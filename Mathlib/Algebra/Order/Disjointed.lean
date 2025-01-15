@@ -6,6 +6,7 @@ Authors: David Loeffler
 import Mathlib.Algebra.Order.PartialSups
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Disjointed
+
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`
 

@@ -321,7 +321,7 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     refine hC.inter_mem hs.1 ?_
     exact h (fun n hnS ↦ hs.2 n hnS)
 
-lemma sup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α}
+lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α}
     {t : Finset ι} (hs : ∀ i ∈ t, s i ∈ C) :
     t.sup s ∈ C := by
   classical

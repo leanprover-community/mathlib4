@@ -71,7 +71,7 @@ theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
     union_diff_left, h₂ (t ∩ s₁)]
   simp [diff_eq, add_assoc]
 
-lemma isCaratheodory_iUnion_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
+lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
     (h : ∀ i ∈ t, m.IsCaratheodory (s i)) :
     m.IsCaratheodory (⋃ i ∈ t, s i) := by
   classical
@@ -116,7 +116,7 @@ lemma isCaratheodory_disjointed {ι : Type*} [PartialOrder ι] [LocallyFiniteOrd
   apply isCaratheodory_diff
   · exact h i
   · simpa only [Finset.sup_set_eq_biUnion, ← Finset.mem_coe, Finset.coe_Iio] using
-      m.isCaratheodory_iUnion_finite (finite_Iio _) fun j _ ↦ h j
+      .biUnion_of_finite m (finite_Iio _) fun j _ ↦ h j
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
