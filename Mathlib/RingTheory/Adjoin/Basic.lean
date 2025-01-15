@@ -40,9 +40,12 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
+
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
@@ -50,15 +53,18 @@ theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
 theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
   le_antisymm (le_sInf fun _ h => adjoin_le h) (sInf_le subset_adjoin)
 
+@[simp]
 theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
 
+@[gcongr]
 theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   Algebra.gc.monotone_l H
 
 theorem adjoin_eq_of_le (S : Subalgebra R A) (h₁ : s ⊆ S) (h₂ : S ≤ adjoin R s) : adjoin R s = S :=
   le_antisymm (adjoin_le h₁) h₂
 
+@[simp]
 theorem adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
   adjoin_eq_of_le _ (Set.Subset.refl _) subset_adjoin
 
@@ -393,6 +399,11 @@ theorem pow_smul_mem_adjoin_smul (r : R) (s : Set A) {x : A} (hx : x ∈ adjoin 
     ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ adjoin R (r • s) :=
   pow_smul_mem_of_smul_subset_of_mem_adjoin r s _ subset_adjoin hx (Subalgebra.algebraMap_mem _ _)
 
+lemma adjoin_nonUnitalSubalgebra_eq_span (s : NonUnitalSubalgebra R A) :
+    Subalgebra.toSubmodule (adjoin R (s : Set A)) = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union, ← NonUnitalAlgebra.adjoin_eq_span,
+      NonUnitalAlgebra.adjoin_eq]
+
 end CommSemiring
 
 section Ring
@@ -541,6 +552,20 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
   erw [hi, Set.range_comp, i.toEquiv.range_eq_univ, Set.image_univ]
 
 end
+
+section CommSemiring
+variable (R) [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+lemma NonUnitalAlgebra.adjoin_le_algebra_adjoin (s : Set A) :
+    adjoin R s ≤ (Algebra.adjoin R s).toNonUnitalSubalgebra := adjoin_le Algebra.subset_adjoin
+
+lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
+    adjoin R (NonUnitalAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalAlgebra.adjoin_le_algebra_adjoin R s)
+    (adjoin_le <| (NonUnitalAlgebra.subset_adjoin R).trans subset_adjoin)
+
+end CommSemiring
 
 namespace Subalgebra
 

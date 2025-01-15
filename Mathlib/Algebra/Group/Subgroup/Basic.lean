@@ -45,9 +45,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -414,7 +412,8 @@ def conjugatesOfSet (s : Set G) : Set G :=
   ⋃ a ∈ s, conjugatesOf a
 
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
-  erw [Set.mem_iUnion₂]; simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
+  rw [conjugatesOfSet, Set.mem_iUnion₂]
+  simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
 
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
   mem_conjugatesOfSet_iff.2 ⟨x, h, IsConj.refl _⟩
@@ -466,7 +465,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
     refine Subgroup.closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_)
       (fun x _ ihx => ?_) h
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
-    · simpa using (normalClosure s).one_mem
+    · simp
     · rw [← conj_mul]
       exact mul_mem ihx ihy
     · rw [← conj_inv]

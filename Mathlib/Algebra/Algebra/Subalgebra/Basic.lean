@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -83,7 +84,7 @@ variable (S : Subalgebra R A)
 instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe apply (rule_sets := [SetLike])]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
@@ -145,6 +146,14 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
     (S : Subalgebra R A) {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
     (∏ x ∈ t, f x) ∈ S :=
   prod_mem h
+
+/-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
+  __ := S
+  smul_mem' r _x hx := S.smul_mem hx r
+
+lemma one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) : (1 : A) ∈ S.toNonUnitalSubalgebra :=
+  S.one_mem
 
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.SubsemiringClass with
@@ -275,14 +284,13 @@ which can quickly get expensive.
 -/
 instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     [IsScalarTower R' R A] :
-    Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
-      rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
-        Algebra.algebraMap_eq_smul_one]
-      exact algebraMap_mem S
-          _ with
-    commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
-    smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _ }
+    Algebra R' S where
+  algebraMap := (algebraMap R' A).codRestrict S fun x => by
+    rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
+      Algebra.algebraMap_eq_smul_one]
+    exact algebraMap_mem S _
+  commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
+  smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _
 
 instance algebra : Algebra R S := S.algebra'
 
@@ -416,11 +424,12 @@ variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
 
 instance (priority := 75) toAlgebra : Algebra R s where
-  toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
-  map_one' := Subtype.ext <| by simp
-  map_mul' _ _ := Subtype.ext <| by simp
-  map_zero' := Subtype.ext <| by simp
-  map_add' _ _ := Subtype.ext <| by simp
+  algebraMap := {
+    toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
+    map_one' := Subtype.ext <| by simp
+    map_mul' _ _ := Subtype.ext <| by simp
+    map_zero' := Subtype.ext <| by simp
+    map_add' _ _ := Subtype.ext <| by simp}
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -1156,7 +1165,7 @@ variable {R : Type*} [Ring R]
 def subalgebraOfSubring (S : Subring R) : Subalgebra ℤ R :=
   { S with
     algebraMap_mem' := fun i =>
-      Int.induction_on i (by simpa using S.zero_mem)
+      Int.induction_on i (by simp)
         (fun i ih => by simpa using S.add_mem ih S.one_mem) fun i ih =>
         show ((-i - 1 : ℤ) : R) ∈ S by
           rw [Int.cast_sub, Int.cast_one]
@@ -1245,3 +1254,20 @@ theorem comap_map_eq_self_of_injective
 end Subalgebra
 
 end MapComap
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- Turn a non-unital subalgebra containing `1` into a subalgebra. -/
+def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A) ∈ S) :
+    Subalgebra R A :=
+  { S with
+    one_mem' := h1
+    algebraMap_mem' := fun r =>
+      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
+
+lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
+    S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
+
+lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
+    (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
+  cases S; rfl

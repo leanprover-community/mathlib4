@@ -195,7 +195,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     by_cases h₂ : j = i
     · subst j; simp
     · simp [h₂]
-  intro a ha; rw [DirectSum.ext_iff R]; intro i
+  intro a ha; rw [DirectSum.ext_component_iff R]; intro i
   have f := LinearMap.congr_arg (f := (π i)) ha
   erw [LinearMap.congr_fun (h₁ i) a] at f
   rw [(map_zero (π i) : (π i) 0 = (0 : M i))] at f
@@ -243,7 +243,8 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
   simp_rw [iff_rTensor_injective', Baer, rTensor_injective_iff_lcomp_surjective,
     Surjective, DFunLike.ext_iff, Subtype.forall]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat. -/
+/-- `CharacterModule M` is an injective module iff `M` is flat.
+See [Lambek_1964] for a self-contained proof. -/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective
@@ -272,6 +273,12 @@ theorem lTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
     [Flat R M] (L : N →ₗ[R] N') (hL : Function.Injective L) :
     Function.Injective (L.lTensor M) :=
   (L.lTensor_inj_iff_rTensor_inj M).2 (rTensor_preserves_injective_linearMap L hL)
+
+theorem linearIndependent_one_tmul {S} [Ring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+    (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
+  classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
+    Finsupp.linearCombination_one_tmul]
+  simpa using lTensor_preserves_injective_linearMap _ hv
 
 variable (R M) in
 /-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map.

@@ -320,6 +320,9 @@ theorem mem_closure {x : R} {s : Set R} :
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
 theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
@@ -477,6 +480,7 @@ variable [NonUnitalNonAssocSemiring S]
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
   (NonUnitalSubsemiring.gi R).l_u_eq s
 

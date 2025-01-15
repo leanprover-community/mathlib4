@@ -463,6 +463,9 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subring R,
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
 theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
@@ -545,8 +548,8 @@ theorem mem_closure_iff {s : Set R} {x} :
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
       | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
-      | one_left => simpa using zero_mem _
-      | one_right => simpa using zero_mem _
+      | one_left => simp
+      | one_right => simp
       | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
       | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
       | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
@@ -606,6 +609,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 variable {R}
 
 /-- Closure of a subring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 

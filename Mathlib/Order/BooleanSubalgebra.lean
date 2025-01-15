@@ -337,12 +337,21 @@ variable {s : Set α}
 
 lemma mem_closure {x : α} : x ∈ closure s ↔ ∀ ⦃L : BooleanSubalgebra α⦄, s ⊆ L → x ∈ L := mem_sInf
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 lemma subset_closure : s ⊆ closure s := fun _ hx ↦ mem_closure.2 fun _ hK ↦ hK hx
+
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 @[simp] lemma closure_le : closure s ≤ L ↔ s ⊆ L := ⟨subset_closure.trans, fun h ↦ sInf_le h⟩
 
 lemma closure_mono (hst : s ⊆ t) : closure s ≤ closure t := sInf_le_sInf fun _L ↦ hst.trans
+
+lemma latticeClosure_subset_closure : latticeClosure s ⊆ closure s :=
+  latticeClosure_min subset_closure (closure s).isSublattice
+
+@[simp] lemma closure_latticeClosure (s : Set α) : closure (latticeClosure s) = closure s :=
+  le_antisymm (closure_le.2 latticeClosure_subset_closure) (closure_mono subset_latticeClosure)
 
 /-- An induction principle for closure membership. If `p` holds for `⊥` and all elements of `s`, and
 is preserved under suprema and complement, then `p` holds for all elements of the closure of `s`. -/

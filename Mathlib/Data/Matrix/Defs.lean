@@ -38,8 +38,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 

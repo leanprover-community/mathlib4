@@ -30,9 +30,7 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
 
-assert_not_exists Finset
-assert_not_exists Subgroup
-assert_not_exists Rat.instField
+assert_not_exists Finset Subgroup Rat.instField
 
 universe u v w
 
@@ -61,7 +59,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [aesop safe apply (rule_sets := [SetLike])] star_mem
+attribute [aesop unsafe 90% apply (rule_sets := [SetLike])] star_mem
 
 namespace StarMemClass
 
@@ -88,6 +86,10 @@ theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
 
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
+
+@[aesop unsafe 5% apply (rule_sets := [SetLike])]
+theorem mem_of_star_mem {S R : Type*} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
+    {s : S} {r : R} (hr : star r ∈ s) : r ∈ s := by rw [← star_star r]; exact star_mem hr
 
 @[simp]
 theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
@@ -289,7 +291,7 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
-    star (ofNat(n) : R) = OfNat.ofNat n :=
+    star (ofNat(n) : R) = ofNat(n) :=
   star_natCast _
 
 section

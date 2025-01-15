@@ -312,6 +312,62 @@ lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 
 
 end trivial
 
+section nontrivial
+
+variable {R : Type*} [Semiring R] {S : Type*} [OrderedSemiring S]
+
+/-- An absolute value on a semiring `R` without zero divisors is *nontrivial* if it takes
+a value `≠ 1` on a nonzero element.
+
+This has the advantage over `v ≠ .trivial` that it does not require decidability
+of `· = 0` in `R`. -/
+def IsNontrivial (v : AbsoluteValue R S) : Prop :=
+  ∃ x ≠ 0, v x ≠ 1
+
+lemma isNontrivial_iff_ne_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
+    [Nontrivial S] (v : AbsoluteValue R S) :
+    v.IsNontrivial ↔ v ≠ .trivial := by
+  refine ⟨fun ⟨x, hx₀, hx₁⟩ h ↦ hx₁ <| h.symm ▸ trivial_apply hx₀, fun H ↦ ?_⟩
+  contrapose! H
+  simp only [IsNontrivial] at H
+  push_neg at H
+  ext1 x
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · simp [H, hx]
+
+lemma not_isNontrivial_iff (v : AbsoluteValue R S) :
+    ¬ v.IsNontrivial ↔ ∀ x ≠ 0, v x = 1 := by
+  simp only [IsNontrivial]
+  push_neg
+  rfl
+
+@[simp]
+lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x : R} (hx : x ≠ 0) :
+    v x = 1 :=
+  v.not_isNontrivial_iff.mp hv _ hx
+
+lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} (h : v.IsNontrivial) :
+    ∃ x, 1 < v x := by
+  obtain ⟨x, hx₀, hx₁⟩ := h
+  rcases hx₁.lt_or_lt with h | h
+  · refine ⟨x⁻¹, ?_⟩
+    rw [map_inv₀]
+    exact (one_lt_inv₀ <| v.pos hx₀).mpr h
+  · exact ⟨x, h⟩
+
+lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [Field F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} (h : v.IsNontrivial) :
+    ∃ x ≠ 0, v x < 1 := by
+  obtain ⟨y, hy⟩ := h.exists_abv_gt_one
+  have hy₀ := v.ne_zero_iff.mp <| (zero_lt_one.trans hy).ne'
+  refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
+  rw [map_inv₀]
+  exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
+
+end nontrivial
+
 end AbsoluteValue
 
 -- Porting note: Removed [] in fields, see
