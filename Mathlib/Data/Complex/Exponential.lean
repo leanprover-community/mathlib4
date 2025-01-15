@@ -1492,15 +1492,13 @@ theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
 theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
   rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_ofReal, abs_cos_add_sin_mul_I, mul_one]
 
-theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by
-  rw [abs_exp, abs_exp, Real.exp_eq_exp]
+theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by simp
 
 theorem abs_exp_mul_I (x : ℂ) : abs (exp (x * I)) = exp (-x.im) := by simp
 
-theorem one_sub_rexp_re_le_abs_one_sub_cexp (x : ℂ) :
-    1 - Real.exp x.re ≤ abs (1 - exp x) := calc
+theorem one_sub_rexp_re_le_abs_one_sub_cexp (x : ℂ) : 1 - Real.exp x.re ≤ abs (1 - exp x) := calc
   abs (1 - exp x) ≥ abs 1 - abs (exp x) := IsAbsoluteValue.sub_abv_le_abv_sub abs _ _
-  _ = 1 - Real.exp x.re := by simp [Complex.abs_exp]
+  _ = 1 - Real.exp x.re := by simp
 
 end Complex
 
