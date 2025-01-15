@@ -52,27 +52,6 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-section uliftYoneda
-
-/-- A version of the Yoneda embedding (see `yoneda`) of
-a category `C : Type u₁` (with `Category.{v₁} C`) in
-the category of presheaves of types `Cᵒᵖ ⥤ Type (max w v₁)`
-for an auxiliary universe `w`. -/
-@[pp_with_univ]
-def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
-  yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
-
-def fullyFaithfulULiftYoneda : (uliftYoneda.{w} (C := C)).FullyFaithful := by
-  apply?
-  sorry
-
-instance : (uliftYoneda.{w} (C := C)).Full := fullyFaithfulULiftYoneda.full
-
-instance : (uliftYoneda.{w} (C := C)).Faithful := fullyFaithfulULiftYoneda.faithful
-
-
-section
-
 namespace Presheaf
 
 variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
@@ -187,7 +166,7 @@ by the fact that it factors through the yoneda embedding).
 @[reducible]
 def functorToRepresentables (P : Cᵒᵖ ⥤ Type (max w v₁)) :
     P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
-  (CategoryOfElements.π P).leftOp ⋙ uliftYoneda
+  (CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}
 
 /-- This is a cocone with point `P` for the functor `functorToRepresentables P`. It is shown in
 `colimitOfRepresentable P` that this cocone is a colimit: that is, we have exhibited an arbitrary
@@ -200,12 +179,15 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
-    { app := fun x => yonedaEquiv.symm x.unop.2
+    { app x := uliftYonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
-        rw [comp_id, ← yonedaEquiv_symm_map]
+        rw [comp_id]
+        rw [← uliftYonedaEquiv_symm_map]
         congr 1
         rw [f.unop.2] }
+
+#exit
 
 /-- The legs of the cocone `coconeOfRepresentable` are natural in the choice of presheaf. -/
 theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :

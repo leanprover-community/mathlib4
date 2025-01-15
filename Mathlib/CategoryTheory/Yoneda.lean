@@ -116,8 +116,16 @@ end Yoneda
 
 namespace ULiftYoneda
 
+variable (C)
+
 def fullyFaithful : (uliftYoneda.{w} (C := C)).FullyFaithful :=
   Yoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
+
+instance : (uliftYoneda.{w} (C := C)).Full :=
+  (fullyFaithful C).full
+
+instance : (uliftYoneda.{w} (C := C)).Faithful :=
+  (fullyFaithful C).faithful
 
 end ULiftYoneda
 
@@ -637,6 +645,24 @@ def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
   right_inv x := by simp
 
 attribute [simp] uliftYonedaEquiv_symm_apply_app
+
+lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type max w v₁}
+    (f : uliftYoneda.{w}.obj (unop X) ⟶ F)
+    (g : X ⟶ Y) : F.map g (uliftYonedaEquiv.{w} f) =
+      uliftYonedaEquiv.{w} (uliftYoneda.map g.unop ≫ f) := by
+  dsimp
+  rw [uliftYonedaEquiv_apply, uliftYonedaEquiv_apply,
+    ← FunctorToTypes.naturality _ _ f g (ULift.up (𝟙 _))]
+  simp [uliftYoneda]
+
+@[reassoc]
+lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type max w v₁}
+    (t : F.obj X) :
+    uliftYonedaEquiv.{w}.symm (F.map f t) =
+      uliftYoneda.map f.unop ≫ uliftYonedaEquiv.symm t := by
+  obtain ⟨u, rfl⟩ := uliftYonedaEquiv.surjective t
+  rw [uliftYonedaEquiv_naturality]
+  simp
 
 end YonedaLemma
 
