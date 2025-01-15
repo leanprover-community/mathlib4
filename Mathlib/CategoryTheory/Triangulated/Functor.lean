@@ -96,8 +96,8 @@ set_option maxHeartbeats 400000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
-  zero := by ext <;> simp
-  add _ _ := by ext <;> simp
+  zero := by ext <;> simp -- the autoparam solves this but it's slower
+  add _ _ := by ext <;> simp -- the autoparam solves this but it's slower
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]

@@ -284,10 +284,10 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
       mul_hom := by
         rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
           f.mul_hom] }
-  map_id _ := by
+  map_id _ := by -- the autoparam solves this but it's slow
     simp only [Mon_.id_hom', map_id]
     rfl
-  map_comp _ _ := by
+  map_comp _ _ := by -- the autoparam solves this but it's slow
     simp only [Mon_.comp_hom', map_comp]
     rfl
 
