@@ -145,13 +145,13 @@ lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     (I.height : WithBot ENat) ≤ ringKrullDim R := by
   sorry  -- The original uses le_supr₂ which needs to be adapted
 
-instance Ideal.finiteHeightOfFiniteRingKrullDim {I : Ideal R}
-    [FiniteRingKrullDim R] (priority := 90):
-    Ideal.FiniteHeight I := by
+instance Ideal.finiteHeightOfFiniteRingKrullDim (priority := 90) {I : Ideal R}
+    [FiniteRingKrullDim R] : Ideal.FiniteHeight I := by
   rw [Ideal.finiteHeight_iff_lt, or_iff_not_imp_left]
   intro e
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I e
-  refine' (Ideal.height_mono hM').trans_lt _
+  refine (Ideal.height_mono hM').trans_lt ?_
+
   sorry
   -- refine' (lt_of_le_of_lt _ (ringKrullDim_lt_top (R := R)))
   -- apply M.primeHeightLeRingKrullDim
