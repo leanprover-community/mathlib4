@@ -85,8 +85,6 @@ section Semiring
 
 open Finsupp
 
-open scoped Classical
-
 variable {R S A}
 variable [Semiring R] [Semiring S] [AddCommMonoid A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
