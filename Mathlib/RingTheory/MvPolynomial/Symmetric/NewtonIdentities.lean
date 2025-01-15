@@ -182,9 +182,9 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
   intro a
   rw [← filter_or, mem_filter]
-  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
+  refine ⟨fun ha ↦ by grind, fun ha ↦ ?_⟩
   have hacard := le_iff_lt_or_eq.mp ha.2.1
-  tauto
+  grind
 
 end DecidableEq
 

@@ -435,7 +435,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     rw [content_mul, rprim.content_eq_one, mul_one, content_C, normalize_lcm, lcm_dvd_iff,
       primPart_mul (mul_ne_zero hpq rprim.ne_zero), rprim.primPart_eq,
       (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
-    tauto
+    grind
 
 theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.degree := by
   have := natDegree_le_iff_degree_le.mp (natDegree_le_of_dvd (gcd_dvd_left p q) hp)

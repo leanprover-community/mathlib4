@@ -307,7 +307,7 @@ theorem mem_cardinaleGenerate_iff {s : Set α} {hreg : c.IsRegular} :
       simpa [subset_refl] using IsRegular.nat_lt hreg 1
     | univ =>
       exact ⟨∅, ⟨empty_subset g, mk_eq_zero (∅ : Set <| Set α) ▸ IsRegular.nat_lt hreg 0, by simp⟩⟩
-    | superset _ _ ih => exact Exists.imp (by tauto) ih -- grind times out!!
+    | superset _ _ ih => exact Exists.imp (by tauto) ih -- grind times out!! -- https://lean-fro.zulipchat.com/#narrow/channel/398861-general/topic/grind.20and.20cc/near/493901332
     | @sInter S Sct _ ih =>
       choose T Tg Tct hT using ih
       refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa,

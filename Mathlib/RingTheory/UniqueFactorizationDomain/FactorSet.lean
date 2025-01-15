@@ -525,7 +525,7 @@ theorem count_mul_of_coprime {a : Associates α} {b : Associates α}
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
   · simp [ha]
-  cases' count_of_coprime ha hb hab hp with hz hb0; · tauto
+  cases' count_of_coprime ha hb hab hp with hz hb0; · grind
   apply Or.intro_right
   rw [count_mul ha hb hp, hb0, add_zero]
 

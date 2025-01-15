@@ -236,7 +236,7 @@ theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b
     a + b ≤ c := by
   by_contra! h
   have := exists_of_lt_add h
-  tauto
+  tauto -- grind won't instantiate a ∀
 
 private theorem add_ne_of_lt (a b : Nimber) :
     (∀ a' < a, a' + b ≠ a + b) ∧ ∀ b' < b, a + b' ≠ a + b := by

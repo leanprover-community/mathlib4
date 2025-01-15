@@ -105,7 +105,7 @@ lemma mem_codiscreteWithin {S T : Set X} :
   simp only [codiscreteWithin, mem_iSup, mem_nhdsWithin, disjoint_principal_right, subset_def,
     mem_diff, mem_inter_iff, mem_compl_iff]
   congr! 7 with x - u y
-  tauto
+  grind
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by

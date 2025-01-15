@@ -68,7 +68,7 @@ private theorem mul_nonempty (a b : Nimber.{u}) :
     ((fun x ↦ x.1 * b + a * x.2 + x.1 * x.2) '' Set.Iio a ×ˢ Set.Iio b)
   ext
   simp_rw [Set.mem_setOf_eq, Set.mem_image, Set.mem_prod, Set.mem_Iio, Prod.exists]
-  tauto
+  grind
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
   rw [mul_def] at h
@@ -79,7 +79,7 @@ theorem mul_le_of_forall_ne (h : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * 
     a * b ≤ c := by
   by_contra! h'
   have := exists_of_lt_mul h'
-  tauto
+  tauto -- grind doesn't work here because it won't instantiate a universal quantifier
 
 instance : MulZeroClass Nimber where
   mul_zero a := by
