@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -95,10 +96,13 @@ theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n
 theorem pow_succ_eq {p : N} (n : ℕ) (h : IsIdempotentElem p) : p ^ (n + 1) = p :=
   Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one p) fun n ih => by rw [pow_succ, ih, h.eq]
 
+theorem iff_eq_one_of_isUnit {p : N} (h : IsUnit p) : IsIdempotentElem p ↔ p = 1 :=
+  ⟨fun idem ↦ have ⟨q, eq⟩ := h.exists_left_inv
+    by rw [← eq, ← idem.eq, ← mul_assoc, eq, one_mul, idem.eq], by rintro rfl; exact .one⟩
+
 @[simp]
 theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
-  Iff.intro (fun h => mul_left_cancel ((mul_one p).symm ▸ h.eq : p * p = p * 1)) fun h =>
-    h.symm ▸ one
+  iff_eq_one_of_isUnit (Group.isUnit p)
 
 @[simp]
 theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 := by
