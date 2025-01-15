@@ -59,7 +59,7 @@ lemma symm (h : IsMoritaEquivalent R S) : IsMoritaEquivalent S R where
 -- `max u₁ u₂`, `max u₂ u₃` vs `max u₁ u₃`. But if we once we proved the definition of Morita
 -- equivalence is equivalent to the existence of a full idempotent element, we can remove this
 -- restriction in the universe.
--- Or alternatively, @alreadydone one has sketched an argument on how the universe restriction can be
+-- Or alternatively, @alreadydone has sketched an argument on how the universe restriction can be
 -- removed via a categorical argument,
 -- see [here](https://github.com/leanprover-community/mathlib4/pull/20640#discussion_r1912189931)
 lemma trans {R S T : Type u₁} [Ring R] [Ring S] [Ring T]
