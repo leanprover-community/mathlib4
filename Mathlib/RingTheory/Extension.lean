@@ -233,12 +233,11 @@ lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
 
 /-- A map between extensions induce a map between kernels. -/
 def Hom.mapKer (f : P.Hom P')
-    [alg : Algebra P.Ring P'.Ring] (halg : alg = f.toRingHom.toAlgebra) :
+    [alg : Algebra P.Ring P'.Ring] (halg : algebraMap P.Ring P'.Ring = f.toRingHom) :
     P.ker →ₗ[P.Ring] P'.ker :=
   (Algebra.linearMap P.Ring P'.Ring).restrict (q := P'.ker.restrictScalars P.Ring) fun x hx ↦ by
-    subst halg
-    show (algebraMap P'.Ring S' (f.toRingHom x)) = 0
-    simp [show algebraMap P.Ring S x = 0 from hx]
+    show (algebraMap P'.Ring S' (algebraMap P.Ring P'.Ring  x)) = 0
+    simp [halg, show algebraMap P.Ring S x = 0 from hx]
 
 end
 
