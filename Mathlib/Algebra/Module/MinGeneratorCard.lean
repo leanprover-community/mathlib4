@@ -5,6 +5,30 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
 -/
 import Mathlib.RingTheory.Finiteness.Defs
 
+/-!
+# Minimum Cardinality of Generating Set for Submodules
+
+In this file, we define the minimum cardinality of a generating set for a submodule,
+which is implemented as `minGeneratorCard` and `spanRank`.
+
+## Main Definitions
+
+* `minGeneratorCard` : The minimum cardinality of a generating set for a submodule, with type `ℕ`.
+If the minimum cardinality of a generating set is infinity,
+then the minimum cardinality is defined to be `0`.
+* `spanRank` : The span rank of a submodule, possibly infinite, with type `WithTop ℕ`.
+* `minGenerator` : For a finitely generated submodule, get a minimal generating function.
+
+## Main Results
+
+* `exists_generator_eq_min_generator_card` : Constructs a generating function
+  whose cardinality equals `minGeneratorCard` for a finitely generated submodule.
+
+## Tags
+submodule, generating set, span rank
+
+-/
+
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 namespace Submodule
@@ -44,6 +68,8 @@ lemma fg_iff_spanrank_eq {p : Submodule R M} :
   rw [← spanRankNeTop_iff, e]
   exact WithTop.coe_ne_top
 
+/-- Constructs a generating function whose cardinality equals
+  `minGeneratorCard` for a finitely generated submodule.-/
 theorem exists_generator_eq_min_generator_card {p : Submodule R M} (h : p.FG) :
   ∃ f : Fin p.minGeneratorCard → M, span R (Set.range f) = p := by
   haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
@@ -65,7 +91,7 @@ theorem exists_generator_eq_min_generator_card {p : Submodule R M} (h : p.FG) :
   let f' :=  Fintype.equivFinOfCardEq temp.symm
   use Subtype.val ∘ f'.symm
   rw [Set.range_comp, Set.range_eq_univ.mpr]
-  simp_all only [nonempty_subtype, Set.toFinite_toFinset, Set.toFinset_card,
+  · simp_all only [nonempty_subtype, Set.toFinite_toFinset, Set.toFinset_card,
     Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq, t2]
   exact f'.symm.surjective
 
