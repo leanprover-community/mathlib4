@@ -138,14 +138,14 @@ theorem map_constants (φ : M ↪ₑ[L] N) (c : L.Constants) : φ c = c :=
 def toEmbedding (f : M ↪ₑ[L] N) : M ↪[L] N where
   toFun := f
   inj' := f.injective
-  map_fun' {_} f x := by aesop
-  map_rel' {_} R x := by aesop
+  map_fun' {_} f x := by simp
+  map_rel' {_} R x := by simp
 
 /-- An elementary embedding is also a first-order homomorphism. -/
 def toHom (f : M ↪ₑ[L] N) : M →[L] N where
   toFun := f
-  map_fun' {_} f x := by aesop
-  map_rel' {_} R x := by aesop
+  map_fun' {_} f x := by simp
+  map_rel' {_} R x := by simp
 
 @[simp]
 theorem toEmbedding_toHom (f : M ↪ₑ[L] N) : f.toEmbedding.toHom = f.toHom :=
@@ -281,7 +281,7 @@ namespace Equiv
 /-- A first-order equivalence is also an elementary embedding. -/
 def toElementaryEmbedding (f : M ≃[L] N) : M ↪ₑ[L] N where
   toFun := f
-  map_formula' n φ x := by aesop
+  map_formula' n φ x := by simp
 
 @[simp]
 theorem toElementaryEmbedding_toEmbedding (f : M ≃[L] N) :

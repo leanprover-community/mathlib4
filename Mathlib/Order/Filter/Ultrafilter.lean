@@ -161,7 +161,7 @@ theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) �
   simp only [imp_iff_not_or, eventually_or, eventually_not]
 
 theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
-  Finite.induction_on hs (by simp) fun _ _ his => by
+  Finite.induction_on _ hs (by simp) fun _ _ his => by
     simp [union_mem_iff, his, or_and_right, exists_or]
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
@@ -261,7 +261,7 @@ theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 
 theorem pure_injective : Injective (pure : α → Ultrafilter α) := fun _ _ h =>
-  Filter.pure_injective (congr_arg Ultrafilter.toFilter h : _)
+  Filter.pure_injective (congr_arg Ultrafilter.toFilter h :)
 
 instance [Inhabited α] : Inhabited (Ultrafilter α) :=
   ⟨pure default⟩

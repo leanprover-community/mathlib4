@@ -160,10 +160,10 @@ instance instTop : Top (BooleanSubalgebra α) where
 /-- The trivial boolean subalgebra of a lattice. -/
 instance instBot : Bot (BooleanSubalgebra α) where
   bot.carrier := {⊥, ⊤}
-  bot.bot_mem' := by aesop
-  bot.compl_mem' := by aesop
-  bot.supClosed' _ := by aesop
-  bot.infClosed' _ := by aesop
+  bot.bot_mem' := by simp
+  bot.compl_mem' := by simp
+  bot.supClosed' _ := by simp
+  bot.infClosed' _ := by simp
 
 /-- The inf of two boolean subalgebras is their intersection. -/
 instance instInf : Min (BooleanSubalgebra α) where
@@ -347,6 +347,12 @@ theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) : x ∈ closure 
 
 lemma closure_mono (hst : s ⊆ t) : closure s ≤ closure t := sInf_le_sInf fun _L ↦ hst.trans
 
+lemma latticeClosure_subset_closure : latticeClosure s ⊆ closure s :=
+  latticeClosure_min subset_closure (closure s).isSublattice
+
+@[simp] lemma closure_latticeClosure (s : Set α) : closure (latticeClosure s) = closure s :=
+  le_antisymm (closure_le.2 latticeClosure_subset_closure) (closure_mono subset_latticeClosure)
+
 /-- An induction principle for closure membership. If `p` holds for `⊥` and all elements of `s`, and
 is preserved under suprema and complement, then `p` holds for all elements of the closure of `s`. -/
 @[elab_as_elim]
@@ -366,8 +372,8 @@ lemma closure_bot_sup_induction {p : ∀ g ∈ closure s, Prop} (mem : ∀ x hx,
 
 section sdiff_sup
 
-variable (sup : SupClosed s) (inf : InfClosed s) (bot_mem : ⊥ ∈ s) (top_mem : ⊤ ∈ s)
-include sup inf bot_mem top_mem
+variable (isSublattice : IsSublattice s) (bot_mem : ⊥ ∈ s) (top_mem : ⊤ ∈ s)
+include isSublattice bot_mem top_mem
 
 theorem mem_closure_iff_sup_sdiff {a : α} :
     a ∈ closure s ↔ ∃ t : Finset (s × s), a = t.sup fun x ↦ x.1.1 \ x.2.1 := by
@@ -384,21 +390,21 @@ theorem mem_closure_iff_sup_sdiff {a : α} :
   simp_rw [Finset.sup_insert, compl_sup, eq]
   refine tc.induction ⟨∅, by simp⟩ fun ⟨z, w⟩ tc _ ⟨t, eq⟩ ↦ ?_
   simp_rw [Finset.sup_insert, inf_sup_left, eq]
-  refine ⟨{(z, ⟨_, sup x.2 w.2⟩), (⟨_, inf y.2 z.2⟩, w)} ∪ t, ?_⟩
+  use {(z, ⟨_, isSublattice.supClosed x.2 w.2⟩), (⟨_, isSublattice.infClosed y.2 z.2⟩, w)} ∪ t
   simp_rw [Finset.sup_union, Finset.sup_insert, Finset.sup_singleton, sdiff_eq,
     compl_sup, inf_left_comm z.1, compl_inf, compl_compl, inf_sup_right, inf_assoc]
 
 @[elab_as_elim] theorem closure_sdiff_sup_induction {p : ∀ g ∈ closure s, Prop}
     (sdiff : ∀ x hx y hy, p (x \ y) (sdiff_mem (subset_closure hx) (subset_closure hy)))
-    (sup' : ∀ x hx y hy, p x hx → p y hy → p (x ⊔ y) (sup_mem hx hy))
-    {x} (hx : x ∈ closure s) : p x hx := by
-  obtain ⟨t, rfl⟩ := (mem_closure_iff_sup_sdiff sup inf bot_mem top_mem).mp hx
+    (sup : ∀ x hx y hy, p x hx → p y hy → p (x ⊔ y) (sup_mem hx hy))
+    (x) (hx : x ∈ closure s) : p x hx := by
+  obtain ⟨t, rfl⟩ := (mem_closure_iff_sup_sdiff isSublattice bot_mem top_mem).mp hx
   revert hx
   classical
   refine t.induction (by simpa using sdiff _ bot_mem _ bot_mem) fun x t _ ih hxt ↦ ?_
   simp only [Finset.sup_insert] at hxt ⊢
-  exact sup' _ _ _ _ (sdiff _ x.1.2 _ x.2.2)
-    (ih <| (mem_closure_iff_sup_sdiff sup inf bot_mem top_mem).mpr ⟨_, rfl⟩)
+  exact sup _ _ _ ((mem_closure_iff_sup_sdiff isSublattice bot_mem top_mem).mpr ⟨_, rfl⟩)
+    (sdiff _ x.1.2 _ x.2.2) (ih _)
 
 end sdiff_sup
 

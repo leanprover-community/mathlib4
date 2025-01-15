@@ -10,6 +10,8 @@ import Mathlib.Data.ZMod.Basic
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
 
+assert_not_exists TwoSidedIdeal
+
 variable {n : ℕ} {M M₁ : Type*}
 
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.

@@ -359,6 +359,7 @@ protected def gi : GaloisInsertion (@closure K _) (↑) where
 variable {K}
 
 /-- Closure of a subfield `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subfield K) : closure (s : Set K) = s :=
   (Subfield.gi K).l_u_eq s
 

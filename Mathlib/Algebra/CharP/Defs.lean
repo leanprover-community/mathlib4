@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Characteristic of semirings
@@ -20,7 +19,7 @@ import Mathlib.Tactic.NormNum.Basic
     prime characteristic `p`)
 -/
 
-assert_not_exists Finset
+assert_not_exists Field Finset
 
 open Set
 
@@ -189,19 +188,9 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 end ringChar
 
 lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
-  suffices (2 : R) ≠ 0 by
-    intro h
-    symm at h
-    rw [← sub_eq_zero, sub_neg_eq_add] at h
-    norm_num at h
-    exact this h
-    -- Porting note: this could probably be golfed
-  intro h
-  rw [show (2 : R) = (2 : ℕ) by norm_cast] at h
-  have := (CharP.cast_eq_zero_iff R p 2).mp h
-  have := Nat.le_of_dvd (by decide) this
-  rw [fact_iff] at *
-  omega
+  rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
+    CharP.cast_eq_zero_iff R p 2]
+  exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
 
 namespace CharP
 
