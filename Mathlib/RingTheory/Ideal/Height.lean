@@ -232,3 +232,20 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsP
   -- have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
   -- rw [e] at this
   -- exact lt_irrefl _ this
+
+
+/-- The prime height of the maximal ideal equals the Krull dimension -/
+theorem LocalRing.maximalIdeal_primeHeight [IsLocalRing R]:
+    (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R :=
+  sorry
+
+/-- For a local ring with finite Krull dimension, a prime ideal has height equal to the Krull dimension
+    if and only if it is the maximal ideal -/
+theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] {I : Ideal R}
+    (hI : I.IsPrime) : Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
+  constructor
+  · intro h
+    exact IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_of_primeHeight_eq_ringKrullDim h)
+  · intro h
+    simp_rw [h]
+    exact LocalRing.maximalIdeal_primeHeight
