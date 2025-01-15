@@ -80,17 +80,6 @@ noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySm
   left_inv _ := by simp [Functor.mapArrow]; rfl
   right_inv _ := by simp [Functor.mapArrow]; rfl
 
--- to be moved
-lemma Arrow.ext {C : Type u} [Category.{v} C] {f g : Arrow C}
-    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
-    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
-  obtain ⟨X, Y, f⟩ := f
-  obtain ⟨X', Y', g⟩ := g
-  obtain rfl : X = X' := h₁
-  obtain rfl : Y = Y' := h₂
-  obtain rfl : f = g := by simpa using h₃
-  rfl
-
 /-- The bijection `Arrow (Shrink C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] :
     Arrow (Shrink.{w} C) ≃ Arrow C where

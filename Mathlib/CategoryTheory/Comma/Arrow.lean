@@ -277,6 +277,16 @@ def rightFunc : Arrow C ⥤ C :=
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
 
+lemma ext {f g : Arrow C}
+    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
+    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
+  obtain ⟨X, Y, f⟩ := f
+  obtain ⟨X', Y', g⟩ := g
+  obtain rfl : X = X' := h₁
+  obtain rfl : Y = Y' := h₂
+  obtain rfl : f = g := by simpa using h₃
+  rfl
+
 end Arrow
 
 namespace Functor
