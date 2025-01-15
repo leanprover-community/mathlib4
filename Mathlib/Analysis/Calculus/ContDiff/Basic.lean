@@ -1146,6 +1146,9 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWith
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i+1) ↦ E) F).symm :
         _ →L[𝕜] E [×(i+1)]→L[𝕜] F)
 
+@[deprecated (since := "2025-01-15")]
+alias ContDiffWithinAt.iteratedFderivWithin_right := ContDiffWithinAt.iteratedFDerivWithin_right
+
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth at `x₀`. -/
 protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiffAt 𝕜 n (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀)

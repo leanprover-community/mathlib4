@@ -257,13 +257,11 @@ theorem ae_exists_fderiv_of_countable
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
+omit [MeasurableSpace E] in
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
--- We redeclare `E` here as we do not need the `[MeasurableSpace E]` instance
--- available in the rest of the file.
 theorem hasFDerivAt_of_hasLineDerivAt_of_closure
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [ProperSpace E] {f : E → F}
-    (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
+    {f : E → F} (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
     {L : E →L[ℝ] F} {x : E} (hL : ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v) :
     HasFDerivAt f L x := by
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
@@ -313,6 +311,9 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
       simp only [add_sub_add_left_eq_sub, ← smul_sub, norm_smul, norm_rho]; gcongr
     _ = ((C + ‖L‖ + 1) * δ) * ρ := by ring
     _ = ε * ‖v‖ := by rw [hδ, hρ]
+
+@[deprecated (since := "2025-01-15")]
+alias hasFderivAt_of_hasLineDerivAt_of_closure := hasFDerivAt_of_hasLineDerivAt_of_closure
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
 differentiable almost everywere. Superseded by
