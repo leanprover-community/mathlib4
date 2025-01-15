@@ -233,7 +233,7 @@ theorem Convex.translate_preimage_left (hs : Convex 𝕜 s) (z : E) :
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [OrderedAddCommMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab =>
   calc
