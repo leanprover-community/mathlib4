@@ -77,6 +77,10 @@ instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) wher
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 
+instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
+    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
+  prf N hN := ⟨⟨N, hN⟩, rfl⟩
+
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
@@ -272,6 +276,12 @@ theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [L
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieModule (I : LieIdeal R L) : LieModule R I M :=
   LieSubalgebra.lieModule (I : LieSubalgebra R L)
+
+instance (I : LieIdeal R L) : IsLieTower I L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance (I : LieIdeal R L) : IsLieTower L I M where
+  leibniz_lie x y m := leibniz_lie x y.val m
 
 end LieIdeal
 

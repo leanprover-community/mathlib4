@@ -34,7 +34,7 @@ instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
   IsLocalization.epi M _
 
 instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
-    @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M : _) := by
+    @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M :) := by
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
