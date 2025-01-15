@@ -242,7 +242,6 @@ lemma restrictScalarsField_apply_apply
   LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
     (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
 
-/-- Simultaneously restrict both the domains and scalars of a perfect pairing. -/
 def restrictScalarsFieldSpan
     (hij : p.IsPerfectCompl (span L <| LinearMap.range i) (span L <| LinearMap.range j))
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
