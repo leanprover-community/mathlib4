@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Prime.Pow
+import Mathlib.NumberTheory.Divisors
 
 /-!
 # Prime powers and factorizations

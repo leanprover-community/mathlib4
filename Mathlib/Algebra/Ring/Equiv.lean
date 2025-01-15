@@ -38,8 +38,7 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
 -- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype
+assert_not_exists Field Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -529,6 +528,14 @@ theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
     (f : R ≃+* R') (g : S ≃+* S') :
     ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
+
+/-- This is `Equiv.piOptionEquivProd` as a `RingEquiv`. -/
+@[simps!]
+def piOptionEquivProd {ι : Type*} {R : Option ι → Type*} [Π i, NonUnitalNonAssocSemiring (R i)] :
+    (Π i, R i) ≃+* R none × (Π i, R (some i)) where
+  toEquiv := Equiv.piOptionEquivProd
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 
 end NonUnitalSemiring
 

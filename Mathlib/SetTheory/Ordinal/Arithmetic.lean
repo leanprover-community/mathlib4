@@ -50,8 +50,7 @@ Some properties of the operations are also used to discuss general tools on ordi
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-assert_not_exists Field
-assert_not_exists Module
+assert_not_exists Field Module
 
 noncomputable section
 
@@ -1357,6 +1356,11 @@ theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
     (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
   Ordinal.iSup_eq_of_range_eq h
 
+theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o := by
+  apply (le_of_forall_lt _).antisymm'
+  · simp [Ordinal.iSup_le_iff]
+  · exact fun a ha ↦ (lt_succ a).trans_le <| Ordinal.le_iSup (fun x : Iio _ ↦ _) ⟨a, ha⟩
+
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β]:
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
@@ -2243,10 +2247,9 @@ theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
 @[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias one_add_nat_cast := one_add_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
-    1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
+    1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
   one_add_natCast m
 
 @[simp, norm_cast]
@@ -2334,10 +2337,9 @@ theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
 @[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias lift_nat_cast := lift_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
 /-! ### Properties of ω -/

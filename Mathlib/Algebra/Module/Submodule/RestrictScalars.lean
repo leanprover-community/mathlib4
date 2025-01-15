@@ -55,7 +55,7 @@ variable (R M)
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
-  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h : _)
+  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h :)
 
 @[simp]
 theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
