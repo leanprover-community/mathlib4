@@ -34,8 +34,8 @@ noncomputable def multilinearMapToDual :
       Function.update (fun j ↦ f j (v j)) i (φ (v i)) j := fun _ f φ i j v ↦ by
     by_cases h : j = i
     · subst h
-      simp only [Function.update_same]
-    · simp only [Function.update_noteq h]
+      simp only [Function.update_self]
+    · simp only [Function.update_of_ne h]
   { toFun := fun f ↦ PiTensorProduct.lift
       (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
     map_update_add' := fun f i φ₁ φ₂ ↦ by
