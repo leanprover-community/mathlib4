@@ -6,7 +6,7 @@ Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 import Mathlib.Order.RingKrullDim
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.RingTheory.RingKrullDim.Basic
+import Mathlib.RingTheory.KrullDimension.Basic
 /-!
 # The Height of an Ideal
 
