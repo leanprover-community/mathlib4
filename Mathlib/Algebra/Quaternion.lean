@@ -67,6 +67,12 @@ structure QuaternionAlgebra (R : Type*) (a b c : R) where
 scoped[Quaternion] notation "ℍ[" R "," a "," b "," c "]" =>
     QuaternionAlgebra R a b c
 
+open Quaternion in
+@[deprecated "This is a deprecated expression for QuoternionAlgebra R a 0 b only true for
+  charateristic not equal to 2, please use the general version
+  ℍ[R,a,0,b] instead. " (since := "2025-01-15")]
+scoped[Quaternion] notation "ℍ[" R "," a "," b "]" => ℍ[R, a, 0, b]
+
 namespace QuaternionAlgebra
 open Quaternion
 
