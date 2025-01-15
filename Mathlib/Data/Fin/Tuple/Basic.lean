@@ -873,7 +873,7 @@ theorem insertNth_injective2 {p : Fin (n + 1)} :
   ⟨by simpa using congr_fun h p, funext fun i ↦ by simpa using congr_fun h (succAbove p i)⟩
 
 @[simp]
-theorem insertNth_eq_insertNth {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
+theorem insertNth_inj {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
     insertNth p xₚ x = insertNth p yₚ y ↔ xₚ = yₚ ∧ x = y :=
   insertNth_injective2.eq_iff
 
