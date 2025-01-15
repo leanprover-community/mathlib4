@@ -37,7 +37,7 @@ theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degr
           rw [leadingCoeff_eq_zero_iff_deg_eq_bot.1 h] at hq
           cases hq
     _ = LinearMap.ker (aeval f (C q.leadingCoeff * X + C (q.coeff 0))) := by
-          rw [C_mul', aeval_def]; simp [algebraMap, Algebra.toRingHom]
+          rw [C_mul', aeval_def]; simp [algebraMap, Algebra.algebraMap]
     _ = LinearMap.ker (aeval f q) := by rwa [← eq_X_add_C_of_degree_eq_one]
 
 theorem ker_aeval_ring_hom'_unit_polynomial (f : End K V) (c : K[X]ˣ) :

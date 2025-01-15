@@ -985,7 +985,7 @@ section
 -- attribute [local simp] colimMap -- Porting note: errors out colim.map_id and map_comp now
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
-@[simps] -- Porting note: simps on all fields now
+@[simps]
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
