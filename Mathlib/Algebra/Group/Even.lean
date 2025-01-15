@@ -48,6 +48,9 @@ def IsSquare (a : α) : Prop := ∃ r, a = r * r
 @[to_additive]
 lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := Iff.rfl
 
+alias ⟨IsSquare.exists_mul_self, _⟩ := isSquare_iff_exists_mul_self
+attribute [to_additive] IsSquare.exists_mul_self
+
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
 
 @[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
@@ -103,11 +106,9 @@ lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
 
 @[to_additive]
 lemma exists_apply_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
-    IsSquare b → ∃ a, f a = b ∧ IsSquare a := by
-  rintro ⟨s, rfl⟩
+    IsSquare b → ∃ a, f a = b ∧ IsSquare a := fun ⟨s, _⟩ => by
   rcases hf s with ⟨r, rfl⟩
-  use r * r
-  simp
+  use r * r; simp_all
 
 end MonoidHom
 
@@ -138,17 +139,14 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 end Monoid
 
 @[to_additive]
-lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
-  rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a * b, mul_mul_mul_comm _ _ _ _⟩
+lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
+  fun ⟨r, _⟩ ⟨s, _⟩ => ⟨r * s, by simp_all [mul_mul_mul_comm]⟩
 
 section DivisionMonoid
 variable [DivisionMonoid α] {a : α}
 
 @[to_additive (attr := simp)] lemma isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
-  constructor <;> intro h
-  · rw [← isSquare_op_iff, ← inv_inv a]
-    exact h.map (MulEquiv.inv' α)
-  · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
+  constructor <;> exact fun h => by simpa using (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 
 alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 attribute [to_additive] IsSquare.inv
