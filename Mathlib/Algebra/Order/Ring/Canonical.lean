@@ -30,6 +30,8 @@ structure CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrdered
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 
+attribute [nolint docBlame] CanonicallyOrderedCommSemiring.toCommSemiring
+
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
     [AddZeroClass α] [One α] [LE α] [CanonicallyOrderedAdd α] : ZeroLEOneClass α where

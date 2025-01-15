@@ -19,6 +19,8 @@ set_option linter.deprecated false in
 structure CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedCommSemiring α,
   LinearOrderedSemifield α
 
+attribute [nolint docBlame] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
+
 variable {α : Type*} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
 
 -- See note [reducible non-instances]

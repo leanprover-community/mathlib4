@@ -317,6 +317,9 @@ set_option linter.existingAttributeWarning false in
 structure CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 
+attribute [nolint docBlame] CanonicallyLinearOrderedAddCommMonoid.toLinearOrderedAddCommMonoid
+attribute [nolint docBlame] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
+
 section CanonicallyLinearOrderedCommMonoid
 
 variable [LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]
