@@ -274,7 +274,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
--- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
 @[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
