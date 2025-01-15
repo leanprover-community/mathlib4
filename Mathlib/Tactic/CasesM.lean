@@ -49,7 +49,9 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
           for subgoal in subgoals do
             -- If only one new hypothesis is generated, rename it to the original name.
             let g ← if h : subgoal.fields.size = 1 then
-              subgoal.mvarId.rename subgoal.fields[0].fvarId! ldecl.userName
+              match subgoal.fields[0] with
+              | .fvar fvarId => subgoal.mvarId.rename fvarId ldecl.userName
+              | _ => pure subgoal.mvarId
             else
               pure subgoal.mvarId
             if recursive then
