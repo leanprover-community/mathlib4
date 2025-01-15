@@ -407,7 +407,8 @@ theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
       x ⊓ y ⊓ z ⊓ (x \ z ⊓ y \ z) = x ⊓ y ⊓ (z ⊓ x \ z) ⊓ y \ z := by ac_rfl
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, bot_inf_eq])
 
-theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
+/-- See also `sdiff_inf_right_comm`. -/
+theorem inf_sdiff_assoc (x y z : α) : (x ⊓ y) \ z = x ⊓ y \ z :=
   sdiff_unique
     (calc
       x ⊓ y ⊓ z ⊔ x ⊓ y \ z = x ⊓ (y ⊓ z) ⊔ x ⊓ y \ z := by rw [inf_assoc]
@@ -417,8 +418,14 @@ theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
       x ⊓ y ⊓ z ⊓ (x ⊓ y \ z) = x ⊓ x ⊓ (y ⊓ z ⊓ y \ z) := by ac_rfl
       _ = ⊥ := by rw [inf_inf_sdiff, inf_bot_eq])
 
-theorem inf_sdiff_right_comm : x \ z ⊓ y = (x ⊓ y) \ z := by
+/-- See also `inf_sdiff_assoc`. -/
+theorem sdiff_inf_right_comm (x y z : α) : x \ z ⊓ y = (x ⊓ y) \ z := by
   rw [inf_comm x, inf_comm, inf_sdiff_assoc]
+
+lemma inf_sdiff_left_comm (a b c : α) : a ⊓ (b \ c) = b ⊓ (a \ c) := by
+  simp_rw [← inf_sdiff_assoc, inf_comm]
+
+@[deprecated (since := "2025-01-08")] alias inf_sdiff_right_comm := sdiff_inf_right_comm
 
 theorem inf_sdiff_distrib_left (a b c : α) : a ⊓ b \ c = (a ⊓ b) \ (a ⊓ c) := by
   rw [sdiff_inf, sdiff_eq_bot_iff.2 inf_le_left, bot_sup_eq, inf_sdiff_assoc]
@@ -427,7 +434,7 @@ theorem inf_sdiff_distrib_right (a b c : α) : a \ b ⊓ c = (a ⊓ c) \ (b ⊓ 
   simp_rw [inf_comm _ c, inf_sdiff_distrib_left]
 
 theorem disjoint_sdiff_comm : Disjoint (x \ z) y ↔ Disjoint x (y \ z) := by
-  simp_rw [disjoint_iff, inf_sdiff_right_comm, inf_sdiff_assoc]
+  simp_rw [disjoint_iff, sdiff_inf_right_comm, inf_sdiff_assoc]
 
 theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :=
   Eq.symm <|
@@ -512,10 +519,9 @@ abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α]
   compl a := ⊤ \ a
   inf_compl_le_bot _ := disjoint_sdiff_self_right.le_bot
   top_le_sup_compl _ := le_sup_sdiff
-  sdiff_eq _ _ := by
-      -- Porting note: changed `rw` to `erw` here.
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [← inf_sdiff_assoc, inf_top_eq]
+  sdiff_eq a b := by
+    change _ = a ⊓ (⊤ \ b)
+    rw [← inf_sdiff_assoc, inf_top_eq]
 
 section BooleanAlgebra
 
@@ -681,7 +687,7 @@ theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
   @disjoint_sdiff_self_right αᵒᵈ _ _ _
 
 theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
-  (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @Codisjoint_comm _ (_) _ _ _
+  (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @codisjoint_comm _ (_) _ _ _
 
 @[simp] lemma himp_le_iff : x ⇨ y ≤ x ↔ x = ⊤ :=
   ⟨fun h ↦ codisjoint_self.1 <| codisjoint_himp_self_right.mono_right h, fun h ↦ le_top.trans h.ge⟩
@@ -727,13 +733,9 @@ instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
   inf_compl_le_bot a := a.and_not_self.le
   top_le_sup_compl a := a.or_not_self.ge
 
-@[simp]
-theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
-  rfl
+theorem Bool.sup_eq_bor : (· ⊔ ·) = or := by dsimp
 
-@[simp]
-theorem Bool.inf_eq_band : (· ⊓ ·) = and :=
-  rfl
+theorem Bool.inf_eq_band : (· ⊓ ·) = and := by dsimp
 
 @[simp]
 theorem Bool.compl_eq_bnot : HasCompl.compl = not :=
@@ -743,7 +745,7 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedBooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bot α] [SDiff α]
+protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α] [Bot α] [SDiff α]
     [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -755,7 +757,7 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] 
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
+protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)

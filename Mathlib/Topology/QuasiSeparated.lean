@@ -26,7 +26,7 @@ of compact open subsets are still compact.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
@@ -64,14 +64,14 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
     rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact Set.inter_subset_left.trans (hU.trans (Set.image_subset_range _ _))
   · intro x hx
-    rw [← h.inj.injOn.mem_image_iff (Set.subset_univ _) trivial]
+    rw [← h.injective.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hU hx
   · rw [h.isCompact_iff]
     convert hU''
     rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hU.trans (Set.image_subset_range _ _)
   · intro x hx
-    rw [← h.inj.injOn.mem_image_iff (Set.subset_univ _) trivial]
+    rw [← h.injective.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hV hx
   · rw [h.isCompact_iff]
     convert hV''
@@ -81,11 +81,11 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
 @[deprecated (since := "2024-10-26")]
 alias IsQuasiSeparated.image_of_embedding := IsQuasiSeparated.image_of_isEmbedding
 
-theorem IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
+theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
   refine ⟨fun hs => hs.image_of_isEmbedding h.isEmbedding, ?_⟩
   intro H U V hU hU' hU'' hV hV' hV''
-  rw [h.isEmbedding.isCompact_iff, Set.image_inter h.inj]
+  rw [h.isEmbedding.isCompact_iff, Set.image_inter h.injective]
   exact
     H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)

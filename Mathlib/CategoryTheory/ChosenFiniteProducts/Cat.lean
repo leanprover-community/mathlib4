@@ -89,10 +89,10 @@ lemma associator_inv (X : Cat) (Y : Cat) (Z : Cat) :
 
 lemma leftUnitor_hom (C : Cat) : (λ_ C).hom = Prod.snd _ _ := rfl
 
-lemma leftUnitor_inv (C : Cat) : (λ_ C).inv = Prod.sectr ⟨⟨⟨⟩⟩⟩ _ := rfl
+lemma leftUnitor_inv (C : Cat) : (λ_ C).inv = Prod.sectR ⟨⟨⟨⟩⟩⟩ _ := rfl
 
 lemma rightUnitor_hom (C : Cat) : (ρ_ C).hom = Prod.fst _ _ := rfl
 
-lemma rightUnitor_inv (C : Cat) : (ρ_ C).inv = Prod.sectl _ ⟨⟨⟨⟩⟩⟩ := rfl
+lemma rightUnitor_inv (C : Cat) : (ρ_ C).inv = Prod.sectL _ ⟨⟨⟨⟩⟩⟩ := rfl
 
 end CategoryTheory.Monoidal

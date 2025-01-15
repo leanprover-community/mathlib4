@@ -30,36 +30,20 @@ open Function
 
 variable {F α β M N P G H : Type*}
 
-/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
-@[to_additive (attr := simps)
-  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
-def OneHom.inverse [One M] [One N]
-    (f : OneHom M N) (g : N → M)
-    (h₁ : Function.LeftInverse g f) :
-  OneHom N M :=
-  { toFun := g,
-    map_one' := by rw [← f.map_one, h₁] }
+namespace EmbeddingLike
+variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
 
-/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive (attr := simps)
-  "Makes an additive inverse from a bijection which preserves addition."]
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
-    (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : N →ₙ* M where
-  toFun := g
-  map_mul' x y :=
-    calc
-      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
-      _ = g (f (g x * g y)) := by rw [f.map_mul]
-      _ = g x * g y := h₁ _
+@[to_additive (attr := simp)]
+theorem map_eq_one_iff {f : F} {x : M} :
+    f x = 1 ↔ x = 1 :=
+  _root_.map_eq_one_iff f (EmbeddingLike.injective f)
 
-/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps)
-  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
-def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
-  { (f : OneHom A B).inverse g h₁,
-    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
+@[to_additive]
+theorem map_ne_one_iff {f : F} {x : M} :
+    f x ≠ 1 ↔ x ≠ 1 :=
+  map_eq_one_iff.not
+
+end EmbeddingLike
 
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
 structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
@@ -80,9 +64,6 @@ add_decl_doc AddEquiv.toAddHom
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
 structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
--- Porting note: remove when `to_additive` can do this
--- https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MulEquiv.toMulHom
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toEquiv
@@ -96,6 +77,11 @@ infixl:25 " ≃* " => MulEquiv
 /-- Notation for an `AddEquiv`. -/
 infixl:25 " ≃+ " => AddEquiv
 
+@[to_additive]
+lemma MulEquiv.toEquiv_injective {α β : Type*} [Mul α] [Mul β] :
+    Function.Injective (toEquiv : (α ≃* β) → (α ≃ β))
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
@@ -104,6 +90,28 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
     Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+
+@[to_additive]
+alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated EmbeddingLike.map_eq_one_iff (since := "2024-11-10")]
+MulEquivClass.map_eq_one_iff
+attribute [deprecated EmbeddingLike.map_eq_zero_iff (since := "2024-11-10")]
+AddEquivClass.map_eq_zero_iff
+
+
+@[to_additive]
+alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated EmbeddingLike.map_ne_one_iff (since := "2024-11-10")]
+MulEquivClass.map_ne_one_iff
+attribute [deprecated EmbeddingLike.map_ne_zero_iff (since := "2024-11-10")]
+AddEquivClass.map_ne_zero_iff
+
 
 namespace MulEquivClass
 
@@ -129,18 +137,6 @@ instance (priority := 100) instMonoidHomClass
           congr_arg _ (EquivLike.right_inv e 1).symm
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
-
-variable {F}
-
-@[to_additive (attr := simp)]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
-    (h : F) {x : M} :
-    h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
-
-@[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
-    (h : F) {x : M} :
-    h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 
 end MulEquivClass
 
@@ -218,19 +214,19 @@ theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩,
 theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 
--- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
+/-- The `simp`-normal form to turn something into a `MulHom` is via `MulHomClass.toMulHom`. -/
 @[to_additive (attr := simp)]
 theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
   rfl
 
--- Porting note: `to_fun_eq_coe` no longer needed in Lean4
+@[to_additive]
+theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 
+/-- `simp`-normal form of `toFun_eq_coe`. -/
 @[to_additive (attr := simp)]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
--- Porting note (#11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
--- not `f.toEquiv.toFun`; use higher priority as a workaround
-@[to_additive (attr := simp 1100)]
+@[to_additive (attr := simp)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
@@ -304,10 +300,10 @@ lemma symm_map_mul {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) (x y : N) :
 def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   ⟨h.toEquiv.symm, h.symm_map_mul⟩
 
-@[to_additive] -- Porting note: no longer a `simp`, see below
+@[to_additive]
 theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
+/-- `simp`-normal form of `invFun_eq_symm`. -/
 @[to_additive (attr := simp)]
 theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
@@ -316,8 +312,6 @@ theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 
 @[to_additive (attr := simp)]
 theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
-
--- Porting note: `toEquiv_mk` no longer needed in Lean4
 
 @[to_additive (attr := simp)]
 theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
@@ -450,14 +444,20 @@ section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
-def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
-  { Equiv.equivOfUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
+  { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+
+@[to_additive (attr := deprecated ofUnique (since := "2024-12-25"))]
+alias mulEquivOfUnique := ofUnique
+
+/-- Alias of `AddEquiv.ofEquiv`. -/
+add_decl_doc AddEquiv.addEquivOfUnique
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
   a unique element."]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
-  default := mulEquivOfUnique
+  default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
@@ -471,12 +471,12 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
 -- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
 -- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
@@ -506,11 +506,11 @@ protected theorem map_one (h : M ≃* N) : h 1 = 1 := map_one h
 
 @[to_additive]
 protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
-  MulEquivClass.map_eq_one_iff h
+  EmbeddingLike.map_eq_one_iff
 
 @[to_additive]
 theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
-  MulEquivClass.map_ne_one_iff h
+  EmbeddingLike.map_ne_one_iff
 
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
 @[to_additive (attr := simps! apply) "A bijective `AddSemigroup` homomorphism is an isomorphism"]
@@ -518,7 +518,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 
--- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
@@ -563,8 +563,6 @@ for multiplicative maps from a monoid to a commutative monoid.
 @[to_additive (attr := simps apply)
   "An additive analogue of `Equiv.arrowCongr`,
   for additive maps from an additive monoid to a commutative additive monoid."]
--- Porting note: @[simps apply] removed because it was making a lemma which
--- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
     (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
   toFun h := g.toMonoidHom.comp (h.comp f.symm.toMonoidHom)
@@ -632,15 +630,39 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
 
 end MulEquiv
 
--- Porting note: we want to add
--- `@[simps (config := .asFn)]`
--- here, but it generates simp lemmas which aren't in simp normal form
--- (they have `toFun` in)
+namespace MonoidHom
+
+/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
+an additive equivalence `e : α ≃+ β`."]
+def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
+    (β →* γ) ≃ (α →* γ) where
+  toFun f := f.comp e
+  invFun g := g.comp e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
+an additive equivalence `e : α ≃+ β`."]
+def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
+    (γ →* α) ≃ (γ →* β) where
+  toFun f := e.toMonoidHom.comp f
+  invFun g := e.symm.toMonoidHom.comp g
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+end MonoidHom
+
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
 `f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
-@[to_additive
+@[to_additive (attr := simps (config := .asFn))
   "Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
   `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
@@ -652,20 +674,6 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
   left_inv := DFunLike.congr_fun h₁
   right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
-
--- Porting note: the next two lemmas were added manually because `@[simps]` is generating
--- lemmas with `toFun` in
-@[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
-    (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
-    ((MulHom.toMulEquiv f g h₁ h₂) : M → N) = f :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
-    (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
-    (MulEquiv.symm (MulHom.toMulEquiv f g h₁ h₂) : N → M) = ↑g :=
-  rfl
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is

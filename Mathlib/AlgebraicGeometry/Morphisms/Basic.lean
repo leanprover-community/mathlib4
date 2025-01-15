@@ -142,8 +142,7 @@ instance inf (P Q : MorphismProperty Scheme) [IsLocalAtTarget P] [IsLocalAtTarge
      fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
 
-variable {P} [hP : IsLocalAtTarget P]
-variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : Y.OpenCover)
+variable {P} [hP : IsLocalAtTarget P] {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
 
 lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
     {iX : UX ⟶ X} {f' : UX ⟶ UY} (h : IsPullback iX f' f iY) (H : P f) : P f' := by
@@ -228,7 +227,7 @@ instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSourc
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
 
 variable {P} [IsLocalAtSource P]
-variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : X.OpenCover)
+variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover)
 
 lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
@@ -270,7 +269,7 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     IsLocalAtTarget P where
   iff_of_openCover' {X Y} f 𝒰 := by
     refine (iff_of_openCover (𝒰.pullbackCover f)).trans (forall_congr' fun i ↦ ?_)
-    rw [← Scheme.OpenCover.pullbackHom_map]
+    rw [← Scheme.Cover.pullbackHom_map]
     constructor
     · exact hP _ _
     · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
@@ -545,9 +544,10 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
-  haveI : ∀ i, IsAffine (Scheme.OpenCover.obj (Scheme.openCoverOfIsIso (𝟙 Y)) i) := fun i => by
+  haveI : ∀ i, IsAffine (Scheme.Cover.obj
+      (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i => by
     dsimp; infer_instance
-  rw [iff_of_openCover (P := P) (Scheme.openCoverOfIsIso.{0} (𝟙 Y))]
+  rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
   · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
   rw [← Category.comp_id (pullback.snd _ _), ← pullback.condition,
@@ -586,7 +586,7 @@ private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
   intro i
   let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.map i)
   have : e.hom ≫ pullback.fst _ _ = X.affineCover.pullbackHom (pullback.fst _ _) i := by
-    simp [e, Scheme.OpenCover.pullbackHom]
+    simp [e, Scheme.Cover.pullbackHom]
   rw [← this, Q.cancel_left_of_respectsIso]
   apply hP' (.of_hasPullback _ _)
   exact H
@@ -594,7 +594,7 @@ private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
 theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
     P.IsStableUnderBaseChange :=
   MorphismProperty.IsStableUnderBaseChange.mk'
-    (fun X Y S f g H => by
+    (fun X Y S f g _ H => by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i
       let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).map i) ≅
@@ -606,7 +606,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
           (S.affineCover.pullbackCover f).pullbackHom (pullback.fst _ _) i := by
-        simp [e, Scheme.OpenCover.pullbackHom]
+        simp [e, Scheme.Cover.pullbackHom]
       rw [← this, P.cancel_left_of_respectsIso]
       apply HasAffineProperty.pullback_fst_of_right hP'
       letI := isLocal_affineProperty P

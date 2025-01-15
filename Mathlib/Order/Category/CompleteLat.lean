@@ -60,7 +60,7 @@ instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : CompleteLatticeHom _ _) -- Porting note (#11215): TODO, wrong?
+  hom := (e : CompleteLatticeHom _ _) -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO, wrong?
   inv := (e.symm : CompleteLatticeHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _

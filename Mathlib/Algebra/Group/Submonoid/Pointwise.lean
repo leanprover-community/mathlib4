@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
@@ -23,6 +24,9 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
+`SMul (AddSubmonoid R) (AddSubmonoid A)` is also provided given `DistribSMul R A`,
+and when `R = A` it is definitionally equal to the multiplication on `AddSubmonoid R`.
+
 These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
@@ -40,13 +44,29 @@ While the statements of these lemmas are defeq, we repeat them here due to them 
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
 
+Many results about multiplication is derived from the corresponding results about
+scalar multiplication, but results requiring right distributivity do not have
+SMul versions, due to the lack of a suitable typeclass (unless one goes all the
+way to `Module`).
+
 -/
 
 
 open Set Pointwise
 
-variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
+variable {α G M R A S : Type*}
 variable [Monoid M] [AddMonoid A]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
+  aesop (add simp mem_mul)
+
+set_option linter.unusedVariables false in
+@[to_additive (attr := simp)]
+lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
+    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+  | 1, _, H => by simp
+  | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
   `GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
@@ -75,6 +95,21 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
+
+@[to_additive]
+lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
+  | 1, _ => by simp
+  | n + 2, _ =>
+    calc
+      closure (s ^ (n + 2))
+      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
+      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
+      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
+      _ = closure s := sup_idem _
+
+@[to_additive]
+lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
+  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
 
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
@@ -552,15 +587,10 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
 
 variable {M N P Q : AddSubmonoid R}
 
-@[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  smul_le_smul hmp hnq
+@[mono, gcongr] lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q := smul_le_smul hmp hnq
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
-  smul_le_smul_left h
-
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
-  smul_le_smul_right h
+@[gcongr] lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
+@[gcongr] lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
 
 theorem mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
   smul_subset_smul
@@ -586,6 +616,10 @@ theorem iSup_mul (S : ι → AddSubmonoid R) (T : AddSubmonoid R) : (⨆ i, S i)
 
 theorem mul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid R) : (T * ⨆ i, S i) = ⨆ i, T * S i :=
   smul_iSup T S
+
+theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
+  le_antisymm (mul_le.mpr fun m hm n hn ↦ h m hm n hn ▸ mul_mem_mul hn hm)
+    (mul_le.mpr fun n hn m hm ↦ h m hm n hn ▸ mul_mem_mul hm hn)
 
 end NonUnitalNonAssocSemiring
 

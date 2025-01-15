@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Order.Archimedean.Basic
@@ -31,6 +31,7 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 period, periodic, periodicity, antiperiodic
 -/
 
+assert_not_exists TwoSidedIdeal
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 

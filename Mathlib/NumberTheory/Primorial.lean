@@ -27,8 +27,6 @@ open Finset
 
 open Nat
 
-open Nat
-
 /-- The primorial `n#` of `n` is the product of the primes less than or equal to `n`.
 -/
 def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p

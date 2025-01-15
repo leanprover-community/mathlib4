@@ -121,10 +121,10 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     convert I_smul ((I : 𝕜) • x + y) using 2
-    linear_combination (norm := module) congr(-$hI' • x)
+    linear_combination (norm := module) -hI' • x
   have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
     convert (I_smul ((I : 𝕜) • y + x)).symm using 2
-    linear_combination (norm := module) congr(-$hI' • y)
+    linear_combination (norm := module) -hI' • y
   rw [h₁, h₂]
   ring
 

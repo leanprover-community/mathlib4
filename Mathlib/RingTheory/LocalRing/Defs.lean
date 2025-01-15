@@ -14,16 +14,18 @@ Define local rings as commutative rings having a unique maximal ideal.
 
 ## Main definitions
 
-* `LocalRing`: A predicate on semirings, stating that for any pair of elements that
+* `IsLocalRing`: A predicate on semirings, stating that for any pair of elements that
   adds up to `1`, one of them is a unit. In the commutative case this is shown to be equivalent
   to the condition that there exists a unique maximal ideal, see
-  `LocalRing.of_unique_max_ideal` and `LocalRing.maximal_ideal_unique`.
+  `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_ideal_unique`.
 
 -/
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.
-Note that `LocalRing` is a predicate. -/
-class LocalRing (R : Type*) [Semiring R] extends Nontrivial R : Prop where
+Note that `IsLocalRing` is a predicate. -/
+class IsLocalRing (R : Type*) [Semiring R] extends Nontrivial R : Prop where
   of_is_unit_or_is_unit_of_add_one ::
   /-- in a local ring `R`, if `a + b = 1`, then either `a` is a unit or `b` is a unit. In another
     word, for every `a : R`, either `a` is a unit or `1 - a` is a unit. -/
   isUnit_or_isUnit_of_add_one {a b : R} (h : a + b = 1) : IsUnit a ∨ IsUnit b
+
+@[deprecated (since := "2024-11-09")] alias LocalRing := IsLocalRing

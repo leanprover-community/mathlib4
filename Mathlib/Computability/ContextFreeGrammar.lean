@@ -37,7 +37,7 @@ structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
   /-- Initial nonterminal. -/
   initial : NT
   /-- Rewrite rules. -/
-  rules : List (ContextFreeRule T NT)
+  rules : Finset (ContextFreeRule T NT)
 
 universe uT uN
 variable {T : Type uT}
@@ -245,7 +245,7 @@ variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
 
 /-- Grammar for a reversed language. -/
 @[simps] def reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
-  ⟨g.NT, g.initial, g.rules.map .reverse⟩
+  ⟨g.NT, g.initial, g.rules.map (⟨ContextFreeRule.reverse, ContextFreeRule.reverse_injective⟩)⟩
 
 @[simp] lemma reverse_reverse (g : ContextFreeGrammar T) : g.reverse.reverse = g := by
   simp [reverse, Finset.map_map]

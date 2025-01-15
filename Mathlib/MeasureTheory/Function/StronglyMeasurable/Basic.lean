@@ -130,14 +130,6 @@ theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
     {f : α → β} : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
 
-@[deprecated (since := "2024-02-05")]
-alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
-
-@[deprecated StronglyMeasurable.of_finite (since := "2024-02-06")]
-theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
-    (f : α → β) : StronglyMeasurable f :=
-  .of_finite
-
 theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSpace β] {b : β} :
     StronglyMeasurable fun _ : α => b :=
   ⟨fun _ => SimpleFunc.const α b, fun _ => tendsto_const_nhds⟩
@@ -375,6 +367,21 @@ theorem of_uncurry_right [TopologicalSpace β] {_ : MeasurableSpace α} {_ : Mea
     StronglyMeasurable fun x => f x y :=
   hf.comp_measurable measurable_prod_mk_right
 
+protected theorem prod_swap {_ : MeasurableSpace α} {_ : MeasurableSpace β} [TopologicalSpace γ]
+    {f : β × α → γ} (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun z : α × β => f z.swap) :=
+  hf.comp_measurable measurable_swap
+
+protected theorem fst {_ : MeasurableSpace α} [mβ : MeasurableSpace β] [TopologicalSpace γ]
+    {f : α → γ} (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun z : α × β => f z.1) :=
+  hf.comp_measurable measurable_fst
+
+protected theorem snd [mα : MeasurableSpace α] {_ : MeasurableSpace β} [TopologicalSpace γ]
+    {f : β → γ} (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun z : α × β => f z.2) :=
+  hf.comp_measurable measurable_snd
+
 section Arithmetic
 
 variable {mα : MeasurableSpace α} [TopologicalSpace β]
@@ -512,16 +519,14 @@ variable [MeasurableSpace α] [TopologicalSpace β]
 
 open Filter
 
-open Filter
-
 @[aesop safe 20 (rule_sets := [Measurable])]
-protected theorem sup [Sup β] [ContinuousSup β] (hf : StronglyMeasurable f)
+protected theorem sup [Max β] [ContinuousSup β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊔ g) :=
   ⟨fun n => hf.approx n ⊔ hg.approx n, fun x =>
     (hf.tendsto_approx x).sup_nhds (hg.tendsto_approx x)⟩
 
 @[aesop safe 20 (rule_sets := [Measurable])]
-protected theorem inf [Inf β] [ContinuousInf β] (hf : StronglyMeasurable f)
+protected theorem inf [Min β] [ContinuousInf β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊓ g) :=
   ⟨fun n => hf.approx n ⊓ hg.approx n, fun x =>
     (hf.tendsto_approx x).inf_nhds (hg.tendsto_approx x)⟩
@@ -699,7 +704,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
     have : Measurable (G ∘ f) := Measurable.subtype_mk H.measurable
     exact hG.measurableEmbedding.measurable_comp_iff.1 this
   · have : IsSeparable (g ⁻¹' range (g ∘ f)) := hg.isSeparable_preimage H.isSeparable_range
-    rwa [range_comp, hg.inj.preimage_image] at this
+    rwa [range_comp, hg.injective.preimage_image] at this
 
 /-- A sequential limit of strongly measurable functions is strongly measurable. -/
 theorem _root_.stronglyMeasurable_of_tendsto {ι : Type*} {m : MeasurableSpace α}
@@ -1149,7 +1154,6 @@ theorem mono_measure {ν : Measure α} (hf : AEStronglyMeasurable f μ) (h : ν 
 protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AEStronglyMeasurable f ν :=
   let ⟨g, hg, hg'⟩ := hμ; ⟨g, hg, h.ae_eq hg'⟩
 
-@[deprecated (since := "2024-02-15")] protected alias mono' := AEStronglyMeasurable.mono_ac
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t)) :
     AEStronglyMeasurable f (μ.restrict s) :=
@@ -1504,7 +1508,7 @@ theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
   rcases hf.exists_stronglyMeasurable_extend hgm₁ fun x => ⟨g x⟩ with ⟨g₂, hgm₂, rfl⟩
   exact ⟨g₂, hgm₂, hf.ae_map_iff.2 heq⟩
 
-theorem _root_.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
+theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
     [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β} (hg : IsEmbedding g) :
     AEStronglyMeasurable (fun x => g (f x)) μ ↔ AEStronglyMeasurable f μ := by
   letI := pseudoMetrizableSpacePseudoMetric γ

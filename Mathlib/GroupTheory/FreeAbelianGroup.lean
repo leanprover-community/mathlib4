@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.FreeGroup.Basic
 
@@ -178,7 +179,7 @@ theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α 
 /-- If `g : FreeAbelianGroup X` and `A` is an abelian group then `liftAddGroupHom g`
 is the additive group homomorphism sending a function `X → A` to the term of type `A`
 corresponding to the evaluation of the induced map `FreeAbelianGroup X → A` at `g`. -/
-@[simps!]  -- Porting note: Changed `simps` to `simps!`.
+@[simps!]
 def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α → β) →+ β :=
   AddMonoidHom.mk' (fun f ↦ lift f a) (lift.add' a)
 
@@ -401,8 +402,19 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
 
 end Mul
 
-instance one [One α] : One (FreeAbelianGroup α) :=
+section One
+variable [One α]
+
+instance one : One (FreeAbelianGroup α) :=
   ⟨of 1⟩
+
+theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
+  rfl
+
+theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
+  rfl
+
+end One
 
 instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalNonAssocRing with
@@ -429,21 +441,16 @@ instance ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
     mul_one := fun x ↦ by
-      dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
-      rw [lift.of]
+      rw [mul_def, one_def, lift.of]
       refine FreeAbelianGroup.induction_on x rfl (fun L ↦ ?_) (fun L ih ↦ ?_) fun x1 x2 ih1 ih2 ↦ ?_
-      · rw [lift.of]
-        congr 1
-        exact mul_one L
+      · rw [lift.of, mul_one]
       · rw [map_neg, ih]
       · rw [map_add, ih1, ih2]
     one_mul := fun x ↦ by
-      dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
+      simp_rw [mul_def, one_def, lift.of]
       refine FreeAbelianGroup.induction_on x rfl ?_ ?_ ?_
       · intro L
-        rw [lift.of, lift.of]
-        congr 1
-        exact one_mul L
+        rw [lift.of, one_mul]
       · intro L ih
         rw [map_neg, ih]
       · intro x1 x2 ih1 ih2
@@ -454,7 +461,7 @@ variable {α}
 /-- `FreeAbelianGroup.of` is a `MonoidHom` when `α` is a `Monoid`. -/
 def ofMulHom : α →* FreeAbelianGroup α where
   toFun := of
-  map_one' := rfl
+  map_one' := of_one _
   map_mul' := of_mul
 
 @[simp]
@@ -502,12 +509,6 @@ theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
 -- Porting note: Added a type to `↑f`.
 theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
     ⇑(liftMonoid.symm f) = lift.symm (↑f : FreeAbelianGroup α →+ R) :=
-  rfl
-
-theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
-  rfl
-
-theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
   rfl
 
 end Monoid
