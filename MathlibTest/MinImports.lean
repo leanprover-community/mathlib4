@@ -79,6 +79,8 @@ section Linter.MinImports
 set_option linter.minImports.increases false
 
 set_option linter.minImports false
+/-- info: Counting imports from here. -/
+#guard_msgs in
 #import_bumps
 
 /--
