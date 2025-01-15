@@ -263,7 +263,7 @@ namespace StructureSheaf
 @[simp]
 theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
     (s : (structureSheaf R).1.obj (op U)) (x : V) :
-    ((structureSheaf R).1.map i.op s).1 x = (s.1 (i x) : _) :=
+    ((structureSheaf R).1.map i.op s).1 x = (s.1 (i x) :) :=
   rfl
 
 /-
@@ -460,7 +460,7 @@ the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hx : x ∈ U) :
     (structureSheaf R).1.obj (op U) ⟶ CommRingCat.of (Localization.AtPrime x.asIdeal) :=
   CommRingCat.ofHom
-  { toFun s := (s.1 ⟨x, hx⟩ : _)
+  { toFun s := (s.1 ⟨x, hx⟩ :)
     map_one' := rfl
     map_mul' _ _ := rfl
     map_zero' := rfl
@@ -471,12 +471,12 @@ theorem coe_openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpect
     (hx : x ∈ U) :
     (openToLocalization R U x hx :
         (structureSheaf R).1.obj (op U) → Localization.AtPrime x.asIdeal) =
-      fun s => (s.1 ⟨x, hx⟩ : _) :=
+      fun s => s.1 ⟨x, hx⟩ :=
   rfl
 
 theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) (s : (structureSheaf R).1.obj (op U)) :
-    openToLocalization R U x hx s = (s.1 ⟨x, hx⟩ : _) :=
+    openToLocalization R U x hx s = s.1 ⟨x, hx⟩ :=
   rfl
 
 /-- The ring homomorphism from the stalk of the structure sheaf of `R` at a point corresponding to
@@ -650,7 +650,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
-  use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le : _) hxDh
+  use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
   rw [op_comp, Functor.map_comp] --, comp_apply, ← s_eq, res_const]
   -- Porting note: `comp_apply` can't be rewritten, so use a change
   change const R _ _ _ _ = (structureSheaf R).1.map i_basic_open.op
@@ -661,7 +661,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   swap
   · intro y hy
     rw [basic_opens_eq] at hy
-    exact (Set.Subset.trans hDhV hVDg : _) hy
+    exact (Set.Subset.trans hDhV hVDg :) hy
   -- All that is left is a simple calculation
   apply const_ext
   rw [mul_assoc f c g, hc]
@@ -842,7 +842,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   · intro y hy
     change y ∈ PrimeSpectrum.basicOpen (f ^ (n + 1))
     rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by omega)]
-    exact (leOfHom (iDh i) : _) hy
+    exact (leOfHom (iDh i) :) hy
   -- The rest of the proof is just computation
   apply const_ext
   rw [← hb, Finset.sum_mul, Finset.mul_sum]
@@ -929,7 +929,6 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
   infer_instance
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
--- Porting note: was @[simps (config := { rhsMd := Tactic.Transparency.semireducible })]
 @[simps!]
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)
@@ -989,7 +988,7 @@ def comapFun (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (Prime
     (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1) (s : ∀ x : U, Localizations R x) (y : V) :
     Localizations S y :=
   Localization.localRingHom (PrimeSpectrum.comap f y.1).asIdeal _ f rfl
-    (s ⟨PrimeSpectrum.comap f y.1, hUV y.2⟩ : _)
+    (s ⟨PrimeSpectrum.comap f y.1, hUV y.2⟩ :)
 
 theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
     (V : Opens (PrimeSpectrum.Top S)) (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1)
@@ -1052,7 +1051,7 @@ theorem comap_apply (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
     (s : (structureSheaf R).1.obj (op U)) (p : V) :
     (comap f U V hUV s).1 p =
       Localization.localRingHom (PrimeSpectrum.comap f p.1).asIdeal _ f rfl
-        (s.1 ⟨PrimeSpectrum.comap f p.1, hUV p.2⟩ : _) :=
+        (s.1 ⟨PrimeSpectrum.comap f p.1, hUV p.2⟩ :) :=
   rfl
 
 theorem comap_const (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
