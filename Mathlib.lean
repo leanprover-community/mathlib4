@@ -509,6 +509,7 @@ import Mathlib.Algebra.Lie.Derivation.Killing
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
+import Mathlib.Algebra.Lie.Extension
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.InvariantForm
@@ -766,6 +767,7 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.PartialSups
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Positive.Field
 import Mathlib.Algebra.Order.Positive.Ring
@@ -3103,6 +3105,7 @@ import Mathlib.FieldTheory.Isaacs
 import Mathlib.FieldTheory.JacobsonNoether
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.KummerExtension
+import Mathlib.FieldTheory.KummerPolynomial
 import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.FieldTheory.Minpoly.Basic
@@ -4731,6 +4734,7 @@ import Mathlib.RingTheory.Unramified.Finite
 import Mathlib.RingTheory.Unramified.Locus
 import Mathlib.RingTheory.Unramified.Pi
 import Mathlib.RingTheory.Valuation.AlgebraInstances
+import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
@@ -5052,6 +5056,7 @@ import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToAdditive.Frontend
