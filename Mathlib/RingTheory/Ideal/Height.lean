@@ -205,10 +205,9 @@ lemma Ideal.primeHeightEqZeroIff {R : Type u} [CommRing R] {I : Ideal R} [I.IsPr
   --   exact not_le_of_lt e (hI.2 ⟨hJ, bot_le⟩ e.le)
 
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsPrime]
- [h : FiniteRingKrullDimensional R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
-  sorry
-  -- cases Subsingleton R with
-  -- | mk => exact absurd I.isPrime_proper (Subsingleton.elim _ _)
+ [h : FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
+  cases Subsingleton R with
+  | mk => exact absurd I.isPrime_proper (Subsingleton.elim _ _)
 
   -- by_contra h'
   -- obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h'
