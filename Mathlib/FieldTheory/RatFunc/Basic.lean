@@ -741,7 +741,6 @@ open GCDMonoid Polynomial
 
 variable [Field K]
 
-set_option tactic.skipAssignedInstances false in
 /-- `RatFunc.numDenom` are numerator and denominator of a rational function over a field,
 normalized such that the denominator is monic. -/
 def numDenom (x : RatFunc K) : K[X] × K[X] :=
