@@ -123,7 +123,7 @@ In an additive commutative monoid with multiplication,
 -/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
     (hx : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) :=
-  IsSumSq.sum (fun _ hi => IsSquare.isSumSq (hx _ hi))
+  .sum fun _ hi => IsSquare.isSumSq (hx _ hi)
 
 /--
 In an additive commutative monoid with multiplication,
