@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Defs
@@ -21,7 +22,6 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 * `MulAction.stabilizer`
 
 -/
-
 
 universe u v
 
@@ -180,6 +180,7 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
 
 end Monoid
 
+-- TODO: The following two sections
 section Group
 namespace FixedPoints
 variable [Group α] [MulDistribMulAction M α]
@@ -203,6 +204,7 @@ lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
 end FixedPoints
 end Group
 
+-- TODO: The following two sections are about ring-like structures. They should move to a later file
 section AddMonoid
 
 variable [AddMonoid α] [DistribMulAction M α]
