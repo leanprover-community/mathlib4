@@ -255,7 +255,7 @@ end Topologically
 /-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
 def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} :=
-  fun _ _ f => ∀ x, P (f.stalkMap x)
+  fun _ _ f => ∀ x, P (f.stalkMap x).hom
 
 section Stalkwise
 
@@ -297,7 +297,7 @@ lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
   letI := stalkwise_respectsIso hP
   apply IsLocalAtSource.mk'
   · intro X Y f U hf x
-    rw [Scheme.stalkMap_comp, hP.cancel_right_isIso]
+    rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hP.cancel_right_isIso]
     exact hf _
   · intro X Y f ι U hU hf x
     have hy : x ∈ iSup U := by rw [hU]; trivial
@@ -307,10 +307,10 @@ lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
 
 lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
     stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
-      P (Localization.localRingHom _ p φ rfl) := by
+      P (Localization.localRingHom _ p φ.hom rfl) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
     RingHom.toMorphismProperty_respectsIso_iff.mp hP
-  trans ∀ (p : PrimeSpectrum S), P (Localization.localRingHom _ p.asIdeal φ rfl)
+  trans ∀ (p : PrimeSpectrum S), P (Localization.localRingHom _ p.asIdeal φ.hom rfl)
   · exact forall_congr' fun p ↦
       (RingHom.toMorphismProperty P).arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso _ _)
   · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.1 p.2⟩

@@ -105,14 +105,14 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     · intro x hx
       refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
-      simp only [Subsingleton.elim j 0]
+      simp only [F, Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, ← image_comp,
-      Function.comp_apply, image_id']
+    simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
+      ← image_comp, Function.comp_apply, image_id']
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
