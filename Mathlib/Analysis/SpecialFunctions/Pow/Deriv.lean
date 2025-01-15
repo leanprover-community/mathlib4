@@ -297,7 +297,7 @@ theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
     _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
       filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const hx hc]
     _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
-      (Asymptotics.IsTheta.of_norm_eventuallyEq (Eq.eventuallyEq rfl)).const_mul_left hc
+      (Asymptotics.IsTheta.of_norm_eventuallyEq EventuallyEq.rfl).const_mul_left hc
     _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
       rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
