@@ -193,8 +193,10 @@ theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t
 theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
   tauto
 
+theorem setOf_injective : Function.Injective (@setOf α) := injective_id
+
 @[simp]
-theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := by rfl
+theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
