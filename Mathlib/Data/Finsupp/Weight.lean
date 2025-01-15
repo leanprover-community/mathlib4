@@ -44,7 +44,7 @@ there are finitely many `f : σ →₀ ℕ` of bounded weight.
 ## Degree
 
 - `Finsupp.degree f` is the sum of all `f s`, for `s ∈ f.support`.
-  The present choice is to have it defined as a function.
+  The present choice is to have it defined as a plain function.
 
 - `Finsupp.degree_eq_zero_iff` says that `f.degree = 0` iff `f = 0`.
 
