@@ -1151,25 +1151,23 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       Nat.le_add_right, and_self]
   · rintro ⟨n, hn⟩
     rw [SimpleGraph.Walk.mem_support_iff]
-    by_cases h0 : n = 0
-    · rw [h0, getVert_zero] at hn
+    cases n with
+    | zero =>
+      rw [getVert_zero] at hn
       left
       exact hn.1.symm
-    · right
+    | succ n =>
+      right
       have hnp : ¬ p.Nil := by
         rw [nil_iff_length_eq]
         omega
-      rw [← support_tail_of_not_nil _ hnp]
-      rw [mem_support_iff_exists_getVert]
-      use n - 1
-      simp only [Nat.sub_le_iff_le_add]
-      rw [getVert_tail, length_tail_add_one hnp]
-      have : (n - 1 + 1) = n := by omega
-      rwa [this]
+      rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
+      use n
+      rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]
 termination_by p.length
 decreasing_by
 · simp_wf
-  rw [@Nat.lt_iff_add_one_le]
+  rw [Nat.lt_iff_add_one_le]
   rw [length_tail_add_one hnp]
 
 end Walk
