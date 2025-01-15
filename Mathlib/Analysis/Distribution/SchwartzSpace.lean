@@ -185,7 +185,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _),
+  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _).contDiffAt,
     norm_smul c (iteratedFDeriv ℝ n (⇑f) x)]
 
 end Aux
@@ -744,12 +744,15 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
   rintro ⟨k, n⟩
   use {(k, n)}, ‖m‖, norm_nonneg _
   intro f x
-  refine le_trans
-    (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 (mod_cast le_top))
-      (by positivity)) ?_
-  move_mul [‖m‖]
-  gcongr ?_ * ‖m‖
-  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply, le_seminorm]
+  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply]
+  calc
+    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (f · m) x‖ ≤ ‖x‖ ^ k * (‖m‖ * ‖iteratedFDeriv ℝ n f x‖) := by
+      gcongr
+      exact norm_iteratedFDeriv_clm_apply_const (f.smooth _).contDiffAt le_rfl
+    _ ≤ ‖m‖ * SchwartzMap.seminorm 𝕜 k n f := by
+      move_mul [‖m‖]
+      gcongr
+      apply le_seminorm
 
 end EvalCLM
 
