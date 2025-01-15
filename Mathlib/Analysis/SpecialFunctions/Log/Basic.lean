@@ -143,6 +143,11 @@ theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
+theorem log_pos_iff' (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
+  rcases hx.eq_or_lt with (rfl | hx)
+  · simp [le_refl, zero_le_one]
+  exact log_pos_iff hx
+
 @[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
   (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
