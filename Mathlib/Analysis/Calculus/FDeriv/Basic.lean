@@ -1312,10 +1312,10 @@ theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ => c) s :=
 @[fun_prop]
 theorem hasFDerivWithinAt_singleton [T1Space E] (f : E → F) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) {x} x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_singleton, hasFDerivAtFilter_iff_isLittleOTVS,
-    IsLittleOTVS, ContinuousLinearMap.zero_apply, sub_zero]
-  simp
-  sorry
+  simp_rw [HasFDerivWithinAt, nhdsWithin_singleton, hasFDerivAtFilter_iff_isLittleOTVS,
+    IsLittleOTVS, ContinuousLinearMap.zero_apply, sub_zero, Filter.eventually_pure, sub_self]
+  refine fun U hU => ⟨Set.univ, by simp, fun ε hε => ?_⟩
+  simp [egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)]
 
 @[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
