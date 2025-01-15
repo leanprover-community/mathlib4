@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
@@ -26,7 +27,9 @@ base rings to be a field, so we also generalize the lemma to rings in this file.
 
 open Pointwise
 
-variable (R S A B : Type*)
+universe u v w u₁
+
+variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 
 namespace IsScalarTower
 
@@ -85,20 +88,21 @@ section Semiring
 
 open Finsupp
 
-
-open scoped Classical
+universe v₁ w₁
 
 variable {R S A}
-variable [Semiring R] [Semiring S] [AddCommMonoid A]
+
+variable [Ring R] [Ring S] [AddCommGroup A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
-theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι' → A}
+theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' ↦ b p.1 • c p.2 := by
   rw [← linearIndependent_equiv' (.prodComm ..) (g := fun p : ι' × ι ↦ b p.2 • c p.1) rfl,
     LinearIndependent, linearCombination_smul]
   simpa using Function.Injective.comp hc
     ((mapRange_injective _ (map_zero _) hb).comp <| Equiv.injective _)
+
 
 variable (R)
 
@@ -180,6 +184,7 @@ variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [A
   [Algebra A D]
 
 variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
+
 
 /-- Restrict the domain of an `AlgHom`. -/
 def AlgHom.restrictDomain : B →ₐ[A] D :=
