@@ -36,8 +36,7 @@ attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
   of a naturally-occurring lattice satisfies this than the lattice
   itself (for example, dual of the lattice of ideals of a PID or
   Dedekind domain satisfy this; collections of all things ≤ 1 seem to
-  be more natural that collections of all things ≥ 1).
--/
+  be more natural that collections of all things ≥ 1). -/
 @[to_additive]
 class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] extends
   ExistsMulOfLE α : Prop where
