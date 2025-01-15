@@ -157,8 +157,7 @@ theorem measurable_compProdFun (κ : Kernel α β) [IsSFiniteKernel κ] (η : Ke
 @[deprecated (since := "2024-08-30")]
 alias measurable_compProdFun_of_finite := measurable_compProdFun
 
-open scoped Classical
-
+open scoped Classical in
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
 (see `ProbabilityTheory.Kernel.lintegral_compProd`).
@@ -258,6 +257,7 @@ lemma compProd_preimage_fst {s : Set β} (hs : MeasurableSet s) (κ : Kernel α 
 lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β → γ} (hf : Measurable f)
     {s : Set (β × γ)} (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ] (x : α) :
     (κ ⊗ₖ deterministic f hf) x s = κ x {b | (b, f (x, b)) ∈ s} := by
+  classical
   simp only [deterministic_apply, measurableSet_setOf, Set.mem_setOf_eq, Measure.dirac_apply,
     Set.mem_setOf_eq, Set.indicator_apply, Pi.one_apply, compProd_apply hs]
   let t := {b | (b, f (x, b)) ∈ s}
