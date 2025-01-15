@@ -139,6 +139,7 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
     { obj := fun j => (F.obj j).obj k,
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
+  map_id k := by aesop_cat
 
 attribute [grind =] flip_obj_obj flip_obj_map flip_map_app
 
