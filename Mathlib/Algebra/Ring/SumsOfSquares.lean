@@ -3,12 +3,11 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Tactic.ApplyFun
-
 /-!
 # Sums of squares
 
@@ -104,8 +103,6 @@ sums of squares in `R`.
 theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
     closure {x : R | IsSquare x} = sumSq R := by
   refine closure_eq_of_le (fun x hx ↦ IsSquare.isSumSq hx) (fun x hx ↦ ?_)
-  /- TODO : after Aesop ruleset improvements, change proof to: -/
-  /- induction hx <;> aesop -/
   induction hx with
   | zero => apply zero_mem
   | sq_add a hs ih => exact add_mem (subset_closure (IsSquare.mul_self a)) ih
