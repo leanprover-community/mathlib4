@@ -6,7 +6,9 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.Index
 
 /-!
 # Extra lemmas about commutators
@@ -64,5 +66,17 @@ noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
 theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G) (s : S) :
     quotientCenterEmbedding hS g s = ⟨⁅g, s⁆, g, s, rfl⟩ :=
   rfl
+
+variable (G)
+
+instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := by
+  obtain ⟨S, -, hS⟩ := Group.rank_spec G
+  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
+
+lemma index_center_le_pow [Finite (commutatorSet G)] [Group.FG G] :
+    (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
+  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
+  rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]
+  exact Finite.card_le_of_embedding (quotientCenterEmbedding hS2)
 
 end Subgroup
