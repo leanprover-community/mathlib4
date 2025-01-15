@@ -6,6 +6,7 @@ Authors: Thomas Browning
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
+import Mathlib.GroupTheory.Commutator.Lemmas
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient

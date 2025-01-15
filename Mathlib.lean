@@ -3234,7 +3234,7 @@ import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Commutator.Finite
+import Mathlib.GroupTheory.Commutator.Lemmas
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence.Basic
