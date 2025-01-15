@@ -10,7 +10,7 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.MaximalSpectrum
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
