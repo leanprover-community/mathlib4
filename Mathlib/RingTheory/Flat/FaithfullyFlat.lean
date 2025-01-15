@@ -183,7 +183,7 @@ end faithful
 lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R M]
     (e : N ≃ₗ[R] M) : FaithfullyFlat R N := by
   rw [iff_flat_and_lTensor_faithful]
-  exact ⟨Flat.of_linearEquiv e,
+  exact ⟨Flat.of_linearEquiv R M N e,
     fun P _ _ hP ↦ (TensorProduct.congr e (LinearEquiv.refl R P)).toEquiv.nontrivial⟩
 
 section
