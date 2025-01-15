@@ -98,20 +98,19 @@ theorem Ideal.iUnion_minimalPrimes :
   ext x
   simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop, Set.mem_setOf_eq]
   constructor
-  · rintro ⟨p, hp, hxp⟩
-    have := hp.1.1
+  · rintro ⟨p, ⟨⟨hp₁, hp₂⟩, hp₃⟩, hxp⟩
     have : p.map (algebraMap R (Localization.AtPrime p)) ≤ (I.map (algebraMap _ _)).radical := by
       rw [Ideal.radical_eq_sInf, le_sInf_iff]
       rintro q ⟨hq', hq⟩
       obtain ⟨h₁, h₂⟩ := ((IsLocalization.AtPrime.orderIsoOfPrime _ p) ⟨q, hq⟩).2
       rw [Ideal.map_le_iff_le_comap] at hq' ⊢
-      exact hp.2 ⟨h₁, hq'⟩ h₂
+      exact hp₃ ⟨h₁, hq'⟩ h₂
     obtain ⟨n, hn⟩ := this (Ideal.mem_map_of_mem _ hxp)
     rw [IsLocalization.mem_map_algebraMap_iff (M := p.primeCompl)] at hn
     obtain ⟨⟨a, b⟩, hn⟩ := hn
     rw [← map_pow, ← _root_.map_mul, IsLocalization.eq_iff_exists p.primeCompl] at hn
     obtain ⟨t, ht⟩ := hn
-    refine ⟨t * b, fun h ↦ (t * b).2 (hp.1.1.radical_le_iff.mpr hp.1.2 h), n + 1, ?_⟩
+    refine ⟨t * b, fun h ↦ (t * b).2 (hp₁.radical_le_iff.mpr hp₂ h), n + 1, ?_⟩
     simp only at ht
     have : (x * (t.1 * b.1)) ^ (n + 1) = (t.1 ^ n * b.1 ^ n * x * t.1) * a := by
       rw [mul_assoc, ← ht]; ring
@@ -123,7 +122,8 @@ theorem Ideal.iUnion_minimalPrimes :
     refine ⟨p, hp, (hp.1.1.mem_or_mem ?_).resolve_right hyp⟩
     exact hp.1.1.radical_le_iff.mpr hp.1.2 hx
 
-theorem Ideal.exists_mul_mem_of_mem_minimalPrimes {x p} (hp : p ∈ I.minimalPrimes) (hx : x ∈ p) :
+theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
+    {p : Ideal R} (hp : p ∈ I.minimalPrimes) {x : R} (hx : x ∈ p) :
     ∃ y ∉ I, x * y ∈ I := by
   classical
   obtain ⟨y, hy, n, hx⟩ := Ideal.iUnion_minimalPrimes.subset (Set.mem_biUnion hp hx)
@@ -135,7 +135,7 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes {x p} (hp : p ∈ I.minimalPri
   exact Nat.find_spec H
 
 /-- minimal primes are contained in zero divisors. -/
-lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes (p : Ideal R) (hp : p ∈ minimalPrimes R) :
+lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
   classical
   rw [← Set.subset_compl_iff_disjoint_right, Set.subset_def]
