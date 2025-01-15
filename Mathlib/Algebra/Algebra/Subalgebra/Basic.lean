@@ -780,7 +780,7 @@ lemma iSup_induction {ι : Sort*} {S : ι → Subalgebra R A} {motive : A → Pr
     (mul : ∀ a b, motive a → motive b → motive (a * b))
     (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
   let T : Subalgebra R A :=
-  { carrier := motive
+  { carrier := {x | motive x}
     mul_mem' := fun {a b} ↦ mul a b
     one_mem' := one
     add_mem' := fun {a b} ↦ add a b
