@@ -32,9 +32,10 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
   simp [unitsMap, castHom_self]
 
-@[simp]
-def val_unitsMap {m n : Nat} (h : n ∣ m) (a : Units (ZMod m)) :
-    ↑(ZMod.unitsMap h a) = ((a : ZMod m).cast : ZMod n) := rfl
+/-- `unitsMap_val` shows that coercing from `(ZMod m)ˣ` to `ZMod n` gives the same result
+when going via `(ZMod n)ˣ` and `ZMod m`. -/
+lemma unitsMap_val (h : n ∣ m) (a : (ZMod m)ˣ) :
+    ↑(unitsMap h a) = ((a : ZMod m).cast : ZMod n) := rfl
 
 lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)

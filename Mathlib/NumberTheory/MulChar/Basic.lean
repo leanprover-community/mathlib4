@@ -195,10 +195,12 @@ theorem toUnitHom_eq (χ : MulChar R R') : toUnitHom χ = equivToUnitHom χ :=
 theorem ofUnitHom_eq (χ : Rˣ →* R'ˣ) : ofUnitHom χ = equivToUnitHom.symm χ :=
   rfl
 
-theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ a) = χ ↑a :=
+@[simp]
+theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ a) = χ a :=
   coe_toUnitHom χ a
 
-theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = ↑(f a) :=
+@[simp]
+theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
 
 @[simp]
@@ -362,22 +364,6 @@ def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
       simp only [Equiv.toFun_as_coe, coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply,
         MonoidHom.mul_apply, Units.val_mul]
   }
-
-@[simp]
-theorem equivToUnitHom_eq (χ : MulChar R R') : equivToUnitHom χ = mulEquivToUnitHom χ :=
-  rfl
-
-@[simp]
-theorem equivToUnitHom_symm_eq (χ : Rˣ →* R'ˣ) : equivToUnitHom.symm χ = mulEquivToUnitHom.symm χ :=
-  rfl
-
-@[simp]
-theorem coe_mulEquivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(mulEquivToUnitHom χ a) = χ ↑a :=
-  coe_toUnitHom χ a
-
-@[simp]
-theorem mulEquivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : mulEquivToUnitHom.symm f ↑a = f a :=
-  ofUnitHom_coe f a
 
 end Group
 
