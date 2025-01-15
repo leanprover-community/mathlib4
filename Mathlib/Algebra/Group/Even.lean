@@ -97,7 +97,6 @@ lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).sym
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
 
-@[to_additive (attr := aesop unsafe 90% apply)]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
   fun ⟨r, _⟩ => ⟨f r, by simp_all⟩
 
@@ -127,11 +126,9 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
 @[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
 
-@[to_additive (attr := aesop unsafe 80% apply)]
 lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
 
-@[to_additive (attr := aesop unsafe 90% apply)]
 lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
 
@@ -139,7 +136,6 @@ lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
 
 end Monoid
 
-@[to_additive (attr := aesop unsafe 90% apply)]
 lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a * b, mul_mul_mul_comm _ _ _ _⟩
 
@@ -155,24 +151,15 @@ variable [DivisionMonoid α] {a : α}
 alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 attribute [to_additive] IsSquare.inv
 
-@[to_additive (attr := aesop unsafe 80% apply)]
 lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_zpow _⟩
 
 end DivisionMonoid
 
-@[to_additive (attr := aesop unsafe 90% apply)]
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
-@[to_additive (attr := aesop unsafe 90% apply)]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, zpow_add _ _ _⟩
 
 @[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.even_zsmul
-
-example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
-  IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
-
-example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
-  Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop
