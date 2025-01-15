@@ -55,7 +55,6 @@ theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
 In an additive monoid with multiplication,
 if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares.
 -/
-@[aesop unsafe 90% apply]
 theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [add_assoc, sq_add]
@@ -94,7 +93,6 @@ theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := b
 In an additive unital magma with multiplication, squares are sums of squares
 (see Mathlib.Algebra.Group.Even).
 -/
-@[aesop unsafe 50% apply]
 theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) :
     IsSumSq x := by rcases hx with ⟨_, rfl⟩; apply IsSumSq.mul_self
 
@@ -118,7 +116,6 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 In an additive commutative monoid with multiplication, a finite sum of sums of squares
 is a sum of squares.
 -/
-@[aesop unsafe 90% apply]
 theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : ι → R}
     (hs : ∀ i ∈ I, IsSumSq <| s i) : IsSumSq (∑ i ∈ I, s i) := by
   simpa using sum_mem (S := AddSubmonoid.sumSq R) hs
@@ -128,14 +125,15 @@ In an additive commutative monoid with multiplication,
 `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
 -/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
-    (ha : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
+    (hx : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) :=
+  IsSumSq.sum (fun _ hi => IsSquare.isSumSq (hx _ hi))
 
 /--
 In an additive commutative monoid with multiplication,
 `∑ i ∈ I, a i * a i` is a sum of squares.
 -/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
-    IsSumSq (∑ i ∈ I, a i * a i) := by aesop
+    IsSumSq (∑ i ∈ I, a i * a i) := IsSumSq.sum (fun _ _ => IsSumSq.mul_self _)
 
 @[deprecated (since := "2024-12-27")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
@@ -170,7 +168,6 @@ end NonUnitalSubsemiring
 In a commutative (possibly non-unital) semiring,
 if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares.
 -/
-@[aesop unsafe 50% apply]
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSq R) (by simpa)
@@ -188,7 +185,7 @@ In a commutative semiring `R`, `Subsemiring.sumSq R` is the subsemiring of sums 
 -/
 def sumSq : Subsemiring T where
   __ := NonUnitalSubsemiring.sumSq T
-  one_mem' := by aesop
+  one_mem' := by simpa using IsSquare.isSumSq IsSquare.one
 
 @[simp] theorem sumSq_toNonUnitalSubsemiring :
     (sumSq T).toNonUnitalSubsemiring = .sumSq T := rfl
@@ -206,7 +203,6 @@ theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
 end Subsemiring
 
 /-- In a commutative semiring, a finite product of sums of squares is a sum of squares. -/
-@[aesop unsafe 50% apply]
 theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R}
     (hx : ∀ i ∈ I, IsSumSq <| x i) : IsSumSq (∏ i ∈ I, x i) := by
   simpa using prod_mem (S := Subsemiring.sumSq R) (by simpa)
