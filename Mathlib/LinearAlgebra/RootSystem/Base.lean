@@ -45,7 +45,10 @@ For reduced root pairings `RootSystem.Base` is equivalent to the usual definitio
 informal literature. However for non-reduced root pairings, it is more restrictive because it
 includes axioms on coroots as well as on roots. For example by
 `RootPairing.Base.eq_one_or_neg_one_of_mem_support_of_smul_mem` it is clear that the 1-dimensional
-root system `{-2, -1, 0, 1, 2} ⊆ ℝ` has no base. -/
+root system `{-2, -1, 0, 1, 2} ⊆ ℝ` has no base.
+
+Compare with [serre1965](Ch. V, §8, Definition 5 and §9, Proposition 7) as well as
+[bourbaki1968](Ch. VI, §1.5). -/
 structure Base (P : RootPairing ι R M N) where
   /-- The set of roots / coroots belonging to the base. -/
   support : Set ι
