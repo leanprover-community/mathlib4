@@ -94,8 +94,8 @@ theorem stereoToFun_apply (x : E) :
     stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x :=
   rfl
 
-theorem contDiffOn_stereoToFun :
-    ContDiffOn ℝ ω (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
+theorem contDiffOn_stereoToFun {n : WithTop ℕ∞} :
+    ContDiffOn ℝ n (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
@@ -104,7 +104,7 @@ theorem contDiffOn_stereoToFun :
 
 theorem continuousOn_stereoToFun :
     ContinuousOn (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} :=
-  contDiffOn_stereoToFun.continuousOn
+  (contDiffOn_stereoToFun (n := 0)).continuousOn
 
 variable (v)
 
@@ -389,7 +389,7 @@ instance EuclideanSpace.instIsManifoldSphere
         (-- Removed type ascription, and this helped for some reason with timeout issues?
             OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v')).repr
-      have H₁ := U'.contDiff.comp_contDiffOn contDiffOn_stereoToFun
+      have H₁ := U'.contDiff.comp_contDiffOn (contDiffOn_stereoToFun (n := ω))
       -- Porting note: need to help with implicit variables again
       have H₂ := (contDiff_stereoInvFunAux (m := ω) (v := v.val)|>.comp
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
