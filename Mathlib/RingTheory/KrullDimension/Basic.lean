@@ -61,8 +61,7 @@ class FiniteRingKrullDim (R : Type*) [CommRing R] : Prop where
   ringKrullDim_ne_top : ringKrullDim R ≠ ⊤
 
 lemma ringKrullDim_ne_top [h : FiniteRingKrullDim R] :
-  ringKrullDim R ≠ ⊤ :=
-h.ringKrullDim_ne_top
+  ringKrullDim R ≠ ⊤ := h.ringKrullDim_ne_top
 
 lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
   ringKrullDim R < ⊤ := by
@@ -76,14 +75,10 @@ lemma finiteRingKrullDim_iff_lt :
   · intro h
     exact ⟨ne_top_of_lt h⟩
 
-lemma ringKrullDim_of_subsingleton [Subsingleton R] :
-  ringKrullDim R = 0 := by
-  sorry
-
 instance (priority := 100) finiteRingKrullDimalOfSubsingleton [Subsingleton R] :
   FiniteRingKrullDim R := by
-  rw [finiteRingKrullDim_iff_lt, ringKrullDim_of_subsingleton]
-  sorry --exact WithTop.top_pos
+  rw [finiteRingKrullDim_iff_lt, ringKrullDim_eq_bot_of_subsingleton]
+  exact bot_lt_top
 
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
