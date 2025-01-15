@@ -68,7 +68,11 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
+/-
+Aesop attribute is for closing goals of the form `?x ∈ s`, allowing Aesop to show
+`[SetLike S M] [Zero/OneMemClass S M] (s : S) → ∃ x : M, x ∈ s`
+-/
+attribute [simp, aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 
@@ -108,7 +112,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop unsafe 90% apply (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by

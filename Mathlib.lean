@@ -296,6 +296,7 @@ import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Int.Defs
@@ -388,6 +389,7 @@ import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Invertible
@@ -509,6 +511,7 @@ import Mathlib.Algebra.Lie.Derivation.Killing
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
+import Mathlib.Algebra.Lie.Extension
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.InvariantForm
@@ -625,6 +628,7 @@ import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.Derivation
 import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.MvPolynomial.Invertible
@@ -765,6 +769,7 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.PartialSups
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Positive.Field
 import Mathlib.Algebra.Order.Positive.Ring
@@ -777,6 +782,7 @@ import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Algebra.Order.Ring.Cone
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Order.Ring.Idempotent
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Nat
@@ -901,7 +907,7 @@ import Mathlib.Algebra.Ring.Ext
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Int.Defs
@@ -3102,6 +3108,7 @@ import Mathlib.FieldTheory.Isaacs
 import Mathlib.FieldTheory.JacobsonNoether
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.KummerExtension
+import Mathlib.FieldTheory.KummerPolynomial
 import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.FieldTheory.Minpoly.Basic
@@ -3447,6 +3454,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 import Mathlib.LinearAlgebra.ExteriorPower.Basic
+import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
@@ -3588,7 +3596,8 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.TensorAlgebra.Basis
 import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
-import Mathlib.LinearAlgebra.TensorPower
+import Mathlib.LinearAlgebra.TensorPower.Basic
+import Mathlib.LinearAlgebra.TensorPower.Pairing
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
@@ -4175,7 +4184,6 @@ import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.Ideal
-import Mathlib.Order.Idempotents
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Interval.Basic
 import Mathlib.Order.Interval.Finset.Basic
@@ -4446,7 +4454,7 @@ import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Flat.EquationalCriterion
-import Mathlib.RingTheory.Flat.FaithfullyFlat
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.FractionalIdeal.Basic
@@ -4567,7 +4575,6 @@ import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
-import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
@@ -4658,7 +4665,6 @@ import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
-import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
@@ -4695,6 +4701,10 @@ import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.Local
 import Mathlib.RingTheory.Smooth.Pi
 import Mathlib.RingTheory.Smooth.StandardSmooth
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
+import Mathlib.RingTheory.Spectrum.Maximal.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.SurjectiveOnStalks
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -4729,6 +4739,7 @@ import Mathlib.RingTheory.Unramified.Finite
 import Mathlib.RingTheory.Unramified.Locus
 import Mathlib.RingTheory.Unramified.Pi
 import Mathlib.RingTheory.Valuation.AlgebraInstances
+import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
@@ -5050,6 +5061,7 @@ import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToAdditive.Frontend

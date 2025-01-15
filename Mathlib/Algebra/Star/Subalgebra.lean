@@ -350,7 +350,6 @@ variable {R}
 
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
-@[simps!]
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
   toSubalgebra := S ⊔ star S
   star_mem' := fun {a} ha => by
@@ -358,8 +357,14 @@ def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
     rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
     simpa using ha
 
-theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
-  rfl
+theorem starClosure_coe (S : Subalgebra R A) :
+    (S.starClosure : Set A) = (S ⊔ star S : Subalgebra R A) := rfl
+
+theorem starClosure_mem (S : Subalgebra R A) {x : A} :
+    x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
+
+theorem starClosure_toSubalgebra (S : Subalgebra R A) :
+    S.starClosure.toSubalgebra = S ⊔ star S := rfl
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=
@@ -383,10 +388,10 @@ open StarSubalgebra
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
+
 variable (R)
 
 /-- The minimal star subalgebra that contains `s`. -/
-@[simps!]
 def adjoin (s : Set A) : StarSubalgebra R A :=
   { Algebra.adjoin R (s ∪ star s) with
     star_mem' := fun hx => by
@@ -399,15 +404,22 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) : adjoin R s = (Algebra.adjoin 
       (Subalgebra.star_adjoin_comm R s).symm ▸ Algebra.adjoin_union s (star s)
 
 theorem adjoin_toSubalgebra (s : Set A) :
-    (adjoin R s).toSubalgebra = Algebra.adjoin R (s ∪ star s) :=
-  rfl
+    (adjoin R s).toSubalgebra = Algebra.adjoin R (s ∪ star s) := rfl
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   Set.subset_union_left.trans Algebra.subset_adjoin
 
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans Algebra.subset_adjoin
+
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
+
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_adjoin_of_star_mem {s : Set A} {x : A} (hx : star x ∈ s) : x ∈ adjoin R s :=
+  star_subset_adjoin R s hx
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton x)
@@ -434,9 +446,15 @@ protected def gi : GaloisInsertion (adjoin R : Set A → StarSubalgebra R A) (�
 theorem adjoin_le {S : StarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
   StarAlgebra.gc.l_le hs
 
+@[simp]
 theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   StarAlgebra.gc _ _
 
+@[gcongr]
+theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
+  StarAlgebra.gc.monotone_l H
+
+@[simp]
 lemma adjoin_eq (S : StarSubalgebra R A) : adjoin R (S : Set A) = S :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R (S : Set A))
 

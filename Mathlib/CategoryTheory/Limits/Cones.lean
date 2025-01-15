@@ -999,13 +999,11 @@ section
 variable (G : C ⥤ D)
 
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
   Cocones.ext (Iso.refl _)
 
 /-- The opposite cone of the image of a cocone is the image of the opposite cone. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
   Cones.ext (Iso.refl _)

@@ -488,7 +488,6 @@ theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : 
     (s ∆ t).image f = s.image f ∆ t.image f :=
   mod_cast Set.image_symmDiff hf s t
 
-@[simp]
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
   disjoint_iff_ne.2 fun _ ha _ hb =>
