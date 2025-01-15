@@ -117,8 +117,8 @@ variable {A B : Type*} [Monoid A] [Monoid B] [TopologicalSpace A] [TopologicalSp
 into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
 `ContinuousMonoidHom A B`. -/
 @[to_additive (attr := coe) "Turn an element of a type `F` satisfying
-`MonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousMonoidHom`.
-This is declared as the default coercion from `F` to `ContinuousMonoidHom A B`."]
+`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousAddMonoidHom`.
+This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`."]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
     ContinuousMonoidHom A B :=
   { MonoidHomClass.toMonoidHom f with }
