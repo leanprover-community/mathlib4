@@ -22,7 +22,7 @@ open TensorProduct PiTensorProduct
 variable (R : Type*) (M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- The linear map from the `n`th exterior power to the `n`th tensor power obtained by
-`MultilinearMap.alternarization`. -/
+`MultilinearMap.alternatization`. -/
 noncomputable def toTensorPower (n : ℕ) : ⋀[R]^n M →ₗ[R] ⨂[R]^n M :=
   alternatingMapLinearEquiv (MultilinearMap.alternatization (PiTensorProduct.tprod R))
 
