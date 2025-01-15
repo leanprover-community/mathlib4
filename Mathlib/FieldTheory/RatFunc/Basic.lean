@@ -48,8 +48,6 @@ universe u v
 
 noncomputable section
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 variable {K : Type u}
@@ -320,11 +318,12 @@ open RatFunc
 
 variable {G₀ L R S F : Type*} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
 variable [FunLike F R[X] S[X]]
+
+open scoped Classical in
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `RatFunc R →* RatFunc S`,
 on the condition that `φ` maps non zero divisors to non zero divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-
 def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →* RatFunc S where
   toFun f :=
