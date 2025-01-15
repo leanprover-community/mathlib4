@@ -159,7 +159,7 @@ section RootSystem
 variable {P : RootSystem ι R M N} (b : P.Base)
 
 /-- A base of a root system yields a basis of the root space. -/
-@[simps!] def toBasis :
+@[simps!] def toWeightBasis :
     Basis b.support R M :=
   Basis.mk b.linInd_root <| by
     change ⊤ ≤ span R (range <| P.root ∘ ((↑) : b.support → ι))
@@ -167,9 +167,9 @@ variable {P : RootSystem ι R M N} (b : P.Base)
     exact P.span_root_eq_top
 
 /-- A base of a root system yields a basis of the coroot space. -/
-def toBasis' :
+def toCoweightBasis :
     Basis b.support R N :=
-  Base.toBasis (P := P.flip) b.flip
+  Base.toWeightBasis (P := P.flip) b.flip
 
 include b
 variable [Fintype ι]
