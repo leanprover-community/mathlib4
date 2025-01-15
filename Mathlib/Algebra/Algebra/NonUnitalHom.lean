@@ -255,7 +255,7 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     toFun := id
     map_smul' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
   rfl
 
@@ -474,7 +474,7 @@ lemma coe_restrictScalars' (f : A →ₙₐ[S] B) : (f.restrictScalars R : A →
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₙₐ[S] B) → A →ₙₐ[R] B) :=
-  fun _ _ h ↦ ext (congr_fun h : _)
+  fun _ _ h ↦ ext (congr_fun h :)
 
 end NonUnitalAlgHom
 
