@@ -82,6 +82,11 @@ def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := 
   let e ← instantiateMVars e
   pats.anyM fun p ↦ return (← Conv.matchPattern? p e) matches some (_, #[])
 
+/-- Common implementation of `casesm` and `casesm!`. -/
+def elabCasesM (pats : Array Term) (recursive allowSplit : Bool) : TacticM Unit := do
+  let pats ← elabPatterns pats
+  liftMetaTactic (casesMatching (matchPatterns pats) recursive allowSplit)
+
 /--
 * `casesm p` applies the `cases` tactic to a hypothesis `h : type`
   if `type` matches the pattern `p`.
@@ -97,14 +102,11 @@ casesm* _ ∨ _, _ ∧ _
 ```
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
-  let pats ← elabPatterns pats.getElems
-  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
+  elabCasesM pats recursive.isSome true
 
 @[inherit_doc casesM]
 elab (name := casesm!) "casesm!" recursive:"*"? ppSpace pats:term,+ : tactic => do
-  let pats ← elabPatterns pats.getElems
-  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome (allowSplit := false))
-
+  elabCasesM pats recursive.isSome false
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
