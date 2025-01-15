@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathlib.RingTheory.MaximalSpectrum
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 # Maximal spectrum of a commutative ring

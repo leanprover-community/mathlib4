@@ -147,24 +147,7 @@ variable (R ι)
 def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
   { lof R ι L j with
     toFun := of L j
-    map_lie' := fun {x y} => by
-      ext i
-      by_cases h : j = i
-      · rw [← h]
-        -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-        -- with `simp [of, singleAddHom]`
-        simp only [of, singleAddHom, bracket_apply]
-        erw [AddHom.coe_mk, single_apply, single_apply]
-        · simp? [h] says simp only [h, ↓reduceDIte, single_apply]
-        · intros
-          rw [single_add]
-      · -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-        -- with `simp [of, singleAddHom]`
-        simp only [of, singleAddHom, bracket_apply]
-        erw [AddHom.coe_mk, single_apply, single_apply]
-        · simp only [h, dite_false, single_apply, lie_self]
-        · intros
-          rw [single_add] }
+    map_lie' := fun {x y} => (lie_of_same L x y).symm }
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
