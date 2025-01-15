@@ -40,17 +40,22 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
             g.cases ldecl.fvarId
           else
             let s ← saveState
-            let subgoals ← g.cases ldecl.fvarId
+            let subgoals ← g.cases ldecl.fvarId (givenNames := #[⟨true, [ldecl.userName]⟩])
             if subgoals.size > 1 then
               s.restore
               continue
             else
               pure subgoals
           for subgoal in subgoals do
-            if recursive then
-              acc ← go subgoal.mvarId acc
+            -- If only one new hypothesis is generated, rename it to the original name.
+            let g ← if h : subgoal.fields.size = 1 then
+              subgoal.mvarId.rename subgoal.fields[0].fvarId! ldecl.userName
             else
-              acc := acc.push subgoal.mvarId
+              pure subgoal.mvarId
+            if recursive then
+              acc ← go g acc
+            else
+              acc := acc.push g
           return acc
       return (acc.push g)
 
@@ -93,6 +98,12 @@ casesm* _ ∨ _, _ ∧ _
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
   liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
+
+@[inherit_doc casesM]
+elab (name := casesm!) "casesm!" recursive:"*"? ppSpace pats:term,+ : tactic => do
+  let pats ← elabPatterns pats.getElems
+  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome (allowSplit := false))
+
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
