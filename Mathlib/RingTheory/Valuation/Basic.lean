@@ -927,7 +927,7 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
 
-instance [Ring K] (v : Valuation K Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
   zero := ⟨0, 0, by simp⟩
   zero_mul := by
     intro a
@@ -935,6 +935,9 @@ instance [Ring K] (v : Valuation K Γ₀) : CommMonoidWithZero (MonoidHom.mrange
   mul_zero := by
     intro a
     exact Subtype.ext (mul_zero a.val)
+
+@[simp]
+lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
     CommGroupWithZero (MonoidHom.mrange v) where
