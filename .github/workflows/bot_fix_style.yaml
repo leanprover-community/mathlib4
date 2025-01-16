@@ -59,16 +59,17 @@ jobs:
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'write'
+
       - name: Add reaction (comment)
               # from now on, it is sufficient to just check `user_permission`:
               # if the comment did not contain `bot fix style`,
               # then `user_permission` would not have ran
 
-      # reactions are not supported for `comment`s and `review_comment`s?
-      # this action only runs on `comment`s rather than `review`s or `review_comment`s
+        # reactions are not supported for `comment`s and `review_comment`s?
+        # this action only runs on `comment`s rather than `review`s or `review_comment`s
         if: ${{ steps.user_permission.outputs.require-result == 'true' &&
-                # is this a good way to check if the event is a `comment`?
-                ! github.event.comment.id == '' }}
+                ! github.event.comment.id == '' # is this a good way to check if the event is a `comment`?
+              }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}
