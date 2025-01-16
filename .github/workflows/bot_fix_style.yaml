@@ -61,9 +61,9 @@ jobs:
           require: 'write'
 
       - name: Add reaction (comment)
-      # from now on, it is sufficient to just check `user_permission`:
-      # if the comment did not contain `bot fix style`,
-      # then `user_permission` would not have ran
+        # from now on, it is sufficient to just check `user_permission`:
+        # if the comment did not contain `bot fix style`,
+        # then `user_permission` would not have ran
 
       # reactions are not supported for `comment`s and `review_comment`s?
       # this action only runs on `comment`s rather than `review`s or `review_comment`s
