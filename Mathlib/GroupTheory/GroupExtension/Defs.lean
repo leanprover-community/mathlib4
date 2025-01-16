@@ -102,7 +102,8 @@ structure Section where
 /-- `Splitting` of an additive group extension is a section homomorphism. -/
 structure Splitting extends G →+ E, S.Section
 
-attribute [nolint docBlame] Splitting.toSection
+/-- A splitting of an additive group extension as a (set-theoretic) section. -/
+add_decl_doc Splitting.toSection
 
 end AddGroupExtension
 
@@ -185,7 +186,8 @@ end Section
 @[to_additive]
 structure Splitting extends G →* E, S.Section
 
-attribute [nolint docBlame] Splitting.toSection
+/-- A splitting of a group extension as a (set-theoretic) section. -/
+add_decl_doc Splitting.toSection
 
 namespace Splitting
 
