@@ -158,8 +158,12 @@ theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
     ext <;> simp
   use P, i, hP0, hP
   intro hzero
+  /- Need to use hzero to find a polynomial satisfying hP and hP0 that has smaller totalDegree than
+  P. Dividing by `X i` if `X i ∣ P` or sending `X i` to `0` otherwise should work I think. Maybe
+  something else works too. -/
+  sorry
 
-theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι]
+theorem exchange_lemma [DecidableEq ι]
     [Nontrivial R] [NoZeroDivisors A] (x : ι → A) (y : A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
     ∃ i : ι, Algebra.IsAlgebraic (adjoin R (range (update x i y))) A := by
