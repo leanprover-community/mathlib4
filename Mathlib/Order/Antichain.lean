@@ -67,12 +67,6 @@ protected theorem subsingleton [IsTrichotomous α r] (h : IsAntichain r s) : s.S
   · exact hab
   · exact h.eq' ha hb hab
 
-theorem subsingleton' [IsTotal α r] (h : IsAntichain r s) : s.Subsingleton := by
-  intro a ha b hb
-  obtain hab | hab := total_of r a b
-  · exact h.eq ha hb hab
-  · exact h.eq' ha hb hab
-
 protected theorem flip (hs : IsAntichain r s) : IsAntichain (flip r) s := fun _ ha _ hb h =>
   hs hb ha h.symm
 

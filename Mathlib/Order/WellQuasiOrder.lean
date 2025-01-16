@@ -97,6 +97,15 @@ instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrdered
   obtain ⟨a, b, h, hf⟩ := wellQuasiOrdered_le f
   exact (f.map_rel_iff.2 h).not_le hf
 
+theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPreorder α r]
+    (h : WellQuasiOrdered r) : WellFounded fun a b ↦ r a b ∧ ¬ r b a := by
+  letI : Preorder α :=
+    { le := r
+      le_refl := refl_of r
+      le_trans := fun _ _ _ => trans_of r }
+  have : WellQuasiOrderedLE α := ⟨h⟩
+  exact wellFounded_lt
+
 theorem WellQuasiOrderedLE.finite_of_isAntichain [WellQuasiOrderedLE α] {s : Set α}
     (h : IsAntichain (· ≤ ·) s) : s.Finite :=
   h.finite_of_wellQuasiOrdered wellQuasiOrdered_le
@@ -132,6 +141,6 @@ variable [LinearOrder α]
 /-- In a linear order, WQOs and well-orders are equivalent. -/
 theorem wellQuasiOrderedLE_iff_wellFoundedLT : WellQuasiOrderedLE α ↔ WellFoundedLT α := by
   rw [wellQuasiOrderedLE_iff, and_iff_left_iff_imp]
-  exact fun _ s hs ↦ hs.subsingleton'.finite
+  exact fun _ s hs ↦ hs.subsingleton.finite
 
 end LinearOrder
