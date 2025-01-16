@@ -135,7 +135,6 @@ example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 1) := by
 example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 2) := by
   use 0; simp
 
-
 variable {σ : Type*} [LinearOrder σ]
 
 /-- The lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/

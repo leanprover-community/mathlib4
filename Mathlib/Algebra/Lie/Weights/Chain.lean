@@ -50,7 +50,7 @@ namespace LieModule
 
 section IsNilpotent
 
-variable [LieAlgebra.IsNilpotent R L] (χ₁ χ₂ : L → R) (p q : ℤ)
+variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
@@ -121,7 +121,7 @@ open LieAlgebra
 
 variable {H : LieSubalgebra R L} (α χ : H → R) (p q : ℤ)
 
-lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsNilpotent R H]
+lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilpotent H]
     (hq : genWeightSpace M (q • α + χ) = ⊥)
     {x : L} (hx : x ∈ rootSpace H α)
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
@@ -132,8 +132,11 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsN
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
-      simpa using (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
-        (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
+      -- was `simpa using [...]` and very slow
+      -- (https://github.com/leanprover-community/mathlib4/issues/19751)
+      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using
+        (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
+            (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
     rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩
@@ -141,7 +144,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsN
   | h0 => simp
   | hadd _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
 
-lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieAlgebra.IsNilpotent R H]
+lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpotent H]
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     {x : L} (hx : x ∈ rootSpace H (-α))
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
@@ -205,24 +208,24 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
   have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
-    rw [← LieSubmodule.iSupIndep_iff_coe_toSubmodule]
+    rw [← LieSubmodule.iSupIndep_iff_toSubmodule]
     refine (iSupIndep_genWeightSpace R H M).comp fun i j hij ↦ ?_
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : genWeightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
-    simp_rw [genWeightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
+    simp_rw [N, genWeightSpaceChain_def', LieSubmodule.iSup_toSubmodule]
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
-  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
+  simp_rw [N, LieSubmodule.toEnd_restrict_eq_toEnd]
   dsimp [N]
   convert_to _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
-  simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
-    Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
+  simp_rw [a, b, trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
+    ← smul_assoc, Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
 
@@ -231,7 +234,7 @@ end LieSubalgebra
 section
 
 variable {M}
-variable [LieAlgebra.IsNilpotent R L]
+variable [LieRing.IsNilpotent L]
 variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
