@@ -58,12 +58,8 @@ theorem choose_succ_le_two_pow (n k : ℕ) : (n + 1).choose k ≤ 2 ^ n := by
     · cases' k with k
       · rw [choose_zero_right]
         exact Nat.one_le_two_pow
-      · calc
-          (n + 2).choose (k + 1) =
-            (n + 1).choose k +
-            (n + 1).choose (k + 1)           := choose_succ_succ' _ _
-          _ ≤ 2 ^ n + (n + 1).choose (k + 1) := Nat.add_le_add_right (choose_succ_le_two_pow _ _) _
-          _ ≤ 2 ^ n + 2 ^ n                  := Nat.add_le_add_left (choose_succ_le_two_pow _ _) _
-          _ = 2 ^ (n + 1)                    := Eq.symm (two_pow_succ n)
+      · rw [choose_succ_succ', two_pow_succ]
+        exact Nat.add_le_add (choose_succ_le_two_pow n k) (choose_succ_le_two_pow n (k + 1))
+
 
 end Nat
