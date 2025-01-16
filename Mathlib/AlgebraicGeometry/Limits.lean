@@ -260,8 +260,7 @@ lemma sigmaι_eq_iff (i j : ι) (x y) :
     · subst h
       simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and]
       exact ((disjointGlueData f).ι i).isOpenEmbedding.injective H
-    · obtain (e | ⟨z, _⟩) := (Scheme.GlueData.ι_eq_iff _ _ _ _ _).mp H
-      · exact (h (Sigma.mk.inj_iff.mp e).1).elim
+    · obtain ⟨z, _⟩ := (Scheme.GlueData.ι_eq_iff _ _ _ _ _).mp H
       · simp only [disjointGlueData_J, disjointGlueData_V, h, ↓reduceIte] at z
         cases z
   · rintro ⟨rfl⟩

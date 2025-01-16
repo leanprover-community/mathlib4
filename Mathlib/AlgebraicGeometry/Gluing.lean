@@ -219,8 +219,7 @@ theorem ι_isoCarrier_inv (i : D.J) :
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
 See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
 def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
-  a = b ∨
-    ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).base x = b.2
+  ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).base x = b.2
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).base x = (𝖣.ι j).base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
@@ -347,7 +346,6 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
     (TopCat.pullbackConeIsLimit _ _).conePointUniqueUpToIso
       (isLimitOfHasPullbackOfPreservesLimit Scheme.forgetToTop (𝒰.map i) (𝒰.map j))
   rw [𝒰.gluedCover.ι_eq_iff]
-  right
   use e.hom ⟨⟨x, y⟩, h⟩
   constructor
   · erw [← comp_apply e.hom, IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
