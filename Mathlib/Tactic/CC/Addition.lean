@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Mathlib.Data.Option.Defs
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.CC.MkProof
 
 /-!
@@ -199,12 +198,11 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
   let B ← normalize (← inferType b)
   -- TODO(Leo): check if the following test is a performance bottleneck
   if ← pureIsDefEq A B then
-    -- TODO(Leo): to improve performance we can create the following proof lazily
-    let proof ← mkAppM ``Subsingleton.elim #[a, b]
+    let proof ← mkAppM ``FastSubsingleton.elim #[a, b]
     pushEq a b proof
   else
     let some AEqB ← getEqProof A B | failure
-    let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
+    let proof ← mkAppM ``FastSubsingleton.helim #[AEqB, a, b]
     pushHEq a b proof
 
 /-- Given the equivalent expressions `oldRoot` and `newRoot` the root of `oldRoot` is
@@ -940,9 +938,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 to the todo list or register `e` as the canonical form of itself. -/
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
-  -- TODO: this is likely to become a bottleneck. See e.g.
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/convert.20is.20often.20slow/near/433830798
-  let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
+  let ss ← synthInstance? (← mkAppM ``FastSubsingleton #[type])
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
   -- Make sure type has been internalized
