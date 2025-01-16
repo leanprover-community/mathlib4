@@ -294,6 +294,10 @@ theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (
 theorem measurableSet_closure : MeasurableSet (closure s) :=
   isClosed_closure.measurableSet
 
+@[measurability]
+theorem measurableSet_frontier : MeasurableSet (frontier s) :=
+  measurableSet_closure.diff measurableSet_interior
+
 theorem measurable_of_isOpen {f : δ → γ} (hf : ∀ s, IsOpen s → MeasurableSet (f ⁻¹' s)) :
     Measurable f := by
   rw [‹BorelSpace γ›.measurable_eq]
