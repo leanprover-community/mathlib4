@@ -140,21 +140,24 @@ lemma fac_aux₂ {n : ℕ}
       change X.map α₁.hom (lift segal s x) = s.π.app α₁ x
       have : X.map α.hom (lift segal s x) = s.π.app α x := by
         apply segal.spineInjective
-        apply Truncated.Path₁.ext'
+        apply Path.ext'
         intro t
-        dsimp only [spineEquiv, Truncated.StrictSegal.spineEquiv]
-        erw [Equiv.coe_fn_mk, Truncated.spine_arrow _ _,
-            ← FunctorToTypes.map_comp_apply]
+        change X.map _ _ = X.map _ _
+        rw [← FunctorToTypes.map_comp_apply]
         match t with
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
               Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
-            erw [this, h₂, ← congr_fun (s.w β₂) x]
+            dsimp only [inclusion, op_map, Quiver.Hom.unop_op,
+              fullSubcategoryInclusion.map]
+            rw [this, h₂, ← congr_fun (s.w β₂) x]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
               Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
-            erw [this, h₀, ← congr_fun (s.w β₀) x]
+            dsimp only [inclusion, op_map, Quiver.Hom.unop_op,
+              fullSubcategoryInclusion.map]
+            rw [this, h₀, ← congr_fun (s.w β₀) x]
             rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]
       dsimp
@@ -185,25 +188,22 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     apply segal.spineInjective
     dsimp
     ext k
-    · dsimp [spineEquiv, Truncated.StrictSegal.spineEquiv]
-      erw [Equiv.coe_fn_mk]
-      erw [spine_map_vertex]
-      rw [spine_spineToSimplex_apply, spine_vertex]
+    · change (X.spine _ (X.map f.op _)).vertex _ = X.map _ _
+      rw [spine_map_vertex]
+      rw [spine_spineToSimplex_apply]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) (by omega) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
-    · dsimp only [spineEquiv, Truncated.StrictSegal.spineEquiv, spine_arrow]
-      erw [Equiv.coe_fn_mk, spine_arrow]
-      erw [← FunctorToTypes.map_comp_apply]
+    · change X.map _ _ = _
+      rw [← FunctorToTypes.map_comp_apply]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (mkOfSucc k ≫ f) (by omega) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _ _).trans (congr_fun (s.w α).symm x)
   uniq s m hm := by
     ext x
     apply segal.spineInjective (X := X)
-    dsimp [spineEquiv, Truncated.StrictSegal.spineEquiv]
-    erw [Equiv.coe_fn_mk]
-    erw [Truncated.StrictSegal.spine_spineToSimplex_apply _ _]
+    change _ = X.spine _ (segal.spineToSimplex _)
+    rw [spine_spineToSimplex_apply]
     ext i
     · exact congr_fun (hm (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
     · exact congr_fun (hm (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
@@ -214,7 +214,7 @@ noncomputable def isPointwiseRightKanExtension :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
   fun Δ => isPointwiseRightKanExtensionAt X segal Δ.unop.len
 
-theorem isRightKanExtension (segal : StrictSegal X):
+theorem isRightKanExtension (segal : StrictSegal X) :
     X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
     (isPointwiseRightKanExtension X segal)
