@@ -12,11 +12,11 @@ import Mathlib.Data.List.GetD
 /-!
 # Turing machine tapes
 
-This file defines a the notion of a Turing machine tape, and the operations on it. A tape is a
+This file defines the notion of a Turing machine tape, and the operations on it. A tape is a
 bidirectional infinite sequence of cells, each of which stores an element of a given alphabet `Γ`.
 All but finitely many of the cells are required to hold the blank symbol `default : Γ`.
 
-## Important Declarations
+## Main definitions
 
 * `ListBlank Γ` is the type of one-directional tapes with alphabet `Γ`. Implemented as a quotient
   of `List Γ` by extension by blanks at the end.
