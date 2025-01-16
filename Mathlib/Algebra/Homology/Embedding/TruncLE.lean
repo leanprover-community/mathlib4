@@ -103,7 +103,7 @@ lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : 
   apply Quiver.Hom.op_inj
   dsimp [truncLE'Map, truncLE'XIsoCycles]
   rw [assoc, assoc, truncGE'Map_f_eq_opcyclesMap _ e.op (by simpa) h,
-    opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id_assoc]
+    opcyclesOpIso_inv_naturality_assoc, Iso.hom_inv_id_assoc]
 
 lemma truncLE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
@@ -142,25 +142,6 @@ end
 /-- The canonical morphism `K.truncLE' e ⟶ K.restriction e`. -/
 noncomputable def truncLE'ToRestriction : K.truncLE' e ⟶ K.restriction e :=
   (unopFunctor C c.symm).map (K.op.restrictionToTruncGE' e.op).op
-
-/-
-lemma truncLE'ToRestriction_hasDesc : e.HasLift (K.restrictionToTruncGE' e) := by
-  intro j hj i' _
-  dsimp [restrictionToTruncGE']
-  rw [restrictionToTruncGE'.f_eq_iso_hom_pOpcycles_iso_inv K e rfl hj]
-  simp [restrictionXIso]
-
-lemma restrictionToTruncGE'_f_eq_iso_hom_pOpcycles_iso_inv
-    {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
-    (K.restrictionToTruncGE' e).f i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
-      (K.truncGE'XIsoOpcycles e hi' hi).inv := by
-  apply restrictionToTruncGE'.f_eq_iso_hom_pOpcycles_iso_inv
-
-lemma restrictionToTruncGE'_f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i')
-    (hi : ¬ e.BoundaryGE i) :
-    (K.restrictionToTruncGE' e).f i =
-      (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
-  apply restrictionToTruncGE'.f_eq_iso_hom_iso_inv-/
 
 /-- `(K.truncLE'ToRestriction e).f i` is an isomorphism when `¬ e.BoundaryLE i`. -/
 lemma isIso_truncLE'ToRestriction (i : ι) (hi : ¬ e.BoundaryLE i) :

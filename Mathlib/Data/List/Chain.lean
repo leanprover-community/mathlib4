@@ -3,9 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -421,7 +422,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     cases as with
     | nil =>
       simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
-      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+      exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
@@ -431,7 +432,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+        exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
       · simp_all only [List.cons.injEq, le_refl]
 
 lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}

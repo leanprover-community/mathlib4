@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Flat.Algebra
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -101,7 +101,7 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
     simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
-  split <;> simp only [smul_eq_mul, val_zero, val_one]
+  split <;> simp
 
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
@@ -241,25 +241,25 @@ private instance : AddCommGroup (AdicCompletion I R ⊗[R] (LinearMap.ker f)) :=
 
 private def firstRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
   ComposableArrows.mk₄
-    (ModuleCat.asHom <| lTensorKerIncl I M f)
-    (ModuleCat.asHom <| lTensorf I M f)
-    (ModuleCat.asHom (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] PUnit))
-    (ModuleCat.asHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.ofHom <| lTensorKerIncl I M f)
+    (ModuleCat.ofHom <| lTensorf I M f)
+    (ModuleCat.ofHom (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
 
 private def secondRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
   ComposableArrows.mk₄
-    (ModuleCat.asHom (map I <| (LinearMap.ker f).subtype))
-    (ModuleCat.asHom (map I f))
-    (ModuleCat.asHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
-    (ModuleCat.asHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.ofHom (map I <| (LinearMap.ker f).subtype))
+    (ModuleCat.ofHom (map I f))
+    (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
 
 include hf
 
 private lemma firstRow_exact : (firstRow I M f).Exact where
   zero k _ := match k with
-    | 0 => (tens_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => LinearMap.zero_comp _
-    | 2 => LinearMap.zero_comp 0
+    | 0 => ModuleCat.hom_ext (tens_exact I M f hf).linearMap_comp_eq_zero
+    | 1 => ModuleCat.hom_ext (LinearMap.zero_comp _)
+    | 2 => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -269,9 +269,9 @@ private lemma firstRow_exact : (firstRow I M f).Exact where
 
 private lemma secondRow_exact [Fintype ι] [IsNoetherianRing R] : (secondRow I M f).Exact where
   zero k _ := match k with
-    | 0 => (adic_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => LinearMap.zero_comp (map I f)
-    | 2 => LinearMap.zero_comp 0
+    | 0 => ModuleCat.hom_ext (adic_exact I M f hf).linearMap_comp_eq_zero
+    | 1 => ModuleCat.hom_ext (LinearMap.zero_comp (map I f))
+    | 2 => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -282,25 +282,25 @@ private lemma secondRow_exact [Fintype ι] [IsNoetherianRing R] : (secondRow I M
 /- The compatible vertical maps between the first and the second row. -/
 private def firstRowToSecondRow : firstRow I M f ⟶ secondRow I M f :=
   ComposableArrows.homMk₄
-    (ModuleCat.asHom (ofTensorProduct I (LinearMap.ker f)))
-    (ModuleCat.asHom (ofTensorProduct I (ι → R)))
-    (ModuleCat.asHom (ofTensorProduct I M))
-    (ModuleCat.asHom 0)
-    (ModuleCat.asHom 0)
-    (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm
-    (ofTensorProduct_naturality I f).symm
+    (ModuleCat.ofHom (ofTensorProduct I (LinearMap.ker f)))
+    (ModuleCat.ofHom (ofTensorProduct I (ι → R)))
+    (ModuleCat.ofHom (ofTensorProduct I M))
+    (ModuleCat.ofHom 0)
+    (ModuleCat.ofHom 0)
+    (ModuleCat.hom_ext (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm)
+    (ModuleCat.hom_ext (ofTensorProduct_naturality I f).symm)
     rfl
     rfl
 
 private lemma ofTensorProduct_iso [Fintype ι] [IsNoetherianRing R] :
-    IsIso (ModuleCat.asHom (ofTensorProduct I M)) := by
+    IsIso (ModuleCat.ofHom (ofTensorProduct I M)) := by
   refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
     (firstRow_exact I M f hf) (secondRow_exact I M f hf) (firstRowToSecondRow I M f) ?_ ?_ ?_ ?_
   · apply ConcreteCategory.epi_of_surjective
     exact ofTensorProduct_surjective_of_finite I (LinearMap.ker f)
   · apply (ConcreteCategory.isIso_iff_bijective _).mpr
     exact ofTensorProduct_bijective_of_pi_of_fintype I ι
-  · show IsIso (ModuleCat.asHom 0)
+  · show IsIso (ModuleCat.ofHom 0)
     apply Limits.isIso_of_isTerminal
       <;> exact Limits.IsZero.isTerminal (ModuleCat.isZero_of_subsingleton _)
   · apply ConcreteCategory.mono_of_injective
@@ -310,9 +310,9 @@ private lemma ofTensorProduct_iso [Fintype ι] [IsNoetherianRing R] :
 private
 lemma ofTensorProduct_bijective_of_map_from_fin [Fintype ι] [IsNoetherianRing R] :
     Function.Bijective (ofTensorProduct I M) := by
-  have : IsIso (ModuleCat.asHom (ofTensorProduct I M)) :=
+  have : IsIso (ModuleCat.ofHom (ofTensorProduct I M)) :=
     ofTensorProduct_iso I M f hf
-  exact ConcreteCategory.bijective_of_isIso (ModuleCat.asHom (ofTensorProduct I M))
+  exact ConcreteCategory.bijective_of_isIso (ModuleCat.ofHom (ofTensorProduct I M))
 
 end
 
@@ -375,8 +375,8 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
-instance flat_of_isNoetherian [IsNoetherianRing R] : Algebra.Flat R (AdicCompletion I R) where
-  out := (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr <| fun J ↦
+instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
+  (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian

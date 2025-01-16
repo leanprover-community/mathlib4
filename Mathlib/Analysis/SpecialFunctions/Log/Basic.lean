@@ -383,6 +383,21 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   filter_upwards [eventually_gt_atTop 1] with x hx
   aesop (add safe forward log_pos)
 
+/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
+@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+  toFun := Real.exp
+  invFun := Real.log
+  source := univ
+  target := Ioi (0 : ℝ)
+  map_source' x _ := exp_pos x
+  map_target' _ _ := mem_univ _
+  left_inv' _ _ := by simp
+  right_inv' _ hx := exp_log hx
+  open_source := isOpen_univ
+  open_target := isOpen_Ioi
+  continuousOn_toFun := continuousOn_exp
+  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+
 end Real
 
 section Continuity
