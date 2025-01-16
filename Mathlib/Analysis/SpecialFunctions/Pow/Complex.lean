@@ -42,6 +42,10 @@ theorem cpow_eq_zero_iff (x y : ℂ) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [cpow_def]
   split_ifs <;> simp [*, exp_ne_zero]
 
+theorem cpow_ne_zero_iff {x y : ℂ} (hy : y ≠ 0) :
+    x ^ y ≠ 0 ↔ x ≠ 0 := by
+  simp only [ne_eq, cpow_eq_zero_iff, hy, not_false_eq_true, and_true]
+
 @[simp]
 theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_def, *]
 
