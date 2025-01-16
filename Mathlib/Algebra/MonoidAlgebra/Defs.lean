@@ -807,9 +807,6 @@ protected noncomputable def opRingEquiv [Monoid G] :
       rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
       simp }
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
--- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
--- defeq abuse going on.
 theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 

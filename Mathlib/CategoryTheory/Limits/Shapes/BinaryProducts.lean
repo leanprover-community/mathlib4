@@ -728,13 +728,11 @@ end ProdLemmas
 
 noncomputable section CoprodLemmas
 
--- @[reassoc (attr := simp)]
-@[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
+@[simp]
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
   ext <;> simp
 
--- Porting note: hand generated reassoc here. Simp can prove it
 theorem coprod.desc_comp_assoc {C : Type u} [Category C] {V W X Y : C}
     [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V) (h : Y ⟶ V) {Z : C} (l : W ⟶ Z) :
     coprod.desc g h ≫ f ≫ l = coprod.desc (g ≫ f) (h ≫ f) ≫ l := by simp

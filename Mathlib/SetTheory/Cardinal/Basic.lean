@@ -603,7 +603,6 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
   inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 
--- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]

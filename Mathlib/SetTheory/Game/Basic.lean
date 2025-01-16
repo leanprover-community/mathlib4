@@ -912,8 +912,7 @@ def inv'Zero : inv' 0 ≡r 1 := by
   refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
-  · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
-    simp; rfl
+  · simp; rfl
   · dsimp
     infer_instance
 

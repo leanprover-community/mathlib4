@@ -65,18 +65,12 @@ theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
--- Porting note: `simp` and `norm_cast` can prove it
---@[simp, norm_cast]
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
 
--- Porting note: `simp` and `norm_cast` can prove it
---@[simp, norm_cast]
 theorem coe_one : ((1 : ℕ) : ℕ∞) = 1 :=
   rfl
 
--- Porting note: `simp` and `norm_cast` can prove it
---@[simp, norm_cast]
 theorem coe_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
 
