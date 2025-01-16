@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Series of a relation
@@ -129,6 +130,7 @@ namespace Rel
 
 /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
   maximum length. -/
+@[mk_iff]
 class FiniteDimensional : Prop where
   /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
     maximum length. -/
@@ -136,6 +138,7 @@ class FiniteDimensional : Prop where
 
 /-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
+@[mk_iff]
 class InfiniteDimensional : Prop where
   /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
     arbitrary length. -/
@@ -516,17 +519,19 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     dsimp only
     by_cases h₂ : i.1 + 1 < p.length
     · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
-      erw [dif_pos h₁, dif_pos h₂]
+      simp only [Fin.coe_castSucc, Fin.val_succ]
+      rw [dif_pos h₁, dif_pos h₂]
       convert p.step ⟨i, h₁⟩ using 1
-    · erw [dif_neg h₂]
+    · simp only [Fin.coe_castSucc, Fin.val_succ]
+      rw [dif_neg h₂]
       by_cases h₁ : i.1 < p.length
-      · erw [dif_pos h₁]
+      · rw [dif_pos h₁]
         have h₃ : p.length = i.1 + 1 := by omega
         convert p.step ⟨i, h₁⟩ using 1
         convert connect.symm
         · aesop
         · congr; aesop
-      · erw [dif_neg h₁]
+      · rw [dif_neg h₁]
         convert q.step ⟨i.1 - p.length, _⟩ using 1
         · congr
           change (i.1 + 1) - _ = _
@@ -619,6 +624,33 @@ lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p
   omega
 
 end RelSeries
+
+variable {r} in
+lemma Rel.not_finiteDimensional_iff [Nonempty α] :
+    ¬ r.FiniteDimensional ↔ r.InfiniteDimensional := by
+  rw [finiteDimensional_iff, infiniteDimensional_iff]
+  push_neg
+  constructor
+  · intro H n
+    induction n with
+    | zero => refine ⟨⟨0, ![Nonempty.some ‹_›], by simp⟩, by simp⟩
+    | succ n IH =>
+      obtain ⟨l, hl⟩ := IH
+      obtain ⟨l', hl'⟩ := H l
+      exact ⟨l'.take ⟨n + 1, by simpa [hl] using hl'⟩, rfl⟩
+  · intro H l
+    obtain ⟨l', hl'⟩ := H (l.length + 1)
+    exact ⟨l', by simp [hl']⟩
+
+variable {r} in
+lemma Rel.not_infiniteDimensional_iff [Nonempty α] :
+    ¬ r.InfiniteDimensional ↔ r.FiniteDimensional := by
+  rw [← not_finiteDimensional_iff, not_not]
+
+lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
+    r.FiniteDimensional ∨ r.InfiniteDimensional := by
+  rw [← not_finiteDimensional_iff]
+  exact em r.FiniteDimensional
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
@@ -814,6 +846,19 @@ end Fintype
 end LTSeries
 
 end LTSeries
+
+lemma not_finiteDimensionalOrder_iff [Preorder α] [Nonempty α] :
+    ¬ FiniteDimensionalOrder α ↔ InfiniteDimensionalOrder α :=
+  Rel.not_finiteDimensional_iff
+
+lemma not_infiniteDimensionalOrder_iff [Preorder α] [Nonempty α] :
+    ¬ InfiniteDimensionalOrder α ↔ FiniteDimensionalOrder α :=
+  Rel.not_infiniteDimensional_iff
+
+variable (α) in
+lemma finiteDimensionalOrder_or_infiniteDimensionalOrder [Preorder α] [Nonempty α] :
+    FiniteDimensionalOrder α ∨ InfiniteDimensionalOrder α :=
+  Rel.finiteDimensional_or_infiniteDimensional _
 
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
   is `β`. -/

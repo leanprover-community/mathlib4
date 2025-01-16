@@ -65,20 +65,21 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
     mul_zero := fun x => show A.mul _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X :=
+instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X where
+  algebraMap :=
   { A.one.hom with
     map_zero' := A.one.hom.map_zero
     map_one' := rfl
     map_mul' := fun x y => by
       have h := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul.symm) (x ⊗ₜ A.one y)
-      rwa [MonoidalCategory.leftUnitor_hom_apply, ← A.one.hom.map_smul] at h
-    commutes' := fun r a => by
-      dsimp
-      have h₁ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul) (r ⊗ₜ a)
-      have h₂ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.mul_one) (a ⊗ₜ r)
-      exact h₁.trans h₂.symm
-    smul_def' := fun r a =>
-      (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul) (r ⊗ₜ a)).symm }
+      rwa [MonoidalCategory.leftUnitor_hom_apply, ← A.one.hom.map_smul] at h }
+  commutes' := fun r a => by
+    dsimp
+    have h₁ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul) (r ⊗ₜ a)
+    have h₂ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.mul_one) (a ⊗ₜ r)
+    exact h₁.trans h₂.symm
+  smul_def' := fun r a =>
+    (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul) (r ⊗ₜ a)).symm
 
 @[simp]
 theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A.one r :=

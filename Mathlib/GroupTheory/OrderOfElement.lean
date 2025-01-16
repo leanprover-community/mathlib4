@@ -263,9 +263,6 @@ protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
 protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx : IsOfFinOrder x) :
     (Submonoid.powers x : Set G) = (Finset.range (orderOf x)).image (x ^ ·) :=
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
-@[deprecated (since := "2024-02-21")]
-alias IsOfFinAddOrder.powers_eq_image_range_orderOf :=
-  IsOfFinAddOrder.multiples_eq_image_range_addOrderOf
 
 @[to_additive]
 theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
@@ -1089,19 +1086,14 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 @[to_additive]
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
   minimalPeriod_prod_map _ _ _
-@[deprecated (since := "2024-02-21")] alias Prod.add_orderOf := Prod.addOrderOf
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
-@[deprecated (since := "2024-02-21")]
-alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
 
 @[to_additive]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
-@[deprecated (since := "2024-02-21")] alias
-add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf
 
 @[to_additive]
 theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
