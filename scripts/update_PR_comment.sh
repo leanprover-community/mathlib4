@@ -23,7 +23,7 @@ comment_init="${2:-}"
 # But we do complain if the PR number is missing.
 PR="${3:-}"
 if [[ -z $PR ]]; then
-  echo "Usage: <new_message> <beginning of message> <pr_number>"
+  echo "Usage: <new_message_file> <beginning_of_old_message> <pr_number>"
   exit 1
 fi
 
