@@ -44,7 +44,7 @@ variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProp
 namespace MorphismProperty
 
 /-- A class of morphisms `W` in a monoidal category is monoidal if it is multiplicative
-and stable with left and right whiskering. Under this condition, the localized
+and stable under left and right whiskering. Under this condition, the localized
 category can be equipped with a monoidal category structure, see `LocalizedMonoidal`. -/
 class IsMonoidal extends W.IsMultiplicative : Prop where
   whiskerLeft (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) (hg : W g) : W (X ◁ g)
