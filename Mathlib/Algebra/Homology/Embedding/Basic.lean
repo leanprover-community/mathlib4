@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
 
@@ -218,6 +219,7 @@ lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
+    simp only [Int.not_lt] at this
     obtain ⟨k, rfl⟩ := Int.le.dest this
     exact (h k) (by simp)
   · intros
@@ -229,6 +231,7 @@ lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
+    simp only [Int.not_lt] at this
     obtain ⟨k, rfl⟩ := Int.le.dest this
     exact (h k) (by simp)
   · intros
