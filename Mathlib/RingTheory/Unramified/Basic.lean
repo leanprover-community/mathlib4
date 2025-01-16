@@ -39,8 +39,7 @@ namespace Algebra
 
 section
 
-variable (R : Type v) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
+variable (R : Type v) (A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 
 /--
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
