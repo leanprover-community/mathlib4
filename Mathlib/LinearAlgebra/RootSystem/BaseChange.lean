@@ -34,10 +34,15 @@ namespace RootPairing
 /-- We say a root pairing is balanced if the root span and coroot span are perfectly
 complementary.
 
-All finite root pairings over a field are balanced. -/
+All root systems are balanced and all finite root pairings over a field are balanced. -/
 class IsBalanced {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N) : Prop where
   isPerfectCompl : P.toPerfectPairing.IsPerfectCompl P.rootSpan P.corootSpan
+
+instance {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
+    [CommRing R] [Module R M] [Module R N] (P : RootSystem ι R M N) :
+    P.IsBalanced where
+  isPerfectCompl := by simp
 
 variable {ι L M N : Type*}
   [Field L] [AddCommGroup M] [AddCommGroup N] [Module L M] [Module L N]
@@ -45,7 +50,7 @@ variable {ι L M N : Type*}
 
 section restrictScalars
 
-variable (K : Type*) [Field K] [Algebra K L] [NoZeroSMulDivisors K L]
+variable (K : Type*) [Field K] [Algebra K L]
   [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
   [P.IsBalanced]
 
