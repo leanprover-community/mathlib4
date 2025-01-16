@@ -174,6 +174,14 @@ theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
     |a - c| = |a - b + (b - c)| := by rw [sub_add_sub_cancel]
     _ ≤ |a - b| + |b - c| := abs_add _ _
 
+theorem abs_sub_le_max_sub {a b c : α} (hac : a ≤ b) (hcd : b ≤ c) (d : α) :
+    |b - d| ≤ max (c - d) (d - a) := by
+  rcases le_total d b with h | h
+  · rw [abs_of_nonneg <| sub_nonneg_of_le h]
+    exact le_max_of_le_left <| sub_le_sub_right hcd _
+  · rw [abs_of_nonpos <| sub_nonpos_of_le h, neg_sub]
+    exact le_max_of_le_right <| sub_le_sub_left hac _
+
 theorem abs_add_three (a b c : α) : |a + b + c| ≤ |a| + |b| + |c| :=
   (abs_add _ _).trans (add_le_add_right (abs_add _ _) _)
 
