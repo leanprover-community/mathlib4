@@ -41,7 +41,7 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
-assert_not_exists BoundedSMul Summable
+assert_not_exists BoundedSMul Summable CaucySeq PartialHomeomorph BoundedLENhdsClass
 
 open Set Topology Filter NNReal
 
