@@ -5,7 +5,6 @@ Authors: Joël Riou, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 # Localization of monoidal categories
