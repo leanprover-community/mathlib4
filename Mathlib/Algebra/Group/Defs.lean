@@ -5,10 +5,11 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.One.Defs
 import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.OfNat
 import Batteries.Logic
 
 /-!
@@ -38,9 +39,7 @@ We register the following instances:
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists Function.Injective.eq_iff
+assert_not_exists MonoidWithZero DenselyOrdered Function.Injective.eq_iff
 
 universe u v w
 
@@ -167,7 +166,6 @@ class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 
 attribute [to_additive] CommSemigroup
-attribute [to_additive existing] CommSemigroup.toCommMagma
 
 section CommMagma
 
@@ -410,7 +408,7 @@ the `npow` field when defining multiplicative objects.
 
 /-- Exponentiation by repeated squaring. -/
 @[to_additive "Scalar multiplication by repeated self-addition,
-the additive version of exponentation by repeated squaring."]
+the additive version of exponentiation by repeated squaring."]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
   npowBinRec.go k 1
 where
@@ -543,9 +541,6 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
--- Bug https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] Monoid.toMulOneClass
-
 @[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
 
@@ -628,8 +623,6 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-attribute [to_additive existing] CommMonoid.toCommSemigroup
-
 section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.
@@ -644,8 +637,6 @@ attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cance
 class LeftCancelMonoid (M : Type u) extends Monoid M, LeftCancelSemigroup M
 
 attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
-
-attribute [to_additive existing] LeftCancelMonoid.toLeftCancelSemigroup
 
 end LeftCancelMonoid
 
@@ -664,8 +655,6 @@ class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
 
 attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] RightCancelMonoid.toRightCancelSemigroup
-
 end RightCancelMonoid
 
 section CancelMonoid
@@ -679,8 +668,6 @@ class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancel
 @[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
-attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
-
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddCommMonoid M, AddLeftCancelMonoid M
 
@@ -691,8 +678,6 @@ attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower c
 class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
 
 attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
-
-attribute [to_additive existing] CancelCommMonoid.toLeftCancelMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -899,12 +884,9 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-@[deprecated (since := "2024-03-20")] alias zpow_coe_nat := zpow_natCast
-@[deprecated (since := "2024-03-20")] alias coe_nat_zsmul := natCast_zsmul
 
--- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
-lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
+lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
@@ -962,9 +944,6 @@ class InvOneClass (G : Type*) extends One G, Inv G where
 @[to_additive]
 class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 
--- FIXME: `to_additive` is not operating on the second parent. (https://github.com/leanprover-community/mathlib4/issues/660)
-attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
-
 variable [InvOneClass G]
 
 @[to_additive (attr := simp)]
@@ -991,8 +970,6 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   /-- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
   protected inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
-
-attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
 
 section DivisionMonoid
 
@@ -1024,8 +1001,6 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
-
-attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -1114,8 +1089,6 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
-
-attribute [to_additive existing] CommGroup.toCommMonoid
 
 section CommGroup
 
