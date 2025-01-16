@@ -295,7 +295,7 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
   · apply c_lim.comp φ_strict.tendsto_atTop
   · exact hφ
 
-/-- The tangent cone at a non-isolated point contains `0`. -/
+/-- The tangent cone at a non-isolated point in dimension 1 is the whole space -/
 theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : (𝓝[s \ {x}] x).NeBot) :
     tangentConeAt 𝕜 s x = univ := by
   apply eq_univ_iff_forall.2 (fun y ↦ ?_)
@@ -308,23 +308,24 @@ theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : (𝓝[s \ {x}] x).Ne
     apply NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _ (Metric.ball_mem_nhds _ (u_pos n)))
   choose v hv using A
   let d := fun n ↦ v n - x
-  have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
+  have d_ne n : d n ≠ 0 := by
+    simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, d] at hv
+    simpa [d, sub_ne_zero] using (hv n).1.2
   refine ⟨fun n ↦ y * (d n)⁻¹, d, ?_, ?_, ?_⟩
   · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv n).1.1)
-  · sorry
+  · simp only [norm_mul, norm_inv]
+    apply (tendsto_const_mul_atTop_of_pos (by simpa using hy)).2
+    apply tendsto_inv_nhdsGT_zero.comp
+    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
+      eventually_atTop, ge_iff_le]
+    have B (n : ℕ) : ‖d n‖ ≤ u n := by
+      specialize hv n
+      simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm] at hv
+      simpa using hv.2.le
+    refine ⟨?_, 0, fun n hn ↦ by simpa using d_ne n⟩
+    exact squeeze_zero (fun n ↦ by positivity) B u_lim
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
-    simp only [smul_eq_mul, mul_assoc, d]
-    rw [inv_mul_cancel₀, mul_one]
-    simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, d] at hv
-    simpa [sub_ne_zero] using (hv n).1.2
-
-
-
-
-
-
-#exit
-
+    simp only [smul_eq_mul, mul_assoc, inv_mul_cancel₀ (d_ne n), mul_one]
 
 end TangentCone
 
@@ -510,26 +511,15 @@ theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
 theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
 
-/-- In one dimension over a proper field, every point is either a point of unique differentiability,
-or isolated. -/
-theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot [ProperSpace 𝕜] (s : Set 𝕜) (x : 𝕜) :
+/-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
+theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
     UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ := by
   rcases eq_or_neBot (𝓝[s \ {x}] x) with h | h
   · exact Or.inr h
-  left
-  rcases tangentCone_nonempty (𝕜 := 𝕜) h with ⟨l, hl⟩
-  suffices Submodule.span 𝕜 (tangentConeAt 𝕜 s x) = ⊤ by
-    constructor
-    · simp [this]
-    · simp only [mem_closure_iff_nhdsWithin_neBot]
-      apply neBot_of_le (hf := h)
-      exact nhdsWithin_mono _ diff_subset
-  ext y
-  simp only [Submodule.mem_top, iff_true]
-  have : y = (y / l) • l := by
-    rw [smul_eq_mul, div_mul_cancel₀]
-    exact hl.2
-  rw [this]
-  exact Submodule.smul_mem _ _ (Submodule.subset_span hl.1)
+  refine Or.inl ⟨?_, ?_⟩
+  · simp [tangentCone_eq_univ h]
+  · simp only [mem_closure_iff_nhdsWithin_neBot]
+    apply neBot_of_le (hf := h)
+    exact nhdsWithin_mono _ diff_subset
 
 end UniqueDiff
