@@ -189,11 +189,12 @@ elab "included_variables" dd:(ppSpace "!")? plumb:(ppSpace &"plumb")? : tactic =
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
 
 /-- The `NameSet` of all the `SyntaxNodeKinds` of all the binders. -/
-abbrev binders : NameSet := NameSet.empty
-  |>.insert ``Lean.Parser.Term.explicitBinder
-  |>.insert ``Lean.Parser.Term.strictImplicitBinder
-  |>.insert ``Lean.Parser.Term.implicitBinder
-  |>.insert ``Lean.Parser.Term.instBinder
+abbrev binders : NameSet := NameSet.ofList [
+  ``Lean.Parser.Term.explicitBinder,
+  ``Lean.Parser.Term.strictImplicitBinder,
+  ``Lean.Parser.Term.implicitBinder,
+  ``Lean.Parser.Term.instBinder,
+]
 
 /--
 `findBinders stx` extracts all syntax nodes in `stx` representing binders.
