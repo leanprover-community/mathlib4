@@ -34,11 +34,6 @@ def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
   fun n ↦ c n • ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E
 
 @[simp]
-lemma coeff_ofScalars {p : ℕ → ℝ} {n : ℕ} :
-    (FormalMultilinearSeries.ofScalars ℝ p).coeff n = p n := by
-  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
-
-@[simp]
 theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
   rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
   refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
@@ -144,12 +139,12 @@ theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
 
 end Field
 
-section Normed
+section Seminormed
 
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 -- Also works:
@@ -157,7 +152,8 @@ variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E
 set_option maxSynthPendingDepth 2 in
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
-  rw [ofScalars, norm_smul (c n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  set_option maxSynthPendingDepth 2 in
+  rw [ofScalars, norm_smul]
 
 theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := by
   simp only [ofScalars_norm_eq_mul]
@@ -167,6 +163,16 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
 @[simp]
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
   simp [ofScalars_norm_eq_mul]
+
+end Seminormed
+
+section Normed
+
+open Filter ENNReal
+open scoped Topology NNReal
+
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+    [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :

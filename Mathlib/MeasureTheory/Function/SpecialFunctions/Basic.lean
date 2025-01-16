@@ -18,9 +18,7 @@ See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
 -/
 
 -- Guard against import creep:
-assert_not_exists InnerProductSpace
-assert_not_exists Real.arctan
-assert_not_exists FiniteDimensional.proper
+assert_not_exists InnerProductSpace Real.arctan FiniteDimensional.proper
 
 noncomputable section
 
@@ -54,10 +52,8 @@ lemma aemeasurable_of_aemeasurable_exp (hf : AEMeasurable (fun x ↦ exp (f x)) 
 lemma aemeasurable_of_aemeasurable_exp_mul {t : ℝ}
     (ht : t ≠ 0) (hf : AEMeasurable (fun x ↦ exp (t * f x)) μ) :
     AEMeasurable f μ := by
-  suffices AEMeasurable (fun x ↦ t * f x) μ by
-    rw [show f = fun x ↦ (t * f x) / t by ext; field_simp]
-    exact this.div aemeasurable_const
-  exact aemeasurable_of_aemeasurable_exp hf
+  simpa only [mul_div_cancel_left₀ _ ht]
+    using (aemeasurable_of_aemeasurable_exp hf).div (aemeasurable_const (b := t))
 
 @[measurability]
 theorem measurable_sin : Measurable sin :=

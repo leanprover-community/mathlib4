@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # The lattice of subobjects
@@ -59,7 +60,7 @@ variable [HasPullbacks C]
 is (isomorphic to) the top object in `MonoOver X`. -/
 def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
   iso_of_both_ways (leTop _)
-    (homMk (pullback.lift f (𝟙 _) (by aesop_cat)) (pullback.lift_snd _ _ _))
+    (homMk (pullback.lift f (𝟙 _) (by simp)) (pullback.lift_snd _ _ _))
 
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
@@ -527,7 +528,7 @@ def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s
             (by
               rcases j with ⟨-, ⟨g, ⟨m, rfl⟩⟩⟩
               simpa using m))))
-    (by aesop_cat)
+    (by simp)
 
 @[simp]
 theorem leInfCone_π_app_none {A : C} (s : Set (Subobject A)) (f : Subobject A)
@@ -572,7 +573,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
-    aesop_cat
+    simp
 
 theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
