@@ -691,7 +691,8 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph X Z where
   continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 
 /-- Composing two partial homeomorphisms, by restricting to the maximal domain where their
-composition is well defined. -/
+composition is well defined.
+Within the `Manifold` namespace, there is the notation `e ≫ₕ f` for this. -/
 @[trans]
 protected def trans : PartialHomeomorph X Z :=
   PartialHomeomorph.trans' (e.symm.restrOpen e'.source e'.open_source).symm

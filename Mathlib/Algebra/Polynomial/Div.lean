@@ -111,12 +111,12 @@ noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X
     else ⟨0, p⟩
   termination_by p => p
 
-/-- `divByMonic` gives the quotient of `p` by a monic polynomial `q`. -/
+/-- `divByMonic`, notation `p /ₘ q`, gives the quotient of `p` by a monic polynomial `q`. -/
 def divByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).1 else 0
 
-/-- `modByMonic` gives the remainder of `p` by a monic polynomial `q`. -/
+/-- `modByMonic`, notation `p  %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
 def modByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).2 else p

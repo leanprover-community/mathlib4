@@ -25,7 +25,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
 
 variable (I I') in
-/-- Bundled `n` times continuously differentiable maps. -/
+/-- Bundled `n` times continuously differentiable maps,
+notation `C^n(I, M; I', M')` and `C^n(I, M; k)` (when the target is a normed space `k` with
+the trivial model) in the `Manifold` namespace. -/
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
