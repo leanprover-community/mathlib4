@@ -325,6 +325,37 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
 
 end CompactIccSpace
 
+section ProperSpace
+
+variable [ProperSpace α]
+
+namespace HasCompactMulSupport
+
+open Function Bornology
+
+variable [One β]
+variable {f : α → β}
+
+@[to_additive]
+theorem of_mulSupport_subset_closedBall (hf : mulSupport f ⊆ closedBall x r) :
+    HasCompactMulSupport f :=
+  HasCompactMulSupport.of_mulSupport_subset_isCompact (isCompact_closedBall ..) hf
+
+@[to_additive]
+theorem of_mulSupport_subset_ball (hf : mulSupport f ⊆ ball x r) :
+    HasCompactMulSupport f :=
+ of_mulSupport_subset_closedBall <| Trans.trans hf ball_subset_closedBall
+
+@[to_additive]
+theorem of_mulSupport_subset_isBounded {s : Set α}
+    (hs : IsBounded s) (hf : mulSupport f ⊆ s) :
+    HasCompactMulSupport f :=
+  IsCompact.closure_of_subset hs.isCompact_closure <| Trans.trans hf subset_closure
+
+end HasCompactMulSupport
+
+end ProperSpace
+
 end Bounded
 
 section Diam
