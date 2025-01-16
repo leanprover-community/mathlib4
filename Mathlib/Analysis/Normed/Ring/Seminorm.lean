@@ -196,15 +196,6 @@ namespace RingSeminorm
 
 variable [Ring R] (p : RingSeminorm R)
 
-theorem map_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩, fun h => ?_⟩
-  obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
-  · exfalso
-    refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
-    simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
-  · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
-    simpa only [one_mul] using map_mul_le_mul p (1 : R) _
-
 open Filter Nat Real
 
 /-- If `f` is a ring seminorm on `R` with `f 1 ≤ 1` and `s : ℕ → ℕ` is bounded by `n`, then
