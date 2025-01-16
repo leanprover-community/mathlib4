@@ -399,7 +399,7 @@ theorem right_inl (n : N) : (inl n : middleOfTwoCocycle f).right = 1 := rfl
 
 theorem mem_range_inl (e : middleOfTwoCocycle f) : e ∈ inl.range ↔ e.right = 1 :=
   ⟨fun ⟨n, hn⟩ ↦ hn ▸ right_inl n, fun h ↦ ⟨e.left * Additive.toMul (α := N) (f (1, 1)),
-    middleOfTwoCocycle.ext (by rw [left_inl, mul_inv_cancel_right]) (h ▸ right_inl _)⟩⟩
+    middleOfTwoCocycle.ext (by rw [left_inl, mul_inv_cancel_right]) (by rw [right_inl, h])⟩⟩
 
 theorem inl_injective : Function.Injective (inl (f := f)) := fun _ _ h ↦ by
   simpa only [inl, MonoidHom.coe_mk, OneHom.coe_mk, mk.injEq, mul_left_inj, and_true] using h
