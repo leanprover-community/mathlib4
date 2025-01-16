@@ -422,6 +422,16 @@ def homLinearEquiv : (M ⟶ N) ≃ₗ[S] (M →ₗ[R] N) :=
 
 end Module
 
+open ZeroObject in
+noncomputable instance : Unique (0 : ModuleCat.{v} R) where
+  default := 0
+  uniq := by
+    let e : (0 : ModuleCat.{v} R) ≅ .of R PUnit :=
+      ⟨0, 0, by simp, by ext; apply Subsingleton.elim⟩
+    intro x
+    have := Equiv.subsingleton e.toLinearEquiv.toEquiv
+    apply Subsingleton.elim
+
 section
 
 variable {S : Type u} [CommRing S]
