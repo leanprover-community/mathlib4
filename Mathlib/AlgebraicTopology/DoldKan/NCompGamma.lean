@@ -159,20 +159,10 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
 
 end Γ₂N₁
 
--- Porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
+@[simps! hom_app inv_app]
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
   (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
-
-@[simp]
-lemma Γ₂N₂ToKaroubiIso_hom_app (X : SimplicialObject C) :
-    Γ₂N₂ToKaroubiIso.hom.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.hom.app X) := by
-  simp [Γ₂N₂ToKaroubiIso]
-
-@[simp]
-lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
-    Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
-  simp [Γ₂N₂ToKaroubiIso]
 
 namespace Γ₂N₂
 
