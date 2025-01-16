@@ -4,25 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Maximal.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
-# Maximal spectrum of a commutative ring
+# Maximal spectrum of a commutative (semi)ring
 
-The maximal spectrum of a commutative ring is the type of all maximal ideals.
-It is naturally a subset of the prime spectrum endowed with the subspace topology.
-
-## Main definitions
-
-* `MaximalSpectrum R`: The maximal spectrum of a commutative ring `R`,
-  i.e., the set of all maximal ideals of `R`.
-
-## Implementation notes
-
-The Zariski topology on the maximal spectrum is defined as the subspace topology induced by the
-natural inclusion into the prime spectrum to avoid API duplication for zero loci.
+Basic properties the maximal spectrum of a ring.
 -/
-
 
 noncomputable section
 
@@ -30,17 +19,9 @@ open scoped Classical
 
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
-/-- The maximal spectrum of a commutative ring `R` is the type of all maximal ideals of `R`. -/
-@[ext]
-structure MaximalSpectrum where
-  asIdeal : Ideal R
-  IsMaximal : asIdeal.IsMaximal
-
-attribute [instance] MaximalSpectrum.IsMaximal
+namespace MaximalSpectrum
 
 variable {R}
-
-namespace MaximalSpectrum
 
 instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
   let ⟨I, hI⟩ := Ideal.exists_maximal R
@@ -48,7 +29,7 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 
 /-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
-  ⟨x.asIdeal, x.IsMaximal.isPrime⟩
+  ⟨x.asIdeal, x.isMaximal.isPrime⟩
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
@@ -93,8 +74,6 @@ theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
 end PrimeSpectrum
 
 namespace MaximalSpectrum
-
-variable (R)
 
 /-- The product of localizations at all maximal ideals of a commutative semiring. -/
 abbrev PiLocalization : Type _ := Π I : MaximalSpectrum R, Localization.AtPrime I.1
@@ -187,8 +166,6 @@ theorem finite_of_toPiLocalization_surjective
 end MaximalSpectrum
 
 namespace PrimeSpectrum
-
-variable (R)
 
 /-- The product of localizations at all prime ideals of a commutative semiring. -/
 abbrev PiLocalization : Type _ := Π p : PrimeSpectrum R, Localization p.asIdeal.primeCompl
