@@ -17,8 +17,8 @@ algebraic structures on `ℍ[R]`.
 
 * `QuaternionAlgebra R a b c`, `ℍ[R, a, b, c]` :
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b`, `c`
-  (Many other references such as Wikipedia assume charR ≠ 2 therefore one can complete
-  the square and WLOG assume $b = 0$.)
+  (Many other references such as Wikipedia assume $\operatorname{char} R ≠ 2$ therefore one can
+  complete the square and WLOG assume $b = 0$.)
 * `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a.
   `QuaternionAlgebra R (-1) (0) (-1)`;
 * `Quaternion.normSq` : square of the norm of a quaternion;
@@ -67,7 +67,7 @@ structure QuaternionAlgebra (R : Type*) (a b c : R) where
 scoped[Quaternion] notation "ℍ[" R "," a "," b "," c "]" =>
     QuaternionAlgebra R a b c
 
-@[inherit_doc, deprecated "Use ℍ[R,a,0,b] instead of ℍ[R,a,b]." (since := "2025-01-15")]
+@[inherit_doc]
 scoped[Quaternion] notation "ℍ[" R "," a "," b "]" => QuaternionAlgebra R a 0 b
 
 namespace QuaternionAlgebra
@@ -154,7 +154,7 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
 
 -- Porting note: removed `simps`, added simp lemmas manually.
 -- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
-instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
+instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
 
@@ -822,7 +822,7 @@ nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 
 @[simp] nonrec theorem sub_self_re : a - ↑a.re = a.im := a.sub_self_re
 
-@[simp] lemma coe_eq : QuaternionAlgebra.coe = coe (R := R) := rfl
+@[simp] lemma coe_apply (a : R): coe a = QuaternionAlgebra.coe a := rfl
 
 @[simp, norm_cast]
 theorem coe_re : (x : ℍ[R]).re = x := rfl
