@@ -275,10 +275,36 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
+lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
+  cases hfin : height a with
+  | top =>
+    have : ⊤ ≤ height b := by
+      rw [← hfin]
+      gcongr
+    simp [this]
+  | coe n =>
+    apply Order.add_one_le_of_lt
+    rw [← hfin]
+    gcongr
+    simp [hfin]
+
 /- For elements of finite height, `coheight` is strictly antitone. -/
 @[gcongr] lemma coheight_strictAnti {x y : α} (hyx : y < x) (hfin : coheight x < ⊤) :
     coheight x < coheight y :=
   height_strictMono (α := αᵒᵈ) hyx hfin
+
+lemma coheight_add_one_le {a b : α} (hab : b < a) : coheight a + 1 ≤ coheight b := by
+  cases hfin : coheight a with
+  | top =>
+    have : ⊤ ≤ coheight b := by
+      rw [← hfin]
+      gcongr
+    simp [this]
+  | coe n =>
+    apply Order.add_one_le_of_lt
+    rw [← hfin]
+    gcongr
+    simp [hfin]
 
 lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
