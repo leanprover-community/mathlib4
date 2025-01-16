@@ -59,7 +59,6 @@ jobs:
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'write'
-
       - name: Add reaction (comment)
               # from now on, it is sufficient to just check `user_permission`:
               # if the comment did not contain `bot fix style`,
