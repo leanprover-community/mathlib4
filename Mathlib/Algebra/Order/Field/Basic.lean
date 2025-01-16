@@ -432,18 +432,6 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
-namespace Nat
-
-theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : α) :=
-  one_div_pos.mpr (cast_pos.mpr (Nat.pos_of_ne_zero hn))
-
-theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : α) := one_div_nonneg.mpr (cast_nonneg' n)
-
-theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : α) ≠ 0 :=
-  _root_.ne_of_gt (one_div_cast_pos hn)
-
-end Nat
-
 end LinearOrderedSemifield
 
 section
