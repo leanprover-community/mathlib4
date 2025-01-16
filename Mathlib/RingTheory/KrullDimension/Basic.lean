@@ -21,7 +21,7 @@ open Order
 /--
 The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
-noncomputable def ringKrullDim (R : Type*) [CommRing R] : WithBot ENat :=
+noncomputable def ringKrullDim (R : Type*) [CommRing R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
 
 variable {R S : Type*} [CommRing R] [CommRing S]
