@@ -27,7 +27,7 @@ with respect to an ideal `I`:
 
 suppress_compilation
 
-open Submodule
+open Submodule Function
 
 variable {R S T : Type*} [CommRing R] (I : Ideal R)
 variable (M : Type*) [AddCommGroup M] [Module R M]
@@ -43,6 +43,7 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
+@[mk_iff]
 class IsAdicComplete extends IsHausdorff I M, IsPrecomplete I M : Prop
 
 variable {I M}
@@ -367,7 +368,7 @@ theorem transitionMap_comp_eval {m n : ℕ} (hmn : m ≤ n) :
 /-- A sequence `ℕ → M` is an `I`-adic Cauchy sequence if for every `m ≤ n`,
 `f m ≡ f n` modulo `I ^ m • ⊤`. -/
 def IsAdicCauchy (f : ℕ → M) : Prop :=
-  ∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]
+  ∀ ⦃m n⦄, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]
 
 /-- The type of `I`-adic Cauchy sequences. -/
 def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
@@ -388,22 +389,22 @@ def submodule : Submodule R (ℕ → M) where
     exact SModEq.smul (hf hmn) r
 
 instance : Zero (AdicCauchySequence I M) where
-  zero := ⟨0, fun _ ↦ rfl⟩
+  zero := ⟨0, fun _ _ _ ↦ rfl⟩
 
 instance : Add (AdicCauchySequence I M) where
-  add x y := ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
+  add x y := ⟨x.val + y.val, fun _ _ hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
 
 instance : Neg (AdicCauchySequence I M) where
-  neg x := ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
+  neg x := ⟨- x.val, fun _ _ hmn ↦ SModEq.neg (x.property hmn)⟩
 
 instance : Sub (AdicCauchySequence I M) where
-  sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
+  sub x y := ⟨x.val - y.val, fun _ _ hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
 
 instance : SMul ℕ (AdicCauchySequence I M) where
-  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.nsmul (x.property hmn) n⟩
+  smul n x := ⟨n • x.val, fun _ _ hmn ↦ SModEq.nsmul (x.property hmn) n⟩
 
 instance : SMul ℤ (AdicCauchySequence I M) where
-  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.zsmul (x.property hmn) n⟩
+  smul n x := ⟨n • x.val, fun _ _ hmn ↦ SModEq.zsmul (x.property hmn) n⟩
 
 instance : AddCommGroup (AdicCauchySequence I M) := by
   let f : AdicCauchySequence I M → (ℕ → M) := Subtype.val
@@ -411,7 +412,7 @@ instance : AddCommGroup (AdicCauchySequence I M) := by
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : SMul R (AdicCauchySequence I M) where
-  smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
+  smul r x := ⟨r • x.val, fun _ _ hmn ↦ SModEq.smul (x.property hmn) r⟩
 
 instance : Module R (AdicCauchySequence I M) :=
   let f : AdicCauchySequence I M →+ (ℕ → M) :=
@@ -451,8 +452,9 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
 
 end AdicCauchySequence
 
+variable {I M} in
 /-- The `I`-adic cauchy condition can be checked on successive `n`.-/
-theorem isAdicCauchy_iff (f : ℕ → M) :
+theorem isAdicCauchy_iff {f : ℕ → M} :
     IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor
   · intro h n
@@ -482,6 +484,16 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+/-- The canonical linear map sending an element to the constant cauchy sequence. -/
+@[simps]
+def AdicCauchySequence.of : M →ₗ[R] AdicCauchySequence I M where
+  toFun v := ⟨fun _ ↦ v, fun _ _ _ ↦ rfl⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+lemma AdicCauchySequence.of_injective : Function.Injective (of I M) :=
+  fun _ _ h ↦ congr_fun (congr_arg Subtype.val h) 0
+
 /-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
 theorem mk_zero_of (f : AdicCauchySequence I M)
     (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
@@ -510,6 +522,29 @@ theorem induction_on {p : AdicCompletion I M → Prop} (x : AdicCompletion I M)
   obtain ⟨f, rfl⟩ := mk_surjective I M x
   exact h f
 
+variable {I M} in
+lemma _root_.IsHausdorff.iff_injective :
+    IsHausdorff I M ↔ Injective (AdicCompletion.of I M) := by
+  simp [injective_iff_map_eq_zero, isHausdorff_iff, SModEq.zero, AdicCompletion.ext_iff]
+
+variable {I M} in
+lemma _root_.IsPrecomplete.iff_surjective :
+    IsPrecomplete I M ↔ Surjective (AdicCompletion.of I M) := by
+  simp [Function.Surjective, (AdicCompletion.mk_surjective I M).forall,
+    AdicCompletion.ext_iff, isPrecomplete_iff, AdicCauchySequence, Subtype.forall,
+    eq_comm (a := Submodule.Quotient.mk _)]
+  rfl
+
+variable {I M} in
+lemma _root_.IsAdicComplete.iff_bijective :
+    IsAdicComplete I M ↔ Bijective (AdicCompletion.of I M) := by
+  simp [isAdicComplete_iff, IsHausdorff.iff_injective, IsPrecomplete.iff_surjective,
+    Function.Bijective]
+
+lemma of_injective [IsHausdorff I M] : Injective (of I M) := IsHausdorff.iff_injective.mp ‹_›
+lemma of_surjective [IsPrecomplete I M] : Surjective (of I M) := IsPrecomplete.iff_surjective.mp ‹_›
+lemma of_bijective [IsAdicComplete I M] : Bijective (of I M) := IsAdicComplete.iff_bijective.mp ‹_›
+
 variable {M}
 
 /-- Lift a compatible family of linear maps `M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N)` to
@@ -536,6 +571,32 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
+
+variable {I}
+
+lemma isAdicCauchy_sum_range (f : ℕ → M) (hf : ∀ n, f n ∈ I ^ n • (⊤ : Submodule R M)) :
+    AdicCompletion.IsAdicCauchy I M fun n ↦ ∑ i ∈ Finset.range n, f i := by
+  refine isAdicCauchy_iff.mpr fun n ↦ .symm ?_
+  simpa [Finset.sum_range_succ, ← add_assoc, add_sub_cancel_left, SModEq.sub_mem] using hf n
+
+lemma exists_apply_zero_eq_zero_and_eq_mk (x : AdicCompletion I M) :
+    ∃ y : AdicCauchySequence I M, y 0 = 0 ∧ x = .mk _ _ y := by
+  obtain ⟨x, rfl⟩ := mk_surjective _ _ x
+  refine ⟨⟨fun n ↦ n.casesOn 0 (x <| · + 1), isAdicCauchy_iff.mpr ?_⟩, rfl, ?_⟩
+  · rintro (_ | n)
+    · simp
+    · simpa using x.2 n.succ.le_succ
+  · ext (_ | n) <;> simp
+
+open Finset in
+lemma exists_sum_range_eq (x : AdicCompletion I M) :
+    ∃ f : ℕ → M, ∃ hf, x = .mk _ _ ⟨fun n ↦ ∑ i ∈ range n, f i, isAdicCauchy_sum_range f hf⟩ := by
+  obtain ⟨x, hx, rfl⟩ := exists_apply_zero_eq_zero_and_eq_mk x
+  refine ⟨fun n ↦ x (n + 1) - x n, fun n ↦ SModEq.sub_mem.mp (x.2 n.le_succ).symm, ?_⟩
+  ext i
+  simp only [AdicCompletion.mk_apply_coe, Submodule.mkQ_apply, Finset.sum_sub_distrib,
+    Submodule.Quotient.mk_sub, eq_sub_iff_add_eq']
+  rw [← Submodule.Quotient.mk_add, ← Finset.sum_range_succ, Finset.sum_range_succ', hx, add_zero]
 
 end AdicCompletion
 
