@@ -51,7 +51,9 @@ theorem wellQuasiOrdered_iff_exists_monotone_subseq [IsPreorder α r] :
   · obtain ⟨g, gmon⟩ := h f
     exact ⟨_, _, g.strictMono Nat.zero_lt_one, gmon _ _ (Nat.zero_le 1)⟩
 
-/-- A typeclass for an ordered with a well quasi-ordered `≤` relation. -/
+/-- A typeclass for an ordered with a well quasi-ordered `≤` relation.
+
+Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
 @[mk_iff wellQuasiOrderedLE_iff']
 class WellQuasiOrderedLE (α : Type*) [LE α] where
   wqo : @WellQuasiOrdered α (· ≤ ·)
@@ -79,14 +81,31 @@ theorem WellQuasiOrderedLE.finite_of_isAntichain [WellQuasiOrderedLE α]
 /-- A preorder is well quasi-ordered iff it's well-founded and has no infinite antichains. -/
 theorem wellQuasiOrderedLE_iff :
     WellQuasiOrderedLE α ↔ WellFoundedLT α ∧ ∀ s : Set α, IsAntichain (· ≤ ·) s → s.Finite := by
-  refine ⟨fun h ↦ ⟨h.to_wellFoundedLT, fun s ↦ h.finite_of_isAntichain⟩, fun ⟨hwf, hc⟩ ↦ ?_⟩
-  rw [wellQuasiOrderedLE_iff', WellQuasiOrdered]
-  contrapose! hc
-  obtain ⟨f, hf⟩ := hc
-  have := Function.argmin
+  refine ⟨fun h ↦ ⟨h.to_wellFoundedLT, fun s ↦ h.finite_of_isAntichain⟩,
+    fun ⟨hwf, hc⟩ ↦ ⟨fun f ↦ ?_⟩⟩
+  obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq (· > ·) f
+  · exfalso
+    apply RelEmbedding.not_wellFounded_of_decreasing_seq _ hwf.wf
+    exact (RelEmbedding.ofMonotone _ h1).swap
+  · contrapose! hc
+    refine ⟨Set.range (f ∘ g), ?_, ?_⟩
+    · rintro _ ⟨m, rfl⟩ _ ⟨n, rfl⟩ _ hf
+      obtain h | rfl | h := lt_trichotomy m n
+      · exact hc _ _ (g.strictMono h) hf
+      · contradiction
+      · exact h2 _ _ h (lt_of_le_not_le hf (hc _ _ (g.strictMono h)))
+    · refine Set.infinite_range_of_injective fun m n (hf : f (g m) = f (g n)) ↦ ?_
+      obtain h | rfl | h := lt_trichotomy m n <;>
+        (first | rfl | cases (hf ▸ hc _ _ (g.strictMono h)) le_rfl)
 
-
-
-
-#exit
 end Preorder
+
+section LinearOrder
+variable [LinearOrder α]
+
+/-- In a linear order, WQOs and well-orders are equivalent. -/
+theorem wellQuasiOrderedLE_iff_wellFoundedLT : WellQuasiOrderedLE α ↔ WellFoundedLT α := by
+  rw [wellQuasiOrderedLE_iff, and_iff_left_iff_imp]
+  exact fun _ s hs ↦ hs.subsingleton'.finite
+
+end LinearOrder
