@@ -60,16 +60,15 @@ jobs:
         with:
           require: 'write'
 
+      # from now on, it is sufficient to just check `user_permission`:
+      # if the comment did not contain `bot fix style`,
+      # then `user_permission` would not have ran
       - name: Add reaction (comment)
-              # from now on, it is sufficient to just check `user_permission`:
-              # if the comment did not contain `bot fix style`,
-              # then `user_permission` would not have ran
-
-        # reactions are not supported for `comment`s and `review_comment`s?
+        # reactions are only supported for `comment`s and `review_comment`s?
         # this action only runs on `comment`s rather than `review`s or `review_comment`s
+        # is the `id` check a good way to check that this is a `comment`?
         if: ${{ steps.user_permission.outputs.require-result == 'true' &&
-                ! github.event.comment.id == '' # is this a good way to check if the event is a `comment`?
-              }}
+                ! github.event.comment.id == '' }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}
@@ -77,8 +76,8 @@ jobs:
 
       - name: Add reaction (review comment)
         # this action only runs on `review_comment`s
+        # is the `id` check a good way to check that this is a `review_comment`?
         if: ${{ steps.user_permission.outputs.require-result == 'true' &&
-                # is this a good way to check if the event is a `review_comment`?
                 ! github.event.pull_request_review_comment.id == '' }}
         run: |
             gh api --method POST \
