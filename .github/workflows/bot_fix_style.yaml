@@ -68,7 +68,7 @@ jobs:
       - name: Add reaction (comment)
         # reactions are only supported for `comment`s and `review_comment`s?
         # This action only runs on `comment`s rather than `review`s or `review_comment`s
-        # is the `id` check a good way to check that this is a `comment`?
+        # Is the `id` check a good way to check that this is a `comment`?
         if: ${{ steps.user_permission.outputs.require-result == 'true' &&
                 ! github.event.comment.id == '' }}
         uses: peter-evans/create-or-update-comment@v4
