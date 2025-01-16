@@ -543,7 +543,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   haveI := hfb.isDomain fb.toRingHom
   haveI := ha.isDomain _
   haveI : Module.Flat R (toSubmodule fa.range) :=
-    .of_linearEquiv _ _ _ (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
+    .of_linearEquiv (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
   have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
     (include_range R A B).rank_inf_le_one_of_flat_left
   let ga : R[X] →ₐ[R] A := aeval a

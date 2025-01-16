@@ -120,7 +120,7 @@ theorem tfae_equational_criterion : List.TFAE [
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
         x = y ∘ₗ a ∧ a f = 0] := by
   classical
-  tfae_have 1 ↔ 2 := iff_rTensor_injective' R M
+  tfae_have 1 ↔ 2 := iff_rTensor_injective'
   tfae_have 3 ↔ 2 := forall_vanishesTrivially_iff_forall_rTensor_injective R
   tfae_have 3 ↔ 4 := by
     simp [(TensorProduct.lid R M).injective.eq_iff.symm, isTrivialRelation_iff_vanishesTrivially]
