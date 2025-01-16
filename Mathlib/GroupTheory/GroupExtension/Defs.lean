@@ -38,6 +38,16 @@ For additive groups:
   of `G` by `N`
 - `SemidirectProduct.toGroupExtension φ`: the multiplicative group extension associated to the
   semidirect product coming from `φ : G →* MulAut N`, `1 → N → N ⋊[φ] G → G → 1`
+
+## TODO
+
+If `N` is abelian,
+
+- there is a bijection between `N`-conjugacy classes of
+  `(SemidirectProduct.toGroupExtension φ).Splitting` and `groupCohomology.H1`
+  (which will be available in `GroupTheory/GroupExtension/Abelian.lean` to be added in a later PR).
+- there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
+  (which is also stated as a TODO in `RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
 
 variable (N E G : Type*)
