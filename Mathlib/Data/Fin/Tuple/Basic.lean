@@ -142,7 +142,7 @@ theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y 
   ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
 
 @[simp]
-theorem cons_eq_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
+theorem cons_inj {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x = cons y₀ y ↔ x₀ = y₀ ∧ x = y :=
   cons_injective2.eq_iff
 
@@ -586,6 +586,22 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   · rw [eq_last_of_not_lt h]
     simp
 
+/-- As a binary function, `Fin.snoc` is injective. -/
+theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
+  ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
+
+@[simp]
+theorem snoc_inj {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
+    snoc x xₙ = snoc y yₙ ↔ x = y ∧ xₙ = yₙ :=
+  snoc_injective2.eq_iff
+
+theorem snoc_right_injective (x : ∀ i : Fin n, α i.castSucc) :
+    Function.Injective (snoc x) :=
+  snoc_injective2.right _
+
+theorem snoc_left_injective (xₙ : α (last n)) : Function.Injective (snoc · xₙ) :=
+  snoc_injective2.left _
+
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
 @[simp]
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
@@ -791,6 +807,10 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
+/-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
+theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
+  succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
+
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
 
@@ -846,6 +866,24 @@ theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbov
 theorem eq_insertNth_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
     g = insertNth p a f ↔ g p = a ∧ removeNth p g = f := by
   simpa [eq_comm] using insertNth_eq_iff
+
+/-- As a binary function, `Fin.insertNth` is injective. -/
+theorem insertNth_injective2 {p : Fin (n + 1)} :
+    Function.Injective2 (@insertNth n α p) := fun xₚ yₚ x y h ↦
+  ⟨by simpa using congr_fun h p, funext fun i ↦ by simpa using congr_fun h (succAbove p i)⟩
+
+@[simp]
+theorem insertNth_inj {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
+    insertNth p xₚ x = insertNth p yₚ y ↔ xₚ = yₚ ∧ x = y :=
+  insertNth_injective2.eq_iff
+
+theorem insertNth_left_injective {p : Fin (n + 1)} (x : ∀ i, α (succAbove p i)) :
+    Function.Injective (insertNth p · x) :=
+  insertNth_injective2.left _
+
+theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
+    Function.Injective (insertNth p x) :=
+  insertNth_injective2.right _
 
 /- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/
