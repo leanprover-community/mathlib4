@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # M-structure
@@ -311,3 +312,58 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 end IsLprojection
+
+section WithL1
+
+open ENNReal
+
+variable (p : ℝ≥0∞) (α β : Type*)
+
+variable {p α β}
+variable [NormedAddCommGroup α] [NormedAddCommGroup β]
+
+namespace WithLp
+
+/-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
+def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
+
+/-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
+def idemSnd : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
+
+lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = (WithLp.equiv _ _).symm (x.1, 0) := rfl
+
+lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = (WithLp.equiv _ _).symm (0, x.2) := rfl
+
+lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := AddMonoidHom.ext
+  fun x => by
+    rw [AddMonoidHom.sub_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
+      sub_eq_iff_eq_add, add_comm, ← WithLp.equiv_symm_add, Prod.mk_add_mk, zero_add, add_zero]; rfl
+
+theorem prod_norm_eq_sup_idemFst (x : WithLp ∞ (α × β)) :
+    ‖x‖ = ‖idemFst x‖ ⊔ ‖(1 - idemFst) x‖ := by
+  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_equiv_symm_fst ∞ α β x.1,
+    ← WithLp.norm_equiv_symm_snd ∞ α β x.2, idemFst_compl]
+  rfl
+
+lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
+    ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖(1 - idemFst) x‖ ^ p.toReal) ^ (1 / p.toReal) := by
+  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_equiv_symm_fst p α β x.1,
+    ← WithLp.norm_equiv_symm_snd p α β x.2, idemFst_compl]
+  rfl
+
+lemma idemFst_Lprojection :
+    IsLprojection (WithLp 1 (α × β)) (idemFst : AddMonoid.End (WithLp 1 (α × β))) where
+  proj := rfl
+  Lnorm x := by
+    rw [prod_norm_eq_add_idemFst (by simp only [one_toReal, zero_lt_one])]
+    simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
+      AddMonoid.End.smul_def]
+
+lemma idemSnd_Lprojection :
+    IsLprojection (WithLp 1 (α × β)) (idemSnd : AddMonoid.End (WithLp 1 (α × β))) := by
+  rw [← idemFst_compl]
+  exact idemFst_Lprojection.Lcomplement
+
+end WithLp
+
+end WithL1
