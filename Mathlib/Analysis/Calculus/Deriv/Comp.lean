@@ -131,6 +131,11 @@ theorem derivWithin.scomp (hg : DifferentiableWithinAt 𝕜' g₁ t' (h x))
     derivWithin (g₁ ∘ h) s x = derivWithin h s x • derivWithin g₁ t' (h x) :=
   (HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh.hasDerivWithinAt hs).derivWithin hxs
 
+by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · simp only [derivWithin, fderivWithin_neg hxs, ContinuousLinearMap.neg_apply]
+  · simp [derivWithin_zero_of_isolated hxs]
+
 theorem derivWithin.scomp_of_eq (hg : DifferentiableWithinAt 𝕜' g₁ t' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hy : y = h x) :
