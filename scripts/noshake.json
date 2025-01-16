@@ -377,7 +377,6 @@
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Option.NAry":
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
-  "Mathlib.Data.One.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
