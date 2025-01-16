@@ -488,7 +488,6 @@ theorem ite_prod_one (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
 
 @[to_additive]
 theorem ite_one_prod (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
-    (f : ι → R) :
     (if p then 1 else (∏ x in s, f x)) = ∏ x in s, if p then 1 else f x := by
   simp only [prod_ite_irrel, prod_const_one]
 
