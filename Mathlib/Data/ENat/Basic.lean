@@ -401,60 +401,50 @@ protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ 
     (f : F) (a b : ℕ∞) : (a + b).map f = a.map f + b.map f :=
   WithTop.map_add f a b
 
+@[to_additive]
+theorem map_eq_one_iff {β} {f : ℕ → β} {v : ℕ∞} [One β] :
+    ENat.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := WithTop.map_eq_one_iff
+
+@[to_additive]
+theorem one_eq_map_iff {β} {f : ℕ → β} {v : ℕ∞} [One β] :
+    1 = ENat.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := WithTop.one_eq_map_iff
+
 /-- A version of `ENat.map` for `OneHom`s. -/
--- @[to_additive (attr := simps (config := .asFn))
---   "A version of `ENat.map` for `ZeroHom`s"]
+@[simps (config := .asFn)]
 protected def _root_.OneHom.ENatMap {N : Type*} [One N] (f : OneHom ℕ N) :
-    OneHom ℕ∞ (WithTop N) where
-  toFun := ENat.map f
-  map_one' := by simp
+    OneHom ℕ∞ (WithTop N) :=
+  { f.withTopMap with toFun := ENat.map f }
 
 /-- A version of `ENat.map` for `ZeroHom`s. -/
+@[simps (config := .asFn)]
 protected def _root_.ZeroHom.ENatMap {N : Type*} [Zero N] (f : ZeroHom ℕ N) :
-    ZeroHom ℕ∞ (WithTop N) where
-  toFun := ENat.map f
-  map_zero' := by simp
+    ZeroHom ℕ∞ (WithTop N) :=
+  { f.withTopMap with toFun := ENat.map f }
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := .asFn)]
 protected def _root_.AddHom.ENatMap {N : Type*} [Add N] (f : AddHom ℕ N) :
-    AddHom ℕ∞ (WithTop N) where
-  toFun := ENat.map f
-  map_add' := ENat.map_add f
+    AddHom ℕ∞ (WithTop N) :=
+  { f.withTopMap with toFun := ENat.map f }
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
 @[simps (config := .asFn)]
 protected def _root_.AddMonoidHom.ENatMap {N : Type*} [AddZeroClass N]
     (f : ℕ →+ N) : ℕ∞ →+ WithTop N :=
-  { ZeroHom.ENatMap f.toZeroHom, AddHom.ENatMap f.toAddHom with toFun := ENat.map f }
+  { f.withTopMap with toFun := ENat.map f }
 
 /-- A version of `ENat.map` for `MonoidWithZeroHom`s. -/
 @[simps (config := .asFn)]
 protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [DecidableEq S]
     [Nontrivial S] (f : ℕ →*₀ S)
     (hf : Function.Injective f) : ℕ∞ →*₀ WithTop S :=
-  { f.toZeroHom.ENatMap, f.toMonoidHom.toOneHom.ENatMap with
-    toFun := ENat.map f
-    map_mul' := fun x y => by
-      have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
-      rcases Decidable.eq_or_ne x 0 with (rfl | hx)
-      · simp
-      rcases Decidable.eq_or_ne y 0 with (rfl | hy)
-      · simp
-      induction' x with x
-      · simp [hy, this]
-      induction' y with y
-      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (_root_.map_zero f)] using hx
-        simp [mul_top hx, WithTop.mul_top this]
-      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
-        simp only [map_coe, ← coe_mul, map_mul, WithTop.coe_mul] }
+  { f.withTopMap hf with toFun := ENat.map f }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps (config := .asFn)]
 protected def _root_.RingHom.ENatMap {S : Type*} [CanonicallyOrderedCommSemiring S] [DecidableEq S]
     [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
-  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+  { f.withTopMap hf with toFun := ENat.map f }
 
 end ENat
 

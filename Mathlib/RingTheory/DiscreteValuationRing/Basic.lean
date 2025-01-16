@@ -384,12 +384,12 @@ open Classical in
 /-- The `ℕ∞`-valued additive valuation on a DVR. -/
 noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     AddValuation R ℕ∞ :=
-  multiplicity_addValuation (Classical.choose_spec (exists_prime R))
+  .multiplicity (Classical.choose_spec (exists_prime R))
 
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
     addVal R r = n := by
   classical
-  rw [addVal, multiplicity_addValuation_apply, hr, emultiplicity_eq_of_associated_left
+  rw [addVal, AddValuation.multiplicity_apply, hr, emultiplicity_eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     emultiplicity_eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
     emultiplicity_pow_self_of_prime (irreducible_iff_prime.1 hϖ)]
@@ -442,10 +442,10 @@ theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := b
       rw [h]
       apply dvd_zero
     obtain ⟨n, ha⟩ := associated_pow_irreducible ha0 hp.irreducible
-    rw [addVal, multiplicity_addValuation_apply, multiplicity_addValuation_apply,
+    rw [addVal, AddValuation.multiplicity_apply, AddValuation.multiplicity_apply,
       emultiplicity_le_emultiplicity_iff] at h
     exact ha.dvd.trans (h n ha.symm.dvd)
-  · rw [addVal, multiplicity_addValuation_apply, multiplicity_addValuation_apply]
+  · rw [addVal, AddValuation.multiplicity_apply, AddValuation.multiplicity_apply]
     exact emultiplicity_le_emultiplicity_of_dvd_right h
 
 theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b) :=
