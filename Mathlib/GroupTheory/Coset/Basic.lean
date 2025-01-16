@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.Quotient
+import Mathlib.Algebra.Ring.Pointwise.Set.Basic
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
 
