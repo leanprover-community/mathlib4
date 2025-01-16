@@ -14,7 +14,7 @@ the other files in this directory, because they involve several types of composi
 
 ## Main statements
 
-* `fooBar_unique`
+* `parallelComp_comp_parallelComp`: `(η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ')`
 
 -/
 
