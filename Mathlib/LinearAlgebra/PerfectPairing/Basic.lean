@@ -30,7 +30,7 @@ to connect 1 and 2.
 
 -/
 
-open Function Module Set
+open Function Module
 
 noncomputable section
 

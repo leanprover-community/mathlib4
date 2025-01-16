@@ -139,12 +139,18 @@ theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x�
   isBigO_iff.2 ⟨c, h⟩
 
 theorem IsBigO.of_bound' (h : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) : f =O[l] g :=
-  IsBigO.of_bound 1 <| by
-    simp_rw [one_mul]
-    exact h
+  .of_bound 1 <| by simpa only [one_mul] using h
 
 theorem IsBigO.bound : f =O[l] g → ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isBigO_iff.1
+
+/-- See also `Filter.Eventually.isBigO`, which is the same lemma
+stated using `Filter.Eventually` instead of `Filter.EventuallyLE`. -/
+theorem IsBigO.of_norm_eventuallyLE {g : α → ℝ} (h : (‖f ·‖) ≤ᶠ[l] g) : f =O[l] g :=
+  .of_bound' <| h.mono fun _ h ↦ h.trans <| le_abs_self _
+
+theorem IsBigO.of_norm_le {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) : f =O[l] g :=
+  .of_norm_eventuallyLE <| .of_forall h
 
 /-- The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant
@@ -482,9 +488,11 @@ theorem _root_.Filter.Eventually.trans_isBigO {f : α → E} {g : α → F'} {k 
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) (hgk : g =O[l] k) : f =O[l] k :=
   (IsBigO.of_bound' hfg).trans hgk
 
+/-- See also `Asymptotics.IsBigO.of_norm_eventuallyLE`, which is the same lemma
+stated using `Filter.EventuallyLE` instead of `Filter.Eventually`. -/
 theorem _root_.Filter.Eventually.isBigO {f : α → E} {g : α → ℝ} {l : Filter α}
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ g x) : f =O[l] g :=
-  IsBigO.of_bound' <| hfg.mono fun _x hx => hx.trans <| Real.le_norm_self _
+  .of_norm_eventuallyLE hfg
 
 section
 
@@ -1570,11 +1578,11 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
-  classical
-  induction' s using Finset.induction_on with i s is IH
-  · simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
-  · simp only [is, Finset.sum_insert, not_false_iff]
-    exact (h _ (Finset.mem_insert_self i s)).add (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
+  induction s using Finset.cons_induction with
+  | empty => simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
+  | cons i s is IH =>
+    simp only [is, Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
+    exact h.1.add (IH h.2)
 
 theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by
   simp only [IsBigO_def] at *
@@ -1582,13 +1590,59 @@ theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x
   exact ⟨_, IsBigOWith.sum hC⟩
 
 theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A i x) =o[l] g' := by
-  classical
-  induction' s using Finset.induction_on with i s is IH
-  · simp only [isLittleO_zero, Finset.sum_empty, forall_true_iff]
-  · simp only [is, Finset.sum_insert, not_false_iff]
-    exact (h _ (Finset.mem_insert_self i s)).add (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
+  simp only [← Finset.sum_apply]
+  exact Finset.sum_induction A (· =o[l] g') (fun _ _ ↦ .add) (isLittleO_zero ..) h
 
 end Sum
+
+section Prod
+variable {ι : Type*}
+
+theorem IsBigO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
+    (hf : ∀ i ∈ L, f i =O[l] g i) :
+    (fun x ↦ (L.map (f · x)).prod) =O[l] (fun x ↦ (L.map (g · x)).prod) := by
+  induction L with
+  | nil => simp [isBoundedUnder_const]
+  | cons i L ihL =>
+    simp only [List.map_cons, List.prod_cons, List.forall_mem_cons] at hf ⊢
+    exact hf.1.mul (ihL hf.2)
+
+theorem IsBigO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+    {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (hf : ∀ i ∈ s, f i =O[l] g i) :
+    (fun x ↦ (s.map (f · x)).prod) =O[l] (fun x ↦ (s.map (g · x)).prod) := by
+  obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
+  exact mod_cast IsBigO.listProd hf
+
+theorem IsBigO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+    {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜}
+    (hf : ∀ i ∈ s, f i =O[l] g i) : (∏ i ∈ s, f i ·) =O[l] (∏ i ∈ s, g i ·) :=
+  .multisetProd hf
+
+theorem IsLittleO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
+    (h₁ : ∀ i ∈ L, f i =O[l] g i) (h₂ : ∃ i ∈ L, f i =o[l] g i) :
+    (fun x ↦ (L.map (f · x)).prod) =o[l] (fun x ↦ (L.map (g · x)).prod) := by
+  induction L with
+  | nil => simp at h₂
+  | cons i L ihL =>
+    simp only [List.map_cons, List.prod_cons, List.forall_mem_cons, List.exists_mem_cons_iff]
+      at h₁ h₂ ⊢
+    cases h₂ with
+    | inl hi => exact hi.mul_isBigO <| .listProd h₁.2
+    | inr hL => exact h₁.1.mul_isLittleO <| ihL h₁.2 hL
+
+theorem IsLittleO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+    {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
+    (h₂ : ∃ i ∈ s, f i =o[l] g i) :
+    (fun x ↦ (s.map (f · x)).prod) =o[l] (fun x ↦ (s.map (g · x)).prod) := by
+  obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
+  exact mod_cast IsLittleO.listProd h₁ h₂
+
+theorem IsLittleO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+    {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
+    (h₂ : ∃ i ∈ s, f i =o[l] g i) : (∏ i ∈ s, f i ·) =o[l] (∏ i ∈ s, g i ·) :=
+  .multisetProd h₁ h₂
+
+end Prod
 
 /-! ### Relation between `f = o(g)` and `f / g → 0` -/
 

@@ -16,10 +16,8 @@ We provide API for restricting perfect pairings to submodules and for restrictin
  * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
  * `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
    subring.
- * `PerfectPairing.restrictScalarsField`: restriction of scalars for a perfect pairing taking values
-   in a subfield.
- * `PerfectPairing.restrictScalarsFieldSpan`: simultaneously restrict both the domains and scalars
-   of a perfect pairing.
+ * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
+   of a perfect pairing with coefficients in a field.
 
 -/
 
@@ -218,8 +216,9 @@ variable {M' N' : Type*}
   [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]
   (i : M' →ₗ[K] M) (j : N' →ₗ[K] N) (hi : Injective i) (hj : Injective j)
 
-/-- Restriction of scalars for a perfect pairing taking values in a subfield. -/
-def restrictScalarsField
+/-- An auxiliary definition used only to simplify the construction of the more general definition
+`PerfectPairing.restrictScalarsField`. -/
+private def restrictScalarsFieldAux
     (hM : span L (LinearMap.range i : Set M) = ⊤)
     (hN : span L (LinearMap.range j : Set N) = ⊤)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
@@ -232,24 +231,15 @@ def restrictScalarsField
   have : FiniteDimensional K (LinearMap.range i) := FiniteDimensional.of_fintype_basis b'
   exact Finite.equiv (LinearEquiv.ofInjective i hi).symm
 
-@[simp]
-lemma restrictScalarsField_apply_apply
-    (hM : span L (LinearMap.range i : Set M) = ⊤)
-    (hN : span L (LinearMap.range j : Set N) = ⊤)
-    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
-    (x : M') (y : N') :
-    algebraMap K L (p.restrictScalarsField i j hi hj hM hN hp x y) = p (i x) (j y) :=
-  LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
-    (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
-
-/-- Simultaneously restrict both the domains and scalars of a perfect pairing. -/
-def restrictScalarsFieldSpan
+/-- Simultaneously restrict both the domains and scalars of a perfect pairing with coefficients in a
+field. -/
+def restrictScalarsField
     (hij : p.IsPerfectCompl (span L <| LinearMap.range i) (span L <| LinearMap.range j))
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
     PerfectPairing K M' N' := by
   letI P : PerfectPairing L (span L <| LinearMap.range i) (span L <| LinearMap.range j) :=
     p.restrict (Submodule.subtype _) (Submodule.subtype _) (by simp) (by simp) (by simpa)
-  exact P.restrictScalarsField
+  exact P.restrictScalarsFieldAux
     ((LinearMap.range i).inclusionSpan L ∘ₗ i.rangeRestrict)
     ((LinearMap.range j).inclusionSpan L ∘ₗ j.rangeRestrict)
     (((LinearMap.range i).injective_inclusionSpan L).comp (by simpa))
@@ -263,11 +253,11 @@ def restrictScalarsFieldSpan
       ((LinearMap.restrictScalarsₗ K L _ _ _).comp (p.toLin.restrictScalars K))
       (by simpa) (i x) (j y) (subset_span (mem_range_self x)) (subset_span (mem_range_self y)))
 
-@[simp] lemma restrictScalarsFieldSpan_apply_apply
+@[simp] lemma restrictScalarsField_apply_apply
     (hij : p.IsPerfectCompl (span L <| LinearMap.range i) (span L <| LinearMap.range j))
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
     (x : M') (y : N') :
-    algebraMap K L (p.restrictScalarsFieldSpan i j hi hj hij hp x y) = p (i x) (j y) :=
+    algebraMap K L (p.restrictScalarsField i j hi hj hij hp x y) = p (i x) (j y) :=
   LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
     (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
 

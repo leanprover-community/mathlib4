@@ -248,7 +248,7 @@ lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan) (h : x ≠ 0) :
 lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
     P.RootForm.toQuadraticMap.Anisotropic :=
   fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by
-    simpa only [rootSpan, P.span_eq_top] using Submodule.mem_top
+    simpa only [rootSpan, P.span_root_eq_top] using Submodule.mem_top
 
 end LinearOrderedCommRing
 
