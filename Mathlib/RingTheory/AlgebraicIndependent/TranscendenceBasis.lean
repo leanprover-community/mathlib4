@@ -125,7 +125,7 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-#print Polynomial.restriction
+#print vars
 theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
     (x : ι → A) (y : A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
@@ -133,11 +133,39 @@ theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
     (hP0 : (aeval fun o ↦ o.elim Polynomial.X fun j ↦ Polynomial.C (x j)) P ≠ 0)
     (hPa : aeval (fun o => o.elim y x) P = 0),
     P.aeval (fun o => o.elim (Polynomial.C y) (update (Polynomial.C ∘ x) i Polynomial.X)) ≠ 0 := by
-  rcases hx.1 y with ⟨P, hP0, hP⟩
-  have hP : ∃ n : ℕ, (P.coeff n : A) ∉ (algebraMap R A).range := by
+  let ⟨P, ⟨hP0,  hP⟩, hPmin⟩ := WellFounded.has_min
+    (InvImage.wf MvPolynomial.totalDegree Nat.lt_wfRel.2) _
+      ((isAlgebraic_adjoin_range_left_iff rfl).1 (hx.1 y))
+  obtain ⟨i, hi⟩ : ∃ i, some i ∈ P.vars := by
     by_contra h
-    simp at h
+    have hPC : RingHom.id _ P = ((Polynomial.aeval (MvPolynomial.X none)).toRingHom.comp
+      (MvPolynomial.aeval (fun _ => (Polynomial.X : Polynomial R))).toRingHom) P := by
+      refine MvPolynomial.hom_congr_vars (by ext; simp) ?_ rfl
+      intro i hi _
+      induction i <;> simp_all
+    rw [RingHom.id_apply] at hPC
+    have hP0 : P ≠ 0 := by rintro rfl; simp at hP0
+    rw [hPC] at hP0 hP
+    apply hP0
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply]
+    rw [transcendental_iff.1 hy ((MvPolynomial.aeval (fun _ => (Polynomial.X : Polynomial R))) P),
+     map_zero]
+    rw [← hP]
+    show (Polynomial.aeval y).toRingHom.comp ((aeval fun x ↦ Polynomial.X).toRingHom) P =
+        ((aeval fun o ↦ o.elim y x).toRingHom.comp (((Polynomial.aeval (X none)).toRingHom.comp
+          (aeval fun x ↦ Polynomial.X).toRingHom))) P
+    apply RingHom.congr_fun
+    ext <;> simp
+  use P, i, hP0, hP
+  intro hzero
 
+
+  -- have hP0 := We
+  -- rcases hx.1 y with ⟨P, hP0, hP⟩
+  -- have hP : ∃ n : ℕ, (P.coeff n : A) ∉ (algebraMap R A).range := by
+  --   by_contra h
+  --   simp at h
+#print isAlgebraic_adjoin_range_left_iff
 theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι]
     [Nontrivial R] [NoZeroDivisors A]
     (x : ι → A) (y : A) (hx : IsTranscendenceBasis R x) (hy : Transcendental R y) :
