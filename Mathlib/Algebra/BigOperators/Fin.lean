@@ -388,6 +388,48 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
   rintro x hx
   rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
 
+/-- Equivalence between the Sigma type `(i : Fin m) × Fin (n i)` and `Fin (∑ i : Fin m, n i)`. -/
+def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i : Fin m, n i) :=
+  match m with
+  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simp; exact Fin.isEmpty')
+  | Nat.succ m =>
+    calc _ ≃ _ := (@finSumFinEquiv m 1).sigmaCongrLeft.symm
+      _ ≃ _ := Equiv.sumSigmaDistrib _
+      _ ≃ _ := finSigmaFinEquiv.sumCongr (Equiv.uniqueSigma _)
+      _ ≃ _ := finSumFinEquiv
+      _ ≃ _ := finCongr (Fin.sum_univ_castSucc n).symm
+
+@[simp]
+theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
+    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
+  induction m
+  · exact k.fst.elim0
+  rename_i m ih
+  rcases k with ⟨⟨iv,hi⟩,j⟩
+  rw [finSigmaFinEquiv]
+  unfold finSumFinEquiv
+  simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.instTrans_trans,
+    Equiv.trans_apply, finCongr_apply, Fin.coe_cast]
+  conv  =>
+    enter [1,1,3]
+    apply Equiv.sumCongr_apply
+  by_cases him : iv < m
+  · conv in Sigma.mk _ _ =>
+      equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
+    simpa using ih _
+  · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
+    subst him
+    conv in Sigma.mk _ _ =>
+      equals ⟨Sum.inr 0, j⟩ => simp [Fin.addCases, Fin.natAdd]
+    simp
+    rfl
+
+/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f`-/
+theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
+    (finSigmaFinEquiv ij : ℕ) = ij.2 := by
+  rw [finSigmaFinEquiv_apply, add_left_eq_self]
+  apply @Finset.sum_of_isEmpty _ _ _ _ (by simpa using Fin.isEmpty')
+
 namespace List
 
 section CommMonoid
