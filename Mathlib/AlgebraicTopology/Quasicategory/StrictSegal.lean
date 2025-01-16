@@ -20,7 +20,7 @@ condition is a quasicategory.
 universe u
 
 open CategoryTheory
-open Simplicial SimplicialObject SimplexCategory
+open Simplicial SimplexCategory Truncated SimplicialObject
 
 namespace SSet.StrictSegal
 open SSet.Truncated
@@ -33,35 +33,28 @@ theorem quasicategory {X : SSet.{u}} (segal : StrictSegal X) : Quasicategory X :
   intro j hj
   apply segal.spineInjective
   ext k
-  dsimp only [spineEquiv, Truncated.StrictSegal.spineEquiv]
-  erw [spine_arrow, spine_arrow,
-    ← types_comp_apply (σ₀.app _) (Prefunctor.map _ _)]
-  rw [← σ₀.naturality]
+  change (X.spine _ _).arrow _ = X.map _ _
+  dsimp only [inclusion, Functor.op_obj, fullSubcategoryInclusion.obj]
+  rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
   let ksucc := k.succ.castSucc
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
-  · rw [← spine_arrow, spine_δ_arrow_lt _ _ hlt]
-    dsimp only [Path.map, Path₁.map]
-    apply congr_arg
-    simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj, whiskering_obj_obj_obj,
-      yoneda_obj_obj, uliftFunctor_obj, ne_eq, whiskering_obj_obj_map, uliftFunctor_map,
-      yoneda_obj_map, len_mk, id_eq, horn.spineId, Functor.op_obj, Fin.val_zero,
-      Int.Nat.cast_ofNat_Int, Fin.val_last, Int.reduceNeg, Functor.op_map, Quiver.Hom.unop_op,
-      horn.face_coe, standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk]
-    apply Subtype.ext
-    simp only [Int.reduceNeg]
-    erw [mkOfSucc_δ_lt hlt]
+  · rw [spine_δ_arrow_lt _ _ hlt]
+    apply congr_arg _ ∘ Subtype.ext
+    dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+      whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, Functor.op_map,
+      whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, horn.face_coe,
+      horn.spineId_arrow_coe, Quiver.Hom.unop_op, fullSubcategoryInclusion.map,
+      standardSimplex.objEquiv, Equiv.ulift_symm_down]
+    rw [mkOfSucc_δ_lt hlt]
     rfl
-  · rw [← spine_arrow _ _, spine_δ_arrow_gt _ _ hgt]
-    dsimp only [Path.map, Path₁.map, Fin.coe_eq_castSucc]
-    apply congr_arg
-    simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj, whiskering_obj_obj_obj,
-      yoneda_obj_obj, uliftFunctor_obj, ne_eq, whiskering_obj_obj_map, uliftFunctor_map,
-      yoneda_obj_map, len_mk, id_eq, horn.spineId, Functor.op_obj, Fin.val_zero,
-      Int.Nat.cast_ofNat_Int, Fin.val_last, Int.reduceNeg, Functor.op_map, Quiver.Hom.unop_op,
-      horn.face_coe, standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk]
-    apply Subtype.ext
-    simp only [Int.reduceNeg]
-    erw [mkOfSucc_δ_gt hgt]
+  · rw [spine_δ_arrow_gt _ _ hgt]
+    apply congr_arg _ ∘ Subtype.ext
+    dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+      whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, Functor.op_map,
+      whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, horn.face_coe,
+      horn.spineId_arrow_coe, Quiver.Hom.unop_op, fullSubcategoryInclusion.map,
+      standardSimplex.objEquiv, Equiv.ulift_symm_down]
+    rw [mkOfSucc_δ_gt hgt]
     rfl
   · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
     have hn0 : n ≠ 0 := by
@@ -80,35 +73,36 @@ theorem quasicategory {X : SSet.{u}} (segal : StrictSegal X) : Quasicategory X :
     have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
         X.spine 2 (σ₀.app _ triangle) := by
       ext m
-      dsimp [spine_arrow, Path.interval, Path₁.interval, Path₁.map]
-      erw [← types_comp_apply (σ₀.app _) (Prefunctor.map _ _), ← σ₀.naturality]
-      apply congr_arg
-      simp [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
-        whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, ne_eq,
-        whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, len_mk,
-        Nat.reduceAdd, Quiver.Hom.unop_op, Truncated.inclusion,
-        SimplicialObject.truncation]
-      erw [Quiver.Hom.unop_op]
+      dsimp only [truncation, SimplicialObject.truncation, inclusion,
+        whiskeringLeft_obj_obj, Functor.op_obj, fullSubcategoryInclusion.obj,
+        Truncated.spine_arrow, Functor.comp_map, Functor.op_map,
+        Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
+      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+      apply congr_arg _ ∘ Subtype.ext
+      dsimp only [standardSimplex, uliftFunctor, Functor.comp_obj,
+        whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj]
       cases n with
       | zero => contradiction
       | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
-    rw [← spine_arrow _ _, spine_δ_arrow_eq _ _ heq, hi]
-    simp [Truncated.StrictSegal.spineToDiagonal, diagonal]
-    erw [Truncated.StrictSegal.spineToSimplex_spine_apply _ 2]
-    erw [← types_comp_apply (σ₀.app _) (Prefunctor.map _ _), ← σ₀.naturality, types_comp_apply]
+    rw [spine_δ_arrow_eq _ _ heq, hi]
+    change X.map _ ((segal (n + 2)).spineToSimplex 2 _
+      (((truncation (n + 3)).obj X).spine 2 (by leq) _)) = _
+    rw [(segal (n + 2)).spineToSimplex_spine_apply 2]
+    dsimp only [inclusion, Functor.op_obj, fullSubcategoryInclusion.obj,
+      Functor.op_map, Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
+    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
     apply congr_arg
-    simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
-      whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
-      uliftFunctor_map, whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe,
-      len_mk, Nat.reduceAdd, Quiver.Hom.unop_op, Subtype.mk.injEq, ULift.up_inj]
+    dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+      whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, horn.face_coe,
+      uliftFunctor_map, whiskering_obj_obj_map]
     ext z
     cases n with
     | zero => contradiction
     | succ _ =>
       fin_cases z <;>
-      · simp only [standardSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
-          Quiver.Hom.unop_op, Equiv.ulift_symm_down, Truncated.inclusion]
-        erw [mkOfSucc_δ_eq heq]
+      · dsimp only [standardSimplex.objEquiv, yoneda_obj_map,
+          Quiver.Hom.unop_op, Equiv.ulift_symm_down]
+        rw [mkOfSucc_δ_eq heq]
         rfl
 
 end SSet.StrictSegal

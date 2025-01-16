@@ -804,7 +804,12 @@ def delabMkNotation : Delab :=
 
 end Meta
 
-/-- The truncated form of the inclusion functor. -/
+/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. -/
+abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
+  (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ := f
+
+/-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
 def incl (n m : ℕ) (h : n ≤ m := by leq) : Truncated n ⥤ Truncated m where
   obj a := ⟨a.1, a.2.trans h⟩
   map := id

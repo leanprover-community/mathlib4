@@ -21,10 +21,12 @@ of length `n`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory SimplicialObject.Truncated
+open CategoryTheory Simplicial SimplexCategory
 
 namespace SSet
 namespace Truncated
+
+open SimplexCategory.Truncated SimplicialObject.Truncated
 
 variable (X : SSet.Truncated.{u} 1)
 
@@ -37,9 +39,9 @@ structure Path₁ (n : ℕ) where
   /-- A path includes the data of `n` 1-simplices in `X`.-/
   arrow (i : Fin n) : X _[1]₁
   /-- The source of a 1-simplex in a path is identified with the source vertex. -/
-  arrow_src (i : Fin n) : X.map (δ 1).op (arrow i) = vertex i.castSucc
+  arrow_src (i : Fin n) : X.map (Hom.tr (δ 1)).op (arrow i) = vertex i.castSucc
   /-- The target of a 1-simplex in a path is identified with the target vertex. -/
-  arrow_tgt (i : Fin n) : X.map (δ 0).op (arrow i) = vertex i.succ
+  arrow_tgt (i : Fin n) : X.map (Hom.tr (δ 0)).op (arrow i) = vertex i.succ
 
 namespace Path₁
 
@@ -72,10 +74,10 @@ def map (f : Path₁ X n) (σ : X ⟶ Y) : Path₁ Y n where
   arrow i := σ.app _ (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact congr (σ.naturality _) rfl |>.symm
+    exact congr (σ.naturality (Hom.tr (δ 1)).op) rfl |>.symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact congr (σ.naturality _) rfl |>.symm
+    exact congr (σ.naturality (Hom.tr (δ 0)).op) rfl |>.symm
 
 /-- `Path₁.map` respects subintervals of paths. -/
 lemma map_interval (f : Path₁ X n) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ n) :
@@ -120,14 +122,22 @@ end Path
 by traversing through its vertices in order. -/
 @[simps]
 def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X m where
-  vertex i := X.map (const [0] [m] i).op Δ
-  arrow i := X.map (mkOfSucc i).op Δ
+  vertex i := X.map (Hom.tr (const [0] [m] i)).op Δ
+  arrow i := X.map (Hom.tr (mkOfSucc i)).op Δ
   arrow_src i := by
-    erw [← FunctorToTypes.map_comp_apply, ← op_comp (f := (δ 1).op.unop)]
-    simp
+    dsimp only [Hom.tr, trunc, SimplicialObject.Truncated.trunc, incl,
+      whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+    change X.map (Hom.tr (_ ≫ _)).op _ = _
+    rw [δ_one_mkOfSucc, Fin.coe_castSucc, Fin.coe_eq_castSucc]
   arrow_tgt i := by
-    erw [← FunctorToTypes.map_comp_apply, ← op_comp (f := (δ 0).op.unop)]
-    simp
+    dsimp only [Hom.tr, trunc, SimplicialObject.Truncated.trunc, incl,
+      whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+    change X.map (Hom.tr (_ ≫ _)).op _ = _
+    rw [δ_zero_mkOfSucc]
 
 /- TODO: fix -/
 lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁)
@@ -141,14 +151,14 @@ lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊
 
 lemma spine_map_subinterval (m : ℕ) (h : m ≤ n + 1 := by leq)
     (j l : ℕ) (hjl : j + l ≤ m) (Δ : X _[m]ₙ₊₁) :
-    X.spine l (by omega) (X.map (subinterval j l hjl).op Δ) =
+    X.spine l (by leq) (X.map (subinterval j l hjl).op Δ) =
       (X.spine m h Δ).interval j l hjl := by
   ext i
   · simp only [Path₁.interval, spine_vertex, ← FunctorToTypes.map_comp_apply]
-    erw [← op_comp (C := SimplexCategory)]
-    rw [const_subinterval_eq]
+    change X.map (Hom.tr ((const [0] [l] i) ≫ (subinterval j l hjl))).op _ = _
+    rw [const_subinterval_eq j l hjl]
   · simp only [Path₁.interval, spine_arrow, ← FunctorToTypes.map_comp_apply]
-    erw [← op_comp (C := SimplexCategory)]
+    change X.map (Hom.tr (mkOfSucc i ≫ subinterval j l hjl)).op _ = _
     rw [mkOfSucc_subinterval_eq]
 
 end Truncated
@@ -160,7 +170,7 @@ then taking the 1-truncated path. -/
 abbrev Path (n : ℕ) := truncation 1 |>.obj X |>.Path₁ n
 
 namespace Path
-open Truncated
+open Truncated (Path₁)
 
 variable {X} {n : ℕ}
 
@@ -211,25 +221,21 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
     Path Λ[n + 2, i] (n + 2) where
   vertex j := ⟨standardSimplex.spineId _ |>.vertex j, horn.const n i j _ |>.2⟩
   arrow j := ⟨standardSimplex.spineId _ |>.arrow j, by
-    let edge := horn.primitiveEdge h₀ hₙ j
+    let edge := primitiveEdge h₀ hₙ j
     suffices (standardSimplex.spineId _).arrow j = edge.1 from this ▸ edge.2
     simp only [edge, SimplicialObject.truncation, Truncated.inclusion,
-      primitiveEdge, standardSimplex.spineId, standardSimplex.edge,
-      standardSimplex.map_apply, spine_arrow, Truncated.incl,
-      fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map,
-      Functor.comp_map, whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
-      Functor.op_map, Quiver.Hom.unop_op, ne_eq, edge_coe,
-      EmbeddingLike.apply_eq_iff_eq]
+      primitiveEdge, Truncated.spine_arrow, edge_coe, whiskeringLeft_obj_obj,
+      standardSimplex.spineId, standardSimplex.edge, standardSimplex.map_apply,
+      Functor.comp_obj, Functor.op_obj, fullSubcategoryInclusion.obj,
+      Functor.comp_map, EmbeddingLike.apply_eq_iff_eq]
     apply Hom.ext_one_left <;> rfl⟩
   arrow_src := by
-    simp only [SimplicialObject.truncation, horn, ne_eq, whiskeringLeft_obj_obj,
-      len_mk, id_eq, Functor.comp_obj, Functor.op_obj, Nat.reduceAdd,
-      Fin.isValue, Functor.comp_map, Functor.op_map, Subtype.mk.injEq]
+    simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,
+      Functor.comp_obj, Functor.comp_map, Subtype.mk.injEq]
     exact standardSimplex.spineId (n + 2) |>.arrow_src
   arrow_tgt := by
-    simp only [SimplicialObject.truncation, horn, ne_eq, whiskeringLeft_obj_obj,
-      len_mk, id_eq, Functor.comp_obj, Functor.op_obj, Nat.reduceAdd,
-      Fin.isValue, Functor.comp_map, Functor.op_map, Subtype.mk.injEq]
+    simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,
+      Functor.comp_obj, Functor.comp_map, Subtype.mk.injEq]
     exact standardSimplex.spineId (n + 2) |>.arrow_tgt
 
 @[simp]

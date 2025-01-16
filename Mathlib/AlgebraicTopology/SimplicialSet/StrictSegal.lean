@@ -25,10 +25,12 @@ in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory SimplicialObject.Truncated
+open CategoryTheory Simplicial SimplexCategory
 
 namespace SSet
 namespace Truncated
+
+open SimplexCategory.Truncated SimplicialObject.Truncated
 
 /-- An `n + 1`-truncated simplicial set satisfies the strict Segal condition if
 its simplices are uniquely determined by their spine. -/
@@ -72,23 +74,25 @@ theorem spineInjective : Function.Injective (spineEquiv segal m) :=
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (m + 1)) (f : Path X m) :
-    X.map (const [0] [m] i).op (segal.spineToSimplex m h f) = f.vertex i := by
+    X.map (Hom.tr (const [0] [m] i)).op (segal.spineToSimplex m h f) =
+      f.vertex i := by
   rw [← spine_vertex (h := h), spine_spineToSimplex_apply (h := h)]
 
 @[simp]
 theorem spineToSimplex_arrow (i : Fin m) (f : Path X m) :
-    X.map (mkOfSucc i).op (segal.spineToSimplex m h f) = f.arrow i := by
+    X.map (Hom.tr (mkOfSucc i)).op (segal.spineToSimplex m h f) =
+      f.arrow i := by
   rw [← spine_arrow (h := h), spine_spineToSimplex_apply (h := h)]
 
 /- TODO: SimplicialObject.Truncated.diagonal -/
 /-- In the presence of the strict Segal condition, a path of length `m` can be
 "composed" by taking the diagonal edge of the resulting `m`-simplex. -/
 def spineToDiagonal : Path X m → X _[1]ₙ₊₁ :=
-  X.map (diag m).op ∘ segal.spineToSimplex m h
+  X.map (Hom.tr (diag m)).op ∘ segal.spineToSimplex m h
 
 @[simp]
 theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
-    X.map (subinterval j l hjl).op (segal.spineToSimplex m h f) =
+    X.map (Hom.tr (subinterval j l hjl)).op (segal.spineToSimplex m h f) =
       segal.spineToSimplex l (by leq) (f.interval j l hjl) := by
   apply segal.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
@@ -97,11 +101,11 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   exact segal.spine_spineToSimplex_apply m h f |>.symm
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
-    X.map (intervalEdge j l hjl).op (segal.spineToSimplex m h f) =
+    X.map (Hom.tr (intervalEdge j l hjl)).op (segal.spineToSimplex m h f) =
       segal.spineToDiagonal l (by leq) (f.interval j l hjl) := by
-  dsimp [spineToDiagonal]
+  dsimp only [spineToDiagonal, Function.comp_apply]
   rw [← spineToSimplex_interval (h := h), ← FunctorToTypes.map_comp_apply]
-  erw [← op_comp (C := SimplexCategory)]
+  change _ = X.map (Hom.tr ((diag l) ≫ (subinterval j l hjl))).op _
   rw [diag_subinterval_eq]
 
 end
@@ -122,7 +126,7 @@ lemma spine_δ_vertex_lt (f : Path X (m + 1)) {i : Fin (m + 1)} {j : Fin (m + 2)
       (segal.spineToSimplex (m + 1) (by leq) f))).vertex i =
       f.vertex i.castSucc := by
   rw [spine_vertex X m, ← FunctorToTypes.map_comp_apply]
-  erw [← op_comp (C := SimplexCategory)]
+  change X.map (Hom.tr (const [0] [m] i ≫ δ j)).op _ = _
   rw [const_comp, spineToSimplex_vertex _ (m + 1)]
   dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
     Fin.succAboveOrderEmb_apply]
@@ -137,7 +141,7 @@ lemma spine_δ_vertex_ge (f : Path X (m + 1)) {i : Fin (m + 1)} {j : Fin (m + 2)
       (segal.spineToSimplex (m + 1) (by leq) f))).vertex i =
       f.vertex i.succ := by
   rw [spine_vertex X m, ← FunctorToTypes.map_comp_apply]
-  erw [← op_comp (C := SimplexCategory)]
+  change X.map (Hom.tr (const [0] [m] i ≫ δ j)).op _ = _
   rw [const_comp, spineToSimplex_vertex _ (m + 1)]
   dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
     Fin.succAboveOrderEmb_apply]
@@ -152,7 +156,7 @@ lemma spine_δ_arrow_lt (f : Path X (m + 1)) {i : Fin m} {j : Fin (m + 2)}
       (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
       f.arrow i.castSucc := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
-  erw [← op_comp (C := SimplexCategory)]
+  change X.map (Hom.tr (mkOfSucc i ≫ δ j)).op _ = _
   rw [mkOfSucc_δ_lt hij, spineToSimplex_arrow _ (m + 1)]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -164,7 +168,7 @@ lemma spine_δ_arrow_gt (f : Path X (m + 1)) {i : Fin m} {j : Fin (m + 2)}
       (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
       f.arrow i.succ := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
-  erw [← op_comp (C := SimplexCategory)]
+  change X.map (Hom.tr (mkOfSucc i ≫ δ j)).op _ = _
   rw [mkOfSucc_δ_gt hij, spineToSimplex_arrow _ (m + 1)]
 
 end
@@ -176,7 +180,7 @@ lemma spine_δ_arrow_eq {n : ℕ} {X : SSet.Truncated.{u} (n + 2)} (segal : Stri
       (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
         segal.spineToDiagonal 2 (by leq) (f.interval i 2 (by leq)) := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
-  erw [← op_comp (C := SimplexCategory)]
+  change X.map (Hom.tr (mkOfSucc i ≫ δ j)).op _ = _
   rw [mkOfSucc_δ_eq hij, spineToSimplex_edge _ (m + 1)]
 
 end StrictSegal
