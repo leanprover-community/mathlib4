@@ -88,6 +88,13 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     erw [preservesLimitIso_hom_π]
     rw [← ModuleCat.restrictScalarsComp'App_inv_naturality]
     dsimp
+    -- `restrictScalars` got unfolded too much during type checking, fold it up again.
+    change
+      _ ≫ _ ≫ _ ≫ (ModuleCat.restrictScalarsComp'App _ _ _ _ _).inv =
+      _ ≫ _ ≫ _ ≫ _ ≫
+        (ModuleCat.restrictScalars (R.map f).hom).map
+          ((ModuleCat.restrictScalars (R.map g).hom).map _) ≫
+        (ModuleCat.restrictScalarsComp'App _ _ _ _ _).inv
     rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
       preservesLimitIso_inv_π]
     erw [limMap_π]
