@@ -595,7 +595,7 @@ end OfLinearEquiv
 section OfRingEquiv
 
 /-- Promotes a linear `RingEquiv` to an `AlgEquiv`. -/
-@[simps apply symm_apply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
+@[simps apply symm_apply toEquiv]
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -757,7 +757,7 @@ variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/
-@[simps! apply symm_apply toEquiv] -- Porting note: don't want redundant simps lemma `toEquiv_symm`
+@[simps! apply symm_apply toEquiv]
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
 
