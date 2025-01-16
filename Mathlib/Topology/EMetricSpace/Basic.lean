@@ -295,30 +295,3 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       toUniformSpace := inferInstance,
       uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
         simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
-
-namespace NNReal
-
-open Filter
-
-/-- If `u : ℕ → ℝ` is bounded above and nonnegative, it is also bounded above when regarded as
-  a function to `ℝ≥0`. -/
-theorem bddAbove' {u : ℕ → ℝ} (hu0 : 0 ≤ u) (hu_bdd : BddAbove (Set.range u)) :
-    BddAbove (Set.range fun n : ℕ ↦ (⟨u n, hu0 n⟩ : ℝ≥0)) := by
-  obtain ⟨B, hB⟩ := hu_bdd
-  simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
-  have hB0 : 0 ≤ B := le_trans (hu0 0) (hB 0)
-  use(⟨B, hB0⟩ : ℝ≥0)
-  simp only [mem_upperBounds, Set.mem_range, forall_exists_index, Subtype.forall, Subtype.mk_le_mk]
-  intros a _ n hn
-  simp only [Subtype.mk.injEq] at hn
-  rw [← hn]
-  exact hB n
-
-/-- If `u : ℕ → ℝ` is bounded above an nonnegative, it is eventually bounded by some constant `. -/
-theorem eventually_le_of_bddAbove' {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
-    {a : ℝ≥0 | ∀ᶠ n : ℕ in atTop, u n ≤ a}.Nonempty := by
-  obtain ⟨B, hB⟩ := hu
-  simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
-  exact ⟨B, Set.mem_setOf_eq.mpr (Eventually.of_forall hB)⟩
-
-end NNReal
