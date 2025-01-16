@@ -303,6 +303,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
 
 /-! ### About cycles -/
 
+-- TODO: These results could possibly be less laborious with a periodic function getCycleVert
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i | 1 ≤ i ∧ i ≤ p.length} := by
   rw [← p.cons_tail_eq hpc.not_nil] at hpc
