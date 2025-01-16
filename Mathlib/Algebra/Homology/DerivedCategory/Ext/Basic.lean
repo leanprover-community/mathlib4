@@ -77,6 +77,10 @@ lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := 
   rw [hasExt_iff.{w}]
   infer_instance
 
+lemma HasExt.standard : HasExt.{max u v} C := by
+  letI := HasDerivedCategory.standard
+  exact hasExt_of_hasDerivedCategory _
+
 variable {C}
 
 variable [HasExt.{w} C]
