@@ -112,8 +112,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
   rw [norm_inv, norm_eq_abs]
   refine inv_anti₀ (by linarith) ?_
   calc 1 - ‖z‖
-    _ ≤ 1 - t * ‖z‖ := by
-      nlinarith [norm_nonneg z]
+    _ ≤ 1 - t * ‖z‖ := by linear_combination ‖z‖ * ht.2
     _ = 1 - ‖t * z‖ := by
       rw [norm_mul, norm_eq_abs (t : ℂ), abs_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by

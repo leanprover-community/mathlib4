@@ -6,6 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
@@ -1127,7 +1128,7 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
   refine lt_of_le_of_lt norm_pow_le_mul_norm ?_
   replace hn : 0 < (n : ℝ) := by norm_cast
   rw [nsmul_eq_mul]
-  nlinarith
+  linear_combination (n:ℝ) * h
 
 @[to_additive]
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
