@@ -24,7 +24,8 @@ universe w' w v' v u' u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w} A]
+  {A : Type u'} [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
+  [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
 
 namespace Sheaf
 
@@ -32,12 +33,15 @@ section
 
 variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
 private lemma isLocallyBijective_iff_isIso' :
     IsLocallyInjective f ∧ IsLocallySurjective f ↔ IsIso f := by
   constructor
   · rintro ⟨h₁, _⟩
+    have : J.HasSheafCompose (forget (Type w)) :=
+      hasSheafCompose_of_preservesLimitsOfSize _
     rw [isLocallyInjective_iff_injective] at h₁
     suffices ∀ (X : Cᵒᵖ), Function.Surjective (f.val.app X) by
       rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf _ _), NatTrans.isIso_iff_isIso_app]
@@ -138,18 +142,20 @@ lemma WEqualsLocallyBijective.mk' [HasWeakSheafify J A] [(forget A).ReflectsIsom
     [∀ (P : Cᵒᵖ ⥤ A), Presheaf.IsLocallySurjective J (CategoryTheory.toSheafify J P)] :
     J.WEqualsLocallyBijective A where
   iff {P Q} f := by
-    rw [W_iff, ← Sheaf.isLocallyBijective_iff_isIso,
+    rw [W_iff, ← Sheaf.isLocallyBijective_iff_isIso ((presheafToSheaf J A).map f),
       ← Presheaf.isLocallyInjective_comp_iff J f (CategoryTheory.toSheafify J Q),
       ← Presheaf.isLocallySurjective_comp_iff J f (CategoryTheory.toSheafify J Q),
       CategoryTheory.toSheafify_naturality, Presheaf.comp_isLocallyInjective_iff,
       Presheaf.comp_isLocallySurjective_iff]
 
-instance {D : Type w} [Category.{w'} D] [ConcreteCategory.{max u v} D]
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
+instance {D : Type w} [Category.{w'} D] [HasForget.{max u v} D]
     [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] [(forget D).ReflectsIsomorphisms] :
-    J.WEqualsLocallyBijective D := by
-  apply WEqualsLocallyBijective.mk'
+    J.WEqualsLocallyBijective D :=
+  WEqualsLocallyBijective.mk' J D
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance : J.WEqualsLocallyBijective (Type (max u v)) := inferInstance
 
 end GrothendieckTopology

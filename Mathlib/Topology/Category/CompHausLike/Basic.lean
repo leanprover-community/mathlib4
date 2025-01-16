@@ -64,8 +64,6 @@ universe u
 
 open CategoryTheory
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 variable (P : TopCat.{u} → Prop)
 
 /-- The type of Compact Hausdorff topological spaces satisfying an additional property `P`. -/
@@ -89,8 +87,8 @@ instance : CoeSort (CompHausLike P) (Type u) :=
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
 
-instance concreteCategory : ConcreteCategory (CompHausLike P) :=
-  InducedCategory.concreteCategory _
+instance concreteCategory : ConcreteCategory (CompHausLike P) (fun X Y => C(X, Y)) :=
+  InducedCategory.concreteCategory toTop
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
   InducedCategory.hasForget₂ _
@@ -117,25 +115,13 @@ theorem coe_of : (CompHausLike.of P X : Type _) = X :=
   rfl
 
 @[simp]
-theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
+theorem coe_id (X : CompHausLike P) : (𝟙 X : X → X) = id :=
   rfl
 
 @[simp]
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
+    f ≫ g = g ∘ f :=
   rfl
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (TopologicalSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (CompactSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 
@@ -245,6 +231,12 @@ def isoOfHomeo {X Y : CompHausLike.{u} P} (f : X ≃ₜ Y) : X ≅ Y :=
 @[simps!]
 def homeoOfIso {X Y : CompHausLike.{u} P} (f : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso <| (compHausLikeToTop P).mapIso f
+
+lemma coe_homeoOfIso {X Y : CompHausLike.{u} P} (f : X ≅ Y) :
+    (homeoOfIso f : X → Y) = f.hom := rfl
+
+lemma coe_homeoOfIso_symm {X Y : CompHausLike.{u} P} (f : X ≅ Y) :
+    ((homeoOfIso f).symm : Y → X) = f.inv := rfl
 
 /-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
 of topological spaces. -/

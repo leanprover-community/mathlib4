@@ -40,8 +40,6 @@ namespace CompHausLike
 
 universe w u
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 section FiniteCoproducts
 
 variable {P : TopCat.{max u w} → Prop} {α : Type w} [Finite α] (X : α → CompHausLike P)
@@ -100,7 +98,7 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
     (fun s ↦ desc _ fun a ↦ s.inj a)
     (fun _ _ ↦ ι_desc _ _ _)
     fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
-      (DFunLike.ext _ _ fun t ↦ congrFun (congrArg DFunLike.coe (hm a)) t)
+      (ConcreteCategory.ext_apply (fun t ↦ congrFun (congrArg _ (hm a)) t))
 
 lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduct.ι X a) := by
   intro x y hxy
@@ -164,7 +162,9 @@ lemma Sigma.isOpenEmbedding_ι (a : α) :
     (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
   convert finiteCoproduct.isOpenEmbedding_ι X a
   ext x
-  change (Sigma.ι X a ≫ _) x = _
+  -- Replaced `change (Sigma.ι X a ≫ _) x = _` with this `erw`, but really should be dealt with
+  -- better once we have `Hom` structures.
+  erw [← coe_comp]
   simp
 
 @[deprecated (since := "2024-10-18")]

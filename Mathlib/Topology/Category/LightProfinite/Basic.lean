@@ -32,12 +32,6 @@ where possible, try to keep them in sync -/
 
 universe v u
 
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace CompHausLike
 
 /-- `LightProfinite` is the category of second countable profinite spaces. -/
@@ -227,8 +221,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         apply ULift.ext
         dsimp [g, LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [CategoryTheory.comp_apply, ContinuousMap.coe_mk,
-          CategoryTheory.comp_apply, ContinuousMap.coe_mk, Function.comp_apply, if_neg]
+        erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
         simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
@@ -261,7 +254,8 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightDiagram := InducedCategory.category toProfinite
 
-instance concreteCategory : ConcreteCategory LightDiagram := InducedCategory.concreteCategory _
+instance concreteCategory : ConcreteCategory LightDiagram (fun X Y => C(X.cone.pt, Y.cone.pt)) :=
+  InducedCategory.concreteCategory (fun (S : LightDiagram) => S.cone.pt)
 
 end LightDiagram
 

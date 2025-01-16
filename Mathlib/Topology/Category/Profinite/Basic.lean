@@ -37,10 +37,6 @@ profinite
 
 -/
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
-
 universe v u
 
 open CategoryTheory Topology CompHausLike
@@ -245,8 +241,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         apply ULift.ext
         dsimp [g, LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
+        erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
         simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H

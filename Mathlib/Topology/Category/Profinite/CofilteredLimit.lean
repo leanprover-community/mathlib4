@@ -26,9 +26,6 @@ namespace Profinite
 
 open CategoryTheory Limits
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] ConcreteCategory.instFunLike
-
 universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{max u v}} (C : Cone F)
@@ -97,14 +94,14 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w]
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine ⟨s.1, s.2, ?_⟩
       rw [(hV s).2]
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w] at hx
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by

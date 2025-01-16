@@ -231,6 +231,12 @@ Note that the `ConcreteCategory` and `HasForget` instances here differ from `for
 theorem forget_eq_ConcreteCategory_hom [HasForget C] {X Y : C} (f : X ⟶ Y) :
   (forget C).map f = @ConcreteCategory.hom _ _ _ _ _ (HasForget.toConcreteCategory C) _ _ f := rfl
 
+def Types.instFunLike : ∀ X Y : Type u, FunLike (X ⟶ Y) X Y := HasForget.toFunLike _
+
+def Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ Y) where
+  hom f := f
+  ofHom f := f
+
 end
 
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
@@ -296,10 +302,21 @@ instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [HasForg
     [Category.{v'} D] [HasForget.{w} D] [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 
-instance InducedCategory.concreteCategory {C : Type u} {D : Type u'}
+instance InducedCategory.hasForget {C : Type u} {D : Type u'}
     [Category.{v'} D] [HasForget.{w} D] (f : C → D) :
-      HasForget (InducedCategory D f) where
+    HasForget (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
+
+instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{v'} D]
+    {FD : D → D → Type*} {DD : D → Type*} [∀ X Y, FunLike (FD X Y) (DD X) (DD Y)]
+    [ConcreteCategory D FD] (f : C → D) :
+    ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
+  hom := ConcreteCategory.hom (C := D)
+  ofHom := ConcreteCategory.ofHom (C := D)
+  hom_ofHom := ConcreteCategory.hom_ofHom (C := D)
+  ofHom_hom := ConcreteCategory.ofHom_hom (C := D)
+  id_apply := ConcreteCategory.id_apply (C := D)
+  comp_apply := ConcreteCategory.comp_apply (C := D)
 
 instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
     [HasForget.{w} D] (f : C → D) : HasForget₂ (InducedCategory D f) D where
@@ -312,8 +329,8 @@ instance FullSubcategory.hasForget {C : Type u} [Category.{v} C] [HasForget.{w} 
 
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-    [instCC : ConcreteCategory C FC]
-    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
+    [ConcreteCategory C FC] (Z : C → Prop) :
+    ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
   hom := ConcreteCategory.hom (C := C)
   ofHom := ConcreteCategory.ofHom (C := C)
   hom_ofHom := ConcreteCategory.hom_ofHom (C := C)

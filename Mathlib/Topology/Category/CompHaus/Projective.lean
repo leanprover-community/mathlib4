@@ -34,8 +34,6 @@ open CategoryTheory Function
 
 namespace CompHaus
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg

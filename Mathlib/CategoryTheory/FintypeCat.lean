@@ -53,8 +53,14 @@ def incl : FintypeCat ⥤ Type* :=
 instance : incl.Full := InducedCategory.full _
 instance : incl.Faithful := InducedCategory.faithful _
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
-  ⟨incl⟩
+abbrev funLikeFintype (X Y : FintypeCat) : FunLike (X ⟶ Y) X Y where
+  coe f := f
+  coe_injective' _ _ h := h
+
+attribute [local instance] funLikeFintype Types.instFunLike Types.instConcreteCategory
+
+instance concreteCategoryFintype : ConcreteCategory FintypeCat (fun X Y => X ⟶ Y) :=
+  InducedCategory.concreteCategory Bundled.α
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
