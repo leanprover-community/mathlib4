@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.Positivity
