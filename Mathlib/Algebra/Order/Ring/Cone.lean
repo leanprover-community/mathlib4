@@ -71,7 +71,7 @@ due to non-customisable field: `lt`. -/
 @[reducible] def OrderedRing.mkOfCone [RingConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
   __ := OrderedAddCommGroup.mkOfCone C
-  zero_le_one := show _ ∈ C by simpa using one_mem C
+  zero_le_one := show _ ∈ C by simp
   mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
 /-- Construct a linearly ordered domain by designating a maximal cone in a domain.

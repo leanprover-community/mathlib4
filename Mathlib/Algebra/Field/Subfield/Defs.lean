@@ -67,11 +67,11 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
 
 variable {S} {x : K}
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp]
 lemma nnratCast_mem (s : S) (q : ℚ≥0) : (q : K) ∈ s := by
   simpa only [NNRat.cast_def] using div_mem (natCast_mem s q.num) (natCast_mem s q.den)
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp]
 lemma ratCast_mem (s : S) (q : ℚ) : (q : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (intCast_mem s q.num) (natCast_mem s q.den)
 
@@ -81,11 +81,11 @@ instance instRatCast (s : S) : RatCast s where ratCast q := ⟨q, ratCast_mem s 
 @[simp, norm_cast] lemma coe_nnratCast (s : S) (q : ℚ≥0) : ((q : s) : K) = q := rfl
 @[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop unsafe 90% apply (rule_sets := [SetLike])]
 lemma nnqsmul_mem (s : S) (q : ℚ≥0) (hx : x ∈ s) : q • x ∈ s := by
   simpa only [NNRat.smul_def] using mul_mem (nnratCast_mem _ _) hx
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop unsafe 90% apply (rule_sets := [SetLike])]
 lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (ratCast_mem _ _) hx
 
@@ -93,7 +93,7 @@ lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
 @[deprecated (since := "2024-04-05")] alias coe_rat_mem := ratCast_mem
 @[deprecated (since := "2024-04-05")] alias rat_smul_mem := qsmul_mem
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
   SubfieldClass.nnratCast_mem s (OfScientific.ofScientific n b m)

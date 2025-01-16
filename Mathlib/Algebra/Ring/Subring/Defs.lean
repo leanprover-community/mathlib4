@@ -85,7 +85,7 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 
 @[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
