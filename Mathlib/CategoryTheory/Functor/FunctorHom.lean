@@ -145,7 +145,7 @@ def natTransEquiv : (𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G) ≃ (F �
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop ⟩
-  invFun f := ⟨fun _ _ ↦ HomObj.ofNatTrans f, _⟩
+  invFun f := { app _ _ := HomObj.ofNatTrans f }
   left_inv f := by
     ext X a Y φ
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)

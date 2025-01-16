@@ -36,7 +36,7 @@ variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 open Function Filter Module Set Metric
 
-open scoped Topology Manifold
+open scoped Topology Manifold ContDiff
 
 noncomputable section
 
@@ -283,10 +283,10 @@ theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
   ((nhds_basis_tsupport c).restrict_subset hs).to_hasBasis'
     (fun f hf => ⟨f, hf.2, subset_closure⟩) fun f _ => f.support_mem_nhds
 
-variable [SmoothManifoldWithCorners I M]
+variable [IsManifold I ∞ M]
 
 /-- A smooth bump function is infinitely smooth. -/
-protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ⊤ f := by
+protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
   refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
   refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
@@ -295,7 +295,7 @@ protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ⊤ f := by
 
 @[deprecated (since := "2024-11-20")] alias smooth := SmoothBumpFunction.contMDiff
 
-protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ⊤ f x :=
+protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
   f.contMDiff.contMDiffAt
 
 @[deprecated (since := "2024-11-20")] alias smoothAt := SmoothBumpFunction.contMDiffAt
@@ -306,8 +306,8 @@ protected theorem continuous : Continuous f :=
 /-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
-    (hg : ContMDiffOn I 𝓘(ℝ, G) ⊤ g (chartAt H c).source) :
-    ContMDiff I 𝓘(ℝ, G) ⊤ fun x => f x • g x := by
+    (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
+    ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source :=
   -- Porting note: was a more readable `calc`
