@@ -61,6 +61,10 @@ instance hasColimits : HasColimits SSet := by
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
 
+@[simp]
+lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
+    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+
 /-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
@@ -384,10 +388,10 @@ protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.sk n
+abbrev sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.cosk n
+abbrev cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
 
 end
 
@@ -514,6 +518,20 @@ lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.suc
 
 lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _[n]) :
     S.σ i.castSucc (S.σ j x) = S.σ j.succ (S.σ i x) := congr_fun (S.σ_comp_σ H) x
+
+variable {T : SSet} (f : S ⟶ T)
+
+open Opposite
+
+lemma δ_naturality_apply {n : ℕ} (i : Fin (n + 2)) (x : S _[n + 1]) :
+    f.app (op [n]) (S.δ i x) = T.δ i (f.app (op [n + 1]) x) := by
+  show (S.δ i ≫ f.app (op [n])) x = (f.app (op [n + 1]) ≫ T.δ i) x
+  exact congr_fun (SimplicialObject.δ_naturality f i) x
+
+lemma σ_naturality_apply {n : ℕ} (i : Fin (n + 1)) (x : S _[n]) :
+    f.app (op [n + 1]) (S.σ i x) = T.σ i (f.app (op [n]) x) := by
+  show (S.σ i ≫ f.app (op [n + 1])) x = (f.app (op [n]) ≫ T.σ i) x
+  exact congr_fun (SimplicialObject.σ_naturality f i) x
 
 end applications
 

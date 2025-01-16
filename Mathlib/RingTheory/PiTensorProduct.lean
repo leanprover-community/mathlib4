@@ -149,16 +149,17 @@ instance instSemiring : Semiring (⨂[R] i, A i) where
 
 instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
-  toFun := (· • 1)
-  map_one' := by simp
-  map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
-    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
-      mul_smul]
-    congr
-    show (1 : ⨂[R] i, A i) = 1 * 1
-    rw [mul_one]
-  map_zero' := by simp
-  map_add' := by simp [add_smul]
+  algebraMap :=
+  { toFun := (· • 1)
+    map_one' := by simp
+    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
+      rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
+        mul_smul]
+      congr
+      show (1 : ⨂[R] i, A i) = 1 * 1
+      rw [mul_one]
+    map_zero' := by simp
+    map_add' := by simp [add_smul] }
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change mul _ _ = mul _ _
@@ -272,6 +273,11 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       toFun
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
+        -- one of these is required, the other is a performance optimization
+        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+          IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
+        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+          Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext x y
         show toFun (tprod R x * tprod R y) = toFun (tprod R x) * toFun (tprod R y)

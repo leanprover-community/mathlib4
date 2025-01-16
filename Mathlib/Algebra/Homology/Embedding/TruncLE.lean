@@ -103,7 +103,7 @@ lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : 
   apply Quiver.Hom.op_inj
   dsimp [truncLE'Map, truncLE'XIsoCycles]
   rw [assoc, assoc, truncGE'Map_f_eq_opcyclesMap _ e.op (by simpa) h,
-    opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id_assoc]
+    opcyclesOpIso_inv_naturality_assoc, Iso.hom_inv_id_assoc]
 
 lemma truncLE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
