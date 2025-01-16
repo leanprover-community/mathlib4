@@ -1072,6 +1072,14 @@ theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
     v ∈ C.supp ↔ G.connectedComponentMk v = C :=
   Iff.rfl
 
+lemma mem_supp_iff_of_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w) :
+    v ∈ c.supp ↔ w ∈ c.supp := by
+  simp only [ConnectedComponent.mem_supp_iff] at *
+  constructor <;> intro h <;> simp only [← h] <;> apply connectedComponentMk_eq_of_adj
+  · exact hadj.symm
+  · exact hadj
+
+
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
 
