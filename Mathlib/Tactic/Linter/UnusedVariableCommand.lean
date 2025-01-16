@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
+import Batteries.Data.NameSet
 import Mathlib.Tactic.DeclarationNames
 
 /-!
@@ -189,7 +190,7 @@ elab "included_variables" dd:(ppSpace "!")? plumb:(ppSpace &"plumb")? : tactic =
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
 
 /-- The `NameSet` of all the `SyntaxNodeKinds` of all the binders. -/
-abbrev binders : NameSet := NameSet.ofList [
+abbrev binders : NameSet := .ofList [
   ``Lean.Parser.Term.explicitBinder,
   ``Lean.Parser.Term.strictImplicitBinder,
   ``Lean.Parser.Term.implicitBinder,
@@ -375,7 +376,7 @@ def exampleToDef (stx : Syntax) (nm : Name) : Syntax :=
     match d with
       | .node kind ``Command.example args => do
         let did := .node default ``Lean.Parser.Command.declId #[mkIdent nm, mkNullNode #[]]
-        return some (.node kind ``definition ((args.insertAt 1 did).push (mkNullNode #[])))
+        return some (.node kind ``definition ((args.insertIdx! 1 did).push (mkNullNode #[])))
       | _ => return none
   let toDecl := toDecl.replaceM (m := Id) fun d =>
     match d with
