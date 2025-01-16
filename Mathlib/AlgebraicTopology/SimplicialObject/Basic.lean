@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.Util.Superscript
 
 /-!
 # Simplicial objects in a category.
@@ -18,6 +19,9 @@ A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCatego
 
 Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term of a
 (co)simplicial object `X`, where `n` is a natural number.
+
+The notation `X _[m]ₙ` denotes the `m`-th term of an `n`-truncated (co)simplicial
+object `X`. The proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`.
 
 -/
 
@@ -243,6 +247,19 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
   whiskeringRight _ _ _
 
 variable {C}
+
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `X : Truncated n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
+scoped syntax:max (name := mkNotation) (priority := high)
+  term " _[" term ("," term)? "]" noWs subscriptTerm : term
+macro_rules
+  | `($X:term _[$m:term]$n:subscript) =>
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, by trunc⟩))
+  | `($X:term _[$m:term, $p:term]$n:subscript) =>
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
 end Truncated
 
@@ -677,6 +694,19 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
   whiskeringRight _ _ _
 
 variable {C}
+
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `X : Truncated n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
+scoped syntax:max (name := mkNotation) (priority := high)
+  term " _[" term ("," term)? "]" noWs subscriptTerm : term
+macro_rules
+  | `($X:term _[$m:term]$n:subscript) =>
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, by trunc⟩)
+  | `($X:term _[$m:term, $p:term]$n:subscript) =>
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, $p⟩)
 
 end Truncated
 
