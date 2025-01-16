@@ -1162,8 +1162,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₁ → Prop
   | goto l => ∀ a v, l a v ∈ S
   | halt => True
 
-open scoped Classical
-
+open scoped Classical in
 /-- The subterm closure of a statement. -/
 noncomputable def stmts₁ : Stmt₁ → Finset Stmt₁
   | Q@(move _ q) => insert Q (stmts₁ q)
@@ -1176,6 +1175,7 @@ theorem stmts₁_self {q : Stmt₁} : q ∈ stmts₁ q := by
   cases q <;> simp only [stmts₁, Finset.mem_insert_self, Finset.mem_singleton_self]
 
 theorem stmts₁_trans {q₁ q₂ : Stmt₁} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
+  classical
   intro h₁₂ q₀ h₀₁
   induction q₂ with (
     simp only [stmts₁] at h₁₂ ⊢
@@ -1203,6 +1203,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
   | halt => subst h; trivial
   | _ _ q IH => rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
 
+open scoped Classical in
 /-- The set of all statements in a Turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
 noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) :=
@@ -1363,12 +1364,11 @@ machine states in the target (even though the type `Λ'` is infinite). -/
 noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
   (TM1.stmts M S) ×ˢ Finset.univ
 
-open scoped Classical
-
 attribute [local simp] TM1.stmts₁_self
 
 theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     TM0.Supports (tr M) ↑(trStmts M S) := by
+  classical
   constructor
   · apply Finset.mem_product.2
     constructor
@@ -1695,10 +1695,10 @@ theorem tr_respects :
 
 end
 
-open scoped Classical
 
 variable [Fintype Γ]
 
+open scoped Classical in
 /-- The set of accessible `Λ'.write` machine states. -/
 noncomputable def writes : Stmt₁ → Finset Λ'₁
   | Stmt.move _ q => writes q
@@ -1708,11 +1708,13 @@ noncomputable def writes : Stmt₁ → Finset Λ'₁
   | Stmt.goto _ => ∅
   | Stmt.halt => ∅
 
+open scoped Classical in
 /-- The set of accessible machine states, assuming that the input machine is supported on `S`,
 are the normal states embedded from `S`, plus all write states accessible from these states. -/
 noncomputable def trSupp (S : Finset Λ) : Finset Λ'₁ :=
   S.biUnion fun l ↦ insert (Λ'.normal l) (writes (M l))
 
+open scoped Classical in
 theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
     Supports (tr enc dec M) (trSupp M S) :=
   ⟨Finset.mem_biUnion.2 ⟨_, ss.1, Finset.mem_insert_self _ _⟩, fun q h ↦ by
@@ -1960,8 +1962,8 @@ def SupportsStmt (S : Finset Λ) : Stmt₂ → Prop
   | halt => True
 
 section
-open scoped Classical
 
+open scoped Classical in
 /-- The set of subtree statements in a statement. -/
 noncomputable def stmts₁ : Stmt₂ → Finset Stmt₂
   | Q@(push _ _ q) => insert Q (stmts₁ q)
@@ -1976,6 +1978,7 @@ theorem stmts₁_self {q : Stmt₂} : q ∈ stmts₁ q := by
   cases q <;> simp only [Finset.mem_insert_self, Finset.mem_singleton_self, stmts₁]
 
 theorem stmts₁_trans {q₁ q₂ : Stmt₂} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
+  classical
   intro h₁₂ q₀ h₀₁
   induction q₂ with (
     simp only [stmts₁] at h₁₂ ⊢
@@ -2004,6 +2007,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₂} (h : q�
   | halt => subst h; trivial
   | load _ _ IH | _ _ _ _ IH => rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
 
+open scoped Classical in
 /-- The set of statements accessible from initial set `S` of labels. -/
 noncomputable def stmts (M : Λ → Stmt₂) (S : Finset Λ) : Finset (Option Stmt₂) :=
   Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
@@ -2280,8 +2284,8 @@ theorem trNormal_run {k : K} (s : StAct₂ k) (q : Stmt₂) :
   cases s <;> rfl
 
 section
-open scoped Classical
 
+open scoped Classical in
 /-- The set of machine states accessible from an initial TM2 statement. -/
 noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
   | TM2.Stmt.push k f q => {go k (StAct.push f) q, ret q} ∪ trStmts₁ q
@@ -2291,6 +2295,7 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
   | TM2.Stmt.branch _ q₁ q₂ => trStmts₁ q₁ ∪ trStmts₁ q₂
   | _ => ∅
 
+open scoped Classical in
 theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
   cases s <;> simp only [trStmts₁, stRun]
@@ -2509,13 +2514,15 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
 end
 
 section
-open scoped Classical
+
 variable [Inhabited Λ]
 
+open scoped Classical in
 /-- The support of a set of TM2 states in the TM2 emulator. -/
 noncomputable def trSupp (S : Finset Λ) : Finset Λ'₂₁ :=
   S.biUnion fun l ↦ insert (normal l) (trStmts₁ (M l))
 
+open scoped Classical in
 theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M S) :=
   ⟨Finset.mem_biUnion.2 ⟨_, ss.1, Finset.mem_insert.2 <| Or.inl rfl⟩, fun l' h ↦ by
     suffices ∀ (q) (_ : TM2.SupportsStmt S q) (_ : ∀ x ∈ trStmts₁ q, x ∈ trSupp M S),

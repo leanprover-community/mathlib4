@@ -307,8 +307,7 @@ variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
 
-open scoped Classical
-
+open scoped Classical in
 /-- `factors a` is a multiset of irreducible elements whose product is `a`, up to units -/
 noncomputable def factors (a : R) : Multiset R :=
   if h : a = 0 then ∅ else Classical.choose (WfDvdMonoid.exists_factors a h)
