@@ -842,8 +842,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     exists RelEmbedding.refl (· ≤ ·)
     simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
   · intro x s hx ih f
-    obtain ⟨g, hg⟩ :=
-      (WellFoundedLT.isWF univ).isPWO.exists_monotone_subseq (f:= fun n => f n x) mem_univ
+    obtain ⟨g, hg⟩ := (WellFoundedLT.isWF univ).isPWO.exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
     refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩

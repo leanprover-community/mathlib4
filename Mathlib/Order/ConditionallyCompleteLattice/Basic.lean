@@ -538,7 +538,7 @@ open Function
 
 variable [WellFoundedLT α]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id s hs :=
+theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id wellFounded_lt s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
 
 theorem isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
