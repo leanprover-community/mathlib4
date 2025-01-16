@@ -72,7 +72,7 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : ConcreteCategory (FGModuleCat R) := by
+instance : ConcreteCategory (FGModuleCat R) (fun X Y => X →ₗ[R] Y) := by
   dsimp [FGModuleCat]
   infer_instance
 

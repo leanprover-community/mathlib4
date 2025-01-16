@@ -306,9 +306,20 @@ instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D
   forget₂ := inducedFunctor f
   forget_comp := rfl
 
-instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C] [HasForget.{w} C]
+instance FullSubcategory.hasForget {C : Type u} [Category.{v} C] [HasForget.{w} C]
     (Z : C → Prop) : HasForget (FullSubcategory Z) where
   forget := fullSubcategoryInclusion Z ⋙ forget C
+
+instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [instCC : ConcreteCategory C FC]
+    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
+  hom := ConcreteCategory.hom (C := C)
+  ofHom := ConcreteCategory.ofHom (C := C)
+  hom_ofHom := ConcreteCategory.hom_ofHom (C := C)
+  ofHom_hom := ConcreteCategory.ofHom_hom (C := C)
+  id_apply := ConcreteCategory.id_apply (C := C)
+  comp_apply := ConcreteCategory.comp_apply (C := C)
 
 instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [HasForget.{w} C]
     (Z : C → Prop) : HasForget₂ (FullSubcategory Z) C where
