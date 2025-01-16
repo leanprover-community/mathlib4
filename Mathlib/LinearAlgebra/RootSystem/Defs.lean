@@ -150,6 +150,14 @@ protected def flip : RootPairing ι R N M :=
 lemma flip_flip : P.flip.flip = P :=
   rfl
 
+variable (ι R M N) in
+/-- `RootPairing.flip` as an equivalence. -/
+@[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- If we interchange the roles of `M` and `N`, we still have a root system. -/
 protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
   { toRootPairing := P.toRootPairing.flip
@@ -160,6 +168,14 @@ protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R
 protected lemma _root_.RootSystem.flip_flip (P : RootSystem ι R M N) :
     P.flip.flip = P :=
   rfl
+
+variable (ι R M N) in
+/-- `RootSystem.flip` as an equivalence. -/
+@[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Roots written as functionals on the coweight space. -/
 abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
