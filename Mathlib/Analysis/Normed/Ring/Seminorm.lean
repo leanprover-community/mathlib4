@@ -135,9 +135,9 @@ theorem apply_one [DecidableEq R] (x : R) : (1 : RingSeminorm R) x = if x = 0 th
 end NonUnitalRing
 
 
-section CommRing
+section Ring
 
-variable [CommRing R] (p : RingSeminorm R)
+variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
   refine
