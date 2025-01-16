@@ -130,6 +130,11 @@ def ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGrp.ofHom
 
+@[to_additive]
+theorem hom_ofHom {X Y : Type _} [Group X] [Group Y] (f : X →* Y) :
+    ConcreteCategory.hom (ofHom f) = f :=
+  rfl
+
 @[to_additive (attr := simp)]
 theorem coe_ofHom {X Y : Type _} [Group X] [Group Y] (f : X →* Y) :
     (ofHom f : X → Y) = f :=
@@ -280,6 +285,11 @@ theorem one_apply (G H : CommGrp) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
 @[to_additive]
 def ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
   f
+
+@[to_additive]
+theorem hom_ofHom {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) :
+    ConcreteCategory.hom (ofHom f) = f :=
+  rfl
 
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGroup`. -/
 add_decl_doc AddCommGrp.ofHom

@@ -75,7 +75,10 @@ def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
   simp only [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single]
   change (F.map _ ≫ c.ι.app _) _ - _ = 0
   rw [c.ι.naturality]
-  simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id, sub_self]
+  simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
+  -- TODO: line below can be added to the `simp` above when we add a `AddCommGrp.Hom`
+  -- structure and there is no confusion between `_ →+ _` and `_ ⟶ _`:
+  exact sub_self _
 
 @[simp]
 lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
@@ -83,6 +86,9 @@ lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
   dsimp [desc, ι]
   erw [QuotientAddGroup.lift_mk']
   simp
+  -- TODO: line below can be deleted when we add a `AddCommGrp.Hom`
+  -- structure and there is no confusion between `_ →+ _` and `_ ⟶ _`:
+  rfl
 
 @[simp]
 lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
@@ -100,7 +106,13 @@ induces a cocone on `F` as long as the universes work out.
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
   pt := AddCommGrp.of A
-  ι := { app := fun j => f.comp (Quot.ι F j) }
+  ι.app j := AddCommGrp.ofHom <| f.comp (Quot.ι F j)
+  ι.naturality j j' g := by
+    ext
+    -- TODO: `hom_ofHom` doesn't apply if `coe_of` was already applied, so we need two separate
+    -- `simp` calls. This whole proof used to be automatic.
+    simp only [comp_apply, hom_ofHom, id_apply, Functor.const_obj_obj, Functor.const_obj_map]
+    simp [coe_of]
 
 lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
     (hc : IsColimit c) : (hc.desc (toCocone F f)).comp (Quot.desc F c) = f := by
@@ -109,11 +121,17 @@ lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f :
   change (c.ι.app j ≫ hc.desc (toCocone F f)) _ = _
   rw [hc.fac]
   simp
+  -- TODO: line below can be deleted when we add a `AddCommGrp.Hom`
+  -- structure and there is no confusion between `_ →+ _` and `_ ⟶ _`:
+  rfl
 
 lemma Quot.desc_toCocone_desc_app [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
     (hc : IsColimit c) (x : Quot F) : hc.desc (toCocone F f) (Quot.desc F c x) = f x := by
   conv_rhs => rw [← Quot.desc_toCocone_desc F c f hc]
   dsimp
+  -- TODO: line below can be deleted when we add a `AddCommGrp.Hom`
+  -- structure and there is no confusion between `_ →+ _` and `_ ⟶ _`:
+  rfl
 
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
@@ -127,16 +145,18 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     ext x
     dsimp
     conv_lhs => erw [← Quot.ι_desc F c j x]
-    rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
-    simp only [Quot.ι_desc, Functor.const_obj_obj]
+    simp [← AddEquiv.ofBijective_apply _ h, -AddEquiv.ofBijective_apply, hom_ofHom]
   uniq s m hm := by
     ext x
     obtain ⟨x, rfl⟩ := h.2 x
     dsimp
-    rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
+    rw [← AddEquiv.ofBijective_apply _ h, hom_ofHom, AddMonoidHom.comp_apply, AddMonoidHom.coe_coe,
+        AddEquiv.symm_apply_apply]
     suffices eq : m.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
       rw [← eq]; rfl
-    exact Quot.addMonoidHom_ext F (by simp [← hm])
+  -- TODO: `intros; rfl` below can be deleted when we add a `AddCommGrp.Hom`
+  -- structure and there is no confusion between `_ →+ _` and `_ ⟶ _`:
+    exact Quot.addMonoidHom_ext F (by simp [← hm]; intros; rfl)
 
 /-- (internal implementation) The colimit cocone of a functor `F`, implemented as a quotient of
 `DFinsupp (fun j ↦ F.obj j)`, under the assumption that said quotient is small.
@@ -150,10 +170,11 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
       naturality _ _ _ := by
         ext
         dsimp
+        -- TODO: `hom_ofHom` doesn't apply if `coe_of` was already applied, so we need two separate
+        -- `simp` calls. This whole proof used to be automatic.
         simp only [Category.comp_id, ofHom_apply, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
-          Function.comp_apply]
-        change Shrink.addEquiv.symm _ = _
-        rw [Quot.map_ι] }
+          Function.comp_apply, hom_ofHom]
+        simp [coe_of] }
 
 @[simp]
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrp.{w}) [Small.{w} (Quot F)] :
@@ -161,7 +182,10 @@ theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrp.{w}) [Smal
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
   simp only [colimitCocone_pt, coe_of, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
   erw [Quot.ι_desc]
-  simp
+  simp [hom_ofHom]
+  -- TODO: line below can be deleted when we add a `AddCommGrp.Hom`
+  -- structure and there is no confusion between `_ →+ _` and `_ ⟶ _`:
+  rfl
 
 /-- (internal implementation) The fact that the candidate colimit cocone constructed in
 `colimitCocone` is the colimit.

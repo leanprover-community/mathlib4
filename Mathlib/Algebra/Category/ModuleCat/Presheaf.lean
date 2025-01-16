@@ -123,7 +123,7 @@ lemma presheaf_obj_coe (X : Cᵒᵖ) :
 
 @[simp]
 lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
-    DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f) x = M.map f x := rfl
+    (M.presheaf.map f) x = M.map f x := rfl
 
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
@@ -143,7 +143,6 @@ lemma toPresheaf_obj_coe (X : Cᵒᵖ) :
 
 @[simp]
 lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X) :
-    DFunLike.coe (α := M₁.obj X) (β := fun _ ↦ M₂.obj X)
       (((toPresheaf R).map f).app X) x = f.app X x := rfl
 
 instance : (toPresheaf R).Faithful where
