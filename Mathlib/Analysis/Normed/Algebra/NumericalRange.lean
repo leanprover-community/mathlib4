@@ -6,6 +6,11 @@ Authors: Christopher Hoskin
 import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Analysis.Normed.Module.Dual
 
+/-!
+# Numerical ranges
+
+-/
+
 variable {𝕜 B : Type*}
 
 section
@@ -17,7 +22,11 @@ variable [NormedRing B] [NormedAlgebra 𝕜 B]
 
 variable (B)
 
+/-- State space of a unital Banach Algebra -/
 def StateSpace := {x : NormedSpace.Dual 𝕜 B | x ∈ Metric.closedBall 0 1 ∧ x 1 = 1 }
+
+lemma ss_eq_inter :
+    StateSpace B = Metric.closedBall 0 1 ∩ {x : NormedSpace.Dual 𝕜 B | x 1 = 1} := rfl
 
 lemma ss_subset_unitball : StateSpace B ⊆ (Metric.closedBall 0 1 : Set (NormedSpace.Dual 𝕜 B)) :=
   fun _ hy => Set.mem_of_mem_inter_left hy
@@ -41,9 +50,12 @@ end
 
 section
 
-variable [RCLike 𝕜] [NormedRing B] [NormedAlgebra 𝕜 B] [NormOneClass B]
+variable [RCLike 𝕜] [NormedRing B] [NormedAlgebra 𝕜 B]
 
-instance : Nonempty (StateSpace (𝕜 := 𝕜) B) := by
+lemma plain : {x : NormedSpace.Dual 𝕜 B | x 1 = 1} =
+    (NormedSpace.inclusionInDoubleDualLi 𝕜 (1 : B))⁻¹' {(1 : 𝕜)} := rfl
+
+instance [NormOneClass B] : Nonempty (StateSpace (𝕜 := 𝕜) B) := by
   have e1: ∃ g : B →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g 1 = ‖(1 : B)‖ :=
     exists_dual_vector _ _ (ne_of_apply_ne norm (by simp))
   obtain ⟨g,⟨hg₁, hg₂⟩⟩ := e1
@@ -54,5 +66,16 @@ instance : Nonempty (StateSpace (𝕜 := 𝕜) B) := by
   · rw [hg₂]
     rw [norm_one]
     exact RCLike.ofReal_one
+
+open ComplexOrder in
+theorem ss_convex : Convex ℝ (StateSpace (𝕜 := 𝕜) B) := by
+  rw [ss_eq_inter]
+  apply Convex.inter (convex_closedBall _ _)
+  have e1 (x : NormedSpace.Dual 𝕜 B): x 1 = NormedSpace.inclusionInDoubleDualLi 𝕜 (1 : B) x := by
+    rfl
+  simp_rw [e1]
+  --simp_rw [← NormedSpace.dual_def]
+  apply convex_hyperplane
+  exact { map_add := fun x ↦ congrFun rfl, map_smul := fun c ↦ congrFun rfl }
 
 end
