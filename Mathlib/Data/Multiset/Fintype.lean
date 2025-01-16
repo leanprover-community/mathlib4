@@ -304,8 +304,8 @@ There is some equivalence between `m` and `m.map f` which respects `f`.
 def mapEquiv_aux (m : Multiset α) (f : α → β) :
     Squash { v : m ≃ m.map f // ∀ a : m, v a = f a} :=
   Quotient.recOnSubsingleton m fun l ↦ .mk <|
-    List.recOn l ⟨@Equiv.equivOfIsEmpty _ _ (by dsimp; infer_instance) (by dsimp; infer_instance),
-      by simp⟩
+    List.recOn l
+      ⟨@Equiv.equivOfIsEmpty _ _ (by dsimp; infer_instance) (by dsimp; infer_instance), by simp⟩
       fun a s ⟨v, hv⟩ ↦ ⟨Multiset.consEquiv.trans v.optionCongr |>.trans
         Multiset.consEquiv.symm |>.trans (Multiset.cast (map_cons f a s)).symm, fun x ↦ by
         simp only [consEquiv, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.optionCongr_apply,
