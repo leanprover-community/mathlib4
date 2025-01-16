@@ -41,22 +41,6 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
 
--- todo: move
-lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
-    rw [le_inv_mul_iff₀ hc]
-    calc c * x
-    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
-    _ ≤ _ := Real.add_one_le_exp (c * x)
-
--- todo: move
-lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
-    (max x y) ^ p = max (x ^ p) (y ^ p) := by
-  rcases le_total x y with hxy | hxy
-  · rw [max_eq_right hxy, max_eq_right]
-    exact rpow_le_rpow hx hxy hp
-  · rw [max_eq_left hxy, max_eq_left]
-    exact rpow_le_rpow hy hxy hp
-
 section Interval
 
 /-- Auxiliary lemma for `integrable_exp_mul_of_nonneg_of_le`. -/
@@ -136,7 +120,7 @@ end Interval
 
 section IntegrableExpSet
 
-/-- The interval of reals for which `exp (t * X)` is integrable. -/
+/-- The interval of reals `t` for which `exp (t * X)` is integrable. -/
 def integrableExpSet (X : Ω → ℝ) (μ : Measure Ω) : Set ℝ :=
   {t | Integrable (fun ω ↦ exp (t * X ω)) μ}
 
@@ -163,6 +147,8 @@ end IntegrableExpSet
 
 section FiniteMoments
 
+/-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable, then
+`ω ↦ exp (t * |X| + v * X)` is integrable. -/
 lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     Integrable (fun ω ↦ exp (t * |X ω| + v * X ω)) μ := by
@@ -203,7 +189,7 @@ lemma integrable_exp_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)
   · simpa using ht_int_neg
 
 /-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable, then
-`ω ↦ exp (t * |X| + v * X)` is integrable. -/
+`ω ↦ exp (|t| * |X| + v * X)` is integrable. -/
 lemma integrable_exp_abs_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     Integrable (fun ω ↦ exp (|t| * |X ω| + v * X ω)) μ := by
