@@ -56,10 +56,6 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 /-- The topological dual of a seminormed space `E`. -/
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
--- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
--- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
-instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
-
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
 -- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
 instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
