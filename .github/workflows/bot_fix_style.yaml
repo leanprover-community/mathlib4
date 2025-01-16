@@ -60,12 +60,12 @@ jobs:
         with:
           require: 'write'
 
+      - name: Add reaction (comment)
         # from now on, it is sufficient to just check `user_permission`:
         # if the comment did not contain `bot fix style`,
         # then `user_permission` would not have ran
 
         # reactions are not supported for `comment`s and `review_comment`s?
-      - name: Add reaction (comment)
         # this action only runs on `comment`s rather than `review`s or `review_comment`s
         if: ${{ steps.user_permission.outputs.require-result == 'true' &&
                 # is this a good way to check if the event is a `comment`?
