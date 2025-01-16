@@ -7,6 +7,12 @@ import Mathlib.Order.Filter.Bases
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
+**WARNING** : The content of this file will be replaced by that of
+`Topology.Algebra.FilterBasisNew` once the rest of the library has been adapted.
+Consider this material as deprecated, unless you depend on other library files using the
+old API. See `https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Refactoring.20algebraic.20filter.20bases/near/479437345`
+for more details.
+
 # Group and ring filter bases
 
 A `GroupFilterBasis` is a `FilterBasis` on a group with some properties relating
