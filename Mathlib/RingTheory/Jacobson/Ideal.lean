@@ -383,6 +383,30 @@ theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaxima
         exact I.sub_mem (I.mul_mem_left _ hxy) (I.mul_mem_left _ hz))
       (this ▸ id)⟩
 
+lemma isUnit_or_mem_jacobson_bot_of_dvd_isNilpotent_of_zero_divisors_mem_jacobson_bot [CommRing R]
+    {s a : R} (hsn : s ≠ 0) (hs : IsNilpotent s) (hd : a ∣ s)
+    (hj : (⊥ : Ideal R).jacobson ≤ Ideal.span {s})
+    (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ (⊥ : Ideal R).jacobson) :
+    IsUnit a ∨ a ∈ (⊥ : Ideal R).jacobson := by
+  nontriviality R
+  have hs0 : ∀ x ∉ (⊥ : Ideal R).jacobson, ∀ y, y * x = 0 → y = 0 := by
+    intro x hx y hy
+    by_contra H
+    exact hx (h0 ⟨y, H, hy⟩)
+  obtain ⟨b, h⟩ := hd
+  refine (em _).symm.imp_left fun H ↦ ?_
+  classical
+  replace h' : b ∈ Ideal.span {s} := by
+    refine hj (h0 ⟨s ^ (Nat.find hs - 1), Nat.find_min hs (by simp), hs0 _ H _ ?_⟩)
+    rw [mul_right_comm, mul_assoc, ← h, ← pow_succ, Nat.sub_add_cancel (by simp)]
+    exact Nat.find_spec hs
+  obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton.mp h'
+  suffices IsUnit (a * c) from isUnit_of_mul_isUnit_left this
+  rw [mul_left_comm, eq_comm, ← sub_eq_zero, ← mul_sub_one] at h
+  have := h0 ⟨_, hsn, h⟩
+  rw [SetLike.mem_coe, Ideal.mem_jacobson_bot] at this
+  simpa using this 1
+
 end Ideal
 
 namespace TwoSidedIdeal
@@ -401,3 +425,16 @@ theorem mem_jacobson_iff {x : R} {I : TwoSidedIdeal R} :
   simp [jacobson, Ideal.mem_jacobson_iff]
 
 end TwoSidedIdeal
+
+lemma pow_dvd_pow_iff_of_ne_zero_of_mem_jacobson_bot {R : Type*} [CommRing R] {x : R} {n m : ℕ}
+    (hm : x ^ m ≠ 0) (hx : x ∈ (⊥ : Ideal R).jacobson) :
+    x ^ n ∣ x ^ m ↔ n ≤ m := by
+  refine ⟨?_, pow_dvd_pow _⟩
+  rw [← not_lt]
+  rintro ⟨y, hy⟩ H
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt H
+  rw [add_assoc, pow_add, eq_comm, ← sub_eq_zero, mul_assoc, ← mul_sub_one] at hy
+  suffices IsUnit (x ^ (k + 1) * y - 1) by
+    exact hm (this.mul_left_eq_zero.mp hy)
+  rw [← IsUnit.neg_iff, neg_sub, sub_eq_add_neg, ← mul_neg, pow_succ', mul_assoc, add_comm]
+  exact (Ideal.mem_jacobson_bot.mp hx) _
