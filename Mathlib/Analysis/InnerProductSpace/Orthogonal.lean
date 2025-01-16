@@ -3,7 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.LinearAlgebra.SesquilinearForm
 
 /-!
@@ -350,6 +350,7 @@ theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U
 
 end Submodule
 
+open scoped Function in -- required for scoped `on` notation
 theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
     (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
   forall₃_congr fun _i _j _hij =>

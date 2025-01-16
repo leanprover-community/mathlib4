@@ -98,7 +98,7 @@ theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, I
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
 
-@[deprecated (since := "2024-10-07")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-07")]
 theorem NoetherianSpace.wellFounded_closeds [NoetherianSpace α] :
     WellFounded fun s t : Closeds α => s < t :=
   wellFounded_lt

@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Pointwise
-import Mathlib.Order.LiminfLimsup
 
 /-!
 # Boundedness in normed groups

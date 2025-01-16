@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.Constructions
 
 /-!
-# Product measures
+# Indexed product measures
 
 In this file we define and prove properties about finite products of measures
 (and at some point, countable products of measures).
@@ -49,7 +50,6 @@ finitary product measure
 
 -/
 
-
 noncomputable section
 
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
@@ -80,7 +80,7 @@ theorem isPiSystem_pi [∀ i, MeasurableSpace (α i)] :
 
 section Finite
 
-variable [Finite ι]
+variable [Finite ι] [Finite ι']
 
 /-- Boxes of countably spanning sets are countably spanning. -/
 theorem IsCountablySpanning.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountablySpanning (C i)) :
@@ -499,8 +499,8 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
     simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, mem_prod]
     refine ⟨by tauto, fun _ i ↦ ?_⟩
     rcases i <;> tauto
-  simp only [me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this, prod_prod,
-    pi_pi, mul_comm]
+  simp only [e_meas, me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this,
+    prod_prod, pi_pi, mul_comm]
 
 section Intervals
 
@@ -632,7 +632,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   obtain ⟨s, ⟨hs, hsU⟩⟩ := isOpen_pi_iff'.1 U_open a ha
   refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono hsU))
   simp only [pi_pi]
-  rw [CanonicallyOrderedCommSemiring.prod_pos]
+  rw [CanonicallyOrderedAdd.prod_pos]
   intro i _
   apply (hs i).1.measure_pos (μ i) ⟨a i, (hs i).2⟩
 

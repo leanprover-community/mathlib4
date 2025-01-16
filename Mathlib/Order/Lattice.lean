@@ -95,12 +95,6 @@ def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b =
   le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
 
-instance OrderDual.instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance OrderDual.instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
-
 section SemilatticeSup
 
 variable [SemilatticeSup α] {a b c d : α}
@@ -862,11 +856,11 @@ variable {ι : Type*} {π : ι → Type*} [DecidableEq ι]
 -- Porting note: Dot notation on `Function.update` broke
 theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊔ b) = update f i a ⊔ update f i b :=
-  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_of_ne, *]
 
 theorem update_inf [∀ i, SemilatticeInf (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊓ b) = update f i a ⊓ update f i b :=
-  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_of_ne, *]
 
 end Function
 

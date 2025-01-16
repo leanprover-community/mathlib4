@@ -49,7 +49,7 @@ smooth function, smooth bump function
 noncomputable section
 
 open Function Set Filter
-open scoped Topology Filter
+open scoped Topology Filter ContDiff
 
 variable {E X : Type*}
 
@@ -80,7 +80,7 @@ structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E
   toFun : ℝ → E → ℝ
   mem_Icc : ∀ (R : ℝ) (x : E), toFun R x ∈ Icc (0 : ℝ) 1
   symmetric : ∀ (R : ℝ) (x : E), toFun R (-x) = toFun R x
-  smooth : ContDiffOn ℝ ⊤ (uncurry toFun) (Ioi (1 : ℝ) ×ˢ (univ : Set E))
+  smooth : ContDiffOn ℝ ∞ (uncurry toFun) (Ioi (1 : ℝ) ×ˢ (univ : Set E))
   eq_one : ∀ R : ℝ, 1 < R → ∀ x : E, ‖x‖ ≤ 1 → toFun R x = 1
   support : ∀ R : ℝ, 1 < R → Function.support (toFun R) = Metric.ball (0 : E) R
 
@@ -178,7 +178,8 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
     ContDiffWithinAt ℝ n (fun x => f x (g x)) s x := by
   change ContDiffWithinAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
     ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))) s x
-  refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le le_top).comp_contDiffWithinAt x ?_
+  refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le
+    (mod_cast le_top)).comp_contDiffWithinAt x ?_
   · exact prod_mem_nhds (Ioi_mem_nhds (f x).one_lt_rOut_div_rIn) univ_mem
   · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 
