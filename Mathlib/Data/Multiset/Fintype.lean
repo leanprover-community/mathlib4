@@ -272,7 +272,8 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     · simp
     · simp only [Option.elim_some, Nat.zero_eq, Fin.coe_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
       ite_eq_right_iff, reduceCtorEq, imp_false, not_and]
-      apply ne_of_lt ∘ (· ▸ x.2.2)
+      rintro rfl
+      exact x.2.2.ne
 
 @[simp]
 lemma consEquiv_symm_none {v : α} :
