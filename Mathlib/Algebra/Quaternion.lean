@@ -152,8 +152,9 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) :
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
   coe_injective.eq_iff
 
--- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
-instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
+-- Porting note: removed `simps`, added simp lemmas manually.
+-- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
+instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
 
@@ -1377,7 +1378,6 @@ variable (R : Type*) [Zero R] [One R] [Neg R]
 theorem mk_quaternion : #(ℍ[R]) = #R ^ 4 :=
   mk_quaternionAlgebra _ _ _
 
---@[simp] Porting note: LHS can be simplified to `#R^4`
 theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
   mk_quaternionAlgebra_of_infinite _ _ _
 
@@ -1385,7 +1385,6 @@ theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
 theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ 4 :=
   mk_univ_quaternionAlgebra _ _ _
 
---@[simp] Porting note: LHS can be simplified to `#R^4`
 theorem mk_univ_quaternion_of_infinite [Infinite R] : #(Set.univ : Set ℍ[R]) = #R :=
   mk_univ_quaternionAlgebra_of_infinite _ _ _
 

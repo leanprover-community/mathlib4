@@ -1056,7 +1056,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
 
 /-- A partial homeomorphism defines a homeomorphism between its source and target. -/
-@[simps!] -- Porting note: new `simps`
+@[simps!]
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target
 

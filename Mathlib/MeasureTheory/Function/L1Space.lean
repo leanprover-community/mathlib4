@@ -1195,6 +1195,14 @@ theorem Integrable.bdd_mul' {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
   rw [Pi.smul_apply, smul_eq_mul]
   exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right hx (norm_nonneg _))
 
+theorem Integrable.mul_of_top_right {f : α → 𝕜} {φ : α → 𝕜} (hf : Integrable f μ)
+    (hφ : Memℒp φ ∞ μ) : Integrable (φ * f) μ :=
+  hf.smul_of_top_right hφ
+
+theorem Integrable.mul_of_top_left {f : α → 𝕜} {φ : α → 𝕜} (hφ : Integrable φ μ)
+    (hf : Memℒp f ∞ μ) : Integrable (φ * f) μ :=
+  hφ.smul_of_top_left hf
+
 end NormedRing
 
 section NormedDivisionRing
