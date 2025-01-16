@@ -118,7 +118,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 := by positivity
   have h₂ : (0 : ℝ) < 1 - (1 / (2 * ((n : ℝ) + 1) + 1)) ^ 2 := by
     rw [← mul_lt_mul_right h₃]
-    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
+    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [cast_nonneg (α := ℝ) n]
     convert H using 1 <;> field_simp [h₃.ne']
   refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast

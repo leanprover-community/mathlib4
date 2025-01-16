@@ -48,7 +48,7 @@ open Finset Nat
 
 open FinsetFamily
 
-variable {𝕜 α : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 α : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 namespace Finset
 

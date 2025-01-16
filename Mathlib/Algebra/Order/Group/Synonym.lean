@@ -162,6 +162,15 @@ instance [h : Semigroup α] : Semigroup (Lex α) := h
 instance [h : CommSemigroup α] : CommSemigroup (Lex α) := h
 
 @[to_additive]
+instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul (Lex α) := h
+
+@[to_additive]
+instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul (Lex α) := h
+
+@[to_additive]
+instance [Mul α] [h : IsCancelMul α] : IsCancelMul (Lex α) := h
+
+@[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
 
 @[to_additive]

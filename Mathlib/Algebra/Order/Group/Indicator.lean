@@ -221,7 +221,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
 end CanonicallyOrderedMul
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup M]
+variable [CommGroup M] [LinearOrder M]
 
 open scoped symmDiff
 
