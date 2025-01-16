@@ -3,8 +3,9 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
+import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
@@ -25,6 +26,7 @@ several basic results on it.
 * `FiniteMultiplicity a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
 -/
 
+assert_not_exists Field
 
 variable {α β : Type*}
 
@@ -352,6 +354,10 @@ theorem emultiplicity_eq_coe {n : ℕ} :
 theorem FiniteMultiplicity.multiplicity_eq_iff (hf : FiniteMultiplicity a b) {n : ℕ} :
     multiplicity a b = n ↔ a ^ n ∣ b ∧ ¬a ^ (n + 1) ∣ b := by
   simp [← emultiplicity_eq_coe, hf.emultiplicity_eq_multiplicity]
+
+theorem emultiplicity_eq_ofNat {a b n : ℕ} [n.AtLeastTwo] :
+    emultiplicity a b = (ofNat(n) : ℕ∞) ↔ a ^ ofNat(n) ∣ b ∧ ¬a ^ (ofNat(n) + 1) ∣ b :=
+  emultiplicity_eq_coe
 
 @[deprecated (since := "2024-11-30")]
 alias multiplicity.Finite.multiplicity_eq_iff := FiniteMultiplicity.multiplicity_eq_iff
