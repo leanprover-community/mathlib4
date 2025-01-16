@@ -27,7 +27,7 @@ open Ideal
 
 /-- The height of a prime ideal is defined as the supremum of the lengths of strictly decreasing
 chains of prime ideals below it. -/
-noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ENat :=
+noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
   Order.height (⟨I, hI⟩ : PrimeSpectrum R)
 
 /-- The height of an ideal is defined as the infimum of the heights of minimal prime ideals
