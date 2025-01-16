@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Ultrafilter.Defs
