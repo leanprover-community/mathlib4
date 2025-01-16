@@ -96,6 +96,8 @@ instance (r : α → α → Prop) [IsTrans α r] (p : α → Prop) : IsTrans _ (
 instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _ (Subrel r p) :=
   ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
 
+instance (r : α → α → Prop) [IsPreorder α r] (p : α → Prop) : IsPreorder _ (Subrel r p) where
+
 end Subrel
 
 /-- Restrict the codomain of a relation embedding. -/
