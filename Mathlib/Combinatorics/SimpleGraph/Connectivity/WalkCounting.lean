@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
@@ -20,6 +21,8 @@ can also be useful as a recursive description of this set when `V` is finite.
 
 TODO: should this be extended further?
 -/
+
+assert_not_exists Field
 
 open Finset Function
 
@@ -62,7 +65,7 @@ Note that `u` and `v` may be the same. -/
 @[simps]
 def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
-  toFun p := ⟨p.val.getVert 1, match p with
+  toFun p := ⟨p.val.snd, match p with
     | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
   left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
@@ -205,9 +208,9 @@ instance : Fintype G.ConnectedComponent :=
 instance : Decidable G.Preconnected :=
   inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
 
-instance : Decidable G.Connected := by
-  rw [connected_iff, ← Finset.univ_nonempty_iff]
-  infer_instance
+instance : Decidable G.Connected :=
+  decidable_of_iff (G.Preconnected ∧ (Finset.univ : Finset V).Nonempty) <| by
+    rw [connected_iff, ← Finset.univ_nonempty_iff]
 
 instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
   elems := (univ (α := { p : G.Walk u v | p.IsPath ∧ p.length < Fintype.card V })).map

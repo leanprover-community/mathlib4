@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
 
@@ -68,8 +67,41 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+assert_not_exists Ideal
 
 open Function
+
+namespace Localization
+
+open IsLocalization
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (S : Submonoid (R i))
+
+/-- `IsLocalization.map` applied to a projection homomorphism from a product ring. -/
+noncomputable abbrev mapPiEvalRingHom :
+    Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
+  map (T := S) _ (Pi.evalRingHom R i) le_rfl
+
+open Function in
+theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
+  let T := S.comap (Pi.evalRingHom R i)
+  classical
+  refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
+  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective T x₁
+    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective T x₂
+    simp_rw [map_mk'] at eq
+    rw [IsLocalization.eq] at eq ⊢
+    obtain ⟨s, hs⟩ := eq
+    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    obtain rfl | ne := eq_or_ne j i
+    · simpa using hs
+    · simp [update_of_ne ne]
+  · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
+    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
+      by simp [map_mk']⟩
+
+end Localization
 
 section CommSemiring
 
@@ -81,15 +113,6 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
-
-theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
-  constructor <;> intro h
-  · rw [← mk'_spec S x y, mul_comm]
-    exact I.mul_mem_left ((algebraMap R S) y) h
-  · rw [← mk'_spec S x y] at h
-    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
-    have := I.mul_mem_left b h
-    rwa [mul_comm, mul_assoc, hb, mul_one] at this
 
 variable (M S) in
 include M in

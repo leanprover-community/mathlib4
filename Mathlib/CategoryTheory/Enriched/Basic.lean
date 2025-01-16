@@ -143,7 +143,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
   id_comp f := congr_fun (e_id_comp (Type v) _ _) f
   comp_id f := congr_fun (e_comp_id (Type v) _ _) f
-  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ : _)
+  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ :)
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
@@ -296,6 +296,16 @@ def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [Enrich
     (G : EnrichedFunctor V D E) : EnrichedFunctor V C E where
   obj X := G.obj (F.obj X)
   map _ _ := F.map _ _ ≫ G.map _ _
+
+lemma EnrichedFunctor.ext {C : Type u₁} {D : Type u₂} [EnrichedCategory V C]
+    [EnrichedCategory V D] {F G : EnrichedFunctor V C D} (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : C), F.map X Y ≫ eqToHom (by rw [h_obj, h_obj]) = G.map X Y) : F = G := by
+  match F, G with
+  | mk F_obj F_map _ _, mk G_obj G_map _ _ =>
+    obtain rfl : F_obj = G_obj := funext fun X ↦ h_obj X
+    congr
+    ext X Y
+    simpa using h_map X Y
 
 section
 

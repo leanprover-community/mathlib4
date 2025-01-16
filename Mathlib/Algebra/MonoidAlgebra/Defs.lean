@@ -48,8 +48,7 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
-assert_not_exists NonUnitalAlgHom
-assert_not_exists AlgEquiv
+assert_not_exists NonUnitalAlgHom AlgEquiv
 
 noncomputable section
 
@@ -344,6 +343,10 @@ variable {S : Type*}
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
   Finsupp.smulZeroClass
+
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
+  Finsupp.noZeroSMulDivisors
 
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
   Finsupp.distribSMul _ _
@@ -989,7 +992,7 @@ theorem liftNC_mul {g_hom : Type*}
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
+  MonoidAlgebra.liftNC_mul f g _ _ @h_comm
 
 end Mul
 
@@ -1009,7 +1012,7 @@ theorem one_def : (1 : k[G]) = single 0 1 :=
 theorem liftNC_one {g_hom : Type*}
     [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
     (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
-  (MonoidAlgebra.liftNC_one f g : _)
+  MonoidAlgebra.liftNC_one f g
 
 end One
 
@@ -1062,6 +1065,10 @@ section Semiring
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
   Finsupp.smulZeroClass
+
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R k[G] :=
+  Finsupp.noZeroSMulDivisors
 
 variable [Semiring k] [AddMonoid G]
 

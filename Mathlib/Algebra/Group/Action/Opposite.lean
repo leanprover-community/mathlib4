@@ -26,8 +26,7 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists Units
+assert_not_exists MonoidWithZero Units
 
 variable {M N α β : Type*}
 

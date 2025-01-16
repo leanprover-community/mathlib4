@@ -63,14 +63,20 @@ theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
 
 @[simp]
 theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    sigmaCurry (f + g) = sigmaCurry f + sigmaCurry g := by
+    #adaptation_note
+    /-- After https://github.com/leanprover/lean4/pull/6024
+    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
+    sigmaCurry (f + g) = (sigmaCurry f + sigmaCurry g : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    sigmaCurry (r • f) = r • sigmaCurry f := by
+    #adaptation_note
+    /-- After https://github.com/leanprover/lean4/pull/6024
+    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
+    sigmaCurry (r • f) = (r • sigmaCurry f : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
 

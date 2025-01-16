@@ -5,7 +5,7 @@ Authors: Johan Commelin, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topological simplices

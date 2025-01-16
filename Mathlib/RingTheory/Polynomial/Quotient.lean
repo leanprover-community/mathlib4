@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.RingTheory.Polynomial.Ideal
 
 /-!
 # Quotients of polynomial rings
