@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Directed
+import Mathlib.Order.BoundedOrder.Monotone
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -19,9 +20,9 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v w x
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
+variable {α : Type u} {γ : Type v}
 
 section
 

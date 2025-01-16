@@ -30,10 +30,8 @@ namespace CategoryTheory
 
 open Localization
 
-variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
-  {D₁ : Type u₄} {D₂ : Type u₅} {D₃ : Type u₆}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
-  [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₃]
+variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
 /-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`

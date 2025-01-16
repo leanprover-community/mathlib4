@@ -50,8 +50,8 @@ needed.
 
 noncomputable section
 
-open Function Set Bornology
-open scoped Topology ENNReal NNReal
+open Bornology Function Set Topology
+open scoped ENNReal NNReal
 
 section Defs
 
@@ -62,7 +62,7 @@ structure Dilation where
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 
-infixl:25 " →ᵈ " => Dilation
+@[inherit_doc] infixl:25 " →ᵈ " => Dilation
 
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/
@@ -74,7 +74,7 @@ end Defs
 
 namespace Dilation
 
-variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*} {G : Type*}
+variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*}
 
 section Setup
 
@@ -229,8 +229,8 @@ end Setup
 section PseudoEmetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable [FunLike F α β] [DilationClass F α β] [FunLike G β γ] [DilationClass G β γ]
-variable (f : F) (g : G) {x y z : α} {s : Set α}
+variable [FunLike F α β] [DilationClass F α β]
+variable (f : F)
 
 /-- Every isometry is a dilation of ratio `1`. -/
 @[simps]
@@ -267,8 +267,8 @@ protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
 instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
 
-@[simp] -- Porting note: Removed `@[protected]`
-theorem coe_id : ⇑(Dilation.id α) = id :=
+@[simp]
+protected theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
@@ -375,7 +375,7 @@ alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
-  (Dilation.isUniformInducing f).inducing.tendsto_nhds_iff
+  (Dilation.isUniformInducing f).isInducing.tendsto_nhds_iff
 
 /-- A dilation is continuous. -/
 theorem toContinuous : Continuous (f : α → β) :=
@@ -406,11 +406,11 @@ theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
-  (Dilation.isUniformInducing f).inducing.continuousOn_iff.symm
+  (Dilation.isUniformInducing f).isInducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
-  (Dilation.isUniformInducing f).inducing.continuous_iff.symm
+  (Dilation.isUniformInducing f).isInducing.continuous_iff.symm
 
 end PseudoEmetricDilation
 
@@ -427,9 +427,12 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- A dilation from a metric space is an embedding -/
-protected theorem embedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
-    Embedding (f : α → β) :=
-  (Dilation.isUniformEmbedding f).embedding
+theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
+    IsEmbedding (f : α → β) :=
+  (Dilation.isUniformEmbedding f).isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
 lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :

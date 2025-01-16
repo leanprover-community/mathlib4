@@ -81,7 +81,7 @@ viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 
-theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
+theorem mk_surjective : Function.Surjective (mk K p) := Quot.mk_surjective
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
   Eq.symm <| Quot.sound (R.intro m x)
@@ -224,7 +224,7 @@ instance instZero : Zero (PerfectClosure K p) :=
 theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
   rfl
 
-/-- Prior to #15862, this lemma was called `mk_zero_zero`.
+/-- Prior to https://github.com/leanprover-community/mathlib4/pull/15862, this lemma was called `mk_zero_zero`.
 See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 @[simp]
 theorem mk_zero : mk K p 0 = 0 :=
@@ -404,7 +404,7 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
 instance instReduced : IsReduced (PerfectClosure K p) where
   eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
     replace h : mk K p x ^ p ^ n = 0 := by
-      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
+      rw [← Nat.sub_add_cancel ((n.lt_pow_self (Fact.out : p.Prime).one_lt).le),
         pow_add, h, mul_zero]
     simp only [zero_def, mk_pow, mk_eq_iff, zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
     obtain ⟨m, h⟩ := h

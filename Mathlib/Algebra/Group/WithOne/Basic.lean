@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.WithOne.Defs
 
 /-!
@@ -18,8 +19,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v w
 
@@ -73,8 +73,7 @@ variable (f : α →ₙ* β)
 theorem lift_coe (x : α) : lift f x = f x :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_one : lift f 1 = 1 :=
   rfl
 
@@ -112,8 +111,6 @@ theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = 
 theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map g).comp (map f) :=
   MonoidHom.ext fun x => (map_map f g x).symm
 
--- Porting note: this used to have `@[simps apply]` but it was generating lemmas which
--- weren't in simp normal form.
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) "A version of `Equiv.optionCongr` for `WithZero`."]
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=

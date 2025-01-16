@@ -24,8 +24,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists OrderedCommMonoid
+assert_not_exists MonoidWithZero OrderedCommMonoid
 
 open Function Multiset Nat
 
@@ -138,8 +137,6 @@ theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
 @[simp]
 theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
-
-@[deprecated (since := "2024-01-04")] alias card_doubleton := Finset.card_pair
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -259,7 +256,7 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     #(s.filter P) ≤ n ↔ ∀ s' ⊆ s, n < #s' → ∃ a ∈ s', ¬ P a :=
   (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
-    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ subset_of_le hs' hx) h⟩
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
 
 @[simp]
 theorem card_map (f : α ↪ β) : #(s.map f) = #s :=
@@ -276,8 +273,14 @@ theorem card_filter_le (s : Finset α) (p : α → Prop) [DecidablePred p] :
 theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
   eq_of_veq <| Multiset.eq_of_le_of_card_le (val_le_iff.mpr h) h₂
 
+theorem eq_iff_card_le_of_subset (hst : s ⊆ t) : #t ≤ #s ↔ s = t :=
+  ⟨eq_of_subset_of_card_le hst, (ge_of_eq <| congr_arg _ ·)⟩
+
 theorem eq_of_superset_of_card_ge (hst : s ⊆ t) (hts : #t ≤ #s) : t = s :=
   (eq_of_subset_of_card_le hst hts).symm
+
+theorem eq_iff_card_ge_of_superset (hst : s ⊆ t) : #t ≤ #s ↔ t = s :=
+  (eq_iff_card_le_of_subset hst).trans eq_comm
 
 theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
   ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset'⟩
@@ -285,10 +288,16 @@ theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
 theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
   eq_of_subset_of_card_le hs (card_map _).ge
 
-theorem filter_card_eq {p : α → Prop} [DecidablePred p] (h : #(s.filter p) = #s) (x : α)
-    (hx : x ∈ s) : p x := by
-  rw [← eq_of_subset_of_card_le (s.filter_subset p) h.ge, mem_filter] at hx
-  exact hx.2
+theorem card_filter_eq_iff {p : α → Prop} [DecidablePred p] :
+    #(s.filter p) = #s ↔ ∀ x ∈ s, p x := by
+  rw [(card_filter_le s p).eq_iff_not_lt, not_lt, eq_iff_card_le_of_subset (filter_subset p s),
+    filter_eq_self]
+
+alias ⟨filter_card_eq, _⟩ := card_filter_eq_iff
+
+theorem card_filter_eq_zero_iff {p : α → Prop} [DecidablePred p] :
+    #(s.filter p) = 0 ↔ ∀ x ∈ s, ¬ p x := by
+  rw [card_eq_zero, filter_eq_empty_iff]
 
 nonrec lemma card_lt_card (h : s ⊂ t) : #s < #t := card_lt_card <| val_lt_iff.2 h
 
@@ -490,8 +499,6 @@ lemma card_union_eq_card_add_card : #(s ∪ t) = #s + #t ↔ Disjoint s t := by
 
 @[simp] alias ⟨_, card_union_of_disjoint⟩ := card_union_eq_card_add_card
 
-@[deprecated (since := "2024-02-09")] alias card_union_eq := card_union_of_disjoint
-@[deprecated (since := "2024-02-09")] alias card_disjoint_union := card_union_of_disjoint
 
 lemma cast_card_inter [AddGroupWithOne R] :
     (#(s ∩ t) : R) = #s + #t - #(s ∪ t) := by
@@ -602,10 +609,6 @@ theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
-theorem _root_.Multiset.toFinset_card_eq_one_iff [DecidableEq α] (s : Multiset α) :
-    #s.toFinset = 1 ↔ Multiset.card s ≠ 0 ∧ ∃ a : α, s = Multiset.card s • {a} := by
-  simp_rw [card_eq_one, Multiset.toFinset_eq_singleton_iff, exists_and_left]
-
 theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ #s + 1 = #t := by
   constructor
@@ -665,9 +668,6 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
-
-@[deprecated (since := "2024-02-05")]
-alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
 
 theorem exists_ne_of_one_lt_card (hs : 1 < #s) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
   obtain ⟨x, hx, y, hy, hxy⟩ := Finset.one_lt_card.mp hs

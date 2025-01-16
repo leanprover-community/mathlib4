@@ -52,10 +52,12 @@ def SuperChain (s t : Set α) : Prop :=
 def IsMaxChain (s : Set α) : Prop :=
   IsChain r s ∧ ∀ ⦃t⦄, IsChain r t → s ⊆ t → s = t
 
-variable {r} {c c₁ c₂ s t : Set α} {a x y : α}
+variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
 
-theorem isChain_empty : IsChain r ∅ :=
-  Set.pairwise_empty _
+@[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
+@[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
+
+@[deprecated (since := "2024-11-25")] alias isChain_empty := IsChain.empty
 
 theorem Set.Subsingleton.isChain (hs : s.Subsingleton) : IsChain r s :=
   hs.pairwise _
@@ -78,6 +80,9 @@ protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b �
     IsChain r (insert a s) :=
   hs.insert_of_symmetric (fun _ _ => Or.symm) ha
 
+lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
+  IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
+
 theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
   refine ⟨fun h => ⟨fun a b => ?_⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
   rw [or_left_comm, or_iff_not_imp_left]
@@ -88,10 +93,18 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
   fun _ ⟨_, ha₁, ha₂⟩ _ ⟨_, hb₁, hb₂⟩ =>
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 
+lemma isChain_union {s t : Set α} :
+    IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
+  rw [IsChain, IsChain, IsChain, pairwise_union_of_symmetric fun _ _ ↦ Or.symm]
+
+lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+  hs.image _ _ _ (fun _ _ a ↦ hf a)
+
 theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsChain (· ≤ ·) (range f) := by
   rw [← image_univ]
-  exact (isChain_of_trichotomous _).image (· ≤ ·) _ _ hf
+  exact hf.isChain_image (isChain_of_trichotomous _)
 
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
@@ -135,6 +148,14 @@ theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) 
 
 theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) : ⊤ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inr le_top) <| subset_insert _ _).symm ▸ mem_insert _ _
+
+lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxChain r c) :
+    IsMaxChain s (e '' c) where
+  left := hc.isChain.image _ _ _ fun _ _ ↦ by exact e.map_rel_iff.2
+  right t ht hf := by
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
+    exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
+      ((e.toEquiv.subset_symm_image _ _).2 hf)
 
 open Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
@@ -279,8 +300,6 @@ instance : SetLike (Flag α) α where
 theorem ext : (s : Set α) = t → s = t :=
   SetLike.ext'
 
--- Porting note (#10618): `simp` can now prove this
--- @[simp]
 theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl
 
@@ -304,11 +323,17 @@ theorem top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
 theorem bot_mem [OrderBot α] (s : Flag α) : (⊥ : α) ∈ s :=
   s.maxChain.bot_mem
 
+/-- Reinterpret a maximal chain as a flag. -/
+def ofIsMaxChain (c : Set α) (hc : IsMaxChain (· ≤ ·) c) : Flag α := ⟨c, hc.isChain, hc.2⟩
+
+@[simp, norm_cast]
+lemma coe_ofIsMaxChain (c : Set α) (hc) : ofIsMaxChain c hc = c := rfl
+
 end LE
 
 section Preorder
 
-variable [Preorder α] {a b : α}
+variable [Preorder α] [Preorder β] {a b : α} {s : Flag α}
 
 protected theorem le_or_le (s : Flag α) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b ∨ b ≤ a :=
   s.chain_le.total ha hb
@@ -322,6 +347,24 @@ instance [OrderBot α] (s : Flag α) : OrderBot s :=
 instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
   Subtype.boundedOrder s.bot_mem s.top_mem
 
+lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨ b ≤ a :=
+  ⟨fun ha b => s.le_or_le ha, fun hb =>
+    of_not_not fun ha =>
+      Set.ne_insert_of_not_mem _ ‹_› <|
+        s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
+
+/-- Flags are preserved under order isomorphisms. -/
+def map (e : α ≃o β) : Flag α ≃ Flag β
+    where
+  toFun s := ofIsMaxChain _ (s.maxChain.image e)
+  invFun s := ofIsMaxChain _ (s.maxChain.image e.symm)
+  left_inv s := ext <| e.symm_image_image s
+  right_inv s := ext <| e.image_symm_image s
+
+@[simp, norm_cast] lemma coe_map (e : α ≃o β) (s : Flag α) : ↑(map e s) = e '' s := rfl
+
+@[simp] lemma symm_map (e : α ≃o β) : (map e).symm = map e.symm := rfl
+
 end Preorder
 
 section PartialOrder
@@ -330,7 +373,7 @@ variable [PartialOrder α]
 
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 
-instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :
+instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] (s : Flag α) :
     LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2

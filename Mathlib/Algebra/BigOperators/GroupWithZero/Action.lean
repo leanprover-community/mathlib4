@@ -3,11 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Lemmas about group actions on big operators
@@ -72,6 +72,18 @@ theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
   cases nonempty_fintype (PLift ι)
   simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
     finprod_eq_prod_of_fintype, Finset.smul_prod']
+
+variable {G : Type*} [Group G] [MulDistribMulAction G β]
+
+theorem Finset.smul_prod_perm [Fintype G] (b : β) (g : G) :
+    (g • ∏ h : G, h • b) = ∏ h : G, h • b := by
+  simp only [smul_prod', smul_smul]
+  exact Finset.prod_bijective (g * ·) (Group.mulLeft_bijective g) (by simp) (fun _ _ ↦ rfl)
+
+theorem smul_finprod_perm [Finite G] (b : β) (g : G) :
+    (g • ∏ᶠ h : G, h • b) = ∏ᶠ h : G, h • b := by
+  cases nonempty_fintype G
+  simp only [finprod_eq_prod_of_fintype, Finset.smul_prod_perm]
 
 end
 

@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Pointwise
-import Mathlib.Order.LiminfLimsup
 
 /-!
 # Boundedness in normed groups
@@ -21,11 +20,10 @@ normed group
 open Filter Metric Bornology
 open scoped Pointwise Topology
 
-variable {α ι E F G : Type*}
+variable {α E F G : Type*}
 
 section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
 
 @[to_additive (attr := simp) comap_norm_atTop]
 lemma comap_norm_atTop' : comap norm atTop = cobounded E := by
@@ -161,8 +159,6 @@ lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) ?_)⟩
-  -- Porting note: `ENNReal.add_lt_add` should be `protected`?
-  -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one
 

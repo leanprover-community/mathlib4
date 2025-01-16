@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.DiscreteCategory
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Strict
 
 /-!
@@ -20,8 +20,6 @@ in `LocallyDiscrete C` is defined as the discrete category associated with the t
 namespace CategoryTheory
 
 open Bicategory Discrete
-
-open Bicategory
 
 universe w₂ w₁ v₂ v₁ v u₂ u₁ u
 
@@ -106,35 +104,6 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
   comp_id _ := Discrete.ext (Category.comp_id _)
   assoc _ _ _ := Discrete.ext (Category.assoc _ _ _)
 
-attribute [local simp]
-  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
-
-variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
-
-/--
-If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
-be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
--/
-@[simps]
-def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B where
-  obj i := F.obj i.as
-  map f := F.map f.as
-  map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
-  mapId i := eqToIso (F.map_id i.as)
-  mapComp f g := eqToIso (F.map_comp f.as g.as)
-
-/--
-If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
-be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
--/
-@[simps]
-def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B where
-  obj i := F.obj i.as
-  map f := F.map f.as
-  map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
-  mapId i := eqToHom (F.map_id i.as)
-  mapComp f g := eqToHom (F.map_comp f.as g.as)
-
 end
 
 section
@@ -147,6 +116,21 @@ lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C) {a b : B} {f g : a �
   subst h; simp only [eqToHom_refl, PrelaxFunctor.map₂_id]
 
 end
+
+namespace Bicategory
+
+/-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
+abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)
+
+instance (C : Type*) [Category C] : IsLocallyDiscrete (LocallyDiscrete C) :=
+  fun _ _ ↦ Discrete.isDiscrete _
+
+instance (B : Type*) [Bicategory B] [IsLocallyDiscrete B] : Strict B where
+  id_comp f := obj_ext_of_isDiscrete (leftUnitor f).hom
+  comp_id f := obj_ext_of_isDiscrete (rightUnitor f).hom
+  assoc f g h := obj_ext_of_isDiscrete (associator f g h).hom
+
+end Bicategory
 
 end CategoryTheory
 

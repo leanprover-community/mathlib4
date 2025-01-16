@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Ideals and quotients of topological rings
@@ -15,6 +15,7 @@ ring. We also define a `TopologicalSpace` structure on the quotient of a topolog
 ideal and prove that the quotient is a topological ring.
 -/
 
+open Topology
 
 section Ring
 
@@ -58,12 +59,15 @@ theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) :=
 theorem QuotientRing.isOpenQuotientMap_mk : IsOpenQuotientMap (mk N) :=
   QuotientAddGroup.isOpenQuotientMap_mk
 
-theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
-  ((isOpenQuotientMap_mk N).prodMap (isOpenQuotientMap_mk N)).quotientMap
+theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
+  ((isOpenQuotientMap_mk N).prodMap (isOpenQuotientMap_mk N)).isQuotientMap
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientRing.quotientMap_coe_coe := QuotientRing.isQuotientMap_coe_coe
 
 instance topologicalRing_quotient : TopologicalRing (R ⧸ N) where
   __ := QuotientAddGroup.instTopologicalAddGroup _
-  continuous_mul := (QuotientRing.quotientMap_coe_coe N).continuous_iff.2 <|
+  continuous_mul := (QuotientRing.isQuotientMap_coe_coe N).continuous_iff.2 <|
     continuous_quot_mk.comp continuous_mul
 
 end CommRing

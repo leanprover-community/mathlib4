@@ -21,7 +21,7 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 - `AlgebraicGeometry.isAffineOpen_of_isAffineOpen_basicOpen`:
   If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine,
   then `U` is also affine.
-- `AlgebraicGeometry.isAffineHom_stableUnderBaseChange`:
+- `AlgebraicGeometry.isAffineHom_isStableUnderBaseChange`:
   Affine morphisms are stable under base change.
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
@@ -84,8 +84,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   rw [X.basicOpen_res]
   ext1
   refine Set.image_preimage_eq_inter_range.trans ?_
-  erw [Subtype.range_coe]
-  rfl
+  simp
 
 lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
@@ -139,7 +138,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (U) (s : Set Γ(X, U))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     IsAffineOpen U := by
   apply isAffine_of_isAffineOpen_basicOpen (U.topIso.inv '' s)
-  · rw [← Ideal.map_span U.topIso.inv, hs, Ideal.map_top]
+  · rw [← Ideal.map_span U.topIso.inv.hom, hs, Ideal.map_top]
   · rintro _ ⟨j, hj, rfl⟩
     rw [← (Scheme.Opens.ι _).isAffineOpen_iff_of_isOpenImmersion, Scheme.image_basicOpen]
     simpa [Scheme.Opens.toScheme_presheaf_obj] using hs₂ j hj
@@ -158,7 +157,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       rw [Scheme.preimage_basicOpen]
       exact (isAffineOpen_top X).basicOpen _
     · intro X Y _ f S hS hS'
-      apply_fun Ideal.map (f.app ⊤) at hS
+      apply_fun Ideal.map (f.appTop).hom at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
       have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'
@@ -169,11 +168,11 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       Subtype.forall, isAffineHom_iff]
     rfl
 
-lemma isAffineHom_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @IsAffineHom := by
-  apply HasAffineProperty.stableUnderBaseChange
+lemma isAffineHom_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
+  apply HasAffineProperty.isStableUnderBaseChange
   letI := HasAffineProperty.isLocal_affineProperty
-  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   introv X hX H
   infer_instance
 

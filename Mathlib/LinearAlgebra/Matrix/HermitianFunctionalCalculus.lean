@@ -31,6 +31,8 @@ This file defines an instance of the continuous functional calculus for Hermitia
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
 
+open Topology
+
 namespace Matrix
 
 variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜}
@@ -144,12 +146,6 @@ instance instContinuousFunctionalCalculus :
       exact False.elim <| Matrix.of.symm.injective.ne hxy <| Subsingleton.elim _ _
     · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
   predicate_zero := .zero _
-
-instance instUniqueContinuousFunctionalCalculus :
-    UniqueContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) :=
-  let _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
-  let _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
-  inferInstance
 
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the
 spectral theorem. Note that this actually operates on bare functions since every function is

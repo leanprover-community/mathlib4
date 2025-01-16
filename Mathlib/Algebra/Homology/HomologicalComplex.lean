@@ -548,14 +548,14 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   obtain rfl := c.next_eq' w
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
-@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc, elementwise]
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
 attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
-@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc, elementwise]
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 
@@ -566,7 +566,7 @@ attribute [simp] comm_to_apply
 induces a morphism of arrows of the differentials out of each object.
 -/
 def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
-  Arrow.homMk (f.comm_from i)
+  Arrow.homMk _ _ (f.comm_from i)
 
 @[simp]
 theorem sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
@@ -589,7 +589,7 @@ theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
 induces a morphism of arrows of the differentials into each object.
 -/
 def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
-  Arrow.homMk (f.comm_to j)
+  Arrow.homMk _ _ (f.comm_to j)
 
 @[simp]
 theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=

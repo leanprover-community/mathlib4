@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Bhavik Mehta, Daniel Weber
 -/
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces

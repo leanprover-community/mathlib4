@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
@@ -143,9 +143,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-  Embedding.t2Space <|
-    WeakBilin.embedding <|
-      show Function.Injective (topDualPairing 𝕜 E) from ContinuousLinearMap.coe_injective
+   (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
 
 end Semiring
 
