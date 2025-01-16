@@ -131,9 +131,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
       intro X Y f
       refine Quiver.Hom.unop_inj ?_
       ext x
-      simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
-        comp_f, Hom.isoOfComponents_hom_f]
-      erw [Category.id_comp, Category.comp_id (f.unop.f x)])
+      simp)
 
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
@@ -182,9 +180,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
       intro X Y f
       refine Quiver.Hom.unop_inj ?_
       ext x
-      simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
-        comp_f, Hom.isoOfComponents_hom_f]
-      erw [Category.id_comp, Category.comp_id (f.unop.f x)])
+      simp)
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
