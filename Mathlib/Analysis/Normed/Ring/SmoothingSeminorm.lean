@@ -256,23 +256,24 @@ theorem smoothingSeminorm_le (x : R) : smoothingSeminorm' f x ≤ f x := by
 section IsNonarchimedean
 
 /-- Auxiliary sequence for the proof that `smoothingSeminorm'` is nonarchimedean. -/
-private def mu {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)),
+private def mu {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1,
       f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ))) :
     ℕ → ℕ := fun n => Classical.choose (hn n)
 
-private theorem mu_property {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
+private theorem mu_property {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1,
       f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
     (n : ℕ) : f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (f (x ^ mu f hn n) * f (y ^ (n - mu f hn n : ℕ))) ^ (1 / (n : ℝ)) :=
-  Classical.choose_spec (Classical.choose_spec (hn n))
+  (Classical.choose_spec (hn n)).2
 
-private theorem mu_le {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
+
+private theorem mu_le {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1,
       f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
     (n : ℕ) : mu f hn n ≤ n := by
-  simp only [mu, ← Nat.lt_succ_iff, ← Finset.mem_range]
-  exact Classical.choose (Classical.choose_spec (hn n))
+  simp only [mu, ← Nat.lt_succ_iff]
+  exact (Classical.choose_spec (hn n)).1
 
-private theorem mu_bdd {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
+private theorem mu_bdd {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1,
       f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
     (n : ℕ) : (mu f hn n : ℝ) / n ∈ Set.Icc (0 : ℝ) 1 := by
   refine Set.mem_Icc.mpr ⟨div_nonneg (cast_nonneg (mu f hn n)) (cast_nonneg n), ?_⟩
@@ -282,10 +283,7 @@ private theorem mu_bdd {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ F
     rw [div_le_one hn', cast_le]
     exact mu_le _ _ _
 
-private theorem f_bddBelow (s : ℕ → ℕ) {x y : R}
-    (_hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
-      f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
-    (ψ : ℕ → ℕ) :
+private theorem f_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :
     BddBelow {a : ℝ | ∀ᶠ n : ℝ in map (fun n : ℕ => f x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop,
       n ≤ a} := by
   use 0
@@ -320,10 +318,7 @@ private theorem f_bddAbove' (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : �
   ext
   simp only [one_div, Set.mem_range, Subtype.exists, Set.mem_univ, exists_const]
 
-private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R} (_hn : ∀ n : ℕ,
-      ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
-        f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
-    (ψ : ℕ → ℕ) :
+private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} (ψ : ℕ → ℕ) :
     {a : ℝ | ∀ᶠ n : ℝ in map (fun n : ℕ => f x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop,
       n ≤ a}.Nonempty := by
   by_cases hfx : f x < 1
@@ -340,13 +335,11 @@ private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x
     rw [mul_one_div]
     exact div_le_one_of_le₀ (cast_le.mpr (hs_le (ψ b))) (cast_nonneg _)
 
-private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R}
-    (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
-      f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
-      {ψ : ℕ → ℕ} (hψ_lim : Tendsto ((fun n : ℕ => ↑(s n) / (n : ℝ)) ∘ ψ) atTop (𝓝 0)) :
+private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} {ψ : ℕ → ℕ}
+    (hψ_lim : Tendsto ((fun n : ℕ => ↑(s n) / (n : ℝ)) ∘ ψ) atTop (𝓝 0)) :
     limsup (fun n : ℕ => f x ^ ((s (ψ n) : ℝ) * (1 / (ψ n : ℝ)))) atTop ≤ 1 := by
   simp only [limsup, limsSup]
-  rw [csInf_le_iff (f_bddBelow f s hn ψ) (f_nonempty f hs_le hn ψ)]
+  rw [csInf_le_iff (f_bddBelow f s ψ) (f_nonempty f hs_le ψ)]
   · intro c hc_bd
     simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq,
       forall_exists_index] at hc_bd
@@ -375,9 +368,7 @@ theorem smoothingSeminorm'_isLimit_comp (hf1 : f 1 ≤ 1) (x : R) {ψ : ℕ → 
   haveI hψ_lim' : Tendsto ψ atTop atTop := StrictMono.tendsto_atTop hψ_mono
   (smoothingSeminorm'_isLimit f hf1 x).comp hψ_lim'
 
-private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R}
-    (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
-      f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
+private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R}
     {a : ℝ} (a_in : a ∈ Set.Icc (0 : ℝ) 1) {ψ : ℕ → ℕ} (hψ_mono : StrictMono ψ)
     (hψ_lim : Tendsto ((fun n : ℕ => (s n : ℝ) / ↑n) ∘ ψ) atTop (𝓝 a)) :
     limsup (fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤ smoothingSeminorm' f x ^ a := by
@@ -385,7 +376,7 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
   · rw [ha] at hψ_lim
     calc limsup (fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
           limsup (fun n : ℕ => f x ^ ((s (ψ n) : ℝ) * (1 / (ψ n : ℝ)))) atTop := by
-          apply csInf_le_csInf _ (f_nonempty f hs_le hn ψ)
+          apply csInf_le_csInf _ (f_nonempty f hs_le ψ)
           · intro b hb
             simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq] at hb ⊢
             obtain ⟨m, hm⟩ := hb
@@ -399,7 +390,7 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
             simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le,
               Set.mem_setOf_eq, forall_exists_index]
             exact fun _ m hm ↦ le_trans (rpow_nonneg (apply_nonneg f _) _) (hm m (le_refl _))
-      _ ≤ 1 := (f_limsup_le_one f hs_le hn hψ_lim)
+      _ ≤ 1 := (f_limsup_le_one f hs_le hψ_lim)
       _ = smoothingSeminorm' f x ^ a := by rw [ha, rpow_zero]
   · have ha_pos : 0 < a := lt_of_le_of_ne a_in.1 (Ne.symm ha)
     have h_eq : (fun n : ℕ =>
@@ -419,7 +410,7 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
 theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) :
     IsNonarchimedean (smoothingSeminorm' f) := by
   intro x y
-  have hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
+  have hn : ∀ n : ℕ, ∃ m < n + 1,
         f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) :=
     fun n => RingSeminorm.exists_index_pow_le f hna x y n
   set mu : ℕ → ℕ := fun n => mu f hn n
@@ -441,10 +432,10 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   have b_in : b ∈ Set.Icc (0 : ℝ) 1 := unitInterval.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
   have hx : limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
-      smoothingSeminorm' f x ^ a := limsup_mu_le f hf1 hmu_le hn a_in hψ_mono hψ_lim
+      smoothingSeminorm' f x ^ a := limsup_mu_le f hf1 hmu_le a_in hψ_mono hψ_lim
   have hy : limsup (fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f y ^ b :=
-    limsup_mu_le f hf1 hnu_le (RingSeminorm.exists_index_pow_le f hna y x) b_in hψ_mono hb_lim
+    limsup_mu_le f hf1 hnu_le b_in hψ_mono hb_lim
   have hxy : limsup
       (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b := by
@@ -452,8 +443,10 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
       limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)))
         atTop ≤ limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop *
           limsup (fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop :=
-      limsup_mul_le (f_bddAbove f hf1 hmu_le x ψ) (fun n => rpow_nonneg (apply_nonneg _ _) _)
-        (f_bddAbove f hf1 hnu_le y ψ) fun n => rpow_nonneg (apply_nonneg _ _) _
+      limsup_mul_le (Eventually.of_forall (fun n => rpow_nonneg (apply_nonneg _ _) _))
+        (f_bddAbove f hf1 hmu_le x ψ).isBoundedUnder_of_range
+        (Eventually.of_forall (fun n => rpow_nonneg (apply_nonneg _ _) _))
+        (f_bddAbove f hf1 hnu_le y ψ).isBoundedUnder_of_range
     have h_bdd : IsBoundedUnder LE.le atTop fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) :=
       RingSeminorm.isBoundedUnder f hf1 hnu_le ψ
     apply le_trans hxy' (mul_le_mul hx hy (le_limsup_of_frequently_le (Frequently.of_forall
@@ -482,8 +475,8 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) <
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
-    ENNReal.exists_lt_of_limsup_le (bddAbove_range_mul (f_bddAbove f hf1 hmu_le _ _)
-        (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
+    Filter.exists_lt_of_limsup_le (bddAbove_range_mul (f_bddAbove f hf1 hmu_le _ _)
+      (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
         fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder_of_range hxy hε
   obtain ⟨N, hN⟩ := hex
   apply le_trans (ciInf_le (smoothingSeminormSeq_bddBelow f _)
