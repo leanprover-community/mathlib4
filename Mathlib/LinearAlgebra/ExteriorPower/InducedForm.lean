@@ -16,8 +16,6 @@ Documentation
 
 open Function
 
-#check Submodule.span_induction
-
 theorem basis_induction {K M I : Type*} [Field K] [AddCommGroup M] [Module K M] (b : Basis I K M)
   {p : (x : M) → Prop} (mem : ∀ (i : I), p (b i))
   (zero : p 0)
@@ -32,8 +30,6 @@ theorem basis_induction {K M I : Type*} [Field K] [AddCommGroup M] [Module K M] 
   · simp only [Basis.span_eq, Submodule.mem_top, true_implies]
     exact smul
   · simp only [Basis.span_eq, Submodule.mem_top]
-
-#check Submodule.span_induction₂
 
 theorem basis_induction₂ {K M I : Type*} [Field K] [AddCommGroup M] [Module K M] (b : Basis I K M)
   {p : (x y : M) → Prop} (mem_mem : ∀ (i j : I), p (b i) (b j))
@@ -210,16 +206,25 @@ theorem exteriorPower_repr (s : Finset I) (hs : s.card = k) (v : ⋀[K]^k M) :
   simp only [exteriorPower_dualBasis']
   simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
 
-#check Basis.exteriorPower K k b
-#check basis_induction₂
+theorem exteriorPower_repr_dual (s : Finset I) (hs : s.card = k) (v : ⋀[K]^k M) :
+  (Basis.exteriorPower K k (B.dualBasis hN b)).repr v ⟨s, hs⟩ =
+  ⟪v, Basis.exteriorPower K k b ⟨s, hs⟩⟫ := by
+  nth_rw 2 [← Basis.sum_repr (Basis.exteriorPower K k (B.dualBasis hN b)) v]
+  rw [LinearMap.BilinForm.sum_left]
+  simp only [LinearMap.BilinForm.smul_left]
+  simp only [exteriorPower_dualBasis']
+  simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
 
+omit [Finite I] in
 theorem bilin_symm (b : Basis I K M) (hS : B.IsSymm) : (exteriorPower.BilinForm k B).IsSymm := by
   intro v w
   simp only [RingHom.id_apply]
   apply basis_induction₂ (b := Basis.exteriorPower K k b) (p := fun x y ↦ ⟪x, y⟫ = ⟪y, x⟫)
   · intro s t
     simp only [coe_basis]
-    sorry
+    unfold ιMulti_family
+    rw [bilin_symm_ιMulti]
+    exact hS
   · simp only [map_zero, LinearMap.zero_apply, implies_true]
   · simp only [map_zero, LinearMap.zero_apply, implies_true]
   · intro x y z a a_1
@@ -231,16 +236,14 @@ theorem bilin_symm (b : Basis I K M) (hS : B.IsSymm) : (exteriorPower.BilinForm 
   · intro k_1 x y a
     simp_all only [map_smul, smul_eq_mul, LinearMap.smul_apply]
 
-theorem bilinNondegen' (b : Basis I K M) (hN : B.Nondegenerate)
-  (hS : B.IsSymm) :
+theorem bilinNondegen (b : Basis I K M) (hN : B.Nondegenerate) :
   (exteriorPower.BilinForm k B).Nondegenerate := by
   intro v h
-  rw [← Basis.forall_coord_eq_zero_iff (Basis.exteriorPower K k b)]
+  rw [← Basis.forall_coord_eq_zero_iff (Basis.exteriorPower K k (B.dualBasis hN b))]
   intro ⟨s, hs⟩
   simp only [Basis.coord_apply]
-  rw [exteriorPower_repr B hN]
-  rw [← h (((Basis.exteriorPower K k (B.dualBasis hN b)) ⟨s, hs⟩))]
-  sorry
+  rw [exteriorPower_repr_dual B hN]
+  rw [← h (((Basis.exteriorPower K k b) ⟨s, hs⟩))]
 
 end overField
 
