@@ -614,6 +614,23 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
 
+/-- A homological complex `K` is acyclic if it is exact at `i` for any `i`. -/
+def Acyclic := ∀ i, K.ExactAt i
+
+lemma acyclic_iff :
+    K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
+
+lemma acyclic_of_isZero (hK : IsZero K) :
+    K.Acyclic := by
+  rw [acyclic_iff]
+  intro i
+  apply ShortComplex.exact_of_isZero_X₂
+  dsimp
+  rw [IsZero.iff_id_eq_zero]
+  change 𝟙 ((eval _ _ i).obj K) = 0
+  rw [← CategoryTheory.Functor.map_id, hK.eq_of_src (𝟙 K) 0]
+  simp
+
 end HomologicalComplex
 
 namespace ChainComplex
