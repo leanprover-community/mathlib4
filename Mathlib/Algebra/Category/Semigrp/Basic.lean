@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
@@ -44,7 +44,7 @@ namespace MagmaCat
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
-    by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
+    by intros; apply @DFunLike.coe_injective, by aesop_cat, by simp⟩
 
 -- Porting note: deriving failed for `ConcreteCategory`,
 -- "default handlers have not been implemented yet"

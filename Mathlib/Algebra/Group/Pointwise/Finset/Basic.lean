@@ -3,7 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
@@ -178,6 +178,9 @@ lemma image_op_one [DecidableEq α] : (1 : Finset α).image op = 1 := rfl
 @[to_additive (attr := simp)]
 lemma map_op_one : (1 : Finset α).map opEquiv.toEmbedding = 1 := rfl
 
+@[to_additive (attr := simp)]
+lemma one_product_one [One β] : (1 ×ˢ 1 : Finset (α × β)) = 1 := by ext; simp [Prod.ext_iff]
+
 end One
 
 /-! ### Finset negation/inversion -/
@@ -294,6 +297,10 @@ lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
 
 @[to_additive (attr := simp)]
 lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
+
+@[to_additive (attr := simp)]
+lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
 
 end InvolutiveInv
 
@@ -600,6 +607,11 @@ theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f *
 lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image op :=
   image_image₂_antidistrib op_mul
 
+@[to_additive (attr := simp)]
+lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
+    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
+  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
+
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
     (s * t).map opEquiv.toEmbedding = t.map opEquiv.toEmbedding * s.map opEquiv.toEmbedding := by
@@ -740,11 +752,11 @@ theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image₂_subset_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image₂_subset_right
 
@@ -958,7 +970,7 @@ protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
 @[to_additive (attr := gcongr)]
-lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
+lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := subset_of_le (pow_left_mono n hst)
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
@@ -968,6 +980,10 @@ lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
 lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ t ^ n :=
   (pow_subset_pow_left hst).trans (pow_subset_pow_right ht hmn)
 
+@[to_additive]
+lemma subset_pow (hs : 1 ∈ s) (hn : n ≠ 0) : s ⊆ s ^ n := by
+  simpa using pow_subset_pow_right hs <| Nat.one_le_iff_ne_zero.2 hn
+
 @[deprecated (since := "2024-11-19")] alias pow_subset_pow_of_one_mem := pow_subset_pow_right
 
 @[deprecated (since := "2024-11-19")]
@@ -975,7 +991,7 @@ alias nsmul_subset_nsmul_of_zero_mem := nsmul_subset_nsmul_right
 
 @[to_additive]
 lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
-    s ^ n ⊆ t ^ (n - 1) * s := pow_le_pow_mul_of_sq_le_mul hst hn
+    s ^ n ⊆ t ^ (n - 1) * s := subset_of_le (pow_le_pow_mul_of_sq_le_mul hst hn)
 
 @[to_additive (attr := simp) nsmul_empty]
 lemma empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
@@ -1064,6 +1080,11 @@ lemma map_op_pow (s : Finset α) :
     ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
+
+@[to_additive]
+lemma product_pow [Monoid β] (s : Finset α) (t : Finset β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
+  | 0 => by simp
+  | n + 1 => by simp [pow_succ, product_pow _ _ n]
 
 end Monoid
 
@@ -1468,6 +1489,8 @@ section Mul
 
 variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
 
+@[to_additive] lemma smul_finset_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image₂_right
+
 @[to_additive]
 theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
   image_subset_image₂_left
@@ -1515,7 +1538,16 @@ end Semigroup
 
 section IsLeftCancelMul
 
-variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
+
+@[to_additive]
+lemma Nontrivial.mul_left : t.Nontrivial → s.Nonempty → (s * t).Nontrivial := by
+  rintro ⟨a, ha, b, hb, hab⟩ ⟨c, hc⟩
+  exact ⟨c * a, mul_mem_mul hc ha, c * b, mul_mem_mul hc hb, by simpa⟩
+
+@[to_additive]
+lemma Nontrivial.mul (hs : s.Nontrivial) (ht : t.Nontrivial) : (s * t).Nontrivial :=
+  ht.mul_left hs.nonempty
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
@@ -1523,11 +1555,11 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
 @[to_additive (attr := simp)]
-theorem card_singleton_mul : ({a} * t).card = t.card :=
+theorem card_singleton_mul (a : α) (t : Finset α) : ({a} * t).card = t.card :=
   card_image₂_singleton_left _ <| mul_right_injective _
 
 @[to_additive]
-theorem singleton_mul_inter : {a} * (s ∩ t) = {a} * s ∩ ({a} * t) :=
+theorem singleton_mul_inter (a : α) (s t : Finset α) : {a} * (s ∩ t) = {a} * s ∩ ({a} * t) :=
   image₂_singleton_inter _ _ <| mul_right_injective _
 
 @[to_additive]
@@ -1547,20 +1579,25 @@ theorem card_le_card_mul_self {s : Finset α} : s.card ≤ (s * s).card := by
 
 end IsLeftCancelMul
 
-section
+section IsRightCancelMul
 
-variable [Mul α] [IsRightCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsRightCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
+
+@[to_additive]
+lemma Nontrivial.mul_right : s.Nontrivial → t.Nonempty → (s * t).Nontrivial := by
+  rintro ⟨a, ha, b, hb, hab⟩ ⟨c, hc⟩
+  exact ⟨a * c, mul_mem_mul ha hc, b * c, mul_mem_mul hb hc, by simpa⟩
 
 @[to_additive (attr := simp)]
-theorem card_mul_singleton : (s * {a}).card = s.card :=
+theorem card_mul_singleton (s : Finset α) (a : α) : (s * {a}).card = s.card :=
   card_image₂_singleton_right _ <| mul_left_injective _
 
 @[to_additive]
-theorem inter_mul_singleton : s ∩ t * {a} = s * {a} ∩ (t * {a}) :=
+theorem inter_mul_singleton (s t : Finset α) (a : α) : s ∩ t * {a} = s * {a} ∩ (t * {a}) :=
   image₂_inter_singleton _ _ <| mul_left_injective _
 
 @[to_additive]
-theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s * t).card :=
+theorem card_le_card_mul_right (ht : t.Nonempty) : s.card ≤ (s * t).card :=
   card_le_card_image₂_right _ ht mul_left_injective
 
 /--
@@ -1571,18 +1608,23 @@ See `card_le_card_mul_self` for the version with left-cancellative multiplicatio
 "The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
 See `card_le_card_add_self` for the version with left-cancellative addition."
 ]
-theorem card_le_card_mul_self' {s : Finset α} : s.card ≤ (s * s).card := by
+theorem card_le_card_mul_self' : s.card ≤ (s * s).card := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
-end
+end IsRightCancelMul
 
 section CancelMonoid
 variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
 
+@[to_additive]
+lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivial
+  | 1, _ => by simpa
+  | n + 2, _ => by simpa [pow_succ] using (hs.pow n.succ_ne_zero).mul hs
+
 /-- See `Finset.card_pow_mono` for a version that works for the empty set. -/
 @[to_additive "See `Finset.card_nsmul_mono` for a version that works for the empty set."]
 protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ (s ^ n).card :=
-  monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right _ hs
+  monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right hs
 
 /-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
 @[to_additive "See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars."]

@@ -12,7 +12,7 @@ import Mathlib.Algebra.Homology.QuasiIso
 
 Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we shall
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,
-the homology is obviously zero. When `e.f j = j`, we construct an isomorphism
+the homology is obviously zero. When `e.f j = j`, we shall construct an isomorphism
 `(K.extend e).homology j' ≅ K.homology j`.
 
 -/
@@ -22,8 +22,7 @@ open CategoryTheory Limits Category
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
-  [HasZeroObject C]
+  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
 
@@ -79,6 +78,7 @@ variable (cocone : CokernelCofork (hcone.lift (KernelFork.ofι (K.d i j) (K.d_co
   (hcocone : IsColimit cocone)
 
 include hi hi' hcone in
+/-- Auxiliary lemma for `lift_d_comp_eq_zero_iff`. -/
 lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
     (hf' : f' ≫ cone.ι = K.d i j)
     (f'' : (K.extend e).X i' ⟶ cone.pt)
@@ -267,10 +267,8 @@ noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
 
 end HomologyData
 
-variable {j : ι} {j' : ι'} (hj' : e.f j = j')
-
-include hj' in
-lemma hasHomology [K.HasHomology j] : (K.extend e).HasHomology j' :=
+lemma hasHomology {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] :
+    (K.extend e).HasHomology j' :=
   ShortComplex.HasHomology.mk'
     (homologyData' K e hj' rfl rfl ((K.sc j).homologyData))
 
