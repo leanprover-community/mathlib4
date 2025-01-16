@@ -240,7 +240,6 @@ theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
       m * powHalf (Submonoid.log p) := by
   rw [← Localization.mk_eq_mk']; rfl
 
--- @[simp] -- Porting note: simp normal form is `dyadicMap_apply_pow'`
 theorem dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m (Submonoid.pow 2 n)) =
       m • powHalf n := by
