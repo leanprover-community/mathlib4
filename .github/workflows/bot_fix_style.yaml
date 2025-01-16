@@ -19,7 +19,7 @@ jobs:
     env:
       AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
       COMMENT_EVENT: ${{ github.event.comment.body }}
-      COMMENT_REVIEW: ${{ github.event.pull_request_review.body }}
+      COMMENT_REVIEW: ${{ github.event.review.body }}
       COMMENT_REVIEW_COMMENT: ${{ github.event.pull_request_review_comment.body }}
     name: Fix style issues from lint
     # the `if` works with `comment`s, but not with `review`s or `review_comment`s
