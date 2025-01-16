@@ -59,7 +59,7 @@ Note that we obtain a root system (not just a root pairing). See also
 `RootPairing.restrictScalars`. -/
 def restrictScalars' :
     RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
-  { toPerfectPairing := (P.toPerfectPairing.restrictScalarsFieldSpan _ _
+  { toPerfectPairing := (P.toPerfectPairing.restrictScalarsField _ _
       (injective_subtype _) (injective_subtype _) (by simpa using IsBalanced.isPerfectCompl)
       (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
         (LinearMap.range (Algebra.linearMap K L)) (range P.root) (range P.coroot)
@@ -76,7 +76,12 @@ def restrictScalars' :
       ext; simpa [algebra_compatible_smul L] using P.reflection_perm_root i j
     reflection_perm_coroot i j := by
       ext; simpa [algebra_compatible_smul L] using P.reflection_perm_coroot i j
-    span_eq_top := by
+    span_root_eq_top := by
+      rw [← span_setOf_mem_eq_top]
+      congr
+      ext ⟨x, hx⟩
+      simp
+    span_coroot_eq_top := by
       rw [← span_setOf_mem_eq_top]
       congr
       ext ⟨x, hx⟩
