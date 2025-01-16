@@ -125,39 +125,24 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-
-theorem exists_thing [DecidableEq ι] [Nontrivial R]
-    [NoZeroDivisors A] (x : ι → A) (y : A)
+#print Polynomial.restriction
+theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
+    (x : ι → A) (y : A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
     ∃ (P : MvPolynomial (Option ι) R) (i : ι)
     (hP0 : (aeval fun o ↦ o.elim Polynomial.X fun j ↦ Polynomial.C (x j)) P ≠ 0)
     (hPa : aeval (fun o => o.elim y x) P = 0),
     P.aeval (fun o => o.elim (Polynomial.C y) (update (Polynomial.C ∘ x) i Polynomial.X)) ≠ 0 := by
   rcases hx.1 y with ⟨P, hP0, hP⟩
+  have hP : ∃ n : ℕ, (P.coeff n : A) ∉ (algebraMap R A).range := by
+    by_contra h
+    simp at h
 
-
-theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [Nontrivial R]
-    [NoZeroDivisors A]
+theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι]
+    [Nontrivial R] [NoZeroDivisors A]
     (x : ι → A) (y : A) (hx : IsTranscendenceBasis R x) (hy : Transcendental R y) :
     ∃ i : ι, Algebra.IsAlgebraic (adjoin R (range (update x i y))) A := by
-  obtain ⟨P, hP0, hP⟩ := (isAlgebraic_adjoin_range_left_iff rfl).1 (hx.isAlgebraic.1 y)
-  -- obtain ⟨j, hj⟩ : ∃ j, some j ∈ P.vars := by
-  --   by_contra h
-  --   have hPC : RingHom.id _ P = ((MvPolynomial.rename (fun _ => none)).toRingHom.comp
-  --     (MvPolynomial.rename (fun _ => i)).toRingHom) P := by
-  --     refine MvPolynomial.hom_congr_vars (by ext; simp) ?_ rfl
-  --     intro i hi _
-  --     induction i <;> simp_all
-  --   rw [RingHom.id_apply] at hPC
-  --   rw [hPC] at hP
-  --   have hP0 : P ≠ 0 := by rintro rfl; simp at hP0
-  --   rw [hPC] at hP0 hP
-  --   apply hP0
-  --   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply]
-  --   rw [algebraicIndependent_iff.1 hy ((MvPolynomial.rename (fun _ => i)) P), map_zero]
-  --   simpa [Function.comp_def, aeval_rename] using hP
-  obtain ⟨i, hi⟩ : ∃ i : ι, P.aeval (fun o => o.elim (Polynomial.C y)
-    (update (Polynomial.C ∘ x) i Polynomial.X)) ≠ 0 := by sorry
+  obtain ⟨P, i, hP0, hP, hi⟩ := exists_thing x y hx.isAlgebraic hy
   use i
   let M : Subalgebra R A := (aeval (Function.update x i y)).range
   let N : Subalgebra R A := (aeval x).range
@@ -191,19 +176,16 @@ theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [Non
   have hfr : f.range.restrictScalars R = O := by ext; simp [O, f]
   have hxiO : x i ∈ O := (AlgHom.mem_range _).2 ⟨MvPolynomial.X (some i), by simp⟩
   have h : (⊤ : Subalgebra M O) = Algebra.adjoin M {⟨x i, hxiO⟩} :=
-    Subalgebra.map_injective hf <| by
-    simp only [AlgHom.toRingHom_eq_coe, Algebra.map_top, AlgHom.map_adjoin_singleton, AlgHom.coe_mk,
-      RingHom.coe_coe, coe_val, O, M]
-    apply Subalgebra.restrictScalars_injective R
-    rw [restrictScalars_adjoin, adjoin_union, adjoin_eq, hfr]
-    simp only [O, Option.range_eq, ← adjoin_range_eq_range_aeval, Function.comp_def,
-      Set.insert_eq, Algebra.adjoin_union]
+    Subalgebra.map_injective hf <| Subalgebra.restrictScalars_injective R <| by
+    simp only [Algebra.map_top, hfr, ← adjoin_range_eq_range_aeval, Option.range_eq, comp_def,
+      insert_eq, adjoin_union, AlgHom.map_adjoin_singleton, restrictScalars_adjoin, adjoin_eq, M, O,
+      i5, N, f]
     simp only [← adjoin_union, f]
     congr 1
     ext a
     simp only [Option.elim_none, Option.elim_some, singleton_union, mem_insert_iff, mem_range,
       AlgHom.toRingHom_eq_coe, AlgHom.coe_mk, RingHom.coe_coe, coe_val, union_singleton, update,
-      eq_rec_constant, dite_eq_ite, O, M, f]
+      eq_rec_constant, dite_eq_ite, i5, M, N, f, O]
     by_cases hay : a = y
     · subst a; simp only [true_or, ite_eq_left_iff, true_iff, M, O, f]
       exact Or.inr ⟨i, by simp⟩
@@ -216,10 +198,10 @@ theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [Non
       { O with algebraMap_mem' := fun r => hMO <| by simp [RingHom.algebraMap_toAlgebra] }
   have h2 : Algebra.IsAlgebraic M O := by
     refine ⟨fun a => ?_⟩
-    rw [← isAlgebraic_algHom_iff f hf]
-    simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_mk, RingHom.coe_coe, coe_val, f]
+    simp only [← isAlgebraic_algHom_iff f hf, AlgHom.toRingHom_eq_coe, AlgHom.coe_mk,
+      RingHom.coe_coe, coe_val, f, i5, M, N, O]
     have haT : a ∈ (⊤ : Subalgebra M O) := mem_top
-    erw [← @isAlgebraic_iff_isAlgebraic_val M A _ _ _ OM ⟨a, a.2⟩,
+    rw [← @isAlgebraic_iff_isAlgebraic_val M A _ _ _ OM ⟨a, a.2⟩,
       ← @isAlgebraic_iff_isAlgebraic_val M O _ _ _ ⊤ ⟨⟨a, a.2⟩, haT⟩]
     suffices (adjoin M ({⟨x i, hxiO⟩} : Set O)).IsAlgebraic by
       { rw [← h] at this
