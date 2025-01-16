@@ -7,6 +7,7 @@ import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.SchurZassenhaus
+import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Z-Groups
@@ -23,9 +24,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 * `IsZGroup.isCyclic_commutator`: a finite Z-group has cyclic commutator subgroup.
 * `IsZGroup.coprime_commutator_index`: the commutator subgroup of a finite Z-group is a
   Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
-
-TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
-and `G/G'` are cyclic of coprime orders.
+* `isZGroup_iff_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic to a
+  semidirect product of two cyclic groups of coprime order.
 
 -/
 
@@ -305,5 +305,22 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
   · have := (P.2.map f').isCyclic_of_isZGroup
     apply isCyclic_of_injective (f'.subgroupMap P)
     rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
+
+/-- A finite group `G` is a Z-group if and only if `G` is isomorphic to a semidirect product of two
+  cyclic groups of coprime order. -/
+theorem isZGroup_iff_mulEquiv [Finite G] :
+    IsZGroup G ↔ ∃ (m n : ℕ) (φ : Multiplicative (ZMod m) →* MulAut (Multiplicative (ZMod n)))
+      (_ : G ≃* SemidirectProduct _ _ φ), Nat.Coprime m n := by
+  refine ⟨fun hG ↦ ?_, ?_⟩
+  · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime hG.coprime_commutator_index
+    exact ⟨_, _, _, (SemidirectProduct.mulEquivSubgroup hH).symm.trans (SemidirectProduct.congr'
+      (zmodCyclicMulEquiv hG.isCyclic_commutator).symm (hH.symm.QuotientMulEquiv.symm.trans
+      (zmodCyclicMulEquiv hG.isCyclic_abelianization).symm)), (hG.coprime_commutator_index).symm⟩
+  · rintro ⟨m, n, φ, e, h⟩
+    have := Finite.of_injective _ (e.symm.injective.comp SemidirectProduct.inl_injective)
+    rw [← m.card_zmod, ← n.card_zmod, Nat.coprime_comm] at h
+    have : IsZGroup (Multiplicative (ZMod n) ⋊[φ] Multiplicative (ZMod m)) :=
+      isZGroup_of_coprime SemidirectProduct.range_inl_eq_ker_rightHom.ge h
+    exact IsZGroup.of_injective (f := e.toMonoidHom) e.injective
 
 end Classification
