@@ -401,10 +401,16 @@ def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`,
   without a linear order. -/
+def squashCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
+    Squash { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
+  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Squash.mk (cycleFactorsAux l f (h _)))
+    (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
+
+set_option linter.deprecated false in
+@[deprecated squashCycleFactors (since := "2025-01-13")]
 def truncCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
-    (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
+  squashCycleFactors f
 
 section CycleFactorsFinset
 
