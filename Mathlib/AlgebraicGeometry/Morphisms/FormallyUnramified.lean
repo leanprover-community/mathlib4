@@ -11,7 +11,7 @@ import Mathlib.RingTheory.RingHom.Unramified
 # Formally unramified morphisms
 
 A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified.
+`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified.
 
 We show that these properties are local, and are stable under compositions and base change.
 
@@ -28,9 +28,8 @@ namespace AlgebraicGeometry
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-/-- A morphism of schemes `f : X ⟶ Y` is locally of finite type if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite type.
--/
+/-- A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U ⊆ Y` and
+`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified. -/
 @[mk_iff]
 class FormallyUnramified (f : X ⟶ Y) : Prop where
   formallyUnramified_of_affine_subset :
