@@ -26,6 +26,16 @@ open CategoryTheory Category Limits
 
 namespace CategoryTheory
 
+/--
+In a category, given a morphism `f : A ⟶ B` and an object `X`,
+this is the obvious pushout diagram:
+```
+A ⟶ A ⨿ X
+|     |
+v     v
+B ⟶ B ⨿ X
+```
+-/
 lemma IsPushout.of_coprod_inl_with_id {C : Type*} [Category C]
     {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct A X]
     [HasBinaryCoproduct B X] :
