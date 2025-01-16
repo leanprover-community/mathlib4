@@ -35,15 +35,15 @@ open Finset MulAction
 
 open scoped Pointwise
 
-variable (R S T : leftTransversals (H : Set G)) [FiniteIndex H]
+variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
 @[to_additive "The difference of two left transversals"]
 noncomputable def diff : A :=
-  let α := MemLeftTransversals.toEquiv S.2
-  let β := MemLeftTransversals.toEquiv T.2
-  (@Finset.univ (G ⧸ H) H.fintypeQuotientOfFiniteIndex).prod fun q =>
-    ϕ
+  let α := S.2.leftQuotientEquiv
+  let β := T.2.leftQuotientEquiv
+  let _ := H.fintypeQuotientOfFiniteIndex
+  ∏ q : G ⧸ H, ϕ
       ⟨(α q : G)⁻¹ * β q,
         QuotientGroup.leftRel_apply.mp <|
           Quotient.exact' ((α.symm_apply_apply q).trans (β.symm_apply_apply q).symm)⟩
@@ -73,6 +73,63 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
+open Equiv Function MemLeftTransversals MulAction ZMod
+
+variable (g : G)
+
+variable (H) in
+/-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
+  in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
+  representative `g₀` of `q₀`. -/
+noncomputable def transferFunction : G ⧸ H → G := fun q =>
+  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
+
+lemma transferFunction_apply (q : G ⧸ H) :
+    transferFunction H g q =
+      g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) *
+        (quotientEquivSigmaZMod H g q).1.out.out := rfl
+
+lemma coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
+  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out,
+    ← quotientEquivSigmaZMod_symm_apply, Sigma.eta, symm_apply_apply]
+
+variable (H) in
+/-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
+of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+def transferSet : Set G := Set.range (transferFunction H g)
+
+lemma mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g := ⟨q, rfl⟩
+
+variable (H) in
+/-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
+  of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+def transferTransversal : H.LeftTransversal :=
+  ⟨transferSet H g, isComplement_range_left (coe_transferFunction g)⟩
+
+lemma transferTransversal_apply (q : G ⧸ H) :
+    ↑((transferTransversal H g).2.leftQuotientEquiv q) = transferFunction H g q :=
+  IsComplement.leftQuotientEquiv_apply (coe_transferFunction g) q
+
+lemma transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑((transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
+      g ^ (cast k : ℤ) * q.out.out := by
+  rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
+    apply_symm_apply]
+
+lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑((g • transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
+      if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
+      else g ^ (cast k : ℤ) * q.out.out := by
+  rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
+    mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
+    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
+    sub_eq_neg_add, cast_sub_one, add_sub_cancel]
+  by_cases hk : k = 0
+  · rw [if_pos hk, if_pos hk, zpow_natCast]
+  · rw [if_neg hk, if_neg hk]
+
 end Subgroup
 
 namespace MonoidHom
@@ -84,14 +141,14 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 @[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
-  let T : leftTransversals (H : Set G) := Inhabited.default
+  let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     map_one' := by beta_reduce; rw [one_smul, diff_self]
     -- Porting note: added `simp only` (not just beta reduction)
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
-variable (T : leftTransversals (H : Set G))
+variable (T : H.LeftTransversal)
 
 @[to_additive]
 theorem transfer_def [FiniteIndex H] (g : G) : transfer ϕ g = diff ϕ T (g • T) := by
@@ -244,3 +301,57 @@ theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
 end BurnsideTransfer
 
 end MonoidHom
+
+namespace IsCyclic
+
+open Subgroup
+
+-- we could suppress the variable `p`, but that might introduce `motive not type correct` issues.
+variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : (Nat.card G).minFac = p) {P : Sylow p G}
+
+include hp in
+theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centralizer (P : Set G) := by
+  subst hp
+  by_cases hn : Nat.card G = 1
+  · have := (Nat.card_eq_one_iff_unique.mp hn).1
+    rw [Subsingleton.elim P.normalizer (centralizer P)]
+  have := Fact.mk (Nat.minFac_prime hn)
+  have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
+  rw [normalizerMonoidHom_ker, ← index, ← relindex] at key
+  refine relindex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
+  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  rcases eq_zero_or_pos k with h0 | h0
+  · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
+    apply Nat.coprime_one_right
+  rw [hP.card_mulAut, hk, Nat.totient_prime_pow Fact.out h0]
+  refine (Nat.Coprime.pow_right _ ?_).mul_right ?_
+  · replace key : P.IsCommutative := by
+      let h := hP.commGroup
+      exact ⟨⟨CommGroup.mul_comm⟩⟩
+    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_of_le_left P.normalizer P.le_centralizer)
+    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_index_of_le P.le_normalizer)
+    rw [Nat.coprime_comm, Nat.Prime.coprime_iff_not_dvd Fact.out]
+    exact P.not_dvd_index
+  · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_card (centralizer P) P.normalizer)
+    apply Nat.Coprime.coprime_dvd_left (card_subgroup_dvd_card P.normalizer)
+    have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
+    have h2 := Nat.gcd_le_right (m := Nat.card G) ((Nat.card G).minFac - 1)
+      (tsub_pos_iff_lt.mpr (Nat.minFac_prime hn).one_lt)
+    contrapose! h2
+    refine Nat.sub_one_lt_of_le (Nat.card G).minFac_pos (Nat.minFac_le_of_dvd ?_ h1)
+    exact (Nat.two_le_iff _).mpr ⟨ne_zero_of_dvd_ne_zero Nat.card_pos.ne' h1, h2⟩
+
+include hp in
+/-- A cyclic Sylow subgroup for the smallest prime has a normal complement. -/
+theorem isComplement' (hP : IsCyclic P) :
+    (MonoidHom.transferSylow P (hP.normalizer_le_centralizer hp)).ker.IsComplement' P := by
+  subst hp
+  by_cases hn : Nat.card G = 1
+  · have := (Nat.card_eq_one_iff_unique.mp hn).1
+    rw [Subsingleton.elim (MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)).ker ⊥,
+      Subsingleton.elim P.1 ⊤]
+    exact isComplement'_bot_top
+  have := Fact.mk (Nat.minFac_prime hn)
+  exact MonoidHom.ker_transferSylow_isComplement' P (hP.normalizer_le_centralizer rfl)
+
+end IsCyclic
