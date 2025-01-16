@@ -475,6 +475,8 @@
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
+  "Mathlib.Algebra.Order.Ring.Nat":
+  ["Mathlib.Algebra.Order.Group.Nat"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],
   "Batteries.Tactic.Omega.Frontend": ["Batteries.Tactic.Omega.Logic"],
