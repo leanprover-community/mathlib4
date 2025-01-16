@@ -271,7 +271,7 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     rintro (_ | x)
     · simp
     · simp only [Option.elim_some, Nat.zero_eq, Fin.coe_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
-      ite_eq_right_iff, reduceCtorEq, imp_false, not_and]
+        ite_eq_right_iff, reduceCtorEq, imp_false, not_and]
       rintro rfl
       exact x.2.2.ne
 
