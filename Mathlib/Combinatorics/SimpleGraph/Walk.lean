@@ -3,6 +3,8 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Data.List.Rotate
+import Mathlib.Data.List.Lemmas
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -904,6 +906,62 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.lastDart hp).edge = s(p.penultimate, w) := rfl
 
+lemma firstDart_mem_darts {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) :
+    p.firstDart hp ∈ p.darts := by
+  induction p <;> simp [Walk.firstDart] at hp ⊢
+
+theorem darts_getElem_fst
+    {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
+    (p.darts[i]'(by simpa)).fst = p.support[i]'(by simp; omega) := by
+  induction p generalizing i with
+  | nil => simp at hi
+  | @cons u' v' w' adj tail ih =>
+    simp at hi
+    by_cases h : i = 0
+    · subst h; simp
+    · simpa (config := {singlePass := true}) [show i = i - 1 + 1 by omega]
+        using ih (i - 1) (by omega)
+
+lemma darts_getElem_fst_eq_support_tail
+    {u v} {p : G.Walk u v} (i : ℕ) (hi : 0 < i ∧ i < p.length) :
+    (p.darts[i]'(by simp; omega)).fst = p.support.tail[i - 1]'(by simp; omega) := by
+  simp only [← List.drop_one]
+  rw [List.getElem_drop, p.darts_getElem_fst]
+  simp only [show 1 + (i - 1) = i by omega]
+  exact hi.2
+
+theorem darts_getElem_snd_eq_support_tail
+    {u v : V} {p : G.Walk u v} (i : ℕ) (h : i < p.length) :
+    (p.darts[i]'(by simpa)).snd = p.support.tail[i]'(by simpa) := by
+  simp [← p.map_snd_darts]
+
+theorem darts_getElem_snd
+    {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
+    (p.darts[i]'(by simpa)).snd = p.support[i + 1]'(by simpa) := by
+  rw [darts_getElem_snd_eq_support_tail i hi]
+  simp only [← List.drop_one]
+  rw [List.getElem_drop]
+  congr 1
+  apply add_comm
+
+lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length + 1) :
+    p.support[i]'(by simpa using hi) = p.getVert i := by
+  induction p generalizing i with
+  | nil => simp [Walk.getVert]
+  | cons v p' ih =>
+    cases i
+    · rfl
+    · simp [Walk.getVert] at hi
+      simpa [Walk.getVert] using ih (by omega)
+
+@[simp] lemma support_tail_ne_nil {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
+    p.support.tail ≠ [] := by
+  cases p <;> simp at hp |-
+
+lemma IsRotated_dropLast_tail (p : G.Walk u u) : p.support.dropLast ~r p.support.tail := by
+  apply List.IsRotated.dropLast_tail (show p.support ≠ [] by simp)
+  simp
+
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
 lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
@@ -1083,6 +1141,27 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 
+theorem dropUntil_not_nil {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) (ne : w ≠ v) :
+    ¬(p.dropUntil w hw).Nil := by
+  induction p with
+  | nil =>
+    simp only [support_nil, List.mem_singleton] at hw
+    exact False.elim (ne hw)
+  | cons _ _ ih =>
+    simp only [support_cons, List.mem_cons] at hw
+    cases' hw with hw₁ hw₂
+    · subst hw₁
+      simp [Walk.dropUntil]
+    · simp only [dropUntil, support_cons]
+      split_ifs with hw₃
+      · subst hw₃
+        exact not_nil_cons
+      · exact ih hw₂ ne
+
+lemma sum_takeUntil_dropUntil_length {u v w : V} {p : G.Walk u v} (hw : w ∈ p.support) :
+    (p.takeUntil w hw).length + (p.dropUntil w hw).length = p.length := by
+  simpa only [length_append] using congr_arg (·.length) (p.take_spec hw)
+
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
   (c.dropUntil u h).append (c.takeUntil u h)
@@ -1103,6 +1182,15 @@ theorem rotate_darts {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
 theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).edges ~r c.edges :=
   (rotate_darts c h).map _
+
+@[simp] lemma rotate_length_eq {u v : V} {c : G.Walk u u} (hv : v ∈ c.support) :
+    (c.rotate hv).length = c.length := by
+  have : (c.rotate hv).edges ~r c.edges := by apply rotate_edges
+  simpa only [← length_edges] using this.perm.length_eq
+
+lemma rotate_Nil_iff {u v : V} {c : G.Walk u u} (hv : v ∈ c.support) :
+    (c.rotate hv).Nil ↔ c.Nil := by
+  simp only [nil_iff_length_eq, rotate_length_eq hv]
 
 end WalkDecomp
 
@@ -1371,6 +1459,54 @@ theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
   intros e
   rw [edges_transfer]
   apply edges_subset_edgeSet p
+
+open Classical in
+/-- Convert a list of vertices to a walk. -/
+noncomputable def fromList {l : List V} (ne : l ≠ []) (hl : l.Chain' (fun u v => G.Adj u v)) :
+    G.Walk (l.head ne) (l.getLast ne) :=
+  match l with
+  | [] => by simp at ne
+  | a :: l' =>
+    if h : l' = [] then
+      (nil : G.Walk a a).copy (by simp) (by simp [h])
+    else cons
+      (show G.Adj a (l'.head h) by
+        rw [List.chain'_cons'] at hl; apply hl.1; simp [List.head?_eq_head h])
+      (fromList h
+        (by rw [List.chain'_cons'] at hl; exact hl.2) |>.copy rfl
+        (by conv_lhs =>
+          simp (config := {singlePass := true}) only [← List.tail_cons (a := a) (as := l')]
+          rw [List.getLast_tail]))
+
+lemma fromList_support {l : List V} (ne : l ≠ []) (hl : l.Chain' (fun u v => G.Adj u v)) :
+    (fromList ne hl).support = l := by
+  induction l with
+  | nil => simp at ne
+  | cons a l' ih =>
+    simp [fromList]
+    split_ifs with l'_ne
+    · simp [l'_ne]
+    · simpa using ih l'_ne _
+
+lemma prev_unique {u v : V} {c : G.Walk u v} {d₁ d₂ : G.Dart} (nodup : c.support.tail.Nodup)
+    (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.snd = d₂.snd) :
+    d₁.fst = d₂.fst := by
+  by_contra h
+  have ne : d₁ ≠ d₂ := by
+    contrapose h
+    simp at h |-
+    congr
+  exact ne <| List.inj_on_of_nodup_map (c.map_snd_darts ▸ nodup) hd₁ hd₂ eq
+
+lemma next_unique {u v : V} {c : G.Walk u v} (nodup : c.support.dropLast.Nodup)
+    {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ c.darts) (hd₂ : d₂ ∈ c.darts) (eq : d₁.fst = d₂.fst) :
+    d₁.snd = d₂.snd := by
+  by_contra h
+  have ne : d₁ ≠ d₂ := by
+    contrapose h
+    simp at h |-
+    congr
+  exact ne <| List.inj_on_of_nodup_map (c.map_fst_darts ▸ nodup) hd₁ hd₂ eq
 
 end Walk
 

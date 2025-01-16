@@ -242,6 +242,19 @@ lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ 
   | .cons _ (.cons _ .nil) => simp at hp
   | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
 
+lemma IsCycle.support_dropLast_Nodup {u : V} {p : G.Walk u u} (hp : IsCycle p) :
+    p.support.dropLast.Nodup := by
+  rw [List.IsRotated.nodup_iff p.IsRotated_dropLast_tail]
+  exact hp.2
+
+lemma IsCycle.prev_unique {u : V} {p : G.Walk u u} (hp : IsCycle p)
+    {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ p.darts) (hd₂ : d₂ ∈ p.darts) (eq : d₁.snd = d₂.snd) :
+    d₁.fst = d₂.fst := p.prev_unique hp.2 hd₁ hd₂ eq
+
+lemma IsCycle.next_unique {u : V} {p : G.Walk u u} (hp : IsCycle p)
+    {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ p.darts) (hd₂ : d₂ ∈ p.darts) (eq : d₁.fst = d₂.fst) :
+    d₁.snd = d₂.snd := p.next_unique hp.support_dropLast_Nodup hd₁ hd₂ eq
+
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
   simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
