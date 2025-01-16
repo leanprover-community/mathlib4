@@ -125,7 +125,7 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-
+#print totalDegree_mu
 theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
     (x : ι → A) (y : A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
@@ -242,3 +242,8 @@ theorem exchange_lemma [DecidableEq ι]
       simp only [comp_def, O, i5, f, M, update]
       congr; ext o; cases o <;> simp [update]; split_ifs <;> simp_all
   refine IsAlgebraic.trans' M (S := O) Subtype.val_injective
+
+theorem big_exchange_lemma [DecidableEq ι]
+    [Nontrivial R] [NoZeroDivisors A] (x : ι → A) (y : ι' → A)
+    (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : AlgebraicIndependent R y) :
+    ∃ f : ι' ↪ ι, Algebra.IsAlgebraic (adjoin R (range y ∪ (x '' (range f)ᶜ))) A := by sorry
