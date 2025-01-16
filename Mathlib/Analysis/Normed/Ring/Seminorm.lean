@@ -134,6 +134,7 @@ theorem apply_one [DecidableEq R] (x : R) : (1 : RingSeminorm R) x = if x = 0 th
 
 end NonUnitalRing
 
+
 section Ring
 
 variable [Ring R] (p : RingSeminorm R)
