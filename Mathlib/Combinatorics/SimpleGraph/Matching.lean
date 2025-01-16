@@ -413,7 +413,7 @@ lemma IsPerfectMatching.symmDiff_spanningCoe_IsPerfectMatching_IsAlternating_lef
   intro v w w' hww' hvw hvw'
   obtain ⟨v1, ⟨hm1, hv1⟩⟩ := hM.1 (hM.2 v)
   obtain ⟨v2, ⟨hm2, hv2⟩⟩ := hM'.1 (hM'.2 v)
-  simp only [ne_eq, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj] at *
+  simp only [symmDiff_def] at *
   aesop
 
 lemma IsPerfectMatching.symmDiff_spanningCoe_IsPerfectMatching_IsAlternating_right
