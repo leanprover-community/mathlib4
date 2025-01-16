@@ -61,6 +61,26 @@ lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
+@[simp]
+lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
+    sSup S f ↔ ∃ (W : S), W.1 f := by
+  dsimp [sSup, iSup]
+  constructor
+  · rintro ⟨_, ⟨⟨_, ⟨⟨_, ⟨_, h⟩, rfl⟩, rfl⟩⟩, rfl⟩, hf⟩
+    exact ⟨⟨_, h⟩, hf⟩
+  · rintro ⟨⟨W, hW⟩, hf⟩
+    exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
+
+@[simp]
+lemma iSup_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    iSup W f ↔ ∃ i, W i f := by
+  apply (sSup_iff (Set.range W) f).trans
+  constructor
+  · rintro ⟨⟨_, i, rfl⟩, hf⟩
+    exact ⟨i, hf⟩
+  · rintro ⟨i, hf⟩
+    exact ⟨⟨_, i, rfl⟩, hf⟩
+
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
 def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
