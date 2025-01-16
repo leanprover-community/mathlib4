@@ -57,7 +57,7 @@ jobs:
           fi
 
       - id: user_permission
-        if: steps.bot_fix_style.outputs.bot_fix_style == 'bot_fix_style'
+        if: steps.bot_fix_style.outputs.bot_fix_style == 'bot-fix-style'
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'write'
