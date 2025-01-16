@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Real.IsNonarchimedean
-import Mathlib.Order.Filter.ENNReal
 import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
