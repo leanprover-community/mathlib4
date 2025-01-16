@@ -482,13 +482,12 @@ theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset α) (f : p → α �
   split_ifs with h <;> rfl
 
 @[to_additive]
-theorem ite_prod_one {R ι : Type*} [CommMonoid R] {p : Prop} [Decidable p] (s : Finset ι)
-    (f : ι → R) :
+theorem ite_prod_one (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
     (if p then (∏ x in s, f x) else 1) = ∏ x in s, if p then f x else 1 := by
   simp only [prod_ite_irrel, prod_const_one]
 
 @[to_additive]
-theorem ite_one_prod {R ι : Type*} [CommMonoid R] {p : Prop} [Decidable p] (s : Finset ι)
+theorem ite_one_prod (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
     (f : ι → R) :
     (if p then 1 else (∏ x in s, f x)) = ∏ x in s, if p then 1 else f x := by
   simp only [prod_ite_irrel, prod_const_one]
