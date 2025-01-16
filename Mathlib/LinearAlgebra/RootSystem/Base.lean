@@ -13,10 +13,17 @@ This file contains a theory of bases for root pairings / systems.
 ## Implementation details
 
 For reduced root pairings `RootSystem.Base` is equivalent to the usual definition appearing in the
-informal literature. However for non-reduced root pairings, it is more restrictive because it
-includes axioms on coroots as well as on roots. For example by
+informal literature (e.g., it follows from [serre1965](Ch. V, §8, Proposition 7) that
+`RootSystem.Base` is equivalent to both [serre1965](Ch. V, §8, Definition 5) and
+[bourbaki1968](Ch. VI, §1.5) for reduced pairings). However for non-reduced root pairings, it is
+more restrictive because it includes axioms on coroots as well as on roots. For example by
 `RootPairing.Base.eq_one_or_neg_one_of_mem_support_of_smul_mem` it is clear that the 1-dimensional
-root system `{-2, -1, 0, 1, 2} ⊆ ℝ` has no base.
+root system `{-2, -1, 0, 1, 2} ⊆ ℝ` has no base in the sense of `RootSystem.Base`.
+
+It is also worth remembering that it is only for reduced root systems that one has the simply
+transitive action of the Weyl group on the set of bases, and that the Weyl group of a non-reduced
+root system is the same as that of the reduced root system obtained by passing to the indivisible
+roots.
 
 For infinite root systems, `RootSystem.Base` is usually not the right notion: linear independence
 is too strong.
@@ -41,14 +48,9 @@ namespace RootPairing
 
 /-- A base of a root pairing.
 
-For reduced root pairings `RootSystem.Base` is equivalent to the usual definition appearing in the
-informal literature. However for non-reduced root pairings, it is more restrictive because it
-includes axioms on coroots as well as on roots. For example by
-`RootPairing.Base.eq_one_or_neg_one_of_mem_support_of_smul_mem` it is clear that the 1-dimensional
-root system `{-2, -1, 0, 1, 2} ⊆ ℝ` has no base.
-
-Compare with [serre1965](Ch. V, §8, Definition 5 and §9, Proposition 7) as well as
-[bourbaki1968](Ch. VI, §1.5). -/
+For reduced root pairings this definition is equivalent to the usual definition appearing in the
+informal literature but not for non-reduced root pairings it is more restrictive. See the module
+doc string for further remarks.  -/
 structure Base (P : RootPairing ι R M N) where
   /-- The set of roots / coroots belonging to the base. -/
   support : Set ι
