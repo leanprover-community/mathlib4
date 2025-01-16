@@ -310,6 +310,45 @@ theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra
   use g
   rwa [norm_lt_iff _ pos] at b
 
+-- Redefine `X`, since for the next theorem it need not be compact
+variable {X : Type*} [TopologicalSpace X]
+
+/--
+A variant of the Stone-Weierstrass theorem where `X` need not be compact:
+If `A` is a subalgebra of `C(X, ℝ)` which separates points, then, for any compact set `K ⊆ X`,
+every real-valued continuous function on `X` is within any `ε > 0` of some element of `A` on `K`.
+-/
+theorem exists_mem_subalgebra_near_continuous_on_compact_of_separatesPoints
+    {A : Subalgebra ℝ C(X, ℝ)} (hA : A.SeparatesPoints) (f : C(X, ℝ))
+    {K : Set X} (hK : IsCompact K) {ε : ℝ} (pos : 0 < ε) :
+    ∃ g ∈ A, (∀ x ∈ K, ‖(g : X → ℝ) x - f x‖ < ε) := by
+  let restrict_on_K : C(X, ℝ) →⋆ₐ[ℝ] C(K, ℝ) :=
+    ContinuousMap.compStarAlgHom' ℝ ℝ ⟨(Subtype.val), continuous_subtype_val⟩
+  --consider the subalgebra AK of functions with domain K
+  let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map (restrict_on_K) A
+  have hsep : AK.SeparatesPoints := by
+    intro x y hxy
+    obtain ⟨_, ⟨g, hg1, hg2⟩, hg_sep⟩ := hA (Subtype.coe_ne_coe.mpr hxy)
+    simp only [Set.mem_image, SetLike.mem_coe, exists_exists_and_eq_and]
+    use restrict_on_K g
+    constructor
+    · rw [Subalgebra.mem_map]
+      use g, hg1
+      simp only [AlgHom.coe_coe]
+    · change K.restrict (↑g) x ≠ K.restrict (↑g) y
+      simpa only [Set.restrict_apply, hg2]
+  obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
+      @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
+      (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
+      (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+  obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
+  use g, hgA
+  intro x hxK
+  have eqg : g x = gK ⟨x, hxK⟩ := by
+    rw [← hgKAK]; rfl
+  rw [eqg]
+  exact hgapprox ⟨x, hxK⟩
+
 end ContinuousMap
 
 section RCLike
