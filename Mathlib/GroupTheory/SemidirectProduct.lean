@@ -305,4 +305,24 @@ def congr' :
 
 end Congr
 
+@[simp]
+lemma card {N H : Type*} [Group N] [Group H] (φ : H →* MulAut N) :
+    Nat.card (N ⋊[φ] H) = Nat.card N * Nat.card H := by
+  let ψ : N ⋊[φ] H ≃ N × H := {
+    toFun := fun x => ⟨x.1, x.2⟩
+    invFun := fun x => ⟨x.1, x.2⟩
+    left_inv := fun _ => rfl
+    right_inv := fun _ => rfl
+  }
+  rw [Nat.card_eq_of_bijective ψ ψ.bijective, Nat.card_prod]
+
+def mulEquivProd
+    {N H : Type*} [Group N] [Group H] :
+    N ⋊[1] H ≃* N × H where
+  toFun x := ⟨x.1, x.2⟩
+  invFun x := ⟨x.1, x.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+
 end SemidirectProduct
