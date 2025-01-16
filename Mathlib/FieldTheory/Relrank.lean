@@ -125,6 +125,7 @@ theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le
 set_option synthInstance.maxHeartbeats 400000 in
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
+  let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
     IntermediateField.topEquiv.toLinearEquiv.rank_eq]
 
