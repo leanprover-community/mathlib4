@@ -1139,6 +1139,14 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
       simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h
       obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first |exact (ha.ne rfl).elim|simp
 
+@[simp]
+theorem induce_top_verts (v : Set V) : ((⊤ : G.Subgraph).induce v).verts = v :=
+  rfl
+
+@[simp]
+theorem induce_induce (v : Set V) : (G'.induce (G'.induce v).verts) = G'.induce v :=
+  rfl
+
 end Induce
 
 /-- Given a subgraph and a set of vertices, delete all the vertices from the subgraph,
