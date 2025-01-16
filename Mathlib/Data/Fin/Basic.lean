@@ -37,10 +37,7 @@ This file expands on the development in the core library.
 * `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
   `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
-  `Fin.castAdd n i` and `Fin.natAdd m i`;
-* `Fin.succAboveCases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
-  handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
-  as eliminator and works for `Sort*`. -- Porting note: this is in another file
+  `Fin.castAdd n i` and `Fin.natAdd m i`.
 
 ### Embeddings and isomorphisms
 
@@ -67,9 +64,8 @@ This file expands on the development in the core library.
   by `i ↦ n-(i+1)`
 -/
 
-assert_not_exists Monoid
-assert_not_exists Fintype
-universe u v
+
+assert_not_exists Monoid Fintype
 
 open Fin Nat Function
 

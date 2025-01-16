@@ -242,7 +242,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
       SetLike.coe_gOne, one_mul]
 
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
-  toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
+  algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,

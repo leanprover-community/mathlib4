@@ -227,8 +227,7 @@ theorem image_inter (i j : D.J) :
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
-    · dsimp only at *
-      substs eq₁
+    · substs eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩

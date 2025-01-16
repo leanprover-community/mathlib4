@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Fintype.Order
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extension of field embeddings
