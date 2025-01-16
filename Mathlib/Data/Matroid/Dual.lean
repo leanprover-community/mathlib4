@@ -206,7 +206,7 @@ theorem base_iff_dual_base_compl (hB : B ⊆ M.E := by aesop_mat) :
   rw [dual_base_iff, diff_diff_cancel_left hB]
 
 theorem ground_not_base (M : Matroid α) [h : RkPos M✶] : ¬M.Base M.E := by
-  rwa [rkPos_iff_empty_not_base, dual_base_iff, diff_empty] at h
+  rwa [rkPos_iff, dual_base_iff, diff_empty] at h
 
 theorem Base.ssubset_ground [h : RkPos M✶] (hB : M.Base B) : B ⊂ M.E :=
   hB.subset_ground.ssubset_of_ne (by rintro rfl; exact M.ground_not_base hB)

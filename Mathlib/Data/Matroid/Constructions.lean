@@ -123,10 +123,10 @@ theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
   exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
 
 theorem eq_loopyOn_or_rkPos (M : Matroid α) : M = loopyOn M.E ∨ RkPos M := by
-  rw [← empty_base_iff, rkPos_iff_empty_not_base]; apply em
+  rw [← empty_base_iff, rkPos_iff]; apply em
 
 theorem not_rkPos_iff : ¬RkPos M ↔ M = loopyOn M.E := by
-  rw [rkPos_iff_empty_not_base, not_iff_comm, empty_base_iff]
+  rw [rkPos_iff, not_iff_comm, empty_base_iff]
 
 end LoopyOn
 
