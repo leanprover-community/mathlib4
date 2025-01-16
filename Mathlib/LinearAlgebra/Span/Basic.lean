@@ -9,7 +9,6 @@ import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
