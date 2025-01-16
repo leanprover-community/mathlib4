@@ -71,6 +71,16 @@ lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
+/-- Help to unfold definitions of morphisms.
+
+Can be removed once we have a `Hom` structure, since that will ensure there's an `ofHom` in between
+the `hom` and the constructor. -/
+@[to_additive (attr := simp)]
+lemma hom_mk {X Y : MonCat} {f : X → Y} {h₁ h₂} :
+    ConcreteCategory.hom (C := MonCat)
+      ({ toFun := f, map_one' := h₁, map_mul' := h₂ } : X ⟶ Y) =
+    { toFun := f, map_one' := h₁, map_mul' := h₂ } := rfl
+
 @[to_additive (attr := simp)] lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
     (forget MonCat).map f = f := rfl
 
