@@ -8,7 +8,7 @@ import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # A collection of specific limit computations
