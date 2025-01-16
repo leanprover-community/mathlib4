@@ -27,13 +27,7 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
 
 assert_not_exists MonoidWithZero
 
-open List (Vector)
-open Relation
-
-open Nat (iterate)
-
-open Function (update iterate_succ iterate_succ_apply iterate_succ' iterate_succ_apply'
-  iterate_zero_apply)
+open Function (iterate_succ iterate_succ_apply iterate_zero_apply)
 
 namespace Turing
 
