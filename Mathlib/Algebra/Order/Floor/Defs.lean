@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.Ring.Cast
 
 We define the natural- and integer-valued floor and ceil functions on linearly ordered rings.
 
+Only the theorems that can be proved with the minimal imports required for the definitions
+are in this file. Other theorems are in `Mathlib/Algebra/Order/Floor/Basic.lean`.
+
 ## Main Definitions
 
 * `FloorSemiring`: An ordered semiring with natural-valued floor and ceil.
@@ -970,9 +973,6 @@ theorem ceil_eq_iff : ⌈a⌉ = z ↔ ↑z - 1 < a ∧ a ≤ z := by
 
 @[simp]
 theorem ceil_eq_zero_iff : ⌈a⌉ = 0 ↔ a ∈ Ioc (-1 : α) 0 := by simp [ceil_eq_iff]
-
-theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z := fun _ ⟨h₀, h₁⟩ =>
-  ceil_eq_iff.mpr ⟨h₀, h₁⟩
 
 @[bound]
 theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=

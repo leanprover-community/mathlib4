@@ -286,6 +286,9 @@ end LinearOrderedField
 
 /-! #### Ceil -/
 
+theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z := fun _ ⟨h₀, h₁⟩ =>
+  ceil_eq_iff.mpr ⟨h₀, h₁⟩
+
 theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, (⌈a⌉ : α) = z := fun a ha =>
   mod_cast ceil_eq_on_Ioc z a ha
 
