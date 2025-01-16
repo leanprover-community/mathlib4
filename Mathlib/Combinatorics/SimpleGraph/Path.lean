@@ -1079,6 +1079,14 @@ lemma mem_supp_iff_of_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w
   · exact hadj.symm
   · exact hadj
 
+lemma induce_supp_spanningCoe_adj_iff {v w : V} (c : G.ConnectedComponent) :
+  (G.induce c.supp).spanningCoe.Adj v w ↔ v ∈ c.supp ∧ G.Adj v w := by
+  by_cases h : v ∈ c.supp
+  · refine ⟨by aesop, ?_⟩
+    intro h'
+    have : w ∈ c.supp := by rwa [c.mem_supp_iff_of_adj h'.2] at h
+    aesop
+  · aesop
 
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl

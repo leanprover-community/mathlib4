@@ -403,15 +403,6 @@ lemma induce_sUnion_connected_of_pairwise_not_disjoint {S : Set (Set V)} (Sn : S
   refine ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
           Or.inl vs, Or.inr wt, induce_union_connected (Sc sS) (Sc tS) (Snd sS tS) _ _⟩
 
-lemma ConnectedComponent.induce_supp_spanningCoe_adj_iff {v w : V} (c : G.ConnectedComponent) :
-  (G.induce c.supp).spanningCoe.Adj v w ↔ v ∈ c.supp ∧ G.Adj v w := by
-  by_cases h : v ∈ c.supp
-  · refine ⟨by aesop, ?_⟩
-    intro h'
-    have : w ∈ c.supp := by rwa [c.mem_supp_iff_of_adj h'.2] at h
-    aesop
-  · aesop
-
 lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.Nonempty) :
     ∃ (t' : Finset V), t ⊆ t' ∧ (G.induce (t' : Set V)).Connected := by
   classical
