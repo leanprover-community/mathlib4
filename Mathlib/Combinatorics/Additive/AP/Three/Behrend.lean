@@ -42,8 +42,7 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
 
-assert_not_exists IsConformalMap
-assert_not_exists Conformal
+assert_not_exists IsConformalMap Conformal
 
 open Nat hiding log
 open Finset Metric Real

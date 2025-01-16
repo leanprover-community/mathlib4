@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Order.Hom.Basic
@@ -752,7 +751,7 @@ variable (α)
 protected def id : α →*₀o α :=
   { MonoidWithZeroHom.id α, OrderHom.id with }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderMonoidWithZeroHom.id α) = id :=
   rfl
 

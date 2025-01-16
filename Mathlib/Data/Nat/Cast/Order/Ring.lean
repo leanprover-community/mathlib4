@@ -31,10 +31,9 @@ theorem cast_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n :
   cast_nonneg' n
 
 /-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
-    0 ≤ (no_index (OfNat.ofNat n : α)) :=
+    0 ≤ (ofNat(n) : α) :=
   ofNat_nonneg' n
 
 @[simp, norm_cast]
@@ -57,17 +56,15 @@ theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontri
     (0 : α) < n ↔ 0 < n := cast_pos'
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
--- See note [no_index around OfNat.ofNat]
 @[simp low]
-theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)) :=
+theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
 
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
     {n : ℕ} [n.AtLeastTwo] :
-    0 < (no_index (OfNat.ofNat n : α)) :=
+    0 < (ofNat(n) : α) :=
   ofNat_pos'
 
 end Nontrivial
@@ -89,10 +86,9 @@ theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [Canoni
 theorem abs_cast [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (a : ℕ) : |(a : α)| = a :=
   abs_of_nonneg (cast_nonneg a)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
-    |(no_index (OfNat.ofNat n : α))| = OfNat.ofNat n :=
+    |(ofNat(n) : α)| = ofNat(n) :=
   abs_cast n
 
 lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :

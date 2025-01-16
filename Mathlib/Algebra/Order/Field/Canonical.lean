@@ -11,6 +11,15 @@ import Mathlib.Algebra.Order.Ring.Canonical
 # Canonically ordered semifields
 -/
 
+set_option linter.deprecated false in
+/-- A canonically linear ordered field is a linear ordered field in which `a ≤ b` iff there exists
+`c` with `b = a + c`. -/
+@[deprecated "Use `[LinearOrderedSemifield α] [CanonicallyOrderedAdd α]` instead."
+  (since := "2025-01-13")]
+structure CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedCommSemiring α,
+  LinearOrderedSemifield α
+
+attribute [nolint docBlame] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 

@@ -68,7 +68,7 @@ end
 
 
 namespace LinearIndependent
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [Nontrivial R]
 

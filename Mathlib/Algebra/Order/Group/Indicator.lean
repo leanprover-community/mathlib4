@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs

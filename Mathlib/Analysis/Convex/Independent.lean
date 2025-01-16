@@ -40,10 +40,7 @@ independence, convex position
 -/
 
 
-open scoped Classical
-open Affine
-
-open Finset Function
+open Affine Finset Function
 
 variable {𝕜 E ι : Type*}
 
@@ -158,6 +155,7 @@ section LinearOrderedField
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
+open scoped Classical in
 /-- To check convex independence, one only has to check finsets thanks to Carathéodory's theorem. -/
 theorem convexIndependent_iff_finset {p : ι → E} :
     ConvexIndependent 𝕜 p ↔

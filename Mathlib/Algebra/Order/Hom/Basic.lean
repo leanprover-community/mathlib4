@@ -259,7 +259,7 @@ section GroupNormClass
 
 variable [Group α] [AddCommMonoid β] [PartialOrder β] [GroupNormClass F α β] (f : F) {x : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem map_eq_zero_iff_eq_one : f x = 0 ↔ x = 1 :=
   ⟨eq_one_of_map_eq_zero _, by
     rintro rfl

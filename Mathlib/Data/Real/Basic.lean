@@ -23,10 +23,7 @@ The fact that the real numbers are a (trivial) *-ring has similarly been deferre
 -/
 
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
+assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -483,8 +480,6 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open scoped Classical
-
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
@@ -492,6 +487,7 @@ instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
+open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
