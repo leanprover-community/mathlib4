@@ -148,7 +148,6 @@ lemma hom_comp {A B C : ProfiniteGrp.{u}} (f : A ⟶ B) (g : B ⟶ C) :
 lemma comp_apply {A B C : ProfiniteGrp.{u}} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
     (f ≫ g) a = g (f a) := by
   simp only [hom_comp, ContinuousMonoidHom.comp_toFun]
-  rfl
 
 @[to_additive (attr := ext)]
 lemma hom_ext {A B : ProfiniteGrp.{u}} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g :=
