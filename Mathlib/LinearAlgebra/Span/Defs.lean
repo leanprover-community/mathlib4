@@ -63,8 +63,11 @@ variable {s t : Set M}
 theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
+
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
@@ -168,7 +171,7 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | one => simpa only [smul_zero] using zero_mem _
+      | one => simp only [smul_zero, zero_mem]
       | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
