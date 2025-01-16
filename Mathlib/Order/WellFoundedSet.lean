@@ -12,7 +12,7 @@ import Mathlib.Tactic.TFAE
 /-!
 # Well-founded sets
 
-This file introduces specializations of `WellFounded` and `QuasiWellOrdered` for sets.
+This file introduces specializations of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## Main Definitions
  * `Set.WellFoundedOn s r` indicates that the relation `r` is
