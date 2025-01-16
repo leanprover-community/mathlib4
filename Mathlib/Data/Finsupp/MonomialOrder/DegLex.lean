@@ -24,8 +24,6 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 -/
 
-section degLex
-
 /-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
 def DegLex (α : Type*) := α
 
@@ -255,5 +253,3 @@ example : single (0 : Fin 2) 1 ≺[degLex] single 1 2 := by
   simp [degLex_lt_iff, lt_iff]
 
 end Examples
-
-end degLex
