@@ -147,7 +147,7 @@ theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
 
 @[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
-  (log_pos_iff (le_of_lt (lt_trans zero_lt_one hx))).2 hx
+  (log_pos_iff (lt_trans zero_lt_one hx).le).2 hx
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
   rw [← neg_neg x, log_neg_eq_log]
@@ -177,7 +177,7 @@ theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
 theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [le_refl, zero_le_one]
-  rw [← not_lt, log_pos_iff (le_of_lt hx), not_lt]
+  rw [← not_lt, log_pos_iff hx.le, not_lt]
 
 @[deprecated (since := "2025-01-16")]
 alias log_nonpos_iff' := log_nonpos_iff
