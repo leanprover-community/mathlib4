@@ -125,7 +125,7 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-#print vars
+
 theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
     (x : ι → A) (y : A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
@@ -159,18 +159,11 @@ theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
   use P, i, hP0, hP
   intro hzero
 
-
-  -- have hP0 := We
-  -- rcases hx.1 y with ⟨P, hP0, hP⟩
-  -- have hP : ∃ n : ℕ, (P.coeff n : A) ∉ (algebraMap R A).range := by
-  --   by_contra h
-  --   simp at h
-#print isAlgebraic_adjoin_range_left_iff
 theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι]
-    [Nontrivial R] [NoZeroDivisors A]
-    (x : ι → A) (y : A) (hx : IsTranscendenceBasis R x) (hy : Transcendental R y) :
+    [Nontrivial R] [NoZeroDivisors A] (x : ι → A) (y : A)
+    (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
     ∃ i : ι, Algebra.IsAlgebraic (adjoin R (range (update x i y))) A := by
-  obtain ⟨P, i, hP0, hP, hi⟩ := exists_thing x y hx.isAlgebraic hy
+  obtain ⟨P, i, hP0, hP, hi⟩ := exists_thing x y hx hy
   use i
   let M : Subalgebra R A := (aeval (Function.update x i y)).range
   let N : Subalgebra R A := (aeval x).range
@@ -196,9 +189,7 @@ theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι]
   have hxa := hx.isAlgebraic
   rw [adjoin_range_eq_range_aeval] at hxa ⊢
   have h1 : Algebra.IsAlgebraic O A :=
-    ⟨fun a => IsAlgebraic.extendScalars
-      (Set.inclusion_injective (by exact hNO))
-      (hxa.isAlgebraic a)⟩
+    ⟨fun a => IsAlgebraic.extendScalars (Set.inclusion_injective (by exact hNO)) (hxa a)⟩
   let f : O →ₐ[M] A := AlgHom.mk (Subalgebra.val _).toRingHom (fun _ => rfl)
   have hf : Function.Injective f := Subtype.val_injective
   have hfr : f.range.restrictScalars R = O := by ext; simp [O, f]
