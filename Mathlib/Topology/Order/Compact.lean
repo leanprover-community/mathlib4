@@ -155,6 +155,26 @@ instance compactSpace_Icc (a b : α) : CompactSpace (Icc a b) :=
 
 end
 
+section openIntervals
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+
+/-- `Set.Ico a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ico_iff {a b : α} : IsCompact (Set.Ico a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ico_iff.mp h.isClosed, by simp_all⟩
+
+/-- `Set.Ioc a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioc_iff {a b : α} : IsCompact (Set.Ioc a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ioc_iff.mp h.isClosed, by simp_all⟩
+
+/-- `Set.Ioo a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioo_iff {a b : α} : IsCompact (Set.Ioo a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ioo_iff.mp h.isClosed, by simp_all⟩
+
+end openIntervals
+
 /-!
 ### Extreme value theorem
 -/

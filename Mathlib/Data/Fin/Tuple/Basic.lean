@@ -135,7 +135,7 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
     · rw [h']
       simp
     · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
-      rw [update_noteq h', update_noteq this, cons_succ]
+      rw [update_of_ne h', update_of_ne this, cons_succ]
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
@@ -159,7 +159,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · simp only [h, update_noteq, Ne, not_false_iff]
+  · simp only [h, update_of_ne, Ne, not_false_iff]
     let j' := pred j h
     have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, cons_succ]
@@ -395,7 +395,7 @@ theorem cons_eq_append (x : α) (xs : Fin n → α) :
   subst h; simp
 
 lemma append_rev {m n} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n)) :
-    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (cast (Nat.add_comm ..) i) := by
+    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (i.cast (Nat.add_comm ..)) := by
   rcases rev_surjective i with ⟨i, rfl⟩
   rw [rev_rev]
   induction i using Fin.addCases
@@ -403,7 +403,7 @@ lemma append_rev {m n} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n))
   · simp [cast_rev, rev_addNat]
 
 lemma append_comp_rev {m n} (xs : Fin m → α) (ys : Fin n → α) :
-    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (Nat.add_comm ..) :=
+    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ Fin.cast (Nat.add_comm ..) :=
   funext <| append_rev xs ys
 
 theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
@@ -430,11 +430,11 @@ theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
 
 @[simp]
 theorem repeat_zero (a : Fin n → α) :
-    Fin.repeat 0 a = Fin.elim0 ∘ cast (Nat.zero_mul _) :=
-  funext fun x => (cast (Nat.zero_mul _) x).elim0
+    Fin.repeat 0 a = Fin.elim0 ∘ Fin.cast (Nat.zero_mul _) :=
+  funext fun x => (x.cast (Nat.zero_mul _)).elim0
 
 @[simp]
-theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul _) := by
+theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ Fin.cast (Nat.one_mul _) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -443,7 +443,7 @@ theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul
 
 theorem repeat_succ (a : Fin n → α) (m : ℕ) :
     Fin.repeat m.succ a =
-      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
+      append a (Fin.repeat m a) ∘ Fin.cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -453,7 +453,7 @@ theorem repeat_succ (a : Fin n → α) (m : ℕ) :
 
 @[simp]
 theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
-    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (Nat.add_mul ..) := by
+    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ Fin.cast (Nat.add_mul ..) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -582,7 +582,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_noteq, this, snoc]
+    simp [h, update_of_ne, this, snoc]
   · rw [eq_last_of_not_lt h]
     simp
 

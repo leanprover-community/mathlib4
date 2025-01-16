@@ -178,7 +178,7 @@ variable (R A)
 protected def id : A →⋆ₙₐ[R] A :=
   { (1 : A →ₙₐ[R] A) with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
   rfl
 
@@ -279,7 +279,7 @@ lemma coe_restrictScalars' (f : A →⋆ₙₐ[S] B) : (f.restrictScalars R : A 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →⋆ₙₐ[S] B) → A →⋆ₙₐ[R] B) :=
-  fun _ _ h ↦ ext (DFunLike.congr_fun h : _)
+  fun _ _ h ↦ ext (DFunLike.congr_fun h :)
 
 end RestrictScalars
 
@@ -413,7 +413,7 @@ variable (R A)
 protected def id : A →⋆ₐ[R] A :=
   { AlgHom.id _ _ with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
   rfl
 

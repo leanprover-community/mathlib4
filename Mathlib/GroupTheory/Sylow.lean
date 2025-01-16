@@ -408,7 +408,7 @@ theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
 @[deprecated (since := "2024-11-07")]
 alias _root_.card_sylow_dvd_index := card_dvd_index
 
-/-- Auxilliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
+/-- Auxiliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
     [P.FiniteIndex] : ¬ p ∣ P.index := by
   intro h
