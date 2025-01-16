@@ -5,7 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set.Basic
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
