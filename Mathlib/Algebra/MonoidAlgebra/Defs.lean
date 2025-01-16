@@ -98,9 +98,9 @@ section
 
 variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
--- Porting note: `reducible` cannot be `local`, so we replace some definitions and theorems with
---               new ones which have new types.
-
+-- TODO: This definition is very leaky, and we later have frequent problems conflating the two
+-- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
+-- In Mathlib 3 this was locally reducible.
 abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
 
 theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
