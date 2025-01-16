@@ -68,7 +68,7 @@ variable {f : β → α} {s t : Set α} {x y : α}
 
 theorem wellFoundedOn_iff :
     s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
-  have f : RelEmbedding (fun (a : s) (b : s) => r a b) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
+  have f : RelEmbedding (Subrel r (· ∈ s)) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
     ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
   refine ⟨fun h => ?_, f.wellFounded⟩
   rw [WellFounded.wellFounded_iff_has_min]
@@ -889,7 +889,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
     convert PSigma.Lex.right (⟨_, c', rfl⟩ : range f) _ using 1; swap
     · exact ⟨c, h'⟩
     · exact PSigma.subtype_ext (Subtype.ext h') rfl
-    · dsimp only [Subtype.coe_mk] at *
+    · dsimp only [Subtype.coe_mk, Subrel, Order.Preimage] at *
       revert h'
       generalize f c = d
       rintro rfl h''
