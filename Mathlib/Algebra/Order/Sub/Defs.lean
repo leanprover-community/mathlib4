@@ -19,9 +19,9 @@ subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENN
 ## Implementation details
 
 `OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
-where we don't have a `CanonicallyOrderedAddCommMonoid` instance
+where we don't have a `CanonicallyOrderedAdd` instance
 (even though that is our main focus). Conversely, this means we can use
-`CanonicallyOrderedAddCommMonoid` without necessarily having to define a subtraction.
+`CanonicallyOrderedAdd` without necessarily having to define a subtraction.
 
 The results in this file are ordered by the type-class assumption needed to prove it.
 This means that similar results might not be close to each other. Furthermore, we don't prove

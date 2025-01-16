@@ -675,8 +675,7 @@ import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Algebra.Order.CompleteField
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Canonical.Basic
-import Mathlib.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Field.Pi
