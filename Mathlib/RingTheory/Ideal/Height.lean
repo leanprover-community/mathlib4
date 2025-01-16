@@ -32,7 +32,7 @@ noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ENat :=
 
 /-- The height of an ideal is defined as the infimum of the heights of minimal prime ideals
 containing it. -/
-noncomputable def Ideal.height : ENat :=
+noncomputable def Ideal.height : ℕ∞ :=
   ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
