@@ -209,7 +209,7 @@ variable [HasZeroMorphisms V]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `Action.zero_hom` was moved just below
-instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
+instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by simp⟩
 
 @[simp]
 theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
