@@ -41,7 +41,8 @@ lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp_rw [Ideal.minimalPrimes_eq_subsingleton_self]
   simp
 
-/-- An ideal has finite height if it is either the top ideal or its height is not top. -/
+/-- An ideal has finite height if it is either the unit ideal or its height is finite.
+We include the unit ideal in order to have the instance `IsNoetherianRing R → FiniteHeight I`. -/
 class Ideal.FiniteHeight : Prop where
   eq_top_or_height_ne_top : I = ⊤ ∨ I.height ≠ ⊤
 
