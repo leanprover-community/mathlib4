@@ -1173,6 +1173,53 @@ instance epi_homologyMap_of_epi_cyclesMap
     Epi (homologyMap φ) :=
   epi_homologyMap_of_epi_cyclesMap' φ inferInstance
 
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+left homology data for `S` whose `K` and `H` fields are
+respectively `S.cycles` and `S.homology`. -/
+@[simps!]
+noncomputable def LeftHomologyData.canonical [S.HasHomology] : S.LeftHomologyData where
+  K := S.cycles
+  H := S.homology
+  i := S.iCycles
+  π := S.homologyπ
+  wi := by simp
+  hi := S.cyclesIsKernel
+  wπ := S.toCycles_comp_homologyπ
+  hπ := S.homologyIsCokernel
+
+/-- Computation of the `f'` field of `LeftHomologyData.canonical`. -/
+@[simp]
+lemma LeftHomologyData.canonical_f' [S.HasHomology] :
+    (LeftHomologyData.canonical S).f' = S.toCycles := rfl
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+right homology data for `S` whose `Q` and `H` fields are
+respectively `S.opcycles` and `S.homology`. -/
+@[simps!]
+noncomputable def RightHomologyData.canonical [S.HasHomology] : S.RightHomologyData where
+  Q := S.opcycles
+  H := S.homology
+  p := S.pOpcycles
+  ι := S.homologyι
+  wp := by simp
+  hp := S.opcyclesIsCokernel
+  wι := S.homologyι_comp_fromOpcycles
+  hι := S.homologyIsKernel
+
+/-- Computation of the `g'` field of `RightHomologyData.canonical`. -/
+@[simp]
+lemma RightHomologyData.canonical_g' [S.HasHomology] :
+    (RightHomologyData.canonical S).g' = S.fromOpcycles := rfl
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+homology data for `S` whose `left.K`, `left/right.H` and `right.Q` fields are
+respectively `S.cycles`, `S.homology` and `S.opcycles`. -/
+@[simps!]
+noncomputable def HomologyData.canonical [S.HasHomology] : S.HomologyData where
+  left := LeftHomologyData.canonical S
+  right := RightHomologyData.canonical S
+  iso := Iso.refl _
+
 end ShortComplex
 
 end CategoryTheory
