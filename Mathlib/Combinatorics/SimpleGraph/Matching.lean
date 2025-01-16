@@ -5,6 +5,7 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Functor
 
@@ -339,14 +340,14 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
-lemma induce_component_IsCycles (c : G.ConnectedComponent) (h : G.IsCycles)
-  : (G.induce c.supp).spanningCoe.IsCycles := by
+lemma IsCycles.spanningCoe_induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
+    (G.induce c.supp).spanningCoe.IsCycles := by
   intro v ⟨w, hw⟩
   rw [mem_neighborSet, c.induce_supp_spanningCoe_adj_iff] at hw
   rw [← h ⟨w, hw.2⟩]
   congr
   ext w'
-  simp only [mem_neighborSet, induce_component_spanningCoe_Adj, hw, true_and]
+  simp only [mem_neighborSet, c.induce_supp_spanningCoe_adj_iff, hw, true_and]
 
 open scoped symmDiff
 
