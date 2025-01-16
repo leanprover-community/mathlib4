@@ -44,18 +44,6 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ
 
 section MomentGeneratingFunction
 
-lemma mgf_abs_le_add (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    mgf (fun ω ↦ |X ω|) μ t ≤ mgf X μ t + mgf (-X) μ t := by
-  simp_rw [mgf]
-  rw [← integral_add ht_int_pos (by simpa using ht_int_neg)]
-  have h_int_add : Integrable (fun a ↦ rexp (t * X a) + rexp (-(t * X a))) μ :=
-    ht_int_pos.add <| by simpa using ht_int_neg
-  simp only [Pi.neg_apply, mul_neg, ge_iff_le]
-  refine integral_mono_ae ?_ h_int_add
-    (ae_of_all _ (fun ω ↦ exp_mul_abs_le_add (t := t) (u := X ω)))
-  exact integrable_exp_mul_abs ht_int_pos ht_int_neg
-
 section Analytic
 
 lemma summable_integral_abs_mul_exp
