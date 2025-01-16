@@ -83,7 +83,7 @@ instance : Category (LocalizedMonoidal L W ε) :=
 
 namespace Monoidal
 
-/-- The monoidal functor for a monoidal category `C` to
+/-- The monoidal functor from a monoidal category `C` to
 its localization `LocalizedMonoidal L W ε`. -/
 def toMonoidalCategory : C ⥤ LocalizedMonoidal L W ε := L
 
