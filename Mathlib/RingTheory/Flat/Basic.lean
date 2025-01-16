@@ -274,6 +274,12 @@ theorem lTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
     Function.Injective (L.lTensor M) :=
   (L.lTensor_inj_iff_rTensor_inj M).2 (rTensor_preserves_injective_linearMap L hL)
 
+theorem linearIndependent_one_tmul {S} [Ring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+    (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
+  classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
+    Finsupp.linearCombination_one_tmul]
+  simpa using lTensor_preserves_injective_linearMap _ hv
+
 variable (R M) in
 /-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map.
   See `Module.Flat.iff_rTensor_preserves_injective_linearMap` to specialize the universe of

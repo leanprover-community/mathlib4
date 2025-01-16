@@ -3,11 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import Mathlib.LinearAlgebra.Eigenspace.Zero
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!

@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 /-!
 # Prime spectrum of a commutative (semi)ring
 
-For the Zariski topology, see `AlgebraicGeometry.PrimeSpectrum.Basic`.
+For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
@@ -37,7 +37,7 @@ which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 -/
 
--- A dividing line between this file and `AlgebraicGeometry.PrimeSpectrum.Basic` is
+-- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
@@ -375,7 +375,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
+See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=
