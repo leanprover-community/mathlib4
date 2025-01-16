@@ -57,6 +57,13 @@ theorem derivWithin_add (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Differentiable
     derivWithin (fun y => f y + g y) s x = derivWithin f s x + derivWithin g s x :=
   (hf.hasDerivWithinAt.add hg.hasDerivWithinAt).derivWithin hxs
 
+theorem derivWithin_add_of_properSpace [ProperSpace 𝕜] (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hg : DifferentiableWithinAt 𝕜 g s x) :
+    derivWithin (fun y => f y + g y) s x = derivWithin f s x + derivWithin g s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with h | h
+  · exact derivWithin_add h hf hg
+  · simp [derivWithin_zero_of_isolated h]
+
 @[simp]
 theorem deriv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     deriv (fun y => f y + g y) x = deriv f x + deriv g x :=
@@ -81,6 +88,12 @@ nonrec theorem HasDerivAt.add_const (hf : HasDerivAt f f' x) (c : F) :
 theorem derivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     derivWithin (fun y => f y + c) s x = derivWithin f s x := by
   simp only [derivWithin, fderivWithin_add_const hxs]
+
+theorem derivWithin_add_const_of_properSpace [ProperSpace 𝕜] (c : F) :
+    derivWithin (fun y => f y + c) s x = derivWithin f s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with h | h
+  · exact derivWithin_add_const h c
+  · simp [derivWithin_zero_of_isolated h]
 
 theorem deriv_add_const (c : F) : deriv (fun y => f y + c) x = deriv f x := by
   simp only [deriv, fderiv_add_const]
@@ -108,6 +121,12 @@ nonrec theorem HasDerivAt.const_add (c : F) (hf : HasDerivAt f f' x) :
 theorem derivWithin_const_add (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     derivWithin (fun y => c + f y) s x = derivWithin f s x := by
   simp only [derivWithin, fderivWithin_const_add hxs]
+
+theorem derivWithin_const_add_of_properSpace [ProperSpace 𝕜] (c : F) :
+    derivWithin (fun y => c + f y) s x = derivWithin f s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with h | h
+  · exact derivWithin_const_add h c
+  · simp [derivWithin_zero_of_isolated h]
 
 theorem deriv_const_add (c : F) : deriv (fun y => c + f y) x = deriv f x := by
   simp only [deriv, fderiv_const_add]
@@ -165,6 +184,13 @@ theorem derivWithin_sum (hxs : UniqueDiffWithinAt 𝕜 s x)
     derivWithin (fun y => ∑ i ∈ u, A i y) s x = ∑ i ∈ u, derivWithin (A i) s x :=
   (HasDerivWithinAt.sum fun i hi => (h i hi).hasDerivWithinAt).derivWithin hxs
 
+theorem derivWithin_sum_of_properSpace [ProperSpace 𝕜]
+    (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
+    derivWithin (fun y => ∑ i ∈ u, A i y) s x = ∑ i ∈ u, derivWithin (A i) s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact derivWithin_sum hxs h
+  · simp [derivWithin_zero_of_isolated hxs]
+
 @[simp]
 theorem deriv_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
     deriv (fun y => ∑ i ∈ u, A i y) x = ∑ i ∈ u, deriv (A i) x :=
@@ -192,6 +218,12 @@ nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
 theorem derivWithin.neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun y => -f y) s x = -derivWithin f s x := by
   simp only [derivWithin, fderivWithin_neg hxs, ContinuousLinearMap.neg_apply]
+
+theorem derivWithin.neg_of_properSpace [ProperSpace 𝕜] :
+    derivWithin (fun y => -f y) s x = -derivWithin f s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact derivWithin.neg hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
   simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
@@ -280,6 +312,13 @@ theorem derivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Differentiable
     (hg : DifferentiableWithinAt 𝕜 g s x) :
     derivWithin (fun y => f y - g y) s x = derivWithin f s x - derivWithin g s x :=
   (hf.hasDerivWithinAt.sub hg.hasDerivWithinAt).derivWithin hxs
+
+theorem derivWithin_sub_of_properSpace [ProperSpace 𝕜] (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hg : DifferentiableWithinAt 𝕜 g s x) :
+    derivWithin (fun y => f y - g y) s x = derivWithin f s x - derivWithin g s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact derivWithin_sub hxs hf hg
+  · simp [derivWithin_zero_of_isolated hxs]
 
 @[simp]
 theorem deriv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
