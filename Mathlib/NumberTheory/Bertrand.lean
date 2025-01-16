@@ -44,7 +44,7 @@ open Real
 
 namespace Bertrand
 
-/-- A reified version of the `Bertrand.main_inequality` below.
+/-- A refined version of the `Bertrand.main_inequality` below.
 This is not best possible: it actually holds for 464 ≤ x.
 -/
 theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
@@ -61,7 +61,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
   have h5 : 0 < x := lt_of_lt_of_le (by norm_num1) x_large
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
-    mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
+    mul_one_div, ← log_nonpos_iff (hf' x h5).le, ← hf x h5]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): the proof was rewritten, because it was too slow
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
@@ -88,7 +88,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     norm_num1
   · have : √(2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)), this,
+    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)).le, this,
         div_le_one (by positivity)]
     conv in 512 => equals 2 ^ 9 => norm_num1
     conv in 2 * 512 => equals 2 ^ 10 => norm_num1
