@@ -270,6 +270,7 @@ lemma ConvexOn.exists_ge_of_centerMass {t : Finset ι} (h : ConvexOn 𝕜 s f)
     (hw₀ : ∀ i ∈ t, 0 ≤ w i) (hw₁ : 0 < ∑ i ∈ t, w i) (hp : ∀ i ∈ t, p i ∈ s) :
     ∃ i ∈ t, f (t.centerMass w p) ≤ f (p i) := by
   set y := t.centerMass w p
+  classical
   -- TODO: can `rsuffices` be used to write the `exact` first, then the proof of this obtain?
   obtain ⟨i, hi, hfi⟩ : ∃ i ∈ {i ∈ t | w i ≠ 0}, w i • f y ≤ w i • (f ∘ p) i := by
     have hw' : (0 : 𝕜) < ∑ i ∈ t with w i ≠ 0, w i := by rwa [sum_filter_ne_zero]

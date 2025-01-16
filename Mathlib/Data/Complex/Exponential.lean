@@ -1497,3 +1497,5 @@ theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = 
   rw [abs_exp, abs_exp, Real.exp_eq_exp]
 
 end Complex
+
+set_option linter.style.longFile 1700
