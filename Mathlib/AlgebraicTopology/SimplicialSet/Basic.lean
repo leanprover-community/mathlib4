@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
-import Mathlib.Util.Superscript
 
 /-!
 # Simplicial sets
