@@ -21,7 +21,8 @@ jobs:
       COMMENT_EVENT: ${{ github.event.comment.body }}
       COMMENT_REVIEW: ${{ github.event.review.body }}
     name: Fix style issues from lint
-    if: github.event.issue.pull_request
+    # the `if` works with `comment`s, but not with `review`s or `review_comment`s
+    # if: github.event.issue.pull_request
     # && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     steps:
