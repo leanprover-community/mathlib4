@@ -89,15 +89,35 @@ variable {R} in
 structure Hom (M N : ModuleCat.{v} R) where
   private mk ::
   /-- The underlying linear map. -/
-  hom : M →ₗ[R] N
+  hom' : M →ₗ[R] N
 
 instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance {M N : ModuleCat.{v} R} : CoeFun (M ⟶ N) (fun _ ↦ M → N) where
-  coe f := f.hom
+instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) (· →ₗ[R] ·) where
+  hom := Hom.hom'
+  ofHom f := ⟨f⟩
+
+variable {R} in
+/-- The underlying linear map. -/
+abbrev Hom.hom {X Y : ModuleCat.{v} R}
+    (f : Hom X Y) : X →ₗ[R] Y :=
+  ConcreteCategory.hom (C := ModuleCat.{v} R) f
+
+variable {R} in
+/-- Typecheck a `LinearMap` as a morphism in `ModuleCat R`. -/
+abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+    (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
+  ConcreteCategory.ofHom f
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom {X Y : ModuleCat.{v} R}
+    (f : Hom X Y) : X →ₗ[R] Y :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
 
 section
 
@@ -137,15 +157,9 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
 
-/-- Typecheck a `LinearMap` as a morphism in `ModuleCat R`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
-    (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
-  ⟨f⟩
-
 @[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
 
-/- Doesn't need to be `@[simp]` since the `simp` tactic applies this rewrite automatically:
-`ofHom` and `hom` are reducibly equal to the constructor and projection respectively. -/
+@[simp]
 lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
 
@@ -187,10 +201,6 @@ end
 
 instance : Inhabited (ModuleCat R) :=
   ⟨of R R⟩
-
-instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) (· →ₗ[R] ·) carrier where
-  hom := Hom.hom
-  ofHom := ofHom
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
@@ -535,9 +545,9 @@ a morphism between the underlying objects in `AddCommGrp` and the compatibility
 with the scalar multiplication. -/
 @[simps]
 def homMk : M ⟶ N where
-  hom.toFun := φ
-  hom.map_add' _ _ := φ.map_add _ _
-  hom.map_smul' r x := (congr_hom (hφ r) x).symm
+  hom'.toFun := φ
+  hom'.map_add' _ _ := φ.map_add _ _
+  hom'.map_smul' r x := (congr_hom (hφ r) x).symm
 
 lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGrp).map (homMk φ hφ) = φ := rfl
@@ -566,7 +576,7 @@ variable {R : Type*} [CommRing R]
 namespace ModuleCat
 
 /-- Turn a bilinear map into a homomorphism. -/
-@[simps]
+@[simps!]
 def ofHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     M ⟶ of R (N ⟶ P) :=
   ofHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f

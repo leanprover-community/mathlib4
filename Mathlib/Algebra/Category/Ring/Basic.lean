@@ -54,7 +54,7 @@ lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
 variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
-structure Hom (R S : SemiRingCat) where
+structure Hom (R S : SemiRingCat.{u}) where
   private mk ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
@@ -75,6 +75,12 @@ abbrev Hom.hom {R S : SemiRingCat.{u}} (f : Hom R S) :=
 /-- Typecheck a `RingHom` as a morphism in `SemiRingCat`. -/
 abbrev ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := SemiRingCat) f
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (R S : SemiRingCat) (f : Hom R S) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -202,7 +208,7 @@ lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
 variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
-structure Hom (R S : RingCat) where
+structure Hom (R S : RingCat.{u}) where
   private mk ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
@@ -223,6 +229,12 @@ abbrev Hom.hom {R S : RingCat.{u}} (f : Hom R S) :=
 /-- Typecheck a `RingHom` as a morphism in `RingCat`. -/
 abbrev ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := RingCat) f
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (R S : RingCat) (f : Hom R S) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -350,7 +362,7 @@ lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
-structure Hom (R S : CommSemiRingCat) where
+structure Hom (R S : CommSemiRingCat.{u}) where
   private mk ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
@@ -373,6 +385,12 @@ abbrev ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : 
 
 instance {R S : CommSemiRingCat.{u}} : CoeFun (R ⟶ S) (fun _ ↦ R → S) where
   coe f := f.hom
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (R S : CommSemiRingCat) (f : Hom R S) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -499,7 +517,7 @@ lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]
-structure Hom (R S : CommRingCat) where
+structure Hom (R S : CommRingCat.{u}) where
   private mk ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
@@ -520,6 +538,12 @@ abbrev Hom.hom {R S : CommRingCat.{u}} (f : Hom R S) :=
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
 abbrev ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := CommRingCat) f
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (R S : CommRingCat) (f : Hom R S) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
