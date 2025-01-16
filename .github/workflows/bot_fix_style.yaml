@@ -20,15 +20,17 @@ jobs:
       AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
       COMMENT_EVENT: ${{ github.event.comment.body }}
       COMMENT_REVIEW: ${{ github.event.review.body }}
+      COMMENT_REVIEW_COMMENT: ${{ github.event.pull_request_review_comment.body }}
     name: Fix style issues from lint
-    if: github.event.issue.pull_request
+    # the `if` works with `comment`s, but not with `review`s or `review_comment`s
+    # if: github.event.issue.pull_request
     # && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     steps:
       - name: Find bot fix style
         id: bot_fix_style
         run: |
-          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}${COMMENT_REVIEW_COMMENT}"
           # we strip `\r` since line endings from GitHub contain this character
           COMMENT="${COMMENT//$'\r'/}"
           # for debugging, we print some information
@@ -55,7 +57,7 @@ jobs:
           fi
 
       - id: user_permission
-        if: steps.bot_fix_style.outputs.bot_fix_style == 'bot_fix_style'
+        if: steps.bot_fix_style.outputs.bot_fix_style == 'bot-fix-style'
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'write'
@@ -65,8 +67,8 @@ jobs:
       # then `user_permission` would not have ran
       - name: Add reaction (comment)
         # reactions are only supported for `comment`s and `review_comment`s?
-        # this action only runs on `comment`s rather than `review`s or `review_comment`s
-        # is the `id` check a good way to check that this is a `comment`?
+        # This action only runs on `comment`s rather than `review`s or `review_comment`s
+        # Is the `id` check a good way to check that this is a `comment`?
         if: ${{ steps.user_permission.outputs.require-result == 'true' &&
                 ! github.event.comment.id == '' }}
         uses: peter-evans/create-or-update-comment@v4
