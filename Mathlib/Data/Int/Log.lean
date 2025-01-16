@@ -3,8 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Floor
 import Mathlib.Data.Nat.Log
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Floor.Defs
 
 /-!
 # Integer logarithms in a field with respect to a natural base
