@@ -1105,6 +1105,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Binomial
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Analytic.Composition
