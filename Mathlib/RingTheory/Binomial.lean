@@ -411,6 +411,14 @@ theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
 theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
 
+theorem choose_neg [NatPowAssoc R] (r : R) (n : ℕ) :
+    choose (-r) n = (-1)^n • choose (r + n - 1) n := by
+  apply (nsmul_right_inj (Nat.factorial_ne_zero n)).mp
+  rw [← descPochhammer_eq_factorial_smul_choose, smul_comm,
+    ← descPochhammer_eq_factorial_smul_choose, descPochhammer_smeval_eq_ascPochhammer,
+    show (-r - n + 1) = -(r + n - 1) by abel, ascPochhammer_smeval_neg_eq_descPochhammer]
+  simp
+
 theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
     (r : R) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =
     (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (k + 1)) r := by
