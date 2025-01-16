@@ -193,7 +193,7 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
 
-/-- The monotone chain condition: a preorder is co-well-founded iff every increasing sequence
+/-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.
 
 See `WellFoundedGT.monotone_chain_condition_iff` for a stronger version on partial orders. -/
@@ -211,7 +211,7 @@ theorem WellFoundedGT.monotone_chain_condition' [Preorder α] [h : WellFoundedGT
     ∃ n, ∀ m, n ≤ m → ¬a n < a m :=
   WellFoundedGT.monotone_chain_condition_iff'.1 h a
 
-/-- A stronger version of the monotone chain condition for partial orders.
+/-- A stronger version of the **monotone chain** condition for partial orders.
 
 See `WellFoundedGT.monotone_chain_condition_iff'` for a version on preorders.  -/
 theorem WellFoundedGT.monotone_chain_condition_iff [PartialOrder α] :
