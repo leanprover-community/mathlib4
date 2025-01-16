@@ -3,8 +3,8 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Numerical ranges
