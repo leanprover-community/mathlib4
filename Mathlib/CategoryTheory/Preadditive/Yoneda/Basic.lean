@@ -48,17 +48,16 @@ def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
 object `X` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End Y`-module
 structure, see `preadditiveYonedaObj`.
 -/
-@[simps]
+@[simps] -- This can be changed to `@[simps!]` if we make a `AddCommGrp.Hom` structure.
+-- Currently, `@[simps]` doesn't insert `ofHom` and `.hom` in the right places.
 def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrp.{v} where
   obj Y := preadditiveYonedaObj Y ⋙ forget₂ _ _
   map f :=
-    { app := fun _ =>
+    { app := fun _ => AddCommGrp.ofHom
         { toFun := fun g => g ≫ f
           map_zero' := Limits.zero_comp
           map_add' := fun _ _ => add_comp _ _ _ _ _ _ }
       naturality := fun _ _ _ => AddCommGrp.ext fun _ => Category.assoc _ _ _ }
-  map_id _ := by ext; dsimp; simp
-  map_comp f g := by ext; dsimp; simp
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
@@ -75,22 +74,21 @@ def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
 object `Y` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End X`-module
 structure, see `preadditiveCoyonedaObj`.
 -/
-@[simps]
+@[simps] -- This can be changed to `@[simps!]` if we make a `AddCommGrp.Hom` structure.
+-- Currently, `@[simps]` doesn't insert `ofHom` and `.hom` in the right places.
 def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{v} where
   obj X := preadditiveCoyonedaObj X ⋙ forget₂ _ _
   map f :=
-    { app := fun _ =>
+    { app := fun _ => AddCommGrp.ofHom
         { toFun := fun g => f.unop ≫ g
           map_zero' := Limits.comp_zero
           map_add' := fun _ _ => comp_add _ _ _ _ _ _ }
       naturality := fun _ _ _ =>
         AddCommGrp.ext fun _ => Eq.symm <| Category.assoc _ _ _ }
-  map_id _ := by ext; dsimp; simp
-  map_comp f g := by ext; dsimp; simp
 
 -- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app_apply
-  CategoryTheory.preadditiveCoyoneda_map_app_apply
+attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app
+  CategoryTheory.preadditiveCoyoneda_map_app
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
 
