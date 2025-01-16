@@ -1187,10 +1187,8 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
         one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos cpos _), mul_comm]
     exact (le_div_iff₀ εpos).1 hn.1
   · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
-    have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
-    rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
-        ← div_eq_inv_mul]
-    exact mul_le_mul_of_nonneg_right hn.1 (norm_nonneg _)
+    rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one]
+    linear_combination ‖c‖ * hn.1
 
 /-- Let `p` be a seminorm on a vector space over a `NormedField`.
 If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be
