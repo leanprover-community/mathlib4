@@ -3,15 +3,16 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 
 /-!
 # Dual vector spaces
@@ -445,6 +446,21 @@ theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
     cases nonempty_fintype ι
     rw [← b.toDual_toDual, range_comp, b.toDual_range, Submodule.map_top, toDual_range _]
 
+omit [DecidableEq ι]
+
+/-- `simp` normal form version of `linearCombination_dualBasis` -/
+@[simp]
+theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
+    Finsupp.linearCombination R b.coord f (b i) = f i := by
+  haveI := Classical.decEq ι
+  rw [← coe_dualBasis, linearCombination_dualBasis]
+
+@[deprecated (since := "2024-08-29")] alias total_coord := linearCombination_coord
+
+theorem dual_rank_eq [Finite ι] (b : Basis ι R M) :
+    Cardinal.lift.{uR,uM} (Module.rank R M) = Module.rank R (Dual R M) := by
+  classical rw [← lift_umax.{uM}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM,uR}]
+
 section
 
 variable [Module.Finite R M]
@@ -468,19 +484,6 @@ instance _root_.Module.dual_finite [Projective R M] : Module.Finite R (Dual R M)
 end
 
 end CommSemiring
-
-/-- `simp` normal form version of `linearCombination_dualBasis` -/
-@[simp]
-theorem linearCombination_coord [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite ι]
-    (b : Basis ι R M) (f : ι →₀ R) (i : ι) : Finsupp.linearCombination R b.coord f (b i) = f i := by
-  haveI := Classical.decEq ι
-  rw [← coe_dualBasis, linearCombination_dualBasis]
-
-@[deprecated (since := "2024-08-29")] alias total_coord := linearCombination_coord
-
-theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
-    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
-  classical rw [← lift_umax.{uV,uK}, b.toDualEquiv.lift_rank_eq, lift_id'.{uV,uK}]
 
 end Basis
 
@@ -544,16 +547,16 @@ theorem finite_dual_iff [Free K V] : Module.Finite K (Dual K V) ↔ Module.Finit
   nontriviality K
   have ⟨⟨s, span_s⟩⟩ := h
   classical
-  haveI := (b.linearIndependent.map_injOn _ b.toDual_injective.injOn).finite_of_le_span_finite _ s ?_
+  --haveI := (b.linearIndependent.map_injOn _ b.toDual_injective.injOn).finite_of_le_span_finite _ s ?_
   · exact Finite.of_basis b
   · rw [span_s]; apply le_top
 
 end
 
-theorem dual_rank_eq {K V} [CommRing K] [AddCommGroup V] [Module K V]
-    [Free K V] [Module.Finite K V] :
-    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) :=
-  (Module.Free.chooseBasis K V).dual_rank_eq
+omit [Projective K V] in
+theorem dual_rank_eq [Free K V] [Module.Finite K V] :
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
+  rw [lift_rank_eq]
 
 section IsReflexive
 
