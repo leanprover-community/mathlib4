@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.Seminorm
 
 /-!
 # Tangent cone
@@ -207,6 +208,53 @@ theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ
     y - x ∈ tangentConeAt ℝ s x :=
   mem_tangentCone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
 
+/-- In a proper space, the tangent cone at a non-isolated point is nontrivial. -/
+theorem tangentCone_nonempty [ProperSpace E] {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
+    (tangentConeAt 𝕜 s x ∩ {0}ᶜ).Nonempty := by
+  obtain ⟨u, -, u_pos, u_lim⟩ :
+      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  have A n : ((s \ {x}) ∩ Metric.ball x (u n)).Nonempty := by
+    apply NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _ (Metric.ball_mem_nhds _ (u_pos n)))
+  choose v hv using A
+  let d := fun n ↦ v n - x
+  have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
+  let ⟨r, hr⟩ := exists_one_lt_norm 𝕜
+  have W n := rescale_to_shell hr zero_lt_one (x := d n) (by simpa using (M n).2)
+  choose c c_ne c_le le_c hc using W
+  have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
+    apply tendsto_inv_nhdsGT_zero.comp
+    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
+      eventually_atTop, ge_iff_le]
+    have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by
+      apply (hc n).trans
+      gcongr
+      specialize hv n
+      simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm] at hv
+      simpa using hv.2.le
+    refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
+    apply squeeze_zero (fun n ↦ by positivity) B
+    simpa using u_lim.const_mul _
+  obtain ⟨l, l_mem, φ, φ_strict, hφ⟩ :
+      ∃ l ∈ Metric.closedBall (0 : E) 1 \ Metric.ball (0 : E) (1 / ‖r‖),
+      ∃ (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto ((fun n ↦ c n • d n) ∘ φ) atTop (𝓝 l) := by
+    apply IsCompact.tendsto_subseq _ (fun n ↦ ?_)
+    · exact (isCompact_closedBall 0 1).diff Metric.isOpen_ball
+    simp only [mem_diff, Metric.mem_closedBall, dist_zero_right, (c_le n).le,
+      Metric.mem_ball, not_lt, true_and, le_c n]
+  refine ⟨l, ?_, ?_⟩; swap
+  · simp only [mem_compl_iff, mem_singleton_iff]
+    contrapose! l_mem
+    simp only [one_div, l_mem, mem_diff, Metric.mem_closedBall, dist_self, zero_le_one,
+      Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
+    contrapose! hr
+    simp [hr]
+  refine ⟨c ∘ φ, d ∘ φ, ?_, ?_, ?_⟩
+  · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv (φ n)).1.1)
+  · apply c_lim.comp φ_strict.tendsto_atTop
+  · exact hφ
+
 end TangentCone
 
 section UniqueDiff
@@ -390,5 +438,27 @@ theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
 
 theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
+
+/-- In one dimension over a proper field, every point is either a point of unique differentiability,
+or isolated. -/
+theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot [ProperSpace 𝕜] (s : Set 𝕜) (x : 𝕜) :
+    UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ := by
+  rcases eq_or_neBot (𝓝[s \ {x}] x) with h | h
+  · exact Or.inr h
+  left
+  rcases tangentCone_nonempty (𝕜 := 𝕜) h with ⟨l, hl⟩
+  suffices Submodule.span 𝕜 (tangentConeAt 𝕜 s x) = ⊤ by
+    constructor
+    · simp [this]
+    · simp only [mem_closure_iff_nhdsWithin_neBot]
+      apply neBot_of_le (hf := h)
+      exact nhdsWithin_mono _ diff_subset
+  ext y
+  simp only [Submodule.mem_top, iff_true]
+  have : y = (y / l) • l := by
+    rw [smul_eq_mul, div_mul_cancel₀]
+    exact hl.2
+  rw [this]
+  exact Submodule.smul_mem _ _ (Submodule.subset_span hl.1)
 
 end UniqueDiff
