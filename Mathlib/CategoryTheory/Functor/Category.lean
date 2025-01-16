@@ -139,7 +139,6 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
     { obj := fun j => (F.obj j).obj k,
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
-  map_id k := by aesop_cat
 
 attribute [grind =] flip_obj_obj flip_obj_map flip_map_app
 
@@ -152,10 +151,7 @@ def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
     { app := fun Y =>
-      { app := fun X => (φ.app X).app Y
-        naturality := fun X₁ X₂ f => by
-          dsimp
-          simp only [← NatTrans.comp_app, naturality] } }
+      { app := fun X => (φ.app X).app Y } }
 
 namespace Iso
 

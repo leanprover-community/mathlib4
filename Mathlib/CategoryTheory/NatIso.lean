@@ -55,12 +55,14 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   hom_inv_id := by rw [← comp_app, Iso.hom_inv_id]; rfl
   inv_hom_id := by rw [← comp_app, Iso.inv_hom_id]; rfl
 
-@[reassoc (attr := simp)]
+attribute [grind =] app_hom app_inv
+
+@[reassoc (attr := simp), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) :=
   congr_fun (congr_arg NatTrans.app α.hom_inv_id) X
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) :=
   congr_fun (congr_arg NatTrans.app α.inv_hom_id) X
@@ -159,6 +161,10 @@ theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
     (f' : W ⟶ X') (g' : X' ⟶ G.obj Y) :
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
+
+
+
+attribute [grind] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
