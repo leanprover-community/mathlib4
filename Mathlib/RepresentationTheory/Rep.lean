@@ -106,6 +106,12 @@ theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
   LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (f.comm g)) x
 
+/-- Alternative constructor for representation morphisms with less categorical terms. -/
+@[simps] def homMk (A B : Rep k G) (f : A →ₗ[k] B)
+    (hf : ∀ g, f.comp (A.ρ g) = (B.ρ g).comp f) : A ⟶ B where
+  hom := f
+  comm := hf
+
 variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
@@ -329,7 +335,43 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
   rw [zero_smul]
 
 end Linearization
+section Morphisms
+open BigOperators
 
+section norm
+variable {G : Type u} [Group G] [Fintype G]
+
+/-- The norm map associated to a `k`-linear `G`-representation on `A`, when `G` is a finite group.
+Sends `x : A` to `∑ ρ(g)(x)` for `g : G`. -/
+def norm (A : Rep k G) : A ⟶ A :=
+Rep.homMk A A (∑ g : G, A.ρ g) fun h => by
+  ext
+  simp_rw [LinearMap.coe_comp, LinearMap.coeFn_sum, Function.comp_apply, Finset.sum_apply,
+    map_sum, ←LinearMap.mul_apply, ←map_mul]
+  exact Fintype.sum_bijective (fun g => h⁻¹ * g * h)
+    ((Group.mulRight_bijective h).comp (Group.mulLeft_bijective h⁻¹)) _ _ (fun g => by simp)
+
+-- I always have to `erw` this; not sure how to fix it
+@[simp] theorem norm_apply {A : Rep k G} (x : A) :
+    (norm A).hom x = ∑ g : G, A.ρ g x := LinearMap.sum_apply _ _ _
+
+theorem norm_of_unique [hU : Unique G] {A : Rep k G} (x : A) :
+    (Rep.norm A).hom x = x := by
+  erw [Rep.norm_apply x]
+  rw [Finset.univ_unique, Finset.sum_singleton,
+    ← Unique.eq_default 1, map_one, LinearMap.one_apply]
+
+theorem norm_ofDistribMulAction_eq {A : Type u} [AddCommGroup A] [Module k A]
+    [DistribMulAction G A] [SMulCommClass G k A] (x : A) :
+    (norm (ofDistribMulAction k G A)).hom x = ∑ g : G, g • x := norm_apply _
+
+theorem norm_ofMulDistribMulAction_eq {G M : Type} [Group G] [Fintype G]
+    [CommGroup M] [MulDistribMulAction G M] (x : M) :
+    Additive.toMul ((Rep.norm (Rep.ofMulDistribMulAction G M)).hom (Additive.ofMul x))
+      = ∏ g : G, g • x := norm_apply _
+
+end norm
+end Morphisms
 end
 
 section MonoidalClosed
