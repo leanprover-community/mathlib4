@@ -248,9 +248,8 @@ theorem toGroupExtension_rightHom : (toGroupExtension φ).rightHom = SemidirectP
   rfl
 
 /-- A canonical splitting of the group extension associated to the semidirect product -/
-def inr_splitting : (toGroupExtension φ).Splitting := {
-  inr with
+def inr_splitting : (toGroupExtension φ).Splitting where
+  __ := inr
   rightInverse_rightHom := rightHom_inr
-}
 
 end SemidirectProduct
