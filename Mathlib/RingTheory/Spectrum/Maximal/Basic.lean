@@ -11,11 +11,6 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 # Maximal spectrum of a commutative (semi)ring
 
 Basic properties the maximal spectrum of a ring.
-
-## Implementation notes
-
-The Zariski topology on the maximal spectrum is defined as the subspace topology induced by the
-natural inclusion into the prime spectrum to avoid API duplication for zero loci.
 -/
 
 noncomputable section

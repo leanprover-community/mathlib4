@@ -3,19 +3,11 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-# Maximal spectrum of a commutative ring
-
-The maximal spectrum of a commutative ring is the type of all maximal ideals.
-It is naturally a subset of the prime spectrum endowed with the subspace topology.
-
-## Main definitions
-
-* `MaximalSpectrum R`: The maximal spectrum of a commutative ring `R`,
-  i.e., the set of all maximal ideals of `R`.
+# The Zariski topology on the maximal spectrum of a commutative (semi)ring
 
 ## Implementation notes
 
