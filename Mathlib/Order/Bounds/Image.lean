@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Directed
 
 /-!
 
@@ -462,6 +464,39 @@ theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
+
+variable {γ : Type*} [Preorder γ]
+
+omit [Preorder α] [Preorder β] in
+lemma Prod.upperBounds1 {f : α × β → γ} {d : Set (α × β)} :
+    upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) ⊆ upperBounds (f '' d) :=
+  upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d))
+
+
+lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
+    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
+  apply le_antisymm
+  · intro u hu c hc
+    simp at hc
+    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
+    --have e1: hd _ hb₂ _ ha₂
+    obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
+    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
+    rw [← right]
+    apply le_trans (hf e1) (hu _)
+    use (a₃, b₃)
+    exact And.imp_right (fun _ ↦ rfl) hm
+  · exact Prod.upperBounds1
+
+-- c.f. isLUB_prod
+-- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+--    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
+
+lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
+    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
+    IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
+  rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
 end Prod
 
