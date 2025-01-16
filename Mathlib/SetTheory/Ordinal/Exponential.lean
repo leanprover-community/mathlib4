@@ -47,16 +47,17 @@ theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a :=
   if h : a = 0 then by subst a; simp only [zero_opow (succ_ne_zero _), mul_zero]
   else by simp only [opow_def, limitRecOn_succ, if_neg h]
 
-theorem opow_limit {a b : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
+theorem opow_limit {a b : Ordinal} (a0 : a ≠ 0) (h : IsSuccLimit b) :
     a ^ b = bsup.{u, u} b fun c _ => a ^ c := by
   simp only [opow_def, if_neg a0]; rw [limitRecOn_limit _ _ _ _ h]
 
-theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
-    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c := by rw [opow_limit a0 h, bsup_le_iff]
+theorem opow_le_of_isSuccLimit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsSuccLimit b) :
+    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c := by
+  rw [opow_limit a0 h, bsup_le_iff]
 
-theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
+theorem lt_opow_of_isSuccLimit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsSuccLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
-  rw [← not_iff_not, not_exists]; simp only [not_lt, opow_le_of_limit b0 h, exists_prop, not_and]
+  simpa using (opow_le_of_isSuccLimit b0 h).not
 
 @[simp]
 theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by
@@ -70,8 +71,8 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
     simp only [opow_succ, ih, mul_one]
   | H₃ b l IH =>
     refine eq_of_forall_ge_iff fun c => ?_
-    rw [opow_le_of_limit Ordinal.one_ne_zero l]
-    exact ⟨fun H => by simpa only [opow_zero] using H 0 l.pos, fun H b' h => by rwa [IH _ h]⟩
+    rw [opow_le_of_isSuccLimit Ordinal.one_ne_zero l]
+    exact ⟨fun H => by simpa only [opow_zero] using H 0 l.bot_lt, fun H b' h => by rwa [IH _ h]⟩
 
 theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
   have h0 : 0 < a ^ (0 : Ordinal) := by simp only [opow_zero, zero_lt_one]
@@ -81,7 +82,7 @@ theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
     rw [opow_succ]
     exact mul_pos IH a0
   | H₃ b l _ =>
-    exact (lt_opow_of_limit (Ordinal.pos_iff_ne_zero.1 a0) l).2 ⟨0, l.pos, h0⟩
+    exact (lt_opow_of_isSuccLimit (Ordinal.pos_iff_ne_zero.1 a0) l).2 ⟨0, l.bot_lt, h0⟩
 
 theorem opow_ne_zero {a : Ordinal} (b : Ordinal) (a0 : a ≠ 0) : a ^ b ≠ 0 :=
   Ordinal.pos_iff_ne_zero.1 <| opow_pos b <| Ordinal.pos_iff_ne_zero.2 a0
@@ -103,7 +104,7 @@ theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
 theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) :=
   have a0 : 0 < a := zero_lt_one.trans h
   ⟨fun b => by simpa only [mul_one, opow_succ] using (mul_lt_mul_iff_left (opow_pos b a0)).2 h,
-    fun _ l _ => opow_le_of_limit (ne_of_gt a0) l⟩
+    fun _ l _ => opow_le_of_isSuccLimit (ne_of_gt a0) l⟩
 
 @[deprecated isNormal_opow (since := "2024-10-11")]
 alias opow_isNormal := isNormal_opow
@@ -117,21 +118,22 @@ theorem opow_le_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b ≤ a ^ c 
 theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c :=
   (isNormal_opow a1).inj
 
-theorem isLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsLimit b → IsLimit (a ^ b) :=
-  (isNormal_opow a1).isLimit
+theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
+  (isNormal_opow a1).isSuccLimit
 
-@[deprecated isLimit_opow (since := "2024-10-11")]
-alias opow_isLimit := isLimit_opow
+@[deprecated isSuccLimit_opow (since := "2024-10-11")]
+alias opow_isLimit := isSuccLimit_opow
 
-theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a ^ b) := by
-  rcases zero_or_succ_or_limit b with (e | ⟨b, rfl⟩ | l')
+theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0) :
+    IsSuccLimit (a ^ b) := by
+  rcases zero_or_succ_or_isSuccLimit b with (e | ⟨b, rfl⟩ | l')
   · exact absurd e hb
   · rw [opow_succ]
-    exact isLimit_mul (opow_pos _ l.pos) l
-  · exact isLimit_opow l.one_lt l'
+    exact isSuccLimit_mul (opow_pos _ l.bot_lt) l
+  · exact isSuccLimit_opow (one_lt_of_isSuccLimit l) l'
 
-@[deprecated isLimit_opow_left (since := "2024-10-11")]
-alias opow_isLimit_left := isLimit_opow_left
+@[deprecated isSuccLimit_opow_left (since := "2024-10-11")]
+alias opow_isLimit_left := isSuccLimit_opow_left
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ | h₁
@@ -154,7 +156,7 @@ theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c �
       simpa only [opow_succ] using mul_le_mul' IH ab
     | H₃ c l IH =>
       exact
-        (opow_le_of_limit a0 l).2 fun b' h =>
+        (opow_le_of_isSuccLimit a0 l).2 fun b' h =>
           (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 a0).trans_le ab) h.le)
 
 theorem opow_le_opow {a b c d : Ordinal} (hac : a ≤ c) (hbd : b ≤ d) (hc : 0 < c) : a ^ b ≤ c ^ d :=
@@ -240,7 +242,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
           ?_
     dsimp only [Function.comp_def]
     simp +contextual only [IH]
-    exact (opow_le_of_limit (opow_ne_zero _ a0) l).symm
+    exact (opow_le_of_isSuccLimit (opow_ne_zero _ a0) l).symm
 
 theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u : Ordinal) (hv : v ≠ 0) (w : Ordinal) :
     0 < b ^ u * v + w :=
@@ -257,8 +259,31 @@ theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b 
     (mul_le_mul_left' (succ_le_of_lt hvb) _) using 1
   exact opow_succ b u
 
-/-! ### Ordinal logarithm -/
+section deprecated
 
+set_option linter.deprecated false
+
+@[deprecated opow_le_of_isSuccLimit (since := "2024-12-12")]
+theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
+    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c :=
+  opow_le_of_isSuccLimit a0 h
+
+@[deprecated lt_opow_of_isSuccLimit (since := "2024-12-12")]
+theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
+    a < b ^ c ↔ ∃ c' < c, a < b ^ c' :=
+  lt_opow_of_isSuccLimit b0 h
+
+@[deprecated isSuccLimit_opow (since := "2024-12-12")]
+theorem isLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsLimit b → IsLimit (a ^ b) :=
+  isSuccLimit_opow a1
+
+@[deprecated isSuccLimit_opow (since := "2024-12-12")]
+theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a ^ b) :=
+  isSuccLimit_opow_left l hb
+
+end deprecated
+
+/-! ### Ordinal logarithm -/
 
 /-- The ordinal logarithm is the solution `u` to the equation `x = b ^ u * v + w` where `v < b` and
 `w < b ^ u`. -/
@@ -301,11 +326,11 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     succ (log b x) = sInf { o : Ordinal | x < b ^ o } := by
   let t := sInf { o : Ordinal | x < b ^ o }
   have : x < b ^ t := csInf_mem (log_nonempty hb)
-  rcases zero_or_succ_or_limit t with (h | h | h)
+  rcases zero_or_succ_or_isSuccLimit t with (h | h | h)
   · refine ((one_le_iff_ne_zero.2 hx).not_lt ?_).elim
     simpa only [h, opow_zero] using this
-  · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
-  · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
+  · rw [show log b x = pred t from log_def hb x, succ_pred_iff_mem_range_succ.2 h]
+  · rcases (lt_opow_of_isSuccLimit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
     exact h₁.not_le.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
 
 theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :

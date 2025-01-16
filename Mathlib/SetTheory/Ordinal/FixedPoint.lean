@@ -150,7 +150,7 @@ theorem derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
   limitRecOn_succ ..
 
 theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
-    IsLimit o → derivFamily f o = ⨆ b : Set.Iio o, derivFamily f b :=
+    IsSuccLimit o → derivFamily f o = ⨆ b : Set.Iio o, derivFamily f b :=
   limitRecOn_limit _ _ _ _
 
 theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
@@ -170,7 +170,7 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     exact nfpFamily_fp H 0
   · rw [derivFamily_succ]
     exact nfpFamily_fp H _
-  · have : Nonempty (Set.Iio o) := ⟨0, l.pos⟩
+  · have : Nonempty (Set.Iio o) := ⟨0, l.bot_lt⟩
     rw [derivFamily_limit _ l, H.map_iSup]
     refine eq_of_forall_ge_iff fun c => ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
@@ -529,7 +529,7 @@ theorem deriv_zero_right (f) : deriv f 0 = nfp f 0 :=
 theorem deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
   derivFamily_succ _ _
 
-theorem deriv_limit (f) {o} : IsLimit o → deriv f o = ⨆ a : {a // a < o}, deriv f a :=
+theorem deriv_limit (f) {o} : IsSuccLimit o → deriv f o = ⨆ a : {a // a < o}, deriv f a :=
   derivFamily_limit _
 
 theorem isNormal_deriv (f) : IsNormal (deriv f) :=
