@@ -15,6 +15,13 @@ kernels.
 
 * `ProbabilityTheory.Kernel.deterministic (f : α → β) (hf : Measurable f)`:
   kernel `a ↦ Measure.dirac (f a)`.
+* `ProbabilityTheory.Kernel.id`: the identity kernel, deterministic kernel for
+  the identity function.
+* `ProbabilityTheory.Kernel.copy α`: the deterministic kernel that maps `x : α` to
+  the Dirac measure at `(x, x) : α × α`.
+* `ProbabilityTheory.Kernel.discard α`: the Markov kernel to the type `Unit`.
+* `ProbabilityTheory.Kernel.swap α β`: the deterministic kernel that maps `(x, y)` to
+  the Dirac measure at `(y, x)`.
 * `ProbabilityTheory.Kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
 * `ProbabilityTheory.Kernel.restrict κ (hs : MeasurableSet s)`: kernel for which the image of
   `a : α` is `(κ a).restrict s`.
@@ -92,6 +99,66 @@ theorem setLIntegral_deterministic {f : β → ℝ≥0∞} {g : α → β} {a : 
 alias set_lintegral_deterministic := setLIntegral_deterministic
 
 end Deterministic
+
+section Id
+
+/-- The identity kernel, that maps `x : α` to the Dirac measure at `x`. -/
+protected noncomputable
+def id : Kernel α α := Kernel.deterministic id measurable_id
+
+instance : IsMarkovKernel (Kernel.id : Kernel α α) := by rw [Kernel.id]; infer_instance
+
+lemma id_apply (a : α) : Kernel.id a = Measure.dirac a := by
+  rw [Kernel.id, deterministic_apply, id_def]
+
+end Id
+
+section Copy
+
+/-- The deterministic kernel that maps `x : α` to the Dirac measure at `(x, x) : α × α`. -/
+noncomputable
+def copy (α : Type*) [MeasurableSpace α] : Kernel α (α × α) :=
+  Kernel.deterministic (fun x ↦ (x, x)) (measurable_id.prod measurable_id)
+
+instance : IsMarkovKernel (copy α) := by rw [copy]; infer_instance
+
+lemma copy_apply (a : α) : copy α a = Measure.dirac (a, a) := by simp [copy, deterministic_apply]
+
+end Copy
+
+section Discard
+
+/-- The Markov kernel to the `Unit` type. -/
+noncomputable
+def discard (α : Type*) [MeasurableSpace α] : Kernel α Unit :=
+  Kernel.deterministic (fun _ ↦ ()) measurable_const
+
+instance : IsMarkovKernel (discard α) := by rw [discard]; infer_instance
+
+@[simp]
+lemma discard_apply (a : α) : discard α a = Measure.dirac () := deterministic_apply _ _
+
+end Discard
+
+section Swap
+
+/-- The deterministic kernel that maps `(x, y)` to the Dirac measure at `(y, x)`. -/
+noncomputable
+def swap (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Kernel (α × β) (β × α) :=
+  Kernel.deterministic Prod.swap measurable_swap
+
+instance : IsMarkovKernel (swap α β) := by rw [swap]; infer_instance
+
+/-- See `swap_apply'` for a fully applied version of this lemma. -/
+lemma swap_apply (ab : α × β) : swap α β ab = Measure.dirac ab.swap := by
+  rw [swap, deterministic_apply]
+
+/-- See `swap_apply` for a partially applied version of this lemma. -/
+lemma swap_apply' (ab : α × β) {s : Set (β × α)} (hs : MeasurableSet s) :
+    swap α β ab s = s.indicator 1 ab.swap := by
+  rw [swap_apply, Measure.dirac_apply' _ hs]
+
+end Swap
 
 section Const
 
