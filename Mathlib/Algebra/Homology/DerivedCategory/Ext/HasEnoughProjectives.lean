@@ -122,9 +122,7 @@ lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] :
         intro X₃ Y
         let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X₃))
         have hS : S.ShortExact :=
-          { mono_f := by dsimp; infer_instance
-            epi_g := by dsimp; infer_instance
-            exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
+          { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
         have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
           Ext.contravariant_sequence_exact₃ hS Y x₃
             (Ext.eq_zero_of_projective _) (by omega)
