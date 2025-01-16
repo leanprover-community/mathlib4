@@ -152,8 +152,18 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedA
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
 
+/-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
+ the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
+evaluate to zero at all points `z ∈ s`. -/
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    Submodule 𝕜 (Dual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
+
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
+    SetLike.coe (polarSubmodule 𝕜 m) = polar 𝕜 m := rfl
 
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
