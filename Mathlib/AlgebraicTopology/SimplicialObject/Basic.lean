@@ -50,7 +50,7 @@ set_option quotPrecheck false in
 /-- `X _[n]` denotes the `n`th-term of the simplicial object X -/
 scoped[Simplicial]
   notation3:1000 X " _[" n "]" =>
-    (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
+      (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
 
 open Simplicial
 
@@ -834,7 +834,7 @@ object and back is isomorphic to the given object. -/
 @[simps!]
 def SimplicialObject.Augmented.rightOpLeftOpIso (X : SimplicialObject.Augmented C) :
     X.rightOp.leftOp ≅ X :=
-  Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by aesop_cat)
+  Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by simp)
 
 /-- Converting an augmented cosimplicial object to an augmented simplicial
 object and back is isomorphic to the given object. -/
