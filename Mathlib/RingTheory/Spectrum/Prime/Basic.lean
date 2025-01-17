@@ -8,21 +8,18 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
-# Prime spectrum of a commutative (semi)ring as a type
+# Prime spectrum of a commutative (semi)ring
 
-The prime spectrum of a commutative (semi)ring is the type of all prime ideals.
-
-For the Zariski topology, see `AlgebraicGeometry.PrimeSpectrum.Basic`.
+For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 
 ## Main definitions
 
-* `PrimeSpectrum R`: The prime spectrum of a commutative (semi)ring `R`,
-  i.e., the set of all prime ideals of `R`.
 * `zeroLocus s`: The zero locus of a subset `s` of `R`
   is the subset of `PrimeSpectrum R` consisting of all prime ideals that contain `s`.
 * `vanishingIdeal t`: The vanishing ideal of a subset `t` of `PrimeSpectrum R`
@@ -40,7 +37,7 @@ which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 -/
 
--- A dividing line between this file and `AlgebraicGeometry.PrimeSpectrum.Basic` is
+-- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
@@ -51,20 +48,6 @@ open scoped Classical Pointwise
 universe u v
 
 variable (R : Type u) (S : Type v)
-
-/-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
-
-It is naturally endowed with a topology (the Zariski topology),
-and a sheaf of commutative rings (see `AlgebraicGeometry.StructureSheaf`).
-It is a fundamental building block in algebraic geometry. -/
-@[ext]
-structure PrimeSpectrum [CommSemiring R] where
-  asIdeal : Ideal R
-  isPrime : asIdeal.IsPrime
-
-@[deprecated (since := "2024-06-22")] alias PrimeSpectrum.IsPrime := PrimeSpectrum.isPrime
-
-attribute [instance] PrimeSpectrum.isPrime
 
 namespace PrimeSpectrum
 
@@ -392,7 +375,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
+See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=

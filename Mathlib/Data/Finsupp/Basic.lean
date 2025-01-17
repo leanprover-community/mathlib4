@@ -1328,10 +1328,8 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
--- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
-    c • Finsupp.single a b = Finsupp.single a (c * b) :=
-  smul_single _ _ _
+    c • Finsupp.single a b = Finsupp.single a (c * b) := by simp
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
