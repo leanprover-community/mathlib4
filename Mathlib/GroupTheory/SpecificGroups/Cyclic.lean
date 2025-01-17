@@ -76,8 +76,8 @@ instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive �
 
 @[to_additive]
 instance IsCyclic.commutative [Group α] [IsCyclic α] :
-    Std.Commutative (· * · : α → α → α) :=
-  Std.Commutative.mk fun x y =>
+    Std.Commutative (· * · : α → α → α) where
+  comm x y :=
     let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
     let ⟨_, hx⟩ := hg x
     let ⟨_, hy⟩ := hg y
