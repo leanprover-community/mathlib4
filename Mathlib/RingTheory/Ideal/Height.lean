@@ -16,8 +16,8 @@ In this file, we defined the height of a prime ideal and the height of an ideal.
 * `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We defined it as the length of
 the maximum chain of prime ideals whose maximal element is $\mathfrak{p}$ minus 1.
 
-* `Ideal.height` : The height of an ideal. We defined it as the infimum of the primeHeight of the
-minimal prime ideals containing I.
+* `Ideal.height` : The height of an ideal. We defined it as the infimum of the `primeHeight` of the
+minimal prime ideals of I.
 
 -/
 
