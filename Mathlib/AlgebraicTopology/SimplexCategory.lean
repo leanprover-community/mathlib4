@@ -777,7 +777,34 @@ macro_rules
   | `([$m:term, $p:term]$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
-open Lean PrettyPrinter.Delaborator SubExpr in
+section Delab
+
+open Lean PrettyPrinter.Delaborator SubExpr
+
+/-- Returns the user-facing name of any constant or free variable. -/
+private def name : Expr → MetaM (Option Name)
+  | Expr.const name _ => return name
+  | Expr.fvar name => name.getUserName
+  | _ => return none
+
+/-- Returns `true` if every character in `s` can be subscripted. -/
+private def isSubscriptable (s : Name) : Bool :=
+  s.toString.toList.all
+    Mathlib.Tactic.Superscript.Mapping.subscript.toSpecial.contains
+
+/-- Checks that the provided expression can be subscripted. -/
+partial def printable (e : Expr) : DelabM Unit := do
+  /- Any number or free variable with a subscriptable name is subscriptable. -/
+  if (← name e).any isSubscriptable || (← delab) matches `($_:num) then return
+  /- Addition and subtraction are subscriptable if their operands are. -/
+  guard <| e.isAppOfArity ``HAdd.hAdd 6 || e.isAppOfArity ``HSub.hSub 6
+  let #[_, _, _, _, x, y] := e.getAppArgs | failure
+  let _ ← withNaryArg 4 <| printable x
+  let _ ← withAppArg <| printable y
+
+/-- Delaborator that checks the provided expression can be subscripted. -/
+def Meta.print (e : Expr) : Delab := printable e >>= fun _ ↦ delab
+
 /-- Delaborator for the notation `[m]ₙ`. -/
 @[app_delab FullSubcategory.mk]
 def delabMkNotation : Delab :=
@@ -790,15 +817,15 @@ def delabMkNotation : Delab :=
     let_expr LE.le _ _ lhs rhs := body | failure
     let_expr SimplexCategory.len simplex := lhs | failure
     guard <| simplex == .bvar 0
-    guard !rhs.hasMVar
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
     let m ← withNaryArg 2 <| withAppArg delab
-    let n ← withNaryArg 1 <| withBindingBody x <| withAppArg delab
+    let n ← withNaryArg 1 <| withBindingBody x <| withAppArg <| Meta.print rhs
     if (← getPPOption getPPProofs) then
       let p ← withAppArg delab
       `([$m, $p]$n)
     else `([$m]$n)
 
+end Delab
 end Meta
 
 end Truncated
