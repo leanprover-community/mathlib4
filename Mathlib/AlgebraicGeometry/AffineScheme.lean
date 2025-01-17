@@ -76,6 +76,16 @@ theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (
   rw [Iso.eq_inv_comp, isoSpec, asIso_hom, ← Scheme.toSpecΓ_naturality_assoc, isoSpec,
     asIso_inv, IsIso.hom_inv_id, Category.comp_id]
 
+@[reassoc (attr := simp)]
+lemma Scheme.toSpecΓ_isoSpec_inv (X : Scheme.{u}) [IsAffine X] :
+    X.toSpecΓ ≫ X.isoSpec.inv  = 𝟙 _ :=
+  X.isoSpec.hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma Scheme.isoSpec_inv_toSpecΓ (X : Scheme.{u}) [IsAffine X] :
+    X.isoSpec.inv ≫ X.toSpecΓ = 𝟙 _ :=
+  X.isoSpec.inv_hom_id
+
 /-- Construct an affine scheme from a scheme and the information that it is affine.
 Also see `AffineScheme.of` for a typeclass version. -/
 @[simps]
@@ -290,6 +300,10 @@ lemma Scheme.Opens.toSpecΓ_top {X : Scheme} :
     (⊤ : X.Opens).toSpecΓ = (⊤ : X.Opens).ι ≫ X.toSpecΓ := by
   simp [Scheme.Opens.toSpecΓ]; rfl
 
+lemma Scheme.Opens.toSpecΓ_appTop {X : Scheme.{u}} (U : X.Opens) :
+    U.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
+  simp [Scheme.Opens.toSpecΓ]
+
 namespace IsAffineOpen
 
 variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
@@ -302,8 +316,13 @@ def isoSpec :
   haveI : IsAffine U := hU
   U.toScheme.isoSpec ≪≫ Scheme.Spec.mapIso U.topIso.symm.op
 
-lemma isoSpec_hom {X : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) :
-    hU.isoSpec.hom = U.toSpecΓ := rfl
+lemma isoSpec_hom : hU.isoSpec.hom = U.toSpecΓ := rfl
+
+@[reassoc (attr := simp)]
+lemma toSpecΓ_isoSpec_inv : U.toSpecΓ ≫ hU.isoSpec.inv = 𝟙 _ := hU.isoSpec.hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoSpec_inv_toSpecΓ :  hU.isoSpec.inv ≫ U.toSpecΓ = 𝟙 _ := hU.isoSpec.inv_hom_id
 
 open IsLocalRing in
 lemma isoSpec_hom_base_apply (x : U) :
@@ -346,6 +365,9 @@ instance isOpenImmersion_fromSpec :
 
 @[reassoc (attr := simp)]
 lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
+
+@[reassoc (attr := simp)]
+lemma toSpecΓ_fromSpec : U.toSpecΓ ≫ hU.fromSpec = U.ι := toSpecΓ_isoSpec_inv_assoc _ _
 
 @[simp]
 theorem range_fromSpec :
@@ -895,35 +917,104 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
 
 section ZeroLocus
 
-/-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
-of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
-lemma Scheme.toΓSpec_preimage_zeroLocus_eq {X : Scheme.{u}} (s : Set Γ(X, ⊤)) :
-    X.toSpecΓ.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
-  LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
+namespace Scheme
 
 open ConcreteCategory
 
-/-- If `X` is affine, the image of the zero locus of global sections of `X` under `toΓSpecFun`
+variable (X : Scheme.{u})
+
+/-- On a scheme `X`, the preimage of the zero locus of the prime spectrum
+of `Γ(X, ⊤)` under `X.toSpecΓ : X ⟶ Spec Γ(X, ⊤)` agrees with the associated zero locus on `X`. -/
+lemma toSpecΓ_preimage_zeroLocus (s : Set Γ(X, ⊤)) :
+    X.toSpecΓ.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
+  LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
+
+@[deprecated (since := "2025-01-17")] alias toΓSpec_preimage_zeroLocus_eq :=
+  toSpecΓ_preimage_zeroLocus
+
+/-- If `X` is affine, the image of the zero locus of global sections of `X` under `X.isoSpec`
 is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
-lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X]
+lemma isoSpec_image_zeroLocus [IsAffine X]
     (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
-  erw [← X.toΓSpec_preimage_zeroLocus_eq, Set.image_preimage_eq]
+  erw [← X.toSpecΓ_preimage_zeroLocus, Set.image_preimage_eq]
   exact (bijective_of_isIso X.isoSpec.hom.base).surjective
+
+lemma toSpecΓ_image_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
+    X.toSpecΓ.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s :=
+  X.isoSpec_image_zeroLocus _
+
+lemma isoSpec_inv_preimage_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
+    X.isoSpec.inv.base ⁻¹' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
+  rw [← toSpecΓ_preimage_zeroLocus, ← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.comp_base,
+    X.isoSpec_inv_toSpecΓ]
+  rfl
+
+lemma isoSpec_inv_image_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
+    X.isoSpec.inv.base '' PrimeSpectrum.zeroLocus s = X.zeroLocus s := by
+  rw [← isoSpec_inv_preimage_zeroLocus, Set.image_preimage_eq]
+  exact (bijective_of_isIso X.isoSpec.inv.base).surjective
+
+@[deprecated (since := "2025-01-17")] alias toΓSpec_image_zeroLocus_eq_of_isAffine :=
+  Scheme.isoSpec_image_zeroLocus
 
 /-- If `X` is an affine scheme, every closed set of `X` is the zero locus
 of a set of global sections. -/
-lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] (s : Set X) :
+lemma eq_zeroLocus_of_isClosed_of_isAffine [IsAffine X] (s : Set X) :
     IsClosed s ↔ ∃ I : Ideal (Γ(X, ⊤)), s = X.zeroLocus (I : Set Γ(X, ⊤)) := by
   refine ⟨fun hs ↦ ?_, ?_⟩
   · let Z : Set (Spec <| Γ(X, ⊤)) := X.toΓSpecFun '' s
     have hZ : IsClosed Z := (X.isoSpec.hom.homeomorph).isClosedMap _ hs
     obtain ⟨I, (hI : Z = _)⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal _).mp hZ
     use I
-    simp only [← Scheme.toΓSpec_preimage_zeroLocus_eq, ← hI, Z]
+    simp only [← Scheme.toSpecΓ_preimage_zeroLocus, ← hI, Z]
     erw [Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.base).injective]
   · rintro ⟨I, rfl⟩
     exact zeroLocus_isClosed X I.carrier
+
+open Set.Notation in
+lemma Opens.toSpecΓ_preimage_zeroLocus {X : Scheme.{u}} (U : X.Opens)
+    (s : Set Γ(X, U)) :
+    U.toSpecΓ.base ⁻¹' PrimeSpectrum.zeroLocus s = U.1 ↓∩ X.zeroLocus s := by
+  rw [toSpecΓ, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp, Spec.map_base]
+  erw [PrimeSpectrum.preimage_comap_zeroLocus]
+  rw [Scheme.toSpecΓ_preimage_zeroLocus]
+  show _ = U.ι.base ⁻¹' (X.zeroLocus s)
+  rw [Scheme.preimage_zeroLocus, U.ι_app_self, ← zeroLocus_map_of_eq _ U.ι_preimage_self,
+    ← Set.image_comp, ← RingHom.coe_comp, ← CommRingCat.hom_comp]
+  congr!
+  simp [← Functor.map_comp]
+  rfl
+
+end Scheme
+
+lemma IsAffineOpen.fromSpec_preimage_zeroLocus {X : Scheme.{u}} {U : X.Opens}
+    (hU : IsAffineOpen U) (s : Set Γ(X, U)) :
+    hU.fromSpec.base ⁻¹' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
+  ext x
+  suffices (∀ f ∈ s, ¬¬ f ∈ x.asIdeal) ↔ s ⊆ x.asIdeal by
+    simpa [← hU.fromSpec_image_basicOpen, -not_not] using this
+  simp_rw [not_not]
+  rfl
+
+lemma IsAffineOpen.fromSpec_image_zeroLocus {X : Scheme.{u}} {U : X.Opens}
+    (hU : IsAffineOpen U) (s : Set Γ(X, U)) :
+    hU.fromSpec.base '' PrimeSpectrum.zeroLocus s = X.zeroLocus s ∩ U := by
+  rw [← hU.fromSpec_preimage_zeroLocus, Set.image_preimage_eq_inter_range, range_fromSpec]
+
+open Set.Notation in
+lemma Scheme.zeroLocus_inf (X : Scheme.{u}) {U : X.Opens} (I J : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) ↑(I ⊓ J) = X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J := by
+  suffices U.1 ↓∩ (X.zeroLocus (U := U) ↑(I ⊓ J)) =
+      U.1 ↓∩ (X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J) by
+    ext x
+    by_cases hxU : x ∈ U
+    · simpa [hxU] using congr(⟨x, hxU⟩ ∈ $this)
+    · simp only [Submodule.inf_coe, Set.mem_union,
+        codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) (I ∩ J)) hxU,
+        codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) I) hxU, true_or]
+  simp only [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J,
+    Set.preimage_union]
 
 end ZeroLocus
 
