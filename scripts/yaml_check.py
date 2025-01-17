@@ -9,13 +9,15 @@ Usage:
  of theorems. The order of these files is important.)
 
 """
+
 from typing import Dict, Mapping, Optional, Union, Tuple, List
 from dataclasses import dataclass
 import yaml
 import json
 import sys
 
-TieredDict = Dict[str, Union[Optional[str], 'TieredDict']]
+TieredDict = Dict[str, Union[Optional[str], "TieredDict"]]
+
 
 def tiered_extract(db: TieredDict) -> List[Tuple[List[str], str]]:
     """From a nested dictionary, return a list of (key_path, values)
@@ -26,18 +28,19 @@ def tiered_extract(db: TieredDict) -> List[Tuple[List[str], str]]:
             for subname, value in tiered_extract(entry):
                 out.append(([name] + subname, value))
         else:
-            if entry and '/' not in entry:
+            if entry and "/" not in entry:
                 out.append(([name], entry))
     return out
 
+
 def flatten_names(data: List[Tuple[List[str], str]]) -> List[Tuple[str, str]]:
-    return [(' :: '.join(id), v) for id, v in data]
+    return [(" :: ".join(id), v) for id, v in data]
+
 
 def print_list(fn: str, pairs: List[Tuple[str, str]]) -> None:
-    with open(fn, 'w', encoding='utf8') as out:
-        for (id, val) in pairs:
-            out.write(f'{id}\n{val.strip()}\n\n')
-
+    with open(fn, "w", encoding="utf8") as out:
+        for id, val in pairs:
+            out.write(f"{id}\n{val.strip()}\n\n")
 
 
 # keep in sync with make_site.py in the leanprover-community.github.io repo
@@ -58,6 +61,7 @@ class HundredTheorem:
     date: Optional[str] = None
     links: Optional[Mapping[str, str]] = None
     note: Optional[str] = None
+
 
 # keep in sync with make_site.py in the leanprover-community.github.io repo!
 # These field names match the names in the data files of the 1000+ theorems project upstream.
@@ -89,18 +93,19 @@ class ThousandPlusTheorem:
     # any additional notes or comments
     comment: Optional[str] = None
 
+
 hundred_yaml = sys.argv[1]
 thousand_yaml = sys.argv[2]
 overview_yaml = sys.argv[3]
 undergrad_yaml = sys.argv[4]
 
-with open(hundred_yaml, 'r', encoding='utf8') as hy:
+with open(hundred_yaml, "r", encoding="utf8") as hy:
     hundred = yaml.safe_load(hy)
-with open(thousand_yaml, 'r', encoding='utf8') as hy:
+with open(thousand_yaml, "r", encoding="utf8") as hy:
     thousand = yaml.safe_load(hy)
-with open(overview_yaml, 'r', encoding='utf8') as hy:
+with open(overview_yaml, "r", encoding="utf8") as hy:
     overview = yaml.safe_load(hy)
-with open(undergrad_yaml, 'r', encoding='utf8') as hy:
+with open(undergrad_yaml, "r", encoding="utf8") as hy:
     undergrad = yaml.safe_load(hy)
 
 hundred_decls: List[Tuple[str, str]] = []
@@ -111,21 +116,25 @@ for index, entry in hundred.items():
     try:
         _thm = HundredTheorem(index, **entry)
     except TypeError as e:
-        print(f"error: entry for theorem {index} is invalid: {e}", file=sys.stderr)
+        print(f"error: entry for theorem {index} is invalid: {e}")
         errors += 1
     # Also verify that the |decl| and |decls| fields are not *both* provided.
     if _thm.decl and _thm.decls:
-        print(f"warning: entry for theorem {index} has both a decl and a decls field; "
-        "please only provide one of these", file=sys.stderr)
+        print(
+            f"warning: entry for theorem {index} has both a decl and a decls field; "
+            "please only provide one of these",
+            file=sys.stderr,
+        )
         errors += 1
-    title = entry['title']
-    if 'decl' in entry:
-        hundred_decls.append((f'{index} {title}', entry['decl']))
-    elif 'decls' in entry:
-        if not isinstance(entry['decls'], list):
+
+    title = entry["title"]
+    if "decl" in entry:
+        hundred_decls.append((f"{index} {title}", entry["decl"]))
+    elif "decls" in entry:
+        if not isinstance(entry["decls"], list):
             print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
             errors += 1
-        hundred_decls = hundred_decls + [(f'{index} {title}', d) for d in entry['decls']]
+        hundred_decls = hundred_decls + [(f"{index} {title}", d) for d in entry["decls"]]
 
 thousand_decls: List[Tuple[str, str]] = []
 for index, entry in thousand.items():
@@ -145,14 +154,14 @@ for index, entry in thousand.items():
         "the latter is superfluous; please remove it", file=sys.stderr)
         errors += 1
 
-    title = entry['title']
-    if 'decl' in entry:
-        thousand_decls.append((f'{index} {title}', entry['decl']))
-    elif 'decls' in entry:
-        if not isinstance(entry['decls'], list):
+    title = entry["title"]
+    if "decl" in entry:
+        thousand_decls.append((f"{index} {title}", entry["decl"]))
+    elif "decls" in entry:
+        if not isinstance(entry["decls"], list):
             print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
             errors += 1
-        thousand_decls = thousand_decls + [(f'{index} {title}', d) for d in entry['decls']]
+        thousand_decls = thousand_decls + [(f"{index} {title}", d) for d in entry["decls"]]
 
 overview_decls = tiered_extract(overview)
 assert all(len(n) == 3 for n, _ in overview_decls)
@@ -162,13 +171,13 @@ undergrad_decls = tiered_extract(undergrad)
 assert all(len(n) >= 3 for n, _ in undergrad_decls)
 undergrad_decls = flatten_names(undergrad_decls)
 
-with open('100.json', 'w', encoding='utf8') as f:
+with open("100.json", "w", encoding="utf8") as f:
     json.dump(hundred_decls, f)
-with open('1000.json', 'w', encoding='utf8') as f:
+with open("1000.json", "w", encoding="utf8") as f:
     json.dump(thousand_decls, f)
-with open('overview.json', 'w', encoding='utf8') as f:
+with open("overview.json", "w", encoding="utf8") as f:
     json.dump(overview_decls, f)
-with open('undergrad.json', 'w', encoding='utf8') as f:
+with open("undergrad.json", "w", encoding="utf8") as f:
     json.dump(undergrad_decls, f)
 
 if errors:

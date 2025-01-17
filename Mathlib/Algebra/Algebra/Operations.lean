@@ -67,6 +67,7 @@ section Module
 
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
+-- TODO: Why is this in a file about `Algebra`?
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
 TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
 once a version of `Algebra` without the `commutes'` field is introduced.
@@ -91,8 +92,7 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 
 @[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
-  -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
-  simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
+  simp [one_eq_span]
 
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
@@ -323,6 +323,15 @@ theorem pow_subset_pow {n : ℕ} : (↑M : Set A) ^ n ⊆ ↑(M ^ n : Submodule 
 
 theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx
+
+lemma restrictScalars_pow {A B C : Type*} [Semiring A] [Semiring B]
+    [Semiring C] [SMul A B] [Module A C] [Module B C]
+    [IsScalarTower A C C] [IsScalarTower B C C] [IsScalarTower A B C]
+    {I : Submodule B C} :
+    ∀ {n : ℕ}, (hn : n ≠ 0) → (I ^ n).restrictScalars A = I.restrictScalars A ^ n
+  | 1, _ => by simp [Submodule.pow_one]
+  | n + 2, _ => by
+    simp [Submodule.pow_succ (n := n + 1), restrictScalars_mul, restrictScalars_pow n.succ_ne_zero]
 
 end Module
 
