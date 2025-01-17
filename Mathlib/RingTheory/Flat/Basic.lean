@@ -19,13 +19,21 @@ import Mathlib.RingTheory.Finiteness.TensorProduct
 /-!
 # Flat modules
 
-A module `M` over a commutative semiring `R` is *flat*
-if for all finitely generated submodules `N` of all finitely generated `R`-modules `P`,
-the canonical map `N ⊗ M →ₗ P ⊗ M` is injective.
+A module `M` over a commutative semiring `R` is *mono-flat* if for all monomorphisms of modules
+(i.e., injective linear maps) `N →ₗ[R] P`, the canonical map `N ⊗ M → P ⊗ M` is injective
+(cf. [Katsov2004], [KatsovNam2011]).
+To show a module is mono-flat, it suffices to check inclusions of finitely generated
+submodules `N` into finitely generated modules `P`, and `P` can be further assumed to lie in
+the same universe as `R`.
 
-This is equivalent to the claim that for all injective `R`-linear maps `f : M₁ → M₂`
-the induced map `M₁ ⊗ M → M₂ ⊗ M` is injective.
+`M` is flat if `· ⊗ M` preserves finite limits (equivalently, pullbacks, or equalizers).
+If `R` is a ring, an `R`-module `M` is flat if and only if it is mono-flat, and to show
+a module is flat, it suffices to check inclusions of finitely generated ideals into `R`.
 See <https://stacks.math.columbia.edu/tag/00HD>.
+
+Currently, `Module.Flat` is defined to be equivalent to mono-flatness over a semiring.
+It is left as a TODO item to introduce the genuine flatness over semirings and rename
+the current `Module.Flat` to `Module.MonoFlat`.
 
 ## Main declaration
 
@@ -51,7 +59,7 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 
 ## TODO
 
-* Generalize flatness to noncommutative rings.
+* Generalize flatness to noncommutative semirings.
 
 -/
 
@@ -64,6 +72,8 @@ namespace Module
 open Function (Surjective)
 
 open LinearMap Submodule DirectSum
+
+section Semiring
 
 /-! ### Flatness over a semiring -/
 
@@ -252,6 +262,12 @@ theorem tensorProduct_mapIncl_injective_of_left
   rw [mapIncl, ← rTensor_comp_lTensor]
   exact (rTensor_preserves_injective_linearMap _ p.injective_subtype).comp
     (lTensor_preserves_injective_linearMap _ q.injective_subtype)
+
+end Flat
+
+end Semiring
+
+namespace Flat
 
 /-! ### Flatness over a ring -/
 
