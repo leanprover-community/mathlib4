@@ -16,6 +16,25 @@ section delaborator
 /-- info: X _[m]ₙ : C -/
 #guard_msgs in #check X _[m]ₙ
 
+/-- info: X _[m]ₙ : C -/
+#guard_msgs in #check X _[m]ₙ₊₍₃₋₍₂₊₁₎₎
+
+section bad_subscripts
+variable (b : ℕ) (Y: CategoryTheory.SimplicialObject.Truncated C b) (hb : m ≤ b)
+
+/- The delaborator should not fire because `b` cannot be subscripted. -/
+/-- info: Y.obj (Opposite.op { obj := SimplexCategory.mk m, property := hb }) : C -/
+#guard_msgs in #check Y.obj (Opposite.op ⟨SimplexCategory.mk m, hb⟩)
+
+variable {x} (hx : x = X _[m]ₙ) (n : True)
+
+/- The delaborator should not fire because `n` is now shadowed and `✝` cannot
+be subscripted. -/
+/-- info: hx : x = X.obj (Opposite.op { obj := SimplexCategory.mk m, property := h }) -/
+#guard_msgs in #check hx
+
+end bad_subscripts
+
 section mvars
 set_option pp.mvars false
 
@@ -62,6 +81,25 @@ section delaborator
 
 /-- info: X _[m]ₙ : C -/
 #guard_msgs in #check X _[m]ₙ
+
+/-- info: X _[m]ₙ : C -/
+#guard_msgs in #check X _[m]ₙ₊₍₃₋₍₂₊₁₎₎
+
+section bad_subscripts
+variable (b : ℕ) (Y: CategoryTheory.CosimplicialObject.Truncated C b) (hb : m ≤ b)
+
+/- The delaborator should not fire because `b` cannot be subscripted. -/
+/-- info: Y.obj { obj := SimplexCategory.mk m, property := hb } : C -/
+#guard_msgs in #check Y.obj ⟨SimplexCategory.mk m, hb⟩
+
+variable {x} (hx : x = X _[m]ₙ) (n : True)
+
+/- The delaborator should not fire because `n` is now shadowed and `✝` cannot
+be subscripted. -/
+/-- info: hx : x = X.obj { obj := SimplexCategory.mk m, property := h } -/
+#guard_msgs in #check hx
+
+end bad_subscripts
 
 section mvars
 set_option pp.mvars false

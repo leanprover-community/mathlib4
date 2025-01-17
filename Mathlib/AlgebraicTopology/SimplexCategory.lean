@@ -778,7 +778,6 @@ macro_rules
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
 section Delab
-
 open Lean PrettyPrinter.Delaborator SubExpr
 
 /-- Returns the user-facing name of any constant or free variable. -/
@@ -793,7 +792,7 @@ private def isSubscriptable (s : Name) : Bool :=
     Mathlib.Tactic.Superscript.Mapping.subscript.toSpecial.contains
 
 /-- Checks that the provided expression can be subscripted. -/
-partial def printable (e : Expr) : DelabM Unit := do
+private partial def printable (e : Expr) : DelabM Unit := do
   /- Any number or free variable with a subscriptable name is subscriptable. -/
   if (← name e).any isSubscriptable || (← delab) matches `($_:num) then return
   /- Addition and subtraction are subscriptable if their operands are. -/
@@ -818,8 +817,8 @@ def delabMkNotation : Delab :=
     let_expr SimplexCategory.len simplex := lhs | failure
     guard <| simplex == .bvar 0
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let m ← withNaryArg 2 <| withAppArg delab
     let n ← withNaryArg 1 <| withBindingBody x <| withAppArg <| Meta.print rhs
+    let m ← withNaryArg 2 <| withAppArg delab
     if (← getPPOption getPPProofs) then
       let p ← withAppArg delab
       `([$m, $p]$n)

@@ -263,6 +263,7 @@ macro_rules
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
+open SimplexCategory.Truncated.Meta (print) in
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `X _[m]ₙ`. -/
 @[app_delab Prefunctor.obj]
@@ -271,16 +272,15 @@ def delabMkNotation : Delab :=
     let_expr Prefunctor.obj src _ _ _ f x := ← getExpr | failure
     -- check that f is a contravariant functor out of the truncated simplex category
     guard <| f.isAppOfArity ``Functor.toPrefunctor 5
-    let_expr Opposite src := src | failure
-    let_expr SimplexCategory.Truncated n := src | failure
-    guard !n.hasMVar
     let_expr Opposite.op _ x := x | failure
     let_expr FullSubcategory.mk _ _ simplex _ := x | failure
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
+    let_expr Opposite src := src | failure
+    let_expr SimplexCategory.Truncated n := src | failure
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let f ← withNaryArg 4 <| withAppArg delab
+    let n ← withNaryArg 0 <| withAppArg <| withAppArg <| print n
     let m ← withAppArg <| withAppArg <| withNaryArg 2 <| withAppArg delab
-    let n ← withNaryArg 0 <| withAppArg <| withAppArg delab
+    let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
       let p ← withAppArg <| withAppArg <| withAppArg delab
       `($f _[$m, $p]$n)
@@ -737,6 +737,7 @@ macro_rules
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
 
+open SimplexCategory.Truncated.Meta (print) in
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `X _[m]ₙ`. -/
 @[app_delab Prefunctor.obj]
@@ -745,14 +746,13 @@ def delabMkNotation : Delab :=
     let_expr Prefunctor.obj src _ _ _ f x := ← getExpr | failure
     -- check that f is a functor out of the truncated simplex category
     guard <| f.isAppOfArity ``Functor.toPrefunctor 5
-    let_expr SimplexCategory.Truncated n := src | failure
-    guard !n.hasMVar
     let_expr FullSubcategory.mk _ _ simplex _ := x | failure
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
+    let_expr SimplexCategory.Truncated n := src | failure
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let f ← withNaryArg 4 <| withAppArg delab
+    let n ← withNaryArg 0 <| withAppArg <| print n
     let m ← withAppArg <| withNaryArg 2 <| withAppArg delab
-    let n ← withNaryArg 0 <| withAppArg delab
+    let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
       let p ← withAppArg <| withAppArg delab
       `($f _[$m, $p]$n)

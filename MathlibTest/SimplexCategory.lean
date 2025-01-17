@@ -27,13 +27,13 @@ CategoryTheory.FullSubcategory fun a => a.len ≤ n + (4 - (2 + 1)) -/
 #guard_msgs in #check [m]ₙ₊₍₄₋₍₂₊₁₎₎
 
 section bad_subscripts
-variable (ab : ℕ) (hab : m ≤ ab)
+variable (b : ℕ) (hb : m ≤ b)
 
 /- The delaborator should not fire because `b` cannot be subscripted. -/
-/-- info: { obj := SimplexCategory.mk m, property := hab } :
-CategoryTheory.FullSubcategory fun a => a.len ≤ ab -/
+/-- info: { obj := SimplexCategory.mk m, property := hb } :
+CategoryTheory.FullSubcategory fun a => a.len ≤ b -/
 #guard_msgs in
-#check (⟨SimplexCategory.mk m, hab⟩ : SimplexCategory.Truncated ab)
+#check (⟨SimplexCategory.mk m, hb⟩ : SimplexCategory.Truncated b)
 
 variable {x} (hx : x = [m]ₙ) (n : True)
 
