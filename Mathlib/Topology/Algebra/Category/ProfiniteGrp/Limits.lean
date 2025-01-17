@@ -3,6 +3,7 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 import Mathlib.Topology.Algebra.ClopenNhdofOne
 
@@ -129,21 +130,15 @@ noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteG
   with
   map_mul' := (toLimit P).hom.map_mul' }
 
---TODO : Refactor using `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` after it is proved.
+instance toLimit_isIso (P : ProfiniteGrp.{u}) :
+    IsIso (toLimit P) := by
+  rw [CategoryTheory.ConcreteCategory.isIso_iff_bijective]
+  exact ⟨toLimit_injective P, toLimit_surjective P⟩
+
 /-- The isomorphism in the category of profinite group between a profinite group and
 the projective limit of its quotients by open normal subgroups -/
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
-    P ≅ (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) where
-  hom := P.toLimit
-  inv := ofHom { (continuousMulEquivLimittoFiniteQuotientFunctor P).symm.toMonoidHom with
-    continuous_toFun := (continuousMulEquivLimittoFiniteQuotientFunctor P).continuous_invFun}
-  hom_inv_id := by
-    ext x
-    exact ContinuousMulEquiv.symm_apply_apply
-      (continuousMulEquivLimittoFiniteQuotientFunctor P) x
-  inv_hom_id := by
-    ext x
-    exact ContinuousMulEquiv.apply_symm_apply
-      (continuousMulEquivLimittoFiniteQuotientFunctor P) x
+    P ≅ (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) :=
+  asIso (toLimit P)
 
 end ProfiniteGrp
