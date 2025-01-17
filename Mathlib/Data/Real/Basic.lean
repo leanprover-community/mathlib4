@@ -609,7 +609,7 @@ def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x
 
 /-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
-theorem pow_isMul_of_isMul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
+theorem pow_isMul_of_isMul {R : Type*} [CommRing R] (f : R → ℝ) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) : ∀ (n : ℕ) (y : R), f (x ^ n * y) = f x ^ n * f y := by
   intro n
   induction n with
