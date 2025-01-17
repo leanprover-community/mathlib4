@@ -185,6 +185,11 @@ theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s :=
   ⟨s.toList, s.nodup_toList, s.toList_toFinset⟩
 
+@[simp]
+theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList.Perm f₂.toList ↔ f₁ = f₂ where
+  mp h := Finset.ext (fun x => by simp [← Finset.mem_toList, h.mem_iff])
+  mpr h := List.Perm.of_eq <| congrArg Finset.toList h
+
 end ToList
 
 end Finset
