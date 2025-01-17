@@ -235,10 +235,7 @@ theorem image_inter (i j : D.J) :
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app, CategoryTheory.IsIso.inv_hom_id_apply, eq₁]⟩
-    · -- Porting note: was
-      -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
-      dsimp only at *
-      substs eq₁
+    · subst eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
