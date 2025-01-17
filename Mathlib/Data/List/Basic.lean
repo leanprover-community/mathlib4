@@ -208,7 +208,7 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
   | (b :: l) => by simp [eq_replicate_length, replicate_succ]
 
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
-  rw [append_replicate_replicate]
+  rw [replicate_append_replicate]
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
