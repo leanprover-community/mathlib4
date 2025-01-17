@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Types
 # Concrete categories
 
 A concrete category is a category `C` with a fixed faithful functor
-`forget : C ⥤ Type*`.  We define concrete categories using `class ConcreteCategory`.
+`forget : C ⥤ Type*`.  We define concrete categories using `class HasForget`.
 In particular, we impose no restrictions on the
 carrier type `C`, so `Type` is a concrete category with the identity
 forgetful functor.
@@ -27,6 +27,11 @@ Two classes helping construct concrete categories in the two most
 common cases are provided in the files `BundledHom` and
 `UnbundledHom`, see their documentation for details.
 
+## Implementation notes
+
+We are currently switching over from `HasForget` to a new class `ConcreteCategory`,
+see Zulip thread: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20category.20class.20redesign
+
 ## References
 
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
@@ -42,27 +47,32 @@ namespace CategoryTheory
 
 /-- A concrete category is a category `C` with a fixed faithful functor `Forget : C ⥤ Type`.
 
-Note that `ConcreteCategory` potentially depends on three independent universe levels,
+Note that `HasForget` potentially depends on three independent universe levels,
 * the universe level `w` appearing in `Forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
 They are specified that order, to avoid unnecessary universe annotations.
 -/
-class ConcreteCategory (C : Type u) [Category.{v} C] where
+class HasForget (C : Type u) [Category.{v} C] where
   /-- We have a functor to Type -/
   protected forget : C ⥤ Type w
   /-- That functor is faithful -/
   [forget_faithful : forget.Faithful]
 
-attribute [inline, reducible] ConcreteCategory.forget
-attribute [instance] ConcreteCategory.forget_faithful
+@[deprecated HasForget
+  "`ConcreteCategory` will be refactored, use `HasForget` in the meantime"
+  (since := "2025-01-17")]
+alias ConcreteCategory := HasForget
+
+attribute [inline, reducible] HasForget.forget
+attribute [instance] HasForget.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/
-abbrev forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Type w :=
-  ConcreteCategory.forget
+abbrev forget (C : Type u) [Category.{v} C] [HasForget.{w} C] : C ⥤ Type w :=
+  HasForget.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
-@[instance] abbrev ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
+@[instance] abbrev HasForget.types : HasForget.{u, u, u+1} (Type u) where
   forget := 𝟭 _
 
 /-- Provide a coercion to `Type u` for a concrete category. This is not marked as an instance
@@ -70,24 +80,24 @@ as it could potentially apply to every type, and so is too expensive in typeclas
 
 You can use it on particular examples as:
 ```
-instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
+instance : HasCoeToSort X := HasForget.hasCoeToSort X
 ```
 -/
-def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
+def HasForget.hasCoeToSort (C : Type u) [Category.{v} C] [HasForget.{w} C] :
     CoeSort C (Type w) where
   coe X := (forget C).obj X
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.hasCoeToSort
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [HasForget.{w} C]
 
 /-- In any concrete category, `(forget C).map` is injective. -/
-abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
+abbrev HasForget.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext low] -- Porting note: lowered priority
@@ -134,47 +144,47 @@ end
 /-- `HasForget₂ C D`, where `C` and `D` are both concrete categories, provides a functor
 `forget₂ C D : C ⥤ D` and a proof that `forget₂ ⋙ (forget D) = forget C`.
 -/
-class HasForget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
-  [Category.{v'} D] [ConcreteCategory.{w} D] where
+class HasForget₂ (C : Type u) (D : Type u') [Category.{v} C] [HasForget.{w} C]
+  [Category.{v'} D] [HasForget.{w} D] where
   /-- A functor from `C` to `D` -/
   forget₂ : C ⥤ D
-  /-- It covers the `ConcreteCategory.forget` for `C` and `D` -/
+  /-- It covers the `HasForget.forget` for `C` and `D` -/
   forget_comp : forget₂ ⋙ forget D = forget C := by aesop
 
 /-- The forgetful functor `C ⥤ D` between concrete categories for which we have an instance
 `HasForget₂ C`. -/
-abbrev forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
-    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : C ⥤ D :=
+abbrev forget₂ (C : Type u) (D : Type u') [Category.{v} C] [HasForget.{w} C]
+    [Category.{v'} D] [HasForget.{w} D] [HasForget₂ C D] : C ⥤ D :=
   HasForget₂.forget₂
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
-lemma forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCategory.{w} C]
-    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] {X Y Z : C}
+lemma forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C] [HasForget.{w} C]
+    [Category.{v'} D] [HasForget.{w} D] [HasForget₂ C D] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) (x : (forget₂ C D).obj X) :
     ((forget₂ C D).map (f ≫ g) x) =
       (forget₂ C D).map g ((forget₂ C D).map f x) := by
   rw [Functor.map_comp, comp_apply]
 
-instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
-    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : (forget₂ C D).Faithful :=
+instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [HasForget.{w} C]
+    [Category.{v'} D] [HasForget.{w} D] [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 
-instance InducedCategory.concreteCategory {C : Type u} {D : Type u'}
-    [Category.{v'} D] [ConcreteCategory.{w} D] (f : C → D) :
-      ConcreteCategory (InducedCategory D f) where
+instance InducedCategory.hasForget {C : Type u} {D : Type u'}
+    [Category.{v'} D] [HasForget.{w} D] (f : C → D) :
+      HasForget (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
 
 instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
-    [ConcreteCategory.{w} D] (f : C → D) : HasForget₂ (InducedCategory D f) D where
+    [HasForget.{w} D] (f : C → D) : HasForget₂ (InducedCategory D f) D where
   forget₂ := inducedFunctor f
   forget_comp := rfl
 
-instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
-    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) where
+instance FullSubcategory.hasForget {C : Type u} [Category.{v} C] [HasForget.{w} C]
+    (Z : C → Prop) : HasForget (FullSubcategory Z) where
   forget := fullSubcategoryInclusion Z ⋙ forget C
 
-instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [HasForget.{w} C]
     (Z : C → Prop) : HasForget₂ (FullSubcategory Z) C where
   forget₂ := fullSubcategoryInclusion Z
   forget_comp := rfl
@@ -182,8 +192,8 @@ instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [ConcreteCat
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
 it suffices to ensure that compositions agree with `forget₂ C D ⋙ forget D = forget C`.
 -/
-def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCategory.{w} C]
-    [Category.{v'} D] [ConcreteCategory.{w} D]
+def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [HasForget.{w} C]
+    [Category.{v'} D] [HasForget.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
@@ -193,9 +203,9 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
 
 /-- Composition of `HasForget₂` instances. -/
 @[reducible]
-def HasForget₂.trans (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
-    (D : Type u') [Category.{v'} D] [ConcreteCategory.{w} D]
-    (E : Type u'') [Category.{v''} E] [ConcreteCategory.{w} E]
+def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
+    (D : Type u') [Category.{v'} D] [HasForget.{w} D]
+    (E : Type u'') [Category.{v''} E] [HasForget.{w} E]
     [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
   forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
   forget_comp := by
@@ -204,13 +214,13 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
     it is prone to creating type class resolution loops. -/
-def hasForgetToType (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
+def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
     HasForget₂ C (Type w) where
   forget₂ := forget C
   forget_comp := Functor.comp_id _
 
 @[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [ConcreteCategory D]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [HasForget D]
     {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
     φ.app Y (F.map f x) = G.map f (φ.app X x) := by
   simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
