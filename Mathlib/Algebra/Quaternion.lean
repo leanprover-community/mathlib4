@@ -105,7 +105,11 @@ instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂, c₃] := (equivTuple c�
 section Zero
 variable [Zero R]
 
-/-- The imaginary part of a quaternion (which doesn't behave well unless c₂ = 0). -/
+/-- The imaginary part of a quaternion.
+
+Note that unless `c₂ = 0`, this definition is not particularly well-behaved;
+for instance, `QuaternionAlgebra.star_im` only says that the star of an imaginary quaternions
+is imaginary under this condition. -/
 def im (x : ℍ[R,c₁,c₂,c₃]) : ℍ[R,c₁,c₂,c₃] :=
   ⟨0, x.imI, x.imJ, x.imK⟩
 
