@@ -268,7 +268,7 @@ end Interval
 /-!
 ### Semiring structure
 
-When `α` is a `CanonicallyOrderedCommSemiring`, the previous `+` and `*` on `NonemptyInterval α`
+When `α` is a canonically `OrderedCommSemiring`, the previous `+` and `*` on `NonemptyInterval α`
 form a `CommSemiring`.
 -/
 
@@ -293,7 +293,7 @@ end NatCast
 
 namespace NonemptyInterval
 
-instance [CanonicallyOrderedCommSemiring α] : CommSemiring (NonemptyInterval α) :=
+instance [OrderedCommSemiring α] [CanonicallyOrderedAdd α] : CommSemiring (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commSemiring _
     toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
 
