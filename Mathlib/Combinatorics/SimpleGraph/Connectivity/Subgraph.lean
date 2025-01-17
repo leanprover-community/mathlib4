@@ -103,11 +103,52 @@ protected lemma Connected.sup {H K : G.Subgraph}
   rintro ⟨v, (hv|hv)⟩
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
+
 end Subgraph
 
-/-! ### Walks as subgraphs -/
+/-! ### Coercion of walks-/
 
 namespace Walk
+
+variable {H : Subgraph G} {u v w : H.verts}
+
+/-- Coerces a walk in a subgraph to the walk in the ambient graph -/
+protected def coe {u v} (p : H.coe.Walk u v) : G.Walk u.val v.val :=
+  match p with
+  | .nil => Walk.nil
+  | .cons h q => Walk.cons (H.adj_sub h) (q.coe)
+
+lemma coe_nil : (Walk.nil : H.coe.Walk u u).coe = (Walk.nil : G.Walk u.val u.val) := by
+  rw [Walk.coe]
+
+@[simp]
+lemma coe_cons {h : H.coe.Adj u v} (p : H.coe.Walk v w) :
+    (Walk.cons h p : H.coe.Walk u w).coe = Walk.cons (H.adj_sub h) p.coe := by simp [Walk.coe]
+
+@[simp]
+lemma coe_length {u v} (p : H.coe.Walk u v) : p.coe.length = p.length := by
+  match p with
+  | .nil => rfl
+  | .cons h q =>
+    simp only [coe_cons, length_cons, add_left_inj]
+    exact q.coe_length
+termination_by p.length
+
+lemma _root_.SimpleGraph.Reachable.of_coe_reachable  (h : H.coe.Reachable u v) :
+  G.Reachable u v := h.some.coe.reachable
+
+lemma _root_.SimpleGraph.Subgraph.Connected.exists_connectedComponent_eq {H : Subgraph G}
+    (hc : H.Connected) (hb : H.verts.Nonempty) (h : ∀ v ∈ H.verts, ∀ w, H.Adj v w ↔ G.Adj v w) :
+    ∃ c : G.ConnectedComponent, H.verts = c.supp := by
+  rw [SimpleGraph.ConnectedComponent.exists]
+  obtain ⟨v, hv⟩ := hb
+  use v
+  ext w
+  simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]
+  exact ⟨fun hw ↦ by simpa using (hc ⟨w, hw⟩ ⟨v, hv⟩).of_coe_reachable,
+    fun a ↦ a.symm.mem_verts_subgraph h hv⟩
+
+/-! ### Walks as subgraphs -/
 
 variable {u v w : V}
 

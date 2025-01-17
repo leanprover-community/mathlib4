@@ -193,6 +193,7 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
+
 /-! ## Homomorphisms, embeddings and isomorphisms -/
 
 

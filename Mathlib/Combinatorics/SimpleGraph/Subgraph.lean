@@ -174,6 +174,12 @@ theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G�
 lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
     (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
 
+lemma subgraphOfAdj_spanningCoe {v w : V} (hadj : G.Adj v w) :
+    (G.subgraphOfAdj hadj).spanningCoe = fromEdgeSet {s(v, w)} := by
+  ext v w
+  aesop
+
+
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
 def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
@@ -566,6 +572,10 @@ theorem _root_.SimpleGraph.toSubgraph.isSpanning (H : SimpleGraph V) (h : H ≤ 
 theorem spanningCoe_le_of_le {H H' : Subgraph G} (h : H ≤ H') : H.spanningCoe ≤ H'.spanningCoe :=
   h.2
 
+@[simp]
+lemma sup_spanningCoe (H H' : Subgraph G) :
+  (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := by rfl
+
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   toFun v := ↑v
@@ -763,6 +773,21 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+lemma adj_iff_of_neighborSet_equiv {v : V} [DecidableEq V] {H : Subgraph G}
+  (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
+  ∀ w, H.Adj v w ↔ G.Adj v w := by
+  intro w
+  refine ⟨fun a => a.adj_sub, ?_⟩
+  have : Fintype (H.neighborSet v) := (h.set_finite_iff.mp hfin.finite).fintype
+  let f : H.neighborSet v → G.neighborSet v := fun a => ⟨a, a.coe_prop.adj_sub⟩
+  have hfinj : f.Injective := fun w w' hww' ↦ by aesop
+  have hfbij : f.Bijective := ⟨hfinj, hfinj.surjective_of_fintype h.symm⟩
+  intro h
+  have hv := ((Fintype.bijInv hfbij) ⟨w, h⟩).coe_prop
+  obtain ⟨v', hv'⟩ : ∃ v', f v' = ⟨w, h⟩ := hfbij.surjective ⟨w, h⟩
+  have : ↑(f v') = w := by simpa using congrArg Subtype.val hv'
+  aesop
 
 end Subgraph
 
