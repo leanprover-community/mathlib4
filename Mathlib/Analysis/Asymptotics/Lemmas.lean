@@ -205,7 +205,6 @@ theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) 
 
 /-! ### Scalar multiplication -/
 
-
 section SMulConst
 
 variable [Module R E'] [BoundedSMul R E']
@@ -349,7 +348,6 @@ end Prod
 
 /-! ### Relation between `f = o(g)` and `f / g → 0` -/
 
-
 theorem IsLittleO.tendsto_div_nhds_zero {f g : α → 𝕜} (h : f =o[l] g) :
     Tendsto (fun x => f x / g x) l (𝓝 0) :=
   (isLittleO_one_iff 𝕜).mp <| by
@@ -417,7 +415,6 @@ theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
 
 /-! ### Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `NormedField`. -/
 
-
 section ExistsMulEq
 
 variable {u v : α → 𝕜}
@@ -474,7 +471,6 @@ alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul
 end ExistsMulEq
 
 /-! ### Miscellaneous lemmas -/
-
 
 theorem div_isBoundedUnder_of_isBigO {α : Type*} {l : Filter α} {f g : α → 𝕜} (h : f =O[l] g) :
     IsBoundedUnder (· ≤ ·) l fun x => ‖f x / g x‖ := by
