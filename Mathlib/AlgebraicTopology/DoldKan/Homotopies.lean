@@ -145,13 +145,11 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
   unfold hσ
   split_ifs
   · rw [zero_comp, comp_zero]
-  · simp only [zsmul_comp, comp_zsmul]
-    erw [f.naturality]
-    rfl
+  · simp
 
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
-  app X := Hσ q
+  app _ := Hσ q
   naturality _ _ f := by
     unfold Hσ
     rw [nullHomotopicMap'_comp, comp_nullHomotopicMap']

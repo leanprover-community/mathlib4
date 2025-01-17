@@ -215,14 +215,15 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
     · simp [List.singleton_inj]; tauto
   · rw [rmatch, rmatch, deriv]
     split_ifs with h
-    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
-    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
+    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
-  induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
-  · repeat rw [rmatch]
+  induction x generalizing P Q with
+  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  | cons _ _ ih =>
+    repeat rw [rmatch]
     rw [deriv_add]
     exact ih _ _
 
@@ -273,7 +274,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
-          = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
+          = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
   fun x => by
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
@@ -294,7 +295,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · intro t' ht'
           cases ht' with
           | head ht' =>
-            simp only [ne_eq, not_false_iff, true_and, rmatch]
+            simp only [ne_eq, not_false_iff, true_and, rmatch, reduceCtorEq]
             exact ht
           | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
@@ -305,16 +306,16 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
-          simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
-          refine ⟨t, U.join, hsum.2, ?_, ?_⟩
+            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
+          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+          refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length := by
+          · have hwf : U.flatten.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
-              simp only [List.length_append, List.length_join, List.length]
+              simp only [List.length_append, List.length_flatten, List.length]
               omega
             rw [IH _ hwf]
             refine ⟨U, rfl, fun t h => helem t ?_⟩
@@ -363,8 +364,8 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 @[simp]
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
-  | 0 => by dsimp; rfl
-  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
+  | 0 => by unfold map; rfl
+  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) :)
 
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
@@ -372,7 +373,7 @@ protected theorem map_pow (f : α → β) (P : RegularExpression α) :
 theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 0 => rfl
   | 1 => rfl
-  | char a => rfl
+  | char _ => rfl
   | R + S => by simp_rw [map, map_id]
   | comp R S => by simp_rw [map, map_id]; rfl
   | star R => by simp_rw [map, map_id]
@@ -383,7 +384,7 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
 theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, (P.map f).map g = P.map (g ∘ f)
   | 0 => rfl
   | 1 => rfl
-  | char a => rfl
+  | char _ => rfl
   | R + S => by simp only [map, Function.comp_apply, map_map]
   | comp R S => by simp only [map, Function.comp_apply, map_map]
   | star R => by simp only [map, Function.comp_apply, map_map]
@@ -402,7 +403,7 @@ theorem matches'_map (f : α → β) :
     exact image_singleton
   -- Porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
-  | comp R S => by simp only [matches'_map, map, matches'_mul]; erw [map_mul]
+  | comp R S => by simp [matches'_map]
   | star R => by
     simp_rw [map, matches', matches'_map]
     rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]

@@ -34,16 +34,11 @@ longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
-assert_not_exists inv_involutive
-assert_not_exists div_right_inj
-assert_not_exists pow_ite
-
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists inv_involutive div_right_inj pow_ite MonoidWithZero DenselyOrdered
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 /-- Add an extra element `1` to a type -/
 @[to_additive "Add an extra element `0` to a type"]
@@ -111,6 +106,16 @@ instance coeTC : CoeTC α (WithOne α) :=
 def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
+
+@[to_additive (attr := simp)]
+lemma recOneCoe_one {C : WithOne α → Sort*} (h₁ h₂) :
+    recOneCoe h₁ h₂ (1 : WithOne α) = (h₁ : C 1) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma recOneCoe_coe {C : WithOne α → Sort*} (h₁ h₂) (a : α) :
+    recOneCoe h₁ h₂ (a : WithOne α) = (h₂ : ∀ a : α, C a) a :=
+  rfl
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero

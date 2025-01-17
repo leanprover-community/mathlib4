@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
@@ -64,7 +64,7 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
-  Iso.ext (map_injective F (congr_arg Iso.hom h : _))
+  Iso.ext (map_injective F (congr_arg Iso.hom h :))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
@@ -171,6 +171,15 @@ lemma full : F.Full where
 lemma faithful : F.Faithful where
   map_injective := hF.map_injective
 
+instance : Subsingleton F.FullyFaithful where
+  allEq h₁ h₂ := by
+    have := h₁.faithful
+    cases h₁ with | mk f₁ hf₁ _ => cases h₂ with | mk f₂ hf₂ _ =>
+    simp only [Functor.FullyFaithful.mk.injEq]
+    ext
+    apply F.map_injective
+    rw [hf₁, hf₂]
+
 /-- The unique isomorphism `X ≅ Y` which induces an isomorphism `F.obj X ≅ F.obj Y`
 when `hF : F.FullyFaithful`. -/
 @[simps]
@@ -240,7 +249,7 @@ variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
 instance Faithful.comp [F.Faithful] [G.Faithful] :
-    (F ⋙ G).Faithful  where map_injective p := F.map_injective (G.map_injective p)
+    (F ⋙ G).Faithful where map_injective p := F.map_injective (G.map_injective p)
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type

@@ -47,7 +47,7 @@ class Encodable (α : Type*) where
   --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
-  /-- Invariant relationship between encoding and decoding-/
+  /-- Invariant relationship between encoding and decoding -/
   encodek : ∀ a, decode (encode a) = some a
 
 attribute [simp] Encodable.encodek
@@ -592,7 +592,7 @@ section Quotient
 
 open Encodable Quotient
 
-variable {α : Type*} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
+variable {α : Type*} {s : Setoid α} [DecidableRel (α := α) (· ≈ ·)] [Encodable α]
 
 /-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/

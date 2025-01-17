@@ -115,7 +115,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
     · intro Y f hf
       refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)
-      erw [NatTrans.naturality_apply, NatTrans.naturality_apply]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply]
       exact hf
   · intro hφ
     exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩
@@ -166,7 +166,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
-instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
+instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
     intro ⟨x, _⟩ ⟨y, _⟩ h
@@ -179,7 +179,7 @@ open GrothendieckTopology.Plus
 instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toPlus P) where
   equalizerSieve_mem {X} x y h := by
-    erw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
+    rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
     exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
 
@@ -243,8 +243,8 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   infer_instance
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
-    IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by
-  dsimp [GrothendieckTopology.imageSheafι]
+    IsLocallyInjective (imageSheafι f) := by
+  dsimp [imageSheafι]
   infer_instance
 
 end Sheaf

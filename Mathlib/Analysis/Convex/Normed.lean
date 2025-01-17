@@ -8,6 +8,7 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Topological and metric properties of convex sets in normed spaces
@@ -24,13 +25,14 @@ We prove the following facts:
   is bounded.
 -/
 
-variable {ι : Type*} {E P : Type*}
+variable {E P : Type*}
 
-open Metric Set
-open scoped Convex
+open AffineBasis Module Metric Set
+open scoped Convex Pointwise Topology
 
+section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
-variable {s t : Set E}
+variable {s : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/
@@ -74,7 +76,7 @@ theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthicken
 of `s` at distance at least `dist x y` from `y`. -/
 theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (y : E) :
     ∃ x' ∈ s, dist x y ≤ dist x' y :=
-  (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull hx
+  (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull (subset_convexHull ..) hx
 
 /-- Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,
 there exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. -/
@@ -109,10 +111,6 @@ theorem isBounded_convexHull {s : Set E} :
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   TopologicalAddGroup.pathConnectedSpace
 
-instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
-  locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
-    (convex_ball x r).isPathConnected <| by simp [r_pos]
-
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
@@ -133,3 +131,56 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
+
+end SeminormedAddCommGroup
+
+section NormedAddCommGroup
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} {x : E}
+
+/-- We can intercalate a simplex between a point and one of its neighborhoods. -/
+lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
+    ∃ b : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E,
+      x ∈ interior (convexHull ℝ (range b)) ∧ convexHull ℝ (range b) ⊆ s := by
+  classical
+  -- By translating, WLOG `x` is the origin.
+  wlog hx : x = 0
+  · obtain ⟨b, hb⟩ := this (s := -x +ᵥ s) (by simpa using vadd_mem_nhds_vadd (-x) hs) rfl
+    use x +ᵥ b
+    simpa [subset_set_vadd_iff, mem_vadd_set_iff_neg_vadd_mem, convexHull_vadd, interior_vadd,
+      Pi.vadd_def, -vadd_eq_add, vadd_eq_add (a := -x), ← Set.vadd_set_range] using hb
+  subst hx
+  -- The strategy is now to find an arbitrary maximal spanning simplex (aka an affine basis)...
+  obtain ⟨b⟩ := exists_affineBasis_of_finiteDimensional
+    (ι := Fin (finrank ℝ E + 1)) (k := ℝ) (P := E) (by simp)
+  -- ... translate it to contain the origin...
+  set c : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E := -Finset.univ.centroid ℝ b +ᵥ b
+  have hc₀ : 0 ∈ interior (convexHull ℝ (range c) : Set E) := by
+    simpa [c, convexHull_vadd, interior_vadd, range_add, Pi.vadd_def, mem_vadd_set_iff_neg_vadd_mem]
+      using b.centroid_mem_interior_convexHull
+  set cnorm := Finset.univ.sup' Finset.univ_nonempty (fun i ↦ ‖c i‖)
+  have hcnorm : range c ⊆ closedBall 0 (cnorm + 1) := by
+    simpa only [cnorm, subset_def, Finset.mem_coe, mem_closedBall, dist_zero_right,
+      ← sub_le_iff_le_add, Finset.le_sup'_iff, forall_mem_range] using fun i ↦ ⟨i, by simp⟩
+  -- ... and finally scale it to fit inside the neighborhood `s`.
+  obtain ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.1 hs
+  set ε' : ℝ := ε / 2 / (cnorm + 1)
+  have hc' : 0 < cnorm + 1 := by
+    have : 0 ≤ cnorm := Finset.le_sup'_of_le _ (Finset.mem_univ 0) (norm_nonneg _)
+    positivity
+  have hε' : 0 < ε' := by positivity
+  set d : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E := Units.mk0 ε' hε'.ne' • c
+  have hε₀ : 0 < ε / 2 := by positivity
+  have hdnorm : (range d : Set E) ⊆ closedBall 0 (ε / 2) := by
+    simp [d, Set.set_smul_subset_iff₀ hε'.ne', hε₀.le, _root_.smul_closedBall, abs_of_nonneg hε'.le,
+      range_subset_iff, norm_smul]
+    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff₀ hc',
+      mul_le_mul_left hε₀] using hcnorm
+  refine ⟨d, ?_, ?_⟩
+  · simpa [d, Pi.smul_def, range_smul, interior_smul₀, convexHull_smul, zero_mem_smul_set_iff,
+      hε'.ne']
+  · calc
+      convexHull ℝ (range d) ⊆ closedBall 0 (ε / 2) := convexHull_min hdnorm (convex_closedBall ..)
+      _ ⊆ ball 0 ε := closedBall_subset_ball (by linarith)
+      _ ⊆ s := hεs
+
+end NormedAddCommGroup

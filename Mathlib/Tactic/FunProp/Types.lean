@@ -67,7 +67,7 @@ def defaultNamesToUnfold : Array Name :=
 
 /-- `fun_prop` configuration -/
 structure Config where
-  /-- Maximum number of transitions between function properties. For example infering continuity
+  /-- Maximum number of transitions between function properties. For example inferring continuity
   from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
   `maxTransitionDepth = 2`. The default value of one expects that transition theorems are
   transitively closed e.g. there is a transition theorem that infers continuity directly from
@@ -97,8 +97,10 @@ structure Context where
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache -/
+  utilize its cache. It holds successful goals. -/
   cache : Simp.Cache := {}
+  /-- Cache storing failed goals such that they are not tried again. -/
+  failureCache : ExprSet := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
@@ -153,7 +155,7 @@ function property like continuity from another property like differentiability.
 The main reason is that if the user forgets to add a continuity theorem for function `foo` then
 `fun_prop` should report that there is a continuity theorem for `foo` missing. If we would log
 messages `transitionDepth > 0` then user will see messages saying that there is a missing theorem
-for differentiability, smoothness, ... for `foo`.  -/
+for differentiability, smoothness, ... for `foo`. -/
 def logError (msg : String) : FunPropM Unit := do
   if (← read).transitionDepth = 0 then
     modify fun s =>

@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
 
@@ -16,10 +16,8 @@ this reason, we create a type synonym `WithCStarModule` which is endowed with th
 
 The common use cases are, when `A` is a C⋆-algebra:
 
-+ `A` itself over `A`
 + `E × F` where `E` and `F` are `CStarModule`s over `A`
 + `Π i, E i` where `E i` is a `CStarModule` over `A` and `i : ι` with `ι` a `Fintype`
-+ `E` where `E` is an `InnerProductSpace` over `ℂ`
 
 In this way, the set up is very similar to the `WithLp` type synonym, although there is no way to
 reuse `WithLp` because the norms *do not* coincide in general.
@@ -31,9 +29,9 @@ C⋆-algebra, then so is `A × A`, and therefore we may consider both `A` and `A
 over themselves, respectively. However, we may *also* consider `A × A` as a `CStarModule` over `A`.
 However, by utilizing the type synonym, these actually correspond to *different types*, namely:
 
-+ `A` as a `CStarModule` over `A` corresponds to `C⋆ᵐᵒᵈ A`
-+ `A × A` as a `CStarModule` over `A × A` corresponds to `C⋆ᵐᵒᵈ (A × A)`
-+ `A × A` as a `CStarModule` over `A` corresponds to `C⋆ᵐᵒᵈ (C⋆ᵐᵒᵈ A × C⋆ᵐᵒᵈ A)`
++ `A` as a `CStarModule` over `A` corresponds to `A`
++ `A × A` as a `CStarModule` over `A × A` corresponds to `A × A`
++ `A × A` as a `CStarModule` over `A` corresponds to `C⋆ᵐᵒᵈ (A × A)`
 
 ## Main definitions
 
@@ -169,7 +167,8 @@ instance [u : UniformSpace E] : UniformSpace (C⋆ᵐᵒᵈ E) := u.comap <| equ
 instance [Bornology E] : Bornology (C⋆ᵐᵒᵈ E) := Bornology.induced <| equiv E
 
 /-- `WithCStarModule.equiv` as a uniform equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
-def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E := equiv E |>.toUniformEquivOfUniformInducing ⟨rfl⟩
+def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E :=
+  equiv E |>.toUniformEquivOfIsUniformInducing ⟨rfl⟩
 
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance

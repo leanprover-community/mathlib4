@@ -26,7 +26,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
       rintro _ ⟨a, h⟩ ⟨b, rfl⟩
       simp only [trans_apply, inl_apply, inr_apply] at h
       have : Sum.inl a = Sum.inr b := f.injective h
-      simp only at this⟩
+      simp only [reduceCtorEq] at this⟩
   invFun := fun ⟨⟨f, g⟩, disj⟩ =>
     ⟨fun x =>
       match x with

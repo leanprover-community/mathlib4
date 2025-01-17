@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
@@ -12,13 +13,15 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 
 section Finite
 
-open Basis Cardinal Set Submodule
+open Basis Cardinal Set Submodule Finsupp
 
-universe u v v' v'' u₁' w w'
+universe u v w w'
 
-variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁] [Nontrivial R]
-variable [Module R M] [Module R M'] [Module R M₁]
+variable {R : Type u} {M : Type v}
+
+section Semiring
+
+variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring
@@ -49,9 +52,9 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
   let bS : Set M := b '' S
   have h : ∀ x ∈ w, x ∈ span R bS := by
     intro x m
-    rw [← b.total_repr x, Finsupp.span_image_eq_map_total, Submodule.mem_map]
+    rw [← b.linearCombination_repr x, span_image_eq_map_linearCombination, Submodule.mem_map]
     use b.repr x
-    simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
+    simp only [and_true, eq_self_iff_true, Finsupp.mem_supported]
     rw [Finset.coe_subset, ← Finset.le_iff_subset]
     exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
   -- Thus this finite subset of the basis elements spans the entire module.
@@ -63,7 +66,14 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     rw [k]
     exact mem_top
   -- giving the desire contradiction.
-  exact b.linearIndependent.not_mem_span_image nm k'
+  simp only [self_mem_span_image, Finset.mem_coe, bS] at k'
+  exact nm k'
+
+end Semiring
+
+section Ring
+
+variable [Ring R] [AddCommGroup M] [Nontrivial R] [Module R M]
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
@@ -101,9 +111,9 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     apply LinearIndependent.to_subtype_range
     rw [linearIndependent_iff]
     intro l z
-    rw [Finsupp.total_option] at z
+    rw [Finsupp.linearCombination_option] at z
     simp only [v', Option.elim'] at z
-    change _ + Finsupp.total κ M R v l.some = 0 at z
+    change _ + Finsupp.linearCombination R v l.some = 0 at z
     -- We have some linear combination of `b b'` and the `v i`, which we want to show is trivial.
     -- We'll first show the coefficient of `b b'` is zero,
     -- by expressing the `v i` in the basis `b`, and using that the `v i` have no `b b'` term.
@@ -113,8 +123,9 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       apply_fun fun x => b.repr x b' at z
       simp only [repr_self, map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
         Finsupp.smul_single', map_neg, Finsupp.coe_neg] at z
-      erw [DFunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
-      simpa [Finsupp.total_apply, w] using z
+      erw [DFunLike.congr_fun (apply_linearCombination R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b']
+        at z
+      simpa [Finsupp.linearCombination_apply, w] using z
     -- Then all the other coefficients are zero, because `v` is linear independent.
     have l₁ : l.some = 0 := by
       rw [l₀, zero_smul, zero_add] at z
@@ -151,5 +162,7 @@ then the cardinality of `b` is bounded by the cardinality of `s`.
 theorem infinite_basis_le_maximal_linearIndependent {ι : Type w} (b : Basis ι R M) [Infinite ι]
     {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #ι ≤ #κ :=
   Cardinal.lift_le.mp (infinite_basis_le_maximal_linearIndependent' b v i m)
+
+end Ring
 
 end Finite

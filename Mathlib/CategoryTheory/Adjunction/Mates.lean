@@ -13,11 +13,13 @@ import Mathlib.Tactic.ApplyFun
 
 This file establishes the bijection between the 2-cells
 
+```
          L₁                  R₁
       C --→ D             C ←-- D
     G ↓  ↗  ↓ H         G ↓  ↘  ↓ H
       E --→ F             E ←-- F
          L₂                  R₂
+```
 
 where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. The corresponding natural transformations are called mates.
 
@@ -45,8 +47,8 @@ open Category Functor Adjunction NatTrans
 
 section mateEquiv
 
-variable {C : Type u₁} {D : Type u₂}{E : Type u₃} {F : Type u₄}
-variable [Category.{v₁} C] [Category.{v₂} D][Category.{v₃} E] [Category.{v₄} F]
+variable {C : Type u₁} {D : Type u₂} {E : Type u₃} {F : Type u₄}
+variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] [Category.{v₄} F]
 variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E ⥤ F} {R₂ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
@@ -99,8 +101,7 @@ def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) wher
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
-      α.app _ ≫ H.map (adj₁.counit.app d) := by
-  erw [Functor.map_comp]; simp
+      α.app _ ≫ H.map (adj₁.counit.app d) := by simp
 
 /-- A component of a transposed version of the inverse mates correspondence. -/
 theorem mateEquiv_counit_symm (α : R₁ ⋙ G ⟶ H ⋙ R₂) (d : D) :
@@ -119,9 +120,7 @@ theorem unit_mateEquiv (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
     rw [← R₂.map_comp, ← Functor.comp_map G L₂, α.naturality]
   rw [R₂.map_comp]
   slice_lhs 3 4 =>
-    {
-      rw [← R₂.map_comp, Functor.comp_map L₁ H, ← H.map_comp, left_triangle_components]
-    }
+    rw [← R₂.map_comp, Functor.comp_map L₁ H, ← H.map_comp, left_triangle_components]
   simp only [comp_obj, map_id, comp_id]
 
 /-- A component of a transposed version of the inverse mates correspondence. -/
@@ -136,10 +135,10 @@ end mateEquiv
 section mateEquivVComp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄} {E : Type u₅} {F : Type u₆}
-variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
-variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
-variable {G₁ : A ⥤ C}{G₂ : C ⥤ E}{H₁ : B ⥤ D}{H₂ : D ⥤ F}
-variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : C ⥤ D}{R₂ : D ⥤ C}{L₃ : E ⥤ F}{R₃ : F ⥤ E}
+variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
+variable [Category.{v₄} D] [Category.{v₅} E] [Category.{v₆} F]
+variable {G₁ : A ⥤ C} {G₂ : C ⥤ E} {H₁ : B ⥤ D} {H₂ : D ⥤ F}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L₃ : E ⥤ F} {R₃ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Squares between left adjoints can be composed "vertically" by pasting. -/
@@ -162,32 +161,21 @@ theorem mateEquiv_vcomp
   simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
     assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map,
     whiskerRight_twice]
-  slice_rhs 1 4 =>
-    {
-      rw [← assoc, ← assoc, ← unit_naturality (adj₃)]
-    }
+  slice_rhs 1 4 => rw [← assoc, ← assoc, ← unit_naturality (adj₃)]
   rw [L₃.map_comp, R₃.map_comp]
   slice_rhs 2 4 =>
-    {
-      rw [← R₃.map_comp, ← R₃.map_comp, ← assoc, ← L₃.map_comp, ← G₂.map_comp, ← G₂.map_comp]
-      rw [← Functor.comp_map G₂ L₃, β.naturality]
-    }
+    rw [← R₃.map_comp, ← R₃.map_comp, ← assoc, ← L₃.map_comp, ← G₂.map_comp, ← G₂.map_comp]
+    rw [← Functor.comp_map G₂ L₃, β.naturality]
   rw [(L₂ ⋙ H₂).map_comp, R₃.map_comp, R₃.map_comp]
   slice_rhs 4 5 =>
-    {
-      rw [← R₃.map_comp, Functor.comp_map L₂ _, ← Functor.comp_map _ L₂, ← H₂.map_comp]
-      rw [adj₂.counit.naturality]
-    }
+    rw [← R₃.map_comp, Functor.comp_map L₂ _, ← Functor.comp_map _ L₂, ← H₂.map_comp]
+    rw [adj₂.counit.naturality]
   simp only [comp_obj, Functor.comp_map, map_comp, id_obj, Functor.id_map, assoc]
   slice_rhs 4 5 =>
-    {
-      rw [← R₃.map_comp, ← H₂.map_comp, ← Functor.comp_map _ L₂, adj₂.counit.naturality]
-    }
+    rw [← R₃.map_comp, ← H₂.map_comp, ← Functor.comp_map _ L₂, adj₂.counit.naturality]
   simp only [comp_obj, id_obj, Functor.id_map, map_comp, assoc]
   slice_rhs 3 4 =>
-    {
-      rw [← R₃.map_comp, ← H₂.map_comp, left_triangle_components]
-    }
+    rw [← R₃.map_comp, ← H₂.map_comp, left_triangle_components]
   simp only [map_id, id_comp]
 
 end mateEquivVComp
@@ -195,11 +183,11 @@ end mateEquivVComp
 section mateEquivHComp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄} {E : Type u₅} {F : Type u₆}
-variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
-variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
-variable {G : A ⥤ D}{H : B ⥤ E}{K : C ⥤ F}
-variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : D ⥤ E}{R₂ : E ⥤ D}
-variable {L₃ : B ⥤ C}{R₃ : C ⥤ B} {L₄ : E ⥤ F}{R₄ : F ⥤ E}
+variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
+variable [Category.{v₄} D] [Category.{v₅} E] [Category.{v₆} F]
+variable {G : A ⥤ D} {H : B ⥤ E} {K : C ⥤ F}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : D ⥤ E} {R₂ : E ⥤ D}
+variable {L₃ : B ⥤ C} {R₃ : C ⥤ B} {L₄ : E ⥤ F} {R₄ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 
 /-- Squares between left adjoints can be composed "horizontally" by pasting. -/
@@ -219,18 +207,13 @@ theorem mateEquiv_hcomp
       rightAdjointSquare.hcomp (mateEquiv adj₁ adj₂ α) (mateEquiv adj₃ adj₄ β) := by
   unfold leftAdjointSquare.hcomp rightAdjointSquare.hcomp mateEquiv Adjunction.comp
   ext c
-  simp only [comp_obj, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc,
-    Equiv.coe_fn_mk, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, associator_inv_app,
-    Functor.comp_map, associator_hom_app, map_id, id_comp, whiskerRight_twice]
+  dsimp
+  simp only [comp_id, map_comp, id_comp, assoc]
   slice_rhs 2 4 =>
-    {
-      rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
-    }
+    rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
   slice_rhs 4 5 =>
-    {
-      rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄ , β.naturality]
-    }
+    rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄ , β.naturality]
   simp only [comp_obj, Functor.comp_map, map_comp, assoc]
 
 end mateEquivHComp
@@ -240,9 +223,9 @@ section mateEquivSquareComp
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
 variable {D : Type u₄} {E : Type u₅} {F : Type u₆}
 variable {X : Type u₇} {Y : Type u₈} {Z : Type u₉}
-variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
-variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
-variable [Category.{v₇} X] [Category.{v₈} Y][Category.{v₉} Z]
+variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
+variable [Category.{v₄} D] [Category.{v₅} E] [Category.{v₆} F]
+variable [Category.{v₇} X] [Category.{v₈} Y] [Category.{v₉} Z]
 variable {G₁ : A ⥤ D} {H₁ : B ⥤ E} {K₁ : C ⥤ F} {G₂ : D ⥤ X} {H₂ : E ⥤ Y} {K₂ : F ⥤ Z}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : B ⥤ C} {R₂ : C ⥤ B} {L₃ : D ⥤ E} {R₃ : E ⥤ D}
 variable {L₄ : E ⥤ F} {R₄ : F ⥤ E} {L₅ : X ⥤ Y} {R₅ : Y ⥤ X} {L₆ : Y ⥤ Z} {R₆ : Z ⥤ Y}
@@ -275,9 +258,7 @@ theorem leftAdjointSquare.comp_hvcomp
   ext a
   simp only [comp_obj, comp_app, map_comp, assoc]
   slice_rhs 2 3 =>
-    {
-      rw [← Functor.comp_map _ L₆, δ.naturality]
-    }
+    rw [← Functor.comp_map _ L₆, δ.naturality]
   simp only [comp_obj, Functor.comp_map, assoc]
 
 /-- Squares of squares between right adjoints can be composed by iterating vertical and horizontal
@@ -306,9 +287,7 @@ theorem rightAdjointSquare.comp_hvcomp
   ext c
   simp only [comp_obj, comp_app, map_comp, assoc]
   slice_rhs 2 3 =>
-    {
-      rw [← Functor.comp_map _ R₅, ← γ.naturality]
-    }
+    rw [← Functor.comp_map _ R₅, ← γ.naturality]
   simp only [comp_obj, Functor.comp_map, assoc]
 
 /-- The mates equivalence commutes with composition of squares of squares. These results form the
@@ -349,6 +328,7 @@ Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transf
 iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateIsoEquiv`.
 This is in contrast to the general case `mateEquiv` which does not in general have this property.
 -/
+@[simps!]
 def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
@@ -422,6 +402,7 @@ variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
+@[simp]
 theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₃ β =
       conjugateEquiv adj₁ adj₃ (β ≫ α) := by
@@ -435,6 +416,7 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
   simp only [comp_id, id_comp, assoc, map_comp] at vcompd ⊢
   rw [vcompd]
 
+@[simp]
 theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
@@ -445,7 +427,7 @@ theorem conjugateEquiv_comm {α : L₂ ⟶ L₁} {β : L₁ ⟶ L₂} (βα : β
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₁ β = 𝟙 _ := by
   rw [conjugateEquiv_comp, βα, conjugateEquiv_id]
 
-theorem conjugateEquiv_symm_comm {α : R₁ ⟶ R₂}{β : R₂ ⟶ R₁} (αβ : α ≫ β = 𝟙 _) :
+theorem conjugateEquiv_symm_comm {α : R₁ ⟶ R₂} {β : R₂ ⟶ R₁} (αβ : α ≫ β = 𝟙 _) :
     (conjugateEquiv adj₂ adj₁).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α = 𝟙 _ := by
   rw [conjugateEquiv_symm_comp, αβ, conjugateEquiv_symm_id]
 
@@ -494,20 +476,27 @@ theorem conjugateEquiv_symm_of_iso (α : R₁ ⟶ R₂)
   infer_instance
 
 /-- Thus conjugation defines an equivalence between natural isomorphisms. -/
-noncomputable def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
-  toFun α := asIso (conjugateEquiv adj₁ adj₂ α.hom)
-  invFun β := asIso ((conjugateEquiv adj₁ adj₂).symm β.hom)
+@[simps]
+def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
+  toFun α := {
+    hom := conjugateEquiv adj₁ adj₂ α.hom
+    inv := conjugateEquiv adj₂ adj₁ α.inv
+  }
+  invFun β := {
+    hom := (conjugateEquiv adj₁ adj₂).symm β.hom
+    inv := (conjugateEquiv adj₂ adj₁).symm β.inv
+  }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
 end ConjugateIsomorphism
 
 section IteratedmateEquiv
-variable {A : Type u₁} {B : Type u₂}{C : Type u₃} {D : Type u₄}
-variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C] [Category.{v₄} D]
-variable {F₁ : A ⥤ C}{U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
+variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C] [Category.{v₄} D]
+variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
-variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁)(adj₄ : F₂ ⊣ U₂)
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
 
 /-- When all four functors in a sequare are left adjoints, the mates operation can be iterated:
 
@@ -526,11 +515,7 @@ theorem iterated_mateEquiv_conjugateEquiv (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂)
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
   unfold conjugateEquiv mateEquiv Adjunction.comp
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
-    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
-    rightUnitor_inv_app, associator_inv_app, leftUnitor_hom_app, map_id, associator_hom_app,
-    Functor.id_map, comp_id, id_comp]
+  simp
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : U₂ ⋙ R₁ ⟶ R₂ ⋙ U₁) :
     (mateEquiv adj₁ adj₂).symm ((mateEquiv adj₄ adj₃).symm α) =
@@ -542,11 +527,11 @@ end IteratedmateEquiv
 
 section mateEquivconjugateEquivVComp
 
-variable {A : Type u₁} {B : Type u₂} {C : Type u₃}{D : Type u₄}
-variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
+variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
 variable [Category.{v₄} D]
 variable {G : A ⥤ C} {H : B ⥤ D}
-variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L₃ : C ⥤ D}{R₃ : D ⥤ C}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L₃ : C ⥤ D} {R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Composition of a squares between left adjoints with a conjugate square. -/
@@ -581,8 +566,8 @@ end mateEquivconjugateEquivVComp
 
 section conjugateEquivmateEquivVComp
 
-variable {A : Type u₁} {B : Type u₂} {C : Type u₃}{D : Type u₄}
-variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
+variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
 variable [Category.{v₄} D]
 variable {G : A ⥤ C} {H : B ⥤ D}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A} {L₃ : C ⥤ D} {R₃ : D ⥤ C}

@@ -5,11 +5,10 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean.Elab.Tactic.Location
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Conv
-import Mathlib.Init.Set
-import Lean.Elab.Tactic.Location
 
 /-!
 # The `push_neg` tactic
@@ -145,10 +144,9 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
 
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
-  let myctx : Simp.Context :=
-    { config := { eta := true, zeta := false, proj := false },
-      simpTheorems := #[ ]
-      congrTheorems := (← getSimpCongrTheorems) }
+  let myctx : Simp.Context ← Simp.mkContext { eta := true, zeta := false, proj := false }
+      (simpTheorems := #[ ])
+      (congrTheorems := (← getSimpCongrTheorems))
   (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })
 
 /--

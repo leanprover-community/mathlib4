@@ -68,4 +68,28 @@ instance module [Semiring R] : Module R PUnit where
   add_smul := by subsingleton
   zero_smul := by subsingleton
 
+@[to_additive]
+instance : SMul PUnit R where smul _ x := x
+
+/-- The one-element type acts trivially on every element. -/
+@[to_additive (attr := simp)]
+lemma smul_eq' (r : PUnit) (a : R) : r • a = a := rfl
+
+@[to_additive] instance [SMul R S] : SMulCommClass PUnit R S := ⟨by simp⟩
+instance [SMul R S] : IsScalarTower PUnit R S := ⟨by simp⟩
+
+instance : MulAction PUnit R where
+  __ := inferInstanceAs (SMul PUnit R)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+instance [Zero R] : SMulZeroClass PUnit R where
+  __ := inferInstanceAs (SMul PUnit R)
+  smul_zero _ := rfl
+
+instance [AddMonoid R] : DistribMulAction PUnit R where
+  __ := inferInstanceAs (MulAction PUnit R)
+  __ := inferInstanceAs (SMulZeroClass PUnit R)
+  smul_add _ _ _ := rfl
+
 end PUnit
