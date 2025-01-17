@@ -5,7 +5,6 @@ Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
@@ -380,6 +379,7 @@ instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 
+/-- Turn a morphism in `CommSemiRingCat` back into a `RingHom`. -/
 abbrev Hom.hom {R S : CommSemiRingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := CommSemiRingCat) f
 
