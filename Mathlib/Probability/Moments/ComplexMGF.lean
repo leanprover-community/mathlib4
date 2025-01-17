@@ -106,12 +106,6 @@ lemma convexMGF_add_sub_range (ht : t ≠ 0)
     swap; · exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
     simp only [mul_re, add_re, ofReal_re, add_im, ofReal_im, mul_zero, sub_zero]
     exact hε_int_pos
-  have h_int_z : Integrable (fun ω ↦ cexp (z * X ω)) μ := by
-    rw [integrable_cexp_iff]
-    swap; · exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
-    simp only [mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero]
-    convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht h_int_pos h_int_neg 0 using 2
-    simp
   have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
     rw [← integrable_norm_iff]
     swap
@@ -287,7 +281,6 @@ lemma isBigO_abs_convexMGF_add_sub_range (hz : z.re ∈ interior (integrableExpS
     (fun ε ↦ complexMGF X μ (z + ε)
         - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ)
       =O[𝓝 0] fun ε ↦ (abs ε) ^ n := by
-  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   let hz' := hz
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hz'
   obtain ⟨l, u, hlu, h_subset⟩ := hz'
@@ -316,7 +309,6 @@ lemma isBigO_abs_convexMGF_add_sub_range (hz : z.re ∈ interior (integrableExpS
   with derivative `μ[X * exp (z * X)]`. -/
 theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
-  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
   simp only [smul_eq_mul]
   calc (fun h ↦ complexMGF X μ (z + h) - complexMGF X μ z - h * ∫ ω, X ω * cexp (z * X ω) ∂μ)
