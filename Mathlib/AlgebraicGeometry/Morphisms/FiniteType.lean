@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.RingTheory.RingHom.FiniteType
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Jacobson
+import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Morphisms of finite type

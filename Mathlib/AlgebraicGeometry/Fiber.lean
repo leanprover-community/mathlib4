@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Morphisms.Finite
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Jacobson
+import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Scheme-theoretic fiber
