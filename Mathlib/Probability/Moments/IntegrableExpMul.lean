@@ -22,13 +22,16 @@ We prove the integrability of other functions for `t` in the interior of that in
 
 ## Main results
 
-* `ProbabilityTheory.integrable_exp_mul_of_nonneg_of_le`: if `exp (u * X)` is integrable for `0 ≤ u`
-  then it is integrable on `[0, u]`.
+* `ProbabilityTheory.integrable_exp_mul_of_le_of_le`: if `exp (u * X)` is integrable for `u = a` and
+  `u = b` then it is integrable on `[a, b]`.
+* `ProbabilityTheory.convex_integrableExpSet`: `integrableExpSet X μ` is a convex set.
 * `ProbabilityTheory.integrable_exp_mul_of_nonpos_of_ge`: if `exp (u * X)` is integrable for `u ≤ 0`
   then it is integrable on `[u, 0]`.
-* `ProbabilityTheory.integrable_pow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
-  interval in which `exp (t * X)` is integrable, for all `n : ℕ`, `|X| ^ n * exp (v * X)` is
-  integrable.
+* `ProbabilityTheory.integrable_rpow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
+  interval in which `exp (t * X)` is integrable, for all nonnegative `p : ℝ`,
+  `|X| ^ n * exp (v * X)` is integrable.
+* `ProbabilityTheory.memℒp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
+  `integrableExpSet X μ`, then `X` is in `ℒp` for al finite `p`.
 
 -/
 
