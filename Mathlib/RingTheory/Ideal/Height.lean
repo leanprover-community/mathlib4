@@ -96,6 +96,7 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
   · exact I.primeHeight_ne_top.lt_top
   · exact h
 
+@[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp only [height, minimalPrimes_top]
   rw [iInf₂_eq_top]; intro i hi; exact False.elim hi
