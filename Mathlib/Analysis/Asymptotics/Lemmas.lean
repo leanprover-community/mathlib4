@@ -35,9 +35,6 @@ variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
 variable {l l' : Filter α}
-
-
-
 @[simp]
 theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
   rw [IsBigOWith_def, eventually_principal]
