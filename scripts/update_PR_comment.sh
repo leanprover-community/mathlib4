@@ -16,21 +16,21 @@ BASH_DOC_MODULE
 
 # If the first two arguments are missing, use the empty string as default value.
 
-# the text of the message that will replace the current one
+# the file containing the text of the message that will replace the current one
 message="${1:-}"
 # the start of the message to locate it among all messages in the PR
 comment_init="${2:-}"
 # But we do complain if the PR number is missing.
 PR="${3:-}"
 if [[ -z $PR ]]; then
-  echo "Usage: <new_message> <beginning of message> <pr_number>"
+  echo "Usage: <new_message_file> <beginning_of_old_message> <pr_number>"
   exit 1
 fi
-data=$(jq -n --arg msg "$message" '{"body": $msg}')
+
 baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
 printf 'Base url: %s\n' "${baseURL}"
 method="POST"
-if [[ -n "$message" ]]; then
+if [[ -f "$message" ]]; then
     url="${baseURL}/${PR}/comments"
     printf 'Base url: %s\n' "${url}"
     headers="Authorization: token ${GITHUB_TOKEN}"
@@ -41,5 +41,6 @@ if [[ -n "$message" ]]; then
         url="${baseURL}/comments/${comment_id}"
         method="PATCH"
     fi
-    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
+    jq -Rs -n -c '{"body": inputs}' "${message}" > "${message}.json"
+    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d @"${message}.json" "$url"
 fi

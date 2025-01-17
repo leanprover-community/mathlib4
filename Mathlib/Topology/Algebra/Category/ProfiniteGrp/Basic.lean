@@ -25,6 +25,14 @@ disconnected.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
+# TODO
+
+As discussion in `https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Refactor.20
+Category.20of.20ProfiniteGrp.20and.20ContinuousMulEquiv/near/493290115`
+
+* Refactor the category of `ProfiniteGrp` into one-field structure as in `AlgebraCat`
+
+* Prove `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` using `profiniteGrpToProfinite`
 -/
 
 universe u v
@@ -68,6 +76,7 @@ instance : CoeSort ProfiniteGrp (Type u) where
 attribute [instance] group topologicalGroup
     ProfiniteAddGrp.addGroup ProfiniteAddGrp.topologicalAddGroup
 
+--TODO: Refactor into one-field structure as in `AlgebraCat`
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ContinuousMonoidHom A B
