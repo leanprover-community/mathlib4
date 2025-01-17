@@ -208,7 +208,7 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 
-lemma not_commutative_of_gt_two {n : ℕ} (h : n > 2) :
+lemma not_commutative_of_two_lt {n : ℕ} (h : 2 < n) :
     ¬Std.Commutative fun (x y : DihedralGroup n) => x * y := by
   rintro ⟨h'⟩
   specialize h' (r 1) (sr 0)
