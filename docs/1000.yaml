@@ -11,8 +11,6 @@
 # Current TODOs/unresolved questions:
 # - add infrastructure for updating the information upstream when formalisations are added
 # - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
-#   (can this handle formalisation of *statements* also?)
-# - complete the information which theorems are already formalised
 #
 # TODO: display a less ambiguous title for e.g. "Liouville's theorem"
 
@@ -2012,7 +2010,7 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
-  # TODO: does mathlib have these versions? add the right decls!
+  # TODO: does mathlib have these?
 
 Q2394548:
   title: Hurewicz theorem
@@ -3475,8 +3473,8 @@ Q7308146:
 
 Q7309601:
   title: Whitney–Graustein Theorem
-  # there's an external project, deducing this from sphere-eversion
-  # TODO link statement (proof depends on some sorries about the winding number)
+  url: https://github.com/MetalCreator666/WhitneyGraustein/
+  comment: "assumes some basic topology statements as axioms; use the sphere eversion project"
 
 Q7310041:
   title: Reider's theorem
