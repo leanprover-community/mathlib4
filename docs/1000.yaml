@@ -53,7 +53,7 @@ Q132427:
 Q132469:
   title: Fermat's Last Theorem
   statement: FermatLastTheorem
-  # Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/
+  comment: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 
 Q137164:
   title: Besicovitch covering theorem
@@ -616,7 +616,7 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
-  # far away; FLT project is working on a special case
+  comment: "https://imperialcollegelondon.github.io/FLT is proving a special case"
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -3489,7 +3489,7 @@ Q7318284:
 
 Q7322366:
   title: Ribet's theorem
-  # part of FLT, right?
+  # part of the original proof of Fermat's Last Theorem
 
 Q7323144:
   title: Rice–Shapiro theorem
@@ -3669,7 +3669,7 @@ Q7825663:
 
 Q7827204:
   title: Mazur's torsion theorem
-  # TODO: is this used in FLT?
+  comment: "This is used to prove Fermat's last theorem (but a non-trivial project on its own)."
 
 Q7841060:
   title: Trichotomy theorem
