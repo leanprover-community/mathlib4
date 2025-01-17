@@ -1,3 +1,9 @@
+@/-
+Copyright (c) 2025 Christopher Hoskin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christopher Hoskin
+-/
+
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Analysis.LocallyConvex.Polar
@@ -19,7 +25,7 @@ namespace LinearMap
 
 variable (C : Set E)
 
-/-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
+/-- The prime of `s : Set E` is given by the set of all `y` in `polar C` such that `B x y = 1`
 for all `x ∈ s`. -/
 def prime (s : Set E) : Set F :=
   { y : F | y ∈ B.polar C ∧ ∀ x ∈ s, B x y = 1 }
