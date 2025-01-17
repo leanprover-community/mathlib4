@@ -52,7 +52,6 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 
--- Porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=

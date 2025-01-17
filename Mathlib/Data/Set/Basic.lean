@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.One.Defs
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
@@ -514,7 +514,6 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
-@[deprecated (since := "2024-03-23")] alias ball_empty_iff := forall_mem_empty
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -843,10 +842,6 @@ theorem union_inter_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) �
 theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
 
-@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
-@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -979,12 +974,10 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
 theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
-@[deprecated (since := "2024-03-23")] alias bex_insert_iff := exists_mem_insert
 
 theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
   forall₂_or_left.trans <| and_congr_left' forall_eq
-@[deprecated (since := "2024-03-23")] alias ball_insert_iff := forall_mem_insert
 
 /-- Inserting an element to a set is equivalent to the option type. -/
 def subtypeInsertEquivOption
@@ -1273,6 +1266,14 @@ lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
 
+/-- See also `Set.sdiff_inter_right_comm`. -/
+lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
+
+/-- See also `Set.inter_diff_assoc`. -/
+lemma sdiff_inter_right_comm (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ t := sdiff_inf_right_comm ..
+
+lemma inter_sdiff_left_comm (s t u : Set α) : s ∩ (t \ u) = t ∩ (s \ u) := inf_sdiff_left_comm ..
+
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut
 
@@ -1296,7 +1297,7 @@ lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
 theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
   inf_sdiff_distrib_left _ _ _
 
-theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t ∩ u) :=
+theorem inter_diff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
 
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
@@ -1475,9 +1476,6 @@ theorem union_diff_right {s t : Set α} : (s ∪ t) \ t = s \ t :=
 
 theorem union_diff_distrib {s t u : Set α} : (s ∪ t) \ u = s \ u ∪ t \ u :=
   sup_sdiff
-
-theorem inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) :=
-  inf_sdiff_assoc
 
 @[simp]
 theorem inter_diff_self (a b : Set α) : a ∩ (b \ a) = ∅ :=
