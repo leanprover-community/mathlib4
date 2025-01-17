@@ -73,21 +73,25 @@ theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCy
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
 
+@[to_additive]
+instance IsCyclic.commutative [Group α] [IsCyclic α] :
+    Std.Commutative (· * · : α → α → α) :=
+  Std.Commutative.mk fun x y =>
+    let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+    let ⟨_, hx⟩ := hg x
+    let ⟨_, hy⟩ := hg y
+    hy ▸ hx ▸ zpow_mul_comm _ _ _
+
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
       "A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`."]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
-  { hg with
-    mul_comm := fun x y =>
-      let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-      let ⟨_, hn⟩ := hg x
-      let ⟨_, hm⟩ := hg y
-      hm ▸ hn ▸ zpow_mul_comm _ _ _ }
+  { hg with mul_comm := commutative.comm }
 
 instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
-  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
+  ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
 
