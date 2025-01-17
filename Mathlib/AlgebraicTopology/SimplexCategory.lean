@@ -783,20 +783,20 @@ open Mathlib.Tactic.Superscript.Mapping (subscript)
 
 /-- Checks that the provided expression can be subscripted. -/
 private partial def subscriptable (e : Expr) : DelabM Unit := do
-  /- Any number or free variable with a subscriptable name is subscriptable. -/
+  -- Any number or free variable with a subscriptable name is subscriptable.
   if (← name e).any isSubscriptable || (← delab) matches `($_:num) then return
-  /- Addition and subtraction are subscriptable if their operands are. -/
+  -- Addition and subtraction are subscriptable if their operands are.
   guard <| e.isAppOfArity ``HAdd.hAdd 6 || e.isAppOfArity ``HSub.hSub 6
   let #[_, _, _, _, x, y] := e.getAppArgs | failure
   let _ ← withNaryArg 4 <| subscriptable x
   let _ ← withAppArg <| subscriptable y
 where
-  /- Return the user-facing name of any constant or free variable. -/
+  -- Return the user-facing name of any constant or free variable.
   name : Expr → MetaM (Option Name)
     | Expr.const name _ => return name
     | Expr.fvar name => name.getUserName
     | _ => return none
-  /- Return `true` if every character in `s` can be subscripted. -/
+  -- Return `true` if every character in `s` can be subscripted.
   isSubscriptable (s : Name) : Bool :=
     s.toString.toList.all subscript.toSpecial.contains
 

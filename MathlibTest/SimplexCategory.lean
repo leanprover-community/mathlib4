@@ -26,7 +26,7 @@ section delaborator
 CategoryTheory.FullSubcategory fun a => a.len ≤ n + (4 - (2 + 1)) -/
 #guard_msgs in #check [m]ₙ₊₍₄₋₍₂₊₁₎₎
 
-section bad_subscripts
+section no_subscript
 variable (b : ℕ) (hb : m ≤ b)
 
 /- The delaborator should not fire because `b` cannot be subscripted. -/
@@ -42,7 +42,7 @@ be subscripted. -/
 /-- info: hx : x = { obj := SimplexCategory.mk m, property := h } -/
 #guard_msgs in #check hx
 
-end bad_subscripts
+end no_subscript
 
 section mvars
 set_option pp.mvars false

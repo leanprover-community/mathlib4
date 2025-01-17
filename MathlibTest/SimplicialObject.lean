@@ -19,7 +19,7 @@ section delaborator
 /-- info: X _[m]ₙ : C -/
 #guard_msgs in #check X _[m]ₙ₊₍₃₋₍₂₊₁₎₎
 
-section bad_subscripts
+section no_subscript
 variable (b : ℕ) (Y: CategoryTheory.SimplicialObject.Truncated C b) (hb : m ≤ b)
 
 /- The delaborator should not fire because `b` cannot be subscripted. -/
@@ -33,7 +33,7 @@ be subscripted. -/
 /-- info: hx : x = X.obj (Opposite.op { obj := SimplexCategory.mk m, property := h }) -/
 #guard_msgs in #check hx
 
-end bad_subscripts
+end no_subscript
 
 section mvars
 set_option pp.mvars false
@@ -85,7 +85,7 @@ section delaborator
 /-- info: X _[m]ₙ : C -/
 #guard_msgs in #check X _[m]ₙ₊₍₃₋₍₂₊₁₎₎
 
-section bad_subscripts
+section no_subscript
 variable (b : ℕ) (Y: CategoryTheory.CosimplicialObject.Truncated C b) (hb : m ≤ b)
 
 /- The delaborator should not fire because `b` cannot be subscripted. -/
@@ -99,7 +99,7 @@ be subscripted. -/
 /-- info: hx : x = X.obj { obj := SimplexCategory.mk m, property := h } -/
 #guard_msgs in #check hx
 
-end bad_subscripts
+end no_subscript
 
 section mvars
 set_option pp.mvars false
