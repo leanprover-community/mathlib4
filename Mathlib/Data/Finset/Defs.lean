@@ -75,8 +75,16 @@ structure Finset (α : Type*) where
   /-- `val` contains no duplicates -/
   nodup : Nodup val
 
+lemma Multiset.nodup_iff_exists_finset {x : Multiset α} :
+    x.Nodup ↔ ∃ y : Finset α, Finset.val y = x := by
+  constructor
+  · intro hx
+    exact ⟨⟨x, hx⟩, rfl⟩
+  · rintro ⟨s, rfl⟩
+    exact s.nodup
+
 instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.val Multiset.Nodup :=
-  ⟨fun m hm => ⟨⟨m, hm⟩, rfl⟩⟩
+  ⟨fun _ => nodup_iff_exists_finset.mp⟩
 
 namespace Finset
 
