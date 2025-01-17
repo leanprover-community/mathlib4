@@ -872,7 +872,7 @@ theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ 
 @[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
-    List.flatMap l f = List.flatMap l g :=
+    l.flatMap f = l.flatMap g :=
   (congr_arg List.flatten <| map_congr_left h :)
 
 @[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
