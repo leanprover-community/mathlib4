@@ -108,15 +108,6 @@ open Lean Meta Elab.Tactic in
   else
     throwError "The goal does not contain `sorry`"
 
-open Lean Meta Grind in
-def fallback : Fallback := do
-  let nodes ← filterENodes fun _ => pure true
-  let mut data : Std.HashMap Expr (Std.HashSet Expr) := {}
-  for n in nodes do
-    if n.self != n.root then
-      data := data.alter n.root (fun s? => s?.getD {} |>.insert n.self)
-  logInfo m!"{data.toList.map fun (k, v) => (k, v.toList)}"
-
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
@@ -125,7 +116,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry | intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20) on_failure fallback))
+  first | sorry_if_sorry | intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20)))
 
 /--
 We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
