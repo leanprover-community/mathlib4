@@ -33,11 +33,11 @@ We provide the following functions to work with these objects:
 
 ## Notations
 
-* `[n]` denotes the `n`-dimensional simplex.
+* `[n]` denotes the `n`-dimensional simplex. This notation is available with
+  `open Simplicial`.
 * `[m]ₙ` denotes the `m`-dimensional simplex in the `n`-truncated simplex category.
-  The proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. Access
-  these notations using `open SimplexCategory.Truncated`.
-
+  The truncation proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`.
+  This notation is available with `open SimplexCategory.Truncated`.
 -/
 
 

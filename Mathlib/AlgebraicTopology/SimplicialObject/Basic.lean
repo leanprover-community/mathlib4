@@ -21,8 +21,9 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 (co)simplicial object `X`, where `n` is a natural number.
 
 The notation `X _[m]ₙ` denotes the `m`-th term of an `n`-truncated (co)simplicial
-object `X`. The proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`.
-
+object `X`. The truncation proof `p : m ≤ n` can also be provided using the syntax
+`X _[m, p]ₙ`. This notation is available with
+`open CategoryTheory.SimplicialObject.Truncated`.
 -/
 
 open Opposite
