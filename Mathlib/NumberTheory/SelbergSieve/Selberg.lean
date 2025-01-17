@@ -78,7 +78,6 @@ theorem selbergWeights_eq_zero (d : ℕ) (hd : ¬d ^ 2 ≤ y) :
     linarith [hyp.1]
   · rfl
 
-@[aesop safe]
 theorem selbergWeights_mul_mu_nonneg (d : ℕ) (hdP : d ∣ P) :
     0 ≤ γ d * μ d := by
   dsimp only [selbergWeights]
@@ -181,6 +180,28 @@ theorem selbergWeights_eq_dvds_sum (d : ℕ) :
     rw [if_neg, mul_zero]
     push_neg; intro h; contradiction
 
+omit s in
+private theorem moebius_inv_dvd_lower_bound (l m : ℕ) (hm : Squarefree m) :
+    (∑ d in m.divisors, if l ∣ d then μ d else 0) = if l = m then μ l else 0 := by
+  have hm_pos : 0 < m := Nat.pos_of_ne_zero <| Squarefree.ne_zero hm
+  revert hm
+  revert m
+  apply (ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq_on {n | Squarefree n}
+    (fun _ _ => Squarefree.squarefree_of_dvd)).mpr
+  intro m hm_pos hm
+  rw [sum_divisorsAntidiagonal' (f:= fun r s => μ r • if l=s then μ l else 0)]
+  by_cases hl : l ∣ m
+  · rw [if_pos hl, sum_eq_single l]
+    · have hmul : m / l * l = m := Nat.div_mul_cancel hl
+      rw [if_pos rfl, smul_eq_mul, ←isMultiplicative_moebius.map_mul_of_coprime,
+        hmul]
+      apply coprime_of_squarefree_mul; rw [hmul]; exact hm
+    · intro d _ hdl; rw[if_neg hdl.symm, smul_zero]
+    · intro h; rw[mem_divisors] at h; exfalso; exact h ⟨hl, (Nat.ne_of_lt hm_pos).symm⟩
+  · rw [if_neg hl, sum_eq_zero]; intro d hd
+    rw [if_neg, smul_zero]
+    by_contra h; rw [←h] at hd; exact hl (dvd_of_mem_divisors hd)
+
 theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
     (∑ d ∈ divisors P, if l ∣ d then ν d * γ d else 0) =
       if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
@@ -200,7 +221,8 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
     _ = ∑ x ∈ divisors P, if x = l then if ↑l ^ 2 ≤ y then g l * ↑(μ l) * S⁻¹ else 0 else 0 := by
       apply sum_congr rfl; intro k hk
       norm_cast
-      simp_rw [ite_and, ← sum_over_dvd_ite prodPrimes_ne_zero (Nat.dvd_of_mem_divisors hk)]
+      simp_rw [ite_and, ← sum_filter,
+        Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero (Nat.dvd_of_mem_divisors hk), sum_filter]
       rw [moebius_inv_dvd_lower_bound _ _ (squarefree_of_mem_divisors_prodPrimes hk)]
       push_cast
       rw [← ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
@@ -415,13 +437,13 @@ theorem selberg_bound (s : SelbergSieve) :
     s.siftedSum ≤
       X / S +
         ∑ d ∈ divisors P, if (d : ℝ) ≤ y then (3:ℝ) ^ ω d * |R d| else 0 := by
-  let μPlus := s.selbergUbSieve
+  let mu_plus := s.selbergUbSieve
   calc
-    s.siftedSum ≤ X * s.mainSum μPlus + s.errSum μPlus :=
-      s.siftedSum_le_mainSum_errSum_of_UpperBoundSieve μPlus
+    s.siftedSum ≤ X * s.mainSum μ⁺ + s.errSum μ⁺ :=
+      s.siftedSum_le_mainSum_errSum_of_UpperBoundSieve mu_plus
     _ ≤ _ := ?_
   gcongr
-  · erw [s.selberg_bound_simple_mainSum, div_eq_mul_inv]
+  · rw [s.selberg_bound_simple_mainSum, div_eq_mul_inv]
   · apply s.selberg_bound_simple_errSum
 
 end SelbergSieve

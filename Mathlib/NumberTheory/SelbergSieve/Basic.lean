@@ -208,7 +208,7 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
       apply prod_lt_prod_of_nonempty
       · intro p hp
         simp only [mem_primeFactors] at hp
-        apply nu_pos_of_prime p (by aesop) (hp.2.1.trans hdP)
+        apply nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
       · intro p hpd; rw [mem_primeFactors_of_ne_zero hd_sq.ne_zero] at hpd
         apply nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
       · simp only [nonempty_primeFactors, show 1 < d by omega]
@@ -270,9 +270,8 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
   calc
     (∑ l ∈ divisors P, if l ∣ d then g l else 0) =
         ∑ l ∈ divisors P, if l ∣ d then g (d / l) else 0 := by
-      rw [← sum_over_dvd_ite prodPrimes_ne_zero hd,
-        ← Nat.sum_divisorsAntidiagonal fun x _ => g x, Nat.sum_divisorsAntidiagonal' fun x _ => g x,
-        sum_over_dvd_ite prodPrimes_ne_zero hd]
+      simp_rw [← sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hd,
+        sum_div_divisors d g]
     _ = g d * ∑ l ∈ divisors P, if l ∣ d then 1 / g l else 0 := by
       simp_rw [← sum_filter, mul_sum]; apply sum_congr rfl; intro l hl
       simp only [mem_filter, mem_divisors, ne_eq] at hl
