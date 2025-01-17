@@ -225,9 +225,9 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     ext
     simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp,
       RingHom.coe_coe, Function.comp_apply, ← IsScalarTower.algebraMap_apply]
-    simp only [IsScalarTower.algebraMap_apply R Rₚ (FractionRing R), AlgEquiv.coe_ringEquiv,
+    rw [IsScalarTower.algebraMap_apply R Rₚ (FractionRing R), AlgEquiv.coe_ringEquiv,
       AlgEquiv.commutes, IsScalarTower.algebraMap_apply R S L,
-      IsScalarTower.algebraMap_apply S Sₚ L]
+      IsScalarTower.algebraMap_apply S Sₚ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
     simp only [← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply R Rₚ (FractionRing Rₚ),
       ← IsScalarTower.algebraMap_apply Rₚ, ← IsScalarTower.algebraMap_apply]
