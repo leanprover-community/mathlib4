@@ -208,19 +208,21 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 
-lemma not_commutative_of_two_lt {n : ℕ} (h : 2 < n) :
-    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y := by
-  rintro ⟨h'⟩
-  specialize h' (r 1) (sr 0)
-  rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero, one_add_one_eq_two,
-    ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
-  exact Nat.not_le_of_gt h <| Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
+lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
+    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y
+  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h' (r 1) (sr 0)
+  | n + 3, _, _ => by
+    rintro ⟨h'⟩
+    specialize h' (r 1) (sr 0)
+    rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero,
+      one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
+    simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
 
-lemma not_commutative_zero :
-    ¬Std.Commutative fun (x y : DihedralGroup 0) => x * y := by
-  rintro ⟨h'⟩
-  specialize h' (r 1) (sr 0)
-  simp at h'
+lemma commutative_iff {n : ℕ} :
+    (Std.Commutative fun (x y : DihedralGroup n) ↦ x * y) ↔ n = 1 ∨ n = 2 := by
+  constructor
+  · contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
+  · rintro (rfl | rfl) <;> exact ⟨by decide⟩
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

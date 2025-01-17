@@ -864,10 +864,13 @@ end mulEquiv
 
 end generator
 
-lemma DihedralGroup.not_isCyclic {n : ℕ} (h : n ≠ 1) :
-    ¬IsCyclic (DihedralGroup n) := fun h' =>
-  match n with
-  | 0 => not_commutative_zero h'.commutative
-  | 1 => h rfl
-  | 2 => by simpa [exponent, card] using h'.exponent_eq_card
-  | _ + 3 => not_commutative_of_gt_two (Nat.lt_of_sub_eq_succ rfl) h'.commutative
+lemma DihedralGroup.not_isCyclic : ∀ {n : ℕ}, n ≠ 1 → ¬IsCyclic (DihedralGroup n)
+  | 0, _, h' => not_commutative_zero h'.commutative
+  | 2, _, h' => by simpa [exponent, card] using h'.exponent_eq_card
+  | _ + 3, _, h' => not_commutative_of_two_lt (Nat.lt_of_sub_eq_succ rfl) h'.commutative
+
+lemma DihedralGroup.isCyclic_iff {n : ℕ} :
+    IsCyclic (DihedralGroup n) ↔ n = 1 := by
+  constructor
+  · contrapose; exact not_isCyclic
+  · rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card
