@@ -30,21 +30,22 @@ variable {α n m : Type*}
 lemma toPEquiv_toMatrix_mulVec_apply [Fintype n] [DecidableEq n]
     [NonAssocSemiring α] (σ : m ≃ n) (i : m) (a : n → α) :
     (σ.toPEquiv.toMatrix *ᵥ a) i = a (σ i) := by
-  induction' a using Pi.induction_add with f g hf hg x y
-  · simp
-  · simp [hf, hg, Matrix.mulVec_add]
-  · simp [Pi.single_apply]
+  induction a using Pi.induction_add with
+  | hone => simp
+  | hmul f g hf hg => simp [hf, hg, Matrix.mulVec_add]
+  | hsingle => simp [Pi.single_apply]
 
 lemma toPEquiv_toMatrix_vecMul_apply [Fintype m] [DecidableEq n]
     [NonAssocSemiring α] (σ : m ≃ n) (i : n) (a : m → α) :
     (a ᵥ* σ.toPEquiv.toMatrix) i = a (σ.symm i) := by
   classical
-  induction' a using Pi.induction_add with f g hf hg x y
-  · simp
-  · simp [hf, hg, Matrix.add_vecMul]
-  · simp [single_vecMul, PEquiv.toMatrix_apply, Option.mem_def, mul_ite,
-      mul_one, mul_zero, Pi.single_apply, symm_apply_eq]
-    simp_rw [eq_comm]
+  induction a using Pi.induction_add with
+  | hone => simp
+  | hmul f g hf hg => simp [hf, hg, Matrix.add_vecMul]
+  | hsingle =>
+      simp only [single_vecMul, PEquiv.toMatrix_apply, toPEquiv_apply, Option.mem_def,
+        Option.some.injEq, mul_ite, mul_one, mul_zero, Pi.single_apply, symm_apply_eq]
+      simp_rw [eq_comm]
 
 end Equiv
 
@@ -61,7 +62,7 @@ left (resp. right) corresponds to swapping the `i`-th and `j`-th row (resp. colu
 def swap (i j : n) : Matrix n n R :=
   (Equiv.swap i j).toPEquiv.toMatrix
 
-lemma swap_eq_swap (i j : n) :
+lemma swap_comm (i j : n) :
     swap R i j = swap R j i := by
   simp only [swap, Equiv.swap_comm]
 
@@ -83,15 +84,15 @@ lemma map_swap {S : Type*} [Semiring S] (f : R →+* S) (i j : n) :
 
 variable [Fintype n]
 
-lemma swap_mulVec_single (i j : n) (r : R) :
+lemma swap_mulVec_single_left (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single i r = Pi.single j r := by
   simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap]
   rw [Equiv.swap_apply_left]
 
 /-- Variant of `Matrix.swap_mulVec_single` with `i` and `j` switched in `Pi.single`. -/
-lemma swap_mulVec_single' (i j : n) (r : R) :
+lemma swap_mulVec_single_right (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single j r = Pi.single i r := by
-  rw [swap_eq_swap, swap_mulVec_single]
+  rw [swap_comm, swap_mulVec_single_left]
 
 lemma swap_mulVec_single_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : R) :
     swap R i j *ᵥ Pi.single k r = Pi.single k r := by
@@ -104,15 +105,15 @@ lemma swap_mulVec_apply (i j : n) (a : n → R) :
 
 /-- Multiplying with `swap R i j` on the left swaps the `i`-th row with the `j`-th row. -/
 @[simp]
-lemma swap_mul_apply (a i j : n) (g : Matrix n n R) :
+lemma swap_mul_apply_left (a i j : n) (g : Matrix n n R) :
     (swap R i j * g) i a = g j a := by
   simp [swap, PEquiv.toPEquiv_mul_matrix]
 
 /-- Multiplying with `swap R i j` on the left swaps the `j`-th row with the `i`-th row. -/
 @[simp]
-lemma swap_mul_apply' (a i j : n) (g : Matrix n n R) :
+lemma swap_mul_apply_right (a i j : n) (g : Matrix n n R) :
     (swap R i j * g) j a = g i a := by
-  rw [swap_eq_swap, swap_mul_apply]
+  rw [swap_comm, swap_mul_apply_left]
 
 lemma swap_mul_of_ne {a b i j : n} (hai : a ≠ i) (haj : a ≠ j) (g : Matrix n n R) :
     (swap R i j * g) a b = g a b := by
@@ -120,15 +121,15 @@ lemma swap_mul_of_ne {a b i j : n} (hai : a ≠ i) (haj : a ≠ j) (g : Matrix n
 
 /-- Multiplying with `swap R i j` on the right swaps the `i`-th column with the `j`-th column. -/
 @[simp]
-lemma mul_swap_apply (a i j : n) (g : Matrix n n R) :
+lemma mul_swap_apply_left (a i j : n) (g : Matrix n n R) :
     (g * swap R i j) a i = g a j := by
   simp [swap, PEquiv.mul_toPEquiv_toMatrix]
 
 /-- Multiplying with `swap R i j` on the right swaps the `j`-th column with the `i`-th column. -/
 @[simp]
-lemma mul_swap_apply' (a i j : n) (g : Matrix n n R) :
+lemma mul_swap_apply_right (a i j : n) (g : Matrix n n R) :
     (g * swap R i j) a j = g a i := by
-  rw [swap_eq_swap, mul_swap_apply]
+  rw [swap_comm, mul_swap_apply_left]
 
 lemma mul_swap_of_ne {a b : n} {i j : n} (hbi : b ≠ i) (hbj : b ≠ j) (g : Matrix n n R) :
     (g * swap R i j) a b = g a b := by
