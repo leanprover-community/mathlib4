@@ -10,9 +10,9 @@ import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
 
 /-!
-# The moment generatic function is analytic
+# The moment generating function is analytic
 
-The moment generatic function is analytic on the interior of the interval on which it is defined.
+The moment generating function is analytic on the interior of the interval on which it is defined.
 
 ## Main results
 
