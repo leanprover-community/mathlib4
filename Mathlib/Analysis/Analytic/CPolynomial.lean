@@ -278,7 +278,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum'
     ∀ y ∈ EMetric.ball x r, ∀ m, n ≤ m →
     f y = p.partialSum m (y - x) := by
   intro y hy m hm
-  rw [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, ← mem_emetric_ball_zero_iff] at hy
+  rw [EMetric.mem_ball, edist_eq_enorm_sub, ← mem_emetric_ball_zero_iff] at hy
   rw [← (HasFiniteFPowerSeriesOnBall.eq_partialSum hf _ hy m hm), add_sub_cancel]
 
 /-! The particular cases where `f` has a finite power series bounded by `0` or `1`. -/
@@ -300,7 +300,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetri
     rw [hf (x + y)]
     · convert hasSum_zero
       rw [hp, ContinuousMultilinearMap.zero_apply]
-    · rwa [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, add_comm, add_sub_cancel_right,
+    · rwa [EMetric.mem_ball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
         ← edist_zero_eq_enorm, ← EMetric.mem_ball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a
@@ -514,7 +514,7 @@ it is continuously polynomial at every point of this ball. -/
 theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) (h : y ∈ EMetric.ball x r) :
     CPolynomialAt 𝕜 f y := by
-  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
+  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_enorm_sub] using h
   have := hf.changeOrigin this
   rw [add_sub_cancel] at this
   exact this.cPolynomialAt

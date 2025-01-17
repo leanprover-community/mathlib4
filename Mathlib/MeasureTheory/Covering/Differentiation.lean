@@ -826,7 +826,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
     filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, (‖f x - c‖₊ : ℝ≥0∞) < ε / 2 := by
-    simp_rw [← edist_eq_coe_nnnorm_sub]
+    simp_rw [← edist_eq_enorm_sub]
     have : f x ∈ closure t := ht (mem_range_self _)
     exact EMetric.mem_closure_iff.1 this (ε / 2) (ENNReal.half_pos (ne_of_gt εpos))
   filter_upwards [(tendsto_order.1 (M c ct)).2 (ε / 2) xc, h'x, v.eventually_measure_lt_top x] with
@@ -835,7 +835,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
   calc
     (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) ≤ ∫⁻ y in a, ‖f y - c‖₊ + ‖f x - c‖₊ ∂μ := by
       apply lintegral_mono fun x => ?_
-      simpa only [← edist_eq_coe_nnnorm_sub] using edist_triangle_right _ _ _
+      simpa only [← edist_eq_enorm_sub] using edist_triangle_right _ _ _
     _ = (∫⁻ y in a, ‖f y - c‖₊ ∂μ) + ∫⁻ _ in a, ‖f x - c‖₊ ∂μ :=
       (lintegral_add_right _ measurable_const)
     _ ≤ ε / 2 * μ a + ε / 2 * μ a := by

@@ -74,7 +74,7 @@ theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
-  repeat rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
+  repeat rw [edist_comm y₀, edist_eq_enorm_sub] at this
   exact mod_cast this
 
 theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -101,7 +101,7 @@ theorem tendsto_approxOn_Lp_eLpNorm [OpensMeasurableSpace E] {f : β → E} (hf 
   -- (1) The function "`p`-th power of distance between `f` and the approximation" is measurable
   have hF_meas :
     ∀ n, Measurable fun x => (‖approxOn f hf s y₀ h₀ n x - f x‖₊ : ℝ≥0∞) ^ p.toReal := by
-    simpa only [← edist_eq_coe_nnnorm_sub] using fun n =>
+    simpa only [← edist_eq_enorm_sub] using fun n =>
       (approxOn f hf s y₀ h₀ n).measurable_bind (fun y x => edist y (f x) ^ p.toReal) fun y =>
         (measurable_edist_right.comp hf).pow_const p.toReal
   -- (2) The functions "`p`-th power of distance between `f` and the approximation" are uniformly

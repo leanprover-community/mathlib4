@@ -686,7 +686,7 @@ theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a 
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
   have : y + f a ∈ EMetric.ball (f a) r := by
-    simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff,
+    simp only [EMetric.mem_ball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
   simpa [add_comm] using hr this

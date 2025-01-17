@@ -342,7 +342,7 @@ it is analytic at every point of this ball. -/
 theorem HasFPowerSeriesWithinOnBall.analyticWithinAt_of_mem
     (hf : HasFPowerSeriesWithinOnBall f p s x r)
     (h : y ∈ insert x s ∩ EMetric.ball x r) : AnalyticWithinAt 𝕜 f s y := by
-  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h.2
+  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_enorm_sub] using h.2
   have := hf.changeOrigin this (by simpa using h.1)
   rw [add_sub_cancel] at this
   exact this.analyticWithinAt

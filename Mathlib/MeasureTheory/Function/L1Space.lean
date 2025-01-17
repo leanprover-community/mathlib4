@@ -115,7 +115,7 @@ theorem hasFiniteIntegral_iff_edist (f : α → β) :
 
 theorem hasFiniteIntegral_iff_ofReal {f : α → ℝ} (h : 0 ≤ᵐ[μ] f) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal (f a) ∂μ) < ∞ := by
-  rw [hasFiniteIntegral_iff_nnnorm, lintegral_nnnorm_eq_of_ae_nonneg h]
+  rw [hasFiniteIntegral_iff_nnnorm, lintegral_enorm_of_ae_nonneg h]
 
 theorem hasFiniteIntegral_iff_ofNNReal {f : α → ℝ≥0} :
     HasFiniteIntegral (fun x => (f x : ℝ)) μ ↔ (∫⁻ a, f a ∂μ) < ∞ := by
@@ -1370,7 +1370,7 @@ theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[�
 theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
   simp only [Lp.edist_def, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_nnnorm, Pi.sub_apply,
     one_toReal, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
-  simp [edist_eq_coe_nnnorm_sub]
+  simp [edist_eq_enorm_sub]
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
   simp_rw [dist_edist, edist_def]
@@ -1465,7 +1465,7 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
   simp only [toL1, Lp.edist_toLp_toLp, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_nnnorm,
     Pi.sub_apply, one_toReal, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
-  simp [edist_eq_coe_nnnorm_sub]
+  simp [edist_eq_enorm_sub]
 
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by

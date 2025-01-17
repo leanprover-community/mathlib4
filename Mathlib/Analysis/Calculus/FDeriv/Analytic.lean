@@ -204,7 +204,7 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
-  simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
+  simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
@@ -219,7 +219,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   · dsimp only
     rw [← h.fderivWithin_eq _ _ hu, add_sub_cancel]
-    · simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz.2
+    · simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz.2
     · simpa using hz.1
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. For a
@@ -487,7 +487,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
-  simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
+  simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function has a finite power series on a ball, then so does its derivative.
 This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
