@@ -113,7 +113,7 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
 
 theorem tendsto_toNNReal_iff {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0∞}
     (ha : a ≠ ∞) (hf : ∀ x, f x ≠ ∞) : Tendsto f u (𝓝 a) ↔
-    Tendsto (ENNReal.toNNReal ∘ f ) u (nhds (a.toNNReal)) := by
+    Tendsto (ENNReal.toNNReal ∘ f ) u (𝓝 (a.toNNReal)) := by
   constructor
   · exact fun h =>  Filter.Tendsto.comp (ENNReal.tendsto_toNNReal ha) h
   · intro h

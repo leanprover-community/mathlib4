@@ -34,8 +34,8 @@ convergence in measure and other notions of convergence.
   which converges in measure to `g`, then `f` has a subsequence which convergence almost
   everywhere to `g`.
 * `MeasureTheory.exists_seq_tendstoInMeasure_atTop_iff`: for a sequence of functions `f`,
-convergence in measure is equivalent to the fact that every subsequence has another subsequence
-that converges almost surely.
+  convergence in measure is equivalent to the fact that every subsequence has another subsequence
+  that converges almost surely.
 * `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm`: convergence in Lp implies convergence
   in measure.
 -/
@@ -293,9 +293,9 @@ lemma false_of_tendsto_of_bddBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: (0
 
 end
 
-lemma forall_seq_tendstoInMeasure_atTop {u : Filter ι} {v : Filter κ} {f : ι → α → E}
+lemma TendstoInMeasure.comp_of_tendsto {u : Filter ι} {v : Filter κ} {f : ι → α → E}
     {g : α → E} {ns : κ → ι} (hfg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
-    TendstoInMeasure μ (fun n => f (ns n)) v g :=
+    TendstoInMeasure μ (f ∘ ns) v g :=
   fun ε hε => (hfg ε hε).comp hns
 
 lemma subseq_of_not_tendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (𝓝 (0 : ℝ≥0))) :
@@ -310,7 +310,7 @@ lemma subseq_of_not_tendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (𝓝 (0
   rw [← NNReal.abs_eq, ← Real.norm_eq_abs, ← not_lt, ← mem_ball_zero_iff]
   exact fun a => (h4 n) (h3 a)
 
-/- TendstoInMeasure is equivalent to a proof  that every subsequence has another subsequence
+/- TendstoInMeasure is equivalent to  every subsequence has another subsequence
 which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
@@ -360,13 +360,13 @@ end
 
 end ExistsSeqTendstoAe
 
-section LimitInMeasureUnique
+section TendstoInMeasureUnique
 
 variable [MetricSpace E]
 variable {f : ℕ → α → E} {g h : α → E}
 
--- The LimitInMeasure is ae unique
-theorem ae_unique_of_limitInMeasure' (hg : TendstoInMeasure μ f atTop g)
+-- The TendstoInMeasure is ae unique
+theorem ae_unique_of_tendstoInMeasure' (hg : TendstoInMeasure μ f atTop g)
     (hh : TendstoInMeasure μ f atTop h) : g =ᵐ[μ] h := by
   obtain ⟨ns,h1,h1'⟩ := TendstoInMeasure.exists_seq_tendsto_ae hg
   obtain ⟨ns', h2, h2'⟩ :=
@@ -378,13 +378,13 @@ theorem ae_unique_of_limitInMeasure' (hg : TendstoInMeasure μ f atTop g)
   refine tendsto_nhds_unique hg1 hh1
 
 -- Same as above but with a more general filter on ι
-theorem ae_unique_of_limitInMeasure {g h : α → E} {f : ι → α → E}  {u : Filter ι} [NeBot u]
+theorem ae_unique_of_tendstoInMeasure {g h : α → E} {f : ι → α → E}  {u : Filter ι} [NeBot u]
     [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) :
     g =ᵐ[μ] h := by
   obtain ⟨ns,h1,h1'⟩ := TendstoInMeasure.exists_seq_tendstoInMeasure_atTop hg
-  exact ae_unique_of_limitInMeasure' (f := f ∘ ns) h1' (TendstoInMeasure.subseq' h1 hh)
+  exact ae_unique_of_tendstoInMeasure' (f := f ∘ ns) h1' (TendstoInMeasure.subseq' h1 hh)
 
-end LimitInMeasureUnique
+end TendstoInMeasureUnique
 
 section AEMeasurableOf
 
