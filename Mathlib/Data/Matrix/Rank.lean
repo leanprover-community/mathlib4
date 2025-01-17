@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
 # Rank of matrices
@@ -18,12 +19,6 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 
 * `Matrix.rank`: the rank of a matrix
 
-## TODO
-
-* Do a better job of generalizing over `ℚ`, `ℝ`, and `ℂ` in `Matrix.rank_transpose` and
-  `Matrix.rank_conjTranspose`. See
-  [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/row.20rank.20equals.20column.20rank/near/350462992).
-
 -/
 
 
@@ -31,7 +26,7 @@ open Matrix
 
 namespace Matrix
 
-open FiniteDimensional
+open Module
 
 variable {l m n o R : Type*} [Fintype n] [Fintype o]
 
@@ -81,7 +76,7 @@ theorem rank_unit [StrongRankCondition R] [DecidableEq n] (A : (Matrix n n R)ˣ)
     (A : Matrix n n R).rank = Fintype.card n := by
   apply le_antisymm (rank_le_card_width (A : Matrix n n R)) _
   have := rank_mul_le_left (A : Matrix n n R) (↑A⁻¹ : Matrix n n R)
-  rwa [← Units.val_mul, mul_inv_self, Units.val_one, rank_one] at this
+  rwa [← Units.val_mul, mul_inv_cancel, Units.val_one, rank_one] at this
 
 theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R) (h : IsUnit A) :
     A.rank = Fintype.card n := by
@@ -146,9 +141,9 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   have aux₁ := toLin_self (Pi.basisFun R n) (Pi.basisFun R m) A i
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
-  rw [Pi.basisFun_apply, LinearMap.coe_stdBasis] at aux₁ aux₂
-  simp only [e₁, e₁, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
-    LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
+  rw [Pi.basisFun_apply] at aux₁ aux₂
+  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
+    aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by
@@ -170,10 +165,10 @@ section Field
 
 variable [Field R]
 
-/-- The rank of a diagnonal matrix is the count of non-zero elements on its main diagonal -/
+/-- The rank of a diagonal matrix is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
-  rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
+  rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 end Field
@@ -250,24 +245,43 @@ theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank :=
   · rw [ker_mulVecLin_transpose_mul_self]
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 
-/-- TODO: prove this in greater generality. -/
-@[simp]
-theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=
-  le_antisymm ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-    ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-
-@[simp]
-theorem rank_self_mul_transpose (A : Matrix m n R) : (A * Aᵀ).rank = A.rank := by
-  simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
-
 end LinearOrderedField
 
-/-- The rank of a matrix is the rank of the space spanned by its rows.
+@[simp]
+theorem rank_transpose [Field R] [Fintype m] (A : Matrix m n R) : Aᵀ.rank = A.rank := by
+  classical
+  rw [Aᵀ.rank_eq_finrank_range_toLin (Pi.basisFun R n).dualBasis (Pi.basisFun R m).dualBasis,
+      toLin_transpose, ← LinearMap.dualMap_def, LinearMap.finrank_range_dualMap_eq_finrank_range,
+      toLin_eq_toLin', toLin'_apply', rank]
 
-TODO: prove this in a generality that works for `ℂ` too, not just `ℚ` and `ℝ`. -/
-theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m n R) :
+@[simp]
+theorem rank_self_mul_transpose [LinearOrderedField R] [Fintype m] (A : Matrix m n R) :
+    (A * Aᵀ).rank = A.rank := by
+  simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
+
+/-- The rank of a matrix is the rank of the space spanned by its rows. -/
+theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A)) := by
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
+
+theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
+    {M : Matrix m n R} (h : LinearIndependent R M) : M.rank = Fintype.card m := by
+  rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+
+lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
+    {A : Matrix l m R} {B : Matrix m n R} (hAB : A * B = 0) :
+    A.rank + B.rank ≤ Fintype.card m := by
+  classical
+  let el : Basis l R (l → R) := Pi.basisFun R l
+  let em : Basis m R (m → R) := Pi.basisFun R m
+  let en : Basis n R (n → R) := Pi.basisFun R n
+  rw [Matrix.rank_eq_finrank_range_toLin A el em,
+      Matrix.rank_eq_finrank_range_toLin B em en,
+      ← Module.finrank_fintype_fun_eq_card R,
+      ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A),
+      add_le_add_iff_left]
+  apply Submodule.finrank_mono
+  rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 
 end Matrix

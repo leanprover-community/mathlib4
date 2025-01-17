@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -56,7 +56,6 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
-      haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
       · intro h w
         have j : IsIso (f ≫ i.hom) := by infer_instance
@@ -117,7 +116,7 @@ variable (C)
 
 /-- We don't want the definition of 'simple' to include the zero object, so we check that here. -/
 theorem zero_not_simple [Simple (0 : C)] : False :=
-  (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by aesop_cat⟩⟩ rfl
+  (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by simp⟩⟩ rfl
 
 end
 

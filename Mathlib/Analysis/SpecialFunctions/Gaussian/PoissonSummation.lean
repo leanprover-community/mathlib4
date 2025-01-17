@@ -29,8 +29,6 @@ noncomputable section
 
 section GaussianPoisson
 
-variable {E : Type*} [NormedAddCommGroup E]
-
 /-! First we show that Gaussian-type functions have rapid decay along `cocompact ℝ`. -/
 
 lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ) :
@@ -57,12 +55,12 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
   rw [cocompact_eq_atBot_atTop, isLittleO_sup]
   constructor
   · refine ((cexp_neg_quadratic_isLittleO_rpow_atTop ha (-b) s).comp_tendsto
-      Filter.tendsto_neg_atBot_atTop).congr' (eventually_of_forall fun x ↦ ?_) ?_
+      Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ ?_) ?_
     · simp only [neg_mul, Function.comp_apply, ofReal_neg, neg_sq, mul_neg, neg_neg]
-    · refine (eventually_lt_atBot 0).mp (eventually_of_forall fun x hx ↦ ?_)
+    · refine (eventually_lt_atBot 0).mp (Eventually.of_forall fun x hx ↦ ?_)
       simp only [Function.comp_apply, abs_of_neg hx]
   · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl ?_
-    refine (eventually_gt_atTop 0).mp (eventually_of_forall fun x hx ↦ ?_)
+    refine (eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx ↦ ?_)
     simp_rw [abs_of_pos hx]
 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :

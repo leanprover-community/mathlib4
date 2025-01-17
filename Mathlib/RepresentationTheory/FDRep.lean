@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.RepresentationTheory.Rep
 import Mathlib.Algebra.Category.FGModuleCat.Limits
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Rep
 
 /-!
 # `FDRep k G` is the category of finite dimensional `k`-linear representations of `G`.
@@ -27,12 +28,10 @@ We verify that `FDRep k G` is a `k`-linear monoidal category, and rigid when `G`
 `FDRep k G` has all finite limits.
 
 ## TODO
-* `FDRep k G ≌ FullSubcategory (FiniteDimensional k)`
-* Upgrade the right rigid structure to a rigid structure
-  (this just needs to be done for `FGModuleCat`).
-* `FDRep k G` has all finite colimits.
-* `FDRep k G` is abelian.
-* `FDRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
+* `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
+* `FdRep k G` has all finite colimits.
+* `FdRep k G` is abelian.
+* `FdRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
 
 -/
 
@@ -58,14 +57,14 @@ variable {k G : Type u} [Field k] [Monoid G]
 
 -- Porting note: `@[derive]` didn't work for `FDRep`. Add the 4 instances here.
 instance : LargeCategory (FDRep k G) := inferInstance
-instance : ConcreteCategory (FDRep k G) := inferInstance
+instance : HasForget (FDRep k G) := inferInstance
 instance : Preadditive (FDRep k G) := inferInstance
 instance : HasFiniteLimits (FDRep k G) := inferInstance
 
 instance : Linear k (FDRep k G) := by infer_instance
 
 instance : CoeSort (FDRep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  HasForget.hasCoeToSort _
 
 instance (V : FDRep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FDRep k G) (FGModuleCat k)).obj V).obj; infer_instance
@@ -83,7 +82,18 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  Action.ρ V
+  (ModuleCat.endMulEquiv _).toMonoidHom.comp (Action.ρ V)
+
+@[simp]
+lemma endMulEquiv_symm_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
+
+@[simp]
+lemma endMulEquiv_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+
+@[simp]
+lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
@@ -92,15 +102,16 @@ def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
 theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
-  erw [FDRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
-  rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
+  erw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
+  rw [← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
+      Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
-  ⟨FGModuleCat.of k V, ρ⟩
+  ⟨FGModuleCat.of k V, ρ ≫ MonCat.ofHom (ModuleCat.endMulEquiv _).symm.toMonoidHom⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
@@ -115,11 +126,11 @@ example : MonoidalPreadditive (FDRep k G) := by infer_instance
 
 example : MonoidalLinear k (FDRep k G) := by infer_instance
 
-open FiniteDimensional
+open Module
 
 open scoped Classical
 
--- We need to provide this instance explicitely as otherwise `finrank_hom_simple_simple` gives a
+-- We need to provide this instance explicitly as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 
@@ -150,6 +161,8 @@ variable {k G : Type u} [Field k] [Group G]
 noncomputable instance : RightRigidCategory (FDRep k G) := by
   change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
 
+example : RigidCategory (FDRep k G) := by infer_instance
+
 end FDRep
 
 namespace FDRep
@@ -178,11 +191,13 @@ noncomputable def dualTensorIsoLinHomAux :
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (linHom ρV W.ρ) := by
-  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) ?_
-  convert dualTensorHom_comm ρV W.ρ
+  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
+  ext : 1
+  exact dualTensorHom_comm ρV W.ρ g
 
 @[simp]
-theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dualTensorHom k V W :=
+theorem dualTensorIsoLinHom_hom_hom :
+    (dualTensorIsoLinHom ρV W).hom.hom = ModuleCat.ofHom (dualTensorHom k V W) :=
   rfl
 
 end FDRep

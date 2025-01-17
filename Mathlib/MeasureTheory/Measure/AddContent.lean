@@ -3,6 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.MeasureTheory.SetSemiring
 
@@ -63,9 +64,8 @@ instance : Inhabited (AddContent C) :=
     sUnion' := by simp }⟩
 
 instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
-  coe := fun m s ↦ m.toFun s
-  coe_injective' := by
-    intro m m' h
+  coe m s := m.toFun s
+  coe_injective' m m' _ := by
     cases m
     cases m'
     congr
@@ -74,9 +74,6 @@ variable {m m' : AddContent C}
 
 @[ext] protected lemma AddContent.ext (h : ∀ s, m s = m' s) : m = m' :=
   DFunLike.ext _ _ h
-
-protected lemma AddContent.ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s :=
-  DFunLike.ext_iff
 
 @[simp] lemma addContent_empty : m ∅ = 0 := m.empty'
 
@@ -94,7 +91,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   rotate_left
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
-      mem_singleton_iff, Ne, id, forall_eq, true_and_iff]
+      mem_singleton_iff, Ne, id, forall_eq, true_and]
     exact fun _ => h_dis
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
     exact hst

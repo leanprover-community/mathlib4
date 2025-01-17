@@ -6,6 +6,7 @@ Authors: Jon Eugster, Eric Wieser
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristics of algebras
@@ -63,9 +64,38 @@ theorem RingHom.charP {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f
 
 /-- If `R →+* A` is injective, then `R` is of characteristic `p` if and only if `A` is also of
 characteristic `p`. Similar to `RingHom.charZero_iff`. -/
-theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
-    (H : Function.Injective f) (p : ℕ) : CharP R p ↔ CharP A p :=
+protected theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
+    (f : R →+* A) (H : Function.Injective f) (p : ℕ) : CharP R p ↔ CharP A p :=
   ⟨fun _ ↦ charP_of_injective_ringHom H p, fun _ ↦ f.charP H p⟩
+
+/-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+lemma expChar_of_injective_ringHom {R A : Type*}
+    [Semiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
+    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
+  rcases hR with _ | hprime
+  · haveI := charZero_of_injective_ringHom h; exact .zero
+  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+
+/-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
+exponential characteristic `p`. Similar to `RingHom.charZero`. -/
+lemma RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
+  cases ‹ExpChar A p› with
+  | zero => haveI := f.charZero; exact .zero
+  | prime hp => haveI := f.charP H p; exact .prime hp
+
+/-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
+also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+lemma RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+  ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
+
+/-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+lemma expChar_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
+  expChar_of_injective_ringHom h q
 
 /-!
 As an application, a `ℚ`-algebra has characteristic zero.
@@ -81,8 +111,8 @@ variable (R : Type*) [Nontrivial R]
 /-- A nontrivial `ℚ`-algebra has `CharP` equal to zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
-instance `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
-automatically receive an `Algebra ℚ R` instance.
+instance `DivisionRing.toRatAlgebra`. It's probably easier to go the other way: prove `CharZero R`
+and automatically receive an `Algebra ℚ R` instance.
 -/
 theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
   charP_of_injective_algebraMap (algebraMap ℚ R).injective 0
@@ -90,8 +120,8 @@ theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
 /-- A nontrivial `ℚ`-algebra has characteristic zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
-instance `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
-automatically receive an `Algebra ℚ R` instance.
+instance `DivisionRing.toRatAlgebra`. It's probably easier to go the other way: prove `CharZero R`
+and automatically receive an `Algebra ℚ R` instance.
 -/
 theorem algebraRat.charZero [Ring R] [Algebra ℚ R] : CharZero R :=
   @CharP.charP_to_charZero R _ (algebraRat.charP_zero R)
@@ -102,12 +132,15 @@ end QAlgebra
 An algebra over a field has the same characteristic as the field.
 -/
 
+lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
+    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 
 section
 
 variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
 
-theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
+protected theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
 
 theorem Algebra.ringChar_eq : ringChar K = ringChar L := by

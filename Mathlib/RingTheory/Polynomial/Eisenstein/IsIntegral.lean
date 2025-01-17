@@ -53,6 +53,8 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       congr
       congr
       next => skip
+      congr
+      next => skip
       ext
       rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
@@ -135,7 +137,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
   letI := B.finite
   let P := minpoly R B.gen
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
-  have finrank_K_L : FiniteDimensional.finrank K L = B.dim := B.finrank
+  have finrank_K_L : Module.finrank K L = B.dim := B.finrank
   have deg_K_P : (minpoly K B.gen).natDegree = B.dim := B.natDegree_minpoly
   have deg_R_P : P.natDegree = B.dim := by
     rw [← deg_K_P, minpoly.isIntegrallyClosed_eq_field_fractions' K hBint,
@@ -143,7 +145,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
   choose! f hf using
     hei.isWeaklyEisensteinAt.exists_mem_adjoin_mul_eq_pow_natDegree_le (minpoly.aeval R B.gen)
       (minpoly.monic hBint)
-  simp only [(minpoly.monic hBint).natDegree_map, deg_R_P] at hf
+  simp only [P, (minpoly.monic hBint).natDegree_map, deg_R_P] at hf
 
   -- The Eisenstein condition shows that `p` divides `Q.coeff 0`
   -- if `p^n.succ` divides the following multiple of `Q.coeff 0^n.succ`:
@@ -173,7 +175,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
 
   -- Do the computation in `K` so we can work in terms of `z` instead of `r`.
   apply IsFractionRing.injective R K
-  simp only [_root_.map_mul, _root_.map_pow, _root_.map_neg, _root_.map_one]
+  simp only [_root_.map_mul, map_pow, map_neg, map_one]
   -- Both sides are actually norms:
   calc
     _ = norm K (Q.coeff 0 • B.gen ^ n) := ?_
@@ -182,7 +184,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
         (congr_arg (norm K) (eq_sub_of_add_eq ?_))
     _ = _ := ?_
   · simp only [Algebra.smul_def, algebraMap_apply R K L, Algebra.norm_algebraMap, _root_.map_mul,
-      _root_.map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
+      map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map, ← hn]
     ring
   swap
@@ -193,7 +195,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
           B.gen ^ n := ?_
     _ = (Q.coeff 0 • B.gen ^ 0 +
         ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) * B.gen ^ n := by
-      rw [_root_.pow_zero]
+      rw [pow_zero]
     _ = aeval B.gen Q * B.gen ^ n := ?_
     _ = _ := by rw [hQ, Algebra.smul_mul_assoc]
   · have : ∀ i ∈ (range (Q.natDegree + 1)).erase 0,

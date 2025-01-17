@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Patrick Massot, Scott Morrison
+Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
@@ -36,8 +36,8 @@ instance : UnbundledHom @UniformContinuous :=
 
 deriving instance LargeCategory for UniformSpaceCat
 
-instance : ConcreteCategory UniformSpaceCat :=
-  inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
+instance : HasForget UniformSpaceCat :=
+  inferInstanceAs <| HasForget <| Bundled UniformSpace
 
 instance : CoeSort UniformSpaceCat Type* :=
   Bundled.coeSort
@@ -67,8 +67,6 @@ theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ 
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute
--- due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
@@ -128,8 +126,8 @@ instance category : LargeCategory CpltSepUniformSpace :=
   InducedCategory.category toUniformSpace
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
-instance concreteCategory : ConcreteCategory CpltSepUniformSpace :=
-  InducedCategory.concreteCategory toUniformSpace
+instance hasForget : HasForget CpltSepUniformSpace :=
+  InducedCategory.hasForget toUniformSpace
 
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
   InducedCategory.hasForget₂ toUniformSpace
@@ -166,12 +164,12 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   val := Completion.extension f
   property := Completion.uniformContinuous_extension
 
--- Porting note (#10754): added this instance to make things compile
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
--- This was a global instance prior to #13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike in
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.HasForget.instFunLike in
 @[simp]
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=
@@ -191,7 +189,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
     { homEquiv := fun X Y =>
         { toFun := fun f => completionHom X ≫ f
           invFun := fun f => extensionHom f
-          left_inv := fun f => by dsimp; erw [extension_comp_coe]
+          left_inv := fun f => by dsimp; rw [extension_comp_coe]
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel
+Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.HasLimits
@@ -494,8 +494,8 @@ def Fork.IsLimit.homIso {X Y : C} {f g : X ⟶ Y} {t : Fork f g} (ht : IsLimit t
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // h ≫ f = h ≫ g } where
   toFun k := ⟨k ≫ t.ι, by simp only [Category.assoc, t.condition]⟩
   invFun h := (Fork.IsLimit.lift' ht _ h.prop).1
-  left_inv k := Fork.IsLimit.hom_ext ht (Fork.IsLimit.lift' _ _ _).prop
-  right_inv h := Subtype.ext (Fork.IsLimit.lift' ht _ _).prop
+  left_inv _ := Fork.IsLimit.hom_ext ht (Fork.IsLimit.lift' _ _ _).prop
+  right_inv _ := Subtype.ext (Fork.IsLimit.lift' ht _ _).prop
 
 /-- The bijection of `Fork.IsLimit.homIso` is natural in `Z`. -/
 theorem Fork.IsLimit.homIso_natural {X Y : C} {f g : X ⟶ Y} {t : Fork f g} (ht : IsLimit t)
@@ -513,8 +513,8 @@ def Cofork.IsColimit.homIso {X Y : C} {f g : X ⟶ Y} {t : Cofork f g} (ht : IsC
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // f ≫ h = g ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp only [← Category.assoc, t.condition]⟩
   invFun h := (Cofork.IsColimit.desc' ht _ h.prop).1
-  left_inv k := Cofork.IsColimit.hom_ext ht (Cofork.IsColimit.desc' _ _ _).prop
-  right_inv h := Subtype.ext (Cofork.IsColimit.desc' ht _ _).prop
+  left_inv _ := Cofork.IsColimit.hom_ext ht (Cofork.IsColimit.desc' _ _ _).prop
+  right_inv _ := Subtype.ext (Cofork.IsColimit.desc' ht _ _).prop
 
 /-- The bijection of `Cofork.IsColimit.homIso` is natural in `Z`. -/
 theorem Cofork.IsColimit.homIso_natural {X Y : C} {f g : X ⟶ Y} {t : Cofork f g} {Z Z' : C}
@@ -533,7 +533,7 @@ theorem Cofork.IsColimit.homIso_natural {X Y : C} {f g : X ⟶ Y} {t : Cofork f 
 def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) : Cone F where
   pt := t.pt
   π :=
-    { app := fun X => t.π.app X ≫ eqToHom (by aesop)
+    { app := fun X => t.π.app X ≫ eqToHom (by simp)
       naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp [t.condition]}}
 
 /-- This is a helper construction that can be useful when verifying that a category has all
@@ -548,23 +548,23 @@ def Cocone.ofCofork {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.
     Cocone F where
   pt := t.pt
   ι :=
-    { app := fun X => eqToHom (by aesop) ≫ t.ι.app X
+    { app := fun X => eqToHom (by simp) ≫ t.ι.app X
       naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp [t.condition]}}
 
 @[simp]
 theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) (j) :
-    (Cone.ofFork t).π.app j = t.π.app j ≫ eqToHom (by aesop) := rfl
+    (Cone.ofFork t).π.app j = t.π.app j ≫ eqToHom (by simp) := rfl
 
 @[simp]
 theorem Cocone.ofCofork_ι {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.map right))
-    (j) : (Cocone.ofCofork t).ι.app j = eqToHom (by aesop) ≫ t.ι.app j := rfl
+    (j) : (Cocone.ofCofork t).ι.app j = eqToHom (by simp) ≫ t.ι.app j := rfl
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
     `parallelPair (F.map left) (F.map right)` and a cone on `F`, we get a fork on
     `F.map left` and `F.map right`. -/
 def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left) (F.map right) where
   pt := t.pt
-  π := { app := fun X => t.π.app X ≫ eqToHom (by aesop)
+  π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
          naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp}}
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
@@ -573,16 +573,16 @@ def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left)
 def Cofork.ofCocone {F : WalkingParallelPair ⥤ C} (t : Cocone F) :
     Cofork (F.map left) (F.map right) where
   pt := t.pt
-  ι := { app := fun X => eqToHom (by aesop) ≫ t.ι.app X
+  ι := { app := fun X => eqToHom (by simp) ≫ t.ι.app X
          naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp}}
 
 @[simp]
 theorem Fork.ofCone_π {F : WalkingParallelPair ⥤ C} (t : Cone F) (j) :
-    (Fork.ofCone t).π.app j = t.π.app j ≫ eqToHom (by aesop) := rfl
+    (Fork.ofCone t).π.app j = t.π.app j ≫ eqToHom (by simp) := rfl
 
 @[simp]
 theorem Cofork.ofCocone_ι {F : WalkingParallelPair ⥤ C} (t : Cocone F) (j) :
-    (Cofork.ofCocone t).ι.app j = eqToHom (by aesop) ≫ t.ι.app j := rfl
+    (Cofork.ofCocone t).ι.app j = eqToHom (by simp) ≫ t.ι.app j := rfl
 
 @[simp]
 theorem Fork.ι_postcompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
@@ -710,7 +710,7 @@ theorem equalizer.condition : equalizer.ι f g ≫ f = equalizer.ι f g ≫ g :=
 /-- The equalizer built from `equalizer.ι f g` is limiting. -/
 noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
     (equalizer.condition f g)) :=
-  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by aesop))
+  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
 variable {f g}
 
@@ -719,7 +719,6 @@ variable {f g}
 noncomputable abbrev equalizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) : W ⟶ equalizer f g :=
   limit.lift (parallelPair f g) (Fork.ofι k h)
 
--- Porting note (#10618): removed simp since simp can prove this and the reassoc version
 @[reassoc]
 theorem equalizer.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     equalizer.lift k h ≫ equalizer.ι f g = k :=
@@ -767,7 +766,7 @@ def idFork (h : f = g) : Fork f g :=
 
 /-- The identity on `X` is an equalizer of `(f, g)`, if `f = g`. -/
 def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
-  Fork.IsLimit.mk _ (fun s => Fork.ι s) (fun s => Category.comp_id _) fun s m h => by
+  Fork.IsLimit.mk _ (fun s => Fork.ι s) (fun _ => Category.comp_id _) fun s m h => by
     convert h
     exact (Category.comp_id _).symm
 
@@ -850,7 +849,6 @@ noncomputable abbrev coequalizer.cofork : Cofork f g :=
 theorem coequalizer.cofork_π : (coequalizer.cofork f g).π = coequalizer.π f g :=
   rfl
 
--- Porting note (#10618): simp can prove this, simp removed
 theorem coequalizer.cofork_ι_app_one : (coequalizer.cofork f g).ι.app one = coequalizer.π f g :=
   rfl
 
@@ -861,7 +859,7 @@ theorem coequalizer.condition : f ≫ coequalizer.π f g = g ≫ coequalizer.π 
 /-- The cofork built from `coequalizer.π f g` is colimiting. -/
 noncomputable def coequalizerIsCoequalizer :
     IsColimit (Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g)) :=
-  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by aesop))
+  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
 
 variable {f g}
 
@@ -871,7 +869,6 @@ noncomputable abbrev coequalizer.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫
     coequalizer f g ⟶ W :=
   colimit.desc (parallelPair f g) (Cofork.ofπ k h)
 
--- Porting note (#10618): removing simp since simp can prove this and reassoc version
 @[reassoc]
 theorem coequalizer.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     coequalizer.π f g ≫ coequalizer.desc k h = k :=
@@ -925,9 +922,9 @@ variable {f g}
 def idCofork (h : f = g) : Cofork f g :=
   Cofork.ofπ (𝟙 Y) <| h ▸ rfl
 
-/-- The identity on `Y` is a coequalizer of `(f, g)`, where `f = g`.  -/
+/-- The identity on `Y` is a coequalizer of `(f, g)`, where `f = g`. -/
 def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
-  Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun s => Category.id_comp _) fun s m h => by
+  Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun _ => Category.id_comp _) fun s m h => by
     convert h
     exact (Category.id_comp _).symm
 

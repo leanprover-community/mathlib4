@@ -26,10 +26,8 @@ This file contains several standard constructions on vector bundles:
 Vector bundle, direct sum, pullback
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Bundle Set FiberBundle
 
 /-! ### The trivial vector bundle -/
@@ -138,7 +136,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 
 variable {𝕜 F₁ E₁ F₂ E₂}
 
-@[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
+@[simp]
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :
@@ -147,7 +145,7 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
   ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
-  exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) : _)
+  exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) :)
 
 end
 

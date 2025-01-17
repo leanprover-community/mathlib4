@@ -40,6 +40,8 @@ We only directly define a matroid for `Matroid.sigma`. All other versions of sum
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.
 -/
 
+assert_not_exists Field
+
 universe u v
 
 open Set
@@ -85,16 +87,16 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
       fun i ↦ (hI i).subset_basis'_of_subset (preimage_mono (f := Sigma.mk i) hIX)
 
     use univ.sigma Js
-    simp only [mem_maximals_setOf_iff, mem_univ, mk_preimage_sigma, and_imp]
-    refine ⟨⟨fun i ↦ (hJs i).1.indep, ⟨?_, ?_⟩⟩, fun S hS _ hSX h ↦ h.antisymm ?_⟩
+    simp only [maximal_subset_iff', mem_univ, mk_preimage_sigma, le_eq_subset, and_imp]
+    refine ⟨?_, ⟨fun i ↦ (hJs i).1.indep, ?_⟩, fun S hS hSX hJS ↦ ?_⟩
     · rw [← univ_sigma_preimage_mk I]
       exact sigma_mono rfl.subset fun i ↦ (hJs i).2
     · rw [← univ_sigma_preimage_mk X]
       exact sigma_mono rfl.subset fun i ↦ (hJs i).1.subset
     rw [← univ_sigma_preimage_mk S]
     refine sigma_mono rfl.subset fun i ↦ ?_
-    rw [sigma_subset_iff] at h
-    rw [(hJs i).1.eq_of_subset_indep (hS i) (h <| mem_univ i)]
+    rw [sigma_subset_iff] at hJS
+    rw [(hJs i).1.eq_of_subset_indep (hS i) (hJS <| mem_univ i)]
     exact preimage_mono hSX
 
   subset_ground B hB := by
@@ -111,12 +113,12 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
 
 @[simp] lemma sigma_basis_iff {I X} :
     (Matroid.sigma M).Basis I X ↔ ∀ i, (M i).Basis (Sigma.mk i ⁻¹' I) (Sigma.mk i ⁻¹' X) := by
-  simp only [Basis, sigma_indep_iff, mem_maximals_iff, mem_setOf_eq, and_imp, and_assoc,
-    sigma_ground_eq, forall_and, and_congr_right_iff]
+  simp only [Basis, sigma_indep_iff, maximal_subset_iff, and_imp, and_assoc, sigma_ground_eq,
+    forall_and, and_congr_right_iff]
   refine fun hI ↦ ⟨fun ⟨hIX, h, h'⟩ ↦ ⟨fun i ↦ preimage_mono hIX, fun i I₀ hI₀ hI₀X hII₀ ↦ ?_, ?_⟩,
     fun ⟨hIX, h', h''⟩ ↦ ⟨?_, ?_, ?_⟩⟩
   · refine hII₀.antisymm ?_
-    specialize h (y := I ∪ Sigma.mk i '' I₀)
+    specialize h (t := I ∪ Sigma.mk i '' I₀)
     simp only [preimage_union, union_subset_iff, hIX, image_subset_iff, hI₀X, and_self,
       subset_union_left, true_implies] at h
     rw [h, preimage_union, sigma_mk_preimage_image_eq_self]
@@ -184,6 +186,8 @@ lemma Finitary.sum' (h : ∀ i, (M i).Finitary) : (Matroid.sum' M).Finitary := b
 end sum'
 
 section disjointSigma
+
+open scoped Function -- required for scoped `on` notation
 
 variable {α ι : Type*} {M : ι → Matroid α}
 
@@ -275,6 +279,12 @@ def disjointSum (M N : Matroid α) (h : Disjoint M.E N.E) : Matroid α :=
     (M.disjointSum N h).Basis I X ↔ M.Basis (I ∩ M.E) (X ∩ M.E) ∧
       N.Basis (I ∩ N.E) (X ∩ N.E) ∧ I ⊆ X ∧ X ⊆ M.E ∪ N.E := by
   simp [disjointSum, and_assoc]
+
+lemma disjointSum_comm {h} : M.disjointSum N h = N.disjointSum M h.symm := by
+  ext
+  · simp [union_comm]
+  repeat simpa [union_comm] using ⟨fun ⟨m, n, h⟩ ↦ ⟨n, m, M.E.union_comm N.E ▸ h⟩,
+    fun ⟨n, m, h⟩ ↦ ⟨m, n, M.E.union_comm N.E ▸ h⟩⟩
 
 lemma Indep.eq_union_image_of_disjointSum {h I} (hI : (disjointSum M N h).Indep I) :
     ∃ IM IN, M.Indep IM ∧ N.Indep IN ∧ Disjoint IM IN ∧ I = IM ∪ IN := by

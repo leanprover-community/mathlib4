@@ -68,7 +68,7 @@ variable {L : GrothendieckTopology E}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
 -/
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
 
@@ -103,7 +103,6 @@ we actually verify that any pointwise right Kan extension of `F` along `G.op` is
 variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
 variable {A : Type w} [Category.{w'} A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D} [G.IsCocontinuous J K]
-variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 namespace RanIsSheafOfIsCocontinuous
 
@@ -134,9 +133,8 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
     liftAux hF α s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ :=
   (Multifork.IsLimit.fac
     (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩) _ _
-      ⟨W, g, by simpa only [GrothendieckTopology.Cover.sieve,
-          Sieve.functorPullback_apply, functorPullback_mem, Sieve.pullback_apply, ← w]
-          using S.1.downward_closed i.hf h⟩).trans (by
+      ⟨W, g, by simpa only [Sieve.functorPullback_apply, functorPullback_mem,
+        Sieve.pullback_apply, ← w] using S.1.downward_closed i.hf h⟩).trans (by
         dsimp
         simp only [← Category.assoc]
         congr 1
@@ -147,7 +145,7 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
             { g₁ := 𝟙 _
               g₂ := h
               w := by simpa using w.symm }
-        simpa using s.condition r )
+        simpa [r] using s.condition r )
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :
@@ -185,6 +183,7 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   rw [Category.assoc, eq]
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
+include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
     (h : ∀ (i : S.Arrow), f ≫ R.map i.f.op = g ≫ R.map i.f.op) : f = g := by
@@ -209,6 +208,7 @@ def isLimitMultifork : IsLimit (S.multifork R) :=
 end RanIsSheafOfIsCocontinuous
 
 variable (K)
+variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 /-- If `G` is cocontinuous, then `G.op.ran` pushes sheaves to sheaves.
 
@@ -230,8 +230,8 @@ variable (A J)
 def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
   obj ℱ := ⟨G.op.ran.obj ℱ.val, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
   map f := ⟨G.op.ran.map f.val⟩
-  map_id ℱ := Sheaf.Hom.ext _ _ <| (ran G.op).map_id ℱ.val
-  map_comp f g := Sheaf.Hom.ext _ _ <| (ran G.op).map_comp f.val g.val
+  map_id ℱ := Sheaf.Hom.ext <| (ran G.op).map_id ℱ.val
+  map_comp f g := Sheaf.Hom.ext <| (ran G.op).map_comp f.val g.val
 
 /-- `G.sheafPushforwardCocontinuous A J K : Sheaf J A ⥤ Sheaf K A` is induced
 by the right Kan extension functor `G.op.ran` on presheaves. -/
@@ -255,7 +255,7 @@ left adjoint to `G.sheafPushforwardCocontinuous A J K`. This adjunction may repl
 
 namespace Functor
 
-variable [G.IsCocontinuous J K] [G.IsContinuous J K]
+variable [G.IsContinuous J K]
 
 /--
 Given a functor between sites that is continuous and cocontinuous,
@@ -303,10 +303,9 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf 
           Adjunction.homEquiv_unit])
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
-  [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
-def pushforwardContinuousSheafificationCompatibility :
+def pushforwardContinuousSheafificationCompatibility [G.IsContinuous J K] :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq

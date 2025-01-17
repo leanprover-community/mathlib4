@@ -23,10 +23,13 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
-structure HopfAlgebraCat extends Bundled Ring.{v} where
-  [instHopfAlgebra : HopfAlgebra R α]
+structure HopfAlgebraCat where
+  /-- The underlying type. -/
+  carrier : Type v
+  [instRing : Ring carrier]
+  [instHopfAlgebra : HopfAlgebra R carrier]
 
-attribute [instance] HopfAlgebraCat.instHopfAlgebra
+attribute [instance] HopfAlgebraCat.instHopfAlgebra HopfAlgebraCat.instRing
 
 variable {R}
 
@@ -35,7 +38,7 @@ namespace HopfAlgebraCat
 open HopfAlgebra
 
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
-  ⟨(·.α)⟩
+  ⟨(·.carrier)⟩
 
 variable (R)
 
@@ -43,7 +46,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
-  instHopfAlgebra := (inferInstance : HopfAlgebra R X)
+  carrier := X
 
 variable {R}
 
@@ -58,7 +61,7 @@ lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
 /-- A type alias for `BialgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : HopfAlgebraCat.{v} R) :=
+structure Hom (V W : HopfAlgebraCat.{v} R) where
   /-- The underlying `BialgHom`. -/
   toBialgHom : V →ₐc[R] W
 
@@ -75,7 +78,7 @@ instance category : Category (HopfAlgebraCat.{v} R) where
 @[ext]
 lemma hom_ext {X Y : HopfAlgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `BialgHom` as a morphism in `HopfAlgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
@@ -91,17 +94,17 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
+instance hasForget : HasForget.{v} (HopfAlgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toBialgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
   forget₂ :=
     { obj := fun X => BialgebraCat.of R X
-      map := fun {X Y} f => BialgebraCat.ofHom f.toBialgHom }
+      map := fun {_ _} f => BialgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgebraCat R) :
@@ -129,8 +132,8 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 def toHopfAlgebraCatIso (e : X ≃ₐc[R] Y) : HopfAlgebraCat.of R X ≅ HopfAlgebraCat.of R Y where
   hom := HopfAlgebraCat.ofHom e
   inv := HopfAlgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem toHopfAlgebraCatIso_refl :
     toHopfAlgebraCatIso (BialgEquiv.refl R X) = .refl _ :=

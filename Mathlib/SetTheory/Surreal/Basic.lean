@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
@@ -341,7 +341,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   zero_add := by rintro ⟨a⟩; exact Quotient.sound (zero_add_equiv a)
   add_zero := by rintro ⟨a⟩; exact Quotient.sound (add_zero_equiv a)
   neg := Neg.neg
-  add_left_neg := by rintro ⟨a⟩; exact Quotient.sound (add_left_neg_equiv a)
+  neg_add_cancel := by rintro ⟨a⟩; exact Quotient.sound (neg_add_cancel_equiv a)
   add_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound add_comm_equiv
   le := (· ≤ ·)
   lt := (· < ·)
@@ -378,6 +378,7 @@ def toGame : Surreal →+o Game where
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
 
+@[simp]
 theorem zero_toGame : toGame 0 = 0 :=
   rfl
 

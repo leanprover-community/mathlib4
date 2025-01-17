@@ -148,7 +148,7 @@ instance triangleCategory : Category (Triangle C) where
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
-  TriangleMorphism.ext _ _ h₁ h₂ h₃
+  TriangleMorphism.ext h₁ h₂ h₃
 
 @[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
@@ -249,7 +249,7 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by simp) (by simp)
 
 section
 
@@ -260,9 +260,9 @@ variable {J : Type*} (T : J → Triangle C)
 /-- The product of a family of triangles. -/
 @[simps!]
 def productTriangle : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+  Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
+    (Limits.Pi.map (fun j => (T j).mor₂))
+    (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
 /-- A projection from the product of a family of triangles. -/
 @[simps]

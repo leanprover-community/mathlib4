@@ -13,7 +13,7 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C*A⁻¹*B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the file `CateogryTheory.Preadditive.Biproducts`,
+results in this direction can be found in the file `CategoryTheory.Preadditive.Biproducts`,
 especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
 Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
@@ -27,8 +27,8 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
    block triangular matrix.
  * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
  * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
-  positive definite, then `[A B; Bᴴ D]` is postive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
-  postive semidefinite.
+  positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
+  positive semidefinite.
 
 -/
 
@@ -53,8 +53,8 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
       fromBlocks 1 0 (C * ⅟ A) 1 * fromBlocks A 0 0 (D - C * ⅟ A * B) *
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
-    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
-    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel]
+    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_cancel_left,
+    Matrix.invOf_mul_cancel_right, Matrix.mul_assoc, add_sub_cancel]
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
 Schur complement. -/
@@ -78,7 +78,7 @@ def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : 
     [Invertible A] [Invertible D] : Invertible (fromBlocks A B 0 D) :=
   invertibleOfLeftInverse _ (fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D)) <| by
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_right_neg,
+      Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, add_neg_cancel,
       fromBlocks_one]
 
 /-- A lower-block-triangular matrix is invertible if its diagonal is. -/
@@ -88,7 +88,7 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       (fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A))
         (⅟ D)) <| by -- a symmetry argument is more work than just copying the proof
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_left_neg,
+      Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, neg_add_cancel,
       fromBlocks_one]
 
 theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
@@ -224,7 +224,7 @@ end Triangular
 
 section Block
 
-/-! #### General 2×2 block matrices-/
+/-! #### General 2×2 block matrices -/
 
 
 /-- A block matrix is invertible if the bottom right corner and the corresponding schur complement
@@ -443,7 +443,7 @@ end CommRing
 
 section StarOrderedRing
 
-variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [StarRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
@@ -491,6 +491,8 @@ theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 
+variable [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+
 theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
@@ -498,7 +500,7 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
   constructor
   · refine fun h => ⟨h.1, fun x => ?_⟩
     have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
-    rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_self, dotProduct_zero,
+    rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
   · refine fun h => ⟨h.1, fun x => ?_⟩

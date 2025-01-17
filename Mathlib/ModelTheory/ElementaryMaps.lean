@@ -10,16 +10,18 @@ import Mathlib.ModelTheory.Substructures
 # Elementary Maps Between First-Order Structures
 
 ## Main Definitions
-* A `FirstOrder.Language.ElementaryEmbedding` is an embedding that commutes with the
+
+- A `FirstOrder.Language.ElementaryEmbedding` is an embedding that commutes with the
   realizations of formulas.
-* The `FirstOrder.Language.elementaryDiagram` of a structure is the set of all sentences with
+- The `FirstOrder.Language.elementaryDiagram` of a structure is the set of all sentences with
   parameters that the structure satisfies.
-* `FirstOrder.Language.ElementaryEmbedding.ofModelsElementaryDiagram` is the canonical
-elementary embedding of any structure into a model of its elementary diagram.
+- `FirstOrder.Language.ElementaryEmbedding.ofModelsElementaryDiagram` is the canonical
+  elementary embedding of any structure into a model of its elementary diagram.
 
 ## Main Results
-* The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
-gives a simple criterion for an embedding to be elementary.
+
+- The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
+  gives a simple criterion for an embedding to be elementary.
  -/
 
 
@@ -63,29 +65,26 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     cases g
     simp only [ElementaryEmbedding.mk.injEq]
     ext x
-    exact Function.funext_iff.1 h x
-
-instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
+    exact funext_iff.1 h x
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
-    rw [← BoundedFormula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
+    rw [← BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
     have h :=
       f.map_formula' ((φ.restrictFreeVar id).toFormula.relabel (Fintype.equivFin _))
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
     simp only [Formula.realize_relabel, BoundedFormula.realize_toFormula, iff_eq_eq] at h
-    rw [← Function.comp.assoc _ _ (Fintype.equivFin _).symm,
-      Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
-      _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp.assoc, Sum.elim_comp_inl,
-      Function.comp.assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp.assoc] at h
+    rw [← Function.comp_assoc _ _ (Fintype.equivFin _).symm,
+      Function.comp_assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
+      _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp_assoc, Sum.elim_comp_inl,
+      Function.comp_assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp_assoc] at h
     refine h.trans ?_
-    erw [Function.comp.assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
+    erw [Function.comp_assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
-      BoundedFormula.realize_restrictFreeVar Set.Subset.rfl]
+      BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl]
 
 @[simp]
 theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
@@ -139,14 +138,14 @@ theorem map_constants (φ : M ↪ₑ[L] N) (c : L.Constants) : φ c = c :=
 def toEmbedding (f : M ↪ₑ[L] N) : M ↪[L] N where
   toFun := f
   inj' := f.injective
-  map_fun' {_} f x := by aesop
-  map_rel' {_} R x := by aesop
+  map_fun' {_} f x := by simp
+  map_rel' {_} R x := by simp
 
 /-- An elementary embedding is also a first-order homomorphism. -/
 def toHom (f : M ↪ₑ[L] N) : M →[L] N where
   toFun := f
-  map_fun' {_} f x := by aesop
-  map_rel' {_} R x := by aesop
+  map_fun' {_} f x := by simp
+  map_rel' {_} R x := by simp
 
 @[simp]
 theorem toEmbedding_toHom (f : M ↪ₑ[L] N) : f.toEmbedding.toHom = f.toHom :=
@@ -166,9 +165,6 @@ theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
 @[ext]
 theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 variable (L) (M)
 
@@ -225,7 +221,7 @@ def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
           ?_)
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
-        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp,
+        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp_def,
         Term.realize_constants]
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
         LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff]
@@ -249,9 +245,9 @@ theorem isElementary_of_exists (f : M ↪[L] N)
   refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
-    simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
+    simp [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
   · intros
-    simp only [BoundedFormula.Realize, ← Sum.comp_elim, realize_term]
+    simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
     erw [map_rel f]
   · intro _ _ _ ih1 ih2 _
     simp [ih1, ih2]
@@ -285,7 +281,7 @@ namespace Equiv
 /-- A first-order equivalence is also an elementary embedding. -/
 def toElementaryEmbedding (f : M ≃[L] N) : M ↪ₑ[L] N where
   toFun := f
-  map_formula' n φ x := by aesop
+  map_formula' n φ x := by simp
 
 @[simp]
 theorem toElementaryEmbedding_toEmbedding (f : M ≃[L] N) :
@@ -302,7 +298,7 @@ end Equiv
 @[simp]
 theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
     t.realize ((↑) ∘ v) = (↑(t.realize v) : M) :=
-  S.subtype.realize_term t
+  HomClass.realize_term S.subtype
 
 end Language
 

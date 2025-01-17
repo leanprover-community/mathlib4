@@ -29,9 +29,6 @@ variable {D : Type w₁} [Category.{max v u} D]
 variable {E : Type w₂} [Category.{max v u} E]
 variable (F : D ⥤ E)
 
--- Porting note: Removed this and made whatever necessary noncomputable
--- noncomputable section
-
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
@@ -123,7 +120,7 @@ theorem toSheafify_comp_sheafifyCompIso_inv :
 section
 
 -- We will sheafify `D`-valued presheaves in this section.
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable [HasForget.{max v u} D] [PreservesLimits (forget D)]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 
 @[simp]

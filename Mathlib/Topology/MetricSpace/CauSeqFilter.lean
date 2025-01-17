@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
@@ -13,13 +14,9 @@ is complete in terms of `Cauchy` filter if and only if it is complete in terms
 of `CauSeq` Cauchy sequences.
 -/
 
-
 universe u v
 
-open Set Filter
-
-open scoped Classical
-open Topology
+open Set Filter Topology
 
 variable {β : Type v}
 

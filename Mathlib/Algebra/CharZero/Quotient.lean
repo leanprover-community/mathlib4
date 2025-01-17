@@ -3,7 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Lemmas about quotients in characteristic zero
@@ -22,7 +26,7 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
   simp_rw [AddSubgroup.mem_zmultiples_iff, div_eq_mul_inv, ← smul_mul_assoc, eq_sub_iff_add_eq]
   have hz' : (z : R) ≠ 0 := Int.cast_ne_zero.mpr hz
   conv_rhs => simp (config := { singlePass := true }) only [← (mul_right_injective₀ hz').eq_iff]
-  simp_rw [← zsmul_eq_mul, smul_add, ← mul_smul_comm, zsmul_eq_mul (z : R)⁻¹, mul_inv_cancel hz',
+  simp_rw [← zsmul_eq_mul, smul_add, ← mul_smul_comm, zsmul_eq_mul (z : R)⁻¹, mul_inv_cancel₀ hz',
     mul_one, ← natCast_zsmul, smul_smul, ← add_smul]
   constructor
   · rintro ⟨k, h⟩
@@ -49,12 +53,12 @@ namespace QuotientAddGroup
 
 theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {z : ℤ} (hz : z ≠ 0) :
     z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + ((k : ℕ) • (p / z) : R) := by
-  induction ψ using Quotient.inductionOn'
-  induction θ using Quotient.inductionOn'
+  induction ψ using Quotient.inductionOn
+  induction θ using Quotient.inductionOn
   -- Porting note: Introduced Zp notation to shorten lines
   let Zp := AddSubgroup.zmultiples p
-  have : (Quotient.mk'' : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
-  simp only [this]
+  have : (Quotient.mk _ : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
+  simp only [Zp, this]
   simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
   exact AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div hz

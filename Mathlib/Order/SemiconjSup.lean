@@ -1,12 +1,11 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.RelIso.Group
 
@@ -31,6 +30,8 @@ homeomorphisms of the circle, so in order to apply results from this file one ha
 homeomorphisms to the real line first.
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 variable {α β γ : Type*}
 
@@ -94,7 +95,7 @@ theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃
   refine fun y => (H _).unique ?_
   have := (f₁ g).leftOrdContinuous (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
-  simpa [(· ∘ ·)] using this
+  simpa [comp_def] using this
 
 /-- Consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order
 isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconjugates each `f₁ g'` to `f₂ g'`.
@@ -115,8 +116,5 @@ theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f�
     (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
   semiconj_of_isLUB f₁ f₂ (fun x => isLUB_csSup (range_nonempty _) (hbdd x)) _
-
--- Guard against import creep
-assert_not_exists Finset
 
 end Function

@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou, Scott Morrison, Adam Topaz
+Authors: Joël Riou, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -31,11 +31,11 @@ wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
 
-universe w v u t r
+universe w w' v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C]
 
@@ -43,7 +43,7 @@ section Products
 
 section ProductEquiv
 
-variable [ConcreteCategory.{max w v} C] {J : Type w} (F : J → C)
+variable [HasForget.{max w v} C] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
 /-- The equivalence `(forget C).obj (∏ᶜ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
@@ -66,7 +66,7 @@ end ProductEquiv
 section ProductExt
 
 variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
-  [ConcreteCategory.{max w r} D] (F : C ⥤ D)
+  [HasForget.{max w r} D] (F : C ⥤ D)
   [PreservesLimit (Discrete.functor f) F]
   [HasProduct fun j => F.obj (f j)]
   [PreservesLimitsOfShape WalkingCospan (forget D)]
@@ -89,7 +89,7 @@ end Products
 
 section Terminal
 
-variable [ConcreteCategory.{w} C]
+variable [HasForget.{w} C]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `(forget C).obj X` is a
 singleton. -/
@@ -124,7 +124,7 @@ end Terminal
 
 section Initial
 
-variable [ConcreteCategory.{w} C]
+variable [HasForget.{w} C]
 
 /-- If `forget C` preserves initials and `X` is initial, then `(forget C).obj X` is empty. -/
 lemma empty_of_initial_of_preserves [PreservesColimit (Functor.empty.{0} C) (forget C)] (X : C)
@@ -149,7 +149,7 @@ end Initial
 
 section BinaryProducts
 
-variable [ConcreteCategory.{w} C] (X₁ X₂ : C) [HasBinaryProduct X₁ X₂]
+variable [HasForget.{w} C] (X₁ X₂ : C) [HasBinaryProduct X₁ X₂]
   [PreservesLimit (pair X₁ X₂) (forget C)]
 
 /-- The equivalence `(forget C).obj (X₁ ⨯ X₂) ≃ ((forget C).obj X₁) × ((forget C).obj X₂)`
@@ -183,7 +183,7 @@ end BinaryProducts
 
 section Pullbacks
 
-variable [ConcreteCategory.{v} C] {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
+variable [HasForget.{v} C] {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
     [HasPullback f₁ f₂] [PreservesLimit (cospan f₁ f₂) (forget C)]
 
 /-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`,
@@ -220,7 +220,7 @@ end Pullbacks
 
 section WidePullback
 
-variable [ConcreteCategory.{max w v} C]
+variable [HasForget.{max w v} C]
 
 open WidePullback
 
@@ -247,9 +247,9 @@ end WidePullback
 
 section Multiequalizer
 
-variable [ConcreteCategory.{max w v} C]
+variable [HasForget.{max w w' v} C]
 
-theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
+theorem multiequalizer_ext {I : MulticospanIndex.{w, w'} C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ↑(multiequalizer I))
     (h : ∀ t : I.L, Multiequalizer.ι I t x = Multiequalizer.ι I t y) : x = y := by
   apply Concrete.limit_ext
@@ -259,11 +259,11 @@ theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
     simp [h]
 
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
-def multiequalizerEquivAux (I : MulticospanIndex C) :
+def multiequalizerEquivAux (I : MulticospanIndex.{w, w'} C) :
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun i => x.1 (WalkingMulticospan.left _), fun i => by
+    ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
       have a := x.2 (WalkingMulticospan.Hom.fst i)
       have b := x.2 (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
@@ -271,7 +271,7 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
   invFun x :=
     { val := fun j =>
         match j with
-        | WalkingMulticospan.left a => x.1 _
+        | WalkingMulticospan.left _ => x.1 _
         | WalkingMulticospan.right b => I.fst b (x.1 _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)
@@ -292,17 +292,17 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
 
 /-- The equivalence between the noncomputable multiequalizer and
 the concrete multiequalizer. -/
-noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
+noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w, w'} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
     (multiequalizer I : C) ≃
       { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } :=
   letI h1 := limit.isLimit I.multicospan
   letI h2 := isLimitOfPreserves (forget C) h1
-  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
-  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
+  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{max w w', v} _)
+  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux I)
 
 @[simp]
-theorem multiequalizerEquiv_apply (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
+theorem multiequalizerEquiv_apply (I : MulticospanIndex.{w, w'} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x : ↑(multiequalizer I)) (i : I.L) :
     ((Concrete.multiequalizerEquiv I) x : ∀ i : I.L, I.left i) i = Multiequalizer.ι I i x :=
   rfl
@@ -315,7 +315,7 @@ open WidePushout
 
 open WidePushoutShape
 
-variable [ConcreteCategory.{v} C]
+variable [HasForget.{v} C]
 
 theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j : α, B ⟶ X j)
     [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
@@ -340,7 +340,7 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
 end WidePushout
 
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
+theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [HasForget C]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   ext x

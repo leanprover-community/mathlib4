@@ -6,6 +6,7 @@ Authors: Johan Commelin, Eric Rodriguez
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Wedderburn's Little Theorem
@@ -47,7 +48,7 @@ private def InductionHyp : Prop :=
 
 namespace InductionHyp
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 variable {D}
 
@@ -95,7 +96,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
       refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
       obtain ⟨r, rfl⟩ := hx y
       obtain ⟨s, rfl⟩ := hx z
-      rw [smul_mul_smul, smul_mul_smul, mul_comm]
+      rw [smul_mul_smul_comm, smul_mul_smul_comm, mul_comm]
   rw [Nat.cast_sum]
   apply Finset.dvd_sum
   rintro ⟨x⟩ hx
@@ -127,7 +128,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [← aux, ← aux, ← eval_mul]
   refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
-  rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
+  rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
@@ -148,7 +149,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  exact Set.card_lt_card hR
+  convert Set.card_lt_card hR
 
 end LittleWedderburn
 

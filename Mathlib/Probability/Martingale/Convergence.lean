@@ -48,7 +48,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
+variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence
@@ -117,7 +117,7 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
   push_neg
   intro k
   induction' k with k ih
-  · simp only [Nat.zero_eq, zero_le, exists_const]
+  · simp only [zero_le, exists_const]
   · obtain ⟨N, hN⟩ := ih
     obtain ⟨N₁, hN₁, hN₁'⟩ := h₁ N
     obtain ⟨N₂, hN₂, hN₂'⟩ := h₂ N₁
@@ -163,7 +163,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           exact add_le_add (hbdd _) le_rfl
       refine ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
-        ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top.ne (measure_ne_top _ _)⟩,
+        ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top _ _)⟩,
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
@@ -173,8 +173,8 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           exact norm_nonneg _
       · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
-  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
+  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or]
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞ := by
@@ -191,7 +191,7 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) :
-    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
+    ∀ᵐ ω ∂μ.trim (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   letI := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]
@@ -269,12 +269,12 @@ $(f_n)_n$ is a martingale by the tower property for conditional expectations. Fu
 $(f_n)_n$ is uniformly integrable in the probability sense. Indeed, as a single function is
 uniformly integrable in the measure theory sense, for all $\epsilon > 0$, there exists some
 $\delta > 0$ such that for all measurable set $A$ with $\mu(A) < δ$, we have
-$\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficently large $\lambda$, by the Markov
+$\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficiently large $\lambda$, by the Markov
 inequality, we have for all $n$,
 $$
   \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb|g| < \delta,
 $$
-we have for sufficently large $\lambda$, for all $n$,
+we have for sufficiently large $\lambda$, for all $n$,
 $$
   \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le
     \mathbb|g|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
@@ -379,19 +379,19 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     filter_upwards [(martingale_condexp g ℱ μ).ae_eq_condexp_limitProcess hunif n] with x hx _
     rw [hx]
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
-    (fun s _ _ => hlimint.integrableOn) (fun s hs => ?_) hgmeas.aeStronglyMeasurable'
+    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aeStronglyMeasurable'
     stronglyMeasurable_limitProcess.aeStronglyMeasurable'
-  apply @MeasurableSpace.induction_on_inter _ _ _ (⨆ n, ℱ n)
-    (MeasurableSpace.measurableSpace_iSup_eq ℱ) _ _ _ _ _ _ hs
-  · rintro s ⟨n, hs⟩ t ⟨m, ht⟩ -
-    by_cases hnm : n ≤ m
-    · exact ⟨m, (ℱ.mono hnm _ hs).inter ht⟩
-    · exact ⟨n, hs.inter (ℱ.mono (not_le.1 hnm).le _ ht)⟩
-  · simp only [measure_empty, ENNReal.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
-      forall_true_left]
-  · rintro t ⟨n, ht⟩ -
-    exact this n _ ht
-  · rintro t htmeas ht -
+  have hpi : IsPiSystem {s | ∃ n, MeasurableSet[ℱ n] s} := by
+    rw [Set.setOf_exists]
+    exact isPiSystem_iUnion_of_monotone _ (fun n ↦ (ℱ n).isPiSystem_measurableSet) fun _ _ ↦ ℱ.mono
+  induction s, hs
+    using MeasurableSpace.induction_on_inter (MeasurableSpace.measurableSpace_iSup_eq ℱ) hpi with
+  | empty =>
+    simp only [measure_empty, Measure.restrict_empty, integral_zero_measure]
+  | basic s hs =>
+    rcases hs with ⟨n, hn⟩
+    exact this n _ hn
+  | compl t htmeas ht =>
     have hgeq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
     have hheq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
@@ -399,9 +399,9 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
       setIntegral_trim hle hgmeas htmeas, ←
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
-      integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
-      this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
-  · rintro f hf hfmeas heq -
+      integral_trim hle stronglyMeasurable_limitProcess, ← setIntegral_univ,
+      this 0 _ MeasurableSet.univ, setIntegral_univ, ht (measure_lt_top _ _)]
+  | iUnion f hf hfmeas heq =>
     rw [integral_iUnion (fun n => hle _ (hfmeas n)) hf hg.integrableOn,
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)

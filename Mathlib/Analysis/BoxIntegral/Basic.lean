@@ -50,8 +50,7 @@ non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 integral
 -/
 
-
-open scoped Classical Topology NNReal Filter Uniformity BoxIntegral
+open scoped Topology NNReal Filter Uniformity BoxIntegral
 
 open Set Finset Function Filter Metric BoxIntegral.IntegrationParams
 
@@ -101,6 +100,7 @@ theorem integralSum_inf_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
     integralSum f vol (π.infPrepartition π') = integralSum f vol π :=
   integralSum_biUnion_partition f vol π _ fun _J hJ => h.restrict (Prepartition.le_of_mem _ hJ)
 
+open Classical in
 theorem integralSum_fiberwise {α} (g : Box ι → α) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) :
     (∑ y ∈ π.boxes.image g, integralSum f vol (π.filter (g · = y))) = integralSum f vol π :=
@@ -159,6 +159,7 @@ predicate. -/
 def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   ∃ y, HasIntegral I l f vol y
 
+open Classical in
 /-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.
 Returns zero on non-integrable functions. -/
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
@@ -183,7 +184,7 @@ theorem hasIntegral_iff : HasIntegral I l f vol y ↔
     simp [@forall_swap ℝ≥0 (TaggedPrepartition I)]
 
 /-- Quite often it is more natural to prove an estimate of the form `a * ε`, not `ε` in the RHS of
-`BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma.  -/
+`BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma. -/
 theorem HasIntegral.of_mul (a : ℝ)
     (h : ∀ ε : ℝ, 0 < ε → ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧ ∀ c π,
       l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ a * ε) :
@@ -260,8 +261,9 @@ theorem integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
   ⟨fun h => h.of_neg, fun h => h.neg⟩
 
 @[simp]
-theorem integral_neg : integral I l (-f) vol = -integral I l f vol :=
-  if h : Integrable I l f vol then h.hasIntegral.neg.integral_eq
+theorem integral_neg : integral I l (-f) vol = -integral I l f vol := by
+  classical
+  exact if h : Integrable I l f vol then h.hasIntegral.neg.integral_eq
   else by rw [integral, integral, dif_neg h, dif_neg (mt Integrable.of_neg h), neg_zero]
 
 theorem HasIntegral.sub (h : HasIntegral I l f vol y) (h' : HasIntegral I l g vol y') :
@@ -298,6 +300,7 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
 theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
+  classical
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
   simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
   exact h.1.add (ihs h.2)
@@ -388,7 +391,7 @@ additional distortion estimates if `BoxIntegral.IntegrationParams.bDistortion l 
 corresponding integral sum is `ε`-close to the integral.
 
 If `BoxIntegral.IntegrationParams.bRiemann = true`, then `r c x` does not depend on `x`. If
-`ε ≤ 0`, then we use `r c x = 1`.  -/
+`ε ≤ 0`, then we use `r c x = 1`. -/
 def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
   else fun _ _ => ⟨1, Set.mem_Ioi.2 zero_lt_one⟩
@@ -444,7 +447,7 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
 
 /-- If `f` is integrable on `I` along `l`, then for two sufficiently fine tagged prepartitions
 (in the sense of the filter `BoxIntegral.IntegrationParams.toFilter l I`) such that they cover
-the same part of `I`, the integral sums of `f` over `π₁` and `π₂` are very close to each other.  -/
+the same part of `I`, the integral sums of `f` over `π₁` and `π₂` are very close to each other. -/
 theorem tendsto_integralSum_toFilter_prod_self_inf_iUnion_eq_uniformity (h : Integrable I l f vol) :
     Tendsto (fun π : TaggedPrepartition I × TaggedPrepartition I =>
       (integralSum f vol π.1, integralSum f vol π.2))
@@ -509,8 +512,8 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
   -- Let us prove that the distance is less than or equal to `ε + δ` for all positive `δ`.
   refine le_of_forall_pos_le_add fun δ δ0 => ?_
   -- First we choose some constants.
-  set δ' : ℝ := δ / (π₀.boxes.card + 1)
-  have H0 : 0 < (π₀.boxes.card + 1 : ℝ) := Nat.cast_add_one_pos _
+  set δ' : ℝ := δ / (#π₀.boxes + 1)
+  have H0 : 0 < (#π₀.boxes + 1 : ℝ) := Nat.cast_add_one_pos _
   have δ'0 : 0 < δ' := div_pos δ0 H0
   set C := max π₀.distortion π₀.compl.distortion
   /- Next we choose a tagged partition of each `J ∈ π₀` such that the integral sum of `f` over this
@@ -661,7 +664,8 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   let t₁ (J : Box ι) : ℝⁿ := (π₁.infPrepartition π₂.toPrepartition).tag J
   let t₂ (J : Box ι) : ℝⁿ := (π₂.infPrepartition π₁.toPrepartition).tag J
   let B := (π₁.toPrepartition ⊓ π₂.toPrepartition).boxes
-  let B' := B.filter (fun J ↦ J.toSet ⊆ U)
+  classical
+  let B' := {J ∈ B | J.toSet ⊆ U}
   have hB' : B' ⊆ B := B.filter_subset (fun J ↦ J.toSet ⊆ U)
   have μJ_ne_top : ∀ J ∈ B, μ J ≠ ⊤ :=
     fun J hJ ↦ lt_top_iff_ne_top.1 <| lt_of_le_of_lt (μ.mono (Prepartition.le_of_mem' _ J hJ)) μI
@@ -741,7 +745,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
   · obtain ⟨C, hC⟩ := (NormedSpace.isBounded_iff_subset_smul_closedBall ℝ).1
                         (I.isCompact_Icc.image_of_continuousOn hc).isBounded
     use ‖C‖, fun x hx ↦ by
-      simpa only [smul_closedUnitBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
+      simpa only [smul_unitClosedBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
   · refine eventually_of_mem ?_ (fun x hx ↦ hc.continuousWithinAt hx)
     rw [mem_ae_iff, μ.restrict_apply] <;> simp [MeasurableSet.compl_iff.2 I.measurableSet_Icc]
 
@@ -775,8 +779,9 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   choose! δ₂ Hδ₂ using H₂
   have ε0' := half_pos ε0; have H0 : 0 < (2 : ℝ) ^ Fintype.card ι := pow_pos zero_lt_two _
   rcases hs.exists_pos_forall_sum_le (div_pos ε0' H0) with ⟨εs, hεs0, hεs⟩
-  simp only [le_div_iff' H0, mul_sum] at hεs
+  simp only [le_div_iff₀' H0, mul_sum] at hεs
   rcases exists_pos_mul_lt ε0' (B I) with ⟨ε', ε'0, hεI⟩
+  classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
   refine ⟨δ, fun c => l.rCond_of_bRiemann_eq_false hl, ?_⟩
   simp only [Set.mem_iUnion, mem_inter_iff, mem_setOf_eq]
@@ -790,7 +795,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     /- For the boxes such that `π.tag J ∈ s`, we use the fact that at most `2 ^ #ι` boxes have the
         same tag. -/
     specialize hlH hsne
-    have : ∀ J ∈ π.boxes.filter fun J => π.tag J ∈ s,
+    have : ∀ J ∈ {J ∈ π.boxes | π.tag J ∈ s},
         dist (vol J (f <| π.tag J)) (g J) ≤ εs (π.tag J) := fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
       refine Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) ?_
@@ -810,9 +815,9 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     In this case the estimate is straightforward. -/
   -- Porting note: avoided strange elaboration issues by rewriting using `calc`
   calc
-    dist (∑ J ∈ π.boxes.filter (¬tag π · ∈ s), vol J (f (tag π J)))
-      (∑ J ∈ π.boxes.filter (¬tag π · ∈ s), g J)
-      ≤ ∑ J ∈ π.boxes.filter (¬tag π · ∈ s), ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
+    dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
+      (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)
+      ≤ ∑ J ∈ π.boxes with ¬tag π J ∈ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
@@ -867,11 +872,11 @@ less than or equal to `ε * B J`.
 
 Then `f` is McShane integrable on `I` with integral `g I`. -/
 theorem HasIntegral.mcShane_of_forall_isLittleO (B : ι →ᵇᵃ[I] ℝ) (hB0 : ∀ J, 0 ≤ B J)
-    (g : ι →ᵇᵃ[I] F) (H : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I, ∀ ε > (0 : ℝ), ∃ δ > 0, ∀ J ≤ I,
+    (g : ι →ᵇᵃ[I] F) (H : ∀ (_ : ℝ≥0), ∀ x ∈ Box.Icc I, ∀ ε > (0 : ℝ), ∃ δ > 0, ∀ J ≤ I,
       Box.Icc J ⊆ Metric.closedBall x δ → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I McShane f vol (g I) :=
   (HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (l := McShane) rfl B hB0 g ∅ countable_empty
-      (fun ⟨_x, hx⟩ => hx.elim) fun c x hx => hx.2.elim) <| by
+      (fun ⟨_x, hx⟩ => hx.elim) fun _ _ hx => hx.2.elim) <| by
     simpa only [McShane, Bool.coe_sort_false, false_imp_iff, true_imp_iff, diff_empty] using H
 
 end BoxIntegral

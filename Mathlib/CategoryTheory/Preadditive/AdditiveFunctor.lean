@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Scott Morrison
+Authors: Adam Topaz, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -52,7 +52,6 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 
--- Porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -68,6 +67,8 @@ instance : Additive (𝟭 C) where
 
 instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
     Additive (F ⋙ G) where
+
+instance {J : Type*} [Category J] (j : J) : ((evaluation J C).obj j).Additive where
 
 @[simp]
 theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
@@ -120,6 +121,7 @@ lemma additive_of_comp_faithful
     rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
 
 open ZeroObject Limits in
+include F in
 lemma hasZeroObject_of_additive [HasZeroObject C] :
     HasZeroObject D where
   zero := ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
@@ -154,9 +156,9 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
   preserves :=
     { preserves :=
       { preserves := fun hb =>
-          isBilimitOfTotal _ (by
+          ⟨isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
-            erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])} }
+            erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }
 
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
@@ -169,7 +171,7 @@ lemma additive_of_preserves_binary_products
     [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
     [F.PreservesZeroMorphisms] : F.Additive := by
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
-  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  have := preservesBinaryBiproducts_of_preservesBinaryProducts F
   exact Functor.additive_of_preservesBinaryBiproducts F
 
 end
@@ -191,7 +193,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive
@@ -251,9 +253,9 @@ variable [Preadditive D] [HasZeroObject C] [HasZeroObject D] [HasBinaryBiproduct
 
 section
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryCoproducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
 /-- Turn a left exact functor into an additive functor. -/
 def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=

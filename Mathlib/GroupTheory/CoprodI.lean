@@ -132,7 +132,7 @@ variable {N : Type*} [Monoid N]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
         MonoidHom.comp_apply, h]; rfl
 
@@ -151,11 +151,11 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
             FreeMonoid.lift _ (FreeMonoid.of _ * FreeMonoid.of _) =
               FreeMonoid.lift _ (FreeMonoid.of _)
           simp only [MonoidHom.map_mul, FreeMonoid.lift_eval_of]
-  invFun f i := f.comp of
+  invFun f _ := f.comp of
   left_inv := by
     intro fi
     ext i x
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
@@ -236,14 +236,14 @@ theorem inv_def (x : CoprodI G) :
   rfl
 
 instance : Group (CoprodI G) :=
-  { mul_left_inv := by
+  { inv_mul_cancel := by
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
       | h_one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
       | h_of m ih =>
         change of _⁻¹ * of _ = 1
-        rw [← of.map_mul, mul_left_inv, of.map_one]
+        rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | h_mul x y ihx ihy =>
         rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
@@ -314,7 +314,6 @@ instance (i : ι) : Inhabited (Pair M i) :=
   ⟨⟨1, empty, by tauto⟩⟩
 
 variable {M}
-variable [∀ i, DecidableEq (M i)]
 
 /-- Construct a new `Word` without any reduction. The underlying list of
 `cons m w _ _` is `⟨_, m⟩::w`  -/
@@ -327,6 +326,18 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       · exact h1
       · exact w.ne_one l hl
     chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
+
+@[simp]
+theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
+    fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
+
+@[simp]
+theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
+    prod (cons m w h2 h1) = of m * prod w := by
+  simp [cons, prod, List.map_cons, List.prod_cons]
+
+section
+variable [∀ i, DecidableEq (M i)]
 
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, except if `head`
 is `1 : M i` then we have to just return `Word` since we need the result to be reduced. -/
@@ -353,11 +364,11 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     rw [← he] at h'
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
-      simpa [cons, rcons, dif_neg hm, dif_neg hm', true_and_iff, eq_self_iff_true, Subtype.mk_eq_mk,
+      simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
-    exact Word.ext _ _ h
+    exact Word.ext h
 
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
@@ -371,14 +382,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     · split_ifs <;> simp_all
   · split_ifs <;> simp_all [Ne.symm hij]
 
-@[simp]
-theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
-    fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
-
-@[simp]
-theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
-    prod (cons m w h2 h1) = of m * prod w := by
-  simp [cons, prod, List.map_cons, List.prod_cons]
+end
 
 /-- Induct on a word by adding letters one at a time without reduction,
 effectively inducting on the underlying `List`. -/
@@ -410,7 +414,7 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
     consRecOn (cons m w h1 h2) h_empty h_cons = h_cons i m w h1 h2
       (consRecOn w h_empty h_cons) := rfl
 
-variable [DecidableEq ι]
+variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
@@ -526,12 +530,12 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head _ hnil, Option.some.injEq, ne_eq]
+        simp only [List.head?_eq_head hnil, Option.some.injEq, ne_eq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
         · rintro (⟨_, h, rfl⟩ | hm')
-          · simp [Sigma.ext_iff] at h
+          · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
           · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
@@ -605,7 +609,7 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 
 instance : DecidableEq (Word M) :=
-  Function.Injective.decidableEq Word.ext
+  Function.Injective.decidableEq fun _ _ => Word.ext
 
 instance : DecidableEq (CoprodI M) :=
   Equiv.decidableEq Word.equiv
@@ -617,7 +621,7 @@ variable (M)
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note(#5171): commented out
+--@[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
@@ -637,7 +641,7 @@ def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
 theorem toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
   induction w
   · rintro ⟨rfl⟩
-  · apply List.append_ne_nil_of_ne_nil_left
+  · apply List.append_ne_nil_of_left_ne_nil
     assumption
 
 /-- The first letter of a `NeWord` -/
@@ -658,7 +662,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.head?_append (by assumption)
+  · exact List.mem_head?_append_of_mem_head? (by assumption)
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
@@ -666,7 +670,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.getLast?_append (by assumption)
+  · exact List.mem_getLast?_append_of_mem_getLast? (by assumption)
 
 /-- The `Word M` represented by a `NeWord M i j` -/
 def toWord {i j} (w : NeWord M i j) : Word M where
@@ -750,7 +754,7 @@ theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M 
     (replaceHead x hnotone w).head = x := by
   induction w
   · rfl
-  · simp [*]
+  · simp [*, replaceHead]
 
 /-- One can multiply an element from the left to a non-empty reduced word if it does not cancel
 with the first element in the word. -/
@@ -762,15 +766,16 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
     (mulHead w x hnotone).head = x * w.head := by
   induction w
   · rfl
-  · simp [*]
+  · simp [*, mulHead]
 
 @[simp]
 theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
-  induction' w with _ _ _ _ _ _ _ _ _ _ w_ih_w₁ w_ih_w₂
-  · simp [mulHead, replaceHead]
-  · specialize w_ih_w₁ _ hnotone
+  induction w with
+  | singleton => simp [mulHead, replaceHead]
+  | append _ _ _ w_ih_w₁ w_ih_w₂ =>
+    specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
     simp? [replaceHead, ← mul_assoc] at * says
       simp only [replaceHead, head, append_prod, ← mul_assoc] at *
@@ -807,7 +812,8 @@ open Pointwise
 
 open Cardinal
 
-variable [hnontriv : Nontrivial ι]
+open scoped Function -- required for scoped `on` notation
+
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
@@ -819,8 +825,9 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 variable {α : Type*} [MulAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
+variable (hXdisj : Pairwise (Disjoint on X))
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
+include hpp
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
@@ -832,6 +839,8 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
       _ ⊆ lift f w₁.prod • X _ := set_smul_subset_set_smul_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
+include hXnonempty hXdisj
+
 theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead : k ≠ i)
     (hlast : k ≠ j) : lift f w.prod ≠ 1 := by
   intro heq1
@@ -839,12 +848,15 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead :
   obtain ⟨x, hx⟩ := hXnonempty k
   exact (hXdisj hhead).le_bot ⟨hx, this hx⟩
 
-theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift f w.prod ≠ 1 := by
+variable [Nontrivial ι]
+
+theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) :
+    lift f w.prod ≠ 1 := by
   obtain ⟨k, hk⟩ := exists_ne i
   exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hk hk
 
-theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ #(H i))
-    (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
+theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
+    (hcard : 3 ≤ #(H i)) (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
   obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
     rw [← div_inv_eq_mul]
@@ -858,7 +870,9 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard :
   apply hw'
   simp [w', heq1]
 
-theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
+include hcard in
+theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
+    lift f w.prod ≠ 1 := by
   classical
     cases' hcard with hcard hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
@@ -880,21 +894,16 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f
         simpa using heq
       · change i ≠ k at hh
         change j ≠ k at hl
-        obtain ⟨h, hn1, -⟩ := Cardinal.three_le hcard 1 1
-        let w' : NeWord H k k :=
-          NeWord.append (NeWord.append (NeWord.singleton h hn1) hh.symm w) hl
-            (NeWord.singleton h⁻¹ (inv_ne_one.mpr hn1))
-        have hw' : lift f w'.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
-        intro heq1
-        apply hw'
-        simp [w', heq1]
+        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
-theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Word.empty := by
+include hcard in
+theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
+    w = Word.empty := by
   by_contra hnotempty
   obtain ⟨i, j, w, rfl⟩ := NeWord.of_word w hnotempty
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 
+include hcard in
 /-- The **Ping-Pong-Lemma**.
 
 Given a group action of `G` on `X` so that the `H i` acts in a specific way on disjoint subsets
@@ -951,6 +960,8 @@ section PingPongLemma
 
 open Pointwise Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
 
@@ -958,12 +969,13 @@ variable {G : Type u_1} [Group G] (a : ι → G)
 variable {α : Type*} [MulAction G α]
 variable (X Y : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
+variable (hXdisj : Pairwise (Disjoint on X))
+variable (hYdisj : Pairwise (Disjoint on Y))
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
+include hXnonempty hXdisj hYdisj hXYdisj hX hY in
 /-- The Ping-Pong-Lemma.
 
 Given a group action of `G` on `X` so that the generators of the free groups act in specific
@@ -993,7 +1005,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   apply lift_injective_of_ping_pong f _ X'
   · show ∀ i, (X' i).Nonempty
     exact fun i => Set.Nonempty.inl (hXnonempty i)
-  · show Pairwise fun i j => Disjoint (X' i) (X' j)
+  · show Pairwise (Disjoint on X')
     intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right

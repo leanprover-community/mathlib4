@@ -14,14 +14,14 @@ open System IO
 
 structure HashMemo where
   rootHash : UInt64
-  depsMap  : Lean.HashMap FilePath (Array FilePath) := {}
-  cache    : Lean.HashMap FilePath (Option UInt64) := {}
+  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
+  cache    : Std.HashMap FilePath (Option UInt64) := {}
   hashMap  : HashMap := {}
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
   if hashMap.contains path then hashMap else
-  match (hashMemo.depsMap.find? path, hashMemo.hashMap.find? path) with
+  match (hashMemo.depsMap[path]?, hashMemo.hashMap[path]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
@@ -73,9 +73,9 @@ def getRootHash : CacheM UInt64 := do
       pure id
     else
       pure ((← mathlibDepPath) / ·)
-  let hashs ← rootFiles.mapM fun path =>
+  let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
-  return hash (hash Lean.githash :: hashs)
+  return hash (hash Lean.githash :: hashes)
 
 /--
 Computes the hash of a file, which mixes:
@@ -85,12 +85,15 @@ Computes the hash of a file, which mixes:
 * The hashes of the imported files that are part of `Mathlib`
 -/
 partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
-  match (← get).cache.find? filePath with
+  match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
-      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
+      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
+      if fixedPath.extension != "lean" then
+        IO.println s!"Note that `lake exe cache get ...` expects file names \
+          (e.g. `Mathlib/Init.lean`), not module names (e.g. `Mathlib.Init`)."
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Analysis.BoundedVariation
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Constant speed
@@ -40,7 +41,7 @@ arc-length, parameterization
 
 open scoped NNReal ENNReal
 
-open Set MeasureTheory Classical
+open Set
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
@@ -232,9 +233,7 @@ theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
     edist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
   dsimp only [naturalParameterization]
   haveI : Nonempty α := ⟨a⟩
-  obtain ⟨cs, hc⟩ :=
-    @Function.invFunOn_pos _ _ _ s (variationOnFromTo f s a) (variationOnFromTo f s a b)
-      ⟨b, bs, rfl⟩
+  obtain ⟨cs, hc⟩ := Function.invFunOn_pos (b := variationOnFromTo f s a b) ⟨b, bs, rfl⟩
   rw [variationOnFromTo.eq_left_iff hf as cs bs] at hc
   apply variationOnFromTo.edist_zero_of_eq_zero hf cs bs hc
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.Card
 
 /-!
@@ -63,7 +63,7 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 
 -- Syntactic equality
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 
@@ -130,7 +130,7 @@ namespace Multiset
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     omega
-  exact Nat.le_of_pred_lt (han.trans_lt $ by simpa using hsm hn)
+  exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
 end Multiset
 
@@ -188,8 +188,7 @@ theorem Multiset.map_univ_coeEmbedding (m : Multiset α) :
   ext ⟨x, i⟩
   simp only [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
     Prod.mk.inj_iff, exists_true_left, Multiset.exists_coe, Multiset.coe_mk, Fin.val_mk,
-    exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, iff_self_iff,
-    true_and_iff]
+    exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, true_and]
 
 @[simp]
 theorem Multiset.map_univ_coe (m : Multiset α) :
@@ -218,8 +217,7 @@ theorem Multiset.card_coe (m : Multiset α) : Fintype.card m = Multiset.card m :
 @[to_additive]
 theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by
   congr
-  -- Porting note: `simp` fails with "maximum recursion depth has been reached"
-  erw [map_univ_coe]
+  simp
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :

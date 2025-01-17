@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Filtered.Basic
@@ -15,7 +15,7 @@ of sets in the limit is, in fact, a topological basis.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 
@@ -29,14 +29,13 @@ namespace TopCat
 
 section CofilteredLimit
 
-variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
-  (hC : IsLimit C)
+variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
-theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
+theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Set (F.obj j)))
     (hT : ∀ j, IsTopologicalBasis (T j)) (univ : ∀ i : J, Set.univ ∈ T i)
     (inter : ∀ (i) (U1 U2 : Set (F.obj i)), U1 ∈ T i → U2 ∈ T i → U1 ∩ U2 ∈ T i)
     (compat : ∀ (i j : J) (f : i ⟶ j) (V : Set (F.obj j)) (_hV : V ∈ T j), F.map f ⁻¹' V ∈ T i) :
@@ -47,12 +46,12 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
   let D := limitConeInfi F
   -- The isomorphism between the cone point of `C` and the cone point of `D`.
   let E : C.pt ≅ D.pt := hC.conePointUniqueUpToIso (limitConeInfiIsLimit _)
-  have hE : Inducing E.hom := (TopCat.homeoOfIso E).inducing
+  have hE : IsInducing E.hom := (TopCat.homeoOfIso E).isInducing
   -- Reduce to the assertion of the theorem with `D` instead of `C`.
   suffices
     IsTopologicalBasis
       {U : Set D.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V} by
-    convert this.inducing hE
+    convert this.isInducing hE
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩
@@ -105,7 +104,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
-      erw [Set.preimage_iInter]
+      rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
       -- Porting note: needed more hand holding here
@@ -114,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      erw [← coe_comp, D.w] -- now `erw` after #13170
+      rw [← coe_comp, D.w]
       rfl
 
 end CofilteredLimit

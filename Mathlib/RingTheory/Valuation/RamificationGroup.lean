@@ -45,6 +45,6 @@ instance decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
 the decomposition subgroup to the group of automorphisms of the residue field of `A`. -/
 def inertiaSubgroup (A : ValuationSubring L) : Subgroup (A.decompositionSubgroup K) :=
   MonoidHom.ker <|
-    MulSemiringAction.toRingAut (A.decompositionSubgroup K) (LocalRing.ResidueField A)
+    MulSemiringAction.toRingAut (A.decompositionSubgroup K) (IsLocalRing.ResidueField A)
 
 end ValuationSubring

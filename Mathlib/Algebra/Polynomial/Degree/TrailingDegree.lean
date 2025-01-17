@@ -3,7 +3,7 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Data.ENat.Basic
 
 /-!
@@ -121,7 +121,7 @@ theorem natTrailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : natTrailingDegre
   constructor
   · rintro h
     by_contra hp
-    obtain ⟨n, hpn, hn⟩ := by simpa using min_mem_image_coe $ support_nonempty.2 hp
+    obtain ⟨n, hpn, hn⟩ := by simpa using min_mem_image_coe <| support_nonempty.2 hp
     obtain rfl := (trailingDegree_eq_iff_natTrailingDegree_eq hp).1 hn.symm
     exact hpn h
   · rintro rfl
@@ -138,7 +138,7 @@ lemma trailingDegree_eq_zero : trailingDegree p = 0 ↔ coeff p 0 ≠ 0 :=
   simp [natTrailingDegree, or_comm]
 
 lemma natTrailingDegree_ne_zero : natTrailingDegree p ≠ 0 ↔ p ≠ 0 ∧ coeff p 0 = 0 :=
-  natTrailingDegree_eq_zero.not.trans $ by rw [not_or, not_ne_iff]
+  natTrailingDegree_eq_zero.not.trans <| by rw [not_or, not_ne_iff]
 
 lemma trailingDegree_ne_zero : trailingDegree p ≠ 0 ↔ coeff p 0 = 0 :=
   trailingDegree_eq_zero.not_left
@@ -227,7 +227,7 @@ theorem coeff_eq_zero_of_lt_natTrailingDegree {p : R[X]} {n : ℕ} (h : n < p.na
 theorem coeff_natTrailingDegree_pred_eq_zero {p : R[X]} {hp : (0 : ℕ∞) < natTrailingDegree p} :
     p.coeff (p.natTrailingDegree - 1) = 0 :=
   coeff_eq_zero_of_lt_natTrailingDegree <|
-    Nat.sub_lt ((WithTop.zero_lt_coe (natTrailingDegree p)).mp hp) Nat.one_pos
+    Nat.sub_lt (WithTop.coe_pos.mp hp) Nat.one_pos
 
 theorem le_trailingDegree_X_pow (n : ℕ) : (n : ℕ∞) ≤ trailingDegree (X ^ n : R[X]) := by
   simpa only [C_1, one_mul] using le_trailingDegree_C_mul_X_pow n (1 : R)

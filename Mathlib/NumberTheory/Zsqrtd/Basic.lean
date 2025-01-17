@@ -31,7 +31,7 @@ structure Zsqrtd (d : ℤ) where
   im : ℤ
   deriving DecidableEq
 
-prefix:100 "ℤ√" => Zsqrtd
+@[inherit_doc] prefix:100 "ℤ√" => Zsqrtd
 
 namespace Zsqrtd
 
@@ -139,7 +139,7 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
-    add_left_neg := ?_
+    neg_add_cancel := ?_
     add_comm := ?_ } <;>
   intros <;>
   ext <;>
@@ -217,20 +217,20 @@ theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
   rfl
 
 instance : StarRing (ℤ√d) where
-  star_involutive x := Zsqrtd.ext _ _ rfl (neg_neg _)
+  star_involutive _ := Zsqrtd.ext rfl (neg_neg _)
   star_mul a b := by ext <;> simp <;> ring
-  star_add a b := Zsqrtd.ext _ _ rfl (neg_add _ _)
+  star_add _ _ := Zsqrtd.ext rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
 instance nontrivial : Nontrivial (ℤ√d) :=
-  ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
+  ⟨⟨0, 1, Zsqrtd.ext_iff.not.mpr (by simp)⟩⟩
 
 @[simp]
 theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
@@ -238,7 +238,7 @@ theorem natCast_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 
 @[simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).im = 0 :=
   rfl
 
 theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
@@ -330,7 +330,7 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
     IsCoprime b.re b.im := by
   apply isCoprime_of_dvd
   · rintro ⟨hre, him⟩
-    obtain rfl : b = 0 := Zsqrtd.ext b 0 hre him
+    obtain rfl : b = 0 := Zsqrtd.ext hre him
     rw [zero_dvd_iff] at hdvd
     simp [hdvd, zero_im, zero_re, not_isCoprime_zero_zero] at hcoprime
   · rintro z hz - hzdvdu hzdvdv
@@ -476,13 +476,13 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 
 theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
   add_nonneg (mul_self_nonneg _)
@@ -521,7 +521,7 @@ theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z
     rw [norm_def, sub_eq_add_neg, mul_assoc] at h
     have left := mul_self_nonneg z.re
     have right := neg_nonneg.mpr (mul_nonpos_of_nonpos_of_nonneg hd.le (mul_self_nonneg z.im))
-    obtain ⟨ha, hb⟩ := (add_eq_zero_iff' left right).mp h
+    obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg left right).mp h
     ext <;> apply eq_zero_of_mul_self_eq_zero
     · exact ha
     · rw [neg_eq_zero, mul_eq_zero] at hb
@@ -558,7 +558,7 @@ instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
 
-instance decidableLE : @DecidableRel (ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
+instance decidableLE : DecidableRel (α := ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
 
 open Int in
 theorem nonneg_cases : ∀ {a : ℤ√d}, Nonneg a → ∃ x y : ℕ, a = ⟨x, y⟩ ∨ a = ⟨x, -y⟩ ∨ a = ⟨-x, y⟩
@@ -654,7 +654,7 @@ instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt := (· < ·)
-  lt_iff_le_not_le a b := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
+  lt_iff_le_not_le _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
@@ -805,12 +805,12 @@ theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fu
 open Int in
 theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
   | ⟨0, 0⟩, _, _ => rfl
-  | ⟨-[x+1], -[y+1]⟩, xy, _ => False.elim xy
-  | ⟨(x + 1 : Nat), (y + 1 : Nat)⟩, _, yx => False.elim yx
-  | ⟨-[x+1], 0⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ (by decide))
-  | ⟨(x + 1 : Nat), 0⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
-  | ⟨0, -[y+1]⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ d_pos)
-  | ⟨0, (y + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
+  | ⟨-[_+1], -[_+1]⟩, xy, _ => False.elim xy
+  | ⟨(_ + 1 : Nat), (_ + 1 : Nat)⟩, _, yx => False.elim yx
+  | ⟨-[_+1], 0⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ (by decide))
+  | ⟨(_ + 1 : Nat), 0⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
+  | ⟨0, -[_+1]⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ d_pos)
+  | ⟨0, (_ + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
   | ⟨(x + 1 : Nat), -[y+1]⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
     let t := le_antisymm yx xy
     rw [one_mul] at t
@@ -883,7 +883,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr ?_, fun h => by rw [h, norm_zero]⟩
+  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d
@@ -893,8 +893,8 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   · push_neg at h
     suffices a.re * a.re = 0 by
       rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
-      simpa only [true_and_iff, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
-        mul_zero, mul_eq_zero, h.ne, false_or_iff, or_self_iff] using ha
+      simpa only [true_and, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
+        mul_zero, mul_eq_zero, h.ne, false_or, or_self_iff] using ha
     apply _root_.le_antisymm _ (mul_self_nonneg _)
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
@@ -927,12 +927,9 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
         simp only [mul_re, Int.cast_add, Int.cast_mul, mul_im, this, r.prop]
         ring }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
-  left_inv r := by
-    ext
-    simp
+  left_inv r := by simp
   right_inv f := by
-    -- Porting note: was `ext`
-    refine hom_ext _ _ ?_
+    ext
     simp
 
 /-- `lift r` is injective if `d` is non-square, and R has characteristic zero (that is, the map from

@@ -13,12 +13,11 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
+Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
--- TODO
--- assert_not_exists Ring
+assert_not_exists Ring
 
 open Finset Nat
 
@@ -66,59 +65,36 @@ lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0) : range n = Icc 0 (n - 
 theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
   Ico_zero_eq_range.symm
 
-@[simp]
-theorem card_Icc : (Icc a b).card = b + 1 - a :=
-  List.length_range' _ _ _
+@[simp] lemma card_Icc : #(Icc a b) = b + 1 - a := List.length_range' ..
+@[simp] lemma card_Ico : #(Ico a b) = b - a := List.length_range' ..
+@[simp] lemma card_Ioc : #(Ioc a b) = b - a := List.length_range' ..
+@[simp] lemma card_Ioo : #(Ioo a b) = b - a - 1 := List.length_range' ..
 
 @[simp]
-theorem card_Ico : (Ico a b).card = b - a :=
-  List.length_range' _ _ _
+theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
+  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> omega
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = b - a :=
-  List.length_range' _ _ _
+lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
-  List.length_range' _ _ _
+theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-@[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 :=
-  (card_Icc _ _).trans $ by rw [← Int.natCast_inj, sup_eq_max, inf_eq_min, Int.ofNat_sub] <;> omega
-
-@[simp]
-lemma card_Iic : (Iic b).card = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
-
-@[simp]
-theorem card_Iio : (Iio b).card = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
-
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [Fintype.card_ofFinset, card_Icc]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ico]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ioc]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [Fintype.card_ofFinset, card_Ioo]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
   rw [Fintype.card_ofFinset, card_Iic]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 
 -- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
@@ -188,19 +164,19 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
 
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
-  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm, @and_comm (a ≠ x),
-    lt_iff_le_and_ne]
+  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm,
+    and_comm (a := a ≠ x), lt_iff_le_and_ne]
 
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction' n with n ih
-  · simp only [zero_add, Nat.zero_eq, Ico_zero_eq_range]
+  · simp only [zero_add, Ico_zero_eq_range]
     rintro k hk l hl (hkl : k % a = l % a)
     simp only [Finset.mem_range, Finset.mem_coe] at hk hl
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
   rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
     Ico_succ_right_eq_insert_Ico (by omega)]
   rintro k hk l hl (hkl : k % a = l % a)
-  have ha : 0 < a := Nat.pos_iff_ne_zero.2 $ by rintro rfl; simp at hk
+  have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
   simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl
   rcases hk with ⟨hkn, rfl | hk⟩ <;> rcases hl with ⟨hln, rfl | hl⟩
   · rfl
@@ -275,9 +251,10 @@ end Finset
 
 section Induction
 
-variable {P : ℕ → Prop} (h : ∀ n, P (n + 1) → P n)
+variable {P : ℕ → Prop}
 
-theorem Nat.decreasing_induction_of_not_bddAbove (hP : ¬BddAbove { x | P x }) (n : ℕ) : P n :=
+theorem Nat.decreasing_induction_of_not_bddAbove (h : ∀ n, P (n + 1) → P n)
+    (hP : ¬BddAbove { x | P x }) (n : ℕ) : P n :=
   let ⟨_, hm, hl⟩ := not_bddAbove_iff.1 hP n
   decreasingInduction (fun _ _ => h _) hm hl.le
 
@@ -294,7 +271,8 @@ lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀
     specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
     all_goals omega
 
-theorem Nat.decreasing_induction_of_infinite (hP : { x | P x }.Infinite) (n : ℕ) : P n :=
+theorem Nat.decreasing_induction_of_infinite
+    (h : ∀ n, P (n + 1) → P n) (hP : { x | P x }.Infinite) (n : ℕ) : P n :=
   Nat.decreasing_induction_of_not_bddAbove h (mt BddAbove.finite hP) n
 
 theorem Nat.cauchy_induction' (seed : ℕ) (h : ∀ n, P (n + 1) → P n) (hs : P seed)
@@ -305,7 +283,7 @@ theorem Nat.cauchy_induction' (seed : ℕ) (h : ∀ n, P (n + 1) → P n) (hs : 
   obtain ⟨y, hl, hy⟩ := hi m (le_of_not_lt fun hl => hl.ne <| hm seed hs hl.le) hP
   exact hl.ne (hm y hy hl.le)
 
-theorem Nat.cauchy_induction (seed : ℕ) (hs : P seed) (f : ℕ → ℕ)
+theorem Nat.cauchy_induction (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed) (f : ℕ → ℕ)
     (hf : ∀ x, seed ≤ x → P x → x < f x ∧ P (f x)) (n : ℕ) : P n :=
   seed.cauchy_induction' h hs (fun x hl hx => ⟨f x, hf x hl hx⟩) n
 
@@ -316,7 +294,7 @@ theorem Nat.cauchy_induction_mul (h : ∀ (n : ℕ), P (n + 1) → P n) (k seed 
   convert (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
   rw [one_mul]
 
-theorem Nat.cauchy_induction_two_mul (seed : ℕ) (hs : P seed.succ)
+theorem Nat.cauchy_induction_two_mul (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (2 * x)) (n : ℕ) : P n :=
   Nat.cauchy_induction_mul h 2 seed Nat.one_lt_two hs hm n
 
