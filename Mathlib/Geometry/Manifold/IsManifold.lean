@@ -603,6 +603,26 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   · refine I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm ?_)
     exact (mapsTo_preimage _ _).mono_left inter_subset_left
 
+-- FIXME: does this generalise to other groupoids? The argument is not specific
+-- to C^n functions, but uses something about the groupoid's property that is not easy to abstract.
+/-- Any change of coordinates with empty source belongs to `contDiffGroupoid`. -/
+lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+    (hf : f.source = ∅) : f ∈ contDiffGroupoid n I := by
+  constructor
+  · intro x ⟨hx, _⟩
+    rw [mem_preimage] at hx
+    simp_all only [mem_empty_iff_false]
+  · intro x ⟨hx, _⟩
+    have : f.target = ∅ := by simp [← f.image_source_eq_target, hf]
+    simp_all [hx]
+
+include I in
+/-- Any change of coordinates with empty source belongs to `continuousGroupoid`. -/
+lemma ContinuousGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+    (hf : f.source = ∅) : f ∈ continuousGroupoid H := by
+  rw [← contDiffGroupoid_zero_eq (I := I)]
+  exact ContDiffGroupoid.mem_of_source_eq_empty f hf
+
 /-- An identity partial homeomorphism belongs to the `C^n` groupoid. -/
 theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
@@ -806,19 +826,6 @@ section DisjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
-
--- TODO: does this generalise to other groupoids? The argument is not *very* specific
--- to C^n functions, but uses something about the groupoid's property that is not abstract.
-/-- Any change of coordinates with empty source belongs to `contDiffGroupoid`. -/
-lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
-    (hf : f.source = ∅) : f ∈ contDiffGroupoid n I := by
-  constructor
-  · intro x ⟨hx, _⟩
-    rw [mem_preimage] at hx
-    simp_all only [mem_empty_iff_false]
-  · intro x ⟨hx, _⟩
-    have : f.target = ∅ := by simp [← f.image_source_eq_target, hf]
-    simp_all [hx]
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
