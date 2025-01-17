@@ -200,8 +200,6 @@ lemma abs_convexMGF_add_sub_convexMGF_le
   refine (norm_integral_le_integral_norm _).trans ?_
   simp only [norm_mul, Complex.norm_eq_abs, Complex.abs_exp, mul_re, ofReal_re, ofReal_im, mul_zero,
     sub_zero, _root_.sq_abs]
-  have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
-  swap; · rw [← sub_ne_zero]; simp [ht]
   refine integral_mono_of_nonneg (ae_of_all _ fun ω ↦ ?_) ?_ (ae_of_all _ fun ω ↦ ?_)
   · positivity
   · refine Integrable.const_mul ?_ _
