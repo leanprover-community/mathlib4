@@ -16,8 +16,8 @@ In this file, we defined the height of a prime ideal and the height of an ideal.
 * `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We defined it as the length of
 the maximum chain of prime ideals whose maximal element is $\mathfrak{p}$ minus 1.
 
-* `Ideal.height` : The height of an ideal. We defined it as the infimum of the primeHeight of the
-minimal prime ideals containing I.
+* `Ideal.height` : The height of an ideal. We defined it as the infimum of the `primeHeight` of the
+minimal prime ideals of I.
 
 -/
 
@@ -47,7 +47,7 @@ class Ideal.FiniteHeight : Prop where
   eq_top_or_height_ne_top : I = ⊤ ∨ I.height ≠ ⊤
 
 lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
-  Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
+    Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
   constructor
   · intro h
     cases h.eq_top_or_height_ne_top with
@@ -96,6 +96,7 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
   · exact I.primeHeight_ne_top.lt_top
   · exact h
 
+@[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp only [height, minimalPrimes_top]
   rw [iInf₂_eq_top]; intro i hi; exact False.elim hi
