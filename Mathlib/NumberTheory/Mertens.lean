@@ -222,6 +222,29 @@ theorem Nat.Primes.prime (p : Nat.Primes) : Nat.Prime p := p.2
 
 theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
   if ¬ Nat.Prime n then Λ n / n else 0 := by
+  have hassum_p (p : Primes) :
+      HasSum (fun y => if y = 0 then 0 else Real.log p / p^(y+1)) (Real.log p / (p * (p-1))) := by
+    have hp : (p : ℝ) ≠ 0 := by
+      exact_mod_cast p.2.ne_zero
+    have hp' : (p : ℝ)⁻¹ ≠ 0 := by
+      exact inv_ne_zero hp
+    rw [← hasSum_nat_add_iff' 1]
+    simp only [AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, ↓reduceIte, range_one,
+      sum_singleton, sub_zero, div_eq_mul_inv, ]
+    rw [hasSum_mul_left_iff (Real.log_pos (by exact_mod_cast p.2.one_lt)).ne.symm, ]
+    simp_rw [← inv_pow, pow_succ]
+    rw [show (p * (p - 1 : ℝ))⁻¹ = (1-(p:ℝ)⁻¹)⁻¹ * (p : ℝ)⁻¹ * (p : ℝ)⁻¹ from ?rw]
+    case rw =>
+      rw [← mul_inv, sub_mul]
+      simp only [mul_inv_rev, one_mul, isUnit_iff_ne_zero, ne_eq, hp,
+        not_false_eq_true, IsUnit.inv_mul_cancel]
+    rw [hasSum_mul_right_iff hp', hasSum_mul_right_iff hp']
+    apply hasSum_geometric_of_lt_one (r := (p:ℝ)⁻¹) (by positivity)
+    apply inv_lt_one_of_one_lt₀
+    exact_mod_cast p.2.one_lt
+
+
+
   set f := fun (n:{k : ℕ | IsPrimePow k}) ↦ if ¬ Nat.Prime n then Λ n / n else 0
   let e := Nat.Primes.prodNatEquiv
   rw [← Equiv.summable_iff e]
@@ -233,9 +256,17 @@ theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
   rw [this, summable_prod_of_nonneg]
   · refine ⟨?_, ?_⟩
     · intro p
-      simp only [e, f]
+      apply (hassum_p p).summable
+    simp_rw [fun p : Primes ↦ (hassum_p p).tsum_eq]
+    simp [Primes]
+    -- need Nat not Primes...
+    -- -- why do I need to give f here...
+    -- apply Summable.comp_injective (i := (fun p : Primes ↦ (p : ℕ)))
+    --   (f := fun (n: ℕ) => Real.log n / (n * (n - 1:ℝ)) )
 
-      sorry
+    apply summable_of_isBigO (g := fun p : Primes ↦ (p:ℝ) ^ (-3/2:ℝ))
+    · rw [Nat.Primes.summable_rpow]
+      norm_num
 
     sorry
   · intro p
