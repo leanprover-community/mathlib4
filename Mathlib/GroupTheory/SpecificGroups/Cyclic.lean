@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 import Mathlib.GroupTheory.Exponent
@@ -862,3 +863,11 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
+
+lemma DihedralGroup.not_isCyclic {n : ℕ} (h : n ≠ 1) :
+    ¬IsCyclic (DihedralGroup n) := fun h' =>
+  match n with
+  | 0 => not_commutative_zero h'.commutative
+  | 1 => h rfl
+  | 2 => by simpa [exponent, card] using h'.exponent_eq_card
+  | _ + 3 => not_commutative_of_gt_two (Nat.lt_of_sub_eq_succ rfl) h'.commutative

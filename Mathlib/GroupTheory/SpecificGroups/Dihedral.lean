@@ -3,10 +3,10 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
+import Mathlib.Data.Finite.Sum
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.Data.Finite.Sum
 
 /-!
 # Dihedral Groups
@@ -207,6 +207,20 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact orderOf_r_one.symm
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
+
+lemma not_commutative_of_gt_two {n : ℕ} (h : n > 2) :
+    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y := by
+  rintro ⟨h'⟩
+  specialize h' (r 1) (sr 0)
+  rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero, one_add_one_eq_two,
+    ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
+  exact Nat.not_le_of_gt h <| Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
+
+lemma not_commutative_zero :
+    ¬Std.Commutative fun (x y : DihedralGroup 0) => x * y := by
+  rintro ⟨h'⟩
+  specialize h' (r 1) (sr 0)
+  simp at h'
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/
