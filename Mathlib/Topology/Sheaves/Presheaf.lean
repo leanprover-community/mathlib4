@@ -127,8 +127,6 @@ abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
--- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
--- `@[simp]` is removed
 theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
     x |_ V |_ U = x |_ U := by
@@ -136,8 +134,6 @@ theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategor
   rw [← comp_apply, ← Functor.map_comp]
   rfl
 
--- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
--- `@[simp]` is removed
 theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
