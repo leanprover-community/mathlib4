@@ -21,8 +21,9 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 (co)simplicial object `X`, where `n` is a natural number.
 
 The notation `X _[m]ₙ` denotes the `m`-th term of an `n`-truncated (co)simplicial
-object `X`. The proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`.
-
+object `X`. The truncation proof `p : m ≤ n` can also be provided using the syntax
+`X _[m, p]ₙ`. This notation is available with
+`open CategoryTheory.SimplicialObject.Truncated`.
 -/
 
 open Opposite
@@ -263,7 +264,7 @@ macro_rules
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
-open SimplexCategory.Truncated.Meta (print) in
+open SimplexCategory.Truncated.Meta (subscript) in
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `X _[m]ₙ`. -/
 @[app_delab Prefunctor.obj]
@@ -278,7 +279,7 @@ def delabMkNotation : Delab :=
     let_expr Opposite src := src | failure
     let_expr SimplexCategory.Truncated n := src | failure
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let n ← withNaryArg 0 <| withAppArg <| withAppArg <| print n
+    let n ← withNaryArg 0 <| withAppArg <| withAppArg <| subscript n
     let m ← withAppArg <| withAppArg <| withNaryArg 2 <| withAppArg delab
     let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
@@ -737,7 +738,7 @@ macro_rules
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
 
-open SimplexCategory.Truncated.Meta (print) in
+open SimplexCategory.Truncated.Meta (subscript) in
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `X _[m]ₙ`. -/
 @[app_delab Prefunctor.obj]
@@ -750,7 +751,7 @@ def delabMkNotation : Delab :=
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
     let_expr SimplexCategory.Truncated n := src | failure
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let n ← withNaryArg 0 <| withAppArg <| print n
+    let n ← withNaryArg 0 <| withAppArg <| subscript n
     let m ← withAppArg <| withNaryArg 2 <| withAppArg delab
     let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
