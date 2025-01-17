@@ -220,7 +220,7 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
     {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E,
       HasCompactSupport g ∧ (∫⁻ x, ‖f x - g x‖₊ ∂μ) ≤ ε ∧ Continuous g ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm] at hf ⊢
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
   exact hf.exists_hasCompactSupport_eLpNorm_sub_le ENNReal.one_ne_top hε
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
@@ -230,7 +230,7 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
     {f : α → E} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E, HasCompactSupport g ∧ (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧
       Continuous g ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm, ← ENNReal.ofReal_one]
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_hasCompactSupport_integral_rpow_sub_le zero_lt_one hε
 
@@ -310,7 +310,7 @@ version in terms of `∫⁻`. -/
 theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, (∫⁻ x, ‖f x - g x‖₊ ∂μ) ≤ ε ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm] at hf ⊢
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
   exact hf.exists_boundedContinuous_eLpNorm_sub_le ENNReal.one_ne_top hε
 
 /-- Any integrable function can be approximated by bounded continuous functions,
@@ -318,7 +318,7 @@ version in terms of `∫`. -/
 theorem Integrable.exists_boundedContinuous_integral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm, ← ENNReal.ofReal_one]
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_boundedContinuous_integral_rpow_sub_le zero_lt_one hε
 
