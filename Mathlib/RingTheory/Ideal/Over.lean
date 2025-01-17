@@ -42,11 +42,10 @@ restricted back to `R` is `p` if and only if `p` is the restriction of a prime i
 lemma comap_map_eq_self_iff_of_isPrime (p : Ideal R) [p.IsPrime] :
     (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
   refine ⟨fun hp ↦ ?_, ?_⟩
-  · have {q : Ideal S} : Disjoint (q : Set S) (p.primeCompl.map f) ↔ q.comap f ≤ p := by
-      rw [disjoint_comm]
-      simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
-    obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_le_prime_disjoint _ _ (this.mpr hp.le)
-    exact ⟨q, hq₁, le_antisymm (this.mp hq₃) (map_le_iff_le_comap.mp hq₂)⟩
+  · obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_le_prime_disjoint _ _
+      (disjoint_map_primeCompl_iff_comap_le.mpr hp.le)
+    exact ⟨q, hq₁, le_antisymm (disjoint_map_primeCompl_iff_comap_le.mp hq₃)
+      (map_le_iff_le_comap.mp hq₂)⟩
   · rintro ⟨q, hq, rfl⟩
     simp
 
