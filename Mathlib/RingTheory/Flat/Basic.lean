@@ -104,7 +104,10 @@ lemma _root_.LinearMap.rTensor_injective_iff_subtype {f : N →ₗ[R] P} (hf : F
 variable (R M) in
 /-- An `R`-module `M` is flat if for every finitely generated submodule `N` of every
 finitely generated `R`-module `P` in the same universe as `R`,
-the canonical map `N ⊗ M → P ⊗ M` is injective. -/
+the canonical map `N ⊗ M → P ⊗ M` is injective. This implies the same is true for
+arbitrary `R`-modules `N` and `P` and injective linear maps `N →ₗ[R] P`, see
+`Flat.rTensor_preserves_injective_linearMap`. To show a module over a ring `R` is flat, it
+suffices to consider the case `P = R`, see `Flat.iff_rTensor_injective`. -/
 @[mk_iff] class Flat : Prop where
   out ⦃P : Type u⦄ [AddCommMonoid P] [Module R P] [Module.Finite R P] (N : Submodule R P) : N.FG →
     Function.Injective (N.subtype.rTensor M)
