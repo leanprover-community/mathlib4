@@ -293,12 +293,12 @@ def Scheme.Opens.toSpecΓ {X : Scheme.{u}} (U : X.Opens) :
 lemma Scheme.Opens.toSpecΓ_SpecMap_map {X : Scheme} (U V : X.Opens) (h : U ≤ V) :
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE h).op) = X.homOfLE h ≫ V.toSpecΓ := by
   delta Scheme.Opens.toSpecΓ
-  simp [← Spec.map_comp, ← X.presheaf.map_comp]
+  simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality_assoc]
 
 @[simp]
 lemma Scheme.Opens.toSpecΓ_top {X : Scheme} :
     (⊤ : X.Opens).toSpecΓ = (⊤ : X.Opens).ι ≫ X.toSpecΓ := by
-  simp [Scheme.Opens.toSpecΓ]; rfl
+  simp [Scheme.Opens.toSpecΓ, toSpecΓ_naturality]; rfl
 
 lemma Scheme.Opens.toSpecΓ_appTop {X : Scheme.{u}} (U : X.Opens) :
     U.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
@@ -1015,6 +1015,37 @@ lemma Scheme.zeroLocus_inf (X : Scheme.{u}) {U : X.Opens} (I J : Ideal Γ(X, U))
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) I) hxU, true_or]
   simp only [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J,
     Set.preimage_union]
+
+lemma Scheme.zeroLocus_biInf
+    {X : Scheme.{u}} {U : X.Opens} {ι : Type*}
+    (I : ι → Ideal Γ(X, U)) {t : Set ι} (ht : t.Finite) :
+    X.zeroLocus (U := U) ↑(⨅ i ∈ t, I i) = (⋃ i ∈ t, X.zeroLocus (U := U) (I i)) ∪ (↑U)ᶜ := by
+  refine ht.induction_on _ (by simp) fun {i t} hit ht IH ↦ ?_
+  simp only [Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, ← IH, ← zeroLocus_inf,
+    Submodule.inf_coe, Set.union_assoc]
+  congr!
+  simp
+
+lemma Scheme.zeroLocus_biInf_of_nonempty
+    {X : Scheme.{u}} {U : X.Opens} {ι : Type*}
+    (I : ι → Ideal Γ(X, U)) {t : Set ι} (ht : t.Finite) (ht' : t.Nonempty) :
+    X.zeroLocus (U := U) ↑(⨅ i ∈ t, I i) = ⋃ i ∈ t, X.zeroLocus (U := U) (I i) := by
+  rw [zeroLocus_biInf I ht, Set.union_eq_left]
+  obtain ⟨i, hi⟩ := ht'
+  exact fun x hx ↦ Set.mem_iUnion₂_of_mem hi
+    (codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) (I i)) hx)
+
+lemma Scheme.zeroLocus_iInf
+    {X : Scheme.{u}} {U : X.Opens} {ι : Type*}
+    (I : ι → Ideal Γ(X, U)) [Finite ι] :
+    X.zeroLocus (U := U) ↑(⨅ i, I i) = (⋃ i, X.zeroLocus (U := U) (I i)) ∪ (↑U)ᶜ := by
+  simpa using zeroLocus_biInf I Set.finite_univ
+
+lemma Scheme.zeroLocus_iInf_of_nonempty
+    {X : Scheme.{u}} {U : X.Opens} {ι : Type*}
+    (I : ι → Ideal Γ(X, U)) [Finite ι] [Nonempty ι] :
+    X.zeroLocus (U := U) ↑(⨅ i, I i) = ⋃ i, X.zeroLocus (U := U) (I i) := by
+  simpa using zeroLocus_biInf_of_nonempty I Set.finite_univ
 
 end ZeroLocus
 
