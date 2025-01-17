@@ -47,7 +47,7 @@ class Ideal.FiniteHeight : Prop where
   eq_top_or_height_ne_top : I = ⊤ ∨ I.height ≠ ⊤
 
 lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
-  Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
+    Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
   constructor
   · intro h
     cases h.eq_top_or_height_ne_top with
