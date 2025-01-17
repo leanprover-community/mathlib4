@@ -330,10 +330,12 @@ instance toHasForget : HasForget C where
 
 end ConcreteCategory
 
-theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
+theorem forget_obj (X : C) : (forget C).obj X = ToType X := by
+  with_reducible_and_instances rfl
 
 @[simp]
-theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
+theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := by
+  with_reducible_and_instances rfl
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -396,7 +398,8 @@ example [inst : HasForget C] :
 Note that the `ConcreteCategory` and `HasForget` instances here differ from `forget_map_eq_coe`.
 -/
 theorem forget_eq_ConcreteCategory_hom [HasForget C] {X Y : C} (f : X ⟶ Y) :
-    (forget C).map f = @ConcreteCategory.hom _ _ _ _ _ (HasForget.toConcreteCategory C) _ _ f := rfl
+    (forget C).map f = @ConcreteCategory.hom _ _ _ _ _ (HasForget.toConcreteCategory C) _ _ f := by
+  with_reducible_and_instances rfl
 
 /-- A `FunLike` instance on plain functions, in order to instantiate a `ConcreteCategory` structure
 on the category of types.
