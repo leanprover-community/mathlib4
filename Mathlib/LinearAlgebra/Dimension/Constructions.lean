@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hug
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Rank of various constructions
