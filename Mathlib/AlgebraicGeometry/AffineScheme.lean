@@ -607,7 +607,7 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsA
   letI := hV.isLocalization_basicOpen (f.appLE U V e r)
   ext : 1
   apply IsLocalization.ringHom_ext (.powers r)
-  rw [IsLocalization.Away.map, IsLocalization.map_comp,
+  rw [IsLocalization.Away.map, CommRingCat.hom_ofHom, IsLocalization.map_comp,
     RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
     ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
@@ -623,7 +623,7 @@ lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
   haveI := h.isLocalization_basicOpen (f.app U r)
   ext : 1
   apply IsLocalization.ringHom_ext (.powers r)
-  rw [IsLocalization.Away.map, CommRingCat.hom_comp, RingHom.comp_assoc,
+  rw [IsLocalization.Away.map, CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom,
     IsLocalization.map_comp, RingHom.algebraMap_toAlgebra,
     RingHom.algebraMap_toAlgebra, ← RingHom.comp_assoc, ← CommRingCat.hom_comp,
     ← CommRingCat.hom_comp, ← X.presheaf.map_comp]
@@ -785,6 +785,7 @@ theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
 
 end IsAffineOpen
 
+set_option maxHeartbeats 400000 in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
 localization of `f` away from `r`. -/
@@ -806,22 +807,21 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
     simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.isoOfEq_rfl, Iso.refl_trans,
       Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Iso.symm_hom,
       Scheme.Spec_map, Quiver.Hom.unop_op, Arrow.mk_hom, Category.assoc,
-      ← Spec.map_comp]
-    show _ ≫ Spec.map (CommRingCat.ofHom
-        ((e₂.toRingHom.comp (Localization.awayMap f.hom r)).comp (algebraMap R _)))
-      = _ ≫ _ ≫ Spec.map (CommRingCat.ofHom (e₁.toRingHom.comp (algebraMap R _)))
-    rw [RingHom.comp_assoc]
+      ← Spec.map_comp, RingEquiv.toCommRingCatIso_hom,
+      AlgEquiv.toRingEquiv_toRingHom]
+    rw [← Category.assoc, ← CommRingCat.ofHom_comp, ← CommRingCat.ofHom_comp]
+    conv_rhs => rw [← CommRingCat.ofHom_comp]
     conv => enter [1,2,1,1,2]; tactic => exact IsLocalization.map_comp _
     rw [← RingHom.comp_assoc]
     conv => enter [1,2,1,1,1]; tactic => exact e₂.toAlgHom.comp_algebraMap
     conv => enter [2,2,2,1,1]; tactic => exact e₁.toAlgHom.comp_algebraMap
-    show _ ≫ Spec.map (f ≫ (Scheme.ΓSpecIso S).inv ≫
-      (Spec S).presheaf.map (homOfLE le_top).op) =
+    show _ ≫ Spec.map (f ≫ ((Scheme.ΓSpecIso S).inv ≫
+      (Spec S).presheaf.map (homOfLE le_top).op)) =
       Spec.map f ∣_ basicOpen r ≫ _ ≫ Spec.map ((Scheme.ΓSpecIso R).inv ≫
       (Spec R).presheaf.map (homOfLE le_top).op)
     simp only [IsAffineOpen.isoSpec_hom, homOfLE_leOfHom, Spec.map_comp, Category.assoc,
       Scheme.Opens.toSpecΓ_SpecMap_map_assoc, Scheme.Opens.toSpecΓ_top, Scheme.homOfLE_ι_assoc,
-      morphismRestrict_ι_assoc]
+      morphismRestrict_ι_assoc, CommRingCat.ofHom_comp, CommRingCat.ofHom_hom]
     simp only [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Category.assoc, Iso.inv_hom_id,
       Category.comp_id, Category.id_comp]
     rfl
