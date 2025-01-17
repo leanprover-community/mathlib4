@@ -243,7 +243,37 @@ theorem exchange_lemma [DecidableEq ι]
       congr; ext o; cases o <;> simp [update]; split_ifs <;> simp_all
   refine IsAlgebraic.trans' M (S := O) Subtype.val_injective
 
-theorem big_exchange_lemma [DecidableEq ι]
+/- The plan is to use this and Zorn's lemma to prove `big_exhange_lemma`. This isn't a textbook
+proof, so there's a small chance it won't work. -/
+variable (R) in
+@[ext]
+structure Exchange (x : ι → A) (y : ι' → A) : Type _ where
+  carrier : Set ι'
+  exchange : carrier → ι
+  algebraic : Algebra.IsAlgebraic (adjoin R (range y ∪ (x '' (range exchange)ᶜ))) A
+
+namespace Exchange
+
+variable (x : ι → A) (y : ι' → A)
+instance : PartialOrder (Exchange R x y) where
+  le := fun s t => ∃ h : s.carrier ⊆ t.carrier, t.exchange ∘ inclusion h = s.exchange
+  le_refl := fun _ => ⟨Set.Subset.refl _, rfl⟩
+  le_trans := fun s t u h₁ h₂ => ⟨Set.Subset.trans h₁.fst h₂.fst, by
+      have h1 := h₁.snd
+      have h2 := h₂.snd
+      simp only [funext_iff, comp_apply, Subtype.forall, Set.inclusion_mk] at *
+      intro a ha
+      rw [h2 a (h₁.fst ha), h1 a ha]⟩
+  le_antisymm := fun ⟨s, f, _⟩ ⟨t, g, _⟩ hst hts => by
+    have hst : s = t := Set.Subset.antisymm hst.fst hts.fst
+    subst s
+    ext1
+    · rfl
+    · simpa [funext_iff] using hts.snd
+
+end Exchange
+
+theorem big_exchange_lemma
     [Nontrivial R] [NoZeroDivisors A] (x : ι → A) (y : ι' → A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : AlgebraicIndependent R y) :
     ∃ f : ι' ↪ ι, Algebra.IsAlgebraic (adjoin R (range y ∪ (x '' (range f)ᶜ))) A := by sorry
