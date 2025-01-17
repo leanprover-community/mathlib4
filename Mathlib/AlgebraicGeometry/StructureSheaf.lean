@@ -7,8 +7,8 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!

@@ -3,12 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.LocalProperties.Projective
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Localization.Free
 import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.RingTheory.TensorProduct.Free
 
