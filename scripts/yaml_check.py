@@ -146,12 +146,18 @@ for index, entry in thousand.items():
         errors += 1
     # Also verify that the |decl| and |decls| fields are not *both* provided.
     if _thm.decl and _thm.decls:
-        print(f"error: entry for theorem {index} has both a decl and a decls field; "
-        "please only provide one of these", file=sys.stderr)
+        print(
+            f"error: entry for theorem {index} has both a decl and a decls field; "
+            "please only provide one of these",
+            file=sys.stderr,
+        )
         errors += 1
     elif _thm.statement and (_thm.decl or _thm.decls):
-        print(f"error: entry for theorem {index} has both a statement and a decl(s) field: "
-        "the latter is superfluous; please remove it", file=sys.stderr)
+        print(
+            f"error: entry for theorem {index} has both a statement and a decl(s) field: "
+            "the latter is superfluous; please remove it",
+            file=sys.stderr,
+        )
         errors += 1
 
     title = entry["title"]
