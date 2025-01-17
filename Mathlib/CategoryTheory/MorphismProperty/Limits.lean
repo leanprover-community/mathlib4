@@ -338,7 +338,7 @@ instance : (W.limitsOfShape J).RespectsIso :=
     obtain hg : h₂'.lift (Cone.mk _ (c₁'.π ≫ f)) = g :=
       h₂'.hom_ext (fun j ↦ by
         rw [h₂'.fac]
-        simp [reassoc_of% fac])
+        simp [reassoc_of% fac, c₁', c₂'])
     rw [← hg]
     exact ⟨_, _, _, _, h₁', _, _, hf⟩)
 
@@ -429,7 +429,7 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
       h₁'.hom_ext (fun j ↦ by
         rw [h₁'.fac]
-        simp [fac])
+        simp [fac, c₁', c₂'])
     rw [← hg]
     exact ⟨_, _, _, _, _, h₂', _, hf⟩)
 
