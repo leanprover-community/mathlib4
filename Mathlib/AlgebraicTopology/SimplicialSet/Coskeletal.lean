@@ -189,8 +189,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     dsimp
     ext k
     · change (X.spine _ (X.map f.op _)).vertex _ = X.map _ _
-      rw [spine_map_vertex]
-      rw [spine_spineToSimplex_apply]
+      rw [spine_map_vertex, spine_spineToSimplex_apply]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) (by omega) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
