@@ -625,6 +625,11 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
   ext
   rfl
 
+@[simp]
+lemma comap_mk_bot (I : Ideal R) :
+    comap (Ideal.Quotient.mk I) ⊥ = I := by
+  ext; simp [Ideal.Quotient.eq_zero_iff_mem]
+
 lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
   ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]

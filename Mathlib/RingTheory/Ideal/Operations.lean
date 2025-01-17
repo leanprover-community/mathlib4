@@ -1112,6 +1112,10 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 
+@[simp]
+theorem dvd_bot (I : Ideal R) : I ∣ ⊥ :=
+  ⟨0, by simp⟩
+
 end Dvd
 
 end MulAndRadical
@@ -1186,6 +1190,65 @@ theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZer
   · exact ⟨fun _ _ _ ↦ Subsingleton.eq_zero _, fun _ _ _ ↦ Subsingleton.eq_zero _⟩
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
+
+lemma Ideal.iInf_pow_eq_bot_of_isPrincipal_of_ne_top_of_zero_divisors_le
+    {R : Type*} [CommRing R] {I : Ideal R}
+    (hI : I.IsPrincipal) (hI' : Submodule.IsPrincipal (⨅ n, I ^ n)) (hnt : I ≠ ⊤)
+    (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ I) : ⨅ n, I ^ n = ⊥ := by
+  rcases eq_or_ne I ⊥ with rfl|hne
+  · rw [eq_bot_iff]
+    intro
+    simp only [mem_iInf, mem_bot]
+    intro h
+    simpa using h 1
+  obtain ⟨s, rfl⟩ := hI
+  have hs0 : ∀ x ∉ span {s}, ∀ y, y * x = 0 → y = 0 := by
+    intro x hx y hy
+    by_contra H
+    exact hx (h0 ⟨y, H, hy⟩)
+  obtain ⟨t, ht⟩ := hI'
+  have ht' : t ∈ span {s} := by
+    have := iInf_le (fun n ↦ (span {s}) ^ n) 1
+    simp only [zero_add, pow_one] at this
+    exact this (ht.ge (mem_span_singleton_self _))
+  simp only [submodule_span_eq] at *
+  rw [ht, span_singleton_eq_bot]
+  classical
+  by_contra! ht0
+  obtain ⟨t₁, ht₁⟩ := mem_span_singleton.mp ht'; clear ht'
+  suffices hti : t₁ ∈ ⨅ n, (span {s}) ^ n by
+    obtain ⟨t₄, ht₄⟩ := mem_span_singleton.mp (ht ▸ hti)
+    rw [← sub_eq_zero, ht₄, mul_left_comm, ← mul_one_sub] at ht₁
+    refine ht0 (hs0 _ ?_ _ ht₁)
+    rw [← Ideal.add_mem_iff_left _ (mul_mem_right t₄ _ (mem_span_singleton_self s))]
+    simp [← eq_top_iff_one, ← span_singleton_eq_top, hnt]
+  by_contra H
+  obtain ⟨n, t₂, hn, ht'⟩ : ∃ n t₂, t₁ = s ^ n * t₂ ∧ t₂ ∉ span {s} := by
+    simp only [span_singleton_pow, mem_iInf, mem_span_singleton,
+      not_forall] at H
+    have := Nat.find_min (m := Nat.find H - 1) H (by simp)
+    rw [Decidable.not_not] at this
+    obtain ⟨t₂, this⟩ := this
+    refine ⟨_, _, this, ?_⟩
+    rw [mem_span_singleton]
+    rintro ⟨y, rfl⟩
+    apply Nat.find_spec H
+    refine ⟨y, this.trans ?_⟩
+    simp [← pow_succ, ← mul_assoc]
+  have hts : t ∈ span {s ^ (n + 2)} := by
+    have := iInf_le (fun n ↦ (span {s}) ^ n) (n + 2)
+    simp only [zero_add, pow_one, span_singleton_pow _ (n + 2)] at this
+    exact this (ht.ge (mem_span_singleton_self _))
+  obtain ⟨t₃, ht₃⟩ := mem_span_singleton.mp hts; clear hts
+  have := ht₁
+  rw [ht₃, hn, ← mul_assoc, ← pow_succ', pow_succ, mul_assoc, eq_comm, ← sub_eq_zero,
+      ← mul_sub] at this
+  have ht₂ : t₂ - s * t₃ ∉ span {s} := by
+    contrapose! ht'
+    simpa using Ideal.add_mem _ ht' (mul_mem_right t₃ _ (mem_span_singleton_self _))
+  rw [pow_succ, hs0 _ ht₂ _ this, zero_mul, zero_mul] at ht₃
+  subst t
+  exact ht0 ht₃
 
 namespace Submodule
 
