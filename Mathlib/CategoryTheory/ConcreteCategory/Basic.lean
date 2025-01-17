@@ -396,7 +396,7 @@ example [inst : HasForget C] :
 Note that the `ConcreteCategory` and `HasForget` instances here differ from `forget_map_eq_coe`.
 -/
 theorem forget_eq_ConcreteCategory_hom [HasForget C] {X Y : C} (f : X ⟶ Y) :
-  (forget C).map f = @ConcreteCategory.hom _ _ _ _ _ (HasForget.toConcreteCategory C) _ _ f := rfl
+    (forget C).map f = @ConcreteCategory.hom _ _ _ _ _ (HasForget.toConcreteCategory C) _ _ f := rfl
 
 /-- A `FunLike` instance on plain functions, in order to instantiate a `ConcreteCategory` structure
 on the category of types.
