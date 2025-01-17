@@ -124,7 +124,7 @@ theorem abelian_iff_derived_succ_eq_bot (I : LieIdeal R L) (k : ℕ) :
   rw [add_comm, derivedSeriesOfIdeal_add I 1 k, abelian_iff_derived_one_eq_bot]
 
 open TensorProduct in
-theorem derivedSeriesOfIdeal_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
+@[simp] theorem derivedSeriesOfIdeal_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
     derivedSeriesOfIdeal A (A ⊗[R] L) k (I.baseChange A) =
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
@@ -133,7 +133,7 @@ theorem derivedSeriesOfIdeal_baseChange {A : Type*} [CommRing A] [Algebra R A] (
     LieSubmodule.lie_baseChange]
 
 open TensorProduct in
-theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
+@[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
     derivedSeries A (A ⊗[R] L) k = (derivedSeries R L k).baseChange A := by
   rw [derivedSeries_def, derivedSeries_def, ← derivedSeriesOfIdeal_baseChange,
     LieSubmodule.baseChange_top]
@@ -296,7 +296,7 @@ theorem isSolvable_tensorProduct_iff : IsSolvable (A ⊗[R] L) ↔ IsSolvable L 
   rw [eq_bot_iff] at h ⊢
   intro x hx
   rw [derivedSeries_baseChange] at h
-  specialize h <| Submodule.tmul_mem_baseChange_of_mem (1:A) hx
+  specialize h <| Submodule.tmul_mem_baseChange_of_mem 1 hx
   rw [LieSubmodule.mem_bot] at h ⊢
   rwa [Module.FaithfullyFlat.one_tmul_eq_zero_iff] at h
 
