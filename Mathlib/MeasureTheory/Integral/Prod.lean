@@ -148,7 +148,7 @@ variable [SFinite ν]
 theorem integrable_measure_prod_mk_left {s : Set (α × β)} (hs : MeasurableSet s)
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => (ν (Prod.mk x ⁻¹' s)).toReal) μ := by
   refine ⟨(measurable_measure_prod_mk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
-  simp_rw [hasFiniteIntegral_iff_nnnorm, ennnorm_eq_ofReal toReal_nonneg]
+  simp_rw [hasFiniteIntegral_iff_nnnorm, enorm_eq_ofReal toReal_nonneg]
   convert h2s.lt_top using 1
   rw [prod_apply hs]
   apply lintegral_congr_ae
@@ -220,7 +220,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
-    ennnorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
+    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
   -- this fact is probably too specialized to be its own lemma
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]

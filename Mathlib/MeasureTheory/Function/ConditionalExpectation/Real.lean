@@ -100,7 +100,7 @@ theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
       mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
-  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
+  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_enorm]
     · exact hfint.2.ne
     · rw [← eLpNorm_one_eq_lintegral_nnnorm, ← eLpNorm_one_eq_lintegral_nnnorm]
       exact eLpNorm_one_condexp_le_eLpNorm _

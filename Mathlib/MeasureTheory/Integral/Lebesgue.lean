@@ -325,7 +325,7 @@ alias set_lintegral_congr_fun := setLIntegral_congr_fun
 
 theorem lintegral_ofReal_le_lintegral_nnnorm (f : α → ℝ) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖₊ ∂μ := by
-  simp_rw [← ofReal_norm_eq_coe_nnnorm]
+  simp_rw [← ofReal_norm_eq_enorm]
   refine lintegral_mono fun x => ENNReal.ofReal_le_ofReal ?_
   rw [Real.norm_eq_abs]
   exact le_abs_self (f x)

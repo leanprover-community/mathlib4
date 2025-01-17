@@ -297,7 +297,7 @@ theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : p
       (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
     simp_rw [← smul_eq_mul, nnnorm_smul, ENNReal.coe_mul, smul_eq_mul]
     refine Filter.EventuallyEq.mul (ae_eq_refl _) ?_
-    simp only [Real.ennnorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+    simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real

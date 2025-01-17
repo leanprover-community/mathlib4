@@ -1348,7 +1348,7 @@ private theorem lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum
       (∑ i ∈ Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p := by
     ext1 a
     congr
-    simp_rw [← ofReal_norm_eq_coe_nnnorm]
+    simp_rw [← ofReal_norm_eq_enorm]
     rw [← ENNReal.ofReal_sum_of_nonneg]
     · rw [Real.norm_of_nonneg _]
       exact Finset.sum_nonneg fun x _ => norm_nonneg _
@@ -1463,7 +1463,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
       specialize hx N n m hnN hmN
       rw [_root_.dist_eq_norm,
         ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB N),
-        ofReal_norm_eq_coe_nnnorm]
+        ofReal_norm_eq_enorm]
       exact hx.le
     · rw [← ENNReal.zero_toReal]
       exact

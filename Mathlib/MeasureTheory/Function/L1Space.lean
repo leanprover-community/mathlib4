@@ -62,11 +62,11 @@ namespace MeasureTheory
 
 
 theorem lintegral_nnnorm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ‖f a‖₊ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_eq_coe_nnnorm]
+    ∫⁻ a, ‖f a‖₊ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [ofReal_norm_eq_coe_nnnorm, edist_eq_coe_nnnorm]
+  simp only [ofReal_norm_eq_enorm, edist_zero_eq_enorm]
 
 theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
@@ -103,11 +103,11 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
 
 theorem hasFiniteIntegral_iff_nnnorm {f : α → β} :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ‖f a‖₊ ∂μ) < ∞ := by
-  simp only [HasFiniteIntegral, ofReal_norm_eq_coe_nnnorm, enorm_eq_nnnorm]
+  simp only [HasFiniteIntegral, ofReal_norm_eq_enorm, enorm_eq_nnnorm]
 
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
-  simp only [hasFiniteIntegral_iff_nnnorm, ofReal_norm_eq_coe_nnnorm]
+  simp only [hasFiniteIntegral_iff_nnnorm, ofReal_norm_eq_enorm]
 
 theorem hasFiniteIntegral_iff_edist (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, edist (f a) 0 ∂μ) < ∞ := by
@@ -258,7 +258,7 @@ lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf_ne_top : ∀ᵐ x
 theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteIntegral f μ) :
     IsFiniteMeasure (μ.withDensity fun x => ENNReal.ofReal <| f x) := by
   refine isFiniteMeasure_withDensity ((lintegral_mono fun x => ?_).trans_lt hfi).ne
-  exact Real.ofReal_le_ennnorm (f x)
+  exact Real.ofReal_le_enorm (f x)
 
 section DominatedConvergence
 
@@ -471,7 +471,6 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 @[deprecated Integrable.of_finite (since := "2024-10-05"), nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
-
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
   rw [← memℒp_one_iff_integrable]
@@ -484,6 +483,13 @@ theorem Memℒp.integrable_norm_rpow' [IsFiniteMeasure μ] {f : α → β} {p : 
   by_cases h_top : p = ∞
   · simp [h_top, integrable_const]
   exact hf.integrable_norm_rpow h_zero h_top
+
+lemma Memℒp.integrable_norm_pow {f : α → β} {p : ℕ} (hf : Memℒp f p μ) (hp : p ≠ 0) :
+    Integrable (fun x : α => ‖f x‖ ^ p) μ := by
+  simpa using hf.integrable_norm_rpow (mod_cast hp) (by simp)
+
+lemma Memℒp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : Memℒp f p μ) :
+    Integrable (fun x : α => ‖f x‖ ^ p) μ := by simpa using hf.integrable_norm_rpow'
 
 theorem Integrable.mono_measure {f : α → β} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
@@ -1393,7 +1399,7 @@ theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) :
   (but only a.e.-equal). -/
 theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
     ENNReal.ofReal ‖f - g‖ = ∫⁻ x, (‖f x - g x‖₊ : ℝ≥0∞) ∂μ := by
-  simp_rw [ofReal_norm_eq_lintegral, ← edist_eq_coe_nnnorm]
+  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_eq_enorm]
   apply lintegral_congr_ae
   filter_upwards [Lp.coeFn_sub f g] with _ ha
   simp only [ha, Pi.sub_apply]
@@ -1444,7 +1450,7 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, edist (f a) 0 ∂μ) := by
   simp only [toL1, Lp.norm_toLp, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_nnnorm, one_toReal,
     ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
-  simp [edist_eq_coe_nnnorm]
+  simp [edist_zero_eq_enorm]
 
 theorem nnnorm_toL1 {f : α → β} (hf : Integrable f μ) :
     (‖hf.toL1 f‖₊ : ℝ≥0∞) = ∫⁻ a, ‖f a‖₊ ∂μ := by

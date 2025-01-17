@@ -129,7 +129,7 @@ theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
     refine (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x).mono fun z hz => ?_
     dsimp only
     rw [hz]
-  rw [h_eq, ofReal_norm_eq_coe_nnnorm]
+  rw [h_eq, ofReal_norm_eq_enorm]
   exact lintegral_nnnorm_condexpIndSMul_le hm hs hμs x
 
 theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)

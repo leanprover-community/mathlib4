@@ -870,7 +870,7 @@ theorem norm_integral_le_lintegral_norm (f : α → G) :
 
 theorem ennnorm_integral_le_lintegral_ennnorm (f : α → G) :
     (‖∫ a, f a ∂μ‖₊ : ℝ≥0∞) ≤ ∫⁻ a, ‖f a‖₊ ∂μ := by
-  simp_rw [← ofReal_norm_eq_coe_nnnorm]
+  simp_rw [← ofReal_norm_eq_enorm]
   apply ENNReal.ofReal_le_of_le_toReal
   exact norm_integral_le_lintegral_norm f
 
@@ -1051,7 +1051,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
 theorem integral_norm_eq_lintegral_nnnorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = ENNReal.toReal (∫⁻ x, ‖f x‖₊ ∂μ) := by
   rw [integral_eq_lintegral_of_nonneg_ae _ hf.norm]
-  · simp_rw [ofReal_norm_eq_coe_nnnorm]
+  · simp_rw [ofReal_norm_eq_enorm]
   · filter_upwards; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 
 theorem ofReal_integral_norm_eq_lintegral_nnnorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
@@ -1085,7 +1085,7 @@ theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f
     ENNReal.ofReal (∫ x, f x ∂μ) = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
   have : f =ᵐ[μ] (‖f ·‖) := f_nn.mono fun _x hx ↦ (abs_of_nonneg hx).symm
   simp_rw [integral_congr_ae this, ofReal_integral_norm_eq_lintegral_nnnorm hfi,
-    ← ofReal_norm_eq_coe_nnnorm]
+    ← ofReal_norm_eq_enorm]
   exact lintegral_congr_ae (this.symm.fun_comp ENNReal.ofReal)
 
 theorem integral_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : ∀ᵐ x ∂μ, f x < ∞) :
@@ -1300,7 +1300,7 @@ theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a
     Lp.norm_def, if_false, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
   rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall (by simp [norm_nonneg]))
       (Lp.aestronglyMeasurable f).norm]
-  simp [ofReal_norm_eq_coe_nnnorm]
+  simp [ofReal_norm_eq_enorm]
 
 theorem L1.dist_eq_integral_dist (f g : α →₁[μ] H) : dist f g = ∫ a, dist (f a) (g a) ∂μ := by
   simp only [dist_eq_norm, L1.norm_eq_integral_norm]
@@ -1315,7 +1315,7 @@ theorem Memℒp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (h
     (hf : Memℒp f p μ) :
     eLpNorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
   have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
-    simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
+    simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_enorm]
   simp only [eLpNorm_eq_lintegral_rpow_nnnorm hp1 hp2, one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
   · exact ae_of_all _ fun x => by positivity
@@ -1680,13 +1680,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   -- replace norms by nnnorm
   have h_left : ∫⁻ a, ENNReal.ofReal (‖f a‖ * ‖g a‖) ∂μ =
       ∫⁻ a, ((fun x => (‖f x‖₊ : ℝ≥0∞)) * fun x => (‖g x‖₊ : ℝ≥0∞)) a ∂μ := by
-    simp_rw [Pi.mul_apply, ← ofReal_norm_eq_coe_nnnorm, ENNReal.ofReal_mul (norm_nonneg _)]
+    simp_rw [Pi.mul_apply, ← ofReal_norm_eq_enorm, ENNReal.ofReal_mul (norm_nonneg _)]
   have h_right_f : ∫⁻ a, ENNReal.ofReal (‖f a‖ ^ p) ∂μ = ∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p ∂μ := by
     refine lintegral_congr fun x => ?_
-    rw [← ofReal_norm_eq_coe_nnnorm, ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hpq.nonneg]
+    rw [← ofReal_norm_eq_enorm, ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hpq.nonneg]
   have h_right_g : ∫⁻ a, ENNReal.ofReal (‖g a‖ ^ q) ∂μ = ∫⁻ a, (‖g a‖₊ : ℝ≥0∞) ^ q ∂μ := by
     refine lintegral_congr fun x => ?_
-    rw [← ofReal_norm_eq_coe_nnnorm, ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hpq.symm.nonneg]
+    rw [← ofReal_norm_eq_enorm, ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hpq.symm.nonneg]
   rw [h_left, h_right_f, h_right_g]
   -- we can now apply `ENNReal.lintegral_mul_le_Lp_mul_Lq` (up to the `toReal` application)
   refine ENNReal.toReal_mono ?_ ?_

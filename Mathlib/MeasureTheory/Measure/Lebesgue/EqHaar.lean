@@ -563,7 +563,7 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[�
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
     AlternatingMap.smul_apply, Algebra.id.smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
-    Real.ennnorm_eq_ofReal_abs]
+    Real.enorm_eq_ofReal_abs]
 
 instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance

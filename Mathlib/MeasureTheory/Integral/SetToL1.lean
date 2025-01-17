@@ -613,7 +613,7 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
     ext1 x
-    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_coe_nnnorm,
+    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_enorm,
       ENNReal.toReal_ofReal (norm_nonneg _)]
   · intro x _
     by_cases hx0 : x = 0
@@ -1569,7 +1569,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   rw [← Integrable.toL1_sub]
   refine ((fs_int n).sub f_int).coeFn_toL1.mono fun x hx => ?_
   dsimp only
-  rw [hx, ofReal_norm_eq_coe_nnnorm, Pi.sub_apply]
+  rw [hx, ofReal_norm_eq_enorm, Pi.sub_apply]
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C) {ι}

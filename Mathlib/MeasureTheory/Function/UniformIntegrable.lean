@@ -499,7 +499,7 @@ theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
   refine le_trans (eLpNorm_mono this) ?_
   rw [eLpNorm_indicator_const hs hp hp']
   refine mul_le_mul_right' (le_of_eq ?_) _
-  rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, abs_of_nonneg hc]
+  rw [← ofReal_norm_eq_enorm, Real.norm_eq_abs, abs_of_nonneg hc]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_sub_le_of_dist_bdd := eLpNorm_sub_le_of_dist_bdd

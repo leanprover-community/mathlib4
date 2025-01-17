@@ -911,7 +911,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     (atTop ×ˢ 𝓝 y) (𝓝 0) by simpa using A.add this
   apply Metric.tendsto_nhds.2 (fun ε εpos ↦ ?_)
   obtain ⟨r', yr', r'r⟩ : ∃ (r' : ℝ≥0), ‖y‖₊ < r' ∧ r' < r := by
-    simp [edist_eq_coe_nnnorm] at hy
+    simp [edist_zero_eq_enorm] at hy
     simpa using ENNReal.lt_iff_exists_nnreal_btwn.1 hy
   have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnnorm] using yr'
   have S : Summable fun n ↦ ‖p n‖ * ↑r' ^ n := p.summable_norm_mul_pow (r'r.trans_le hf.r_le)
@@ -1281,7 +1281,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn'
   · ext z
     simp
   · intro z
-    simp [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub]
+    simp [edist_zero_eq_enorm, edist_eq_coe_nnnorm_sub]
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f y`

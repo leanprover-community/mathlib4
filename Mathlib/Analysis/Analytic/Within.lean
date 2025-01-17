@@ -130,8 +130,8 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
       · simp only [add_sub_cancel] at e1
         exact e1.unique e0
       · simpa only [add_sub_cancel]
-      · simpa only [EMetric.mem_ball, edist_eq_coe_nnnorm]
-      · simp only [EMetric.mem_ball, edist_eq_coe_nnnorm]
+      · simpa only [EMetric.mem_ball, edist_zero_eq_enorm]
+      · simp only [EMetric.mem_ball, edist_zero_eq_enorm]
         exact lt_of_lt_of_le yb h.r_le
     · refine ⟨h.r_le, h.r_pos, ?_⟩
       intro y lt

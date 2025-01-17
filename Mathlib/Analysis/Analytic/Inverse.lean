@@ -592,7 +592,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
+          rw [EMetric.mem_ball, edist_zero_eq_enorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
