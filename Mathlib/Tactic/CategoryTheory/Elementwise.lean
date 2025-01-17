@@ -52,13 +52,6 @@ theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f :=
 theorem hom_elementwise {C : Type*} [Category C] [HasForget C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
-/-- Using the `FunLike` coercion of `HasForget` does the same as the original coercion.
--/
-theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
-    [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
-    (f : X ⟶ Y) :
-    @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
-
 end theorems
 
 /-- List of simp lemmas to apply to the elementwise theorem. -/
