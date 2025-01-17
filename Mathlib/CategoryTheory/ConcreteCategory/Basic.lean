@@ -355,6 +355,13 @@ theorem hom_id {X : C} : (𝟙 X : ToType X → ToType X) = id :=
 theorem hom_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X → ToType Z) = g ∘ f :=
   (forget _).map_comp f g
 
+/-- Using the `FunLike` coercion of `HasForget` does the same as the original coercion.
+-/
+theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+    [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
+    (f : X ⟶ Y) :
+    @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
+
 section
 
 variable (C)
