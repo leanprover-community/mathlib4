@@ -71,12 +71,12 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
           (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
-      rw [eLpNorm_one_eq_lintegral_nnnorm, eLpNorm_one_eq_lintegral_nnnorm,
-        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_nnnorm.mp integrable_condExp.2).ne
-          (hasFiniteIntegral_iff_nnnorm.mp hf.2).ne,
-        ← integral_norm_eq_lintegral_nnnorm
+      rw [eLpNorm_one_eq_lintegral_enorm, eLpNorm_one_eq_lintegral_enorm,
+        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
+          (hasFiniteIntegral_iff_enorm.mp hf.2).ne,
+        ← integral_norm_eq_lintegral_enorm
           (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
-        ← integral_norm_eq_lintegral_nnnorm hf.1]
+        ← integral_norm_eq_lintegral_enorm hf.1]
       simp_rw [Real.norm_eq_abs]
       rw (config := {occs := .pos [2]}) [← integral_condExp hm]
       refine integral_congr_ae ?_
@@ -106,9 +106,9 @@ theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
       mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
-  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
+  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_enorm]
     · exact hfint.2.ne
-    · rw [← eLpNorm_one_eq_lintegral_nnnorm, ← eLpNorm_one_eq_lintegral_nnnorm]
+    · rw [← eLpNorm_one_eq_lintegral_enorm, ← eLpNorm_one_eq_lintegral_enorm]
       exact eLpNorm_one_condExp_le_eLpNorm _
   · filter_upwards with x using abs_nonneg _
   · simp_rw [← Real.norm_eq_abs]
@@ -237,7 +237,7 @@ alias Integrable.uniformIntegrable_condexp := Integrable.uniformIntegrable_condE
 section PullOut
 
 -- TODO: this section could be generalized beyond multiplication, to any bounded bilinear map.
-/-- Auxiliary lemma for `condexp_mul_of_stronglyMeasurable_left`. -/
+/-- Auxiliary lemma for `condExp_mul_of_stronglyMeasurable_left`. -/
 theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFunc α m ℝ) {g : α → ℝ}
     (hg : Integrable g μ) : μ[(f * g : α → ℝ)|m] =ᵐ[μ] f * μ[g|m] := by
   have : ∀ (s c) (f : α → ℝ), Set.indicator s (Function.const α c) * f = s.indicator (c • f) := by
