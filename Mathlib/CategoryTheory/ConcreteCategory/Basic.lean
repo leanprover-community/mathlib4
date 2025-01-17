@@ -371,7 +371,6 @@ abbrev HasForget.toFunLike [HasForget C] (X Y : C) :
   coe := (forget C).map
   coe_injective' _ _ h := Functor.Faithful.map_injective h
 
-attribute [local instance] HasForget.toFunLike
 /-- Build a concrete category out of `HasForget`.
 
 The intended usecase is to prove theorems referencing only `(forget C)`
@@ -386,8 +385,6 @@ abbrev HasForget.toConcreteCategory [HasForget C] :
   ofHom f := f
   id_apply := congr_fun ((forget C).map_id _)
   comp_apply _ _ := congr_fun ((forget C).map_comp _ _)
-
-attribute [local instance] HasForget.toConcreteCategory
 
 /-- Check that the new `ConcreteCategory` has the same forgetful functor as we started with. -/
 example [inst : HasForget C] :
