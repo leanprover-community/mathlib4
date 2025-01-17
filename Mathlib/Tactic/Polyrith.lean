@@ -160,17 +160,17 @@ inductive Source where
   | fvar : FVarId → Source
 
 /-- The first half of `polyrith` produces a list of arguments to be sent to Sage. -/
-def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
+def parseContext (only : Bool) (hyps : Array Expr) (target : Expr) :
     AtomM (Expr × Array (Source × Poly) × Poly) := do
   let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
-  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars target).eq? | fail
   let .sort u ← instantiateMVars (← whnf (← inferType α)) | unreachable!
   let some v := u.dec | throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
   let c ← mkCache sα
-  let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
+  let target := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
     /-- Parses a hypothesis and adds it to the `out` list. -/
     processHyp src ty out := do
@@ -184,7 +184,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
       out ← processHyp (.fvar ldecl.fvarId) ldecl.type out
   for hyp in hyps, i in [:hyps.size] do
     out ← processHyp (.input i) (← inferType hyp) out
-  pure (α, out, tgt)
+  pure (α, out, target)
 
 /-- A JSON parser for `ℚ` specific to the return value of Sage. -/
 local instance : FromJson ℚ where fromJson?
@@ -260,7 +260,7 @@ structure SageSuccess where
   /-- The main result of the function call is an array of polynomials
   parallel to the input list of hypotheses and an exponent for the goal. -/
   data : Option SageCoeffAndPower := none
-  deriving Repr
+  deriving FromJson, Repr
 
 /-- The result of a sage call in the failure case. -/
 structure SageError where
@@ -268,6 +268,7 @@ structure SageError where
   name : String
   /-- The error message -/
   value : String
+  deriving FromJson
 
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
@@ -297,7 +298,7 @@ The query invokes Sage's `MPolynomial_libsingular.lift`. See
 https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
 for a description of this method.
 -/
-def sageCreateQuery (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (tgt : Poly) :
+def sageCreateQuery (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (target : Poly) :
     IO String := do
   let vars := (List.range atoms).map (s!"var{·}") ++ ["aux"]
   -- format `vars`, `hyps` into Python lists
@@ -309,7 +310,7 @@ def sageCreateQuery (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (t
       s!"
 P = PolynomialRing({sageTypeStr α}, {varsStringListPython})
 {varsListPython} = P.gens()
-p = P({tgt})
+p = P({target})
 if p == 0:
     # The 'radicalization trick' implemented below does not work if
     # the target polynomial p is 0 since it requires substituting 1/p.
@@ -332,7 +333,7 @@ else:
       -- if coefficients are found.
       s!"
 P = PolynomialRing({sageTypeStr α}, 'var', 1)
-p = P({tgt})
+p = P({target})
 I = P.ideal({hypsListPython})
 coeffs = p.lift(I)
 print(serialize_polynomials(1, coeffs))
@@ -367,17 +368,16 @@ register_option polyrith.sageUserAgent : String :=
 This function calls the Sage API at <https://sagecell.sagemath.org/service>.
 The output is parsed as `SageResult`.
 -/
-def runSage (trace : Bool) (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (tgt : Poly) :
+def runSage (trace : Bool) (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (target : Poly) :
     CoreM SageResult := do
-  let query ← sageCreateQuery α atoms hyps tgt
+  let query ← sageCreateQuery α atoms hyps target
   if trace then
     -- dry run enabled
     return .ok { trace := query }
 
   -- send query to SageMath API
   let apiUrl := "https://sagecell.sagemath.org/service"
-  let query' := System.Uri.escapeUri query
-  let data := s!"code={query'}"
+  let data := s!"code={System.Uri.escapeUri query}"
   let curlArgs := #[
     "-X", "POST",
     "--user-agent", polyrith.sageUserAgent.get (← getOptions),
@@ -430,7 +430,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     (traceOnly := false) : MetaM (Except MVarId (TSyntax `tactic)) := do
   IO.sleep 10 -- otherwise can lead to weird errors when actively editing code with polyrith calls
   g.withContext <| AtomM.run .reducible do
-    let (α, hyps', tgt) ← parseContext only hyps (← g.getType)
+    let (α, hyps', target) ← parseContext only hyps (← g.getType)
     let rec
       /-- Try to prove the goal by `ring` and fail with the given message otherwise. -/
       byRing msg := do
@@ -442,7 +442,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     if hyps'.isEmpty then
       return ← byRing "polyrith did not find any relevant hypotheses"
     let vars := (← get).atoms.size
-    match ← runSage traceOnly α vars hyps' tgt with
+    match ← runSage traceOnly α vars hyps' target with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
       if let some {coeffs := polys, power := pow} := data then
