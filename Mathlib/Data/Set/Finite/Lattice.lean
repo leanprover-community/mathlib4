@@ -198,6 +198,16 @@ theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f
 
 end SetFiniteConstructors
 
+/--
+If the image of `s` under `f` is finite, and each fiber of `f` has a finite intersection
+with `s`, then `s` is itself finite.
+
+It is useful to give `f` explicitly here so this can be used with `apply`.
+-/
+lemma Finite.of_finite_fibers (f : α → β) {s : Set α} (himage : (f '' s).Finite)
+    (hfibers : ∀ x ∈ f '' s, (s ∩ f ⁻¹' {x}).Finite) : s.Finite :=
+  (himage.biUnion hfibers).subset fun x ↦ by aesop
+
 /-! ### Properties -/
 
 theorem finite_subset_iUnion {s : Set α} (hs : s.Finite) {ι} {t : ι → Set α} (h : s ⊆ ⋃ i, t i) :

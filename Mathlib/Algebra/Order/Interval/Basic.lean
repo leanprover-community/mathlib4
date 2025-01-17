@@ -166,7 +166,7 @@ theorem bot_mul : ⊥ * t = ⊥ :=
 theorem mul_bot : s * ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 
--- Porting note: simp can prove `add_bot`
+-- simp can already prove `add_bot`
 attribute [simp] mul_bot
 
 end Interval
@@ -247,7 +247,7 @@ theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : �
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 
--- Porting note: simp can prove `coe_nsmul_interval`
+-- simp can already prove `coe_nsmul_interval`
 attribute [simp] coe_pow_interval
 
 end NonemptyInterval

@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.WithOne.Defs
 
 /-!
