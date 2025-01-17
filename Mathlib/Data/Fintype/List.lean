@@ -40,10 +40,7 @@ theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations :=
 
 @[simp]
 theorem lists_nodup_finset (l : Finset α) : (lists (l.val)).Nodup := by
-  have h_nodup : l.val.Nodup := l.nodup
-  rw [← Finset.coe_toList l, Multiset.coe_nodup] at h_nodup
-  rw [← Finset.coe_toList l]
-  exact nodup_permutations l.val.toList (h_nodup)
+  simpa [← Finset.coe_toList] using l.nodup
 
 @[simp]
 theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = ⟦l⟧ := by
@@ -53,50 +50,27 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 end Multiset
 
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
-  refine Fintype.ofFinset ?_ ?_
-  · let univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
-    let allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
+  refine Fintype.ofFinset (p := { l : List α | l.Nodup }) ?_ ?_
+  · letI univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
+    letI allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
     refine ⟨allPerms, Multiset.nodup_bind.mpr ?_⟩
     simp only [Multiset.lists_nodup_finset, implies_true, true_and]
     unfold Multiset.Pairwise
     use ((Finset.univ : Finset α).powerset.toList : (List (Finset α)))
     constructor
-    · simp only [Finset.coe_toList]
-      rfl
+    · simp only [Finset.coe_toList, univSubsets]
     · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
       ext l
       unfold Nodup
       refine Pairwise.iff ?_
       intro m n
-      simp only [_root_.Disjoint]
-      rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
-      have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
-      rw  [_root_.Disjoint] at this
-      rw [this]
-      simp only [ne_eq]
-      rw [List.disjoint_iff_ne]
+      simp only [Function.onFun]
+      rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe,
+        Multiset.coe_disjoint, List.disjoint_iff_ne]
       constructor
-      · intro h
-        by_contra hc
-        rw [hc] at h
-        contrapose! h
-        use n.toList
-        simp
-      · intro h
-        simp only [mem_permutations]
-        intro a ha b hb
-        by_contra hab
-        absurd h
-        rw [hab] at ha
-        exact Finset.perm_toList.mp <| Perm.trans (id (Perm.symm ha)) hb
-  · intro l
-    simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
-      Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]
-    constructor
-    · intro h
-      rcases h with ⟨f, hf⟩
-      convert f.nodup
-      rw [hf]
-      rfl
-    · intro h
-      exact CanLift.prf _ h
+      · rintro h rfl
+        refine h m.toList ?_ m.toList ?_ ?_ <;> simp
+      · simp only [mem_permutations]
+        rintro h a ha b hb rfl
+        exact h <| Finset.perm_toList.mp <| ha.symm.trans hb
+  · simp [← Multiset.coe_nodup, ← Set.mem_range, Multiset.nodup_iff_exists_finset]
