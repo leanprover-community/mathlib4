@@ -27,7 +27,27 @@ variable (C : Set E)
 
 /-- The prime of `s : Set E` is given by the set of all `y` in `polar C` such that `B x y = 1`
 for all `x ∈ s`. -/
-def prime (s : Set E) : Set F :=
-  { y : F | y ∈ B.polar C ∧ ∀ x ∈ s, B x y = 1 }
+def prime (s : Set C) : Set (B.polar C) :=
+  { y : (B.polar C) | ∀ x ∈ s, B x y = 1 }
+
+#check GaloisInsertion
+
+theorem prime_gc (hC : B.flip.polar (B.polar C) = C) :
+    GaloisConnection (OrderDual.toDual ∘ (B.prime C))
+      ((B.flip.prime (B.polar C)) ∘ OrderDual.ofDual) := fun s t => by
+  constructor
+  · intro h
+    simp
+    simp at h
+    intro x hx
+    rw [prime]
+    simp
+    constructor
+    · rw [hC]
+
+    rw [OrderDual.toDual, Equiv.refl, prime] at h
+    simp at h
+
+
 
 end LinearMap
