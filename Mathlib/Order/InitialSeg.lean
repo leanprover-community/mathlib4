@@ -217,7 +217,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     cases hy (Set.mem_range_self z)
 
 /-- Restrict the codomain of an initial segment -/
-def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
+def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s (· ∈ p) :=
   ⟨RelEmbedding.codRestrict p f H, fun a ⟨b, m⟩ h =>
     let ⟨a', e⟩ := f.mem_range_of_rel h
     ⟨a', by subst e; rfl⟩⟩
@@ -458,11 +458,9 @@ theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ �
 @[deprecated top_rel_top (since := "2024-10-10")]
 alias topLTTop := top_rel_top
 
-/-- Build a principal segment embedding into a given interval `{ b | r b a }`. -/
--- The explicit typing is required in order for `simp` to work properly.
+/-- Any element of a well order yields a principal segment. -/
 @[simps!]
-def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
-    @PrincipalSeg { b // r b a } α (Subrel r { b | r b a }) r :=
+def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r (r · a) ≺i r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h => ⟨⟨_, h⟩, rfl⟩⟩⟩
 
 @[simp]
@@ -470,15 +468,13 @@ theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofE
   rfl
 
 /-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
--- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply]
-noncomputable def subrelIso (f : r ≺i s) :
-    @RelIso { b // s b f.top } α (Subrel s { b | s b f.top }) r :=
+noncomputable def subrelIso (f : r ≺i s) : Subrel s (s · f.top) ≃r r :=
   RelIso.symm ⟨(Equiv.ofInjective f f.injective).trans
     (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
 
 @[simp]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b) = b :=
+theorem apply_subrelIso (f : r ≺i s) (b : {b // s b f.top}) : f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 @[simp]
@@ -486,7 +482,8 @@ theorem subrelIso_apply (f : r ≺i s) (a : α) : f.subrelIso ⟨f a, f.lt_top a
   Equiv.ofInjective_symm_apply f.injective _
 
 /-- Restrict the codomain of a principal segment embedding. -/
-def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
+def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) :
+    r ≺i Subrel s (· ∈ p) :=
   ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ => by simp [← f.mem_range_iff_rel]⟩
 
 @[simp]
