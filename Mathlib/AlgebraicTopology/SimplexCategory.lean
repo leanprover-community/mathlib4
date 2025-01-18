@@ -771,7 +771,8 @@ open Mathlib.Tactic (subscriptTerm) in
 proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   "[" term ("," term)? "]" noWs subscriptTerm : term
-macro_rules
+
+scoped macro_rules
   | `([$m:term]$n:subscript) =>
     `((⟨SimplexCategory.mk $m, by trunc⟩ : SimplexCategory.Truncated $n))
   | `([$m:term, $p:term]$n:subscript) =>
