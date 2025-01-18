@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Possibly infinite lists
@@ -116,8 +115,7 @@ theorem get?_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1)
 @[simp]
 theorem cons_ne_nil {x : α} {s : Seq α} : (cons x s) ≠ .nil := by
   intro h
-  apply_fun (·.get? 0) at h
-  simp at h
+  simpa using congrArg (·.get? 0) h
 
 @[simp]
 theorem nil_ne_cons {x : α} {s : Seq α} : .nil ≠ (cons x s) := cons_ne_nil.symm
