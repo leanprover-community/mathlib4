@@ -47,7 +47,7 @@ namespace Path₁
 
 variable {X} {n : ℕ}
 
-/-- Two paths of length `n + 1` are equal if all of their arrows are equal. -/
+/-- To show two paths equal it suffices to show that they have the same edges. -/
 @[ext]
 lemma ext' {f g : Path₁ X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g := by
   ext j
@@ -95,7 +95,7 @@ namespace Path
 
 variable {X} {m : ℕ}
 
-/-- Two paths of length `n + 1` are equal if all of their arrows are equal. -/
+/-- To show two paths equal it suffices to show that they have the same edges. -/
 @[ext]
 lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
   Path₁.ext' h
@@ -174,7 +174,7 @@ open Truncated (Path₁)
 
 variable {X} {n : ℕ}
 
-/-- Two paths of length `n + 1` are equal if all of their arrows are equal. -/
+/-- To show two paths equal it suffices to show that they have the same edges. -/
 @[ext]
 lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
   Path₁.ext' h
