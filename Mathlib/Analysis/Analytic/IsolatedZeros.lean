@@ -231,12 +231,12 @@ lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
   rw [(by rfl : (0 : ENat) = (0 : Nat)), order_eq_nat_iff hf 0]
   constructor
-  · intro ⟨g, _, _, hg⟩; simpa [Eventually.self_of_nhds hg]
-  · intro hz; use f; exact ⟨hf, hz, by simp⟩
+  · intro ⟨g, _, _, hg⟩; simpa [hg.self_of_nhds]
+  · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
 
 /- An analytic function vanishes at a point if its order vanishes when converted to ℕ. -/
-lemma zero_if_order_toNat_eq_zero (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order.toNat ≠ 0 → f z₀ = 0 := by simp [hf.order_eq_zero_iff]; tauto
+lemma zero_if_order_toNat_eq_zero (hf : AnalyticAt 𝕜 f z₀) : hf.order.toNat ≠ 0 → f z₀ = 0 := by
+  simp [hf.order_eq_zero_iff]; tauto
 
 end AnalyticAt
 
