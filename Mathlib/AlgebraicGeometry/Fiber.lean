@@ -36,14 +36,16 @@ def Scheme.Hom.fiberι (f : X.Hom Y) (y : Y) : f.fiber y ⟶ X := pullback.fst _
 
 instance (f : X.Hom Y) (y : Y) : (f.fiber y).CanonicallyOver X where hom := f.fiberι y
 
-instance (f : X.Hom Y) (y : Y) : (f.fiber y).Over X where hom := f.fiberι y
-
 /-- The canonical map from the scheme theoretic fiber to the residue field. -/
 def Scheme.Hom.fiberToSpecResidueField (f : X.Hom Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
-@[simp]
+/-- The fiber of `f` at `y` is naturally a `κ(y)`-scheme. -/
+@[reducible] def Scheme.Hom.fiberOverSpecResidueField
+    (f : X.Hom Y) (y : Y) : (f.fiber y).Over (Spec (Y.residueField y)) where
+  hom := f.fiberToSpecResidueField y
+
 lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X.Hom Y) (y : Y) (x : f.fiber y) :
     (f.fiberToSpecResidueField y).base x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
