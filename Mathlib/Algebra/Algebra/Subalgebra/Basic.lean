@@ -284,14 +284,13 @@ which can quickly get expensive.
 -/
 instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     [IsScalarTower R' R A] :
-    Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
-      rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
-        Algebra.algebraMap_eq_smul_one]
-      exact algebraMap_mem S
-          _ with
-    commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
-    smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _ }
+    Algebra R' S where
+  algebraMap := (algebraMap R' A).codRestrict S fun x => by
+    rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
+      Algebra.algebraMap_eq_smul_one]
+    exact algebraMap_mem S _
+  commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
+  smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _
 
 instance algebra : Algebra R S := S.algebra'
 
@@ -425,11 +424,12 @@ variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
 
 instance (priority := 75) toAlgebra : Algebra R s where
-  toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
-  map_one' := Subtype.ext <| by simp
-  map_mul' _ _ := Subtype.ext <| by simp
-  map_zero' := Subtype.ext <| by simp
-  map_add' _ _ := Subtype.ext <| by simp
+  algebraMap := {
+    toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
+    map_one' := Subtype.ext <| by simp
+    map_mul' _ _ := Subtype.ext <| by simp
+    map_zero' := Subtype.ext <| by simp
+    map_add' _ _ := Subtype.ext <| by simp}
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -468,8 +468,6 @@ def toSubalgebra (p : Submodule R A) (h_one : (1 : A) ∈ p)
 theorem mem_toSubalgebra {p : Submodule R A} {h_one h_mul} {x} :
     x ∈ p.toSubalgebra h_one h_mul ↔ x ∈ p := Iff.rfl
 
--- Porting note: changed statement to reflect new structures
--- @[simp] -- Porting note: as a result, it is no longer a great simp lemma
 theorem toSubalgebra_mk (s : Submodule R A) (h1 hmul) :
     s.toSubalgebra h1 hmul =
       Subalgebra.mk ⟨⟨⟨s, @hmul⟩, h1⟩, s.add_mem, s.zero_mem⟩
