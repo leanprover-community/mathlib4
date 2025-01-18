@@ -153,10 +153,8 @@ def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → 
     · intro h
       exact (h (Finset.mem_univ _)).elim
 
--- Porting note: removed @[simp] as simp can prove this
 theorem degreeLTEquiv_eq_zero_iff_eq_zero {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) :
-    degreeLTEquiv _ _ ⟨p, hp⟩ = 0 ↔ p = 0 := by
-  rw [LinearEquiv.map_eq_zero_iff, Submodule.mk_eq_zero]
+    degreeLTEquiv _ _ ⟨p, hp⟩ = 0 ↔ p = 0 := by simp
 
 theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) (x : R) :
     p.eval x = ∑ i, degreeLTEquiv _ _ ⟨p, hp⟩ i * x ^ (i : ℕ) := by
@@ -359,9 +357,8 @@ theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑(coeff (restriction p) n) = 
     rfl
   · rfl
 
--- Porting note: removed @[simp] as simp can prove this
-theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = coeff p n :=
-  coeff_restriction
+theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = coeff p n := by
+  simp
 
 @[simp]
 theorem support_restriction (p : R[X]) : support (restriction p) = support p := by
@@ -429,9 +426,8 @@ theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n 
     rfl
   · rfl
 
--- Porting note: removed @[simp] as simp can prove this
-theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n :=
-  coeff_toSubring _ _ hp
+theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n := by
+  simp
 
 @[simp]
 theorem support_toSubring : support (toSubring p T hp) = support p := by
