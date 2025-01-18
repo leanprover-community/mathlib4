@@ -34,14 +34,13 @@ variable {α β γ : Type}
 
 namespace QueryComplexity
 
--- A deterministic oracle is a map from `α` to `Bool`
+/-- A deterministic oracle is a map from `α` to `Bool` -/
 def Oracle (α : Type) := α → Bool
 
 /- A deterministic computation that make decisions by querying oracles. A computation is either a
-   pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
-   be queried by the oracle (`i`) and two other computations, to be run depending on the answer
-   of the oracle.
--/
+pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
+be queried by the oracle (`i`) and two other computations, to be run depending on the answer
+of the oracle. -/
 inductive Comp (ι : Type) {I : Type} (s : Set I) (α : Type) : Type where
   | pure' : α → Comp ι s α
   | query' : (o : I) → o ∈ s → (i : ι) → Comp ι s α → Comp ι s α → Comp ι s α
@@ -59,12 +58,12 @@ instance : Monad (Comp ι s) where
   bind := Comp.bind'
 
 /-- Produce a `Comp` given the identifier of an oracle and a value to be queried. The `Comp`
-    just returns `true` or `false` according to the answer of the oracle. -/
+just returns `true` or `false` according to the answer of the oracle. -/
 def query (o : I) (y : ι) : Comp ι {o} Bool :=
   Comp.query' o (mem_singleton _) y (pure true) (pure false)
 
 /-- Execute `f` with the oracles `os`. Returns the final value and the number of queries to
-    each one of the oracles. -/
+each one of the oracles. -/
 def run (f : Comp ι s α) (os : I → Oracle ι) : α × (I → ℕ) := match f with
   | .pure' x => (x, fun _ => 0)
   | .query' i _ y f0 f1 =>
@@ -77,7 +76,8 @@ def value (f : Comp ι s α) (o : I → Oracle ι) : α :=
   Prod.fst (f.run o)
 
 /-- The value of a `Comp ι s` after it's execution with a single oracle -/
-@[simp] def value' (f : Comp ι s α) (o : Oracle ι) : α :=
+@[simp]
+def value' (f : Comp ι s α) (o : Oracle ι) : α :=
   f.value fun _ ↦ o
 
 /-- The query count for a specific oracle of a `Comp ι s` -/

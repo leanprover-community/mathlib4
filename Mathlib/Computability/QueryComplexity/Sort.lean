@@ -115,7 +115,8 @@ lemma oracle_inj (α : Type) [Fintype α] : (oracle (α := α)).Injective := by
   simpa only [unoracle_oracle, DFunLike.coe_fn_eq] using h
 
 /-- There are `n!` valid oracles -/
-@[simp] lemma card_oracles (α : Type) [Fintype α] :
+@[simp]
+lemma card_oracles (α : Type) [Fintype α] :
     (oracles α).card = (Fintype.card α).factorial := by
   simp only [oracles, Finset.card_image_of_injective _ (oracle_inj _), Finset.card_univ]
   exact Fintype.card_equiv (Fintype.equivFin α)
@@ -161,7 +162,7 @@ lemma merge_eq (o : SOracle α) : (s t : List α) →
     simp only [value', merge, value_bind, value_allow_all, value_query, List.merge]
     cases o (a, b)
     · simp only [Bool.false_eq_true, ↓reduceIte, bind_pure_comp, value_map, List.cons.injEq,
-                 true_and]
+        true_and]
       apply merge_eq o _ _
     · simp only [↓reduceIte, bind_pure_comp, value_map, List.cons.injEq, true_and]
       apply merge_eq o _ _
@@ -202,10 +203,9 @@ lemma cost_merge_le (o : SOracle α) : (s t : List α) →
   | [], _ => by simp [merge, List.merge]
   | (_ :: _), [] => by simp [merge, List.merge]
   | (a :: l), (b :: r) => by
-    simp only [cost', merge, cost_bind, cost_allow_all, cost_query,
-               value_allow_all, value_query, List.length_cons, Nat.succ_eq_add_one,
-               Nat.cast_add, Nat.cast_one, min_add_add_right, add_comm 1,
-               add_le_add_iff_right, ← add_assoc]
+    simp only [cost', merge, cost_bind, cost_allow_all, cost_query, value_allow_all, value_query,
+      List.length_cons, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, min_add_add_right,
+      add_comm 1, add_le_add_iff_right, ← add_assoc]
     cases o (a, b)
     · simp only [Bool.false_eq_true, ↓reduceIte, bind_pure_comp, cost_map]
       apply cost_merge_le o _ _
@@ -230,11 +230,11 @@ lemma length_merge (o : SOracle α) : (s t x : List α) →
     by_cases ho : (o (a, b))
     · rw [ho] at px; simp at px; rw [<- px]; simp;
       have ih := length_merge o s (b :: t) ((merge s (b :: t)).value (fun _ => o)) rfl
-      simp at ih
+      simp only [List.length_cons] at ih
       omega
     · simp at ho; rw [ho] at px; simp at px; rw [<- px]; simp;
       have ih := length_merge o (a :: s) t ((merge (a :: s) t).value (fun _ => o)) rfl
-      simp at ih
+      simp only [List.length_cons] at ih
       omega
 
 /-- `mergeSort` preserves `length` -/
@@ -243,8 +243,7 @@ lemma length_mergeSort (o : SOracle α) : (s x : List α) →
     x.length = s.length := by
   intros s x p
   rw [mergeSort_eq o s] at p
-  rw [<- p]
-  rw [List.length_mergeSort]
+  rw [<- p, List.length_mergeSort]
 
 /-- `log2 n`, rounding up -/
 def Nat.ceil_log2 (n : ℕ) : ℕ := Nat.log2 (2 * n - 1)
@@ -258,7 +257,8 @@ lemma Nat.le_ceil_log2 (n : ℕ) : n ≤ 2 ^ ceil_log2 n := by
     omega
 
 /-- `Nat.ceil_log2 n` is zero for `n ≤ 1` -/
-@[simp] lemma Nat.ceil_log2_eq_zero_iff (n : ℕ) : ceil_log2 n = 0 ↔ n ≤ 1 := by
+@[simp]
+lemma Nat.ceil_log2_eq_zero_iff (n : ℕ) : ceil_log2 n = 0 ↔ n ≤ 1 := by
   by_cases n0 : n = 0
   · simp only [ceil_log2, n0, mul_zero, _root_.zero_le, tsub_eq_zero_of_le, Nat.log2_zero]
   by_cases n1 : n = 1
@@ -292,7 +292,7 @@ lemma Nat.log2_le_log2 {a b : ℕ} (ab : a ≤ b) : a.log2 ≤ b.log2 := by
 lemma Nat.ceil_log2_le_ceil_log2 {a b : ℕ} (ab : a ≤ b) : ceil_log2 a ≤ ceil_log2 b := by
   apply Nat.log2_le_log2; omega
 
- /-- `n/2` has one smaller `ceil_log2` -/
+/-- `n/2` has one smaller `ceil_log2` -/
 lemma Nat.ceil_log2_div2 (n : ℕ) (n2 : 2 ≤ n) : ceil_log2 (n / 2) ≤ ceil_log2 n - 1 := by
   simp only [ceil_log2]
   have e : (2 * n - 1).log2 = ((2 * n - 1) / 2).log2 + 1 := by
@@ -353,7 +353,7 @@ lemma cost_mergeSort_le (o : SOracle α) (s : List α) :
       let l2 := (List.splitAt t (a :: b :: s)).2
       have l1_length : l1.length < n := by
         simp only [t, l1, List.length_cons, List.splitAt_eq, List.length_take, ← hn, inf_lt_right,
-                   not_le]
+          not_le]
         omega
       have l2_length : l2.length < n := by
         simp only [t, l2, List.length_cons, List.splitAt_eq, List.length_drop]
