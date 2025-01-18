@@ -32,9 +32,11 @@ namespace Truncated
 
 open SimplexCategory.Truncated SimplicialObject.Truncated
 
+variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
+
 /-- An `n + 1`-truncated simplicial set satisfies the strict Segal condition if
 its simplices are uniquely determined by their spine. -/
-structure StrictSegal {n : ℕ} (X : SSet.Truncated.{u} (n + 1)) where
+structure StrictSegal where
   /-- The inverse to `spine X m`. -/
   spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by leq) : Path X m → X _[m]ₙ₊₁
   /-- `spineToSimplex` is a right inverse to `spine X m`. -/
@@ -44,14 +46,18 @@ structure StrictSegal {n : ℕ} (X : SSet.Truncated.{u} (n + 1)) where
   spineToSimplex_spine (m : ℕ) (h : m ≤ n + 1 := by leq) :
     spineToSimplex m ∘ spine X m = id
 
+/-- For an `n + 1`-truncated simplicial set `X`, `IsStrictSegal X` asserts the
+mere existence of an inverse to `spine X m` for all `m ≤ n + 1`. -/
+class IsStrictSegal : Prop where
+  segal (m : ℕ) (h : m ≤ n + 1) : Function.Bijective (X.spine m)
+
 namespace StrictSegal
 
 /- TODO: find a better way than this section to avoid capturing an extra `m`
 in `spine_δ_arrow_eq`. -/
 section
 
-variable {n : ℕ} {X : SSet.Truncated.{u} (n + 1)} (segal : StrictSegal X)
-  (m : ℕ) (h : m ≤ n + 1 := by leq)
+variable {X} (segal : StrictSegal X) (m : ℕ) (h : m ≤ n + 1 := by leq)
 
 lemma spine_spineToSimplex_apply (f : Path X m) :
     X.spine m h (segal.spineToSimplex m h f) = f :=
@@ -68,6 +74,11 @@ def spineEquiv : X _[m]ₙ₊₁ ≃ Path X m where
   invFun := segal.spineToSimplex m
   left_inv := segal.spineToSimplex_spine_apply m
   right_inv := segal.spine_spineToSimplex_apply m
+
+/-- The unique existence of an inverse to `spine X m` for all `m ≤ n + 1`
+implies the mere existence of such an inverse. -/
+instance isStrictSegal_of_strictSegal : IsStrictSegal X where
+  segal m h := segal.spineEquiv m h |>.bijective
 
 theorem spineInjective : Function.Injective (spineEquiv segal m) :=
   Equiv.injective _
@@ -185,14 +196,19 @@ lemma spine_δ_arrow_eq {n : ℕ} {X : SSet.Truncated.{u} (n + 2)} (segal : Stri
 end StrictSegal
 end Truncated
 
+variable (X : SSet.{u})
+
 /-- A simplicial set `X` is `SSet.StrictSegal` if the `n + 1`-truncation of `X`
 is `SSet.Truncated.StrictSegal` for all `n : ℕ`. -/
-abbrev StrictSegal (X : SSet.{u}) :=
-  ∀ n : ℕ, truncation (n + 1) |>.obj X |>.StrictSegal
+abbrev StrictSegal := ∀ n : ℕ, truncation (n + 1) |>.obj X |>.StrictSegal
+
+/-- For `X` a simplicial set, `SSet.IsStrictSegal X` asserts that the `n + 1`
+truncation of `X` satisfies `SSet.Truncated.IsStrictSegal` for all `n : ℕ`. -/
+abbrev IsStrictSegal := ∀ n : ℕ, truncation (n + 1) |>.obj X |>.IsStrictSegal
 
 namespace StrictSegal
 
-variable {X : SSet.{u}} (segal : StrictSegal X) {n : ℕ}
+variable {X} (segal : StrictSegal X) {n : ℕ}
 
 /-- The inverse to `spine X n`. -/
 abbrev spineToSimplex : Path X n → X _[n] := segal n |>.spineToSimplex n
@@ -216,6 +232,11 @@ lemma spineToSimplex_spine_apply (Δ : X _[n]) :
 /-- The fields of `StrictSegal` define an equivalence between `X _[m]`
 and `Path X m`. -/
 abbrev spineEquiv (n : ℕ) : X _[n] ≃ Path X n := segal n |>.spineEquiv n
+
+/-- The unique existence of an inverse to `spine X n` implies the mere
+existence of such an inverse. -/
+instance isStrictSegal_of_strictSegal : IsStrictSegal X :=
+  fun n ↦ segal n |>.isStrictSegal_of_strictSegal
 
 theorem spineInjective : Function.Injective (segal.spineEquiv n) :=
   segal n |>.spineInjective n
