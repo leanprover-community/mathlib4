@@ -116,7 +116,9 @@ example [Module.Finite k L] [IsKilling k L] : IsSemisimple k L := by
 example [Module.Finite k L] [IsKilling k L] : HasTrivialRadical k L := by
   infer_instance
 
+open LieAlgebra in
 lemma exists_traceForm_ne_zero_of_perfect [FiniteDimensional k L] [FiniteDimensional k V]
+    [LieModule.IsTriangularizable k L V]
     [Nontrivial L] (hL : LieAlgebra.derivedSeries k L 1 = ⊤) (hLsub : Function.Injective (π L V)) :
     ∃ x : L, LieModule.traceForm k L V x x ≠ 0 := by
   by_contra! hLV
@@ -138,9 +140,35 @@ lemma exists_traceForm_ne_zero_of_perfect [FiniteDimensional k L] [FiniteDimensi
     sorry
   suffices LieModule.genWeightSpace V (0 : H → k) = ⊤ by
     sorry
-  suffices ∀ χ : H → k, χ ≠ 0 → LieModule.genWeightSpace V χ = ⊥ by
+  suffices ∀ χ : H → k, LieModule.genWeightSpace V χ ≠ ⊥ → χ = 0 by
     sorry
-  sorry
+  intro χ' hχ
+  let χ : LieModule.Weight k H V := ⟨χ', hχ⟩
+  suffices ∀ (α : LieModule.Weight k H L) (e : rootSpace H α) (f : rootSpace H (-⇑α)) (h : H),
+    ⁅(e:L), (f:L)⁆ = h → χ h = 0 by
+    sorry
+  intro α e f h hh
+  have key := LieModule.traceForm_eq_sum_finrank_nsmul_mul k H V h h
+  replace hLV : LieModule.traceForm k H V h h = 0 := hLV h
+  choose r hr using LieSubalgebra.exists_weight_eq_mul_root (k := k) (L := L) (V := V) H
+  replace hr := fun χ ↦ hr χ α e f h hh
+  simp_rw [hLV, nsmul_eq_mul, ← pow_two, hr, mul_pow, ← mul_assoc, ← Finset.sum_mul] at key
+  rw [eq_comm, mul_eq_zero, pow_two, mul_eq_zero, or_self] at key
+  by_cases hα : α h = 0
+  · simpa [hα] using hr χ
+  simp only [hα, or_false] at key
+  norm_cast at key
+  rw [Finset.sum_eq_zero_iff_of_nonneg] at key
+  swap; · intros; positivity
+  specialize key χ (Finset.mem_univ χ)
+  rw [mul_eq_zero, pow_two, mul_eq_zero, or_self] at key
+  by_cases hrχ : r χ α = 0
+  · simpa [hrχ] using hr χ
+  simp only [hrχ, or_false] at key
+  norm_cast at key
+  rw [Module.finrank_zero_iff] at key
+  rw [← LieSubmodule.nontrivial_iff_ne_bot] at hχ
+  apply (not_nontrivial _ hχ).elim
 
 -- move this
 instance [Subsingleton L] : IsSolvable k L := by
