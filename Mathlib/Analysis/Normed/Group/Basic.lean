@@ -89,6 +89,9 @@ lemma enorm_eq_nnnorm : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
 @[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
 
+@[simp] lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
+@[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
+
 end ENorm
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
@@ -703,6 +706,9 @@ lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=

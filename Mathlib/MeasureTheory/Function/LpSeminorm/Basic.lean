@@ -371,7 +371,7 @@ end Neg
 section Const
 
 theorem eLpNorm'_const (c : F) (hq_pos : 0 < q) :
-    eLpNorm' (fun _ : α => c) q μ = (‖c‖₊ : ℝ≥0∞) * μ Set.univ ^ (1 / q) := by
+    eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
     ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ 1 / q)]
   congr
@@ -383,7 +383,7 @@ theorem eLpNorm'_const (c : F) (hq_pos : 0 < q) :
 alias snorm'_const := eLpNorm'_const
 
 theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
-    eLpNorm' (fun _ : α => c) q μ = (‖c‖₊ : ℝ≥0∞) * μ Set.univ ^ (1 / q) := by
+    eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
     ENNReal.mul_rpow_of_ne_top _ (measure_ne_top μ Set.univ)]
   · congr
@@ -391,29 +391,25 @@ theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
     rw [one_div, mul_inv_cancel₀ hq_ne_zero]
   · rw [Ne, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
-    constructor
-    · left
-      rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero]
-    · exact Or.inl ENNReal.coe_ne_top
+    simp [hc_ne_zero]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_const' := eLpNorm'_const'
 
-theorem eLpNormEssSup_const (c : F) (hμ : μ ≠ 0) :
-    eLpNormEssSup (fun _ : α => c) μ = (‖c‖₊ : ℝ≥0∞) := by
+theorem eLpNormEssSup_const (c : F) (hμ : μ ≠ 0) : eLpNormEssSup (fun _ : α => c) μ = ‖c‖ₑ := by
   rw [eLpNormEssSup_eq_essSup_enorm, essSup_const _ hμ]
 
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_const := eLpNormEssSup_const
 
 theorem eLpNorm'_const_of_isProbabilityMeasure (c : F) (hq_pos : 0 < q) [IsProbabilityMeasure μ] :
-    eLpNorm' (fun _ : α => c) q μ = (‖c‖₊ : ℝ≥0∞) := by simp [eLpNorm'_const c hq_pos, measure_univ]
+    eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ := by simp [eLpNorm'_const c hq_pos, measure_univ]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_const_of_isProbabilityMeasure := eLpNorm'_const_of_isProbabilityMeasure
 
 theorem eLpNorm_const (c : F) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
-    eLpNorm (fun _ : α => c) p μ = (‖c‖₊ : ℝ≥0∞) * μ Set.univ ^ (1 / ENNReal.toReal p) := by
+    eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   by_cases h_top : p = ∞
   · simp [h_top, eLpNormEssSup_const c hμ]
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
@@ -422,7 +418,7 @@ theorem eLpNorm_const (c : F) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
 alias snorm_const := eLpNorm_const
 
 theorem eLpNorm_const' (c : F) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
-    eLpNorm (fun _ : α => c) p μ = (‖c‖₊ : ℝ≥0∞) * μ Set.univ ^ (1 / ENNReal.toReal p) := by
+    eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
 
 @[deprecated (since := "2024-07-27")]
@@ -862,7 +858,7 @@ lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (h
     eLpNorm (s.indicator fun _ => c) p μ
       = (∫⁻ x, ((‖(s.indicator fun _ ↦ c) x‖₊ : ℝ≥0∞) ^ p.toReal) ∂μ) ^ (1 / p.toReal) :=
           eLpNorm_eq_lintegral_rpow_enorm hp hp_top
-    _ = (∫⁻ x, (s.indicator fun _ ↦ (‖c‖₊ : ℝ≥0∞) ^ p.toReal) x ∂μ) ^ (1 / p.toReal) := by
+    _ = (∫⁻ x, (s.indicator fun _ ↦ ‖c‖ₑ ^ p.toReal) x ∂μ) ^ (1 / p.toReal) := by
       congr 2
       refine (Set.comp_indicator_const c (fun x ↦ (‖x‖₊ : ℝ≥0∞) ^ p.toReal) ?_)
       simp [hp_pos]
@@ -1456,7 +1452,7 @@ theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
 alias snorm'_const_smul := eLpNorm'_const_smul
 
 theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
-    eLpNormEssSup (c • f) μ = (‖c‖₊ : ℝ≥0∞) * eLpNormEssSup f μ := by
+    eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, nnnorm_smul, ENNReal.coe_mul,
     ENNReal.essSup_const_mul]
 
@@ -1464,7 +1460,7 @@ theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
 alias snormEssSup_const_smul := eLpNormEssSup_const_smul
 
 theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α):
-    eLpNorm (c • f) p μ = (‖c‖₊ : ℝ≥0∞) * eLpNorm f p μ := by
+    eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
   refine le_antisymm eLpNorm_const_smul_le ?_
