@@ -191,11 +191,13 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
+variable (A) (B)
+
 @[reducible] def toLE : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
 
 @[reducible] def toPartialOrder : PartialOrder A where
-  __ := toLE
+  __ := toLE A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
 
 attribute [local instance] toLE toPartialOrder

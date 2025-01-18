@@ -29,15 +29,14 @@ of this class is to abstract the closure construction common to most algebraic s
 -/
 
 class IsConcreteSInf (A B : Type*) [SetLike A B] [InfSet A] where
-  coe_sInf' {s : Set A} : SetLike.coe (sInf s) = sInf (SetLike.coe '' s)
+  coe_sInf' {s : Set A} : ((sInf s : A) : Set B) = ⋂ a ∈ s, ↑a
 
 namespace IsConcreteSInf
 
 variable {A B : Type*} [SetLike A B] [InfSet A] [IsConcreteSInf A B]
 
 @[simp, norm_cast]
-theorem coe_sInf {s : Set A} : ((sInf s : A) : Set B) = ⋂ a ∈ s, a := by
-  simpa using IsConcreteSInf.coe_sInf'
+theorem coe_sInf {s : Set A} : ((sInf s : A) : Set B) = ⋂ a ∈ s, a := IsConcreteSInf.coe_sInf'
 
 theorem mem_sInf {s : Set A} {x : B} : x ∈ sInf s ↔ ∀ a ∈ s, x ∈ a := by
   rw [← SetLike.mem_coe]; simp
@@ -58,10 +57,9 @@ class IsConcreteClosure (A B : Type*) [SetLike A B] [Preorder A] [HasClosure A B
 
 namespace SetLike
 
-variable {A B : Type*} [SetLike A B]
+variable (A B : Type*) [SetLike A B]
 
-@[reducible] def toHasClosure [InfSet A] [LE A] :
-    HasClosure A B where
+@[reducible] def toHasClosure [InfSet A] [LE A] : HasClosure A B where
   closure s := sInf {a : A | s ≤ a}
 
 instance [CompleteLattice A] [IsConcreteSInf A B] : IsConcreteLE A B where
@@ -73,7 +71,7 @@ instance [CompleteLattice A] [IsConcreteSInf A B] : IsConcreteLE A B where
 Construct a complete lattice on `A` on from an injection `A → Set B` that respects the ordering
 and arbitrary infima.
 -/
-@[reducible] def toCompleteLattice_concrete
+@[reducible] def toCompleteLattice
     [PartialOrder A] [IsConcreteLE A B] [InfSet A] [IsConcreteSInf A B] : CompleteLattice A :=
   completeLatticeOfInf A fun s => IsGLB.of_image IsConcreteLE.coe_subset_coe
     (by simpa [IsConcreteSInf.coe_sInf] using isGLB_biInf)
@@ -82,16 +80,12 @@ and arbitrary infima.
 Construct a complete lattice on a type `A` from an injection `A → Set B`
 that reflects arbitrary intersections.
 -/
-@[reducible] noncomputable def toCompleteLattice
+@[reducible] noncomputable def toCompleteLattice_abstract
     (exists_coe_eq_iInter : ∀ {s : Set A}, ∃ a : A, (a : Set B) = ⋂ a' ∈ s, a') :
     CompleteLattice A :=
   let _ : InfSet A := ⟨fun _ => Classical.choose exists_coe_eq_iInter⟩
-  @toCompleteLattice_concrete _ _ _ toPartialOrder _ _
+  @toCompleteLattice _ _ _ (toPartialOrder _ _) _ _
     ⟨fun {_} => by simpa using Classical.choose_spec exists_coe_eq_iInter⟩
-
-end SetLike
-
-section CompleteLattice
 
 variable {L α : Type*} [SetLike L α] [CompleteLattice L] [IsConcreteSInf L α]
 
@@ -190,4 +184,4 @@ theorem iSup_eq_closure {ι : Sort*} (l : ι → L) :
     ⨆ i, l i = HasClosure.closure (⋃ i, (l i : Set α)) := by
   simp_rw [closure_iUnion, closure_eq]
 
-end CompleteLattice
+end SetLike
