@@ -785,7 +785,7 @@ lemma adj_iff_of_neighborSet_equiv {v : V} [DecidableEq V] {H : Subgraph G}
   intro h
   have hv := ((Fintype.bijInv hfbij) ⟨w, h⟩).coe_prop
   obtain ⟨v', hv'⟩ : ∃ v', f v' = ⟨w, h⟩ := hfbij.surjective ⟨w, h⟩
-  have : ↑(f v') = w := by simpa using congrArg Subtype.val hv'
+  have : (f v') = w := by simpa using congrArg Subtype.val hv'
   aesop
 
 end Subgraph
