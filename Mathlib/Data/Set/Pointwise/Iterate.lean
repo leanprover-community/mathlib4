@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
