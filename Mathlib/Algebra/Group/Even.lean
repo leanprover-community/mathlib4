@@ -105,9 +105,9 @@ variable [Monoid α] {n : ℕ} {a : α}
 @[to_additive even_iff_exists_two_nsmul]
 lemma isSquare_iff_exists_sq (a : α): IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
 
+@[to_additive Even.exists_two_nsmul
+  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
-attribute [to_additive Even.exists_two_nsmul
-  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."] IsSquare.exists_sq
 
 @[to_additive (attr := simp) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
@@ -135,8 +135,7 @@ variable [DivisionMonoid α] {a : α}
 @[to_additive (attr := simp)] lemma isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   constructor <;> exact fun h => by simpa using (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 
-alias ⟨_, IsSquare.inv⟩ := isSquare_inv
-attribute [to_additive] IsSquare.inv
+@[to_additive] alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 
 @[to_additive] lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_zpow _⟩
