@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kevin Kappelmann
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Interval.Set.Group
 
-
 /-!
 # Rounding
 
