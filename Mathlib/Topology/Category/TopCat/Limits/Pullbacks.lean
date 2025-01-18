@@ -119,7 +119,7 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 
 -- Porting note: why do I need to tell Lean to coerce pullback to a type
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
-    (x : ConcreteCategory.forget.obj (pullback f g)) :
+    (x : HasForget.forget.obj (pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
         simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
