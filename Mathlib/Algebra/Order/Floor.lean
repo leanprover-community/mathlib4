@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int.Even
 import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Data.Int.Lemmas
