@@ -289,6 +289,20 @@ theorem chain_bounded (c : Set (Exchange R x y)) (hc : IsChain (· ≤ ·) c) : 
       simp only [comp_apply, Set.inclusion_mk, id_eq, eq_mpr_eq_cast, e,
         Set.iUnionLift_inclusion]⟩⟩
 
+theorem exists_gt [IsDomain A] (e : Exchange R x y)
+    (he : e.carrier ≠ Set.univ) (hx : Algebra.IsAlgebraic (adjoin R (range x)) A)
+    (hy : AlgebraicIndependent R y) :
+    ∃ e' : Exchange R x y, e < e' := by
+  simp only [ne_eq, Set.ext_iff, mem_univ, iff_true, not_forall] at he
+  rcases he with ⟨j, hj⟩
+  classical
+  obtain ⟨i, hi⟩ := exchange_lemma (R := adjoin R (y '' e.carrier)) x (y j) sorry sorry
+  refine ⟨⟨insert j e.carrier, fun k =>
+    if hk : k.1 ∈ e.carrier then e.exchange ⟨k, hk⟩ else i, sorry⟩,
+    lt_of_le_of_ne ⟨Set.subset_insert _ _, by simp [funext_iff]⟩
+      (by cases e; simp [Set.ext_iff, hj])⟩
+
+
 end Exchange
 
 theorem big_exchange_lemma
