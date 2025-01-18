@@ -509,7 +509,7 @@ lemma _root_.nnnorm_cfc_of_monotoneOn [Nontrivial A] (a : A) (f : ℝ≥0 → �
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ = f ‖a‖₊ := by
   refine le_antisymm ?_ ?_
   · refine nnnorm_cfc_nnreal_le fun x hx => ?_
-    refine hf hx (nnnorm_mem_spectrum_of_nonneg ha) <| spectrum.le_nnnorm_of_mem hx
+    exact hf hx (nnnorm_mem_spectrum_of_nonneg ha) <| spectrum.le_nnnorm_of_mem hx
   · exact apply_le_nnnorm_cfc_nnreal f a (nnnorm_mem_spectrum_of_nonneg ha) hf₂ ha
 
 lemma _root_.nnnorm_cfcₙ_of_monotoneOn (a : B) (f : ℝ≥0 → ℝ≥0)
