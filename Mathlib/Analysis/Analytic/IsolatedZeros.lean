@@ -223,7 +223,7 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
 lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
       ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
-  erw [← hf.order_eq_nat_iff]
+  unfold EventuallyEq; rw [← hf.order_eq_nat_iff]
   exact ⟨fun h₁f ↦ (ENat.coe_toNat h₁f).symm, fun h₁f ↦ ENat.coe_toNat_eq_self.mp h₁f.symm ⟩
 
 /- An analytic function has order zero at a point iff it does not vanish there. -/
