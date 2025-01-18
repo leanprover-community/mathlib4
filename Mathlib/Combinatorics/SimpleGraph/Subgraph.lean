@@ -179,7 +179,6 @@ lemma subgraphOfAdj_spanningCoe {v w : V} (hadj : G.Adj v w) :
   ext v w
   aesop
 
-
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
 def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :

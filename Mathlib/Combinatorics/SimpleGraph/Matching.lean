@@ -367,24 +367,10 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
     use w, w'
     aesop
 
-theorem toSubgraph_adj_sndOfNotNil {u v v'} (p : G.Walk u v) (hp : p.IsPath)
-    (hadj : (p.toSubgraph).Adj u v') : p.getVert 1 = v' := by
-  have ⟨i, hi⟩ := (Walk.toSubgraph_adj_iff _).mp hadj
-  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
-  rcases hi.1 with (⟨hl1, rfl⟩| ⟨hr1, hr2⟩)
-  · have : i = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
-      rw [p.getVert_zero, hl1]
-    simp [this]
-  · have : (i + 1) = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
-      rw [p.getVert_zero, hr2]
-    contradiction
-
 lemma IsCycles.snd_of_support_of_path_of_adj [Fintype V] [DecidableEq V] {v w w' : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
     (hadj : G.Adj v w') : p.snd = w' := by
-  apply toSubgraph_adj_sndOfNotNil p hp
+  apply hp.toSubgraph_adj_sndOfNotNil
   rw [Walk.mem_support_iff_exists_getVert] at hw'
   obtain ⟨n, ⟨rfl, hnl⟩⟩ := hw'
   by_cases hn : n = 0 ∨ n = p.length
@@ -411,7 +397,7 @@ lemma IsCycles.sDiff_spanningCoe_toSubgraph_reachable [Fintype V] [DecidableEq V
   -- The edge (v, w) can't be in p, because then it would be the second node
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
-    exact hw'1 (toSubgraph_adj_sndOfNotNil p hp h)
+    exact hw'1 (hp.toSubgraph_adj_sndOfNotNil h)
   -- If w = w', then then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
@@ -419,6 +405,7 @@ lemma IsCycles.sDiff_spanningCoe_toSubgraph_reachable [Fintype V] [DecidableEq V
       simp only [sdiff_adj, Subgraph.spanningCoe_adj]
       exact ⟨hw'2.symm, fun h ↦ hnpvw' h.symm⟩
     exact this.reachable
+  -- Construct the walk needed recursively by extending p
   have hle : (G \ (p.cons hw'2.symm).toSubgraph.spanningCoe) ≤ (G \ p.toSubgraph.spanningCoe) := by
     apply sdiff_le_sdiff (by rfl) ?hcd
     aesop
@@ -437,7 +424,6 @@ decreasing_by
   simp_wf
   have : p.length < Fintype.card V := by exact Walk.IsPath.length_lt hp
   omega
-
 
 lemma IsCycles.reachable_deleteEdge [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G \ SimpleGraph.fromEdgeSet {s(v, w)}).Reachable v w := by
