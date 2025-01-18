@@ -451,7 +451,7 @@ instance : DecidablePred (· ∈ G.support) := by
 `s` has the same number of edges as `G`. -/
 theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     #(G.induce s).edgeFinset = #G.edgeFinset := by
-  apply Finset.card_bij (fun e _ ↦ e.map (↑))
+  apply card_bij (fun e _ ↦ e.map (↑))
   · apply Sym2.ind
     intro _ _
     simp
@@ -476,7 +476,7 @@ in the induced subgraph of `s` are the same as in `G`. -/
 theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
     (G.induce s).degree v = G.degree v := by
   simp_rw [←card_neighborFinset_eq_degree]
-  apply Finset.card_bij (fun v _ ↦ ↑v) (by simp) (by simp)
+  apply card_bij (fun v _ ↦ ↑v) (by simp) (by simp)
   intro w hadj
   rw [mem_neighborFinset] at hadj
   have hw : w ∈ G.support := G.mem_support.mpr ⟨v, hadj.symm⟩
