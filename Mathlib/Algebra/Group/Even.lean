@@ -44,12 +44,6 @@ for some `r : α`. -/
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
-@[to_additive]
-lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := Iff.rfl
-
-alias ⟨IsSquare.exists_mul_self, _⟩ := isSquare_iff_exists_mul_self
-attribute [to_additive] IsSquare.exists_mul_self
-
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
 
 @[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
@@ -102,12 +96,6 @@ variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F �
 @[to_additive]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
   fun ⟨r, _⟩ => ⟨f r, by simp_all⟩
-
-@[to_additive]
-lemma exists_apply_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
-    IsSquare b → ∃ a, f a = b ∧ IsSquare a := fun ⟨s, _⟩ => by
-  rcases hf s with ⟨r, rfl⟩
-  use r * r; simp_all
 
 end MonoidHom
 
