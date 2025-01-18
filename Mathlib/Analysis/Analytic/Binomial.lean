@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.ODE.Gronwall
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.RingTheory.Binomial
 import Mathlib.Tactic.MoveAdd
