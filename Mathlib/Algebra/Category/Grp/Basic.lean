@@ -42,7 +42,7 @@ deriving instance LargeCategory for Grp
 attribute [to_additive] instGrpLargeCategory
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory Grp := by
+instance hasForget : HasForget Grp := by
   dsimp only [Grp]
   infer_instance
 
@@ -171,7 +171,7 @@ deriving instance LargeCategory for CommGrp
 attribute [to_additive] instCommGrpLargeCategory
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommGrp := by
+instance hasForget : HasForget CommGrp := by
   dsimp only [CommGrp]
   infer_instance
 
