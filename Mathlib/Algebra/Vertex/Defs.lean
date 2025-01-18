@@ -13,13 +13,18 @@ an `R`-module `V` with a left-multiplication operation `Y` to vertex operators i
 may view `Y` as a bilinear map `V × V → V((z))`, or as a family of non-associative products
 parametrized by `ℤ`.  The unit element is introduced with the `AddCommGroupWithOne` type, and the
 Borcherds identity that defines vertex algebras is introduced in pieces for easier manipulation.
+
 ## Definitions
-* NonAssocNonUnitalVertexAlgebra : This is an `R`-module `V` with multiplication `V ⊗ V → V((z))`.
-* Borcherds identity sums: These are composites of vertex operators multiplied by binomial powers.
-* Various identities: Borcherds, commutator, locality, associativity, skew-symmetry.
-* VertexAlgebra: A NonUnitalVertexAlgebra with One, satisfying a right identity rule.
+ * `VertexAlg.stateField` : This is the left-multiplication structure in a vertex algebra, sometimes
+   called a state-field correspondence. It is fundamentally a linear map `V →ₗ[R] V →ₗ[R] V((z))`.
+ * Borcherds identity sums: These are composites of vertex operators multiplied by binomial powers.
+ * Various identities: Borcherds, commutator, locality, associativity, skew-symmetry.
+ * VertexAlgebra: An `AddCommGroupWithOne` with a `stateField`, satisfying associativity and
+   locality.
+
 ## Main results
 We postpone the proofs of equivalences of various identities to Mathlib.Algebra.Vertex.Basic.
+
 ## To do:
 * Refactor: remove non-unital non-associative vertex algebra.  Introduce Y by itself.
 * Use formal series more, instead of combinatorial coefficient calculations.
@@ -27,6 +32,7 @@ We postpone the proofs of equivalences of various identities to Mathlib.Algebra.
 * Fix weak associativity defs
 * cofiniteness conditions?
 * Typeclasses for worldsheet symmetry: basic, graded, Möbius, quasi-conformal, gauged
+
 ## References
 G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
 A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
@@ -188,7 +194,8 @@ series. -/
 def creative (A : VertexOperator R V) : Prop :=
   0 ≤ HahnSeries.order (A 1)
 
-/-- The state attached to a creative field is its `z^0`-coefficient at `1`. -/
+/-- The state attached to a creative field is its `z^0`-coefficient at `1`. We omit the creative
+hypothesis. -/
 def state (A : VertexOperator R V) : V :=
   HVertexOperator.coeff A 0 1
 

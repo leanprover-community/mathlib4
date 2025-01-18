@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.RingTheory.HahnSeries.Basic
@@ -135,12 +135,8 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  simp only [leadingCoeff, coeffTop, orderTop, AddOpposite.unop_op, mk_eq_zero,
-    addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff, funext_iff]
-  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
-  split_ifs <;> rfl
+  dsimp only [leadingCoeff, coeffTop]
+  aesop
 
 @[simp]
 lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :

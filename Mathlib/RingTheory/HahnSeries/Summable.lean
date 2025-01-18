@@ -213,7 +213,7 @@ theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hs
 theorem hsum_subsingleton [Subsingleton α] {s : SummableFamily Γ R α} (a : α) :
     s.hsum = s a := by
   haveI : Unique α := uniqueOfSubsingleton a
-  let e : Unit ≃ α := Equiv.equivOfUnique Unit α
+  let e : Unit ≃ α := Equiv.ofUnique Unit α
   have he : ∀u : Unit, e u = a := fun u ↦ (fun f ↦ (Equiv.apply_eq_iff_eq_symm_apply f).mpr) e rfl
   have hs : Equiv e.symm s = single (s a) := by ext; simp [he]
   rw [← hsum_equiv e.symm, hs, hsum_single]
