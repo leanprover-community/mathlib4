@@ -49,7 +49,7 @@ structure StrictSegal where
 /-- For an `n + 1`-truncated simplicial set `X`, `IsStrictSegal X` asserts the
 mere existence of an inverse to `spine X m` for all `m ≤ n + 1`. -/
 class IsStrictSegal : Prop where
-  segal (m : ℕ) (h : m ≤ n + 1) : Function.Bijective (X.spine m)
+  segal (m : ℕ) (h : m ≤ n + 1 := by leq) : Function.Bijective (X.spine m)
 
 namespace StrictSegal
 
