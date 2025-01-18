@@ -33,11 +33,11 @@ We provide the following functions to work with these objects:
 
 ## Notations
 
-* `[n]` denotes the `n`-dimensional simplex.
+* `[n]` denotes the `n`-dimensional simplex. This notation is available with
+  `open Simplicial`.
 * `[m]ₙ` denotes the `m`-dimensional simplex in the `n`-truncated simplex category.
-  The proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. Access
-  these notations using `open SimplexCategory.Truncated`.
-
+  The truncation proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`.
+  This notation is available with `open SimplexCategory.Truncated`.
 -/
 
 
@@ -774,13 +774,39 @@ open Mathlib.Tactic (subscriptTerm) in
 proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   "[" term ("," term)? "]" noWs subscriptTerm : term
-macro_rules
+
+scoped macro_rules
   | `([$m:term]$n:subscript) =>
     `((⟨SimplexCategory.mk $m, by trunc⟩ : SimplexCategory.Truncated $n))
   | `([$m:term, $p:term]$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
-open Lean PrettyPrinter.Delaborator SubExpr in
+section Delab
+open Lean PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic.Superscript.Mapping (subscript)
+
+/-- Checks that the provided expression can be subscripted. -/
+private partial def subscriptable (e : Expr) : DelabM Unit := do
+  -- Any number or free variable with a subscriptable name is subscriptable.
+  if (← name e).any isSubscriptable || (← delab) matches `($_:num) then return
+  -- Addition and subtraction are subscriptable if their operands are.
+  guard <| e.isAppOfArity ``HAdd.hAdd 6 || e.isAppOfArity ``HSub.hSub 6
+  let #[_, _, _, _, x, y] := e.getAppArgs | failure
+  let _ ← withNaryArg 4 <| subscriptable x
+  let _ ← withAppArg <| subscriptable y
+where
+  -- Return the user-facing name of any constant or free variable.
+  name : Expr → MetaM (Option Name)
+    | Expr.const name _ => return name
+    | Expr.fvar name => name.getUserName
+    | _ => return none
+  -- Return `true` if every character in `s` can be subscripted.
+  isSubscriptable (s : Name) : Bool :=
+    s.toString.toList.all subscript.toSpecial.contains
+
+/-- Checks that the provided expression can be subscripted before delaborating. -/
+def Meta.subscript (e : Expr) : Delab := subscriptable e >>= fun _ ↦ delab
+
 /-- Delaborator for the notation `[m]ₙ`. -/
 @[app_delab FullSubcategory.mk]
 def delabMkNotation : Delab :=
@@ -793,15 +819,15 @@ def delabMkNotation : Delab :=
     let_expr LE.le _ _ lhs rhs := body | failure
     let_expr SimplexCategory.len simplex := lhs | failure
     guard <| simplex == .bvar 0
-    guard !rhs.hasMVar
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
+    let n ← withNaryArg 1 <| withBindingBody x <| withAppArg <| Meta.subscript rhs
     let m ← withNaryArg 2 <| withAppArg delab
-    let n ← withNaryArg 1 <| withBindingBody x <| withAppArg delab
     if (← getPPOption getPPProofs) then
       let p ← withAppArg delab
       `([$m, $p]$n)
     else `([$m]$n)
 
+end Delab
 end Meta
 
 /-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. -/

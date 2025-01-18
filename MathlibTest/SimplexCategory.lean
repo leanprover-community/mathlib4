@@ -19,8 +19,30 @@ section delaborator
 /-- info: [m]ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
 #guard_msgs in #check [m]ₙ
 
-/-- info: [1]ₙ ₊ ₁ : CategoryTheory.FullSubcategory fun a => a.len ≤ n + 1 -/
-#guard_msgs in #check [1]ₙ₊₁
+/-- info: [m]ₙ ₊ ₁ : CategoryTheory.FullSubcategory fun a => a.len ≤ n + 1 -/
+#guard_msgs in #check [m]ₙ₊₁
+
+/-- info: [m]ₙ ₊ ₍₄ ₋ ₍₂ ₊ ₁₎₎ :
+CategoryTheory.FullSubcategory fun a => a.len ≤ n + (4 - (2 + 1)) -/
+#guard_msgs in #check [m]ₙ₊₍₄₋₍₂₊₁₎₎
+
+section no_subscript
+variable (b : ℕ) (hb : m ≤ b)
+
+/- The delaborator should not fire because `b` cannot be subscripted. -/
+/-- info: { obj := SimplexCategory.mk m, property := hb } :
+CategoryTheory.FullSubcategory fun a => a.len ≤ b -/
+#guard_msgs in
+#check (⟨SimplexCategory.mk m, hb⟩ : SimplexCategory.Truncated b)
+
+variable {x} (hx : x = [m]ₙ) (n : True)
+
+/- The delaborator should not fire because `n` is now shadowed and `✝` cannot
+be subscripted. -/
+/-- info: hx : x = { obj := SimplexCategory.mk m, property := h } -/
+#guard_msgs in #check hx
+
+end no_subscript
 
 section mvars
 set_option pp.mvars false
