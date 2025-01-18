@@ -47,10 +47,15 @@ variable (R : Type u₀) [CommRing R]
 
 open scoped ModuleCat.Algebra
 
+/--
+Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent if the categories of
+`A`-modules and `B`-modules are equivalent as `R`-linear category.
+-/
 @[ext]
 structure MoritaEquivalence
     (A : Type u₁) [Ring A] [Algebra R A]
     (B : Type u₂) [Ring B] [Algebra R B] where
+  /--the underlying equivalence of category-/
   eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
   additive : eqv.functor.Additive := by infer_instance
   linear : eqv.functor.Linear R := by infer_instance

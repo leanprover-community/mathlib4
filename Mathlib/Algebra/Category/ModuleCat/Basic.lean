@@ -432,6 +432,9 @@ variable {S₀ : Type u₀} [CommRing S₀] {S : Type u} [Ring S] [Algebra S₀ 
 
 variable {M N : ModuleCat.{v} S}
 
+/--
+Let `S` be an `S₀`-algebra. Then `S`-modules are modules over `S₀`.
+-/
 scoped instance : Module S₀ M := Module.compHom _ (algebraMap S₀ S)
 
 scoped instance : SMulCommClass S S₀ M :=
@@ -439,6 +442,9 @@ scoped instance : SMulCommClass S S₀ M :=
         show s • algebraMap S₀ S s₀ • n = algebraMap S₀ S s₀ • s • n by
         rw [← smul_assoc, smul_eq_mul, ← Algebra.commutes, mul_smul] }
 
+/--
+Let `S` be an `S₀`-algebra. Then the category of `S`-modules is `S₀`-linear.
+-/
 scoped instance instLinear : Linear S₀ (ModuleCat.{v} S) where
   smul_comp _ M N s₀ f g := by
     ext
