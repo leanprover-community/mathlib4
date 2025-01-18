@@ -831,7 +831,7 @@ end Truncated
 
 section Concrete
 
-instance : ConcreteCategory.{0} SimplexCategory where
+instance : HasForget.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
