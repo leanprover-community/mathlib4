@@ -74,9 +74,6 @@ instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
-set_option synthInstance.maxHeartbeats 0 in
--- set_option synthInstance.maxSize 100000 in
-set_option maxHeartbeats 0 in
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
   (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
