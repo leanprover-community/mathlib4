@@ -3,9 +3,11 @@ Copyright (c) 2025 Tomaz Mascarenhas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving, Tomaz Mascarenhas
 -/
-import Mathlib.Computability.QueryComplexity.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Computability.QueryComplexity.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Tactic.Cases
 
 /-!
 ## Basic properties of `Comp` and its Monad instance.
