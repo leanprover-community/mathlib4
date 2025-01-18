@@ -139,10 +139,8 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X 
     change X.map (Hom.tr (_ ≫ _)).op _ = _
     rw [δ_zero_mkOfSucc]
 
-/- TODO: fix -/
 lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁)
-    (a : ℕ) (ha : a ≤ n + 1 := by leq) (φ : ([a] : SimplexCategory) ⟶ [m])
-    (i : Fin (a + 1)) :
+    (a : ℕ) (ha : a ≤ n + 1 := by leq) (φ : [a]ₙ₊₁ ⟶ [m]ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a ha (X.map φ.op Δ)).vertex i =
       (X.spine m hm Δ).vertex (φ.toOrderHom i) := by
   dsimp only [spine_vertex]
@@ -203,13 +201,12 @@ by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
 abbrev spine (n : ℕ) : X _[n] → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
 
-lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
+lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
     (i : Fin (m + 1)) :
-    (spine X m (X.map φ.op Δ)).vertex i = (spine X n Δ).vertex (φ.toOrderHom i) := by
-  /- #check Truncated.spine_map_vertex ((truncation (n + 1)).obj X) n (by omega) Δ m _ φ i -/
-  dsimp [spine_vertex, truncation, SimplicialObject.truncation]
-  rw [← FunctorToTypes.map_comp_apply]
-  rfl
+    (spine X m (X.map φ.op Δ)).vertex i =
+      (spine X n Δ).vertex (φ.toOrderHom i) :=
+  truncation ((m ⊔ n) + 1) |>.obj X
+    |>.spine_map_vertex n (by leq) Δ m (by leq) φ i
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
 def standardSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
