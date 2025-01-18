@@ -61,39 +61,39 @@ lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
     | inr h => exact Or.inr (ne_top_of_lt h)
 
 lemma Ideal.height_ne_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
-  I.height ≠ ⊤ :=
+    I.height ≠ ⊤ :=
   (h.eq_top_or_height_ne_top).resolve_left hI
 
 lemma Ideal.height_lt_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
-  I.height < ⊤ := by
+    I.height < ⊤ := by
   exact lt_of_le_of_ne le_top (Ideal.height_ne_top hI)
 
 lemma Ideal.primeHeight_ne_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
-  I.primeHeight ≠ ⊤ := by
+    I.primeHeight ≠ ⊤ := by
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_ne_top (by exact h.ne_top)
 
 lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
-  I.primeHeight < ⊤ := by
+    I.primeHeight < ⊤ := by
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top (by exact h.ne_top)
 
 @[gcongr]
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
-  I.primeHeight ≤ J.primeHeight := by
+    I.primeHeight ≤ J.primeHeight := by
   unfold primeHeight
   gcongr
   exact h
 
 lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J) :
-  I.primeHeight + 1 ≤ J.primeHeight := by
+    I.primeHeight + 1 ≤ J.primeHeight := by
   unfold primeHeight
   exact Order.height_add_one_le h
 
 @[gcongr]
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
   (h : I < J) [I.FiniteHeight] :
-  I.primeHeight < J.primeHeight := by
+    I.primeHeight < J.primeHeight := by
   unfold primeHeight
   gcongr
   · exact I.primeHeight_ne_top.lt_top
@@ -114,7 +114,7 @@ theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height 
 
 @[gcongr]
 lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
-  (h : I < J) [I.FiniteHeight] : I.height < J.height := by
+    (h : I < J) [I.FiniteHeight] : I.height < J.height := by
   rw [Ideal.height_eq_primeHeight I]
   by_cases hJ : J = ⊤
   · rw [hJ, height_top]; exact I.primeHeight_lt_top
