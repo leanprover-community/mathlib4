@@ -349,11 +349,11 @@ lemma cost_mergeSort_le (o : SOracle α) (s : List α) :
   induction' n using Nat.strong_induction_on with n h generalizing s
   induction' s with a s d
   · simp only [List.length_nil] at hn
-    simp [mergeSort,  ← hn]
+    simp [mergeSort, ← hn]
   · clear d
     induction' s with b s d
     · simp only [List.length_singleton] at hn
-      simp [mergeSort,  ← hn]
+      simp [mergeSort, ← hn]
     · simp only [List.length_cons, Nat.succ_eq_add_one] at hn
       simp only [cost', mergeSort, cost_bind, splitInTwo]
       let t := ((a :: b :: s).length + 1) / 2
@@ -373,7 +373,7 @@ lemma cost_mergeSort_le (o : SOracle α) (s : List α) :
         rw [length_mergeSort _ l1 _ rfl]
         rw [length_mergeSort _ l2 _ rfl]
         simp only [l1, l2, t, List.length_cons, List.splitAt_eq, List.length_take, Nat.cast_min,
-                   List.length_drop, ← Nat.cast_min, ← Nat.cast_add, Nat.cast_le]
+          List.length_drop, ← Nat.cast_min, ← Nat.cast_add, Nat.cast_le]
         omega
       have h1 := h _ l1_length _ rfl
       have h2 := h _ l2_length _ rfl
