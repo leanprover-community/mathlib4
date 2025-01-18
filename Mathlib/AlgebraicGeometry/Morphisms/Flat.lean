@@ -10,7 +10,8 @@ import Mathlib.RingTheory.RingHom.Flat
 # Flat morphisms
 
 A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat.
+`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat. This is equivalent to
+asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).
 
 We show that this property is local, and are stable under compositions and base change.
 
@@ -27,7 +28,8 @@ namespace AlgebraicGeometry
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat.
+`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat. This is equivalent to
+asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).
 -/
 @[mk_iff]
 class Flat (f : X ⟶ Y) : Prop where

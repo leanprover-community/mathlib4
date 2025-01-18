@@ -690,7 +690,7 @@ lemma stalkMap
       hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso] at this
     have heq : (X.isoSpec.inv.base (X.isoSpec.hom.base x)) = x := by simp
     rwa [hQi.arrow_mk_iso_iff
-      (Scheme.arrowStalkMapIsoOfInseparable f <| Inseparable.of_eq heq)] at this
+      (Scheme.arrowStalkMapIsoOfEq f heq)] at this
   obtain ⟨R, S, rfl, rfl⟩ := hXY
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   rw [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]
