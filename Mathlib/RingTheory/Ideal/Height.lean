@@ -65,8 +65,8 @@ lemma Ideal.height_ne_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
   (h.eq_top_or_height_ne_top).resolve_left hI
 
 lemma Ideal.height_lt_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
-    I.height < ⊤ := by
-  exact lt_of_le_of_ne le_top (Ideal.height_ne_top hI)
+    I.height < ⊤ :=
+  lt_of_le_of_ne le_top (Ideal.height_ne_top hI)
 
 lemma Ideal.primeHeight_ne_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
     I.primeHeight ≠ ⊤ := by
