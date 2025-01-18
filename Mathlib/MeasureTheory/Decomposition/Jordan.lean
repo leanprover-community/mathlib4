@@ -5,6 +5,7 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedHahn
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Jordan decomposition
