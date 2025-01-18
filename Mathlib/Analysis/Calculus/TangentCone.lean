@@ -224,7 +224,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) 
   have W n := rescale_to_shell hr (u_pos n) (x := d n) (by simpa using (M n).2)
   choose c c_ne c_le le_c hc using W
   have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
-    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹) atTop atTop by simpa
     apply tendsto_inv_nhdsGT_zero.comp
     simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
       eventually_atTop, ge_iff_le]
@@ -238,8 +238,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) 
           simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm]
             at hv
           simpa using hv.2.le
-      _ = ((u n) ⁻¹ * u n ) * ‖r‖ * u n := by ring
-      _ = ‖r‖ * u n := by rw [inv_mul_cancel₀ (u_pos n).ne', one_mul]
+      _ = ‖r‖ * u n := by field_simp [(u_pos n).ne']; ring
     refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
     apply squeeze_zero (fun n ↦ by positivity) B
     simpa using u_lim.const_mul _
