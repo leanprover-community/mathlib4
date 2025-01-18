@@ -57,11 +57,6 @@ lemma pure'_bind (x : α) (f : α → Comp ι s β) : (pure' x : Comp ι s α) >
 lemma query'_bind (o : I) (m : o ∈ s) (y : ι) (f0 f1 : Comp ι s α)
     (g : α → Comp ι s β) : query' o m y f0 f1 >>= g = .query' o m y (f0 >>= g) (f1 >>= g) := rfl
 
-/-- Cost is nonnegative -/
-@[simp]
-lemma cost_nonneg {f : Comp ι s α} {o : I → Oracle ι} {i : I} : 0 ≤ f.cost o i := by
-  simp only [zero_le]
-
 /-- `pure` has cost 0 -/
 @[simp]
 lemma cost_pure (x : α) (o : I → Oracle ι) (i : I) : (pure x : Comp ι s α).cost o i = 0 := by
