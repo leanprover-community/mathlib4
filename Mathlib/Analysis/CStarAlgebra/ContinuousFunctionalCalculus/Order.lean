@@ -505,7 +505,7 @@ lemma pow_antitone {a : A} (ha₀ : 0 ≤ a := by cfc_tac) (ha₁ : a ≤ 1) :
   exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
 
 lemma _root_.nnnorm_cfc_of_monotoneOn [Nontrivial A] (a : A) (f : ℝ≥0 → ℝ≥0)
-    (hf : MonotoneOn f (spectrum ℝ≥0 a)) (hf₂ : ContinuousOn f (spectrum ℝ≥0 a))
+    (hf : MonotoneOn f (spectrum ℝ≥0 a)) (hf₂ : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ = f ‖a‖₊ := by
   refine le_antisymm ?_ ?_
   · refine nnnorm_cfc_nnreal_le fun x hx => ?_
@@ -513,7 +513,7 @@ lemma _root_.nnnorm_cfc_of_monotoneOn [Nontrivial A] (a : A) (f : ℝ≥0 → �
   · exact apply_le_nnnorm_cfc_nnreal f a (nnnorm_mem_spectrum_of_nonneg ha) hf₂ ha
 
 lemma _root_.nnnorm_cfcₙ_of_monotoneOn (a : B) (f : ℝ≥0 → ℝ≥0)
-    (hf : MonotoneOn f (σₙ ℝ≥0 a)) (hf₂ : ContinuousOn f (σₙ ℝ≥0 a))
+    (hf : MonotoneOn f (σₙ ℝ≥0 a)) (hf₂ : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (ha : 0 ≤ a := by cfc_tac) :
     ‖cfcₙ f a‖₊ = f ‖a‖₊ := by
   have hmain : Unitization.inr (R := ℂ) (cfcₙ f a) = cfc f (a : Unitization (R := ℂ) B) :=

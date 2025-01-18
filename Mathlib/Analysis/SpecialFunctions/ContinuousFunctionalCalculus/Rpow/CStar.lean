@@ -31,12 +31,8 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 lemma nnnorm_nnrpow (a : A) (r : ℝ≥0) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) := by
   simp only [nnrpow_def]
-  rw [nnnorm_cfcₙ_of_monotoneOn _ _ _ _ _ _]
-  · exact Monotone.monotoneOn (NNReal.monotone_nnrpow_const r) _
-  · cfc_cont_tac
-  · have : r ≠ 0 := by exact Ne.symm (ne_of_lt hr)
-    simp [this]
-  · exact ha
+  rw [nnnorm_cfcₙ_of_monotoneOn _ _
+      (Monotone.monotoneOn (NNReal.monotone_nnrpow_const r) _)]
 
 lemma norm_nnrpow (a : A) (r : ℝ≥0) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) := by
   have h₁ : ‖a ^ r‖ = (‖a ^ r‖₊ : ℝ) := rfl
