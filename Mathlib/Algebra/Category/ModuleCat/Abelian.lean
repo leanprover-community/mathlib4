@@ -71,8 +71,8 @@ def normalEpi (hf : Epi f) : NormalEpi f where
 /-- The category of R-modules is abelian. -/
 instance abelian : Abelian (ModuleCat.{v} R) where
   has_cokernels := hasCokernels_moduleCat
-  normalMonoOfMono := normalMono
-  normalEpiOfEpi := normalEpi
+  normalMonoOfMono f hf := ⟨normalMono f hf⟩
+  normalEpiOfEpi f hf := ⟨normalEpi f hf⟩
 
 section ReflectsLimits
 
