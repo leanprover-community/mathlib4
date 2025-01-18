@@ -333,7 +333,7 @@ private theorem average_density_near_total_density [Nonempty α]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
   apply density_sub_eps_le_sum_density_div_card hPα hPε hA hB
 
-private theorem edgeDensity_chunk_aux [Nonempty α]
+private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
     (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5)
     (hU : U ∈ P.parts) (hV : V ∈ P.parts) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 ≤
@@ -499,10 +499,9 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
         norm_num
         exact edgeDensity_star_not_uniform hPα hPε hε₁ hUVne hUV
       · rw [sp, card_product]
-        apply (edgeDensity_chunk_aux hPα hPε hU hV).trans
+        apply (edgeDensity_chunk_aux hP hPα hPε hU hV).trans
         · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
-          · norm_num
-            rfl
+          norm_num
 
 /-- Lower bound on the edge densities between parts of `SzemerediRegularity.increment`. This is the
 blanket lower bound used the uniform parts. -/
