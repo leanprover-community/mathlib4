@@ -125,7 +125,61 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-#print totalDegree_mu
+
+theorem algebraicIndependent_of_set_of_finite {x : ι → A}
+    (s : Set ι) (ind : AlgebraicIndependent R fun i : s ↦ x i)
+    (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R (fun i : t ↦ x i) →
+      ∀ i ∉ s, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x := by
+  classical
+  refine algebraicIndependent_of_finite_type fun t hfin ↦ ?_
+  suffices AlgebraicIndependent R fun i : ↥(t ∩ s ∪ t \ s) ↦ x i from
+    this.comp (Equiv.Set.ofEq (t.inter_union_diff s).symm) (Equiv.injective _)
+  refine hfin.diff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
+    fun {a u} ha hu ha' h ↦ ?_
+  have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
+  convert (((image_eq_range _ _ ▸ h.option_iff <| x a).2 <| H _ (hfin.subset (union_subset
+    inter_subset_left <| hu.trans diff_subset)) h a ha.2 this).comp _ (subtypeInsertEquivOption
+    this).injective).comp (Equiv.Set.ofEq union_insert) (Equiv.injective _) with x
+  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+
+/- if we assume that hx is a transcendence basis, then we should be able to
+replace NoZeroDivisor A by NoZeroDivisor R, because a polynomial ring over
+a ring with no zero divisor has no zero divisor. -/
+open Set in
+theorem exchange_lemma [DecidableEq ι] (x : ι → A) (y : A) [NoZeroDivisors A]
+    (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
+    ∃ i : ι, Algebra.IsAlgebraic (adjoin R (range (update x i y))) A := by
+  let xy (o : Option ι) := o.elim y x
+  have : ¬ AlgebraicIndependent R xy := fun h ↦ by
+    have := h.transcendental_adjoin (s := range some) (i := none) (by simp)
+    rw [← range_comp] at this
+    exact this (hx.1 y)
+  have := mt (algebraicIndependent_of_set_of_finite {none} <|
+    (algebraicIndependent_singleton_iff ⟨_, rfl⟩).mpr hy) this
+  simp_rw [Transcendental] at this; push_neg at this
+  obtain ⟨t, fin, ind, _|i, hi, hit, alg⟩ := this
+  · exact (hi rfl).elim
+  let Rxyi := adjoin R (range (update x i y))
+  let Rxy := adjoin R (range x ∪ {y})
+  let _ : Algebra Rxyi Rxy := by
+    refine (Subalgebra.inclusion <| adjoin_mono <| range_subset_iff.mpr fun j ↦ ?_).toAlgebra
+    obtain rfl | ne := eq_or_ne j i
+    · rw [update_self]; exact .inr rfl
+    · rw [update_of_ne ne]; exact .inl ⟨_, rfl⟩
+  have : IsScalarTower Rxyi Rxy A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ show a = _ from rfl
+  set Rx := adjoin R (range x)
+  let _ : Algebra Rx Rxy := (Subalgebra.inclusion <| adjoin_mono subset_union_left).toAlgebra
+  have : IsScalarTower Rx Rxy A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ show a = _ from rfl
+  have : Algebra.IsAlgebraic Rxy A :=
+    .extendScalars (R := adjoin R (range x)) (Subalgebra.inclusion_injective _)
+  let _ : Algebra (adjoin R (xy '' t)) Rxy := (Subalgebra.inclusion
+    (adjoin_mono (image_subset_iff.2 (fun a hat => by cases a <;> simp [xy])))).toAlgebra
+  have : Algebra.IsAlgebraic Rxyi Rxy :=
+    Algebra.IsAlgebraic.extendScalars (show Injective (algebraMap (adjoin R (xy '' t)) Rxy) from sorry)
+
+  exact ⟨i, Algebra.IsAlgebraic.trans' _ (S := Rxy) Subtype.val_injective⟩
+
 theorem exists_thing [DecidableEq ι] [Nontrivial R] --[NoZeroDivisors A]
     (x : ι → A) (y : A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
@@ -185,6 +239,7 @@ theorem exchange_lemma [DecidableEq ι]
       apply Algebra.adjoin_mono
       rintro _ ⟨k, rfl⟩
       exact Set.mem_range.2 ⟨some k, by simp⟩
+  algebraize [(Subalgebra.inclusion hMO).toRingHom, (Subalgebra.inclusion hNO).toRingHom]
   let i1 : Algebra M O := RingHom.toAlgebra (Subalgebra.inclusion hMO).toRingHom
   have i2 : IsScalarTower M O A := IsScalarTower.of_algebraMap_eq (fun x => rfl)
   let i3 : Algebra N O := RingHom.toAlgebra (Subalgebra.inclusion hNO).toRingHom
@@ -270,6 +325,11 @@ instance : PartialOrder (Exchange R x y) where
     ext1
     · rfl
     · simpa [funext_iff] using hts.snd
+
+theorem chain_bounded (c : Set (Exchange R x y)) (hc : IsChain (. ≤ .) c) : Bounded (. ≤ .) c where
+  carrier := ⋃ s ∈ c, s.carrier
+  exchange := sorry -- Use `unionLift`
+  algebraic := sorry
 
 end Exchange
 
