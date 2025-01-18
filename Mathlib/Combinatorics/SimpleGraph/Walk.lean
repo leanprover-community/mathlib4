@@ -921,6 +921,10 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq _ hp]
 
+protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by cases p <;> aesop
+
+lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil := mt Nil.tail hp
+
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl

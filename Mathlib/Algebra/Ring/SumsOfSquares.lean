@@ -22,7 +22,6 @@ We introduce a predicate for sums of squares in a ring.
   `a * a + s` is a sum of squares.
 - `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
   the submonoid or subsemiring of sums of squares in an additive monoid or semiring `R`
-  with multiplication.
 
 -/
 
@@ -83,7 +82,6 @@ attribute [norm_cast] coe_sumSq
 end AddSubmonoid
 
 @[deprecated (since := "2024-08-09")] alias SumSqIn := AddSubmonoid.sumSq
-@[deprecated (since := "2025-01-03")] alias sumSqIn := AddSubmonoid.sumSq
 @[deprecated (since := "2025-01-06")] alias sumSq := AddSubmonoid.sumSq
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
@@ -211,6 +209,9 @@ sums of squares are non-negative.
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
     (hs : IsSumSq s) : 0 ≤ s := by
+  induction hs using IsSumSq.rec' with
+  | zero          => simp
+  | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
   induction hs using IsSumSq.rec' with
   | zero          => simp
   | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
