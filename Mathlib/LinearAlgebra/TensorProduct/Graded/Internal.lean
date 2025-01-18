@@ -242,7 +242,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
       SetLike.coe_gOne, one_mul]
 
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
-  toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
+  algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
@@ -252,7 +252,7 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
     -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
     erw [LinearMap.map_smul]
-    erw [LinearEquiv.symm_apply_apply]
+    simp
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = algebraMap R A r ᵍ⊗ₜ[R] 1 := rfl
 

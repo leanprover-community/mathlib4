@@ -17,9 +17,11 @@ import Mathlib.GroupTheory.GroupAction.Hom
 # Properties of group actions involving quotient groups
 
 This file proves properties of group actions which use the quotient group construction, notably
-* the orbit-stabilizer theorem `card_orbit_mul_card_stabilizer_eq_card_group`
-* the class formula `card_eq_sum_card_group_div_card_stabilizer'`
-* Burnside's lemma `sum_card_fixedBy_eq_card_orbits_mul_card_group`
+* the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
+* the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
+* Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,
+
+as well as their analogues for additive groups.
 -/
 
 universe u v w
@@ -93,10 +95,9 @@ theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
 theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
-theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q :=
-  Quotient.mk_smul_out H b q
+theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q := by
+  simp
 
 theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out ∈ H := by
@@ -112,7 +113,6 @@ attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_
 attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
 AddAction.Quotient.mk_vadd_out'
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
 alias Quotient.coe_smul_out' := Quotient.coe_smul_out
 

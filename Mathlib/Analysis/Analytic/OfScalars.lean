@@ -139,17 +139,21 @@ theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
 
 end Field
 
-section Normed
+section Seminormed
 
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
+-- Also works:
+-- `letI : BoundedSMul 𝕜 (ContinuousMultilinearMap 𝕜 (fun i : Fin n ↦ E) E) := inferInstance`
+set_option maxSynthPendingDepth 2 in
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
-  rw [ofScalars, norm_smul (c n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  set_option maxSynthPendingDepth 2 in
+  rw [ofScalars, norm_smul]
 
 theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := by
   simp only [ofScalars_norm_eq_mul]
@@ -160,13 +164,22 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
   simp [ofScalars_norm_eq_mul]
 
+end Seminormed
+
+section Normed
+
+open Filter ENNReal
+open scoped Topology NNReal
+
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+    [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
+
 private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       Tendsto (fun n ↦ ‖‖c (n + 1)‖ * r' ^ (n + 1)‖ /
         ‖‖c n‖ * r' ^ n‖) atTop (𝓝 ↑(r' * r)) := by
-  simp_rw [norm_mul, norm_norm, mul_div_mul_comm, ← norm_div, pow_succ,
-    mul_div_right_comm, div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')
-    ), one_mul, norm_div, NNReal.norm_eq]
+  simp_rw [norm_mul, norm_norm, mul_div_mul_comm, ← norm_div, pow_succ, mul_div_right_comm,
+    div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')), one_mul, norm_div, NNReal.norm_eq]
   exact mul_comm r' r ▸ hc.mul tendsto_const_nhds
 
 theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
