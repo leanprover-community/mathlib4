@@ -51,6 +51,7 @@ instance [Finite P] : Finite (Dual P) :=
 instance [h : Fintype P] : Fintype (Dual P) :=
   h
 
+set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩
 
