@@ -9,18 +9,21 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Path
 /-!
 # Strict Segal simplicial sets
 
-A simplicial set `X` satisfies the `StrictSegal` condition if for all `n`, the map
-`X.spine n : X _[n] → X.Path n` is an equivalence, with equivalence inverse
-`spineToSimplex {n : ℕ} : Path X n → X _[n]`.
+A simplicial set `X` satisfies the `StrictSegal` condition if, for all `m : ℕ`,
+the map `X.spine m : X _[m] → X.Path m` is an equivalence, with equivalence
+inverse `spineToSimplex {m : ℕ} : Path X m → X _[m]`. We define this
+construction first for `n + 1`-truncated simplicial sets in
+`SSet.Truncated.StrictSegal`. The data of a `StrictSegal` simplicial set is
+then defined by an `SSet.Truncated.StrictSegal` structure on the
+`n + 1`-truncation of `X` for all `n : ℕ`.
 
 Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
-TODO: Show that these are the only examples: that a `StrictSegal` simplicial set is isomorphic to
-the nerve of its homotopy category.
+TODO: Show that these are the only examples: that a `StrictSegal` simplicial set
+is isomorphic to the nerve of its homotopy category.
 
-`StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
-in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
-
+`StrictSegal` simplicial sets have an important property of being 2-coskeletal
+which is proven in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
 -/
 
 universe v u
@@ -232,8 +235,8 @@ lemma spineToSimplex_spine_apply (Δ : X _[n]) :
 and `Path X m`. -/
 abbrev spineEquiv (n : ℕ) : X _[n] ≃ Path X n := segal n |>.spineEquiv n
 
-/-- The unique existence of an inverse to `spine X n` implies the mere
-existence of such an inverse. -/
+/-- The unique existence of an inverse to `spine X n` forall `n : ℕ` implies
+the mere existence of such an inverse. -/
 instance isStrictSegal_of_strictSegal : IsStrictSegal X :=
   fun n ↦ segal n |>.isStrictSegal_of_strictSegal
 
