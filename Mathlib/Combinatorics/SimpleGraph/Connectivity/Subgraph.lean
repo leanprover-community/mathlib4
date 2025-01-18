@@ -279,6 +279,57 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
 
+namespace IsPath
+
+lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
+    (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet u = {p.snd} := by
+  have hadj1 := p.toSubgraph_adj_snd hnp
+  ext v
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+  refine ⟨?_, by aesop⟩
+  rintro ⟨i, (hl | hr)⟩
+  · have : i = 0 := by
+      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+      aesop
+    aesop
+  · have : i + 1 = 0 := by
+      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+      aesop
+    contradiction
+
+lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
+    (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet v = {p.penultimate} := by
+  simpa using (IsPath.neighborSet_toSubgraph_startpoint (p.isPath_reverse_iff.mpr hp)
+      (by rw [@Walk.not_nil_iff_lt_length, Walk.length_reverse]; exact
+        Walk.not_nil_iff_lt_length.mp hnp))
+
+lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hpc : p.IsPath)
+    (h : i ≠ 0) (h' : i < p.length) :
+    p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
+  have hadj1 := ((show i - 1 + 1 = i from by omega) ▸
+    p.toSubgraph_adj_getVert (by omega : (i - 1) < p.length)).symm
+  ext v
+  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+    Prod.swap_prod_mk]
+  refine ⟨?_, by aesop⟩
+  rintro ⟨i', (⟨hl, _⟩ | ⟨_, hl⟩)⟩ <;>
+    apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
+      (by rw [Set.mem_setOf_eq]; omega) at hl <;> aesop
+
+lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
+    (h : i ≠ 0) (h' : i < p.length) :
+    (p.toSubgraph.neighborSet (p.getVert i)).ncard = 2 := by
+  rw [neighborSet_toSubgraph_internal hp h h']
+  have : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
+    intro h
+    have := hp.getVert_injOn (by rw [Set.mem_setOf_eq]; omega) (by rw [Set.mem_setOf_eq]; omega) h
+    omega
+  simp_all
+
+end IsPath
+
 namespace IsCycle
 
 lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
