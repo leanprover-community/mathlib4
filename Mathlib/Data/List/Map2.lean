@@ -5,6 +5,20 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Data.List.Basic
 
+/-!
+# Map₂ Lemmas
+
+This file contains additional lemmas about a number of list functions related to combining zipping
+Lists together. In particular, we include lemmas about:
+
+* `map₂Left'`
+* `map₂Right'`
+* `zipWith`
+* `zipLeft'`
+* `zipRight'`
+
+-/
+
 assert_not_exists GroupWithZero
 assert_not_exists Lattice
 assert_not_exists Prod.swap_eq_iff_eq_swap
