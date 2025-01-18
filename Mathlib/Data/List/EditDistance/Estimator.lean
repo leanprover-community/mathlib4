@@ -23,7 +23,7 @@ This is then used in the implementation of `rewrite_search`
 to avoid needing the entire edit distance calculation in unlikely search paths.
 -/
 
-variable {α : Type*} {β δ : Type} [CanonicallyLinearOrderedAddCommMonoid δ]
+variable {α : Type*} {β δ : Type} [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
   (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--

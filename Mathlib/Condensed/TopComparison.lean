@@ -25,7 +25,7 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
@@ -89,8 +89,8 @@ the extensive topology.
 -/
 noncomputable instance [PreservesFiniteCoproducts G] :
     PreservesFiniteProducts (yonedaPresheaf G X) :=
-  have := preservesFiniteProductsOp G
-  ⟨fun _ ↦ compPreservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
+  have := preservesFiniteProducts_op G
+  ⟨fun _ ↦ comp_preservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
 
 section
 
@@ -109,7 +109,7 @@ def TopCat.toSheafCompHausLike :
   cond := by
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    refine ⟨⟨inferInstance⟩, ?_⟩
+    refine ⟨inferInstance, ?_⟩
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he

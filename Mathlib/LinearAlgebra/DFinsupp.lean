@@ -390,8 +390,6 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
 
 end Submodule
 
-namespace CompleteLattice
-
 open DFinsupp
 
 section Semiring
@@ -401,23 +399,26 @@ variable [DecidableEq ι] [Semiring R] [AddCommMonoid N] [Module R N]
 /-- Independence of a family of submodules can be expressed as a quantifier over `DFinsupp`s.
 
 This is an intermediate result used to prove
-`CompleteLattice.independent_of_dfinsupp_lsum_injective` and
-`CompleteLattice.Independent.dfinsupp_lsum_injective`. -/
-theorem independent_iff_forall_dfinsupp (p : ι → Submodule R N) :
-    Independent p ↔
+`iSupIndep_of_dfinsupp_lsum_injective` and
+`iSupIndep.dfinsupp_lsum_injective`. -/
+theorem iSupIndep_iff_forall_dfinsupp (p : ι → Submodule R N) :
+    iSupIndep p ↔
       ∀ (i) (x : p i) (v : Π₀ i : ι, ↥(p i)),
         lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
-  simp_rw [CompleteLattice.independent_def, Submodule.disjoint_def,
+  simp_rw [iSupIndep_def, Submodule.disjoint_def,
     Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
   refine forall_congr' fun i => Subtype.forall'.trans ?_
   simp_rw [Submodule.coe_eq_zero]
 
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_forall_dfinsupp := iSupIndep_iff_forall_dfinsupp
+
 /- If `DFinsupp.lsum` applied with `Submodule.subtype` is injective then the submodules are
-independent. -/
-theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
+iSupIndep. -/
+theorem iSupIndep_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     (h : Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype)) :
-    Independent p := by
-  rw [independent_iff_forall_dfinsupp]
+    iSupIndep p := by
+  rw [iSupIndep_iff_forall_dfinsupp]
   intro i x v hv
   replace hv : lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
       lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x) := by
@@ -425,12 +426,18 @@ theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
   have := DFunLike.ext_iff.mp (h hv) i
   simpa [eq_comm] using this
 
+@[deprecated (since := "2024-11-24")]
+alias independent_of_dfinsupp_lsum_injective := iSupIndep_of_dfinsupp_lsum_injective
+
 /- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 submonoids are independent. -/
-theorem independent_of_dfinsupp_sumAddHom_injective (p : ι → AddSubmonoid N)
-    (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : Independent p := by
-  rw [← independent_map_orderIso_iff (AddSubmonoid.toNatSubmodule : AddSubmonoid N ≃o _)]
-  exact independent_of_dfinsupp_lsum_injective _ h
+theorem iSupIndep_of_dfinsupp_sumAddHom_injective (p : ι → AddSubmonoid N)
+    (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : iSupIndep p := by
+  rw [← iSupIndep_map_orderIso_iff (AddSubmonoid.toNatSubmodule : AddSubmonoid N ≃o _)]
+  exact iSupIndep_of_dfinsupp_lsum_injective _ h
+
+@[deprecated (since := "2024-11-24")]
+alias independent_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsupp_sumAddHom_injective
 
 /-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as
 `Finsupp.linearCombination` -/
@@ -450,24 +457,27 @@ section Ring
 
 variable [DecidableEq ι] [Ring R] [AddCommGroup N] [Module R N]
 
-/- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
+/-- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/
-theorem independent_of_dfinsupp_sumAddHom_injective' (p : ι → AddSubgroup N)
-    (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : Independent p := by
-  rw [← independent_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
-  exact independent_of_dfinsupp_lsum_injective _ h
+theorem iSupIndep_of_dfinsupp_sumAddHom_injective' (p : ι → AddSubgroup N)
+    (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : iSupIndep p := by
+  rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
+  exact iSupIndep_of_dfinsupp_lsum_injective _ h
+
+@[deprecated (since := "2024-11-24")]
+alias independent_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsupp_sumAddHom_injective'
 
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
-are `CompleteLattice.Independent`.
+are `iSupIndep`.
 
 Note that this is not generally true for `[Semiring R]`, for instance when `A` is the
 `ℕ`-submodules of the positive and negative integers.
 
 See `Counterexamples/DirectSumIsInternal.lean` for a proof of this fact. -/
-theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Independent p) :
+theorem iSupIndep.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : iSupIndep p) :
     Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`
-  rw [independent_iff_forall_dfinsupp] at h
+  rw [iSupIndep_iff_forall_dfinsupp] at h
   suffices LinearMap.ker (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) = ⊥ by
     -- Lean can't find this without our help
     letI thisI : AddCommGroup (Π₀ i, p i) := inferInstance
@@ -482,34 +492,46 @@ theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Inde
   rwa [← erase_add_single i m, LinearMap.map_add, lsum_single, Submodule.subtype_apply,
     add_eq_zero_iff_eq_neg, ← Submodule.coe_neg] at hm
 
+@[deprecated (since := "2024-11-24")]
+alias Independent.dfinsupp_lsum_injective := iSupIndep.dfinsupp_lsum_injective
+
 /-- The canonical map out of a direct sum of a family of additive subgroups is injective when the
-additive subgroups are `CompleteLattice.Independent`. -/
-theorem Independent.dfinsupp_sumAddHom_injective {p : ι → AddSubgroup N} (h : Independent p) :
+additive subgroups are `iSupIndep`. -/
+theorem iSupIndep.dfinsupp_sumAddHom_injective {p : ι → AddSubgroup N} (h : iSupIndep p) :
     Function.Injective (sumAddHom fun i => (p i).subtype) := by
-  rw [← independent_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)] at h
+  rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)] at h
   exact h.dfinsupp_lsum_injective
+
+@[deprecated (since := "2024-11-24")]
+alias Independent.dfinsupp_sumAddHom_injective := iSupIndep.dfinsupp_sumAddHom_injective
 
 /-- A family of submodules over an additive group are independent if and only iff `DFinsupp.lsum`
 applied with `Submodule.subtype` is injective.
 
 Note that this is not generally true for `[Semiring R]`; see
-`CompleteLattice.Independent.dfinsupp_lsum_injective` for details. -/
-theorem independent_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
-    Independent p ↔ Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) :=
-  ⟨Independent.dfinsupp_lsum_injective, independent_of_dfinsupp_lsum_injective p⟩
+`iSupIndep.dfinsupp_lsum_injective` for details. -/
+theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
+    iSupIndep p ↔ Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) :=
+  ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
+
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_dfinsupp_lsum_injective := iSupIndep_iff_dfinsupp_lsum_injective
 
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/
-theorem independent_iff_dfinsupp_sumAddHom_injective (p : ι → AddSubgroup N) :
-    Independent p ↔ Function.Injective (sumAddHom fun i => (p i).subtype) :=
-  ⟨Independent.dfinsupp_sumAddHom_injective, independent_of_dfinsupp_sumAddHom_injective' p⟩
+theorem iSupIndep_iff_dfinsupp_sumAddHom_injective (p : ι → AddSubgroup N) :
+    iSupIndep p ↔ Function.Injective (sumAddHom fun i => (p i).subtype) :=
+  ⟨iSupIndep.dfinsupp_sumAddHom_injective, iSupIndep_of_dfinsupp_sumAddHom_injective' p⟩
 
-/-- If a family of submodules is `Independent`, then a choice of nonzero vector from each submodule
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsupp_sumAddHom_injective
+
+/-- If a family of submodules is independent, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
 
-See also `CompleteLattice.Independent.linearIndependent'`. -/
-theorem Independent.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Submodule R N)
-    (hp : Independent p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
+See also `iSupIndep.linearIndependent'`. -/
+theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Submodule R N)
+    (hp : iSupIndep p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
     LinearIndependent R v := by
   let _ := Classical.decEq ι
   let _ := Classical.decEq R
@@ -527,15 +549,19 @@ theorem Independent.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → 
   simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
   simpa
 
-theorem independent_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {ι} {v : ι → N}
-    (h_ne_zero : ∀ i, v i ≠ 0) : (Independent fun i => R ∙ v i) ↔ LinearIndependent R v :=
+@[deprecated (since := "2024-11-24")]
+alias Independent.linearIndependent := iSupIndep.linearIndependent
+
+theorem iSupIndep_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {ι} {v : ι → N}
+    (h_ne_zero : ∀ i, v i ≠ 0) : (iSupIndep fun i => R ∙ v i) ↔ LinearIndependent R v :=
   let _ := Classical.decEq ι
   ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,
-    fun hv => hv.independent_span_singleton⟩
+    fun hv => hv.iSupIndep_span_singleton⟩
+
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_linearIndependent_of_ne_zero := iSupIndep_iff_linearIndependent_of_ne_zero
 
 end Ring
-
-end CompleteLattice
 
 namespace LinearMap
 

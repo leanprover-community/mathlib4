@@ -36,7 +36,7 @@ universe v u
 Previously, this had accidentally been made a global instance,
 and we now turn it on locally when convenient.
 -/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace CompHausLike
 
@@ -175,8 +175,8 @@ noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [Co
 instance : HasCountableLimits LightProfinite where
   out _ := { has_limit := fun F ↦ ⟨limitCone F, limitConeIsLimit F⟩ }
 
-noncomputable instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
-  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSizeShrink _
+instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
+  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSize_shrink _
   inferInstanceAs (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
 
 variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
@@ -261,7 +261,7 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightDiagram := InducedCategory.category toProfinite
 
-instance concreteCategory : ConcreteCategory LightDiagram := InducedCategory.concreteCategory _
+instance hasForget : HasForget LightDiagram := InducedCategory.hasForget _
 
 end LightDiagram
 
@@ -297,10 +297,11 @@ instance instCountableDiscreteQuotient (S : LightProfinite)  :
 
 /-- A profinite space which is light gives rise to a light profinite space. -/
 noncomputable def toLightDiagram (S : LightProfinite.{u}) : LightDiagram.{u} where
-  diagram := sequentialFunctor _ ⋙ (lightToProfinite.obj S).fintypeDiagram
-  cone := (Functor.Initial.limitConeComp (sequentialFunctor _) (lightToProfinite.obj S).lim).cone
-  isLimit :=
-    (Functor.Initial.limitConeComp (sequentialFunctor _) (lightToProfinite.obj S).lim).isLimit
+  diagram := IsCofiltered.sequentialFunctor _ ⋙ (lightToProfinite.obj S).fintypeDiagram
+  cone := (Functor.Initial.limitConeComp (IsCofiltered.sequentialFunctor _)
+    (lightToProfinite.obj S).lim).cone
+  isLimit := (Functor.Initial.limitConeComp (IsCofiltered.sequentialFunctor _)
+    (lightToProfinite.obj S).lim).isLimit
 
 end LightProfinite
 

@@ -836,7 +836,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
 /-- If `E / F` is a field extension of exponential characteristic `q`, if `{ u_i }` is a
 family of separable elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }`
 is also `F`-linearly independent for any natural number `n`. -/
-theorem LinearIndependent.map_pow_expChar_pow_of_isIntegral'
+theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
     (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
@@ -959,7 +959,7 @@ theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
-  simp only [coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
+  simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
 
@@ -990,7 +990,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     contrapose!
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
     rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
-  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isIntegral' q n hsep) lF₀ <| by
+  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
     rw [← hl, linearCombination_apply, onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]

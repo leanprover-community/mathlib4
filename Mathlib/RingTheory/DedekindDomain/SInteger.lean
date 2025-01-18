@@ -96,7 +96,6 @@ theorem unit_valuation_eq_one (x : S.unit K) {v : HeightOneSpectrum R} (hv : v �
     v.valuation ((x : Kˣ) : K) = 1 :=
   x.property v hv
 
--- Porting note: `apply_inv_coe` fails the simpNF linter
 /-- The group of `S`-units is the group of units of the ring of `S`-integers. -/
 @[simps apply_val_coe symm_apply_coe]
 def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where

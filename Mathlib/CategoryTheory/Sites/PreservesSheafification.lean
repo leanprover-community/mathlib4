@@ -43,7 +43,7 @@ universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits
+open Category Limits
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   {A B : Type*} [Category A] [Category B] (F : A ⥤ B)
@@ -249,7 +249,7 @@ variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ 
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
   [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-  [ConcreteCategory D] [ConcreteCategory E]
+  [HasForget D] [HasForget E]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget D)]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget E)]
   [PreservesLimits (forget D)] [PreservesLimits (forget E)]
@@ -285,7 +285,7 @@ instance : PreservesSheafification J F := by
 end
 
 example {D : Type*} [Category.{max v u} D]
-  [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+  [HasForget.{max v u} D] [PreservesLimits (forget D)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
   [∀ (α β : Type max u v) (fst snd : β → α),

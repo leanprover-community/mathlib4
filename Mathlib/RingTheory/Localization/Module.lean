@@ -32,15 +32,11 @@ variable {R : Type*} (Rₛ : Type*)
 
 section IsLocalizedModule
 
-section AddCommMonoid
-variable [CommSemiring R] (S : Submonoid R)
-
 open Submodule
 
-variable [CommSemiring Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
-variable {M M' : Type*} [AddCommMonoid M] [Module R M]
-  [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
-  [IsLocalizedModule S f]
+variable [CommSemiring R] (S : Submonoid R) [CommSemiring Rₛ] [Algebra R Rₛ] [IsLocalization S Rₛ]
+  {M Mₛ : Type*} [AddCommMonoid M] [Module R M] [AddCommMonoid Mₛ] [Module R Mₛ]
+  [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (f : M →ₗ[R] Mₛ) [IsLocalizedModule S f]
 
 include S
 
@@ -53,56 +49,33 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
-end AddCommMonoid
-
-section AddCommGroup
-
-variable {R : Type*} (Rₛ : Type*) [CommRing R] (S : Submonoid R)
-variable [CommRing Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
-variable {M M' : Type*} [AddCommGroup M] [Module R M]
-  [AddCommGroup M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
-  [IsLocalizedModule S f]
-
-include S
-
 theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (f ∘ v) := by
-  rw [linearIndependent_iff'] at hv ⊢
-  intro t g hg i hi
-  choose! a g' hg' using IsLocalization.exist_integer_multiples S t g
-  have h0 : f (∑ i ∈ t, g' i • v i) = 0 := by
-    apply_fun ((a : R) • ·) at hg
-    rw [smul_zero, Finset.smul_sum] at hg
-    rw [map_sum, ← hg]
-    refine Finset.sum_congr rfl fun i hi => ?_
-    rw [← smul_assoc, ← hg' i hi, map_smul, Function.comp_apply, algebraMap_smul]
-  obtain ⟨s, hs⟩ := (IsLocalizedModule.eq_zero_iff S f).mp h0
-  simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hs
-  specialize hv t _ hs i hi
-  rw [← (IsLocalization.map_units Rₛ a).mul_right_eq_zero, ← Algebra.smul_def, ← hg' i hi]
-  exact (IsLocalization.map_eq_zero_iff S _ _).2 ⟨s, hv⟩
+  rw [linearIndependent_iff'ₛ] at hv ⊢
+  intro t g₁ g₂ eq i hi
+  choose! a fg hfg using IsLocalization.exist_integer_multiples S (t.disjSum t) (Sum.elim g₁ g₂)
+  simp_rw [Sum.forall, Finset.inl_mem_disjSum, Sum.elim_inl, Finset.inr_mem_disjSum, Sum.elim_inr,
+    Subtype.forall'] at hfg
+  apply_fun ((a : R) • ·) at eq
+  simp_rw [← t.sum_coe_sort, Finset.smul_sum, ← smul_assoc, ← hfg,
+    algebraMap_smul, Function.comp_def, ← map_smul, ← map_sum,
+    t.sum_coe_sort (f := fun x ↦ fg (Sum.inl x) • v x),
+    t.sum_coe_sort (f := fun x ↦ fg (Sum.inr x) • v x)] at eq
+  have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
+  simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at eq
+  have := congr(algebraMap R Rₛ $(hv t _ _ eq i hi))
+  simpa only [map_mul, (IsLocalization.map_units Rₛ s).mul_right_inj, hfg.1 ⟨i, hi⟩, hfg.2 ⟨i, hi⟩,
+    Algebra.smul_def, (IsLocalization.map_units Rₛ a).mul_right_inj] using this
 
-variable [Module Rₛ M] [IsScalarTower R Rₛ M]
-
-theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
+theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
+    {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
 
-end AddCommGroup
-
-
-variable [CommRing R] (S : Submonoid R)
-
 section Basis
 
-variable [CommRing Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
-
-open Submodule
-
-variable {M Mₛ : Type*} [AddCommGroup M] [AddCommGroup Mₛ] [Module R M] [Module R Mₛ]
-  [Module Rₛ Mₛ] (f : M →ₗ[R] Mₛ) [IsLocalizedModule S f] [IsScalarTower R Rₛ Mₛ]
-  {ι : Type*} (b : Basis ι R M)
+variable {ι : Type*} (b : Basis ι R M)
 
 /-- If `M` has an `R`-basis, then localizing `M` at `S` has a basis over `R` localized at `S`. -/
 noncomputable def Basis.ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
@@ -138,12 +111,12 @@ end IsLocalizedModule
 
 section LocalizationLocalization
 
-variable [CommRing R] (S : Submonoid R) [CommRing Rₛ] [Algebra R Rₛ]
-variable [hT : IsLocalization S Rₛ]
-variable {A : Type*} [CommRing A] [Algebra R A]
-variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
+variable [CommSemiring R] (S : Submonoid R) [CommSemiring Rₛ] [Algebra R Rₛ]
+variable [IsLocalization S Rₛ]
+variable {A : Type*} [CommSemiring A] [Algebra R A]
+variable (Aₛ : Type*) [CommSemiring Aₛ] [Algebra A Aₛ]
 variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
-variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
+variable [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
 open Submodule
 
@@ -207,17 +180,7 @@ open IsLocalization
 def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
   toFun := f
   map_add' := f.map_add
-  map_smul' := by
-    intro r m
-    simp only [RingHom.id_apply]
-    rcases mk'_surjective S r with ⟨r, s, rfl⟩
-    calc f (mk' A r s • m)
-        = ((s : R) • mk' A 1 s) • f (mk' A r s • m) := by simp
-      _ = (mk' A 1 s) • (s : R) • f (mk' A r s • m) := by rw [smul_comm, smul_assoc]
-      _ = (mk' A 1 s) • f ((s : R) • mk' A r s • m) := by simp
-      _ = (mk' A 1 s) • f (r • m) := by rw [← smul_assoc, smul_mk'_self, algebraMap_smul]
-      _ = (mk' A 1 s) • r • f m := by simp
-      _ = mk' A r s • f m := by rw [smul_comm, ← smul_assoc, smul_mk'_one]
+  map_smul' := (IsLocalization.linearMap_compatibleSMul S A M N).map_smul _
 
 @[simp] lemma LinearMap.restrictScalars_extendScalarsOfIsLocalization (f : M →ₗ[R] N) :
     (f.extendScalarsOfIsLocalization S A).restrictScalars R = f := rfl
@@ -257,8 +220,7 @@ variable [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S R
 @[simps!]
 noncomputable
 def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
-  ((LinearMap.extendScalarsOfIsLocalizationEquiv
-    S Rₛ).restrictScalars R).toLinearMap.comp (map S f g)
+  ((LinearMap.extendScalarsOfIsLocalizationEquiv S Rₛ).restrictScalars R).toLinearMap ∘ₗ map S f g
 
 end IsLocalizedModule
 
@@ -273,7 +235,7 @@ noncomputable
 def LocalizedModule.map :
     (M →ₗ[R] N) →ₗ[R] (LocalizedModule S M →ₗ[Localization S] LocalizedModule S N) :=
   IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
-        (LocalizedModule.mkLinearMap S N) (Localization S)
+    (LocalizedModule.mkLinearMap S N) (Localization S)
 
 @[simp]
 lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
@@ -293,5 +255,17 @@ lemma LocalizedModule.map_injective (l : M →ₗ[R] N) (hl : Function.Injective
 lemma LocalizedModule.map_surjective (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     Function.Surjective (map S l) :=
   IsLocalizedModule.map_surjective S (mkLinearMap S M) (mkLinearMap S N) l hl
+
+lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+    [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂]
+    (l : M →ₗ[R] N) :
+    (map S l).restrictScalars R = (IsLocalizedModule.iso S g₂).symm ∘ₗ
+      IsLocalizedModule.map S g₁ g₂ l ∘ₗ IsLocalizedModule.iso S g₁ := by
+  rw [LinearEquiv.eq_toLinearMap_symm_comp, ← LinearEquiv.comp_toLinearMap_symm_eq]
+  apply IsLocalizedModule.linearMap_ext S g₁ g₂
+  rw [LinearMap.comp_assoc, IsLocalizedModule.iso_symm_comp]
+  ext
+  simp
 
 end LocalizedModule

@@ -23,9 +23,7 @@ and unique types.
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
-assert_not_exists Multiplicative
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -474,5 +472,3 @@ attribute [deprecated sub_add_cancel_left (since := "2024-03-20")] IsAddUnit.sub
 -- @[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
 -- @[deprecated (since := "2024-03-20")]
 -- alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
-@[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
-@[deprecated (since := "2024-03-20")] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel

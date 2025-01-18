@@ -53,6 +53,8 @@ the colors.
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
+assert_not_exists Field
+
 open Fintype Function
 
 universe u v
@@ -264,10 +266,6 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   have := Nat.sInf_mem (⟨m, hm⟩ : {n' | G.Colorable n'}.Nonempty)
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
-
-@[deprecated Colorable.chromaticNumber_le (since := "2024-03-21")]
-theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
-    G.chromaticNumber ≤ Fintype.card α := C.colorable.chromaticNumber_le
 
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by

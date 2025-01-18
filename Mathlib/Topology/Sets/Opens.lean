@@ -91,7 +91,6 @@ theorem coe_mk {U : Set α} {hU : IsOpen U} : ↑(⟨U, hU⟩ : Opens α) = U :=
 @[simp]
 theorem mem_mk {x : α} {U : Set α} {h : IsOpen U} : x ∈ mk U h ↔ x ∈ U := Iff.rfl
 
--- Porting note: removed @[simp] because LHS simplifies to `∃ x, x ∈ U`
 protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).Nonempty :=
   Set.nonempty_coe_sort
 
@@ -103,7 +102,6 @@ protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x,
 theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
   SetLike.coe_injective h
 
--- Porting note: removed @[simp], simp can prove it
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 
@@ -118,7 +116,7 @@ protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (U : Opens α) : Set α := U
 
-initialize_simps_projections Opens (carrier → coe)
+initialize_simps_projections Opens (carrier → coe, as_prefix coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
 @[simps]
@@ -378,7 +376,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   fun f g h =>
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
-      inseparable_iff_forall_open.2 fun s hs =>
+      inseparable_iff_forall_isOpen.2 fun s hs =>
         have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 

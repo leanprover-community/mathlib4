@@ -93,7 +93,7 @@ theorem equivTuple_apply {R : Type*} (c₁ c₂ : R) (x : ℍ[R,c₁,c₂]) :
 @[simp]
 theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a.4 = a := rfl
 
-variable {S T R : Type*} {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
+variable {S T R : Type*} {c₁ c₂ : R} (r x y : R) (a b : ℍ[R,c₁,c₂])
 
 instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).subsingleton
 instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).surjective.nontrivial
@@ -148,7 +148,8 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
   coe_injective.eq_iff
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually.
+-- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
 instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
@@ -169,7 +170,7 @@ instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 section One
 variable [One R]
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : One ℍ[R,c₁,c₂] := ⟨⟨1, 0, 0, 0⟩⟩
 
 @[simp] theorem one_re : (1 : ℍ[R,c₁,c₂]).re = 1 := rfl
@@ -190,7 +191,7 @@ end Zero
 section Add
 variable [Add R]
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Add ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
 
@@ -223,7 +224,7 @@ end AddZeroClass
 section Neg
 variable [Neg R]
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp] theorem neg_re : (-a).re = -a.re := rfl
@@ -484,11 +485,12 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
-  toFun s := coe (algebraMap S R s)
-  map_one' := by simp only [map_one, coe_one]
-  map_zero' := by simp only [map_zero, coe_zero]
-  map_mul' x y := by simp only [map_mul, coe_mul]
-  map_add' x y := by simp only [map_add, coe_add]
+  algebraMap :=
+  { toFun s := coe (algebraMap S R s)
+    map_one' := by simp only [map_one, coe_one]
+    map_zero' := by simp only [map_zero, coe_zero]
+    map_mul' x y := by simp only [map_mul, coe_mul]
+    map_add' x y := by simp only [map_add, coe_add] }
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
   commutes' s x := by ext <;> simp [Algebra.commutes]
 
@@ -718,6 +720,7 @@ end QuaternionAlgebra
 def Quaternion (R : Type*) [One R] [Neg R] :=
   QuaternionAlgebra R (-1) (-1)
 
+@[inherit_doc]
 scoped[Quaternion] notation "ℍ[" R "]" => Quaternion R
 
 /-- The equivalence between the quaternions over `R` and `R × R × R × R`. -/
@@ -742,9 +745,7 @@ instance {R : Type*} [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
 
 namespace Quaternion
 
-variable {S T R : Type*} [CommRing R] (r x y z : R) (a b c : ℍ[R])
-
-export QuaternionAlgebra (re imI imJ imK)
+variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 /-- Coercion `R → ℍ[R]`. -/
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
@@ -1191,7 +1192,7 @@ theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 
 instance instNontrivial : Nontrivial ℍ[R] where
-  exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
+  exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩
 
 instance : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
@@ -1226,8 +1227,6 @@ instance instGroupWithZero : GroupWithZero ℍ[R] :=
     inv := Inv.inv
     inv_zero := by rw [instInv_inv, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
-      -- Porting note: the aliased definition confuse TC search
-      letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
       rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
         inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
 
@@ -1351,7 +1350,6 @@ variable (R : Type*) [One R] [Neg R]
 theorem mk_quaternion : #(ℍ[R]) = #R ^ 4 :=
   mk_quaternionAlgebra _ _
 
---@[simp] Porting note: LHS can be simplified to `#R^4`
 theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
   mk_quaternionAlgebra_of_infinite _ _
 
@@ -1359,7 +1357,6 @@ theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
 theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ 4 :=
   mk_univ_quaternionAlgebra _ _
 
---@[simp] Porting note: LHS can be simplified to `#R^4`
 theorem mk_univ_quaternion_of_infinite [Infinite R] : #(Set.univ : Set ℍ[R]) = #R :=
   mk_univ_quaternionAlgebra_of_infinite _ _
 

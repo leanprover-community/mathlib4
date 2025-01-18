@@ -754,7 +754,7 @@ theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M 
     (replaceHead x hnotone w).head = x := by
   induction w
   · rfl
-  · simp [*]
+  · simp [*, replaceHead]
 
 /-- One can multiply an element from the left to a non-empty reduced word if it does not cancel
 with the first element in the word. -/
@@ -766,7 +766,7 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
     (mulHead w x hnotone).head = x * w.head := by
   induction w
   · rfl
-  · simp [*]
+  · simp [*, mulHead]
 
 @[simp]
 theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
@@ -812,6 +812,8 @@ open Pointwise
 
 open Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
@@ -823,7 +825,7 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 variable {α : Type*} [MulAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
+variable (hXdisj : Pairwise (Disjoint on X))
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 include hpp
 
@@ -892,15 +894,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
         simpa using heq
       · change i ≠ k at hh
         change j ≠ k at hl
-        obtain ⟨h, hn1, -⟩ := Cardinal.three_le hcard 1 1
-        let w' : NeWord H k k :=
-          NeWord.append (NeWord.append (NeWord.singleton h hn1) hh.symm w) hl
-            (NeWord.singleton h⁻¹ (inv_ne_one.mpr hn1))
-        have hw' : lift f w'.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
-        intro heq1
-        apply hw'
-        simp [w', heq1]
+        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
 include hcard in
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
@@ -966,6 +960,8 @@ section PingPongLemma
 
 open Pointwise Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
 
@@ -973,8 +969,8 @@ variable {G : Type u_1} [Group G] (a : ι → G)
 variable {α : Type*} [MulAction G α]
 variable (X Y : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
+variable (hXdisj : Pairwise (Disjoint on X))
+variable (hYdisj : Pairwise (Disjoint on Y))
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
@@ -1009,7 +1005,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   apply lift_injective_of_ping_pong f _ X'
   · show ∀ i, (X' i).Nonempty
     exact fun i => Set.Nonempty.inl (hXnonempty i)
-  · show Pairwise fun i j => Disjoint (X' i) (X' j)
+  · show Pairwise (Disjoint on X')
     intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right

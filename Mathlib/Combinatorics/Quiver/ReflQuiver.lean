@@ -31,6 +31,10 @@ class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
 /-- Notation for the identity morphism in a category. -/
 scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
 
+@[simp]
+theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X') :
+    Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX ; rfl
+
 instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
   { inst with }
 
@@ -65,6 +69,18 @@ theorem ext {V : Type u} [ReflQuiver.{v₁} V] {W : Type u₂} [ReflQuiver.{v₂
   congr
   funext X Y f
   simpa using h_map X Y f
+
+/-- This may be a more useful form of `ReflPrefunctor.ext`. -/
+theorem ext' {V W : Type u} [ReflQuiver.{v} V] [ReflQuiver.{v} W]
+    {F G : ReflPrefunctor V W}
+    (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : V) (f : X ⟶ Y),
+      F.map f = Quiver.homOfEq (G.map f) (h_obj _).symm (h_obj _).symm) : F = G := by
+  obtain ⟨Fpre, Fid⟩ := F
+  obtain ⟨Gpre, Gid⟩ := G
+  simp at h_obj h_map
+  obtain rfl : Fpre = Gpre := Prefunctor.ext' (V := V) (W := W) h_obj h_map
+  rfl
 
 /-- The identity morphism between reflexive quivers. -/
 @[simps!]
