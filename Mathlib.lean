@@ -4709,6 +4709,7 @@ import Mathlib.RingTheory.Smooth.Pi
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
 import Mathlib.RingTheory.Spectrum.Maximal.Defs
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.RingTheory.Spectrum.Maximal.Topology
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
