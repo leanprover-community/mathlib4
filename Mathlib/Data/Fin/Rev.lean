@@ -5,9 +5,9 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Basic
 /-!
-# Reverse on `fin n`
+# Reverse on `Fin n`
 
-This file contains lemmas about `Fin.rev : fin n → fin n` which maps `i` to `n - 1 - i`.
+This file contains lemmas about `Fin.rev : Fin n → Fin n` which maps `i` to `n - 1 - i`.
 
 ## Definitions
 
