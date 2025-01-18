@@ -213,6 +213,28 @@ instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
 instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   ⟨inferInstance⟩
 
+/--
+If every cocone on a diagram of sheaves which is a colimit on the level of presheaves satisfies
+the condition that the cocone point is a sheaf, then the functor from sheaves to preseheaves
+creates colimits of the diagram.
+Note: this almost never holds in sheaf categories in general, but it does for the extensive
+topology (see `Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits`).
+-/
+def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
+    (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :
+    CreatesColimit F (sheafToPresheaf J D) :=
+  createsColimitOfReflectsIso fun E hE =>
+    { liftedCocone := ⟨⟨E.pt, h _ hE⟩,
+        ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.ι.naturality _⟩⟩
+      validLift := Cocones.ext (eqToIso rfl) fun j => by simp
+      makesColimit :=
+        { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
+          fac := fun S j => by ext1; dsimp; rw [hE.fac]; rfl
+          uniq := fun S m hm => by
+            ext1
+            exact hE.uniq ((sheafToPresheaf J D).mapCocone S) m.val fun j =>
+              congr_arg Hom.val (hm j) } }
+
 variable {D : Type w} [Category.{max v u} D]
 
 example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance

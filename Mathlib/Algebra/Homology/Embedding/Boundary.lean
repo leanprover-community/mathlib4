@@ -144,6 +144,9 @@ lemma BoundaryLE.false_of_isTruncGE {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE]
   obtain ⟨k, hk⟩ := e.mem_next hj.1
   exact hj.2 k (by simpa only [hk] using hj.1)
 
+@[simp] lemma op_boundaryLE_iff {j : ι} : e.op.BoundaryLE j ↔ e.BoundaryGE j := by rfl
+@[simp] lemma op_boundaryGE_iff {j : ι} : e.op.BoundaryGE j ↔ e.BoundaryLE j := by rfl
+
 end Embedding
 
 lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
