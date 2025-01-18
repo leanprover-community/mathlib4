@@ -96,7 +96,7 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
     Hom.toCoalgHom (𝟙 M) = CoalgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
+instance hasForget : HasForget.{v} (CoalgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toCoalgHom }

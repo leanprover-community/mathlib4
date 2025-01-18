@@ -48,7 +48,7 @@ instance : BundledHom @CompleteLatticeHom where
 
 deriving instance LargeCategory for CompleteLat
 
-instance : ConcreteCategory CompleteLat := by
+instance : HasForget CompleteLat := by
   dsimp [CompleteLat]; infer_instance
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where

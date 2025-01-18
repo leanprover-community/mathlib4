@@ -62,11 +62,7 @@ attribute [simp] algebraMap_σ
 -- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid unsensical instances
 @[nolint unusedArguments]
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    Algebra R₀ P.Ring where
-  __ := Module.compHom P.Ring (algebraMap R₀ R)
-  __ := (algebraMap R P.Ring).comp (algebraMap R₀ R)
-  smul_def' _ _ := smul_def _ _
-  commutes' _ _ := commutes _ _
+    Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
