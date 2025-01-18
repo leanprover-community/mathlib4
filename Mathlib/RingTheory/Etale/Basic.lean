@@ -220,7 +220,7 @@ namespace RingHom
 variable {R S : Type u} [CommRing R] [CommRing S]
 
 /--
-A ring homomorphism `R →+* A` is formally etale it is formally unramified and formally smooth.
+A ring homomorphism `R →+* A` is formally etale if it is formally unramified and formally smooth.
 See `Algebra.FormallyEtale`.
 -/
 @[algebraize Algebra.FormallyEtale]
