@@ -12,8 +12,6 @@ import Mathlib.Util.AssertExists
 
 /-! # Lemmas about inequalities with `1`. -/
 
-assert_not_exists Monoid
-
 variable {α : Type*}
 
 section dite
