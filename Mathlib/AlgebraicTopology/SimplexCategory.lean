@@ -783,7 +783,7 @@ scoped macro_rules
 
 section Delab
 open Lean PrettyPrinter.Delaborator SubExpr
-open Mathlib.Tactic.Superscript.Mapping (subscript)
+open Mathlib.Tactic.Superscript (Mapping)
 
 /-- Checks that the provided expression can be subscripted. -/
 private partial def subscriptable (e : Expr) : DelabM Unit := do
@@ -797,15 +797,15 @@ private partial def subscriptable (e : Expr) : DelabM Unit := do
 where
   -- Return the user-facing name of any constant or free variable.
   name : Expr → MetaM (Option Name)
-    | Expr.const name _ => return name
+    | Expr.const name _ => pure name
     | Expr.fvar name => name.getUserName
-    | _ => return none
+    | _ => pure none
   -- Return `true` if every character in `s` can be subscripted.
   isSubscriptable (s : Name) : Bool :=
-    s.toString.toList.all subscript.toSpecial.contains
+    s.toString.toList.all Mapping.subscript.toSpecial.contains
 
 /-- Checks that the provided expression can be subscripted before delaborating. -/
-def Meta.subscript (e : Expr) : Delab := subscriptable e >>= fun _ ↦ delab
+def Meta.subscript (e : Expr) : Delab := subscriptable e >>= fun () ↦ delab
 
 /-- Delaborator for the notation `[m]ₙ`. -/
 @[app_delab FullSubcategory.mk]
