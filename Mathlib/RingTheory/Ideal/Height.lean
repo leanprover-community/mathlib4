@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 /-!
 # The Height of an Ideal
 
-In this file, we defined the height of a prime ideal and the height of an ideal.
+In this file, we define the height of a prime ideal and the height of an ideal.
 
 # Main definitions
 
