@@ -218,7 +218,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) 
     NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _
       (Metric.ball_mem_nhds _ (mul_pos (u_pos n) (u_pos n))))
   choose v hv using A
-  let d := fun n ↦ v n - x
+  let d n := v n - x
   have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
   let ⟨r, hr⟩ := exists_one_lt_norm 𝕜
   have W n := rescale_to_shell hr (u_pos n) (x := d n) (by simpa using (M n).2)
