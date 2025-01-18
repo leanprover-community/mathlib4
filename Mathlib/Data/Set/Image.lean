@@ -186,11 +186,6 @@ variable {f : α → β} {s t : Set α}
 
 -- Porting note: `Set.image` is already defined in `Data.Set.Defs`
 
-@[deprecated mem_image (since := "2024-03-23")]
-theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
-  bex_def.symm
-
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl
 
@@ -207,18 +202,6 @@ theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
 
 theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
-
-@[deprecated (since := "2024-02-21")] alias ball_image_iff := forall_mem_image
-@[deprecated (since := "2024-02-21")] alias bex_image_iff := exists_mem_image
-@[deprecated (since := "2024-02-21")] alias ⟨_, ball_image_of_ball⟩ := forall_mem_image
-
-@[deprecated forall_mem_image (since := "2024-02-21")]
-theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
-    ∀ {y : β}, y ∈ f '' s → C y := forall_mem_image.2 h _
-
-@[deprecated forall_mem_image (since := "2024-02-21")]
-theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β} (h_y : y ∈ f '' s)
-    (h : ∀ x : α, x ∈ s → C (f x)) : C y := forall_mem_image.2 h _ h_y
 
 -- Porting note: used to be `safe`
 @[congr]
@@ -421,6 +404,9 @@ theorem image_preimage_subset (f : α → β) (s : Set β) : f '' (f ⁻¹' s) �
 theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '' s) := fun _ =>
   mem_image_of_mem f
 
+theorem preimage_image_univ {f : α → β} : f ⁻¹' (f '' univ) = univ :=
+  Subset.antisymm (fun _ _ => trivial) (subset_preimage_image f univ)
+
 @[simp]
 theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻¹' (f '' s) = s :=
   Subset.antisymm (fun _ ⟨_, hy, e⟩ => h e ▸ hy) (subset_preimage_image f s)
@@ -571,7 +557,6 @@ variable {f : ι → α} {s t : Set α}
 
 theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
 
-@[deprecated (since := "2024-02-21")] alias forall_range_iff := forall_mem_range
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
@@ -580,9 +565,6 @@ theorem forall_subtype_range_iff {p : range f → Prop} :
     apply H⟩
 
 theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp
-
-@[deprecated (since := "2024-03-10")]
-alias exists_range_iff' := exists_range_iff
 
 theorem exists_subtype_range_iff {p : range f → Prop} :
     (∃ a : range f, p a) ↔ ∃ i, p ⟨f i, mem_range_self _⟩ :=
@@ -606,6 +588,13 @@ theorem subset_range_of_surjective {f : α → β} (h : Surjective f) (s : Set �
 theorem image_univ {f : α → β} : f '' univ = range f := by
   ext
   simp [image, range]
+
+lemma image_compl_eq_range_diff_image {f : α → β} (hf : Injective f) (s : Set α) :
+    f '' sᶜ = range f \ f '' s := by rw [← image_univ, ← image_diff hf, compl_eq_univ_diff]
+
+/-- Alias of `Set.image_compl_eq_range_sdiff_image`. -/
+lemma range_diff_image {f : α → β} (hf : Injective f) (s : Set α) : range f \ f '' s = f '' sᶜ := by
+  rw [image_compl_eq_range_diff_image hf]
 
 @[simp]
 theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f ⊆ s := by
@@ -938,10 +927,6 @@ theorem range_unique [h : Unique ι] : range f = {f default} := by
 
 theorem range_diff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
   fun _ ⟨⟨x, h₁⟩, h₂⟩ => ⟨x, fun h => h₂ ⟨x, h, h₁⟩, h₁⟩
-
-theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range f \ f '' s = f '' sᶜ :=
-  (Subset.antisymm (range_diff_image_subset f s)) fun _ ⟨_, hx, hy⟩ =>
-    hy ▸ ⟨mem_range_self _, fun ⟨_, hx', Eq⟩ => hx <| H Eq ▸ hx'⟩
 
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by

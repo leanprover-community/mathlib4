@@ -46,6 +46,8 @@ prove analogous results.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CoxeterSystem
 
 open List Matrix Function Classical
@@ -246,10 +248,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       omega
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by
-      apply (Nat.sub_eq_iff_eq_add' this).mpr
-      rw [add_assoc, add_comm 1, Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr hM)]
-      exact mul_two _
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
@@ -306,8 +305,7 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
@@ -315,8 +313,7 @@ theorem not_isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
@@ -324,8 +321,7 @@ theorem isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
@@ -333,8 +329,7 @@ theorem not_isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

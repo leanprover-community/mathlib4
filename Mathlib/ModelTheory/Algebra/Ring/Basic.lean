@@ -237,7 +237,7 @@ def languageEquivEquivRingEquiv {R S : Type*}
     [NonAssocRing R] [NonAssocRing S]
     [CompatibleRing R] [CompatibleRing S] :
     (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
-  { toFun := fun f =>
+  { toFun f :=
     { f with
       map_add' := by
         intro x y
@@ -245,13 +245,13 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_mul' := by
         intro x y
         simpa using f.map_fun mulFunc ![x, y] }
-    invFun := fun f =>
+    invFun f :=
     { f with
       map_fun' := fun {n} f => by
         cases f <;> simp
       map_rel' := fun {n} f => by cases f },
-    left_inv := fun f => by ext; rfl
-    right_inv := fun f => by ext; rfl }
+    left_inv f := rfl
+    right_inv f := rfl }
 
 variable (R : Type*) [Language.ring.Structure R]
 
