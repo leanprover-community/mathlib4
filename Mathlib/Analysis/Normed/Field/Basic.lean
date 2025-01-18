@@ -923,19 +923,10 @@ open NNReal
 
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
-@[simp]
-theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
-  NNReal.eq <| Real.norm_of_nonneg x.2
+@[simp] lemma nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x := by ext; simp [nnnorm]
+@[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [enorm]
 
 end NNReal
-
-@[simp 1001] -- Porting note: increase priority so that the LHS doesn't simplify
-theorem norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
-  Real.norm_of_nonneg (norm_nonneg _)
-
-@[simp]
-theorem nnnorm_norm [SeminormedAddCommGroup α] (a : α) : ‖‖a‖‖₊ = ‖a‖₊ := by
-  rw [Real.nnnorm_of_nonneg (norm_nonneg a)]; rfl
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
 theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]

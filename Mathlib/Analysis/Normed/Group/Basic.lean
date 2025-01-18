@@ -1317,6 +1317,16 @@ instance : NNNorm ℝ≥0 where
 
 end NNReal
 
+ -- Porting note: increase priority so that the LHS doesn't simplify
+@[to_additive (attr := simp 1001) norm_norm]
+lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)
+
+@[to_additive (attr := simp) nnnorm_norm]
+lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]
+
+@[to_additive (attr := simp) enorm_norm]
+lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]
+
 end SeminormedCommGroup
 
 section NormedGroup
