@@ -5,12 +5,13 @@ Authors: Yael Dillies
 -/
 import Batteries.Tactic.Init
 import Mathlib.Data.One.Defs
-import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.TypeStar
 
 /-! # Lemmas about inequalities with `1`. -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 section dite
 variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
