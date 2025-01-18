@@ -125,52 +125,75 @@ def tensorCotangentSpace
       ext a
       simp; rfl }
 
-set_option maxHeartbeats 240000 in
+/-- (Implementation)
+If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`.
+This is the inverse. -/
+noncomputable
+def tensorCotangentInvFun
+    [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
+    (H : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) :
+    Q.Cotangent →+ T ⊗[S] P.Cotangent :=
+  letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
+  haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
+  haveI : IsScalarTower P.Ring Q.Ring T :=
+    .of_algebraMap_eq fun r ↦ halg ▸ (f.algebraMap_toRingHom r).symm
+  letI e := LinearEquiv.ofBijective _ H
+  letI f' : Q.ker →ₗ[Q.Ring] T ⊗[S] P.Cotangent :=
+    (LinearMap.liftBaseChange _
+      ((TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ Cotangent.mk)) ∘ₗ e.symm.toLinearMap
+  QuotientAddGroup.lift _ f' <| by
+    intro x hx
+    refine Submodule.smul_induction_on hx ?_ fun _ _ ↦ add_mem
+    clear x hx
+    rintro a ha b -
+    obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
+    obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
+    obtain ⟨y, rfl⟩ := e.surjective b
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul,
+      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearEquiv.symm_apply_apply, f']
+    clear hx ha
+    induction x with
+    | zero => simp only [LinearEquiv.map_zero, ZeroMemClass.coe_zero, zero_smul]
+    | add x y _ _ =>
+      simp only [LinearEquiv.map_add, Submodule.coe_add, add_smul, zero_add, *]
+    | tmul a b =>
+      induction y with
+      | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
+      | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
+      | tmul c d =>
+        simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
+          LinearMap.coe_restrictScalars, Function.comp_apply, mk_apply, smul_eq_mul, e,
+          LinearMap.liftBaseChange_tmul, LinearEquiv.ofBijective_apply]
+        have h₂ : b.1 • Cotangent.mk d = 0 := by ext; simp [Cotangent.smul_eq_zero_of_mem _ b.2]
+        rw [TensorProduct.smul_tmul', mul_smul, f.mapKer_apply_coe, ← halg,
+          algebraMap_smul, ← TensorProduct.tmul_smul, h₂, tmul_zero, smul_zero]
+
+omit [IsScalarTower R S T] in
+lemma tensorCotangentInvFun_smul_mk
+    [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
+    (H : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) (x : Q.Ring) (y : P.ker) :
+    tensorCotangentInvFun f halg H (x • .mk ⟨f.toRingHom y, (f.mapKer halg y).2⟩) =
+      x • 1 ⊗ₜ .mk y := by
+  letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
+  haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
+  haveI : IsScalarTower P.Ring Q.Ring T :=
+    .of_algebraMap_eq fun r ↦ halg ▸ (f.algebraMap_toRingHom r).symm
+  letI e := LinearEquiv.ofBijective _ H
+  trans tensorCotangentInvFun f halg H (.mk ((f.mapKer halg).liftBaseChange Q.Ring (x ⊗ₜ y)))
+  · simp; rfl
+  show ((TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ Cotangent.mk).liftBaseChange _
+    (e.symm (e (x ⊗ₜ y))) = _
+  rw [e.symm_apply_apply]
+  simp
+
 /-- If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`. -/
 noncomputable
 def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
     (H : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) :
     T ⊗[S] P.Cotangent ≃ₗ[T] Q.Cotangent :=
-  haveI : IsScalarTower R P.Ring Q.Ring := by
-    exact .of_algebraMap_eq fun r ↦ halg ▸ (f.toRingHom_algebraMap r).symm
-  letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
-  haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
-  haveI : IsScalarTower P.Ring Q.Ring T := by
-    exact .of_algebraMap_eq fun r ↦ halg ▸ (f.algebraMap_toRingHom r).symm
-  letI e := LinearEquiv.ofBijective _ H
-  letI f' : Q.ker →ₗ[Q.Ring] T ⊗[S] P.Cotangent :=
-    (LinearMap.liftBaseChange _
-      ((TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ Cotangent.mk)) ∘ₗ e.symm.toLinearMap
   { __ := (Cotangent.map f).liftBaseChange T
-    invFun :=
-      QuotientAddGroup.lift _ f' <| by
-        intro x hx
-        refine Submodule.smul_induction_on hx ?_ fun _ _ ↦ add_mem
-        clear x hx
-        rintro a ha b -
-        obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
-        obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
-        obtain ⟨y, rfl⟩ := e.surjective b
-        simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul,
-          LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-          LinearEquiv.symm_apply_apply, f']
-        clear hx ha
-        induction x with
-        | zero => simp only [LinearEquiv.map_zero, ZeroMemClass.coe_zero, zero_smul]
-        | add x y _ _ =>
-          simp only [LinearEquiv.map_add, Submodule.coe_add, add_smul, zero_add, *]
-        | tmul a b =>
-          induction y with
-          | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
-          | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
-          | tmul c d =>
-            simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
-              LinearMap.coe_restrictScalars, Function.comp_apply, mk_apply, smul_eq_mul, e,
-              LinearMap.liftBaseChange_tmul, LinearEquiv.ofBijective_apply]
-            have h₁ : (f.mapKer halg b).1 = algebraMap _ _ b.1 := rfl
-            have h₂ : b.1 • Cotangent.mk d = 0 := by ext; simp [Cotangent.smul_eq_zero_of_mem _ b.2]
-            rw [TensorProduct.smul_tmul', mul_smul, h₁,
-              algebraMap_smul, ← TensorProduct.tmul_smul, h₂, tmul_zero, smul_zero]
+    invFun := tensorCotangentInvFun f halg H
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
@@ -180,33 +203,27 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
         obtain ⟨b, rfl⟩ := Cotangent.mk_surjective b
         obtain ⟨a, rfl⟩ := Q.algebraMap_surjective a
         simp only [LinearMap.liftBaseChange_tmul, Cotangent.map_mk, Hom.toAlgHom_apply,
-          algebraMap_smul, ← map_smul]
-        obtain rfl := algebra_ext alg f.toRingHom.toAlgebra (DFunLike.congr_fun halg)
-        letI := f.toRingHom.toAlgebra
-        show f' (e (a ⊗ₜ b)) = _
-        simp [f', algebraMap_eq_smul_one, TensorProduct.smul_tmul']
+          algebraMap_smul, map_smul]
+        refine (tensorCotangentInvFun_smul_mk f halg H a b).trans ?_
+        simp [algebraMap_eq_smul_one, TensorProduct.smul_tmul']
     right_inv x := by
       obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-      obtain ⟨x, rfl⟩ := e.surjective x
+      obtain ⟨x, rfl⟩ := H.surjective x
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
-      show (Cotangent.map f).liftBaseChange T (f' (e x)) = _
       induction x with
       | zero => simp only [map_zero]
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
-        obtain rfl := algebra_ext alg f.toRingHom.toAlgebra (DFunLike.congr_fun halg)
-        letI := f.toRingHom.toAlgebra
-        simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars,
-          LinearEquiv.symm_apply_apply, LinearMap.liftBaseChange_tmul, Function.comp_apply,
-          mk_apply, LinearMap.map_smul_of_tower, Cotangent.map_mk, Hom.toAlgHom_apply, one_smul, f']
-        simp only [LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, map_smul, e]
+        simp only [LinearMap.liftBaseChange_tmul, map_smul]
+        erw [tensorCotangentInvFun_smul_mk]
+        simp
         rfl }
 
 /-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally etale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
 noncomputable
 def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
     [Module.Flat S T]
-    (H₁ : letI := f.toRingHom.toAlgebra; FormallyEtale P.Ring Q.Ring)
+    (H₁ : f.toRingHom.FormallyEtale)
     (H₂ : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) :
     T ⊗[S] P.H1Cotangent ≃ₗ[T] Q.H1Cotangent := by
   refine .ofBijective ((H1Cotangent.map f).liftBaseChange T) ?_
