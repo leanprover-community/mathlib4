@@ -260,7 +260,6 @@ open Mathlib.Tactic (subscriptTerm) in
 proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
-
 scoped macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -743,7 +742,6 @@ open Mathlib.Tactic (subscriptTerm) in
 proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
-
 scoped macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
