@@ -5,7 +5,7 @@ Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 -/
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 /-!
 # The Height of an Ideal
 
@@ -20,6 +20,7 @@ the maximum chain of prime ideals whose maximal element is $\mathfrak{p}$ minus 
 minimal prime ideals of I.
 
 -/
+
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
