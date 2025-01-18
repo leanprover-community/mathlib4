@@ -396,16 +396,36 @@ lemma hasDerivAt_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n
     convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
 
-lemma hasDerivAt_pow_mul_exp_real (ht : t∈ interior (integrableExpSet X μ)) (n : ℕ) :
+lemma hasDerivAt_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     HasDerivAt (fun t ↦ μ[fun ω ↦ X ω ^ n * rexp (t * X ω)])
       μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] t := by
-  have h_re n (t : ℝ) : (∫ ω, X ω ^ n * cexp (t * X ω) ∂μ).re
-      = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
+  have h_re_of_mem n t (ht' : t ∈ interior (integrableExpSet X μ)) :
+      (∫ ω, X ω ^ n * cexp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
+    rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at ht'
+    obtain ⟨l, u, hlu, h_subset⟩ := ht'
+    let t' := ((t - l) ⊓ (u - t)) / 2
+    have h_pos : 0 < (t - l) ⊓ (u - t) := by simp [hlu.1, hlu.2]
+    have ht' : 0 < t' := half_pos h_pos
     simp_rw [← RCLike.re_eq_complex_re]
     rw [← integral_re]
     · norm_cast
-    · sorry
-  simp_rw [← h_re]
+    · rw [← integrable_norm_iff]
+      swap
+      · refine AEMeasurable.aestronglyMeasurable ?_
+        refine ((Complex.measurable_ofReal.comp_aemeasurable hX).pow_const _).mul ?_
+        refine Complex.measurable_exp.comp_aemeasurable ?_
+        exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
+      simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
+        ofReal_im, mul_zero, sub_zero]
+      convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht'.ne' ?_ ?_ n
+      · simp
+      · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
+      · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
+  have h_re n : ∀ᶠ t' : ℝ in 𝓝 t, (∫ ω, X ω ^ n * cexp (t' * X ω) ∂μ).re
+      = ∫ ω, X ω ^ n * rexp (t' * X ω) ∂μ := by
+    filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'
+  rw [← EventuallyEq.hasDerivAt_iff (h_re _), ← h_re_of_mem _ t ht]
   have h := hasDerivAt_pow_mul_exp (X := X) (μ := μ) (z := t) ?_ n
   swap; · simp [ht]
   exact h.real_of_complex
