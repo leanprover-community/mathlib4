@@ -171,10 +171,8 @@ theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
 
 @[simp]
 theorem integrableOn_finite_biUnion {s : Set β} (hs : s.Finite) {t : β → Set α} :
-    IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ := by
-  refine hs.induction_on ?_ ?_
-  · simp
-  · intro a s _ _ hf; simp [hf, or_imp, forall_and]
+    IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ :=
+  hs.induction_on _ (by simp) <| by intro a s _ _ hf; simp [hf, or_imp, forall_and]
 
 @[simp]
 theorem integrableOn_finset_iUnion {s : Finset β} {t : β → Set α} :
@@ -332,7 +330,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
   haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
-  exact ((Lp.memℒp _).restrict s).memℒp_of_exponent_le hp
+  exact ((Lp.memℒp _).restrict s).mono_exponent hp
 
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
     (∫⁻ x, ENNReal.ofReal (f x) ∂μ) < ∞ :=

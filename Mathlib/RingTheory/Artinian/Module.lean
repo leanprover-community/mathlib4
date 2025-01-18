@@ -189,8 +189,8 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
     · apply w
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
-  refine ⟨n, fun m p => ?_⟩
-  exact (h m).eq_bot_of_ge (sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p)
+  refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
+  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
 
@@ -354,8 +354,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib.RingTheory.Artinian.Ring`
-assert_not_exists IsLocalization
-assert_not_exists LocalRing
+assert_not_exists IsLocalization LocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
