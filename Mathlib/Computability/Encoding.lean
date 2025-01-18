@@ -150,7 +150,7 @@ def encodingNatΓ' : Encoding ℕ where
       -- instead.
       rw [List.map_map, leftInverse_section_inclusion.id, List.map_id, decode_encodeNat]
 
-/-- A binary fin_encoding of ℕ in Γ'. -/
+/-- A binary FinEncoding of ℕ in Γ'. -/
 def finEncodingNatΓ' : FinEncoding ℕ :=
   ⟨encodingNatΓ', inferInstanceAs (Fintype Γ')⟩
 
