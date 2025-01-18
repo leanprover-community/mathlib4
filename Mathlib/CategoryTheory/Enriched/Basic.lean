@@ -143,7 +143,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
   id_comp f := congr_fun (e_id_comp (Type v) _ _) f
   comp_id f := congr_fun (e_comp_id (Type v) _ _) f
-  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ : _)
+  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ :)
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/

@@ -40,7 +40,7 @@ namespace CompHausLike
 
 universe w u
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 section FiniteCoproducts
 

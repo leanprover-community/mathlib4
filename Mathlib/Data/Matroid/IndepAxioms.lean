@@ -82,6 +82,8 @@ for the inverse of `e`).
 * `Matroid.ofBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
 
+assert_not_exists Field
+
 open Set Matroid
 
 variable {α : Type*}
@@ -153,7 +155,7 @@ namespace IndepMatroid
       by_contra h; push_neg at h
       obtain ⟨I, e, -, hIe, h⟩ := h
       refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
-      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) (hJfin.diff _)) (by simp)
+      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
   IndepMatroid.mk
   (E := E)
   (Indep := Indep)
@@ -177,7 +179,7 @@ namespace IndepMatroid
       have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
         rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
       choose! f hf using hchoose
-      have := (hB₀fin.diff I).to_subtype
+      have : Finite ↑(B₀ \ I) := hB₀fin.diff.to_subtype
       refine ⟨iUnion f ∪ (B₀ ∩ I),
         union_subset (iUnion_subset (fun i ↦ (hf i).1)) inter_subset_right,
         (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset inter_subset_left),

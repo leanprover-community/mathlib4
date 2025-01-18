@@ -295,8 +295,7 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
 
 theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 
--- See note [no_index around OfNat.ofNat]
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _
 
 @[rclike_simps, simp]
@@ -537,29 +536,23 @@ theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofRe
 
 @[simp, rclike_simps, norm_cast]
 theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofReal_im]
-
--- See note [no_index around OfNat.ofNat]
 @[simp, rclike_simps]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (ofNat(n) : K) = ofNat(n) :=
   natCast_re n
-
--- See note [no_index around OfNat.ofNat]
 @[simp, rclike_simps]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (ofNat(n) : K) = 0 :=
   natCast_im n
 
--- See note [no_index around OfNat.ofNat]
 @[rclike_simps, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ) : K) = ofNat(n) :=
   ofReal_natCast n
 
 theorem ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
-    re (OfNat.ofNat n * z) = OfNat.ofNat n * re z := by
+    re (ofNat(n) * z) = ofNat(n) * re z := by
   rw [← ofReal_ofNat, re_ofReal_mul]
 
 theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
-    im (OfNat.ofNat n * z) = OfNat.ofNat n * im z := by
+    im (ofNat(n) * z) = ofNat(n) * im z := by
   rw [← ofReal_ofNat, im_ofReal_mul]
 
 @[rclike_simps, norm_cast]
@@ -595,11 +588,11 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 @[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
 
 @[simp, rclike_simps]
-theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
+theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖ = ofNat(n) :=
   norm_natCast n
 
 @[simp, rclike_simps]
-lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖₊ = OfNat.ofNat n :=
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
   nnnorm_natCast n
 
 lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
@@ -1122,11 +1115,12 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   star_add := by subst h''; exact h.star_add
   -- algebra fields
   smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
-  toFun := @Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
-  map_one' := by subst h''; exact h.map_one'
-  map_mul' := by subst h''; exact h.map_mul'
-  map_zero' := by subst h''; exact h.map_zero'
-  map_add' := by subst h''; exact h.map_add'
+  algebraMap :=
+  { toFun := @Algebra.algebraMap _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+    map_one' := by subst h''; exact h.algebraMap.map_one'
+    map_mul' := by subst h''; exact h.algebraMap.map_mul'
+    map_zero' := by subst h''; exact h.algebraMap.map_zero'
+    map_add' := by subst h''; exact h.algebraMap.map_add' }
   commutes' := by subst h''; exact h.commutes'
   smul_def' := by subst h''; exact h.smul_def'
   norm_smul_le := by subst h''; exact h.norm_smul_le
