@@ -221,7 +221,6 @@ protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to `coe_toCompacts`
 theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 
@@ -317,7 +316,6 @@ protected theorem ext {s t : PositiveCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to a new lemma
 theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
   rfl
 

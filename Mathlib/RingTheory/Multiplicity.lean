@@ -285,7 +285,7 @@ alias multiplicity.Finite.not_pow_dvd_of_multiplicity_lt :=
   FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt
 
 theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < multiplicity a b := by
-  refine zero_lt_iff.2 fun h => ?_
+  refine Nat.pos_iff_ne_zero.2 fun h => ?_
   simpa [hdiv] using FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt
     (by by_contra! nh; simp [nh] at h) (lt_one_iff.mpr h)
 

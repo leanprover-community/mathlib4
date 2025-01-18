@@ -260,10 +260,9 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
--- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
--- @[simps obj_left obj_hom mapLeft]
+@[simps! obj_left obj_hom map_left]
 def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   obj U := Over.mk U.ι
   map {U V} i := Over.homMk (X.homOfLE i.le) (by simp)
@@ -273,16 +272,6 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   map_comp {U V W} i j := by
     ext1
     exact (X.homOfLE_homOfLE i.le j.le).symm
-
-@[simp] lemma Scheme.restrictFunctor_obj_left (U : X.Opens) :
-  (X.restrictFunctor.obj U).left = U := rfl
-
-@[simp] lemma Scheme.restrictFunctor_obj_hom (U : X.Opens) :
-  (X.restrictFunctor.obj U).hom = U.ι := rfl
-
-@[simp]
-lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).left = (X.homOfLE i.le) := rfl
 
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictFunctor_map_ofRestrict := Scheme.homOfLE_ι
