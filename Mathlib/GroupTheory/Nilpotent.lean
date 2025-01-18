@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.GroupTheory.Commutator.Finite
+import Mathlib.GroupTheory.Commutator.Lemmas
 
 /-!
 
