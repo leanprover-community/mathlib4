@@ -1487,5 +1487,3 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "failed to match on Int.ceil application"
 
 end Mathlib.Meta.Positivity
-
-set_option linter.style.longFile 1800
