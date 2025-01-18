@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
+import Mathlib.Probability.Moments.ComplexMGF
 
 /-!
 # The moment generating function is analytic
@@ -42,13 +43,73 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
 
+lemma analyticAt_re_ofReal {f : ℂ → ℂ} {x : ℝ} (hf : AnalyticAt ℂ f x) :
+    AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
+  (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
+
 section MomentGeneratingFunction
+
+section Deriv
+
+lemma hasDerivAt_mgf (h : t ∈ interior (integrableExpSet X μ)) :
+    HasDerivAt (mgf X μ) (μ[fun ω ↦ X ω * exp (t * X ω)]) t := by
+  convert hasDerivAt_integral_pow_mul_exp_real h 0
+  · simp [mgf]
+  · simp
+
+lemma hasDerivAt_iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    HasDerivAt (iteratedDeriv n (mgf X μ)) μ[fun ω ↦ X ω ^ (n + 1) * exp (t * X ω)] t := by
+  induction n generalizing t with
+  | zero => simp [hasDerivAt_mgf ht]
+  | succ n hn =>
+    rw [iteratedDeriv_succ]
+    have : deriv (iteratedDeriv n (mgf X μ))
+        =ᶠ[𝓝 t] fun t ↦ μ[fun ω ↦ X ω ^ (n + 1) * exp (t * X ω)] := by
+      have h_mem : ∀ᶠ y in 𝓝 t, y ∈ interior (integrableExpSet X μ) :=
+        isOpen_interior.eventually_mem ht
+      filter_upwards [h_mem] with y hy using HasDerivAt.deriv (hn hy)
+    rw [EventuallyEq.hasDerivAt_iff this]
+    exact hasDerivAt_integral_pow_mul_exp_real ht (n + 1)
+
+lemma iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    iteratedDeriv n (mgf X μ) t = μ[fun ω ↦ X ω ^ n * exp (t * X ω)] := by
+  induction n generalizing t with
+  | zero => simp [mgf]
+  | succ n hn =>
+    rw [iteratedDeriv_succ]
+    exact (hasDerivAt_iteratedDeriv_mgf ht n).deriv
+
+/-- The derivatives of the moment generating function at zero are the moments. -/
+lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
+  simp [iteratedDeriv_mgf h n]
+
+lemma deriv_mgf (h : v ∈ interior (integrableExpSet X μ)) :
+    deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] :=
+  (hasDerivAt_mgf h).deriv
+
+lemma deriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
+    deriv (mgf X μ) 0 = μ[X] := by
+  simp [deriv_mgf h]
+
+end Deriv
+
+lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
+    AnalyticAt ℝ (mgf X μ) t := by
+  rw [← re_complexMGF_ofReal']
+  refine analyticAt_re_ofReal ?_
+  exact analyticAt_complexMGF (by simp [ht])
+
+/-- The moment generating function is analytic on the interior of the interval on which it is
+defined. -/
+lemma analyticOnNhd_mgf : AnalyticOnNhd ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
+  fun _ hx ↦ analyticAt_mgf hx
 
 section Analytic
 
 lemma summable_integral_abs_mul_exp
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i * exp (v * X ω)] := by
   by_cases ht : t = 0
   · simp only [ht, abs_zero]
@@ -82,19 +143,19 @@ lemma summable_integral_abs_mul_exp
   · exact fun i _ ↦ h_int _ i
 
 lemma summable_integral_pow_abs_mul_exp_mul_abs
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i * exp (v * X ω)] / i.factorial * |t| ^ i := by
   simp_rw [← integral_div, ← integral_mul_right]
-  have h_eq i ω : |X ω| ^ i * rexp (v * X ω) / i.factorial * |t| ^ i
-      = |X ω| ^ i / i.factorial * |t| ^ i * rexp (v * X ω) := by ring
+  have h_eq i ω : |X ω| ^ i * exp (v * X ω) / i.factorial * |t| ^ i
+      = |X ω| ^ i / i.factorial * |t| ^ i * exp (v * X ω) := by ring
   simp_rw [h_eq]
   exact summable_integral_abs_mul_exp ht_int_pos ht_int_neg
 
 lemma summable_integral_pow_mul_exp_mul
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[fun ω ↦ X ω ^ i * rexp (v * X ω)] / i.factorial * t ^ i := by
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[fun ω ↦ X ω ^ i * exp (v * X ω)] / i.factorial * t ^ i := by
   refine (summable_integral_pow_abs_mul_exp_mul_abs ht_int_pos ht_int_neg).mono fun i ↦ ?_
   simp only [Pi.pow_apply, norm_mul, norm_div, norm_eq_abs, norm_natCast, norm_pow, abs_abs,
     Nat.abs_cast]
@@ -105,16 +166,16 @@ lemma summable_integral_pow_mul_exp_mul
   refine (norm_integral_le_integral_norm _).trans ?_
   simp
 
-lemma summable_integral_pow_mul (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+lemma summable_integral_pow_mul (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[X ^ i] / i.factorial * t ^ i := by
   have h := summable_integral_pow_mul_exp_mul (μ := μ) (X := X) (v := 0) (t := t) ?_ ?_
   · simpa using h
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     mgf X μ (v + t) = ∑' n, μ[fun ω ↦ X ω ^ n * exp (v * X ω)] / n.factorial * t ^ n := by
   by_cases ht : t = 0
   · rw [tsum_eq_single 0]
@@ -206,24 +267,24 @@ lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)
   · intro n
     positivity
 
-lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
     mgf X μ t = ∑' n, μ[X ^ n] / n.factorial * t ^ n := by
   have h := mgf_add_eq_tsum (μ := μ) (X := X) (v := 0) (t := t) ?_ ?_
   · simpa using h
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
     mgf (fun ω ↦ |X ω|) μ t = ∑' n, (μ[fun ω ↦ |X ω| ^ n]) / n.factorial * t ^ n := by
   refine mgf_eq_tsum (X := fun ω ↦ |X ω|) (μ := μ) (t := t) ?_ ?_
   · exact integrable_exp_mul_abs ht_int_pos ht_int_neg
   · exact integrable_exp_mul_abs ht_int_neg (by simpa using ht_int_pos)
 
 lemma hasFPowerSeriesOnBall_mgf (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     HasFPowerSeriesOnBall (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ
         (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v ‖t‖₊ := by
@@ -241,7 +302,7 @@ lemma hasFPowerSeriesOnBall_mgf (ht : t ≠ 0)
     simp only [Pi.pow_apply, smul_eq_mul, zero_add]
     simp only [Metric.emetric_ball_nnreal, coe_nnnorm, norm_eq_abs, Metric.mem_ball,
       dist_zero_right] at hy
-    have hy_int_pos : Integrable (fun ω ↦ rexp ((v + y) * X ω)) μ := by
+    have hy_int_pos : Integrable (fun ω ↦ exp ((v + y) * X ω)) μ := by
       rcases le_total 0 t with ht | ht
       · rw [abs_of_nonneg ht, abs_lt] at hy
         refine integrable_exp_mul_of_le_of_le ht_int_neg ht_int_pos ?_ ?_
@@ -257,7 +318,7 @@ lemma hasFPowerSeriesOnBall_mgf (ht : t ≠ 0)
         · rw [sub_eq_add_neg]
           gcongr
           exact hy.2.le
-    have hy_int_neg : Integrable (fun ω ↦ rexp ((v - y) * X ω)) μ := by
+    have hy_int_neg : Integrable (fun ω ↦ exp ((v - y) * X ω)) μ := by
       rcases le_total 0 t with ht | ht
       · rw [abs_of_nonneg ht, abs_lt] at hy
         refine integrable_exp_mul_of_le_of_le ht_int_neg ht_int_pos ?_ ?_
@@ -280,8 +341,8 @@ lemma hasFPowerSeriesOnBall_mgf (ht : t ≠ 0)
     · exact summable_integral_pow_mul_exp_mul hy_int_pos hy_int_neg
 
 lemma hasFPowerSeriesOnBall_mgf_zero (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) :
     HasFPowerSeriesOnBall (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 ‖t‖₊ := by
   have h := hasFPowerSeriesOnBall_mgf ht ?_ ?_ (μ := μ) (X := X) (v := 0)
@@ -290,8 +351,8 @@ lemma hasFPowerSeriesOnBall_mgf_zero (ht : t ≠ 0)
   · simpa using ht_int_neg
 
 lemma hasFPowerSeriesAt_mgf (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ
         (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v :=
@@ -309,73 +370,19 @@ lemma hasFPowerSeriesAt_mgf_of_mem_interior
     (h_subset (sub_half_inf_sub_mem_Ioo hvlu))
 
 lemma hasFPowerSeriesAt_mgf_zero (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) :
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 :=
   ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf_zero ht ht_int_pos ht_int_neg⟩
 
-lemma analyticAt_mgf (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
-    AnalyticAt ℝ (mgf X μ) v :=
-  ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
-
-lemma analyticAt_mgf_of_mem_interior
-    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    AnalyticAt ℝ (mgf X μ) v :=
-  ⟨_, hasFPowerSeriesAt_mgf_of_mem_interior hv⟩
-
 lemma analyticAt_mgf_zero (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) :
     AnalyticAt ℝ (mgf X μ) 0 :=
   ⟨_, hasFPowerSeriesAt_mgf_zero ht ht_int_pos ht_int_neg⟩
 
-/-- The moment generating function is analytic on the interior of the interval on which it is
-defined. -/
-lemma analyticOnNhd_mgf :
-    AnalyticOnNhd ℝ (mgf X μ) (interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :=
-  fun _ hx ↦ analyticAt_mgf_of_mem_interior hx
-
 end Analytic
-
-section MgfDeriv
-
-lemma hasDerivAt_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    HasDerivAt (mgf X μ) (μ[fun ω ↦ X ω * exp (v * X ω)]) v := by
-  simpa using (hasFPowerSeriesAt_mgf_of_mem_interior h).hasDerivAt
-
-lemma deriv_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] :=
-  (hasDerivAt_mgf h).deriv
-
-lemma deriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    deriv (mgf X μ) 0 = μ[X] := by
-  simp [deriv_mgf h]
-
-/-- The nth derivative of the moment generating function of `X` at `v` in the interior of its
-domain is `μ[X^n * exp(v * X)]`. -/
-lemma iteratedDeriv_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
-    iteratedDeriv n (mgf X μ) v = μ[fun ω ↦ X ω ^ n * exp (v * X ω)] := by
-  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at h
-  obtain ⟨l, u, hvlu, h_subset⟩ := h
-  have ht : min (v - l) (u - v) / 2 ≠ 0 := (ne_of_lt (by simpa)).symm
-  have h_series := hasFPowerSeriesOnBall_mgf ht (h_subset (add_half_inf_sub_mem_Ioo hvlu))
-    (h_subset (sub_half_inf_sub_mem_Ioo hvlu))
-  have h_fact_smul := h_series.factorial_smul 1 n
-  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, prod_const_one,
-    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, one_mul, nsmul_eq_mul] at h_fact_smul
-  rw [mul_div_cancel₀] at h_fact_smul
-  · exact h_fact_smul.symm
-  · simp [n.factorial_ne_zero]
-
-/-- The derivatives of the moment generating function at zero are the moments. -/
-lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
-    iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
-  simp [iteratedDeriv_mgf h n]
-
-end MgfDeriv
 
 end MomentGeneratingFunction
 

@@ -24,7 +24,7 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
   with derivative `μ[X * exp (z * X)]`.
 * `differentiableOn_complexMGF`: `complexMGF X μ` is holomorphic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
-* `analyticOn_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
+* `analyticOnNhd_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
 ## TODO
@@ -335,20 +335,24 @@ theorem differentiableOn_complexMGF :
 
 /-- `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
-theorem analyticOn_complexMGF :
-    AnalyticOn ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
-  differentiableOn_complexMGF.analyticOn (isOpen_interior.preimage Complex.continuous_re)
+theorem analyticOnNhd_complexMGF :
+    AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
+  differentiableOn_complexMGF.analyticOnNhd (isOpen_interior.preimage Complex.continuous_re)
 
-lemma hasDerivAt_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+lemma analyticAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
+    AnalyticAt ℂ (complexMGF X μ) z := analyticOnNhd_complexMGF z hz
+
+lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     HasDerivAt (fun z ↦ μ[fun ω ↦ X ω ^ n * cexp (z * X ω)])
         μ[fun ω ↦ X ω ^ (n + 1) * cexp (z * X ω)] z := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
+  let hz' := hz
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hz
   obtain ⟨l, u, hlu, h_subset⟩ := hz
   let t := ((z.re - l) ⊓ (u - z.re)) / 2
   have h_pos : 0 < (z.re - l) ⊓ (u - z.re) := by simp [hlu.1, hlu.2]
   have ht : 0 < t := half_pos h_pos
-  refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le (E := ℂ) (𝕜 := ℂ)
+  refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t/2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
     (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
@@ -362,10 +366,8 @@ lemma hasDerivAt_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n
       exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
     simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
       ofReal_im, mul_zero, sub_zero]
-    convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht.ne' ?_ ?_ n
-    · simp
-    · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
-    · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
+    convert integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet hz n
+    simp
   · refine AEMeasurable.aestronglyMeasurable ?_
     exact AEMeasurable.mul (by fun_prop) (Complex.measurable_exp.comp_aemeasurable (by fun_prop))
   · refine ae_of_all _ fun ω ε hε ↦ ?_
@@ -396,7 +398,7 @@ lemma hasDerivAt_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n
     convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
 
-lemma hasDerivAt_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     HasDerivAt (fun t ↦ μ[fun ω ↦ X ω ^ n * rexp (t * X ω)])
       μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] t := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
@@ -418,7 +420,7 @@ lemma hasDerivAt_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) 
       = ∫ ω, X ω ^ n * rexp (t' * X ω) ∂μ := by
     filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'
   rw [← EventuallyEq.hasDerivAt_iff (h_re _), ← h_re_of_mem _ t ht]
-  have h := hasDerivAt_pow_mul_exp (X := X) (μ := μ) (z := t) ?_ n
+  have h := hasDerivAt_integral_pow_mul_exp (X := X) (μ := μ) (z := t) ?_ n
   swap; · simp [ht]
   exact h.real_of_complex
 
@@ -435,7 +437,7 @@ lemma hasDeriAt_iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpS
         exact isOpen_interior.preimage Complex.continuous_re
       filter_upwards [h_mem] with y hy using HasDerivAt.deriv (hn hy)
     rw [EventuallyEq.hasDerivAt_iff this]
-    exact hasDerivAt_pow_mul_exp hz (n + 1)
+    exact hasDerivAt_integral_pow_mul_exp hz (n + 1)
 
 lemma iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     iteratedDeriv n (complexMGF X μ) z = μ[fun ω ↦ X ω ^ n * cexp (z * X ω)] := by
@@ -444,31 +446,5 @@ lemma iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) 
   | succ n hn =>
     rw [iteratedDeriv_succ]
     exact (hasDeriAt_iteratedDeriv_complexMGF hz n).deriv
-
-lemma hasDeriAt_iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    HasDerivAt (iteratedDeriv n (mgf X μ)) μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] t := by
-  induction n generalizing t with
-  | zero =>
-    simp only [iteratedDeriv_zero, zero_add, pow_one]
-    convert hasDerivAt_pow_mul_exp_real ht 0
-    · simp [mgf]
-    · simp
-  | succ n hn =>
-    rw [iteratedDeriv_succ]
-    have : deriv (iteratedDeriv n (mgf X μ))
-        =ᶠ[𝓝 t] fun t ↦ μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] := by
-      have h_mem : ∀ᶠ y in 𝓝 t, y ∈ interior (integrableExpSet X μ) :=
-        isOpen_interior.eventually_mem ht
-      filter_upwards [h_mem] with y hy using HasDerivAt.deriv (hn hy)
-    rw [EventuallyEq.hasDerivAt_iff this]
-    exact hasDerivAt_pow_mul_exp_real ht (n + 1)
-
-lemma iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    iteratedDeriv n (mgf X μ) t = μ[fun ω ↦ X ω ^ n * rexp (t * X ω)] := by
-  induction n generalizing t with
-  | zero => simp [mgf]
-  | succ n hn =>
-    rw [iteratedDeriv_succ]
-    exact (hasDeriAt_iteratedDeriv_mgf ht n).deriv
 
 end ProbabilityTheory
