@@ -37,7 +37,7 @@ namespace QueryComplexity
 /-- A deterministic oracle is a map from `α` to `Bool` -/
 def Oracle (α : Type) := α → Bool
 
-/- A deterministic computation that make decisions by querying oracles. A computation is either a
+/-- A deterministic computation that make decisions by querying oracles. A computation is either a
 pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
 be queried by the oracle (`i`) and two other computations, to be run depending on the answer
 of the oracle. -/

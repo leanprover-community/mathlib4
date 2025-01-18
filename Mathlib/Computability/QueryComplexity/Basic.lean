@@ -60,7 +60,7 @@ lemma query'_bind (o : I) (m : o ∈ s) (y : ι) (f0 f1 : Comp ι s α)
 /-- Cost is nonnegative -/
 @[simp]
 lemma cost_nonneg {f : Comp ι s α} {o : I → Oracle ι} {i : I} : 0 ≤ f.cost o i := by
-  simp only [zero_le]
+  simp
 
 /-- `pure` has cost 0 -/
 @[simp]

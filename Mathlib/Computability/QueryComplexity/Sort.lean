@@ -41,6 +41,7 @@ variable {α β : Type}
 /-- We only have one oracle, so index them by `Unit` -/
 def u : Set Unit := univ
 
+/-- An oracle that answers queries over pairs of values. Used in the definition of `mergeSort` -/
 def SOracle (α : Type) := Oracle (α × α)
 
 /-- Sort computations are w.r.t. a `≤` comparison oracle -/
@@ -142,6 +143,7 @@ We define our `merge` to match `List.mergeSort`, so that we reuse the existing c
 
 open List.MergeSort.Internal
 
+/-- Redefinition of `List.merge` using the `Comp` abstraction -/
 def merge (xs ys : List α) : SComp α (List α) := do
   match xs, ys with
   | [], ys => return ys
@@ -152,6 +154,7 @@ def merge (xs ys : List α) : SComp α (List α) := do
     else
       return y :: (← merge (x :: xs) ys)
 
+/-- Redefinition of `List.mergeSort` using the `Comp` abstraction -/
 def mergeSort : List α → SComp α (List α)
   | [] => pure []
   | [a] => pure [a]
