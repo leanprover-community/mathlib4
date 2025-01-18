@@ -1,3 +1,5 @@
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Lie.CartanExists
 import Mathlib.Algebra.Lie.LieTheorem
 import Mathlib.Algebra.Lie.Killing
 
@@ -9,8 +11,8 @@ variable [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
 local notation "π" => LieModule.toEnd k
 
 open Module LieAlgebra LieModule in
-lemma exists_weight_eq_mul_root [FiniteDimensional k V] [FiniteDimensional k L]
-    (H : LieSubalgebra k L) [H.IsCartanSubalgebra] [IsTriangularizable k H V]
+lemma exists_weight_eq_mul_root [FiniteDimensional k V]
+    (H : LieSubalgebra k L) [H.IsCartanSubalgebra] 
     (χ : Weight k H V) (α : Weight k H L) :
     ∃ r : ℚ, ∀ (e : rootSpace H α) (f : rootSpace H (-⇑α)) (h : H),
       ⁅(e : L), (f : L)⁆ = h → χ h = r * α h := by
@@ -103,6 +105,8 @@ namespace LieAlgebra
 variable {k L V : Type*} [Field k] [CharZero k] [LieRing L] [LieAlgebra k L]
 variable [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
 
+local notation "π" => LieModule.toEnd k
+
 example [IsSemisimple k L] : HasTrivialRadical k L := by
   infer_instance
 
@@ -111,6 +115,32 @@ example [Module.Finite k L] [IsKilling k L] : IsSemisimple k L := by
 
 example [Module.Finite k L] [IsKilling k L] : HasTrivialRadical k L := by
   infer_instance
+
+lemma exists_traceForm_ne_zero_of_perfect [FiniteDimensional k L] [FiniteDimensional k V]
+    [Nontrivial L] (hL : LieAlgebra.derivedSeries k L 1 = ⊤) (hLsub : Function.Injective (π L V)) :
+    ∃ x : L, LieModule.traceForm k L V x x ≠ 0 := by
+  by_contra! hLV
+  obtain ⟨e, he⟩ := LieAlgebra.exists_isCartanSubalgebra_engel k L
+  set H := LieSubalgebra.engel k e
+  suffices LieRing.IsNilpotent L by
+    rw [LieRing.IsNilpotent, LieModule.isNilpotent_iff k] at this
+    obtain ⟨n, hn⟩ := this
+    suffices LieModule.lowerCentralSeries k L L n = ⊤ by
+      rw [this] at hn
+      exact top_ne_bot hn
+    clear hn
+    induction n with
+    | zero => simp
+    | succ n ih => simpa [ih] using hL
+  suffices LieAlgebra.rootSpace H (0 : H → k) = ⊤ by
+    sorry
+  suffices ∀ α : H → k, α ≠ 0 → LieAlgebra.rootSpace H α = ⊥ by
+    sorry
+  suffices LieModule.genWeightSpace V (0 : H → k) = ⊤ by
+    sorry
+  suffices ∀ χ : H → k, χ ≠ 0 → LieModule.genWeightSpace V χ = ⊥ by
+    sorry
+  sorry
 
 -- move this
 instance [Subsingleton L] : IsSolvable k L := by
