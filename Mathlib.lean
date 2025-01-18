@@ -309,6 +309,7 @@ import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
+import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Group.Nat.TypeTags
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.NatPowAssoc
@@ -403,6 +404,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Algebra.GroupWithZero.Submonoid
 import Mathlib.Algebra.GroupWithZero.ULift
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
@@ -931,6 +933,7 @@ import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Semireal.Defs
+import Mathlib.Algebra.Ring.Submonoid
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subring.IntPolynomial
