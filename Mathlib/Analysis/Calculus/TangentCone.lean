@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Seminorm
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Tangent cone

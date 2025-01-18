@@ -112,7 +112,6 @@ theorem derivWithin_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 
   · exact (hc.hasDerivWithinAt.inv hx).derivWithin hxs
   · simp [derivWithin_zero_of_isolated hxs]
 
-
 @[simp]
 theorem deriv_inv'' (hc : DifferentiableAt 𝕜 c x) (hx : c x ≠ 0) :
     deriv (fun x => (c x)⁻¹) x = -deriv c x / c x ^ 2 :=

@@ -383,7 +383,6 @@ theorem fderivWithin_comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt �
   · exact (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
   · simp [derivWithin_zero_of_isolated hxs]
 
-
 @[deprecated (since := "2024-10-31")]
 alias fderivWithin.comp_derivWithin := fderivWithin_comp_derivWithin
 
