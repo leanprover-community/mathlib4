@@ -123,7 +123,20 @@ theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 end spineToSimplex
 
-/- TODO: spineToSimplex_map -/
+open Opposite in
+/-- For any `σ : X ⟶ Y` between `n + 1`-truncated `StrictSegal` simplicial sets,
+`spineToSimplex` commutes with `Path.map`. -/
+lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)}
+    (sx : StrictSegal X) (sy : StrictSegal Y)
+    (m : ℕ) (h : m ≤ n := by leq) (f : Path X (m + 1)) (σ : X ⟶ Y) :
+    sy.spineToSimplex (m + 1) (by leq) (f.map σ) =
+      σ.app (op [m + 1]ₙ₊₁) (sx.spineToSimplex (m + 1) (by leq) f) := by
+  apply sy.spineInjective (m + 1)
+  ext k
+  dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
+  rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
+  simp only [spineToSimplex_arrow, types_comp_apply]
+  rfl
 
 section spine_δ
 
@@ -275,6 +288,13 @@ theorem spineToSimplex_edge :
   segal n |>.spineToSimplex_edge n _ f j l hjl
 
 end interval
+
+/-- For any `σ : X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
+commutes with `Path.map`. -/
+lemma spineToSimplex_map {X Y : SSet.{u}} (sx : StrictSegal X)
+    (sy : StrictSegal Y) {n : ℕ} (f : Path X (n + 1)) (σ : X ⟶ Y) :
+    sy.spineToSimplex (f.map σ) = σ.app _ (sx.spineToSimplex f) :=
+  sx (n + 1) |>.spineToSimplex_map (sy _) n (by leq) f ((truncation _).map σ)
 
 variable (f : Path X (n + 1))
 variable {i : Fin (n + 1)} {j : Fin (n + 2)}
