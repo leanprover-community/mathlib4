@@ -43,8 +43,7 @@ We provide `Infinite` instances for
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -194,7 +193,6 @@ theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β 
 /-- Note: this lemma is specifically about `Fintype.ofSubsingleton`. For a statement about
 arbitrary `Fintype` instances, use either `Fintype.card_le_one_iff_subsingleton` or
 `Fintype.card_unique`. -/
-@[simp]
 theorem card_ofSubsingleton (a : α) [Subsingleton α] : @Fintype.card _ (ofSubsingleton a) = 1 :=
   rfl
 
@@ -204,7 +202,6 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
 
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
-@[simp]
 theorem card_ofIsEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 

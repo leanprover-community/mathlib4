@@ -818,19 +818,16 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 
 -- We can express the associator and the unitors, given componentwise above,
 -- as natural isomorphisms.
--- Porting Note: Had to add a `simps!` because Lean was complaining this wasn't a constructor app.
 /-- The associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
--- Porting Note: same as above
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
--- Porting Note: same as above
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=

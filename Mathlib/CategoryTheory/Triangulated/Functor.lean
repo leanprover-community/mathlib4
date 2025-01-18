@@ -19,6 +19,8 @@ distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Preadditive
@@ -76,7 +78,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _
     ((F.commShiftIso n).app _) ((F.commShiftIso n).app _) ((F.commShiftIso n).app _)
-    (by aesop_cat) (by aesop_cat) (by
+    (by simp) (by simp) (by
       dsimp
       simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
@@ -94,6 +96,8 @@ set_option maxHeartbeats 400000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
+  zero := by ext <;> simp -- the `aesop_cat` autoparam solves this but it's slower
+  add _ _ := by ext <;> simp -- the `aesop_cat` autoparam solves this but it's slower
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
@@ -103,7 +107,7 @@ def mapTriangleRotateIso :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       ((F.commShiftIso (1 : ℤ)).symm.app _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by aesop_cat)
 
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
@@ -112,7 +116,7 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by aesop_cat)
 
 
 variable (C) in
