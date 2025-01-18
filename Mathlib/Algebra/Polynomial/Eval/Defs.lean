@@ -104,7 +104,7 @@ alias eval₂_nat_cast := eval₂_natCast
 
 @[simp]
 lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
-    (ofNat(n) : R[X]).eval₂ f a = OfNat.ofNat n := by
+    (ofNat(n) : R[X]).eval₂ f a = ofNat(n) := by
   simp [OfNat.ofNat]
 
 variable [Semiring T]
@@ -264,7 +264,7 @@ alias eval₂_at_nat_cast := eval₂_at_natCast
 
 @[simp]
 theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
-    p.eval₂ f ofNat(n) = f (p.eval (OfNat.ofNat n)) := by
+    p.eval₂ f ofNat(n) = f (p.eval (ofNat(n))) := by
   simp [OfNat.ofNat]
 
 @[simp]
@@ -279,7 +279,7 @@ alias eval_nat_cast := eval_natCast
 
 @[simp]
 lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
-    (ofNat(n) : R[X]).eval a = OfNat.ofNat n := by
+    (ofNat(n) : R[X]).eval a = ofNat(n) := by
   simp only [OfNat.ofNat, eval_natCast]
 
 @[simp]
@@ -549,7 +549,7 @@ alias map_nat_cast := map_natCast
 
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (ofNat(n) : R[X]).map f = OfNat.ofNat n :=
+    (ofNat(n) : R[X]).map f = ofNat(n) :=
   show (n : R[X]).map f = n by rw [Polynomial.map_natCast]
 
 --TODO rename to `map_dvd_map`

@@ -12,8 +12,7 @@ import Mathlib.Logic.Equiv.Defs
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
 
