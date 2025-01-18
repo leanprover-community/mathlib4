@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Morrison
 -/
 
-import Mathlib.LinearAlgebra.ExteriorPower.InducedForm
+--import Mathlib.LinearAlgebra.ExteriorPower.InducedForm
 
 /-!
 Documentation
@@ -20,5 +20,3 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 ω = ⋀ e_i
 α ∧ ⋆β = ⟨α , β⟩ ω
 -/
-
-open ExteriorAlgebra BigOperators
