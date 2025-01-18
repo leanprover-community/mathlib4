@@ -3,6 +3,7 @@ Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
+import Mathlib.Analysis.Analytic.OfScalars
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.RingTheory.Binomial
@@ -42,32 +43,9 @@ open scoped Nat
 
 universe u v
 
-theorem Ring.choose_eq_div {𝕂 : Type v} [Field 𝕂] [CharZero 𝕂]
-    {a : 𝕂} {n : ℕ} :
-    Ring.choose a n = (n ! : 𝕂)⁻¹ • (descPochhammer ℤ n).smeval a := by
-  rw [Ring.descPochhammer_eq_factorial_smul_choose]
-  trans (n ! : 𝕂)⁻¹ • ((n ! : 𝕂) • Ring.choose a n)
-  · rw [smul_smul]
-    rw [inv_mul_cancel₀]
-    · simp
-    rw [Nat.cast_ne_zero]
-    exact Nat.factorial_ne_zero n
-  · congr
-    apply Nat.cast_smul_eq_nsmul
-
-theorem ascPochhammer_nonneg {R : Type u} [LinearOrderedCommRing R] {a : R} {n : ℕ} (ha : 0 ≤ a) :
-    0 ≤ (ascPochhammer ℕ n).smeval a := by
-  cases n with
-  | zero => simp
-  | succ m =>
-    simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
-    apply mul_nonneg
-    · exact ascPochhammer_nonneg ha
-    · linarith
-
 section
 
-variable {𝕂 : Type v} [NormedField 𝕂]
+variable {𝕂 : Type u} [NormedField 𝕂]
 
 /-- Binomial series:
 $$
@@ -75,29 +53,26 @@ $$
   \frac{a(a-1)(a-2)}{3!} x^3 + \cdots
 $$
 -/
-noncomputable def binomialSeries [CharZero 𝕂] (𝔸 : Type u) [NormedDivisionRing 𝔸] [Algebra 𝕂 𝔸]
-    (a : 𝕂) : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
-  (Ring.choose a n) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
+noncomputable def binomialSeries [CharZero 𝕂] (𝔸 : Type v) [NormedDivisionRing 𝔸] [Algebra 𝕂 𝔸]
+    (a : 𝕂) : FormalMultilinearSeries 𝕂 𝔸 𝔸 := .ofScalars 𝔸 (Ring.choose a ·)
 
-theorem descPochhammer_bound_ascPochhammer {a : 𝕂} {n : ℕ} :
+theorem descPochhammer_le_ascPochhammer {a : 𝕂} {n : ℕ} :
     ‖(descPochhammer ℤ n).smeval a‖ ≤ (ascPochhammer ℕ n).smeval ‖a‖ := by
   cases n with
   | zero => simp
   | succ m =>
     simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast,
       descPochhammer_succ_right]
-    apply mul_le_mul
-    · exact descPochhammer_bound_ascPochhammer
-    · trans ‖a‖ + ‖(m : 𝕂)‖
-      · apply norm_sub_le
+    gcongr
+    · apply Ring.ascPochhammer_smeval_nonneg
       simp
+    · exact descPochhammer_le_ascPochhammer
+    · apply le_trans (norm_sub_le _ _)
+      gcongr
       -- the following should be simpler
       conv => lhs; rw [← nsmul_one]
       trans m * ‖(1 : 𝕂)‖
       · apply norm_nsmul_le
-      simp
-    · simp
-    · apply ascPochhammer_nonneg
       simp
 
 end
@@ -133,7 +108,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
       apply mul_le_of_le_one_right
       · apply mul_nonneg
         · apply div_nonneg
-          · apply ascPochhammer_nonneg
+          · apply Ring.ascPochhammer_smeval_nonneg
             simp
           · simp
         · simp
@@ -152,17 +127,13 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
   replace hb := Nat.exists_eq_add_of_le hb
   obtain ⟨k, hk⟩ := hb
   subst hk
-  -- for some reason, `rw` below cannot infer it
-  have _ : BoundedSMul 𝕂 (ContinuousMultilinearMap 𝕂 (fun (i : Fin (M + k)) ↦ 𝔸) 𝔸) := by
-    infer_instance
-  rw [norm_smul (Ring.choose a (M + k)) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (M + k) 𝔸)]
   simp [pow_add, div_eq_mul_inv]
   move_mul [r.toReal^M, r.toReal^M]
   apply mul_le_mul_of_nonneg_right _ (by simp)
-  simp [Ring.choose_eq_div]
+  simp [Ring.choose_eq_smul]
   trans ((M + k) ! : ℝ)⁻¹ * (ascPochhammer ℕ (M + k)).smeval ‖a‖ * ↑r ^ k
   · rw [mul_le_mul_right, mul_le_mul_left]
-    · exact descPochhammer_bound_ascPochhammer
+    · exact descPochhammer_le_ascPochhammer
     · simp
       apply Nat.factorial_pos
     · apply pow_pos
@@ -182,7 +153,7 @@ theorem binomialSeries_ODE {a : ℝ} :
   have h_coeff : ∀ k, (binomialSeries ℝ a).coeff k = (Ring.choose a k) := by
     intro k
     unfold binomialSeries
-    simp [coeff]
+    simp [ofScalars, coeff]
     -- the following should be simpler
     rw [List.prod_eq_one]
     · simp
@@ -198,8 +169,7 @@ theorem binomialSeries_ODE {a : ℝ} :
     · ring
     conv => lhs; arg 2; ext; arg 2; ext; arg 2; change fun _ ↦ 1
     have : ∀ x : Fin k ⊕ Fin 1, Sum.elim (1 : Fin k → ℝ) (fun x ↦ 1) x = 1 := by
-      intro x
-      cases x <;> simp
+      aesop
     conv => lhs; arg 2; ext; arg 2; ext x; rw [this]
     simp [add_comm 1 k]
   simp
@@ -209,10 +179,10 @@ theorem binomialSeries_ODE {a : ℝ} :
   cases n with
   | zero =>
     simp [unshift]
-    simp [binomialSeries]
     apply ContinuousMultilinearMap.ext
     intro m
     simp [h_deriv_coeff]
+    simp [binomialSeries, ofScalars, coeff]
   | succ k =>
     apply ContinuousMultilinearMap.ext
     intro m
@@ -233,7 +203,7 @@ theorem binomialSeries_ODE {a : ℝ} :
     move_mul [a]
     rw [mul_assoc, mul_eq_mul_left_iff]
     left
-    simp [h_coeff, h_deriv_coeff, Ring.choose_eq_div]
+    simp [h_coeff, h_deriv_coeff, Ring.choose_eq_smul]
     conv => rhs; arg 1; simp [descPochhammer_succ_right, Polynomial.smeval_mul,
       Polynomial.smeval_natCast]
     rw [add_comm 1 k]
@@ -317,9 +287,7 @@ theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + 
   have binomialSum_zero : binomialSum a 0 = 1 := by
     simp [binomialSum, FormalMultilinearSeries.sum]
     rw [tsum_eq_zero_add']
-    · simp
-      unfold FormalMultilinearSeries.coeff binomialSeries
-      simp
+    · simp [binomialSeries, ofScalars, coeff]
     · simp
       exact summable_zero
   by_cases hx_zero : x = 0
