@@ -57,6 +57,8 @@ instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
 instance smulMemClass : SMulMemClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
 
+initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
+
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
   Iff.rfl
@@ -84,22 +86,19 @@ theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
--- Porting note: adding this as the `simp`-normal form of `toSubMulAction_eq`
+-- Porting note: adding this as the `simp`-normal form of `toSubMulAction_inj`
 @[simp]
 theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
   (SetLike.coe_injective (A := Submodule R M)).eq_iff
 
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
   zero_mem' := by simpa [hs] using p.zero_mem'
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
-
-@[simp]
-theorem coe_copy (S : Submodule R M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
-  rfl
 
 theorem copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
@@ -108,8 +107,10 @@ theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M →
   fun p q h => SetLike.ext'_iff.2 (show (p.toAddSubmonoid : Set M) = q from SetLike.ext'_iff.1 h)
 
 @[simp]
-theorem toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
+theorem toAddSubmonoid_inj : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toAddSubmonoid_eq := toAddSubmonoid_inj
 
 @[simp]
 theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p :=
@@ -118,8 +119,10 @@ theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p 
 theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M → SubMulAction R M) :=
   fun p q h => SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
 
-theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
+theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toSubMulAction_eq := toSubMulAction_inj
 
 @[simp]
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
@@ -284,11 +287,13 @@ theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
-  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h : _)
+  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
 @[simp]
-theorem toAddSubgroup_eq : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
+theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toAddSubgroup_eq := toAddSubgroup_inj
 
 protected theorem sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
   sub_mem

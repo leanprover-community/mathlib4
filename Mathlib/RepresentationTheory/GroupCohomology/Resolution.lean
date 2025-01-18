@@ -98,7 +98,7 @@ def actionDiagonalSucc (G : Type u) [Group G] :
     ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ Action.mk (Fin n → G) 1
   | 0 =>
     diagonalOneIsoLeftRegular G ≪≫
-      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.equivOfUnique PUnit _).toIso)
+      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)
   | n + 1 =>
     diagonalSucc _ _ ≪≫
       tensorIso (Iso.refl _) (actionDiagonalSucc G n) ≪≫

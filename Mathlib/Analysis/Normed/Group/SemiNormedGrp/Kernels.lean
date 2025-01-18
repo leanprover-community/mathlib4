@@ -80,7 +80,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               erw [zero_apply])
             fun _ _ w =>
             Subtype.eq
-              (NormedAddGroupHom.lift_unique f.1.range _ _ _ (congr_arg Subtype.val w : _)) }
+              (NormedAddGroupHom.lift_unique f.1.range _ _ _ (congr_arg Subtype.val w :)) }
 
 -- Sanity check
 example : HasCokernels SemiNormedGrp₁ := by infer_instance
@@ -145,7 +145,7 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       ext a
       simp only [comp_apply, Limits.zero_comp]
       -- Porting note: `simp` not firing on the below
-      rw [comp_apply, NormedAddGroupHom.zero_apply]
+      rw [NormedAddGroupHom.zero_apply]
       -- Porting note: Lean 3 didn't need this instance
       letI : SeminormedAddCommGroup ((forget SemiNormedGrp).obj Y) :=
         (inferInstance : SeminormedAddCommGroup Y)
