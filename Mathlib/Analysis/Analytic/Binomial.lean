@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Analytic.OfScalars
+import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.RingTheory.Binomial
 import Mathlib.Tactic.MoveAdd
@@ -24,7 +26,8 @@ and $x$ is an element of a normed algebra over $\mathbb{K}$.
 ## Main Statements
 
 * `binomialSeries_radius_ge_one`: The radius of convergence of the binomial series is at least $1$.
-* `binomialSum_eq_rpow`: The series converges to $(1 + x)^a$ for real $a$ and $|x| < 1$.
+* `one_add_rpow_hasFPowerSeriesAt_zero`: The series converges to $(1 + x)^a$ for real $a$ and
+  $|x| < 1$.
 
 ## Implementation Details
 
@@ -228,11 +231,11 @@ theorem binomialSeries_ODE {a : ℝ} :
     ring
 
 /-- Sum of the binomial series $\sum_{k=0}^{\infty} \binom{a}{k} s^k$. -/
-noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
+private noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
 
 /-- Let `f` denote the sum of binomial series $\sum_{k=0}^{\infty} \binom{a}{k} s^k$.
 Then $a \cdot f'(s) = (1 + s) f(s)$. -/
-theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
+private theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
     HasDerivAt (binomialSum a) (a * binomialSum a x / (1 + x)) x := by
   have h_fun : HasFPowerSeriesOnBall (binomialSum a) (binomialSeries ℝ a) 0 1 := by
     apply HasFPowerSeriesOnBall.mono _ (by simp) (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a))
@@ -283,7 +286,7 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
   exact h_fun
 
 /-- The binomial series converges to `(1 + x).rpow a` for real `a` and `|x| < 1`. -/
-theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + x)^a := by
+private theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + x)^a := by
   have binomialSum_zero : binomialSum a 0 = 1 := by
     simp [binomialSum, FormalMultilinearSeries.sum]
     rw [tsum_eq_zero_add']
@@ -356,3 +359,16 @@ theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + 
       linarith
   · simp [s]
   · simpa
+
+/-- The binomial series converges to `(1 + x).rpow a` for real `a` and `|x| < 1`. -/
+theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
+    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 := by
+  use 1
+  constructor
+  · exact binomialSeries_radius_ge_one
+  · simp
+  · intro x hx
+    convert FormalMultilinearSeries.hasSum (binomialSeries ℝ a) _ using 1
+    · simp only [zero_add]
+      exact (binomialSum_eq_rpow (by aesop)).symm
+    exact EMetric.ball_subset_ball binomialSeries_radius_ge_one hx
