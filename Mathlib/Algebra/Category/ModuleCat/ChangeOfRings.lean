@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Change Of Rings
@@ -263,6 +264,25 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
 instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
     (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
   (restrictScalarsEquivalenceOfRingEquiv e).isEquivalence_functor
+
+instance restrictScalarsEquivalenceOfRingEquiv_additive {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+    (restrictScalarsEquivalenceOfRingEquiv e).functor.Additive where
+
+instance restrictScalarsEquivalenceOfRingEquiv_linear
+      {R₀ R S} [CommRing R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+      (e : R ≃ₐ[R₀] S) :
+    (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ where
+  map_smul {M N} f r₀ := by
+    ext m
+    simp only [AlgEquiv.toRingEquiv_eq_coe, restrictScalarsEquivalenceOfRingEquiv,
+      RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, AddEquiv.toEquiv_eq_coe,
+      Equiv.toFun_as_coe, EquivLike.coe_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
+      AddEquiv.coe_refl, AddEquiv.refl_symm, restrictScalars.map_apply, hom_smul,
+      LinearMap.smul_apply]
+    show algebraMap _ _ r₀ • _ = e (algebraMap _ _ r₀) • f.hom m
+    rw [AlgEquiv.commutes]
+    rfl
+
 
 open TensorProduct
 

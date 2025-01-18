@@ -3,19 +3,23 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Yunzhou Xie
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Morita equivalence
 
-We say that `R` and `S` are Morita equivalent if the categories of modules over `R` and `S` are
-equivalent. In this file, we prove that Morita equivalence is an equivalence relation and that
-isomorphic rings are Morita equivalent.
+For two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules over `A` and
+`B` are `R`-linearly equivalent. In this file, we prove that Morita equivalence is an equivalence
+relation and that isomorphic algebras are Morita equivalent.
 
 # Main definitions
 
-- `IsMoritaEquivalent R S`: a predicate asserting that `R` and `S` are Morita equivalent.
+- `MoritaEquivalence R A B`: a structure containing a `R`-linear equivalence of categories between
+  the module categories of `A` and `B`.
+- `IsMoritaEquivalent R A B`: a predicate asserting that `R`-algebras `A` and `B` are Morita
+  equivalent.
 
 ## TODO
 
@@ -35,25 +39,41 @@ Morita Equivalence, Category Theory, Noncommutative Ring, Module Theory
 
 -/
 
-universe u₁ u₂ u₃
+universe u₀ u₁ u₂ u₃
 
 open CategoryTheory
 
+variable (R : Type u₀) [CommRing R]
+
+@[ext]
+structure MoritaEquivalence
+    (A : Type u₁) [Ring A] [Algebra R A]
+    (B : Type u₂) [Ring B] [Algebra R B] where
+  eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
+  additive : eqv.functor.Additive := by infer_instance
+  linear : eqv.functor.Linear R := by infer_instance
+
+namespace MoritaEquivalence
+
+attribute [instance] MoritaEquivalence.additive MoritaEquivalence.linear
+
 /--
-Two rings are Morita equivalent if their module categories are equivalent.
+For any `R`-algebra `A`, `A` is Morita equivalent to itself.
 -/
-structure IsMoritaEquivalent (R : Type u₁) [Ring R] (S : Type u₂) [Ring S] : Prop where
-  cond : Nonempty <| ModuleCat.{max u₁ u₂} R ≌ ModuleCat.{max u₁ u₂} S
+def refl (A : Type u₁) [Ring A] [Algebra R A] : MoritaEquivalence R A A where
+  eqv := CategoryTheory.Equivalence.refl
+  additive := CategoryTheory.Functor.instAdditiveId
+  linear := CategoryTheory.Functor.instLinearId
 
-namespace IsMoritaEquivalent
-
-variable {R : Type u₁} [Ring R] {S : Type u₂} [Ring S] {T : Type u₃} [Ring T]
-
-lemma refl : IsMoritaEquivalent R R where
-  cond := ⟨.refl⟩
-
-lemma symm (h : IsMoritaEquivalent R S) : IsMoritaEquivalent S R where
-  cond := h.cond.map .symm
+/--
+For any `R`-algebras `A` and `B`, if `A` is Morita equivalent to `B`, then `B` is Morita equivalent
+to `A`.
+-/
+def symm {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
+    (e : MoritaEquivalence R A B) : MoritaEquivalence R B A where
+  eqv := e.eqv.symm
+  additive := e.eqv.inverse_additive
+  linear := e.eqv.inverseLinear R
 
 -- TODO: We have restricted all the rings to the same universe here because of the complication
 -- `max u₁ u₂`, `max u₂ u₃` vs `max u₁ u₃`. But if we once we proved the definition of Morita
@@ -62,12 +82,56 @@ lemma symm (h : IsMoritaEquivalent R S) : IsMoritaEquivalent S R where
 -- Or alternatively, @alreadydone has sketched an argument on how the universe restriction can be
 -- removed via a categorical argument,
 -- see [here](https://github.com/leanprover-community/mathlib4/pull/20640#discussion_r1912189931)
-lemma trans {R S T : Type u₁} [Ring R] [Ring S] [Ring T]
-    (h : IsMoritaEquivalent R S) (h' : IsMoritaEquivalent S T) :
-    IsMoritaEquivalent R T where
-  cond := Nonempty.map2 .trans h.cond h'.cond
+/--
+For any `R`-algebras `A`, `B`, and `C`, if `A` is Morita equivalent to `B` and `B` is Morita
+equivalent to `C`, then `A` is Morita equivalent to `C`.
+-/
+def trans {A B C : Type u₁}
+    [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Ring C] [Algebra R C]
+    (e : MoritaEquivalence R A B) (e' : MoritaEquivalence R B C) :
+    MoritaEquivalence R A C where
+  eqv := e.eqv.trans e'.eqv
+  additive := Functor.instAdditiveComp e.eqv.functor e'.eqv.functor
+  linear := Functor.instLinearComp e.eqv.functor e'.eqv.functor
 
-lemma of_ringEquiv (f : R ≃+* S) : IsMoritaEquivalent R S where
-  cond := ⟨ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.symm⟩
+variable {R} in
+/--
+Equivalence `R`-algebras are Morita equivalent.
+-/
+noncomputable def ofAlgEquiv {A : Type u₁} {B : Type u₂}
+      [Ring A] [Algebra R A] [Ring B] [Algebra R B] (f : A ≃ₐ[R] B) :
+    MoritaEquivalence R A B where
+  eqv := ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.symm.toRingEquiv
+  linear := ModuleCat.restrictScalarsEquivalenceOfRingEquiv_linear f.symm
+
+end MoritaEquivalence
+
+/--
+Two rings are Morita equivalent if their module categories are equivalent.
+-/
+structure IsMoritaEquivalent
+    (A : Type u₁) [Ring A] [Algebra R A]
+    (B : Type u₂) [Ring B] [Algebra R B] : Prop where
+  cond : Nonempty <| MoritaEquivalence R A B
+
+namespace IsMoritaEquivalent
+
+-- variable {A : Type u₁} [Ring R] {B : Type u₂} [Ring B] {C : Type u₃} [Ring T]
+
+lemma refl {A : Type u₁} [Ring A] [Algebra R A] : IsMoritaEquivalent R A A where
+  cond := ⟨.refl R A⟩
+
+lemma symm {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
+    (h : IsMoritaEquivalent R A B) : IsMoritaEquivalent R B A where
+  cond := h.cond.map <| .symm R
+
+lemma trans {A B C : Type u₁} [Ring A] [Ring B] [Ring C] [Algebra R A] [Algebra R B] [Algebra R C]
+    (h : IsMoritaEquivalent R A B) (h' : IsMoritaEquivalent R B C) :
+    IsMoritaEquivalent R A C where
+  cond := Nonempty.map2 (.trans R) h.cond h'.cond
+
+lemma of_AlgEquiv {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
+    (f : A ≃ₐ[R] B) : IsMoritaEquivalent R A B where
+  cond := ⟨.ofAlgEquiv f⟩
 
 end IsMoritaEquivalent
