@@ -104,40 +104,7 @@ protected lemma Connected.sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
-end Subgraph
-
-/-! ### Coercion of walks-/
-
-namespace Walk
-
-variable {H : Subgraph G} {u v w : H.verts}
-
-/-- Coerces a walk in a subgraph to the walk in the ambient graph -/
-protected def coe {u v} (p : H.coe.Walk u v) : G.Walk u.val v.val :=
-  match p with
-  | .nil => Walk.nil
-  | .cons h q => Walk.cons (H.adj_sub h) (q.coe)
-
-lemma coe_nil : (Walk.nil : H.coe.Walk u u).coe = (Walk.nil : G.Walk u.val u.val) := by
-  rw [Walk.coe]
-
-@[simp]
-lemma coe_cons {h : H.coe.Adj u v} (p : H.coe.Walk v w) :
-    (Walk.cons h p : H.coe.Walk u w).coe = Walk.cons (H.adj_sub h) p.coe := by simp [Walk.coe]
-
-@[simp]
-lemma coe_length {u v} (p : H.coe.Walk u v) : p.coe.length = p.length := by
-  match p with
-  | .nil => rfl
-  | .cons h q =>
-    simp only [coe_cons, length_cons, add_left_inj]
-    exact q.coe_length
-termination_by p.length
-
-lemma _root_.SimpleGraph.Reachable.of_coe_reachable  (h : H.coe.Reachable u v) :
-  G.Reachable u v := h.some.coe.reachable
-
-lemma _root_.SimpleGraph.Subgraph.Connected.exists_connectedComponent_eq {H : Subgraph G}
+lemma Connected.exists_connectedComponent_eq {H : Subgraph G}
     (hc : H.Connected) (hb : H.verts.Nonempty) (h : ∀ v ∈ H.verts, ∀ w, H.Adj v w ↔ G.Adj v w) :
     ∃ c : G.ConnectedComponent, H.verts = c.supp := by
   rw [SimpleGraph.ConnectedComponent.exists]
@@ -145,10 +112,15 @@ lemma _root_.SimpleGraph.Subgraph.Connected.exists_connectedComponent_eq {H : Su
   use v
   ext w
   simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]
-  exact ⟨fun hw ↦ by simpa using (hc ⟨w, hw⟩ ⟨v, hv⟩).of_coe_reachable,
+  exact ⟨fun hw ↦ by simpa using (hc ⟨w, hw⟩ ⟨v, hv⟩).map H.hom,
     fun a ↦ a.symm.mem_verts_subgraph h hv⟩
 
+end Subgraph
+
+
 /-! ### Walks as subgraphs -/
+
+namespace Walk
 
 variable {u v w : V}
 
@@ -304,7 +276,7 @@ lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
       (by rw [@Walk.not_nil_iff_lt_length, Walk.length_reverse]; exact
         Walk.not_nil_iff_lt_length.mp hnp))
 
-lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hpc : p.IsPath)
+lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
   have hadj1 := ((show i - 1 + 1 = i from by omega) ▸
@@ -315,13 +287,13 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hpc : p.Is
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i', (⟨hl, _⟩ | ⟨_, hl⟩)⟩ <;>
-    apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
+    apply hp.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
       (by rw [Set.mem_setOf_eq]; omega) at hl <;> aesop
 
 lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
     (p.toSubgraph.neighborSet (p.getVert i)).ncard = 2 := by
-  rw [neighborSet_toSubgraph_internal hp h h']
+  rw [hp.neighborSet_toSubgraph_internal h h']
   have : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
     intro h
     have := hp.getVert_injOn (by rw [Set.mem_setOf_eq]; omega) (by rw [Set.mem_setOf_eq]; omega) h
@@ -329,8 +301,8 @@ lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v
   simp_all
 
 lemma toSubgraph_adj_sndOfNotNil {u v v'} {p : G.Walk u v} (hp : p.IsPath)
-    (hadj : p.toSubgraph.Adj u v') : p.getVert 1 = v' := by
-  have ⟨i, hi⟩ := (Walk.toSubgraph_adj_iff _).mp hadj
+    (hadj : p.toSubgraph.Adj u v') : p.snd = v' := by
+  have ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hadj
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
   rcases hi.1 with (⟨hl1, rfl⟩| ⟨hr1, hr2⟩)
   · have : i = 0 := by

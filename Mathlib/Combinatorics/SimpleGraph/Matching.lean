@@ -418,11 +418,11 @@ lemma IsCycles.sDiff_spanningCoe_toSubgraph_reachable [Fintype V] [DecidableEq V
     refine ⟨hw'2.symm, fun h ↦ ?_⟩
     exact hnpvw' h.symm
   use (((hcyc.sDiff_spanningCoe_toSubgraph_reachable
-    (p.cons hw'2.symm) hp'p).some).mapLe hle).append (this.toWalk)
+    (p.cons hw'2.symm) hp'p).some).mapLe hle).append this.toWalk
 termination_by Fintype.card V + 1 - p.length
 decreasing_by
   simp_wf
-  have : p.length < Fintype.card V := by exact Walk.IsPath.length_lt hp
+  have := Walk.IsPath.length_lt hp
   omega
 
 lemma IsCycles.reachable_deleteEdge [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
