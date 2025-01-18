@@ -6,8 +6,8 @@ Authors: Jireh Loreaux
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Algebra.UniformGroup
+--import Mathlib.Topology.Algebra.Module.Basic
+--import Mathlib.Topology.Algebra.UniformGroup
 
 /-! # Type synonym for types with a `CStarModule` structure
 
