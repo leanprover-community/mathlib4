@@ -799,13 +799,7 @@ linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
     M ≃L[R] M₂ × ker f₁ :=
   equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
-    (fun x => by simp) fun ⟨x, y⟩ => by
-      -- Porting note: `simp` timeouts.
-      rw [ContinuousLinearMap.coprod_apply,
-        Submodule.subtypeL_apply, _root_.map_add, ContinuousLinearMap.prod_apply, h x,
-        ContinuousLinearMap.projKerOfRightInverse_comp_inv,
-        ContinuousLinearMap.prod_apply, LinearMap.map_coe_ker,
-        ContinuousLinearMap.projKerOfRightInverse_apply_idem, Prod.mk_add_mk, add_zero, zero_add]
+    (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
 
 @[simp]
 theorem fst_equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
