@@ -32,7 +32,7 @@ noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
   Order.height (⟨I, hI⟩ : PrimeSpectrum R)
 
 /-- The height of an ideal is defined as the infimum of the heights of minimal prime ideals
-containing it. -/
+of it. -/
 noncomputable def Ideal.height : ℕ∞ :=
   ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime ‹_›)
 
