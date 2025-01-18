@@ -120,14 +120,8 @@ theorem mem_evalFrom_choice {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
   induction' x using List.reverseRecOn with _ _ ih generalizing s
   · apply mem_εClosure_choice
-  · simp only [evalFrom_append_singleton, mem_stepSet_iff]
-    constructor <;> intro h
-    · obtain ⟨_, h, _⟩ := h
-      rw [ih] at h
-      tauto
-    · obtain ⟨_, ht, _, h, _⟩ := h
-      have := ih.mpr ⟨_, ht, h⟩
-      tauto
+  · simp_rw [evalFrom_append_singleton, mem_stepSet_iff, ih]
+    tauto
 
 /-- `M.eval x` computes all possible paths through `M` with input `x` starting at an element of
 `M.start`. -/
@@ -165,8 +159,7 @@ theorem Path.eq_of_nil (s t : σ) : M.Path s t [] → s = t := by
 @[simp]
 theorem path_singleton {s t : σ} {a : Option α} : M.Path s t [a] ↔ t ∈ M.step s a where
   mp := by
-    intro h
-    cases' h with _ _ _ _ _ _ _ h
+    rintro (_ | ⟨_, _, _, _, _, _, h⟩)
     apply Path.eq_of_nil at h
     subst t
     assumption
@@ -179,13 +172,12 @@ theorem path_append {s u : σ} {x y : List (Option α)} :
     induction' x with _ _ ih generalizing s
     · rw [List.nil_append]
       tauto
-    · intro h
-      cases' h with _ _ _ _ _ _ _ h
-      obtain ⟨_, _, _⟩ := ih h
+    · rintro (_ | ⟨_, _, _, _, _, _, h⟩)
+      apply ih at h
       tauto
   mpr := by
     intro ⟨_, hx, _⟩
-    induction' x generalizing s <;> cases hx <;> tauto
+    induction x generalizing s <;> cases hx <;> tauto
 
 theorem εClosure_path {s₁ s₂ : σ} :
     s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.Path s₁ s₂ (List.replicate n none) where
@@ -200,7 +192,7 @@ theorem εClosure_path {s₁ s₂ : σ} :
       tauto
   mpr := by
     intro ⟨n, h⟩
-    induction' n generalizing s₂
+    induction n generalizing s₂
     · rw [List.replicate_zero] at h
       apply Path.eq_of_nil at h
       solve_by_elim
@@ -217,27 +209,23 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
       use List.replicate n none
       rw [List.reduceOption_replicate_none]
       trivial
-    · intro ⟨_, hx⟩
-      rw [List.reduceOption_eq_nil_iff] at hx
-      obtain ⟨⟨_, ⟨⟩⟩, _⟩ := hx
+    · simp_rw [List.reduceOption_eq_nil_iff]
+      rintro ⟨_, ⟨⟨_, ⟨⟩⟩, _⟩⟩
       tauto
   · rw [evalFrom_append_singleton, mem_stepSet_iff]
     constructor
     · intro ⟨_, ht, h⟩
       obtain ⟨x', _, _⟩ := ih.mp ht
       rw [mem_εClosure_choice] at h
-      obtain ⟨_, _, h⟩ := h
-      rw [εClosure_path] at h
-      obtain ⟨n, _⟩ := h
+      simp_rw [εClosure_path] at h
+      obtain ⟨_, _, ⟨n, _⟩⟩ := h
       use x' ++ some a :: List.replicate n none
       rw [List.reduceOption_append, List.reduceOption_cons_of_some,
         List.reduceOption_replicate_none, path_append]
       tauto
-    · intro ⟨_, hx, h⟩
-      rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff] at hx
-      obtain ⟨_, _, ⟨⟩, _, hx₂⟩ := hx
-      rw [List.reduceOption_eq_nil_iff] at hx₂
-      obtain ⟨_, ⟨⟩⟩ := hx₂
+    · simp_rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff,
+        List.reduceOption_eq_nil_iff]
+      rintro ⟨_, ⟨_, _, ⟨⟩, _, ⟨_, ⟨⟩⟩⟩, h⟩
       rw [path_append] at h
       obtain ⟨t, _, _ | _⟩ := h
       use t
@@ -256,8 +244,7 @@ theorem accepts_path {x : List α} :
     tauto
   mpr := by
     intro ⟨_, _, _, hs₁, _, h⟩
-    have := M.evalFrom_path.mpr ⟨_, h⟩
-    have := M.mem_evalFrom_choice.mpr ⟨_, hs₁, this⟩
+    have := M.mem_evalFrom_choice.mpr ⟨_, hs₁, M.evalFrom_path.mpr ⟨_, h⟩⟩
     tauto
 
 /-! ### Conversions between `εNFA` and `NFA` -/
