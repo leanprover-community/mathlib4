@@ -112,7 +112,7 @@ theorem encard_insert_of_not_mem {a : α} (has : a ∉ s) : (insert a s).encard 
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
-  refine h.induction_on (by simp) ?_
+  refine h.induction_on _ (by simp) ?_
   rintro a t hat _ ht'
   rw [encard_insert_of_not_mem hat]
   exact lt_tsub_iff_right.1 ht'
@@ -598,7 +598,7 @@ theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := 
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
   · apply ncard_le_ncard diff_subset hs
-  convert @zero_le ℕ _ _
+  convert zero_le (α := ℕ) _
   exact (hs.diff (by simp : Set.Finite {a})).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
