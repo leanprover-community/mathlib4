@@ -801,7 +801,7 @@ where
   isSubscriptable (s : Name) : Bool :=
     s.toString.toList.all subscript.toSpecial.contains
 
-/-- Checks the provided expression can be subscripted before delaborating. -/
+/-- Checks that the provided expression can be subscripted before delaborating. -/
 def Meta.subscript (e : Expr) : Delab := subscriptable e >>= fun _ ↦ delab
 
 /-- Delaborator for the notation `[m]ₙ`. -/
