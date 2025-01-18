@@ -139,7 +139,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyStar]`
-    simp [Quiver.symmetrifyStar, Function.comp_apply] <;>
+    simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
 
