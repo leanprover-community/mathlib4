@@ -147,8 +147,7 @@ def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : �
 
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
   refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · -- Porting note: Explicitly specify `c`.
-    refine @evalInduction _ _ _ (fun a ↦ Reaches f a b ∧ f b = none) _ h fun a h IH ↦ ?_
+  · refine evalInduction h fun a h IH ↦ ?_
     cases' e : f a with a'
     · rw [Part.mem_unique h
           (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e]; rfl)]
