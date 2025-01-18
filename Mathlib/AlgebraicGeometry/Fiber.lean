@@ -36,13 +36,15 @@ def Scheme.Hom.fiberι (f : X.Hom Y) (y : Y) : f.fiber y ⟶ X := pullback.fst _
 
 instance (f : X.Hom Y) (y : Y) : (f.fiber y).CanonicallyOver X where hom := f.fiberι y
 
+instance (f : X.Hom Y) (y : Y) : (f.fiber y).Over X where hom := f.fiberι y
+
 /-- The canonical map from the scheme theoretic fiber to the residue field. -/
 def Scheme.Hom.fiberToSpecResidueField (f : X.Hom Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
 @[simp]
-lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X.Hom Y) (y : Y) (x) :
+lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X.Hom Y) (y : Y) (x : f.fiber y) :
     (f.fiberToSpecResidueField y).base x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
@@ -58,8 +60,13 @@ def Scheme.Hom.fiberHomeo (f : X.Hom Y) (y : Y) : f.fiber y ≃ₜ f.base ⁻¹'
   .trans (.ofIsEmbedding _ (f.fiberι y).isEmbedding) (.setCongr (f.range_fiberι y))
 
 @[simp]
-lemma Scheme.Hom.fiberHomeo_apply (f : X.Hom Y) (y : Y) (x) :
+lemma Scheme.Hom.fiberHomeo_apply (f : X.Hom Y) (y : Y) (x : f.fiber y) :
     (f.fiberHomeo y x).1 = (f.fiberι y).base x := rfl
+
+@[simp]
+lemma Scheme.Hom.fiberι_fiberHomeo_symm (f : X.Hom Y) (y : Y) (x : f.base ⁻¹' {y}) :
+    (f.fiberι y).base ((f.fiberHomeo y).symm x) = x :=
+  congr($((f.fiberHomeo y).apply_symm_apply x).1)
 
 /-- A point `x` as a point in the fiber of `f` at `f x`. -/
 def Scheme.Hom.asFiber (f : X.Hom Y) (x : X) : f.fiber (f.base x) :=
@@ -67,7 +74,7 @@ def Scheme.Hom.asFiber (f : X.Hom Y) (x : X) : f.fiber (f.base x) :=
 
 @[simp]
 lemma Scheme.Hom.fiberι_asFiber (f : X.Hom Y) (x : X) : (f.fiberι _).base (f.asFiber x) = x :=
-  congr($((f.fiberHomeo _).apply_symm_apply ⟨x, rfl⟩).1)
+  f.fiberι_fiberHomeo_symm _ _
 
 instance (f : X ⟶ Y) [QuasiCompact f] (y : Y) : CompactSpace (f.fiber y) :=
   haveI : QuasiCompact (f.fiberToSpecResidueField y) :=

@@ -74,6 +74,9 @@ instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
+set_option synthInstance.maxHeartbeats 0 in
+-- set_option synthInstance.maxSize 100000 in
+set_option maxHeartbeats 0 in
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
   (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
@@ -82,7 +85,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     intro i
     have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
-    have inst : JacobsonSpace Y := ‹_› -- why is this needed?
+    have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
     have inst : JacobsonSpace (Y.affineCover.obj i) :=
       .of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
     let e := Homeomorph.ofIsEmbedding _
@@ -91,7 +94,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · have inst : JacobsonSpace (Spec R) := ‹_› -- why is this needed?
+  · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
     rw [jacobsonSpace_iff_of_iSup_eq_top (Scheme.OpenCover.iSup_opensRange X.affineCover)]
     intro i
     have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
