@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+import Mathlib.Data.Set.UnionLift
 
 /-!
 # Transcendence basis
@@ -326,10 +327,21 @@ instance : PartialOrder (Exchange R x y) where
     · rfl
     · simpa [funext_iff] using hts.snd
 
-theorem chain_bounded (c : Set (Exchange R x y)) (hc : IsChain (. ≤ .) c) : Bounded (. ≤ .) c where
-  carrier := ⋃ s ∈ c, s.carrier
-  exchange := sorry -- Use `unionLift`
-  algebraic := sorry
+theorem chain_bounded (c : Set (Exchange R x y)) (hc : IsChain (· ≤ ·) c) : Bounded (· ≤ ·) c :=
+  let e : Exchange R x y :=
+  { carrier := ⋃ s : c, s.1.carrier
+    exchange := Set.iUnionLift (fun s : c => s.1.carrier) (fun s => s.1.exchange)
+      (fun s t i hs ht => by
+        simp only
+        rcases hc.total s.2 t.2 with h | h
+        · rw [← h.2]; rfl
+        · rw [← h.2]; rfl) _
+      (Set.Subset.refl _)
+    algebraic := sorry }
+  ⟨e, fun b hb => ⟨Set.subset_iUnion (fun s : c => s.1.carrier) ⟨b, hb⟩, by
+      ext a
+      simp only [comp_apply, Set.inclusion_mk, id_eq, eq_mpr_eq_cast, e,
+        Set.iUnionLift_inclusion]⟩⟩
 
 end Exchange
 
