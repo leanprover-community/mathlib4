@@ -329,7 +329,7 @@ lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v
   simp_all
 
 lemma toSubgraph_adj_sndOfNotNil {u v v'} {p : G.Walk u v} (hp : p.IsPath)
-    (hadj : (p.toSubgraph).Adj u v') : p.getVert 1 = v' := by
+    (hadj : p.toSubgraph.Adj u v') : p.getVert 1 = v' := by
   have ⟨i, hi⟩ := (Walk.toSubgraph_adj_iff _).mp hadj
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
   rcases hi.1 with (⟨hl1, rfl⟩| ⟨hr1, hr2⟩)
