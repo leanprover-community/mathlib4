@@ -25,7 +25,6 @@ def WideSubquiver (V) [Quiver.{v + 1} V] :=
 
 /-- A type synonym for `V`, when thought of as a quiver having only the arrows from
 some `WideSubquiver`. -/
--- Porting note: no hasNonemptyInstance linter yet
 @[nolint unusedArguments]
 def WideSubquiver.toType (V) [Quiver V] (_ : WideSubquiver V) : Type u :=
   V

@@ -68,9 +68,6 @@ def Hom.opEquiv {V} [Quiver V] {X Y : V} :
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- A type synonym for a quiver with no arrows. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 
 instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty⟩
