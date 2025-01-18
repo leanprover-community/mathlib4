@@ -221,7 +221,6 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
         rw [stalkIso_hom, stalkIso_inv, CommRingCat.comp_apply, CommRingCat.comp_apply,
             localizationToStalk_of]
         erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
-        rfl
 
 /-- Version of `localRingHom_comp_stalkIso_apply` using `CommRingCat.Hom.hom` -/
 theorem localRingHom_comp_stalkIso_apply' {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S)
@@ -424,7 +423,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← comp_apply, toOpen_res] at e
+    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=

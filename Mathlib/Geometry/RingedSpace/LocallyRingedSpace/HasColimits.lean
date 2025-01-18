@@ -227,9 +227,10 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  rw [← CommRingCat.forget_map_apply, PresheafedSpace.stalkMap_germ_apply
-    (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
-  rw [CommRingCat.forget_map_apply]
+  rw [← CommRingCat.forget_map_apply, forget_map_eq_coe,
+    PresheafedSpace.stalkMap_germ_apply
+      (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
+  rw [coe_toHasForget_instFunLike]
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=
@@ -242,8 +243,9 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
-  rw [← CommRingCat.germ_res_apply (coequalizer f.toShHom g.toShHom).presheaf (homOfLE VleU) _
-      (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).base x V.1 hxV) s]
+  rw [ConcreteCategory.hom, CommRingCat.instConcreteCategoryRingHomCarrier,
+      ← CommRingCat.germ_res_apply (coequalizer f.toShHom g.toShHom).presheaf (homOfLE VleU) _
+        (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).base x V.1 hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom :).c.app _).hom,
     ← CommRingCat.comp_apply, NatTrans.naturality, CommRingCat.comp_apply,
