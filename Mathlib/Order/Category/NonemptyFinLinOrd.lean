@@ -59,8 +59,8 @@ instance : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder 
 deriving instance LargeCategory for NonemptyFinLinOrd
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory NonemptyFinLinOrd :=
-  BundledHom.concreteCategory _
+instance : HasForget NonemptyFinLinOrd :=
+  BundledHom.hasForget _
 
 instance : CoeSort NonemptyFinLinOrd Type* :=
   Bundled.coeSort
