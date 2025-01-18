@@ -367,165 +367,136 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
     use w, w'
     aesop
 
+-- lemma IsCycles_Path_mem_support_is_second {v w w' : V} (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
+--     (hadj : G.Adj v w') (hcyc : G.IsCycles) : p.getVert 1 = w' := by
+--   rw [@Walk.mem_support_iff_exists_getVert] at hw'
+--   obtain ⟨n, ⟨rfl, hnl⟩⟩ := hw'
+--   have hnz : n ≠ 0 := by
+--     intro h
+--     simp_all only [h, zero_le, Walk.getVert_zero, ne_eq, SimpleGraph.irrefl]
+--   by_cases hn : n = 1
+--   · rw [hn]
+--   have hnp1 : G.Adj (p.getVert n) (p.getVert (n + 1)) := by
+--     exact (Walk.toSubgraph_adj_getVert p (by
+--       by_contra! hc
+--       exact hw (Walk.getVert_of_length_le p hc).symm)).adj_sub
+--   rw [adj_comm] at hadj
+--   have hns1 : G.Adj (p.getVert n) (p.getVert (n - 1)) := by
+--     simpa [show n - 1 + 1 = n from by omega] using (@Walk.toSubgraph_adj_getVert _  _  _ _ p (n - 1) (by omega)).adj_sub.symm
+--   have := hcyc (Set.nonempty_of_mem hnp1)
+--   rw [@Set.ncard_eq_two] at this
+--   obtain ⟨x, y, hxy⟩ := this
+--   have hvgv : v ∈ G.neighborSet (p.getVert n) := hadj
+--   have hsgv : p.getVert (n - 1) ∈ G.neighborSet (p.getVert n) := hns1
+--   have hpgv : p.getVert (n + 1) ∈ G.neighborSet (p.getVert n) := hnp1
+--   rw [hxy.2] at hvgv hsgv hpgv
+
+--   have : p.getVert (n - 1) ≠ p.getVert (n + 1) := by
+--     by_cases h : n = p.length
+--     · subst h
+--       simp_all only [ne_eq, and_true, Set.mem_insert_iff, Set.mem_singleton_iff, le_refl, Walk.getVert_length,
+--         not_true_eq_false]
+--     intro h
+--     apply hp.getVert_injOn (by rw [@Set.mem_setOf]; omega) (by rw [@Set.mem_setOf]; omega) at h
+
+--     omega
+
+--   have hsnv : p.getVert (n - 1) ≠ v := by
+--     intro h
+--     have : p.getVert (n - 1) = p.getVert 0 := by aesop
+--     apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega) at this
+--     omega
+
+--   have hpnv : p.getVert (n + 1) ≠ v := by
+--     have : p.getVert (n + 1) = p.getVert 0 := by aesop
+--     by_cases h : n = p.length
+--     · subst h
+--       simp_all only [ne_eq, and_true, Set.mem_insert_iff, Set.mem_singleton_iff, le_refl, Walk.getVert_length,
+--         not_true_eq_false]
+--     apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega) at this
+--     omega
+
+--   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hsgv hpgv
+--   aesop
+
+
+theorem toSubgraph_adj_sndOfNotNil {u v v'} (p : G.Walk u v) (hp : p.IsPath)
+    (hadj : (p.toSubgraph).Adj u v') : p.getVert 1 = v' := by
+  have ⟨i, hi⟩ := (Walk.toSubgraph_adj_iff _).mp hadj
+  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
+  rcases hi.1 with (⟨hl1, rfl⟩| ⟨hr1, hr2⟩)
+  · have : i = 0 := by
+      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+      rw [p.getVert_zero, hl1]
+    simp [this]
+  · have : (i + 1) = 0 := by
+      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+      rw [p.getVert_zero, hr2]
+    contradiction
+
 lemma IsCycles_Path_mem_support_is_second {v w w' : V} (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
     (hadj : G.Adj v w') (hcyc : G.IsCycles) : p.getVert 1 = w' := by
+  apply toSubgraph_adj_sndOfNotNil p hp
   rw [@Walk.mem_support_iff_exists_getVert] at hw'
   obtain ⟨n, ⟨rfl, hnl⟩⟩ := hw'
-  have hnz : n ≠ 0 := by
-    intro h
-    simp_all only [h, zero_le, Walk.getVert_zero, ne_eq, SimpleGraph.irrefl]
-  by_cases hn : n = 1
-  · rw [hn]
-  have hnp1 : G.Adj (p.getVert n) (p.getVert (n + 1)) := by
-    exact (Walk.toSubgraph_adj_getVert p (by
-      by_contra! hc
-      exact hw (Walk.getVert_of_length_le p hc).symm)).adj_sub
-  rw [adj_comm] at hadj
-  have hns1 : G.Adj (p.getVert n) (p.getVert (n - 1)) := by
-    simpa [show n - 1 + 1 = n from by omega] using (@Walk.toSubgraph_adj_getVert _  _  _ _ p (n - 1) (by omega)).adj_sub.symm
-  have := hcyc (Set.nonempty_of_mem hnp1)
-  rw [@Set.ncard_eq_two] at this
-  obtain ⟨x, y, hxy⟩ := this
-  have hvgv : v ∈ G.neighborSet (p.getVert n) := hadj
-  have hsgv : p.getVert (n - 1) ∈ G.neighborSet (p.getVert n) := hns1
-  have hpgv : p.getVert (n + 1) ∈ G.neighborSet (p.getVert n) := hnp1
-  rw [hxy.2] at hvgv hsgv hpgv
+  have hnp : ¬ p.Nil := by
+    intro hp
+    have : p.length = 0 := Walk.nil_iff_length_eq.mp hp
+    simp [show n = 0 from by omega] at hadj
+  -- by_cases hn : n = 1
+  -- · subst hn
+    -- exact Walk.toSubgraph_adj_snd _ (by rw [Walk.not_nil_iff_lt_length]; omega)
+  by_cases hl : n = p.length
+  · subst hl
+    simp_all
+  have : G.Adj (p.getVert 0) (p.getVert n) := by rwa [p.getVert_zero]
+  have : G.Adj (p.getVert 0) (p.getVert 1) := by
+    simpa using (Walk.toSubgraph_adj_snd p hnp).adj_sub
 
-  have : p.getVert (n - 1) ≠ p.getVert (n + 1) := by
-    by_cases h : n = p.length
-    · subst h
-      simp_all only [ne_eq, and_true, Set.mem_insert_iff, Set.mem_singleton_iff, le_refl, Walk.getVert_length,
-        not_true_eq_false]
-    intro h
-    apply hp.getVert_injOn (by rw [@Set.mem_setOf]; omega) (by rw [@Set.mem_setOf]; omega) at h
-
-    omega
-
-  have hsnv : p.getVert (n - 1) ≠ v := by
-    intro h
-    have : p.getVert (n - 1) = p.getVert 0 := by aesop
-    apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega) at this
-    omega
-
-  have hpnv : p.getVert (n + 1) ≠ v := by
-    have : p.getVert (n + 1) = p.getVert 0 := by aesop
-    by_cases h : n = p.length
-    · subst h
-      simp_all only [ne_eq, and_true, Set.mem_insert_iff, Set.mem_singleton_iff, le_refl, Walk.getVert_length,
-        not_true_eq_false]
-    apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega) at this
-    omega
-
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hsgv hpgv
-  aesop
-
-lemma Reachable_of_things  {v v' w : V} (p : G.Walk v w) (hp : p.IsPath)
-  (h : p.snd = v') : (G \ fromEdgeSet {s(v, v')}).Reachable v' w := by
-  rw [SimpleGraph.reachable_delete_edges_iff_exists_walk]
-  rw [← h]
-  use p.tail
 
   sorry
 
--- lemma IsCycles_Reachable_Path' [Fintype V] [DecidableEq V] {v w : V} {p : G.Walk v w} (hcyc : G.IsCycles)
---    (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by
---   cases p with
---   | nil => use .nil
---   | @cons u v' w h q =>
---     by_cases hvw : v' = w
---     · subst hvw
-
---       sorry
---     simp [sdiff_sup]
---     have hr := IsCycles_Reachable_Path' hcyc (hp.of_cons)
---     simp [Subgraph.subgraphOfAdj_spanningCoe]
---     rw [inf_comm]
---     -- have : G \ q.toSubgraph.spanningCoe ⊓ G \ fromEdgeSet {s(v, v')} =
---         -- (G \ q.toSubgraph.spanningCoe) \ fromEdgeSet {s(v, v')} := by exact?
---     rw [← sdiff_sdiff_left', Sym2.eq_swap]
---     apply Reachable.symm
---     -- have hadj : (G \ q.toSubgraph.spanningCoe).Adj v v' := by sorry
-
---     refine Reachable_of_things hr.some.reverse.bypass (Walk.bypass_isPath _) ?_
---     by_contra hc
-
---     -- have : G.Adj v' hr.some.reverse.bypass.snd := by
---       -- have := hr.some.reverse.bypass.adj_snd
--- --
---       -- sorry
---     -- obtain ⟨w', hw'⟩ := hcyc.unique_other_adj_of_adj h.symm
---     -- dsimp at hw'
-
-
---     sorry
 
 lemma IsCycles_Reachable_Path [Fintype V] {v w : V} (hcyc : G.IsCycles)
   (p : G.Walk v w) (hp : p.IsPath) :
     (G \ p.toSubgraph.spanningCoe).Reachable w v := by
+  -- Consider the case when p is nil
   by_cases hvw : v = w
   · subst hvw
     use .nil
   have hpn : ¬p.Nil := Walk.not_nil_of_ne hvw
-  have : p.toSubgraph.Adj v (p.getVert 1) := by
-    simpa [Walk.getVert_zero p] using
-      SimpleGraph.Walk.toSubgraph_adj_getVert p (Walk.not_nil_iff_lt_length.mp hpn)
-  obtain ⟨w', ⟨hw'1, hw'2⟩⟩ := hcyc.other_adj_of_adj (this.adj_sub)
+  obtain ⟨w', ⟨⟨hw'1, hw'2⟩, hwu⟩⟩ := hcyc.unique_other_adj_of_adj
+    ((Walk.toSubgraph_adj_snd p hpn).adj_sub)
+  -- The edge (v, w) can't be in p, because then it would be the second node
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
-    rw [@Walk.toSubgraph_adj_iff] at h
-    obtain ⟨i, hi⟩ := h
-    by_cases h0 : i = 0
-    · aesop
-    by_cases h1 : i = 1
-    · subst h1
-      have : p.getVert 1 ≠ v := by
-        intro h
-        rw [h] at this
-        exact this.ne rfl
-      aesop
-    by_cases hpi : p.getVert i = v
-    · have : p.getVert i = p.getVert 0 := by aesop
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega) at this
-      omega
-    have : p.getVert (i + 1) = p.getVert 0 := by aesop
-    apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega) at this
-    omega
+    exact hw'1 (toSubgraph_adj_sndOfNotNil p hp h)
+  -- If w = w', then then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
     have : (G \ p.toSubgraph.spanningCoe).Adj w v := by
       simp only [sdiff_adj, Subgraph.spanningCoe_adj]
       exact ⟨hw'2.symm, fun h ↦ hnpvw' h.symm⟩
     exact this.reachable
-  let p' := Walk.cons hw'2.symm p
-  have hle : (G \ p'.toSubgraph.spanningCoe) ≤ (G \ p.toSubgraph.spanningCoe) := by
+  have hle : (G \ (p.cons hw'2.symm).toSubgraph.spanningCoe) ≤ (G \ p.toSubgraph.spanningCoe) := by
     apply sdiff_le_sdiff (by rfl) ?hcd
     aesop
-
-  have hp'p : p'.IsPath := by
-    unfold p'
-    rw [@Walk.cons_isPath_iff]
-    refine ⟨hp, ?_⟩
-    intro hw'
-    -- Big
-    have := IsCycles_Path_mem_support_is_second _  hww'  hw' hp hw'2 hcyc
-    exact hw'1 this
-
-  have p'' := (IsCycles_Reachable_Path hcyc p' hp'p).some
-
-
-  let pMap := Walk.mapLe hle p''
+  have hp'p : (p.cons hw'2.symm).IsPath := by
+    rw [Walk.cons_isPath_iff]
+    refine ⟨hp, fun hw' ↦ ?_⟩
+    exact hw'1 (IsCycles_Path_mem_support_is_second _  hww'  hw' hp hw'2 hcyc)
   have : (G \ p.toSubgraph.spanningCoe).Adj w' v := by
     simp only [sdiff_adj, Subgraph.spanningCoe_adj]
-    refine ⟨hw'2.symm, ?_⟩
-    intro h
+    refine ⟨hw'2.symm, fun h ↦ ?_⟩
     exact hnpvw' h.symm
-
-  use Walk.append pMap (this.toWalk)
+  use (((IsCycles_Reachable_Path hcyc
+    (p.cons hw'2.symm) hp'p).some).mapLe hle).append (this.toWalk)
 termination_by Fintype.card V + 1 - p.length
 decreasing_by
   simp_wf
   have : p.length < Fintype.card V := by exact Walk.IsPath.length_lt hp
   omega
+
 
 lemma IsCycles.reachable_deleteEdge [Fintype V] (hadj : G.Adj v w) (hcyc : G.IsCycles) :
     (G \ SimpleGraph.fromEdgeSet {s(v, w)}).Reachable v w := by
@@ -563,6 +534,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponent_supp [Fintype
   use p.rotate hvp
   rw [← this]
   exact ⟨hp.1.rotate _, by simp_all⟩
+
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
 `G` is in `G'`. Note that the degree of each vertex needs to be at most 2 for this to be
