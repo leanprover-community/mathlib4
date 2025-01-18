@@ -6,7 +6,6 @@ Authors: Geoffrey Irving, Tomaz Mascarenhas
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Computability.QueryComplexity.Defs
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Tactic.Cases
 
 /-!
@@ -63,7 +62,7 @@ lemma query'_bind (o : I) (m : o ∈ s) (y : ι) (f0 f1 : Comp ι s α)
 /-- `pure` has cost 0 -/
 @[simp]
 lemma cost_pure (x : α) (o : I → Oracle ι) (i : I) : (pure x : Comp ι s α).cost o i = 0 := by
-  simp only [cost, run, Nat.cast_zero]
+  simp only [cost, run]
 
 /-- `pure` has cost' 0 -/
 @[simp]
@@ -73,7 +72,7 @@ lemma cost'_pure (x : α) (o : Oracle ι) (i : I) : (pure x : Comp ι s α).cost
 /-- `pure'` has cost 0 -/
 @[simp]
 lemma cost_pure' (x : α) (o : I → Oracle ι) (i : I) : (pure' x : Comp ι s α).cost o i = 0 := by
-  simp only [cost, run, Nat.cast_zero]
+  simp only [cost, run]
 
 /-- `pure'` has cost' 0 -/
 @[simp]
