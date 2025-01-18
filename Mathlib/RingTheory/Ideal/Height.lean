@@ -92,7 +92,7 @@ lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 
 @[gcongr]
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
-  (h : I < J) [I.FiniteHeight] :
+    (h : I < J) [I.FiniteHeight] :
     I.primeHeight < J.primeHeight := by
   unfold primeHeight
   gcongr
