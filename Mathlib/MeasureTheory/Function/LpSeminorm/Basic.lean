@@ -667,16 +667,11 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
   by_cases hp_top : p = ∞
   · simp only [hp_top, eLpNorm_exponent_top, ENNReal.top_mul', hq_pos.not_le,
       ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
-    have h_rpow :
-      essSup (fun x : α => (‖‖f x‖ ^ q‖ₑ)) μ =
-        essSup (fun x : α => (‖f x‖ₑ) ^ q) μ := by
+    have h_rpow : essSup (‖‖f ·‖ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by
       congr
       ext1 x
-      conv_rhs => rw [← nnnorm_norm]
-      rw [← ENNReal.coe_rpow_of_nonneg _ hq_pos.le, ENNReal.coe_inj]
-      ext
-      push_cast
-      rw [Real.norm_rpow_of_nonneg (norm_nonneg _)]
+      conv_rhs => rw [← enorm_norm]
+      rw [← Real.enorm_rpow_of_nonneg (norm_nonneg _) hq_pos.le]
     rw [h_rpow]
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hq_pos
     have h_rpow_surj := (ENNReal.rpow_left_bijective hq_pos.ne.symm).2

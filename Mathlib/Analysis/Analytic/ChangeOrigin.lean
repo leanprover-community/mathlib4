@@ -306,8 +306,8 @@ variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} 
 it also admits a power series on any subball of this ball (even with a different center provided
 it belongs to `s`), given by `p.changeOrigin`. -/
 theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBall f p s x r)
-    (h : (‖y‖₊ : ℝ≥0∞) < r) (hy : x + y ∈ insert x s) :
-    HasFPowerSeriesWithinOnBall f (p.changeOrigin y) s (x + y) (r - ‖y‖₊) where
+    (h : ‖y‖ₑ < r) (hy : x + y ∈ insert x s) :
+    HasFPowerSeriesWithinOnBall f (p.changeOrigin y) s (x + y) (r - ‖y‖ₑ) where
   r_le := by
     apply le_trans _ p.changeOrigin_radius
     exact tsub_le_tsub hf.r_le le_rfl
@@ -322,8 +322,7 @@ theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBa
         rw [insert_eq_of_mem hy] at this
         apply this
         simpa [add_assoc] using h'z
-      refine mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt ?_ hz)
-      exact mod_cast nnnorm_add_le y z
+      exact mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt (enorm_add_le ..) hz)
     rw [this]
     apply (p.changeOrigin y).hasSum
     refine EMetric.ball_subset_ball (le_trans ?_ p.changeOrigin_radius) hz
