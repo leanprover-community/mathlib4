@@ -14,6 +14,14 @@ import Mathlib.Order.Interval.Finset.Fin
 # Sorting has `O(n log n)` query complexity
 
 We prove that merge sort is a sorting algorithm with `O(n log n)` query complexity.
+
+## Main Definition
+* Comp.mergeSort : List α → SComp α (List α)
+
+## Main Results
+* Comp.cost_mergeSort_le :
+  ∀ (o : SOracle α) (s : List α) :
+    (mergeSort s).cost (fun _ ↦ o) () ≤ 3 * s.length * Nat.ceil_log2 s.length
 -/
 
 open Classical

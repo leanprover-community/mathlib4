@@ -20,8 +20,8 @@ in this module is based on the original stochastic version. Source:
 
 ## Main Definitions
 
-- Comp (ι : Type) {I : Type} (s : Set I) (α : Type) : Type
-- Comp.run : Comp ι s α → (I → Oracle ι) → α × (I → ℕ)
+* Comp (ι : Type) {I : Type} (s : Set I) (α : Type) : Type
+* Comp.run : Comp ι s α → (I → Oracle ι) → α × (I → ℕ)
 -/
 
 open Classical
