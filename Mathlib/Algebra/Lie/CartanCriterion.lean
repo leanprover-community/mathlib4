@@ -6,16 +6,18 @@ namespace LieSubalgebra
 variable {k L V : Type*} [Field k] [CharZero k] [LieRing L] [LieAlgebra k L]
 variable [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
 
-open Module LieModule in
+#count_heartbeats in
+open Module LieAlgebra LieModule in
 lemma exists_weight_eq_mul_root [FiniteDimensional k V] [FiniteDimensional k L]
     (H : LieSubalgebra k L) [H.IsCartanSubalgebra] [IsTriangularizable k H V]
     (χ : Weight k H V) (α : Weight k H L) :
-    ∃ r : ℚ, ∀ (e : LieAlgebra.rootSpace H α) (f : genWeightSpace L (-α : H → k)) (h : H),
+    ∃ r : ℚ, ∀ (e : rootSpace H α) (f : rootSpace H (-⇑α)) (h : H),
       ⁅(e : L), (f : L)⁆ = h → χ h = r * α h := by
   classical
   let ι := {n : ℤ // genWeightSpace V (χ + n • α : H → k) ≠ ⊥ ∧ ((α : H → k) = 0 → n = 0)}
   let w (n : ι) : Weight k H V := ⟨χ + n.1 • α, n.2.1⟩ 
   let W (n : ι) : LieSubmodule k H V := genWeightSpace V (w n)
+  let U : Submodule k V := ⨆ i, ((fun i ↦ ↑(genWeightSpace V ⇑i)) ∘ w) i
   have hw : w.Injective := by
     intro m n hmn
     ext
@@ -37,40 +39,31 @@ lemma exists_weight_eq_mul_root [FiniteDimensional k V] [FiniteDimensional k L]
     rw [mul_comm] at this
     have hD : (D : k) ≠ 0 := by
       simp only [ne_eq, Weight.coe_weight_mk, Nat.cast_eq_zero, Finset.sum_eq_zero_iff,
-        Finset.mem_univ, forall_const, not_forall, Subtype.exists, zsmul_eq_mul, Pi.intCast_def,
+        Finset.mem_univ, forall_const, not_forall, Subtype.exists, zsmul_eq_mul,
         Weight.coe_eq_zero_iff, exists_prop, D, ι, w, W]
       use 0
-      simp only [Int.cast_zero, implies_true, and_true, w, D, ι, W]
-      constructor
-      · convert χ.2
-        ext
-        simp
-        rfl
-      apply ne_of_gt
-      rw [finrank_pos_iff]
-      simp only [zero_smul, add_zero, w, D, ι]
-      rw [LieSubmodule.nontrivial_iff_ne_bot]
+      rw [← ne_eq, ← ne_eq, ← Nat.pos_iff_ne_zero, finrank_pos_iff,
+        LieSubmodule.nontrivial_iff_ne_bot]
+      simp only [Int.cast_zero, implies_true, and_true, zero_mul, add_zero, zero_smul, and_self]
       exact χ.2
     field_simp [eq_neg_iff_add_eq_zero, this]
   have aux := (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' k H V).comp hw
   have Hh' (i : ι) : Set.MapsTo (toEnd k H V h)
     ↑(genWeightSpace V (w i)) ↑(genWeightSpace V (w i)) := fun v hv ↦ LieSubmodule.lie_mem _ hv
-  let U : Submodule k V := ⨆ i, ((fun i ↦ ↑(genWeightSpace V ⇑i)) ∘ w) i
-  have key := LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup
-    Finset.univ (aux.comp Subtype.coe_injective) (f := toEnd k L V h) Hh' U <| by simp [U]
-  convert_to (0:k) = _ at key
-  swap
-  · conv at key =>
-      rhs
-      enter [2]
-      ext
-      erw [trace_toEnd_genWeightSpace] -- erw!!
+  have Hh : Set.MapsTo (toEnd k L V h) U U := by
+    simpa using LinearMap.mapsTo_biSup_of_mapsTo (.univ : Set ι) Hh'
+  have key : (((toEnd k L V h).restrict Hh).trace k U) =
+      ∑ n : ι, (((toEnd k H (W n) h)).trace k (W n)) :=
+    LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup
+      Finset.univ (aux.comp Subtype.coe_injective) (f := toEnd k L V h) Hh' U (by simp [U]) Hh
+  suffices (((toEnd k L V h).restrict Hh).trace k U) = 0 by
+    simp only [trace_toEnd_genWeightSpace, this, W] at key
     dsimp only [Weight.coe_weight_mk, Pi.add_apply, Pi.smul_apply, w] at key
     simp only [zsmul_eq_mul, smul_add, nsmul_eq_mul, Finset.sum_add_distrib,
       ← mul_assoc, ← Finset.sum_mul] at key
-    simpa [D, N, w] using key.symm
+    simpa [this, D, N, w] using key.symm
   clear key
-  have He : Set.MapsTo (toEnd k L V e) U U := by
+  have aux' (m : ℤ) (e : rootSpace H (m • ⇑α)) : Set.MapsTo (toEnd k L V e) U U := by
     show U ≤ U.comap (toEnd k L V e)
     simp only [Function.comp_apply, iSup_pos, iSup_le_iff, U]
     intro n v hv
@@ -78,41 +71,29 @@ lemma exists_weight_eq_mul_root [FiniteDimensional k V] [FiniteDimensional k L]
     by_cases hev : ⁅(e:L), v⁆ = 0
     · rw [hev]
       exact Submodule.zero_mem _
-    have hev_mem : ⁅(e:L), v⁆ ∈ genWeightSpace V (χ + (n.1 + 1) • α : H → k) := by
-      have := LieAlgebra.mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace k L H V α (w n) (x := e) e.2 hv
-      simpa [w, add_comm ⇑α, add_smul, add_assoc] using this
+    have hev_mem : ⁅(e:L), v⁆ ∈ genWeightSpace V (χ + (n.1 + m) • α : H → k) := by
+      have := LieAlgebra.mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace k L H V _ (w n) e.2 hv
+      suffices ⇑χ + (↑n + m) • ⇑α = m • ⇑α + ⇑(w n) by rwa [this]
+      simp only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Weight.coe_weight_mk, w]
+      ring
     by_cases hα : (α : H → k) = 0
     · refine le_iSup (fun n ↦ (W n).toSubmodule) n ?_
       simpa [hα, W, w] using hev_mem
-    have hn : genWeightSpace V (χ + (n.1 + 1) • α : H → k) ≠ ⊥ := by
+    have hn : genWeightSpace V (χ + (n.1 + m) • α : H → k) ≠ ⊥ := by
       rw [← LieSubmodule.nontrivial_iff_ne_bot]
       apply nontrivial_of_ne ⟨_, hev_mem⟩ 0
       rw [ne_eq, Subtype.ext_iff]
       exact hev
-    let n' : ι := ⟨n.1 + 1, ⟨hn, by simp [hα]⟩⟩
+    let n' : ι := ⟨n.1 + m, ⟨hn, by simp [hα]⟩⟩
     exact le_iSup (fun n ↦ (W n).toSubmodule) n' hev_mem
+  have He : Set.MapsTo (toEnd k L V e) U U := by
+    specialize aux' 1
+    simp only [Subtype.forall, one_smul] at aux'
+    exact aux' e e.2
   have Hf : Set.MapsTo (toEnd k L V f) U U := by
-    show U ≤ U.comap (toEnd k L V f)
-    simp only [Function.comp_apply, iSup_pos, iSup_le_iff, U]
-    intro n v hv
-    simp only [Submodule.mem_comap, toEnd_apply_apply]
-    by_cases hfv : ⁅(f:L), v⁆ = 0
-    · rw [hfv]
-      exact Submodule.zero_mem _
-    have hfv_mem : ⁅(f:L), v⁆ ∈ genWeightSpace V (χ + (n.1 - 1) • α : H → k) := by
-      have := LieAlgebra.mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace k L H V (-⇑α) (w n) (x := f) f.2 hv
-      simpa [w, add_comm (-⇑α), add_smul, add_assoc, sub_eq_add_neg] using this
-    by_cases hα : (α : H → k) = 0
-    · refine le_iSup (fun n ↦ (W n).toSubmodule) n ?_
-      simpa [hα, W, w] using hfv_mem
-    have hn : genWeightSpace V (χ + (n.1 - 1) • α : H → k) ≠ ⊥ := by
-      rw [← LieSubmodule.nontrivial_iff_ne_bot]
-      apply nontrivial_of_ne ⟨_, hfv_mem⟩ 0
-      rw [ne_eq, Subtype.ext_iff]
-      exact hfv
-    let n' : ι := ⟨n.1 - 1, ⟨hn, by simp [hα]⟩⟩
-    exact le_iSup (fun n ↦ (W n).toSubmodule) n' hfv_mem
-  have Hh : Set.MapsTo (toEnd k L V h) U U := LinearMap.mapsTo_biSup_of_mapsTo _ Hh'
+    specialize aux' (-1)
+    simp only [Int.reduceNeg, Subtype.forall, neg_smul, one_smul] at aux'
+    exact aux' f f.2
   suffices (toEnd k L V h).restrict Hh =
       ⁅(toEnd k L V e).restrict He, (toEnd k L V f).restrict Hf⁆ by
     simp only [LinearMap.trace_lie, this]
