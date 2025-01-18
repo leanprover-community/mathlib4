@@ -201,12 +201,11 @@ given by `CategoryTheory.yonedaEquiv`.
 @[simps]
 def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
   obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
-  map f := by
-    fapply CostructuredArrow.homMk
-    · exact f.unop.val.unop
-    · ext Z y
+  map f :=
+    CostructuredArrow.homMk f.unop.val.unop (by
+      ext Z y
       dsimp [yonedaEquiv]
-      simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
+      simp only [FunctorToTypes.map_comp_apply, ← f.unop.2])
 
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.

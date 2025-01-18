@@ -23,7 +23,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
   - `LinearOrderedSemiring ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
-  - `CanonicallyOrderedCommSemiring ℝ≥0`;
+  - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
   - `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
   - `Archimedean ℝ≥0`;
@@ -54,12 +54,14 @@ open Function
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  CanonicallyOrderedCommSemiring, Inhabited
+  OrderedCommMonoid, Nontrivial, Inhabited
 
 namespace NNReal
 
 scoped notation "ℝ≥0" => NNReal
 
+instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
@@ -69,8 +71,11 @@ instance : Max ℝ≥0 := SemilatticeSup.toMax
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
-  Nonneg.canonicallyLinearOrderedSemifield
+noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
+  Nonneg.linearOrderedSemifield
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -229,7 +234,7 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
-  toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
+  algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
 -- verify that the above produces instances we might care about
 example : Algebra ℝ≥0 ℝ := by infer_instance
@@ -314,10 +319,9 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
 theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Real.toNNReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    Real.toNNReal ofNat(n) = OfNat.ofNat n :=
   toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
@@ -330,8 +334,6 @@ noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
 example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
-
-noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
@@ -348,10 +350,6 @@ example : OrderedCommSemiring ℝ≥0 := by infer_instance
 noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
-
-noncomputable example : LinearOrderedCommGroupWithZero ℝ≥0 := by infer_instance
-
-example : CanonicallyOrderedCommSemiring ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
 
@@ -528,7 +526,7 @@ alias toNNReal_eq_nat_cast := toNNReal_eq_natCast
 
 @[simp]
 lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    r.toNNReal = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
+    r.toNNReal = ofNat(n) ↔ r = OfNat.ofNat n :=
   toNNReal_eq_natCast (NeZero.ne n)
 
 @[simp]
@@ -559,12 +557,12 @@ alias nat_cast_lt_toNNReal := natCast_lt_toNNReal
 
 @[simp]
 lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    r.toNNReal ≤ no_index (OfNat.ofNat n) ↔ r ≤ n :=
+    r.toNNReal ≤ ofNat(n) ↔ r ≤ n :=
   toNNReal_le_natCast
 
 @[simp]
 lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n) < r.toNNReal ↔ n < r :=
+    ofNat(n) < r.toNNReal ↔ n < r :=
   natCast_lt_toNNReal
 
 @[simp]
@@ -625,12 +623,12 @@ alias toNNReal_lt_nat_cast := toNNReal_lt_natCast
 
 @[simp]
 lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    r.toNNReal < no_index (OfNat.ofNat n) ↔ r < OfNat.ofNat n :=
+    r.toNNReal < ofNat(n) ↔ r < OfNat.ofNat n :=
   toNNReal_lt_natCast (NeZero.ne n)
 
 @[simp]
 lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
+    ofNat(n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
   natCast_le_toNNReal (NeZero.ne n)
 
 @[simp]
