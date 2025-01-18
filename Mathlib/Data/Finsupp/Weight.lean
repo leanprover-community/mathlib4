@@ -129,7 +129,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     rw [h]
     apply zero_le
 
-variable [OrderedAddCommMonoid M] (w : σ → M)
+variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
 
 instance : SMulPosMono ℕ M :=
   ⟨fun b hb m m' h ↦ by
@@ -153,7 +153,8 @@ end OrderedAddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 
-variable {M : Type*} [OrderedAddCommMonoid M] [CanonicallyOrderedAdd M] (w : σ → M)
+variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+  [CanonicallyOrderedAdd M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
