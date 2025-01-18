@@ -101,10 +101,12 @@ theorem find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
 
 theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
-  refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n ?_ ?_⟩
-  · simp [h1]
-  intro m _ hm
-  simp only [add_lt_add_iff_right, lt_find_iff] at hm
-  exact hm _ le_rfl
+  refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n ↦ ?_⟩
+  induction n with
+  | one => simp [h1]
+  | succ m _ =>
+    intro hm
+    simp only [add_lt_add_iff_right, lt_find_iff] at hm
+    exact hm _ le_rfl
 
 end PNat
