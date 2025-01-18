@@ -470,6 +470,14 @@ theorem leftInverse_l_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l 
     LeftInverse l u :=
   gi.l_u_eq
 
+theorem le_of_u_le_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u)
+    {a b : β} (h : u a ≤ u b) : a ≤ b := by
+  rw [← gi.gc.le_iff_le, gi.l_u_eq] at h
+  exact h
+
+@[simp] theorem u_le_u_iff_le [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) {a b : β} :
+    u a ≤ u b ↔ a ≤ b := ⟨(gi.le_of_u_le_u ·), (gi.gc.monotone_u ·)⟩
+
 theorem l_top [Preorder α] [PartialOrder β] [OrderTop α] [OrderTop β]
     (gi : GaloisInsertion l u) : l ⊤ = ⊤ :=
   top_unique <| (gi.le_l_u _).trans <| gi.gc.monotone_l le_top

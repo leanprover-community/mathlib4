@@ -33,7 +33,11 @@ class IsConcreteSInf (A B : Type*) [SetLike A B] [InfSet A] where
 
 namespace IsConcreteSInf
 
-variable {A B : Type*} [SetLike A B] [InfSet A] [IsConcreteSInf A B]
+variable {A B : Type*} [SetLike A B]
+
+section InfSet
+
+variable [InfSet A] [IsConcreteSInf A B]
 
 @[simp, norm_cast]
 theorem coe_sInf {s : Set A} : ((sInf s : A) : Set B) = ⋂ a ∈ s, a := IsConcreteSInf.coe_sInf'
@@ -47,6 +51,44 @@ theorem coe_iInf {ι : Sort*} {a : ι → A} : (↑(⨅ i, a i) : Set B) = ⋂ i
 theorem mem_iInf {ι : Sort*} {a : ι → A} {x : B} : (x ∈ ⨅ i, a i) ↔ ∀ i, x ∈ a i := by
   rw [← SetLike.mem_coe]; simp
 
+end InfSet
+
+section CompleteLattice
+
+variable [CompleteLattice A] [IsConcreteSInf A B]
+
+instance : IsConcreteLE A B where
+  coe_subset_coe' {a a'} := by
+    suffices (a : Set B) ⊆ a' ↔ (sInf {a, a'}) = (a : Set B) by simpa
+    rw [coe_sInf]; simp
+
+@[simp]
+theorem coe_top : ((⊤ : A) : Set B) = Set.univ := by
+  suffices sInf (∅ : Set A) = (Set.univ : Set B) by simpa
+  rw [coe_sInf]; simp
+
+@[simp]
+theorem mem_top (x : B) : x ∈ (⊤ : A) := by
+  rw [← SetLike.mem_coe]; simp
+
+@[simp]
+theorem coe_inf (a a' : A) : ((a ⊓ a' : A) : Set B) = (a : Set B) ∩ a' := by
+  suffices sInf {a, a'} = (a : Set B) ∩ a' by simpa
+  rw [coe_sInf]; simp
+
+@[simp]
+theorem mem_inf {a a' : A} {x : B} : x ∈ a ⊓ a' ↔ x ∈ a ∧ x ∈ a' := by
+  rw [← SetLike.mem_coe]; simp
+
+theorem coe_bot : ((⊥ : A) : Set B) = ⋂ a : A, a := by
+  suffices ((sInf (Set.univ) : A) : Set B) = ⋂ a : A, a by simpa
+  rw [coe_sInf]; simp
+
+theorem mem_bot {x : B} : x ∈ (⊥ : A) ↔ ∀ a : A, x ∈ a := by
+  rw [← SetLike.mem_coe, coe_bot]; simp
+
+end CompleteLattice
+
 end IsConcreteSInf
 
 class HasClosure (A B : Type*) where
@@ -55,17 +97,117 @@ class HasClosure (A B : Type*) where
 class IsConcreteClosure (A B : Type*) [SetLike A B] [Preorder A] [HasClosure A B] where
   gi : GaloisInsertion (α := Set B) (β := A) HasClosure.closure SetLike.coe
 
+namespace IsConcreteClosure
+
+variable {L α : Type*} [SetLike L α] [HasClosure L α]
+
+section Preorder
+
+variable [Preorder L] [IsConcreteClosure L α]
+
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
+theorem subset_closure {s : Set α} :
+    s ⊆ HasClosure.closure (A := L) s := IsConcreteClosure.gi.gc.le_u_l s
+
+@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) :
+    x ∈ HasClosure.closure (A := L) s := subset_closure hx
+
+theorem not_mem_of_not_mem_closure {s : Set α} {x : α} (hx : x ∉ HasClosure.closure (A := L) s) :
+    x ∉ s := (hx <| subset_closure ·)
+
+@[simp] theorem closure_le {s : Set α} {l : L} :
+    HasClosure.closure s ≤ l ↔ s ⊆ l := IsConcreteClosure.gi.gc.le_iff_le
+
+theorem coe_monotone :
+    Monotone (SetLike.coe : L → Set α) := IsConcreteClosure.gi.gc.monotone_u
+
+@[gcongr] theorem coe_mono ⦃l m : L⦄ (h : l ≤ m) : (l : Set α) ⊆ m := coe_monotone h
+
+theorem closure_monotone :
+    Monotone (HasClosure.closure : Set α → L) := IsConcreteClosure.gi.gc.monotone_l
+
+@[gcongr] theorem closure_mono ⦃s t : Set α⦄ (h : s ⊆ t) :
+    HasClosure.closure (A := L) s ≤ HasClosure.closure t := closure_monotone h
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder L] [IsConcreteClosure L α]
+
+instance : IsConcreteLE L α where
+  coe_subset_coe' := IsConcreteClosure.gi.u_le_u_iff_le
+
+theorem closure_eq_of_le {s : Set α} {l : L} (h₁ : s ⊆ l) (h₂ : l ≤ HasClosure.closure s) :
+    HasClosure.closure s = l := le_antisymm (closure_le.2 h₁) h₂
+
+@[simp] theorem closure_eq (l : L) :
+    HasClosure.closure (l : Set α) = l := IsConcreteClosure.gi.l_u_eq l
+
+@[simp] theorem closure_empty [OrderBot L] :
+    HasClosure.closure (∅ : Set α) = (⊥ : L) := IsConcreteClosure.gi.gc.l_bot
+
+@[simp] theorem closure_univ [OrderTop L] :
+    HasClosure.closure (Set.univ : Set α) = (⊤ : L) := IsConcreteClosure.gi.l_top
+
+theorem closure_singleton_le_iff_mem (x : α) (l : L) :
+    HasClosure.closure {x} ≤ l ↔ x ∈ l := by
+  rw [closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
+
+theorem isGLB_closure {s : Set α} : IsGLB {l : L | s ⊆ l} (HasClosure.closure s) :=
+  IsConcreteClosure.gi.gc.isGLB_l
+
+end PartialOrder
+
+theorem closure_union [SemilatticeSup L] [IsConcreteClosure L α] (s t : Set α) :
+    HasClosure.closure (A := L) (s ∪ t) = HasClosure.closure s ⊔ HasClosure.closure t :=
+  IsConcreteClosure.gi.gc.l_sup
+
+theorem closure_eq_sInf [CompleteSemilatticeInf L] [IsConcreteClosure L α] {s : Set α} :
+    HasClosure.closure s = sInf {a : L | s ⊆ a} := by
+  suffices sInf {a : L | s ⊆ a} = HasClosure.closure s from Eq.symm this
+  rw [← isGLB_iff_sInf_eq]
+  exact isGLB_closure
+
+theorem mem_iSup [CompleteSemilatticeSup L] [IsConcreteClosure L α] {ι : Sort*} (l : ι → L)
+    {x : α} : (x ∈ ⨆ i, l i) ↔ ∀ m, (∀ i, l i ≤ m) → x ∈ m := by
+  rw [← closure_singleton_le_iff_mem, le_iSup_iff]
+  simp only [closure_singleton_le_iff_mem]
+
+section CompleteLattice
+
+variable [CompleteLattice L] [IsConcreteClosure L α]
+
+instance : IsConcreteSInf L α where
+  coe_sInf' {S} := by
+    suffices ∀ s, s ⊆ SetLike.coe (sInf S) ↔ s ⊆ sInf (SetLike.coe '' S) from
+      Set.ext (fun x => by simpa using this {x})
+    simp [← closure_le] /- no loop because simp acts on subterms first -/
+
+theorem coe_closure {s : Set α} :
+    (HasClosure.closure (A := L) s : Set α) = ⋂ l ∈ {m : L | s ⊆ m}, l := by
+  rw [closure_eq_sInf]; exact IsConcreteSInf.coe_sInf
+
+theorem mem_closure {s : Set α} {x : α} :
+    x ∈ HasClosure.closure (A := L) s ↔ ∀ l : L, s ⊆ l → x ∈ l := by
+  rw [closure_eq_sInf]; exact IsConcreteSInf.mem_sInf
+
+theorem closure_iUnion {ι} (s : ι → Set α) :
+    HasClosure.closure (A := L) (⋃ i, s i) = ⨆ i, HasClosure.closure (s i) :=
+  IsConcreteClosure.gi.gc.l_iSup
+
+theorem iSup_eq_closure {ι : Sort*} (l : ι → L) :
+    ⨆ i, l i = HasClosure.closure (⋃ i, (l i : Set α)) := by
+  simp_rw [closure_iUnion, closure_eq]
+
+end CompleteLattice
+
+end IsConcreteClosure
+
 namespace SetLike
 
 variable (A B : Type*) [SetLike A B]
-
-@[reducible] def toHasClosure [InfSet A] [LE A] : HasClosure A B where
-  closure s := sInf {a : A | s ≤ a}
-
-instance [CompleteLattice A] [IsConcreteSInf A B] : IsConcreteLE A B where
-  coe_subset_coe' {a a'} := by
-    suffices (a : Set B) ⊆ a' ↔ (sInf {a, a'}) = (a : Set B) by simpa
-    rw [IsConcreteSInf.coe_sInf]; simp
 
 /--
 Construct a complete lattice on `A` on from an injection `A → Set B` that respects the ordering
@@ -87,101 +229,19 @@ that reflects arbitrary intersections.
   @toCompleteLattice _ _ _ (toPartialOrder _ _) _ _
     ⟨fun {_} => by simpa using Classical.choose_spec exists_coe_eq_iInter⟩
 
-variable {L α : Type*} [SetLike L α] [CompleteLattice L] [IsConcreteSInf L α]
+@[reducible] def toHasClosure [InfSet A] [LE A] : HasClosure A B where
+  closure s := sInf {a : A | s ≤ a}
 
 attribute [local instance] SetLike.toHasClosure
 
-@[simp]
-theorem coe_top : ((⊤ : L) : Set α) = Set.univ := by
-  suffices sInf (∅ : Set L) = (Set.univ : Set α) by simpa only [sInf_empty]
-  rw [IsConcreteSInf.coe_sInf]; simp
-
-@[simp]
-theorem mem_top (x : α) : x ∈ (⊤ : L) := by
-  rw [← SetLike.mem_coe]; simp
-
-@[simp]
-theorem coe_inf (l m : L) : ((l ⊓ m : L) : Set α) = (l : Set α) ∩ m := by
-  suffices sInf {l, m} = (l : Set α) ∩ m by simpa
-  rw [IsConcreteSInf.coe_sInf]; simp
-
-@[simp]
-theorem mem_inf {l m : L} {x : α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
-  rw [← SetLike.mem_coe]; simp
-
-theorem coe_bot : ((⊥ : L) : Set α) = ⋂ l : L, l := by
-  suffices ((sInf (Set.univ) : L) : Set α) = ⋂ l : L, l by simpa
-  rw [IsConcreteSInf.coe_sInf]; simp
-
-theorem mem_bot {x : α} : x ∈ (⊥ : L) ↔ ∀ l : L, x ∈ l := by
-  rw [← SetLike.mem_coe, coe_bot]; simp
-
-theorem coe_closure {s : Set α} :
-  (HasClosure.closure (A := L) s : Set α) = ⋂ l ∈ {m : L | s ⊆ m}, l := IsConcreteSInf.coe_sInf
-
-theorem mem_closure {s : Set α} {x : α} :
-  x ∈ HasClosure.closure (A := L) s ↔ ∀ l : L, s ⊆ l → x ∈ l := IsConcreteSInf.mem_sInf
-
-variable (L) in
 open IsConcreteLE IsConcreteSInf in
-instance : IsConcreteClosure L α where
+instance [CompleteLattice A] [IsConcreteSInf A B] : IsConcreteClosure A B where
   gi := GaloisConnection.toGaloisInsertion
     (fun _ _ =>
-      ⟨fun h => Set.Subset.trans (fun _ hx => mem_closure.2 fun _ hs => hs hx) (mem_of_le_of_mem h),
+      ⟨fun h => Set.Subset.trans
+        (fun _ hx => mem_sInf.2 (fun _ hs => (hs : _ ∈ {a : A | _ ≤ (a : Set B)}) hx))
+        (mem_of_le_of_mem h),
       (sInf_le ·)⟩)
     fun _ => le_sInf (fun _ => coe_subset_coe.1)
-
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem subset_closure {s : Set α} :
-    s ⊆ HasClosure.closure (A := L) s := IsConcreteClosure.gi.gc.le_u_l s
-
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
-theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) :
-    x ∈ HasClosure.closure (A := L) s := subset_closure hx
-
-theorem not_mem_of_not_mem_closure {s : Set α} {x : α} (hx : x ∉ HasClosure.closure (A := L) s) :
-    x ∉ s := (hx <| subset_closure ·)
-
-@[simp] theorem closure_le {s : Set α} {l : L} :
-    HasClosure.closure s ≤ l ↔ s ⊆ l := IsConcreteClosure.gi.gc.le_iff_le
-
-theorem closure_monotone :
-    Monotone (HasClosure.closure : Set α → L) := IsConcreteClosure.gi.gc.monotone_l
-
-@[gcongr] theorem closure_mono ⦃s t : Set α⦄ (h : s ⊆ t) :
-    HasClosure.closure (A := L) s ≤ HasClosure.closure t := closure_monotone h
-
-theorem closure_eq_of_le {s : Set α} {l : L} (h₁ : s ⊆ l) (h₂ : l ≤ HasClosure.closure s) :
-    HasClosure.closure s = l := le_antisymm (closure_le.2 h₁) h₂
-
-@[simp] theorem closure_eq (l : L) :
-    HasClosure.closure (l : Set α) = l := IsConcreteClosure.gi.l_u_eq l
-
-@[simp] theorem closure_empty :
-    HasClosure.closure (∅ : Set α) = (⊥ : L) := IsConcreteClosure.gi.gc.l_bot
-
-@[simp] theorem closure_univ :
-    HasClosure.closure (Set.univ : Set α) = (⊤ : L) := IsConcreteClosure.gi.l_top
-
-theorem closure_union (s t : Set α) :
-    HasClosure.closure (A := L) (s ∪ t) = HasClosure.closure s ⊔ HasClosure.closure t :=
-  IsConcreteClosure.gi.gc.l_sup
-
-theorem closure_iUnion {ι} (s : ι → Set α) :
-    HasClosure.closure (A := L) (⋃ i, s i) = ⨆ i, HasClosure.closure (s i) :=
-  IsConcreteClosure.gi.gc.l_iSup
-
-theorem closure_singleton_le_iff_mem (x : α) (l : L) :
-    HasClosure.closure {x} ≤ l ↔ x ∈ l := by
-  rw [closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
-
-theorem mem_iSup {ι : Sort*} (l : ι → L) {x : α} :
-    (x ∈ ⨆ i, l i) ↔ ∀ m, (∀ i, l i ≤ m) → x ∈ m := by
-  rw [← closure_singleton_le_iff_mem, le_iSup_iff]
-  simp only [closure_singleton_le_iff_mem]
-
-theorem iSup_eq_closure {ι : Sort*} (l : ι → L) :
-    ⨆ i, l i = HasClosure.closure (⋃ i, (l i : Set α)) := by
-  simp_rw [closure_iUnion, closure_eq]
 
 end SetLike
