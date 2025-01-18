@@ -89,7 +89,9 @@ noncomputable def isLimitKernelFork :
     exact IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (shape _ _ _ hjk))
       (Fork.ext ((truncGE'XIsoOpcycles K e hj' hj) ≪≫ (asIso (K.homologyι j')).symm))
 
-/-- When `j` is as the boundary of the embedding `e` of complex shapes, -/
+/-- When `j` is at the boundary of the embedding `e` of complex shapes,
+this is a homology data for `K.truncGE' e` in degree `j`: the homology is
+given by `K.homology j'` where `e.f j = j'`. -/
 noncomputable def homologyData :
     ((K.truncGE' e).sc' i j k).HomologyData :=
   ShortComplex.HomologyData.ofIsLimitKernelFork _
