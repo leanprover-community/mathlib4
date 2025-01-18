@@ -130,6 +130,8 @@
   title  : The Four Color Problem
 33:
   title  : Fermat’s Last Theorem
+  statement: FermatLastTheorem
+  note: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
