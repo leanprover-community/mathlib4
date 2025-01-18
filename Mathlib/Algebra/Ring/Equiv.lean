@@ -38,8 +38,7 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
 -- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype
+assert_not_exists Field Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -441,6 +440,14 @@ theorem coe_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bij
 theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f)
     (x : R) : ofBijective f hf x = f x :=
   rfl
+
+/-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
+to the only member of this family. -/
+def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAssocSemiring (R i)] :
+    (∀ i, R i) ≃+* R default where
+  __ := Equiv.piUnique R
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
