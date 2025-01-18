@@ -217,7 +217,7 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-/- An analytic function `f` has finite order at a point `z₀` iff locally looks
+/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
   like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
   `z₀`. -/
 lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
