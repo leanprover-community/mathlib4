@@ -94,6 +94,9 @@ instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
 @[to_additive]
+instance : PartialOrder (Subsemigroup M) := SetLike.toPartialOrder (Subsemigroup M) M
+
+@[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
@@ -160,49 +163,12 @@ instance : Bot (Subsemigroup M) :=
 instance : Inhabited (Subsemigroup M) :=
   ⟨⊥⟩
 
-@[to_additive]
-theorem not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
-  Set.not_mem_empty x
-
-@[to_additive (attr := simp)]
-theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
-  Set.mem_univ x
-
-@[to_additive (attr := simp)]
-theorem coe_top : ((⊤ : Subsemigroup M) : Set M) = Set.univ :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
-  rfl
-
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
 instance : Min (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
-
-@[to_additive (attr := simp)]
-theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem mem_inf {p p' : Subsemigroup M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
-  Iff.rfl
-
-@[to_additive]
-theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingleton M := by
-  constructor; intro x y
-  have : ∀ a : M, a ∈ (⊥ : Subsemigroup M) := by simp [Subsingleton.elim (⊥ : Subsemigroup M) ⊤]
-  exact absurd (this x) not_mem_bot
-
-@[to_additive]
-instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
-  ⟨⟨⊥, ⊤, fun h => by
-      obtain ⟨x⟩ := id hn
-      refine absurd (?_ : x ∈ ⊥) not_mem_bot
-      simp [h]⟩⟩
 
 end Subsemigroup
 
