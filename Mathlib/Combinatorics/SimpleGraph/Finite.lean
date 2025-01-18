@@ -452,19 +452,19 @@ instance : DecidablePred (· ∈ G.support) := by
 theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     #(G.induce s).edgeFinset = #G.edgeFinset := by
   apply card_bij (fun e _ ↦ e.map (↑))
-  · apply Sym2.ind
-    intro _ _
+  · intro e
+    induction e
     simp
-  · apply Sym2.ind
-    intro _ _ _
-    apply Sym2.ind
-    simp [Subtype.ext_iff]
-  · apply Sym2.ind
-    intro v₁ v₂ hadj
+  · intro e₁ _ e₂ _
+    induction e₁
+    induction e₂
+    simp [Subtype.ext_iff_val]
+  · intro e hadj
+    induction' e with v w
     rw [mem_edgeFinset, mem_edgeSet] at hadj
-    have hv₁ : v₁ ∈ G.support := G.mem_support.mpr ⟨v₂, hadj⟩
-    have hv₂ : v₂ ∈ G.support := G.mem_support.mpr ⟨v₁, hadj.symm⟩
-    use s(⟨v₁, h hv₁⟩, ⟨v₂, h hv₂⟩)
+    have hv : v ∈ G.support := G.mem_support.mpr ⟨w, hadj⟩
+    have hw : w ∈ G.support := G.mem_support.mpr ⟨v, hadj.symm⟩
+    use s(⟨v, h hv⟩, ⟨w, h hw⟩)
     simp [hadj]
 
 theorem card_edgeFinset_induce_support :
