@@ -29,7 +29,7 @@ CategoryTheory.FullSubcategory fun a => a.len ≤ n + (4 - (2 + 1)) -/
 section no_subscript
 variable (b : ℕ) (hb : m ≤ b)
 
-/- The delaborator should not fire because `b` cannot be subscripted. -/
+/- The delaborator should fail because `b` cannot be subscripted. -/
 /-- info: { obj := SimplexCategory.mk m, property := hb } :
 CategoryTheory.FullSubcategory fun a => a.len ≤ b -/
 #guard_msgs in
@@ -37,8 +37,8 @@ CategoryTheory.FullSubcategory fun a => a.len ≤ b -/
 
 variable {x} (hx : x = [m]ₙ) (n : True)
 
-/- The delaborator should not fire because `n` is now shadowed and `✝` cannot
-be subscripted. -/
+/- The delaborator should fail because `n` is now shadowed and `✝` cannot be
+subscripted. -/
 /-- info: hx : x = { obj := SimplexCategory.mk m, property := h } -/
 #guard_msgs in #check hx
 
@@ -50,7 +50,7 @@ set_option pp.mvars false
 /-- info: [?_]ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
 #guard_msgs in #check [?_, ?_]ₙ
 
-/- The delaborator should not fire because the truncation level is a metavariable. -/
+/- The delaborator should fail because the truncation level is a metavariable. -/
 /-- info: { obj := SimplexCategory.mk ?_, property := ?_ } :
 CategoryTheory.FullSubcategory fun a => a.len ≤ ?_ -/
 #guard_msgs in #check @CategoryTheory.FullSubcategory.mk
