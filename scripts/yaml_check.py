@@ -157,7 +157,7 @@ for index, entry in thousand.items():
     elif _thm.statement and (_thm.decl or _thm.decls):
         print(
             f"error: entry for theorem {index} has both a statement and a decl(s) field: "
-            "the latter is superfluous; please remove it",
+            "the former is superfluous; please remove it",
             file=sys.stderr,
         )
         errors += 1
