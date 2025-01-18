@@ -95,7 +95,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
 /-- Specialize `TopCat.Presheaf.germ_res_apply` to sheaves of rings.
 
 This is unfortunately needed because the results on presheaves are stated using the
-`ConcreteCategory.instFunLike` instance, which is not reducibly equal to the actual coercion of
+`HasForget.instFunLike` instance, which is not reducibly equal to the actual coercion of
 morphisms in `CommRingCat` to functions.
 -/
 lemma _root_.CommRingCat.germ_res_apply
@@ -107,7 +107,7 @@ lemma _root_.CommRingCat.germ_res_apply
 /-- Specialize `TopCat.Presheaf.germ_res_apply'` to sheaves of rings.
 
 This is unfortunately needed because the results on presheaves are stated using the
-`ConcreteCategory.instFunLike` instance, which is not reducibly equal to the actual coercion of
+`HasForget.instFunLike` instance, which is not reducibly equal to the actual coercion of
 morphisms in `CommRingCat` to functions.
 -/
 lemma _root_.CommRingCat.germ_res_apply'
@@ -149,13 +149,13 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
       congr_arg (X.presheaf.germ (V y) z hzVy) (hg y), RingHom.map_one, RingHom.map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
-    -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
+    -- We need to rephrase the result from `HasForget` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   apply isUnit_of_mul_eq_one f gl
   apply X.sheaf.eq_of_locally_eq' V U iVU hcover
   intro i
-  -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
+  -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
   show ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i
