@@ -26,12 +26,12 @@ namespace SSet.StrictSegal
 open SSet.Truncated
 
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
-theorem quasicategory {X : SSet.{u}} (segal : StrictSegal X) : Quasicategory X := by
+theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  use segal.spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
+  use sx.spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
   intro j hj
-  apply segal.spineInjective
+  apply sx.spineInjective
   ext k
   change (X.spine _ _).arrow _ = X.map _ _
   dsimp only [inclusion, Functor.op_obj, fullSubcategoryInclusion.obj]
@@ -85,9 +85,9 @@ theorem quasicategory {X : SSet.{u}} (segal : StrictSegal X) : Quasicategory X :
       | zero => contradiction
       | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
     rw [spine_δ_arrow_eq _ _ heq, hi]
-    change X.map _ ((segal (n + 2)).spineToSimplex 2 _
+    change X.map _ ((sx (n + 2)).spineToSimplex 2 _
       (((truncation (n + 3)).obj X).spine 2 (by leq) _)) = _
-    rw [(segal (n + 2)).spineToSimplex_spine_apply 2]
+    rw [(sx (n + 2)).spineToSimplex_spine_apply 2]
     dsimp only [inclusion, Functor.op_obj, fullSubcategoryInclusion.obj,
       Functor.op_map, Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
     rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
