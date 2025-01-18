@@ -116,6 +116,7 @@ example [Module.Finite k L] [IsKilling k L] : IsSemisimple k L := by
 example [Module.Finite k L] [IsKilling k L] : HasTrivialRadical k L := by
   infer_instance
 
+variable (k L V) in
 open LieAlgebra in
 lemma exists_traceForm_ne_zero_of_perfect [FiniteDimensional k L] [FiniteDimensional k V]
     [LieModule.IsTriangularizable k L V]
@@ -169,6 +170,44 @@ lemma exists_traceForm_ne_zero_of_perfect [FiniteDimensional k L] [FiniteDimensi
   rw [Module.finrank_zero_iff] at key
   rw [← LieSubmodule.nontrivial_iff_ne_bot] at hχ
   apply (not_nontrivial _ hχ).elim
+
+variable (k L V) in
+open LieAlgebra LieModule in
+theorem isSolvable_tfae [FiniteDimensional k L] [FiniteDimensional k V]
+    [LieModule.IsTriangularizable k L V] (hLsub : Function.Injective (π L V)) :
+    List.TFAE
+    [IsSolvable L,
+      ∀ X : L, X ∈ derivedSeries k L 1 → traceForm k L V X X = 0,
+      ∀ X Y : L, Y ∈ derivedSeries k L 1 → traceForm k L V X Y = 0] := by
+  tfae_have 3 → 2 := by aesop
+  tfae_have 2 → 1 := by
+    intro h
+    rw [isSolvable_iff k]
+    by_contra! hL
+    obtain ⟨n, hn, _⟩ : ∃ n, derivedSeries k L (n+1) = derivedSeries k L n ∧
+        Nontrivial (derivedSeries k L n) := sorry
+    set H := derivedSeries k L n
+    have := exists_traceForm_ne_zero_of_perfect k H V ?pf ?sub
+    case sub => exact hLsub.comp Subtype.coe_injective
+    case pf =>
+      ext x
+      suffices (derivedSeries k L (n+1)).comap H.incl ≤ derivedSeries k H 1 by
+        simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, LieSubmodule.mem_top,
+          iff_true] at this ⊢
+        apply this
+        simp only [LieIdeal.mem_comap, LieIdeal.incl_apply]
+        simp only [derivedSeriesOfIdeal_succ] at hn
+        rw [hn]
+        exact x.2
+      intro x hx
+      sorry
+    obtain ⟨x, hx⟩ := this
+    refine hx (h x ?_)
+    apply derivedSeriesOfIdeal_antitone _ (by omega : 1 ≤ n+1)
+    rw [derivedSeries] at hn
+    rw [hn]
+    exact x.2
+  sorry
 
 -- move this
 instance [Subsingleton L] : IsSolvable k L := by
