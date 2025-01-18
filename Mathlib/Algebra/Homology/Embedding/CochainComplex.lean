@@ -26,9 +26,7 @@ open HomologicalComplex
 
 section HasZeroMorphisms
 
-variable [HasZeroMorphisms C]
-
-variable (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
+variable [HasZeroMorphisms C] (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
 
 section
 
