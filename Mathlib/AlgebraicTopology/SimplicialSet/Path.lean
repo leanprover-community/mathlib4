@@ -205,7 +205,7 @@ lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
     (i : Fin (m + 1)) :
     (spine X m (X.map φ.op Δ)).vertex i =
       (spine X n Δ).vertex (φ.toOrderHom i) :=
-  truncation ((m ⊔ n) + 1) |>.obj X
+  truncation (max m n + 1) |>.obj X
     |>.spine_map_vertex n (by leq) Δ m (by leq) φ i
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
