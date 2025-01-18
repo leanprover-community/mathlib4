@@ -45,6 +45,8 @@ open CategoryTheory
 
 variable (R : Type u₀) [CommRing R]
 
+open scoped ModuleCat.Algebra
+
 @[ext]
 structure MoritaEquivalence
     (A : Type u₁) [Ring A] [Algebra R A]
@@ -102,7 +104,7 @@ noncomputable def ofAlgEquiv {A : Type u₁} {B : Type u₂}
       [Ring A] [Algebra R A] [Ring B] [Algebra R B] (f : A ≃ₐ[R] B) :
     MoritaEquivalence R A B where
   eqv := ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.symm.toRingEquiv
-  linear := ModuleCat.restrictScalarsEquivalenceOfRingEquiv_linear f.symm
+  linear := ModuleCat.Algebra.restrictScalarsEquivalenceOfRingEquiv_linear f.symm
 
 end MoritaEquivalence
 

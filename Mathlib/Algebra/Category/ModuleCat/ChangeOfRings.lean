@@ -268,7 +268,9 @@ instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e :
 instance restrictScalarsEquivalenceOfRingEquiv_additive {R S} [Ring R] [Ring S] (e : R ≃+* S) :
     (restrictScalarsEquivalenceOfRingEquiv e).functor.Additive where
 
-instance restrictScalarsEquivalenceOfRingEquiv_linear
+namespace Algebra
+
+scoped instance restrictScalarsEquivalenceOfRingEquiv_linear
       {R₀ R S} [CommRing R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
       (e : R ≃ₐ[R₀] S) :
     (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ where
@@ -283,6 +285,7 @@ instance restrictScalarsEquivalenceOfRingEquiv_linear
     rw [AlgEquiv.commutes]
     rfl
 
+end Algebra
 
 open TensorProduct
 
