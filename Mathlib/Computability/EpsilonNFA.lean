@@ -64,7 +64,7 @@ theorem εClosure_empty : M.εClosure ∅ = ∅ :=
 theorem εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
 
-theorem mem_εClosure_choice_iff (s : σ) (S : Set σ) :
+theorem mem_εClosure_choice {s : σ} {S : Set σ} :
     s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} := by
   constructor
   · intro h
@@ -116,17 +116,17 @@ theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
   · rw [evalFrom_nil, εClosure_empty]
   · rw [evalFrom_append_singleton, ih, stepSet_empty]
 
-theorem mem_evalFrom_choice_iff (s : σ) (S : Set σ) (x : List α) :
+theorem mem_evalFrom_choice {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
   induction' x using List.reverseRecOn with _ _ ih generalizing s
-  · exact mem_εClosure_choice_iff _ _ _
+  · apply mem_εClosure_choice
   · simp only [evalFrom_append_singleton, mem_stepSet_iff]
     constructor <;> intro h
     · obtain ⟨_, h, _⟩ := h
       rw [ih] at h
       tauto
     · obtain ⟨_, ht, _, h, _⟩ := h
-      have := (ih _).mpr ⟨_, ht, h⟩
+      have := ih.mpr ⟨_, ht, h⟩
       tauto
 
 /-- `M.eval x` computes all possible paths through `M` with input `x` starting at an element of
@@ -157,21 +157,23 @@ inductive Path : σ → σ → List (Option α) → Prop
   | cons (t s u : σ) (a : Option α) (x : List (Option α)) :
       t ∈ M.step s a → Path t u x → Path s u (a :: x)
 
-theorem Path_nil_eq (s t : σ) : M.Path s t [] → s = t := by
+theorem Path.eq_of_nil (s t : σ) : M.Path s t [] → s = t := by
   intro h
   cases h
   rfl
 
-theorem Path_singleton_iff (s t : σ) (a : Option α) : M.Path s t [a] ↔ t ∈ M.step s a:= by
+@[simp]
+theorem path_singleton {s t : σ} {a : Option α} : M.Path s t [a] ↔ t ∈ M.step s a := by
   constructor
   · intro h
     cases' h with _ _ _ _ _ _ _ h
-    apply Path_nil_eq at h
+    apply Path.eq_of_nil at h
     subst t
     assumption
   · tauto
 
-theorem Path_append_iff (s u : σ) (x y : List (Option α)) :
+@[simp]
+theorem path_append {s u : σ} {x y : List (Option α)} :
     M.Path s u (x ++ y) ↔ ∃ t, M.Path s t x ∧ M.Path t u y := by
   constructor
   · induction' x with _ _ ih generalizing s
@@ -179,12 +181,12 @@ theorem Path_append_iff (s u : σ) (x y : List (Option α)) :
       tauto
     · intro h
       cases' h with _ _ _ _ _ _ _ h
-      obtain ⟨_, _, _⟩ := ih _ h
+      obtain ⟨_, _, _⟩ := ih h
       tauto
   · intro ⟨_, hx, _⟩
     induction' x generalizing s <;> cases hx <;> tauto
 
-theorem εClosure_Path_iff (s₁ s₂ : σ) :
+theorem εClosure_path {s₁ s₂ : σ} :
     s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.Path s₁ s₂ (List.replicate n none) := by
   constructor
   · intro h
@@ -194,21 +196,21 @@ theorem εClosure_Path_iff (s₁ s₂ : σ) :
       apply Path.nil
     · obtain ⟨n, _⟩ := ih
       use n + 1
-      rw [List.replicate_add, Path_append_iff]
+      rw [List.replicate_add, path_append]
       tauto
   · intro ⟨n, h⟩
     induction' n generalizing s₂
     · rw [List.replicate_zero] at h
-      apply Path_nil_eq at h
+      apply Path.eq_of_nil at h
       solve_by_elim
-    · simp_rw [List.replicate_add, Path_append_iff, List.replicate_one, Path_singleton_iff] at h
-      obtain ⟨_, _, h⟩ := h
+    · simp_rw [List.replicate_add, path_append, List.replicate_one, path_singleton] at h
+      obtain ⟨_, _, _⟩ := h
       solve_by_elim [εClosure.step]
 
-theorem evalFrom_Path_iff (s₁ s₂ : σ) (x : List α) :
+theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
     s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ M.Path s₁ s₂ x' := by
   induction' x using List.reverseRecOn with _ a ih generalizing s₂
-  · rw [evalFrom_nil, εClosure_Path_iff]
+  · rw [evalFrom_nil, εClosure_path]
     constructor
     · intro ⟨n, _⟩
       use List.replicate n none
@@ -221,39 +223,39 @@ theorem evalFrom_Path_iff (s₁ s₂ : σ) (x : List α) :
   · rw [evalFrom_append_singleton, mem_stepSet_iff]
     constructor
     · intro ⟨_, ht, h⟩
-      obtain ⟨x', _, _⟩ := (ih _).mp ht
-      rw [mem_εClosure_choice_iff] at h
+      obtain ⟨x', _, _⟩ := ih.mp ht
+      rw [mem_εClosure_choice] at h
       obtain ⟨_, _, h⟩ := h
-      rw [εClosure_Path_iff] at h
+      rw [εClosure_path] at h
       obtain ⟨n, _⟩ := h
       use x' ++ some a :: List.replicate n none
       rw [List.reduceOption_append, List.reduceOption_cons_of_some,
-        List.reduceOption_replicate_none, Path_append_iff]
+        List.reduceOption_replicate_none, path_append]
       tauto
     · intro ⟨_, hx, h⟩
       rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff] at hx
       obtain ⟨_, _, ⟨⟩, _, hx₂⟩ := hx
       rw [List.reduceOption_eq_nil_iff] at hx₂
       obtain ⟨_, ⟨⟩⟩ := hx₂
-      rw [Path_append_iff] at h
+      rw [path_append] at h
       obtain ⟨t, _, _ | _⟩ := h
       use t
-      rw [mem_εClosure_choice_iff, ih]
-      simp_rw [εClosure_Path_iff]
+      rw [mem_εClosure_choice, ih]
+      simp_rw [εClosure_path]
       tauto
 
-theorem accepts_Path_iff (x : List α) :
+theorem accepts_path {x : List α} :
     x ∈ M.accepts ↔
       ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.Path s₁ s₂ x' := by
   constructor
   · intro ⟨_, _, h⟩
-    rw [eval, mem_evalFrom_choice_iff] at h
+    rw [eval, mem_evalFrom_choice] at h
     obtain ⟨_, _, h⟩ := h
-    rw [evalFrom_Path_iff] at h
+    rw [evalFrom_path] at h
     tauto
   · intro ⟨_, _, _, hs₁, _, h⟩
-    have := (M.evalFrom_Path_iff _ _ _).mpr ⟨_, h⟩
-    have := (M.mem_evalFrom_choice_iff _ _ _).mpr ⟨_, hs₁, this⟩
+    have := M.evalFrom_path.mpr ⟨_, h⟩
+    have := M.mem_evalFrom_choice.mpr ⟨_, hs₁, this⟩
     tauto
 
 /-! ### Conversions between `εNFA` and `NFA` -/
