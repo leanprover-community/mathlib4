@@ -58,10 +58,6 @@ This file expands on the development in the core library.
 * `Fin.divNat i` : divides `i : Fin (m * n)` by `n`;
 * `Fin.modNat i` : takes the mod of `i : Fin (m * n)` by `n`;
 
-### Misc definitions
-
-* `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
-  by `i ↦ n-(i+1)`
 -/
 
 
