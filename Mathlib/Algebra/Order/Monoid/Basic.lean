@@ -20,6 +20,39 @@ universe u
 
 variable {α : Type u} {β : Type*}
 
+section
+variable [CommMonoid α] [PartialOrder α]
+
+/-- Pullback an `IsOrderedMonoid` under an injective map. -/
+@[to_additive "Pullback an `IsOrderedAddMonoid` under an injective map."]
+lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [One β] [Mul β]
+    [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
+    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    let _ : CommMonoid β := hf.commMonoid f one mul npow
+    let _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedMonoid β :=
+  let _ : CommMonoid β := hf.commMonoid f one mul npow
+  let _ : PartialOrder β := PartialOrder.lift f hf
+  { mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
+      rw [mul, mul]; apply mul_le_mul_left'; exact ab }
+
+/-- Pullback an `IsOrderedCancelMonoid` under an injective map. -/
+@[to_additive Function.Injective.isOrderedCancelAddMonoid
+    "Pullback an `IsOrderedCancelAddMonoid` under an injective map."]
+lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [One β] [Mul β]
+    [Pow β ℕ] (f : β → α) (hf : Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    let _ : CommMonoid β := hf.commMonoid f one mul npow
+    let _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedCancelMonoid β :=
+  let _ : CommMonoid β := hf.commMonoid f one mul npow
+  let _ : PartialOrder β := PartialOrder.lift f hf
+  { __ := hf.isOrderedMonoid f one mul npow
+    le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
+      (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul]) }
+
+end
+
 /-- Pullback an `OrderedCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]

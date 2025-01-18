@@ -32,7 +32,8 @@ noncomputable section
 
 section definition
 
-variable {R R' S K : Type*} [Semiring R] [Ring R'] [OrderedSemiring S] [Field K]
+variable {R R' S K : Type*} [Semiring R] [Ring R'] [Semiring S] [PartialOrder S] [IsOrderedRing S]
+  [Field K]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances

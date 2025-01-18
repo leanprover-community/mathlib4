@@ -34,7 +34,7 @@ This is the stronger version of `Subgroup.mem_closure_singleton`. -/
 integer multiples of the element, such that each multiple is a unique element.
 This is the stronger version of `AddSubgroup.mem_closure_singleton`."]
 lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
-    [LinearOrderedCommGroup G] {a b : G} (ha : a ≠ 1) :
+    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
   rw [mem_closure_singleton]
   constructor
@@ -52,7 +52,8 @@ is isomorphic (and order-isomorphic) to the closure of an element in the other g
 @[to_additive "In two linearly ordered additive groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group."]
 noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
-    [LinearOrderedCommGroup G] [LinearOrderedCommGroup G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
+    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    [CommGroup G'] [LinearOrder G'] [IsOrderedMonoid G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
     closure ({x} : Set G) ≃*o closure ({y} : Set G') :=
   if hx : x = 1 then by
     refine ⟨⟨⟨fun _ ↦ ⟨1, by simp [hxy.mp hx]⟩, fun _ ↦ ⟨1, by simp [hx]⟩, ?_, ?_⟩, ?_⟩, ?_⟩
@@ -109,7 +110,7 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
         B.choose_spec]
 
-variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
+variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
 @[to_additive]
 lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
@@ -149,7 +150,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
 noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {G : Type*}
-    [LinearOrderedAddCommGroup G] [Archimedean G] {x : G}
+    [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] {x : G}
     (h : IsLeast {y : G | 0 < y} x) : G ≃+o ℤ := by
   have : IsLeast {y : G | y ∈ (⊤ : AddSubgroup G) ∧ 0 < y} x := by simpa using h
   replace this := AddSubgroup.cyclic_of_min this
@@ -178,7 +179,7 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
-    [LinearOrderedAddCommGroup G] [Archimedean G] :
+    [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ∨ DenselyOrdered G := by
   by_cases H : ∃ x, IsLeast {y : G | 0 < y} x
   · obtain ⟨x, hx⟩ := H
@@ -197,7 +198,7 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered, exclusively. -/
 lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
-    [LinearOrderedAddCommGroup G] [Archimedean G] :
+    [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ↔ ¬ DenselyOrdered G := by
   suffices ∀ (_ : G ≃+o ℤ), ¬ DenselyOrdered G by
     rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩|h
@@ -304,7 +305,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
 section WellFounded
 
 lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
-    {G : Type*} [LinearOrderedAddCommGroup G] [Nontrivial G] {g : G} :
+    {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) := by
   suffices Set.WellFoundedOn {x : G | 0 ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) by
     rw [← this]
@@ -340,7 +341,7 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     exact BddBelow.wellFoundedOn_lt ⟨0, by simp [mem_lowerBounds]⟩
 
 lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
-    {G : Type*} [LinearOrderedAddCommGroup G] [Nontrivial G] (g : G) :
+    {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃+o ℤ) := by
   rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete (g := -g)]
   refine ⟨fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_, fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_⟩ <;>
@@ -349,7 +350,7 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
 
 @[to_additive existing]
 lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
-    {G : Type*} [LinearOrderedCommGroup G] [Nontrivial G] {g : G} :
+    {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   let e : G ≃o Additive G := OrderIso.refl G
   suffices Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Set.WellFoundedOn {x | e g ≤ x} (· < ·) by
@@ -363,7 +364,7 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
 
 @[to_additive existing]
 lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
-    {G : Type*} [LinearOrderedCommGroup G] [Nontrivial G] (g : G) :
+    {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete (g := g⁻¹)]
   refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩ <;>

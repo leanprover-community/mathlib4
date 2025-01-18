@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -221,7 +220,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
 end CanonicallyOrderedMul
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup M]
+variable [CommGroup M] [LinearOrder M]
 
 open scoped symmDiff
 

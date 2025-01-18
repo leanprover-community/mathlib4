@@ -84,7 +84,7 @@ noncomputable instance Real.normedLinearOrderedField : NormedLinearOrderedField 
 
 @[to_additive]
 instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
-  { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.orderedCommGroup with }
+  { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.isOrderedMonoid with }
 
 @[to_additive]
 instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :

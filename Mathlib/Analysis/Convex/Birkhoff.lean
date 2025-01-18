@@ -36,7 +36,7 @@ variable {R n : Type*} [Fintype n] [DecidableEq n]
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield R] {M : Matrix n n R}
+variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
@@ -70,7 +70,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] {M : Matrix n n R}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a scalar multiple of a doubly stochastic matrix, then it is a conical combination of

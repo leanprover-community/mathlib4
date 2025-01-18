@@ -242,7 +242,7 @@ end CharZeroField
 /-! ### Linearly ordered field -/
 
 section LinearOrderedField
-variable [LinearOrderedField K] [Module K V]
+variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [Module K V]
 
 example (ha : 0 ≤ a) (hb : 0 < b) :
     x = (a / (a + b)) • y + (b / (a + b)) • (x + (a / b) • (x - y)) := by

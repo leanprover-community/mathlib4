@@ -3,7 +3,6 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Order.Filter.AtTopBot.Monoid
 
@@ -18,16 +17,16 @@ namespace Filter
 
 section OrderedGroup
 
-variable [OrderedAddCommGroup β] (l : Filter α) {f g : α → β}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] (l : Filter α) {f g : α → β}
 
 theorem tendsto_atTop_add_left_of_le' (C : β) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_left' _ _ _ l (fun x => -f x) (fun x => f x + g x) (-C) (by simpa)
-    (by simpa)
+  tendsto_atTop_of_add_bdd_above_left' (l := l) (f := fun x => -f x) (g := fun x => f x + g x) (-C)
+    (by simpa) (by simpa)
 
 theorem tendsto_atBot_add_left_of_ge' (C : β) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_left_of_le' _ βᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_add_left_of_le' (β := βᵒᵈ) _ C hf hg
 
 theorem tendsto_atTop_add_left_of_le (C : β) (hf : ∀ x, C ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -35,16 +34,16 @@ theorem tendsto_atTop_add_left_of_le (C : β) (hf : ∀ x, C ≤ f x) (hg : Tend
 
 theorem tendsto_atBot_add_left_of_ge (C : β) (hf : ∀ x, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_left_of_le _ βᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_add_left_of_le (β := βᵒᵈ)  _ C hf hg
 
 theorem tendsto_atTop_add_right_of_le' (C : β) (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, C ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_right' _ _ _ l (fun x => f x + g x) (fun x => -g x) (-C)
+  tendsto_atTop_of_add_bdd_above_right' (l := l) (f := fun x => f x + g x) (g := fun x => -g x) (-C)
     (by simp [hg]) (by simp [hf])
 
 theorem tendsto_atBot_add_right_of_ge' (C : β) (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ C) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_right_of_le' _ βᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_add_right_of_le' (β := βᵒᵈ) _ C hf hg
 
 theorem tendsto_atTop_add_right_of_le (C : β) (hf : Tendsto f l atTop) (hg : ∀ x, C ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -52,7 +51,7 @@ theorem tendsto_atTop_add_right_of_le (C : β) (hf : Tendsto f l atTop) (hg : �
 
 theorem tendsto_atBot_add_right_of_ge (C : β) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_right_of_le _ βᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_add_right_of_le (β := βᵒᵈ)  _ C hf hg
 
 theorem tendsto_atTop_add_const_left (C : β) (hf : Tendsto f l atTop) :
     Tendsto (fun x => C + f x) l atTop :=
@@ -60,7 +59,7 @@ theorem tendsto_atTop_add_const_left (C : β) (hf : Tendsto f l atTop) :
 
 theorem tendsto_atBot_add_const_left (C : β) (hf : Tendsto f l atBot) :
     Tendsto (fun x => C + f x) l atBot :=
-  @tendsto_atTop_add_const_left _ βᵒᵈ _ _ _ C hf
+  tendsto_atTop_add_const_left (β := βᵒᵈ) _ C hf
 
 theorem tendsto_atTop_add_const_right (C : β) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x + C) l atTop :=
@@ -68,7 +67,7 @@ theorem tendsto_atTop_add_const_right (C : β) (hf : Tendsto f l atTop) :
 
 theorem tendsto_atBot_add_const_right (C : β) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x + C) l atBot :=
-  @tendsto_atTop_add_const_right _ βᵒᵈ _ _ _ C hf
+  tendsto_atTop_add_const_right (β := βᵒᵈ) _ C hf
 
 theorem map_neg_atBot : map (Neg.neg : β → β) atBot = atTop :=
   (OrderIso.neg β).map_atBot
@@ -86,7 +85,7 @@ theorem tendsto_neg_atTop_atBot : Tendsto (Neg.neg : β → β) atTop atBot :=
   (OrderIso.neg β).tendsto_atTop
 
 theorem tendsto_neg_atBot_atTop : Tendsto (Neg.neg : β → β) atBot atTop :=
-  @tendsto_neg_atTop_atBot βᵒᵈ _
+  tendsto_neg_atTop_atBot (β := βᵒᵈ)
 
 variable {l}
 
@@ -102,18 +101,18 @@ end OrderedGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
+variable [AddCommGroup α] [LinearOrder α]
 
 /-- $\lim_{x\to+\infty}|x|=+\infty$ -/
 theorem tendsto_abs_atTop_atTop : Tendsto (abs : α → α) atTop atTop :=
   tendsto_atTop_mono le_abs_self tendsto_id
 
 /-- $\lim_{x\to-\infty}|x|=+\infty$ -/
-theorem tendsto_abs_atBot_atTop : Tendsto (abs : α → α) atBot atTop :=
+theorem tendsto_abs_atBot_atTop [IsOrderedAddMonoid α] : Tendsto (abs : α → α) atBot atTop :=
   tendsto_atTop_mono neg_le_abs tendsto_neg_atBot_atTop
 
 @[simp]
-theorem comap_abs_atTop : comap (abs : α → α) atTop = atBot ⊔ atTop := by
+theorem comap_abs_atTop [IsOrderedAddMonoid α] : comap (abs : α → α) atTop = atBot ⊔ atTop := by
   refine
     le_antisymm (((atTop_basis.comap _).le_basis_iff (atBot_basis.sup atTop_basis)).2 ?_)
       (sup_le tendsto_abs_atBot_atTop.le_comap tendsto_abs_atTop_atTop.le_comap)

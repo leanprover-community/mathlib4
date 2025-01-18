@@ -55,7 +55,7 @@ namespace MulAntidiagonal
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
+variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
 
 -- Porting note: to_additive cannot translate the "Mul" in "MulAntidiagonal" by itself here
 @[to_additive Set.AddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
@@ -83,7 +83,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CancelCommMonoid α] [PartialOrder α] [MulLeftMono α] [MulRightStrictMono α]
+variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
   (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]

@@ -327,7 +327,7 @@ instance partialOrder : PartialOrder ℝ where
   le_antisymm a b := by
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
-    simpa [mk_eq] using @CauSeq.le_antisymm _ _ a b
+    simpa [mk_eq] using CauSeq.le_antisymm (f := a) (g := b)
 
 instance : Preorder ℝ := by infer_instance
 
@@ -499,8 +499,7 @@ noncomputable instance : LinearOrderedRing ℝ := by infer_instance
 
 noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
 
-instance : IsDomain ℝ :=
-  { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
+instance : IsDomain ℝ := IsStrictOrderedRing.isDomain
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 
