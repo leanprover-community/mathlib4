@@ -402,11 +402,6 @@ lemma hasDerivAt_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) 
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
   have h_re_of_mem n t (ht' : t ∈ interior (integrableExpSet X μ)) :
       (∫ ω, X ω ^ n * cexp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
-    rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at ht'
-    obtain ⟨l, u, hlu, h_subset⟩ := ht'
-    let t' := ((t - l) ⊓ (u - t)) / 2
-    have h_pos : 0 < (t - l) ⊓ (u - t) := by simp [hlu.1, hlu.2]
-    have ht' : 0 < t' := half_pos h_pos
     simp_rw [← RCLike.re_eq_complex_re]
     rw [← integral_re]
     · norm_cast
@@ -417,11 +412,8 @@ lemma hasDerivAt_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) 
         refine Complex.measurable_exp.comp_aemeasurable ?_
         exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
       simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
-        ofReal_im, mul_zero, sub_zero]
-      convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht'.ne' ?_ ?_ n
-      · simp
-      · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
-      · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
+        ofReal_im, mul_zero, sub_zero, Complex.abs_pow]
+      exact integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet ht' n
   have h_re n : ∀ᶠ t' : ℝ in 𝓝 t, (∫ ω, X ω ^ n * cexp (t' * X ω) ∂μ).re
       = ∫ ω, X ω ^ n * rexp (t' * X ω) ∂μ := by
     filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'
