@@ -219,10 +219,9 @@ lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
     simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
 
 lemma commutative_iff {n : ℕ} :
-    (Std.Commutative fun (x y : DihedralGroup n) ↦ x * y) ↔ n = 1 ∨ n = 2 := by
-  constructor
-  · contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
-  · rintro (rfl | rfl) <;> exact ⟨by decide⟩
+    Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
+  mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
+  mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

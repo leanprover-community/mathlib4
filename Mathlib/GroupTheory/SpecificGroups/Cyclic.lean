@@ -870,7 +870,6 @@ lemma DihedralGroup.not_isCyclic {n : ℕ} (h1 : n ≠ 1) : ¬IsCyclic (Dihedral
   · exact not_commutative h1 h2 h'.commutative
 
 lemma DihedralGroup.isCyclic_iff {n : ℕ} :
-    IsCyclic (DihedralGroup n) ↔ n = 1 := by
-  constructor
-  · contrapose; exact not_isCyclic
-  · rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card
+    IsCyclic (DihedralGroup n) ↔ n = 1 where
+  mp := by contrapose; exact not_isCyclic
+  mpr := by rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card
