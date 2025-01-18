@@ -9,6 +9,7 @@ import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Exponential, trigonometric and hyperbolic trigonometric functions
@@ -46,7 +47,6 @@ def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 
 /-- The complex exponential function, defined via its Taylor series -/
--- Porting note: removed `irreducible` attribute, so I can prove things
 @[pp_nodot]
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
