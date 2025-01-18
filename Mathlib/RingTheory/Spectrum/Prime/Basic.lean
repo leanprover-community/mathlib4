@@ -5,7 +5,6 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -65,6 +64,19 @@ instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 
 variable (R S)
+
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+@[simps]
+def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
+  toFun I := ⟨I.asIdeal, I.2⟩
+  invFun I := ⟨I, I.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+theorem asIdeal_range_eq : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -190,6 +202,10 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
   Ideal.ext fun f => by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
+
+theorem nilradical_eq_iInf :
+    nilradical R = iInf PrimeSpectrum.asIdeal := by
+  apply PrimeSpectrum.asIdeal_range_eq R ▸ nilradical_eq_sInf R
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
@@ -540,29 +556,6 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
     rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
-
-variable (S)
-
-theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Function.Injective (algebraMap R S).specComap := by
-  intro p q h
-  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
-  dsimp only [specComap] at h
-  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
-  ext1
-  exact h
-
-theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
-  ext x
-  constructor
-  · simp_rw [disjoint_iff_inf_le]
-    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
-    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
-  · intro h
-    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
-    ext1
-    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 
 section Pi
 

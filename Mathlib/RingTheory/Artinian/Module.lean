@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Artinian rings and modules
@@ -544,7 +544,7 @@ noncomputable def quotNilradicalEquivPi :
   let f := MaximalSpectrum.asIdeal (R := R)
   .trans
     (Ideal.quotEquivOfEq <| ext fun x ↦ by
-      rw [nilradical_eq_iInf, iInf, primeSpectrum_asIdeal_range_eq]; rfl)
+      rw [PrimeSpectrum.nilradical_eq_iInf, iInf, primeSpectrum_asIdeal_range_eq]; rfl)
     (Ideal.quotientInfRingEquivPiQuotient f <| fun I J h ↦
       Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <|
       fun hIJ ↦ h <| MaximalSpectrum.ext hIJ)

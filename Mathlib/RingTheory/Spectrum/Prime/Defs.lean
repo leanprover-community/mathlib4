@@ -39,17 +39,4 @@ namespace PrimeSpectrum
 
 attribute [instance] isPrime
 
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
-@[simps]
-def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-theorem asIdeal_range_eq : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
-  Set.ext fun J ↦
-    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
-      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
-
 end PrimeSpectrum
