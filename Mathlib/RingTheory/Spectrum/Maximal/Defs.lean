@@ -17,13 +17,32 @@ It is naturally a subset of the prime spectrum endowed with the subspace topolog
   i.e., the set of all maximal ideals of `R`.
 -/
 
+variable (R : Type*) [CommSemiring R]
+
 /-- The maximal spectrum of a commutative (semi)ring `R` is the type of all
 maximal ideals of `R`. -/
 @[ext]
-structure MaximalSpectrum (R : Type*) [CommSemiring R] where
+structure MaximalSpectrum where
   asIdeal : Ideal R
   isMaximal : asIdeal.IsMaximal
 
 @[deprecated (since := "2025-01-16")] alias MaximalSpectrum.IsMaximal := MaximalSpectrum.isMaximal
 
-attribute [instance] MaximalSpectrum.IsMaximal
+namespace MaximalSpectrum
+
+attribute [instance] isMaximal
+
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+@[simps]
+def equivSubtype : MaximalSpectrum R ≃ {I : Ideal R // I.IsMaximal} where
+  toFun I := ⟨I.asIdeal, I.2⟩
+  invFun I := ⟨I, I.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+theorem asIdeal_range_eq : Set.range MaximalSpectrum.asIdeal = {J : Ideal R | J.IsMaximal} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isMaximal,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+
+end MaximalSpectrum

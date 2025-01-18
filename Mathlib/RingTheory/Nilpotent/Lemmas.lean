@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Nilpotent elements
@@ -45,6 +46,10 @@ theorem mem_nilradical : x ∈ nilradical R ↔ IsNilpotent x :=
 theorem nilradical_eq_sInf (R : Type*) [CommSemiring R] :
     nilradical R = sInf { J : Ideal R | J.IsPrime } :=
   (Ideal.radical_eq_sInf ⊥).trans <| by simp_rw [and_iff_right bot_le]
+
+theorem nilradical_eq_iInf (R : Type*) [CommSemiring R] :
+    nilradical R = iInf PrimeSpectrum.asIdeal := by
+  apply PrimeSpectrum.asIdeal_range_eq R ▸ nilradical_eq_sInf R
 
 theorem nilpotent_iff_mem_prime : IsNilpotent x ↔ ∀ J : Ideal R, J.IsPrime → x ∈ J := by
   rw [← mem_nilradical, nilradical_eq_sInf, Submodule.mem_sInf]
