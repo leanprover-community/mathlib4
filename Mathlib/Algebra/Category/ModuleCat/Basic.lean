@@ -426,29 +426,32 @@ section
 
 universe u₀
 
-section
+namespace Algebra
 
 variable {S₀ : Type u₀} [CommRing S₀] {S : Type u} [Ring S] [Algebra S₀ S]
 
 variable {M N : ModuleCat.{v} S}
 
-instance : Module S₀ M := Module.compHom _ (algebraMap S₀ S)
-instance : SMulCommClass S S₀ M :=
+scoped instance : Module S₀ M := Module.compHom _ (algebraMap S₀ S)
+
+scoped instance : SMulCommClass S S₀ M :=
     { smul_comm s s₀ n :=
         show s • algebraMap S₀ S s₀ • n = algebraMap S₀ S s₀ • s • n by
         rw [← smul_assoc, smul_eq_mul, ← Algebra.commutes, mul_smul] }
 
-instance : Linear S₀ (ModuleCat.{v} S) where
+scoped instance instLinear : Linear S₀ (ModuleCat.{v} S) where
   smul_comp _ M N s₀ f g := by
     ext
     simp [show ∀ (m : M), s₀ • m = algebraMap S₀ S s₀ • m by intros; rfl,
       show ∀ (n : N), s₀ • n = algebraMap S₀ S s₀ • n by intros; rfl]
 
-end
+end Algebra
 
 section
 
 variable {S : Type u} [CommRing S]
+
+instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 
