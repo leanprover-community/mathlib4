@@ -31,7 +31,6 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,

@@ -42,13 +42,11 @@ structure PreErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop w
 
 /-- A map `f : α → α` is said to be ergodic with respect to a measure `μ` if it is measure
 preserving and pre-ergodic. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) extends
   MeasurePreserving f μ μ, PreErgodic f μ : Prop
 
 /-- A map `f : α → α` is said to be quasi ergodic with respect to a measure `μ` if it is quasi
 measure preserving and pre-ergodic. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) extends
   QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
 

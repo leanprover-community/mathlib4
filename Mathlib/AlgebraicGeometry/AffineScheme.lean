@@ -46,8 +46,6 @@ namespace AlgebraicGeometry
 open Spec (structureSheaf)
 
 /-- The category of affine schemes -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 def AffineScheme :=
   Scheme.Spec.EssImageSubcategory
 deriving Category

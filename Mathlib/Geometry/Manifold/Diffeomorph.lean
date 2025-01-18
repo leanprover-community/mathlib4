@@ -65,7 +65,6 @@ variable (I I' M M' n)
 
 /-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
 and `I'`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv
   protected contMDiff_invFun : ContMDiff I' I n toEquiv.symm

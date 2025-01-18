@@ -74,7 +74,6 @@ namespace Mat_
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j

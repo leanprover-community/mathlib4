@@ -72,7 +72,6 @@ example {R} [CommSemiring R] (S : Submonoid R) : ⇑(Localization.r' S) = Locali
 /-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
 we can localize `M` by `S`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): @[nolint has_nonempty_instance]
 def _root_.LocalizedModule : Type max u v :=
   Quotient (r.setoid S M)
 

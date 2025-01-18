@@ -235,7 +235,6 @@ variable [MetricSpace α] {s : Opens α}
 
 /-- A type synonym for a subset `s` of a metric space, on which we will construct another metric
 for which it will be complete. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type _ := s
 
 namespace CompleteCopy
