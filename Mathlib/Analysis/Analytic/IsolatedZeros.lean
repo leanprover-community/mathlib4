@@ -229,7 +229,7 @@ lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
 /- An analytic function has order zero at a point iff it does not vanish there. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
-  rw [(by rfl : (0 : ENat) = (0 : Nat)), order_eq_nat_iff hf 0]
+  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
   constructor
   · intro ⟨g, _, _, hg⟩; simpa [hg.self_of_nhds]
   · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
