@@ -99,14 +99,14 @@ class SetLike (A : Type*) (B : outParam Type*) where
   protected coe_injective' : Function.Injective coe
 
 /-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving. -/
-class IsConcreteLE (A B : Type*) [isl : SetLike A B] [ile : LE A] where
+class IsConcreteLE (A B : Type*) [SetLike A B] [LE A] where
   /-- The coercion from a `SetLike` type preserves the ordering. -/
   protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
 
 attribute [coe] SetLike.coe
 namespace SetLike
 
-variable {A : Type*} {B : Type*} [i : SetLike A B]
+variable {A B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
@@ -191,16 +191,17 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
-def toLE : LE A where
+@[reducible] def toLE : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-def toPartialOrder : PartialOrder A where
+@[reducible] def toPartialOrder : PartialOrder A where
   __ := toLE
   __ := PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
 
-instance : IsConcreteLE (isl := i) (ile := toLE) :=
-  let _ := toLE (i := i)
-  ⟨Iff.rfl⟩
+attribute [local instance] toLE toPartialOrder
+
+instance : IsConcreteLE A B where
+  coe_subset_coe' := Iff.rfl
 
 end SetLike
 
@@ -208,7 +209,7 @@ namespace IsConcreteLE
 
 section LE
 
-variable {A : Type*} {B : Type*} [SetLike A B] [LE A] [IsConcreteLE A B]
+variable {A B : Type*} [SetLike A B] [LE A] [IsConcreteLE A B]
 variable {p q : A}
 
 @[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
@@ -228,7 +229,7 @@ end LE
 
 section Preorder
 
-variable {A : Type*} {B : Type*} [SetLike A B] [Preorder A] [IsConcreteLE A B]
+variable {A B : Type*} [SetLike A B] [Preorder A] [IsConcreteLE A B]
 variable {p q : A}
 
 @[mono]
@@ -238,7 +239,7 @@ end Preorder
 
 section PartialOrder
 
-variable {A : Type*} {B : Type*} [SetLike A B] [PartialOrder A] [IsConcreteLE A B]
+variable {A B : Type*} [SetLike A B] [PartialOrder A] [IsConcreteLE A B]
 variable {p q : A}
 
 @[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
