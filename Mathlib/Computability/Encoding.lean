@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Option.Basic
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Encodings
@@ -55,12 +56,7 @@ inductive Γ'
   | bra
   | ket
   | comma
-  deriving DecidableEq
-
--- Porting note: A handler for `Fintype` had not been implemented yet.
-instance Γ'.fintype : Fintype Γ' :=
-  ⟨⟨{.blank, .bit true, .bit false, .bra, .ket, .comma}, by decide⟩,
-    by intro; cases_type* Γ' Bool <;> decide⟩
+  deriving DecidableEq, Fintype
 
 instance inhabitedΓ' : Inhabited Γ' :=
   ⟨Γ'.blank⟩
@@ -156,7 +152,7 @@ def encodingNatΓ' : Encoding ℕ where
 
 /-- A binary fin_encoding of ℕ in Γ'. -/
 def finEncodingNatΓ' : FinEncoding ℕ :=
-  ⟨encodingNatΓ', Γ'.fintype⟩
+  ⟨encodingNatΓ', inferInstanceAs (Fintype Γ')⟩
 
 /-- A unary encoding function of ℕ in bool. -/
 def unaryEncodeNat : Nat → List Bool
