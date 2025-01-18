@@ -71,7 +71,7 @@ lemma isCentral_ofTwoCocycleTriv : IsCentral (Extension.ofTwoCocycleTriv c) := b
   intro y
   simp_all only [IsExtension.extension_L, IsExtension.extension_instLieRing,
     IsExtension.extension_instLieAlgebra, IsExtension.extension_proj, bracket_ofTwoCocycleTriv]
-  rw [show x = (x.1, x.2) by rfl, rightHomTwoCocycleTriv] at hx
+  rw [show x = (x.1, x.2) by rfl, twoCocycleTrivProj] at hx
   simp [show x.1 = 0 by exact hx]
 
 end TwoCocycleTriv

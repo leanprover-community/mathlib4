@@ -105,6 +105,7 @@ def aeval [CommSemiring R] (f : PowerSeries R) : PowerSeries R →ₐ[R] PowerSe
   map_add' := by simp
   commutes' r := by
     ext n
-    simp [Algebra.algebraMap_eq_smul_one]
+    simp only [algebraMap_eq, ← monomial_zero_eq_C_apply, eval_monomial, coeff_monomial, pow_zero,
+      mul_one, map_smul, coeff_one, smul_eq_mul, mul_ite, mul_zero]
 
 end PowerSeries
