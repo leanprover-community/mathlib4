@@ -310,6 +310,7 @@ lemma sigmaMk_mk (i) (x : f i) :
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.sigmaCofanIsColimit _⟩ _ _).trans ?_
   exact ι_comp_sigmaComparison Scheme.forgetToTop _ _
 
+open scoped Function in
 lemma isOpenImmersion_sigmaDesc
     {X : Scheme} (α : ∀ i, f i ⟶ X) [∀ i, IsOpenImmersion (α i)]
     (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
