@@ -50,7 +50,7 @@ lemma FG.mul {R : Type*} [CommSemiring R] {I J : Ideal R} (hI : I.FG) (hJ : J.FG
 lemma FG.pow {R : Type*} [CommSemiring R] {I : Ideal R} (hI : I.FG) (n : ℕ) :
     (I ^ n).FG := by
   induction n with
-  | zero => simpa using Module.Finite.out
+  | zero => simpa using Module.Finite.fg_top
   | succ n IH => exact IH.mul hI
 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :

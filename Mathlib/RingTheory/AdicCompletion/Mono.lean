@@ -29,14 +29,15 @@ lemma AdicCompletion.IsAdicCauchy.mono {f} (hf : IsAdicCauchy I M f) : IsAdicCau
   fun _ _ h ↦ (hf h).mono (Submodule.smul_mono (pow_le_pow_left' hIJ _) le_rfl)
 
 /-- The canonical map `lim M/IⁿM ⟶ lim M⧸JⁿM` if `I ≤ J`. -/
-def AdicCompletion.homOfLE : AdicCompletion I M →ₗ[R] AdicCompletion J M where
-  toFun v := ⟨fun i ↦ Submodule.mapQ _ _ .id
-      (Submodule.smul_mono (pow_le_pow_left' hIJ i) le_rfl) (v.1 i), by
+noncomputable
+def AdicCompletion.homOfLE : AdicCompletion I M →ₗ[R] AdicCompletion J M := --where
+  lift _ (fun n ↦ Submodule.mapQ _ _ .id (Submodule.smul_mono (pow_le_pow_left' hIJ n) le_rfl) ∘ₗ
+    AdicCompletion.eval I M n) <| by
       intro m n hmn
-      obtain ⟨x, hx⟩ := Submodule.Quotient.mk_surjective _ (v.1 n)
-      simp [← v.2 hmn, ← hx]⟩
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp [AdicCompletion.val_smul]
+      ext x
+      obtain ⟨x, rfl⟩ := AdicCompletion.mk_surjective _ _ x
+      simpa [SModEq, Submodule.Quotient.eq] using (x.2 hmn).symm.mono
+        (Submodule.smul_mono (pow_le_pow_left' hIJ _) le_rfl)
 
 @[simp]
 lemma AdicCompletion.homOfLE_mk (x) :
