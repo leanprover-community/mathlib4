@@ -96,7 +96,7 @@ instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
 
 variable {S}
 
-open Set SetLike
+open Set IsConcreteClosure
 
 /-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
@@ -140,7 +140,7 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
 theorem dense_induction {p : M → Prop} (s : Set M) (closure : closure s = ⊤)
     (mem : ∀ x ∈ s, p x) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) :
     p x := by
-  induction closure.symm ▸ mem_top x using closure_induction with
+  induction closure.symm ▸ IsConcreteSInf.mem_top x using closure_induction with
   | mem _ h => exact mem _ h
   | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
@@ -169,7 +169,7 @@ open Subsemigroup
   then they are equal on its additive subsemigroup closure."]
 theorem eqOn_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
-  show closure s ≤ f.eqLocus g from SetLike.closure_le.2 h
+  show closure s ≤ f.eqLocus g from IsConcreteClosure.closure_le.2 h
 
 @[to_additive]
 theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :
