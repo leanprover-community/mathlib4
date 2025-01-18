@@ -65,15 +65,15 @@ theorem εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
 
 theorem mem_εClosure_choice {s : σ} {S : Set σ} :
-    s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} := by
-  constructor
-  · intro h
+    s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
+  mp h := by
     induction' h with s _ _ _ _ _ ih
     · tauto
     · obtain ⟨s, _, _⟩ := ih
       use s
       solve_by_elim [εClosure.step]
-  · intro ⟨_, _, h⟩
+  mpr := by
+    intro ⟨_, _, h⟩
     induction' h <;> subst_vars <;> solve_by_elim [εClosure.step]
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
@@ -163,33 +163,33 @@ theorem Path.eq_of_nil (s t : σ) : M.Path s t [] → s = t := by
   rfl
 
 @[simp]
-theorem path_singleton {s t : σ} {a : Option α} : M.Path s t [a] ↔ t ∈ M.step s a := by
-  constructor
-  · intro h
+theorem path_singleton {s t : σ} {a : Option α} : M.Path s t [a] ↔ t ∈ M.step s a where
+  mp := by
+    intro h
     cases' h with _ _ _ _ _ _ _ h
     apply Path.eq_of_nil at h
     subst t
     assumption
-  · tauto
+  mpr := by tauto
 
 @[simp]
 theorem path_append {s u : σ} {x y : List (Option α)} :
-    M.Path s u (x ++ y) ↔ ∃ t, M.Path s t x ∧ M.Path t u y := by
-  constructor
-  · induction' x with _ _ ih generalizing s
+    M.Path s u (x ++ y) ↔ ∃ t, M.Path s t x ∧ M.Path t u y where
+  mp := by
+    induction' x with _ _ ih generalizing s
     · rw [List.nil_append]
       tauto
     · intro h
       cases' h with _ _ _ _ _ _ _ h
       obtain ⟨_, _, _⟩ := ih h
       tauto
-  · intro ⟨_, hx, _⟩
+  mpr := by
+    intro ⟨_, hx, _⟩
     induction' x generalizing s <;> cases hx <;> tauto
 
 theorem εClosure_path {s₁ s₂ : σ} :
-    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.Path s₁ s₂ (List.replicate n none) := by
-  constructor
-  · intro h
+    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.Path s₁ s₂ (List.replicate n none) where
+  mp h := by
     induction' h with t _ _ _ _ _ ih
     · use 0
       subst t
@@ -198,7 +198,8 @@ theorem εClosure_path {s₁ s₂ : σ} :
       use n + 1
       rw [List.replicate_add, path_append]
       tauto
-  · intro ⟨n, h⟩
+  mpr := by
+    intro ⟨n, h⟩
     induction' n generalizing s₂
     · rw [List.replicate_zero] at h
       apply Path.eq_of_nil at h
@@ -246,14 +247,15 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
 
 theorem accepts_path {x : List α} :
     x ∈ M.accepts ↔
-      ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.Path s₁ s₂ x' := by
-  constructor
-  · intro ⟨_, _, h⟩
+      ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.Path s₁ s₂ x' where
+  mp := by
+    intro ⟨_, _, h⟩
     rw [eval, mem_evalFrom_choice] at h
     obtain ⟨_, _, h⟩ := h
     rw [evalFrom_path] at h
     tauto
-  · intro ⟨_, _, _, hs₁, _, h⟩
+  mpr := by
+    intro ⟨_, _, _, hs₁, _, h⟩
     have := M.evalFrom_path.mpr ⟨_, h⟩
     have := M.mem_evalFrom_choice.mpr ⟨_, hs₁, this⟩
     tauto
