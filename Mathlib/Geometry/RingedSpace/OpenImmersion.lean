@@ -130,7 +130,7 @@ theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f 
   erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
   trans f.c.app x ≫ X.presheaf.map (𝟙 _)
   · congr 1
-  · erw [X.presheaf.map_id, Category.comp_id]
+  · simp
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : (isoRestrict f).inv ≫ f = Y.ofRestrict _ := by
@@ -417,7 +417,7 @@ theorem pullbackConeOfLeftLift_snd :
     erw [← s.pt.presheaf.map_comp, ← s.pt.presheaf.map_comp]
     trans s.snd.c.app x ≫ s.pt.presheaf.map (𝟙 _)
     · congr 1
-    · rw [s.pt.presheaf.map_id]; erw [Category.comp_id]
+    · simp
 
 instance pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f g).snd := by
   erw [CategoryTheory.Limits.PullbackCone.mk_snd]
@@ -718,7 +718,7 @@ end Pullback
 
 section OfStalkIso
 
-variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
+variable [HasLimits C] [HasColimits C] [HasForget C]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 

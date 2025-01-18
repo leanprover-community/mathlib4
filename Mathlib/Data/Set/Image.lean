@@ -186,11 +186,6 @@ variable {f : α → β} {s t : Set α}
 
 -- Porting note: `Set.image` is already defined in `Data.Set.Defs`
 
-@[deprecated mem_image (since := "2024-03-23")]
-theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
-  bex_def.symm
-
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl
 
@@ -207,18 +202,6 @@ theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
 
 theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
-
-@[deprecated (since := "2024-02-21")] alias ball_image_iff := forall_mem_image
-@[deprecated (since := "2024-02-21")] alias bex_image_iff := exists_mem_image
-@[deprecated (since := "2024-02-21")] alias ⟨_, ball_image_of_ball⟩ := forall_mem_image
-
-@[deprecated forall_mem_image (since := "2024-02-21")]
-theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
-    ∀ {y : β}, y ∈ f '' s → C y := forall_mem_image.2 h _
-
-@[deprecated forall_mem_image (since := "2024-02-21")]
-theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β} (h_y : y ∈ f '' s)
-    (h : ∀ x : α, x ∈ s → C (f x)) : C y := forall_mem_image.2 h _ h_y
 
 -- Porting note: used to be `safe`
 @[congr]
@@ -574,7 +557,6 @@ variable {f : ι → α} {s t : Set α}
 
 theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
 
-@[deprecated (since := "2024-02-21")] alias forall_range_iff := forall_mem_range
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
@@ -583,9 +565,6 @@ theorem forall_subtype_range_iff {p : range f → Prop} :
     apply H⟩
 
 theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp
-
-@[deprecated (since := "2024-03-10")]
-alias exists_range_iff' := exists_range_iff
 
 theorem exists_subtype_range_iff {p : range f → Prop} :
     (∃ a : range f, p a) ↔ ∃ i, p ⟨f i, mem_range_self _⟩ :=

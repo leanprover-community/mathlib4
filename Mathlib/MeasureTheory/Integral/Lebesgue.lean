@@ -1304,6 +1304,8 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
 
 open Measure
 
+open scoped Function -- required for scoped `on` notation
+
 theorem lintegral_iUnion₀ [Countable β] {s : β → Set α} (hm : ∀ i, NullMeasurableSet (s i) μ)
     (hd : Pairwise (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i, s i, f a ∂μ = ∑' i, ∫⁻ a in s i, f a ∂μ := by
