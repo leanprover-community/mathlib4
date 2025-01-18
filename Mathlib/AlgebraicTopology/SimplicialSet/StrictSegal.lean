@@ -80,7 +80,7 @@ def spineEquiv : X _[m]ₙ₊₁ ≃ Path X m where
 
 /-- The unique existence of an inverse to `spine X m` for all `m ≤ n + 1`
 implies the mere existence of such an inverse. -/
-instance isStrictSegal_of_strictSegal : IsStrictSegal X where
+lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X where
   segal m h := sx.spineEquiv m h |>.bijective
 
 theorem spineInjective : Function.Injective (sx.spineEquiv m) :=
@@ -249,7 +249,7 @@ abbrev spineEquiv (n : ℕ) : X _[n] ≃ Path X n := sx n |>.spineEquiv n
 
 /-- The unique existence of an inverse to `spine X n` forall `n : ℕ` implies
 the mere existence of such an inverse. -/
-instance isStrictSegal_of_strictSegal : IsStrictSegal X :=
+lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X :=
   fun n ↦ sx n |>.isStrictSegal_of_strictSegal
 
 theorem spineInjective : Function.Injective (sx.spineEquiv n) :=
