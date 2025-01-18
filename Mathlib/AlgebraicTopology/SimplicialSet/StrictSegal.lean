@@ -84,7 +84,6 @@ theorem spineToSimplex_arrow (i : Fin m) (f : Path X m) :
       f.arrow i := by
   rw [← spine_arrow (h := h), spine_spineToSimplex_apply (h := h)]
 
-/- TODO: SimplicialObject.Truncated.diagonal -/
 /-- In the presence of the strict Segal condition, a path of length `m` can be
 "composed" by taking the diagonal edge of the resulting `m`-simplex. -/
 def spineToDiagonal : Path X m → X _[1]ₙ₊₁ :=
