@@ -106,7 +106,7 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
       RingCat.comp_apply]
   have hb₀ : (φ.app (Opposite.op Z)) b₀ = (A.map (f₁.op ≫ g₁.op)) m := by
     dsimp [b₀]
-    erw [NatTrans.naturality_apply, hb₁, Functor.map_comp, comp_apply]
+    erw [NatTrans.naturality_apply, hb₁, Functor.map_comp, CategoryTheory.comp_apply]
   have ha₀' : (α.app (Opposite.op Z)) a₀ = (R.map (f₂.op ≫ g₂.op)) r := by
     rw [ha₀, ← op_comp, fac, op_comp]
   have hb₀' : (φ.app (Opposite.op Z)) b₀ = (A.map (f₂.op ≫ g₂.op)) m := by
@@ -161,11 +161,11 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     apply A.isSeparated _ _ (J.pullback_stable f.unop hS)
     rintro Z g hg
     dsimp at hg
-    erw [← comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply, M₀.map_smul]
+    erw [← CategoryTheory.comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply, M₀.map_smul]
     refine (ha _ hg).trans (app_eq_of_isLocallyInjective α φ A.isSeparated _ _ _ _ ?_ ?_)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
-      simp [RingCat.forget_map]
+      simp [RingCat.forget_map, ConcreteCategory.hom]
     · erw [NatTrans.naturality_apply, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
@@ -298,9 +298,9 @@ lemma map_smul :
   apply A.isSeparated _ _ hS
   rintro Y f ⟨⟨r₀,
     (hr₀ : (α.app (Opposite.op Y)).hom r₀ = (R.val.map f.op).hom ((R.val.map π).hom r))⟩, ⟨m₀, hm₀⟩⟩
-  rw [← comp_apply, ← Functor.map_comp,
+  rw [← CategoryTheory.comp_apply, ← Functor.map_comp,
     map_smul_eq α φ r m (π ≫ f.op) r₀ (by rw [hr₀, Functor.map_comp, RingCat.comp_apply]) m₀
-      (by rw [hm₀, Functor.map_comp, comp_apply]),
+      (by rw [hm₀, Functor.map_comp, CategoryTheory.comp_apply]),
     map_smul_eq α φ (R.val.map π r) (A.val.map π m) f.op r₀ hr₀ m₀ hm₀]
 
 end Sheafify
