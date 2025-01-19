@@ -213,13 +213,27 @@ end polar_convex
 section Bipolar
 
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
-variable [Module 𝕜 E] [Module 𝕜 F]
+variable [Module 𝕜 E] [Module 𝕜 F] [Module ℝ E]
+
+lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
+  rename_i inst_3
+  simp_all only [nonempty_subtype]
+  obtain ⟨w, h⟩ := inst_3
+  have e1 : w ∈ (absConvexHull 𝕜 s) := mem_absConvexHull_iff.mpr fun t a a_1 ↦ a h
+  have e3 : Balanced 𝕜 (absConvexHull 𝕜 s) := by exact balanced_absConvexHull
+  have e2 : -w ∈ (absConvexHull 𝕜 s) := by
+    rw [Balanced.neg_mem_iff e3]
+    exact e1
+  have e4 : (1/2 : ℝ) • w + (1/2 : ℝ) • (-w) ∈ (absConvexHull 𝕜 s) := by
+    apply convex_absConvexHull e1 e2
+    simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
+    simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
+    exact add_halves 1
+  simp at e4
+  exact e4
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
-
-
-
-variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable  [IsScalarTower ℝ 𝕜 E]
 
 theorem bipolar_convex : Convex ℝ (B.flip.polar (B.polar s)) :=
   polar_real_convex (B.polar s)
@@ -227,8 +241,10 @@ theorem bipolar_convex : Convex ℝ (B.flip.polar (B.polar s)) :=
 theorem bipolar_absConvex : AbsConvex 𝕜 (B.flip.polar (B.polar s)) :=
   polar_AbsConvex (B.polar s)
 
+
+
 open scoped ComplexOrder
-theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} :
+theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   apply le_antisymm
   · simp only [Set.le_eq_subset]
@@ -237,8 +253,16 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} :
     rw [Set.mem_compl_iff] at hx
     have e1 : Convex ℝ (closedAbsConvexHull (E := WeakBilin B) 𝕜 s) := absConvex_convexClosedHull.2
     have e2 : IsClosed (closedAbsConvexHull (E := WeakBilin B) 𝕜 s) := isClosed_closedAbsConvexHull
-    obtain ⟨f,⟨u,hf⟩⟩ :=
+    obtain ⟨f,⟨u,⟨hf₁,hf₂⟩⟩⟩ :=
       RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B) e1 e2 hx
+    have e3 : RCLike.re (f 0) < u := by
+      --rw [← (RCLike.ofReal_re (K := 𝕜) 0)]
+
+      --rw [← map_zero f]
+      apply (hf₁ 0)
+
+
+      apply lt_trans
     sorry
 
   · exact closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
