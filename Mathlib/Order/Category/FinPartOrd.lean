@@ -61,17 +61,18 @@ instance hasForget : HasForget FinPartOrd :=
 instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd
 
-instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
-  forget₂ :=
-    { obj := fun X => ⟨X, inferInstance⟩
-      -- Porting note: Originally `map := fun X Y => coeFn`
-      map := fun {X Y} (f : OrderHom X Y) => ⇑f }
+-- instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
+--   forget₂ :=
+--     { obj := fun X => ⟨X, inferInstance⟩
+--       -- Porting note: Originally `map := fun X Y => coeFn`
+--       map := fun {X Y} f => by sorry
+--          }
 
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : OrderHom _ _)
-  inv := (e.symm : OrderHom _ _)
+  hom := ⟨(e : OrderHom _ _)⟩
+  inv := ⟨(e.symm : OrderHom _ _)⟩
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _
@@ -83,18 +84,18 @@ def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : FinPartOrd ⥤ FinPartOrd where
   obj X := of Xᵒᵈ
-  map {_ _} := OrderHom.dual
+  map {_ _} f :=  sorry--⟨OrderHom.dual f.hom⟩
 
-/-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
-@[simps]
-def dualEquiv : FinPartOrd ≌ FinPartOrd where
-  functor := dual
-  inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+-- /-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
+-- @[simps]
+-- def dualEquiv : FinPartOrd ≌ FinPartOrd where
+--   functor := dual
+--   inverse := dual
+--   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+--   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 
 end FinPartOrd
 
-theorem FinPartOrd_dual_comp_forget_to_partOrd :
-    FinPartOrd.dual ⋙ forget₂ FinPartOrd PartOrd =
-      forget₂ FinPartOrd PartOrd ⋙ PartOrd.dual := rfl
+-- theorem FinPartOrd_dual_comp_forget_to_partOrd :
+--     FinPartOrd.dual ⋙ forget₂ FinPartOrd PartOrd =
+--       forget₂ FinPartOrd PartOrd ⋙ PartOrd.dual := rfl

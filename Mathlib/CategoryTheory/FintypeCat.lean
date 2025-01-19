@@ -59,6 +59,9 @@ instance hasForgetFintype : HasForget FintypeCat :=
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
+instance instFunLike (X Y : FintypeCat) : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe f := f.hom
+
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
   rfl
@@ -69,15 +72,16 @@ theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f
 
 @[simp]
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  congr_fun f.hom_inv_id x
+  congr_fun (congr_arg InducedCategoryHom.hom f.hom_inv_id) x
 
 @[simp]
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  congr_fun f.inv_hom_id y
+  congr_fun (congr_arg InducedCategoryHom.hom f.inv_hom_id) y
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
+  apply InducedCategory.hom_ext
   funext
   apply h
 
@@ -86,18 +90,19 @@ lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g 
 @[simps]
 def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
   toFun e :=
-    { hom := e
-      inv := e.symm }
+    { hom := ⟨e⟩
+      inv := ⟨e.symm⟩ }
   invFun i :=
     { toFun := i.hom
       invFun := i.inv
-      left_inv := congr_fun i.hom_inv_id
-      right_inv := congr_fun i.inv_hom_id }
+      left_inv := congr_fun (congr_arg InducedCategoryHom.hom i.hom_inv_id)
+      right_inv := congr_fun (congr_arg InducedCategoryHom.hom i.inv_hom_id) }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
-  inferInstanceAs <| Finite (X → Y)
+  haveI : Finite (X.α ⟶ Y.α) := inferInstanceAs <| Finite (X → Y)
+  .of_injective InducedCategoryHom.hom (fun _ _ => InducedCategory.hom_ext)
 
 instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
@@ -163,19 +168,20 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 /-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
-  map f := f
+  map f := ⟨f⟩
 
-instance : incl.Full where map_surjective f := ⟨f, rfl⟩
+instance : incl.Full where map_surjective f := ⟨f.hom, rfl⟩
 
 instance : incl.Faithful where
+  map_injective h := congr_arg InducedCategoryHom.hom h
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro
-        { hom := F.symm ∘ ULift.down
-          inv := ULift.up ∘ F }⟩
+        { hom := ⟨F.symm ∘ ULift.down⟩
+          inv := ⟨ULift.up ∘ F⟩ }⟩
 
 noncomputable instance : incl.IsEquivalence where
 
@@ -204,8 +210,8 @@ universe v
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
-  map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
-  map_comp {X Y Z} f g := by ext; simp
+  map {X Y} f :=
+    ⟨fun x => ULift.up <| (Fintype.equivFin Y) (f.hom ((Fintype.equivFin X).symm x.down))⟩
 
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
 of types. This is natural in the sense that it commutes with `uSwitch.map f` for
@@ -232,7 +238,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := by
   ext x
-  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  simp only [comp_apply, equivEquivIso_apply_hom_hom, Equiv.trans_apply]
   rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
   rfl
 
@@ -265,6 +271,6 @@ variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
 
 lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
     σ.app Y (F.map f x) = G.map f (σ.app X x) :=
-  congr_fun (σ.naturality f) x
+  congr_fun (congr_arg InducedCategoryHom.hom <| σ.naturality f) x
 
 end FunctorToFintypeCat

@@ -251,7 +251,8 @@ instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
 
 @[to_additive hasForgetToAddCommMonCat]
 instance hasForgetToCommMonCat : HasForget₂ CommGrp CommMonCat :=
-  InducedCategory.hasForget₂ fun G : CommGrp => CommMonCat.of G
+  sorry
+  -- InducedCategory.hasForget₂ fun G : CommGrp => CommMonCat.of G
 
 @[to_additive]
 instance : Coe CommGrp.{u} CommMonCat.{u} where coe := (forget₂ CommGrp CommMonCat).obj

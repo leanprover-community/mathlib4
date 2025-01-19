@@ -146,7 +146,7 @@ def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.t
   obj X :=
     have : HasProp P' X := ⟨(h _ X.prop)⟩
     CompHausLike.of _ X
-  map f := f
+  map f := ⟨f.hom⟩
 
 section
 
@@ -154,8 +154,8 @@ variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P
 
 /-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
-def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful where
+  preimage f := ⟨f.hom⟩
 
 instance : (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
 
@@ -203,13 +203,13 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     let g₁ : X ⟶ X := ⟨fun _ => x₁, continuous_const⟩
     let g₂ : X ⟶ X := ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
-    exact ContinuousMap.congr_fun ((cancel_mono _).mp this) x₁
+    exact DFunLike.congr_fun ((cancel_mono _).mp this) x₁
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
 theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
-  (hC.isCompact.image f.continuous).isClosed
+  (hC.isCompact.image f.hom.continuous).isClosed
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
 theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Function.Bijective f) :
@@ -258,7 +258,7 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
 /-- A constant map as a morphism in `CompHausLike` -/
 def const {P : TopCat.{u} → Prop}
     (T : CompHausLike.{u} P) {S : CompHausLike.{u} P} (s : S) : T ⟶ S :=
-  ContinuousMap.const _ s
+  ⟨ContinuousMap.const _ s⟩
 
 lemma const_comp {P : TopCat.{u} → Prop} {S T U : CompHausLike.{u} P}
     (s : S) (g : S ⟶ U) : T.const s ≫ g = T.const (g s) :=

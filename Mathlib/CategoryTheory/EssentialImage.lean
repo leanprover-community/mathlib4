@@ -70,7 +70,7 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
 /-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
 -- Porting note: no hasNonEmptyInstance linter yet
 def EssImageSubcategory (F : C ⥤ D) :=
-  FullSubcategory F.essImage
+  FullSubcategory (· ∈ F.essImage)
 
 -- Porting note: `deriving Category` is not able to derive this instance
 instance : Category (EssImageSubcategory F) :=
@@ -91,7 +91,7 @@ instance : Faithful (essImageInclusion F) :=
 
 lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
     (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g := by
-  simpa using h
+  apply FullSubcategory.hom_ext; simpa using h
 
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential
@@ -118,8 +118,7 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : Y ∈ F.essImage
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
-  mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+  mem_essImage := fun ⟨_, hY⟩ => ⟨_, ⟨InducedCategory.isoMk (essImage.getIso hY)⟩⟩
 
 theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
   mem_essImage Y := by

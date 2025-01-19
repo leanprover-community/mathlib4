@@ -67,12 +67,22 @@ instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   id X := ⟨𝟙 (F X)⟩
   comp f g := ⟨f.hom ≫ g.hom⟩
 
+section
+
+variable {F}
+
 @[ext]
 theorem InducedCategory.hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) :
     f = g :=
   InducedCategoryHom.ext h
 
-variable {F} in
+@[simp]
+theorem InducedCategory.id_hom (X : InducedCategory D F) : (𝟙 X :).hom = 𝟙 (F X) := rfl
+
+@[simp]
+theorem InducedCategory.comp_hom {X Y Z : InducedCategory D F} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
 /-- Construct an isomorphism in the induced category
 from an isomorphism in the original category. -/
 @[simps] def InducedCategory.isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
@@ -80,6 +90,8 @@ from an isomorphism in the original category. -/
   inv := ⟨f.inv⟩
   hom_inv_id := by ext; exact f.hom_inv_id
   inv_hom_id := by ext; exact f.inv_hom_id
+
+end
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -133,7 +145,7 @@ lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y 
 @[ext]
 theorem FullSubcategory.hom_ext {X Y : FullSubcategory Z} {f g : X ⟶ Y} (h : f.hom = g.hom) :
     f = g :=
-  InducedCategory.hom_ext _ h
+  InducedCategory.hom_ext h
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).

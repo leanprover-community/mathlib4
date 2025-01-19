@@ -338,4 +338,17 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
   subst h
   simp
 
+@[simp]
+theorem InducedCategory.eqToHom_hom {C : Type*} {F : C → D} {X Y : InducedCategory D F}
+    (h : X = Y) : (eqToHom h).hom = eqToHom (congr_arg F h) := by
+  cases h; rfl
+
+def induced {C' : Type*} (e : C' ≃ D) : InducedCategory D e ≌ D where
+  functor := inducedFunctor e
+  inverse :=
+    { obj := e.symm
+      map {X Y f} := ⟨eqToHom (by simp) ≫ f ≫ eqToHom (by simp)⟩ }
+  unitIso := NatIso.ofComponents (fun X => eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun X => eqToIso (by simp))
+
 end CategoryTheory

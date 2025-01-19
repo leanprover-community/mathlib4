@@ -109,9 +109,10 @@ variable (C)
 /-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
-  map {X Y} f := by apply (preCounitIso X).hom ≫ f ≫ (preCounitIso Y).inv
+  map {X Y} f := ⟨(preCounitIso X).hom ≫ f ≫ (preCounitIso Y).inv⟩
   map_id _ := by aesop
-  map_comp _ _ := by change _ = CategoryStruct.comp (obj := C) _ _; simp
+  map_comp _ _ := InducedCategory.hom_ext <|
+      by change _ = CategoryStruct.comp (obj := C) _ _; simp
 
 /-- The equivalence between the skeleton and the category itself. -/
 @[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
@@ -119,7 +120,7 @@ variable (C)
   inverse := toSkeletonFunctor C
   unitIso := NatIso.ofComponents
     (fun X ↦ InducedCategory.isoMk (Nonempty.some <| Quotient.mk_out X.out).symm)
-    fun _ ↦ .symm <| Iso.inv_hom_id_assoc _ _
+    fun _ ↦ .symm <| InducedCategory.hom_ext <| Iso.inv_hom_id_assoc _ _
   counitIso := NatIso.ofComponents preCounitIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
