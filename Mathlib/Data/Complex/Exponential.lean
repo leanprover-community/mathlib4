@@ -1176,8 +1176,8 @@ theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 
     _ = abs x ^ 2 := by rw [mul_one]
 
 lemma abs_exp_sub_sum_le_exp_abs_sub_sum (x : ℂ) (n : ℕ) :
-  abs (exp x - ∑ m ∈ range n, x ^ m / m.factorial)
-    ≤ Real.exp (abs x) - ∑ m ∈ range n, (abs x) ^ m / m.factorial := by
+    abs (exp x - ∑ m ∈ range n, x ^ m / m.factorial)
+      ≤ Real.exp (abs x) - ∑ m ∈ range n, (abs x) ^ m / m.factorial := by
   rw [← CauSeq.lim_const (abv := Complex.abs) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_abs]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
