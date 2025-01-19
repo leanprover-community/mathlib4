@@ -44,6 +44,8 @@ structure Sequence [Semiring R] where
   /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead, -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
+attribute [coe] Sequence.elems'
+
 namespace Sequence
 
 variable {R}
