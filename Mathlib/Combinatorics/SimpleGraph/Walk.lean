@@ -870,7 +870,7 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   convert adj_getVert_succ _ _ <;> omega
 
 @[simp]
-lemma snd_reverse {p : G.Walk u v} : p.reverse.snd = p.penultimate := by
+lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by
   simpa using getVert_reverse p 1
 
 @[simp]

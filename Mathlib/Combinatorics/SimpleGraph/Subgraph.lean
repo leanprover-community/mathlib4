@@ -174,7 +174,7 @@ theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G�
 lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
     (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
 
-lemma subgraphOfAdj_spanningCoe {v w : V} (hadj : G.Adj v w) :
+lemma spanningCoe_subgraphOfAdj {v w : V} (hadj : G.Adj v w) :
     (G.subgraphOfAdj hadj).spanningCoe = fromEdgeSet {s(v, w)} := by
   ext v w
   aesop
@@ -774,7 +774,7 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
   simp only [Set.mem_toFinset, mem_neighborSet]
 
 lemma adj_iff_of_neighborSet_equiv {v : V} [DecidableEq V] {H : Subgraph G}
-  (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
   ∀ w, H.Adj v w ↔ G.Adj v w := by
   intro w
   refine ⟨fun a => a.adj_sub, ?_⟩

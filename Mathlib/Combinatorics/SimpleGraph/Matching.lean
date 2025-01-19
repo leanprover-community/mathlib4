@@ -3,9 +3,9 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Functor
 
@@ -340,7 +340,7 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
-lemma IsCycles.unique_other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
+lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃! w', w ≠ w' ∧ G.Adj v w' := by
   obtain ⟨w', ⟨hww, hww'⟩⟩ := h.other_adj_of_adj hadj
   use w'
@@ -383,8 +383,7 @@ lemma IsCycles.snd_of_support_of_path_of_adj [Fintype V] [DecidableEq V] {v w w'
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _).fintype v]
   exact hadj.symm
 
-
-lemma IsCycles.sDiff_spanningCoe_toSubgraph_reachable [Fintype V] [DecidableEq V] {v w : V}
+lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V] {v w : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hp : p.IsPath) :
     (G \ p.toSubgraph.spanningCoe).Reachable w v := by
   -- Consider the case when p is nil

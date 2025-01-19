@@ -117,7 +117,6 @@ lemma Connected.exists_connectedComponent_eq {H : Subgraph G}
 
 end Subgraph
 
-
 /-! ### Walks as subgraphs -/
 
 namespace Walk
@@ -286,7 +285,7 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsP
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
-  rintro ⟨i', ⟨hl, _⟩|⟨_, hl⟩⟩ <;>
+  rintro ⟨i', ⟨hl, _⟩ | ⟨_, hl⟩⟩ <;>
     apply hp.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
       (by rw [Set.mem_setOf_eq]; omega) at hl <;> aesop
 
@@ -309,7 +308,7 @@ lemma toSubgraph_adj_sndOfNotNil {u v v'} {p : G.Walk u v} (hp : p.IsPath)
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
       rw [p.getVert_zero, hl1]
     simp [this]
-  · have : (i + 1) = 0 := by
+  · have : i + 1 = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
       rw [p.getVert_zero, hr2]
     contradiction
