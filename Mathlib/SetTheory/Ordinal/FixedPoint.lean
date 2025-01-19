@@ -163,6 +163,10 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
 @[deprecated isNormal_derivFamily (since := "2024-10-11")]
 alias derivFamily_isNormal := isNormal_derivFamily
 
+theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
+    StrictMono (derivFamily f) :=
+  (isNormal_derivFamily f).strictMono
+
 theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     f i (derivFamily f o) = derivFamily f o := by
   induction' o using limitRecOn with o _ o l IH
@@ -537,6 +541,9 @@ theorem isNormal_deriv (f) : IsNormal (deriv f) :=
 
 @[deprecated isNormal_deriv (since := "2024-10-11")]
 alias deriv_isNormal := isNormal_deriv
+
+theorem deriv_strictMono (f) : StrictMono (deriv f) :=
+  derivFamily_strictMono _
 
 theorem deriv_id_of_nfp_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   ((isNormal_deriv _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
