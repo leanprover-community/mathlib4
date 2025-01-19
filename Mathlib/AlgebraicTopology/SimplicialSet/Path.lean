@@ -197,9 +197,16 @@ end Path
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed
 by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
-@[simps!]
 abbrev spine (n : ℕ) : X _[n] → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
+
+@[simp]
+lemma spine_vertex {n : ℕ} (Δ : X _[n]) (i : Fin (n + 1)) :
+    (X.spine n Δ).vertex i = X.map (const [0] [n] i).op Δ := rfl
+
+@[simp]
+lemma spine_arrow {n : ℕ} (Δ : X _[n]) (i : Fin n) :
+    (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ := rfl
 
 lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
     (i : Fin (m + 1)) :
