@@ -300,6 +300,7 @@ lemma Scheme.Opens.toSpecΓ_top {X : Scheme} :
     (⊤ : X.Opens).toSpecΓ = (⊤ : X.Opens).ι ≫ X.toSpecΓ := by
   simp [Scheme.Opens.toSpecΓ, toSpecΓ_naturality]; rfl
 
+@[reassoc]
 lemma Scheme.Opens.toSpecΓ_appTop {X : Scheme.{u}} (U : X.Opens) :
     U.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
   simp [Scheme.Opens.toSpecΓ]
