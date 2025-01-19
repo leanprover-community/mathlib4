@@ -376,7 +376,7 @@ end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
 instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
-  (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr fun J ↦
+  Module.Flat.iff_lTensor_injective'.mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian
