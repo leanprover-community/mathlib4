@@ -118,29 +118,23 @@ lemma zero_accepts : zero.toεNFA.accepts = (0 : Language α) := by
 
 lemma epsilon_accepts : epsilon.toεNFA.accepts = (1 : Language α) := by
   ext x
-  constructor <;> intro h <;> rw [mem_accepts_iff_exists_path] at *
-  · obtain ⟨s₁, s₂, _, _, _, _, h⟩ := h
-    substs x s₁ s₂
+  constructor <;> rw [mem_accepts_iff_exists_path]
+  · rintro ⟨s₁, s₂, _, ⟨⟩, _, ⟨⟩, h⟩
     rw [Language.one_def, mem_singleton_iff, reduceOption_eq_nil_iff]
     use 1
-    cases' h with _ _ _ _ a _ hs h
-    cases a <;> cases hs
-    cases h <;> trivial
-  · subst x
+    rcases h with _ | ⟨_, _, _, ⟨⟩, _, ⟨⟩, ⟨⟩⟩ <;> trivial
+  · rintro rfl
     use .ini, .fin, [none]
     repeat constructor
 
 lemma char_accepts (a : α) : (char a).toεNFA.accepts = {[a]} := by
   ext x
-  constructor <;> intro h <;> rw [mem_accepts_iff_exists_path] at *
-  · obtain ⟨s₁, s₂, _, _, _, _, h⟩ := h
-    substs x s₁ s₂
+  constructor <;> rw [mem_accepts_iff_exists_path]
+  · rintro ⟨_, _, _, ⟨⟩, ⟨⟩, ⟨⟩, h⟩
     rw [mem_singleton_iff, reduceOption_eq_singleton_iff]
     use 0, 0
-    cases' h with _ _ _ _ a _ hs h
-    cases a <;> cases hs
-    cases h <;> subst_eqs <;> trivial
-  · subst x
+    rcases h with _ | ⟨_, _, _, ⟨⟩, _, ⟨⟩, ⟨⟩⟩ <;> subst_eqs <;> trivial
+  · rintro ⟨⟩
     use .ini, .fin, [a]
     repeat constructor
 
@@ -148,53 +142,43 @@ lemma plus_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
     P.toεNFA.IsPath s₁ s₂ x ↔ (P + Q).toεNFA.IsPath (.inr (.inl s₁)) (.inr (.inl s₂)) x := by
   induction' x with _ _ ih generalizing s₁
     <;> constructor
-    <;> intro h
-    <;> cases' h with _ s _ _ _ _ hs h
+    <;> rintro (_ | ⟨s, _, _, _, _, hs, h⟩)
     <;> (try apply IsPath.nil)
   · apply IsPath.cons
     · left
       use s
     · rwa [Function.comp_apply, ← ih]
-  · cases s <;> obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩ := hs
-    · cases' h with _ s _ _ a _ hs
-      cases a <;> cases hs
+  · cases s <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩
+    · rcases h with _ | ⟨_, _, _, ⟨⟩, _, ⟨⟩⟩
     · apply IsPath.cons <;> (try rw [ih]) <;> assumption
 
 lemma plus_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
     Q.toεNFA.IsPath s₁ s₂ x ↔ (P + Q).toεNFA.IsPath (.inr (.inr s₁)) (.inr (.inr s₂)) x := by
   induction' x with _ _ ih generalizing s₁
     <;> constructor
-    <;> intro h
-    <;> cases' h with _ s _ _ _ _ hs h
+    <;> rintro (_ | ⟨s, _, _, _, _, hs, h⟩)
     <;> (try apply IsPath.nil)
   · apply IsPath.cons
     · left
       use s
     · rwa [Function.comp_apply, ← ih]
-  · cases s <;> obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩ := hs
-    · cases' h with _ s _ _ a _ hs
-      cases a <;> cases hs
+  · cases s <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩
+    · rcases h with _ | ⟨_, _, _, ⟨⟩, _, ⟨⟩⟩
     · apply IsPath.cons <;> (try rw [ih]) <;> assumption
 
 lemma plus_no_cross_left (s : P.St) (t : Q.St) (x : List (Option α)) :
     ¬(P + Q).toεNFA.IsPath (.inr (.inl s)) (.inr (.inr t)) x := by
-  intro h
-  induction x generalizing s <;> cases' h with _ s _ _ _ _ hs
-  obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩ := hs <;> tauto
+  induction x generalizing s <;> rintro (_ | ⟨_, _, _, _, _, ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩⟩) <;> tauto
 
 lemma plus_no_cross_right (s : Q.St) (t : P.St) (x : List (Option α)) :
     ¬(P + Q).toεNFA.IsPath (.inr (.inr s)) (.inr (.inl t)) x := by
-  intro h
-  induction x generalizing s <;> cases' h with _ s _ _ _ _ hs
-  obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩ := hs <;> tauto
+  induction x generalizing s <;> rintro (_ | ⟨_, _, _, _, _, ⟨_, _, ⟨⟩⟩ | ⟨⟨⟩, _⟩⟩) <;> tauto
 
 lemma plus_accepts : (P + Q).toεNFA.accepts = P.toεNFA.accepts + Q.toεNFA.accepts := by
   ext x
-  constructor <;> intro h <;> rw [mem_accepts_iff_exists_path] at *
-  · obtain ⟨s₁, s₂, _, _, _, _, h⟩ := h
-    substs x s₁ s₂
-    cases' h with _ s _ _ a x hs h
-    cases a <;> obtain ⟨_ | _, hs, ⟨⟩⟩ := hs
+  constructor <;> rw [mem_accepts_iff_exists_path]
+  · rintro ⟨_, _, _, ⟨⟩, ⟨⟩, ⟨⟩, h⟩
+    rcases h with _ | ⟨_, _, _, ⟨⟩, x, ⟨_ | _, hs, ⟨⟩⟩, h⟩
       <;> [left; right]
       <;> rcases eq_nil_or_concat x with ⟨⟨⟩⟩ | ⟨_, a, ⟨⟩⟩
       <;> (try apply IsPath.eq_of_nil at h; contradiction)
@@ -203,19 +187,19 @@ lemma plus_accepts : (P + Q).toεNFA.accepts = P.toεNFA.accepts + Q.toεNFA.acc
       <;> (try apply plus_no_cross_left at h)
       <;> (try apply plus_no_cross_right at h)
       <;> (try contradiction)
-      <;> (try cases a <;> obtain ⟨_, _, ⟨⟩⟩ := hs; done)
-      <;> obtain ⟨_, _, ⟨⟩⟩ | ⟨_, ⟨⟩, _⟩ := hs
+      <;> (try cases a <;> rcases hs with ⟨_, _, ⟨⟩⟩; done)
+      <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨_, ⟨⟩, _⟩
       <;> rw [reduceOption_cons_of_none, reduceOption_concat, Option.toList_none, append_nil,
             mem_accepts_iff_exists_path]
     · rw [← plus_embed_left] at h
       tauto
     · rw [← plus_embed_right] at h
       tauto
-  · use .inl .ini, .inl .fin
+  · intro h
+    use .inl .ini, .inl .fin
     rcases h with h | h
       <;> rw [mem_accepts_iff_exists_path] at h
-      <;> obtain ⟨s₁, s₂, x', _, _, _, _⟩ := h
-      <;> subst x
+      <;> obtain ⟨s₁, s₂, x', _, _, ⟨⟩, _⟩ := h
       <;> use none :: x' ++ [none]
       <;> simp only [reduceOption_append, reduceOption_cons_of_none, reduceOption_nil, append_nil]
       <;> split_ands
@@ -234,23 +218,20 @@ lemma plus_accepts : (P + Q).toεNFA.accepts = P.toεNFA.accepts + Q.toεNFA.acc
 
 lemma comp_one_way (s : Q.St) (t : P.St) (x : List (Option α)) :
     ¬(comp P Q).toεNFA.IsPath (.inr s) (.inl t) x := by
-  intro h
-  induction x generalizing s <;> cases' h with _ s _ _ _ _ hs
-  obtain ⟨_, _, ⟨⟩⟩ := hs
+  induction x generalizing s <;> rintro (_ | ⟨_, _, _, _, _, ⟨_, _, ⟨⟩⟩⟩)
   tauto
 
 lemma comp_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
     P.toεNFA.IsPath s₁ s₂ x ↔ (comp P Q).toεNFA.IsPath (.inl s₁) (.inl s₂) x := by
   induction' x with _ _ ih generalizing s₁
     <;> constructor
-    <;> intro h
-    <;> cases' h with _ s _ _ _ _ hs h
+    <;> rintro (_ | ⟨s, _, _, _, _, hs, h⟩)
     <;> (try apply IsPath.nil)
   · apply IsPath.cons
     · left
       use s
     · rwa [← ih]
-  · obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨_, _, ⟨⟩⟩, _⟩ := hs
+  · rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨_, _, ⟨⟩⟩, _⟩
     · apply IsPath.cons <;> (try rw [ih]) <;> assumption
     · apply comp_one_way at h
       contradiction
@@ -259,13 +240,12 @@ lemma comp_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
     Q.toεNFA.IsPath s₁ s₂ x ↔ (comp P Q).toεNFA.IsPath (.inr s₁) (.inr s₂) x := by
   induction' x with _ _ ih generalizing s₁
     <;> constructor
-    <;> intro h
-    <;> cases' h with _ s _ _ _ _ hs h
+    <;> rintro (_ | ⟨s, _, _, _, _, hs, h⟩)
     <;> (try apply IsPath.nil)
   · apply IsPath.cons
     · use s
     · rwa [← ih]
-  · obtain ⟨_, _, ⟨⟩⟩ := hs
+  · rcases hs with ⟨_, _, ⟨⟩⟩
     apply IsPath.cons <;> (try rw [ih]) <;> assumption
 
 lemma comp_split (s₁₁ : P.St) (s₂₂ : Q.St) (x : List (Option α)) :
@@ -280,10 +260,10 @@ lemma comp_split (s₁₁ : P.St) (s₂₂ : Q.St) (x : List (Option α)) :
   cases' x with a x
   · apply IsPath.eq_of_nil at h
     contradiction
-  · induction' x with b x ih generalizing s₁₁ a <;> cases' h with _ s _ _ _ _ hs h
+  · induction' x with b x ih generalizing s₁₁ a <;> rcases h with _ | ⟨s, _, _, _, _, hs, h⟩
     · apply IsPath.eq_of_nil at h
       subst s
-      obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨_, _, ⟨⟩⟩, ⟨⟩, _⟩ := hs
+      rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨_, _, ⟨⟩⟩, ⟨⟩, _⟩
       use s₁₁, s₂₂, [], []
       tauto
     · cases' s with _ s
@@ -295,9 +275,9 @@ lemma comp_split (s₁₁ : P.St) (s₂₂ : Q.St) (x : List (Option α)) :
 
 lemma comp_accepts : (comp P Q).toεNFA.accepts = P.toεNFA.accepts * Q.toεNFA.accepts := by
   ext x
-  constructor <;> intro h
-  · rw [mem_accepts_iff_exists_path] at h
-    obtain ⟨_, _, _, ⟨s₁₁, _, ⟨⟩⟩, ⟨s₂₂, _, ⟨⟩⟩, ⟨⟩, h⟩ := h
+  constructor
+  · rw [mem_accepts_iff_exists_path]
+    rintro ⟨_, _, _, ⟨s₁₁, _, ⟨⟩⟩, ⟨s₂₂, _, ⟨⟩⟩, ⟨⟩, h⟩
     apply comp_split at h
     obtain ⟨s₁₂, s₂₁, x₁, x₂, ⟨⟩, _, _, h₁, h₂⟩ := h
     rw [← comp_embed_left] at h₁
@@ -311,12 +291,11 @@ lemma comp_accepts : (comp P Q).toεNFA.accepts = P.toεNFA.accepts * Q.toεNFA.
       constructor
       · use s₂₁, s₂₂, x₂
       · rw [reduceOption_append, reduceOption_cons_of_none]
-  · rw [Language.mem_mul] at h
-    obtain ⟨x₁, h₁, x₂, h₂, ⟨⟩⟩ := h
+  · rw [Language.mem_mul]
+    rintro ⟨x₁, h₁, x₂, h₂, ⟨⟩⟩
     rw [mem_accepts_iff_exists_path] at *
-    obtain ⟨s₁₁, s₁₂, x₁', _, _, _, _⟩ := h₁
-    obtain ⟨_, s₂₂, x₂', _, _, _, _⟩ := h₂
-    substs x₁ x₂
+    obtain ⟨s₁₁, s₁₂, x₁', _, _, ⟨⟩, _⟩ := h₁
+    obtain ⟨_, s₂₂, x₂', _, _, ⟨⟩, _⟩ := h₂
     use .inl s₁₁, .inr s₂₂, x₁' ++ none :: x₂'
     split_ands <;> try tauto
     · rw [reduceOption_append, reduceOption_cons_of_none]
@@ -330,19 +309,15 @@ lemma comp_accepts : (comp P Q).toεNFA.accepts = P.toεNFA.accepts * Q.toεNFA.
         · rwa [← comp_embed_right]
 
 lemma step_accept_empty (s : P.St) : s ∈ P.toεNFA.accept → ∀ a, P.toεNFA.step s a = ∅ := by
-  intro hs
   induction P
-    <;> rcases hs with ⟨_, _, ⟨⟩⟩
+    <;> rintro ⟨_, _, ⟨⟩⟩
     <;> simp only [toεNFA, comp_step, comp_def, image_eq_empty]
     <;> tauto
 
 lemma accept_final (s : P.St) : s ∈ P.toεNFA.accept → ∀ t x, x ≠ [] → ¬P.toεNFA.IsPath s t x := by
-  intro hs _ _ hx
-  rw [ne_nil_iff_exists_cons] at hx
-  obtain ⟨_, _, ⟨⟩⟩ := hx
-  intro h
-  cases' h with _ _ _ _ _ _ hs'
-  rw [step_accept_empty] at hs' <;> assumption
+  simp_rw [ne_nil_iff_exists_cons]
+  rintro _ _ _ ⟨_, _, _, ⟨_, _, ⟨⟩⟩⟩ (_ | ⟨_, _, _, _, _, hs⟩)
+  rw [step_accept_empty] at hs <;> assumption
 
 -- N.B. This holds for any `P`, but only the `star P` case is needed.
 lemma star_no_restart (s : P.St) (x : List (Option α)) :
@@ -353,7 +328,7 @@ lemma star_no_restart (s : P.St) (x : List (Option α)) :
     contradiction
   · simp_rw [isPath_append, isPath_singleton] at h
     obtain ⟨s, _, hs⟩ := h
-    rcases s with ⟨_ | _⟩ | _ <;> cases a <;> obtain ⟨_, _, ⟨⟩⟩ | ⟨⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩, _⟩ := hs
+    rcases s with ⟨_ | _⟩ | _ <;> cases a <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩, _⟩
 
 lemma star_cons (s : (star P).St) :
     s = .inl .ini ∨ s ∈ .inr '' P.toεNFA.accept →
@@ -363,10 +338,10 @@ lemma star_cons (s : (star P).St) :
         (t = .inl .fin ∨ t ∈ .inr '' P.toεNFA.start) ∧
         (star P).toεNFA.IsPath t (.inl .fin) x' := by
   intro hs x h
-  obtain ⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩ := hs
+  rcases hs with ⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩
     <;> cases' x with a x
     <;> (try apply IsPath.eq_of_nil at h)
-    <;> cases' h with _ s _ _ _ _ hs
+    <;> rcases h with _ | ⟨s, _, _, _, _, hs⟩
     <;> use s, x
     <;> cases a
     <;> obtain ⟨_, hs, ⟨⟩⟩ | ⟨⟨⟩⟩ := hs
@@ -385,13 +360,12 @@ lemma star_concat (s : (star P).St) :
     obtain ⟨s, _, hs⟩ := h
     cases a
     · use x
-    · rcases s with ⟨_ | _⟩ | _ <;> obtain ⟨_, _, ⟨⟩⟩ | ⟨_, ⟨⟩, _⟩ := hs
+    · rcases s with ⟨_ | _⟩ | _ <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨_, ⟨⟩, _⟩
 
 lemma star_end (s : (star P).St) :
     s = .inl .ini ∨ s ∈ .inr '' P.toεNFA.accept → (star P).toεNFA.IsPath s (.inl .fin) [none] := by
   rw [isPath_singleton]
-  intro h
-  rcases h with ⟨⟨⟩, _⟩ | ⟨_, _, ⟨⟩⟩ <;> (try right; constructor) <;> tauto
+  rintro (⟨⟨⟩, _⟩ | ⟨_, _, ⟨⟩⟩) <;> (try right; constructor) <;> tauto
 
 lemma star_split (s₁ : P.St) (x : List (Option α)) :
     (star P).toεNFA.IsPath (.inr s₁) (.inl .fin) x →
@@ -403,8 +377,7 @@ lemma star_split (s₁ : P.St) (x : List (Option α)) :
   intro h
   obtain ⟨x, ⟨⟩⟩ := star_concat _ (by tauto) _ h
   simp_rw [isPath_append, isPath_singleton] at h
-  obtain ⟨t, h, ht⟩ := h
-  rcases t with ⟨_ | _⟩ | t <;> obtain ⟨_, _, ⟨⟩⟩ | ⟨_, _, _⟩ := ht
+  rcases h with ⟨⟨_ | _⟩ | t, h, ⟨_, _, ⟨⟩⟩ | ⟨_, _, _⟩⟩
   · apply star_no_restart at h
     contradiction
   · induction' x with a x ih generalizing s₁
@@ -412,8 +385,7 @@ lemma star_split (s₁ : P.St) (x : List (Option α)) :
       cases h
       use t, [], [none]
       split_ands <;> (try apply star_end) <;> tauto
-    · cases' h with _ s _ _ _ _ hs h
-      rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩, _, _⟩
+    · rcases h with _ | ⟨_, _, _, _, _, ⟨_, _, ⟨⟩⟩ | ⟨⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩, _, _⟩, h⟩
       · apply ih at h
         obtain ⟨s₂, x₁, x', _, _, _, _⟩ := h
         use s₂, a :: x₁, x'
@@ -443,23 +415,21 @@ lemma star_parts (s : (star P).St) (x : List (Option α)) :
     obtain ⟨xs, hx, _⟩ := star_parts (.inr s₂) _ (by tauto) h'
     use x₁.reduceOption :: xs
     rw [reduceOption_cons_of_none, reduceOption_append, flatten_cons, hx]
-    have h₁ := (mem_accepts_iff_exists_path _).mpr ⟨s₁, s₂, x₁, (by trivial)⟩
+    have := (mem_accepts_iff_exists_path _).mpr ⟨s₁, s₂, x₁, (by trivial)⟩
     constructor <;> (try intro _ hy; cases hy) <;> tauto
   termination_by x.length
 
 lemma star_embed (s₁ s₂ : P.St) (x : List (Option α)) :
     P.toεNFA.IsPath s₁ s₂ x → (star P).toεNFA.IsPath (.inr s₁) (.inr s₂) x := by
-  induction' x generalizing s₁ <;> intro h <;> cases h <;> (try apply IsPath.cons; left) <;> tauto
+  induction x generalizing s₁ <;> rintro (_ | _) <;> (try apply IsPath.cons; left) <;> tauto
 
 lemma star_accepts : (star P).toεNFA.accepts = P.toεNFA.accepts∗ := by
   ext x
-  constructor <;> intro h
-  · rw [mem_accepts_iff_exists_path] at h
-    obtain ⟨_, _, x, ⟨⟩, ⟨⟩, ⟨⟩, h⟩ := h
+  constructor <;> rw [mem_accepts_iff_exists_path]
+  · rintro ⟨_, _, x, ⟨⟩, ⟨⟩, ⟨⟩, h⟩
     exact star_parts _ x (by tauto) h
-  · rw [Language.mem_kstar] at h
-    obtain ⟨xs, ⟨⟩, hs⟩ := h
-    rw [mem_accepts_iff_exists_path]
+  · rw [Language.mem_kstar]
+    rintro ⟨xs, ⟨⟩, hs⟩
     use .inl .ini, .inl .fin
     induction' xs with _ _ ih
     · use [none]
@@ -471,7 +441,7 @@ lemma star_accepts : (star P).toεNFA.accepts = P.toεNFA.accepts∗ := by
       obtain ⟨_, _, _, hx₂, h₂⟩ := ih hs
       obtain ⟨_, x₂, ⟨⟩, hs₂₁, _⟩ := star_cons _ (by tauto) _ h₂
       use none :: x₁ ++ none :: x₂
-      split_ands <;> try rfl
+      refine ⟨rfl, rfl, ?_, ?_⟩
       · rw [reduceOption_append, reduceOption_cons_of_none, flatten_cons, hx₂]
       · rw [isPath_append]
         use .inr s₁₂
@@ -484,8 +454,7 @@ lemma star_accepts : (star P).toεNFA.accepts = P.toεNFA.accepts∗ := by
           <;> (try apply star_embed)
           <;> tauto
 
-theorem toεNFA_correct (P : RegularExpression α) :
-    P.toεNFA.accepts = P.matches' := by
+theorem toεNFA_correct : P.toεNFA.accepts = P.matches' := by
   induction P with
   | zero => exact zero_accepts
   | epsilon => exact epsilon_accepts
