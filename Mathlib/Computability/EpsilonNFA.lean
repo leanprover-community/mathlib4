@@ -167,7 +167,6 @@ theorem isPath_singleton {s t : σ} {a : Option α} : M.IsPath s t [a] ↔ t ∈
 
 alias ⟨_, IsPath.singleton⟩ := isPath_singleton
 
-@[simp]
 theorem isPath_append {s u : σ} {x y : List (Option α)} :
     M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
   mp := by
