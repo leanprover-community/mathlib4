@@ -59,7 +59,7 @@ variable (C) (F) in
 /-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on
 every `F.obj c` for a functor `F : C ⥤ Cat`, then `colim` on `Grothendieck F` also preserves limits
 of shape `J`. -/
-instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H] [HasLimitsOfShape J H]
+instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [HasLimitsOfShape J H]
     [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) := by
