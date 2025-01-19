@@ -817,8 +817,6 @@ nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 
 @[simp] nonrec theorem sub_self_re : a - ↑a.re = a.im := a.sub_self_re
 
-@[simp] lemma coe_apply (a : R): coe a = QuaternionAlgebra.coe a := rfl
-
 @[simp, norm_cast]
 theorem coe_re : (x : ℍ[R]).re = x := rfl
 
@@ -1065,19 +1063,19 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 @[simp] theorem star_im : (star a).im = -a.im := a.im_star
 
 nonrec theorem self_add_star' : a + star a = ↑(2 * a.re) := by
-  simp [a.self_add_star']
+  simp [a.self_add_star', Quaternion.coe]
 
 nonrec theorem self_add_star : a + star a = 2 * a.re := by
-  simp [a.self_add_star]
+  simp [a.self_add_star, Quaternion.coe]
 
 nonrec theorem star_add_self' : star a + a = ↑(2 * a.re) := by
-  simp [a.star_add_self']
+  simp [a.star_add_self', Quaternion.coe]
 
 nonrec theorem star_add_self : star a + a = 2 * a.re := by
-  simp [a.star_add_self]
+  simp [a.star_add_self, Quaternion.coe]
 
 nonrec theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a := by
-  simp [a.star_eq_two_re_sub]
+  simp [a.star_eq_two_re_sub, Quaternion.coe]
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=
