@@ -49,11 +49,6 @@ lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
     p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def]
 
-/-- A submodule is finitely generated if and only if there exists a finite set generating it -/
-lemma fg_iff_card_finset_nonempty {p : Submodule R M} :
-  p.FG ↔ Set.Nonempty (Finset.card '' { s : Finset M | span R (s : Set M) = p }) := by
-  exact Set.image_nonempty.symm
-
 /-- A submodule is finitely generated if and only if
 its spanrank equals its minimum generator cardinality -/
 lemma fg_iff_spanrank_eq_spanRankNat {p : Submodule R M} :
