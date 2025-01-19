@@ -21,7 +21,7 @@ of length `n`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory
+open CategoryTheory Opposite Simplicial SimplexCategory
 
 namespace SSet
 namespace Truncated
@@ -105,15 +105,21 @@ the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j +
 abbrev interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m) : Path X l :=
   Path₁.interval f j l h
 
-variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
+variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ} (f : Path X m) (σ : X ⟶ Y)
 
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
-@[simps!]
-abbrev map (f : Path X m) (σ : X ⟶ Y) : Path Y m :=
-  Path₁.map f <| trunc (n + 1) 1 |>.map σ
+abbrev map : Path Y m := Path₁.map f <| trunc (n + 1) 1 |>.map σ
+
+@[simp]
+lemma map_vertex (i : Fin (m + 1)) :
+    (f.map σ).vertex i = σ.app (op [0]ₙ₊₁) (f.vertex i) := rfl
+
+@[simp]
+lemma map_arrow (i : Fin m) :
+    (f.map σ).arrow i = σ.app (op [1]ₙ₊₁) (f.arrow i) := rfl
 
 /-- `Path.map` respects subintervals of paths. -/
-lemma map_interval (f : Path X m) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ m) :
+lemma map_interval (j l : ℕ) (h : j + l ≤ m) :
     (f.map σ).interval j l h = (f.interval j l h).map σ := rfl
 
 end Path
@@ -182,15 +188,21 @@ the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j +
 abbrev interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n) : Path X l :=
   Path₁.interval f j l h
 
-variable {X Y : SSet.{u}} {n : ℕ}
+variable {X Y : SSet.{u}} {n : ℕ} (f : Path X n) (σ : X ⟶ Y)
 
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
-@[simps!]
-abbrev map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
-  Path₁.map f <| truncation 1 |>.map σ
+abbrev map : Path Y n := Path₁.map f <| truncation 1 |>.map σ
+
+@[simp]
+lemma map_vertex (i : Fin (n + 1)) :
+    (f.map σ).vertex i = σ.app (op [0]) (f.vertex i) := rfl
+
+@[simp]
+lemma map_arrow (i : Fin n) :
+    (f.map σ).arrow i = σ.app (op [1]) (f.arrow i) := rfl
 
 /-- `Path.map` respects subintervals of paths. -/
-lemma map_interval (f : Path X n) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ n) :
+lemma map_interval (j l : ℕ) (h : j + l ≤ n) :
     (f.map σ).interval j l h = (f.interval j l h).map σ := rfl
 
 end Path
