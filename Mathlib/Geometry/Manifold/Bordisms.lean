@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.HasNiceBoundary
+import Mathlib.Algebra.Module.Equiv.Defs
 
 /-!
 ## (Unoriented) bordism theory
@@ -68,9 +69,9 @@ structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ
   /-- The smooth manifold `M` is a topological space -/
   [topSpaceM : TopologicalSpace M]
   -- /-- The topological space on which the manifold `M` is modeled -/
-  -- H : Type v
+  H : Type v
   -- /-- `H` is a topological space -/
-  -- [topSpaceH : TopologicalSpace H]
+  [topSpaceH : TopologicalSpace H]
   /-- The smooth manifold `M` is a charted space over `H` -/
   [chartedSpace : ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
   /-- The model with corners for the manifold `M` -/
@@ -88,6 +89,7 @@ structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ
   /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
   f : M → X
   hf : Continuous f
+  coordChange : Equiv (Fin n → ℝ) H
 -- TODO: why does the checkUnivs linter complain?
 -- #lint only checkUnivs
 
@@ -100,7 +102,7 @@ instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : NormedSpace ℝ 
 
 instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.M := s.topSpaceM
 
---instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.H := s.topSpaceH
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.H := s.topSpaceH
 
 instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) s.M := s.chartedSpace
@@ -122,10 +124,12 @@ variable {n : ℕ} {k : ℕ∞}
 -- This is part of proving functoriality of the bordism groups.
 noncomputable def map (s : SingularNManifold X n k)
     {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n k where
+  H := s.H
   I := s.I
   f := φ ∘ s.f
   hf := hφ.comp s.hf
   dimension := s.dimension
+  coordChange := s.coordChange
 
 @[simp]
 lemma map_f (s : SingularNManifold X n k) {φ : X → Y} (hφ : Continuous φ) :
@@ -155,9 +159,11 @@ variable {M : Type u} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fi
 variable (M) in
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n k where
-  -- H := H
-  I := I
-  dimension := hdim
+  H := sorry--EuclideanSpace ℝ (Fin n)
+  E := EuclideanSpace ℝ (Fin n)
+  coordChange := sorry--Equiv.refl _
+  I := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
+  dimension := finrank_euclideanSpace_fin
   f := id
   hf := continuous_id
 
@@ -168,17 +174,18 @@ noncomputable def comap [h : Fact (finrank ℝ E = n)]
     {φ : M → s.M} (hφ : ContMDiff I s.I n φ) : SingularNManifold X n k where
   E := E
   M := M
-  --H := H
+  H := H
+  coordChange := sorry -- TODO: doesn't work! s.coordChange
   I := I
   f := s.f ∘ φ
   hf := s.hf.comp hφ.continuous
   dimension := h.out
 
-@[simp]
-lemma comap_f [Fact (finrank ℝ E = n)]
-    (s : SingularNManifold X n k) {φ : M → s.M} (hφ : ContMDiff I s.I n φ) :
-    (s.comap hφ).f = s.f ∘ φ :=
-  rfl
+-- @[simp]
+-- lemma comap_f [Fact (finrank ℝ E = n)]
+--     (s : SingularNManifold X n k) {φ : M → s.M} (hφ : ContMDiff I s.I n φ) :
+--     (s.comap hφ).f = s.f ∘ φ :=
+--   rfl
 
 variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
@@ -188,8 +195,9 @@ def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M]
     {I : ModelWithCorners ℝ E (EuclideanSpace ℝ (Fin n))} [IsManifold I k M] [IsEmpty M] :
   SingularNManifold X n k where
   M := M
-  E := E
-  --H := H
+  E := E--EuclideanSpace ℝ (Fin n)
+  H := ULift (EuclideanSpace ℝ (Fin n))
+  coordChange := sorry
   I := I
   dimension := h.out
   f := fun x ↦ (IsEmpty.false x).elim
@@ -200,6 +208,8 @@ def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M]
 variable (M) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
 def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k where
+  H := H
+  coordChange := sorry -- TODO!
   E := E
   M := M
   I := I
@@ -207,17 +217,20 @@ def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k where
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
--- /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
--- is a singular `n+m`-manifold. -/
--- -- FUTURE: prove that this observation induces a commutative ring structure
--- -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
--- def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
---     SingularNManifold PUnit (n + m) k where
---   M := s.M × t.M
---   I := s.I.prod t.I
---   f := fun _ ↦ PUnit.unit
---   hf := continuous_const
---   dimension := by rw [finrank_prod, s.dimension, t.dimension]
+/-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
+is a singular `n+m`-manifold. -/
+-- FUTURE: prove that this observation induces a commutative ring structure
+-- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
+def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
+    SingularNManifold PUnit (n + m) k where
+  E := sorry
+  H := sorry
+  coordChange := sorry -- product!
+  M := s.M × t.M
+  I := s.I.prod t.I
+  f := fun _ ↦ PUnit.unit
+  hf := continuous_const
+  dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
 end SingularNManifold
 

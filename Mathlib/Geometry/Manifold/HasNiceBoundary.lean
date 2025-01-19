@@ -147,9 +147,25 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
     let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x ⟨i - 1, by omega⟩
     exact ⟨x', by simp [x']⟩
   isEmbedding := sorry
+  -- TODO: it suffices to show each component function is smooth
+  -- the first one is constant, the others are basically the identity...
   isSmooth := sorry
-  range_eq_boundary := sorry
+  -- lemma 1: EuclideanHalfSpace has the boundary you expect
+  -- lemma 2: it maps there
+  range_eq_boundary := by
+    have : (𝓡∂ (n + 1)).boundary (EuclideanHalfSpace (n + 1)) = { ⟨y, _⟩ | y 0 = 0 } := sorry
+    rw [this]
+    ext x
+    constructor
+    · sorry
+    · intro hx--⟨y, hy⟩ --hx
+      rw [Set.mem_setOf] at hx
+      dsimp at hx--obtain ⟨y, hy⟩ := hx
+      rw [Set.mem_range]
+      -- TODO: take the last n components of x... then hx should do it!
+      sorry
 
+#exit
 open Set Topology
 
 variable (M I) in
