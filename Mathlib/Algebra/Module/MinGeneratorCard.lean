@@ -13,16 +13,15 @@ which is implemented as `minGeneratorCard` and `spanRank`.
 
 ## Main Definitions
 
-* `minGeneratorCard`: The minimum cardinality of a generating set for a submodule, with type `ℕ`.
-If the minimum cardinality of a generating set is infinity,
-then the minimum cardinality is defined to be `0`.
+* `minGeneratorCard`: The minimum cardinality of a generating set of a submodule as a natural number.
+  If no finite generating set exists, the minimum cardinality is defined to be `0`.
 * `spanRank`: The span rank of a submodule, possibly infinite, with type `WithTop ℕ`.
 * `FG.minGenerator`: For a finitely generated submodule, get a minimal generating function.
 
 ## Main Results
 
-* `FG.exists_fun_minGeneratorCard_span_range_eq` : Constructs a generating function
-  whose cardinality equals `minGeneratorCard` for a finitely generated submodule.
+* `FG.exists_fun_minGeneratorCard_span_range_eq` : Any finitely generated submodule has a generating
+  family of cardinality equal to `minGeneratorCard`.
 
 ## Tags
 submodule, generating set, span rank
@@ -56,7 +55,7 @@ lemma fg_iff_card_finset_nonempty {p : Submodule R M} :
 
 /-- A submodule is finitely generated if and only if
 its spanrank equals its minimum generator cardinality -/
-lemma fg_iff_spanrank_eq {p : Submodule R M} :
+lemma fg_iff_spanrank_eq_minGeneratorCard {p : Submodule R M} :
     p.FG ↔ p.spanRank = p.minGeneratorCard := by
   constructor
   · intro h
@@ -136,17 +135,17 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
           convert Finset.card_image_le
           rw [Finset.card_univ, Fintype.card_fin]
 
-/-- For a finitely generated submodule, get a minimal generating function -/
+/-- An arbitrarily chosen generating family of minimal cardinality. -/
 noncomputable def FG.minGenerator {p : Submodule R M} (h : p.FG) : Fin p.minGeneratorCard → M :=
   Classical.choose (exists_fun_minGeneratorCard_span_range_eq h)
 
 /-- The span of the minimal generator equals the submodule -/
-lemma FG.spanMinGeneratorRange {p : Submodule R M} (h : p.FG) :
+lemma FG.span_range_minGenerator {p : Submodule R M} (h : p.FG) :
   span R (Set.range (minGenerator h)) = p :=
   Classical.choose_spec (exists_fun_minGeneratorCard_span_range_eq h)
 
 /-- The minimal generator elements are in the submodule -/
-lemma FG.minGeneratorMem {p : Submodule R M} (h : p.FG) (i) :
+lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i) :
   minGenerator h i ∈ p := by
   have := spanMinGeneratorRange h
   simp_rw [← this]
