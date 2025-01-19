@@ -26,8 +26,7 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 

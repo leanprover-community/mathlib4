@@ -375,6 +375,36 @@ theorem leadingCoeff_mul_monic {p q : R[X]} (hq : Monic q) :
       rw [leadingCoeff_mul', hq.leadingCoeff, mul_one]
       rwa [hq.leadingCoeff, mul_one]
 
+lemma degree_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) : (C a * p).degree = p.degree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nontriviality R
+  rw [degree_mul', degree_C ha.ne_zero]
+  · simp
+  · simpa [ha.mul_right_eq_zero]
+
+lemma degree_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) : (p * C a).degree = p.degree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nontriviality R
+  rw [degree_mul', degree_C ha.ne_zero]
+  · simp
+  · simpa [ha.mul_left_eq_zero]
+
+lemma natDegree_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) : (C a * p).natDegree = p.natDegree := by
+  simp [natDegree, degree_C_mul_of_isUnit ha]
+
+lemma natDegree_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) : (p * C a).natDegree = p.natDegree := by
+  simp [natDegree, degree_mul_C_of_isUnit ha]
+
+lemma leadingCoeff_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) :
+    (C a * p).leadingCoeff = a * p.leadingCoeff := by
+  rwa [leadingCoeff, coeff_C_mul, natDegree_C_mul_of_isUnit, leadingCoeff]
+
+lemma leadingCoeff_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) :
+    (p * C a).leadingCoeff = p.leadingCoeff * a := by
+  rwa [leadingCoeff, coeff_mul_C, natDegree_mul_C_of_isUnit, leadingCoeff]
+
 @[simp]
 theorem leadingCoeff_mul_X_pow {p : R[X]} {n : ℕ} : leadingCoeff (p * X ^ n) = leadingCoeff p :=
   leadingCoeff_mul_monic (monic_X_pow n)
@@ -427,6 +457,12 @@ theorem degree_smul_le (a : R) (p : R[X]) : degree (a • p) ≤ degree p := by
 
 theorem natDegree_smul_le (a : R) (p : R[X]) : natDegree (a • p) ≤ natDegree p :=
   natDegree_le_natDegree (degree_smul_le a p)
+
+theorem degree_smul_of_leadingCoeff_rightRegular {k : R} (hk: k ≠ 0)
+    {p : R[X]} (hp : IsRightRegular p.leadingCoeff) : (k • p).degree = p.degree := by
+  apply le_antisymm (degree_smul_le k p) <| degree_le_degree ?_
+  rw [coeff_smul, coeff_natDegree, smul_eq_mul, ne_eq]
+  exact hp.mul_right_eq_zero_iff.ne.mpr hk
 
 theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
   haveI := Nontrivial.of_polynomial_ne hp
