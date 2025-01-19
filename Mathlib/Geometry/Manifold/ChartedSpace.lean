@@ -738,6 +738,17 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
       exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
   · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
 
+/-- A charted space over a discrete space is discrete. -/
+theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
+  apply singletons_open_iff_discrete.1 (fun x ↦ ?_)
+  have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
+    isOpen_inter_preimage _ (isOpen_discrete _)
+  convert this
+  refine Subset.antisymm (by simp) ?_
+  simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
+  intro y hy h'y
+  exact (chartAt H x).injOn hy (ChartedSpace.mem_chart_source x) h'y
+
 end
 
 library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
