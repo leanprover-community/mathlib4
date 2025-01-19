@@ -6,6 +6,9 @@ Authors: Moritz Doll, Kalle Kytölä
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Analysis.LocallyConvex.AbsConvex
+import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.LocallyConvex.WeakDual
 
 /-!
 # Polar set
@@ -59,6 +62,17 @@ theorem polar_mem_iff (s : Set E) (y : F) : y ∈ B.polar s ↔ ∀ x ∈ s, ‖
 theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   hy
 
+theorem polar_preimage (s : Set E) :
+    B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
+
+theorem polar_closed (s : Set E) : IsClosed (X :=  WeakBilin B.flip) (B.polar s) := by
+  rw [polar_preimage]
+  exact isClosed_biInter
+    (fun _ _ => IsClosed.preimage (WeakBilin.eval_continuous B.flip _) Metric.isClosed_ball)
+
+theorem bipolar_closed (s : Set E) : IsClosed (X :=  WeakBilin B) (B.flip.polar (B.polar s)) :=
+  polar_closed _ _
+
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
@@ -70,6 +84,14 @@ theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
+
+theorem polar_balanced (s : Set E) : Balanced 𝕜 (B.polar s) := fun a ha y ⟨z,⟨hz₁,hz₂⟩⟩ x hx => by
+  rw [← hz₂, map_smul, smul_eq_mul, ← mul_one 1]
+  exact le_trans (norm_mul_le _ _)
+    (mul_le_mul ha (hz₁ x hx) (norm_nonneg ((B x) z)) (zero_le_one' ℝ))
+
+theorem bipolar_balanced (s : Set E) : Balanced 𝕜 (B.flip.polar (B.polar s)) :=
+  polar_balanced B.flip (B.polar s)
 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
@@ -165,5 +187,92 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
   .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
 
 end NontriviallyNormedField
+
+
+section polar_convex
+
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+
+theorem polar_real_convex : Convex ℝ (B.polar s) := fun  x hx y hy a b ha hb hab e he => by
+  rw [← hab, map_add, map_smul_of_tower, map_smul_of_tower]
+  apply norm_add_le_of_le
+  · rw [norm_smul, (Real.norm_of_nonneg ha)]
+    exact mul_le_of_le_one_right ha (hx e he)
+  · rw [norm_smul, (Real.norm_of_nonneg hb)]
+    exact mul_le_of_le_one_right hb (hy e he)
+
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := ⟨B.polar_balanced s, polar_real_convex s⟩
+
+end polar_convex
+
+section Bipolar
+
+variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Module 𝕜 E] [Module 𝕜 F] [Module ℝ E]
+
+lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
+  rename_i inst_3
+  simp_all only [nonempty_subtype]
+  obtain ⟨w, h⟩ := inst_3
+  have e1 : w ∈ (absConvexHull 𝕜 s) := mem_absConvexHull_iff.mpr fun t a a_1 ↦ a h
+  have e3 : Balanced 𝕜 (absConvexHull 𝕜 s) := by exact balanced_absConvexHull
+  have e2 : -w ∈ (absConvexHull 𝕜 s) := by
+    rw [Balanced.neg_mem_iff e3]
+    exact e1
+  have e4 : (1/2 : ℝ) • w + (1/2 : ℝ) • (-w) ∈ (absConvexHull 𝕜 s) := by
+    apply convex_absConvexHull e1 e2
+    simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
+    simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
+    exact add_halves 1
+  simp at e4
+  exact e4
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+variable  [IsScalarTower ℝ 𝕜 E]
+
+theorem bipolar_convex : Convex ℝ (B.flip.polar (B.polar s)) :=
+  polar_real_convex (B.polar s)
+
+theorem bipolar_absConvex : AbsConvex 𝕜 (B.flip.polar (B.polar s)) :=
+  polar_AbsConvex (B.polar s)
+
+
+
+open scoped ComplexOrder
+theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
+    B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
+  apply le_antisymm
+  · simp only [Set.le_eq_subset]
+    rw [← Set.compl_subset_compl]
+    intro x hx
+    rw [Set.mem_compl_iff] at hx
+    obtain ⟨f,⟨u,⟨hf₁,hf₂⟩⟩⟩ :=
+      RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B)
+        absConvex_convexClosedHull.2 isClosed_closedAbsConvexHull hx
+    have e3 : RCLike.re (f 0) < u :=
+      (hf₁ 0) (absConvexHull_subset_closedAbsConvexHull (absConvexHull_zero_mem s))
+    rw [map_zero, map_zero] at e3
+    let g := (1/u : ℝ) • f
+    have fg : g = (1/u : ℝ) • f := rfl
+    have hg₁ : ∀ a ∈ (closedAbsConvexHull (E := WeakBilin B) 𝕜) s, RCLike.re (g a) < 1 := by
+      intro a ha
+      rw [fg]
+      simp only [ ContinuousLinearMap.coe_smul', Pi.smul_apply]
+      rw [RCLike.smul_re]
+      have t1 : RCLike.re (f a) < u := hf₁ a ha
+      simp [t1]
+      rw [← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
+      exact mul_lt_mul_of_pos_left ((hf₁ a) ha) (inv_pos_of_pos e3)
+    --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
+    sorry
+
+  · exact closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
+
+end Bipolar
 
 end LinearMap
