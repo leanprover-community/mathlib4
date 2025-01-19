@@ -96,9 +96,8 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
     rintro ⟨x, ⟨hx⟩⟩
     exact Finset.mem_singleton_self _⟩
 
-@[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
-theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
-  Nat.card_unique
+@[to_additive]
+theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 := by simp
 
 @[to_additive]
 theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
