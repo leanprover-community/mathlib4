@@ -1176,7 +1176,7 @@ theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 
     _ = abs x ^ 2 := by rw [mul_one]
 
 lemma abs_exp_sub_range_le_exp_sub_range_abs (x : ℂ) (n : ℕ) :
-  abs (cexp x - ∑ m ∈ range n, x ^ m / m.factorial)
+  abs (exp x - ∑ m ∈ range n, x ^ m / m.factorial)
     ≤ Real.exp (abs x) - ∑ m ∈ range n, (abs x) ^ m / m.factorial := by
   rw [← CauSeq.lim_const (abv := Complex.abs) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_abs]
@@ -1192,11 +1192,11 @@ lemma abs_exp_sub_range_le_exp_sub_range_abs (x : ℂ) (n : ℕ) :
     gcongr
     exact Real.sum_le_exp_of_nonneg (by exact AbsoluteValue.nonneg abs x) _
 
-lemma abs_exp_le_exp_abs (z : ℂ) : abs (cexp z) ≤ Real.exp (abs z) := by
-  convert abs_exp_sub_range_le_exp_sub_range_abs z 0 using 1 <;> simp
+lemma abs_exp_le_exp_abs (x : ℂ) : abs (exp x) ≤ Real.exp (abs x) := by
+  convert abs_exp_sub_range_le_exp_sub_range_abs x 0 using 1 <;> simp
 
 lemma exp_bound_exp (x : ℂ) (n : ℕ) :
-    abs (cexp x - ∑ m ∈ range n, x ^ m / m.factorial) ≤ abs x ^ n * Real.exp (abs x) := by
+    abs (exp x - ∑ m ∈ range n, x ^ m / m.factorial) ≤ abs x ^ n * Real.exp (abs x) := by
   rw [← CauSeq.lim_const (abv := Complex.abs) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_abs]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
