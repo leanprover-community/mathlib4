@@ -975,4 +975,84 @@ def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : 
 
 end Pre
 
+section Prod
+
+section
+
+variable {C' : Type u₃} [Category.{v₃} C'] {D' : Type u₄} [Category.{v₄} D']
+  (S : D) (S' : D') (T : C ⥤ D) (T' : C' ⥤ D')
+
+@[reassoc (attr := simp)]
+theorem StructuredArrow.w_prod_fst {X Y : StructuredArrow (S, S') (T.prod T')}
+    (f : X ⟶ Y) : X.hom.1 ≫ T.map f.right.1 = Y.hom.1 :=
+  congr_arg _root_.Prod.fst (StructuredArrow.w f)
+
+@[reassoc (attr := simp)]
+theorem StructuredArrow.w_prod_snd {X Y : StructuredArrow (S, S') (T.prod T')}
+    (f : X ⟶ Y) : X.hom.2 ≫ T'.map f.right.2 = Y.hom.2 :=
+  congr_arg _root_.Prod.snd (StructuredArrow.w f)
+
+@[simps]
+def StructuredArrow.prodFunctor :
+    StructuredArrow (S, S') (T.prod T') ⥤ StructuredArrow S T × StructuredArrow S' T' where
+  obj f := ⟨.mk f.hom.1, .mk f.hom.2⟩
+  map η := ⟨StructuredArrow.homMk η.right.1 (by simp),
+            StructuredArrow.homMk η.right.2 (by simp)⟩
+
+@[simps]
+def StructuredArrow.prodInverse :
+    StructuredArrow S T × StructuredArrow S' T' ⥤ StructuredArrow (S, S') (T.prod T') where
+  obj f := .mk (Y := (f.1.right, f.2.right)) ⟨f.1.hom, f.2.hom⟩
+  map η := StructuredArrow.homMk ⟨η.1.right, η.2.right⟩ (by simp)
+
+@[simps]
+def StructuredArrow.prodEquivalence :
+    StructuredArrow (S, S') (T.prod T') ≌ StructuredArrow S T × StructuredArrow S' T' where
+  functor := StructuredArrow.prodFunctor S S' T T'
+  inverse := StructuredArrow.prodInverse S S' T T'
+  unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+
+end
+
+section
+
+variable {C' : Type u₃} [Category.{v₃} C'] {D' : Type u₄} [Category.{v₄} D']
+  (S : C ⥤ D) (S' : C' ⥤ D') (T : D) (T' : D')
+
+@[reassoc (attr := simp)]
+theorem CostructuredArrow.w_prod_fst {A B : CostructuredArrow (S.prod S') (T, T')} (f : A ⟶ B) :
+    S.map f.left.1 ≫ B.hom.1 = A.hom.1 :=
+  congr_arg _root_.Prod.fst (CostructuredArrow.w f)
+
+@[reassoc (attr := simp)]
+theorem CostructuredArrow.w_prod_snd {A B : CostructuredArrow (S.prod S') (T, T')} (f : A ⟶ B) :
+    S'.map f.left.2 ≫ B.hom.2 = A.hom.2 :=
+  congr_arg _root_.Prod.snd (CostructuredArrow.w f)
+
+@[simps]
+def CostructuredArrow.prodFunctor :
+    CostructuredArrow (S.prod S') (T, T') ⥤ CostructuredArrow S T × CostructuredArrow S' T' where
+  obj f := ⟨.mk f.hom.1, .mk f.hom.2⟩
+  map η := ⟨CostructuredArrow.homMk η.left.1 (by simp),
+            CostructuredArrow.homMk η.left.2 (by simp)⟩
+
+@[simps]
+def CostructuredArrow.prodInverse :
+    CostructuredArrow S T × CostructuredArrow S' T' ⥤ CostructuredArrow (S.prod S') (T, T') where
+  obj f := .mk (Y := (f.1.left, f.2.left)) ⟨f.1.hom, f.2.hom⟩
+  map η := CostructuredArrow.homMk ⟨η.1.left, η.2.left⟩ (by simp)
+
+@[simps]
+def CostructuredArrow.prodEquivalence :
+    CostructuredArrow (S.prod S') (T, T') ≌ CostructuredArrow S T × CostructuredArrow S' T' where
+  functor := CostructuredArrow.prodFunctor S S' T T'
+  inverse := CostructuredArrow.prodInverse S S' T T'
+  unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+
+end
+
+end Prod
+
 end CategoryTheory
