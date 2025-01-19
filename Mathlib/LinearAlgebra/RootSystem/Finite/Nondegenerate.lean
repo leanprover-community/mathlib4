@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.RootSystem.BaseChange
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 /-!
@@ -158,6 +159,30 @@ lemma isCompl_rootSpan_ker_rootForm :
 lemma isCompl_corootSpan_ker_corootForm :
     IsCompl P.corootSpan (LinearMap.ker P.CorootForm) :=
   P.flip.isCompl_rootSpan_ker_rootForm
+
+lemma ker_rootForm_eq_dualAnnihilator :
+    LinearMap.ker P.RootForm = P.corootSpan.dualAnnihilator.map P.toDualLeft.symm := by
+  have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have _iN : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  suffices finrank R (LinearMap.ker P.RootForm) = finrank R P.corootSpan.dualAnnihilator by
+    refine (Submodule.eq_of_le_of_finrank_eq P.corootSpan_dualAnnihilator_le_ker_rootForm ?_).symm
+    rw [this]
+    apply LinearEquiv.finrank_map_eq
+  have aux0 := Subspace.finrank_add_finrank_dualAnnihilator_eq P.corootSpan
+  have aux1 := Submodule.finrank_add_eq_of_isCompl P.isCompl_rootSpan_ker_rootForm
+  rw [← P.finrank_corootSpan_eq, P.toPerfectPairing.finrank_eq] at aux1
+  omega
+
+lemma ker_corootForm_eq_dualAnnihilator :
+    LinearMap.ker P.CorootForm = P.rootSpan.dualAnnihilator.map P.toDualRight.symm :=
+  P.flip.ker_rootForm_eq_dualAnnihilator
+
+instance : P.IsBalanced where
+    isPerfectCompl :=
+  { isCompl_left := by
+      simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+    isCompl_right := by
+      simpa only [ker_corootForm_eq_dualAnnihilator] using P.isCompl_corootSpan_ker_corootForm }
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
