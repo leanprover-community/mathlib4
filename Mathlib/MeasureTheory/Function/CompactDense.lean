@@ -13,6 +13,24 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 open MeasureTheory Filter
 open scoped ENNReal CompactlySupported ContDiff Convolution Topology Pointwise
 
+-- TODO: Move to `Mathlib/Data/Real/ConjExponents.lean`
+namespace ENNReal
+
+theorem IsConjExponent.inv_toReal_add_inv_toReal_conj {p q : ℝ≥0∞} (h : IsConjExponent p q) :
+    p.toReal⁻¹ + q.toReal⁻¹ = 1 := by
+  cases p with
+  | top =>
+    cases q with
+    | top => simp [isConjExponent_iff] at h
+    | coe q => simpa using h.conj_eq
+  | coe p =>
+    cases q with
+    | top => simpa using h.symm.conj_eq
+    | coe q => exact Real.IsConjExponent.inv_add_inv_conj <| NNReal.isConjExponent_coe.mpr <|
+        ENNReal.isConjExponent_coe.mp h
+
+end ENNReal
+
 variable {𝕜 E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
 
 section Compact
@@ -58,47 +76,46 @@ variable [MeasurableSpace E] [BorelSpace E]
 tends to zero as `t` tends to zero.
 
 This is useful for proving the density of smooth, compactly-supported functions in `L^p`. -/
-theorem eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport
-    {f : E → F} (hf_cont : Continuous f) (hf_supp : HasCompactSupport f)
-    (p : NNReal) (μ : Measure E := by volume_tac) [μ.Regular] [μ.IsAddRightInvariant] :
+theorem eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport {f : E → F}
+    (hf_cont : Continuous f) (hf_supp : HasCompactSupport f) {p : ℝ≥0∞} (hp_top : p ≠ ⊤)
+    (μ : Measure E := by volume_tac) [μ.Regular] [μ.IsAddRightInvariant] :
     Tendsto (fun t ↦ eLpNorm (fun x ↦ f (x + t) - f x) p μ) (𝓝 0) (𝓝 0) := by
   cases Decidable.eq_or_ne p 0 with | inl hp => simp [hp] | inr hp =>
   rw [ENNReal.tendsto_nhds_zero]
   intro ε hε
   cases ε with | top => simp | coe ε =>
   rw [Metric.eventually_nhds_iff]
-  -- Set bound `‖f (x + t) - f x‖ < r`.
+  -- Fix bound `‖f (x + t) - f x‖ < r` for all `t`.
   -- Choose `r` such that `r ^ p * μ (tsupport fun x ↦ f (x + t) - f x) ≤ ε ^ p`.
   -- Use that `μ (tsupport fun x ↦ f (x + t) - f x) ≤ 2 * μ (tsupport f)` independent of `t`.
   -- Add 1 to avoid `ENNReal.toNNReal` mapping ⊤ to 0.
-  have hr_top : ε / (1 + 2 * μ (tsupport f)) ^ (p⁻¹ : ℝ) < ⊤ := by
+  have hr_top : ε / (1 + 2 * μ (tsupport f)) ^ p.toReal⁻¹ < ⊤ := by
     refine ENNReal.div_lt_top ENNReal.coe_ne_top ?_
     simp
-  have hr_pos : 0 < ε / (1 + 2 * μ (tsupport f)) ^ (p⁻¹ : ℝ) := by
+  have hr_pos : 0 < ε / (1 + 2 * μ (tsupport f)) ^ p.toReal⁻¹ := by
     refine ENNReal.div_pos hε.ne' ?_
     refine ENNReal.rpow_ne_top_of_nonneg (by simp) ?_
     refine ENNReal.add_ne_top.mpr ⟨ENNReal.one_ne_top, ?_⟩
     exact ENNReal.mul_ne_top ENNReal.two_ne_top hf_supp.isCompact.measure_ne_top
-  generalize hr : ε / (1 + 2 * μ (tsupport f)) ^ (p⁻¹ : ℝ) = r at hr_top hr_pos
+  generalize hr : ε / (1 + 2 * μ (tsupport f)) ^ p.toReal⁻¹ = r at hr_top hr_pos
   -- Obtain `δ` from `r` using the uniform continuity of `f`.
-  rcases Metric.uniformContinuous_iff.mp (hf_supp.uniformContinuous_of_continuous hf_cont)
-    r.toReal (ENNReal.toReal_pos hr_pos.ne' hr_top.ne) with ⟨δ, hδ_pos, hδ⟩
+  obtain ⟨δ, hδ_pos, hδ⟩ := Metric.uniformContinuous_iff.mp
+    (hf_supp.uniformContinuous_of_continuous hf_cont) _ (r.toReal_pos hr_pos.ne' hr_top.ne)
   refine ⟨δ, hδ_pos, fun t ht ↦ ?_⟩
-  refine le_trans (b := r * μ (tsupport fun x ↦ f (x + t) - f x) ^ (p⁻¹ : ℝ)) ?_ ?_
-  · -- testing
-    rw [← eLpNorm_restrict_eq_of_support_subset (subset_tsupport _)]
-    rw [eLpNorm_nnreal_eq_eLpNorm' hp, eLpNorm'_eq_lintegral_nnnorm]
-    rw [one_div, ENNReal.rpow_inv_le_iff (z := p) (NNReal.coe_pos.mpr <| pos_iff_ne_zero.mpr hp)]
+  refine le_trans (b := r * μ (tsupport fun x ↦ f (x + t) - f x) ^ p.toReal⁻¹) ?_ ?_
+  · rw [← eLpNorm_restrict_eq_of_support_subset (subset_tsupport _)]
+    rw [eLpNorm_eq_lintegral_rpow_nnnorm hp hp_top]
+    rw [one_div, ENNReal.rpow_inv_le_iff (z := p.toReal) (p.toReal_pos hp hp_top)]
     -- Bound integrand with constant function.
-    refine le_of_le_of_eq (lintegral_mono (g := fun _ ↦ r ^ (p : ℝ)) fun x ↦ ?_) ?_
+    refine le_of_le_of_eq (lintegral_mono (g := fun _ ↦ r ^ p.toReal) fun x ↦ ?_) ?_
     · refine ENNReal.rpow_le_rpow ?_ NNReal.zero_le_coe
       refine le_trans ?_ ENNReal.coe_toNNReal_le_self
       rw [ENNReal.coe_le_coe]
       simp only [dist_eq_norm] at hδ
       exact le_of_lt (hδ (by simpa using ht))
     · rw [lintegral_const, Measure.restrict_apply .univ, Set.univ_inter]
-      rw [ENNReal.mul_rpow_of_nonneg _ _ NNReal.zero_le_coe]
-      rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (NNReal.coe_ne_zero.mpr hp)]
+      rw [ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg]
+      rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (ENNReal.toReal_ne_zero.mpr ⟨hp, hp_top⟩)]
       simp
   · rw [← hr]
     rw [ENNReal.mul_comm_div]
@@ -118,25 +135,22 @@ theorem eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport
     simp
 
 theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
-    [NormedSpace ℝ E] [NormedSpace ℝ F] [HasContDiffBump E]
-    [FiniteDimensional ℝ E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] [HasContDiffBump E]
+    [NormedSpace ℝ F] [CompleteSpace F]
     {f : E → F} (hf_cont : Continuous f) (hf_supp : HasCompactSupport f)
-    (p : NNReal) (hp : 1 ≤ p) (μ : Measure E := by volume_tac) [hμ : μ.Regular] [μ.IsOpenPosMeasure]
-    [μ.IsAddRightInvariant] -- [μ.IsAddLeftInvariant] [μ.IsNegInvariant]
-    [CompleteSpace F]
-    (ε : ℝ) (hε : 0 < ε) :
-    ∃ φ : ContDiffBump 0, eLpNorm (φ.normed μ ⋆[.lsmul ℝ ℝ, μ] f - f) p μ ≤ .ofReal ε := by
+    {p : ℝ≥0∞} (hp : 1 ≤ p) (hp_top : p ≠ ⊤)
+    (μ : Measure E := by volume_tac) [hμ : μ.Regular] [μ.IsOpenPosMeasure] [μ.IsAddRightInvariant] :
+    ∀ ε > 0, ∃ φ : ContDiffBump 0, eLpNorm (φ.normed μ ⋆[.lsmul ℝ ℝ, μ] f - f) p μ ≤ .ofReal ε := by
+  intro ε hε
   have hp_pos : 0 < p := zero_lt_one.trans_le hp
+  have hp_toReal_pos : 0 < p.toReal := p.toReal_pos hp_pos.ne' hp_top
+
   -- Obtain `δ` to control `eLpNorm (fun x ↦ f (x + t) - f x) p` for `‖t‖ < δ`.
-  have := eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport hf_cont hf_supp p μ
-  simp only [ENNReal.tendsto_nhds_zero, Metric.eventually_nhds_iff_ball] at this
-  -- specialize this ε' (ENNReal.coe_pos.mpr hε')
-  -- let ε_nn := ε.toNNReal
-  -- have hε_nn : 0 < ε_nn := Real.toNNReal_pos.mpr hε
-  -- specialize this ε_nn (ENNReal.coe_pos.mpr hε_nn)
+  have := eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport hf_cont hf_supp hp_top μ
+  rw [ENNReal.tendsto_nhds_zero] at this
   specialize this (.ofReal ε) (ENNReal.ofReal_pos.mpr hε)
+  simp only [Metric.eventually_nhds_iff_ball] at this
   obtain ⟨δ, hδ_pos, hδ⟩ := this
-  -- rcases this with ⟨δ, hδ_pos, hδ⟩
 
   -- Obtain `φ` whose support is contained within a `δ` ball.
   -- TODO: Is there a more idiomatic way to define `φ`?
@@ -145,9 +159,10 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
   use φ
 
   -- TODO: Is proving `Memℒp` the cleanest way to do this?
-  rw [Memℒp.eLpNorm_eq_integral_rpow_norm (ENNReal.coe_ne_zero.mpr hp_pos.ne') ENNReal.coe_ne_top]
+  rw [Memℒp.eLpNorm_eq_integral_rpow_norm hp_pos.ne' hp_top]
   swap
-  · refine Memℒp.sub ?_ ?_
+  · -- `Memℒp (φ.normed μ ⋆[ContinuousLinearMap.lsmul ℝ ℝ, μ] f - f) p μ`
+    refine Memℒp.sub ?_ ?_
     · refine Continuous.memℒp_of_hasCompactSupport ?_ ?_
       · exact hf_supp.continuous_convolution_right _ φ.integrable_normed.locallyIntegrable hf_cont
       · exact φ.hasCompactSupport_normed.convolution _ hf_supp
@@ -155,19 +170,20 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
 
   rw [ENNReal.ofReal_le_ofReal_iff hε.le]
   simp only [Pi.sub_apply, ENNReal.coe_toReal]
-  rw [Real.rpow_inv_le_iff_of_pos (integral_nonneg fun _ ↦ by simp [Real.rpow_nonneg]) hε.le
-    (NNReal.coe_pos.mpr hp_pos)]
+  rw [Real.rpow_inv_le_iff_of_pos _ hε.le hp_toReal_pos]
+  swap
+  · exact integral_nonneg fun _ ↦ by simp [Real.rpow_nonneg]
 
   -- Establish `Continuous` and `HasCompactSupport` for the integrand.
   -- This will be useful for changing the order of the integral.
   have hφf_cont : Continuous
-      (Function.uncurry fun x t ↦ φ.normed μ t * ‖f (x - t) - f x‖ ^ (p : ℝ)) := by
+      (Function.uncurry fun x t ↦ φ.normed μ t * ‖f (x - t) - f x‖ ^ p.toReal) := by
     refine .mul ?_ ?_
     · refine φ.continuous_normed.comp continuous_snd
     · refine .rpow_const (.norm ?_) fun _ ↦ Or.inr NNReal.zero_le_coe
       exact .sub (hf_cont.comp (.sub continuous_fst continuous_snd)) (hf_cont.comp continuous_fst)
   have hφf_supp : HasCompactSupport
-      (Function.uncurry fun x t ↦ φ.normed μ t * ‖f (x - t) - f x‖ ^ (p : ℝ)) := by
+      (Function.uncurry fun x t ↦ φ.normed μ t * ‖f (x - t) - f x‖ ^ p.toReal) := by
     rw [hasCompactSupport_def]
     have hφ_supp : HasCompactSupport (φ.normed μ) := φ.hasCompactSupport_normed
     refine IsCompact.closure_of_subset (.prod (.add hφ_supp hf_supp) hφ_supp) ?_
@@ -175,8 +191,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
     rintro ⟨x, t⟩
     simp only [Function.uncurry_apply_pair, mul_ne_zero_iff, Set.mem_prod]
     rintro ⟨hφ, hf⟩
-    rw [Real.rpow_ne_zero (norm_nonneg _) (NNReal.coe_ne_zero.mpr hp_pos.ne'), norm_ne_zero_iff]
-      at hf
+    rw [Real.rpow_ne_zero (norm_nonneg _) hp_toReal_pos.ne', norm_ne_zero_iff] at hf
     refine ⟨?_, subset_closure hφ⟩
     · rw [sub_ne_zero] at hf
       rw [Set.mem_add]
@@ -189,7 +204,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
   have hφf_int := hφf_cont.integrable_of_hasCompactSupport hφf_supp (μ := μ.prod μ)
 
   refine le_trans (integral_mono_of_nonneg ?_ ?_ ?_
-    (g := fun x ↦ ∫ t, φ.normed μ t * ‖f (x - t) - f x‖ ^ (p : ℝ) ∂μ)) ?_
+    (g := fun x ↦ ∫ t, φ.normed μ t * ‖f (x - t) - f x‖ ^ p.toReal ∂μ)) ?_
   · exact .of_forall fun _ ↦ Real.rpow_nonneg (norm_nonneg _) _
   · have := ((integrable_prod_iff hφf_cont.measurable.aestronglyMeasurable).mp hφf_int).2
     refine Eq.subst (motive := fun f : E → E → ℝ ↦ Integrable (fun x ↦ ∫ y, f x y ∂μ) μ) ?_ this
@@ -215,7 +230,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
       · exact φ.integrable_normed.smul_const _
     rw [h₁]; clear h₁
 
-    rw [← Real.le_rpow_inv_iff_of_pos (norm_nonneg _) ?_ (NNReal.coe_pos.mpr hp_pos)]
+    rw [← Real.le_rpow_inv_iff_of_pos (norm_nonneg _) ?_ hp_toReal_pos]
     swap
     · refine integral_nonneg fun t ↦ ?_
       simp [mul_nonneg, φ.nonneg_normed, Real.rpow_nonneg]
@@ -223,16 +238,6 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
     -- Note: `generalize` seems to play nicer than `let :=` for e.g. `cases q`.
     have hpq := ENNReal.IsConjExponent.conjExponent (p := p) (by simpa using hp)
     generalize (p : ℝ≥0∞).conjExponent = q at hpq
-
-    -- Note: Can have `p = 1` and `q = ⊤`. This condition still holds since `0⁻¹ = 0`.
-    have hpq_real : (p : ℝ)⁻¹ + q.toReal⁻¹ = (1 : ℝ) := by
-      rw [← ENNReal.coe_toNNReal_eq_toReal]
-      simp only [← NNReal.coe_inv, ← NNReal.coe_add, NNReal.coe_eq_one]
-      cases hp.eq_or_gt with
-      | inl hp => simp [hpq.conj_eq, hp]
-      | inr hp =>
-        rw [← hpq.conjExponent_eq, ← ENNReal.coe_conjExponent hp, ENNReal.toNNReal_coe]
-        exact NNReal.IsConjExponent.inv_add_inv_conj (.conjExponent hp)
 
     have h₁ : eLpNorm (fun t ↦ φ.normed μ t ^ q.toReal⁻¹) q μ = 1 := by
       cases q with | top => simp [eLpNormEssSup_eq_essSup_nnnorm] | coe q =>
@@ -254,7 +259,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
 
     have h_eLpNorm : eLpNorm (fun t ↦ φ.normed μ t • (f (x - t) - f x)) 1 μ ≤
         eLpNorm (fun t ↦ φ.normed μ t ^ q.toReal⁻¹) q μ *
-        eLpNorm (fun t ↦ φ.normed μ t ^ (p⁻¹ : ℝ) • (f (x - t) - f x)) (↑p) μ := by
+        eLpNorm (fun t ↦ φ.normed μ t ^ p.toReal⁻¹ • (f (x - t) - f x)) (↑p) μ := by
       refine le_of_eq_of_le (congrArg (eLpNorm · 1 μ) ?_) <| eLpNorm_smul_le_mul_eLpNorm
         (Continuous.aestronglyMeasurable <| by
           refine .smul ?_ ?_
@@ -264,8 +269,9 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
         (by simpa [add_comm, eq_comm] using hpq.inv_add_inv_conj)
       ext t
       simp only [Pi.smul_apply', smul_smul]
-      rw [mul_comm, ← Real.rpow_add' (φ.nonneg_normed t) (hpq_real.trans_ne one_ne_zero)]
-      simp [hpq_real]
+      rw [mul_comm, ← Real.rpow_add' (φ.nonneg_normed t)
+        (hpq.inv_toReal_add_inv_toReal_conj.trans_ne one_ne_zero)]
+      simp [hpq.inv_toReal_add_inv_toReal_conj]
 
     rw [h₁, one_mul] at h_eLpNorm; clear h₁
 
@@ -278,8 +284,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
         · exact .comp_homeomorph hf_supp (.subLeft x)
       · exact memℒp_one_iff_integrable.mpr φ.integrable_normed
 
-    -- TODO: Ugly to use `hpq` here? Nicer than `ENNReal.coe_ne_zero.mpr hp_pos.ne'` though?
-    rw [Memℒp.eLpNorm_eq_integral_rpow_norm hpq.ne_zero ENNReal.coe_ne_top] at h_eLpNorm
+    rw [Memℒp.eLpNorm_eq_integral_rpow_norm hp_pos.ne' hp_top] at h_eLpNorm
     swap
     · refine .smul ?_ ?_ (p := p) (r := ⊤) (q := p) (by simp)
       · refine .sub ?_ (memℒp_top_const _)
@@ -289,12 +294,12 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
       · have := (memℒp_one_iff_integrable.mpr φ.integrable_normed).norm_rpow_div p⁻¹ (μ := μ)
         simpa [abs_of_nonneg (φ.nonneg_normed _)] using this
 
-    simp at h_eLpNorm
+    simp only [ENNReal.one_toReal, Real.rpow_one, inv_one] at h_eLpNorm
     rw [ENNReal.ofReal_le_ofReal_iff (Real.rpow_nonneg
       (integral_nonneg fun _ ↦ Real.rpow_nonneg (norm_nonneg _) _) _)] at h_eLpNorm
 
     refine le_trans (norm_integral_le_integral_norm _) ?_
-    refine le_of_le_of_eq h_eLpNorm (congrArg (fun f : E → ℝ ↦ (∫ t, f t ∂μ) ^ (p : ℝ)⁻¹) ?_)
+    refine le_of_le_of_eq h_eLpNorm (congrArg (fun f : E → ℝ ↦ (∫ t, f t ∂μ) ^ p.toReal⁻¹) ?_)
     clear h_eLpNorm
 
     ext t
@@ -302,9 +307,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
     rw [Real.mul_rpow (norm_nonneg _) (norm_nonneg _)]
     rw [Real.norm_of_nonneg (Real.rpow_nonneg (φ.nonneg_normed _) _)]
     refine congrArg (· * _) ?_
-    rw [← Real.rpow_mul (φ.nonneg_normed t)]
-    rw [← NNReal.coe_inv, ← NNReal.coe_mul]  -- TODO: Use `suffices` to make cleaner?
-    rw [inv_mul_cancel₀ hp_pos.ne']
+    rw [← Real.rpow_mul (φ.nonneg_normed t), inv_mul_cancel₀ hp_toReal_pos.ne']
     simp
 
   rw [integral_integral_swap_of_hasCompactSupport hφf_cont hφf_supp]
@@ -315,7 +318,7 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
     refine mul_eq_zero_of_left (Function.nmem_support.mp ?_) _
     simpa only [hφδ] using hx
 
-  refine le_trans (integral_mono_of_nonneg ?_ ?_ ?_ (g := fun x ↦ φ.normed μ x * ε ^ (p : ℝ))) ?_
+  refine le_trans (integral_mono_of_nonneg ?_ ?_ ?_ (g := fun x ↦ φ.normed μ x * ε ^ p.toReal)) ?_
   · refine .of_forall fun t ↦ mul_nonneg (φ.nonneg_normed t) (integral_nonneg fun x ↦ ?_)
     simp [Real.rpow_nonneg]
   · exact φ.integrable_normed.restrict.mul_const _
@@ -323,10 +326,9 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
     refine .of_forall fun t ht ↦ ?_
     refine mul_le_mul_of_nonneg_left ?_ (φ.nonneg_normed t)
     specialize hδ (-t) (by simpa using ht)
-    replace hδ := ENNReal.rpow_le_rpow hδ (z := (p : ℝ)) (NNReal.zero_le_coe)
-    rw [ENNReal.ofReal_rpow_of_nonneg hε.le NNReal.zero_le_coe] at hδ
-    rw [Memℒp.eLpNorm_eq_integral_rpow_norm (ENNReal.coe_ne_zero.mpr hp_pos.ne')
-      ENNReal.coe_ne_top] at hδ
+    replace hδ := ENNReal.rpow_le_rpow hδ (z := p.toReal) ENNReal.toReal_nonneg
+    rw [ENNReal.ofReal_rpow_of_nonneg hε.le ENNReal.toReal_nonneg] at hδ
+    rw [Memℒp.eLpNorm_eq_integral_rpow_norm hp_pos.ne' hp_top] at hδ
     rotate_left
     · refine Memℒp.sub ?_ ?_
       · refine Continuous.memℒp_of_hasCompactSupport ?_ ?_
@@ -335,18 +337,15 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
       · exact hf_cont.memℒp_of_hasCompactSupport hf_supp
     -- TODO: Address all these non-negativity conditions!
     -- Maybe better to use `nnnorm`?
-    rw [ENNReal.ofReal_rpow_of_nonneg _ NNReal.zero_le_coe] at hδ
+    rw [ENNReal.ofReal_rpow_of_nonneg _ hp_toReal_pos.le] at hδ
     swap
     · exact Real.rpow_nonneg (integral_nonneg fun x ↦ Real.rpow_nonneg (norm_nonneg _) _) _
     rw [ENNReal.ofReal_le_ofReal_iff (Real.rpow_nonneg hε.le _)] at hδ
     rw [← Real.rpow_mul] at hδ
     swap
     · exact integral_nonneg fun x ↦ Real.rpow_nonneg (norm_nonneg _) _
-    rw [ENNReal.coe_toReal] at hδ
-    rw [inv_mul_cancel₀ (NNReal.coe_ne_zero.mpr hp_pos.ne')] at hδ
-    rw [Real.rpow_one] at hδ
-    simp [← sub_eq_add_neg] at hδ
-    exact hδ
+    rw [inv_mul_cancel₀ hp_toReal_pos.ne'] at hδ
+    simpa [sub_eq_add_neg] using hδ
 
   rw [integral_mul_right]
   refine mul_le_of_le_one_left (Real.rpow_nonneg hε.le _) ?_
@@ -371,9 +370,7 @@ theorem ContDiff.toLp_denseRange [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   obtain ⟨g, hfg⟩ := DenseRange.exists_dist_lt
     (CompactlySupportedContinuousMap.toLp_denseRange F hp_top μ) f (half_pos hε)
   obtain ⟨φ, hφ⟩ := exists_contDiffBump_eLpNorm_conv_sub_self_lt g.continuous g.hasCompactSupport
-    p.toNNReal (ENNReal.le_toNNReal_of_coe_le hp.out hp_top) μ (ε / 2) (half_pos hε)
-  -- TODO: Use `p : ENNReal` to avoid this ugliness?
-  rw [ENNReal.coe_toNNReal hp_top] at hφ
+    hp.out hp_top μ (ε / 2) (half_pos hε)
   -- Show that `φ.normed μ ⋆ g` satisfies `ContDiff` and `HasCompactSupport`.
   refine ⟨⟨φ.normed μ ⋆[ContinuousLinearMap.lsmul ℝ ℝ, μ] g, ⟨?_, ?_⟩⟩, ?_⟩
   · exact φ.hasCompactSupport_normed.contDiff_convolution_left _ φ.contDiff_normed
