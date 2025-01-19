@@ -105,8 +105,7 @@ theorem exp_eq (q : Quaternion ℝ) :
     re_add_im]
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
 
-theorem re_exp (q : ℍ[ℝ]) : (exp ℝ q).re = exp ℝ q.re * Real.cos ‖q - q.re‖ := by
-  simp [exp_eq, show q.im = q - q.re from sub_self_re q|>.symm]
+theorem re_exp (q : ℍ[ℝ]) : (exp ℝ q).re = exp ℝ q.re * Real.cos ‖q - q.re‖ := by simp [exp_eq]
 
 theorem im_exp (q : ℍ[ℝ]) : (exp ℝ q).im = (exp ℝ q.re * (Real.sin ‖q.im‖ / ‖q.im‖)) • q.im := by
   simp [exp_eq, smul_smul, show im ((Real.cos ‖q.im‖) : ℍ[ℝ ,-1,-1]) = 0 from rfl]
