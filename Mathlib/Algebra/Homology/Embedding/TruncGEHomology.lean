@@ -50,8 +50,7 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
-/-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
-lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
+lemma quasiIsoAt_restrictionToTruncGE'_f (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
     QuasiIsoAt (K.restrictionToTruncGE' e) j := by
   rw [quasiIsoAt_iff]
@@ -90,7 +89,9 @@ noncomputable def isLimitKernelFork :
     exact IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (shape _ _ _ hjk))
       (Fork.ext ((truncGE'XIsoOpcycles K e hj' hj) ≪≫ (asIso (K.homologyι j')).symm))
 
-/-- When `j` is as the boundary of the embedding `e` of complex shapes, -/
+/-- When `j` is at the boundary of the embedding `e` of complex shapes,
+this is a homology data for `K.truncGE' e` in degree `j`: the homology is
+given by `K.homology j'` where `e.f j = j'`. -/
 noncomputable def homologyData :
     ((K.truncGE' e).sc' i j k).HomologyData :=
   ShortComplex.HomologyData.ofIsLimitKernelFork _
