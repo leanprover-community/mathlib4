@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.LocallyConvex.WeakDual
+import Mathlib.Analysis.Convex.Normed
 
 /-!
 # Polar set
@@ -206,7 +207,19 @@ theorem polar_real_convex : Convex ℝ (B.polar s) := fun  x hx y hy a b ha hb h
   · rw [norm_smul, (Real.norm_of_nonneg hb)]
     exact mul_le_of_le_one_right hb (hy e he)
 
-theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := ⟨B.polar_balanced s, polar_real_convex s⟩
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_preimage]
+  apply AbsConvex.iInter₂
+  intro i hi
+  constructor
+  · sorry
+  · have e1 : Convex ℝ (Metric.closedBall (0 : 𝕜) 1) := by
+      apply convex_closedBall
+
+    apply Convex.linear_preimage e1 -- (B i)
+    --(B i)
+
+
 
 end polar_convex
 
