@@ -116,7 +116,7 @@ variable (C)
 
 /-- We don't want the definition of 'simple' to include the zero object, so we check that here. -/
 theorem zero_not_simple [Simple (0 : C)] : False :=
-  (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by aesop_cat⟩⟩ rfl
+  (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by simp⟩⟩ rfl
 
 end
 

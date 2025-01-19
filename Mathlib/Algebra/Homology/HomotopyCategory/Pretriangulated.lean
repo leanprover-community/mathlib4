@@ -30,6 +30,8 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C D : Type*} [Category C] [Category D]
@@ -136,8 +138,7 @@ noncomputable def trianglehMapOfHomotopy :
   comm₃ := by
     dsimp
     rw [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃, Functor.map_comp, assoc, assoc]
-    erw [← NatTrans.naturality]
-    rfl
+    simp
 
 end mapOfHomotopy
 

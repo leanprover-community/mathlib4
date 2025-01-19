@@ -84,8 +84,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   rw [X.basicOpen_res]
   ext1
   refine Set.image_preimage_eq_inter_range.trans ?_
-  erw [Subtype.range_coe]
-  rfl
+  simp
 
 lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :

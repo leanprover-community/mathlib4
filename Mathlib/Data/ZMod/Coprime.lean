@@ -14,6 +14,7 @@ We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if 
 `a` and `p` are not coprime.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 
