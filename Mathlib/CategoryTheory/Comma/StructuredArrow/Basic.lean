@@ -992,6 +992,7 @@ theorem StructuredArrow.w_prod_snd {X Y : StructuredArrow (S, S') (T.prod T')}
     (f : X ⟶ Y) : X.hom.2 ≫ T'.map f.right.2 = Y.hom.2 :=
   congr_arg _root_.Prod.snd (StructuredArrow.w f)
 
+/-- Implementation; see `StructuredArrow.prodEquivalence`. -/
 @[simps]
 def StructuredArrow.prodFunctor :
     StructuredArrow (S, S') (T.prod T') ⥤ StructuredArrow S T × StructuredArrow S' T' where
@@ -999,12 +1000,15 @@ def StructuredArrow.prodFunctor :
   map η := ⟨StructuredArrow.homMk η.right.1 (by simp),
             StructuredArrow.homMk η.right.2 (by simp)⟩
 
+/-- Implementation; see `StructuredArrow.prodEquivalence`. -/
 @[simps]
 def StructuredArrow.prodInverse :
     StructuredArrow S T × StructuredArrow S' T' ⥤ StructuredArrow (S, S') (T.prod T') where
   obj f := .mk (Y := (f.1.right, f.2.right)) ⟨f.1.hom, f.2.hom⟩
   map η := StructuredArrow.homMk ⟨η.1.right, η.2.right⟩ (by simp)
 
+/-- The natural equivalence
+`StructuredArrow (S, S') (T.prod T') ≌ StructuredArrow S T × StructuredArrow S' T'`. -/
 @[simps]
 def StructuredArrow.prodEquivalence :
     StructuredArrow (S, S') (T.prod T') ≌ StructuredArrow S T × StructuredArrow S' T' where
@@ -1030,6 +1034,7 @@ theorem CostructuredArrow.w_prod_snd {A B : CostructuredArrow (S.prod S') (T, T'
     S'.map f.left.2 ≫ B.hom.2 = A.hom.2 :=
   congr_arg _root_.Prod.snd (CostructuredArrow.w f)
 
+/-- Implementation; see `CostructuredArrow.prodEquivalence`. -/
 @[simps]
 def CostructuredArrow.prodFunctor :
     CostructuredArrow (S.prod S') (T, T') ⥤ CostructuredArrow S T × CostructuredArrow S' T' where
@@ -1037,12 +1042,15 @@ def CostructuredArrow.prodFunctor :
   map η := ⟨CostructuredArrow.homMk η.left.1 (by simp),
             CostructuredArrow.homMk η.left.2 (by simp)⟩
 
+/-- Implementation; see `CostructuredArrow.prodEquivalence`. -/
 @[simps]
 def CostructuredArrow.prodInverse :
     CostructuredArrow S T × CostructuredArrow S' T' ⥤ CostructuredArrow (S.prod S') (T, T') where
   obj f := .mk (Y := (f.1.left, f.2.left)) ⟨f.1.hom, f.2.hom⟩
   map η := CostructuredArrow.homMk ⟨η.1.left, η.2.left⟩ (by simp)
 
+/-- The natural equivalence
+`CostructuredArrow (S.prod S') (T, T') ≌ CostructuredArrow S T × CostructuredArrow S' T'`. -/
 @[simps]
 def CostructuredArrow.prodEquivalence :
     CostructuredArrow (S.prod S') (T, T') ≌ CostructuredArrow S T × CostructuredArrow S' T' where
@@ -1056,3 +1064,4 @@ end
 end Prod
 
 end CategoryTheory
+#lint
