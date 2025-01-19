@@ -7,6 +7,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Analysis.LocallyConvex.AbsConvex
+import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.LocallyConvex.WeakDual
 
 /-!
 # Polar set
@@ -210,7 +212,7 @@ end polar_convex
 
 section Bipolar
 
-variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
@@ -225,12 +227,21 @@ theorem bipolar_convex : Convex ℝ (B.flip.polar (B.polar s)) :=
 theorem bipolar_absConvex : AbsConvex 𝕜 (B.flip.polar (B.polar s)) :=
   polar_AbsConvex (B.polar s)
 
-theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set (WeakBilin B)} :
+open scoped ComplexOrder
+theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   apply le_antisymm
-  · sorry
-  · apply closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
+  · simp only [Set.le_eq_subset]
+    rw [← Set.compl_subset_compl]
+    intro x hx
+    rw [Set.mem_compl_iff] at hx
+    have e1 : Convex ℝ (closedAbsConvexHull (E := WeakBilin B) 𝕜 s) := absConvex_convexClosedHull.2
+    have e2 : IsClosed (closedAbsConvexHull (E := WeakBilin B) 𝕜 s) := isClosed_closedAbsConvexHull
+    obtain ⟨f,⟨u,hf⟩⟩ :=
+      RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B) e1 e2 hx
+    sorry
 
+  · exact closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
 
 end Bipolar
 
