@@ -193,7 +193,7 @@ lemma hom_inv_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : B) : e.hom (e.in
   simp
 
 @[to_additive]
-instance : ConcreteCategory ProfiniteGrp where
+instance : HasForget ProfiniteGrp where
   forget :=
   { obj := fun G => G
     map := fun f => f }
