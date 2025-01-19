@@ -1643,9 +1643,7 @@ variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, Topolog
 theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
   continuous_iSup_rng continuous_coinduced_rng
 
--- Porting note: the proof was `by simp only [isOpen_iSup_iff, isOpen_coinduced]`
 theorem isOpen_sigma_iff {s : Set (Sigma σ)} : IsOpen s ↔ ∀ i, IsOpen (Sigma.mk i ⁻¹' s) := by
-  delta instTopologicalSpaceSigma
   rw [isOpen_iSup_iff]
   rfl
 

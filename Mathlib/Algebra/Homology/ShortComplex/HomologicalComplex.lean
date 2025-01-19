@@ -630,11 +630,7 @@ lemma acyclic_of_isZero (hK : IsZero K) :
   rw [acyclic_iff]
   intro i
   apply ShortComplex.exact_of_isZero_X₂
-  dsimp
-  rw [IsZero.iff_id_eq_zero]
-  change 𝟙 ((eval _ _ i).obj K) = 0
-  rw [← CategoryTheory.Functor.map_id, hK.eq_of_src (𝟙 K) 0]
-  simp
+  exact (eval _ _ i).map_isZero hK
 
 end HomologicalComplex
 

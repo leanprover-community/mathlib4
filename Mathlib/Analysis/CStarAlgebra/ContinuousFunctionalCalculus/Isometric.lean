@@ -150,7 +150,7 @@ variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [Con
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [MetricSpace A] [IsometricContinuousFunctionalCalculus S A q]
-variable [CompleteSpace R] [UniqueContinuousFunctionalCalculus R A]
+variable [CompleteSpace R] [ContinuousMap.UniqueHom R A]
 
 open scoped ContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
@@ -321,7 +321,7 @@ variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 variable [MetricSpace A] [NonUnitalIsometricContinuousFunctionalCalculus S A q]
-variable [CompleteSpace R] [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [CompleteSpace R] [ContinuousMapZero.UniqueHom R A]
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
