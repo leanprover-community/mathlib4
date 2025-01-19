@@ -3,6 +3,7 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.SuccPred.Limit
 
 /-!
@@ -123,17 +124,10 @@ lemma exists_eq_ciSup_of_not_isSuccPrelimit'
 @[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2024-09-05")]
 alias exists_eq_ciSup_of_not_isSuccLimit' := exists_eq_ciSup_of_not_isSuccPrelimit'
 
-@[deprecated IsLUB.isSuccPrelimit_of_not_mem (since := "2025-01-05")]
-lemma IsLUB.mem_of_not_isSuccPrelimit (hs : IsLUB s x) (hx : ¬ IsSuccPrelimit x) : x ∈ s :=
-  hx.imp_symm hs.isSuccPrelimit_of_not_mem
-
-@[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias IsLUB.mem_of_not_isSuccLimit := IsLUB.mem_of_not_isSuccPrelimit
-
-@[deprecated IsLUB.isSuccPrelimit_of_not_mem (since := "2025-01-05")]
+@[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2025-01-05")]
 lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) :
     ∃ i, f i = x :=
-  hx.imp_symm hf.isSuccPrelimit_of_not_mem
+  hf.mem_of_not_isSuccPrelimit hx
 
 @[deprecated IsLUB.exists_of_not_isSuccPrelimit (since := "2024-09-05")]
 alias IsLUB.exists_of_not_isSuccLimit := IsLUB.exists_of_not_isSuccPrelimit
@@ -160,6 +154,15 @@ theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimi
 
 theorem iSup_Iio_eq_self_iff_isSuccPrelimit : ⨆ a : Iio x, a.1 = x ↔ IsSuccPrelimit x := by
   rw [← sSup_eq_iSup', sSup_Iio_eq_self_iff_isSuccPrelimit]
+
+theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
+  have H : BddAbove (range fun a : Iio x ↦ succ a.1) :=
+    ⟨succ x, by simp +contextual [upperBounds, succ_le_succ, le_of_lt]⟩
+  apply le_antisymm _ (le_of_forall_lt fun y hy ↦ ?_)
+  · rw [ciSup_le_iff' H]
+    exact fun a ↦ succ_le_of_lt a.2
+  · rw [lt_ciSup_iff' H]
+    exact ⟨⟨y, hy⟩, lt_succ_of_not_isMax hy.not_isMax⟩
 
 end ConditionallyCompleteLinearOrderBot
 
@@ -196,17 +199,10 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
 @[deprecated exists_eq_iInf_of_not_isPredPrelimit (since := "2024-09-05")]
 alias exists_eq_iInf_of_not_isPredLimit := exists_eq_iInf_of_not_isPredPrelimit
 
-@[deprecated IsGLB.isPredPrelimit_of_not_mem (since := "2025-01-05")]
-lemma IsGLB.mem_of_not_isPredPrelimit (hs : IsGLB s x) (hx : ¬ IsPredPrelimit x) : x ∈ s :=
-  hx.imp_symm hs.isPredPrelimit_of_not_mem
-
-@[deprecated IsGLB.mem_of_not_isPredPrelimit (since := "2024-09-05")]
-alias IsGLB.mem_of_not_isPredLimit := IsGLB.mem_of_not_isPredPrelimit
-
-@[deprecated IsGLB.isPredPrelimit_of_not_mem (since := "2025-01-05")]
+@[deprecated IsGLB.mem_of_not_isPredLimit (since := "2025-01-05")]
 lemma IsGLB.exists_of_not_isPredPrelimit (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
     ∃ i, f i = x :=
-  hx.imp_symm hf.isPredPrelimit_of_not_mem
+  hf.mem_of_not_isPredPrelimit hx
 
 @[deprecated IsGLB.exists_of_not_isPredPrelimit (since := "2024-09-05")]
 alias IsGLB.exists_of_not_isPredLimit := IsGLB.exists_of_not_isPredPrelimit

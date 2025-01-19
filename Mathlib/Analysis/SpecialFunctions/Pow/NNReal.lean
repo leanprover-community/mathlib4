@@ -176,7 +176,7 @@ alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
-    x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
+    x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
   rpow_natCast x n
 
 theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
@@ -635,7 +635,7 @@ alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
-    x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
+    x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n) :=
   rpow_natCast x n
 
 @[simp, norm_cast]
