@@ -17,6 +17,8 @@ universe u v w x
 
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
+lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by simp
+
 namespace Sum
 
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
