@@ -36,6 +36,8 @@ class FormallyUnramified (f : X ⟶ Y) : Prop where
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1),
       (f.appLE U V e).hom.FormallyUnramified
 
+namespace FormallyUnramified
+
 instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified where
   isLocal_ringHomProperty := RingHom.FormallyUnramified.propertyIsLocal
   eq_affineLocally' := by
