@@ -231,3 +231,33 @@ See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1
 Therefore, if we create an instance that always applies, we set the priority of these instances to
 100 (or something similar, which is below the default value of 1000).
 -/
+
+library_note "SetLike Aesop lemmas"/--
+The Aesop tactic (`aesop`) can automatically prove obvious facts about membership of
+algebraic substructures such as subgroups and subrings. Certain lemmas, whose conclusion is usually
+that a particular term is a member of a particular substructure, are registered
+as Aesop rules using the `aesop` attribute, according to the following principles:
+- Rules are in the `SetLike` ruleset: (rule_sets := [SetLike])
+- Membership lemmas with trivial hypotheses are registered as `simp` rules rather than Aesop rules.
+- Apply-style rules with nontrivial hypotheses are marked `unsafe`. This is because applying them
+  might not be provability-preserving in the context of more complex membership rules.
+  For instance, `mul_mem` is marked `unsafe`.
+- Unsafe rules should not be given a priority higher than 90%. This is the same probability
+  Aesop gives to safe rules when they generate metavariables. If the priority is too high, loops
+  generated in the presence of metavariables will time out Aesop.
+- Apply-style rules with simple hypotheses which fail quickly if they aren't provable are given
+  probability 90%. An example is `mul_mem`.
+- Rules that cause loops (even in the absence of metavariables) are given a priority of 5%.
+  An example is `SetLike.mem_of_subset`.
+- All other `unsafe` rules are given a probability between 5% and 90% based on how likely they are
+  to progress the proof state towards a solution. Apply-style rules should be given
+  a higher probability the more specific their conlusions and the more generic their hypotheses.
+  For instance, `Subgroup.mem_closure_of_mem` is given a lower probability than `mul_mem` because
+  its conclusion is more generic.
+- Aesop should not be invoking low-priority rules unless it can make no other progress.
+  If common usage patterns cause Aesop to invoke low-priority rules, additional lemmas should be
+  added at a higher priority to cover that case to improve performance and prevent timeouts.
+  For example, `Subgroup.closure_mem_of_mem` covers a common use case of `SetLike.mem_of_subset`.
+Some examples of the sorts of goals Aesop is set up to close can be found in the file
+MathlibTest/set_like.lean.
+-/
