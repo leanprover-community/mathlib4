@@ -573,7 +573,7 @@ theorem spanningCoe_le_of_le {H H' : Subgraph G} (h : H ≤ H') : H.spanningCoe 
 
 @[simp]
 lemma sup_spanningCoe (H H' : Subgraph G) :
-  (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := by rfl
+    (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := rfl
 
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
