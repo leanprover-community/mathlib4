@@ -179,7 +179,7 @@ lemma awayMap_awayToSection  :
   obtain ⟨⟨n, a, ⟨b, hb'⟩, i, rfl : _ = b⟩, rfl⟩ := mk_surjective a
   simp only [homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
   erw [ProjectiveSpectrum.Proj.awayToSection_apply]
-  rw [val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
+  rw [CommRingCat.hom_ofHom, val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
     ← Localization.mk_eq_mk']
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
