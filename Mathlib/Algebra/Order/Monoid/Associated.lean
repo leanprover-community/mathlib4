@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
@@ -30,9 +30,8 @@ namespace Associates
 instance instOrderedCommMonoid : OrderedCommMonoid (Associates M) where
   mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
-instance : CanonicallyOrderedCommMonoid (Associates M) where
+instance : CanonicallyOrderedMul (Associates M) where
   exists_mul_of_le h := h
   le_self_mul _ b := ⟨b, rfl⟩
-  bot_le _ := one_le
 
 end Associates
