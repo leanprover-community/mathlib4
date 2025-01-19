@@ -414,8 +414,8 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type u) (A : Type v)
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R : Type u) (A : Type v) (B : Type w)
+variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -433,6 +433,9 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 /-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
+
+@[simp]
+theorem comp_ofId (φ : A →ₐ[R] B) : φ.comp (Algebra.ofId R A) = Algebra.ofId R B := by ext
 
 section MulDistribMulAction
 
