@@ -760,6 +760,15 @@ lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
+/-- If `x = y`, the stalk maps are isomorphic. -/
+noncomputable def arrowStalkMapIsoOfEq {x y : X}
+    (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
+  Arrow.isoMk (Y.presheaf.stalkCongr <| (Inseparable.of_eq h).map f.continuous)
+      (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by
+    simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
+      Arrow.mk_hom]
+    rw [Scheme.stalkSpecializes_stalkMap]
+
 end Scheme
 
 end Stalks

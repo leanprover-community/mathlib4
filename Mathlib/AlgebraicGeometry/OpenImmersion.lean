@@ -180,7 +180,7 @@ theorem appIso_inv_app (U) :
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
 /--
-`elementwise` generates the `ConcreteCategory.instFunLike` lemma, we want `CommRingCat.Hom.hom`.
+`elementwise` generates the `HasForget.instFunLike` lemma, we want `CommRingCat.Hom.hom`.
 -/
 theorem appIso_inv_app_apply' (U) (x) :
     f.app (f ''ᵁ U) ((f.appIso U).inv x) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op x :=
