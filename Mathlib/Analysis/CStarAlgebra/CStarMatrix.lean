@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
+Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
@@ -331,7 +331,7 @@ instance instStarRing [Fintype n] [NonUnitalSemiring A] [StarRing A] :
 
 instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [Algebra R A] :
     Algebra R (CStarMatrix n n A) where
-  toRingHom := ofMatrixRingEquiv.toRingHom.comp <| algebraMap R (Matrix n n A)
+  algebraMap := ofMatrixRingEquiv.toRingHom.comp <| algebraMap R (Matrix n n A)
   commutes' r M := by
     apply ofMatrixRingEquiv.symm.injective
     simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
@@ -343,14 +343,23 @@ instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [
       map_mul, RingEquiv.symm_apply_apply]
     exact Algebra.smul_def (R := R) (A := Matrix n n A) _ _
 
+/-- `ofMatrix` bundled as a star algebra equivalence. -/
+def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
+    Matrix n n A ≃⋆ₐ[ℂ] CStarMatrix n n A :=
+  { ofMatrixRingEquiv with
+    map_star' := fun _ => rfl
+    map_smul' := fun _ _ => rfl }
+
+lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
+    (ofMatrix : Matrix n n A → CStarMatrix n n A)
+      = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
+
 end basic
 
-variable [Fintype m] [Fintype n] [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A]
-  [PartialOrder A] [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A] [StarModule ℂ A]
-  [IsScalarTower ℂ A A] [CompleteSpace A]
+variable [Fintype m] [Fintype n] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-/-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on
-`WithCStarModule (n → A)`. -/
+
+/-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 def toCLM : CStarMatrix m n A →ₗ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C⋆ᵐᵒᵈ (m → A)) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.mulVec ∘ WithCStarModule.equivL ℂ
                map_add' := M.mulVec_add
@@ -368,7 +377,7 @@ def toCLM : CStarMatrix m n A →ₗ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C
     ext x i
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, Matrix.mulVec, Matrix.dotProduct,
+      WithCStarModule.equiv_symm_pi_apply, Matrix.mulVec, dotProduct,
       WithCStarModule.equiv_pi_apply, RingHom.id_apply, ContinuousLinearMap.coe_smul',
       Pi.smul_apply, WithCStarModule.smul_apply, Finset.smul_sum]
     congr
@@ -381,7 +390,7 @@ lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)} :
 lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)} :
     toCLM M v = (WithCStarModule.equiv _).symm (fun i => ∑ j, M i j * v j) := by
   ext i
-  simp [toCLM_apply, Matrix.mulVec, Matrix.dotProduct]
+  simp [toCLM_apply, Matrix.mulVec, dotProduct]
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `n →C⋆ A`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
@@ -489,9 +498,7 @@ in order to show that the map `ofMatrix` is bilipschitz. We then finally registe
 namespace CStarMatrix
 
 variable {m n A : Type*} [Fintype m] [Fintype n] [DecidableEq n]
-  [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A] [CompleteSpace A]
-  [StarOrderedRing A] [NormedSpace ℂ A] [StarModule ℂ A] [IsScalarTower ℂ A A]
-  [SMulCommClass ℂ A A]
+  [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -540,8 +547,8 @@ private lemma antilipschitzWith_toMatrixAux :
     _ = _ := by simp [mul_assoc]
 
 private lemma uniformInducing_toMatrixAux [DecidableEq m] :
-    UniformInducing (ofMatrix.symm : CStarMatrix m n A → Matrix m n A) :=
-  AntilipschitzWith.uniformInducing antilipschitzWith_toMatrixAux
+    IsUniformInducing (ofMatrix.symm : CStarMatrix m n A → Matrix m n A) :=
+  AntilipschitzWith.isUniformInducing antilipschitzWith_toMatrixAux
     lipschitzWith_toMatrixAux.uniformContinuous
 
 private lemma uniformity_eq_aux [DecidableEq m] :
@@ -571,9 +578,7 @@ namespace CStarMatrix
 
 section non_unital
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
-  [CompleteSpace A] [StarOrderedRing A] [NormedSpace ℂ A]
-  [StarModule ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
 
@@ -636,12 +641,22 @@ instance instCStarRing [DecidableEq n] : CStarRing (CStarMatrix n n A) where
     rw [← pow_two, ← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
+/-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
+noncomputable instance instNonUnitalCStarAlgebra [DecidableEq n] :
+    NonUnitalCStarAlgebra (CStarMatrix n n A) where
+  smul_assoc x y z := by simp
+  smul_comm m a b := (Matrix.mul_smul _ _ _).symm
+
+instance instPartialOrder [DecidableEq n] :
+    PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
+instance instStarOrderedRing [DecidableEq n] :
+    StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
+
 end non_unital
 
 section unital
 
-variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
-  [CompleteSpace A] [StarOrderedRing A] [NormedAlgebra ℂ A] [StarModule ℂ A]
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
@@ -652,42 +667,29 @@ noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
--- TODO: make this non-unital
-instance instPartialOrder : PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
-instance instStarOrderedRing : StarOrderedRing (CStarMatrix n n A) :=
-  CStarAlgebra.spectralOrderedRing _
+/-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
+noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
 
 end unital
 
 section
 
-variable {m n A : Type*}
+variable {m n A B : Type*} [NonUnitalCStarAlgebra A] [CStarAlgebra B]
 
-lemma uniformEmbedding_ofMatrix [NonUnitalNormedRing A] :
-    UniformEmbedding (ofMatrix : Matrix m n A → CStarMatrix m n A) where
+lemma uniformEmbedding_ofMatrix :
+    IsUniformEmbedding (ofMatrix : Matrix m n A → CStarMatrix m n A) where
   comap_uniformity := Filter.comap_id'
-  inj := fun ⦃_ _⦄ a ↦ a
+  injective := fun ⦃_ _⦄ a ↦ a
 
 /-- `ofMatrix` bundled as a continuous linear map. -/
-def ofMatrixL [NonUnitalNormedRing A] [Module ℂ A] : Matrix m n A ≃L[ℂ] CStarMatrix m n A :=
+def ofMatrixL : Matrix m n A ≃L[ℂ] CStarMatrix m n A :=
   { ofMatrixₗ with
     continuous_toFun := continuous_id
     continuous_invFun := continuous_id }
 
-lemma ofMatrix_eq_ofMatrixL [NonUnitalNormedRing A] [Module ℂ A] :
+lemma ofMatrix_eq_ofMatrixL :
     (ofMatrix : Matrix m n A → CStarMatrix m n A)
       = (ofMatrixL : Matrix m n A → CStarMatrix m n A) := rfl
-
-/-- `ofMatrix` bundled as a star algebra equivalence. -/
-def ofMatrixStarAlgEquiv [Fintype n] [Star A] [Semiring A] [Module ℂ A] :
-    Matrix n n A ≃⋆ₐ[ℂ] CStarMatrix n n A :=
-  { ofMatrixRingEquiv with
-    map_star' := fun _ => rfl
-    map_smul' := fun _ _ => rfl }
-
-lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [Star A] [Semiring A] [Module ℂ A] :
-    (ofMatrix : Matrix n n A → CStarMatrix n n A)
-      = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
 end
 
