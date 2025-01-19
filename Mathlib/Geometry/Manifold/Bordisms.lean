@@ -242,6 +242,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable [Nonempty H]
 
+variable (k) in
 /-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
@@ -249,7 +250,8 @@ resp. `g` in the obvious way. -/
 structure _root_.UnorientedCobordism (s : SingularNManifold X n k)
     (t : SingularNManifold X n k) {W : Type*} [TopologicalSpace W]
     [ChartedSpace H'' W] {J : ModelWithCorners ℝ E'' H''} [IsManifold J k W]
-    (bd : BoundaryManifoldData W J) [HasNiceBoundary bd] where
+    -- XXX: generalise those to any field also; shouldn't matter, right?
+    (bd : BoundaryManifoldData W J k) where -- TODO: why does this fail?
   hW : CompactSpace W
   hW' : finrank ℝ E'' = n + 1
   F : W → X
