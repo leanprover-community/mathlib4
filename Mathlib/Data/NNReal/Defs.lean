@@ -68,8 +68,8 @@ instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
-noncomputable instance : Sub ℝ≥0 := Nonneg.sub
-noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+instance : Sub ℝ≥0 := Nonneg.sub
+instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
