@@ -8,7 +8,6 @@ import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.UniformGroup.Basic
-import Mathlib.RingTheory.Finiteness.Basic
 
 /-! # Type synonym for types with a `CStarModule` structure
 
