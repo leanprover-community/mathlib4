@@ -21,7 +21,7 @@ Let `G` be a group acting on a space `X`, and `A B : Set X`.
   matching piece of the partition yields a partition of `B`.
 
   This yields a bijection `f : A ≃ B` where, given `a : A`, `f a = γ • a` for `γ : G` the group
-  element for `a`'s piece of the parition. Reversing this is easy, and so we get an equivalent
+  element for `a`'s piece of the partition. Reversing this is easy, and so we get an equivalent
   (up to the choice of group elements) definition: an *Equidecomposition* of `A` and `B` is a
   bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for all `a`.
 
@@ -56,7 +56,7 @@ variable [SMul G X]
 as witnessed by some `S : Finset G` if for all `a ∈ A`, the value `f a` can be obtained
 by applying some element of `S` to `a` instead.
 
-More familiarly, the restriction of `f` to `A` is the result of paritioning `A` into finitely many
+More familiarly, the restriction of `f` to `A` is the result of partitioning `A` into finitely many
 pieces, then applying a single element of `G` to each piece. -/
 def DecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop :=  ∀ a ∈ A, ∃ g ∈ S, f a = g • a
 
