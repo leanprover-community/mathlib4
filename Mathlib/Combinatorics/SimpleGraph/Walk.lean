@@ -874,7 +874,7 @@ lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by
   simpa using getVert_reverse p 1
 
 @[simp]
-lemma penultimate_reverse {p : G.Walk u v} : p.reverse.penultimate = p.snd := by
+lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
   cases p <;> simp [snd, penultimate, getVert_append]
 
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
