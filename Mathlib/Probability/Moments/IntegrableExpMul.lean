@@ -29,9 +29,9 @@ We prove the integrability of other functions for `t` in the interior of that in
   then it is integrable on `[u, 0]`.
 * `ProbabilityTheory.integrable_rpow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
   interval in which `exp (t * X)` is integrable, for all nonnegative `p : ℝ`,
-  `|X| ^ n * exp (v * X)` is integrable.
+  `|X| ^ p * exp (v * X)` is integrable.
 * `ProbabilityTheory.memℒp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
-  `integrableExpSet X μ`, then `X` is in `ℒp` for al finite `p`.
+  `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
 
 -/
 
@@ -42,7 +42,7 @@ open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
 section Interval
 
@@ -231,7 +231,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
 
 lemma rpow_abs_le_mul_max_exp (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : t ≠ 0) :
     |x| ^ p ≤ (p / |t|) ^ p * max (exp (t * x)) (exp (- t * x)) := by
-  rcases lt_trichotomy t 0 with ht_neg | ht_zero | ht_pos
+  rcases lt_or_gt_of_ne ht with ht_neg | ht_pos
   · rw [abs_of_nonpos ht_neg.le, sup_comm]
     convert rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])
     simp
