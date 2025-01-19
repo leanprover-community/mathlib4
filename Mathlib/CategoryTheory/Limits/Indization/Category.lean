@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+import Mathlib.CategoryTheory.Limits.Indization.Morphisms
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.Products
 
@@ -180,5 +181,141 @@ instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
     ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift)⟩
   hasCoproducts_of_finite_and_filtered
+
+noncomputable def ParallelPairPresentation.ι₁' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    P.F₁ ⋙ Ind.yoneda ⟶ (Functor.const P.I).obj A :=
+  ((whiskeringRight _ _ _).obj (Ind.inclusion _)).preimage
+      ((Functor.associator _ _ _).hom ≫ (isoWhiskerLeft P.F₁ Ind.yonedaCompInclusion).hom
+        ≫ P.ι₁ ≫ (Functor.constComp _ _ _).inv)
+
+@[simp]
+theorem ParallelPairPresentation.ι₁'_app {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) {i} :
+    (Ind.inclusion C).map (P.ι₁'.app i) = Ind.yonedaCompInclusion.hom.app _ ≫ P.ι₁.app i := by
+  have := ((whiskeringRight P.I _ _).obj (Ind.inclusion C)).map_preimage
+      ((Functor.associator _ _ _).hom ≫ (isoWhiskerLeft P.F₁ Ind.yonedaCompInclusion).hom
+        ≫ P.ι₁ ≫ (Functor.constComp _ _ _).inv)
+  exact congr_fun (congr_arg NatTrans.app this) i
+
+noncomputable def ParallelPairPresentation.ι₂' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    P.F₂ ⋙ Ind.yoneda ⟶ (Functor.const P.I).obj B :=
+  ((whiskeringRight _ _ _).obj (Ind.inclusion _)).preimage
+      ((Functor.associator _ _ _).hom ≫ (isoWhiskerLeft P.F₂ Ind.yonedaCompInclusion).hom
+        ≫ P.ι₂ ≫ (Functor.constComp _ _ _).inv)
+
+@[simp]
+theorem ParallelPairPresentation.ι₂'_app {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) {i} :
+    (Ind.inclusion C).map (P.ι₂'.app i) = Ind.yonedaCompInclusion.hom.app _ ≫ P.ι₂.app i := by
+  have := ((whiskeringRight P.I _ _).obj (Ind.inclusion C)).map_preimage
+      ((Functor.associator _ _ _).hom ≫ (isoWhiskerLeft P.F₂ Ind.yonedaCompInclusion).hom
+        ≫ P.ι₂ ≫ (Functor.constComp _ _ _).inv)
+  exact congr_fun (congr_arg NatTrans.app this) i
+
+noncomputable def ParallelPairPresentation.mapCocone₁' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    Functor.mapCocone (Ind.inclusion _) (Cocone.mk A P.ι₁') ≅
+      (Cocones.precompose (isoWhiskerLeft P.F₁ Ind.yonedaCompInclusion).hom).obj
+        (Cocone.mk ((Ind.inclusion _).obj A) P.ι₁)
+        :=
+  Cocones.ext (Iso.refl _)
+
+noncomputable def ParallelPairPresentation.mapCocone₂' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    Functor.mapCocone (Ind.inclusion _) (Cocone.mk B P.ι₂') ≅
+      (Cocones.precompose (isoWhiskerLeft P.F₂ Ind.yonedaCompInclusion).hom).obj
+        (Cocone.mk ((Ind.inclusion _).obj B) P.ι₂)
+        :=
+  Cocones.ext (Iso.refl _)
+
+noncomputable def ParallelPairPresentation.isColimit₁' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    IsColimit (Cocone.mk A P.ι₁') := by
+  refine (ReflectsColimit.reflects (F := Ind.inclusion _) ?_).some
+  refine IsColimit.ofIsoColimit ?_ P.mapCocone₁'.symm
+  exact (IsColimit.precomposeHomEquiv _ _).symm P.isColimit₁
+
+noncomputable def ParallelPairPresentation.isColimit₂' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    IsColimit (Cocone.mk B P.ι₂') := by
+  refine (ReflectsColimit.reflects (F := Ind.inclusion _) ?_).some
+  refine IsColimit.ofIsoColimit ?_ P.mapCocone₂'.symm
+  exact (IsColimit.precomposeHomEquiv _ _).symm P.isColimit₂
+
+theorem ParallelPairPresentation.hf' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    f = IsColimit.map P.isColimit₁' (Cocone.mk B P.ι₂') (whiskerRight P.φ Ind.yoneda) := by
+  refine P.isColimit₁'.hom_ext (fun i => ?_)
+  apply (Ind.inclusion _).map_injective
+  erw [P.isColimit₁'.ι_map]
+  simp
+  refine (_ ≫= P.hf).trans ?_
+  erw [P.isColimit₁.ι_map]
+  simp
+  have := Ind.yonedaCompInclusion.hom.naturality (P.φ.app i)
+  simp at this
+  rw [reassoc_of% this]
+  rfl -- wtf...
+
+theorem ParallelPairPresentation.hg' {A B : Ind C} {f g : A ⟶ B}
+    (P : ParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    g = IsColimit.map P.isColimit₁' (Cocone.mk B P.ι₂') (whiskerRight P.ψ Ind.yoneda) := by
+  refine P.isColimit₁'.hom_ext (fun i => ?_)
+  apply (Ind.inclusion _).map_injective
+  erw [P.isColimit₁'.ι_map]
+  simp
+  refine (_ ≫= P.hg).trans ?_
+  erw [P.isColimit₁.ι_map]
+  simp
+  have := Ind.yonedaCompInclusion.hom.naturality (P.ψ.app i)
+  simp at this
+  rw [reassoc_of% this]
+  rfl -- wtf...
+
+
+  -- app i := (Ind.inclusion _).preimage (Ind.yonedaCompInclusion.hom.app _ ≫ P.ι₁.app i)
+  -- naturality := by
+  --   intro X Y f
+  --   apply (Ind.inclusion _).map_injective
+
+  --   simp
+
+instance [HasColimitsOfShape WalkingParallelPair C] :
+    HasColimitsOfShape WalkingParallelPair (Ind C) := by
+  refine ⟨fun F => ?_⟩
+  have := aboutParallelPairs (F.obj WalkingParallelPair.zero).2 (F.obj WalkingParallelPair.one).2
+    ((Ind.inclusion _).map (F.map WalkingParallelPairHom.left))
+    ((Ind.inclusion _).map (F.map WalkingParallelPairHom.right))
+  rcases this with ⟨this⟩
+  -- rename_i I _ _ F₁ F₂ ι₁ isColimit₁ ι₂ isColimit₂ φ ψ hf hg
+  let iso : parallelPair this.φ this.ψ ⋙ (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim ≅ F := by
+    fapply parallelPair.ext
+    · exact (colimit.isColimit _).coconePointUniqueUpToIso this.isColimit₁'
+    · exact (colimit.isColimit _).coconePointUniqueUpToIso this.isColimit₂'
+    · simp only [Functor.comp_obj, parallelPair_obj_zero, whiskeringRight_obj_obj, colim_obj,
+        parallelPair_obj_one, Functor.comp_map, parallelPair_map_left, whiskeringRight_obj_map,
+        colim_map]
+      apply colimit.hom_ext (fun i => ?_)
+      rw [ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
+        colimit.comp_coconePointUniqueUpToIso_hom_assoc]
+      have hf' := this.hf'
+      simp only [hf']
+      erw [this.isColimit₁'.ι_map]
+    · simp only [Functor.comp_obj, parallelPair_obj_zero, whiskeringRight_obj_obj, colim_obj,
+        parallelPair_obj_one, Functor.comp_map, parallelPair_map_right, whiskeringRight_obj_map,
+        colim_map]
+      apply colimit.hom_ext (fun i => ?_)
+      rw [ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
+        colimit.comp_coconePointUniqueUpToIso_hom_assoc]
+      have hg' := this.hg'
+      simp only [hg']
+      erw [this.isColimit₁'.ι_map]
+
+  apply hasColimitOfIso iso.symm
+
+
+
 
 end CategoryTheory

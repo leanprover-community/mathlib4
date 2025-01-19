@@ -93,6 +93,11 @@ structure ParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (f g : A ⟶ B)
   hf : f = IsColimit.map isColimit₁ (Cocone.mk B ι₂) (whiskerRight φ yoneda)
   hg : g = IsColimit.map isColimit₁ (Cocone.mk B ι₂) (whiskerRight ψ yoneda)
 
+instance {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B} (P : ParallelPairPresentation f g) :
+    SmallCategory P.I := P.ℐ
+instance {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B} (P : ParallelPairPresentation f g) :
+    IsFiltered P.I := P.hI
+
 namespace DoubleMorphs
 
 variable {A B : Cᵒᵖ ⥤ Type v₁} (f g : A ⟶ B) (P₁ : IndObjectPresentation A)
