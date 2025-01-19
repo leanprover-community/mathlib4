@@ -94,11 +94,12 @@ open scoped Topology ENNReal NNReal
 open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
+variable {𝕜 : Type u} {F : Type v}
 
 section TVS
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 section
 variable [ContinuousSMul 𝕜 F]
@@ -154,6 +155,7 @@ variable {L L₁ L₂ : Filter 𝕜}
 
 section
 variable [ContinuousSMul 𝕜 F]
+
 /-- Expressing `HasFDerivAtFilter f f' x L` in terms of `HasDerivAtFilter` -/
 theorem hasFDerivAtFilter_iff_hasDerivAtFilter {f' : 𝕜 →L[𝕜] F} :
     HasFDerivAtFilter f f' x L ↔ HasDerivAtFilter f (f' 1) x L := by simp [HasDerivAtFilter]
@@ -209,6 +211,7 @@ theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
 alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
 
 end
+
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     derivWithin f s x = 0 := by
   unfold derivWithin
@@ -218,17 +221,6 @@ theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWith
 theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠ 0) :
     DifferentiableWithinAt 𝕜 f s x :=
   not_imp_comm.1 derivWithin_zero_of_not_differentiableWithinAt h
-
-end TVS
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-variable {f f₀ f₁ : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
 
 theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
@@ -243,6 +235,17 @@ theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : d
 
 theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
   not_imp_comm.1 deriv_zero_of_not_differentiableAt h
+
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 s x)
     (h : HasDerivWithinAt f f' s x) (h₁ : HasDerivWithinAt f f₁' s x) : f' = f₁' :=
@@ -285,6 +288,17 @@ nonrec theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' x L) 
   AddMonoidHomClass.antilipschitz_of_bound (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') fun x => by
     simp [norm_smul, ← div_eq_inv_mul, mul_div_cancel_right₀ _ (mt norm_eq_zero.1 hf')]
 
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasFDerivAt
 
@@ -323,9 +337,31 @@ theorem HasDerivWithinAt.Ioi_iff_Ioo [LinearOrder 𝕜] [OrderClosedTopology �
 
 alias ⟨HasDerivWithinAt.Ioi_of_Ioo, HasDerivWithinAt.Ioo_of_Ioi⟩ := HasDerivWithinAt.Ioi_iff_Ioo
 
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 theorem hasDerivAt_iff_isLittleO_nhds_zero :
     HasDerivAt f f' x ↔ (fun h => f (x + h) - f x - h • f') =o[𝓝 0] fun h => h :=
   hasFDerivAt_iff_isLittleO_nhds_zero
+
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 theorem HasDerivAtFilter.mono (h : HasDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasDerivAtFilter f f' x L₁ :=
@@ -360,8 +396,30 @@ theorem HasDerivAt.differentiableAt (h : HasDerivAt f f' x) : DifferentiableAt �
 theorem hasDerivWithinAt_univ : HasDerivWithinAt f f' univ x ↔ HasDerivAt f f' x :=
   hasFDerivWithinAt_univ
 
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 theorem HasDerivAt.unique (h₀ : HasDerivAt f f₀' x) (h₁ : HasDerivAt f f₁' x) : f₀' = f₁' :=
   smulRight_one_eq_iff.mp <| h₀.hasFDerivAt.unique h₁
+
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 theorem hasDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasDerivWithinAt f f' (s ∩ t) x ↔ HasDerivWithinAt f f' s x :=
@@ -399,6 +457,17 @@ theorem DifferentiableOn.hasDerivAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 
     HasDerivAt f (deriv f x) x :=
   (h.hasFDerivAt hs).hasDerivAt
 
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 theorem HasDerivAt.deriv (h : HasDerivAt f f' x) : deriv f x = f' :=
   h.differentiableAt.hasDerivAt.unique h
 
@@ -409,18 +478,54 @@ theorem HasDerivWithinAt.derivWithin (h : HasDerivWithinAt f f' s x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin f s x = f' :=
   hxs.eq_deriv _ h.differentiableWithinAt.hasDerivWithinAt h
 
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
+omit [ContinuousSMul 𝕜 F] in
 theorem fderivWithin_derivWithin : (fderivWithin 𝕜 f s x : 𝕜 → F) 1 = derivWithin f s x :=
   rfl
 
 theorem derivWithin_fderivWithin :
     smulRight (1 : 𝕜 →L[𝕜] 𝕜) (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
 
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
   simp [← derivWithin_fderivWithin]
 
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
+omit [ContinuousSMul 𝕜 F] in
 theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
   rfl
 
+omit [ContinuousSMul 𝕜 F] in
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
   rw [← fderiv_deriv, ← ContinuousLinearMap.map_smul]
@@ -431,6 +536,17 @@ theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv
 
 lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   simp [mul_comm]
+
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := by
   simp [← deriv_fderiv]
@@ -455,6 +571,17 @@ theorem derivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=
   ((DifferentiableWithinAt.hasDerivWithinAt h).mono st).derivWithin ht
 
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 theorem derivWithin_congr_set' (y : 𝕜) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     derivWithin f s x = derivWithin f t x := by simp only [derivWithin, fderivWithin_congr_set' y h]
 
@@ -477,15 +604,39 @@ theorem derivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : derivWithin f s x = deriv f
 theorem derivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x :=
   derivWithin_of_mem_nhds (hs.mem_nhds hx)
 
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
 lemma deriv_eqOn {f' : 𝕜 → F} (hs : IsOpen s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
     s.EqOn (deriv f) f' := fun x hx ↦ by
   rw [← derivWithin_of_isOpen hs hx, (hf' _ hx).derivWithin <| hs.uniqueDiffWithinAt hx]
 
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
+omit [ContinuousSMul 𝕜 F] in
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :
     deriv f x ∈ s ↔
       DifferentiableAt 𝕜 f x ∧ deriv f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : F) ∈ s := by
   by_cases hx : DifferentiableAt 𝕜 f x <;> simp [deriv_zero_of_not_differentiableAt, *]
 
+omit [ContinuousSMul 𝕜 F] in
 theorem derivWithin_mem_iff {f : 𝕜 → F} {t : Set 𝕜} {s : Set F} {x : 𝕜} :
     derivWithin f t x ∈ s ↔
       DifferentiableWithinAt 𝕜 f t x ∧ derivWithin f t x ∈ s ∨
@@ -568,20 +719,24 @@ theorem Filter.EventuallyEq.hasDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
     HasDerivAt f₀ f' x ↔ HasDerivAt f₁ f' x :=
   ⟨fun h' ↦ h'.congr_of_eventuallyEq h.symm, fun h' ↦ h'.congr_of_eventuallyEq h⟩
 
+omit [ContinuousSMul 𝕜 F] in
 theorem Filter.EventuallyEq.derivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
   unfold derivWithin
   rw [hs.fderivWithin_eq hx]
 
+omit [ContinuousSMul 𝕜 F] in
 theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
   unfold derivWithin
   rw [fderivWithin_congr hs hx]
 
+omit [ContinuousSMul 𝕜 F] in
 theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x = deriv f x := by
   unfold deriv
   rwa [Filter.EventuallyEq.fderiv_eq]
 
+omit [ContinuousSMul 𝕜 F] in
 protected theorem Filter.EventuallyEq.deriv (h : f₁ =ᶠ[𝓝 x] f) : deriv f₁ =ᶠ[𝓝 x] deriv f :=
   h.eventuallyEq_nhds.mono fun _ h => h.deriv_eq
 
@@ -629,9 +784,20 @@ theorem derivWithin_id' (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin (fun x
 
 end id
 
+end TVS
+
 section Const
 
 /-! ### Derivative of constant functions -/
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 variable (c : F) (s x L)
 
@@ -647,6 +813,19 @@ theorem hasDerivWithinAt_const : HasDerivWithinAt (fun _ => c) 0 s x :=
 theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
   hasDerivAtFilter_const _ _ _
 
+end TVS
+
+section Normed
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
+
+variable (c : F) (s x L)
+
 theorem deriv_const : deriv (fun _ => c) x = 0 :=
   HasDerivAt.deriv (hasDerivAt_const x c)
 
@@ -658,9 +837,18 @@ theorem deriv_const' : (deriv fun _ : 𝕜 => c) = fun _ => 0 :=
 theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
   ext; simp [derivWithin]
 
+end Normed
+
 end Const
 
 section Continuous
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 /-! ### Continuity of a function admitting a derivative -/
 
@@ -681,6 +869,13 @@ protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x �
 end Continuous
 
 section MeanValue
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
