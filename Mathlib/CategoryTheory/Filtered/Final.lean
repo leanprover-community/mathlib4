@@ -429,24 +429,6 @@ end Pi
 section Prod
 
 open IsFiltered in
-instance Functor.final_prod' [IsFilteredOrEmpty C] {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D)
-    (G : C ⥤ E) [F.Final] [G.Final] : (F.prod' G).Final := by
-  apply Functor.final_of_exists_of_isFiltered
-  · rintro ⟨d, e⟩
-    obtain ⟨⟨⟨⟩⟩, c₁, f₁⟩ : Nonempty (StructuredArrow d F) := inferInstance
-    obtain ⟨⟨⟨⟩⟩, c₂, f₂⟩ : Nonempty (StructuredArrow e G) := inferInstance
-    dsimp at f₁ f₂ ⊢
-    exact ⟨max c₁ c₂, ⟨⟨f₁ ≫ F.map (leftToMax c₁ c₂), f₂ ≫ G.map (rightToMax c₁ c₂)⟩⟩⟩
-  · rintro ⟨d, e⟩ c ⟨f₁, f₂⟩ ⟨g₁, g₂⟩
-    dsimp at f₁ f₂ g₁ g₂ ⊢
-    obtain ⟨c₁, t₁, ht₁⟩ := Functor.Final.exists_coeq F f₁ g₁
-    obtain ⟨c₂, t₂, ht₂⟩ := Functor.Final.exists_coeq G f₂ g₂
-    refine ⟨coeq (t₁ ≫ leftToMax c₁ c₂) (t₂ ≫ rightToMax c₁ c₂),
-        t₁ ≫ leftToMax c₁ c₂ ≫ coeqHom _ _, Prod.mk.inj_iff.2 ⟨?_, ?_⟩⟩
-    · rw [Functor.map_comp, reassoc_of% ht₁]
-    · rw [← Category.assoc, coeq_condition, Category.assoc, Functor.map_comp, reassoc_of% ht₂]
-
-open IsFiltered in
 instance final_fst [IsFilteredOrEmpty C] [IsFiltered D] : (Prod.fst C D).Final := by
   apply Functor.final_of_exists_of_isFiltered
   · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
@@ -465,25 +447,6 @@ instance initial_fst [IsCofilteredOrEmpty C] [IsCofiltered D] : (Prod.fst C D).I
 
 instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).Initial :=
   inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Initial
-
-open IsCofiltered in
-instance Functor.initial_prod' [IsCofilteredOrEmpty C] {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D)
-    (G : C ⥤ E) [F.Initial] [G.Initial] : (F.prod' G).Initial := by
-  apply Functor.initial_of_exists_of_isCofiltered
-  · rintro ⟨d, e⟩
-    obtain ⟨c₁, ⟨⟨⟩⟩, f₁⟩ : Nonempty (CostructuredArrow F d) := inferInstance
-    obtain ⟨c₂, ⟨⟨⟩⟩, f₂⟩ : Nonempty (CostructuredArrow G e) := inferInstance
-    dsimp at f₁ f₂ ⊢
-    exact ⟨min c₁ c₂, ⟨⟨F.map (minToLeft c₁ c₂) ≫ f₁, G.map (minToRight c₁ c₂) ≫ f₂⟩⟩⟩
-  · rintro ⟨d, e⟩ c ⟨f₁, f₂⟩ ⟨g₁, g₂⟩
-    dsimp at f₁ f₂ g₁ g₂ ⊢
-    obtain ⟨c₁, t₁, ht₁⟩ := Functor.Initial.exists_eq F f₁ g₁
-    obtain ⟨c₂, t₂, ht₂⟩ := Functor.Initial.exists_eq G f₂ g₂
-    refine ⟨eq (minToLeft c₁ c₂ ≫ t₁) (minToRight c₁ c₂ ≫ t₂),
-        eqHom _ _ ≫ (minToLeft c₁ c₂ ≫ t₁), Prod.mk.inj_iff.2 ⟨?_, ?_⟩⟩
-    · simp [ht₁]
-    · rw [eq_condition]
-      simp [ht₂]
 
 end Prod
 
