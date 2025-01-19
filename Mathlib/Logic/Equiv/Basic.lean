@@ -518,12 +518,12 @@ theorem sumCompl_apply_inr {α} {p : α → Prop} [DecidablePred p] (x : { a // 
   rfl
 
 @[simp]
-theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] (a : α) (h : p a) :
+theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] {a : α} (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
 
 @[simp]
-theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] (a : α) (h : ¬p a) :
+theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a : α} (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
 
