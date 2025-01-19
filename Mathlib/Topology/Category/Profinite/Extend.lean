@@ -27,7 +27,7 @@ universe u w
 
 open CategoryTheory Limits FintypeCat Functor
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 namespace Profinite
 
