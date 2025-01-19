@@ -262,6 +262,17 @@ This is not an instance as it forms a non-defeq diamond with
 abbrev center.commSemiring' : CommSemiring (center R) :=
   { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
 
+variable {R}
+
+/-- The center of isomorphic (not necessarily associative) semirings are isomorphic. -/
+@[simps!] def centerCongr [NonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily associative) semiring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerMulOppositeEquiv : center Rᵐᵒᵖ ≃+* center R :=
+  NonUnitalSubsemiring.centerMulOppositeEquiv
+
 end NonAssocSemiring
 
 section Semiring
@@ -284,7 +295,6 @@ instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
 @[simp]
 theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
-
 
 end Semiring
 

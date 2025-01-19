@@ -126,3 +126,45 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
   fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
+
+section congr
+
+variable {M} {N : Type*}
+
+/-- The center of isomorphic magmas are isomorphic. -/
+@[to_additive (attr := simps)]
+def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* center N where
+  toFun r := by refine ⟨e r, ?_, ?_, ?_, ?_⟩ <;>
+    (intros; apply e.symm.injective;
+      simp only [map_mul, e.symm_apply_apply, (isMulCentral_iff _).mp r.2])
+  invFun s := by refine ⟨e.symm s, ?_, ?_, ?_, ?_⟩ <;>
+    (intros; apply e.injective;
+      simp only [map_mul, e.apply_symm_apply, (isMulCentral_iff _).mp s.2])
+  left_inv r := Subtype.ext (e.left_inv _)
+  right_inv s := Subtype.ext (e.right_inv _)
+  map_mul' _ _ := Subtype.ext (map_mul ..)
+
+/-- The center of isomorphic monoids are isomorphic. -/
+@[to_additive (attr := simps!)]
+def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : center M ≃* center N :=
+  Subsemigroup.centerCongr e
+
+/-- The center of a magma is isomorphic to the center of its opposite. -/
+@[to_additive (attr := simps)]
+def Subsemigroup.centerMulOppositeEquiv [Mul M] : center Mᵐᵒᵖ ≃* center M where
+  toFun r := by refine ⟨r.1.unop, ?_, ?_, ?_, ?_⟩ <;>
+    (intros; apply MulOpposite.op_injective;
+      simp only [MulOpposite.op_mul, MulOpposite.op_unop, (isMulCentral_iff _).mp r.2])
+  invFun r := by refine ⟨.op r.1, ?_, ?_, ?_, ?_⟩ <;>
+    (intros; apply MulOpposite.unop_injective;
+      simp only [MulOpposite.unop_mul, MulOpposite.unop_op, (isMulCentral_iff _).mp r.2])
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' r _ := Subtype.ext (congr_arg MulOpposite.unop <| r.2.1 _)
+
+/-- The center of a monoid is isomorphic to the center of its opposite. -/
+@[to_additive (attr := simps!)]
+def Submonoid.centerMulOppositeEquiv [MulOneClass M] : center Mᵐᵒᵖ ≃* center M :=
+  Subsemigroup.centerMulOppositeEquiv
+
+end congr

@@ -453,6 +453,11 @@ def endMulEquiv : End M ≃* (M →ₗ[R] M) where
   left_inv _ := rfl
   right_inv _ := rfl
 
+/-- `ModuleCat.Hom.hom` as an isomorphism of rings. -/
+@[simps!] def endRingEquiv : End M ≃+* (M →ₗ[R] M) where
+  __ := endMulEquiv M
+  map_add' _ _ := rfl
+
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
