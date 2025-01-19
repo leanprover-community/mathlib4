@@ -3,12 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Prime.Lemmas
 import Mathlib.Order.BoundedOrder.Basic
 
@@ -21,7 +15,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset
+assert_not_exists OrderedCommMonoid Multiset Ring
 
 variable {M : Type*}
 
@@ -217,18 +211,6 @@ theorem Associated.eq_zero_iff [MonoidWithZero M] {a b : M} (h : a ~ᵤ b) : a =
 
 theorem Associated.ne_zero_iff [MonoidWithZero M] {a b : M} (h : a ~ᵤ b) : a ≠ 0 ↔ b ≠ 0 :=
   not_congr h.eq_zero_iff
-
-theorem Associated.neg_left [Monoid M] [HasDistribNeg M] {a b : M} (h : Associated a b) :
-    Associated (-a) b :=
-  let ⟨u, hu⟩ := h; ⟨-u, by simp [hu]⟩
-
-theorem Associated.neg_right [Monoid M] [HasDistribNeg M] {a b : M} (h : Associated a b) :
-    Associated a (-b) :=
-  h.symm.neg_left.symm
-
-theorem Associated.neg_neg [Monoid M] [HasDistribNeg M] {a b : M} (h : Associated a b) :
-    Associated (-a) (-b) :=
-  h.neg_left.neg_right
 
 protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ q) (hp : Prime p) :
     Prime q :=

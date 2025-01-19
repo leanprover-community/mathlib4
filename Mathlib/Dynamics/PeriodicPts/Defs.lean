@@ -3,13 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int.Defs
+import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.PNat.Basic
+import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
@@ -42,6 +40,8 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 * https://en.wikipedia.org/wiki/Periodic_point
 
 -/
+
+assert_not_exists MonoidWithZero
 
 
 open Set
@@ -164,7 +164,7 @@ theorem eq_of_apply_eq_same (hx : IsPeriodicPt f n x) (hy : IsPeriodicPt f n y) 
 then `x = y`. -/
 theorem eq_of_apply_eq (hx : IsPeriodicPt f m x) (hy : IsPeriodicPt f n y) (hm : 0 < m) (hn : 0 < n)
     (h : f x = f y) : x = y :=
-  (hx.mul_const n).eq_of_apply_eq_same (hy.const_mul m) (mul_pos hm hn) h
+  (hx.mul_const n).eq_of_apply_eq_same (hy.const_mul m) (Nat.mul_pos hm hn) h
 
 end IsPeriodicPt
 
@@ -187,9 +187,6 @@ theorem bijOn_ptsOfPeriod (f : α → α) {n : ℕ} (hn : 0 < n) :
     ⟨f^[n.pred] x, hx.apply_iterate _, by
       rw [← comp_apply (f := f), comp_iterate_pred_of_pos f hn, hx.eq]⟩⟩
 
-theorem directed_ptsOfPeriod_pNat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
-  fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
-
 /-- The set of periodic points of a map `f : α → α`. -/
 def periodicPts (f : α → α) : Set α :=
   { x : α | ∃ n > 0, IsPeriodicPt f n x }
@@ -208,7 +205,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
     change _ = _
     convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
-  rw [add_mul, one_mul]
+  rw [Nat.add_mul, one_mul]
   exact (Nat.lt_div_mul_add hr).le
 
 variable (f)
@@ -218,10 +215,6 @@ theorem bUnion_ptsOfPeriod : ⋃ n > 0, ptsOfPeriod f n = periodicPts f :=
 
 theorem iUnion_pNat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
   iSup_subtype.trans <| bUnion_ptsOfPeriod f
-
-theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
-  iUnion_pNat_ptsOfPeriod f ▸
-    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
 
 variable {f}
 
@@ -339,7 +332,7 @@ theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
   | _ + 1, _, hn => fun hp => Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
 
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
-  (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ dvd_zero _) fun hn0 =>
+  (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
     -- Porting note: `Nat.dvd_iff_mod_eq_zero` gained explicit arguments
     Nat.dvd_iff_mod_eq_zero.2 <|
       (hx.mod <| isPeriodicPt_minimalPeriod f x).eq_zero_of_lt_minimalPeriod <|
@@ -354,39 +347,10 @@ theorem minimalPeriod_eq_minimalPeriod_iff {g : β → β} {y : β} :
     minimalPeriod f x = minimalPeriod g y ↔ ∀ n, IsPeriodicPt f n x ↔ IsPeriodicPt g n y := by
   simp_rw [isPeriodicPt_iff_minimalPeriod_dvd, dvd_right_iff_eq]
 
-theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
-    (hfix : ¬IsFixedPt f x) : minimalPeriod f x = p :=
-  (hp.out.eq_one_or_self_of_dvd _ hper.minimalPeriod_dvd).resolve_left
-    (mt minimalPeriod_eq_one_iff_isFixedPt.1 hfix)
-
-theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPeriodicPt f (p ^ k) x)
-    (hk1 : IsPeriodicPt f (p ^ (k + 1)) x) : minimalPeriod f x = p ^ (k + 1) := by
-  apply Nat.eq_prime_pow_of_dvd_least_prime_pow hp.out <;>
-    rwa [← isPeriodicPt_iff_minimalPeriod_dvd]
-
 theorem Commute.minimalPeriod_of_comp_dvd_lcm {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ Nat.lcm (minimalPeriod f x) (minimalPeriod g x) := by
   rw [← isPeriodicPt_iff_minimalPeriod_dvd]
   exact (isPeriodicPt_minimalPeriod f x).comp_lcm h (isPeriodicPt_minimalPeriod g x)
-
-theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) :
-    minimalPeriod (f ∘ g) x ∣ minimalPeriod f x * minimalPeriod g x :=
-  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (lcm_dvd_mul _ _)
-
-theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
-    (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
-    minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
-  apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices
-    ∀ {f g : α → α},
-      Commute f g →
-        Coprime (minimalPeriod f x) (minimalPeriod g x) →
-          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
-    hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
-  intro f g h hco
-  refine hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h ?_ ?_).minimalPeriod_dvd
-  · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
-  · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
 
 private theorem minimalPeriod_iterate_eq_div_gcd_aux (h : 0 < gcd (minimalPeriod f x) n) :
     minimalPeriod f^[n] x = minimalPeriod f x / Nat.gcd (minimalPeriod f x) n := by
@@ -521,16 +485,6 @@ theorem isPeriodicPt_prod_map (x : α × β) :
     IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
   simp [IsPeriodicPt]
 
-theorem minimalPeriod_prod_map (f : α → α) (g : β → β) (x : α × β) :
-    minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
-  eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
-
-theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
-  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_left _ _
-
-theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
-  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_right _ _
-
 end Function
 
 namespace MulAction
@@ -584,7 +538,7 @@ theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
   rcases j with n | n
   · rw [Int.ofNat_eq_coe, zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
-  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, dvd_neg,
+  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, Int.dvd_neg,
       Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]

@@ -36,7 +36,7 @@ universe v u
 Previously, this had accidentally been made a global instance,
 and we now turn it on locally when convenient.
 -/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace CompHausLike
 
@@ -261,7 +261,7 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightDiagram := InducedCategory.category toProfinite
 
-instance concreteCategory : ConcreteCategory LightDiagram := InducedCategory.concreteCategory _
+instance hasForget : HasForget LightDiagram := InducedCategory.hasForget _
 
 end LightDiagram
 
