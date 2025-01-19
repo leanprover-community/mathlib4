@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Enriched.Ordinary
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Limits.Shapes.End
@@ -11,7 +12,17 @@ import Mathlib.CategoryTheory.Limits.Shapes.End
 # Functor categories are enriched
 
 If `C` is a `V`-enriched ordinary category, then `J ⥤ C` is also
-a `V`-enriched ordinary category, provided `C` has suitable limits.
+both a `V`-enriched ordinary category and a `J ⥤ V`-enriched
+ordinary category, provided `C` has suitable limits.
+
+We first define the `V`-enriched structure on `J ⥤ C` by saying
+that if `F₁` and `F₂` are in `J ⥤ C`, then `enrichedHom V F₁ F₂ : V`
+is a suitable limit involving `F₁.obj j ⟶[V] F₂.obj j` for all `j : C`.
+The `J ⥤ V` object of morphisms `functorEnrichedHom V F₁ F₂ : J ⥤ V`
+is defined by sending `j : J` to the previously defined `enrichedHom`
+for the "restriction" of `F₁` and `F₂` to the category `Under j`.
+The definition `isLimitConeFunctorEnrichedHom` shows that
+`enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
 
 -/
 
@@ -60,7 +71,7 @@ lemma enrichedHom_condition {i j : J} (f : i ⟶ j) :
 variable {F₁ F₂}
 
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
-this is the isomorphism `(F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁ F₂)` in the category `V`. -/
+this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁ F₂)`. -/
 noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁ F₂) where
   toFun τ := end_.lift (fun j ↦ eHomEquiv V (τ.app j)) (fun i j f ↦ by
     trans eHomEquiv V (τ.app i ≫ F₂.map f)
@@ -95,7 +106,7 @@ section
 
 variable [HasEnrichedHom V F₁ F₁]
 
-/-- The identity for the `V`-enrichment of the category `J ⥤ C` over `V`. -/
+/-- The identity for the `V`-enrichment of the category `J ⥤ C`. -/
 noncomputable def enrichedId : 𝟙_ V ⟶ enrichedHom V F₁ F₁ := homEquiv _ (𝟙 F₁)
 
 @[reassoc (attr := simp)]
@@ -111,7 +122,7 @@ section
 
 variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedHom V F₁ F₃]
 
-/-- The composition for the `V`-enrichment of the category `J ⥤ C` over `V`. -/
+/-- The composition for the `V`-enrichment of the category `J ⥤ C`. -/
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
   end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
     dsimp
@@ -274,7 +285,7 @@ variable [HasEnrichedHom V F₁ F₂]
 
 /-- The (limit) cone expressing that the limit of `functorEnrichedHom V F₁ F₂`
 is `enrichedHom V F₁ F₂`. -/
-@[simps pt]
+@[simps]
 noncomputable def coneFunctorEnrichedHom : Cone (functorEnrichedHom V F₁ F₂) where
   pt := enrichedHom V F₁ F₂
   π :=
@@ -334,5 +345,127 @@ noncomputable def isLimitConeFunctorEnrichedHom :
     exact this
 
 end
+
+/-- The identity for the `J ⥤ V`-enrichment of the category `J ⥤ C`. -/
+@[simps]
+noncomputable def functorEnrichedId [HasFunctorEnrichedHom V F₁ F₁] :
+    𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₁ where
+  app j := enrichedId V _
+  naturality j j' f := by
+    dsimp
+    ext k
+    dsimp
+    rw [assoc, assoc, id_comp, enrichedId_π]
+    erw [end_.lift_π]
+    rw [enrichedId_π]
+    dsimp
+
+/-- The composition for the `J ⥤ V`-enrichment of the category `J ⥤ C`. -/
+@[simps]
+noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
+    [HasFunctorEnrichedHom V F₂ F₃] [HasFunctorEnrichedHom V F₁ F₃] :
+    functorEnrichedHom V F₁ F₂ ⊗ functorEnrichedHom V F₂ F₃ ⟶ functorEnrichedHom V F₁ F₃ where
+  app j := enrichedComp V _ _ _
+  naturality j j' f := by
+    dsimp
+    ext k
+    dsimp
+    rw [assoc, assoc, enrichedComp_π]
+    dsimp
+    rw [← tensor_comp_assoc]
+    erw [end_.lift_π, end_.lift_π, end_.lift_π]
+    rw [enrichedComp_π]
+    dsimp
+
+@[reassoc (attr := simp)]
+lemma functorEnriched_id_comp [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₁ F₁] :
+    (λ_ (functorEnrichedHom V F₁ F₂)).inv ≫
+      functorEnrichedId V F₁ ▷ functorEnrichedHom V F₁ F₂ ≫
+        functorEnrichedComp V F₁ F₁ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma functorEnriched_comp_id [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₂] :
+    (ρ_ (functorEnrichedHom V F₁ F₂)).inv ≫
+      functorEnrichedHom V F₁ F₂ ◁ functorEnrichedId V F₂ ≫
+        functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+
+@[reassoc]
+lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₃]
+    [HasFunctorEnrichedHom V F₃ F₄] [HasFunctorEnrichedHom V F₁ F₃]
+    [HasFunctorEnrichedHom V F₂ F₄] [HasFunctorEnrichedHom V F₁ F₄] :
+    (α_ _ _ _).inv ≫ functorEnrichedComp V F₁ F₂ F₃ ▷ functorEnrichedHom V F₃ F₄ ≫
+      functorEnrichedComp V F₁ F₃ F₄ =
+        functorEnrichedHom V F₁ F₂ ◁ functorEnrichedComp V F₂ F₃ F₄ ≫
+          functorEnrichedComp V F₁ F₂ F₄ := by
+  ext j
+  dsimp
+  rw [enriched_assoc]
+
+variable (J C) in
+/-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
+then `J ⥤ C` is also a `J ⥤ V`-enriched ordinary category. -/
+noncomputable def functorEnrichedCategory
+    [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom V F₁ F₂] :
+    EnrichedCategory (J ⥤ V) (J ⥤ C) where
+  Hom F₁ F₂ := functorEnrichedHom V F₁ F₂
+  id F := functorEnrichedId V F
+  comp F₁ F₂ F₃ := functorEnrichedComp V F₁ F₂ F₃
+  assoc F₁ F₂ F₃ F₄ := functorEnriched_assoc V F₁ F₂ F₃ F₄
+
+variable {F₁ F₂} in
+/-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
+this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂)`. -/
+noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂] :
+    (F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂) :=
+  (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
+
+variable {F₁ F₂} in
+@[reassoc]
+lemma functorHomEquiv_app_π [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
+    (f : F₁ ⟶ F₂) {j : J} (k : Under j) :
+      (functorHomEquiv V f).app j ≫
+        enrichedHomπ V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂) k =
+      eHomEquiv V (f.app k.right) := by
+  change (homEquiv V f ≫ precompEnrichedHom V F₁ F₂ (Under.forget j)) ≫
+    enrichedHomπ V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂) k = _
+  simp
+
+lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
+    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by
+  ext j
+  dsimp [functorHomEquiv]
+  erw [IsLimit.homEquiv_apply]
+  aesop_cat
+
+variable {F₁ F₂ F₃} in
+lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
+    [HasFunctorEnrichedHom V F₂ F₃] [HasEnrichedHom V F₂ F₃]
+    [HasFunctorEnrichedHom V F₁ F₃] [HasEnrichedHom V F₁ F₃]
+    (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
+    (functorHomEquiv V) (f ≫ g) = (λ_ (𝟙_ (J ⥤ V))).inv ≫
+      ((functorHomEquiv V) f ⊗ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
+  ext j
+  dsimp [functorHomEquiv]
+  rw [homEquiv_comp]
+  erw [IsLimit.homEquiv_apply, IsLimit.homEquiv_apply, IsLimit.homEquiv_apply]
+  dsimp
+  ext k
+  rw [assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π, enrichedComp_π,
+    ← tensor_comp_assoc, ← tensor_comp_assoc, assoc, assoc,
+    end_.lift_π, end_.lift_π]
+  dsimp
+
+attribute [local instance] functorEnrichedCategory
+
+variable (J C) in
+/-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
+then `J ⥤ C` is also a `J ⥤ V`-enriched ordinary category. -/
+noncomputable def functorEnrichedOrdinaryCategory
+    [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom V F₁ F₂]
+    [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom V F₁ F₂] :
+    EnrichedOrdinaryCategory (J ⥤ V) (J ⥤ C) where
+  homEquiv := functorHomEquiv V
+  homEquiv_id F := functorHomEquiv_id V F
+  homEquiv_comp f g := functorHomEquiv_comp V f g
 
 end CategoryTheory.Enriched.FunctorCategory
