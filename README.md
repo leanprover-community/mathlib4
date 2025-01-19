@@ -51,6 +51,13 @@ for quick reference.
 
 ## Contributing
 
+In short:
+```shell
+git clone https://github.com/leanprover-community/mathlib4.git
+cd mathlib4
+lake exe cache get
+git switch -c my_new_branch
+```
 The complete documentation for contributing to ``mathlib`` is located
 [on the community guide contribute to mathlib](https://leanprover-community.github.io/contribute/index.html)
 
