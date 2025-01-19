@@ -388,24 +388,24 @@ theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
 -- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
 attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
--- @[simp] -- FIXME simp ignores proof rewrites
+@[deprecated "proof rewrites do nothing in Lean" (since := "2025-01-19")]
 theorem congr_refl_left {α β : Sort*} (f : α → β) {a b : α} (h : a = b) :
     congr (Eq.refl f) h = congr_arg f h := rfl
 
--- @[simp] -- FIXME simp ignores proof rewrites
+@[deprecated "proof rewrites do nothing in Lean" (since := "2025-01-19")]
 theorem congr_refl_right {α β : Sort*} {f g : α → β} (h : f = g) (a : α) :
     congr h (Eq.refl a) = congr_fun h a := rfl
 
--- @[simp] -- FIXME simp ignores proof rewrites
+@[deprecated "proof rewrites do nothing in Lean" (since := "2025-01-19")]
 theorem congr_arg_refl {α β : Sort*} (f : α → β) (a : α) :
     congr_arg f (Eq.refl a) = Eq.refl (f a) :=
   rfl
 
--- @[simp] -- FIXME simp ignores proof rewrites
+@[deprecated "proof rewrites do nothing in Lean" (since := "2025-01-19")]
 theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.refl f) a = Eq.refl (f a) :=
   rfl
 
--- @[simp] -- FIXME simp ignores proof rewrites
+@[deprecated "proof rewrites do nothing in Lean" (since := "2025-01-19")]
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
