@@ -95,8 +95,8 @@ end RelEmbedding
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [h : WellFoundedLT α] (f : ℕ → α) :
     ¬ StrictAnti f := by
   by_contra! hf
-  rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq] at h
-  exact h.elim ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩
+  exact (RelEmbedding.wellFounded_iff_no_descending_seq.1 wellFounded_lt).elim
+    ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩
 
 theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
     ¬ StrictMono f :=
