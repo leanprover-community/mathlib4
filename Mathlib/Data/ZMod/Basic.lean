@@ -705,6 +705,9 @@ theorem val_injective (n : ℕ) [NeZero n] : Function.Injective (val : ZMod n �
 theorem val_one_eq_one_mod (n : ℕ) : (1 : ZMod n).val = 1 % n := by
   rw [← Nat.cast_one, val_natCast]
 
+theorem val_two_eq_two_mod (n : ℕ) : (2 : ZMod n).val = 2 % n := by
+  rw [← Nat.cast_two, val_natCast]
+
 theorem val_one (n : ℕ) [Fact (1 < n)] : (1 : ZMod n).val = 1 := by
   rw [val_one_eq_one_mod]
   exact Nat.mod_eq_of_lt Fact.out
