@@ -1215,4 +1215,144 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
 
 end ZeroAtInfty
 
+/-! ### Inclusion into L^p space -/
+
+section Lp
+
+open MeasureTheory
+open scoped ENNReal
+
+variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
+  [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
+/-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
+`(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
+theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
+    {μ : Measure D} (hμ : μ.HasTemperateGrowth) :
+    ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
+  cases p with
+  | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
+  | coe p =>
+    cases Decidable.eq_or_ne (p : ℝ≥0∞) 0 with
+    | inl hp => exact ⟨0, by simp [hp]⟩
+    | inr hp =>
+      have h_one_add (x : D) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
+      have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
+      rcases hμ.exists_integrable with ⟨l, hl⟩
+      have hlk : l ≤ ⌈(l / p : ℝ)⌉₊ * (p : ℝ) := by
+        simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
+      generalize ⌈(l / p : ℝ)⌉₊ = k at hlk
+      use k
+      suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
+        rw [hasFiniteIntegral_iff_nnnorm] at this
+        rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp ENNReal.coe_ne_top,
+          ENNReal.coe_toReal]
+        refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
+        rw [← neg_mul, Real.rpow_mul (h_one_add x).le,
+          Real.nnnorm_rpow_of_nonneg (Real.rpow_nonneg (h_one_add x).le _),
+          ENNReal.coe_rpow_of_nonneg _ hp_pos.le]
+      refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
+      rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
+      exact Real.rpow_le_rpow_of_exponent_le (by simp) (by simpa using hlk)
+
+variable (𝕜 F) in
+/-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.
+
+The maximum index `k` and the constant `C` depend on `p` and `μ`.
+-/
+theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] :
+    ∃ (k : ℕ) (C : NNReal), ∀ (f : 𝓢(E, F)), eLpNorm f p μ ≤
+      C * ENNReal.ofReal ((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f) := by
+  -- Apply Hölder's inequality `‖f‖_p ≤ ‖f₁‖_p * ‖f₂‖_∞` to obtain the `L^p` norm of `f = f₁ • f₂`
+  -- using `f₁ = (1 + ‖x‖) ^ (-k)` and `f₂ = (1 + ‖x‖) ^ k • f x`.
+  rcases hμ.exists_eLpNorm_lt_top p with ⟨k, hk⟩
+  refine ⟨k, (eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ).toNNReal * 2 ^ k, fun f ↦ ?_⟩
+  have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
+  refine le_trans ?_ ?_
+    (b := eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ)
+  · refine le_of_eq_of_le ?_ (eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_)
+    · congr
+      funext x
+      simp [Real.rpow_neg (h_one_add x).le, (h_one_add x).ne']
+    · refine Continuous.aestronglyMeasurable ?_
+      exact .rpow_const (.add continuous_const continuous_norm) fun x ↦ .inl (h_one_add x).ne'
+  · rw [ENNReal.coe_mul, mul_assoc]
+    refine mul_le_mul' ?_ ?_
+    · rw [ENNReal.coe_toNNReal hk.ne]
+    · rw [eLpNorm_exponent_top, ENNReal.ofReal, ← ENNReal.coe_mul]
+      refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
+      rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
+      simpa [norm_iteratedFDeriv_zero, norm_smul, abs_of_nonneg (h_one_add x).le] using
+        one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
+
+/-- The `L^p` norm of a Schwartz function is finite. -/
+theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] : eLpNorm f p μ < ⊤ := by
+  rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
+  exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
+
+variable [SecondCountableTopologyEither E F]
+
+/-- Schwartz functions are in `L^∞`; does not require `hμ.HasTemperateGrowth`. -/
+theorem memℒp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : Memℒp f ⊤ μ := by
+  rcases f.decay 0 0 with ⟨C, _, hC⟩
+  refine memℒp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
+  simpa using hC x
+
+/-- Schwartz functions are in `L^p` for any `p`. -/
+theorem memℒp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] : Memℒp f p μ :=
+  ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
+
+/-- Schwartz functions are in `L^p` for any `p`. -/
+def toLp (f : 𝓢(E, F))  (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
+    Lp F p μ := (f.memℒp p μ).toLp
+
+theorem coeFn_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    f.toLp p μ =ᵐ[μ] f := (memℒp f p μ).coeFn_toLp
+
+theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
+  rw [Lp.norm_def, eLpNorm_congr_ae coeFn_toLp]
+
+variable (F) in
+/-- The map from Schwartz to `L^p` is injective when the measure is positive on non-empty sets. -/
+def embedding_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+    [μ.IsOpenPosMeasure] : 𝓢(E, F) ↪ Lp F p μ where
+  toFun f := (f.memℒp p μ).toLp
+  inj' f g := by simpa using (Continuous.ae_eq_iff_eq μ f.continuous g.continuous).mp
+
+variable (𝕜 F) in
+theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] :
+    ∃ k C, 0 ≤ C ∧ ∀ (f : 𝓢(E, F)), ‖f.toLp p μ‖ ≤
+      C * (Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f := by
+  rcases eLpNorm_le_seminorm 𝕜 F p μ with ⟨k, C, hC⟩
+  refine ⟨k, C, C.coe_nonneg, fun f ↦ ?_⟩
+  rw [norm_toLp]
+  refine ENNReal.toReal_le_of_le_ofReal (by simp [mul_nonneg]) ?_
+  rw [ENNReal.ofReal_mul NNReal.zero_le_coe]
+  simpa using hC f
+
+variable (𝕜 F) in
+/-- Continuous linear map from Schwartz functions to `L^p`. -/
+def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] : 𝓢(E, F) →L[𝕜] Lp F p μ :=
+  mkCLMtoNormedSpace (fun f ↦ f.toLp p μ) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (by
+      rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩
+      exact ⟨Finset.Iic (k, 0), C, hC_pos, hC⟩)
+
+theorem toLpCLM_apply {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+    {f : 𝓢(E, F)} : toLpCLM 𝕜 F p μ f = f.toLp p μ := rfl
+
+theorem coeFn_toLpCLM {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+    {f : 𝓢(E, F)} : toLpCLM 𝕜 F p μ f =ᵐ[μ] f := coeFn_toLp
+
+theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
+
+end Lp
+
 end SchwartzMap
