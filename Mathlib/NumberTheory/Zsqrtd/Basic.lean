@@ -356,32 +356,26 @@ end Gcd
 def SqLe (a c b d : ℕ) : Prop :=
   c * a * a ≤ d * b * b
 
-theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe x c y d) : SqLe z c w d :=
-  le_trans (mul_le_mul (Nat.mul_le_mul_left _ xz) xz (Nat.zero_le _) (Nat.zero_le _)) <|
-    le_trans xy (mul_le_mul (Nat.mul_le_mul_left _ yw) yw (Nat.zero_le _) (Nat.zero_le _))
+theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe x c y d) :
+    SqLe z c w d := by
+  simp only [SqLe] at *
+  linear_combination c * Nat.pow_le_pow_left xz 2 + d * Nat.pow_le_pow_left yw 2 + xy
 
 theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     c * (x * z) ≤ d * (y * w) :=
   Nat.mul_self_le_mul_self_iff.1 <| by
-    simpa [mul_comm, mul_left_comm] using mul_le_mul xy zw (Nat.zero_le _) (Nat.zero_le _)
+    linear_combination mul_le_mul xy zw (Nat.zero_le _) (Nat.zero_le _)
 
 theorem sqLe_add {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     SqLe (x + z) c (y + w) d := by
-  have xz := sqLe_add_mixed xy zw
-  simp? [SqLe, mul_assoc] at xy zw says simp only [SqLe, mul_assoc] at xy zw
-  simp [SqLe, mul_add, mul_comm, mul_left_comm, add_le_add, *]
+  simp only [SqLe] at *
+  linear_combination xy + zw + 2 * sqLe_add_mixed xy zw
 
 theorem sqLe_cancel {c d x y z w : ℕ} (zw : SqLe y d x c) (h : SqLe (x + z) c (y + w) d) :
     SqLe z c w d := by
-  apply le_of_not_gt
-  intro l
-  refine not_le_of_gt ?_ h
-  simp only [SqLe, mul_add, mul_comm, mul_left_comm, add_assoc, gt_iff_lt]
-  have hm := sqLe_add_mixed zw (le_of_lt l)
-  simp only [SqLe, mul_assoc, gt_iff_lt] at l zw
-  exact
-    lt_of_le_of_lt (add_le_add_right zw _)
-      (add_lt_add_left (add_lt_add_of_le_of_lt hm (add_lt_add_of_le_of_lt hm l)) _)
+  simp only [SqLe] at *
+  contrapose! h with l
+  linear_combination zw + 2 * sqLe_add_mixed zw l.le + l
 
 theorem sqLe_smul {c d x y : ℕ} (n : ℕ) (xy : SqLe x c y d) : SqLe (n * x) c (n * y) d := by
   simpa [SqLe, mul_left_comm, mul_assoc] using Nat.mul_le_mul_left (n * n) xy
@@ -393,13 +387,10 @@ theorem sqLe_mul {d x y z w : ℕ} :
           (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) := by
   refine ⟨?_, ?_, ?_, ?_⟩ <;>
     · intro xy zw
-      have :=
-        Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
-          (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
-      refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert this using 1
-      simp only [one_mul, Int.ofNat_add, Int.ofNat_mul]
-      ring
+      simp only [SqLe] at *
+      zify at *
+      rw [← sub_nonneg] at *
+      linear_combination mul_nonneg xy zw
 
 open Int in
 /-- "Generalized" `nonneg`. `nonnegg c d x y` means `a √c + b √d ≥ 0`;
@@ -779,11 +770,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
       have : m * m = d * (n * n) := by
         refine mul_left_cancel₀ (mul_pos gpos gpos).ne' ?_
         -- Porting note: was `simpa [mul_comm, mul_left_comm] using h`
-        calc
-          g * g * (m * m)
-          _ = m * g * (m * g) := by ring
-          _ = d * (n * g) * (n * g) := h
-          _ = g * g * (d * (n * n)) := by ring
+        linear_combination h
       have co2 :=
         let co1 := co.mul_right co
         co1.mul co1
@@ -846,17 +833,11 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b
         else
           Or.inl <|
             fin <|
-              mul_right_cancel₀ w0 <|
-                calc
-                  x * x * w = -y * (x * z) := by simp [h2, mul_assoc, mul_left_comm]
-                  _ = d * y * y * w := by simp [h1, mul_assoc, mul_left_comm]
+              mul_right_cancel₀ w0 <| by linear_combination x * h2 - y * h1
       else
         Or.inl <|
           fin <|
-            mul_right_cancel₀ z0 <|
-              calc
-                x * x * z = d * -y * (x * w) := by simp [h1, mul_assoc, mul_left_comm]
-                _ = d * y * y * z := by simp [h2, mul_assoc, mul_left_comm]
+            mul_right_cancel₀ z0 <| by linear_combination x * h1 - d * y * h2
 
 instance : NoZeroDivisors (ℤ√d) where
   eq_zero_or_eq_zero_of_mul_eq_zero := Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
