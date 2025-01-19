@@ -240,12 +240,12 @@ def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →�
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
     -- Porting note: a single simp took care of the goal before reenableeta
-    simp_rw [← (extensionOfMax i f).toLinearPMap.map_add]
+    simp_rw [← pmap_add (extensionOfMax i f).toLinearPMap]
     congr
     apply add_smul
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
     -- Porting note: a single simp took care of the goal before reenableeta
-    simp_rw [← (extensionOfMax i f).toLinearPMap.map_smul]
+    simp_rw [← pmap_smul (extensionOfMax i f).toLinearPMap]
     congr 2
     apply mul_smul
 
@@ -268,7 +268,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r 
   rw [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h y r this]
   dsimp [ExtensionOfMaxAdjoin.idealTo]
   simp only [LinearMap.coe_mk, eq1, Subtype.coe_mk, ← ZeroMemClass.zero_def,
-    (extensionOfMax i f).toLinearPMap.map_zero]
+    pmap_zero (extensionOfMax i f).toLinearPMap]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r' : R)
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
@@ -307,7 +307,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
       (by rw [← eq2]; exact Submodule.sub_mem _ (ExtensionOfMaxAdjoin.fst i x).2 ha)
   simp only [map_sub, sub_smul, sub_eq_iff_eq_add] at eq3
   unfold ExtensionOfMaxAdjoin.extensionToFun
-  rw [eq3, ← add_assoc, ← (extensionOfMax i f).toLinearPMap.map_add, AddMemClass.mk_add_mk]
+  rw [eq3, ← add_assoc, ← pmap_add (extensionOfMax i f).toLinearPMap, AddMemClass.mk_add_mk]
   congr
   ext
   dsimp
@@ -327,8 +327,8 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
               (ExtensionOfMaxAdjoin.snd i a + ExtensionOfMaxAdjoin.snd i b) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, ExtensionOfMaxAdjoin.eqn, add_smul, Submodule.coe_add]
           ac_rfl
-        rw [ExtensionOfMaxAdjoin.extensionToFun_wd (y := y) i f h (a + b) _ _ eq1,
-          LinearPMap.map_add, map_add]
+        rw [ExtensionOfMaxAdjoin.extensionToFun_wd (y := y) i f h (a + b) _ _ eq1, pmap_add,
+          map_add]
         unfold ExtensionOfMaxAdjoin.extensionToFun
         abel
       map_smul' := fun r a => by
@@ -339,7 +339,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
         rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, LinearMap.map_smul,
-          LinearPMap.map_smul, ← smul_add]
+          pmap_smul, ← smul_add]
         congr }
   is_extension m := by
     dsimp
@@ -368,9 +368,10 @@ protected theorem extension_property (h : Module.Baer R Q)
   haveI : Fact (Function.Injective f) := ⟨hf⟩
   Exists.intro
     { toFun := ((extensionOfMax f g).toLinearPMap
-        ⟨·, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ ⟨⟩⟩)
-      map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
-      map_smul' := fun r x ↦ by rw [← LinearPMap.map_smul]; dsimp } <|
+        ⟨·, have : ⊤ = PFunLike.domain (extensionOfMax f g).toLinearPMap :=
+          (extensionOfMax_to_submodule_eq_top f g h).symm; this ▸ ⟨⟩⟩)
+      map_add' := fun x y ↦ by rw [← pmap_add]; congr
+      map_smul' := fun r x ↦ by rw [← pmap_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
 
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
