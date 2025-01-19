@@ -6,6 +6,7 @@ Authors: Jack McKoen
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Left and right lifting properties
@@ -17,7 +18,7 @@ and composition, with dual statements for the right lifting property.
 
 -/
 
-universe v u
+universe w v u
 
 namespace CategoryTheory
 
@@ -35,12 +36,12 @@ right lifting property (rlp) with respect to `T`. -/
 def rlp : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ (g : X ⟶ Y) (_ : T g), HasLiftingProperty g f
 
-lemma llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
+instance llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
   of_retract h hg _ _ f hf :=
     letI := hg _ hf
     h.leftLiftingProperty f
 
-lemma rlp_isStableUnderRetracts : T.rlp.IsStableUnderRetracts where
+instance rlp_isStableUnderRetracts : T.rlp.IsStableUnderRetracts where
   of_retract h hf _ _ g hg :=
     letI := hf _ hg
     h.rightLiftingProperty g
@@ -70,19 +71,89 @@ instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-lemma llp_IsStableUnderCoproductsOfShape (J : Type*) :
+lemma llp_isStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := by
   apply IsStableUnderCoproductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
 
-lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
+lemma rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by
   apply IsStableUnderProductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
+
+lemma le_llp_iff_le_rlp (T' : MorphismProperty C) :
+    T ≤ T'.llp ↔ T' ≤ T.rlp :=
+  ⟨fun h _ _ _ hp _ _ _ hi ↦ h _ hi _ hp,
+    fun h _ _ _ hi _ _ _ hp ↦ h _ hp _ hi⟩
+
+lemma gc_llp_rlp :
+    GaloisConnection (OrderDual.toDual (α := MorphismProperty C) ∘ llp)
+      (rlp ∘ OrderDual.ofDual) :=
+  fun _ _ ↦ le_llp_iff_le_rlp _ _
+
+lemma le_rlp_llp : T ≤ T.rlp.llp := by
+  rw [le_llp_iff_le_rlp]
+
+@[simp]
+lemma rlp_llp_rlp : T.rlp.llp.rlp = T.rlp :=
+  gc_llp_rlp.u_l_u_eq_u T
+
+@[simp]
+lemma llp_rlp_llp : T.llp.rlp.llp = T.llp :=
+  gc_llp_rlp.l_u_l_eq_l T
+
+lemma antitone_rlp : Antitone (rlp : MorphismProperty C → _) :=
+  fun _ _ h ↦ gc_llp_rlp.monotone_u h
+
+lemma antitone_llp : Antitone (llp : MorphismProperty C → _) :=
+  fun _ _ h ↦ gc_llp_rlp.monotone_l h
+
+lemma pushouts_le_rlp_llp : T.pushouts ≤ T.rlp.llp := by
+  intro A B i hi
+  exact (T.rlp.llp.isStableUnderCobaseChange_iff_pushouts_le).1 inferInstance i
+    (monotone_pushouts T.le_rlp_llp _ hi)
+
+@[simp]
+lemma pushouts_rlp : T.pushouts.rlp = T.rlp := by
+  apply le_antisymm
+  · exact antitone_rlp T.le_pushouts
+  · rw [← le_llp_iff_le_rlp]
+    exact T.pushouts_le_rlp_llp
+
+lemma colimitsOfShape_discrete_le_rlp_llp (J : Type w) :
+    T.colimitsOfShape (Discrete J) ≤ T.rlp.llp := by
+  intro A B i hi
+  exact (T.rlp.llp.isStableUnderColimitsOfShape_iff_colimitsOfShape_le (Discrete J)).1
+    (llp_isStableUnderCoproductsOfShape _ _) _
+      (monotone_colimitsOfShape T.le_rlp_llp _ _ hi)
+
+lemma coproducts_le_rlp_llp : (coproducts.{w} T) ≤ T.rlp.llp := by
+  intro A B i hi
+  rw [coproducts_iff] at hi
+  obtain ⟨J, hi⟩ := hi
+  exact T.colimitsOfShape_discrete_le_rlp_llp J _ hi
+
+@[simp]
+lemma coproducts_rlp : (coproducts.{w} T).rlp = T.rlp := by
+  apply le_antisymm
+  · exact antitone_rlp T.le_coproducts
+  · rw [← le_llp_iff_le_rlp]
+    exact T.coproducts_le_rlp_llp
+
+
+lemma retracts_le_rlp_llp : T.retracts ≤ T.rlp.llp :=
+  le_trans (monotone_retracts T.le_rlp_llp) T.rlp.llp.retracts_le
+
+@[simp]
+lemma retracts_rlp : T.retracts.rlp = T.rlp := by
+  apply le_antisymm
+  · exact antitone_rlp T.le_retracts
+  · rw [← le_llp_iff_le_rlp]
+    exact T.retracts_le_rlp_llp
 
 end MorphismProperty
 
