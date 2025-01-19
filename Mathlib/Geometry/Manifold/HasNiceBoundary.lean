@@ -127,6 +127,61 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryMa
     rw [this]
     simp [Empty.instIsEmpty]
 
+-- another trivial case: modelWithCornersSelf on euclidean half space!
+
+open Set Topology
+
+variable (M I) in
+/-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
+def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
+    (bd : BoundaryManifoldData N J) : BoundaryManifoldData (M × N) (I.prod J) where
+  M₀ := M × bd.M₀
+  E₀ := E × bd.E₀
+  H₀ := ModelProd H bd.H₀
+  I₀ := I.prod bd.I₀
+  f := Prod.map id bd.f
+  isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
+  -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
+  isSmooth := ContMDiff.prod_map contMDiff_id bd.isSmooth
+  range_eq_boundary := by
+    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left]
+    congr
+    exacts [range_id, bd.range_eq_boundary]
+
+variable (N J) in
+/-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
+def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I)
+    [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) where
+  M₀ := bd.M₀ × N
+  E₀ := bd.E₀ × E'
+  H₀ := ModelProd bd.H₀ H'
+  I₀ := bd.I₀.prod J
+  f := Prod.map bd.f id
+  isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
+  isSmooth := ContMDiff.prod_map bd.isSmooth contMDiff_id
+  range_eq_boundary := by
+    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_right]
+    congr
+    exacts [bd.range_eq_boundary, range_id]
+
+-- XXX: are these two lemmas useful?
+lemma BoundaryManifoldData.prod_of_boundaryless_left_model
+    [BoundarylessManifold I M] (bd : BoundaryManifoldData N J) :
+  (BoundaryManifoldData.prod_of_boundaryless_left M I bd).I₀ = I.prod bd.I₀ := rfl
+
+lemma BoundaryManifoldData.prod_of_boundaryless_right_model
+    (bd : BoundaryManifoldData M I) [BoundarylessManifold J N] :
+  (BoundaryManifoldData.prod_of_boundaryless_right N J bd).I₀ = bd.I₀.prod J := rfl
+
+-- TODO: this statement doesn't compile yet
+-- /-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
+-- Proving this requires knowing homology groups of spheres (or similar). -/
+-- -- TODO: also prove that the boundary has dimension one lower
+-- def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) [NeZero n]
+--     {M : Type u} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace n) M]
+--     [IsManifold (𝓡∂ n) ⊤ M] : BoundaryManifoldData (I := 𝓡∂ n) M where
+--   M₀ := sorry
+--   --sorry
 
 #exit
 
