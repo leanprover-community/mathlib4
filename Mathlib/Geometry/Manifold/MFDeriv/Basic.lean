@@ -590,6 +590,20 @@ theorem mfderivWithin_zero_of_not_mdifferentiableWithinAt
 theorem mfderiv_zero_of_not_mdifferentiableAt (h : ¬MDifferentiableAt I I' f x) :
     mfderiv I I' f x = 0 := by simp only [mfderiv, h, if_neg, not_false_iff]
 
+theorem mdifferentiableWithinAt_of_isInvertible_mfderivWithin
+    (hf : (mfderivWithin I I' f s x).IsInvertible) : MDifferentiableWithinAt I I' f s x := by
+  contrapose hf
+  rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+  contrapose! hf
+  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
+  have : Subsingleton E := hE
+  have : Subsingleton H := I.injective.subsingleton
+  have : DiscreteTopology H := by infer_instance
+  have : DiscreteTopology M := sorry
+  have : ContinuousWithinAt f s x := continuous_of_discreteTopology.continuousWithinAt
+  simp [mdifferentiableWithinAt_iff', this]
+  exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
+
 theorem HasMFDerivWithinAt.mono (h : HasMFDerivWithinAt I I' f t x f') (hst : s ⊆ t) :
     HasMFDerivWithinAt I I' f s x f' :=
   ⟨ContinuousWithinAt.mono h.1 hst,
