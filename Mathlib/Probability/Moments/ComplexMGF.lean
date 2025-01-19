@@ -1,13 +1,13 @@
 /-
-Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
-import Mathlib.Analysis.Calculus.ParametricIntegral
 
 /-!
 # The complex-valued moment generating function
