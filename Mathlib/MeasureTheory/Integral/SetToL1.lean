@@ -607,13 +607,13 @@ namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
-  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_nnnorm]
+  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm]
   have h_eq := SimpleFunc.map_apply (fun x => (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
   simp_rw [← h_eq]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
     ext1 x
-    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_coe_nnnorm,
+    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_enorm,
       ENNReal.toReal_ofReal (norm_nonneg _)]
   · intro x _
     by_cases hx0 : x = 0
@@ -1357,7 +1357,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
     have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
       rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
-      simp_rw [eLpNorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
+      simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply]
       refine (tendsto_congr' ?_).mp hfs
       filter_upwards [hfsi] with i hi
       refine lintegral_congr_ae ?_
@@ -1569,7 +1569,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   rw [← Integrable.toL1_sub]
   refine ((fs_int n).sub f_int).coeFn_toL1.mono fun x hx => ?_
   dsimp only
-  rw [hx, ofReal_norm_eq_coe_nnnorm, Pi.sub_apply]
+  rw [hx, ofReal_norm_eq_enorm, Pi.sub_apply]
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C) {ι}

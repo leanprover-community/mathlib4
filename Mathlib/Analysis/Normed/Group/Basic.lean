@@ -77,6 +77,23 @@ export ENorm (enorm)
 @[inherit_doc] notation "‖" e "‖₊" => nnnorm e
 @[inherit_doc] notation "‖" e "‖ₑ" => enorm e
 
+section ENorm
+variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
+
+instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
+
+lemma enorm_eq_nnnorm : ‖x‖ₑ = ‖x‖₊ := rfl
+
+@[simp, norm_cast] lemma coe_le_enorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [enorm]
+@[simp, norm_cast] lemma enorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [enorm]
+@[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
+@[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
+
+@[simp] lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
+@[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
+
+end ENorm
+
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
 class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
@@ -677,6 +694,10 @@ theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
 theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
+@[to_additive enorm_add_le]
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
+  simpa [enorm, ← ENNReal.coe_add] using nnnorm_mul_le' a b
+
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
@@ -689,6 +710,9 @@ lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
@@ -764,22 +788,10 @@ lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y
 lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
 
-@[to_additive ofReal_norm_eq_coe_nnnorm]
-theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊ :=
-  ENNReal.ofReal_eq_coe_nnreal _
-
 /-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
 @[to_additive toReal_coe_nnnorm "The non negative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm."]
 theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
-
-@[to_additive]
-theorem edist_eq_coe_nnnorm_div (a b : E) : edist a b = ‖a / b‖₊ := by
-  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_coe_nnnorm']
-
-@[to_additive edist_eq_coe_nnnorm]
-theorem edist_eq_coe_nnnorm' (x : E) : edist x 1 = (‖x‖₊ : ℝ≥0∞) := by
-  rw [edist_eq_coe_nnnorm_div, div_one]
 
 open scoped symmDiff in
 @[to_additive]
@@ -787,25 +799,42 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [edist_nndist, nndist_mulIndicator]
 
-@[to_additive]
-theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r ↔ ↑‖a‖₊ < r := by
-  rw [EMetric.mem_ball, edist_eq_coe_nnnorm']
-
 end NNNorm
 
-section ENNNorm
+section ENorm
 
-instance {E : Type*} [NNNorm E] : ENorm E where
-  enorm := (‖·‖₊ : E → ℝ≥0∞)
+@[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
 
-lemma enorm_eq_nnnorm {E : Type*} [NNNorm E] {x : E} : ‖x‖ₑ = ‖x‖₊ := rfl
+@[to_additive ofReal_norm_eq_enorm]
+lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
+
+@[deprecated (since := "2025-01-17")] alias ofReal_norm_eq_coe_nnnorm := ofReal_norm_eq_enorm
+@[deprecated (since := "2025-01-17")] alias ofReal_norm_eq_coe_nnnorm' := ofReal_norm_eq_enorm'
 
 instance : ENorm ℝ≥0∞ where
   enorm x := x
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-end ENNNorm
+@[to_additive]
+theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
+
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm_sub := edist_eq_enorm_sub
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm_div := edist_eq_enorm_div
+
+@[to_additive]
+theorem edist_one_eq_enorm (x : E) : edist x 1 = (‖x‖ₑ : ℝ≥0∞) := by
+  rw [edist_eq_enorm_div, div_one]
+
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm := edist_zero_eq_enorm
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm' := edist_one_eq_enorm
+
+@[to_additive]
+theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by
+  rw [EMetric.mem_ball, edist_one_eq_enorm]
+
+end ENorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -1257,14 +1286,18 @@ lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by simp [nnnorm
 theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
   NNReal.eq <| norm_of_nonneg hr
 
-@[simp]
-theorem nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
+@[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
+@[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]
 
-theorem ennnorm_eq_ofReal (hr : 0 ≤ r) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal r := by
-  rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg hr]
+theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
+  rw [← ofReal_norm_eq_enorm, norm_of_nonneg hr]
 
-theorem ennnorm_eq_ofReal_abs (r : ℝ) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal |r| := by
-  rw [← Real.nnnorm_abs r, Real.ennnorm_eq_ofReal (abs_nonneg _)]
+@[deprecated (since := "2025-01-17")] alias ennnorm_eq_ofReal := enorm_eq_ofReal
+
+theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
+  rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]
+
+@[deprecated (since := "2025-01-17")] alias ennnorm_eq_ofReal_abs := enorm_eq_ofReal_abs
 
 theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ := by
   rw [Real.toNNReal_of_nonneg hr]
@@ -1272,12 +1305,10 @@ theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
   rw [coe_mk, coe_nnnorm r, Real.norm_eq_abs r, abs_of_nonneg hr]
   -- Porting note: this is due to the change from `Subtype.val` to `NNReal.toReal` for the coercion
 
-theorem ofReal_le_ennnorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖₊ := by
-  obtain hr | hr := le_total 0 r
-  · exact (Real.ennnorm_eq_ofReal hr).ge
-  · rw [ENNReal.ofReal_eq_zero.2 hr]
-    exact bot_le
--- Porting note: should this be renamed to `Real.ofReal_le_nnnorm`?
+theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
+  rw [enorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
+
+@[deprecated (since := "2025-01-17")] alias ofReal_le_ennnorm := ofReal_le_enorm
 
 end Real
 
@@ -1289,6 +1320,16 @@ instance : NNNorm ℝ≥0 where
 @[simp] lemma nnnorm_eq_self (x : ℝ≥0) : ‖x‖₊ = x := rfl
 
 end NNReal
+
+ -- Porting note: increase priority so that the LHS doesn't simplify
+@[to_additive (attr := simp 1001) norm_norm]
+lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)
+
+@[to_additive (attr := simp) nnnorm_norm]
+lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]
+
+@[to_additive (attr := simp) enorm_norm]
+lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 end SeminormedCommGroup
 
@@ -1342,12 +1383,21 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
+@[to_additive (attr := simp) enorm_eq_zero]
+lemma enorm_eq_zero' : ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm]
+
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnnorm_eq_zero'.not
 
+@[to_additive enorm_ne_zero]
+lemma enorm_ne_zero' : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+
+@[to_additive (attr := simp) enorm_pos]
+lemma enorm_pos' : 0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
