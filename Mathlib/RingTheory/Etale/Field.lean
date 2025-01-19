@@ -153,8 +153,7 @@ theorem iff_isSeparable [EssFiniteType K L] :
     FormallyEtale K L ↔ Algebra.IsSeparable K L :=
   ⟨fun _ ↦ FormallyUnramified.isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
-attribute [local instance]
-  IsArtinianRing.subtype_isMaximal_finite IsArtinianRing.fieldOfSubtypeIsMaximal in
+attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 /--
 If `A` is an essentially of finite type algebra over a field `K`, then `A` is formally étale
 over `K` if and only if `A` is a finite product of separable field extensions.
@@ -170,8 +169,8 @@ theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
     have := FormallyUnramified.finite_of_free K A
     have := FormallyUnramified.isReduced_of_field K A
     have : IsArtinianRing A := isArtinian_of_tower K inferInstance
-    letI : Fintype {I : Ideal A | I.IsMaximal} := (nonempty_fintype _).some
-    let v (i : {I : Ideal A | I.IsMaximal}) : A := (IsArtinianRing.equivPi A).symm (Pi.single i 1)
+    letI : Fintype (MaximalSpectrum A) := (nonempty_fintype _).some
+    let v (i : MaximalSpectrum A) : A := (IsArtinianRing.equivPi A).symm (Pi.single i 1)
     let e : A ≃ₐ[K] _ := { __ := IsArtinianRing.equivPi A, commutes' := fun r ↦ rfl }
     have := (FormallyEtale.iff_of_equiv e).mp inferInstance
     rw [FormallyEtale.pi_iff] at this
@@ -189,8 +188,6 @@ theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
 
 end Algebra.FormallyEtale
 
-attribute [local instance]
-  IsArtinianRing.subtype_isMaximal_finite IsArtinianRing.fieldOfSubtypeIsMaximal in
 /--
 `A` is étale over a field `K` if and only if
 `A` is a finite product of finite separable field extensions.
