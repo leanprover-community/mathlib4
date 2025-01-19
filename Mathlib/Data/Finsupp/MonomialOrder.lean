@@ -15,6 +15,7 @@ A *monomial order* is well ordering relation on a type of the form `σ →₀ �
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
+
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
@@ -151,5 +152,15 @@ theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 
 theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ toLex c < toLex d := Iff.rfl
+
+theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
+    c ≺[lex] d ↔ c default < d default := by
+  simp [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff, Unique.exists_iff]
+
+theorem MonomialOrder.lex_le_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
+    c ≼[lex] d ↔ c default ≤ d default := by
+  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  apply or_congr _ MonomialOrder.lex_lt_iff_of_unique
+  simp only [Finsupp.ext_iff, Unique.forall_iff]
 
 end Lex
