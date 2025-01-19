@@ -77,7 +77,12 @@ lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 section Linter.MinImports
 
 set_option linter.minImports.increases false
-set_option linter.minImports true
+
+set_option linter.minImports false
+/-- info: Counting imports from here. -/
+#guard_msgs in
+#import_bumps
+
 /--
 warning: Imports increased to
 [Init.Guard, Mathlib.Data.Int.Notation]
