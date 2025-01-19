@@ -275,14 +275,28 @@ theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
 
 variable [TopologicalSpace Ω]
 
-/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
-respect to both agree. -/
+/-- Two finite Borel measures are equal if the integrals of all non-negative bounded continuous
+functions with respect to both agree. -/
 theorem ext_of_forall_lintegral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
     {μ ν : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) :
     μ = ν := by
   apply Subtype.ext
   change (μ : Measure Ω) = (ν : Measure Ω)
   exact ext_of_forall_lintegral_eq_of_IsFiniteMeasure h
+
+/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
+respect to both agree. -/
+theorem ext_of_forall_integral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
+    {P P' : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ), ∫ x, f x ∂P = ∫ x, f x ∂P') :
+    P = P' := by
+  apply ext_of_forall_lintegral_eq
+  intro f
+  apply (ENNReal.toReal_eq_toReal_iff' (ne_of_lt (lintegral_lt_top_of_nnreal P f))
+      (ne_of_lt (lintegral_lt_top_of_nnreal P' f))).mp
+  rw [toReal_lintegral_coe_eq_integral f P, toReal_lintegral_coe_eq_integral f P']
+  exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
+      f.map_bounded'⟩
+
 
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous
 function is obtained by (Lebesgue) integrating the (test) function against the measure.

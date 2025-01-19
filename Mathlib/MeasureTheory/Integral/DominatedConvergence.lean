@@ -154,6 +154,22 @@ lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α
     ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
   (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
 
+/--
+Corollary of the Lebesgue dominated convergence theorem: If a sequence of functions `F n` is
+(eventually) uniformly bounded by a constant and converges (eventually) pointwise to a
+function `f`, then the integrals of `F n` with respect to a finite measure `μ` converge
+to the integral of `f`.
+-/
+theorem FiniteMeasure.tendstoIntegral_of_eventually_boundedPointwise [IsFiniteMeasure μ]
+    {F : ℕ → α → G} {f : α → G} (h_meas : ∀ᶠ (n : ℕ) in atTop, AEStronglyMeasurable (F n) μ)
+    (h_bound : ∃ C, ∀ᶠ (n : ℕ) in atTop, (∀ᵐ (ω : α) ∂μ, ‖F n ω‖ ≤ C))
+    (h_lim : ∀ᵐ (ω : α) ∂μ, Tendsto (fun (n : ℕ) => F n ω) atTop (nhds (f ω))) :
+    Tendsto (fun (n : ℕ) => ∫ (ω : α), F n ω ∂μ) atTop (nhds (∫ (ω : α), f ω ∂μ)) := by
+  cases' h_bound with c h_boundc
+  let C : α → ℝ := (fun _ => c)
+  apply tendsto_integral_filter_of_dominated_convergence
+      C h_meas h_boundc (integrable_const c) h_lim
+
 end MeasureTheory
 
 section TendstoMono
