@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
 import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 
