@@ -862,26 +862,24 @@ instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
   chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
     (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
   mem_chart_source p := by
-    by_cases h : Sum.isLeft p
-    · let x := Sum.getLeft p h
-      rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl, lift_openEmbedding_source,
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl, lift_openEmbedding_source,
         ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inl]
       use x, cm.mem_chart_source x
-    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
-      let x := Sum.getRight p h'
-      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr, lift_openEmbedding_source,
+    | inr x =>
+      rw [Sum.elim_inr, lift_openEmbedding_source,
         ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inr]
       use x, cm'.mem_chart_source x
   chart_mem_atlas p := by
-    by_cases h : Sum.isLeft p
-    · rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl]
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl]
       left
-      let x := Sum.getLeft p h
       use ChartedSpace.chartAt x, cm.chart_mem_atlas x
-    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
-      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr]
+    | inr x =>
+      rw [Sum.elim_inr]
       right
-      let x := Sum.getRight p h'
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
 lemma ChartedSpace.sum_chartAt_inl (x : M) :
