@@ -114,10 +114,10 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
         -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel₀ hlt.ne']
-        _ < (r : ℝ)⁻¹ * x := by nlinarith [inv_pos.mpr hlt]
+        _ < (r : ℝ)⁻¹ * x := by linear_combination (r : ℝ)⁻¹ * hx1
     · suffices (r : ℝ)⁻¹ * x < 1 by exact this.ne
       calc
-        (r : ℝ)⁻¹ * x < (r : ℝ)⁻¹ * r := by nlinarith [inv_pos.mpr hlt]
+        (r : ℝ)⁻¹ * x < (r : ℝ)⁻¹ * r := by linear_combination (r : ℝ)⁻¹ * hx2
         _ = 1 := inv_mul_cancel₀ hlt.ne'
     · nlinarith
   have hcont : ContinuousOn F (Icc (-r) r) := (by continuity : Continuous F).continuousOn

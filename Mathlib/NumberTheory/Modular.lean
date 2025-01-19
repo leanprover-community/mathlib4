@@ -351,9 +351,8 @@ theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
 /-- If `|z| < 1`, then applying `S` strictly decreases `im`. -/
 theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
   have : z.im < z.im / normSq (z : ℂ) := by
-    have imz : 0 < z.im := im_pos z
     apply (lt_div_iff₀ z.normSq_pos).mpr
-    nlinarith
+    linear_combination z.im * h
   convert this
   simp only [ModularGroup.im_smul_eq_div_normSq]
   simp [denom, coe_S]
