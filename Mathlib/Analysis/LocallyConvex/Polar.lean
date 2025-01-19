@@ -68,6 +68,9 @@ theorem polar_closed (s : Set E) : IsClosed (X :=  WeakBilin B.flip) (B.polar s)
   exact isClosed_biInter
     (fun _ _ => IsClosed.preimage (WeakBilin.eval_continuous B.flip _) Metric.isClosed_ball)
 
+theorem bipolar_closed (s : Set E) : IsClosed (X :=  WeakBilin B) (B.flip.polar (B.polar s)) :=
+  polar_closed _ _
+
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
@@ -226,7 +229,7 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set (WeakBilin B)}
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   apply le_antisymm
   · sorry
-  · apply closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) sorry
+  · apply closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
 
 
 end Bipolar
