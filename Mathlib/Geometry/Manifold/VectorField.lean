@@ -342,9 +342,9 @@ protected lemma _root_.MDifferentiable.mpullback_vectorField
     MDifferentiable I I.tangent (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) :=
   fun x ↦ MDifferentiableAt.mpullback_vectorField (hV (f x)) (hf x) (hf' x) hmn
 
-end
+end MDifferentiability
 
-section
+section ContMDiff
 
 variable [IsManifold I n M] [IsManifold I' n M'] [CompleteSpace E]
 -- the next assumptions will usually follow from the previous ones, but they are needed for
@@ -637,7 +637,7 @@ lemma eventuallyEq_mpullback_mpullbackWithin_extChartAt (V : Π (x : M), Tangent
     mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' hy, A]
   simp only [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
 
-end
+end ContMDiff
 
 lemma mpullbackWithin_comp_of_left
     {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x}
@@ -662,7 +662,9 @@ lemma mpullbackWithin_comp_of_right
   rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf']
   rfl
 
-end
+end Pullback
+
+section LieBracket
 
 /-! ### The Lie bracket of vector fields in manifolds -/
 
@@ -896,7 +898,7 @@ protected theorem _root_.Filter.EventuallyEq.mlieBracket_vectorField
   filter_upwards [hV.eventuallyEq_nhds, hW.eventuallyEq_nhds] with y hVy hWy
   exact hVy.mlieBracket_vectorField_eq hWy
 
-section
+section C2
 
 variable {c : 𝕜}
 variable [IsManifold I 2 M] [CompleteSpace E]
@@ -1022,9 +1024,9 @@ theorem _root_.DifferentiableWithinAt.mlieBracketWithin_congr_mono
   rw [mlieBracketWithin_congr hVs hVx hWs hWx]
   exact mlieBracketWithin_subset h₁ hxt hV hW
 
-end
+end C2
 
-section
+section Invariance_IsSymmSndFDerivWithinAt
 
 variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 
@@ -1246,9 +1248,9 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
       filter_upwards [mfderivWithin_eventually_congr_set (I := I) (I' := I') (f := f) s'_eq]
         with y hy using by simp [mpullbackWithin, hy]
 
-end
+end Invariance_IsSymmSndFDerivWithinAt
 
-section
+section Invariance
 
 variable [IsManifold I (minSmoothness 𝕜 2) M] [IsManifold I' (minSmoothness 𝕜 2) M']
   [CompleteSpace E] {n : WithTop ℕ∞}
@@ -1444,9 +1446,9 @@ lemma _root_.ContDiff.mlieBracket_vectorField {m n : ℕ∞}
   simp only [← contMDiffOn_univ, mlieBracketWithin_univ] at hU hV ⊢
   exact hU.mlieBracketWithin_vectorField hV uniqueMDiffOn_univ hmn
 
-end
+end Invariance
 
-section
+section Leibniz
 
 variable [IsManifold I (minSmoothness 𝕜 3) M] [CompleteSpace E]
 
@@ -1610,7 +1612,9 @@ lemma leibniz_identity_mlieBracket
   ext x
   exact leibniz_identity_mlieBracket_apply (hU x) (hV x) (hW x)
 
-end
+end Leibniz
+
+end LieBracket
 
 end VectorField
 
