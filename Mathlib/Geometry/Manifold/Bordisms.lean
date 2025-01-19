@@ -253,15 +253,14 @@ variable (k) in
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way. -/
-structure UnorientedCobordism [Nonempty H] --[Nonempty M] [Nonempty M']
-    (s : SingularNManifold X n k) (t : SingularNManifold X n k) where
+structure UnorientedCobordism (s : SingularNManifold X n k) (t : SingularNManifold X n k) where
   W : Type u -- TODO: making this Type* fails
   [topSpace: TopologicalSpace W]
   [chartedSpace: ChartedSpace H W]
   J : ModelWithCorners ℝ E H
   [smoothManifold: IsManifold J k W]
   bd: BoundaryManifoldData W J k
-  [hW : CompactSpace W]
+  [compactSpace : CompactSpace W]
   hW' : finrank ℝ E'' = n + 1
   F : W → X
   hF : Continuous F
@@ -275,3 +274,15 @@ structure UnorientedCobordism [Nonempty H] --[Nonempty M] [Nonempty M']
   hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
   /-- `F` restricted to `N ↪ ∂W` equals `g` -/
   hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
+
+instance {s t : SingularNManifold X n k} {φ : UnorientedCobordism k s t} : TopologicalSpace φ.W :=
+  φ.topSpace
+
+instance {s t : SingularNManifold X n k} {φ : UnorientedCobordism k s t} : ChartedSpace H φ.W :=
+  φ.chartedSpace
+
+instance {s t : SingularNManifold X n k} {φ : UnorientedCobordism k s t} : IsManifold φ.J k φ.W :=
+  φ.smoothManifold
+
+instance {s t : SingularNManifold X n k} {φ : UnorientedCobordism k s t} : CompactSpace φ.W :=
+  φ.compactSpace
