@@ -6,6 +6,7 @@ Authors: Moritz Doll, Kalle Kytölä
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Analysis.LocallyConvex.AbsConvex
 
 /-!
 # Polar set
@@ -165,5 +166,30 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
   .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
 
 end NontriviallyNormedField
+
+section Bipolar
+
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
+
+theorem polar_convex : Convex ℝ (B.polar s) := fun  x hx y hy a b ha hb hab e he => by
+  rw [← hab, map_add, map_smul_of_tower, map_smul_of_tower]
+  apply norm_add_le_of_le
+  · rw [norm_smul, (Real.norm_of_nonneg ha)]
+    exact mul_le_of_le_one_right ha (hx e he)
+  · rw [norm_smul, (Real.norm_of_nonneg hb)]
+    exact mul_le_of_le_one_right hb (hy e he)
+
+
+theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} [SMul ℝ (WeakBilin B)] {s : Set (WeakBilin B)} :
+    B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
+  apply le_antisymm
+  · sorry
+  · apply closedAbsConvexHull_min (subset_bipolar B s) sorry sorry
+
+
+end Bipolar
 
 end LinearMap
