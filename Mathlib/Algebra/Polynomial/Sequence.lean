@@ -119,22 +119,16 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
     let tail := P - (P.leadingCoeff • u • (S n))
 
     have tail_deg: tail.degree < n := by
-      have mul_unit_not_zero: P.leadingCoeff * u ≠ 0 := by
-        have foo := u_unit.isRegular.right |>.mul_right_eq_zero_iff (a := P.leadingCoeff)
-        have p_coeff_nonzero: P.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr p_ne_zero
-        exact foo.symm.ne.mp p_coeff_nonzero
-
       have u_cancel: (u • S n).leadingCoeff = 1 := by
         rw [leadingCoeff_smul_of_smul_regular]
         · exact hu.2
-        · apply u_unit.isSMulRegular (M := R)
+        · exact u_unit.isSMulRegular R
 
-      have u_degree_same: (u • S n).degree = (S n).degree :=
-        degree_smul_of_leadingCoeff_rightRegular u_unit.ne_zero is_unit.isRegular.right
+      have u_degree_same := degree_smul_of_leadingCoeff_rightRegular
+        u_unit.ne_zero is_unit.isRegular.right
 
-      have other := degree_smul_of_leadingCoeff_rightRegular (leadingCoeff_ne_zero.mpr p_ne_zero) (p := u • S n)
-      rw [u_cancel] at other
-      specialize other isRegular_one.right
+      have other := degree_smul_of_leadingCoeff_rightRegular
+        (leadingCoeff_ne_zero.mpr p_ne_zero) (u_cancel ▸ isRegular_one.right)
       rw [u_degree_same, S.degree_eq n, ← hp, eq_comm, ← degree_eq_natDegree p_ne_zero, hp] at other
 
       have smul_nonzero: (P.leadingCoeff • u • S n) ≠ 0 := by
@@ -171,7 +165,8 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
     have coeff_in_span: P.leadingCoeff • u • S n ∈ Submodule.span R (Set.range S) := by
       have n_in_range: S n ∈ Set.range S := by simp
       have in_span := Submodule.subset_span (R := R) (s := Set.range S) n_in_range
-      have smul_span := Submodule.smul_mem (Submodule.span R (Set.range S)) (P.leadingCoeff • u) in_span
+      have smul_span := Submodule.smul_mem
+        (Submodule.span R (Set.range S)) (P.leadingCoeff • u) in_span
       rwa [smul_assoc] at smul_span
 
     by_cases tail_eq_zero: tail = 0
@@ -181,7 +176,8 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
       simp only [Submodule.mem_top, forall_const] at ih
       have tail_in_span := ih tail.natDegree natdeg_lt_n rfl
 
-      exact (Submodule.sub_mem_iff_left (Submodule.span R (Set.range S)) coeff_in_span).mp tail_in_span
+      exact (Submodule.sub_mem_iff_left
+        (Submodule.span R (Set.range S)) coeff_in_span).mp tail_in_span
   · rw [ne_eq, not_not] at p_ne_zero
     simp [p_ne_zero]
 
