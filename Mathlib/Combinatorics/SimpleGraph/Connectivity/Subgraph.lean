@@ -105,10 +105,10 @@ protected lemma Connected.sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
 lemma Connected.exists_connectedComponent_eq {H : Subgraph G}
-    (hc : H.Connected) (hb : H.verts.Nonempty) (h : ∀ v ∈ H.verts, ∀ w, H.Adj v w ↔ G.Adj v w) :
+    (hc : H.Connected) (h : ∀ v ∈ H.verts, ∀ w, H.Adj v w ↔ G.Adj v w) :
     ∃ c : G.ConnectedComponent, H.verts = c.supp := by
   rw [SimpleGraph.ConnectedComponent.exists]
-  obtain ⟨v, hv⟩ := hb
+  obtain ⟨v, hv⟩ := hc.nonempty
   use v
   ext w
   simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]
