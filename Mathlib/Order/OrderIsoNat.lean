@@ -92,7 +92,7 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
 
 end RelEmbedding
 
-theorem not_strictAnti_of_wellFoundedLT [Preorder α] [h : WellFoundedLT α] (f : ℕ → α) :
+theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
     ¬ StrictAnti f := fun hf ↦
   (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded_of_decreasing_seq wellFounded_lt
 
