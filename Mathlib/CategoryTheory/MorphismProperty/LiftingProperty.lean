@@ -6,6 +6,7 @@ Authors: Jack McKoen
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Left and right lifting properties
@@ -34,6 +35,14 @@ def llp : MorphismProperty C := fun _ _ f ↦
 right lifting property (rlp) with respect to `T`. -/
 def rlp : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ (g : X ⟶ Y) (_ : T g), HasLiftingProperty g f
+
+lemma llp_of_isIso {A B : C} (i : A ⟶ B) [IsIso i] :
+    T.llp i :=
+  fun _ _ _ _ ↦ inferInstance
+
+lemma rlp_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    T.rlp f :=
+  fun _ _ _ _ ↦ inferInstance
 
 lemma llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
   of_retract h hg _ _ f hf :=
@@ -83,6 +92,16 @@ lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
+
+lemma le_llp_iff_le_rlp (T' : MorphismProperty C) :
+    T ≤ T'.llp ↔ T' ≤ T.rlp :=
+  ⟨fun h _ _ _ hp _ _ _ hi ↦ h _ hi _ hp,
+    fun h _ _ _ hi _ _ _ hp ↦ h _ hp _ hi⟩
+
+lemma gc_llp_rlp :
+    GaloisConnection (OrderDual.toDual (α := MorphismProperty C) ∘ llp)
+      (rlp ∘ OrderDual.ofDual) :=
+  fun _ _ ↦ le_llp_iff_le_rlp _ _
 
 end MorphismProperty
 
