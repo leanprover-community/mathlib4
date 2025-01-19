@@ -36,7 +36,7 @@ lemma isEquivalent_descFactorial (k : ℕ) :
       rw [Filter.eventually_atTop]
       use 1; intro n hn
       exact ne_of_gt (mod_cast hn)
-    rw [isEquivalent_iff_tendsto_one hz, ←Filter.tendsto_add_atTop_iff_nat k]
+    rw [isEquivalent_iff_tendsto_one hz, ← Filter.tendsto_add_atTop_iff_nat k]
     simpa using tendsto_natCast_div_add_atTop (k : ℝ)
 
 /-- `n.choose k` is asymptotically equivalent to `n^k / k!`. -/
@@ -47,7 +47,7 @@ theorem isEquivalent_choose (k : ℕ) :
     intro n
     rw [Nat.choose_eq_descFactorial_div_factorial,
       Nat.cast_div (n.factorial_dvd_descFactorial k) (mod_cast k.factorial_ne_zero)]
-  exact (isEquivalent_descFactorial k).div (IsEquivalent.refl)
+  exact (isEquivalent_descFactorial k).div IsEquivalent.refl
 
 /-- `n.choose k` is big-theta `n^k`. -/
 theorem isTheta_choose (k : ℕ) :
