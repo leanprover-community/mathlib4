@@ -29,7 +29,7 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 
 /-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
-  ⟨x.asIdeal, x.IsMaximal.isPrime⟩
+  ⟨x.asIdeal, x.isMaximal.isPrime⟩
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h

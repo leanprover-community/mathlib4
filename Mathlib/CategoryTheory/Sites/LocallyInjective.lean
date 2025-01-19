@@ -29,10 +29,10 @@ namespace CategoryTheory
 open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
+  {D : Type u'} [Category.{v'} D] [HasForget.{w} D]
   (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 namespace Presheaf
 
@@ -189,7 +189,7 @@ instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance isLocallyInjective_toSheafify' [ConcreteCategory.{max u v} D]
+instance isLocallyInjective_toSheafify' [HasForget.{max u v} D]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallyInjective J (toSheafify J P) := by
