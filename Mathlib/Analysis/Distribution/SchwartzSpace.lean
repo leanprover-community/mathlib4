@@ -10,6 +10,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.MeasureTheory.Function.CompactDense
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Tactic.MoveAdd
 
@@ -1351,5 +1352,42 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
 end Lp
+
+section Dense
+
+open MeasureTheory
+open scoped ENNReal
+
+/-- Any infinitely-differentiable, compactly supported function is a Schwartz function. -/
+def ofHasCompactSupport (f : E → F) (hf_smooth : ContDiff ℝ ∞ f) (hf_supp : HasCompactSupport f) :
+    𝓢(E, F) where
+  toFun x := f x
+  smooth' := hf_smooth
+  decay' := by
+    have (m : ℕ × ℕ) : ∃ C, ∀ x, ‖x‖ ^ m.1 * ‖iteratedFDeriv ℝ m.2 f x‖ ≤ C := by
+      suffices ∃ C, ∀ x, ‖‖x‖ ^ m.1 * ‖iteratedFDeriv ℝ m.2 f x‖‖ ≤ C by simpa using this
+      refine HasCompactSupport.exists_bound_of_continuous ?_ ?_
+      · exact (hf_supp.iteratedFDeriv m.2).norm.mul_left
+      · refine .mul (continuous_norm.pow m.1) (.norm ?_)
+        exact hf_smooth.continuous_iteratedFDeriv <| by simp [← WithTop.coe_natCast]
+    choose C hC using this
+    intro k n
+    use (Finset.Iic (k, n)).sup' Finset.nonempty_Iic C
+    exact fun x ↦ Finset.le_sup'_of_le _ (by simp) (hC (k, n) x)
+
+variable [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] [HasContDiffBump E]
+  [CompleteSpace F] [SecondCountableTopologyEither E F]
+
+/-- Schwartz functions are dense in `L^p`. -/
+theorem toLp_denseRange (p : ℝ≥0∞) [Fact (1 ≤ p)] (hp_top : p ≠ ⊤)
+    (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
+    DenseRange (fun f : 𝓢(E, F) ↦ f.toLp p μ) := by
+  refine Dense.mono ?_ (ContDiff.toLp_denseRange hp_top μ)
+  exact Set.range_comp_subset_range
+    (fun f : { f // ContDiff ℝ ∞ f ∧ HasCompactSupport f } ↦ ofHasCompactSupport f.1 f.2.1 f.2.2)
+    (fun f ↦ f.toLp p μ)
+
+end Dense
 
 end SchwartzMap
