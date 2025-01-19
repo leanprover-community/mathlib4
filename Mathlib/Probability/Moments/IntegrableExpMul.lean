@@ -235,7 +235,6 @@ lemma rpow_abs_le_mul_max_exp (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : t ≠ 0
   · rw [abs_of_nonpos ht_neg.le, sup_comm]
     convert rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])
     simp
-  · exact absurd ht_zero ht
   · rw [abs_of_nonneg ht_pos.le]
     exact rpow_abs_le_mul_max_exp_of_pos x hp ht_pos
 
@@ -256,10 +255,10 @@ lemma rpow_abs_le_mul_exp_abs (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : t ≠ 0
 then for nonnegative `p : ℝ` and any `x ∈ [0, |t|)`,
 `|X| ^ p * exp (v * X + x * |X|)` is integrable. -/
 lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
-    (h_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (h_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) (h_nonneg : 0 ≤ x) (hx : x < |t|)
+    (h_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (h_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (h_nonneg : 0 ≤ x) (hx : x < |t|)
     {p : ℝ} (hp : 0 ≤ p) :
-    Integrable (fun a ↦ |X a| ^ p * rexp (v * X a + x * |X a|)) μ := by
+    Integrable (fun a ↦ |X a| ^ p * exp (v * X a + x * |X a|)) μ := by
   have ht : t ≠ 0 := by
     suffices |t| ≠ 0 by simpa
     exact (h_nonneg.trans_lt hx).ne'
@@ -270,9 +269,9 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
   · refine AEMeasurable.aestronglyMeasurable ?_
     exact AEMeasurable.mul (by fun_prop) (measurable_exp.comp_aemeasurable (by fun_prop))
   simp only [norm_mul, norm_pow, norm_eq_abs, sq_abs, abs_exp]
-  have h_le a : |X a| ^ p * rexp (v * X a + x * |X a|)
-      ≤ (p / (|t| - x)) ^ p * rexp (v * X a + |t| * |X a|) := by
-    simp_rw [exp_add, mul_comm (rexp (v * X a)), ← mul_assoc]
+  have h_le a : |X a| ^ p * exp (v * X a + x * |X a|)
+      ≤ (p / (|t| - x)) ^ p * exp (v * X a + |t| * |X a|) := by
+    simp_rw [exp_add, mul_comm (exp (v * X a)), ← mul_assoc]
     gcongr ?_ * _
     have : |t| = |t| - x + x := by simp
     nth_rw 2 [this]
@@ -285,7 +284,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
       simp [hx.le]
     · rw [sub_ne_zero]
       exact hx.ne'
-  refine Integrable.mono (g := fun a ↦ (p / (|t| - x)) ^ p * rexp (v * X a + |t| * |X a|))
+  refine Integrable.mono (g := fun a ↦ (p / (|t| - x)) ^ p * exp (v * X a + |t| * |X a|))
     ?_ ?_ <| ae_of_all _ fun ω ↦ ?_
   · refine Integrable.const_mul ?_ _
     simp_rw [add_comm (v * X _)]
@@ -304,10 +303,10 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
 then for any `n : ℕ` and any `x ∈ [0, |t|)`,
 `|X| ^ n * exp (v * X + x * |X|)` is integrable. -/
 lemma integrable_pow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
-    (h_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (h_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) (h_nonneg : 0 ≤ x) (hx : x < |t|)
+    (h_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (h_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (h_nonneg : 0 ≤ x) (hx : x < |t|)
     (n : ℕ) :
-    Integrable (fun a ↦ |X a| ^ n * rexp (v * X a + x * |X a|)) μ := by
+    Integrable (fun a ↦ |X a| ^ n * exp (v * X a + x * |X a|)) μ := by
   convert integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul h_int_pos h_int_neg h_nonneg hx
     n.cast_nonneg
   simp
