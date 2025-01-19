@@ -32,17 +32,103 @@ Is this truly necessary, or can we allow something weaker? Would e.g. equivalent
 
 open scoped Manifold
 
+universe u
+-- XXX: should M₀, E₀, H₀ have the same universe?
+
 -- Let M, M' and M'' be smooth manifolds *over the same space* `H`, with *the same* `model `I`.
-variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
+variable {M : Type u} [TopologicalSpace M] [cm : ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
-  {M' : Type*} [TopologicalSpace M'] [cm': ChartedSpace H M'] [IsManifold I ⊤ M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  {M' : Type u} [TopologicalSpace M'] [cm': ChartedSpace H M'] [IsManifold I ⊤ M']
+  {M'' : Type u} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [IsManifold I ⊤ M'']
+
+/- Let `M` be a smooth real manifold, modelled on the pair `(E, H)`.
+A smooth manifold has nice boundary if its boundary is a smooth manifold such that the inclusion
+`∂M ↪ M` is smooth.
+
+The first version of this said "I.boundary M is a smooth manifold".
+This proved hard to work with, as I.boundary M is a subset, and computing the boundary means
+we'd like to rewrite by an equivalence of sets. This runs into DTT, equality of types is bad.
+
+Second version: we prescribe a smooth manifold M₀, and ask for a smooth embedding of M₀ into M,
+whose image is the boundary of M. This will allow rewriting the boundary.
+(Perhaps it's not good enough either, we'll see. Let's try!)
+
+Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` and an embedding
+`f : M₀ → M` which is smooth, such that `range f = I.boundary M`.
+-/
+structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners ℝ E H) [IsManifold I ⊤ M] where
+  M₀ : Type u
+  [topologicalSpaceM: TopologicalSpace M₀]
+  /-- The Euclidean space the boundary is modelled on. -/
+  {E₀ : Type u}
+  [normedAddCommGroup : NormedAddCommGroup E₀]
+  [normedSpace : NormedSpace ℝ E₀]
+  /-- The topological space the boundary is a charted space on. -/
+  {H₀ : Type u}
+  [topologicalSpace : TopologicalSpace H₀]
+  /-- A chosen charted space structure on `M₀` on `H₀` -/
+  [charts : ChartedSpace H₀ M₀]
+  /-- A chosen model with corners for the boundary -/
+  I₀ : ModelWithCorners ℝ E₀ H₀
+  /-- `M₀` is a smooth manifold with corners, w.r.t. our chosen model -/
+  [smoothManifold : IsManifold I₀ ⊤ M₀]
+  f: M₀ → M
+  isEmbedding: Topology.IsEmbedding f
+  isSmooth: ContMDiff I₀ I ⊤ f
+  range_eq_boundary: Set.range f = I.boundary M
+
+-- TODO: deal with universe polymorphism; I'm assuming the same universe for now!
+
+variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
+  {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
+  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
+
+instance (d : BoundaryManifoldData M I) : TopologicalSpace d.H₀ := d.topologicalSpace
+
+instance (d : BoundaryManifoldData M I) : NormedAddCommGroup d.E₀ := d.normedAddCommGroup
+
+instance (d : BoundaryManifoldData M I) : NormedSpace ℝ d.E₀ := d.normedSpace
+
+instance (d : BoundaryManifoldData M I) : TopologicalSpace d.M₀ := d.topologicalSpaceM
+
+instance (d : BoundaryManifoldData M I) : ChartedSpace d.H₀ d.M₀ := d.charts
+
+instance (d : BoundaryManifoldData M I) : IsManifold d.I₀ ⊤ d.M₀ :=
+  d.smoothManifold
+
+-- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
+-- we can state already. Boundaryless manifolds have nice boundary, as do products.
+
+variable (M) in
+/-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
+def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryManifoldData M I where
+  M₀ := ULift Empty
+  E₀ := E
+  H₀ := E
+  charts := ChartedSpace.empty E (ULift Empty)
+  I₀ := modelWithCornersSelf ℝ E
+  -- f is vacuous
+  f x := (IsEmpty.false x).elim
+  -- TODO: should be in mathlib; anything on an empty type is an embedding
+  isEmbedding := sorry
+  isSmooth x := (IsEmpty.false x).elim
+  range_eq_boundary := by
+    have : I.boundary M = ∅ := by
+      rw [ModelWithCorners.Boundaryless.iff_boundary_eq_empty]
+      infer_instance
+    rw [this]
+    simp [Empty.instIsEmpty]
+
+
+#exit
 
 -- TODO: in this definition, E' and H' live in different universes, but only occur together:
 -- naively constraining them to the same yields errors later... revisit and fix this!
@@ -53,14 +139,14 @@ This need not exist (say, if `M` has corners); if `M` has no boundary or boundar
 such a structure is in fact canonically induced.
 (Proving this requires more advanced results than we currently have.)
 -/
-structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [IsManifold I ⊤ M] where
   /-- The Euclidean space the boundary is modelled on. -/
-  E' : Type*
+  E' : Type u
   [normedAddCommGroup : NormedAddCommGroup E']
   [normedSpace : NormedSpace ℝ E']
   /-- The topological space the boundary is a charted space on. -/
-  H' : Type*
+  H' : Type u
   [topologicalSpace : TopologicalSpace H']
   /-- A chosen charted space structure on `I.boundary M` on `H'` -/
   charts : ChartedSpace H' (I.boundary M)
@@ -69,9 +155,9 @@ structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H 
   /-- `I.boundary M` is a smooth manifold with corners, w.r.t. our chosen model -/
   smoothManifold : IsManifold model ⊤ (I.boundary M)
 
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
-  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
 instance (d : BoundaryManifoldData M I) : TopologicalSpace d.H' := d.topologicalSpace
@@ -148,7 +234,7 @@ lemma BoundaryManifoldData.prod_of_boundaryless_right_model
 Proving this requires knowing homology groups of spheres (or similar). -/
 -- TODO: also prove that the boundary has dimension one lower
 def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) [NeZero n]
-    {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace n) M]
+    {M : Type u} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace n) M]
     [IsManifold (𝓡∂ n) ⊤ M] : BoundaryManifoldData M (𝓡∂ n) :=
   sorry
 
@@ -174,9 +260,9 @@ instance [BoundarylessManifold I M] :
     have : I.boundary M = ∅ := ModelWithCorners.Boundaryless.boundary_eq_empty
     fun p ↦ False.elim (IsEmpty.false p)
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H'' M']
+variable {M' : Type u} [TopologicalSpace M'] [ChartedSpace H'' M']
   {I' : ModelWithCorners ℝ E'' H''} [IsManifold I' ⊤ M']
-  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H''' N']
+  {N' : Type u} [TopologicalSpace N'] [ChartedSpace H''' N']
   {J' : ModelWithCorners ℝ E''' H'''} [IsManifold J' ⊤ N']
 
 -- missing lemma in the library...
