@@ -100,19 +100,6 @@ lemma linearIndependent [NoZeroDivisors R] :
     have := hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
     exact degree_ne_bot.mp this eqzero |>.elim
 
-
-theorem new_degree_smul_of_smul_regular {k : R} (hk: k ≠ 0)
-    (p : R[X]) (h : IsRightRegular p.leadingCoeff) : (k • p).degree = p.degree := by
-  refine le_antisymm ?_ ?_
-  · rw [degree_le_iff_coeff_zero]
-    intro m hm
-    rw [degree_lt_iff_coeff_zero] at hm
-    simp [hm m le_rfl]
-  · have coeff_nonzero: (k • p).coeff (p.natDegree) ≠ 0 := by
-      rw [coeff_smul, coeff_natDegree, smul_eq_mul, ne_eq]
-      exact h.mul_right_eq_zero_iff.ne.mpr hk
-    exact degree_le_degree coeff_nonzero
-
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
 lemma span [Nontrivial R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.range S) := by
   intro P _
@@ -137,9 +124,9 @@ lemma span [Nontrivial R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ 
         · apply u_unit.isSMulRegular (M := R)
 
       have u_degree_same: (u • S n).degree = (S n).degree := by
-        exact new_degree_smul_of_smul_regular u_unit.ne_zero (S n) is_unit.isRegular.right
+        exact Polynomial.degree_smul_of_leadingCoeff_rightRegular u_unit.ne_zero is_unit.isRegular.right
 
-      have other := new_degree_smul_of_smul_regular (leadingCoeff_ne_zero.mpr p_ne_zero) (u • S n)
+      have other := Polynomial.degree_smul_of_leadingCoeff_rightRegular (leadingCoeff_ne_zero.mpr p_ne_zero) (p := u • S n)
       rw [u_cancel] at other
       specialize other isRegular_one.right
       rw [u_degree_same, S.degree_eq n, ← hp, eq_comm, ← degree_eq_natDegree p_ne_zero, hp] at other
