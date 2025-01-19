@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
@@ -42,19 +43,17 @@ open AlgebraicIndependent
 
 theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
     ∃ s : Set A, IsTranscendenceBasis R ((↑) : s → A) := by
-  cases' exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
-      ((algebraicIndependent_empty_iff R A).2 h) with
-    s hs
-  refine ⟨s, hs.2.1.1, fun t ht hst ↦ ?_⟩
-  simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
-  exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst
+  have ⟨s, hs⟩ := exists_maximal_algebraicIndependent ∅ _ (subset_univ _)
+    ((algebraicIndependent_empty_iff R A).mpr h)
+  simp_rw [subset_univ, and_true] at hs
+  exact ⟨s, isTranscendenceBasis_iff_maximal.mpr hs.2⟩
 
 /-- `Type` version of `exists_isTranscendenceBasis`. -/
 theorem exists_isTranscendenceBasis' (R : Type u) {A : Type v} [CommRing R] [CommRing A]
     [Algebra R A] (h : Injective (algebraMap R A)) :
-    ∃ (ι : Type v) (x : ι → A), IsTranscendenceBasis R x := by
-  obtain ⟨s, h⟩ := exists_isTranscendenceBasis R h
-  exact ⟨s, Subtype.val, h⟩
+    ∃ (ι : Type v) (x : ι → A), IsTranscendenceBasis R x :=
+  have ⟨s, h⟩ := exists_isTranscendenceBasis R h
+  ⟨s, Subtype.val, h⟩
 
 variable {R}
 
@@ -136,6 +135,52 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
+
+section Matroid
+
+variable [NoZeroDivisors A] (inj : Injective (algebraMap R A))
+
+/-- If `R` is a commutative ring and `A` is a commutative `R`-algebra with injective algebra map
+and no zero divisors, then the `R`-algebraic independent subsets of `A` form a `IndepMatroid`. -/
+def IndepMatroid.algebraicIndependent : IndepMatroid A where
+  E := univ
+  Indep s := AlgebraicIndependent R ((↑) : s → A)
+  indep_empty := (algebraicIndependent_empty_iff ..).mpr inj
+  indep_subset _ _ := (·.mono)
+  indep_aug I B I_ind h B_base := by
+    contrapose! h
+    rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
+    cases subsingleton_or_nontrivial R
+    · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
+      contrapose! h
+      have ⟨b, hb⟩ := B_base
+      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, algebraicIndependent_of_subsingleton⟩
+    rw [I_ind.isTranscendenceBasis_iff_isAlgebraic]
+    replace B_base := B_base.isAlgebraic
+    rw [Subtype.range_val] at B_base ⊢
+    set RI := adjoin R I
+    set RB := adjoin R B
+    let RIB := adjoin RI B
+    let _ : Algebra RB RIB := (Subalgebra.inclusion
+      (T := RIB.restrictScalars R) <| adjoin_le_iff.mpr <| by apply subset_adjoin).toAlgebra
+    have : IsScalarTower RB RIB A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ show a = _ from rfl
+    have : Algebra.IsAlgebraic RIB A := .extendScalars (R := RB) (Subalgebra.inclusion_injective _)
+    have : Algebra.IsAlgebraic RI RIB := by
+      have : Injective (algebraMap RI A) := Subtype.val_injective
+      have := (isDomain_iff_noZeroDivisors_and_nontrivial RI).mpr ⟨this.noZeroDivisors _
+        (map_zero _) (map_mul _), (Subtype.range_val ▸ I_ind.aevalEquiv).symm.nontrivial⟩
+      rw [← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
+      intro x hB
+      by_cases hI : x ∈ I
+      · exact isAlgebraic_algebraMap (⟨x, subset_adjoin hI⟩ : RI)
+      contrapose! h
+      exact ⟨x, ⟨hB, hI⟩, (insert_iff hI).mpr ⟨I_ind, h⟩⟩
+    exact IsAlgebraic.trans' (R := RI) (S := RIB) Subtype.val_injective
+  indep_maximal X _ I ind hIX := exists_maximal_algebraicIndependent I X hIX ind
+  subset_ground _ _ := subset_univ _
+
+instance : (IndepMatroid.algebraicIndependent inj).matroid.Finitary where
+  indep_of_forall_finite := algebraicIndependent_of_finite
 
 section exchange_lemmas
 

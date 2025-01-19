@@ -73,13 +73,27 @@ end AlgebraicIndependent
 open AlgebraicIndependent
 
 theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) :
-    (AlgebraicIndependent R fun o : Option ι => o.elim a x) ↔
-      Transcendental (adjoin R (Set.range x)) a := by
+    AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
+      Transcendental (adjoin R (range x)) a := by
   rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
     ← AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
     RingHom.coe_comp]
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
+
+theorem AlgebraicIndependent.optionElim_iff {a : A} :
+    AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
+      AlgebraicIndependent R x ∧ Transcendental (adjoin R (range x)) a :=
+  ⟨fun h ↦ have := h.comp _ (Option.some_injective _); ⟨this, (this.option_iff _).mp h⟩,
+    fun h ↦ (h.1.option_iff _).mpr h.2⟩
+
+theorem AlgebraicIndependent.insert_iff {s : Set A} {a : A} (h : a ∉ s) :
+    AlgebraicIndependent R ((↑) : ↥(insert a s) → A) ↔
+      AlgebraicIndependent R ((↑) : s → A) ∧ Transcendental (adjoin R s) a := by
+  classical rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm]
+  convert optionElim_iff (a := a) using 2
+  · ext (_|_) <;> rfl
+  · rw [Subtype.range_val]
 
 theorem algebraicIndependent_of_set_of_finite (s : Set ι)
     (ind : AlgebraicIndependent R fun i : s ↦ x i)

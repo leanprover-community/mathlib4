@@ -147,9 +147,13 @@ end repr
 
 end AlgebraicIndependent
 
-variable (R)
-
+variable (R) in
 /-- A family is a transcendence basis if it is a maximal algebraically independent subset. -/
 def IsTranscendenceBasis (x : ι → A) : Prop :=
   AlgebraicIndependent R x ∧
     ∀ (s : Set A) (_ : AlgebraicIndependent R ((↑) : s → A)) (_ : range x ⊆ s), range x = s
+
+theorem isTranscendenceBasis_iff_maximal {s : Set A} :
+    IsTranscendenceBasis R ((↑) : s → A) ↔
+      Maximal (fun s : Set A ↦ AlgebraicIndependent R ((↑) : s → A)) s := by
+  rw [IsTranscendenceBasis, maximal_iff, Subtype.range_val]; rfl
