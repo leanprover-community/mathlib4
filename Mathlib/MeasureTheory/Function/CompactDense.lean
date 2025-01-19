@@ -10,6 +10,8 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 
 /-! # Density results for compact functions -/
 
+-- TODO: Move into `Mathlib/MeasureTheory/Function/ContinuousMapDense.lean`
+
 open MeasureTheory Filter
 open scoped ENNReal CompactlySupported ContDiff Convolution Topology Pointwise
 
@@ -35,21 +37,20 @@ variable {𝕜 E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
 
 section Compact
 
-variable [MeasurableSpace E] [BorelSpace E]
+variable [MeasurableSpace E]
 
 -- TODO: Provide `.toLp` as CLM?
 -- Would require `TopologicalSpace (E →C_c F)`, e.g. via `PseudoMetricSpace`.
 
--- TODO: Move?
 /-- Any `CompactlySupportedContinuousMap` is in `L^p`. -/
-theorem CompactlySupportedContinuousMap.memℒp (f : E →C_c F) (p : ℝ≥0∞)
+theorem CompactlySupportedContinuousMap.memℒp [OpensMeasurableSpace E] (f : E →C_c F) (p : ℝ≥0∞)
     (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ] : Memℒp f p μ :=
   f.continuous.memℒp_of_hasCompactSupport f.hasCompactSupport
 
 variable (F) in
 /-- The mapping from continuous, compact-support functions to `L^p` with `1 ≤ p < ⊤` is dense. -/
 theorem CompactlySupportedContinuousMap.toLp_denseRange
-    [NormalSpace E] [WeaklyLocallyCompactSpace E] [NormedSpace ℝ F]
+    [NormalSpace E] [BorelSpace E] [WeaklyLocallyCompactSpace E] [NormedSpace ℝ F]
     {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp_top : p ≠ ⊤) (μ : Measure E := by volume_tac) [μ.Regular] :
     DenseRange (fun f : E →C_c F ↦ (f.memℒp p μ).toLp) := by
   rw [Metric.denseRange_iff]
@@ -70,15 +71,16 @@ end Compact
 
 section Smooth
 
-variable [MeasurableSpace E] [BorelSpace E]
+variable [MeasurableSpace E]
 
 /-- When `f` is continuous and has compact support, the `L^p` norm of `fun x ↦ f(x + t) - f(x)`
 tends to zero as `t` tends to zero.
 
 This is useful for proving the density of smooth, compactly-supported functions in `L^p`. -/
-theorem eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport {f : E → F}
-    (hf_cont : Continuous f) (hf_supp : HasCompactSupport f) {p : ℝ≥0∞} (hp_top : p ≠ ⊤)
-    (μ : Measure E := by volume_tac) [μ.Regular] [μ.IsAddRightInvariant] :
+theorem eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport [MeasurableAdd E]
+    {f : E → F} (hf_cont : Continuous f) (hf_supp : HasCompactSupport f)
+    {p : ℝ≥0∞} (hp_top : p ≠ ⊤) (μ : Measure E := by volume_tac)
+    [μ.IsAddRightInvariant] [IsFiniteMeasureOnCompacts μ] :
     Tendsto (fun t ↦ eLpNorm (fun x ↦ f (x + t) - f x) p μ) (𝓝 0) (𝓝 0) := by
   cases Decidable.eq_or_ne p 0 with | inl hp => simp [hp] | inr hp =>
   rw [ENNReal.tendsto_nhds_zero]
@@ -134,12 +136,11 @@ theorem eLpNorm_comp_add_right_sub_self_tendsto_zero_of_hasCompactSupport {f : E
     rw [Function.support_comp_eq_preimage, ← Homeomorph.preimage_closure]
     simp
 
-theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
-    [NormedSpace ℝ E] [FiniteDimensional ℝ E] [HasContDiffBump E]
-    [NormedSpace ℝ F] [CompleteSpace F]
+theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt [BorelSpace E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] [HasContDiffBump E] [NormedSpace ℝ F] [CompleteSpace F]
     {f : E → F} (hf_cont : Continuous f) (hf_supp : HasCompactSupport f)
-    {p : ℝ≥0∞} (hp : 1 ≤ p) (hp_top : p ≠ ⊤)
-    (μ : Measure E := by volume_tac) [hμ : μ.Regular] [μ.IsOpenPosMeasure] [μ.IsAddRightInvariant] :
+    {p : ℝ≥0∞} (hp : 1 ≤ p) (hp_top : p ≠ ⊤) (μ : Measure E := by volume_tac)
+    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsAddRightInvariant] :
     ∀ ε > 0, ∃ φ : ContDiffBump 0, eLpNorm (φ.normed μ ⋆[.lsmul ℝ ℝ, μ] f - f) p μ ≤ .ofReal ε := by
   intro ε hε
   have hp_pos : 0 < p := zero_lt_one.trans_le hp
@@ -354,23 +355,18 @@ theorem exists_contDiffBump_eLpNorm_conv_sub_self_lt
     simp [ContDiffBump.nonneg_normed]
 
 -- TODO: Define using `ContMDiffMap`?
-theorem ContDiff.toLp_denseRange [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-    [NormalSpace E]
-    [WeaklyLocallyCompactSpace E]
-    [HasContDiffBump E]
-    [NormedSpace ℝ F] [CompleteSpace F]
-    (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (hp_top : p ≠ ⊤)
-    (μ : Measure E := by volume_tac) [μ.Regular]
-    [μ.IsAddRightInvariant] [μ.IsNegInvariant] [μ.IsAddLeftInvariant]
-    [μ.IsOpenPosMeasure] :
+theorem ContDiff.toLp_denseRange [BorelSpace E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [HasContDiffBump E] [NormedSpace ℝ F] [CompleteSpace F]
+    {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (hp_top : p ≠ ⊤) (μ : Measure E := by volume_tac)
+    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
     DenseRange (α := {f : E → F // ContDiff ℝ ∞ f ∧ HasCompactSupport f}) (X := Lp F p μ)
-      (fun f ↦ (f.prop.1.continuous.memℒp_of_hasCompactSupport f.prop.2).toLp) := by
+      fun f ↦ (f.prop.1.continuous.memℒp_of_hasCompactSupport f.prop.2).toLp := by
   rw [Metric.denseRange_iff]
   intro f ε hε
   obtain ⟨g, hfg⟩ := DenseRange.exists_dist_lt
     (CompactlySupportedContinuousMap.toLp_denseRange F hp_top μ) f (half_pos hε)
   obtain ⟨φ, hφ⟩ := exists_contDiffBump_eLpNorm_conv_sub_self_lt g.continuous g.hasCompactSupport
-    hp.out hp_top μ (ε / 2) (half_pos hε)
+    hp.out hp_top μ _ (half_pos hε)
   -- Show that `φ.normed μ ⋆ g` satisfies `ContDiff` and `HasCompactSupport`.
   refine ⟨⟨φ.normed μ ⋆[ContinuousLinearMap.lsmul ℝ ℝ, μ] g, ⟨?_, ?_⟩⟩, ?_⟩
   · exact φ.hasCompactSupport_normed.contDiff_convolution_left _ φ.contDiff_normed
