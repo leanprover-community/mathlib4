@@ -46,6 +46,11 @@ but add these assumptions later as needed. (Quite a few results still do not req
   we register them as `PartialEquiv`s.
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
+We define a few general constructions of smooth manifolds:
+* every empty type is a smooth manifold
+* the product of two smooth manifolds
+* the disjoint union of two manifolds (over the same charted space) is a smooth manifold
+
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
@@ -598,6 +603,26 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   · refine I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm ?_)
     exact (mapsTo_preimage _ _).mono_left inter_subset_left
 
+-- FIXME: does this generalise to other groupoids? The argument is not specific
+-- to C^n functions, but uses something about the groupoid's property that is not easy to abstract.
+/-- Any change of coordinates with empty source belongs to `contDiffGroupoid`. -/
+lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+    (hf : f.source = ∅) : f ∈ contDiffGroupoid n I := by
+  constructor
+  · intro x ⟨hx, _⟩
+    rw [mem_preimage] at hx
+    simp_all only [mem_empty_iff_false]
+  · intro x ⟨hx, _⟩
+    have : f.target = ∅ := by simp [← f.image_source_eq_target, hf]
+    simp_all [hx]
+
+include I in
+/-- Any change of coordinates with empty source belongs to `continuousGroupoid`. -/
+lemma ContinuousGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+    (hf : f.source = ∅) : f ∈ continuousGroupoid H := by
+  rw [← contDiffGroupoid_zero_eq (I := I)]
+  exact ContDiffGroupoid.mem_of_source_eq_empty f hf
+
 /-- An identity partial homeomorphism belongs to the `C^n` groupoid. -/
 theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
@@ -796,6 +821,34 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h1 := (contDiffGroupoid n I).compatible hf1 hg1
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
+
+section DisjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [hM : IsManifold I n M] [hM' : IsManifold I n M']
+
+/-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
+is a `C^n` manifold modeled on `(E, H)`. -/
+instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] : IsManifold I n (M ⊕ M') where
+  compatible {e} e' he he' := by
+    obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
+    · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]
+        exact hM.compatible hf hf'
+      · rw [hef, he'f']
+        apply ContDiffGroupoid.mem_of_source_eq_empty
+        ext x
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+    · -- Analogous argument to the first case: is there a way to deduplicate?
+      obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
+      · rw [hef, he'f']
+        apply ContDiffGroupoid.mem_of_source_eq_empty
+        ext x
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inr]
+        exact hM'.compatible hf hf'
+
+end DisjointUnion
 
 end IsManifold
 
@@ -1676,4 +1729,4 @@ instance : PathConnectedSpace (TangentSpace I x) := inferInstanceAs (PathConnect
 
 end Real
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
