@@ -415,6 +415,12 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 
+theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
+  (isGreatest_himp a b).isLUB.sSup_eq.symm
+
+theorem compl_eq_sSup_disjoint : aᶜ = sSup {w | Disjoint w a} :=
+  (isGreatest_compl a).isLUB.sSup_eq.symm
+
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
@@ -479,6 +485,12 @@ theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
 theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
+
+theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
+  (isLeast_sdiff a b).isGLB.sInf_eq.symm
+
+theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} :=
+  (isLeast_hnot a).isGLB.sInf_eq.symm
 
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
