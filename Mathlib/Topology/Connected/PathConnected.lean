@@ -1207,6 +1207,17 @@ theorem isOpen_isPathConnected_basis (x : X) :
   exact ⟨pathComponentIn x u, ⟨hu.pathComponentIn _, ⟨mem_pathComponentIn_self hxu,
     isPathConnected_pathComponentIn hxu⟩⟩, pathComponentIn_subset.trans hus⟩
 
+/-- In a first-countable locally path-connected space, every point has a neighbourhood basis
+  that is a decreasing sequence of path-connected sets. -/
+theorem exists_isPathConnected_antitone_basis [FirstCountableTopology X] (x : X) :
+    ∃ (b : ℕ → Set X), (𝓝 x).HasAntitoneBasis b ∧ ∀ i, IsPathConnected (b i) := by
+  let ⟨b, hb⟩ := (𝓝 x).exists_antitone_basis
+  refine ⟨pathComponentIn x ∘ b, ⟨?_, ?_⟩, ?_⟩
+  · refine hb.1.to_subset (fun _ _ ↦ pathComponentIn_subset) fun _ _ ↦ ?_
+    exact pathComponentIn_mem_nhds <| hb.1.mem_of_mem trivial
+  · exact fun _ _ h ↦ pathComponentIn_mono <| hb.2 h
+  · exact fun i ↦ isPathConnected_pathComponentIn <| mem_of_mem_nhds <| hb.mem i
+
 theorem Topology.IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
     LocPathConnectedSpace Y :=
   have (y : Y) :
