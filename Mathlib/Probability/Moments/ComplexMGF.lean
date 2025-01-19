@@ -12,6 +12,13 @@ import Mathlib.Probability.Moments.IntegrableExpMul
 /-!
 # The complex-valued moment generating function
 
+The moment generating function (mgf) is `t : ℝ ↦ μ[fun ω ↦ rexp (t * X ω)]`. It can be extended to
+a complex function `z : ℂ ↦ μ[fun ω ↦ cexp (z * X ω)]`, which we call `complexMGF X μ`.
+That function is holomorphic on the vertical strip with base the interior of the interval
+of definition of the mgf.
+On the vertical line that goes through 0, `complexMGF X μ` is equal to the characteristic function.
+This allows us to link properties of the characteristic function and the mgf (mostly deducing
+properties of the mgf from those of the characteristic function).
 
 ## Main definitions
 
@@ -20,6 +27,7 @@ import Mathlib.Probability.Moments.IntegrableExpMul
 ## Main results
 
 * `complexMGF_ofReal_eq_mgf`: for `x : ℝ`, `complexMGF X μ x = mgf X μ x`.
+
 * `hasDerivAt_complexMGF`: for all `z : ℂ` such that the real part `z.re` belongs to the interior
   of the interval of definition of the mgf, `complexMGF X μ` is differentiable at `z`
   with derivative `μ[X * exp (z * X)]`.
@@ -27,6 +35,7 @@ import Mathlib.Probability.Moments.IntegrableExpMul
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 * `analyticOnNhd_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
+
 * `eqOn_complexMGF_of_mgf`: if two random variables have the same moment generating function,
   defined on an interval with nonempty interior, then they have the same `complexMGF`
   on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`.
@@ -459,30 +468,39 @@ lemma iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) 
     rw [iteratedDeriv_succ]
     exact (hasDeriAt_iteratedDeriv_complexMGF hz n).deriv
 
-lemma integrableExpSet_eq_of_mgf {Y : Ω → ℝ} (hXY : mgf X μ = mgf Y μ) :
-    integrableExpSet X μ = integrableExpSet Y μ := by
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
+
+lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
+    integrableExpSet X μ = integrableExpSet Y μ' := by
   ext t
   simp only [integrableExpSet, Set.mem_setOf_eq]
   by_cases hμ : μ = 0
-  · simp [hμ]
-  rw [← mgf_pos_iff' hμ, ← mgf_pos_iff' hμ, hXY]
+  · simp [hμ, hμμ'.mp hμ]
+  have hμ' : μ' ≠ 0 := (not_iff_not.mpr hμμ').mp hμ
+  rw [← mgf_pos_iff' hμ, ← mgf_pos_iff' hμ', hXY]
+
+lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
+    (hXY : mgf X μ = mgf Y μ') :
+    integrableExpSet X μ = integrableExpSet Y μ' := by
+  refine integrableExpSet_eq_of_mgf' hXY ?_
+  simp [IsProbabilityMeasure.ne_zero]
 
 /-- If two random variables have the same moment generating function, defined on an interval with
 nonempty interior, then they have the same `complexMGF` on the vertical strip
 `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
-lemma eqOn_complexMGF_of_mgf {Y : Ω → ℝ} (hXY : mgf X μ = mgf Y μ)
+lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0)
     (ht : t ∈ interior (integrableExpSet X μ)) :
-    Set.EqOn (complexMGF X μ) (complexMGF Y μ)
+    Set.EqOn (complexMGF X μ) (complexMGF Y μ')
       {z | z.re ∈ interior (integrableExpSet X μ)} := by
   have hX : AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
     analyticOnNhd_complexMGF
-  have hY : AnalyticOnNhd ℂ (complexMGF Y μ) {z | z.re ∈ interior (integrableExpSet Y μ)} :=
+  have hY : AnalyticOnNhd ℂ (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet Y μ')} :=
     analyticOnNhd_complexMGF
-  rw [integrableExpSet_eq_of_mgf hXY] at hX ht ⊢
+  rw [integrableExpSet_eq_of_mgf' hXY hμμ'] at hX ht ⊢
   refine AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq hX hY ?_ (z₀ := (t : ℂ))
     (by simp [ht]) ?_
   · exact (convex_integrableExpSet.interior.linear_preimage reLm).isPreconnected
-  · have h_real : ∃ᶠ (x : ℝ) in 𝓝[≠] t, complexMGF X μ x = complexMGF Y μ x := by
+  · have h_real : ∃ᶠ (x : ℝ) in 𝓝[≠] t, complexMGF X μ x = complexMGF Y μ' x := by
       refine .of_forall fun y ↦ ?_
       rw [complexMGF_ofReal_eq_mgf, complexMGF_ofReal_eq_mgf, hXY]
     rw [frequently_iff_seq_forall] at h_real ⊢
@@ -494,5 +512,15 @@ lemma eqOn_complexMGF_of_mgf {Y : Ω → ℝ} (hXY : mgf X μ = mgf Y μ)
         exact hx_tendsto.1
       · simpa using hx_tendsto.2
     · simp [hx_eq]
+
+/-- If two random variables have the same moment generating function, defined on an interval with
+nonempty interior, then they have the same `complexMGF` on the vertical strip
+`{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
+    (hXY : mgf X μ = mgf Y μ') (ht : t ∈ interior (integrableExpSet X μ)) :
+    Set.EqOn (complexMGF X μ) (complexMGF Y μ')
+      {z | z.re ∈ interior (integrableExpSet X μ)} := by
+  refine eqOn_complexMGF_of_mgf' hXY ?_ ht
+  simp [IsProbabilityMeasure.ne_zero]
 
 end ProbabilityTheory
