@@ -342,11 +342,11 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
 lemma IsCycles.spanningCoe_induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
     (G.induce c.supp).spanningCoe.IsCycles := by
   intro v ⟨w, hw⟩
-  rw [mem_neighborSet, c.induce_supp_spanningCoe_adj_iff] at hw
+  rw [mem_neighborSet, c.adj_spanningCoe_induce_supp] at hw
   rw [← h ⟨w, hw.2⟩]
   congr
   ext w'
-  simp only [mem_neighborSet, c.induce_supp_spanningCoe_adj_iff, hw, true_and]
+  simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
 
 open scoped symmDiff
 
@@ -382,7 +382,7 @@ lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : 
 
 lemma IsPerfectMatching.symmDiff_spanningCoe_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
-    ((M.spanningCoe ∆ G').toSubgraph rfl).IsPerfectMatching := by
+    (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
   simp only [toSubgraph_adj, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
@@ -391,21 +391,20 @@ lemma IsPerfectMatching.symmDiff_spanningCoe_of_isAlternating (hM : M.IsPerfectM
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
     have hmadj :  M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
-    simp only [hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true,
-      true_and]
+    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hmadj.mp hw.1, hw'.2,
+      not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
     · aesop
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
-      simp_all only [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2,
-        not_false_eq_true, ne_eq, iff_true, not_true_eq_false, and_false]
+      simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]
   · use w
-    simp only [hw.1, h, not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
+    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
+      not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
     rintro y (hl | hr)
     · exact hw.2 _ hl.1
     · have ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj hr.1
-      simp_all only [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2, not_not,
-        ne_eq, and_false]
+      simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2]
 
 lemma IsPerfectMatching.symmDiff_spanningCoe_IsPerfectMatching_IsAlternating_left {M' : Subgraph G'}
     (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
