@@ -58,19 +58,28 @@ instance InducedCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
 
+@[ext]
+structure InducedCategoryHom (X Y : InducedCategory D F) where
+  hom : F X ⟶ F Y
+
 instance InducedCategory.category : Category.{v} (InducedCategory D F) where
-  Hom X Y := F X ⟶ F Y
-  id X := 𝟙 (F X)
-  comp f g := f ≫ g
+  Hom X Y := InducedCategoryHom F X Y
+  id X := ⟨𝟙 (F X)⟩
+  comp f g := ⟨f.hom ≫ g.hom⟩
+
+@[ext]
+theorem InducedCategory.hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+    f = g :=
+  InducedCategoryHom.ext h
 
 variable {F} in
 /-- Construct an isomorphism in the induced category
 from an isomorphism in the original category. -/
 @[simps] def InducedCategory.isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
-  hom := f.hom
-  inv := f.inv
-  hom_inv_id := f.hom_inv_id
-  inv_hom_id := f.inv_hom_id
+  hom := ⟨f.hom⟩
+  inv := ⟨f.inv⟩
+  hom_inv_id := by ext; exact f.hom_inv_id
+  inv_hom_id := by ext; exact f.inv_hom_id
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -78,11 +87,11 @@ forgetting the extra data.
 @[simps]
 def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
-  map f := f
+  map f := f.hom
 
 /-- The induced functor `inducedFunctor F : InducedCategory D F ⥤ D` is fully faithful. -/
 def fullyFaithfulInducedFunctor : (inducedFunctor F).FullyFaithful where
-  preimage f := f
+  preimage f := ⟨f⟩
 
 instance InducedCategory.full : (inducedFunctor F).Full :=
   (fullyFaithfulInducedFunctor F).full
@@ -116,10 +125,15 @@ instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
 
 -- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
 
-lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
+lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = ⟨𝟙 X.obj⟩ := rfl
 
 lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
+    f ≫ g = ⟨f.hom ≫ g.hom⟩ := rfl
+
+@[ext]
+theorem FullSubcategory.hom_ext {X Y : FullSubcategory Z} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+    f = g :=
+  InducedCategory.hom_ext _ h
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
@@ -132,8 +146,8 @@ theorem fullSubcategoryInclusion.obj {X} : (fullSubcategoryInclusion Z).obj X = 
   rfl
 
 @[simp]
-theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclusion Z).map f = f :=
-  rfl
+theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
+    (fullSubcategoryInclusion Z).map f = f.hom := rfl
 
 /-- The inclusion of a full subcategory is fully faithful. -/
 abbrev fullyFaithfulFullSubcategoryInclusion :
@@ -149,16 +163,17 @@ instance FullSubcategory.faithful : (fullSubcategoryInclusion Z).Faithful :=
 variable {Z} {Z' : C → Prop}
 
 /-- An implication of predicates `Z → Z'` induces a functor between full subcategories. -/
-@[simps]
+@[simps obj_obj map]
 def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ FullSubcategory Z' where
   obj X := ⟨X.1, h X.2⟩
-  map f := f
+  map f := ⟨f.hom⟩
 
 instance FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  (FullSubcategory.map h).Full where map_surjective f := ⟨f, rfl⟩
+  (FullSubcategory.map h).Full where map_surjective f := ⟨⟨f.hom⟩, rfl⟩
 
 instance FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  (FullSubcategory.map h).Faithful where
+    (FullSubcategory.map h).Faithful where
+  map_injective h := by ext; simpa using congrArg InducedCategoryHom.hom h
 
 @[simp]
 theorem FullSubcategory.map_inclusion (h : ∀ ⦃X⦄, Z X → Z' X) :
@@ -174,7 +189,7 @@ variable {D : Type u₂} [Category.{v₂} D] (P Q : D → Prop)
 @[simps]
 def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
-  map f := F.map f
+  map f := ⟨F.map f⟩
 
 @[simp]
 theorem FullSubcategory.lift_comp_inclusion_eq (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
