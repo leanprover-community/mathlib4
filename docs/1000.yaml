@@ -11,8 +11,6 @@
 # Current TODOs/unresolved questions:
 # - add infrastructure for updating the information upstream when formalisations are added
 # - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
-#   (can this handle formalisation of *statements* also?)
-# - complete the information which theorems are already formalised
 #
 # TODO: display a less ambiguous title for e.g. "Liouville's theorem"
 
@@ -52,7 +50,8 @@ Q132427:
 
 Q132469:
   title: Fermat's Last Theorem
-  # See https://imperialcollegelondon.github.io/FLT/
+  statement: FermatLastTheorem
+  comment: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 
 Q137164:
   title: Besicovitch covering theorem
@@ -68,6 +67,7 @@ Q164262:
 
 Q172298:
   title: Lasker–Noether theorem
+  decl: Ideal.isPrimary_decomposition_pairwise_ne_radical
 
 Q174955:
   title: Mihăilescu's theorem
@@ -86,9 +86,13 @@ Q179692:
 
 Q180345X:
   title: Integral root theorem
+  decl: isInteger_of_is_root_of_monic
 
 Q180345:
   title: Rational root theorem
+  decls:
+   - num_dvd_of_is_root
+   - den_dvd_of_is_root
 
 Q182505:
   title: Bayes' theorem
@@ -163,6 +167,7 @@ Q193910:
 
 Q194919:
   title: Inverse eigenvalues theorem
+  # i.e. eigenvalue decomposition of a matrix
 
 Q195133:
   title: Wigner–Eckart theorem
@@ -261,9 +266,15 @@ Q256303:
 
 Q257387:
   title: Vitali theorem
+  # i.e. existence of the Vitali set
+  author: Ching-Tsun Chou
+  url: https://github.com/ctchou/my_lean/blob/main/MyLean/NonMeasurable.lean
+  comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
 
 Q258374:
   title: Carathéodory's theorem
+  decl: MeasureTheory.OuterMeasure.caratheodory
+  comment: Hard to say what exactly is meant.
 
 Q260928:
   title: Jordan curve theorem
@@ -273,6 +284,7 @@ Q266291:
 
 Q268031:
   title: Abel's binomial theorem
+  # presumably not difficult
 
 Q268132:
   title: Gauss–Wantzel theorem
@@ -602,7 +614,7 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
-  # far away; FLT project is working on a special case
+  comment: "https://imperialcollegelondon.github.io/FLT is proving a special case"
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -776,7 +788,9 @@ Q766722:
 
 Q776578:
   title: Artin–Wedderburn theorem
-  # WIP formalisation, but not complete yet (Dec 1, 2024)
+  # using proof_wanted, in Mathlib/RingTheory/SimpleModule.lean
+  statement: isSemisimpleRing_iff_pi_matrix_divisionRing
+  # WIP formalisation, but not complete yet (January 1, 2025)
 
 Q777924:
   title: Tijdeman's theorem
@@ -1304,7 +1318,8 @@ Q1146791:
 
 Q1148215:
   title: Mitchell's embedding theorem
-  # there was a project talking about this; very in progress, I believe. statement exists.
+  # ongoing effort: going slowly; lots of work. see e.g.
+  # https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Freyd-Mitchell.20embedding
 
 Q1149022:
   title: Fubini's theorem
@@ -1995,7 +2010,7 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
-  # TODO: does mathlib have these versions? add the right decls!
+  # TODO: does mathlib have these?
 
 Q2394548:
   title: Hurewicz theorem
@@ -3458,8 +3473,8 @@ Q7308146:
 
 Q7309601:
   title: Whitney–Graustein Theorem
-  # there's an external project, deducing this from sphere-eversion
-  # TODO link statement (proof depends on some sorries about the winding number)
+  url: https://github.com/MetalCreator666/WhitneyGraustein/
+  comment: "assumes some basic topology statements as axioms; use the sphere eversion project"
 
 Q7310041:
   title: Reider's theorem
@@ -3472,7 +3487,7 @@ Q7318284:
 
 Q7322366:
   title: Ribet's theorem
-  # part of FLT, right?
+  # part of the original proof of Fermat's Last Theorem
 
 Q7323144:
   title: Rice–Shapiro theorem
@@ -3652,7 +3667,7 @@ Q7825663:
 
 Q7827204:
   title: Mazur's torsion theorem
-  # TODO: is this used in FLT?
+  comment: "This is used to prove Fermat's last theorem (but a non-trivial project on its own)."
 
 Q7841060:
   title: Trichotomy theorem

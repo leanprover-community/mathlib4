@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 namespace Presieve.FamilyOfElements
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 section smul
 
