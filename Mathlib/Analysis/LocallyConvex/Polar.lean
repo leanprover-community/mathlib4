@@ -256,13 +256,37 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     obtain ⟨f,⟨u,⟨hf₁,hf₂⟩⟩⟩ :=
       RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B) e1 e2 hx
     have e3 : RCLike.re (f 0) < u := by
-      --rw [← (RCLike.ofReal_re (K := 𝕜) 0)]
-
-      --rw [← map_zero f]
       apply (hf₁ 0)
+      apply absConvexHull_subset_closedAbsConvexHull
+      exact absConvexHull_zero_mem s
+    simp at e3
+    let g := (1/u : ℝ) • f
+    have fg : g = (1/u : ℝ) • f := rfl
+    have hg₁ : ∀ a ∈ (closedAbsConvexHull (E := WeakBilin B) 𝕜) s, RCLike.re (g a) < 1 := by
+      intro a ha
+      rw [fg]
+      simp only [ ContinuousLinearMap.coe_smul', Pi.smul_apply]
+      rw [RCLike.smul_re]
+      have t1 : RCLike.re (f a) < u := by exact hf₁ a ha
+      simp [t1]
+      have u0 : u ≠ 0 := by
+        simp [e3]
+        rename_i inst_7
+        simp_all only [nonempty_subtype, one_div, g]
+        obtain ⟨w, h⟩ := inst_7
+        apply Aesop.BuiltinRules.not_intro
+        intro a_1
+        subst a_1
+        simp_all only [lt_self_iff_false]
+      have u1 : u⁻¹ * u = 1 := by
+        simp_all only [nonempty_subtype, one_div, ne_eq, not_false_eq_true, inv_mul_cancel₀, g]
+      rw [← u1]
+      apply mul_lt_mul_of_pos_left
+      apply (hf₁ a)
+      exact ha
 
 
-      apply lt_trans
+      sorry
     sorry
 
   · exact closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
