@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Filter.NAry
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Basic
 
 /-!
 # Pointwise operations on filters

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Topology.Defs.Filter
 

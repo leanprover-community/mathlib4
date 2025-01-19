@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Quotients
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Basic
 
 /-!
 # Ultraproducts and Łoś's Theorem
