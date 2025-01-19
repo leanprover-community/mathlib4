@@ -129,12 +129,11 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
       rw [tail_eq_zero, zero_add] at p_eq_sum
       rw [p_eq_sum] at coeff_in_span
       exact coeff_in_span
-    · have tail_deg : tail.degree < n := by
+    · have tail_natdeg : tail.natDegree < n := by
         have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
           rw [leadingCoeff_smul_of_smul_regular, smul_eq_mul, hu.2]
           · exact isRegular_one.right
           · exact u_unit.isSMulRegular R
-
 
         have other := degree_smul_of_leadingCoeff_rightRegular
           (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
@@ -149,8 +148,7 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
           · rw [n_eq_zero, ne_eq, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
                 smul_C, smul_eq_mul, map_mul]
             rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at hu
-            rw [← C_mul, hu.2, smul_C]
-            simp [p_ne_zero]
+            rwa [← C_mul, hu.2, smul_C, smul_eq_mul, mul_one, C_eq_zero, leadingCoeff_eq_zero]
           · have bar := (P.leadingCoeff • u • S n).ne_zero_of_degree_gt (n := 0)
             rw [← other] at bar
             exact bar <| natDegree_pos_iff_degree_pos.mp (by omega)
@@ -164,13 +162,13 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
           rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, hu.2, mul_one]
 
         have foo := P.degree_sub_lt other p_ne_zero s_to_p_coeff
-        rwa [degree_eq_natDegree p_ne_zero, hp] at foo
+        rw [degree_eq_natDegree p_ne_zero, hp] at foo
+        exact natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr foo
 
-      have natdeg_lt_n := natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr tail_deg
       simp only [mem_top, forall_const] at ih
-      have tail_in_span := ih tail.natDegree natdeg_lt_n rfl
+      have tail_in_span := ih tail.natDegree tail_natdeg rfl
 
-      exact sub_mem_iff_left (Submodule.span R (Set.range S)) coeff_in_span |>.mp tail_in_span
+      exact sub_mem_iff_left _ coeff_in_span |>.mp tail_in_span
   · rw [ne_eq, not_not] at p_ne_zero
     simp [p_ne_zero]
 
