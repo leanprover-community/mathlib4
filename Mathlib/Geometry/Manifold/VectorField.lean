@@ -16,7 +16,8 @@ vector fields.
 
 We define the pullback of a vector field under a map, as
 `VectorField.mpullback I I' f V x := (mfderiv I I' f x).inverse (V (f x))`
-(together with the same notion within a set).
+(together with the same notion within a set). Note that the pullback uses the junk-value pattern:
+if the derivative of the map is not invertible, then pullback is given the junk value zero.
 
 We start developing API around this notion.
 
@@ -87,13 +88,15 @@ variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
 variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
-/-- The pullback of a vector field under a map between manifolds, within a set `s`. -/
+/-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
+derivative of the map within `s` is not invertible, then pullback is given the junk value zero.-/
 def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
     TangentSpace I x :=
   (mfderivWithin I I' f s x).inverse (V (f x))
 
 variable (I I') in
-/-- The pullback of a vector field under a map between manifolds. -/
+/-- The pullback of a vector field under a map between manifolds. If the derivative of the map is
+not invertible, then pullback is given the junk value zero. -/
 def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
     TangentSpace I x :=
   (mfderiv I I' f x).inverse (V (f x))
