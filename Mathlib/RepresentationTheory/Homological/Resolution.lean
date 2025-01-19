@@ -66,6 +66,22 @@ noncomputable section
 universe u v w
 open CategoryTheory
 
+lemma MonoidHom.coe_id {G : Type*} [MulOneClass G] :
+    ⇑(MonoidHom.id G) = _root_.id := rfl
+
+theorem CategoryTheory.ShortComplex.ShortExact.δ_apply_aux
+    {C : Type*} [inst : Category C] [ConcreteCategory C] [HasForget₂ C Ab] [Abelian C]
+    [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*} {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι)
+    (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
+    (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :
+    ((forget₂ C Ab).map (S.X₁.d j k)) x₁ = 0 := by
+  have := hS.mono_f
+  apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
+  rw [← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply, hx₁,
+    ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, map_zero,
+    AddMonoidHom.zero_apply]
+
 lemma Fin.partialProd_contractNth_eq {G : Type*} [Monoid G] {n : ℕ}
     (g : Fin (n + 1) → G) (a : Fin (n + 1)) :
     partialProd (contractNth a (· * ·) g) = partialProd g ∘ a.succ.succAbove := by
@@ -172,64 +188,11 @@ theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C]
     (K.isoSc' i j (c.next j) hi rfl).inv x (by simp_all)
 
 end HomologicalComplex
-namespace LinearEquiv
-
-variable {R₁ R₂ R₃ R₄ M₁ M₂ M₃ M₄ : Type*}
-    [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-    {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
-    {module_M₄ : Module R₄ M₄} {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} {σ₂₄ : R₂ →+* R₄}
-    {σ₁₃ : R₁ →+* R₃} {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃} {σ₁₄ : R₁ →+* R₄} {σ₂₃ : R₂ →+* R₃}
-    {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
-    {re₃₄ : RingHomInvPair σ₃₄ σ₄₃} {re₄₃ : RingHomInvPair σ₄₃ σ₃₄}
-    [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-    [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
-    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃]
-    {e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂} {e₃₄ : M₃ ≃ₛₗ[σ₃₄] M₄} (f : M₂ →ₛₗ[σ₂₄] M₄) (g : M₁ →ₛₗ[σ₁₃] M₃)
-
-theorem symm_comp_eq_comp_symm_iff :
-    e₃₄.symm.toLinearMap.comp f = g.comp (e₁₂.symm.toLinearMap)
-      ↔ f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g := by
-  rw [LinearEquiv.eq_comp_toLinearMap_symm, LinearMap.comp_assoc,
-    LinearEquiv.toLinearMap_symm_comp_eq]
-
-def kerLEquivOfCompEqComp (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) :
-    LinearMap.ker f ≃ₛₗ[σ₂₁] LinearMap.ker g :=
-  LinearEquiv.ofSubmodules e₁₂.symm _ _ <| by
-    simp [Submodule.map_equiv_eq_comap_symm, ← LinearMap.ker_comp, H]
-
-omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
-@[simp]
-theorem subtype_comp_kerLEquivOfCompEqComp (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) :
-    (LinearMap.ker g).subtype.comp (kerLEquivOfCompEqComp f g H).toLinearMap
-      = e₁₂.symm.toLinearMap.comp (LinearMap.ker f).subtype := by ext; rfl
-
-omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
-@[simp]
-theorem subtype_comp_kerLEquivOfCompEqComp_symm
-    (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) :
-    (LinearMap.ker f).subtype.comp (kerLEquivOfCompEqComp f g H).symm.toLinearMap
-      = e₁₂.toLinearMap.comp (LinearMap.ker g).subtype := by ext; rfl
-
-omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
-@[simp]
-theorem kerLEquivOfCompEqComp_apply
-    (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) (x) :
-    (kerLEquivOfCompEqComp f g H x).1 = e₁₂.symm x  := rfl
-
-omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
-@[simp]
-theorem kerLEquivOfCompEqComp_symm_apply
-    (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) (x) :
-    ((kerLEquivOfCompEqComp f g H).symm x).1
-      = e₁₂ x := rfl
-
-end LinearEquiv
 
 namespace CategoryTheory.ShortComplex
 
 variable {R : Type u} [Ring R] {M : ShortComplex (ModuleCat R)}
-    (x : LinearMap.ker M.g)
+    (x : LinearMap.ker M.g.hom)
 
 theorem forget₂_moduleCat_mapCyclesIso (M : ShortComplex (ModuleCat R)) :
     (M.mapCyclesIso (forget₂ (ModuleCat R) Ab)) ≪≫
@@ -355,7 +318,7 @@ variable (k)
 face map complex of a simplicial `k`-linear `G`-representation. -/
 def Rep.standardComplex [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
-    (classifyingSpaceUniversalCover G ⋙ (Rep.linearization k G).1.1)
+    (classifyingSpaceUniversalCover G ⋙ linearization k G)
 
 namespace Rep.standardComplex
 
@@ -393,12 +356,12 @@ instance x_projective [Group G] :
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq [Monoid G] : ((standardComplex k G).d (n + 1) n).hom = d k G (n + 1) := by
+theorem d_eq [Monoid G] : ((standardComplex k G).d (n + 1) n).hom.hom = d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
   simp [classifyingSpaceUniversalCover_obj, Action.ofMulAction_V, standardComplex,
     Rep.coe_linearization_obj, d_of (k := k) x, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), classifyingSpaceUniversalCover_map_hom,
-    SimplexCategory.δ, Fin.succAboveOrderEmb, moduleCat_simps]
+    SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 end Differentials
 
@@ -421,7 +384,7 @@ def compForgetAugmentedIso :
       standardComplex.forget₂ToModuleCat k G :=
   eqToIso
     (Functor.congr_obj (map_alternatingFaceMapComplex (forget₂ (Rep k G) (ModuleCat.{u} k))).symm
-      (classifyingSpaceUniversalCover G ⋙ (Rep.linearization k G).1.1))
+      (classifyingSpaceUniversalCover G ⋙ linearization k G))
 
 /-- As a complex of `k`-modules, the standard resolution of the trivial `G`-representation `k` is
 homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/
@@ -438,15 +401,15 @@ def forget₂ToModuleCatHomotopyEquiv :
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 abbrev ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp [moduleCat_simps])
+  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp)
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
-  refine Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
   show mapDomain _ _ _ = Finsupp.linearCombination _ _ _
   simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented,
     SimplicialObject.augment_right, Functor.const_obj_obj, compForgetAugmentedIso, eqToIso.inv,
@@ -455,14 +418,13 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
-  ext : 1
-  refine LinearMap.ext fun x => ?_
+  ext x : 3
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
       ← (forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
     exact comp_zero
-  exact LinearMap.ext_iff.1 this _
+  exact congr($this x)
 
 /-- The chain map from the standard resolution of `k` to `k[0]` given by `∑ nᵢgᵢ ↦ ∑ nᵢ` in
 degree zero. -/
@@ -529,7 +491,7 @@ lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
-  simp [d, moduleCat_simps]
+  simp [d]
 
 variable (k G)
 
@@ -538,8 +500,8 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
   free_ext _ _ fun i => by
     have := d_single (k := k) (G := G)
-    have := @diagonalSuccIsoFree_inv_hom_single_single k G _
-    simp_all only [moduleCat_simps, Action.comp_hom, LinearMap.coe_comp, Function.comp_apply,
+    have := @diagonalSuccIsoFree_inv_hom_hom_single_single k G _
+    simp_all only [ModuleCat.hom_comp, Action.comp_hom, LinearMap.coe_comp, Function.comp_apply,
       map_add, map_sum]
     simpa [standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i),
       Fin.sum_univ_succ, Fin.partialProd_contractNth_eq]

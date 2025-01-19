@@ -76,17 +76,16 @@ open Representation
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : (Fin n → H) → A)` to `(g : Fin n → G) ↦ φ (x (f ∘ g))`. -/
-@[simps! (config := .lemmasOnly) f f_apply]
+@[simps! (config := .lemmasOnly) f f_hom]
 noncomputable def cochainsMap :
     inhomogeneousCochains A ⟶ inhomogeneousCochains B where
-  f i := φ.hom.compLeft (Fin i → G) ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G => (f ∘ x))
+  f i := ModuleCat.ofHom <|
+    φ.hom.hom.compLeft (Fin i → G) ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G => (f ∘ x))
   comm' i j (hij : _ = _) := by
     subst hij
     ext
     funext
-    simp only [CochainComplex.of_x, inhomogeneousCochains.d_def, ModuleCat.coe_comp,
-      Function.comp_apply]
-    simpa [moduleCat_simps, Fin.comp_contractNth] using (hom_comm_apply φ _ _).symm
+    simpa [inhomogeneousCochains.d_apply, Fin.comp_contractNth] using (hom_comm_apply φ _ _).symm
 
 @[simp]
 lemma cochainsMap_id :
@@ -95,7 +94,7 @@ lemma cochainsMap_id :
 
 @[simp]
 lemma cochainsMap_id_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
-    (cochainsMap (MonoidHom.id G) f).f i = f.hom.compLeft _ := by
+    (cochainsMap (MonoidHom.id G) f).f i = ModuleCat.ofHom (f.hom.hom.compLeft _) := by
   ext
   rfl
 
@@ -118,9 +117,8 @@ lemma cochainsMap_zero : cochainsMap (A := A) (B := B) f 0 = 0 := by rfl
 
 lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap f φ).f i) := by
-  simp only [CochainComplex.of_x, cochainsMap_f, ModuleCat.mono_iff_injective,
-    ModuleCat.hom_def, LinearMap.coe_comp]
-  exact ((Rep.mono_iff_injective φ).1 inferInstance).comp_left.comp <|
+  simpa [ModuleCat.mono_iff_injective] using
+    ((Rep.mono_iff_injective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_injective_of_surjective k A _ hf.comp_left
 
 instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : ℕ) :
@@ -129,9 +127,8 @@ instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i :
 
 lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap f φ).f i) := by
-  simp only [CochainComplex.of_x, cochainsMap_f, ModuleCat.epi_iff_surjective,
-    ModuleCat.hom_def, LinearMap.coe_comp]
-  exact ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
+  simpa [ModuleCat.epi_iff_surjective] using
+    ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_surjective_of_injective k A _ hf.comp_left
 
 instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
@@ -146,8 +143,7 @@ noncomputable abbrev cocyclesMap (n : ℕ) :
   HomologicalComplex.cyclesMap (cochainsMap f φ) n
 
 @[simp]
-theorem cocyclesMap_id_comp {A B C : Rep k G}
-    (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
+theorem cocyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     cocyclesMap (MonoidHom.id G) (φ ≫ ψ) n =
       cocyclesMap (MonoidHom.id G) φ n ≫ cocyclesMap (MonoidHom.id G) ψ n := by
   simp [cocyclesMap, cochainsMap_id_comp, HomologicalComplex.cyclesMap_comp]
@@ -156,8 +152,8 @@ theorem cocyclesMap_id_comp {A B C : Rep k G}
 this is the induced map `Hⁿ(H, A) ⟶ Hⁿ(G, B)` sending `x : (Fin n → H) → A)` to
 `(g : Fin n → G) ↦ φ (x (f ∘ g))`. -/
 noncomputable abbrev map (n : ℕ) :
-  groupCohomology A n ⟶ groupCohomology B n :=
-HomologicalComplex.homologyMap (cochainsMap f φ) n
+    groupCohomology A n ⟶ groupCohomology B n :=
+  HomologicalComplex.homologyMap (cochainsMap f φ) n
 
 @[simp]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
@@ -167,51 +163,47 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H → A` to `(g : G) ↦ φ (x (f g))`. -/
-abbrev fOne := φ.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
+abbrev fOne := φ.hom.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H → A` to `(g₁, g₂ : G × G) ↦ φ (x (f g₁, f g₂))`. -/
-abbrev fTwo := φ.hom.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
+abbrev fTwo := φ.hom.hom.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H × H → A` to
 `(g₁, g₂, g₃ : G × G × G) ↦ φ (x (f g₁, f g₂, f g₃))`. -/
-abbrev fThree := φ.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
+abbrev fThree := φ.hom.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
 
 @[reassoc (attr := simp)]
 lemma cochainsMap_f_0_comp_zeroCochainsLEquiv :
-    (cochainsMap f φ).f 0 ≫ (zeroCochainsLEquiv B : (inhomogeneousCochains B).X 0 →ₗ[k] B) =
-      (zeroCochainsLEquiv A : (inhomogeneousCochains A).X 0 →ₗ[k] A) ≫ φ.hom := by
+    (cochainsMap f φ).f 0 ≫ (zeroCochainsLEquiv B).toModuleIso.hom =
+      (zeroCochainsLEquiv A).toModuleIso.hom ≫ φ.hom := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
 
 @[reassoc (attr := simp)]
 lemma cochainsMap_f_1_comp_oneCochainsLEquiv :
-    (cochainsMap f φ).f 1 ≫ (oneCochainsLEquiv B : (inhomogeneousCochains B).X 1 →ₗ[k] G → B) =
-      (oneCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.asHom (fOne f φ) := by
+    (cochainsMap f φ).f 1 ≫ (oneCochainsLEquiv B).toModuleIso.hom =
+      (oneCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fOne f φ) := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
 
 @[reassoc (attr := simp)]
 lemma cochainsMap_f_2_comp_twoCochainsLEquiv :
-    (cochainsMap f φ).f 2 ≫
-      (twoCochainsLEquiv B : (inhomogeneousCochains B).X 2 →ₗ[k] G × G → B) =
-      (twoCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.asHom (fTwo f φ) := by
-  ext x
-  funext g
+    (cochainsMap f φ).f 2 ≫ (twoCochainsLEquiv B).toModuleIso.hom =
+      (twoCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fTwo f φ) := by
+  ext x g
   show φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
 
 @[reassoc (attr := simp)]
 lemma cochainsMap_f_3_comp_threeCochainsLEquiv :
-    (cochainsMap f φ).f 3 ≫
-      (threeCochainsLEquiv B : (inhomogeneousCochains B).X 3 →ₗ[k] G × G × G → B) =
-      (threeCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.asHom (fThree f φ) := by
-  ext x
-  funext g
+    (cochainsMap f φ).f 3 ≫ (threeCochainsLEquiv B).toModuleIso.hom =
+      (threeCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fThree f φ) := by
+  ext x g
   show φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
@@ -221,9 +213,8 @@ open ShortComplex
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Aᴴ ⟶ Bᴳ`. -/
 def H0Map : ModuleCat.of k (H0 A) ⟶ ModuleCat.of k (H0 B) :=
-  LinearMap.codRestrict _ (φ.hom ∘ₗ A.ρ.invariants.subtype) fun ⟨c, hc⟩ g => by
-    have := (hom_comm_apply φ g c).symm
-    simp_all [moduleCat_simps, hc (f g)]
+  ModuleCat.ofHom <| LinearMap.codRestrict _ (φ.hom.hom ∘ₗ A.ρ.invariants.subtype)
+    fun ⟨c, hc⟩ g => by simpa [hc (f g)] using (hom_comm_apply φ g c).symm
 
 @[simp]
 theorem H0Map_id : H0Map (MonoidHom.id _) (𝟙 A) = 𝟙 _ := by
@@ -254,7 +245,7 @@ theorem cocyclesMap_comp_isoZeroCocycles_hom :
   rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq,
     ← cancel_mono (HomologicalComplex.iCycles _ _)]
   simp only [CochainComplex.of_x, cocyclesMap, Category.assoc, HomologicalComplex.cyclesMap_i,
-    isoZeroCocycles_inv_comp_iCocycles_assoc, ModuleCat.of_coe, LinearEquiv.toModuleIso_inv,
+    isoZeroCocycles_inv_comp_iCocycles_assoc, ModuleCat.of_coe, LinearEquiv.toModuleIso_inv_hom,
     isoZeroCocycles_inv_comp_iCocycles]
   rfl
 
@@ -270,16 +261,16 @@ to `B --dZero--> Fun(G, B) --dOne--> Fun(G × G, B)`. -/
 def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
   τ₁ := φ.hom
-  τ₂ := ModuleCat.asHom (fOne f φ)
-  τ₃ := ModuleCat.asHom (fTwo f φ)
+  τ₂ := ModuleCat.ofHom (fOne f φ)
+  τ₃ := ModuleCat.ofHom (fTwo f φ)
   comm₁₂ := by
     ext x
     funext g
-    simpa [shortComplexH1, dZero, moduleCat_simps, fOne] using (hom_comm_apply φ g x).symm
+    simpa [shortComplexH1, dZero, fOne] using (hom_comm_apply φ g x).symm
   comm₂₃ := by
     ext x
     funext g
-    simpa [shortComplexH1, dOne, moduleCat_simps, fOne, fTwo] using (hom_comm_apply φ _ _).symm
+    simpa [shortComplexH1, dOne, fOne, fTwo] using (hom_comm_apply φ _ _).symm
 
 @[simp]
 theorem mapShortComplexH1_zero :
@@ -314,8 +305,7 @@ noncomputable abbrev mapOneCocycles :
 this is induced map `H¹(H, A) ⟶ H¹(G, B)`. -/
 noncomputable abbrev H1Map : ModuleCat.of k (H1 A) ⟶ ModuleCat.of k (H1 B) :=
   ShortComplex.leftHomologyMap' (mapShortComplexH1 f φ)
-    (shortComplexH1 A).moduleCatLeftHomologyData
-    (shortComplexH1 B).moduleCatLeftHomologyData
+    (shortComplexH1 A).moduleCatLeftHomologyData (shortComplexH1 B).moduleCatLeftHomologyData
 
 @[simp]
 theorem H1Map_id : H1Map (MonoidHom.id _) (𝟙 A) = 𝟙 _ := by
@@ -335,14 +325,15 @@ theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
 @[simp]
-lemma subtype_comp_mapOneCocycles :
-    (oneCocycles B).subtype ∘ₗ mapOneCocycles f φ = fOne f φ ∘ₗ (oneCocycles A).subtype :=
+lemma mapOneCocycles_comp_subtype :
+    mapOneCocycles f φ ≫ ModuleCat.ofHom (oneCocycles B).subtype =
+      ModuleCat.ofHom (oneCocycles A).subtype ≫ ModuleCat.ofHom (fOne f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
 @[simp]
-lemma H1Map_comp_H1π :
-    H1Map f φ ∘ₗ H1π A = H1π B ∘ₗ mapOneCocycles f φ :=
+lemma H1π_comp_H1Map :
+    H1π A ≫ H1Map f φ = mapOneCocycles f φ ≫ H1π B :=
   leftHomologyπ_naturality' (mapShortComplexH1 f φ) _ _
 
 @[reassoc (attr := simp)]
@@ -351,14 +342,12 @@ lemma cocyclesMap_comp_isoOneCocycles_hom :
       (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCocycles,
       Category.assoc, cyclesMap'_i, isoOneCocycles, ← Category.assoc]
-  simp
+  simp [cochainsMap_f_1_comp_oneCochainsLEquiv f φ, mapShortComplexH1]
 
 @[reassoc (attr := simp)]
 lemma map_comp_isoH1_hom :
     map f φ 1 ≫ (isoH1 B).hom = (isoH1 A).hom ≫ H1Map f φ := by
-  simpa [← cancel_epi (groupCohomologyπ _ _), H1Map, Category.assoc]
-    using (leftHomologyπ_naturality' (mapShortComplexH1 f φ)
-    (moduleCatLeftHomologyData _) (moduleCatLeftHomologyData _)).symm
+  simp [← cancel_epi (groupCohomologyπ _ _), H1Map, Category.assoc]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map from the short complex
@@ -367,17 +356,17 @@ this is the induced map from the short complex
 @[simps]
 def mapShortComplexH2 :
     shortComplexH2 A ⟶ shortComplexH2 B where
-  τ₁ := ModuleCat.asHom (fOne f φ)
-  τ₂ := ModuleCat.asHom (fTwo f φ)
-  τ₃ := ModuleCat.asHom (fThree f φ)
+  τ₁ := ModuleCat.ofHom (fOne f φ)
+  τ₂ := ModuleCat.ofHom (fTwo f φ)
+  τ₃ := ModuleCat.ofHom (fThree f φ)
   comm₁₂ := by
     ext x
     funext g
-    simpa [shortComplexH2, dOne, moduleCat_simps, fOne, fTwo] using (hom_comm_apply φ _ _).symm
+    simpa [shortComplexH2, dOne, fOne, fTwo] using (hom_comm_apply φ _ _).symm
   comm₂₃ := by
     ext x
     funext g
-    simpa [shortComplexH2, dTwo, moduleCat_simps, fTwo, fThree] using (hom_comm_apply φ _ _).symm
+    simpa [shortComplexH2, dTwo, fTwo, fThree] using (hom_comm_apply φ _ _).symm
 
 @[simp]
 theorem mapShortComplexH2_zero :
@@ -432,14 +421,15 @@ theorem H2Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
   H2Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
 @[simp]
-lemma subtype_comp_mapTwoCocycles :
-    (twoCocycles B).subtype ∘ₗ mapTwoCocycles f φ = fTwo f φ ∘ₗ (twoCocycles A).subtype :=
+lemma mapTwoCocycles_comp_subtype :
+    mapTwoCocycles f φ ≫ ModuleCat.ofHom (twoCocycles B).subtype =
+      ModuleCat.ofHom (twoCocycles A).subtype ≫ ModuleCat.ofHom (fTwo f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH2 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
 @[simp]
-lemma H2Map_comp_H2π :
-    H2Map f φ ∘ₗ H2π A = H2π B ∘ₗ mapTwoCocycles f φ :=
+lemma H2π_comp_H2Map :
+    H2π A ≫ H2Map f φ = mapTwoCocycles f φ ≫ H2π B :=
   leftHomologyπ_naturality' (mapShortComplexH2 f φ) _ _
 
 @[reassoc (attr := simp)]
@@ -447,14 +437,12 @@ lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCocycles,
       Category.assoc, cyclesMap'_i, isoTwoCocycles, ← Category.assoc]
-  simp
+  simp [cochainsMap_f_2_comp_twoCochainsLEquiv f φ, mapShortComplexH2]
 
 @[reassoc (attr := simp)]
 lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
-  simpa [← cancel_epi (groupCohomologyπ _ _), H2Map, Category.assoc]
-    using (leftHomologyπ_naturality' (mapShortComplexH2 f φ)
-    (moduleCatLeftHomologyData _) (moduleCatLeftHomologyData _)).symm
+  simp [← cancel_epi (groupCohomologyπ _ _), H2Map, Category.assoc]
 
 variable (k G) in
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/
@@ -491,10 +479,10 @@ lemma cochainsMap_shortExact :
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
     exact := by
       rw [ShortComplex.moduleCat_exact_iff_range_eq_ker]
-      have : LinearMap.range X.f.hom = LinearMap.ker X.g.hom :=
+      have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
-      show LinearMap.range (LinearMap.compLeft X.f.hom (Fin i → G))
-        = LinearMap.ker (LinearMap.compLeft X.g.hom (Fin i → G))
+      show LinearMap.range (LinearMap.compLeft X.f.hom.hom (Fin i → G)) =
+        LinearMap.ker (LinearMap.compLeft X.g.hom.hom (Fin i → G))
       rw [LinearMap.range_compLeft, LinearMap.ker_compLeft, this]
     mono_f := letI := hX.2; cochainsMap_id_f_map_mono X.f i
     epi_g := letI := hX.3; cochainsMap_id_f_map_epi X.g i }
@@ -531,26 +519,24 @@ lemma mapShortComplex₃_exact {i j : ℕ} (hij : i + 1 = j) :
     (mapShortComplex₃ hX hij).Exact :=
   (cochainsMap_shortExact hX).homology_exact₃ i j hij
 
-theorem δ_apply_aux (n : ℕ) (y : (Fin n → G) → X.X₂)
-    (x : (Fin (n + 1) → G) → X.X₁) (hx : X.f.hom ∘ x = inhomogeneousCochains.d X.X₂ n y) :
-    inhomogeneousCochains.d X.X₁ (n + 1) x = 0 := by
-  letI := hX.2
-  change (cochainsMap (MonoidHom.id G) _).f _ _ = _ at hx
-  have := congr($((cochainsMap (MonoidHom.id G) X.f).comm (n + 1) (n + 2)) x)
-  simp_all only [inhomogeneousCochains.d_def, ModuleCat.coe_comp, Function.comp_apply]
-  refine (ModuleCat.mono_iff_injective ((cochainsMap (MonoidHom.id G) X.f).f (n + 2))).1
-    inferInstance ?_
-  simpa only [map_zero] using this ▸ congr($(inhomogeneousCochains.d_comp_d X.X₂ n) y)
+theorem δ_apply_aux {i j l : ℕ} (y : (Fin i → G) → X.X₂)
+    (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
+    (inhomogeneousCochains X.X₁).d j l x = 0 :=
+  ShortExact.δ_apply_aux (cochainsMap_shortExact hX) i j y x
+    (by simpa [cochainsMap_id_eq_compLeft] using hx) l
 
-theorem δ_apply (n : ℕ) (z : (Fin n → G) → X.X₃) (hz : inhomogeneousCochains.d X.X₃ n z = 0)
-    (y : (Fin n → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f n y = z)
-    (x : (Fin (n + 1) → G) → X.X₁) (hx : X.f.hom ∘ x = inhomogeneousCochains.d X.X₂ n y) :
-    (cochainsMap_shortExact hX).δ n (n + 1) rfl (groupCohomologyπ X.X₃ n <|
-      (cocyclesIso X.X₃ n).inv ⟨z, hz⟩) = groupCohomologyπ X.X₁ (n + 1)
-      ((cocyclesIso X.X₁ (n + 1)).inv ⟨x, δ_apply_aux hX n y x hx⟩) := by
-  simp_rw [cocyclesIso_inv_eq]
-  exact ShortExact.δ_apply (cochainsMap_shortExact hX) n _ rfl z (by simpa using hz) y hy x
-    (by simpa using hx) (n + 2) (by simp)
+theorem δ_apply (i j l : ℕ) (hij : i + 1 = j) (hjl : (ComplexShape.up ℕ).next j = l)
+    (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
+    (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
+    (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
+    (cochainsMap_shortExact hX).δ i j hij (groupCohomologyπ X.X₃ i <|
+      (moduleCatCyclesIso _).inv ⟨z, show ((inhomogeneousCochains X.X₃).dFrom i).hom z = 0 by
+        simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) = groupCohomologyπ X.X₁ j
+      ((moduleCatCyclesIso _).inv ⟨x, δ_apply_aux hX y x hx⟩) := by
+  convert ShortExact.δ_apply (cochainsMap_shortExact hX) i j hij z
+    hz y hy x (by simpa [cochainsMap_id_eq_compLeft] using hx) l hjl
+  <;> rw [moduleCatCyclesIso_inv_apply]
+  <;> rfl
 
 /-- The degree 0 connecting homomorphism `X₃ᴳ ⟶ H¹(G, X₁)` associated to an exact sequence
 `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations. Uses a simpler expression for `H⁰` and `H¹` than
@@ -561,33 +547,36 @@ noncomputable def δ₀ :
 
 theorem δ₀_apply_aux (y : X.X₂) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     dOne X.X₁ x = 0 := by
-  have h0 := δ_apply_aux hX 0 ((zeroCochainsLEquiv X.X₂).symm y) ((oneCochainsLEquiv X.X₁).symm x)
+  have hδ := δ_apply_aux hX (l := 2) ((zeroCochainsLEquiv X.X₂).symm y)
+    ((oneCochainsLEquiv X.X₁).symm x)
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
-  simp only [ModuleCat.coe_comp, Function.comp_apply] at h0 hy
-  exact h.trans <| (twoCochainsLEquiv X.X₁).map_eq_zero_iff.2 <| h0 (hy.trans <| hx ▸ rfl).symm
+  have h0 := congr($((CommSq.vert_inv
+    ⟨(cochainsMap_f_1_comp_oneCochainsLEquiv (MonoidHom.id G) X.f)⟩).w) x)
+  simp_all [LinearMap.compLeft, shortComplexH1, MonoidHom.coe_id, ← hx]
 
 theorem δ₀_apply (z : X.X₃) (hz : z ∈ X.X₃.ρ.invariants) (y : X.X₂) (hy : X.g.hom y = z)
     (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     δ₀ hX ⟨z, hz⟩ = H1π X.X₁ ⟨x, δ₀_apply_aux hX y x hx⟩ := by
-  have h0z : (inhomogeneousCochains.d X.X₃ 0) ((zeroCochainsLEquiv X.X₃).symm z) = 0 := by
-    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq X.X₃)) z)
-    simp_all [← dZero_ker_eq_invariants, ModuleCat.coe_of]
-  have hxy : X.f.hom ∘ (oneCochainsLEquiv X.X₁).symm x = inhomogeneousCochains.d X.X₂ 0
+  have h0z : ((inhomogeneousCochains X.X₃).d 0 1) ((zeroCochainsLEquiv X.X₃).symm z) = 0 := by
+    have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq X.X₃⟩).w) z)
+    simp_all [← dZero_ker_eq_invariants]
+  have hxy : X.f.hom ∘ (oneCochainsLEquiv X.X₁).symm x = (inhomogeneousCochains X.X₂).d 0 1
       ((zeroCochainsLEquiv X.X₂).symm y) := by
-    have := (congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq X.X₂)) y)).symm
+    have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq X.X₂⟩).w) y)
     ext i
-    simp_all only [CochainComplex.of_x, ModuleCat.coe_of,
-      inhomogeneousCochains.d_def, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-    simp [← hx, oneCochainsLEquiv]
-  have := congr((isoH1 X.X₁).hom $(δ_apply hX 0 ((zeroCochainsLEquiv X.X₃).symm z) h0z
+    simp_all [← hx, oneCochainsLEquiv]
+  have δ_0_1 := congr((isoH1 X.X₁).hom
+    $(δ_apply hX 0 1 2 rfl (by simp) ((zeroCochainsLEquiv X.X₃).symm z) h0z
     ((zeroCochainsLEquiv X.X₂).symm y) (hy ▸ rfl) ((oneCochainsLEquiv X.X₁).symm x) hxy))
-  convert this
-  · exact cocyclesIso_0_eq X.X₃ ▸ rfl
-  · have := LinearMap.ext_iff.1 ((Iso.inv_comp_eq _).2 (groupCohomologyπ_comp_isoH1_hom X.X₁))
-    simp_all only [cocyclesIso_1_eq X.X₁, Iso.trans_inv, ModuleCat.hom_def,
-      ModuleCat.coe_of, LinearEquiv.toModuleIso_inv, ModuleCat.comp_def, LinearMap.coe_comp,
+  convert δ_0_1
+  · simp only [δ₀, isoH0, Iso.trans_inv, ModuleCat.hom_comp, LinearMap.coe_comp,
       Function.comp_apply]
+    rw [moduleCatCyclesIso_inv_apply, isoZeroCocycles_inv_apply_eq_cyclesMk]
+    rfl
+  · simp only [Iso.trans_inv, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
+      congr($(((Iso.inv_comp_eq _).2 (groupCohomologyπ_comp_isoH1_hom X.X₁)).symm) ⟨x, _⟩)]
+    rw [isoOneCocycles_inv_apply_eq_cyclesMk, moduleCatCyclesIso_inv_apply]
     rfl
 
 open Limits
@@ -607,36 +596,38 @@ noncomputable def δ₁ :
 
 theorem δ₁_apply_aux (y : G → X.X₂) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     dTwo X.X₁ x = 0 := by
-  have h1 := δ_apply_aux hX 1 ((oneCochainsLEquiv X.X₂).symm y) ((twoCochainsLEquiv X.X₁).symm x)
+  have hδ := δ_apply_aux hX (l := 3) ((oneCochainsLEquiv X.X₂).symm y)
+    ((twoCochainsLEquiv X.X₁).symm x)
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH2Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH2Iso X.X₁).hom.comm₂₃) x)
-  simp only [ModuleCat.coe_comp, Function.comp_apply] at h1 hy
-  exact h.trans <| (threeCochainsLEquiv X.X₁).map_eq_zero_iff.2 <| h1 (hy.trans <| hx ▸ rfl).symm
+  have h2 := congr($((CommSq.vert_inv
+    ⟨(cochainsMap_f_2_comp_twoCochainsLEquiv (MonoidHom.id G) X.f)⟩).w) x)
+  simp_all [LinearMap.compLeft, shortComplexH2, MonoidHom.coe_id, ← hx]
 
 theorem δ₁_apply (z : G → X.X₃) (hz : z ∈ oneCocycles X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
     (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     δ₁ hX (H1π X.X₃ ⟨z, hz⟩) = H2π X.X₁ ⟨x, δ₁_apply_aux hX y x hx⟩ := by
-  have h1z : (inhomogeneousCochains.d X.X₃ 1) ((oneCochainsLEquiv X.X₃).symm z) = 0 := by
-    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₃)) z)
-    simp_all [ModuleCat.coe_of, oneCocycles]
-  have hxy : X.f.hom ∘ (twoCochainsLEquiv X.X₁).symm x
-      = inhomogeneousCochains.d X.X₂ 1 ((oneCochainsLEquiv X.X₂).symm y) := by
-    have := (congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₂)) y)).symm
+  have h1z : ((inhomogeneousCochains X.X₃).d 1 2) ((oneCochainsLEquiv X.X₃).symm z) = 0 := by
+    have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₃⟩).w) z)
+    simp_all [oneCocycles]
+  have hxy : X.f.hom ∘ (twoCochainsLEquiv X.X₁).symm x =
+      (inhomogeneousCochains X.X₂).d 1 2 ((oneCochainsLEquiv X.X₂).symm y) := by
+    have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₂⟩).w) y)
     ext i
-    simp_all only [CochainComplex.of_x, ModuleCat.coe_of,
-      inhomogeneousCochains.d_def, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-    simp [← hx, twoCochainsLEquiv]
-  have := congr((isoH2 X.X₁).hom $(δ_apply hX 1 ((oneCochainsLEquiv X.X₃).symm z) h1z
+    simp_all [← hx, twoCochainsLEquiv]
+  have δ_1_2 := congr((isoH2 X.X₁).hom
+    $(δ_apply hX 1 2 3 rfl (by simp) ((oneCochainsLEquiv X.X₃).symm z) h1z
     ((oneCochainsLEquiv X.X₂).symm y) (hy ▸ rfl) ((twoCochainsLEquiv X.X₁).symm x) hxy))
-  convert this
-  · have := congr($((CommSq.vert_inv ⟨groupCohomologyπ_comp_isoH1_hom X.X₃⟩).w) ⟨z, hz⟩)
-    rw [cocyclesIso_1_eq]
-    exact this ▸ rfl
-  · have := LinearMap.ext_iff.1 ((Iso.inv_comp_eq _).2 (groupCohomologyπ_comp_isoH2_hom X.X₁))
-    simp_all only [cocyclesIso_2_eq X.X₁, Iso.trans_inv, ModuleCat.hom_def,
-      ModuleCat.coe_of, LinearEquiv.toModuleIso_inv, ModuleCat.comp_def, LinearMap.coe_comp,
-      Function.comp_apply]
-    rfl
+  convert δ_1_2
+  · show (H1π X.X₃ ≫ δ₁ hX) ⟨z, hz⟩ = _
+    rw [moduleCatCyclesIso_inv_apply]
+    simp [δ₁, ← Category.assoc, (CommSq.vert_inv ⟨groupCohomologyπ_comp_isoH1_hom X.X₃⟩).w,
+        isoOneCocycles_inv_apply_eq_cyclesMk X.X₃ ⟨z, hz⟩, HomologicalComplex.cyclesMk,
+        groupCohomology]
+  · rw [moduleCatCyclesIso_inv_apply]
+    simp [(Iso.eq_inv_comp _).2 (groupCohomologyπ_comp_isoH2_hom X.X₁).symm,
+      -groupCohomologyπ_comp_isoH2_hom, isoTwoCocycles_inv_apply_eq_cyclesMk X.X₁ ⟨x, _⟩,
+      HomologicalComplex.cyclesMk]
 
 theorem epi_δ₁_of_isZero (h2 : IsZero (ModuleCat.of k <| H2 X.X₂)) :
     Epi (δ₁ hX) := by
@@ -648,7 +639,7 @@ variable (X) in
 /-- The short complex `X₁ᴳ ⟶ X₂ᴳ ⟶ X₃ᴳ` associated to a short complex of representations. -/
 noncomputable abbrev H0ShortComplex₂ :=
   ShortComplex.mk (H0Map (MonoidHom.id G) X.f) (H0Map (MonoidHom.id G) X.g) <| by
-    ext x; apply Subtype.ext; exact congr(Action.Hom.hom $(X.zero) x.1)
+    ext x; exact congr(Action.Hom.hom $(X.zero) x.1)
 
 variable (X) in
 /-- When `i = 0`, the general short complex `Hⁱ(G, X₁) ⟶ Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃)` associated to a
@@ -686,7 +677,7 @@ theorem H0ShortComplex₃_exact :
 representations. -/
 noncomputable abbrev H1ShortComplex₁ :=
   ShortComplex.mk (δ₀ hX) (H1Map (MonoidHom.id G) X.f) <| by
-    simpa [δ₀, ModuleCat.asHom, ← map_comp_isoH1_hom]
+    simpa [δ₀, ← map_comp_isoH1_hom]
       using (cochainsMap_shortExact hX).δ_comp_assoc 0 1 rfl _
 
 /-- When `i = 0`, the general short complex `Hⁱ(G, X₃) ⟶ Hⁱ⁺¹(G, X₁) ⟶ Hⁱ⁺¹(G, X₂)` associated to
@@ -745,7 +736,7 @@ theorem H1ShortComplex₃_exact :
 sequence of representations. -/
 noncomputable abbrev H2ShortComplex₁ :=
   ShortComplex.mk (δ₁ hX) (H2Map (MonoidHom.id G) X.f) <| by
-    simpa [δ₁, ModuleCat.asHom, ← map_comp_isoH2_hom]
+    simpa [δ₁, ← map_comp_isoH2_hom]
       using (cochainsMap_shortExact hX).δ_comp_assoc 1 2 rfl _
 
 /-- When `i = 1`, the general short complex `Hⁱ(G, X₃) ⟶ Hⁱ⁺¹(G, X₁) ⟶ Hⁱ⁺¹(G, X₂)` associated to

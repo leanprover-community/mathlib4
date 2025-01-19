@@ -123,21 +123,20 @@ theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
   rw [d, lsum_apply, sum_single_index]
   <;> simp
 
-attribute [moduleCat_simps] ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj
-    ModuleCat.MonoidalCategory.tensorObj
-    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_whiskerLeft
-    ModuleCat.MonoidalCategory.whiskerLeft
+open ModuleCat.MonoidalCategory
 
 theorem d_eq [DecidableEq G] :
-    d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
+    ModuleCat.ofHom (d A n) = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
-  ext g a : 2
+  ext g a : 3
   have := finsuppToCoinvariantsTensorFree_single (A := A) g
   have := barComplex.d_single (k := k) _ g
   have := coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G)
-  simp_all [moduleCat_simps, coinvariantsTensorBarResolution, coinvariantsMap,
-    TensorProduct.tmul_add, TensorProduct.tmul_sum, Submodule.Quotient.mk_sum]
+  simp_all [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
+    instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
+    coinvariantsTensorBarResolution, coinvariantsMap, TensorProduct.tmul_add,
+    TensorProduct.tmul_sum, Submodule.Quotient.mk_sum]
 
 end inhomogeneousChains
 
@@ -147,7 +146,7 @@ which calculates the group homology of `A`. -/
 noncomputable abbrev inhomogeneousChains [DecidableEq G] :
     ChainComplex (ModuleCat k) ℕ :=
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
-    (fun n => inhomogeneousChains.d A n) fun n => by
+    (fun n => ModuleCat.ofHom (inhomogeneousChains.d A n)) fun n => by
     simp only [inhomogeneousChains.d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, (coinvariantsTensorBarResolution A).d_comp_d] }
@@ -157,12 +156,12 @@ open inhomogeneousChains
 
 theorem inhomogeneousChains.d_comp_d [DecidableEq G] :
     d A n ∘ₗ d A (n + 1) = 0 := by
-  simpa [ChainComplex.of] using (inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n
+  simpa [ChainComplex.of] using
+    congr(ModuleCat.Hom.hom $((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n))
 
-@[simp]
 theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
-    (inhomogeneousChains A).d (n + 1) n = d A n :=
-  ChainComplex.of_d _ _ _ _
+    (inhomogeneousChains A).d (n + 1) n = ModuleCat.ofHom (d A n) := by
+  simp [inhomogeneousChains]
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
@@ -171,10 +170,8 @@ def inhomogeneousChainsIso [DecidableEq G] :
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
     apply (coinvariantsTensorFreeLEquiv A (Fin i → G)).toModuleIso.symm
-  rintro i j (h : j + 1 = i)
-  subst h
-  simp only [Iso.symm_hom, inhomogeneousChains.d_def, d_eq, Category.assoc]
-  slice_rhs 2 4 => { rw [Iso.hom_inv_id, Category.comp_id] }
+  rintro i j rfl
+  simp [d_eq]
 
 variable [DecidableEq G]
 
@@ -206,15 +203,15 @@ abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((Fin n → G) →₀ A
 
 @[reassoc (attr := simp, elementwise)]
 theorem cyclesSuccIso_inv_comp_iCycles (n : ℕ) :
-    (cyclesSuccIso A n).inv ≫ iCycles A (n + 1) = Submodule.subtype _ := by
+    (cyclesSuccIso A n).inv ≫ iCycles A (n + 1) = ModuleCat.ofHom (Submodule.subtype _) := by
   ext
   simp only [cyclesSuccIso, Iso.trans_inv, Category.assoc, cyclesIsoSc'_inv_iCycles,
     ShortComplex.moduleCatCyclesIso_inv_iCycles]
-  simp [moduleCat_simps]
+  simp
 
 @[reassoc (attr := simp, elementwise)]
 theorem cyclesSuccIso_hom_comp_subtype :
-    (cyclesSuccIso A n).hom ≫ Submodule.subtype _ = iCycles _ _ := by
+    (cyclesSuccIso A n).hom ≫ ModuleCat.ofHom (Submodule.subtype _) = iCycles _ _ := by
   simp only [← Iso.eq_inv_comp, cyclesSuccIso_inv_comp_iCycles]
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
@@ -256,3 +253,5 @@ def groupHomologyIsoTor [Group G] (A : Rep k G) (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIso A)).hom n ≪≫
     ((barResolution k G).isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n).symm
+
+end

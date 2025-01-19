@@ -80,10 +80,10 @@ namespace ModuleCat
 
 variable {R : Type u} [Ring R] {M : Type*} [AddCommGroup M] [Module R M] (S : Submodule R M)
 
-instance : Mono (ModuleCat.asHom S.subtype) :=
+instance : Mono (ModuleCat.ofHom S.subtype) :=
   (ModuleCat.mono_iff_injective _).2 fun _ _ h => Subtype.ext_iff.2 h
 
-instance : Epi (ModuleCat.asHom S.mkQ) :=
+instance : Epi (ModuleCat.ofHom S.mkQ) :=
   (ModuleCat.epi_iff_surjective _).2 S.mkQ_surjective
 
 end ModuleCat
@@ -93,7 +93,7 @@ namespace inhomogeneousCochains
 
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
-@[simps]
+@[simps (config := .lemmasOnly)]
 def d [Monoid G] (A : Rep k G) (n : ℕ) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
   toFun f g :=
     A.ρ (g 0) (f fun i => g i.succ) +
@@ -109,14 +109,14 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) : ((Fin n → G) → A) →ₗ[k] (Fin 
 variable [Group G] (A : Rep k G) (n : ℕ)
 
 theorem d_eq :
-    d A n =
+    ModuleCat.ofHom (d A n) =
       (freeLiftEquiv (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
   show _ = Finsupp.linearCombination _ _ _
   have h := barComplex.d_single (k := k) _ g
-  simp_all [coe_V]
+  simp_all [coe_V, d_apply]
 
 end inhomogeneousCochains
 
@@ -131,20 +131,20 @@ $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => inhomogeneousCochains.d A n) fun n => by
+    (fun n => ModuleCat.ofHom <| inhomogeneousCochains.d A n) fun n => by
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
     simp
 
+theorem inhomogeneousCochains.d_def (n : ℕ) :
+    (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (d A n) := by
+  simp
+
 theorem inhomogeneousCochains.d_comp_d :
     d A (n + 1) ∘ₗ d A n = 0 := by
-  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
-
-@[simp]
-theorem inhomogeneousCochains.d_def :
-    (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d A n :=
-  CochainComplex.of_d _ _ _ _
+  simpa [CochainComplex.of] using
+    congr(ModuleCat.Hom.hom $((inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)))
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
@@ -154,8 +154,7 @@ def inhomogeneousCochainsIso :
     (fun i => (Rep.freeLiftEquiv (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
-  simp only [Iso.symm_hom, inhomogeneousCochains.d_def, d_eq, Category.assoc]
-  slice_rhs 2 4 => { rw [Iso.hom_inv_id, Category.comp_id] }
+  simp [d_eq]
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
@@ -163,6 +162,7 @@ abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
 open HomologicalComplex
 
+-- generalize to any CochainComplex.of ??
 /-- `Zⁿ(G, A)` is isomorphic to the kernel of the explicit map
 `inhomogeneousCochains.d A n : Fun(Gⁿ, A) →ₗ[k] Fun(Gⁿ⁺¹, A)`. -/
 def cocyclesIso (n : ℕ) :
@@ -182,17 +182,17 @@ theorem cocyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousCochains A).X n)
 abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
   (inhomogeneousCochains A).iCycles n
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp)]
 theorem cocyclesIso_inv_comp_iCocycles (n : ℕ) :
-    (cocyclesIso A n).inv ≫ iCocycles A n = Submodule.subtype _ := by
+    (cocyclesIso A n).inv ≫ iCocycles A n = ModuleCat.ofHom (Submodule.subtype _) := by
   ext
   simp only [cocyclesIso, Iso.trans_inv, Category.assoc, cyclesIsoSc'_inv_iCycles,
     ShortComplex.moduleCatCyclesIso_inv_iCycles]
-  simp [moduleCat_simps]
+  simp
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp)]
 theorem cocyclesIso_hom_comp_subtype :
-    (cocyclesIso A n).hom ≫ Submodule.subtype _ = iCocycles _ _ := by
+    (cocyclesIso A n).hom ≫ ModuleCat.ofHom (Submodule.subtype _) = iCocycles _ _ := by
   simp only [← Iso.eq_inv_comp, cocyclesIso_inv_comp_iCocycles]
 
 /-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of

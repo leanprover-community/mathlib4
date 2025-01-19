@@ -382,8 +382,9 @@ noncomputable def ofQuotientGroup [IsTrivial (ρ.comp S.subtype)] :
   (QuotientGroup.con S).lift ρ <| by
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
-    have := congr($(IsTrivial.out (ρ := ρ.comp S.subtype) (⟨MulOpposite.unop z, hz⟩)) w)
-    simp_all [-isTrivial_def]
+    have : ρ y (ρ z.unop _) = _ :=
+      congr((ρ y) ($(IsTrivial.out (ρ := ρ.comp S.subtype) (⟨z.unop, hz⟩)) w))
+    simpa [← LinearMap.mul_apply, ← map_mul] using this
 
 @[simp]
 lemma ofQuotientGroup_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :

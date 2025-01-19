@@ -372,10 +372,10 @@ section Invariants
 @[simps]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat.{u} k where
   obj A := ModuleCat.of k A.ρ.invariants
-  map {A B} f := (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
+  map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
       have := (hom_comm_apply f g c).symm
-      simp_all [moduleCat_simps, hc g]
+      simp_all [hc g]
 
 instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 
@@ -386,9 +386,10 @@ the functor sending a representation to its submodule of invariants. -/
 noncomputable abbrev invariantsAdjunction : trivialFunctor ⊣ invariantsFunctor k G :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun _ _ => {
-      toFun := fun f => LinearMap.codRestrict _ f.hom fun x g => (hom_comm_apply f _ _).symm
+      toFun := fun f => ModuleCat.ofHom <|
+        LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
       invFun := fun f => {
-        hom := Submodule.subtype _ ∘ₗ f
+        hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
         comm := fun g => by ext x; exact ((f x).2 g).symm }
       left_inv := by intro; rfl
       right_inv := by intro; rfl }
@@ -396,7 +397,7 @@ noncomputable abbrev invariantsAdjunction : trivialFunctor ⊣ invariantsFunctor
     homEquiv_naturality_right := by intros; rfl }
 
 noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
-  (invariantsAdjunction k G).rightAdjointPreservesLimits
+  (invariantsAdjunction k G).rightAdjoint_preservesLimits
 
 variable {k G}
 
@@ -416,18 +417,18 @@ open Representation
 representation, factors through `A_G`. -/
 abbrev coinvariantsLift (f : A ⟶ Rep.trivial k G V) :
     coinvariants A.ρ →ₗ[k] V :=
-  Representation.coinvariantsLift _ f.hom f.comm
+  Representation.coinvariantsLift _ f.hom.hom fun _ => congr(ModuleCat.Hom.hom $(f.comm _))
 
 /-- A `G`-representation morphism `A ⟶ B` induces a linear map `A_G →ₗ[k] B_G`. -/
 abbrev coinvariantsMap (f : A ⟶ B) :
     coinvariants A.ρ →ₗ[k] coinvariants B.ρ :=
-  Representation.coinvariantsLift _ (Submodule.mkQ _ ∘ₗ f.hom) fun g => LinearMap.ext fun x =>
+  Representation.coinvariantsLift _ (Submodule.mkQ _ ∘ₗ f.hom.hom) fun g => LinearMap.ext fun x =>
     (Submodule.Quotient.eq _).2 <| mem_augmentationSubmodule_of_eq g (f.hom x) _ <| by
       simpa using (hom_comm_apply f g x).symm
 
 @[simp]
 theorem coinvariantsMap_comp_mkQ (f : A ⟶ B) :
-    coinvariantsMap f ∘ₗ coinvariantsMkQ A.ρ = coinvariantsMkQ B.ρ ∘ₗ f.hom := rfl
+    coinvariantsMap f ∘ₗ coinvariantsMkQ A.ρ = coinvariantsMkQ B.ρ ∘ₗ f.hom.hom := rfl
 
 @[simp]
 theorem coinvariantsMap_mk (f : A ⟶ B) (x : A) :
@@ -449,8 +450,9 @@ variable (A B)
 `A_G →ₗ[k] Aᴳ`. -/
 noncomputable def liftRestrictNorm [Fintype G] :
     A.ρ.coinvariants →ₗ[k] A.ρ.invariants :=
-  A.ρ.coinvariantsLift ((norm A).hom.codRestrict _ fun a g => congr($(norm_hom_comp_ρ A g) a))
-    fun g => LinearMap.ext fun x => Subtype.ext <| congr($(ρ_comp_norm_hom A g) x)
+  A.ρ.coinvariantsLift ((norm A).hom.hom.codRestrict _ fun a g =>
+      congr($(ρ_comp_norm_hom_hom A g) a))
+    fun g => LinearMap.ext fun x => Subtype.ext <| congr($(norm_hom_hom_comp_ρ A g) x)
 
 variable (k G)
 
@@ -458,10 +460,10 @@ variable (k G)
 @[simps]
 def coinvariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k (A.ρ.coinvariants)
-  map f := coinvariantsMap f
+  map f := ModuleCat.ofHom (coinvariantsMap f)
 
 instance : (coinvariantsFunctor k G).Additive where
-  map_add := LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
+  map_add := ModuleCat.hom_ext <| LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
 
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
@@ -469,22 +471,22 @@ noncomputable def coinvariantsAdjunction : coinvariantsFunctor k G ⊣ trivialFu
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y => {
       toFun := fun f => {
-        hom := f ∘ₗ X.ρ.augmentationSubmodule.mkQ
+        hom := ModuleCat.ofHom (f.hom ∘ₗ X.ρ.augmentationSubmodule.mkQ)
         comm := fun g => by
           ext x
-          exact congr(f $((Submodule.Quotient.eq <| X.ρ.augmentationSubmodule).2
+          exact congr(f.hom $((Submodule.Quotient.eq <| X.ρ.augmentationSubmodule).2
             (X.ρ.mem_augmentationSubmodule_of_eq g x _ rfl))) }
-      invFun := fun f => coinvariantsLift f
-      left_inv := fun _ => Submodule.linearMap_qext _ rfl
-      right_inv := fun _ => Action.Hom.ext rfl }
-    homEquiv_naturality_left_symm := by intros; apply Submodule.linearMap_qext; rfl
+      invFun := fun f => ModuleCat.ofHom (coinvariantsLift f)
+      left_inv := fun _ => ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
+      right_inv := fun _ => Action.Hom.ext <| rfl }
+    homEquiv_naturality_left_symm := fun _ _ => ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
     homEquiv_naturality_right := by intros; rfl }
 
 instance : (coinvariantsFunctor k G).PreservesZeroMorphisms where
-  map_zero _ _ := Submodule.linearMap_qext _ rfl
+  map_zero _ _ := ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
 
 instance : Limits.PreservesColimits (coinvariantsFunctor k G) :=
-  (coinvariantsAdjunction k G).leftAdjointPreservesColimits
+  (coinvariantsAdjunction k G).leftAdjoint_preservesColimits
 
 variable {k G} (S : Subgroup G) [S.Normal]
 
@@ -506,9 +508,9 @@ def coinvariantsShortComplex : ShortComplex (Rep k G) where
   X₁ := toAugmentationSubmoduleOfNormal A S
   X₂ := A
   X₃ := toCoinvariantsOfNormal A S
-  f := ⟨Submodule.subtype _, fun g => by rfl⟩
-  g := ⟨Submodule.mkQ _, fun g => by rfl⟩
-  zero := Action.Hom.ext <| LinearMap.ext fun x => (Submodule.Quotient.mk_eq_zero _).2 x.2
+  f := ⟨ModuleCat.ofHom (Submodule.subtype _), fun _ => rfl⟩
+  g := ⟨ModuleCat.ofHom (Submodule.mkQ _), fun _ => rfl⟩
+  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
   exact := (forget₂ _ (ModuleCat k)).reflects_exact_of_faithful _ <|
@@ -541,6 +543,7 @@ def coinvariantsTensorFreeToFinsupp :
 
 variable {A α}
 
+@[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeToFinsupp A α (Submodule.Quotient.mk (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
@@ -563,7 +566,7 @@ lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     finsuppToCoinvariantsTensorFree A α (single i x) =
       Submodule.Quotient.mk (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
   have := finsuppTensorRight_inv_hom (A := A) (B := leftRegular k G)
-  simp_all [finsuppToCoinvariantsTensorFree, coinvariantsMap, moduleCat_simps,
+  simp_all [finsuppToCoinvariantsTensorFree, coinvariantsMap,
     ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj]
 
@@ -593,8 +596,9 @@ sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the `k[G]ᵐᵒᵖ`-module 
 def coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
   obj A := MonoidalCategory.tensorLeft A ⋙ coinvariantsFunctor k G
   map f := {
-    app := fun A => coinvariantsMap (f ⊗ 𝟙 A)
-    naturality := fun _ _ _ => Submodule.linearMap_qext _ <| TensorProduct.ext' fun _ _ => by rfl }
+    app := fun A => ModuleCat.ofHom (coinvariantsMap (f ⊗ 𝟙 A))
+    naturality := fun _ _ _ => ModuleCat.hom_ext <| Submodule.linearMap_qext _ <|
+      TensorProduct.ext' fun _ _ => by rfl }
   map_id _ := NatTrans.ext <| funext fun _ => by
     simpa only [tensorHom_id, id_whiskerRight] using (coinvariantsFunctor k G).map_id _
   map_comp _ _ := NatTrans.ext <| funext fun _ => by
@@ -611,9 +615,10 @@ to the map `A_G →ₗ[k] Aᴳ` induced by the norm map on `A`. -/
 @[simps]
 noncomputable def liftRestrictNormNatTrans [Fintype G] :
     coinvariantsFunctor k G ⟶ invariantsFunctor k G where
-  app A := liftRestrictNorm A
-  naturality _ _ f := Submodule.linearMap_qext _ <| LinearMap.ext fun _ => Subtype.ext <| by
-    have := hom_comm_apply f
-    simp_all [norm, moduleCat_simps, liftRestrictNorm]
+  app A := ModuleCat.ofHom <| liftRestrictNorm A
+  naturality _ _ f := ModuleCat.hom_ext <| Submodule.linearMap_qext _ <|
+    LinearMap.ext fun _ => Subtype.ext <| by
+      have := hom_comm_apply f
+      simp_all [norm, liftRestrictNorm]
 
 end Rep
