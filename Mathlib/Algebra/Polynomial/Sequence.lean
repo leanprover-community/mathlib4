@@ -110,8 +110,7 @@ theorem new_degree_smul_of_smul_regular {k : R} (hk: k ≠ 0)
     simp [hm m le_rfl]
   · have coeff_nonzero: (k • p).coeff (p.natDegree) ≠ 0 := by
       rw [coeff_smul, coeff_natDegree, smul_eq_mul, ne_eq]
-      have foo := IsRightRegular.mul_right_eq_zero_iff h (a := k)
-      exact foo.symm.ne.mp hk
+      exact h.mul_right_eq_zero_iff.ne.mpr hk
     exact degree_le_degree coeff_nonzero
 
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
@@ -123,13 +122,10 @@ lemma span [Nontrivial R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ 
     obtain ⟨u, hu⟩ := isUnit_iff_exists.mp is_unit
 
     have u_unit: IsUnit u := isUnit_iff_exists.mpr ⟨(S n).leadingCoeff, ⟨hu.2, hu.1⟩⟩
-    have u_nonzero := u_unit.ne_zero
 
     let tail := P - (P.leadingCoeff • u • (S n))
 
     have tail_deg: tail.degree < n := by
-      have s_deg_n := S.degree_eq n
-
       have mul_unit_not_zero: P.leadingCoeff * u ≠ 0 := by
         have foo := u_unit.isRegular.right |>.mul_right_eq_zero_iff (a := P.leadingCoeff)
         have p_coeff_nonzero: P.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr p_ne_zero
@@ -141,12 +137,12 @@ lemma span [Nontrivial R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ 
         · apply u_unit.isSMulRegular (M := R)
 
       have u_degree_same: (u • S n).degree = (S n).degree := by
-        exact new_degree_smul_of_smul_regular u_nonzero (S n) is_unit.isRegular.right
+        exact new_degree_smul_of_smul_regular u_unit.ne_zero (S n) is_unit.isRegular.right
 
       have other := new_degree_smul_of_smul_regular (leadingCoeff_ne_zero.mpr p_ne_zero) (u • S n)
       rw [u_cancel] at other
       specialize other isRegular_one.right
-      rw [u_degree_same, s_deg_n, ← hp, eq_comm, ← degree_eq_natDegree p_ne_zero, hp] at other
+      rw [u_degree_same, S.degree_eq n, ← hp, eq_comm, ← degree_eq_natDegree p_ne_zero, hp] at other
 
       have smul_nonzero: (P.leadingCoeff • u • S n) ≠ 0 := by
         by_cases n_eq_zero: n = 0
@@ -155,27 +151,23 @@ lemma span [Nontrivial R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ 
           rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at hu
           rw [← C_mul, hu.2, smul_C]
           simp [p_ne_zero]
-        · have bar := ne_zero_of_degree_gt (p := (P.leadingCoeff • u • S n)) (n := 0)
+        · have bar := (P.leadingCoeff • u • S n).ne_zero_of_degree_gt (n := 0)
           rw [← other] at bar
           have natdegree_gt_zero: 0 < P.natDegree := by omega
           have deg_gt_zero: 0 < P.degree := natDegree_pos_iff_degree_pos.mp natdegree_gt_zero
           exact bar deg_gt_zero
 
       have s_to_p_coeff: P.leadingCoeff = (P.leadingCoeff • (u • S n)).leadingCoeff := by
-        nth_rw 2 [← coeff_natDegree]
         rw [degree_eq_natDegree, degree_eq_natDegree smul_nonzero] at other
-        norm_cast at other
-        rw [← other, coeff_smul]
         rw [← coeff_natDegree] at u_cancel
-        have s_deg := S.degree_eq' n
-        rw [degree_eq_natDegree (by exact ne_zero S n)] at s_deg
+        norm_cast at other
+        nth_rw 2 [← coeff_natDegree]
+        rw [← other, coeff_smul, hp]
+        have s_deg := S.degree_eq n
+        rw [degree_eq_natDegree (ne_zero S n)] at s_deg
         norm_cast at s_deg
-        rw [hp]
         nth_rw 2 [ ← s_deg]
-
-        rw [coeff_smul, coeff_natDegree]
-        simp [hu.2]
-        exact p_ne_zero
+        rwa [coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, hu.2, mul_one]
 
       have foo := P.degree_sub_lt (q := P.leadingCoeff • u • (S n)) other p_ne_zero s_to_p_coeff
 
@@ -191,23 +183,18 @@ lemma span [Nontrivial R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ 
 
     have coeff_in_span: P.leadingCoeff • u • S n ∈ Submodule.span R (Set.range S) := by
       have n_in_range: S n ∈ Set.range S := by simp
-      have in_span := (Submodule.subset_span (R := R) (s := Set.range S)) n_in_range
+      have in_span := Submodule.subset_span (R := R) (s := Set.range S) n_in_range
       have smul_span := Submodule.smul_mem (Submodule.span R (Set.range S)) (P.leadingCoeff • u) in_span
       rwa [smul_assoc] at smul_span
 
     by_cases tail_eq_zero: tail = 0
     · simp [tail_eq_zero] at p_eq_sum
-      have s_n_in_range: S n ∈ Set.range S := by
-        simp
-      rw [← p_eq_sum] at coeff_in_span
-      exact coeff_in_span
-    · have natdeg_lt_n: tail.natDegree < n := by
-        exact (natDegree_lt_iff_degree_lt tail_eq_zero).mpr tail_deg
-      have tail_in_span := ih tail.natDegree natdeg_lt_n (P := tail) (rfl)
+      have s_n_in_range: S n ∈ Set.range S := by simp
+      rwa [← p_eq_sum] at coeff_in_span
+    · have natdeg_lt_n: tail.natDegree < n := (natDegree_lt_iff_degree_lt tail_eq_zero).mpr tail_deg
+      have tail_in_span := ih tail.natDegree natdeg_lt_n rfl
 
-      exact
-        (Submodule.sub_mem_iff_left (Submodule.span R (Set.range S)) coeff_in_span).mp
-          (ih tail.natDegree natdeg_lt_n rfl)
+      exact (Submodule.sub_mem_iff_left (Submodule.span R (Set.range S)) coeff_in_span).mp tail_in_span
   · rw [ne_eq, not_not] at p_ne_zero
     simp [p_ne_zero]
 
