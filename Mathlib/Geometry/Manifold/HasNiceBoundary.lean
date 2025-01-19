@@ -109,16 +109,15 @@ instance (d : BoundaryManifoldData M I) : IsManifold d.I₀ ⊤ d.M₀ :=
 
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
+-- We can just take the empty manifold, with a vacuously defined map.
 def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryManifoldData M I where
   M₀ := ULift Empty
   E₀ := E
   H₀ := E
   charts := ChartedSpace.empty E (ULift Empty)
   I₀ := modelWithCornersSelf ℝ E
-  -- f is vacuous
   f x := (IsEmpty.false x).elim
-  -- TODO: should be in mathlib; anything on an empty type is an embedding
-  isEmbedding := sorry
+  isEmbedding := Topology.IsEmbedding.of_subsingleton _
   isSmooth x := (IsEmpty.false x).elim
   range_eq_boundary := by
     have : I.boundary M = ∅ := by
@@ -144,9 +143,9 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
   isSmooth := ContMDiff.prod_map contMDiff_id bd.isSmooth
   range_eq_boundary := by
-    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left]
+    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left, range_id]
     congr
-    exacts [range_id, bd.range_eq_boundary]
+    exact bd.range_eq_boundary
 
 variable (N J) in
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
@@ -160,9 +159,9 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
   isSmooth := ContMDiff.prod_map bd.isSmooth contMDiff_id
   range_eq_boundary := by
-    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_right]
+    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_right, range_id]
     congr
-    exacts [bd.range_eq_boundary, range_id]
+    exact bd.range_eq_boundary
 
 -- XXX: are these two lemmas useful?
 lemma BoundaryManifoldData.prod_of_boundaryless_left_model
