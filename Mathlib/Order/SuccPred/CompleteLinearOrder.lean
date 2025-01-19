@@ -124,9 +124,6 @@ lemma exists_eq_ciSup_of_not_isSuccPrelimit'
 @[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2024-09-05")]
 alias exists_eq_ciSup_of_not_isSuccLimit' := exists_eq_ciSup_of_not_isSuccPrelimit'
 
-@[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias IsLUB.mem_of_not_isSuccLimit := IsLUB.mem_of_not_isSuccPrelimit
-
 @[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2025-01-05")]
 lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) :
     ∃ i, f i = x :=
@@ -202,13 +199,10 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
 @[deprecated exists_eq_iInf_of_not_isPredPrelimit (since := "2024-09-05")]
 alias exists_eq_iInf_of_not_isPredLimit := exists_eq_iInf_of_not_isPredPrelimit
 
-@[deprecated IsGLB.mem_of_not_isPredPrelimit (since := "2024-09-05")]
-alias IsGLB.mem_of_not_isPredLimit := IsGLB.mem_of_not_isPredPrelimit
-
 @[deprecated IsGLB.mem_of_not_isPredLimit (since := "2025-01-05")]
-lemma IsGLB.isPredPrelimit_of_not_mem (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
+lemma IsGLB.exists_of_not_isPredPrelimit (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
     ∃ i, f i = x :=
-  hf.mem_of_not_isPredLimit hx
+  hf.mem_of_not_isPredPrelimit hx
 
 @[deprecated IsGLB.exists_of_not_isPredPrelimit (since := "2024-09-05")]
 alias IsGLB.exists_of_not_isPredLimit := IsGLB.exists_of_not_isPredPrelimit
