@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.InteriorBoundary
+import Mathlib.Geometry.Manifold.Instances.Real
 
 /-!
 # Smooth manifolds with nice boundary
@@ -45,7 +46,7 @@ variable {M : Type u} [TopologicalSpace M] [cm : ChartedSpace H M]
   {M'' : Type u} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [IsManifold I ⊤ M'']
 
-/- Let `M` be a smooth real manifold, modelled on the pair `(E, H)`.
+/-- Let `M` be a `C^k` real manifold, modelled on the pair `(E, H)`.
 A smooth manifold has nice boundary if its boundary is a smooth manifold such that the inclusion
 `∂M ↪ M` is smooth.
 
@@ -62,32 +63,40 @@ Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` a
 -/
 structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M] where
+  /-- TODO! -/
   M₀ : Type u
+  /-- TODO! -/
   [topologicalSpaceM: TopologicalSpace M₀]
   /-- The Euclidean space the boundary is modelled on. -/
   {E₀ : Type u}
+  /-- TODO! -/
   [normedAddCommGroup : NormedAddCommGroup E₀]
+  /-- TODO! -/
   [normedSpace : NormedSpace ℝ E₀]
   /-- The topological space the boundary is a charted space on. -/
   {H₀ : Type u}
+  /-- TODO! -/
   [topologicalSpace : TopologicalSpace H₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
   [charts : ChartedSpace H₀ M₀]
   /-- A chosen model with corners for the boundary -/
   I₀ : ModelWithCorners ℝ E₀ H₀
-  /-- `M₀` is a smooth manifold with corners, w.r.t. our chosen model -/
-  [smoothManifold : IsManifold I₀ ⊤ M₀]
+  /-- `M₀` is a `C^k` manifold with corners, w.r.t. our chosen model -/
+  [smoothManifold : IsManifold I₀ k M₀]
+  /-- A `C^k` map from the model manifold into `M`, which is required to be an embedding -/
   f: M₀ → M
   isEmbedding: Topology.IsEmbedding f
-  isSmooth: ContMDiff I₀ I ⊤ f
+  isSmooth: ContMDiff I₀ I k f
+  /-- `f` maps `M₀` to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
 -- TODO: deal with universe polymorphism; I'm assuming the same universe for now!
 
-variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
-  {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
+variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
+  {I : ModelWithCorners ℝ E H} [IsManifold I k M]
+  {M' : Type u} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
   {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N] {k : ℕ∞}
+  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
 instance (d : BoundaryManifoldData M I k) : TopologicalSpace d.H₀ := d.topologicalSpace
 
@@ -99,7 +108,7 @@ instance (d : BoundaryManifoldData M I k) : TopologicalSpace d.M₀ := d.topolog
 
 instance (d : BoundaryManifoldData M I k) : ChartedSpace d.H₀ d.M₀ := d.charts
 
-instance (d : BoundaryManifoldData M I k) : IsManifold d.I₀ ⊤ d.M₀ :=
+instance (d : BoundaryManifoldData M I k) : IsManifold d.I₀ k d.M₀ :=
   d.smoothManifold
 
 -- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
@@ -171,17 +180,75 @@ lemma BoundaryManifoldData.prod_of_boundaryless_right_model
     (bd : BoundaryManifoldData M I k) [BoundarylessManifold J N] :
   (BoundaryManifoldData.prod_of_boundaryless_right N J bd).I₀ = bd.I₀.prod J := rfl
 
--- TODO: this statement doesn't compile yet
--- /-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
--- Proving this requires knowing homology groups of spheres (or similar). -/
--- -- TODO: also prove that the boundary has dimension one lower
--- def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) [NeZero n]
---     {M : Type u} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace n) M]
---     [IsManifold (𝓡∂ n) ⊤ M] : BoundaryManifoldData (I := 𝓡∂ n) M where
---   M₀ := sorry
---   --sorry
+/-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
+Proving this requires knowing homology groups of spheres (or similar). -/
+-- TODO: also prove that the boundary has dimension one lower
+def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
+    {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
+    [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k := sorry
+
+-- WIP definition; doesn't work yet
+-- TODO: need bd and bd' to have the same data E₀ and H₀!
+-- def BoundaryManifoldData.sum [Nonempty M] [Nonempty M'] [Nonempty H]
+--     (bd : BoundaryManifoldData M I k) (bd' : BoundaryManifoldData M' I k) :
+--     BoundaryManifoldData (M ⊕ M) I k where--:= sorry
+--   M₀ := bd.M₀ ⊕ bd.M₀
+--   E₀ := sorry
+--   H₀ := sorry
+--   I₀ := sorry -- should be either I₀
+--   f := Sum.map bd.f bd'.f
+--   isEmbedding := sorry -- should be in mathlib
+--   isSmooth := by
+--     --have : Nonempty H₀ := sorry
+--     sorry -- works, except for nonemptiness apply ContMDiff.sum_map bd.isSmooth bd'.isSmooth
+--   range_eq_boundary := sorry -- easy, using boundary_disjointUnion
+
+-- TODO: move to InteriorBoundary
+open Fact.Manifold
+/-- A product `M × [x,y]` has boundary `M × {x,y}`. -/
+lemma boundary_product {x y : ℝ} [Fact (x < y)] [BoundarylessManifold I M] :
+    (I.prod (𝓡∂ 1)).boundary (M × (Set.Icc x y)) = Set.prod univ {⊥, ⊤} := by
+  have : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by rw [boundary_iccChartedSpace]
+  rw [I.boundary_of_boundaryless_left, boundary_iccChartedSpace]
+
+noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
+    [BoundarylessManifold I M] :
+    BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k  where
+  -- FIXME: is this better, or M × Fin 2? In any case, want a diffeo between the latter...
+  M₀ := M ⊕ M
+  H₀ := H
+  E₀ := E
+  I₀ := I
+  -- TODO: most elegant way to write this?
+  f := Sum.elim (fun x ↦ (x, ⊥)) (fun x ↦ ⟨x, ⊤⟩)
+  -- This is the hard(est) part; need to think. Certainly a separate lemma.
+  isEmbedding := sorry
+  isSmooth := by
+    have : Nonempty (ModelProd H (EuclideanHalfSpace 1)) := by
+      rw [ModelProd]
+      infer_instance
+    exact ContMDiff.sum_elim (contMDiff_id.prod_mk  contMDiff_const)
+      (contMDiff_id.prod_mk contMDiff_const)
+  range_eq_boundary := by
+    rw [boundary_product, Set.Sum.elim_range]
+    ext x
+    constructor
+    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;>
+        rw [← hx', Set.prod, mem_setOf] <;> tauto
+    · -- Easy, if only slightly tedious. Can this be extracted as a lemma/what's the best statement?
+      intro hx
+      rw [Set.prod, mem_setOf] at hx
+      have h := hx.2
+      simp only [mem_insert_iff, mem_singleton_iff] at h
+      obtain (h | h) := h
+      · left
+        use x.1, by rw [← h]
+      · right
+        use x.1, by rw [← h]
 
 #exit
+
+-- Old version of this code; can probably be deleted.
 
 -- TODO: in this definition, E' and H' live in different universes, but only occur together:
 -- naively constraining them to the same yields errors later... revisit and fix this!
