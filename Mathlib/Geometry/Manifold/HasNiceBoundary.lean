@@ -134,7 +134,21 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
     rw [this]
     simp [Empty.instIsEmpty]
 
--- another trivial case: modelWithCornersSelf on euclidean half space!
+/-- The `n`-dimensional Euclidean half-space (modelled on itself) has nice boundary
+(which is an `n-1`-dimensional manifold). -/
+noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : ℕ∞) :
+    BoundaryManifoldData (EuclideanHalfSpace (n+1)) (𝓡∂ (n + 1)) k where
+  M₀ := EuclideanSpace ℝ (Fin n)
+  E₀ := EuclideanSpace ℝ (Fin n)
+  H₀ := EuclideanSpace ℝ (Fin n)
+  I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
+  f x := by
+    -- Is there a more elegant way to write this?
+    let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x ⟨i - 1, by omega⟩
+    exact ⟨x', by simp [x']⟩
+  isEmbedding := sorry
+  isSmooth := sorry
+  range_eq_boundary := sorry
 
 open Set Topology
 
