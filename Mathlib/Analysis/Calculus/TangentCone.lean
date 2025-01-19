@@ -77,8 +77,8 @@ section TangentCone
 
 -- This section is devoted to the properties of the tangent cone.
 
+open NormedField
 section TVS
-
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {x y : E} {s t : Set E}
 
@@ -90,7 +90,7 @@ theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖
   · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
 
 theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
-  let ⟨_r, hr₀, hr⟩ := NormedField.exists_norm_lt_one 𝕜
+  let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
     Eventually.of_forall fun _ ↦ mem_univ _
 
@@ -106,7 +106,6 @@ variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable {x y : E} {s t : Set E}
 
-open NormedField
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
 theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
@@ -483,7 +482,6 @@ theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
 end Normed
 
 section RealNormed
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
