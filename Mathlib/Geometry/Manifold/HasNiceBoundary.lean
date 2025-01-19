@@ -61,7 +61,7 @@ Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` a
 `f : M₀ → M` which is smooth, such that `range f = I.boundary M`.
 -/
 structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ⊤ M] where
+    (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M] where
   M₀ : Type u
   [topologicalSpaceM: TopologicalSpace M₀]
   /-- The Euclidean space the boundary is modelled on. -/
@@ -87,19 +87,19 @@ structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H
 variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
   {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
+  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N] {k : ℕ∞}
 
-instance (d : BoundaryManifoldData M I) : TopologicalSpace d.H₀ := d.topologicalSpace
+instance (d : BoundaryManifoldData M I k) : TopologicalSpace d.H₀ := d.topologicalSpace
 
-instance (d : BoundaryManifoldData M I) : NormedAddCommGroup d.E₀ := d.normedAddCommGroup
+instance (d : BoundaryManifoldData M I k) : NormedAddCommGroup d.E₀ := d.normedAddCommGroup
 
-instance (d : BoundaryManifoldData M I) : NormedSpace ℝ d.E₀ := d.normedSpace
+instance (d : BoundaryManifoldData M I k) : NormedSpace ℝ d.E₀ := d.normedSpace
 
-instance (d : BoundaryManifoldData M I) : TopologicalSpace d.M₀ := d.topologicalSpaceM
+instance (d : BoundaryManifoldData M I k) : TopologicalSpace d.M₀ := d.topologicalSpaceM
 
-instance (d : BoundaryManifoldData M I) : ChartedSpace d.H₀ d.M₀ := d.charts
+instance (d : BoundaryManifoldData M I k) : ChartedSpace d.H₀ d.M₀ := d.charts
 
-instance (d : BoundaryManifoldData M I) : IsManifold d.I₀ ⊤ d.M₀ :=
+instance (d : BoundaryManifoldData M I k) : IsManifold d.I₀ ⊤ d.M₀ :=
   d.smoothManifold
 
 -- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
@@ -108,7 +108,8 @@ instance (d : BoundaryManifoldData M I) : IsManifold d.I₀ ⊤ d.M₀ :=
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
 -- We can just take the empty manifold, with a vacuously defined map.
-def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryManifoldData M I where
+def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
+    BoundaryManifoldData M I k where
   M₀ := ULift Empty
   E₀ := E
   H₀ := E
@@ -131,7 +132,7 @@ open Set Topology
 variable (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
 def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
-    (bd : BoundaryManifoldData N J) : BoundaryManifoldData (M × N) (I.prod J) where
+    (bd : BoundaryManifoldData N J k) : BoundaryManifoldData (M × N) (I.prod J) k where
   M₀ := M × bd.M₀
   E₀ := E × bd.E₀
   H₀ := ModelProd H bd.H₀
@@ -147,8 +148,8 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
 
 variable (N J) in
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
-def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I)
-    [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) where
+def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I k)
+    [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) k where
   M₀ := bd.M₀ × N
   E₀ := bd.E₀ × E'
   H₀ := ModelProd bd.H₀ H'
@@ -163,11 +164,11 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
 
 -- XXX: are these two lemmas useful?
 lemma BoundaryManifoldData.prod_of_boundaryless_left_model
-    [BoundarylessManifold I M] (bd : BoundaryManifoldData N J) :
+    [BoundarylessManifold I M] (bd : BoundaryManifoldData N J k) :
   (BoundaryManifoldData.prod_of_boundaryless_left M I bd).I₀ = I.prod bd.I₀ := rfl
 
 lemma BoundaryManifoldData.prod_of_boundaryless_right_model
-    (bd : BoundaryManifoldData M I) [BoundarylessManifold J N] :
+    (bd : BoundaryManifoldData M I k) [BoundarylessManifold J N] :
   (BoundaryManifoldData.prod_of_boundaryless_right N J bd).I₀ = bd.I₀.prod J := rfl
 
 -- TODO: this statement doesn't compile yet
