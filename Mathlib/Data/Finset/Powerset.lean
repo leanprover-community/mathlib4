@@ -39,13 +39,9 @@ theorem coe_powerset (s : Finset α) :
   ext
   simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
-  mem_powerset.2 (empty_subset _)
+theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s := by simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
-  mem_powerset.2 Subset.rfl
+theorem mem_powerset_self (s : Finset α) : s ∈ powerset s := by simp
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=

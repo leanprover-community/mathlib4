@@ -393,6 +393,12 @@ instance numberField : NumberField ℚ where
 noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
 
+@[simp]
+theorem coe_ringOfIntegersEquiv (z : 𝓞 ℚ) :
+    (Rat.ringOfIntegersEquiv z : ℚ) = algebraMap (𝓞 ℚ) ℚ z := by
+  obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
+  simp
+
 end Rat
 
 namespace AdjoinRoot

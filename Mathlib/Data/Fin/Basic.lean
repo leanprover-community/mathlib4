@@ -37,10 +37,7 @@ This file expands on the development in the core library.
 * `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
   `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
-  `Fin.castAdd n i` and `Fin.natAdd m i`;
-* `Fin.succAboveCases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
-  handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
-  as eliminator and works for `Sort*`. -- Porting note: this is in another file
+  `Fin.castAdd n i` and `Fin.natAdd m i`.
 
 ### Embeddings and isomorphisms
 
@@ -67,9 +64,8 @@ This file expands on the development in the core library.
   by `i ↦ n-(i+1)`
 -/
 
-assert_not_exists Monoid
-assert_not_exists Fintype
-universe u v
+
+assert_not_exists Monoid Fintype
 
 open Fin Nat Function
 
@@ -79,8 +75,6 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-@[deprecated (since := "2024-02-15")] alias eq_of_veq := eq_of_val_eq
-@[deprecated (since := "2024-02-15")] alias veq_of_eq := val_eq_of_eq
 @[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
 @[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
 
@@ -150,10 +144,6 @@ section coe
 
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   Fin.ext_iff.symm
-
-@[deprecated Fin.ext_iff (since := "2024-02-20")]
-theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
-  Fin.ext_iff
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
