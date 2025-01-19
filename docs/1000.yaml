@@ -401,9 +401,9 @@ Q420714:
 
 Q422187:
   title: Myhill–Nerode theorem
-  # two in-progress formalisations, none merged as of end of 2024
-  # https://github.com/atarnoam/lean-automata/blob/main/src/regular_languages.lean
-  # https://github.com/leanprover-community/mathlib4/pull/11311
+  decl: Language.isRegular_iff_finite_range_leftQuotient
+  author: Chris Wong
+  date: 2024-03-24
 
 Q425432:
   title: Laurent expansion theorem
