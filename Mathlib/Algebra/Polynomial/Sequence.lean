@@ -39,7 +39,9 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
+  /-- The `i`'th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
   protected elems' : ℕ → R[X]
+  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead, -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 namespace Sequence
@@ -53,9 +55,11 @@ section Semiring
 
 variable [Semiring R] (S : Sequence R)
 
+/-- `S i` has degree `i`. -/
 @[simp]
 lemma degree_eq (i : ℕ) : (S i).degree = i := S.degree_eq' i
 
+/-- `S i` has `natDegree` `i`. -/
 @[simp]
 lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_some <| S.degree_eq i
 
