@@ -26,7 +26,7 @@ open CategoryTheory Opposite Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
-open SimplexCategory.Truncated SimplicialObject.Truncated
+open SimplexCategory.Truncated Hom SimplicialObject.Truncated
 
 variable (X : SSet.Truncated.{u} 1)
 
@@ -39,9 +39,9 @@ structure Path₁ (n : ℕ) where
   /-- A path includes the data of `n` 1-simplices in `X`.-/
   arrow (i : Fin n) : X _[1]₁
   /-- The source of a 1-simplex in a path is identified with the source vertex. -/
-  arrow_src (i : Fin n) : X.map (Hom.tr (δ 1)).op (arrow i) = vertex i.castSucc
+  arrow_src (i : Fin n) : X.map (tr (δ 1)).op (arrow i) = vertex i.castSucc
   /-- The target of a 1-simplex in a path is identified with the target vertex. -/
-  arrow_tgt (i : Fin n) : X.map (Hom.tr (δ 0)).op (arrow i) = vertex i.succ
+  arrow_tgt (i : Fin n) : X.map (tr (δ 0)).op (arrow i) = vertex i.succ
 
 namespace Path₁
 
@@ -74,10 +74,10 @@ def map (f : Path₁ X n) (σ : X ⟶ Y) : Path₁ Y n where
   arrow i := σ.app _ (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact congr (σ.naturality (Hom.tr (δ 1)).op) rfl |>.symm
+    exact congr (σ.naturality (tr (δ 1)).op) rfl |>.symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact congr (σ.naturality (Hom.tr (δ 0)).op) rfl |>.symm
+    exact congr (σ.naturality (tr (δ 0)).op) rfl |>.symm
 
 /-- `Path₁.map` respects subintervals of paths. -/
 lemma map_interval (f : Path₁ X n) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ n) :
@@ -128,42 +128,38 @@ end Path
 by traversing through its vertices in order. -/
 @[simps]
 def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X m where
-  vertex i := X.map (Hom.tr (const [0] [m] i)).op Δ
-  arrow i := X.map (Hom.tr (mkOfSucc i)).op Δ
+  vertex i := X.map (tr (const [0] [m] i)).op Δ
+  arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
-    dsimp only [Hom.tr, trunc, SimplicialObject.Truncated.trunc, incl,
+    dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp]
-    change X.map (Hom.tr (_ ≫ _)).op _ = _
-    rw [δ_one_mkOfSucc, Fin.coe_castSucc, Fin.coe_eq_castSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc,
+      Fin.coe_castSucc, Fin.coe_eq_castSucc]
   arrow_tgt i := by
-    dsimp only [Hom.tr, trunc, SimplicialObject.Truncated.trunc, incl,
+    dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp]
-    change X.map (Hom.tr (_ ≫ _)).op _ = _
-    rw [δ_zero_mkOfSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
 
 lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁)
     (a : ℕ) (ha : a ≤ n + 1 := by leq) (φ : [a]ₙ₊₁ ⟶ [m]ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a ha (X.map φ.op Δ)).vertex i =
       (X.spine m hm Δ).vertex (φ.toOrderHom i) := by
   dsimp only [spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply]
-  rfl
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, const_comp]
 
 lemma spine_map_subinterval (m : ℕ) (h : m ≤ n + 1 := by leq)
     (j l : ℕ) (hjl : j + l ≤ m) (Δ : X _[m]ₙ₊₁) :
-    X.spine l (by leq) (X.map (subinterval j l hjl).op Δ) =
+    X.spine l (by leq) (X.map (tr (subinterval j l hjl)).op Δ) =
       (X.spine m h Δ).interval j l hjl := by
   ext i
-  · simp only [Path₁.interval, spine_vertex, ← FunctorToTypes.map_comp_apply]
-    change X.map (Hom.tr ((const [0] [l] i) ≫ (subinterval j l hjl))).op _ = _
-    rw [const_subinterval_eq j l hjl]
-  · simp only [Path₁.interval, spine_arrow, ← FunctorToTypes.map_comp_apply]
-    change X.map (Hom.tr (mkOfSucc i ≫ subinterval j l hjl)).op _ = _
-    rw [mkOfSucc_subinterval_eq]
+  · dsimp only [Path.interval, Path₁.interval, spine_vertex]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+      const_subinterval_eq j l hjl]
+  · dsimp only [Path.interval, Path₁.interval, spine_arrow]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+      mkOfSucc_subinterval_eq]
 
 end Truncated
 
