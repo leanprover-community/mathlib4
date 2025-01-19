@@ -82,7 +82,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
   rw [pow_two, Subtype.coe_mk, ← he, mul_assoc]
   exact Ideal.mul_mem_mul (he'.ge (Ideal.mem_span_singleton_self e)) hx
 
-theorem FormallyUnramified.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [FormallyUnramified (f ≫ g)] : FormallyUnramified f :=
   HasRingHomProperty.of_comp (fun {R S T _ _ _} f g H ↦ by
     algebraize [f, g, g.comp f]
@@ -93,5 +93,7 @@ instance : MorphismProperty.IsMultiplicative @FormallyUnramified where
 
 instance : MorphismProperty.IsStableUnderBaseChange @FormallyUnramified :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.FormallyUnramified.isStableUnderBaseChange
+
+end FormallyUnramified
 
 end AlgebraicGeometry
