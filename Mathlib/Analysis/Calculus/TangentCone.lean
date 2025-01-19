@@ -211,6 +211,9 @@ theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ
 /-- The tangent cone at a non-isolated point contains `0`. -/
 theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
     0 ∈ tangentConeAt 𝕜 s x := by
+  /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
+  of `1 / (d n) ^ (1/2)`, then `c n` tends to infinity, but `c n • d n` tends to `0`. By definition,
+  this shows that `0` belongs to the tangent cone. -/
   obtain ⟨u, -, u_pos, u_lim⟩ :
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
@@ -218,19 +221,19 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) 
     NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _
       (Metric.ball_mem_nhds _ (mul_pos (u_pos n) (u_pos n))))
   choose v hv using A
-  let d := fun n ↦ v n - x
+  let d n := v n - x
   have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
   let ⟨r, hr⟩ := exists_one_lt_norm 𝕜
   have W n := rescale_to_shell hr (u_pos n) (x := d n) (by simpa using (M n).2)
   choose c c_ne c_le le_c hc using W
   have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
-    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹) atTop atTop by simpa
     apply tendsto_inv_nhdsGT_zero.comp
     simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
       eventually_atTop, ge_iff_le]
-    have B (n : ℕ) : ‖c n‖⁻¹ ≤ ‖r‖ * u n := by
-      apply (hc n).trans
-      calc (u n)⁻¹ * ‖r‖ * ‖d n‖
+    have B (n : ℕ) : ‖c n‖⁻¹ ≤ ‖r‖ * u n := calc
+      ‖c n‖⁻¹
+      _ ≤ (u n)⁻¹ * ‖r‖ * ‖d n‖ := hc n
       _ ≤ (u n)⁻¹ * ‖r‖ * (u n * u n) := by
         gcongr
         · exact mul_nonneg (by simp [(u_pos n).le]) (norm_nonneg _)
@@ -238,8 +241,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) 
           simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm]
             at hv
           simpa using hv.2.le
-      _ = ((u n) ⁻¹ * u n ) * ‖r‖ * u n := by ring
-      _ = ‖r‖ * u n := by rw [inv_mul_cancel₀ (u_pos n).ne', one_mul]
+      _ = ‖r‖ * u n := by field_simp [(u_pos n).ne']; ring
     refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
     apply squeeze_zero (fun n ↦ by positivity) B
     simpa using u_lim.const_mul _
@@ -251,6 +253,10 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) 
 theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
     {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
     (tangentConeAt 𝕜 s x ∩ {0}ᶜ).Nonempty := by
+  /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
+  of `1 / d n`. Then `c n • d n` belongs to a fixed annulus. By compactness, one can extract
+  a subsequence converging to a limit `l`. Then `l` is nonzero, and by definition it belongs to
+  the tangent cone. -/
   obtain ⟨u, -, u_pos, u_lim⟩ :
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
@@ -290,17 +296,21 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
       Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
     contrapose! hr
     simp [hr]
-  refine ⟨c ∘ φ, d ∘ φ, ?_, ?_, ?_⟩
+  refine ⟨c ∘ φ, d ∘ φ, ?_, ?_, hφ⟩
   · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv (φ n)).1.1)
-  · apply c_lim.comp φ_strict.tendsto_atTop
-  · exact hφ
+  · exact c_lim.comp φ_strict.tendsto_atTop
 
-/-- The tangent cone at a non-isolated point in dimension 1 is the whole space -/
+/-- The tangent cone at a non-isolated point in dimension 1 is the whole space. -/
 theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : (𝓝[s \ {x}] x).NeBot) :
     tangentConeAt 𝕜 s x = univ := by
   apply eq_univ_iff_forall.2 (fun y ↦ ?_)
+  -- first deal with the case of `0`, which has to be handled separately.
   rcases eq_or_ne y 0 with rfl | hy
   · exact zero_mem_tangentCone hx
+  /- Assume now `y` is a fixed nonzero scalar. Take a sequence `d n` tending to `0` such
+  that `x + d n ∈ s`. Let `c n = y / d n`. Then `‖c n‖` tends to infinity, and `c n • d n`
+  converges to `y` (as it is equal to `y`). By definition, this shows that `y` belongs to the
+  tangent cone. -/
   obtain ⟨u, -, u_pos, u_lim⟩ :
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
@@ -325,7 +335,7 @@ theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : (𝓝[s \ {x}] x).Ne
     refine ⟨?_, 0, fun n hn ↦ by simpa using d_ne n⟩
     exact squeeze_zero (fun n ↦ by positivity) B u_lim
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
-    simp only [smul_eq_mul, mul_assoc, inv_mul_cancel₀ (d_ne n), mul_one]
+    simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
 
 end TangentCone
 

@@ -11,11 +11,6 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 # Maximal spectrum of a commutative (semi)ring
 
 Basic properties the maximal spectrum of a ring.
-
-## Implementation notes
-
-The Zariski topology on the maximal spectrum is defined as the subspace topology induced by the
-natural inclusion into the prime spectrum to avoid API duplication for zero loci.
 -/
 
 noncomputable section
@@ -34,7 +29,7 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 
 /-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
-  ⟨x.asIdeal, x.IsMaximal.isPrime⟩
+  ⟨x.asIdeal, x.isMaximal.isPrime⟩
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
