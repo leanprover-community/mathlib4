@@ -3,9 +3,8 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.HasNiceBoundary
-import Mathlib.Geometry.Manifold.InteriorBoundary
 
 /-!
 ## (Unoriented) bordism theory
@@ -221,8 +220,10 @@ end SingularNManifold
 -- Is this necessary (`H` presumably is necessary for disjoint unions to work out)?
 -- How would that work in practice? Post-compose with a suitable equivalence of H resp. E?
 
+-- Careful: E and H must be in the same universe. Actually, must they? Why?
+universe u
 -- Let M, M' and W be smooth manifolds.
-variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
@@ -247,19 +248,22 @@ variable (k) in
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way. -/
-structure _root_.UnorientedCobordism (s : SingularNManifold X n k)
-    (t : SingularNManifold X n k) {W : Type*} [TopologicalSpace W]
-    [ChartedSpace H'' W] {J : ModelWithCorners ℝ E'' H''} [IsManifold J k W]
-    -- XXX: generalise those to any field also; shouldn't matter, right?
-    (bd : BoundaryManifoldData W J k) where -- TODO: why does this fail?
-  hW : CompactSpace W
+structure UnorientedCobordism (s : SingularNManifold X n k) (t : SingularNManifold X n k) where
+  W : Type u -- TODO: making this Type* fails
+  [topSpace: TopologicalSpace W]
+  [chartedSpace: ChartedSpace H W]
+  J : ModelWithCorners ℝ E H
+  [smoothManifold: IsManifold J k W]
+  bd: BoundaryManifoldData W J k
+  [hW : CompactSpace W]
   hW' : finrank ℝ E'' = n + 1
   F : W → X
   hF : Continuous F
-  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
-  φ : Diffeomorph bd.model I (J.boundary W) (M ⊕ M') k
-  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
-  `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
-  hFf : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inl = s.f
-  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
-  hFg : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inr = t.f
+  -- TODO: fix this definition!
+  -- /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
+  -- φ : Diffeomorph bd.model I (J.boundary W) (M ⊕ M') k
+  -- /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
+  -- `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
+  -- hFf : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inl = s.f
+  -- /-- `F` restricted to `N ↪ ∂W` equals `g` -/
+  -- hFg : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inr = t.f
