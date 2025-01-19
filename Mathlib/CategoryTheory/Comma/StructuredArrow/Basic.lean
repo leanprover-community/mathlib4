@@ -1064,4 +1064,3 @@ end
 end Prod
 
 end CategoryTheory
-#lint
