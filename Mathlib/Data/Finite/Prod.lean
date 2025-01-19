@@ -11,8 +11,7 @@ import Mathlib.Data.Fintype.Vector
 # Finiteness of products
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedRing MonoidWithZero
 
 variable {α β : Type*}
 
