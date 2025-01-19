@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file constructs colimits in the categpry of additive commutative groups, as
+This file constructs colimits in the category of additive commutative groups, as
 quotients of finitely supported functions.
 
 -/
