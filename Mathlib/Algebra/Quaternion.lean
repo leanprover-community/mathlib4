@@ -685,10 +685,13 @@ theorem star_coe : star (x : ℍ[R,c₁,c₂,c₃]) = x := by ext <;> simp
 @[simp] theorem star_im : star a.im = -a.im + c₂ * a.imI := by ext <;> simp
 
 @[simp]
-theorem star_smul [CommSemiring S] [Algebra S R] (s : S) (a : ℍ[R,c₁,c₂,c₃]) :
+theorem star_smul [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+    (s : S) (a : ℍ[R,c₁,c₂,c₃]) :
     star (s • a) = s • star a :=
-  QuaternionAlgebra.ext (by simp) (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
+  QuaternionAlgebra.ext
+    (by simp [mul_smul_comm]) (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
 
+/-- A version of `star_smul` for the special case when `c₂ = 0`, without `SMulCommClass S R R`. -/
 theorem star_smul' [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R,c₁,0,c₃]) :
     star (s • a) = s • star a :=
   QuaternionAlgebra.ext (by simp) (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
