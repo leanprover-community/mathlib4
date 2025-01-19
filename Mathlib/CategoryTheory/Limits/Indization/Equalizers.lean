@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
+import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.Limits.Indization.Morphisms
 
 /-!
 # Equalizers of ind-objects
@@ -59,5 +61,55 @@ theorem isIndObject_limit_comp_yoneda_comp_colim
   exact fun i => IsIndObject.map (limitObjIsoLimitCompEvaluation _ _).inv (hF i)
 
 end
+
+structure CommonMorphismPresentation {A B : Cᵒᵖ ⥤ Type v} (f g : A ⟶ B) where
+  I : Type v
+  [ℐ : SmallCategory I]
+  [hI : IsFiltered I]
+  F₁ : I ⥤ C
+  F₂ : I ⥤ C
+  ι₁ : F₁ ⋙ yoneda ⟶ (Functor.const I).obj A
+  isColimit₁ : IsColimit (Cocone.mk A ι₁)
+  ι₂ : F₂ ⋙ yoneda ⟶ (Functor.const I).obj B
+  isColimit₂ : IsColimit (Cocone.mk B ι₂)
+  φ : F₁ ⟶ F₂
+  ψ : F₁ ⟶ F₂
+  hf : f = IsColimit.map isColimit₁ (Cocone.mk B ι₂) (whiskerRight φ yoneda)
+  hg : g = IsColimit.map isColimit₁ (Cocone.mk B ι₂) (whiskerRight ψ yoneda)
+
+theorem isIndObject_limit_of_hasLimit {J : Type} [SmallCategory J] (F : J ⥤ C) [HasLimit F] :
+    IsIndObject (limit (F ⋙ yoneda)) :=
+  IsIndObject.map (preservesLimitIso yoneda F).hom (isIndObject_yoneda (limit F))
+
+theorem closed [HasEqualizers C] :
+    ClosedUnderLimitsOfShape WalkingParallelPair (IsIndObject (C := C)) := by
+  apply closedUnderLimitsOfShape_of_limit --(fun e => IsIndObject.map e.hom)
+  intro F hF h
+  have :=
+  aboutParallelPairs (h WalkingParallelPair.zero) (h WalkingParallelPair.one)
+    (F.map WalkingParallelPairHom.left) (F.map WalkingParallelPairHom.right)
+  rcases this with ⟨⟨⟩⟩
+  rename_i I _ _ F₁ F₂ ι₁ isColimit₁ ι₂ isColimit₂ φ ψ hf hg
+  let G : WalkingParallelPair ⥤ I ⥤ C := parallelPair φ ψ
+  have := isIndObject_limit_comp_yoneda_comp_colim G (fun i => isIndObject_limit_of_hasLimit _)
+  suffices G ⋙ (whiskeringRight _ _ _).obj yoneda ⋙ colim ≅ F from
+    IsIndObject.map (HasLimit.isoOfNatIso this).hom ‹_›
+  refine parallelPair.ext ?_ ?_ ?_ ?_
+  · exact (colimit.isColimit _).coconePointUniqueUpToIso isColimit₁
+  · exact (colimit.isColimit _).coconePointUniqueUpToIso isColimit₂
+  · simp only [Functor.comp_obj, parallelPair_obj_zero, whiskeringRight_obj_obj, colim_obj,
+      parallelPair_obj_one, Functor.comp_map, parallelPair_map_left, whiskeringRight_obj_map,
+      colim_map, G]
+    apply colimit.hom_ext (fun i => ?_)
+    rw [ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
+      colimit.comp_coconePointUniqueUpToIso_hom_assoc, hf,
+      IsColimit.ι_map]
+  · simp only [Functor.comp_obj, parallelPair_obj_zero, whiskeringRight_obj_obj, colim_obj,
+      parallelPair_obj_one, Functor.comp_map, parallelPair_map_right, whiskeringRight_obj_map,
+      colim_map, G]
+    apply colimit.hom_ext (fun i => ?_)
+    rw [ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
+      colimit.comp_coconePointUniqueUpToIso_hom_assoc, hg,
+      IsColimit.ι_map]
 
 end CategoryTheory.Limits
