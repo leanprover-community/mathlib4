@@ -175,23 +175,31 @@ theorem sameCycle_extendDomain {p : β → Prop} [DecidablePred p] {f : α ≃ S
 alias ⟨_, SameCycle.extendDomain⟩ := sameCycle_extendDomain
 
 theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < orderOf f, (f ^ i) x = y := by
-  classical
-    rintro ⟨k, rfl⟩
-    use (k % orderOf f).natAbs
-    have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
-    have h₁ := Int.emod_nonneg k h₀.ne'
-    rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
-    refine ⟨?_, by rfl⟩
-    rw [← Int.ofNat_lt, Int.natAbs_of_nonneg h₁]
-    exact Int.emod_lt_of_pos _ h₀
+  rintro ⟨k, rfl⟩
+  use (k % orderOf f).natAbs
+  have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
+  have h₁ := Int.emod_nonneg k h₀.ne'
+  rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
+  refine ⟨?_, by rfl⟩
+  rw [← Int.ofNat_lt, Int.natAbs_of_nonneg h₁]
+  exact Int.emod_lt_of_pos _ h₀
 
 theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
     ∃ i : ℕ, 0 < i ∧ i ≤ orderOf f ∧ (f ^ i) x = y := by
-  classical
-    obtain ⟨_ | i, hi, rfl⟩ := h.exists_pow_eq'
-    · refine ⟨orderOf f, orderOf_pos f, le_rfl, ?_⟩
-      rw [pow_orderOf_eq_one, pow_zero]
-    · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
+  obtain ⟨_ | i, hi, rfl⟩ := h.exists_pow_eq'
+  · refine ⟨orderOf f, orderOf_pos f, le_rfl, ?_⟩
+    rw [pow_orderOf_eq_one, pow_zero]
+  · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
+
+theorem SameCycle.exists_fin_pow_eq [Finite α] (h : SameCycle f x y) :
+    ∃ i : Fin (orderOf f), (f ^ (i : ℕ)) x = y := by
+  obtain ⟨i, hi, hx⟩ := SameCycle.exists_pow_eq' h
+  exact ⟨⟨i, hi⟩, hx⟩
+
+theorem SameCycle.exists_nat_pow_eq [Finite α] (h : SameCycle f x y) :
+    ∃ i : ℕ, (f ^ i) x = y := by
+  obtain ⟨i, _, hi⟩ := h.exists_pow_eq'
+  exact ⟨i, hi⟩
 
 instance (f : Perm α) [DecidableRel (SameCycle f⁻¹)] :
     DecidableRel (SameCycle f) := fun x y =>
