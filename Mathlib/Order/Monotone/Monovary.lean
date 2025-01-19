@@ -24,7 +24,6 @@ This condition comes up in the rearrangement inequality. See `Algebra.Order.Rear
 * `AntivaryOn f g s`: `f` antivaries with `g` on `s`.
 -/
 
-
 open Function Set
 
 variable {ι ι' α β γ : Type*}
