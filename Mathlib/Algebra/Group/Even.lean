@@ -115,13 +115,15 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 @[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 @[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
 
-@[to_additive] lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
+@[to_additive Even.nsmul_right] lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
 
-@[to_additive] lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
+@[deprecated (since := "2024-01-19")] alias Even.nsmul := Even.nsmul_right
+
+@[to_additive Even.nsmul_left] lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
 
-@[deprecated (since := "2024-01-07")] alias Even.nsmul' := Even.even_nsmul
+@[deprecated (since := "2024-01-19")] alias Even.nsmul' := Even.nsmul_left
 
 end Monoid
 
@@ -137,8 +139,10 @@ variable [DivisionMonoid α] {a : α}
 
 @[to_additive] alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 
-@[to_additive] lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
+@[to_additive Even.zsmul_right] lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_zpow _⟩
+
+@[deprecated (since := "2024-01-19")] alias Even.zsmul := Even.zsmul_right
 
 end DivisionMonoid
 
@@ -146,8 +150,8 @@ end DivisionMonoid
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
-@[to_additive]
+@[to_additive Even.zsmul_left]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, zpow_add _ _ _⟩
 
-@[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.even_zsmul
+@[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.zsmul_left
