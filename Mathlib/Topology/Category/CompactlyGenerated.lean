@@ -20,7 +20,7 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 universe u w
 
@@ -47,8 +47,8 @@ attribute [instance] is_compactly_generated
 instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
   InducedCategory.category toTop
 
-instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} :=
-  InducedCategory.concreteCategory _
+instance : HasForget.{w} CompactlyGenerated.{u, w} :=
+  InducedCategory.hasForget _
 
 variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 

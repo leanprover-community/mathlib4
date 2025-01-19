@@ -188,7 +188,7 @@ end
 instance : Inhabited (ModuleCat R) :=
   ⟨of R R⟩
 
-instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
+instance moduleHasForget : HasForget.{v} (ModuleCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
