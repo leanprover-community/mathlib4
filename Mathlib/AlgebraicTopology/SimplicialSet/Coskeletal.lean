@@ -133,7 +133,7 @@ lemma fac_aux₂ {n : ℕ}
       let β₂ : α ⟶ α₂ := StructuredArrow.homMk ((mkOfSucc 0).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       have h₀ : X.map α₀.hom (lift sx s x) = s.π.app α₀ x := by
-        obtain rfl : j = (i + k) + 1 := hik.symm
+        subst hik
         exact fac_aux₁ _ _ _ _ _ hj
       have h₂ : X.map α₂.hom (lift sx s x) = s.π.app α₂ x :=
         hk i (i + k) (by leq) (by omega) rfl
@@ -179,7 +179,7 @@ open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ where
-  lift s x := lift (X := X) sx s x
+  lift s x := lift sx s x
   fac s j := by
     ext x
     obtain ⟨⟨i, hi⟩, ⟨f :  _ ⟶ _⟩, rfl⟩ := j.mk_surjective
@@ -200,7 +200,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _ _).trans (congr_fun (s.w α).symm x)
   uniq s m hm := by
     ext x
-    apply sx.spineInjective (X := X)
+    apply sx.spineInjective
     change _ = X.spine _ (sx.spineToSimplex _)
     rw [spine_spineToSimplex_apply]
     ext i
