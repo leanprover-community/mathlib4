@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Round
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
