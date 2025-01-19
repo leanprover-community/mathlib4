@@ -3,15 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.IsManifold
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Geometry.Manifold.InteriorBoundary
+import Mathlib.Geometry.Manifold.IsManifold
 
 /-!
 # Constructing examples of manifolds over ℝ
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`.
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+whenever `x < y`.
 
 More specifically, we introduce
 * `modelWithCornersEuclideanHalfSpace n :
@@ -77,11 +79,9 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) where
-  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
-instance {n : ℕ} : Zero (EuclideanQuadrant n) where
-  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -382,7 +382,7 @@ lemma IccRightChart_extend_top :
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
   congr
 
-lemma IccRightChart_extend_right_mem_frontier :
+lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
@@ -390,7 +390,7 @@ lemma IccRightChart_extend_right_mem_frontier :
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
+instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
@@ -402,6 +402,51 @@ instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
       apply lt_of_lt_of_le h.out
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
+
+@[simp]
+lemma iccChartedSpace_chartAt {z : Set.Icc x y} :
+    chartAt _ z = if z.val < y then IccLeftChart x y else IccRightChart x y := rfl
+
+lemma iccChartedSpace_chartAt_of_le_top {z : Set.Icc x y} (h : z.val < y) :
+    chartAt _ z = IccLeftChart x y := by
+  simp [iccChartedSpace_chartAt, h]
+
+lemma iccChartedSpace_chartAt_of_top_le {z : Set.Icc x y} (h : y ≤ z.val) :
+    chartAt _ z = IccRightChart x y := by
+  simp [iccChartedSpace_chartAt, reduceIte, not_lt.mpr h]
+
+lemma iccChartedSpace_isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint (⊥ : Set.Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
+    iccChartedSpace_chartAt_of_le_top (by norm_num [hxy.out])]
+  exact IccLeftChart_extend_bot_mem_frontier
+
+lemma iccChartedSpace_isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint (⊤ : Set.Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
+    iccChartedSpace_chartAt_of_top_le (by norm_num)]
+  exact IccRightChart_extend_top_mem_frontier
+
+lemma iccChartedSpace_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (𝓡∂ 1).IsInteriorPoint p := by
+  rw [ModelWithCorners.IsInteriorPoint, extChartAt, iccChartedSpace_chartAt_of_le_top hp.2,
+    interior_range_modelWithCornersEuclideanHalfSpace]
+  exact IccLeftChart_extend_interior_pos hp
+
+lemma boundary_iccChartedSpace : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
+  ext p
+  rcases Set.eq_endpoints_or_mem_Ioo_of_mem_Icc p.2 with (hp | hp | hp)
+  · have : p = ⊥ := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true iccChartedSpace_isBoundaryPoint_bot (mem_insert ⊥ {⊤})
+  · have : p = ⊤ := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true iccChartedSpace_isBoundaryPoint_top (mem_insert_of_mem ⊥ rfl)
+  · apply iff_of_false
+    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
+        iccChartedSpace_isInteriorPoint_interior hp
+    · rw [mem_insert_iff, mem_singleton_iff]
+      push_neg
+      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
+      exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
