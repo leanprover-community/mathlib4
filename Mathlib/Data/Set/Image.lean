@@ -974,6 +974,14 @@ theorem range_some_union_none (α : Type*) : range (some : α → Option α) ∪
 theorem insert_none_range_some (α : Type*) : insert none (range (some : α → Option α)) = univ :=
   (isCompl_range_some_none α).symm.sup_eq_top
 
+variable {α β γ γ₁ γ₂ δ δ₁ δ₂ : Type*} {h : β → α} {f : γ → β} {f₁ : γ₁ → α} {f₂ : γ → γ₁}
+  {g : δ → β} {g₁ : δ₁ → α} {g₂ : δ → δ₁} in
+lemma image_of_range_union_range_eq_univ (hf : h ∘ f = f₁ ∘ f₂) (hg : h ∘ g = g₁ ∘ g₂)
+    (hfg : range f ∪ range g = univ) (s : Set β) :
+    h '' s = f₁ '' (f₂ '' (f ⁻¹' s)) ∪ g₁ '' (g₂ '' (g ⁻¹' s)) := by
+  rw [← image_comp, ← image_comp, ← hf, ← hg, image_comp, image_comp, image_preimage_eq_inter_range,
+    image_preimage_eq_inter_range, ← image_union, ← inter_union_distrib_left, hfg, inter_univ]
+
 end Range
 
 section Subsingleton
