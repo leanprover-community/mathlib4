@@ -87,9 +87,11 @@ section Degrees
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
-theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
-    (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
-  simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
+theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
+    (p - q).degrees ≤ p.degrees ∪ q.degrees := by
+  simpa [degrees_def] using AddMonoidAlgebra.supDegree_sub_le
+
+@[deprecated (since := "2024-12-28")] alias degrees_sub := degrees_sub_le
 
 end Degrees
 
