@@ -39,8 +39,6 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits CategoryTheory.Functor Opposite
 
-section ArbitraryUniverses
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
 
 /-- If `StructuredArrow d F` is filtered for any `d : D`, then `F : C ⥤ D` is final. This is
@@ -224,11 +222,23 @@ instance Over.initial_forget [IsCofilteredOrEmpty C] (c : C) : Initial (Over.for
       simp only [forget_obj, mk_left, forget_map, homMk_left]
       rw [IsCofiltered.eq_condition])
 
-end ArbitraryUniverses
-
 section LocallySmall
 
 variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
+
+/-- Implementation; use `Functor.Final.exists_coeq instead`. -/
+theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
+    (s s' : d ⟶ F.obj c) : ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t := by
+  have : colimit.ι (F ⋙ coyoneda.obj (op d)) c s = colimit.ι (F ⋙ coyoneda.obj (op d)) c s' := by
+    apply (Final.colimitCompCoyonedaIso F d).toEquiv.injective
+    subsingleton
+  obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
+  refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
+  conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
+  dsimp only [comp_obj, coyoneda_obj_obj, unop_op, Functor.comp_map, coyoneda_obj_map] at h
+  simp [reassoc_of% h]
+
+end LocallySmall
 
 /-- If `C` is filtered, then we can give an explicit condition for a functor `F : C ⥤ D` to
     be final. -/
@@ -239,15 +249,13 @@ theorem Functor.final_iff_of_isFiltered [IsFilteredOrEmpty C] :
   · intro d
     obtain ⟨f⟩ : Nonempty (StructuredArrow d F) := IsConnected.is_nonempty
     exact ⟨_, ⟨f.hom⟩⟩
-  · intro d c s s'
-    have : colimit.ι (F ⋙ coyoneda.obj (op d)) c s = colimit.ι (F ⋙ coyoneda.obj (op d)) c s' := by
-      apply (Final.colimitCompCoyonedaIso F d).toEquiv.injective
-      subsingleton
-    obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
-    refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
-    conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
-    dsimp only [comp_obj, coyoneda_obj_obj, unop_op, Functor.comp_map, coyoneda_obj_map] at h
-    simp [reassoc_of% h]
+  · let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂} C := AsSmall.equiv
+    let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂} D := AsSmall.equiv
+    have : IsFilteredOrEmpty (AsSmall.{max u₁ v₁ u₂ v₂} C) := .of_equivalence s₁
+    intro d c s s'
+    obtain ⟨c', t, ht⟩ := Functor.Final.exists_coeq_of_locally_small (s₁.inverse ⋙ F ⋙ s₂.functor)
+      (AsSmall.up.map s) (AsSmall.up.map s')
+    exact ⟨AsSmall.down.obj c', AsSmall.down.map t, s₂.functor.map_injective (by simp_all [s₁, s₂])⟩
 
 /-- If `C` is cofiltered, then we can give an explicit condition for a functor `F : C ⥤ D` to
     be initial. -/
@@ -312,10 +320,6 @@ instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C
 instance Functor.initial_diag_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
   initial_of_isCofiltered_costructuredArrow _
 
-end LocallySmall
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 /-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
 theorem Functor.final_of_isFiltered_of_pUnit [IsFiltered C] (F : C ⥤ Discrete PUnit) :
     Final F := by
@@ -353,8 +357,7 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` is final, if `T` and `S` are final and the domain of `T` is
 filtered. -/
-instance StructuredArrow.final_map₂_id {D : Type u₂} [Category.{v₂} D]
-    {C : Type v₁} [Category.{v₁} C] [IsFiltered C] {E : Type u₃} [Category.{v₁} E]
+instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Category.{v₃} E]
     {T : C ⥤ D} [T.Final] {S : D ⥤ E} [S.Final] {T' : C ⥤ E}
     {d : D} {e : E} (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') [IsIso α] :
     Final (map₂ (F := 𝟭 _) u α) := by
@@ -363,8 +366,7 @@ instance StructuredArrow.final_map₂_id {D : Type u₂} [Category.{v₂} D]
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj d e u α).symm
 
 /-- `StructuredArrow.map` is final if the functor `T` is final` and its domain is filtered. -/
-instance StructuredArrow.final_map {C : Type v₁} [Category.{v₁} C] [IsFiltered C]
-    {D : Type v₁} [Category.{v₁} D] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
+instance StructuredArrow.final_map [IsFiltered C] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
     Final (map (T := T) f) := by
   haveI := NatIso.isIso_of_isIso_app (𝟙 T)
   have : (map₂ (F := 𝟭 C) (G := 𝟭 D) f (𝟙 T)).Final := by
@@ -373,24 +375,23 @@ instance StructuredArrow.final_map {C : Type v₁} [Category.{v₁} C] [IsFilter
 
 /-- `StructuredArrow.post X T S` is final if `T` and `S` are final and the domain of `T` is
 filtered. -/
-instance StructuredArrow.final_post {C : Type v₁} [Category.{v₁} C] [IsFiltered C] {E : Type u₃}
-    [Category.{v₁} E] (X : D) (T : C ⥤ D) [T.Final] (S : D ⥤ E) [S.Final] : Final (post X T S) := by
+instance StructuredArrow.final_post [IsFiltered C] {E : Type u₃} [Category.{v₃} E] (X : D)
+    (T : C ⥤ D) [T.Final] (S : D ⥤ E) [S.Final] : Final (post X T S) := by
   apply final_of_natIso (postIsoMap₂ X T S).symm
 
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial and the domain of `T` is
 filtered. -/
-instance CostructuredArrow.initial_map₂_id {C : Type v₁} [Category.{v₁} C] [IsCofiltered C]
-    {E : Type u₃} [Category.{v₁} E] (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] (d : D) (e : E)
+instance CostructuredArrow.initial_map₂_id [IsCofiltered C] {E : Type u₃} [Category.{v₃} E]
+    (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] (d : D) (e : E)
     (u : S.obj d ⟶ e) : Initial (map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u) := by
   have := (T ⋙ S).initial_iff_isCofiltered_costructuredArrow.mp inferInstance e
   apply initial_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
 
 /-- `CostructuredArrow.post T S X` is initial if `T` and `S` are initial and the domain of `T` is
 cofiltered. -/
-instance CostructuredArrow.initial_post {C : Type v₁} [Category.{v₁} C] [IsCofiltered C]
-    {E : Type u₃} [Category.{v₁} E] (X : D) (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] :
-    Initial (post T S X) := by
+instance CostructuredArrow.initial_post [IsCofiltered C] {E : Type u₃} [Category.{v₃} E] (X : D)
+    (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] : Initial (post T S X) := by
   apply initial_of_natIso (postIsoMap₂ X T S).symm
 
 section Pi
@@ -428,6 +429,24 @@ end Pi
 section Prod
 
 open IsFiltered in
+instance Functor.final_prod' [IsFilteredOrEmpty C] {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D)
+    (G : C ⥤ E) [F.Final] [G.Final] : (F.prod' G).Final := by
+  apply Functor.final_of_exists_of_isFiltered
+  · rintro ⟨d, e⟩
+    obtain ⟨⟨⟨⟩⟩, c₁, f₁⟩ : Nonempty (StructuredArrow d F) := inferInstance
+    obtain ⟨⟨⟨⟩⟩, c₂, f₂⟩ : Nonempty (StructuredArrow e G) := inferInstance
+    dsimp at f₁ f₂ ⊢
+    exact ⟨max c₁ c₂, ⟨⟨f₁ ≫ F.map (leftToMax c₁ c₂), f₂ ≫ G.map (rightToMax c₁ c₂)⟩⟩⟩
+  · rintro ⟨d, e⟩ c ⟨f₁, f₂⟩ ⟨g₁, g₂⟩
+    dsimp at f₁ f₂ g₁ g₂ ⊢
+    obtain ⟨c₁, t₁, ht₁⟩ := Functor.Final.exists_coeq F f₁ g₁
+    obtain ⟨c₂, t₂, ht₂⟩ := Functor.Final.exists_coeq G f₂ g₂
+    refine ⟨coeq (t₁ ≫ leftToMax c₁ c₂) (t₂ ≫ rightToMax c₁ c₂),
+        t₁ ≫ leftToMax c₁ c₂ ≫ coeqHom _ _, Prod.mk.inj_iff.2 ⟨?_, ?_⟩⟩
+    · rw [Functor.map_comp, reassoc_of% ht₁]
+    · rw [← Category.assoc, coeq_condition, Category.assoc, Functor.map_comp, reassoc_of% ht₂]
+
+open IsFiltered in
 instance final_fst [IsFilteredOrEmpty C] [IsFiltered D] : (Prod.fst C D).Final := by
   apply Functor.final_of_exists_of_isFiltered
   · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
@@ -446,6 +465,25 @@ instance initial_fst [IsCofilteredOrEmpty C] [IsCofiltered D] : (Prod.fst C D).I
 
 instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).Initial :=
   inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Initial
+
+open IsCofiltered in
+instance Functor.initial_prod' [IsCofilteredOrEmpty C] {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D)
+    (G : C ⥤ E) [F.Initial] [G.Initial] : (F.prod' G).Initial := by
+  apply Functor.initial_of_exists_of_isCofiltered
+  · rintro ⟨d, e⟩
+    obtain ⟨c₁, ⟨⟨⟩⟩, f₁⟩ : Nonempty (CostructuredArrow F d) := inferInstance
+    obtain ⟨c₂, ⟨⟨⟩⟩, f₂⟩ : Nonempty (CostructuredArrow G e) := inferInstance
+    dsimp at f₁ f₂ ⊢
+    exact ⟨min c₁ c₂, ⟨⟨F.map (minToLeft c₁ c₂) ≫ f₁, G.map (minToRight c₁ c₂) ≫ f₂⟩⟩⟩
+  · rintro ⟨d, e⟩ c ⟨f₁, f₂⟩ ⟨g₁, g₂⟩
+    dsimp at f₁ f₂ g₁ g₂ ⊢
+    obtain ⟨c₁, t₁, ht₁⟩ := Functor.Initial.exists_eq F f₁ g₁
+    obtain ⟨c₂, t₂, ht₂⟩ := Functor.Initial.exists_eq G f₂ g₂
+    refine ⟨eq (minToLeft c₁ c₂ ≫ t₁) (minToRight c₁ c₂ ≫ t₂),
+        eqHom _ _ ≫ (minToLeft c₁ c₂ ≫ t₁), Prod.mk.inj_iff.2 ⟨?_, ?_⟩⟩
+    · simp [ht₁]
+    · rw [eq_condition]
+      simp [ht₂]
 
 end Prod
 
