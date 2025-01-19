@@ -5,6 +5,8 @@ Authors: Michael Rothgang
 -/
 
 import Mathlib.Geometry.Manifold.IsManifold
+-- TODO: move the smoothness results to a different file, then adjoint this import accordingly!
+import Mathlib.Geometry.Manifold.ContMDiffMap
 
 /-!
 # Interior and boundary of a manifold
@@ -366,3 +368,61 @@ instance boundaryless_disjointUnion
 end disjointUnion
 
 end ModelWithCorners
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+  [hM : IsManifold I n M] [hM' : IsManifold I n M']
+  [Nonempty M] [Nonempty M'] [Nonempty H]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
+  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
+  [IsManifold J n N] [IsManifold J n N'] [Nonempty N] [Nonempty N'] [Nonempty H']
+
+-- These lemmas are cherry-picked from #20664.
+-- TODO: prove them there, merge that PR, then update this one.
+lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := sorry
+
+-- analogous to inl version
+lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := sorry
+
+lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := sorry
+
+lemma ContMDiff.sum_map {f : M → N} {g : M' → N'}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
+  ContMDiff.sum_elim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
+
+-- in fact, have an iff, but the other direction is easy :-)
+lemma bar {f : M → N} (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) (dummy: N) :
+    ContMDiff I J n f := by
+  let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ dummy)
+  have haux : ContMDiffOn J J n aux (Sum.inl '' univ) :=
+    (ContMDiff.sum_elim contMDiff_id contMDiff_const).contMDiffOn
+  rw [← contMDiffOn_univ] at h ⊢
+  have : f = aux ∘ (@Sum.inl N N') ∘ f := by simp only [aux, Function.comp_apply]; rfl
+  rw [this]
+  have : univ ⊆ (Sum.inl ∘ f) ⁻¹' (@Sum.inl N N' '' univ) := by
+    intro x _hx
+    rw [mem_preimage, Function.comp_apply]
+    use f x, trivial
+  exact ContMDiffOn.comp haux h this
+
+-- in fact, have an iff, but the other direction is easy :-)
+lemma baz {g : M' → N'} (h : ContMDiff I J n ((@Sum.inr N N') ∘ g)) (dummy : N') :
+    ContMDiff I J n g := by
+  let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ dummy) (@id N')
+  have haux : ContMDiffOn J J n aux (Sum.inr '' univ) :=
+    (ContMDiff.sum_elim contMDiff_const contMDiff_id).contMDiffOn
+  rw [← contMDiffOn_univ] at h ⊢
+  have : g = aux ∘ (@Sum.inr N N') ∘ g := by simp only [aux, Function.comp_apply]; rfl
+  rw [this]
+  apply ContMDiffOn.comp haux h
+  intro x _hx
+  rw [mem_preimage, Function.comp_apply]
+  use g x, trivial
+
+lemma contMDiff_sum_map {f : M → N} {g : M' → N'} [hN : Inhabited N] [hN' : Inhabited N'] :
+    ContMDiff I J n (Sum.map f g) ↔ ContMDiff I J n f ∧ ContMDiff I J n g :=
+  ⟨fun h ↦ ⟨bar (h.comp ContMDiff.inl) hN.default, baz (h.comp ContMDiff.inr) hN'.default⟩,
+    fun h ↦ ContMDiff.sum_map h.1 h.2⟩
+
+lemma ContMDiff.swap : ContMDiff I I n (@Sum.swap M M') := ContMDiff.sum_elim inr inl
