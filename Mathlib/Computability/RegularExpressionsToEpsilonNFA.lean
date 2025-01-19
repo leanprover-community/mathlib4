@@ -15,7 +15,7 @@ nondeterministic finite automaton from a regular expression and a proof of its c
 
 ## Main definitions
 
-  * `RegularExpression.toεNFA`
+* `RegularExpression.toεNFA`
 
 ## References
 
@@ -42,7 +42,7 @@ private def zero_start : Set Empty := ∅
 private def zero_accept : Set Empty := ∅
 
 /-- The `εNFA` for `epsilon` has only an ε-transition from the starting state to the accepting
-  state. -/
+state. -/
 private def epsilon_step : BinSt → Option α → Set (BinSt)
   | .ini, none => {.fin}
   | _, _ => ∅
@@ -50,7 +50,7 @@ private def epsilon_start : Set (BinSt) := {.ini}
 private def epsilon_accept : Set (BinSt) := {.fin}
 
 /-- The `εNFA` for `char a` has only an `a`-labeled transition from the starting state to the
-  accepting state. -/
+accepting state. -/
 private def char_step (a : α) : BinSt → Option α → Set (BinSt)
   | .ini, some b => {s | s = .fin ∧ a = b}
   | _, _ => ∅
@@ -58,9 +58,9 @@ private def char_start : Set (BinSt) := {.ini}
 private def char_accept : Set (BinSt) := {.fin}
 
 /-- The `εNFA` for `plus P Q` is constructed using a sum type to embed left and right (from the
-  `εNFA`s for `P` and `Q` respectively) states. It has separate starting and accepting states, with
-  ε-transitions from the starting state to the embedded starting states, and from the embedded
-  accepting states to the accepting state. -/
+`εNFA`s for `P` and `Q` respectively) states. It has separate starting and accepting states, with
+ε-transitions from the starting state to the embedded starting states, and from the embedded
+accepting states to the accepting state. -/
 private def plus_step (M₁ : εNFA α σ₁) (M₂ : εNFA α σ₂) :
     BinSt ⊕ σ₁ ⊕ σ₂ → Option α → Set (BinSt ⊕ σ₁ ⊕ σ₂)
   | .inl .ini, none => .inr '' Sum.elim M₁.start M₂.start
@@ -73,9 +73,9 @@ private def plus_start : Set (BinSt ⊕ σ₁ ⊕ σ₂) := {.inl .ini}
 private def plus_accept : Set (BinSt ⊕ σ₁ ⊕ σ₂) := {.inl .fin}
 
 /-- The `εNFA` for `comp P Q` is constructed using a sum type to embed left and right (from the
-  `εNFA`s for `P` and `Q` respectively) states. The starting and accepting states are the embedded
-  left-starting and right-accepting states respectively. An ε-transition exists between the embedded
-  left accepting and right starting states. -/
+`εNFA`s for `P` and `Q` respectively) states. The starting and accepting states are the embedded
+left-starting and right-accepting states respectively. An ε-transition exists between the embedded
+left accepting and right starting states. -/
 private def comp_step (M₁ : εNFA α σ₁) (M₂ : εNFA α σ₂) : σ₁ ⊕ σ₂ → Option α → Set (σ₁ ⊕ σ₂)
   | .inl s', a => .inl '' M₁.step s' a ∪ {s | s ∈ .inr '' M₂.start ∧ a = none ∧ s' ∈ M₁.accept}
   | .inr s', a => .inr '' M₂.step s' a
@@ -83,9 +83,9 @@ private def comp_start (M₁ : εNFA α σ₁) : Set (σ₁ ⊕ σ₂) := .inl '
 private def comp_accept (M₂ : εNFA α σ₂) : Set (σ₁ ⊕ σ₂) := .inr '' M₂.accept
 
 /-- The `εNFA` for `star P` is constructed using a sum type to embed the `εNFA` for `P`, with
-  ε-transitions from the starting and accepting states to the respective embedded states. Additional
-  ε-transitions exist between the starting and accepting state (empty matching), and between the
-  embedded accepting and starting states (repetition). -/
+ε-transitions from the starting and accepting states to the respective embedded states. Additional
+ε-transitions exist between the starting and accepting state (empty matching), and between the
+embedded accepting and starting states (repetition). -/
 private def star_step (M : εNFA α σ) : BinSt ⊕ σ → Option α → Set (BinSt ⊕ σ)
   | .inl .ini, none => .inr '' M.start ∪ {.inl .fin}
   | .inr s', a => .inr '' M.step s' a
