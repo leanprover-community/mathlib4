@@ -121,7 +121,7 @@ variable {a : FreeMonoid α}
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
 @[to_additive "The length of an additive free monoid element: 1.length = 0 and (a + b).length =
   a.length + b.length"]
-def length (a : FreeMonoid α) : ℕ := List.length a
+def length (a : FreeMonoid α) : ℕ := a.toList.length
 
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
