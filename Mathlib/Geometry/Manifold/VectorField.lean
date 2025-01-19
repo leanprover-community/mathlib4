@@ -16,7 +16,8 @@ vector fields.
 
 We define the pullback of a vector field under a map, as
 `VectorField.mpullback I I' f V x := (mfderiv I I' f x).inverse (V (f x))`
-(together with the same notion within a set).
+(together with the same notion within a set). Note that the pullback uses the junk-value pattern:
+if the derivative of the map is not invertible, then pullback is given the junk value zero.
 
 We also define the Lie bracket of two vector fields, denoted with
 `VectorField.mlieBracket I V W x`, as the pullback in the manifold of the corresponding notion
@@ -76,16 +77,15 @@ instance [IsManifold I (minSmoothness 𝕜 1) M] :
 
 instance [IsManifold I (minSmoothness 𝕜 3) M] :
     IsManifold I (minSmoothness 𝕜 2) M :=
-  IsManifold.of_le (n := minSmoothness 𝕜 3) (minSmoothness_monotone (by norm_num))
+  IsManifold.of_le (n := minSmoothness 𝕜 3) (minSmoothness_monotone (by norm_cast))
 
 instance [IsManifold I (minSmoothness 𝕜 2) M] :
     IsManifold I (minSmoothness 𝕜 1) M :=
-  IsManifold.of_le (n := minSmoothness 𝕜 2) (minSmoothness_monotone (by norm_num))
-
+  IsManifold.of_le (n := minSmoothness 𝕜 2) (minSmoothness_monotone (by norm_cast))
 
 namespace VectorField
 
-section
+section Pullback
 
 /-! ### Pullback of vector fields in manifolds -/
 
@@ -95,13 +95,15 @@ variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
 variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
-/-- The pullback of a vector field under a map between manifolds, within a set `s`. -/
+/-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
+derivative of the map within `s` is not invertible, then pullback is given the junk value zero.-/
 def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
     TangentSpace I x :=
   (mfderivWithin I I' f s x).inverse (V (f x))
 
 variable (I I') in
-/-- The pullback of a vector field under a map between manifolds. -/
+/-- The pullback of a vector field under a map between manifolds. If the derivative of the map is
+not invertible, then pullback is given the junk value zero. -/
 def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
     TangentSpace I x :=
   (mfderiv I I' f x).inverse (V (f x))
@@ -138,8 +140,21 @@ lemma mpullbackWithin_neg :
   ext x
   simp [mpullbackWithin_apply]
 
+lemma mpullbackWithin_id {V : Π (x : M), TangentSpace I x} (h : UniqueMDiffWithinAt I s x) :
+    mpullbackWithin I I id V s x = V x := by
+  simp [mpullbackWithin_apply, mfderivWithin_id h]
+
 lemma mpullback_apply :
     mpullback I I' f V x = (mfderiv I I' f x).inverse (V (f x)) := rfl
+
+lemma mpullback_smul_apply :
+    mpullback I I' f (c • V) x = c • mpullback I I' f V x := by
+  simp [mpullback]
+
+lemma mpullback_smul :
+    mpullback I I' f (c • V) = c • mpullback I I' f V := by
+  ext x
+  simp [mpullback_apply]
 
 lemma mpullback_add_apply :
     mpullback I I' f (V + V₁) x = mpullback I I' f V x + mpullback I I' f V₁ x := by
@@ -169,12 +184,22 @@ lemma mpullbackWithin_eq_pullbackWithin {f : E → E'} {V : E' → E'} {s : Set 
   simp only [mpullbackWithin, mfderivWithin_eq_fderivWithin, pullbackWithin]
   rfl
 
+lemma mpullback_eq_pullback {f : E → E'} {V : E' → E'} :
+    mpullback 𝓘(𝕜, E) 𝓘(𝕜, E') f V = pullback 𝕜 f V := by
+  simp only [← mpullbackWithin_univ, ← pullbackWithin_univ, mpullbackWithin_eq_pullbackWithin]
+
 @[simp] lemma mpullback_id {V : Π (x : M), TangentSpace I x} : mpullback I I id V = V := by
   ext x
   simp [mpullback]
 
-/-! ### Smoothness of pullback of vector fields -/
-section
+/-! ### Regularity of pullback of vector fields
+
+In this paragraph, we assume that the model space is complete, to ensure that the set of invertible
+linear maps is open and that inversion is a smooth map there. Otherwise, the pullback of vector
+fields could behave wildly, even at points where the derivative of the map is invertible.
+-/
+
+section MDifferentiability
 
 variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 
@@ -187,7 +212,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
     MDifferentiableWithinAt I I.tangent
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) x₀ := by
-  /- We want to apply the general theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
+  /- We want to apply the theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
   stating that applying linear maps to vector fields gives a smooth result when the linear map and
   the vector field are smooth. This theorem is general, we will apply it to
   `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
@@ -256,8 +281,8 @@ lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter_of_eq
   subst h
   exact hV.mpullbackWithin_vectorField_inter hf hf' hx₀ hs hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
-Version on a set. -/
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version on a set. -/
 protected lemma _root_.MDifferentiableOn.mpullbackWithin_vectorField_inter
     (hV : MDifferentiableOn I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
     (hf : ContMDiffOn I I' n f s) (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderivWithin I I' f s x).IsInvertible)

@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
 /-!
 
@@ -46,6 +47,11 @@ variable {R}
 
 theorem eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
   ExistsUnique.unique (maximal_ideal_unique R) hI <| maximalIdeal.isMaximal R
+
+/-- The maximal spectrum of a local ring is a singleton. -/
+instance : Unique (MaximalSpectrum R) where
+  default := ⟨maximalIdeal R, maximalIdeal.isMaximal R⟩
+  uniq := fun I ↦ MaximalSpectrum.ext_iff.mpr <| eq_maximalIdeal I.isMaximal
 
 theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
