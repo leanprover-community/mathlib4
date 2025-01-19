@@ -391,7 +391,7 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V
   · subst hvw
     use .nil
   have hpn : ¬p.Nil := Walk.not_nil_of_ne hvw
-  obtain ⟨w', ⟨⟨hw'1, hw'2⟩, hwu⟩⟩ := hcyc.unique_other_adj_of_adj
+  obtain ⟨w', ⟨⟨hw'1, hw'2⟩, hwu⟩⟩ := hcyc.existsUnique_ne_adj
     ((Walk.toSubgraph_adj_snd p hpn).adj_sub)
   -- The edge (v, w) can't be in p, because then it would be the second node
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
@@ -416,7 +416,7 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V
     simp only [sdiff_adj, Subgraph.spanningCoe_adj]
     refine ⟨hw'2.symm, fun h ↦ ?_⟩
     exact hnpvw' h.symm
-  use (((hcyc.sDiff_spanningCoe_toSubgraph_reachable
+  use (((hcyc.reachable_sdiff_toSubgraph_spanningCoe
     (p.cons hw'2.symm) hp'p).some).mapLe hle).append this.toWalk
 termination_by Fintype.card V + 1 - p.length
 decreasing_by
@@ -429,8 +429,8 @@ lemma IsCycles.reachable_deleteEdge [Fintype V] [DecidableEq V] (hadj : G.Adj v 
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
       Set.mem_singleton_iff, or_true, sup_of_le_left]
-    exact (Subgraph.subgraphOfAdj_spanningCoe hadj).symm
-  exact this ▸ (hcyc.sDiff_spanningCoe_toSubgraph_reachable hadj.toWalk
+    exact (Subgraph.spanningCoe_subgraphOfAdj hadj).symm
+  exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk
     (Walk.IsPath.of_adj hadj)).symm
 
 lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponent_supp [Fintype V] [DecidableEq V]
@@ -442,7 +442,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponent_supp [Fintype
     ⟨hw, h.reachable_deleteEdge hw⟩
   have hvp : v ∈ p.support := SimpleGraph.Walk.fst_mem_support_of_mem_edges _ hp.2
   have : p.toSubgraph.verts = c.supp := by
-    obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_connectedComponent_eq (by aesop) (by
+    obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_connectedComponent_eq (by
       intro v hv w
       refine Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype w
       have : (G.neighborSet v).Nonempty := by
