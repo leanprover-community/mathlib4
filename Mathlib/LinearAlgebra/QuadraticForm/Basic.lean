@@ -896,9 +896,11 @@ theorem associated_apply (x y : M) :
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', LinearMap.one_apply,
     polar]
 
-theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
-    (associatedHom S Q).IsSymm := fun x y ↦ by
-  simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
+attribute [local instance] starAddMonoidOfAddMonoid in
+attribute [local instance] starRingOfComm in
+theorem associated_isSymm (Q : QuadraticMap R M N) : (associatedHom S Q).IsSymm := fun x y ↦ by
+  rw [associated_apply, add_comm x, sub_eq_add_neg, sub_eq_add_neg, add_assoc, add_comm (-Q x),
+    ← add_assoc, ← sub_eq_add_neg, ← sub_eq_add_neg, associated_apply, TrivialStar.star_trivial]
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -919,10 +921,12 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     LinearMap.smul_def, _root_.map_sub]
   abel_nf
 
-theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M R} (h : B₁.IsSymm) :
+attribute [local instance] starAddMonoidOfAddMonoid in
+attribute [local instance] starRingOfComm in
+theorem associated_left_inverse {B₁ : BilinMap R M N} (h : B₁.IsSymm) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
-    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply, ← two_mul, ← smul_eq_mul,
+    rw [associated_toQuadraticMap, ← h.eq x y, TrivialStar.star_trivial, ← (two_smul R),
       invOf_smul_eq_iff, two_smul, two_smul]
 
 /-- A version of `QuadraticMap.associated_left_inverse` for general targets. -/
@@ -951,9 +955,11 @@ associated symmetric bilinear form. -/
 abbrev associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
   associatedHom ℤ
 
+attribute [local instance] starAddMonoidOfAddMonoid in
+attribute [local instance] starRingOfComm in
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
-instance canLift [Invertible (2 : R)] :
-    CanLift (BilinMap R M R) (QuadraticForm R M) (associatedHom ℕ) LinearMap.IsSymm where
+instance canLift :
+    CanLift (BilinMap R M N) (QuadraticMap R M N) (associatedHom ℕ) LinearMap.IsSymm where
   prf B hB := ⟨B.toQuadraticMap, associated_left_inverse _ hB⟩
 
 /-- Symmetric bilinear maps can be lifted to quadratic maps -/
@@ -1045,13 +1051,14 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
+attribute [local instance] starRingOfComm
 theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
     B.toQuadraticMap.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
+  rw [add_right_eq_self (a := B x x + B y y), ← h, star_id_of_comm, add_self_eq_zero]
 
 end CommSemiring
 
@@ -1193,7 +1200,7 @@ theorem QuadraticMap.toMatrix'_smul (a : R) (Q : QuadraticMap R (n → R) R) :
 theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticMap R (n → R) R) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, LinearMap.toMatrix₂'_apply, LinearMap.toMatrix₂'_apply,
-    ← associated_isSymm, RingHom.id_apply, associated_apply]
+    ← associated_isSymm, star_id_of_comm, associated_apply]
 
 end
 
@@ -1255,6 +1262,7 @@ end Semiring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
+attribute [local instance] starRingOfComm
 /-- There exists a non-null vector with respect to any symmetric, nonzero bilinear form `B`
 on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 `x : M` such that `B x x ≠ 0`. -/
