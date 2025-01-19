@@ -13,8 +13,8 @@ which is implemented as `minGeneratorCard` and `spanRank`.
 
 ## Main Definitions
 
-* `minGeneratorCard`: The minimum cardinality of a generating set of a submodule as a natural number.
-  If no finite generating set exists, the minimum cardinality is defined to be `0`.
+* `minGeneratorCard`: The minimum cardinality of a generating set of a submodule as a natural
+  number. If no finite generating set exists, the minimum cardinality is defined to be `0`.
 * `spanRank`: The span rank of a submodule, possibly infinite, with type `WithTop ℕ`.
 * `FG.minGenerator`: For a finitely generated submodule, get a minimal generating function.
 
@@ -118,7 +118,7 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
       rintro _ ⟨x, rfl⟩
       dsimp only [f']
       apply Submodule.subset_span
-      rw [fg_iff_spanrank_eq] at h
+      rw [fg_iff_spanrank_eq_minGeneratorCard] at h
       have he : (p.minGeneratorCard : WithTop Nat) ≤ n := by rwa [h] at e
       use Fin.castLE (ENat.coe_le_coe.mp he) x
       dsimp [f']
@@ -147,7 +147,7 @@ lemma FG.span_range_minGenerator {p : Submodule R M} (h : p.FG) :
 /-- The minimal generator elements are in the submodule -/
 lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i) :
   minGenerator h i ∈ p := by
-  have := spanMinGeneratorRange h
+  have := span_range_minGenerator h
   simp_rw [← this]
   exact subset_span (Set.mem_range_self i)
 
