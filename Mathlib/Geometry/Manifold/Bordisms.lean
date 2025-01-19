@@ -48,6 +48,9 @@ open Module Set
 
 noncomputable section
 
+-- TODO: revisit if I want to have singular n-manifolds modelled over Euclidean space,
+-- or have H (and perhaps E) as part of the underlying data.
+
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M,f)`
 of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
 
@@ -64,14 +67,14 @@ structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ
   M : Type u
   /-- The smooth manifold `M` is a topological space -/
   [topSpaceM : TopologicalSpace M]
-  /-- The topological space on which the manifold `M` is modeled -/
-  H : Type v
-  /-- `H` is a topological space -/
-  [topSpaceH : TopologicalSpace H]
+  -- /-- The topological space on which the manifold `M` is modeled -/
+  -- H : Type v
+  -- /-- `H` is a topological space -/
+  -- [topSpaceH : TopologicalSpace H]
   /-- The smooth manifold `M` is a charted space over `H` -/
-  [chartedSpace : ChartedSpace H M]
+  [chartedSpace : ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
   /-- The model with corners for the manifold `M` -/
-  I : ModelWithCorners ℝ E H
+  I : ModelWithCorners ℝ E (EuclideanSpace ℝ (Fin n))
   /-- `M` is a smooth manifold with corners -/
   [smoothMfd : IsManifold I k M]
   /-- `M` is compact -/
@@ -97,9 +100,10 @@ instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : NormedSpace ℝ 
 
 instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.M := s.topSpaceM
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.H := s.topSpaceH
+--instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.H := s.topSpaceH
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : ChartedSpace s.H s.M := s.chartedSpace
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} :
+    ChartedSpace (EuclideanSpace ℝ (Fin n)) s.M := s.chartedSpace
 
 instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : IsManifold s.I k s.M := s.smoothMfd
 
@@ -141,8 +145,8 @@ variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSp
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
-  {I : ModelWithCorners ℝ E H} [IsManifold I k M]
+variable {M : Type u} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
+  {I : ModelWithCorners ℝ E (EuclideanSpace ℝ (Fin n))} [IsManifold I k M]
   {M' : Type u} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [IsManifold I' k M']
   [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
@@ -151,7 +155,7 @@ variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
 variable (M) in
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n k where
-  H := H
+  -- H := H
   I := I
   dimension := hdim
   f := id
@@ -164,7 +168,7 @@ noncomputable def comap [h : Fact (finrank ℝ E = n)]
     {φ : M → s.M} (hφ : ContMDiff I s.I n φ) : SingularNManifold X n k where
   E := E
   M := M
-  H := H
+  --H := H
   I := I
   f := s.f ∘ φ
   hf := s.hf.comp hφ.continuous
@@ -179,12 +183,13 @@ lemma comap_f [Fact (finrank ℝ E = n)]
 variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] :
+def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M]
+    [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
+    {I : ModelWithCorners ℝ E (EuclideanSpace ℝ (Fin n))} [IsManifold I k M] [IsEmpty M] :
   SingularNManifold X n k where
   M := M
   E := E
-  H := H
+  --H := H
   I := I
   dimension := h.out
   f := fun x ↦ (IsEmpty.false x).elim
@@ -202,17 +207,17 @@ def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k where
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
-/-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
-is a singular `n+m`-manifold. -/
--- FUTURE: prove that this observation induces a commutative ring structure
--- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
-    SingularNManifold PUnit (n + m) k where
-  M := s.M × t.M
-  I := s.I.prod t.I
-  f := fun _ ↦ PUnit.unit
-  hf := continuous_const
-  dimension := by rw [finrank_prod, s.dimension, t.dimension]
+-- /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
+-- is a singular `n+m`-manifold. -/
+-- -- FUTURE: prove that this observation induces a commutative ring structure
+-- -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
+-- def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
+--     SingularNManifold PUnit (n + m) k where
+--   M := s.M × t.M
+--   I := s.I.prod t.I
+--   f := fun _ ↦ PUnit.unit
+--   hf := continuous_const
+--   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
 end SingularNManifold
 
@@ -230,12 +235,12 @@ variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSp
 
 variable {k : ℕ∞}
 
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {I : ModelWithCorners ℝ E H} [IsManifold I k M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+variable {M : Type*} [TopologicalSpace M] {n : ℕ} [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
+  {I : ModelWithCorners ℝ E (EuclideanSpace ℝ (Fin n))} [IsManifold I k M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M']
   /-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M''] {n : ℕ}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M'']
+  /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M'']
   [CompactSpace M] [BoundarylessManifold I M]
   [CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
   [CompactSpace M] [FiniteDimensional ℝ E]
@@ -248,7 +253,8 @@ variable (k) in
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way. -/
-structure UnorientedCobordism (s : SingularNManifold X n k) (t : SingularNManifold X n k) where
+structure UnorientedCobordism [Nonempty H] --[Nonempty M] [Nonempty M']
+    (s : SingularNManifold X n k) (t : SingularNManifold X n k) where
   W : Type u -- TODO: making this Type* fails
   [topSpace: TopologicalSpace W]
   [chartedSpace: ChartedSpace H W]
@@ -259,11 +265,13 @@ structure UnorientedCobordism (s : SingularNManifold X n k) (t : SingularNManifo
   hW' : finrank ℝ E'' = n + 1
   F : W → X
   hF : Continuous F
-  -- TODO: fix this definition!
-  -- /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
-  -- φ : Diffeomorph bd.model I (J.boundary W) (M ⊕ M') k
-  -- /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
-  -- `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
-  -- hFf : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inl = s.f
-  -- /-- `F` restricted to `N ↪ ∂W` equals `g` -/
-  -- hFg : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inr = t.f
+  [hs: Nonempty s.M]
+  [ht: Nonempty t.M]
+  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`.
+  We encode this as a diffeomorphism from the manifold modelling `W` to `M ⊔ M'`. -/
+  φ : Diffeomorph I bd.I₀ (s.M ⊕ t.M) bd.M₀ k
+  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
+  `f = F ∘ ι ∘ φ ∘ Sum.inl : M → X`, where `ι : ∂W → W` is the inclusion. -/
+  hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
+  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
+  hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
