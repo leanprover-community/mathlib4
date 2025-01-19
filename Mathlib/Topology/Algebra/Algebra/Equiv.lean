@@ -137,21 +137,13 @@ theorem isClosed_image (e : A ≃A[R] B) {S : Set A} : IsClosed (e '' S) ↔ IsC
 theorem map_nhds_eq (e : A ≃A[R] B) (a : A) : Filter.map e (𝓝 a) = 𝓝 (e a) :=
   e.toHomeomorph.map_nhds_eq a
 
-theorem map_zero (e : A ≃A[R] B) : e (0 : A) = 0 :=
-  e.toAlgHom.map_zero'
-
-theorem map_add (e : A ≃A[R] B) (a₁ a₂ : A) : e (a₁ + a₂) = e a₁ + e a₂ :=
-  e.toAlgHom.map_add' a₁ a₂
-
-theorem map_smul (e : A ≃A[R] B) (r : R) (a : A) : e (r • a) = r • e a :=
-  _root_.map_smul e r a
-
 theorem map_eq_zero_iff (e : A ≃A[R] B) {a : A} : e a = 0 ↔ a = 0 :=
   e.toAlgEquiv.toLinearEquiv.map_eq_zero_iff
 
 attribute [continuity]
   ContinuousAlgEquiv.continuous_invFun ContinuousAlgEquiv.continuous_toFun
 
+@[fun_prop]
 theorem continuous (e : A ≃A[R] B) : Continuous e := e.continuous_toFun
 
 theorem continuousOn (e : A ≃A[R] B) {S : Set A} : ContinuousOn e S :=
@@ -167,6 +159,10 @@ theorem continuousWithinAt (e : A ≃A[R] B) {S : Set A} {a : A} :
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] (e : A ≃A[R] B) {f : α → A} :
     Continuous (e ∘ f) ↔ Continuous f :=
   e.toHomeomorph.comp_continuous_iff
+
+theorem comp_continuous_iff' {β : Type*} [TopologicalSpace β] (e : A ≃A[R] B) {g : B → β} :
+    Continuous (g ∘ e) ↔ Continuous g :=
+  e.toHomeomorph.comp_continuous_iff'
 
 variable (R A)
 
