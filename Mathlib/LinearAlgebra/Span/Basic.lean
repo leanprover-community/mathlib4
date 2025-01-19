@@ -584,10 +584,16 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
+theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
+  fun _ _ eq ↦ by simpa using congr($eq 1)
+
 @[simp]
 theorem toSpanSingleton_zero : toSpanSingleton R M 0 = 0 := by
   ext
   simp
+
+theorem toSpanSingleton_eq_zero_iff {x : M} : toSpanSingleton R M x = 0 ↔ x = 0 := by
+  rw [← toSpanSingleton_zero, (toSpanSingleton_injective R M).eq_iff]
 
 variable {R M}
 
