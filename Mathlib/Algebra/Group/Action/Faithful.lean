@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Opposite
 
 /-!
 # Faithful group actions
@@ -50,6 +51,12 @@ export FaithfulVAdd (eq_of_vadd_eq_vadd)
 @[to_additive]
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
+
+/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
+@[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]
+instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
+    FaithfulSMul αᵐᵒᵖ α where
+  eq_of_smul_eq_smul h := MulOpposite.unop_injective <| mul_left_cancel (h 1)
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
