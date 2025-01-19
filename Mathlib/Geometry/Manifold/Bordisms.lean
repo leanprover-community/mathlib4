@@ -48,15 +48,14 @@ open Module Set
 
 noncomputable section
 
-universe u in
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M,f)`
 of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
 
 In practice, one wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.) -/
-structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ∞) where
+structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ) (k : ℕ∞) where
   /-- The normed space on which the manifold `M` is modeled. -/
-  E : Type u
+  E : Type v
   /-- `E` is normed (additive) abelian group -/
   [normedAddCommGroup : NormedAddCommGroup E]
   /-- `E` is a real normed space -/
@@ -66,7 +65,7 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ�
   /-- The smooth manifold `M` is a topological space -/
   [topSpaceM : TopologicalSpace M]
   /-- The topological space on which the manifold `M` is modeled -/
-  H : Type u
+  H : Type v
   /-- `H` is a topological space -/
   [topSpaceH : TopologicalSpace H]
   /-- The smooth manifold `M` is a charted space over `H` -/
@@ -86,6 +85,8 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ�
   /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
   f : M → X
   hf : Continuous f
+-- TODO: why does the checkUnivs linter complain?
+-- #lint only checkUnivs
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
