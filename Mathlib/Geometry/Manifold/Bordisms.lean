@@ -3,8 +3,9 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.HasNiceBoundary
+import Mathlib.Geometry.Manifold.InteriorBoundary
 
 /-!
 ## (Unoriented) bordism theory
@@ -215,3 +216,48 @@ def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PU
   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
 end SingularNManifold
+
+-- TODO: for now, assume all manifolds are modelled on the same chart and model space...
+-- Is this necessary (`H` presumably is necessary for disjoint unions to work out)?
+-- How would that work in practice? Post-compose with a suitable equivalence of H resp. E?
+
+-- Let M, M' and W be smooth manifolds.
+variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
+  [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
+  [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
+
+variable {k : ℕ∞}
+
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [IsManifold I k M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  /-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M''] {n : ℕ}
+  [CompactSpace M] [BoundarylessManifold I M]
+  [CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
+  [CompactSpace M] [FiniteDimensional ℝ E]
+  [CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
+
+variable [Nonempty H]
+
+/-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
+is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
+whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
+resp. `g` in the obvious way. -/
+structure _root_.UnorientedCobordism (s : SingularNManifold X n k)
+    (t : SingularNManifold X n k) {W : Type*} [TopologicalSpace W]
+    [ChartedSpace H'' W] {J : ModelWithCorners ℝ E'' H''} [IsManifold J k W]
+    (bd : BoundaryManifoldData W J) [HasNiceBoundary bd] where
+  hW : CompactSpace W
+  hW' : finrank ℝ E'' = n + 1
+  F : W → X
+  hF : Continuous F
+  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
+  φ : Diffeomorph bd.model I (J.boundary W) (M ⊕ M') k
+  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
+  `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
+  hFf : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inl = s.f
+  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
+  hFg : F ∘ (Subtype.val : J.boundary W → W) ∘ φ.symm ∘ Sum.inr = t.f
