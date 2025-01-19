@@ -19,10 +19,6 @@ This file contains basic results on algebraic independence of a family of elemen
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
-
 ## Tags
 transcendence basis, transcendence degree, transcendence
 
@@ -31,12 +27,20 @@ transcendence basis, transcendence degree, transcendence
 
 noncomputable section
 
-open Function Set Subalgebra MvPolynomial Algebra
+open Cardinal Function Set Subalgebra MvPolynomial Algebra
 
 open scoped Classical
 
 variable {ι ι' R K A A' : Type*} {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
+
+variable (R A) in
+/-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
+defined to be the maximal cardinality of an `R`-algebraically independent set in `A`. -/
+def TranscendenceDegree : Cardinal :=
+  ⨆ ι : { s : Set A // AlgebraicIndependent R ((↑) : s → A) }, #ι.1
+
+noncomputable alias trdeg := TranscendenceDegree
 
 theorem algebraicIndependent_iff_ker_eq_bot :
     AlgebraicIndependent R x ↔
@@ -129,6 +133,15 @@ theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) 
 @[nontriviality]
 theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
   algebraicIndependent_iff.2 fun _ _ => Subsingleton.elim _ _
+
+lemma isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
+    IsTranscendenceBasis R x ↔ Nonempty ι := by
+  have := Module.subsingleton R A
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨algebraicIndependent_of_subsingleton,
+    fun s hs hx ↦ hx.antisymm fun a _ ↦ ⟨Classical.arbitrary _, Subsingleton.elim ..⟩⟩⟩
+  by_contra hι; rw [not_nonempty_iff] at hι
+  have := h.2 {0} algebraicIndependent_of_subsingleton
+  simp [range_eq_empty, eq_comm (a := ∅)] at this
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))

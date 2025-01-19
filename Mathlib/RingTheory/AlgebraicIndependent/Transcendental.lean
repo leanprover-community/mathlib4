@@ -81,18 +81,31 @@ theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) 
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
 
+theorem algebraicIndependent_of_set_of_finite (s : Set ι)
+    (ind : AlgebraicIndependent R fun i : s ↦ x i)
+    (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R (fun i : t ↦ x i) →
+      ∀ i ∉ s, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x := by
+  classical
+  refine algebraicIndependent_of_finite_type fun t hfin ↦ ?_
+  suffices AlgebraicIndependent R fun i : ↥(t ∩ s ∪ t \ s) ↦ x i from
+    this.comp (Equiv.Set.ofEq (t.inter_union_diff s).symm) (Equiv.injective _)
+  refine hfin.diff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
+    fun {a u} ha hu ha' h ↦ ?_
+  have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
+  convert (((image_eq_range _ _ ▸ h.option_iff <| x a).2 <| H _ (hfin.subset (union_subset
+    inter_subset_left <| hu.trans diff_subset)) h a ha.2 this).comp _ (subtypeInsertEquivOption
+    this).injective).comp (Equiv.Set.ofEq union_insert) (Equiv.injective _) with x
+  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+
 /-- Variant of `algebraicIndependent_of_finite_type` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite_type'
     (hinj : Injective (algebraMap R A))
     (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R (fun i : t ↦ x i) →
-      ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
-    AlgebraicIndependent R x := by
-  classical
-  refine algebraicIndependent_of_finite_type fun t hfin ↦ hfin.induction_on_subset _
-    (algebraicIndependent_empty_type_iff.mpr hinj) fun {a u} ha hu ha' h ↦ ?_
-  convert ((Set.image_eq_range _ _ ▸ h.option_iff <| x a).2 <| H u (hfin.subset hu) h _ ha').comp _
-    (Set.subtypeInsertEquivOption ha').injective with x
-  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+      ∀ i ∉ t, Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x :=
+  algebraicIndependent_of_set_of_finite ∅ (algebraicIndependent_empty_type_iff.mpr hinj)
+    fun t ht ind i _ ↦ H t ht ind i
 
 /-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite' (s : Set A)
@@ -106,21 +119,44 @@ theorem algebraicIndependent_of_finite' (s : Set A)
 
 namespace AlgebraicIndependent
 
+theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x) ↔
+    AlgebraicIndependent R x ∧ AlgebraicIndependent (adjoin R (range x)) y := by
+  by_cases hx : AlgebraicIndependent R x; swap
+  · exact ⟨fun h ↦ (hx <| by apply h.comp _ Sum.inr_injective).elim, fun h ↦ (hx h.1).elim⟩
+  let e := (sumAlgEquiv R ι' ι).trans (mapAlgEquiv _ hx.aevalEquiv)
+  have : aeval (Sum.elim y x) = ((aeval y).restrictScalars R).comp e.toAlgHom := by
+    ext (_|_) <;> simp [e, algebraMap_aevalEquiv]
+  simp_rw [hx, AlgebraicIndependent, this]; simp
+
+theorem iff_adjoin_image (s : Set ι) :
+    AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : s ↦ x i) ∧
+      AlgebraicIndependent (adjoin R (x '' s)) fun i : ↥sᶜ ↦ x i := by
+  rw [show x '' s = range fun i : s ↦ x i by ext; simp]
+  convert ← sumElim_iff
+  classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
+  ext (_|_) <;> rfl
+
+theorem iff_adjoin_image_compl (s : Set ι) :
+    AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
+      AlgebraicIndependent (adjoin R (x '' sᶜ)) fun i : s ↦ x i := by
+  convert ← iff_adjoin_image _ <;> apply compl_compl
+
+theorem iff_transcendental_adjoin_image (i : ι) :
+    AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
+      Transcendental (adjoin R (x '' {i}ᶜ)) (x i) :=
+  (iff_adjoin_image_compl _).trans <| and_congr_right
+    fun _ ↦ algebraicIndependent_unique_type_iff (ι := {j // j = i})
+
 variable (hx : AlgebraicIndependent R x)
 include hx
 
+theorem trans {ι'} {y : ι' → A} (hy : AlgebraicIndependent (adjoin R (range x)) y) :
+    AlgebraicIndependent R (Sum.elim y x) :=
+  sumElim_iff.mpr ⟨hx, hy⟩
+
 theorem adjoin_of_disjoint {s t : Set ι} (h : Disjoint s t) :
-    AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i := by
-  let e := (sumAlgEquiv R t s).trans (mapAlgEquiv t (hx.comp _ Subtype.val_injective).aevalEquiv)
-  have : ((aeval fun i : t ↦ x i).restrictScalars R).comp e.toAlgHom =
-      (aeval x).comp (rename <| Sum.elim Subtype.val Subtype.val) := by
-    ext (_|_) <;> simp [e, algebraMap_aevalEquiv]
-  have _ := @MvPolynomial.isScalarTower
-  rw [Set.image_eq_range, AlgebraicIndependent, ← AlgHom.coe_restrictScalars' R, ← e.injective_comp]
-  show Injective ((AlgHom.restrictScalars R <| aeval _).comp e.toAlgHom)
-  rw [this, AlgHom.coe_comp]
-  exact .comp hx (rename_injective _ <| Subtype.val_injective.sum_elim
-    Subtype.val_injective fun i j eq ↦ h.ne_of_mem j.2 i.2 eq.symm)
+    AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i :=
+  ((iff_adjoin_image s).mp hx).2.comp (inclusion _) (inclusion_injective h.subset_compl_left)
 
 theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
     (AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i) ↔ Disjoint s t := by

@@ -98,6 +98,17 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
   exact h₂ (hx.2 (Set.range fun o : Option ι => o.elim a x)
     ((algebraicIndependent_subtype_range ai.injective).2 ai) h₁)
 
+theorem AlgebraicIndependent.isTranscendenceBasis_iff_isAlgebraic
+    [Nontrivial R] (ind : AlgebraicIndependent R x) :
+    IsTranscendenceBasis R x ↔ Algebra.IsAlgebraic (adjoin R (range x)) A := by
+  refine ⟨(·.isAlgebraic), fun alg ↦ ⟨ind, fun s ind_s hxs ↦ of_not_not fun hxs' ↦ ?_⟩⟩
+  have : ¬ s ⊆ range x := (hxs' <| hxs.antisymm ·)
+  have ⟨a, has, hax⟩ := not_subset.mp this
+  rw [show range x = Subtype.val '' range (Set.inclusion hxs) by
+    rw [← range_comp, val_comp_inclusion, Subtype.range_val]] at alg
+  refine ind_s.transcendental_adjoin (s := range (inclusion hxs)) (i := ⟨a, has⟩) ?_ (alg.1 _)
+  simpa using hax
+
 /-- If `x` is a transcendence basis of `A/R`, then it is empty if and only if
 `A/R` is algebraic. -/
 theorem IsTranscendenceBasis.isEmpty_iff_isAlgebraic [Nontrivial R]
@@ -125,3 +136,65 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
+
+section exchange_lemmas
+
+variable [DecidableEq ι] {y : A} [NoZeroDivisors A]
+
+open Algebra Set Function
+
+theorem Algebra.IsAlgebraic.exchange_lemma
+    (hx : Algebra.IsAlgebraic (adjoin R (range x)) A) (hy : Transcendental R y) :
+    ∃ i : ι, Algebra.IsAlgebraic (adjoin R (range (update x i y))) A := by
+  let xy (o : Option ι) := o.elim y x
+  have : ¬ AlgebraicIndependent R xy := fun h ↦ by
+    have := h.transcendental_adjoin (s := range some) (i := none) (by simp)
+    rw [← range_comp] at this
+    exact this (hx.1 y)
+  have := mt (algebraicIndependent_of_set_of_finite {none} <|
+    (algebraicIndependent_singleton_iff ⟨_, rfl⟩).mpr hy) this
+  simp_rw [Transcendental] at this; push_neg at this
+  obtain ⟨t, fin, ind, _|i, hi, hit, alg⟩ := this
+  · exact (hi rfl).elim
+  let Rxyi := adjoin R (range (update x i y))
+  let _ : Algebra (adjoin R (xy '' t)) Rxyi := by
+    refine (Subalgebra.inclusion <| adjoin_mono ?_).toAlgebra
+    rintro _ ⟨_|j, hjt, rfl⟩
+    · exact ⟨i, update_self ..⟩
+    obtain rfl | ne := eq_or_ne j i
+    exacts [(hit hjt).elim, ⟨j, update_of_ne ne ..⟩]
+  have : IsScalarTower (adjoin R (xy '' t)) Rxyi A :=
+    .of_algebraMap_eq fun ⟨a, _⟩ ↦ show a = _ from rfl
+  have : IsAlgebraic Rxyi (x i) := alg.extendScalars <| by apply Subalgebra.inclusion_injective
+  rw [← Algebra.isAlgebraic_adjoin_singleton_iff, Subalgebra.isAlgebraic_iff] at this
+  set Rx := adjoin R (range x)
+  set Rxy := adjoin Rxyi {x i}
+  let _ : Algebra Rx Rxy := by
+    refine (Subalgebra.inclusion (T := Rxy.restrictScalars R) ?_).toAlgebra
+    refine adjoin_le_iff.mpr fun x ↦ ?_
+    rintro ⟨j, rfl⟩; obtain rfl | ne := eq_or_ne j i
+    · rw [SetLike.mem_coe, Subalgebra.mem_restrictScalars]
+      exact subset_adjoin rfl
+    exact Subalgebra.algebraMap_mem _ (⟨_, subset_adjoin ⟨j, update_of_ne ne ..⟩⟩ : Rxyi)
+  let _ : SMul Rx Rxy := Algebra.toSMul
+  have : IsScalarTower Rx Rxy A :=
+    .of_algebraMap_eq fun ⟨a, _⟩ ↦ show a = _ from rfl
+  have : Algebra.IsAlgebraic Rxy A := .extendScalars (R := Rx) (Subalgebra.inclusion_injective _)
+  let _ : Algebra Rxyi Rxy := inferInstance
+  let _ : SMul Rxyi Rxy := Algebra.toSMul
+  have : IsScalarTower Rxyi Rxy A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ show a = _ from rfl
+  exact ⟨i, Algebra.IsAlgebraic.trans' _ (S := Rxy) Subtype.val_injective⟩
+
+theorem IsTranscendenceBasis.exchange_lemma
+    (hx : IsTranscendenceBasis R x) (hy : Transcendental R y) :
+    ∃ i : ι, IsTranscendenceBasis R (update x i y) := by
+  cases subsingleton_or_nontrivial R
+  · simp_rw [isTranscendenceBasis_iff_of_subsingleton] at hx ⊢
+    exact ⟨Classical.arbitrary _, hx⟩
+  have ⟨i, hi⟩ := hx.isAlgebraic.exchange_lemma hy
+  have : AlgebraicIndependent R (update x i y) := by
+    rw [iff_transcendental_adjoin_image i]
+    sorry
+  exact ⟨i, this.isTranscendenceBasis_iff_isAlgebraic.mpr hi⟩
+
+end exchange_lemmas
