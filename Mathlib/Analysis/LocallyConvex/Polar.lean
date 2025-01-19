@@ -216,21 +216,11 @@ variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F] [Module ℝ E]
 
 lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
-  rename_i inst_3
-  simp_all only [nonempty_subtype]
-  obtain ⟨w, h⟩ := inst_3
-  have e1 : w ∈ (absConvexHull 𝕜 s) := mem_absConvexHull_iff.mpr fun t a a_1 ↦ a h
-  have e3 : Balanced 𝕜 (absConvexHull 𝕜 s) := by exact balanced_absConvexHull
-  have e2 : -w ∈ (absConvexHull 𝕜 s) := by
-    rw [Balanced.neg_mem_iff e3]
-    exact e1
-  have e4 : (1/2 : ℝ) • w + (1/2 : ℝ) • (-w) ∈ (absConvexHull 𝕜 s) := by
-    apply convex_absConvexHull e1 e2
-    simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
-    simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
-    exact add_halves 1
-  simp at e4
-  exact e4
+  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
+  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
+  exact convex_absConvexHull (subset_absConvexHull hw)
+    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
+    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 variable  [IsScalarTower ℝ 𝕜 E]
