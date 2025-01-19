@@ -212,8 +212,5 @@ theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {
   induction hs using IsSumSq.rec' with
   | zero          => simp
   | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
-  induction hs using IsSumSq.rec' with
-  | zero          => simp
-  | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
