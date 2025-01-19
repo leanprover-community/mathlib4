@@ -317,7 +317,6 @@ theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
 theorem Fintype.card_unit : Fintype.card Unit = 1 :=
   rfl
 
-@[simp]
 theorem Fintype.card_punit : Fintype.card PUnit = 1 :=
   rfl
 
@@ -346,6 +345,18 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 
 @[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
   Finset.card_map _
+
+@[simp]
+theorem Fintype.card_univ [Fintype α] {h : Fintype (Set.univ : Set α)} :
+    @Fintype.card (Set.univ : Set α) h = Fintype.card α := by
+  apply Fintype.card_of_finset'
+  simp
+
+@[simp]
+theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
+    @Fintype.card {_a // True} h = Fintype.card α := by
+  apply Fintype.card_of_subtype
+  simp
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
