@@ -6,7 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Polynomial
+import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
