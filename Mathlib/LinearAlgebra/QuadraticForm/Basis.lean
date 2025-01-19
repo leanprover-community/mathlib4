@@ -18,7 +18,20 @@ open LinearMap (BilinMap)
 
 namespace QuadraticMap
 
-variable {ι R M N} [LinearOrder ι]
+section
+
+variable {ι R M N}
+
+variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [DecidableEq ι]
+
+theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
+    ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,polar_lift_lc Q bm (bm.repr x) p := by
+  rw [← map_finsupp_linearCombination, Basis.linearCombination_repr]
+
+end
+
+variable {ι R M N}  [LinearOrder ι]
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- Given an ordered basis, produce a bilinear form associated with the quadratic form.
@@ -90,5 +103,59 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   toFun Q := Q.toBilin bm
   map_add' := add_toBilin bm
   map_smul' := smul_toBilin S bm
+
+lemma toBilin_symm_eq_Polar (Q : QuadraticMap R M N) (bm : Basis ι R M) :
+    (Q.toBilin bm) + (Q.toBilin bm).flip = polarBilin Q := by
+  ext a b
+  conv_rhs => rw [← toQuadraticMap_toBilin Q bm]
+  simp only [toQuadraticMap_toBilin]
+  symm
+  calc Q (a + b) - Q a - Q b = (Q.toBilin bm).toQuadraticMap (a + b) - Q a - Q b := by
+        rw [ toQuadraticMap_toBilin Q]
+  _ = (((Q.toBilin bm) a a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
+    rw [LinearMap.BilinMap.toQuadraticMap_apply, map_add, map_add, LinearMap.add_apply]
+  _ = (((Q.toBilin bm).toQuadraticMap a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a
+    - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
+  _ = ((Q a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
+    rw [ toQuadraticMap_toBilin Q]
+  _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + (Q.toBilin bm).toQuadraticMap b)) - Q a
+    - Q b := by rw [map_add, LinearMap.add_apply,
+      LinearMap.BilinMap.toQuadraticMap_apply (Q.toBilin bm) b]
+  _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + Q b)) - Q a - Q b := by
+    rw [ toQuadraticMap_toBilin Q]
+  _ = ((Q.toBilin bm) a) b + ((Q.toBilin bm) b) a := by abel
+
+lemma polar_toQuadraticMap (B : BilinMap R M N) (x y : M) :
+    polar B.toQuadraticMap x y = B x y + B y x := by
+  simp only [polar, BilinMap.toQuadraticMap_apply, map_add, LinearMap.add_apply]
+  abel
+
+lemma polarBilin_toQuadraticMap (B : BilinMap R M N) :
+    polarBilin B.toQuadraticMap = B + B.flip := by
+  ext x y
+  simp only [polarBilin_apply_apply, polar_toQuadraticMap, LinearMap.add_apply,
+    LinearMap.flip_apply]
+
+theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) (x y : M) :
+    let s := (bm.repr x).support ∪ (bm.repr y).support
+    B.toQuadraticMap.toBilin bm x y =
+      (∑ i ∈ s,
+        ((bm.repr x) i) •((bm.repr y) i) • B (bm i) (bm i)) +
+      ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) s.offDiag,
+        ((bm.repr x) p.1) • ((bm.repr y) p.2) • (B + B.flip) (bm p.1) (bm p.2) := by
+  simp_rw [toBilin, polar_toQuadraticMap, BilinMap.toQuadraticMap_apply]
+  let s := (bm.repr x).support ∪ (bm.repr y).support
+  have h1 : (bm.repr x).support ⊆ s := Finset.subset_union_left
+  have h2 : (bm.repr y).support ⊆ s := Finset.subset_union_right
+  conv_lhs => rw [← bm.linearCombination_repr x, Finsupp.linearCombination_apply,
+    Finsupp.sum_of_support_subset _ h1 _ (fun i _ ↦ zero_smul R (bm i))]
+  conv_lhs =>  rw [← bm.linearCombination_repr y, Finsupp.linearCombination_apply,
+    Finsupp.sum_of_support_subset _ h2 _ (fun i _ ↦ zero_smul R (bm i))]
+  simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, _root_.map_smul,
+    ← Finset.sum_product', ← Finset.diag_union_offDiag s,
+    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag]
+  simp only [Basis.constr_basis, ↓reduceIte, smul_ite, smul_add, smul_zero, add_right_inj]
+  rw [Finset.sum_ite_of_false (by aesop) _ _, ← Finset.sum_filter]
+  simp_rw [LinearMap.add_apply, LinearMap.flip_apply, smul_add]
 
 end QuadraticMap
