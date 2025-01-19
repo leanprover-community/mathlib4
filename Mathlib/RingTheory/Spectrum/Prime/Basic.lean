@@ -73,7 +73,7 @@ def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
   left_inv _ := rfl
   right_inv _ := rfl
 
-theorem asIdeal_range_eq : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
+theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
     ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
       fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
@@ -204,8 +204,8 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
 
 theorem nilradical_eq_iInf :
-    nilradical R = iInf PrimeSpectrum.asIdeal := by
-  apply PrimeSpectrum.asIdeal_range_eq R ▸ nilradical_eq_sInf R
+    nilradical R = iInf asIdeal := by
+  apply range_asIdeal R ▸ nilradical_eq_sInf R
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=

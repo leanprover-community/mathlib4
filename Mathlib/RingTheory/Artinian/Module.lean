@@ -496,29 +496,24 @@ lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
 
 /-- The prime spectrum is in bijection with the set of prime ideals. -/
 @[simps]
-def primeSpectrum_equiv_maximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
+def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
   toFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mp I.isPrime⟩
   invFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mpr I.isMaximal⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
 lemma primeSpectrum_equiv_maximalSpectrum_comp_asIdeal :
-    MaximalSpectrum.asIdeal ∘ primeSpectrum_equiv_maximalSpectrum.toFun =
+    MaximalSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum =
       PrimeSpectrum.asIdeal (R := R) := rfl
 
 lemma primeSpectrum_equiv_maximalSpectrum_inv_comp_asIdeal :
-    PrimeSpectrum.asIdeal.comp primeSpectrum_equiv_maximalSpectrum.invFun =
+    PrimeSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum.symm =
       MaximalSpectrum.asIdeal (R := R) := rfl
 
 lemma primeSpectrum_asIdeal_range_eq :
-    range PrimeSpectrum.asIdeal = (range <| MaximalSpectrum.asIdeal (R := R)) :=
-  Subset.antisymm
-    (primeSpectrum_equiv_maximalSpectrum_comp_asIdeal (R := R) ▸
-      (Set.range_comp_subset_range primeSpectrum_equiv_maximalSpectrum.toFun <|
-        MaximalSpectrum.asIdeal (R := R)))
-    (primeSpectrum_equiv_maximalSpectrum_inv_comp_asIdeal (R := R) ▸
-      (Set.range_comp_subset_range primeSpectrum_equiv_maximalSpectrum.invFun <|
-        PrimeSpectrum.asIdeal (R := R)))
+    range PrimeSpectrum.asIdeal = (range <| MaximalSpectrum.asIdeal (R := R)) := by
+  simp only [PrimeSpectrum.range_asIdeal, MaximalSpectrum.range_asIdeal,
+    isPrime_iff_isMaximal]
 
 variable (R)
 
@@ -535,7 +530,7 @@ instance : Finite (PrimeSpectrum R) :=
 /-- A temporary field instance on the quotients by maximal ideals. -/
 @[local instance] noncomputable def fieldOfSubtypeIsMaximal
     (I : MaximalSpectrum R) : Field (R ⧸ I.asIdeal) :=
-  have := mem_setOf.mp I.isMaximal; Ideal.Quotient.field I.asIdeal
+  Ideal.Quotient.field I.asIdeal
 
 /-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/

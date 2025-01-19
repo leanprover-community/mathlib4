@@ -21,22 +21,16 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
   i.e., the set of all prime ideals of `R`.
 -/
 
-variable (R : Type*) [CommSemiring R]
-
 /-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
 
 It is naturally endowed with a topology (the Zariski topology),
 and a sheaf of commutative rings (see `Mathlib.AlgebraicGeometry.StructureSheaf`).
 It is a fundamental building block in algebraic geometry. -/
 @[ext]
-structure PrimeSpectrum where
+structure PrimeSpectrum (R : Type*) [CommSemiring R] where
   asIdeal : Ideal R
   isPrime : asIdeal.IsPrime
 
 @[deprecated (since := "2024-06-22")] alias PrimeSpectrum.IsPrime := PrimeSpectrum.isPrime
 
-namespace PrimeSpectrum
-
-attribute [instance] isPrime
-
-end PrimeSpectrum
+attribute [instance] PrimeSpectrum.isPrime
