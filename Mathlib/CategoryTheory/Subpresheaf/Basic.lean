@@ -49,8 +49,49 @@ variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
-instance : Top (Subpresheaf F) :=
-  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by simp⟩⟩
+instance : CompleteLattice (Subpresheaf F) where
+  sup F G :=
+    { obj U := F.obj U ⊔ G.obj U
+      map _ _ := by
+        rintro (h|h)
+        · exact Or.inl (F.map _ h)
+        · exact Or.inr (G.map _ h) }
+  le_sup_left _ _ _ := by simp
+  le_sup_right _ _ _ := by simp
+  sup_le F G H h₁ h₂ U := by
+    rintro x (h|h)
+    · exact h₁ _ h
+    · exact h₂ _ h
+  inf S T :=
+    { obj U := S.obj U ⊓ T.obj U
+      map _ _ h := ⟨S.map _ h.1, T.map _ h.2⟩}
+  inf_le_left _ _ _ _ h := h.1
+  inf_le_right _ _ _ _ h := h.2
+  le_inf _ _ _ h₁ h₂ _ _ h := ⟨h₁ _ h, h₂ _ h⟩
+  sSup S :=
+    { obj U := sSup (Set.image (fun T ↦ T.obj U) S)
+      map f x hx := by
+        obtain ⟨_, ⟨F, h, rfl⟩, h'⟩ := hx
+        simp only [Set.sSup_eq_sUnion, Set.sUnion_image, Set.preimage_iUnion,
+          Set.mem_iUnion, Set.mem_preimage, exists_prop]
+        exact ⟨_, h, F.map f h'⟩ }
+  le_sSup _ _ _ _ _ := by aesop
+  sSup_le _ _ _ _ _ := by aesop
+  sInf S :=
+    { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
+      map f x hx := by
+        rintro _ ⟨F, h, rfl⟩
+        exact F.map f (hx _ ⟨_, h, rfl⟩) }
+  sInf_le _ _ _ _ _ := by aesop
+  le_sInf _ _ _ _ _ := by aesop
+  bot :=
+    { obj U := ⊥
+      map := by simp }
+  bot_le _ _ := bot_le
+  top :=
+    { obj U := ⊤
+      map := by simp }
+  le_top _ _ := le_top
 
 instance : Nonempty (Subpresheaf F) :=
   inferInstance
