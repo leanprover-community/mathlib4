@@ -364,7 +364,7 @@ lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
   simp
 
 /-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ |X ω| ^ n` is
-integrable for all `n : ℕ`. That is, all moments of `X` are finite. -/
+integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_abs_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) {p : ℝ} (hp : 0 ≤ p) :
