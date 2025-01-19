@@ -420,7 +420,6 @@ private theorem exists_mono_in_high_dimension' :
     -- and adding to this the vertical line obtained by the focus point and `l`.
     refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
             Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
-    -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
     · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
