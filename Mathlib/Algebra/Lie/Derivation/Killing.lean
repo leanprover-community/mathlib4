@@ -66,6 +66,7 @@ lemma ad_mem_orthogonal_of_mem_orthogonal {D : LieDerivation R L L} (hD : D ∈ 
 
 variable [Module.Finite R L]
 
+attribute [local instance] starRingOfComm
 lemma ad_mem_ker_killingForm_ad_range_of_mem_orthogonal
     {D : LieDerivation R L L} (hD : D ∈ 𝕀ᗮ) (x : L) :
     ad R L (D x) ∈ (LinearMap.ker (killingForm R 𝕀)).map (LieHom.range (ad R L)).subtype := by

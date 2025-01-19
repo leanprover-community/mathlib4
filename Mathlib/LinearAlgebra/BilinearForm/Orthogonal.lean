@@ -66,6 +66,7 @@ theorem IsRefl.ortho_comm (H : B.IsRefl) {x y : M} : IsOrtho B x y ↔ IsOrtho B
 theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ IsOrtho B₁ y x :=
   LinearMap.IsAlt.ortho_comm H
 
+attribute [local instance] starRingOfComm
 theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
   LinearMap.IsSymm.ortho_comm H
 
