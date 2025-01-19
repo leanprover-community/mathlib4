@@ -3,9 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.Instances.Real
 
 /-!
 # Smooth manifolds with nice boundary
