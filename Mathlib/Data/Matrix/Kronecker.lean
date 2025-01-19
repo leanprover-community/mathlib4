@@ -239,6 +239,7 @@ open Matrix
 def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m × p) α :=
   kroneckerMap (· * ·)
 
+@[inherit_doc Matrix.kroneckerMap]
 scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
 open Kronecker
@@ -417,10 +418,11 @@ Prefer the notation `⊗ₖₜ` rather than this definition. -/
 def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMap (· ⊗ₜ ·)
 
+@[inherit_doc kroneckerTMul]
 scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (· ⊗ₜ ·)
 
-scoped[Kronecker]
-  notation:100 x " ⊗ₖₜ[" R "] " y:100 => Matrix.kroneckerMap (TensorProduct.tmul R) x y
+@[inherit_doc kroneckerTMul]
+scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 => Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
 open Kronecker
 

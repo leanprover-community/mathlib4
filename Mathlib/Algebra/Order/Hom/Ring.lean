@@ -39,7 +39,8 @@ open Function
 
 variable {F α β γ δ : Type*}
 
-/-- `OrderRingHom α β` is the type of monotone semiring homomorphisms from `α` to `β`.
+/-- `OrderRingHom α β`, denoted `α →+*o β`,
+is the type of monotone semiring homomorphisms from `α` to `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingHom α β)`,
 you should parametrize over `(F : Type*) [OrderRingHomClass F α β] (f : F)`.
@@ -63,7 +64,8 @@ to
 otherwise the [refl] attribute on `OrderRingIso.refl` complains.
 TODO: change back when `refl` attribute is fixed, github issue https://github.com/leanprover-community/mathlib4/issues/2505 -/
 
-/-- `OrderRingHom α β` is the type of order-preserving semiring isomorphisms between `α` and `β`.
+/-- `OrderRingIso α β`, with notation `α ≃+*o β`,
+is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
 you should parametrize over `(F : Type*) [OrderRingIsoClass F α β] (f : F)`.

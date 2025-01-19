@@ -22,7 +22,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- Defining the homomorphism in the category R-Alg. -/
+/-- Defining the homomorphism in the category R-Alg, notation `A →ₐ[R] B`. -/
 -- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where

@@ -298,7 +298,8 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
+/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`.
+Notation `𝐞` in the `Real.FourierTransform` namespace. -/
 def fourierChar : AddChar ℝ 𝕊 where
   toFun z := .exp (2 * π * z)
   map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
@@ -372,12 +373,14 @@ open scoped RealInnerProductSpace
 variable [FiniteDimensional ℝ V]
 
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`. -/
+additive character `ω ↦ exp (2 i π ω)`.
+Notation `𝓕` in the `Real.FourierTransform` namespace. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential. -/
+transform but with opposite sign in the exponential.
+Notation `𝓕⁻¹` in the `Real.FourierTransform` namespace. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
