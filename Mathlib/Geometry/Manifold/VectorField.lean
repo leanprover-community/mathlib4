@@ -184,6 +184,32 @@ lemma mpullback_eq_pullback {f : E → E'} {V : E' → E'} :
   ext x
   simp [mpullback]
 
+lemma mpullbackWithin_comp_of_left
+    {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
+    {x₀ : M} (hf : MDifferentiableWithinAt I I' f s x₀) (h : Set.MapsTo f s t)
+    (hu : UniqueMDiffWithinAt I s x₀) (hg' : (mfderivWithin I' I'' g t (f x₀)).IsInvertible) :
+    mpullbackWithin I I'' (g ∘ f) V s x₀ =
+      mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
+  simp only [mpullbackWithin, comp_apply]
+  have hg : MDifferentiableWithinAt I' I'' g t (f x₀) :=
+    mdifferentiableWithinAt_of_isInvertible_mfderivWithin hg'
+  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_left]
+  · rfl
+  · exact hg'
+
+lemma mpullbackWithin_comp_of_right
+    {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
+    {x₀ : M} (hg : MDifferentiableWithinAt I' I'' g t (f x₀)) (h : Set.MapsTo f s t)
+    (hu : UniqueMDiffWithinAt I s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible) :
+    mpullbackWithin I I'' (g ∘ f) V s x₀ =
+      mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
+  simp only [mpullbackWithin, comp_apply]
+  have hf : MDifferentiableWithinAt I I' f s x₀ :=
+    mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf'
+  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf']
+  rfl
+
+
 /-! ### Regularity of pullback of vector fields
 
 In this paragraph, we assume that the model space is complete, to ensure that the set of invertible
@@ -353,7 +379,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) x₀ := by
-  /- We want to apply the general theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
+  /- We want to apply the theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
   that applying linear maps to vector fields gives a smooth result when the linear map and the
   vector field are smooth. This theorem is general, we will apply it to
   `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
@@ -631,31 +657,6 @@ lemma eventuallyEq_mpullback_mpullbackWithin_extChartAt (V : Π (x : M), Tangent
   simp only [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
 
 end ContMDiff
-
-lemma mpullbackWithin_comp_of_left
-    {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
-    {x₀ : M} (hf : MDifferentiableWithinAt I I' f s x₀) (h : Set.MapsTo f s t)
-    (hu : UniqueMDiffWithinAt I s x₀) (hg' : (mfderivWithin I' I'' g t (f x₀)).IsInvertible) :
-    mpullbackWithin I I'' (g ∘ f) V s x₀ =
-      mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
-  simp only [mpullbackWithin, comp_apply]
-  have hg : MDifferentiableWithinAt I' I'' g t (f x₀) :=
-    mdifferentiableWithinAt_of_isInvertible_mfderivWithin hg'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_left]
-  · rfl
-  · exact hg'
-
-lemma mpullbackWithin_comp_of_right
-    {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
-    {x₀ : M} (hg : MDifferentiableWithinAt I' I'' g t (f x₀)) (h : Set.MapsTo f s t)
-    (hu : UniqueMDiffWithinAt I s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible) :
-    mpullbackWithin I I'' (g ∘ f) V s x₀ =
-      mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
-  simp only [mpullbackWithin, comp_apply]
-  have hf : MDifferentiableWithinAt I I' f s x₀ :=
-    mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf']
-  rfl
 
 end Pullback
 
