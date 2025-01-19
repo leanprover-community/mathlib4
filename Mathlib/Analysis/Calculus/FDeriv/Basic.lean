@@ -1504,3 +1504,5 @@ protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v :
   hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
 
 end Support
+
+set_option linter.style.longFile 1700
