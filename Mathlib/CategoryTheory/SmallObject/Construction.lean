@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
@@ -120,6 +121,10 @@ noncomputable abbrev ρFunctorObj : ∐ functorObjTgtFamily f πX ⟶ functorObj
 lemma functorObj_comm :
     functorObjTop f πX ≫ ιFunctorObj f πX = functorObjLeft f πX ≫ ρFunctorObj f πX :=
   pushout.condition
+
+lemma functorObj_isPushout :
+    IsPushout (functorObjTop f πX) (functorObjLeft f πX) (ιFunctorObj f πX) (ρFunctorObj f πX) :=
+  IsPushout.of_hasPushout _ _
 
 @[reassoc]
 lemma FunctorObjIndex.comm (x : FunctorObjIndex f πX) :
