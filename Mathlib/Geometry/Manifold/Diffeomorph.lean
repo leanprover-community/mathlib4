@@ -5,6 +5,7 @@ Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
+import Mathlib.Geometry.Manifold.InteriorBoundary -- TODO: fix this, once prereqs are moved!
 
 /-!
 # Diffeomorphisms
@@ -562,5 +563,117 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
 
 @[deprecated (since := "2024-11-21")]
 alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
+
+end Diffeomorph
+
+namespace Diffeomorph
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [IsManifold I n M] [IsManifold I n M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
+variable {N J : Type*} [TopologicalSpace N] [ChartedSpace H N]
+  {J : ModelWithCorners 𝕜 E' H} [IsManifold J n N]
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N'] [IsManifold J n N']
+  [Nonempty H] [Nonempty H'] [Nonempty N] [Nonempty N'] [Nonempty M] [Nonempty M'] [Nonempty M'']
+
+-- is this really missing? move to right file!
+def _root_.Equiv.sum_map {α β γ δ : Type*} (f : Equiv α β) (g : Equiv γ δ) :
+    Equiv (α ⊕ γ) (β ⊕ δ) where
+  toFun := Sum.map f g
+  invFun := Sum.map f.symm g.symm
+  left_inv := by
+    apply congrFun
+    calc (Sum.map f.symm g.symm) ∘ Sum.map f g
+      _ = Sum.map (f.symm ∘ f) (g.symm ∘ g) := by apply Sum.map_comp_map
+      _ = Sum.map id id := by
+        have h : f.symm ∘ f = id := by ext x; apply f.left_inv x
+        have : g.symm ∘ g = id := by ext x; apply g.left_inv x
+        rw [h, this]
+      _ = id := Sum.map_id_id
+  right_inv := by
+    apply congrFun
+    calc (Sum.map f g) ∘ (Sum.map f.symm g.symm)
+      _ = Sum.map (f ∘ f.symm) (g ∘ g.symm) := by apply Sum.map_comp_map
+      _ = Sum.map id id := by
+        have h : f ∘ f.symm = id := by ext x; apply f.right_inv x
+        have : g ∘ g.symm = id := by ext x; apply g.right_inv x
+        rw [h, this]
+      _ = id := Sum.map_id_id
+
+@[simp]
+lemma Equiv.sum_map_toFun {α β γ δ : Type*} (f : Equiv α β) (g : Equiv γ δ) :
+    (f.sum_map g).toFun = Sum.map f g := rfl
+
+@[simp]
+lemma Equiv.sum_map_invFun {α β γ δ : Type*} (f : Equiv α β) (g : Equiv γ δ) :
+    (f.sum_map g).invFun = Sum.map f.symm g.symm := rfl
+
+def sum_map (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
+  toEquiv := Equiv.sum_map φ.toEquiv ψ.toEquiv
+  contMDiff_toFun := ContMDiff.sum_map φ.contMDiff_toFun ψ.contMDiff_toFun
+  contMDiff_invFun := ContMDiff.sum_map φ.contMDiff_invFun ψ.contMDiff_invFun
+
+lemma sum_map_symm_symm
+    (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  Diffeomorph.sum_map φ.symm ψ.symm = (Diffeomorph.sum_map φ ψ).symm := rfl
+
+lemma sum_map_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  Diffeomorph.sum_map φ ψ = Sum.map φ ψ := rfl
+
+lemma sum_map_inl (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  (Diffeomorph.sum_map φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
+
+lemma sum_map_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  (Diffeomorph.sum_map φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
+
+variable (I M M' n) in -- TODO: argument order is weird!
+def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
+  toEquiv := Equiv.sumComm M M'
+  contMDiff_toFun := ContMDiff.swap
+  contMDiff_invFun := ContMDiff.swap
+
+theorem coe_sumComm : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
+
+@[simp]
+theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := rfl
+
+variable (I M M' n) in
+def sumAssoc : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') n where
+  toEquiv := (Equiv.sumAssoc M M' M'').symm
+  contMDiff_toFun := by
+    apply ContMDiff.sum_elim
+    · exact ContMDiff.comp ContMDiff.inl ContMDiff.inl -- xxx: can I power up fun_prop to do this?
+    · exact ContMDiff.sum_map ContMDiff.inr contMDiff_id
+  contMDiff_invFun := by
+    apply ContMDiff.sum_elim
+    · exact ContMDiff.sum_map contMDiff_id ContMDiff.inl
+    · exact ContMDiff.comp ContMDiff.inr ContMDiff.inr
+
+-- TODO: move this next to contMDiff_const
+lemma contMDiff_of_const {f : M → N} (h : ∀ (x y : M), f x = f y) : ContMDiff I J n f := by
+  intro x
+  have : f = fun _ ↦ f x := by ext y; exact h y x
+  rw [this]
+  apply contMDiff_const
+
+variable (M) in
+def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
+  toEquiv := Equiv.sumEmpty M M'
+  contMDiff_toFun := contMDiff_id.sum_elim (contMDiff_of_const (fun _ ↦ congrFun rfl))
+  contMDiff_invFun := ContMDiff.inl
+
+variable (M M' I n) in
+lemma sumComm_inl : (Diffeomorph.sumComm I M n M') ∘ Sum.inl = Sum.inr := by
+  ext
+  exact Sum.swap_inl
+
+variable (M M' I n) in
+lemma sumComm_inr : (Diffeomorph.sumComm I M n M') ∘ Sum.inr = Sum.inl := by
+  ext
+  exact Sum.swap_inr
+
+end disjointUnion
 
 end Diffeomorph
