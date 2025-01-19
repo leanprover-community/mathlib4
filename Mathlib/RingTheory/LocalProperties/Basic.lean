@@ -400,20 +400,14 @@ variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
 
 theorem Ideal.localized'_eq_map (I : Ideal R) :
-    haveI := (isLocalizedModule_iff_isLocalization' p S).mpr inferInstance
-    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) :=
-  SetLike.ext fun x ↦ by
-    simp_rw [Submodule.mem_localized', IsLocalization.mem_map_algebraMap_iff p,
-      IsLocalizedModule.mk'_eq_iff, mul_comm x, eq_comm (a := _ * x), ← Algebra.smul_def,
-      Prod.exists, Subtype.exists, ← exists_prop]
-    rfl
+    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
+  rw [map, span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
 
 theorem Ideal.localized₀_eq_restrictScalars_map (I : Ideal R) :
     Submodule.localized₀ p (Algebra.linearMap R S) I = (I.map (algebraMap R S)).restrictScalars R :=
   congr(Submodule.restrictScalars R $(localized'_eq_map S p I))
 
 theorem Algebra.idealMap_eq_ofEq_comp_toLocalized₀ (I : Ideal R) :
-    haveI := (isLocalizedModule_iff_isLocalization' p S).mpr inferInstance
     Algebra.idealMap S I =
       (LinearEquiv.ofEq _ _ <| Ideal.localized₀_eq_restrictScalars_map S p I).toLinearMap ∘ₗ
       Submodule.toLocalized₀ p (Algebra.linearMap R S) I :=
