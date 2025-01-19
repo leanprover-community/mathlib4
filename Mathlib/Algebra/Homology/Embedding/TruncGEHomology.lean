@@ -50,7 +50,8 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
-lemma quasiIsoAt_restrictionToTruncGE'_f (hj : ¬ e.BoundaryGE j)
+/-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
+lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
     QuasiIsoAt (K.restrictionToTruncGE' e) j := by
   rw [quasiIsoAt_iff]
