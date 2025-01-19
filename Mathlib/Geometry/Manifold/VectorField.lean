@@ -69,12 +69,11 @@ instance [IsManifold I (minSmoothness 𝕜 1) M] :
 
 instance [IsManifold I (minSmoothness 𝕜 3) M] :
     IsManifold I (minSmoothness 𝕜 2) M :=
-  IsManifold.of_le (n := minSmoothness 𝕜 3) (minSmoothness_monotone (by norm_num))
+  IsManifold.of_le (n := minSmoothness 𝕜 3) (minSmoothness_monotone (by norm_cast))
 
 instance [IsManifold I (minSmoothness 𝕜 2) M] :
     IsManifold I (minSmoothness 𝕜 1) M :=
-  IsManifold.of_le (n := minSmoothness 𝕜 2) (minSmoothness_monotone (by norm_num))
-
+  IsManifold.of_le (n := minSmoothness 𝕜 2) (minSmoothness_monotone (by norm_cast))
 
 namespace VectorField
 
