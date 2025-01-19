@@ -1079,7 +1079,7 @@ lemma mem_supp_iff_of_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w
   · exact hadj.symm
   · exact hadj
 
-lemma induce_supp_spanningCoe_adj_iff {v w : V} (c : G.ConnectedComponent) :
+lemma adj_spanningCoe_induce_supp {v w : V} (c : G.ConnectedComponent) :
   (G.induce c.supp).spanningCoe.Adj v w ↔ v ∈ c.supp ∧ G.Adj v w := by
   by_cases h : v ∈ c.supp
   · refine ⟨by aesop, ?_⟩
