@@ -36,6 +36,7 @@ We also define the following algebraic structures on `ℍ[R]`:
 The following notation is available with `open Quaternion` or `open scoped Quaternion`.
 
 * `ℍ[R, c₁, c₂, c₃]` : `QuaternionAlgebra R c₁ c₂ c₃`
+* `ℍ[R, c₁, c₂]` : `QuaternionAlgebra R c₁ 0 c₂`
 * `ℍ[R]` : quaternions over `R`.
 
 ## Implementation notes
@@ -108,7 +109,7 @@ variable [Zero R]
 /-- The imaginary part of a quaternion.
 
 Note that unless `c₂ = 0`, this definition is not particularly well-behaved;
-for instance, `QuaternionAlgebra.star_im` only says that the star of an imaginary quaternions
+for instance, `QuaternionAlgebra.star_im` only says that the star of an imaginary quaternion
 is imaginary under this condition. -/
 def im (x : ℍ[R,c₁,c₂,c₃]) : ℍ[R,c₁,c₂,c₃] :=
   ⟨0, x.imI, x.imJ, x.imK⟩
@@ -497,28 +498,18 @@ instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
 @[norm_cast, simp]
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> simp
 
-instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] where
-  one_smul _ := by ext <;> simp
-  mul_smul _ _ _ := by ext <;> simp [mul_smul]
-
-instance [Monoid S] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] where
-  smul_add _ _ _ := by ext <;> simp [smul_add]
-  smul_zero _ := by ext <;> simp [smul_zero]
-
-instance [Semiring S] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] where
-  add_smul _ _ _ := by ext <;> simp [add_smul]
-  zero_smul _ := by ext <;> simp [zero_smul]
-
+-- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
+-- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
-  algebraMap := {
-    toFun s := coe (algebraMap S R s)
-    map_one' := by simp
-    map_mul' := by simp
-    map_zero' := by simp
-    map_add' := by simp
-  }
-  commutes' s x := by ext <;> simp [Algebra.commutes]
+  smul := (· • ·)
+  algebraMap :=
+  { toFun s := coe (algebraMap S R s)
+    map_one' := by simp only [map_one, coe_one]
+    map_zero' := by simp only [map_zero, coe_zero]
+    map_mul' x y := by simp only [map_mul, coe_mul]
+    map_add' x y := by simp only [map_add, coe_add] }
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
+  commutes' s x := by ext <;> simp [Algebra.commutes]
 
 theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂,c₃] r = ⟨r, 0, 0, 0⟩ :=
   rfl
