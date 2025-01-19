@@ -565,8 +565,8 @@ def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R :=
       map_smul' := fun _ _ => rfl }
 
 @[simp]
-theorem coe_linearEquivTuple : ⇑(linearEquivTuple c₁ c₂ c₃) = equivTuple c₁ c₂ c₃ :=
-  rfl
+theorem coe_linearEquivTuple :
+    ⇑(linearEquivTuple c₁ c₂ c₃) = equivTuple c₁ c₂ c₃ := rfl
 
 @[simp]
 theorem coe_linearEquivTuple_symm : ⇑(linearEquivTuple c₁ c₂ c₃).symm =
