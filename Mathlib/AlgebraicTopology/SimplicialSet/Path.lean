@@ -110,11 +110,9 @@ variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ} (f : Path X m) (σ : X ⟶
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
 abbrev map : Path Y m := Path₁.map f <| trunc (n + 1) 1 |>.map σ
 
-@[simp]
 lemma map_vertex (i : Fin (m + 1)) :
     (f.map σ).vertex i = σ.app (op [0]ₙ₊₁) (f.vertex i) := rfl
 
-@[simp]
 lemma map_arrow (i : Fin m) :
     (f.map σ).arrow i = σ.app (op [1]ₙ₊₁) (f.arrow i) := rfl
 
@@ -189,11 +187,9 @@ variable {X Y : SSet.{u}} {n : ℕ} (f : Path X n) (σ : X ⟶ Y)
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
 abbrev map : Path Y n := Path₁.map f <| truncation 1 |>.map σ
 
-@[simp]
 lemma map_vertex (i : Fin (n + 1)) :
     (f.map σ).vertex i = σ.app (op [0]) (f.vertex i) := rfl
 
-@[simp]
 lemma map_arrow (i : Fin n) :
     (f.map σ).arrow i = σ.app (op [1]) (f.arrow i) := rfl
 
@@ -208,11 +204,9 @@ by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
 abbrev spine (n : ℕ) : X _[n] → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
 
-@[simp]
 lemma spine_vertex {n : ℕ} (Δ : X _[n]) (i : Fin (n + 1)) :
     (X.spine n Δ).vertex i = X.map (const [0] [n] i).op Δ := rfl
 
-@[simp]
 lemma spine_arrow {n : ℕ} (Δ : X _[n]) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ := rfl
 
