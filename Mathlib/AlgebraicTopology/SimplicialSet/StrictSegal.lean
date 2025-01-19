@@ -78,13 +78,13 @@ def spineEquiv : X _[m]ₙ₊₁ ≃ Path X m where
   left_inv := sx.spineToSimplex_spine_apply m
   right_inv := sx.spine_spineToSimplex_apply m
 
+theorem spineInjective : Function.Injective (sx.spineEquiv m) :=
+  Equiv.injective _
+
 /-- The unique existence of an inverse to `spine X m` for all `m ≤ n + 1`
 implies the mere existence of such an inverse. -/
 lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X where
   segal m h := sx.spineEquiv m h |>.bijective
-
-theorem spineInjective : Function.Injective (sx.spineEquiv m) :=
-  Equiv.injective _
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (m + 1)) (f : Path X m) :
@@ -247,13 +247,18 @@ lemma spineToSimplex_spine_apply (Δ : X _[n]) :
 and `Path X m`. -/
 abbrev spineEquiv (n : ℕ) : X _[n] ≃ Path X n := sx n |>.spineEquiv n
 
+theorem spineInjective : Function.Injective (sx.spineEquiv n) :=
+  sx n |>.spineInjective n
+
 /-- The unique existence of an inverse to `spine X n` forall `n : ℕ` implies
 the mere existence of such an inverse. -/
 lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X :=
   fun n ↦ sx n |>.isStrictSegal_of_strictSegal
 
-theorem spineInjective : Function.Injective (sx.spineEquiv n) :=
-  sx n |>.spineInjective n
+lemma spineEquiv_coe_fn_mk (n : ℕ) : ⇑(sx.spineEquiv n) = X.spine n := rfl
+
+lemma spineEquiv_coe_fn_symm_mk (n : ℕ) :
+    ⇑(sx.spineEquiv n).symm = sx.spineToSimplex := rfl
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
