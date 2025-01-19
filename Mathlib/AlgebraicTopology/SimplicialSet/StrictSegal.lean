@@ -248,9 +248,9 @@ the mere existence of such an inverse. -/
 lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X :=
   fun n ↦ sx n |>.isStrictSegal_of_strictSegal
 
-lemma spineEquiv_coe_fn_mk (n : ℕ) : ⇑(sx.spineEquiv n) = X.spine n := rfl
+lemma spineEquiv_coe_fn (n : ℕ) : ⇑(sx.spineEquiv n) = X.spine n := rfl
 
-lemma spineEquiv_coe_fn_symm_mk (n : ℕ) :
+lemma spineEquiv_coe_fn_symm (n : ℕ) :
     ⇑(sx.spineEquiv n).symm = sx.spineToSimplex := rfl
 
 @[simp]

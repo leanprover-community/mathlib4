@@ -33,8 +33,8 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   intro j hj
   apply sx.spineInjective
   ext k
-  change (X.spine _ _).arrow _ = X.map _ _
-  dsimp only [inclusion, Functor.op_obj, fullSubcategoryInclusion.obj]
+  dsimp only [spineEquiv_coe_fn]
+  slice_rhs 1 2 => rw [spine_arrow]
   rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
   let ksucc := k.succ.castSucc
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
