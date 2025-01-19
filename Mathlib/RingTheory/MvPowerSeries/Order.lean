@@ -400,7 +400,7 @@ theorem order_eq_nat {n : ℕ} :
 
 /-- The order of the monomial `a*X^d` is infinite if `a = 0` and `degree d` otherwise.-/
 theorem order_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
-    order (monomial R d a) = if a = 0 then (⊤ : ℕ∞) else degree d := by
+    order (monomial R d a) = if a = 0 then (⊤ : ℕ∞) else d.degree := by
   rw [degree_eq_weight_one]
   exact weightedOrder_monomial _
 
