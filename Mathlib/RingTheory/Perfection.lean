@@ -454,10 +454,9 @@ instance : CharP (PreTilt K v O hv p) p :=
 
 section Classical
 
-open scoped Classical
-
 open Perfection
 
+open scoped Classical in
 /-- The valuation `Perfection(O/(p)) → ℝ≥0` as a function.
 Given `f ∈ Perfection(O/(p))`, if `f = 0` then output `0`;
 otherwise output `preVal(f(n))^(p^n)` for any `n` such that `f(n) ≠ 0`. -/
@@ -468,6 +467,7 @@ noncomputable def valAux (f : PreTilt K v O hv p) : ℝ≥0 :=
 
 variable {K v O hv p}
 
+open scoped Classical in
 theorem coeff_nat_find_add_ne_zero {f : PreTilt K v O hv p} {h : ∃ n, coeff _ _ n f ≠ 0} (k : ℕ) :
     coeff _ _ (Nat.find h + k) f ≠ 0 :=
   coeff_add_ne_zero (Nat.find_spec h) k
@@ -476,6 +476,7 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
     valAux K v O hv p f = ModP.preVal K v O hv p (coeff _ _ n f) ^ p ^ n := by
   have h : ∃ n, coeff _ _ n f ≠ 0 := ⟨n, hfn⟩
   rw [valAux, dif_pos h]
+  classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction' k with k ih
   · rfl

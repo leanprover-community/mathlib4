@@ -15,8 +15,6 @@ Basic properties the maximal spectrum of a ring.
 
 noncomputable section
 
-open scoped Classical
-
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
 namespace MaximalSpectrum
@@ -133,6 +131,7 @@ variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)] [∀ i, Nontrivial 
 theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     ¬ Function.Surjective (toPiLocalization (Π i, R i)) := fun surj ↦ by
   have ⟨J, max, nmem⟩ := PrimeSpectrum.exists_maximal_nmem_range_sigmaToPi_of_infinite R
+  classical
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max⟩ 1)
   have : r = 0 := funext fun i ↦ toPiLocalization_injective _ <| funext fun I ↦ by
     replace hr := congr_fun hr ⟨_, I.2.comap_piEvalRingHom⟩
@@ -183,8 +182,9 @@ localizations at maximal ideals. -/
 def piLocalizationToMaximal : PiLocalization R →+* MaximalSpectrum.PiLocalization R :=
   Pi.ringHom fun I ↦ Pi.evalRingHom _ I.toPrimeSpectrum
 
-theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) :=
-  fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
+theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) := by
+  classical
+  exact fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
 
 variable {R}
 
@@ -209,6 +209,7 @@ variable {S}
 theorem isMaximal_of_toPiLocalization_surjective (surj : Function.Surjective (toPiLocalization R))
     (I : PrimeSpectrum R) : I.1.IsMaximal := by
   have ⟨J, max, le⟩ := I.1.exists_le_maximal I.2.ne_top
+  classical
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max.isPrime⟩ 1)
   by_contra h
   have hJ : algebraMap _ _ r = _ := (congr_fun hr _).trans (Function.update_self ..)

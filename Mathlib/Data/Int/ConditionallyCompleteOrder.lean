@@ -17,8 +17,8 @@ open Int
 
 
 noncomputable section
-open scoped Classical
 
+open scoped Classical in
 instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
   __ := LinearOrder.toLattice
