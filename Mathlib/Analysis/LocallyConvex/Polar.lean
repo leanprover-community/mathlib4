@@ -72,6 +72,11 @@ theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x 
   ext
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
 
+theorem polar_balanced (s : Set E) : Balanced 𝕜 (B.polar s) := fun a ha y ⟨z,⟨hz₁,hz₂⟩⟩ x hx => by
+  rw [← hz₂, map_smul, smul_eq_mul, ← mul_one 1]
+  exact le_trans (norm_mul_le _ _)
+    (mul_le_mul ha (hz₁ x hx) (norm_nonneg ((B x) z)) (zero_le_one' ℝ))
+
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
@@ -172,11 +177,9 @@ section Bipolar
 variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-theorem polar_balanced : Balanced 𝕜 (B.polar s) := fun a ha y ⟨z,⟨hz₁,hz₂⟩⟩ x hx => by
-  rw [← hz₂, map_smul, smul_eq_mul, norm_mul, ← mul_one 1]
-  exact mul_le_mul ha (hz₁ x hx) (norm_nonneg ((B x) z)) (zero_le_one' ℝ)
+variable (𝕜)
 
 variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
@@ -187,6 +190,8 @@ theorem polar_convex : Convex ℝ (B.polar s) := fun  x hx y hy a b ha hb hab e 
     exact mul_le_of_le_one_right ha (hx e he)
   · rw [norm_smul, (Real.norm_of_nonneg hb)]
     exact mul_le_of_le_one_right hb (hy e he)
+
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := ⟨B.polar_balanced s, polar_convex 𝕜 s⟩
 
 theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} [SMul ℝ (WeakBilin B)] {s : Set (WeakBilin B)} :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
