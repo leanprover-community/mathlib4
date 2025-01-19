@@ -171,7 +171,7 @@ lemma invariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
   · exact mdifferentiableAt_invariantVectorField _
   · exact mdifferentiableAt_invariantVectorField _
   · exact contMDiffAt_mul_left
-  · exact minSmoothness_monotone (by norm_num)
+  · exact minSmoothness_monotone (by norm_cast)
 
 instance : LieRing (GroupLieAlgebra I G) where
   add_lie u v w := by
