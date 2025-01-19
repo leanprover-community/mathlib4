@@ -248,9 +248,6 @@ namespace Free
 
 section
 
--- Porting note: removed local reducible attribute for categoryFree, adjusted dsimp invocations
--- accordingly
-
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by

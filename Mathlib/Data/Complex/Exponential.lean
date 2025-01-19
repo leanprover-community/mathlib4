@@ -47,7 +47,6 @@ def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 
 /-- The complex exponential function, defined via its Taylor series -/
--- Porting note: removed `irreducible` attribute, so I can prove things
 @[pp_nodot]
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
@@ -1446,6 +1445,12 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
       · exact one_sub_le_exp_neg _
     _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
+lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
+    rw [le_inv_mul_iff₀ hc]
+    calc c * x
+    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
+    _ ≤ _ := Real.add_one_le_exp (c * x)
+
 end Real
 
 namespace Mathlib.Meta.Positivity
@@ -1496,3 +1501,5 @@ theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = 
   rw [abs_exp, abs_exp, Real.exp_eq_exp]
 
 end Complex
+
+set_option linter.style.longFile 1700
