@@ -39,8 +39,8 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
-  elems' : ℕ → R[X]
-  degree_eq' (i : ℕ) : (elems' i).degree = i
+  protected elems' : ℕ → R[X]
+  protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 namespace Sequence
 
