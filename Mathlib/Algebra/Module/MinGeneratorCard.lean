@@ -6,22 +6,22 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
 import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
-# Minimum Cardinality of Generating Set for Submodules
+# Span Rank for Submodules
 
-In this file, we define the minimum cardinality of a generating set for a submodule,
-which is implemented as `minGeneratorCard` and `spanRank`.
+In this file, we define the span rank for a submodule, which is implemented as
+  `spanRankNat` and `spanRank`.
 
 ## Main Definitions
 
-* `minGeneratorCard`: The minimum cardinality of a generating set of a submodule as a natural
-  number. If no finite generating set exists, the minimum cardinality is defined to be `0`.
+* `spanRankNat`: The minimum cardinality of a generating set of a submodule as a natural
+  number. If no finite generating set exists, the span rank is defined to be `0`.
 * `spanRank`: The span rank of a submodule, possibly infinite, with type `WithTop ℕ`.
 * `FG.minGenerator`: For a finitely generated submodule, get a minimal generating function.
 
 ## Main Results
 
-* `FG.exists_fun_minGeneratorCard_span_range_eq` : Any finitely generated submodule has a generating
-  family of cardinality equal to `minGeneratorCard`.
+* `FG.exists_fun_spanRankNat_span_range_eq` : Any finitely generated submodule has a generating
+  family of cardinality equal to `spanRankNat`.
 
 ## Tags
 submodule, generating set, span rank
@@ -32,10 +32,10 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 namespace Submodule
 
-/-- The minimum cardinality of a generating set for a submodule. If the minimum cardinality
-of a generating set is infinity, then the minimum cardinality is defined to be `0`. -/
+/-- The span rank of a submodule as a natural number. If the submodule can not be spanned by any
+  finite set, then the span rank is defined to be `0`. -/
 noncomputable
-def minGeneratorCard (p : Submodule R M) : ℕ :=
+def spanRankNat (p : Submodule R M) : ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
 /-- The span rank of a submodule, possibly infinite -/
@@ -44,6 +44,7 @@ def spanRank (p : Submodule R M) : WithTop ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
 /-- A submodule's span rank is not top if and only if it is finitely generated -/
+@[simp]
 lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
     p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def]
@@ -55,22 +56,22 @@ lemma fg_iff_card_finset_nonempty {p : Submodule R M} :
 
 /-- A submodule is finitely generated if and only if
 its spanrank equals its minimum generator cardinality -/
-lemma fg_iff_spanrank_eq_minGeneratorCard {p : Submodule R M} :
-    p.FG ↔ p.spanRank = p.minGeneratorCard := by
+lemma fg_iff_spanrank_eq_spanRankNat {p : Submodule R M} :
+    p.FG ↔ p.spanRank = p.spanRankNat := by
   constructor
   · intro h
     haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
       rwa [nonempty_subtype, ← fg_def]
     exact (WithTop.coe_iInf (OrderBot.bddBelow
-      (Set.range fun i ↦ (minGeneratorCard.proof_1 p i).toFinset.card))).symm
+      (Set.range fun i ↦ (spanRankNat.proof_1 p i).toFinset.card))).symm
   intro e
   rw [← spanRank_ne_top_iff_fg, e]
   exact WithTop.coe_ne_top
 
 /-- Constructs a generating function whose cardinality equals
-  `minGeneratorCard` for a finitely generated submodule.-/
-theorem FG.exists_fun_minGeneratorCard_span_range_eq {p : Submodule R M} (h : p.FG) :
-  ∃ f : Fin p.minGeneratorCard → M, span R (Set.range f) = p := by
+  `spanRankNat` for a finitely generated submodule.-/
+theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
+  ∃ f : Fin p.spanRankNat → M, span R (Set.range f) = p := by
   haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
     rcases h with ⟨s, hs⟩
     use s
@@ -78,7 +79,7 @@ theorem FG.exists_fun_minGeneratorCard_span_range_eq {p : Submodule R M} (h : p.
     · exact Finset.finite_toSet s
     · exact hs
   obtain ⟨⟨s, h₁, h₂⟩, h₃ : h₁.toFinset.card = _⟩ :
-    p.minGeneratorCard ∈ _ := Nat.sInf_mem (Set.range_nonempty _)
+    p.spanRankNat ∈ _ := Nat.sInf_mem (Set.range_nonempty _)
   rw [<- h₃]
   let f := ((@Fintype.ofFinite s h₁).equivFin).invFun
   letI t1 : Finite (@Set.Elem M s) := h₁
@@ -90,8 +91,7 @@ theorem FG.exists_fun_minGeneratorCard_span_range_eq {p : Submodule R M} (h : p.
   let f' :=  Fintype.equivFinOfCardEq temp.symm
   use Subtype.val ∘ f'.symm
   rw [Set.range_comp, Set.range_eq_univ.mpr]
-  · simp_all only [nonempty_subtype, Set.toFinite_toFinset, Set.toFinset_card,
-    Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq, t2]
+  · simp_all
   exact f'.symm.surjective
 
 /-- For a finitely generated submodule, its spanRank is less than or equal to n
@@ -102,27 +102,25 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
   constructor
   · intro e
     have h := spanRank_ne_top_iff_fg.mp (e.trans_lt (WithTop.coe_lt_top n)).ne
-    obtain ⟨f, hf⟩ := FG.exists_fun_minGeneratorCard_span_range_eq h
-    let f' : Fin n → M := fun i => if h : i.1 < p.minGeneratorCard then f (Fin.castLT i h) else 0
-    use f'
-    rw [← hf]
+    obtain ⟨f, hf⟩ := FG.exists_fun_spanRankNat_span_range_eq h
+    use fun i => if h : i.1 < p.spanRankNat then f (Fin.castLT i h) else 0
+    simp_rw [← hf]
     apply le_antisymm
     · rw [Submodule.span_le]
       rintro _ ⟨x, rfl⟩
-      dsimp only [f']
+      dsimp
       split_ifs
       · apply Submodule.subset_span
         exact Set.mem_range_self _
       · exact (span R (Set.range f)).zero_mem
     · rw [Submodule.span_le]
       rintro _ ⟨x, rfl⟩
-      dsimp only [f']
+      simp
       apply Submodule.subset_span
-      rw [fg_iff_spanrank_eq_minGeneratorCard] at h
-      have he : (p.minGeneratorCard : WithTop Nat) ≤ n := by rwa [h] at e
+      rw [fg_iff_spanrank_eq_spanRankNat] at h
+      have he : (p.spanRankNat : WithTop Nat) ≤ n := by rwa [h] at e
       use Fin.castLE (ENat.coe_le_coe.mp he) x
-      dsimp [f']
-      simp only [Fin.is_lt, ↓reduceDIte]
+      simp_all [↓reduceDIte]
       rfl
   · rintro ⟨f, hf⟩
     let s : { s : Set M // s.Finite ∧ span R s = p} :=
@@ -136,13 +134,13 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
           rw [Finset.card_univ, Fintype.card_fin]
 
 /-- An arbitrarily chosen generating family of minimal cardinality. -/
-noncomputable def FG.minGenerator {p : Submodule R M} (h : p.FG) : Fin p.minGeneratorCard → M :=
-  Classical.choose (exists_fun_minGeneratorCard_span_range_eq h)
+noncomputable def FG.minGenerator {p : Submodule R M} (h : p.FG) : Fin p.spanRankNat → M :=
+  Classical.choose (exists_fun_spanRankNat_span_range_eq h)
 
 /-- The span of the minimal generator equals the submodule -/
 lemma FG.span_range_minGenerator {p : Submodule R M} (h : p.FG) :
   span R (Set.range (minGenerator h)) = p :=
-  Classical.choose_spec (exists_fun_minGeneratorCard_span_range_eq h)
+  Classical.choose_spec (exists_fun_spanRankNat_span_range_eq h)
 
 /-- The minimal generator elements are in the submodule -/
 lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i) :
