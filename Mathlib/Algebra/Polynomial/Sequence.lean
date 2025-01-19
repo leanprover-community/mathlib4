@@ -23,9 +23,9 @@ We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` su
 
 ## TODO
 
-* Generalize linear independence of polynomial sequences to arbitrary sets of polynomials
-  which are pairwise different degree.
-
+Generalize linear independence to:
+  * just require coefficients are regular
+  * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
 open Submodule
@@ -91,31 +91,29 @@ lemma linearIndependent [NoZeroDivisors R] :
         intro w v hwv
         have hgwv : g y • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
         cases' mul_eq_zero.mp hgwv with hgy hwv'
-        · exact (hy (by simp [hgy])).elim
+        · exact hy (by simp [hgy]) |>.elim
         · exact sub_eq_zero.mp hwv'
       have hgx := degree_smul_of_smul_regular (S x) hgxreg
       have hgy := degree_smul_of_smul_regular (S y) hgyreg
       simpa [hgx, hgy] using S.degree_ne_degree xney
 
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
+    refine degree_ne_bot.mp  ?_ eqzero |>.elim
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
-    have := hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
-    exact degree_ne_bot.mp this eqzero |>.elim
+    exact hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
 
 section Nontrivial
 
 variable [Nontrivial R]
 
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
-lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.range S) := by
-  intro P _
+lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.range S) := fun P _ ↦ by
   induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
   by_cases p_ne_zero : P = 0; { simp [p_ne_zero] }
-  have is_unit := hCoeff n
-  obtain ⟨u, hu⟩ := isUnit_iff_exists.mp is_unit
-  have u_unit: IsUnit u := isUnit_iff_exists.mpr ⟨(S n).leadingCoeff, ⟨hu.2, hu.1⟩⟩
+  obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
+  have u_unit: IsUnit u := isUnit_iff_exists.mpr ⟨(S n).leadingCoeff, ⟨rightinv, leftinv⟩⟩
 
-  let head := P.leadingCoeff • u • S n
+  set head := P.leadingCoeff • u • S n
   let tail := P - head
 
   have head_mem_span : head ∈ Submodule.span R (Set.range S) := by
@@ -126,48 +124,45 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
 
   by_cases tail_eq_zero : tail = 0
   · simp [head_mem_span, sub_eq_iff_eq_add.mp tail_eq_zero]
-  · have tail_natdeg : tail.natDegree < n := by
-      have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-        rw [leadingCoeff_smul_of_smul_regular, smul_eq_mul, hu.2]
-        · exact isRegular_one.right
-        · exact u_unit.isSMulRegular R
-
-      have head_degree_eq := degree_smul_of_leadingCoeff_rightRegular
-        (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
-
-      have u_degree_same := degree_smul_of_leadingCoeff_rightRegular
-        u_unit.ne_zero (hCoeff n).isRegular.right
-      rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
-          ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
-
-      have smul_nonzero: head ≠ 0 := by
-        by_cases n_eq_zero: n = 0
-        · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at hu
-          dsimp [head]
-          rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-               smul_C, smul_eq_mul, map_mul, ← C_mul, hu.2, smul_C, smul_eq_mul,
-               mul_one, C_eq_zero, leadingCoeff_eq_zero]
-        · apply head.ne_zero_of_degree_gt
-          rw [← head_degree_eq]
-          exact natDegree_pos_iff_degree_pos.mp (by omega)
-
-      have s_to_p_coeff: P.leadingCoeff = head.leadingCoeff := by
-        rw [degree_eq_natDegree, degree_eq_natDegree smul_nonzero] at head_degree_eq
-        nth_rw 2 [← coeff_natDegree]
-        norm_cast at head_degree_eq
-        rw [← head_degree_eq, hp]
-        dsimp [head]
-        nth_rw 2 [← S.natDegree_eq n]
-        rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, hu.2, mul_one]
-
-      refine natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_
-      have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero s_to_p_coeff
-      rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
-
+  · refine sub_mem_iff_left _ head_mem_span |>.mp ?_
     simp only [mem_top, forall_const] at ih
-    have tail_mem_span := ih tail.natDegree tail_natdeg rfl
+    refine ih tail.natDegree ?_ _ rfl
 
-    exact sub_mem_iff_left _ head_mem_span |>.mp tail_mem_span
+    have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
+      rw [leadingCoeff_smul_of_smul_regular, smul_eq_mul, rightinv]
+      · exact isRegular_one.right
+      · exact IsSMulRegular.of_mul_eq_one leftinv
+
+    have head_degree_eq := degree_smul_of_leadingCoeff_rightRegular
+      (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
+
+    have u_degree_same := degree_smul_of_leadingCoeff_rightRegular
+      u_unit.ne_zero (hCoeff n).isRegular.right
+    rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
+        ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
+
+    have head_nonzero: head ≠ 0 := by
+      by_cases n_eq_zero: n = 0
+      · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
+        dsimp [head]
+        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
+              smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
+              mul_one, C_eq_zero, leadingCoeff_eq_zero]
+      · apply head.ne_zero_of_degree_gt
+        rw [← head_degree_eq]
+        exact natDegree_pos_iff_degree_pos.mp (by omega)
+
+    have hPhead : P.leadingCoeff = head.leadingCoeff := by
+      rw [degree_eq_natDegree, degree_eq_natDegree head_nonzero] at head_degree_eq
+      nth_rw 2 [← coeff_natDegree]
+      rw_mod_cast [← head_degree_eq, hp]
+      dsimp [head]
+      nth_rw 2 [← S.natDegree_eq n]
+      rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+
+    refine natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_
+    have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
+    rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
 /-- Every polynomial sequence is a basis of `R[X]`. -/
 noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
