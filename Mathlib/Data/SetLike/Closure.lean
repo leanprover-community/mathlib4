@@ -137,7 +137,7 @@ section PartialOrder
 variable [PartialOrder L] [IsConcreteClosure L α]
 
 instance : IsConcreteLE L α where
-  coe_subset_coe' := IsConcreteClosure.gi.u_le_u_iff_le
+  coe_subset_coe' := IsConcreteClosure.gi.u_le_u_iff
 
 theorem closure_eq_of_le {s : Set α} {l : L} (h₁ : s ⊆ l) (h₂ : l ≤ HasClosure.closure s) :
     HasClosure.closure s = l := le_antisymm (closure_le.2 h₁) h₂
