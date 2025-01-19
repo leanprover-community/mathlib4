@@ -6,8 +6,9 @@ Authors: Jireh Loreaux
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
---import Mathlib.Topology.Algebra.Module.Basic
---import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-! # Type synonym for types with a `CStarModule` structure
 
@@ -180,9 +181,9 @@ lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
 
 instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
     Module.Finite R (WithCStarModule E) where
-  out := by
+  fg_top := by
     rw [← map_top_submodule]
-    exact Submodule.FG.map _ ‹Module.Finite R E›.out
+    exact Submodule.FG.map _ ‹Module.Finite R E›.fg_top
 
 /-! ## `WithCStarModule E` inherits the uniformity and bornology from `E`. -/
 
