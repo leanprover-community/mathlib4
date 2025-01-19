@@ -424,21 +424,52 @@ end Module
 
 section
 
-variable {S : Type u} [CommRing S]
+universe u₀
+
+namespace Algebra
+
+variable {S₀ : Type u₀} [CommRing S₀] {S : Type u} [Ring S] [Algebra S₀ S]
 
 variable {M N : ModuleCat.{v} S}
 
-instance : Linear S (ModuleCat.{v} S) where
+/--
+Let `S` be an `S₀`-algebra. Then `S`-modules are modules over `S₀`.
+-/
+scoped instance : Module S₀ M := Module.compHom _ (algebraMap S₀ S)
+
+scoped instance : SMulCommClass S S₀ M :=
+    { smul_comm s s₀ n :=
+        show s • algebraMap S₀ S s₀ • n = algebraMap S₀ S s₀ • s • n by
+        rw [← smul_assoc, smul_eq_mul, ← Algebra.commutes, mul_smul] }
+
+/--
+Let `S` be an `S₀`-algebra. Then the category of `S`-modules is `S₀`-linear.
+-/
+scoped instance instLinear : Linear S₀ (ModuleCat.{v} S) where
+  smul_comp _ M N s₀ f g := by
+    ext
+    simp [show ∀ (m : M), s₀ • m = algebraMap S₀ S s₀ • m by intros; rfl,
+      show ∀ (n : N), s₀ • n = algebraMap S₀ S s₀ • n by intros; rfl]
+
+end Algebra
+
+section
+
+variable {S : Type u} [CommRing S]
+
+instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 
 theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
-    Iso.homCongr i j f = ⟨LinearEquiv.arrowCongr i.toLinearEquiv j.toLinearEquiv f.hom⟩ :=
+    Iso.homCongr i j f = ⟨LinearEquiv.arrowCongr (R := S) i.toLinearEquiv j.toLinearEquiv f.hom⟩ :=
   rfl
 
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
     Iso.conj i f = ⟨LinearEquiv.conj i.toLinearEquiv f.hom⟩ :=
   rfl
+
+end
 
 end
 
