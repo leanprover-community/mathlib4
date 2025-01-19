@@ -284,9 +284,8 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       apply mul_lt_mul_of_pos_left
       apply (hf₁ a)
       exact ha
-
-
-      sorry
+      exact inv_pos_of_pos e3
+    --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
     sorry
 
   · exact closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
