@@ -84,6 +84,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
   nontrivial' := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use (x : K)
+    dsimp [adicCompletion]
     rw [valuedAdicCompletion_eq_valuation' v (x : K)]
     constructor
     · simpa only [ne_eq, map_eq_zero, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
@@ -110,10 +111,11 @@ lemma toNNReal_Valued_eq_vadicAbv (x : K) :
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
-  simp only [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom, MonoidWithZeroHom.coe_mk,
-    ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom, RingHom.coe_mk, MonoidHom.coe_mk,
-    OneHom.coe_mk, Valued.valuedCompletion_apply, toNNReal_Valued_eq_vadicAbv]
+  simp only [adicCompletion, NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom,
+    RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Valued.valuedCompletion_apply,
+    toNNReal_Valued_eq_vadicAbv]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

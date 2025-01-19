@@ -47,8 +47,10 @@ def toScheme {X : Scheme.{u}} (U : X.Opens) : Scheme.{u} :=
 instance : CoeOut X.Opens Scheme := ⟨toScheme⟩
 
 /-- The restriction of a scheme to an open subset. -/
-@[simps! base_apply]
 def ι : ↑U ⟶ X := X.ofRestrict _
+
+@[simp]
+lemma ι_base_apply (x : U) : U.ι.base x = x.val := rfl
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
@@ -146,6 +148,16 @@ lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x
     (hx : x ∈ V) : X.presheaf.germ (U.ι ''ᵁ V) x ⟨x, hx, rfl⟩ ≫
       (U.stalkIso x).inv = U.toScheme.presheaf.germ V x hx :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.isOpenEmbedding V x hx
+
+lemma stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (x : U) :
+    (U.stalkIso x).inv = U.ι.stalkMap x := by
+  rw [← Category.comp_id (U.stalkIso x).inv, Iso.inv_comp_eq]
+  apply TopCat.Presheaf.stalk_hom_ext
+  intro W hxW
+  simp only [Category.comp_id, U.germ_stalkIso_hom_assoc]
+  convert (Scheme.stalkMap_germ U.ι (U.ι ''ᵁ W) x ⟨_, hxW, rfl⟩).symm
+  refine (U.toScheme.presheaf.germ_res (homOfLE ?_) _ _).symm
+  exact (Set.preimage_image_eq _ Subtype.val_injective).le
 
 end Scheme.Opens
 
@@ -260,10 +272,9 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
--- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
--- @[simps obj_left obj_hom mapLeft]
+@[simps! obj_left obj_hom map_left]
 def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   obj U := Over.mk U.ι
   map {U V} i := Over.homMk (X.homOfLE i.le) (by simp)
@@ -273,16 +284,6 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   map_comp {U V W} i j := by
     ext1
     exact (X.homOfLE_homOfLE i.le j.le).symm
-
-@[simp] lemma Scheme.restrictFunctor_obj_left (U : X.Opens) :
-  (X.restrictFunctor.obj U).left = U := rfl
-
-@[simp] lemma Scheme.restrictFunctor_obj_hom (U : X.Opens) :
-  (X.restrictFunctor.obj U).hom = U.ι := rfl
-
-@[simp]
-lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).left = (X.homOfLE i.le) := rfl
 
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictFunctor_map_ofRestrict := Scheme.homOfLE_ι
@@ -313,7 +314,8 @@ noncomputable
 def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : X.Opens) :
     (U.ι ⁻¹ᵁ V).toScheme ≅ V.ι ⁻¹ᵁ U :=
   IsOpenImmersion.isoOfRangeEq (Opens.ι _ ≫ U.ι) (Opens.ι _ ≫ V.ι) <| by
-    simp [Set.image_preimage_eq_inter_range, Set.inter_comm (U : Set X), Set.range_comp]
+    simp only [comp_coeBase, TopCat.coe_comp, Set.range_comp, Opens.range_ι, Opens.map_coe,
+      Set.image_preimage_eq_inter_range, Set.inter_comm (U : Set X)]
 
 /-- If `f : X ⟶ Y` is an open immersion, then for any `U : X.Opens`,
 we have the isomorphism `U ≅ f ''ᵁ U`. -/
@@ -704,6 +706,21 @@ lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     opensFunctor_map_homOfLE]
   rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
   rfl
+
+@[simp]
+lemma coe_resLE_base (x : V) : ((f.resLE U V e).base x).val = f.base x := by
+  simp [resLE, morphismRestrict_base]
+
+/-- The stalk map of `f.resLE U V` at `x : V` is is the stalk map of `f` at `x`. -/
+def resLEStalkMap (x : V) :
+    Arrow.mk ((f.resLE U V e).stalkMap x) ≅ Arrow.mk (f.stalkMap x) :=
+  Arrow.isoMk (U.stalkIso _ ≪≫
+      (Y.presheaf.stalkCongr <| Inseparable.of_eq <| by simp)) (V.stalkIso x) <| by
+    dsimp
+    rw [Category.assoc, ← Iso.eq_inv_comp, ← Category.assoc, ← Iso.comp_inv_eq,
+      Opens.stalkIso_inv, Opens.stalkIso_inv, ← stalkMap_comp,
+      stalkMap_congr_hom _ _ (resLE_comp_ι f e), stalkMap_comp]
+    simp
 
 end Scheme.Hom
 

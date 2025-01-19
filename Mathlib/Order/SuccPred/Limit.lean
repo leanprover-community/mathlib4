@@ -347,6 +347,20 @@ lemma _root_.IsLUB.mem_of_not_isSuccLimit {s : Set α} (hs : IsLUB s a) (hs' : s
     (ha : ¬IsSuccLimit a) : a ∈ s :=
   ha.imp_symm <| hs.isSuccLimit_of_not_mem hs'
 
+theorem IsSuccPrelimit.isLUB_Iio (ha : IsSuccPrelimit a) : IsLUB (Iio a) a := by
+  refine ⟨fun _ ↦ le_of_lt, fun b hb ↦ le_of_forall_lt fun c hc ↦ ?_⟩
+  obtain ⟨d, hd, hd'⟩ := ha.lt_iff_exists_lt.1 hc
+  exact hd'.trans_le (hb hd)
+
+theorem IsSuccLimit.isLUB_Iio (ha : IsSuccLimit a) : IsLUB (Iio a) a :=
+  ha.isSuccPrelimit.isLUB_Iio
+
+theorem isLUB_Iio_iff_isSuccPrelimit : IsLUB (Iio a) a ↔ IsSuccPrelimit a := by
+  refine ⟨fun ha b hb ↦ ?_, IsSuccPrelimit.isLUB_Iio⟩
+  rw [hb.Iio_eq] at ha
+  obtain rfl := isLUB_Iic.unique ha
+  cases hb.lt.false
+
 variable [SuccOrder α]
 
 theorem IsSuccPrelimit.le_succ_iff (hb : IsSuccPrelimit b) : b ≤ succ a ↔ b ≤ a :=
@@ -658,6 +672,15 @@ lemma _root_.IsGLB.isPredLimit_of_not_mem {s : Set α} (hs : IsGLB s a) (hs' : s
 lemma _root_.IsGLB.mem_of_not_isPredLimit {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : ¬IsPredLimit a) : a ∈ s :=
   ha.imp_symm <| hs.isPredLimit_of_not_mem hs'
+
+theorem IsPredPrelimit.isGLB_Ioi (ha : IsPredPrelimit a) : IsGLB (Ioi a) a :=
+  ha.dual.isLUB_Iio
+
+theorem IsPredLimit.isGLB_Ioi (ha : IsPredLimit a) : IsGLB (Ioi a) a :=
+  ha.dual.isLUB_Iio
+
+theorem isGLB_Ioi_iff_isPredPrelimit : IsGLB (Ioi a) a ↔ IsPredPrelimit a := by
+  simpa using isLUB_Iio_iff_isSuccPrelimit (a := toDual a)
 
 variable [PredOrder α]
 

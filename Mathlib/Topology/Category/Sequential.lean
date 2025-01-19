@@ -18,7 +18,7 @@ for defining categories of topological spaces, by giving it the induced category
 
 open CategoryTheory
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 universe u
 
@@ -42,8 +42,8 @@ attribute [instance] is_sequential
 instance : Category.{u, u+1} Sequential.{u} :=
   InducedCategory.category toTop
 
-instance : ConcreteCategory.{u} Sequential.{u} :=
-  InducedCategory.concreteCategory _
+instance : HasForget.{u} Sequential.{u} :=
+  InducedCategory.hasForget _
 
 variable (X : Type u) [TopologicalSpace X] [SequentialSpace X]
 
