@@ -466,6 +466,13 @@ def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
     | ⟨true, b⟩ => inr b,
     fun s => by cases s <;> rfl, fun s => by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
 
+/-- An alternative form of `Equiv.sumEquivSigmaBool` where `Bool.casesOn` is replaced by `cond`. -/
+def sumEquivSigmalCond (α β) : α ⊕ β ≃ Σ b : Bool, cond b α β :=
+  calc α ⊕ β
+    _ ≃ β ⊕ α := sumComm α β
+    _ ≃ Σ b, Bool.casesOn b β α := sumEquivSigmaBool β α
+    _ ≃ Σ b, cond b α β := sigmaCongrRight fun | true | false => Equiv.refl _
+
 -- See also `Equiv.sigmaPreimageEquiv`.
 /-- `sigmaFiberEquiv f` for `f : α → β` is the natural equivalence between
 the type of all fibres of `f` and the total space `α`. -/
