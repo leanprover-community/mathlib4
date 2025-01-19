@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
 import Mathlib.Analysis.Calculus.ParametricIntegral
@@ -26,12 +27,16 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 * `analyticOnNhd_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
+* `eqOn_complexMGF_of_mgf`: if two random variables have the same moment generating function,
+  defined on an interval with nonempty interior, then they have the same `complexMGF`
+  on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
 ## TODO
 
+Once we have a definition for the characteristic function, we will be able to prove the following.
+
 * `x : ℝ ↦ complexMGF X μ (I * x)` is equal to the characteristic function of
   the random variable `X`.
-* If two random variables have same `mgf`, then they have the same `complexMGF`.
 * As a consequence, if two random variables have same `mgf`, then they have the same
   characteristic function and the same distribution.
 
@@ -47,9 +52,23 @@ namespace ProbabilityTheory
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
   {z ε : ℂ}
 
+lemma integrable_cexp_iff {Y : Ω → ℂ} (hY : AEMeasurable Y μ) :
+    Integrable (fun ω ↦ cexp (Y ω)) μ ↔ Integrable (fun ω ↦ rexp ((Y ω).re)) μ := by
+  rw [← integrable_norm_iff]
+  swap; · exact (Complex.measurable_exp.comp_aemeasurable hY).aestronglyMeasurable
+  congr! with ω
+  simp only [Complex.norm_eq_abs, Complex.abs_exp]
+
 /-- Complex extension of the moment generating function. -/
 noncomputable
 def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω ↦ cexp (z * X ω)]
+
+lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
+    complexMGF X μ z = 0 := by
+  rw [complexMGF, integral_undef]
+  rw [integrable_cexp_iff]
+  · simpa using h
+  · exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
 
 lemma abs_complexMGF_le_mgf : abs (complexMGF X μ z) ≤ mgf X μ z.re := by
   rw [complexMGF, ← re_add_im z]
@@ -77,13 +96,6 @@ lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
 lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X μ := by
   ext x
   exact re_complexMGF_ofReal x
-
-lemma integrable_cexp_iff {Y : Ω → ℂ} (hY : AEMeasurable Y μ) :
-    Integrable (fun ω ↦ cexp (Y ω)) μ ↔ Integrable (fun ω ↦ rexp ((Y ω).re)) μ := by
-  rw [← integrable_norm_iff]
-  swap; · exact (Complex.measurable_exp.comp_aemeasurable hY).aestronglyMeasurable
-  congr! with ω
-  simp only [Complex.norm_eq_abs, Complex.abs_exp]
 
 lemma convexMGF_add_sub_range (ht : t ≠ 0)
     (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
@@ -446,5 +458,41 @@ lemma iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) 
   | succ n hn =>
     rw [iteratedDeriv_succ]
     exact (hasDeriAt_iteratedDeriv_complexMGF hz n).deriv
+
+lemma integrableExpSet_eq_of_mgf {Y : Ω → ℝ} (hXY : mgf X μ = mgf Y μ) :
+    integrableExpSet X μ = integrableExpSet Y μ := by
+  ext t
+  simp only [integrableExpSet, Set.mem_setOf_eq]
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  rw [← mgf_pos_iff' hμ, ← mgf_pos_iff' hμ, hXY]
+
+/-- If two random variables have the same moment generating function, defined on an interval with
+nonempty interior, then they have the same `complexMGF` on the vertical strip
+`{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+lemma eqOn_complexMGF_of_mgf {Y : Ω → ℝ} (hXY : mgf X μ = mgf Y μ)
+    (ht : t ∈ interior (integrableExpSet X μ)) :
+    Set.EqOn (complexMGF X μ) (complexMGF Y μ)
+      {z | z.re ∈ interior (integrableExpSet X μ)} := by
+  have hX : AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
+    analyticOnNhd_complexMGF
+  have hY : AnalyticOnNhd ℂ (complexMGF Y μ) {z | z.re ∈ interior (integrableExpSet Y μ)} :=
+    analyticOnNhd_complexMGF
+  rw [integrableExpSet_eq_of_mgf hXY] at hX ht ⊢
+  refine AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq hX hY ?_ (z₀ := (t : ℂ))
+    (by simp [ht]) ?_
+  · exact (convex_integrableExpSet.interior.linear_preimage reLm).isPreconnected
+  · have h_real : ∃ᶠ (x : ℝ) in 𝓝[≠] t, complexMGF X μ x = complexMGF Y μ x := by
+      refine .of_forall fun y ↦ ?_
+      rw [complexMGF_ofReal_eq_mgf, complexMGF_ofReal_eq_mgf, hXY]
+    rw [frequently_iff_seq_forall] at h_real ⊢
+    obtain ⟨xs, hx_tendsto, hx_eq⟩ := h_real
+    refine ⟨fun n ↦ xs n, ?_, fun n ↦ ?_⟩
+    · rw [tendsto_nhdsWithin_iff] at hx_tendsto ⊢
+      constructor
+      · rw [tendsto_ofReal_iff]
+        exact hx_tendsto.1
+      · simpa using hx_tendsto.2
+    · simp [hx_eq]
 
 end ProbabilityTheory
