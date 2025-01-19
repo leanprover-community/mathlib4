@@ -108,6 +108,12 @@ instance instMonoidHomClass : MonoidHomClass (ContinuousMonoidHom A B) A B where
 instance instContinuousMapClass : ContinuousMapClass (ContinuousMonoidHom A B) A B where
   map_continuous f := f.continuous_toFun
 
+@[to_additive (attr := simp)]
+lemma toMonoidHom_apply (f : ContinuousMonoidHom A B) (a : A) : f.toMonoidHom a = f a := rfl
+
+@[to_additive (attr := simp)]
+lemma toContinuousMap_apply (f : ContinuousMonoidHom A B) (a : A) : f.toContinuousMap a = f a := rfl
+
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
@@ -128,6 +134,10 @@ attribute [to_additive existing] ContinuousMonoidHom.mk'
 @[to_additive (attr := simps!) "Composition of two continuous homomorphisms."]
 def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : ContinuousMonoidHom A C :=
   ⟨g.toMonoidHom.comp f.toMonoidHom, (map_continuous g).comp (map_continuous f)⟩
+
+@[to_additive (attr := simp)]
+lemma coe_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
+    ⇑(g.comp f) = ⇑g ∘ ⇑f := rfl
 
 /-- Product of two continuous homomorphisms on the same space. -/
 @[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
@@ -164,6 +174,10 @@ instance : Inhabited (ContinuousMonoidHom A B) :=
 @[to_additive (attr := simps!) "The identity continuous homomorphism."]
 def id : ContinuousMonoidHom A A :=
   ⟨.id A, continuous_id⟩
+
+@[to_additive (attr := simp)]
+lemma coe_id : ⇑(ContinuousMonoidHom.id A) = _root_.id :=
+  rfl
 
 /-- The continuous homomorphism given by projection onto the first factor. -/
 @[to_additive (attr := simps!)
