@@ -446,7 +446,8 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   trans := isEmptyElim
   wf := wellFounded_of_isEmpty r
 
-instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
+instance Prod.Lex.instIsWellFounded [IsWellFounded α r] [IsWellFounded β s] :
+    IsWellFounded (α × β) (Prod.Lex r s) :=
   ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
