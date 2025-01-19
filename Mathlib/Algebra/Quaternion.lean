@@ -569,8 +569,8 @@ theorem coe_linearEquivTuple :
     ⇑(linearEquivTuple c₁ c₂ c₃) = equivTuple c₁ c₂ c₃ := rfl
 
 @[simp]
-theorem coe_linearEquivTuple_symm : ⇑(linearEquivTuple c₁ c₂ c₃).symm =
-    (equivTuple c₁ c₂ _).symm := rfl
+theorem coe_linearEquivTuple_symm :
+    ⇑(linearEquivTuple c₁ c₂ c₃).symm = (equivTuple c₁ c₂ _).symm := rfl
 
 /-- `ℍ[R, c₁, c₂, c₃]` has a basis over `R` given by `1`, `i`, `j`, and `k`. -/
 noncomputable def basisOneIJK : Basis (Fin 4) R ℍ[R,c₁,c₂,c₃] :=
