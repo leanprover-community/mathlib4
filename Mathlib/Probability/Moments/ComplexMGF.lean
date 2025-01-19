@@ -26,7 +26,7 @@ properties of the mgf from those of the characteristic function).
 
 ## Main results
 
-* `complexMGF_ofReal_eq_mgf`: for `x : ℝ`, `complexMGF X μ x = mgf X μ x`.
+* `complexMGF_ofReal`: for `x : ℝ`, `complexMGF X μ x = mgf X μ x`.
 
 * `hasDerivAt_complexMGF`: for all `z : ℂ` such that the real part `z.re` belongs to the interior
   of the interval of definition of the mgf, `complexMGF X μ` is differentiable at `z`
@@ -37,8 +37,8 @@ properties of the mgf from those of the characteristic function).
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
 * `eqOn_complexMGF_of_mgf`: if two random variables have the same moment generating function,
-  defined on an interval with nonempty interior, then they have the same `complexMGF`
-  on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`.
+  then they have the same `complexMGF` on the vertical strip
+  `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
 ## TODO
 
@@ -55,126 +55,6 @@ Once we have a definition for the characteristic function, we will be able to pr
 open MeasureTheory Filter Finset Real Complex
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
-
-namespace ProbabilityTheory
-
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
-  {z ε : ℂ}
-
-lemma integrable_cexp_iff {Y : Ω → ℂ} (hY : AEMeasurable Y μ) :
-    Integrable (fun ω ↦ cexp (Y ω)) μ ↔ Integrable (fun ω ↦ rexp ((Y ω).re)) μ := by
-  rw [← integrable_norm_iff]
-  swap; · exact (Complex.measurable_exp.comp_aemeasurable hY).aestronglyMeasurable
-  congr! with ω
-  simp only [Complex.norm_eq_abs, Complex.abs_exp]
-
-/-- Complex extension of the moment generating function. -/
-noncomputable
-def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω ↦ cexp (z * X ω)]
-
-lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
-    complexMGF X μ z = 0 := by
-  rw [complexMGF, integral_undef]
-  rw [integrable_cexp_iff]
-  · simpa using h
-  · exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
-
-lemma abs_complexMGF_le_mgf : abs (complexMGF X μ z) ≤ mgf X μ z.re := by
-  rw [complexMGF, ← re_add_im z]
-  simp_rw [add_mul, Complex.exp_add, re_add_im, ← Complex.norm_eq_abs]
-  calc ‖∫ ω, cexp (z.re * X ω) * cexp (z.im * I * X ω) ∂μ‖
-  _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
-  _ = ∫ ω, abs (cexp (z.re * X ω)) ∂μ := by
-    simp only [norm_mul, Complex.norm_eq_abs]
-    congr with ω
-    simp only [ne_eq, map_eq_zero, Complex.exp_ne_zero, not_false_eq_true, mul_eq_left₀]
-    rw [mul_comm _ I, mul_assoc, mul_comm]
-    exact mod_cast abs_exp_ofReal_mul_I _
-  _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.abs_exp]
-
-lemma complexMGF_ofReal_eq_mgf (x : ℝ) : complexMGF X μ x = mgf X μ x := by
-  rw [complexMGF]
-  norm_cast
-  have : ∫ ω, (rexp (x * X ω) : ℂ) ∂μ = ∫ ω, rexp (x * X ω) ∂μ := integral_ofReal
-  rw [this]
-  simp only [mgf]
-
-lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
-  simp [complexMGF_ofReal_eq_mgf]
-
-lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X μ := by
-  ext x
-  exact re_complexMGF_ofReal x
-
-lemma convexMGF_add_sub_range (ht : t ≠ 0)
-    (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
-    (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
-    (hε : |ε.re| ≤ |t|) (n : ℕ) :
-    complexMGF X μ (z + ε) - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
-      = μ[fun ω ↦ cexp (z * X ω)
-        * (cexp (ε * X ω) - ∑ m in range n, ε ^ m / m.factorial * X ω ^ m)] := by
-  have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
-  swap; · rw [← sub_ne_zero]; simp [ht]
-  have hε_int_pos : Integrable (fun ω ↦ rexp ((z.re + ε.re) * X ω)) μ := by
-    refine integrable_exp_mul_of_le_of_le (a := z.re - |t|) (b := z.re + |t|) ?_ ?_ ?_ ?_
-    · rcases le_total 0 t with ht | ht
-      · rwa [_root_.abs_of_nonneg ht]
-      · simpa [abs_of_nonpos ht]
-    · rcases le_total 0 t with ht | ht
-      · rwa [_root_.abs_of_nonneg ht]
-      · rwa [abs_of_nonpos ht]
-    · rw [sub_eq_add_neg]
-      gcongr
-      rw [neg_le]
-      exact (neg_le_abs _).trans hε
-    · gcongr
-      exact (le_abs_self _).trans hε
-  have h_int_zε : Integrable (fun ω ↦ cexp ((z + ε) * X ω)) μ := by
-    rw [integrable_cexp_iff]
-    swap; · exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
-    simp only [mul_re, add_re, ofReal_re, add_im, ofReal_im, mul_zero, sub_zero]
-    exact hε_int_pos
-  have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
-    rw [← integrable_norm_iff]
-    swap
-    · refine AEMeasurable.aestronglyMeasurable ?_
-      refine ((Complex.measurable_ofReal.comp_aemeasurable hX).pow_const _).mul ?_
-      refine Complex.measurable_exp.comp_aemeasurable ?_
-      exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
-    simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
-      ofReal_im, mul_zero, sub_zero]
-    convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht h_int_pos h_int_neg i
-    simp
-  simp_rw [complexMGF, add_mul, Complex.exp_add, mul_comm _ (cexp (ε * X _))]
-  calc ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
-      ∑ m ∈ range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
-  _ = ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
-      ∑ m ∈ range n, ∫ ω, ε ^ m / m.factorial * X ω ^ m * cexp (z * X ω) ∂μ := by
-    congr with m
-    rw [← integral_mul_left]
-    simp_rw [mul_assoc]
-  _ = ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
-      ∫ ω, ∑ m ∈ range n, ε ^ m / m.factorial * X ω ^ m * cexp (z * X ω) ∂μ := by
-    congr
-    rw [integral_finset_sum _ fun i hi ↦ ?_]
-    simp_rw [mul_assoc]
-    refine Integrable.const_mul ?_ _
-    exact h_int_mul _
-  _ = ∫ ω, cexp (z * X ω) * (cexp (ε * X ω) - ∑ m ∈ range n, ε ^ m / m.factorial * X ω ^ m) ∂μ := by
-    rw [← integral_sub]
-    · congr with ω
-      simp_rw [mul_sub]
-      congr 1
-      · rw [mul_comm]
-      · rw [mul_sum]
-        congr with m
-        ring
-    · simp_rw [← Complex.exp_add, ← add_mul, add_comm ε]
-      exact h_int_zε
-    · refine integrable_finset_sum _ fun m hm ↦ ?_
-      simp_rw [mul_assoc]
-      refine Integrable.const_mul ?_ _
-      exact h_int_mul _
 
 lemma abs_exp_sub_range_le_exp_sub_range_abs (x : ℂ) (n : ℕ) :
   abs (cexp x - ∑ m ∈ range n, x ^ m / m.factorial)
@@ -241,6 +121,122 @@ lemma exp_bound_exp (x : ℂ) (n : ℕ) :
       refine sum_le_exp_of_nonneg ?_ _
       exact AbsoluteValue.nonneg abs x
 
+namespace ProbabilityTheory
+
+variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
+  {z ε : ℂ}
+
+-- todo move
+lemma integrable_cexp_iff {Y : Ω → ℂ} (hY : AEMeasurable Y μ) :
+    Integrable (fun ω ↦ cexp (Y ω)) μ ↔ Integrable (fun ω ↦ rexp ((Y ω).re)) μ := by
+  simp [← integrable_norm_iff hY.cexp.aestronglyMeasurable, Complex.norm_eq_abs, Complex.abs_exp]
+
+/-- Complex extension of the moment generating function. -/
+noncomputable
+def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω ↦ cexp (z * X ω)]
+
+lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
+    complexMGF X μ z = 0 := by
+  rw [complexMGF, integral_undef]
+  rw [integrable_cexp_iff]
+  · simpa using h
+  · fun_prop
+
+lemma abs_complexMGF_le_mgf : abs (complexMGF X μ z) ≤ mgf X μ z.re := by
+  rw [complexMGF, ← re_add_im z]
+  simp_rw [add_mul, Complex.exp_add, re_add_im, ← Complex.norm_eq_abs]
+  calc ‖∫ ω, cexp (z.re * X ω) * cexp (z.im * I * X ω) ∂μ‖
+  _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
+  _ = ∫ ω, abs (cexp (z.re * X ω)) ∂μ := by
+    simp only [norm_mul, Complex.norm_eq_abs]
+    congr with ω
+    simp only [ne_eq, map_eq_zero, Complex.exp_ne_zero, not_false_eq_true, mul_eq_left₀]
+    rw [mul_comm _ I, mul_assoc, mul_comm]
+    exact mod_cast abs_exp_ofReal_mul_I _
+  _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.abs_exp]
+
+lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
+  rw [complexMGF]
+  norm_cast
+  have : ∫ ω, (rexp (x * X ω) : ℂ) ∂μ = ∫ ω, rexp (x * X ω) ∂μ := integral_ofReal
+  rw [this]
+  simp only [mgf]
+
+lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
+  simp [complexMGF_ofReal]
+
+lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X μ := by
+  ext x
+  exact re_complexMGF_ofReal x
+
+section Analytic
+
+lemma convexMGF_add_sub_range (ht : t ≠ 0)
+    (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
+    (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
+    (hε : |ε.re| ≤ |t|) (n : ℕ) :
+    complexMGF X μ (z + ε) - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
+      = μ[fun ω ↦ cexp (z * X ω)
+        * (cexp (ε * X ω) - ∑ m in range n, ε ^ m / m.factorial * X ω ^ m)] := by
+  have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
+  swap; · rw [← sub_ne_zero]; simp [ht]
+  have hε_int_pos : Integrable (fun ω ↦ rexp ((z.re + ε.re) * X ω)) μ := by
+    refine integrable_exp_mul_of_le_of_le (a := z.re - |t|) (b := z.re + |t|) ?_ ?_ ?_ ?_
+    · rcases le_total 0 t with ht | ht
+      · rwa [_root_.abs_of_nonneg ht]
+      · simpa [abs_of_nonpos ht]
+    · rcases le_total 0 t with ht | ht
+      · rwa [_root_.abs_of_nonneg ht]
+      · rwa [abs_of_nonpos ht]
+    · rw [sub_eq_add_neg]
+      gcongr
+      rw [neg_le]
+      exact (neg_le_abs _).trans hε
+    · gcongr
+      exact (le_abs_self _).trans hε
+  have h_int_zε : Integrable (fun ω ↦ cexp ((z + ε) * X ω)) μ := by
+    rw [integrable_cexp_iff]
+    swap; · fun_prop
+    simp only [mul_re, add_re, ofReal_re, add_im, ofReal_im, mul_zero, sub_zero]
+    exact hε_int_pos
+  have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
+    rw [← integrable_norm_iff]
+    swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+    simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
+      ofReal_im, mul_zero, sub_zero]
+    convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht h_int_pos h_int_neg i
+    simp
+  simp_rw [complexMGF, add_mul, Complex.exp_add, mul_comm _ (cexp (ε * X _))]
+  calc ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
+      ∑ m ∈ range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
+  _ = ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
+      ∑ m ∈ range n, ∫ ω, ε ^ m / m.factorial * X ω ^ m * cexp (z * X ω) ∂μ := by
+    congr with m
+    rw [← integral_mul_left]
+    simp_rw [mul_assoc]
+  _ = ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
+      ∫ ω, ∑ m ∈ range n, ε ^ m / m.factorial * X ω ^ m * cexp (z * X ω) ∂μ := by
+    congr
+    rw [integral_finset_sum _ fun i hi ↦ ?_]
+    simp_rw [mul_assoc]
+    refine Integrable.const_mul ?_ _
+    exact h_int_mul _
+  _ = ∫ ω, cexp (z * X ω) * (cexp (ε * X ω) - ∑ m ∈ range n, ε ^ m / m.factorial * X ω ^ m) ∂μ := by
+    rw [← integral_sub]
+    · congr with ω
+      simp_rw [mul_sub]
+      congr 1
+      · rw [mul_comm]
+      · rw [mul_sum]
+        congr with m
+        ring
+    · simp_rw [← Complex.exp_add, ← add_mul, add_comm ε]
+      exact h_int_zε
+    · refine integrable_finset_sum _ fun m hm ↦ ?_
+      simp_rw [mul_assoc]
+      refine Integrable.const_mul ?_ _
+      exact h_int_mul _
+
 lemma abs_convexMGF_add_sub_range_le
     (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
     (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
@@ -281,8 +277,7 @@ lemma tendsto_todo_pow_abs (hz : z.re ∈ interior (integrableExpSet X μ)) (n :
   have ht : 0 < t := half_pos h_pos
   refine tendsto_integral_filter_of_dominated_convergence
     (fun ω ↦ |X ω| ^ n * rexp (z.re * X ω + t/2 * |X ω|)) ?_ ?_ ?_ ?_
-  · refine .of_forall fun h ↦ AEMeasurable.aestronglyMeasurable ?_
-    exact AEMeasurable.mul (by fun_prop) (Real.measurable_exp.comp_aemeasurable (by fun_prop))
+  · exact .of_forall fun h ↦ AEMeasurable.aestronglyMeasurable (by fun_prop)
   · rw [eventually_nhds_iff]
     refine ⟨{x | abs x < t/2}, fun y hy ↦ ?_, ?_, by simp [ht]⟩
     · refine ae_of_all _ fun ω ↦ ?_
@@ -363,6 +358,12 @@ theorem analyticOnNhd_complexMGF :
 lemma analyticAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
     AnalyticAt ℂ (complexMGF X μ) z := analyticOnNhd_complexMGF z hz
 
+end Analytic
+
+section Deriv
+
+/-! ### Derivatives of `complexMGF` -/
+
 lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     HasDerivAt (fun z ↦ μ[fun ω ↦ X ω ^ n * cexp (z * X ω)])
         μ[fun ω ↦ X ω ^ (n + 1) * cexp (z * X ω)] z := by
@@ -377,20 +378,14 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t/2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
     (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
-  · refine .of_forall fun z ↦ AEMeasurable.aestronglyMeasurable ?_
-    exact AEMeasurable.mul (by fun_prop) (Complex.measurable_exp.comp_aemeasurable (by fun_prop))
+  · exact .of_forall fun z ↦ AEMeasurable.aestronglyMeasurable (by fun_prop)
   · rw [← integrable_norm_iff]
-    swap
-    · refine AEMeasurable.aestronglyMeasurable ?_
-      refine ((Complex.measurable_ofReal.comp_aemeasurable hX).pow_const _).mul ?_
-      refine Complex.measurable_exp.comp_aemeasurable ?_
-      exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
+    swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
     simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
       ofReal_im, mul_zero, sub_zero]
     convert integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet hz n
     simp
-  · refine AEMeasurable.aestronglyMeasurable ?_
-    exact AEMeasurable.mul (by fun_prop) (Complex.measurable_exp.comp_aemeasurable (by fun_prop))
+  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only [norm_mul, norm_pow, norm_real, Real.norm_eq_abs, Complex.norm_eq_abs]
     rw [Complex.abs_ofReal, Complex.abs_exp]
@@ -429,11 +424,7 @@ lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSe
     rw [← integral_re]
     · norm_cast
     · rw [← integrable_norm_iff]
-      swap
-      · refine AEMeasurable.aestronglyMeasurable ?_
-        refine ((Complex.measurable_ofReal.comp_aemeasurable hX).pow_const _).mul ?_
-        refine Complex.measurable_exp.comp_aemeasurable ?_
-        exact (Complex.measurable_ofReal.comp_aemeasurable hX).const_mul _
+      swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
       simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
         ofReal_im, mul_zero, sub_zero, Complex.abs_pow]
       exact integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet ht' n
@@ -468,6 +459,13 @@ lemma iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) 
     rw [iteratedDeriv_succ]
     exact (hasDeriAt_iteratedDeriv_complexMGF hz n).deriv
 
+end Deriv
+
+section EqOfMGF
+
+/-! We prove that if two random variables have the same `mgf`, then
+they also have the same `complexMGF`.-/
+
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
@@ -488,10 +486,13 @@ lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure
 /-- If two random variables have the same moment generating function, defined on an interval with
 nonempty interior, then they have the same `complexMGF` on the vertical strip
 `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
-lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0)
-    (ht : t ∈ interior (integrableExpSet X μ)) :
+lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     Set.EqOn (complexMGF X μ) (complexMGF Y μ')
       {z | z.re ∈ interior (integrableExpSet X μ)} := by
+  by_cases h_empty : interior (integrableExpSet X μ) = ∅
+  · simp [h_empty]
+  rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at h_empty
+  obtain ⟨t, ht⟩ := h_empty
   have hX : AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
     analyticOnNhd_complexMGF
   have hY : AnalyticOnNhd ℂ (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet Y μ')} :=
@@ -502,7 +503,7 @@ lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ 
   · exact (convex_integrableExpSet.interior.linear_preimage reLm).isPreconnected
   · have h_real : ∃ᶠ (x : ℝ) in 𝓝[≠] t, complexMGF X μ x = complexMGF Y μ' x := by
       refine .of_forall fun y ↦ ?_
-      rw [complexMGF_ofReal_eq_mgf, complexMGF_ofReal_eq_mgf, hXY]
+      rw [complexMGF_ofReal, complexMGF_ofReal, hXY]
     rw [frequently_iff_seq_forall] at h_real ⊢
     obtain ⟨xs, hx_tendsto, hx_eq⟩ := h_real
     refine ⟨fun n ↦ xs n, ?_, fun n ↦ ?_⟩
@@ -517,10 +518,12 @@ lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ 
 nonempty interior, then they have the same `complexMGF` on the vertical strip
 `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
 lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
-    (hXY : mgf X μ = mgf Y μ') (ht : t ∈ interior (integrableExpSet X μ)) :
+    (hXY : mgf X μ = mgf Y μ') :
     Set.EqOn (complexMGF X μ) (complexMGF Y μ')
       {z | z.re ∈ interior (integrableExpSet X μ)} := by
-  refine eqOn_complexMGF_of_mgf' hXY ?_ ht
+  refine eqOn_complexMGF_of_mgf' hXY ?_
   simp [IsProbabilityMeasure.ne_zero]
+
+end EqOfMGF
 
 end ProbabilityTheory
