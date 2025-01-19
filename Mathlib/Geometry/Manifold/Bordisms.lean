@@ -50,8 +50,11 @@ noncomputable section
 
 universe u in
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M,f)`
-of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`. -/
-structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) where
+of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
+
+In practice, one wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
+to compute bordism groups; for the definition, this makes no difference.) -/
+structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ∞) where
   /-- The normed space on which the manifold `M` is modeled. -/
   E : Type u
   /-- `E` is normed (additive) abelian group -/
@@ -71,7 +74,7 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) where
   /-- The model with corners for the manifold `M` -/
   I : ModelWithCorners ℝ E H
   /-- `M` is a smooth manifold with corners -/
-  [smoothMfd : IsManifold I (⊤: ℕ∞) M]
+  [smoothMfd : IsManifold I k M]
   /-- `M` is compact -/
   [compactSpace : CompactSpace M]
   /-- `M` is boundaryless -/
@@ -86,23 +89,25 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) where
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-instance {n : ℕ} {s : SingularNManifold X n} : NormedAddCommGroup s.E := s.normedAddCommGroup
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : NormedAddCommGroup s.E :=
+  s.normedAddCommGroup
 
-instance {n : ℕ} {s : SingularNManifold X n} : NormedSpace ℝ s.E := s.normedSpace
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : NormedSpace ℝ s.E := s.normedSpace
 
-instance {n : ℕ} {s : SingularNManifold X n} : TopologicalSpace s.M := s.topSpaceM
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.M := s.topSpaceM
 
-instance {n : ℕ} {s : SingularNManifold X n} : TopologicalSpace s.H := s.topSpaceH
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : TopologicalSpace s.H := s.topSpaceH
 
-instance {n : ℕ} {s : SingularNManifold X n} : ChartedSpace s.H s.M := s.chartedSpace
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : ChartedSpace s.H s.M := s.chartedSpace
 
-instance {n : ℕ} {s : SingularNManifold X n} : IsManifold s.I (⊤ : ℕ∞) s.M := s.smoothMfd
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : IsManifold s.I k s.M := s.smoothMfd
 
-instance {n : ℕ} {s : SingularNManifold X n} : CompactSpace s.M := s.compactSpace
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : CompactSpace s.M := s.compactSpace
 
-instance {n : ℕ} {s : SingularNManifold X n} : BoundarylessManifold s.I s.M := s.boundaryless
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : BoundarylessManifold s.I s.M :=
+  s.boundaryless
 
-instance {n : ℕ} {s : SingularNManifold X n} : FiniteDimensional ℝ s.E := s.findim
+instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k} : FiniteDimensional ℝ s.E := s.findim
 
 namespace SingularNManifold
 
@@ -110,19 +115,19 @@ variable {n : ℕ} {k : ℕ∞}
 
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
-noncomputable def map (s : SingularNManifold X n)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n where
+noncomputable def map (s : SingularNManifold X n k)
+    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n k where
   I := s.I
   f := φ ∘ s.f
   hf := hφ.comp s.hf
   dimension := s.dimension
 
 @[simp]
-lemma map_f (s : SingularNManifold X n) {φ : X → Y} (hφ : Continuous φ) :
+lemma map_f (s : SingularNManifold X n k) {φ : X → Y} (hφ : Continuous φ) :
     (s.map hφ).f = φ ∘ s.f :=
   rfl
 
-lemma map_comp (s : SingularNManifold X n)
+lemma map_comp (s : SingularNManifold X n k)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
@@ -136,15 +141,15 @@ variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSp
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
 variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
-  {I : ModelWithCorners ℝ E H} [IsManifold I (⊤ : ℕ∞) M]
+  {I : ModelWithCorners ℝ E H} [IsManifold I k M]
   {M' : Type u} [TopologicalSpace M'] [ChartedSpace H' M']
-  {I' : ModelWithCorners ℝ E' H'} [IsManifold I' (⊤ : ℕ∞) M']
+  {I' : ModelWithCorners ℝ E' H'} [IsManifold I' k M']
   [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
   [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
 
 variable (M) in
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
-noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n where
+noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n k where
   H := H
   I := I
   dimension := hdim
@@ -154,8 +159,8 @@ noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n where
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
 noncomputable def comap [h : Fact (finrank ℝ E = n)]
-    (s : SingularNManifold X n)
-    {φ : M → s.M} (hφ : ContMDiff I s.I n φ) : SingularNManifold X n where
+    (s : SingularNManifold X n k)
+    {φ : M → s.M} (hφ : ContMDiff I s.I n φ) : SingularNManifold X n k where
   E := E
   M := M
   H := H
@@ -166,7 +171,7 @@ noncomputable def comap [h : Fact (finrank ℝ E = n)]
 
 @[simp]
 lemma comap_f [Fact (finrank ℝ E = n)]
-    (s : SingularNManifold X n) {φ : M → s.M} (hφ : ContMDiff I s.I n φ) :
+    (s : SingularNManifold X n k) {φ : M → s.M} (hφ : ContMDiff I s.I n φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
@@ -174,8 +179,8 @@ variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
 def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H} [IsManifold I (⊤ : ℕ∞) M] [IsEmpty M] :
-  SingularNManifold X n where
+    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] :
+  SingularNManifold X n k where
   M := M
   E := E
   H := H
@@ -188,7 +193,7 @@ def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M] [Chart
 
 variable (M) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n where
+def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k where
   E := E
   M := M
   I := I
@@ -200,8 +205,8 @@ def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n where
 is a singular `n+m`-manifold. -/
 -- FUTURE: prove that this observation induces a commutative ring structure
 -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod {m n : ℕ} (s : SingularNManifold PUnit n) (t : SingularNManifold PUnit m) :
-    SingularNManifold PUnit (n + m) where
+def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
+    SingularNManifold PUnit (n + m) k where
   M := s.M × t.M
   I := s.I.prod t.I
   f := fun _ ↦ PUnit.unit
