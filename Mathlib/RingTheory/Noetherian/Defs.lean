@@ -160,7 +160,7 @@ theorem set_has_maximal_iff_noetherian :
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
+  rw [isNoetherian_iff', WellFoundedGT.monotone_chain_condition_iff]
 
 variable [IsNoetherian R M]
 
