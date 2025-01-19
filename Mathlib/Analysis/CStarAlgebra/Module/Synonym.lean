@@ -180,10 +180,7 @@ lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
   exact ⟨linearEquiv R E x, by simp⟩
 
 instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
-    Module.Finite R (WithCStarModule E) where
-  fg_top := by
-    rw [← map_top_submodule]
-    exact Submodule.FG.map _ ‹Module.Finite R E›.fg_top
+    Module.Finite R (WithCStarModule E) := inferInstanceAs (Module.Finite R E)
 
 /-! ## `WithCStarModule E` inherits the uniformity and bornology from `E`. -/
 
