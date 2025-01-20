@@ -15,6 +15,7 @@ variable {α β : Type*}
 
 namespace Function.Injective
 variable (f : β → α) (hf : Injective f)
+include hf
 
 variable [Add β] [Mul β]
 
@@ -47,8 +48,8 @@ protected abbrev hasDistribNeg (f : β → α) (hf : Injective f) [Mul α] [HasD
     (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
   reduceProj% zeta%
   { delta% hf.involutiveNeg _ neg, ‹Mul β› with
-    neg_mul := fun x y => hf <| by erw [neg, mul, neg, neg_mul, mul],
-    mul_neg := fun x y => hf <| by erw [neg, mul, neg, mul_neg, mul] }
+    neg_mul := fun x y => hf <| by rw [neg, mul, neg, neg_mul, mul],
+    mul_neg := fun x y => hf <| by rw [neg, mul, neg, mul_neg, mul] }
 
 /-- Pullback a `NonUnitalNonAssocSemiring` instance along an injective function. -/
 -- See note [reducible non-instances]
@@ -211,6 +212,7 @@ end Function.Injective
 
 namespace Function.Surjective
 variable (f : α → β) (hf : Surjective f)
+include hf
 
 variable [Add β] [Mul β]
 
@@ -242,8 +244,8 @@ protected abbrev hasDistribNeg [Mul α] [HasDistribNeg α]
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
   reduceProj% zeta%
   { delta% hf.involutiveNeg _ neg, ‹Mul β› with
-    neg_mul := hf.forall₂.2 fun x y => by erw [← neg, ← mul, neg_mul, neg, mul]
-    mul_neg := hf.forall₂.2 fun x y => by erw [← neg, ← mul, mul_neg, neg, mul] }
+    neg_mul := hf.forall₂.2 fun x y => by rw [← neg, ← mul, neg_mul, neg, mul]
+    mul_neg := hf.forall₂.2 fun x y => by rw [← neg, ← mul, mul_neg, neg, mul] }
 
 /-- Pushforward a `NonUnitalNonAssocSemiring` instance along a surjective function.
 See note [reducible non-instances]. -/

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.PNat.Defs
 
 /-!
@@ -14,8 +15,6 @@ import Mathlib.Data.PNat.Defs
 
 
 namespace Rat
-
-open Rat
 
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c
@@ -53,7 +52,7 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
     rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
   rcases d with ((_ | _) | _) <;>
-  rw [← Int.div_eq_ediv_of_dvd] <;>
+  rw [← Int.tdiv_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left, this]
 
@@ -63,6 +62,16 @@ theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gc
   rcases d with ((_ | _) | _) <;>
     simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
       if_neg (Nat.cast_add_one_ne_zero _), this]
+
+theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
+  rw [add_def, normalize_eq, Nat.div_dvd_iff_dvd_mul (Nat.gcd_dvd_right _ _)
+    (Nat.gcd_ne_zero_right (by simp)), ← Nat.gcd_mul_lcm,
+    mul_dvd_mul_iff_right (Nat.lcm_ne_zero (by simp) (by simp)), Nat.dvd_gcd_iff]
+  refine ⟨?_, dvd_mul_right _ _⟩
+  rw [← Int.natCast_dvd_natCast, Int.dvd_natAbs]
+  apply Int.dvd_add
+    <;> apply dvd_mul_of_dvd_right <;> rw [Int.natCast_dvd_natCast]
+    <;> [exact Nat.gcd_dvd_right _ _; exact Nat.gcd_dvd_left _ _]
 
 theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
   rw [add_def, normalize_eq]
@@ -103,7 +112,7 @@ theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.de
   constructor
   · rintro ⟨qr, rfl⟩
     rw [Rat.mul_self_num, mul_self_den]
-    simp only [isSquare_mul_self, and_self]
+    simp only [IsSquare.mul_self, and_self]
   · rintro ⟨⟨nr, hnr⟩, ⟨dr, hdr⟩⟩
     refine ⟨nr / dr, ?_⟩
     rw [div_mul_div_comm, ← Int.cast_mul, ← Nat.cast_mul, ← hnr, ← hdr, num_div_den]
@@ -195,7 +204,7 @@ theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprim
 theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
-    simp only [Int.cast_zero, Int.zero_div, zero_div, Int.ediv_zero]
+    simp only [Int.cast_zero, Int.zero_tdiv, zero_div, Int.ediv_zero]
   · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
     simp only [Int.ediv_self hn, Int.cast_one, Ne, not_false_iff, div_self this]
 
@@ -247,9 +256,9 @@ theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
   rcases lt_trichotomy a 0 with lt | rfl | gt
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
     simp at lt
-    simp [Rat.inv_neg, inv_intCast_num_of_pos lt, (Int.sign_eq_one_iff_pos _).mpr lt]
-  · rfl
-  · simp [inv_intCast_num_of_pos gt, (Int.sign_eq_one_iff_pos _).mpr gt]
+    simp [Rat.inv_neg, inv_intCast_num_of_pos lt, Int.sign_eq_one_iff_pos.mpr lt]
+  · simp
+  · simp [inv_intCast_num_of_pos gt, Int.sign_eq_one_iff_pos.mpr gt]
 
 @[simp]
 theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
@@ -268,7 +277,7 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
     rw [if_neg (by omega)]
     simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
     exact Int.eq_natAbs_of_zero_le (by omega)
-  · rfl
+  · simp
   · rw [if_neg (by omega)]
     simp only [inv_intCast_den_of_pos gt]
     exact Int.eq_natAbs_of_zero_le (by omega)
@@ -302,7 +311,7 @@ protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ
     rwa [Int.cast_natCast, num_div_den q] at this⟩
 
 protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=
-  ⟨fun ⟨r, hr⟩ => ⟨r.num, r.den, by convert hr; convert num_div_den r⟩, fun ⟨a, b, h⟩ => ⟨_, h⟩⟩
+  ⟨fun ⟨r, hr⟩ => ⟨r.num, r.den, by convert hr; convert num_div_den r⟩, fun ⟨_, _, h⟩ => ⟨_, h⟩⟩
 
 /-!
 ### Denominator as `ℕ+`

@@ -71,7 +71,7 @@ macro_rules
 | `(tactic| rify $[[$simpArgs,*]]? $[at $location]?) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
-    simp (config := {decide := false}) only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
+    simp -decide only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
       $[at $location]?)
 
 @[rify_simps] lemma ratCast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
@@ -86,8 +86,4 @@ alias rat_cast_ne := ratCast_ne
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :
     ((no_index (OfNat.ofNat a : ℚ)) : ℝ) = (OfNat.ofNat a : ℝ) := rfl
 
-end Rify
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Rify

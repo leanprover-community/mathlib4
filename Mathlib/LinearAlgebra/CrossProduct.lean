@@ -38,8 +38,6 @@ crossproduct
 
 open Matrix
 
-open Matrix
-
 variable {R : Type*} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
@@ -88,7 +86,7 @@ theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
 /-- The cross product of two vectors is perpendicular to the second vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
-  rw [← cross_anticomm, Matrix.dotProduct_neg, dot_self_cross, neg_zero]
+  rw [← cross_anticomm, dotProduct_neg, dot_self_cross, neg_zero]
 
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
 theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
@@ -141,3 +139,27 @@ theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×
   lie_jacobi u v w
 
 end LeibnizProperties
+
+-- this can also be proved via `dotProduct_eq_zero_iff` and `triple_product_eq_det`, but
+-- that would require much heavier imports.
+lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fin 3 → F} :
+    crossProduct v w ≠ 0 ↔ LinearIndependent F ![v, w] := by
+  rw [not_iff_comm]
+  by_cases hv : v = 0
+  · rw [hv, map_zero, LinearMap.zero_apply, eq_self, iff_true]
+    exact fun h ↦ h.ne_zero 0 rfl
+  constructor
+  · rw [LinearIndependent.pair_iff' hv, not_forall_not]
+    rintro ⟨a, rfl⟩
+    rw [LinearMap.map_smul, cross_self, smul_zero]
+  have hv' : v = ![v 0, v 1, v 2] := by simp [← List.ofFn_inj]
+  have hw' : w = ![w 0, w 1, w 2] := by simp [← List.ofFn_inj]
+  intro h1 h2
+  simp_rw [cross_apply, cons_eq_zero_iff, zero_empty, and_true, sub_eq_zero] at h1
+  have h20 := LinearIndependent.pair_iff.mp h2 (- w 0) (v 0)
+  have h21 := LinearIndependent.pair_iff.mp h2 (- w 1) (v 1)
+  have h22 := LinearIndependent.pair_iff.mp h2 (- w 2) (v 2)
+  rw [neg_smul, neg_add_eq_zero, hv', hw', smul_vec3, smul_vec3, ← hv', ← hw'] at h20 h21 h22
+  simp only [smul_eq_mul, mul_comm (w 0), mul_comm (w 1), mul_comm (w 2), h1] at h20 h21 h22
+  rw [hv', cons_eq_zero_iff, cons_eq_zero_iff, cons_eq_zero_iff, zero_empty] at hv
+  exact hv ⟨(h20 trivial).2, (h21 trivial).2, (h22 trivial).2, rfl⟩

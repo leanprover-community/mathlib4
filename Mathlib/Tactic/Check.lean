@@ -3,6 +3,7 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Elab.Tactic.Basic
 import Lean.PrettyPrinter
 import Lean.Elab.SyntheticMVars
@@ -54,3 +55,5 @@ Like the `#check` command, the `#check` tactic allows stuck typeclass instance p
 These become metavariables in the output.
 -/
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
+
+end Mathlib.Tactic

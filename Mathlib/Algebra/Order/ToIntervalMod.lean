@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Set.Lattice
@@ -37,6 +36,9 @@ section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
+
+section
+include hp
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ico a (a + p)`. -/
@@ -515,23 +517,23 @@ theorem tfae_modEq :
       [a ≡ b [PMOD p], ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p), toIcoMod hp a b ≠ toIocMod hp a b,
         toIcoMod hp a b + p = toIocMod hp a b] := by
   rw [modEq_iff_toIcoMod_eq_left hp]
-  tfae_have 3 → 2
-  · rw [← not_exists, not_imp_not]
+  tfae_have 3 → 2 := by
+    rw [← not_exists, not_imp_not]
     exact fun ⟨i, hi⟩ =>
       ((toIcoMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ico_self hi, i, (sub_add_cancel b _).symm⟩).trans
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have 4 → 3
-  · intro h
+  | h => by
     rw [← h, Ne, eq_comm, add_right_eq_self]
     exact hp.ne'
   tfae_have 1 → 4
-  · intro h
+  | h => by
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, ?_⟩
-    rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]
+    rw [sub_one_zsmul, add_add_add_comm, add_neg_cancel, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, h]
-  tfae_have 2 → 1
-  · rw [← not_exists, not_imp_comm]
+  tfae_have 2 → 1 := by
+    rw [← not_exists, not_imp_comm]
     have h' := toIcoMod_mem_Ico hp a b
     exact fun h => ⟨_, h'.1.lt_of_ne' h, h'.2⟩
   tfae_finish
@@ -555,12 +557,12 @@ theorem not_modEq_iff_toIcoMod_eq_toIocMod : ¬a ≡ b [PMOD p] ↔ toIcoMod hp 
 theorem not_modEq_iff_toIcoDiv_eq_toIocDiv :
     ¬a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b := by
   rw [not_modEq_iff_toIcoMod_eq_toIocMod hp, toIcoMod, toIocMod, sub_right_inj,
-    (zsmul_strictMono_left hp).injective.eq_iff]
+    zsmul_left_inj hp]
 
 theorem modEq_iff_toIcoDiv_eq_toIocDiv_add_one :
     a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b + 1 := by
   rw [modEq_iff_toIcoMod_add_period_eq_toIocMod hp, toIcoMod, toIocMod, ← eq_sub_iff_add_eq,
-    sub_sub, sub_right_inj, ← add_one_zsmul, (zsmul_strictMono_left hp).injective.eq_iff]
+    sub_sub, sub_right_inj, ← add_one_zsmul, zsmul_left_inj hp]
 
 end AddCommGroup
 
@@ -589,11 +591,11 @@ theorem toIocDiv_wcovBy_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a 
 
 theorem toIcoMod_le_toIocMod (a b : α) : toIcoMod hp a b ≤ toIocMod hp a b := by
   rw [toIcoMod, toIocMod, sub_le_sub_iff_left]
-  exact zsmul_mono_left hp.le (toIocDiv_wcovBy_toIcoDiv _ _ _).le
+  exact zsmul_left_mono hp.le (toIocDiv_wcovBy_toIcoDiv _ _ _).le
 
 theorem toIocMod_le_toIcoMod_add (a b : α) : toIocMod hp a b ≤ toIcoMod hp a b + p := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
-    (zsmul_strictMono_left hp).le_iff_le]
+    (zsmul_left_strictMono hp).le_iff_le]
   apply (toIocDiv_wcovBy_toIcoDiv _ _ _).le_succ
 
 end IcoIoc
@@ -706,6 +708,7 @@ theorem QuotientAddGroup.equivIocMod_coe (a b : α) :
 theorem QuotientAddGroup.equivIocMod_zero (a : α) :
     QuotientAddGroup.equivIocMod hp a 0 = ⟨toIocMod hp a 0, toIocMod_mem_Ioc hp a _⟩ :=
   rfl
+end
 
 /-!
 ### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
@@ -713,6 +716,8 @@ theorem QuotientAddGroup.equivIocMod_zero (a : α) :
 
 
 section Circular
+
+open AddCommGroup
 
 private theorem toIxxMod_iff (x₁ x₂ x₃ : α) : toIcoMod hp x₁ x₂ ≤ toIocMod hp x₁ x₃ ↔
     toIcoMod hp 0 (x₂ - x₁) + toIcoMod hp 0 (x₁ - x₃) ≤ p := by
@@ -755,7 +760,7 @@ private theorem toIxxMod_total' (a b c : α) :
     Thus if a ≠ b and b ≠ c then ({a-b} + {b-c}) + ({c-b} + {b-a}) = 2 * period, so one of
     `{a-b} + {b-c}` and `{c-b} + {b-a}` must be `≤ period` -/
   have := congr_arg₂ (· + ·) (toIcoMod_add_toIocMod_zero hp a b) (toIcoMod_add_toIocMod_zero hp c b)
-  simp only [add_add_add_comm] at this -- Porting note (#10691): Was `rw`
+  simp only [add_add_add_comm] at this
   rw [_root_.add_comm (toIocMod _ _ _), add_add_add_comm, ← two_nsmul] at this
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
@@ -901,6 +906,7 @@ open Set Int
 section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+include hp
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_

@@ -79,7 +79,6 @@ up to a factor of `π / 2`.
 /-- Chord-length is a multiple of arc-length up to constants. -/
 lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ‖x - y‖ ∈ Icc (2 / π * angle x y) (angle x y) := by
-  clear a
   wlog h : y = 1
   · have := @this (x / y) 1 (by simp only [norm_div, hx, hy, div_one]) norm_one rfl
     rwa [angle_div_left_eq_angle_mul_right, div_sub_one, norm_div, hy, div_one, one_mul]
@@ -97,7 +96,7 @@ lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
       calc
         _ = 2 * (1 - (1 - 2 / π ^ 2 * θ ^ 2)) := by ring
         _ ≤ 2 * (1 - θ.cos) := by
-            gcongr; exact Real.cos_quadratic_upper_bound <| abs_le.2 <| Ioc_subset_Icc_self hθ
+            gcongr; exact Real.cos_le_one_sub_mul_cos_sq <| abs_le.2 <| Ioc_subset_Icc_self hθ
         _  = _ := by linear_combination -θ.cos_sq_add_sin_sq
     · rw [Real.sqrt_le_left (by positivity), ← _root_.abs_pow, abs_sq]
       calc
@@ -117,6 +116,6 @@ lemma mul_angle_le_norm_sub (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 2 / π * ang
 
 /-- Arc-length is always less than a multiple of chord-length. -/
 lemma angle_le_mul_norm_sub (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : angle x y ≤ π / 2 * ‖x - y‖ := by
-  rw [← div_le_iff' <| by positivity, div_eq_inv_mul, inv_div]; exact mul_angle_le_norm_sub hx hy
+  rw [← div_le_iff₀' <| by positivity, div_eq_inv_mul, inv_div]; exact mul_angle_le_norm_sub hx hy
 
 end Complex

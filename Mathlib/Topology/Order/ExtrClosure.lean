@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Order.LocalExtr
@@ -20,7 +20,7 @@ open Filter Set
 open Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
-  [OrderClosedTopology Y] {f g : X → Y} {s : Set X} {a : X}
+  [OrderClosedTopology Y] {f : X → Y} {s : Set X} {a : X}
 
 protected theorem IsMaxOn.closure (h : IsMaxOn f s a) (hc : ContinuousOn f (closure s)) :
     IsMaxOn f (closure s) a := fun x hx =>

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Range
 
 /-!
 # Matrix and vector notation
@@ -108,7 +107,7 @@ instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
 
 end MatrixNotation
 
-variable {m n o : ℕ} {m' n' o' : Type*}
+variable {m n o : ℕ}
 
 theorem empty_eq (v : Fin 0 → α) : v = ![] :=
   Subsingleton.elim _ _
@@ -160,18 +159,16 @@ theorem range_cons (x : α) (u : Fin n → α) : Set.range (vecCons x u) = {x} �
 theorem range_empty (u : Fin 0 → α) : Set.range u = ∅ :=
   Set.range_eq_empty _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_cons_empty (x : α) (u : Fin 0 → α) : Set.range (Matrix.vecCons x u) = {x} := by
   rw [range_cons, range_empty, Set.union_empty]
 
--- @[simp] -- Porting note (#10618): simp can prove this (up to commutativity)
+-- simp can prove this (up to commutativity)
 theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
     Set.range (vecCons x <| vecCons y u) = {x, y} := by
   rw [range_cons, range_cons_empty, Set.singleton_union]
 
-@[simp]
 theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
-  funext <| Fin.forall_fin_succ.2 ⟨rfl, cons_val_succ _ _⟩
+  funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 
 theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   let _ : Unique (Fin 1) := inferInstance
@@ -208,8 +205,7 @@ theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons 
 theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
-open Lean in
-open Qq in
+open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
@@ -317,7 +313,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   cases n with
   | zero =>
     cases' i with i hi
-    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
+    simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr
     · simp [Nat.mod_eq_of_lt, h]

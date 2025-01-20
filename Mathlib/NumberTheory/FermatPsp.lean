@@ -61,7 +61,7 @@ instance decidableProbablePrime (n b : ℕ) : Decidable (ProbablePrime n b) :=
   Nat.decidable_dvd _ _
 
 instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
-  And.decidable
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-- If `n` passes the Fermat primality test to base `b`, then `n` is coprime with `b`, assuming that
 `n` and `b` are both positive.
@@ -94,7 +94,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
 
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
     ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by
-  have : 1 ≤ b ^ (n - 1) := one_le_pow_of_one_le h (n - 1)
+  have : 1 ≤ b ^ (n - 1) := one_le_pow₀ h
   -- For exact mod_cast
   rw [Nat.ModEq.comm]
   constructor
@@ -127,7 +127,7 @@ private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  exact lt_self_pow (Nat.lt_of_succ_le ha) hb
+  exact lt_self_pow₀ (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -135,7 +135,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
     _ = a ^ 3 := by rw [Nat.pow_succ a 2]
-    _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
+    _ ≤ a ^ b := pow_right_mono₀ (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
@@ -197,10 +197,8 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_p : 1 ≤ p := Nat.one_le_of_lt p_gt_two
   have hi_bsquared : 0 < b ^ 2 - 1 := by
     -- Porting note: was `by nlinarith [Nat.one_le_pow 2 b hi_b]`
-    have h0 := mul_le_mul b_ge_two b_ge_two zero_le_two hi_b.le
-    have h1 : 1 < 2 * 2 := by omega
-    have := tsub_pos_of_lt (h1.trans_le h0)
-    rwa [pow_two]
+    have := Nat.pow_le_pow_left b_ge_two 2
+    omega
   have hi_bpowtwop : 1 ≤ b ^ (2 * p) := Nat.one_le_pow (2 * p) b hi_b
   have hi_bpowpsubone : 1 ≤ b ^ (p - 1) := Nat.one_le_pow (p - 1) b hi_b
   -- Other useful facts
@@ -306,7 +304,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
     apply gt_of_ge_of_gt
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
-    · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by nlinarith)
+    · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by positivity)
       exact tsub_lt_tsub_right_of_le this h
   suffices h : p < (b ^ 2) ^ (p - 1) by
     have : 4 ≤ b ^ 2 := by nlinarith
@@ -316,7 +314,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by omega)
   have : 2 + p ≤ 2 * p := by omega
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
-  exact this.trans_lt (lt_pow_self b_ge_two _)
+  exact this.trans_lt (Nat.lt_pow_self b_ge_two)
 
 /-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such

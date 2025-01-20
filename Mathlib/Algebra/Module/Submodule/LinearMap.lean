@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Defs
 
 /-!
 
@@ -75,8 +76,10 @@ theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 
 @[simp]
-theorem coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
+theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
 
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
@@ -181,6 +184,13 @@ lemma restrict_comp
     (g ∘ₗ f).restrict hfg = (g.restrict hg) ∘ₗ (f.restrict hf) :=
   rfl
 
+-- TODO Consider defining `Algebra R (p.compatibleMaps p)`, `AlgHom` version of `LinearMap.restrict`
+lemma restrict_smul_one
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {p : Submodule R M}
+    (μ : R) (h : ∀ x ∈ p, (μ • (1 : Module.End R M)) x ∈ p := fun _ ↦ p.smul_mem μ) :
+    (μ • 1 : Module.End R M).restrict h = μ • (1 : Module.End R p) :=
+  rfl
+
 lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
     (hf : MapsTo f p p) (hg : MapsTo g p p) :
     Commute (f.restrict hf) (g.restrict hg) := by
@@ -229,9 +239,10 @@ variable {f' : M →ₗ[R] M}
 
 theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
     (hx : x ∈ p) : (f' ^ n) x ∈ p := by
-  induction' n with n ih generalizing x
-  · simpa
-  · simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
+  induction n generalizing x with
+  | zero => simpa
+  | succ n ih =>
+    simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
 
 theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :

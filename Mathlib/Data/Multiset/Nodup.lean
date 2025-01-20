@@ -60,7 +60,7 @@ theorem nodup_iff_le {s : Multiset α} : Nodup s ↔ ∀ a : α, ¬a ::ₘ a ::�
 
 theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a ::ₘ a ::ₘ t :=
   nodup_iff_le.trans
-    ⟨fun h a t s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
+    ⟨fun h a _ s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
       let ⟨t, s_eq⟩ := le_iff_exists_add.mp le
       h a t (by rwa [cons_add, cons_add, zero_add] at s_eq)⟩
 
@@ -95,7 +95,7 @@ theorem Pairwise.forall (H : Symmetric r) (hs : Pairwise r s) :
   hl₁.symm ▸ hl₂.forall H
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => nodup_append
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2
@@ -167,15 +167,12 @@ protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ 
 theorem nodup_range (n : ℕ) : Nodup (range n) :=
   List.nodup_range _
 
-theorem Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) :=
-  nodup_of_le <| inter_le_left _ _
-
-theorem Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) :=
-  nodup_of_le <| inter_le_right _ _
+lemma Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) := nodup_of_le inter_le_left
+lemma Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) := nodup_of_le inter_le_right
 
 @[simp]
 theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ Nodup s ∧ Nodup t :=
-  ⟨fun h => ⟨nodup_of_le (le_union_left _ _) h, nodup_of_le (le_union_right _ _) h⟩, fun ⟨h₁, h₂⟩ =>
+  ⟨fun h => ⟨nodup_of_le le_union_left h, nodup_of_le le_union_right h⟩, fun ⟨h₁, h₂⟩ =>
     nodup_iff_count_le_one.2 fun a => by
       rw [count_union]
       exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩
@@ -192,7 +189,7 @@ theorem range_le {m n : ℕ} : range m ≤ range n ↔ m ≤ n :=
 theorem mem_sub_of_nodup [DecidableEq α] {a : α} {s t : Multiset α} (d : Nodup s) :
     a ∈ s - t ↔ a ∈ s ∧ a ∉ t :=
   ⟨fun h =>
-    ⟨mem_of_le tsub_le_self h, fun h' => by
+    ⟨mem_of_le (Multiset.sub_le_self ..) h, fun h' => by
       refine count_eq_zero.1 ?_ h
       rw [count_sub a s t, Nat.sub_eq_zero_iff_le]
       exact le_trans (nodup_iff_count_le_one.1 d _) (count_pos.2 h')⟩,

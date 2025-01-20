@@ -3,6 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
+import Mathlib.Init
 import Batteries.Tactic.Basic
 
 /-!
@@ -51,3 +52,7 @@ initialize registerBuiltinAttribute {
       setEnv <| forwardExt.addEntry env (declName, ext)
     | _ => throwUnsupportedSyntax
 }
+
+end GCongr
+
+end Mathlib.Tactic

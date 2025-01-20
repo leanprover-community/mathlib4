@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
+Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Dimension of modules and vector spaces
@@ -52,9 +53,8 @@ For a free module over any ring satisfying the strong rank condition
 (e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
-In particular this agrees with the usual notion of the dimension of a vector space.
-
--/
+In particular this agrees with the usual notion of the dimension of a vector space. -/
+@[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndependent R ((↑) : s → M) }, (#ι.1)
 
@@ -76,7 +76,7 @@ theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
-  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range.{v, v} _) ⟨_, hv.coe_range⟩)
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range _) ⟨_, hv.coe_range⟩)
   exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 
 lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
@@ -92,15 +92,6 @@ theorem cardinal_le_rank' {s : Set M}
   hs.cardinal_le_rank
 
 end LinearIndependent
-
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
 section SurjectiveInjective
 
@@ -119,8 +110,8 @@ theorem lift_rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
     (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
-  simp_rw [Module.rank, lift_iSup (bddAbove_range.{v', v'} _), lift_iSup (bddAbove_range.{v, v} _)]
-  exact ciSup_mono' (bddAbove_range.{v', v} _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+  simp_rw [Module.rank, lift_iSup (bddAbove_range _)]
+  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
     (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
       lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
@@ -263,13 +254,13 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
   simp only [Module.rank_def]
-  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range.{v', v'} _)]
+  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range _)]
   apply ciSup_le'
   rintro ⟨s, li⟩
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, ?_⟩
+    refine le_ciSup (Cardinal.bddAbove_range _) ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -285,10 +276,11 @@ theorem lift_rank_map_le (f : M →ₗ[R] M') (p : Submodule R M) :
 theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
 
-theorem rank_le_of_submodule (s t : Submodule R M) (h : s ≤ t) :
-    Module.rank R s ≤ Module.rank R t :=
+lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
+
+@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
@@ -331,9 +323,11 @@ theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     Module.rank R (LinearMap.range f) = Module.rank R M' := by
   rw [LinearMap.range_eq_top.2 h, rank_top]
 
-theorem rank_submodule_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
+theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
   rw [← rank_top R M]
-  exact rank_le_of_submodule _ _ le_top
+  exact rank_mono le_top
+
+@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
 
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by
@@ -359,6 +353,16 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   · rw [linearIndependent_iff']
     subsingleton
   · exact hw.trans_eq (Cardinal.mk_singleton _).symm
+
+lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
+    [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
+    (h : ∀ x ∈ L, s • x ∈ L') :
+    Module.rank R L ≤ Module.rank R L' :=
+  ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
+    fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
+
+@[deprecated (since := "2024-11-21")]
+alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
 
 end
 

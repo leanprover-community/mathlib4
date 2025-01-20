@@ -3,10 +3,11 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Prime.Defs
+import Mathlib.Algebra.Ring.Units
 
 /-!
 # Prime elements in rings
@@ -50,7 +51,7 @@ theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y 
   rcases mul_eq_mul_prime_prod (fun _ _ ↦ hp)
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩
-  exact ⟨t.card, u.card, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
+  exact ⟨#t, #u, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
 
 end CancelCommMonoidWithZero
 

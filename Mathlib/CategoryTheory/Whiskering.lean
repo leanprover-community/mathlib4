@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
@@ -112,6 +112,46 @@ def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         dsimp
         simp only [map_comp, map_preimage]
         apply f.naturality }
+
+theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
+  rfl
+
+/-- The isomorphism between left-whiskering on the identity functor and the identity of the functor
+between the resulting functor categories. -/
+def whiskeringLeftObjIdIso : (whiskeringLeft C C E).obj (𝟭 _) ≅ 𝟭 _ :=
+  Iso.refl _
+
+theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft C D' E).obj (F ⋙ G) =
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  rfl
+
+/-- The isomorphism between left-whiskering on the composition of functors and the composition
+of two left-whiskering applications. -/
+def whiskeringLeftObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft C D' E).obj (F ⋙ G) ≅
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  Iso.refl _
+
+theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :=
+  rfl
+
+/-- The isomorphism between right-whiskering on the identity functor and the identity of the functor
+between the resulting functor categories. -/
+def wiskeringRightObjIdIso : (whiskeringRight E C C).obj (𝟭 _) ≅ 𝟭 _ :=
+  Iso.refl _
+
+theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  rfl
+
+/-- The isomorphism between right-whiskering on the composition of functors and the composition
+of two right-whiskering applications. -/
+def whiskeringRightObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G ≅
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  Iso.refl _
 
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
@@ -261,5 +301,21 @@ theorem pentagon :
       (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by aesop_cat
 
 end Functor
+
+variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂]
+  [Category D₁] [Category D₂] (E : Type*) [Category E]
+
+/-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
+@[simps!]
+def whiskeringLeft₂ :
+    (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E) where
+  obj F₁ :=
+    { obj := fun F₂ ↦
+        (whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).obj ((whiskeringLeft C₂ D₂ E).obj F₂) ⋙
+          (whiskeringLeft C₁ D₁ (C₂ ⥤ E)).obj F₁
+      map := fun φ ↦ whiskerRight
+        ((whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).map ((whiskeringLeft C₂ D₂ E).map φ)) _ }
+  map ψ :=
+    { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
 
 end CategoryTheory

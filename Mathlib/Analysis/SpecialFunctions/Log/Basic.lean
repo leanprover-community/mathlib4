@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Real logarithm
@@ -123,7 +124,7 @@ theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y 
 lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
   (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
 
-@[gcongr]
+@[gcongr, bound]
 theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 
@@ -142,6 +143,7 @@ theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
+@[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
   (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
 
@@ -154,6 +156,7 @@ theorem log_neg_iff (h : 0 < x) : log x < 0 ↔ x < 1 := by
   rw [← log_one]
   exact log_lt_log_iff h zero_lt_one
 
+@[bound]
 theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
   (log_neg_iff h0).2 h1
 
@@ -176,6 +179,7 @@ theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   · simp [le_refl, zero_le_one]
   exact log_nonpos_iff hx
 
+@[bound]
 theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
   (log_nonpos_iff' hx).2 h'x
 
@@ -252,11 +256,12 @@ theorem log_ne_zero {x : ℝ} : log x ≠ 0 ↔ x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1
 
 @[simp]
 theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
-  induction' n with n ih
-  · simp
-  rcases eq_or_ne x 0 with (rfl | hx)
-  · simp
-  rw [pow_succ, log_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rcases eq_or_ne x 0 with (rfl | hx)
+    · simp
+    · rw [pow_succ, log_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
 
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
@@ -273,17 +278,30 @@ theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   convert add_one_le_exp (log x)
   rw [exp_log hx]
 
+lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
+  simpa [add_comm] using log_le_sub_one_of_pos (inv_pos.2 hx)
+
+/-- See `Real.log_le_sub_one_of_pos` for the stronger version when `x ≠ 0`. -/
+lemma log_le_self (hx : 0 ≤ x) : log x ≤ x := by
+  obtain rfl | hx := hx.eq_or_lt
+  · simp
+  · exact (log_le_sub_one_of_pos hx).trans (by linarith)
+
+/-- See `Real.one_sub_inv_le_log_of_pos` for the stronger version when `x ≠ 0`. -/
+lemma neg_inv_le_log (hx : 0 ≤ x) : -x⁻¹ ≤ log x := by
+  rw [neg_le, ← log_inv]; exact log_le_self <| inv_nonneg.2 hx
+
 /-- Bound for `|log x * x|` in the interval `(0, 1]`. -/
 theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by
   have : 0 < 1 / x := by simpa only [one_div, inv_pos] using h1
   replace := log_le_sub_one_of_pos this
   replace : log (1 / x) < 1 / x := by linarith
-  rw [log_div one_ne_zero h1.ne', log_one, zero_sub, lt_div_iff h1] at this
+  rw [log_div one_ne_zero h1.ne', log_one, zero_sub, lt_div_iff₀ h1] at this
   have aux : 0 ≤ -log x * x := by
     refine mul_nonneg ?_ h1.le
     rw [← log_inv]
     apply log_nonneg
-    rw [← le_inv h1 zero_lt_one, inv_one]
+    rw [← le_inv_comm₀ h1 zero_lt_one, inv_one]
     exact h2
   rw [← abs_of_nonneg aux, neg_mul, abs_neg] at this
   exact this
@@ -306,11 +324,13 @@ theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 
-@[continuity]
+/-- The real logarithm is continuous as a function from nonzero reals. -/
+@[fun_prop]
 theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
   continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
 
-@[continuity]
+/-- The real logarithm is continuous as a function from positive reals. -/
+@[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
   continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
 
@@ -362,6 +382,21 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
     <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1] with x hx
   aesop (add safe forward log_pos)
+
+/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
+@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+  toFun := Real.exp
+  invFun := Real.log
+  source := univ
+  target := Ioi (0 : ℝ)
+  map_source' x _ := exp_pos x
+  map_target' _ _ := mem_univ _
+  left_inv' _ _ := by simp
+  right_inv' _ hx := exp_log hx
+  open_source := isOpen_univ
+  open_target := isOpen_Ioi
+  continuousOn_toFun := continuousOn_exp
+  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
 end Real
 

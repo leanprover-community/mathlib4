@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Set.Basic
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Set.Basic
 
 /-!
 # Set enumeration
@@ -42,7 +42,7 @@ theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enum
 
 theorem enumerate_eq_none :
     ∀ {s n₁ n₂}, enumerate sel s n₁ = none → n₁ ≤ n₂ → enumerate sel s n₂ = none
-  | s, 0, m => fun h _ ↦ enumerate_eq_none_of_sel sel h
+  | _, 0, _ => fun h _ ↦ enumerate_eq_none_of_sel sel h
   | s, n + 1, m => fun h hm ↦ by
     cases hs : sel s
     · exact enumerate_eq_none_of_sel sel hs
@@ -81,14 +81,15 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
       | zero => rfl
       | succ m =>
         have h' : enumerate sel (s \ {a}) m = some a := by
-          simp_all only [enumerate, Nat.zero_eq, Nat.add_eq, zero_add]; exact h₂
+          simp_all only [enumerate, Nat.add_eq, zero_add]; exact h₂
         have : a ∈ s \ {a} := enumerate_mem sel h_sel h'
         simp_all [Set.mem_diff_singleton]
     | succ k ih =>
       cases h : sel s with
       /- Porting note: The original covered both goals with just `simp_all <;> tauto` -/
       | none =>
-        simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
+        simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h,
+          reduceCtorEq]
       | some =>
         simp_all only [add_comm, self_eq_add_left, enumerate, Option.some.injEq,
                        Nat.add_succ, Nat.succ.injEq]

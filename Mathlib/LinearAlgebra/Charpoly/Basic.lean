@@ -51,7 +51,7 @@ section Coeff
 theorem charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 
-open FiniteDimensional in
+open Module in
 lemma charpoly_natDegree [Nontrivial R] [StrongRankCondition R] :
     natDegree (charpoly f) = finrank R M := by
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]

@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Algebra.Module.ZMod
 import Mathlib.GroupTheory.Torsion
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
-import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Torsion submodules
@@ -69,7 +67,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
   LinearMap.ker (LinearMap.toSpanSingleton R M x)
 
 @[simp]
@@ -98,13 +96,13 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDiv
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
     tauto
 
-/-- See also `CompleteLattice.Independent.linearIndependent` which provides the same conclusion
+/-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
-theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
-    [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
+theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
+    [AddCommGroup M] [Module R M] (hv : iSupIndep fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
   refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
-  replace hv := CompleteLattice.independent_def.mp hv i
+  replace hv := iSupIndep_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
@@ -114,6 +112,9 @@ theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
+
+@[deprecated (since := "2024-11-24")]
+alias CompleteLattice.Independent.linear_independent' := iSupIndep.linearIndependent'
 
 end TorsionOf
 
@@ -150,7 +151,7 @@ namespace Submodule
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
   LinearMap.ker (DistribMulAction.toLinearMap R M a)
 
 /-- The submodule containing all elements `x` of `M` such that `a • x = 0` for all `a` in `s`. -/
@@ -363,9 +364,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
   rcases S.eq_empty_or_nonempty with h | h
-  · simp only [h]
-    -- Porting note: converts were not cooperating
-    convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp
+  · simp [h]
   apply le_antisymm
   · apply iSup_le _
     intro i
@@ -447,8 +446,8 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
     DirectSum.IsInternal fun i : S => torsionBySet R M <| p i :=
-  DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (CompleteLattice.independent_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
+  DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (iSupIndep_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
     (by
       apply (iSup_subtype'' ↑S fun i => torsionBySet R M <| p i).trans
       -- Porting note: times out if we change apply below to <|
@@ -635,7 +634,6 @@ variable (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
 theorem mem_torsion'_iff (x : M) : x ∈ torsion' R M S ↔ ∃ a : S, a • x = 0 :=
   Iff.rfl
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem mem_torsion_iff (x : M) : x ∈ torsion R M ↔ ∃ a : R⁰, a • x = 0 :=
   Iff.rfl
 
@@ -670,7 +668,6 @@ theorem torsion'_torsion'_eq_top : torsion' R (torsion' R M S) S = ⊤ :=
 
 /-- The torsion submodule of the torsion submodule (viewed as a module) is the full
 torsion module. -/
--- @[simp] Porting note (#10618): simp can prove this
 theorem torsion_torsion_eq_top : torsion R (torsion R M) = ⊤ :=
   torsion'_torsion'_eq_top R⁰
 
@@ -860,3 +857,62 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 
 end AddMonoid
+
+namespace AddSubgroup
+
+variable (A : Type*) [AddCommGroup A] (n : ℤ)
+
+/-- The additive `n`-torsion subgroup for an integer `n`. -/
+@[reducible]
+def torsionBy : AddSubgroup A :=
+  (Submodule.torsionBy ℤ A n).toAddSubgroup
+
+@[inherit_doc]
+scoped notation:max (priority := high) A"["n"]" => torsionBy A n
+
+lemma torsionBy.neg : A[-n] = A[n] := by
+  ext a
+  simp
+
+variable {A} {n : ℕ}
+
+@[simp]
+lemma torsionBy.nsmul (x : A[n]) : n • x = 0 :=
+  Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.smul_torsionBy ..
+
+lemma torsionBy.nsmul_iff {x : A} :
+    x ∈ A[n] ↔ n • x = 0 :=
+  Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
+
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+    s • x = (s % n) • x :=
+  nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
+
+lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
+    s • x = (s % n) • x :=
+  nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
+
+/-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
+def torsionBy.zmodModule : Module (ZMod n) A[n] :=
+  AddCommGroup.zmodModule torsionBy.nsmul
+
+end AddSubgroup
+
+section InfiniteRange
+
+@[simp]
+lemma infinite_range_add_smul_iff
+    [AddCommGroup M] [Ring R] [Module R M] [Infinite R] [NoZeroSMulDivisors R M] (x y : M) :
+    (Set.range <| fun r : R ↦ x + r • y).Infinite ↔ y ≠ 0 := by
+  refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
+  rw [add_right_inj] at hrs
+  exact smul_left_injective _ h hrs
+
+@[simp]
+lemma infinite_range_add_nsmul_iff [AddCommGroup M] [NoZeroSMulDivisors ℤ M] (x y : M) :
+    (Set.range <| fun n : ℕ ↦ x + n • y).Infinite ↔ y ≠ 0 := by
+  refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
+  rw [add_right_inj, ← natCast_zsmul, ← natCast_zsmul] at hrs
+  simpa using smul_left_injective _ h hrs
+
+end InfiniteRange

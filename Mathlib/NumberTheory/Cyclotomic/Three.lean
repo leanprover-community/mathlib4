@@ -128,7 +128,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExte
   have := hζ.finite_quotient_toInteger_sub_one (by decide)
   let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
   let _ : Ring (𝓞 K ⧸ Ideal.span {λ}) := CommRing.toRing -- to speed up instance synthesis
-  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- dito
+  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- ditto
   have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
   have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
     rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
@@ -144,7 +144,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExte
     rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
   · right; right
     refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
-    rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
+    rw [RingHom.map_add, h, RingHom.map_one, neg_add_cancel]
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
 lemma eta_sq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by

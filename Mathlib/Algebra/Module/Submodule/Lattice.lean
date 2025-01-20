@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
@@ -73,7 +76,7 @@ instance uniqueBot : Unique (⊥ : Submodule R M) :=
 
 instance : OrderBot (Submodule R M) where
   bot := ⊥
-  bot_le p x := by simp (config := { contextual := true }) [zero_mem]
+  bot_le p x := by simp +contextual [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
   ⟨fun h ↦ h.symm ▸ fun _ hx ↦ (mem_bot R).mp hx,
@@ -171,8 +174,8 @@ instance : InfSet (Submodule R M) :=
   ⟨fun S ↦
     { carrier := ⋂ s ∈ S, (s : Set M)
       zero_mem' := by simp [zero_mem]
-      add_mem' := by simp (config := { contextual := true }) [add_mem]
-      smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
+      add_mem' := by simp +contextual [add_mem]
+      smul_mem' := by simp +contextual [smul_mem] }⟩
 
 private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
   Set.biInter_subset_of_mem
@@ -180,12 +183,12 @@ private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ 
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
-instance : Inf (Submodule R M) :=
+instance : Min (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
-      add_mem' := by simp (config := { contextual := true }) [add_mem]
-      smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
+      add_mem' := by simp +contextual [add_mem]
+      smul_mem' := by simp +contextual [smul_mem] }⟩
 
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
@@ -241,6 +244,10 @@ theorem mem_finset_inf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
   simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_iInter]
 
+lemma inf_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
+    q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=
+  SetLike.coe_injective <| by simpa only [inf_coe, iInf_coe] using Set.inter_iInter _ _
+
 theorem mem_sup_left {S T : Submodule R M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
   have : S ≤ S ⊔ T := le_sup_left
   rw [LE.le] at this
@@ -287,7 +294,7 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
     { toAddSubmonoid := sSup (toAddSubmonoid '' s)
       smul_mem' := fun t {m} h ↦ by
         simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
-        refine AddSubmonoid.iSup_induction'
+        refine AddSubmonoid.iSup_induction' _
           (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) ?_ ?_
           (fun x y _ _ ↦ ?_) h
         · rintro ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ x (hx : x ∈ p)

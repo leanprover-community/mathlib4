@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -36,7 +36,7 @@ This is often called 'finitely complete'.
 -/
 class HasFiniteLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has `FinType` objects and morphisms-/
+  and which has `FinType` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
 
 instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
@@ -85,7 +85,7 @@ This is often called 'finitely cocomplete'.
 -/
 class HasFiniteColimits : Prop where
   /-- `C` has all colimits over any type `J` whose objects and morphisms lie in the same universe
-  and which has `Fintype` objects and morphisms-/
+  and which has `Fintype` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]
@@ -239,13 +239,14 @@ instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWid
 /-- Finite wide pullbacks are finite limits, so if `C` has all finite limits,
 it also has finite wide pullbacks
 -/
-theorem hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] : HasFiniteWidePullbacks C :=
+instance (priority := 900) hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] :
+    HasFiniteWidePullbacks C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteLimits.out _⟩
 
 /-- Finite wide pushouts are finite colimits, so if `C` has all finite colimits,
 it also has finite wide pushouts
 -/
-theorem hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
+instance (priority := 900) hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
     HasFiniteWidePushouts C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteColimits.out _⟩
 

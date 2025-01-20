@@ -4,13 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Tactic.Module
 
 /-!
 # Manifold structure on the sphere
@@ -37,13 +40,13 @@ We prove two lemmas about smooth maps:
 
 As an application we prove `contMdiffNegSphere`, that the antipodal map is smooth.
 
-Finally, we equip the `circle` (defined in `Analysis.Complex.Circle` to be the sphere in `ℂ`
+Finally, we equip the `Circle` (defined in `Analysis.Complex.Circle` to be the sphere in `ℂ`
 centred at `0` of radius `1`) with the following structure:
 * a charted space with model space `EuclideanSpace ℝ (Fin 1)` (inherited from `Metric.Sphere`)
 * a Lie group with model with corners `𝓡 1`
 
-We furthermore show that `expMapCircle` (defined in `Analysis.Complex.Circle` to be the natural
-map `fun t ↦ exp (t * I)` from `ℝ` to `circle`) is smooth.
+We furthermore show that `Circle.exp` (defined in `Analysis.Complex.Circle` to be the natural
+map `fun t ↦ exp (t * I)` from `ℝ` to `Circle`) is smooth.
 
 
 ## Implementation notes
@@ -66,9 +69,9 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
-open Metric FiniteDimensional Function
+open Metric Module Function
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 section StereographicProjection
 
@@ -92,7 +95,7 @@ theorem stereoToFun_apply (x : E) :
   rfl
 
 theorem contDiffOn_stereoToFun :
-    ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
+    ContDiffOn ℝ ∞ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
@@ -125,9 +128,9 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
   have h₁ : (0 : ℝ) < ‖w‖ ^ 2 + 4 := by positivity
   suffices ‖(4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v‖ = ‖w‖ ^ 2 + 4 by
     simp only [mem_sphere_zero_iff_norm, norm_smul, Real.norm_eq_abs, abs_inv, this,
-      abs_of_pos h₁, stereoInvFunAux_apply, inv_mul_cancel h₁.ne']
+      abs_of_pos h₁, stereoInvFunAux_apply, inv_mul_cancel₀ h₁.ne']
   suffices ‖(4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v‖ ^ 2 = (‖w‖ ^ 2 + 4) ^ 2 by
-    simpa [sq_eq_sq_iff_abs_eq_abs, abs_of_pos h₁] using this
+    simpa only [sq_eq_sq_iff_abs_eq_abs, abs_norm, abs_of_pos h₁] using this
   rw [Submodule.mem_orthogonal_singleton_iff_inner_left] at hw
   simp [norm_add_sq_real, norm_smul, inner_smul_left, inner_smul_right, hw, mul_pow,
     Real.norm_eq_abs, hv]
@@ -137,7 +140,7 @@ theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
-    simp
+    simp only [map_zero, smul_zero]
   have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
   have h₂ : HasFDerivAt (fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
@@ -154,15 +157,15 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     HasFDerivAt (stereoInvFunAux v ∘ ((↑) : (ℝ ∙ v)ᗮ → E)) (ℝ ∙ v)ᗮ.subtypeL 0 := by
   have : HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) ((ℝ ∙ v)ᗮ.subtypeL 0) :=
     hasFDerivAt_stereoInvFunAux v
-  convert this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
+  refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 
-theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
-  have h₀ : ContDiff ℝ ⊤ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
-  have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
+theorem contDiff_stereoInvFunAux : ContDiff ℝ ∞ (stereoInvFunAux v) := by
+  have h₀ : ContDiff ℝ ∞ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
+  have h₁ : ContDiff ℝ ∞ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
     nlinarith
-  have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
+  have h₂ : ContDiff ℝ ∞ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
@@ -177,15 +180,16 @@ theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     (stereoInvFun hv w : E) = (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v) :=
   rfl
 
+open scoped InnerProductSpace in
 theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
   refine Subtype.coe_ne_coe.1 ?_
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
-      refine (inv_mul_lt_iff' ?_).mpr ?_
-      · nlinarith
-      linarith
+      rw [inv_mul_lt_iff₀']
+      · linarith
+      positivity
     simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
       hv] using hw'
   · simpa using stereoInvFunAux_mem hv w.2
@@ -193,11 +197,13 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
 theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv) :=
   continuous_induced_rng.2 (contDiff_stereoInvFunAux.continuous.comp continuous_subtype_val)
 
+open scoped InnerProductSpace in
+attribute [-simp] AddSubgroupClass.coe_norm Submodule.coe_norm in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
   simp only [stereoToFun_apply, stereoInvFun_apply, smul_add]
-  -- name two frequently-occuring quantities and write down their basic properties
+  -- name two frequently-occurring quantities and write down their basic properties
   set a : ℝ := innerSL _ v x
   set y := orthogonalProjection (ℝ ∙ v)ᗮ x
   have split : ↑x = a • v + ↑y := by
@@ -210,45 +216,35 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     · simp [← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
-  -- two facts which will be helpful for clearing denominators in the main calculation
-  have ha : 1 - a ≠ 0 := by
+  -- a fact which will be helpful for clearing denominators in the main calculation
+  have ha : 0 < 1 - a := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
     linarith
-  -- the core of the problem is these two algebraic identities:
-  have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
-    field_simp; simp only [Submodule.coe_norm] at *; nlinarith
-  have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
-    field_simp
-    transitivity (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
-    · congr
-      simp only [Submodule.coe_norm] at *
-      nlinarith
-    ring!
-  convert
-    congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp only [innerSL_apply, norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs,
-      AddSubgroupClass.coe_norm, mul_pow, div_pow, sq_abs, SetLike.val_smul, mul_smul, a]
-    -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
-    rw [split, add_comm]
-    ac_rfl
-  -- Porting note: this branch did not exit in ml3
-  · rw [split, add_comm]
-    congr!
-    dsimp
-    rw [one_smul]
+  rw [split, Submodule.coe_smul_of_tower]
+  simp only [norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg ha.le]
+  match_scalars
+  · field_simp
+    linear_combination 4 * (1 - a) * pythag
+  · field_simp
+    linear_combination 4 * (a - 1) ^ 3 * pythag
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
-  have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    field_simp; ring
-  convert congr_arg (· • w) this
-  · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
-      orthogonalProjection_orthogonalComplement_singleton_eq_zero v
-    -- Porting note: was innerSL _ and now just inner
-    have h₃ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-    -- Porting note: was innerSL _ and now just inner
-    have h₄ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
-    simp [h₁, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
-  · simp
+  simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
+    orthogonalProjection_mem_subspace_eq_self]
+  have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
+    orthogonalProjection_orthogonalComplement_singleton_eq_zero v
+  -- Porting note: was innerSL _ and now just inner
+  have h₂ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+  -- Porting note: was innerSL _ and now just inner
+  have h₃ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
+  rw [h₁, h₂, h₃]
+  match_scalars
+  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
+  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+  simp (disch := field_simp_discharge) only [add_div', add_sub_sub_cancel, div_div,
+    div_div_eq_mul_div, div_eq_iff, div_mul_eq_mul_div, inv_eq_one_div,
+    mul_div_assoc', mul_one, mul_zero, one_mul, smul_eq_mul, sub_div', zero_add, zero_div, zero_mul]
+  ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
 this is the version as a partial homeomorphism. -/
@@ -360,6 +356,8 @@ end ChartedSpace
 
 section SmoothManifold
 
+open scoped InnerProductSpace
+
 theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
   simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_one]
 
@@ -393,7 +391,7 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
       -- Porting note: need to help with implicit variables again
       have H₂ := (contDiff_stereoInvFunAux (v := v.val)|>.comp
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
-      convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
+      convert H₁.comp_inter (H₂.contDiffOn : ContDiffOn ℝ ∞ _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
       simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
         PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
@@ -409,9 +407,9 @@ instance (n : ℕ) :
   haveI := Fact.mk (@finrank_euclideanSpace_fin ℝ _ (n + 1))
   EuclideanSpace.instSmoothManifoldWithCornersSphere
 
-/-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/
+/-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth. -/
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
+    ContMDiff (𝓡 n) 𝓘(ℝ, E) ⊤ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
   have := EuclideanSpace.instSmoothManifoldWithCornersSphere (E := E) (n := n)
   rw [contMDiff_iff]
@@ -442,8 +440,8 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
     (-- Again, partially removing type ascription... Weird that this helps!
         OrthonormalBasis.fromOrthogonalSpanSingleton
         n (ne_zero_of_mem_unit_sphere (-v))).repr
-  have h : ContDiffOn ℝ ⊤ _ Set.univ := U.contDiff.contDiffOn
-  have H₁ := (h.comp' contDiffOn_stereoToFun).contMDiffOn
+  have h : ContDiffOn ℝ ∞ _ Set.univ := U.contDiff.contDiffOn
+  have H₁ := (h.comp_inter contDiffOn_stereoToFun).contMDiffOn
   have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
   ext x
@@ -457,11 +455,17 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
 
 /-- The antipodal map is smooth. -/
 theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) (𝓡 n) ∞ fun x : sphere (0 : E) 1 => -x := by
+    ContMDiff (𝓡 n) (𝓡 n) ⊤ fun x : sphere (0 : E) 1 => -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
+
+private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+  stereographic' n (-v) v = 0 := by
+    dsimp [stereographic']
+    simp only [EmbeddingLike.map_eq_zero_iff]
+    apply stereographic_neg_apply
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
@@ -475,8 +479,6 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     TangentSpace (𝓡 n) v →L[ℝ] E) = (ℝ ∙ (v : E))ᗮ := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   dsimp [chartAt]
-  -- rw [LinearIsometryEquiv.toHomeomorph_symm]
-  -- rw [← LinearIsometryEquiv.coe_toHomeomorph]
   simp only [chartAt, stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
@@ -486,10 +488,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   suffices
       LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ by
     convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    apply stereographic'_neg
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
@@ -523,10 +522,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by
     convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    apply stereographic'_neg
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
@@ -534,11 +530,11 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
-  simpa using Subtype.coe_injective
+  simpa [- Subtype.val_injective] using Subtype.val_injective
 
 end SmoothManifold
 
-section circle
+section Circle
 
 open Complex
 
@@ -550,18 +546,18 @@ attribute [local instance] finrank_real_complex_fact'
 
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
-instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
+instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) Circle :=
   EuclideanSpace.instChartedSpaceSphere
 
-instance : SmoothManifoldWithCorners (𝓡 1) circle :=
+instance : SmoothManifoldWithCorners (𝓡 1) Circle :=
   EuclideanSpace.instSmoothManifoldWithCornersSphere (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/
-instance : LieGroup (𝓡 1) circle where
+instance : LieGroup (𝓡 1) Circle where
   smooth_mul := by
     apply ContMDiff.codRestrict_sphere
-    let c : circle → ℂ := (↑)
-    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ∞ fun z : ℂ × ℂ => z.fst * z.snd := by
+    let c : Circle → ℂ := (↑)
+    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ⊤ fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
@@ -571,11 +567,13 @@ instance : LieGroup (𝓡 1) circle where
     exact contMDiff_coe_sphere
   smooth_inv := by
     apply ContMDiff.codRestrict_sphere
-    simp only [← coe_inv_circle, coe_inv_circle_eq_conj]
+    simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
-theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=
+theorem contMDiff_circleExp : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ⊤ Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 
-end circle
+@[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp
+
+end Circle

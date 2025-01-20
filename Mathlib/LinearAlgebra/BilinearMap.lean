@@ -3,7 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Submodule.Equiv
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Basics on bilinear maps
@@ -28,6 +29,8 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
+open Function
+
 namespace LinearMap
 
 section Semiring
@@ -37,16 +40,15 @@ variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
 variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
 variable {M : Type*} {N : Type*} {P : Type*}
 variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
-variable {Nₗ : Type*} {Pₗ : Type*}
-variable {M' : Type*} {N' : Type*} {P' : Type*}
+variable {Pₗ : Type*}
+variable {M' : Type*} {P' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
-variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
+variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
+variable [AddCommGroup M'] [AddCommGroup P']
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
 variable [Module R Pₗ] [Module S Pₗ]
-variable [Module R M'] [Module S N'] [Module R₂ P'] [Module S₂ P']
+variable [Module R M'] [Module R₂ P'] [Module S₂ P']
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
 variable [SMulCommClass S₂ R P₂]
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
@@ -103,10 +105,10 @@ attribute [local instance] SMulCommClass.symm
 /-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map from `M × N` to
 `P`, change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
-  mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
-    (fun c n  m  => (f m).map_smulₛₗ _ _)
+  mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
+    (fun _ _  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
-    -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.
     (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 
@@ -376,14 +378,11 @@ end CommSemiring
 
 section CommRing
 
-variable {R R₂ S S₂ M N P : Type*}
-variable {Mₗ Nₗ Pₗ : Type*}
-variable [CommRing R] [CommRing S] [CommRing R₂] [CommRing S₂]
+variable {R M : Type*} [CommRing R]
 
 section AddCommGroup
 
-variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
+variable [AddCommGroup M] [Module R M]
 
 theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
@@ -396,5 +395,37 @@ theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
 end AddCommGroup
 
 end CommRing
+
+open Function
+
+section restrictScalarsRange
+
+variable {R S M N P M' N' P' : Type*}
+  [CommSemiring R] [CommSemiring S] [SMul S R]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
+  [Module S M] [Module S N] [Module S P]
+  [IsScalarTower S R M] [IsScalarTower S R N] [IsScalarTower S R P]
+  [AddCommMonoid M'] [Module S M'] [AddCommMonoid N'] [Module S N'] [AddCommMonoid P'] [Module S P']
+  [SMulCommClass R S P]
+
+variable (i : M' →ₗ[S] M) (j : N' →ₗ[S] N) (k : P' →ₗ[S] P) (hk : Injective k)
+  (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ m n, B (i m) (j n) ∈ LinearMap.range k)
+
+/-- Restrict the scalars, domains, and range of a bilinear map. -/
+noncomputable def restrictScalarsRange :
+    M' →ₗ[S] N' →ₗ[S] P' :=
+  (((LinearMap.restrictScalarsₗ S R _ _ _).comp
+    (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
+
+@[simp] lemma restrictScalarsRange_apply (m : M') (n : N') :
+    k (restrictScalarsRange i j k hk B hB m n) = B (i m) (j n) := by
+  simp [restrictScalarsRange]
+
+@[simp]
+lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :
+    restrictScalarsRange i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
+  rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]
+
+end restrictScalarsRange
 
 end LinearMap

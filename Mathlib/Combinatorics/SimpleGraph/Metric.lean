@@ -56,7 +56,7 @@ protected theorem Reachable.exists_walk_length_eq_edist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
 
-protected theorem Connected.exists_walk_length_eq_edist  (hconn : G.Connected) (u v : V) :
+protected theorem Connected.exists_walk_length_eq_edist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (hconn u v).exists_walk_length_eq_edist
 
@@ -127,7 +127,7 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
-  · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
+  · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
@@ -142,7 +142,8 @@ lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v th
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
-theorem edist_le_subgraph_edist {G' : SimpleGraph V} (h : G ≤ G') :
+@[gcongr]
+theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.edist u v ≤ G.edist u v := by
   by_cases hr : G.Reachable u v
   · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
@@ -267,7 +268,8 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
   by_cases h : u = v <;> simp [h]
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
-theorem dist_le_subgraph_dist {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
+@[gcongr]
+protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
   rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]

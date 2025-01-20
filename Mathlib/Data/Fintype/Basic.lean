@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.Finite.Defs
 
 /-!
 # Finite types
@@ -75,7 +76,7 @@ theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
 theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
   mem_univ
 
-theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [ext_iff]
+theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
 theorem eq_univ_of_forall : (∀ x, x ∈ s) → s = univ :=
   eq_univ_iff_forall.2
@@ -93,7 +94,7 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 
-@[aesop unsafe apply (rule_sets := [finsetNonempty])]
+@[simp, aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
@@ -139,14 +140,73 @@ theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t :=
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
 
 theorem codisjoint_right : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ t → a ∈ s :=
-  Codisjoint_comm.trans codisjoint_left
+  codisjoint_comm.trans codisjoint_left
+
+instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
+  GeneralizedBooleanAlgebra.toBooleanAlgebra
+
+end Finset
+
+namespace Mathlib.Meta
+open Lean Elab Term Meta Batteries.ExtendedBinder
+
+/-- Elaborate set builder notation for `Finset`.
+
+* `{x | p x}` is elaborated as `Finset.filter (fun x ↦ p x) Finset.univ` if the expected type is
+  `Finset ?α`.
+* `{x : α | p x}` is elaborated as `Finset.filter (fun x : α ↦ p x) Finset.univ` if the expected
+  type is `Finset ?α`.
+* `{x ∉ s | p x}` is elaborated as `Finset.filter (fun x ↦ p x) sᶜ` if either the expected type is
+  `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
+* `{x ≠ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) {a}ᶜ` if the expected type is
+  `Finset ?α`.
+
+See also
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
+  form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+
+TODO: Write a delaborator
+-/
+@[term_elab setBuilder]
+def elabFinsetBuilderSetOf : TermElab
+  | `({ $x:ident | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) Finset.univ)) expectedType?
+  | `({ $x:ident : $t | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident : $t ↦ $p) Finset.univ)) expectedType?
+  | `({ $x:ident ∉ $s:term | $p }), expectedType? => do
+    -- If the expected type is known to be `Set ?α`, give up. If it is not known to be `Set ?α` or
+    -- `Finset ?α`, check the expected type of `s`.
+    unless ← knownToBeFinsetNotSet expectedType? do
+      let ty ← try whnfR (← inferType (← elabTerm s none)) catch _ => throwUnsupportedSyntax
+      -- If the expected type of `s` is not known to be `Finset ?α`, give up.
+      match_expr ty with
+      | Finset _ => pure ()
+      | _ => throwUnsupportedSyntax
+    -- Finally, we can elaborate the syntax as a finset.
+    -- TODO: Seems a bit wasteful to have computed the expected type but still use `expectedType?`.
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) $sᶜ)) expectedType?
+  | `({ $x:ident ≠ $a | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+end Mathlib.Meta
+
+namespace Finset
+variable [Fintype α] {s t : Finset α}
 
 section BooleanAlgebra
-
 variable [DecidableEq α] {a : α}
-
-instance booleanAlgebra : BooleanAlgebra (Finset α) :=
-  GeneralizedBooleanAlgebra.toBooleanAlgebra
 
 theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
   sdiff_eq
@@ -211,7 +271,7 @@ theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
 @[simp]
 theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   ext
-  simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
+  simp only [not_or, mem_insert, mem_compl, mem_erase]
 
 theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
   simp_rw [compl_insert, insert_erase (mem_compl.2 ha)]
@@ -288,7 +348,7 @@ namespace Finset
 variable  {s t : Finset α}
 
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
-    s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [ext_iff]
+    s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [Finset.ext_iff]
 
 @[simp] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.subtype p = univ := by simp
@@ -317,7 +377,7 @@ namespace Fintype
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [Function.funext_iff, Fintype.complete])
+    (by simp [funext_iff, Fintype.complete])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -340,6 +400,11 @@ instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α
 
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
+
+@[to_additive]
+instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
+    DecidableEq (α ≃* β) :=
+  fun a b => decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 
 end BundledHoms
 
@@ -433,7 +498,7 @@ This function computes by checking all terms `a : α` to find the `f a = b`, so 
 -/
 def invOfMemRange : Set.range f → α := fun b =>
   Finset.choose (fun a => f a = b) Finset.univ
-    ((existsUnique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
+    ((existsUnique_congr (by simp)).mp (hf.existsUnique_of_mem_range b.property))
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
   (Finset.choose_spec (fun a => f a = b) _ _).right
@@ -509,7 +574,7 @@ def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
 def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 
--- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- In principle, this could be a `simp` theorem but it applies to any occurrence of `univ` and
 -- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl
@@ -533,7 +598,7 @@ namespace Set
 
 variable {s t : Set α}
 
-/-- Construct a finset enumerating a set `s`, given a `Fintype` instance.  -/
+/-- Construct a finset enumerating a set `s`, given a `Fintype` instance. -/
 def toFinset (s : Set α) [Fintype s] : Finset α :=
   (@Finset.univ s _).map <| Function.Embedding.subtype _
 
@@ -562,9 +627,12 @@ def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decida
 theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
@@ -643,7 +711,7 @@ theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ 
 
 /- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
 it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
-Reported in leanprover-community/lean#672 -/
+Reported in https://github.com/leanprover-community/lean/issues/672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
     (Set.univ : Set α).toFinset = Finset.univ := by
@@ -661,7 +729,7 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
 
 @[simp]
 theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
-    { x | p x }.toFinset = Finset.univ.filter p := by
+    Set.toFinset {x | p x} = Finset.univ.filter p := by
   ext
   simp
 
@@ -708,6 +776,11 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
+theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) := by
+  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+  exact ⟨.ofEquiv _ e.symm⟩
 
 @[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
   ext; simp
@@ -927,7 +1000,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
+  Fintype.ofSurjective Quotient.mk'' Quotient.mk''_surjective
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
@@ -1112,13 +1185,14 @@ function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
-    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
+    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim
-  · apply symm
+  · unfold Function.onFun
+    apply symm
     exact hf' n m h
 
 open Batteries.ExtendedBinder Lean Meta

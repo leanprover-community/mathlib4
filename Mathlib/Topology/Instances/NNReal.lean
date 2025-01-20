@@ -6,8 +6,9 @@ Authors: Johan Commelin
 import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on `ℝ≥0`
@@ -48,12 +49,9 @@ a few of which rely on the fact that subtraction is continuous.
 
 -/
 
-
 noncomputable section
 
-open Set TopologicalSpace Metric Filter
-
-open scoped Topology
+open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 
@@ -75,7 +73,22 @@ instance : CompleteSpace ℝ≥0 :=
 
 instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
+
+-- TODO: generalize this to a broader class of subtypes
+instance : IsOrderBornology ℝ≥0 where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ≥0, s ⊆ Icc 0 r := by
+      obtain ⟨rreal, hrreal⟩ := bdd.subset_closedBall 0
+      use rreal.toNNReal
+      simp only [← NNReal.closedBall_zero_eq_Icc', Real.coe_toNNReal']
+      exact subset_trans hrreal (Metric.closedBall_subset_closedBall (le_max_left rreal 0))
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
+
 section coe
+
+lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
+  Ico_bot (a := x) ▸ isOpen_Iio
 
 variable {α : Type*}
 
@@ -91,6 +104,11 @@ noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
+
+lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
+    (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
+    ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
+  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
 @[simps (config := .asFn)]
@@ -185,11 +203,10 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
     (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 
-open scoped Classical
-
 @[norm_cast]
-theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
-  if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
+theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) := by
+  classical
+  exact if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
   else by simp [tsum_def, hf, mt summable_coe.1 hf]
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
@@ -248,7 +265,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
-      pow_left_strictMonoOn hn (zero_le x) (zero_le y) h) <|
+      pow_left_strictMonoOn₀ hn (zero_le x) (zero_le y) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 
@@ -257,7 +274,7 @@ section Monotone
 /-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
 theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
     (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
   exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
 
 /-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
@@ -283,7 +300,7 @@ end Monotone
 
 instance instProperSpace : ProperSpace ℝ≥0 where
   isCompact_closedBall x r := by
-    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
+    have emb : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.isClosedEmbedding fun _ ↦ congrFun rfl
     exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal

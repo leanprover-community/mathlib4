@@ -22,7 +22,7 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-! ### Order dual -/
 

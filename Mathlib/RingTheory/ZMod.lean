@@ -6,6 +6,7 @@ Authors: Alex J. Best
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!

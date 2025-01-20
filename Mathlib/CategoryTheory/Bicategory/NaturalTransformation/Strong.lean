@@ -108,7 +108,7 @@ naturality 2-cell is an isomorphism. -/
 noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : OplaxNatTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongOplaxNatTrans F G where
   app := η.app
-  naturality := fun f => asIso (η.naturality _)
+  naturality := fun _ => asIso (η.naturality _)
 
 variable (F : OplaxFunctor B C)
 
@@ -116,7 +116,7 @@ variable (F : OplaxFunctor B C)
 /-- The identity strong natural transformation. -/
 @[simps!]
 def id : StrongOplaxNatTrans F F :=
-  mkOfOplax (OplaxNatTrans.id F) { naturality := λ f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
+  mkOfOplax (OplaxNatTrans.id F) { naturality := fun f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
 
 @[simp]
 lemma id.toOplax : (id F).toOplax = OplaxNatTrans.id F :=
@@ -183,7 +183,7 @@ end
 @[simps!]
 def vcomp (η : StrongOplaxNatTrans F G) (θ : StrongOplaxNatTrans G H) : StrongOplaxNatTrans F H :=
   mkOfOplax (OplaxNatTrans.vcomp η.toOplax θ.toOplax)
-    { naturality := λ {a b} f ↦
+    { naturality := fun {a b} f ↦
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
 end

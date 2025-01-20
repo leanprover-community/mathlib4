@@ -61,16 +61,11 @@ theorem toFinsupp_support :
     l.toFinsupp.support = (Finset.range l.length).filter (getD l · 0 ≠ 0) :=
   rfl
 
-theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l.get ⟨n, hn⟩ :=
-  getD_eq_get _ _ _
+theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l[n] :=
+  getD_eq_getElem _ _ hn
 
-theorem toFinsupp_apply_fin (n : Fin l.length) : l.toFinsupp n = l.get n :=
-  getD_eq_get _ _ _
-
-set_option linter.deprecated false in
-@[deprecated (since := "2023-04-10")]
-theorem toFinsupp_apply_lt' (hn : n < l.length) : l.toFinsupp n = l.nthLe n hn :=
-  getD_eq_get _ _ _
+theorem toFinsupp_apply_fin (n : Fin l.length) : l.toFinsupp n = l[n] :=
+  getD_eq_getElem _ _ n.isLt
 
 theorem toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
   getD_eq_default _ _ hn
@@ -133,7 +128,7 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
 theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
     toFinsupp l = (l.enum.map fun nr : ℕ × R => Finsupp.single nr.1 nr.2).sum := by
-  /- Porting note (#11215): TODO: `induction` fails to substitute `l = []` in
+  /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with

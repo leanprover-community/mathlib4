@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
@@ -29,7 +29,7 @@ open Projective
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
@@ -89,7 +89,6 @@ theorem complex_d_comp_π_f_zero :
     P.complex.d 1 0 ≫ P.π.f 0 = 0 := by
   rw [← P.π.comm 1 0, single_obj_d, comp_zero]
 
--- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_succ_comp (n : ℕ) :
     P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
   simp

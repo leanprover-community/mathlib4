@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Operations
 
 /-!
 # Partial values of a type
@@ -81,7 +81,7 @@ theorem eta : ∀ o : Part α, (⟨o.Dom, fun h => o.get h⟩ : Part α) = o
   | ⟨_, _⟩ => rfl
 
 /-- `a ∈ o` means that `o` is defined and equal to `a` -/
-protected def Mem (a : α) (o : Part α) : Prop :=
+protected def Mem (o : Part α) (a : α) : Prop :=
   ∃ h, o.get h = a
 
 instance : Membership α (Part α) :=
@@ -330,9 +330,9 @@ noncomputable def equivOption : Part α ≃ Option α :=
 instance : PartialOrder (Part
         α) where
   le x y := ∀ i, i ∈ x → i ∈ y
-  le_refl x y := id
-  le_trans x y z f g i := g _ ∘ f _
-  le_antisymm x y f g := Part.ext fun z => ⟨f _, g _⟩
+  le_refl _ _ := id
+  le_trans _ _ _ f g _ := g _ ∘ f _
+  le_antisymm _ _ f g := Part.ext fun _ => ⟨f _, g _⟩
 
 instance : OrderBot (Part α) where
   bot := none

@@ -56,7 +56,7 @@ theorem mulSupport_subset_iff' {f : α → M} {s : Set α} :
 @[to_additive]
 theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
-  simp (config := { contextual := true }) only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
+  simp +contextual only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
 
 @[to_additive]
@@ -209,9 +209,10 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 @[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
-  induction' n with n hfn
-  · simp [pow_zero, mulSupport_one]
-  · simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+  induction n with
+  | zero => simp [pow_zero, mulSupport_one]
+  | succ n hfn =>
+    simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 
 section DivisionMonoid
 

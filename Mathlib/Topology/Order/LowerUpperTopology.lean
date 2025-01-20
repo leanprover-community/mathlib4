@@ -68,19 +68,21 @@ def upper (α : Type*) [Preorder α] : TopologicalSpace α := generateFrom {s | 
 /-- Type synonym for a preorder equipped with the lower set topology. -/
 def WithLower (α : Type*) := α
 
-variable {α β}
+variable {α β : Type*}
 
 namespace WithLower
 
-/-- `toLower` is the identity function to the `WithLower` of a type.  -/
+/-- `toLower` is the identity function to the `WithLower` of a type. -/
 @[match_pattern] def toLower : α ≃ WithLower α := Equiv.refl _
 
-/-- `ofLower` is the identity function from the `WithLower` of a type.  -/
+/-- `ofLower` is the identity function from the `WithLower` of a type. -/
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithLower_symm_eq : (@toLower α).symm = ofLower := rfl
+@[simp] lemma toLower_symm : (@toLower α).symm = ofLower := rfl
+@[deprecated (since := "2024-12-16")] alias to_WithLower_symm_eq := toLower_symm
 
-@[simp] lemma of_WithLower_symm_eq : (@ofLower α).symm = toLower := rfl
+@[simp] lemma ofLower_symm : (@ofLower α).symm = toLower := rfl
+@[deprecated (since := "2024-12-16")] alias of_WithLower_symm_eq := ofLower_symm
 
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
 
@@ -116,14 +118,16 @@ end WithLower
 def WithUpper (α : Type*) := α
 namespace WithUpper
 
-/-- `toUpper` is the identity function to the `WithUpper` of a type.  -/
+/-- `toUpper` is the identity function to the `WithUpper` of a type. -/
 @[match_pattern] def toUpper : α ≃ WithUpper α := Equiv.refl _
 
-/-- `ofUpper` is the identity function from the `WithUpper` of a type.  -/
+/-- `ofUpper` is the identity function from the `WithUpper` of a type. -/
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithUpper_symm_eq {α} : (@toUpper α).symm = ofUpper := rfl
-@[simp] lemma of_WithUpper_symm_eq : (@ofUpper α).symm = toUpper := rfl
+@[simp] lemma toUpper_symm {α} : (@toUpper α).symm = ofUpper := rfl
+@[deprecated (since := "2024-12-16")] alias to_WithUpper_symm_eq := toUpper_symm
+@[simp] lemma ofUpper_symm : (@ofUpper α).symm = toUpper := rfl
+@[deprecated (since := "2024-12-16")] alias of_WithUpper_symm_eq := ofUpper_symm
 @[simp] lemma toUpper_ofUpper (a : WithUpper α) : toUpper (ofUpper a) = a := rfl
 @[simp] lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a := rfl
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
@@ -198,7 +202,7 @@ variable {α}
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
 def withLowerHomeomorph : WithLower α ≃ₜ α :=
-  WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLower.ofLower.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -263,10 +267,6 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
   obtain rfl := IsLower.topology_eq α
   simp [continuous_generateFrom_iff]
 
-/-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
-preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
-
 end Preorder
 
 section PartialOrder
@@ -280,6 +280,61 @@ instance (priority := 90) t0Space : T0Space α :=
     Ici_injective <| by simpa only [inseparable_iff_closure_eq, closure_singleton] using h
 
 end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
+
+lemma isTopologicalBasis_insert_univ_subbasis :
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
+  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α, lower]) (by
+    rintro _ ⟨b, rfl⟩ _ ⟨c, rfl⟩
+    use b ⊓ c
+    rw [compl_Ici, compl_Ici, compl_Ici, Iio_inter_Iio])
+
+end LinearOrder
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
+
+lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (Ici a)ᶜ = U := by
+  by_cases hU : U = univ
+  · simp only [hU, isOpen_univ, compl_Ici, true_or]
+  refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩
+  intro hO
+  apply Or.inr
+  convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
+  constructor
+  · intro ⟨a, ha⟩
+    use {U}
+    constructor
+    · apply subset_trans (singleton_subset_iff.mpr _) (subset_insert _ _)
+      use a
+    · rw [sUnion_singleton]
+  · intro ⟨S, hS1, hS2⟩
+    have hUS : univ ∉ S := by
+      by_contra hUS'
+      apply hU
+      rw [hS2]
+      exact sUnion_eq_univ_iff.mpr (fun a => ⟨univ, hUS', trivial⟩)
+    use sSup {a | (Ici a)ᶜ ∈ S}
+    rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
+    apply le_antisymm
+    · intro b hb
+      simp only [sInter_image, mem_iInter, mem_compl_iff]
+      intro s hs
+      obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
+      subst hS2 ha
+      simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
+    · intro b hb
+      rw [mem_Ici, sSup_le_iff]
+      intro c hc
+      simp only [sInter_image, mem_iInter] at hb
+      rw [← not_lt, ← mem_Iio, ← compl_Ici]
+      exact hb _ hc
+
+end CompleteLinearOrder
 
 end IsLower
 
@@ -303,7 +358,7 @@ variable {α}
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
 def withUpperHomeomorph : WithUpper α ≃ₜ α :=
-  WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -344,13 +399,6 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Iic a)) :=
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
 
-/-- A function `f : β → α` with upper topology in the codomain is continuous
-provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated (since := "2023-12-24")]
-lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
-    Continuous f :=
-  continuous_iff_Iic.2 h
-
 end Preorder
 
 
@@ -364,6 +412,25 @@ instance (priority := 90) t0Space : T0Space α :=
   IsLower.t0Space (α := αᵒᵈ)
 
 end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] [TopologicalSpace α] [IsUpper α]
+
+lemma isTopologicalBasis_insert_univ_subbasis :
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Iic a)ᶜ = s}) :=
+  IsLower.isTopologicalBasis_insert_univ_subbasis (α := αᵒᵈ)
+
+end LinearOrder
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsUpper α]
+
+lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (Iic a)ᶜ = U :=
+  IsLower.isTopologicalSpace_basis (α := αᵒᵈ) U
+
+end CompleteLinearOrder
 
 end IsUpper
 
@@ -435,3 +502,17 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+/-- The Sierpiński topology on `Prop` is the upper topology -/
+instance : IsUpper Prop where
+  topology_eq_upperTopology := by
+    rw [Topology.upper, sierpinskiSpace, ← generateFrom_insert_empty]
+    congr
+    exact le_antisymm
+      (fun h hs => by
+        simp only [compl_Iic, mem_setOf_eq]
+        rw [← Ioi_True, ← Ioi_False] at hs
+        rcases hs with (rfl | rfl)
+        · use True
+        · use False)
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))

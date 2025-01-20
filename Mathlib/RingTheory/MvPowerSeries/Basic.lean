@@ -8,8 +8,8 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Formal (multivariate) power series
@@ -129,11 +129,14 @@ variable (R) [Semiring R]
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
-  LinearMap.stdBasis R (fun _ ↦ R) n
+  LinearMap.single R (fun _ ↦ R) n
 
 /-- The `n`th coefficient of a multivariate formal power series. -/
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
+
+theorem coeff_apply (f : MvPowerSeries σ R) (d : σ →₀ ℕ) : coeff R d f = f d :=
+  rfl
 
 variable {R}
 
@@ -147,28 +150,28 @@ if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
-    (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
+    (monomial R n) = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  erw [LinearMap.single_apply, Pi.single_apply]
 
 @[simp]
 theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff R n (monomial R n a) = a := by
   classical
   rw [monomial_def]
-  exact LinearMap.stdBasis_same R (fun _ ↦ R) n a
+  exact Pi.single_eq_same _ _
 
 theorem coeff_monomial_ne {m n : σ →₀ ℕ} (h : m ≠ n) (a : R) : coeff R m (monomial R n a) = 0 := by
   classical
   rw [monomial_def]
-  exact LinearMap.stdBasis_ne R (fun _ ↦ R) _ _ h a
+  exact Pi.single_eq_of_ne h _
 
 theorem eq_of_coeff_monomial_ne_zero {m n : σ →₀ ℕ} {a : R} (h : coeff R m (monomial R n a) ≠ 0) :
     m = n :=
@@ -178,10 +181,17 @@ theorem eq_of_coeff_monomial_ne_zero {m n : σ →₀ ℕ} {a : R} (h : coeff R 
 theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n) = LinearMap.id :=
   LinearMap.ext <| coeff_monomial_same n
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
+
+theorem eq_zero_iff_forall_coeff_zero {f : MvPowerSeries σ R} :
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
+  MvPowerSeries.ext_iff
+
+theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
+    f ≠ 0 ↔ (∃ d : σ →₀ ℕ, coeff R d f ≠ 0) := by
+  simp only [MvPowerSeries.ext_iff, ne_eq, coeff_zero, not_forall]
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
@@ -384,9 +394,9 @@ theorem X_def (s : σ) : X s = monomial R (single s 1) 1 :=
   rfl
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 
 theorem coeff_X_pow [DecidableEq σ] (m : σ →₀ ℕ) (s : σ) (n : ℕ) :
     coeff R m ((X s : MvPowerSeries σ R) ^ n) = if m = single s n then 1 else 0 := by
@@ -435,13 +445,11 @@ theorem constantCoeff_C (a : R) : constantCoeff σ R (C σ R a) = a :=
 theorem constantCoeff_comp_C : (constantCoeff σ R).comp (C σ R) = RingHom.id R :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_zero : constantCoeff σ R 0 = 0 :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
   rfl
 
@@ -455,8 +463,7 @@ theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = a * coeff _ n f :=
   rfl
 
@@ -672,7 +679,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent
   apply sum_eq_zero
   intro k hk
   rw [mem_finsuppAntidiag] at hk
-  set s := (range n).filter fun i ↦ k i = 0 with hs_def
+  set s := {i ∈ range n | k i = 0} with hs_def
   have hs : s ⊆ range n := filter_subset _ _
   have hs' (i : ℕ) (hi : i ∈ s) : coeff R (k i) f = constantCoeff σ R f := by
     simp only [hs_def, mem_filter] at hi
@@ -683,10 +690,10 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent
   rw [← prod_sdiff (s₁ := s) (filter_subset _ _)]
   apply mul_eq_zero_of_right
   rw [prod_congr rfl hs', prod_const]
-  suffices m ≤ s.card by
+  suffices m ≤ #s by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
     rw [hm', pow_add, hf, MulZeroClass.zero_mul]
-  rw [← Nat.add_le_add_iff_right, add_comm s.card,
+  rw [← Nat.add_le_add_iff_right, add_comm #s,
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
@@ -731,7 +738,7 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
       refine ⟨X default, ?_⟩
-      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
+      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top]
       intro x
       rw [MvPowerSeries.ext_iff, not_forall]
       refine ⟨Finsupp.single default 1, ?_⟩

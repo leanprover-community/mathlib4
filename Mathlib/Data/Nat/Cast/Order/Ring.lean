@@ -12,7 +12,7 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 
@@ -22,7 +22,7 @@ we use a generic collection of instances so that it applies in other settings (e
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
 variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
+variable [AddLeftMono α] [ZeroLEOneClass α]
 
 /-- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
@@ -37,11 +37,11 @@ theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
   ofNat_nonneg' n
 
 @[simp, norm_cast]
-theorem cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
+theorem cast_min {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(min m n : ℕ) : α) = min (m : α) n :=
   (@mono_cast α _).map_min
 
 @[simp, norm_cast]
-theorem cast_max {α} [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
+theorem cast_max {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(max m n : ℕ) : α) = max (m : α) n :=
   (@mono_cast α _).map_max
 
 section Nontrivial
@@ -73,7 +73,7 @@ end OrderedSemiring
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
 theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
+    [AddLeftReflectLE α] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   rcases le_total m n with h | h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
     exact mono_cast h

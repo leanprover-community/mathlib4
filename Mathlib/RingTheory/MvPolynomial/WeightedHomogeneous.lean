@@ -3,6 +3,7 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.Basic
@@ -129,7 +130,7 @@ def weightedHomogeneousSubmodule (w : σ → M) (m : M) : Submodule R (MvPolynom
   smul_mem' r a ha c hc := by
     rw [coeff_smul] at hc
     exact ha (right_ne_zero_of_mul hc)
-  zero_mem' d hd := False.elim (hd <| coeff_zero _)
+  zero_mem' _ hd := False.elim (hd <| coeff_zero _)
   add_mem' {a} {b} ha hb c hc := by
     rw [coeff_add] at hc
     obtain h | h : coeff c a ≠ 0 ∨ coeff c b ≠ 0 := by
@@ -213,7 +214,7 @@ theorem isWeightedHomogeneous_one (w : σ → M) : IsWeightedHomogeneous w (1 : 
 theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
   apply isWeightedHomogeneous_monomial
-  simp only [weight, LinearMap.toAddMonoidHom_coe, total_single, one_nsmul]
+  simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
 namespace IsWeightedHomogeneous
 
@@ -249,6 +250,12 @@ theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M)
 theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeightedHomogeneous w ψ n) :
     IsWeightedHomogeneous w (φ * ψ) (m + n) :=
   weightedHomogeneousSubmodule_mul w m n <| Submodule.mul_mem_mul hφ hψ
+
+theorem pow {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (n : ℕ) :
+    IsWeightedHomogeneous w (φ ^ n) (n • m) := by
+  induction n with
+  | zero => rw [pow_zero, zero_smul]; exact isWeightedHomogeneous_one R w
+  | succ n ih => rw [pow_succ, succ_nsmul]; exact ih.mul hφ
 
 /-- A product of weighted homogeneous polynomials is weighted homogeneous, with weighted degree
   equal to the sum of the weighted degrees. -/
@@ -308,7 +315,7 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
-      ∑ d ∈ φ.support.filter fun d => weight w d = n, monomial d (coeff d φ) :=
+      ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
   Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert rfl
 
@@ -505,7 +512,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
   rcases Classical.em (d = 0) with (rfl | hd)
   · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
   · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
-    simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
+    simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
     simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
@@ -530,7 +537,7 @@ variable [CanonicallyLinearOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolyno
   has weighted degree zero if and only if `∀ x : σ, m x = 0`. -/
 theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weight w m = 0 ↔ ∀ x : σ, m x = 0 := by
-  simp only [weight, Finsupp.total, LinearMap.toAddMonoidHom_coe, coe_lsum,
+  simp only [weight, Finsupp.linearCombination, LinearMap.toAddMonoidHom_coe, coe_lsum,
     LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
   rw [Finsupp.sum, Finset.sum_eq_zero_iff]
   apply forall_congr'
@@ -581,7 +588,7 @@ theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
 
 variable (R)
 
-/-- The `decompose'` argument of `weightedDecomposition`.  -/
+/-- The `decompose'` argument of `weightedDecomposition`. -/
 def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
   DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
     (Finset.image (weight w) φ.support) fun m =>

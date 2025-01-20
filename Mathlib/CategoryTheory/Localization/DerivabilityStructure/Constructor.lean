@@ -87,7 +87,7 @@ lemma isConnected :
   refine ⟨RightResolution.mk ρ.w.left ρ.hw.1, ?_⟩
   have := zigzag_obj_of_zigzag
     (fromRightResolution Φ L x ⋙ w.costructuredArrowDownwardsPrecomp x y g fac)
-      (isPreconnected_zigzag  (RightResolution.mk (𝟙 _) (W₂.id_mem _))
+      (isPreconnected_zigzag (RightResolution.mk (𝟙 _) (W₂.id_mem _))
         (RightResolution.mk ρ.w.right ρ.hw.2))
   refine Zigzag.trans ?_ (Zigzag.trans this ?_)
   · exact Zigzag.of_hom (eqToHom (by aesop))

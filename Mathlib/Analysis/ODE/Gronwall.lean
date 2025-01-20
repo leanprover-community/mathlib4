@@ -30,8 +30,7 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
 open Metric Set Asymptotics Filter Real
 open scoped Topology NNReal
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-! ### Technical lemmas about `gronwallBound` -/
 
@@ -128,7 +127,6 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
     (fun x hx _r hr => (hf' x hx).liminf_right_slope_norm_le hr) ha bound
 
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
-  (hv : ∀ t, LipschitzOnWith K (v t) (s t))
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
@@ -137,6 +135,7 @@ people call this Grönwall's inequality too.
 This version assumes all inequalities to be true in some time-dependent set `s t`,
 and assumes that the solutions never leave this set. -/
 theorem dist_le_of_approx_trajectories_ODE_of_mem
+    (hv : ∀ t ∈ Ico a b, LipschitzOnWith K (v t) (s t))
     (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (f' t) (Ici t) t)
     (f_bound : ∀ t ∈ Ico a b, dist (f' t) (v t (f t)) ≤ εf)
@@ -153,7 +152,7 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
-  have hv := (hv t).dist_le_mul _ (hfs t ht) _ (hgs t ht)
+  have hv := (hv t ht).dist_le_mul _ (hfs t ht) _ (hgs t ht)
   rw [← dist_eq_norm, ← dist_eq_norm]
   refine this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht)) hv).trans ?_)
   rw [add_comm]
@@ -174,7 +173,7 @@ theorem dist_le_of_approx_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf'
+  dist_le_of_approx_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf'
     f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
 
 /-- If `f` and `g` are two exact solutions of the same ODE, then the distance between them
@@ -184,6 +183,7 @@ people call this Grönwall's inequality too.
 This version assumes all inequalities to be true in some time-dependent set `s t`,
 and assumes that the solutions never leave this set. -/
 theorem dist_le_of_trajectories_ODE_of_mem
+    (hv : ∀ t ∈ Ico a b, LipschitzOnWith K (v t) (s t))
     (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t)
     (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
@@ -211,7 +211,7 @@ theorem dist_le_of_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg
+  dist_le_of_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg
     hg' (fun _ _ => trivial) ha
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
@@ -220,6 +220,7 @@ and we consider only solutions included in `s`.
 
 This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
 theorem ODE_solution_unique_of_mem_Icc_right
+    (hv : ∀ t ∈ Ico a b, LipschitzOnWith K (v t) (s t))
     (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t)
     (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
@@ -234,6 +235,7 @@ theorem ODE_solution_unique_of_mem_Icc_right
 /-- A time-reversed version of `ODE_solution_unique_of_mem_Icc_right`. Uniqueness is shown in a
 closed interval `Icc a b`, where `b` is the "initial" time. -/
 theorem ODE_solution_unique_of_mem_Icc_left
+    (hv : ∀ t ∈ Ioc a b, LipschitzOnWith K (v t) (s t))
     (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ioc a b, HasDerivWithinAt f (v t (f t)) (Iic t) t)
     (hfs : ∀ t ∈ Ioc a b, f t ∈ s t)
@@ -242,9 +244,13 @@ theorem ODE_solution_unique_of_mem_Icc_left
     (hgs : ∀ t ∈ Ioc a b, g t ∈ s t)
     (hb : f b = g b) :
     EqOn f g (Icc a b) := by
-  have hv' t : LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
+  have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
+    intro t ht
+    replace ht : -t ∈ Ioc a b := by
+      simp at ht ⊢
+      constructor <;> linarith
     rw [← one_mul K]
-    exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _)
+    exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)
   have hmt1 : MapsTo Neg.neg (Icc (-b) (-a)) (Icc a b) :=
     fun _ ht ↦ ⟨le_neg.mp ht.2, neg_le.mp ht.1⟩
   have hmt2 : MapsTo Neg.neg (Ico (-b) (-a)) (Ioc a b) :=
@@ -270,6 +276,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
 /-- A version of `ODE_solution_unique_of_mem_Icc_right` for uniqueness in a closed interval whose
 interior contains the initial time. -/
 theorem ODE_solution_unique_of_mem_Icc
+    (hv : ∀ t ∈ Ioo a b, LipschitzOnWith K (v t) (s t))
     (ht : t₀ ∈ Ioo a b)
     (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t)
@@ -282,13 +289,13 @@ theorem ODE_solution_unique_of_mem_Icc
   rw [← Icc_union_Icc_eq_Icc (le_of_lt ht.1) (le_of_lt ht.2)]
   apply EqOn.union
   · have hss : Ioc a t₀ ⊆ Ioo a b := Ioc_subset_Ioo_right ht.2
-    exact ODE_solution_unique_of_mem_Icc_left hv
+    exact ODE_solution_unique_of_mem_Icc_left (fun t ht ↦ hv t (hss ht))
       (hf.mono <| Icc_subset_Icc_right <| le_of_lt ht.2)
       (fun _ ht' ↦ (hf' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hfs _ (hss ht')))
       (hg.mono <| Icc_subset_Icc_right <| le_of_lt ht.2)
       (fun _ ht' ↦ (hg' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hgs _ (hss ht'))) heq
   · have hss : Ico t₀ b ⊆ Ioo a b := Ico_subset_Ioo_left ht.1
-    exact ODE_solution_unique_of_mem_Icc_right hv
+    exact ODE_solution_unique_of_mem_Icc_right (fun t ht ↦ hv t (hss ht))
       (hf.mono <| Icc_subset_Icc_left <| le_of_lt ht.1)
       (fun _ ht' ↦ (hf' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hfs _ (hss ht')))
       (hg.mono <| Icc_subset_Icc_left <| le_of_lt ht.1)
@@ -296,6 +303,7 @@ theorem ODE_solution_unique_of_mem_Icc
 
 /-- A version of `ODE_solution_unique_of_mem_Icc` for uniqueness in an open interval. -/
 theorem ODE_solution_unique_of_mem_Ioo
+    (hv : ∀ t ∈ Ioo a b, LipschitzOnWith K (v t) (s t))
     (ht : t₀ ∈ Ioo a b)
     (hf : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
     (hg : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
@@ -305,36 +313,40 @@ theorem ODE_solution_unique_of_mem_Ioo
   rcases lt_or_le t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
-    exact ODE_solution_unique_of_mem_Icc_left hv
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+    exact ODE_solution_unique_of_mem_Icc_left
+      (fun t'' ht'' ↦ hv t'' ((Ioc_subset_Icc_self.trans hss) ht''))
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').2)
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').2) heq
       ⟨le_rfl, le_of_lt h⟩
   · have hss : Icc t₀ t' ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht.1 ht''.1, lt_of_le_of_lt ht''.2 ht'.2⟩
-    exact ODE_solution_unique_of_mem_Icc_right hv
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+    exact ODE_solution_unique_of_mem_Icc_right
+      (fun t'' ht'' ↦ hv t'' ((Ico_subset_Icc_self.trans hss) ht''))
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').2)
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
 /-- Local unqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_eventually
+    (hv : ∀ᶠ t in 𝓝 t₀, LipschitzOnWith K (v t) (s t))
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
     (hg : ∀ᶠ t in 𝓝 t₀, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
-  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp (hf.and hg)
+  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp (hv.and (hf.and hg))
   rw [Filter.eventuallyEq_iff_exists_mem]
   refine ⟨ball t₀ ε, ball_mem_nhds _ hε, ?_⟩
   simp_rw [Real.ball_eq_Ioo] at *
-  apply ODE_solution_unique_of_mem_Ioo hv (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
-    (fun _ ht ↦ (h _ ht).1) (fun _ ht ↦ (h _ ht).2) heq
+  apply ODE_solution_unique_of_mem_Ioo (fun _ ht ↦ (h _ ht).1)
+    (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
+    (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2) heq
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
@@ -347,5 +359,5 @@ theorem ODE_solution_unique
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
+  ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha

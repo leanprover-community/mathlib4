@@ -26,7 +26,6 @@ In this file we define box-additive functions and prove that a function such tha
 rectangular box, additive function
 -/
 
-
 noncomputable section
 
 open scoped Classical
@@ -58,7 +57,7 @@ namespace BoxAdditiveMap
 
 open Box Prepartition Finset
 
-variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
+variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I : Box ι}
   {i : ι}
 
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
@@ -73,7 +72,6 @@ theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
 theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
   DFunLike.coe_injective
 
--- Porting note (#10618): was @[simp], now can be proved by `simp`
 theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := DFunLike.coe_fn_eq
 
 theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
@@ -191,7 +189,7 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
       rw [WithTop.coe_le_coe] at hJ
       refine i.succAboveCases (fun hx => ?_) (fun j hx => ?_) j
       · simp only [Box.splitLower_def hx, Box.splitUpper_def hx, update_same, ← WithBot.some_eq_coe,
-          Option.elim', Box.face, (· ∘ ·), update_noteq (Fin.succAbove_ne _ _)]
+          Option.elim', Box.face, Function.comp_def, update_noteq (Fin.succAbove_ne _ _)]
         abel
       · have : (J.face i : WithTop (Box (Fin n))) ≤ I₀.face i :=
           WithTop.coe_le_coe.2 (face_mono hJ i)

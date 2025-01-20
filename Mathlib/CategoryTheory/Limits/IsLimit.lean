@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
+Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.Cones
@@ -50,7 +50,7 @@ cone morphism to `t`.
 
 See <https://stacks.math.columbia.edu/tag/002E>.
   -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -59,9 +59,6 @@ structure IsLimit (t : Cone F) where
   /-- It is the unique such map to do this -/
   uniq : ∀ (s : Cone F) (m : s.pt ⟶ t.pt) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
     aesop_cat
-
--- Porting note (#10618):  simp can prove this. Linter complains it still exists
-attribute [-simp, nolint simpNF] IsLimit.mk.injEq
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
@@ -194,7 +191,7 @@ variable {t : Cone F}
 
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
     m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
-  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
+  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/
@@ -503,7 +500,7 @@ cocone morphism from `t`.
 
 See <https://stacks.math.columbia.edu/tag/002F>.
 -/
--- Porting note(#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
@@ -515,9 +512,6 @@ structure IsColimit (t : Cocone F) where
     aesop_cat
 
 attribute [reassoc (attr := simp)] IsColimit.fac
-
--- Porting note (#10618): simp can prove this. Linter claims it still is tagged with simp
-attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Johan Commelin, Scott Morrison
+Authors: Markus Himmel, Johan Commelin, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Preadditive.Biproducts
@@ -550,7 +550,7 @@ abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
     `(0, g)`. -/
 abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
-    rw [biprod.lift_desc, comp_neg, pullback.condition, add_right_neg]
+    rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
     `(f, -g)`. -/
@@ -581,7 +581,7 @@ abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
     `X ⟶ Y ⊞ Z` induced by `f` and `-g`. -/
 abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
-    rw [biprod.lift_desc, neg_comp, pushout.condition, add_right_neg]
+    rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
     cofork. -/

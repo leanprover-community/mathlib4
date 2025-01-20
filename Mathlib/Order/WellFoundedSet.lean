@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.Antichain
@@ -135,16 +134,15 @@ theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
     TFAE [Acc r a,
       WellFoundedOn { b | ReflTransGen r b a } r,
       WellFoundedOn { b | TransGen r b a } r] := by
-  tfae_have 1 → 2
-  · refine fun h => ⟨fun b => InvImage.accessible _ ?_⟩
+  tfae_have 1 → 2 := by
+    refine fun h => ⟨fun b => InvImage.accessible _ ?_⟩
     rw [← acc_transGen_iff] at h ⊢
     obtain h' | h' := reflTransGen_iff_eq_or_transGen.1 b.2
     · rwa [h'] at h
     · exact h.inv h'
-  tfae_have 2 → 3
-  · exact fun h => h.subset fun _ => TransGen.to_reflTransGen
-  tfae_have 3 → 1
-  · refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
+  tfae_have 2 → 3 := fun h => h.subset fun _ => TransGen.to_reflTransGen
+  tfae_have 3 → 1 := by
+    refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
     exact fun ⟨c, hc⟩ d h => ⟨⟨d, .head h hc⟩, h, rfl⟩
   tfae_finish
 
@@ -168,10 +166,10 @@ theorem wellFoundedOn_iff_no_descending_seq :
   · rintro ⟨⟨f, hf⟩⟩
     have H : ∀ n, f n ∈ s := fun n => (hf.2 n.lt_succ_self).2.2
     refine ⟨⟨f, ?_⟩, H⟩
-    simpa only [H, and_true_iff] using @hf
+    simpa only [H, and_true] using @hf
   · rintro ⟨⟨f, hf⟩, hfs : ∀ n, f n ∈ s⟩
     refine ⟨⟨f, ?_⟩⟩
-    simpa only [hfs, and_true_iff] using @hf
+    simpa only [hfs, and_true] using @hf
 
 theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
     (s ∪ t).WellFoundedOn r := by
@@ -311,7 +309,7 @@ theorem Subsingleton.partiallyWellOrderedOn (hs : s.Subsingleton) : PartiallyWel
 theorem partiallyWellOrderedOn_insert :
     PartiallyWellOrderedOn (insert a s) r ↔ PartiallyWellOrderedOn s r := by
   simp only [← singleton_union, partiallyWellOrderedOn_union,
-    partiallyWellOrderedOn_singleton, true_and_iff]
+    partiallyWellOrderedOn_singleton, true_and]
 
 protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r) (a : α) :
     PartiallyWellOrderedOn (insert a s) r :=
@@ -432,7 +430,7 @@ protected theorem Subsingleton.isPWO (hs : s.Subsingleton) : IsPWO s := hs.finit
 
 @[simp]
 theorem isPWO_insert {a} : IsPWO (insert a s) ↔ IsPWO s := by
-  simp only [← singleton_union, isPWO_union, isPWO_singleton, true_and_iff]
+  simp only [← singleton_union, isPWO_union, isPWO_singleton, true_and]
 
 protected theorem IsPWO.insert (h : IsPWO s) (a : α) : IsPWO (insert a s) :=
   isPWO_insert.2 h
@@ -445,7 +443,7 @@ protected theorem Subsingleton.isWF (hs : s.Subsingleton) : IsWF s := hs.isPWO.i
 
 @[simp]
 theorem isWF_insert {a} : IsWF (insert a s) ↔ IsWF s := by
-  simp only [← singleton_union, isWF_union, isWF_singleton, true_and_iff]
+  simp only [← singleton_union, isWF_union, isWF_singleton, true_and]
 
 protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
@@ -469,11 +467,25 @@ protected theorem Subsingleton.wellFoundedOn (hs : s.Subsingleton) : s.WellFound
 
 @[simp]
 theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s r := by
-  simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and_iff]
+  simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and]
+
+@[simp]
+theorem wellFoundedOn_sdiff_singleton : WellFoundedOn (s \ {a}) r ↔ WellFoundedOn s r := by
+  simp only [← wellFoundedOn_insert (a := a), insert_diff_singleton, mem_insert_iff, true_or,
+    insert_eq_of_mem]
 
 protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
     WellFoundedOn (insert a s) r :=
   wellFoundedOn_insert.2 h
+
+protected theorem WellFoundedOn.sdiff_singleton (h : WellFoundedOn s r) (a : α) :
+    WellFoundedOn (s \ {a}) r :=
+  wellFoundedOn_sdiff_singleton.2 h
+
+lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → α)
+    {s : Set α} {t : Set β} (h : MapsTo f t s) (hw : s.WellFoundedOn r) :
+    t.WellFoundedOn (r on f) := by
+  exact InvImage.wf (fun x : t ↦ ⟨f x, h x.prop⟩) hw
 
 end WellFoundedOn
 
@@ -582,7 +594,24 @@ theorem isWF_min_singleton (a) {hs : IsWF ({a} : Set α)} {hn : ({a} : Set α).N
     hs.min hn = a :=
   eq_of_mem_singleton (IsWF.min_mem hs hn)
 
+theorem IsWF.min_eq_of_lt (hs : s.IsWF) (ha : a ∈ s) (hlt : ∀ b ∈ s, b ≠ a → a < b) :
+    hs.min (nonempty_of_mem ha) = a := by
+  by_contra h
+  exact (hs.not_lt_min (nonempty_of_mem ha) ha) (hlt (hs.min (nonempty_of_mem ha))
+    (hs.min_mem (nonempty_of_mem ha)) h)
+
 end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] {s : Set α} {a : α}
+
+theorem IsWF.min_eq_of_le (hs : s.IsWF) (ha : a ∈ s) (hle : ∀ b ∈ s, a ≤ b) :
+    hs.min (nonempty_of_mem ha) = a :=
+  (eq_of_le_of_not_lt (hle (hs.min (nonempty_of_mem ha))
+    (hs.min_mem (nonempty_of_mem ha))) (hs.not_lt_min (nonempty_of_mem ha) ha)).symm
+
+end PartialOrder
 
 section LinearOrder
 
@@ -696,7 +725,7 @@ theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
 /-- Higman's Lemma, which states that for any reflexive, transitive relation `r` which is
   partially well-ordered on a set `s`, the relation `List.SublistForall₂ r` is partially
   well-ordered on the set of lists of elements of `s`. That relation is defined so that
-  `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`.  -/
+  `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`. -/
 theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl α r] [IsTrans α r]
     {s : Set α} (h : s.PartiallyWellOrderedOn r) :
     { l : List α | ∀ x, x ∈ l → x ∈ s }.PartiallyWellOrderedOn (List.SublistForall₂ r) := by
@@ -828,7 +857,7 @@ we only require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
-  refine ((PSigma.lex_wf (wellFoundedOn_range.2 hα) fun a => hβ a).onFun
+  refine ((psigma_lex (wellFoundedOn_range.2 hα) fun a => hβ a).onFun
     (f := fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h => ?_
   obtain h' | h' := Prod.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
@@ -840,7 +869,7 @@ theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn
     (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) :=
   WellFounded.prod_lex_of_wellFoundedOn_fiber hα
-    fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h ↦ ‹_›)
+    fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
 
 end ProdLex
 
@@ -853,7 +882,7 @@ require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     WellFounded (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  refine ((PSigma.lex_wf (wellFoundedOn_range.2 hι) fun a => hπ a).onFun
+  refine ((psigma_lex (wellFoundedOn_range.2 hι) fun a => hπ a).onFun
     (f := fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h => ?_
   obtain h' | ⟨h', h''⟩ := Sigma.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'

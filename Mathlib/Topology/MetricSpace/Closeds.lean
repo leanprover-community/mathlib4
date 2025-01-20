@@ -22,16 +22,11 @@ inherits a metric space structure from the Hausdorff distance, as the Hausdorff 
 always finite in this context.
 -/
 
-
 noncomputable section
-
-open scoped Classical
-open Topology ENNReal
 
 universe u
 
-open scoped Classical
-open Set Function TopologicalSpace Filter
+open Set Function TopologicalSpace Filter Topology ENNReal
 
 namespace EMetric
 
@@ -43,9 +38,9 @@ variable {α : Type u} [EMetricSpace α] {s : Set α}
 on the type of closed subsets -/
 instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h :=
     Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
 
@@ -122,7 +117,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
       use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
-      simp only [Nat.add_zero, Nat.zero_eq, Nat.rec_zero, Nat.rec_add_one, true_and]
+      simp only [Nat.add_zero, Nat.rec_zero, Nat.rec_add_one, true_and]
       exact fun k => (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
     have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
@@ -229,17 +224,20 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 where the edistance is the Hausdorff edistance -/
 instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
 /-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
-theorem NonemptyCompacts.ToCloseds.uniformEmbedding :
-    UniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
-  Isometry.uniformEmbedding fun _ _ => rfl
+theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
+    IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
+  Isometry.isUniformEmbedding fun _ _ => rfl
+
+@[deprecated (since := "2024-10-01")]
+alias NonemptyCompacts.ToCloseds.uniformEmbedding := NonemptyCompacts.ToCloseds.isUniformEmbedding
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
@@ -283,14 +281,14 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 from the same statement for closed subsets -/
 instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
-        NonemptyCompacts.ToCloseds.uniformEmbedding.toUniformInducing).2 <|
+        NonemptyCompacts.ToCloseds.isUniformEmbedding.isUniformInducing).2 <|
     NonemptyCompacts.isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff, image_univ]
+    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.isEmbedding.isCompact_iff, image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/

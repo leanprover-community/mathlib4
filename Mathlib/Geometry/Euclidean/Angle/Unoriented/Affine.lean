@@ -6,7 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Angles between points
@@ -33,7 +33,7 @@ namespace EuclideanGeometry
 open InnerProductGeometry
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] {p p₀ p₁ p₂ : P}
+  [NormedAddTorsor V P] {p p₀ : P}
 
 /-- The undirected angle at `p2` between the line segments to `p1` and
 `p3`. If either of those points equals `p2`, this is π/2. Use
@@ -47,8 +47,8 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
-  have hf1 : (f x).1 ≠ 0 := by simp [hx12]
-  have hf2 : (f x).2 ≠ 0 := by simp [hx32]
+  have hf1 : (f x).1 ≠ 0 := by simp [f, hx12]
+  have hf2 : (f x).2 ≠ 0 := by simp [f, hx32]
   exact (InnerProductGeometry.continuousAt_angle hf1 hf2).comp
     ((continuous_fst.vsub continuous_snd.fst).prod_mk
       (continuous_snd.snd.vsub continuous_snd.fst)).continuousAt
@@ -134,7 +134,7 @@ nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
 @[simp] lemma angle_self_right (p₀ p : P) : ∠ p p₀ p₀ = π / 2 := by rw [angle_comm, angle_self_left]
 
 /-- The angle ∠ABA at a point is `0`, unless `A = B`. -/
-theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self $ vsub_ne_zero.2 h
+theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self <| vsub_ne_zero.2 h
 
 @[deprecated (since := "2024-02-14")] alias angle_eq_left := angle_self_left
 @[deprecated (since := "2024-02-14")] alias angle_eq_right := angle_self_right
@@ -302,8 +302,8 @@ theorem _root_.Wbtw.angle₂₁₃_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw 
     simp at hp₂p₁
   replace hr0 := hr0.lt_of_ne hr0'.symm
   refine ⟨vsub_ne_zero.2 hp₂p₁, r⁻¹, inv_pos.2 hr0, ?_⟩
-  rw [AffineMap.lineMap_apply, vadd_vsub_assoc, vsub_self, add_zero, smul_smul, inv_mul_cancel hr0',
-    one_smul]
+  rw [AffineMap.lineMap_apply, vadd_vsub_assoc, vsub_self, add_zero, smul_smul,
+    inv_mul_cancel₀ hr0', one_smul]
 
 /-- If the second of three points is strictly between the other two, the angle at the first point
 is zero. -/
@@ -350,8 +350,8 @@ theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
   · rw [angle, angle_eq_zero_iff]
     rintro ⟨hp₁p₂, r, hr0, hp₃p₂⟩
     rcases le_or_lt 1 r with (hr1 | hr1)
-    · refine Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one hr1⟩, ?_⟩
-      rw [AffineMap.lineMap_apply, hp₃p₂, smul_smul, inv_mul_cancel hr0.ne.symm, one_smul,
+    · refine Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one_of_one_le₀ hr1⟩, ?_⟩
+      rw [AffineMap.lineMap_apply, hp₃p₂, smul_smul, inv_mul_cancel₀ hr0.ne.symm, one_smul,
         vsub_vadd]
     · refine Or.inr ⟨?_, r, ⟨hr0.le, hr1.le⟩, ?_⟩
       · rw [← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Subobject.FactorThru
@@ -15,7 +15,7 @@ and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCo
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -379,18 +379,19 @@ theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y
 theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
     (s.inf P).Factors f ↔ ∀ i ∈ s, (P i).Factors f := by
   classical
-  induction' s using Finset.induction_on with _ _ _ ih
-  · simp [top_factors]
-  · simp [ih]
+  induction s using Finset.induction_on with
+  | empty => simp [top_factors]
+  | insert _ ih => simp [ih]
 
 -- `i` is explicit here because often we'd like to defer a proof of `m`
 theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
     (m : i ∈ s) : (P i).Factors (s.inf P).arrow := by
   classical
   revert i m
-  induction' s using Finset.induction_on with _ _ _ ih
-  · rintro _ ⟨⟩
-  · intro _ m
+  induction s using Finset.induction_on with
+  | empty => rintro _ ⟨⟩
+  | insert _ ih =>
+    intro _ m
     rw [Finset.inf_insert]
     simp only [Finset.mem_insert] at m
     rcases m with (rfl | m)
@@ -472,11 +473,12 @@ theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
     (h : ∃ i ∈ s, (P i).Factors f) : (s.sup P).Factors f := by
   classical
   revert h
-  induction' s using Finset.induction_on with _ _ _ ih
-  · rintro ⟨_, ⟨⟨⟩, _⟩⟩
-  · rintro ⟨j, ⟨m, h⟩⟩
+  induction s using Finset.induction_on with
+  | empty => rintro ⟨_, ⟨⟨⟩, _⟩⟩
+  | insert _ ih =>
+    rintro ⟨j, ⟨m, h⟩⟩
     simp only [Finset.sup_insert]
-    simp at m
+    simp only [Finset.mem_insert] at m
     rcases m with (rfl | m)
     · exact sup_factors_of_factors_left h
     · exact sup_factors_of_factors_right (ih ⟨j, ⟨m, h⟩⟩)
@@ -497,7 +499,7 @@ end Lattice
 
 section Inf
 
-variable [WellPowered C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C]
 
 /-- The "wide cospan" diagram, with a small indexing type, constructed from a set of subobjects.
 (This is just the diagram of all the subobjects pasted together, but using `WellPowered C`
@@ -532,7 +534,7 @@ theorem leInfCone_π_app_none {A : C} (s : Set (Subobject A)) (f : Subobject A)
     (k : ∀ g ∈ s, f ≤ g) : (leInfCone s f k).π.app none = f.arrow :=
   rfl
 
-variable [HasWidePullbacks.{v₁} C]
+variable [HasWidePullbacks.{w} C]
 
 /-- The limit of `wideCospan s`. (This will be the supremum of the set of subobjects.)
 -/
@@ -588,7 +590,7 @@ end Inf
 
 section Sup
 
-variable [WellPowered C] [HasCoproducts.{v₁} C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
 
 /-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
@@ -639,8 +641,8 @@ end Sup
 
 section CompleteLattice
 
-variable [WellPowered C] [HasWidePullbacks.{v₁} C] [HasImages C] [HasCoproducts.{v₁} C]
-  [InitialMonoClass C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasWidePullbacks.{w} C]
+  [HasImages C] [HasCoproducts.{w} C] [InitialMonoClass C]
 
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 

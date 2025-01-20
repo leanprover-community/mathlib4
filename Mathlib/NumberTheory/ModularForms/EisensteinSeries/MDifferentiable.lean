@@ -23,7 +23,7 @@ open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
 
 namespace EisensteinSeries
 
-/-- Auxilary lemma showing that for any `k : ℤ` the function `z → 1/(c*z+d)^k` is
+/-- Auxiliary lemma showing that for any `k : ℤ` the function `z → 1/(c*z+d)^k` is
 differentiable on `{z : ℂ | 0 < z.im}`. -/
 lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     DifferentiableOn ℂ (fun z : ℂ => (a 0 * z + a 1) ^ (-k)) {z : ℂ | 0 < z.im} := by
@@ -36,7 +36,7 @@ lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
   · simp only [Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div]
     apply differentiableOn_const
 
-/-- Auxilary lemma showing that for any `k : ℤ` and `(a : Fin 2 → ℤ)`
+/-- Auxiliary lemma showing that for any `k : ℤ` and `(a : Fin 2 → ℤ)`
 the extension of `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`.-/
 lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     DifferentiableOn ℂ (↑ₕeisSummand k a) {z : ℂ | 0 < z.im} := by
@@ -55,7 +55,7 @@ theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) 
   refine DifferentiableOn.differentiableAt ?_
     ((isOpen_lt continuous_const Complex.continuous_im).mem_nhds τ.2)
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
-    (eventually_of_forall fun s ↦ DifferentiableOn.sum
+    (Eventually.of_forall fun s ↦ DifferentiableOn.sum
       fun _ _ ↦ eisSummand_extension_differentiableOn _ _)
         (isOpen_lt continuous_const continuous_im)
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 
@@ -52,7 +52,7 @@ open RCLike
 
 open scoped ComplexConjugate Classical
 
-variable {𝕜 E F G : Type*} [RCLike 𝕜]
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
@@ -103,7 +103,7 @@ variable (hT : Dense (T.domain : Set E))
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : E →L[𝕜] 𝕜 :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
-    uniformEmbedding_subtype_val.toUniformInducing
+    isUniformEmbedding_subtype_val.isUniformInducing
 
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (y : T.adjointDomain) (x : T.domain) :
@@ -170,14 +170,17 @@ theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := b
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 
+include hT in
 theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) :
     T† y = x₀ :=
   (adjoint_apply_of_dense hT y).symm ▸ adjointAux_unique hT _ hx₀
 
+include hT in
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_isFormalAdjoint : T†.IsFormalAdjoint T := fun x =>
   (adjoint_apply_of_dense hT x).symm ▸ adjointAux_inner hT x
 
+include hT in
 /-- The adjoint is maximal in the sense that it contains every formal adjoint. -/
 theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
   ⟨-- Trivially, every `x : S.domain` is in `T.adjoint.domain`
@@ -199,7 +202,7 @@ as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
-  · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
+  · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq ?_ _ fun v => ?_

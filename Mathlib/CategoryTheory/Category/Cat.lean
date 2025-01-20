@@ -56,13 +56,13 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := 𝟭 C
   comp F G := F ⋙ G
   homCategory := fun _ _ => Functor.category
-  whiskerLeft {C} {D} {E} F G H η := whiskerLeft F η
-  whiskerRight {C} {D} {E} F G η H := whiskerRight η H
-  associator {A} {B} {C} D := Functor.associator
-  leftUnitor {A} B := Functor.leftUnitor
-  rightUnitor {A} B := Functor.rightUnitor
-  pentagon := fun {A} {B} {C} {D} {E}=> Functor.pentagon
-  triangle {A} {B} {C} := Functor.triangle
+  whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
+  whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
+  associator {_} {_} {_} _ := Functor.associator
+  leftUnitor {_} _ := Functor.leftUnitor
+  rightUnitor {_} _ := Functor.rightUnitor
+  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
+  triangle {_} {_} {_} := Functor.triangle
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
@@ -73,6 +73,10 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 /-- Category structure on `Cat` -/
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
+
+@[simp]
+theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
+  rfl
 
 @[simp]
 theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
@@ -88,6 +92,13 @@ theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ 
   rfl
 
 @[simp]
+theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
+
+@[simp]
+theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
+    (α ≫ β).app X = α.app X ≫ β.app X := rfl
+
+@[simp]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).app X = η.app (F.obj X) :=
   rfl
@@ -96,6 +107,11 @@ lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H)
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).app X = H.map (η.app X) :=
   rfl
+
+@[simp]
+theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
+    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
+  CategoryTheory.eqToHom_app h X
 
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
   rfl
@@ -116,6 +132,14 @@ lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ 
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
+
+/-- The identity in the category of categories equals the identity functor.-/
+theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
+
+/-- Composition in the category of categories equals functor composition.-/
+theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
+
+@[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/

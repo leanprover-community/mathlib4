@@ -100,6 +100,12 @@ theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProduc
   dsimp only
   rw [hx]
 
+@[simp] theorem of_subsingleton [Subsingleton β] : AEStronglyMeasurable' m f μ :=
+  ⟨f, by simp, by simp⟩
+
+@[simp] theorem of_subsingleton' [Subsingleton α] : AEStronglyMeasurable' m f μ :=
+  ⟨f, by simp, by simp⟩
+
 /-- An `m`-strongly measurable function almost everywhere equal to `f`. -/
 noncomputable def mk (f : α → β) (hfm : AEStronglyMeasurable' m f μ) : α → β :=
   hfm.choose
@@ -169,17 +175,10 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     hf_ind.stronglyMeasurable_of_measurableSpace_le_on hs_m hs fun x hxs =>
       Set.indicator_of_not_mem hxs _
 
-variable {α E' F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
-  -- E' for an inner product space on which we compute integrals
-  [NormedAddCommGroup E']
-  [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F for a Lp submodule
-  [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F]
-  -- F' for integrals on a Lp submodule
-  [NormedAddCommGroup F']
-  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section LpMeas
 
@@ -251,7 +250,7 @@ measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies complet
 `lpMeasSubgroup` (and `lpMeas`). -/
 
 
-variable {ι : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {m m0 : MeasurableSpace α} {μ : Measure α}
 
 /-- If `f` belongs to `lpMeasSubgroup F m p μ`, then the measurable function it is almost
 everywhere equal to (given by `AEMeasurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/
@@ -379,7 +378,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine EventuallyEq.trans ?_ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
   refine (Lp.coeFn_neg _).trans ?_
   simp_rw [lpMeasSubgroup_coe]
-  exact eventually_of_forall fun x => by rfl
+  exact Eventually.of_forall fun x => by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f - g) =

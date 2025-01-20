@@ -3,10 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.NeZero
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Canonically ordered monoids
@@ -57,7 +58,7 @@ instance (priority := 100) CanonicallyOrderedCommMonoid.existsMulOfLE (α : Type
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid α] {a b c d : α}
+variable [CanonicallyOrderedCommMonoid α] {a b c : α}
 
 @[to_additive]
 theorem le_self_mul : a ≤ a * c :=
@@ -110,11 +111,11 @@ theorem one_le (a : α) : 1 ≤ a :=
 theorem bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 
---TODO: This is a special case of `mul_eq_one`. We need the instance
--- `CanonicallyOrderedCommMonoid α → Unique αˣ`
-@[to_additive (attr := simp)]
-theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  mul_eq_one_iff' (one_le _) (one_le _)
+@[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
+  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) (one_le _) <| one_le _).1 a.mul_inv).1
+
+@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
+@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
@@ -127,9 +128,13 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 @[to_additive]
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 
+@[to_additive]
+lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+  bot_eq_one (α := α) ▸ bot_not_mem_iff
+
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
-  simp only [one_lt_iff_ne_one, Ne, mul_eq_one_iff, not_and_or]
+  simp only [one_lt_iff_ne_one, Ne, mul_eq_one, not_and_or]
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
@@ -151,7 +156,7 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
     _ ≤ b * c := mul_le_mul' h (one_le _)
 
 @[to_additive]
-theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
+theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ← exists_and_right]
   apply exists_congr
   intro c
@@ -198,8 +203,6 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
 class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 
-attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
-
 section CanonicallyLinearOrderedCommMonoid
 
 variable [CanonicallyLinearOrderedCommMonoid α]
@@ -221,12 +224,10 @@ theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c)
 theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) c := by
   simpa [min_comm _ c] using min_mul_distrib c a b
 
--- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left (one_le a)
 
--- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right (one_le a)

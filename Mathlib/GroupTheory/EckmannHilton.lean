@@ -43,6 +43,8 @@ variable {m₁ m₂ : X → X → X} {e₁ e₂ : X}
 variable (h₁ : IsUnital m₁ e₁) (h₂ : IsUnital m₂ e₂)
 variable (distrib : ∀ a b c d, ((a <m₂> b) <m₁> c <m₂> d) = (a <m₁> c) <m₂> b <m₁> d)
 
+include h₁ h₂ distrib
+
 /-- If a type carries two unital binary operations that distribute over each other,
 then they have the same unit elements.
 

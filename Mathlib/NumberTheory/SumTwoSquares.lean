@@ -5,7 +5,7 @@ Authors: Chris Hughes, Michael Stoll
 -/
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathlib.Tactic.LinearCombination
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares
@@ -151,7 +151,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
   obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
-    rw [show y ^ 2 = n + -1 * x ^ 2 by rw [h]; ring] at hc2
+    rw [show y ^ 2 = n + -1 * x ^ 2 by omega] at hc2
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
@@ -216,7 +216,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     exact even_two_mul _
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := Nat.sq_mul_squarefree_of_pos hn₀
     refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => ?_⟩
-    refine Nat.odd_iff_not_even.mp ?_ (H hqp hq4)
+    refine Nat.not_even_iff_odd.2 ?_ (H hqp hq4)
     have hqb' : padicValNat q b = 1 :=
       b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)
         ((hqp.dvd_iff_one_le_factorization hb₀.ne').mp hqb)
