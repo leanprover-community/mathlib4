@@ -453,7 +453,7 @@ def withHeadRefIfTagAppFns (d : Delab) : Delab := do
   if tagAppFns && (← getExpr).getAppFn.consumeMData.isConst then
     -- Delaborate the head to register term info and get a syntax we can use for the ref.
     -- The syntax `f` itself is thrown away.
-    let f ← withNaryFn delab
+    let f ← withNaryFn <| withOptionAtCurrPos `pp.tagAppFns true delab
     let stx ← withRef f d
     -- Annotate to ensure that the full syntax still refers to the whole expression.
     annotateTermInfo stx
