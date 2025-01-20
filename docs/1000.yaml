@@ -402,7 +402,7 @@ Q420714:
 Q422187:
   title: Myhill–Nerode theorem
   decl: Language.isRegular_iff_finite_range_leftQuotient
-  author: Chris Wong
+  authors: Chris Wong
   date: 2024-03-24
 
 Q425432:
