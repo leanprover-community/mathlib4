@@ -4181,7 +4181,8 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.FixedPoints
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Order.GaloisConnection.Defs
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Grade
 import Mathlib.Order.Height
