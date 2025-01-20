@@ -146,7 +146,6 @@ lemma IsOrderedRing.of_mul_nonneg [Ring α] [PartialOrder α] [IsOrderedAddMonoi
   mul_le_mul_of_nonneg_right a b c ab hc := by
     simpa only [sub_mul, sub_nonneg] using mul_nonneg _ _ (sub_nonneg.2 ab) hc
 
-attribute [local instance] IsOrderedAddMonoid.toIsOrderedCancelAddMonoid in
 lemma IsStrictOrderedRing.of_mul_pos [Ring α] [PartialOrder α] [IsOrderedAddMonoid α]
     [ZeroLEOneClass α] [Nontrivial α] (mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b) :
     IsStrictOrderedRing α where
