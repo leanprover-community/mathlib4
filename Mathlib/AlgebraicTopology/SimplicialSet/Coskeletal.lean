@@ -147,15 +147,11 @@ lemma fac_aux₂ {n : ℕ}
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
               Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
-            dsimp only [inclusion, op_map, Quiver.Hom.unop_op,
-              fullSubcategoryInclusion.map]
             rw [this, h₂, ← congr_fun (s.w β₂) x]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
               Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
-            dsimp only [inclusion, op_map, Quiver.Hom.unop_op,
-              fullSubcategoryInclusion.map]
             rw [this, h₀, ← congr_fun (s.w β₀) x]
             rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]
@@ -193,8 +189,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) (by leq) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
-    · dsimp only [spineEquiv_coe_fn, spine_arrow]
-      rw [← FunctorToTypes.map_comp_apply]
+    · rw [spineEquiv_coe_fn, spine_arrow, ← FunctorToTypes.map_comp_apply]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (mkOfSucc k ≫ f) (by leq) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _ _).trans (congr_fun (s.w α).symm x)
