@@ -46,6 +46,8 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 
 assert_not_exists OrderedSemiring
 
+open scoped Function -- required for scoped `on` notation
+
 variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
@@ -205,6 +207,9 @@ theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFounded ((· < ·) : α →
   simp [IsWF, wellFoundedOn_iff]
 
 theorem IsWF.mono (h : IsWF t) (st : s ⊆ t) : IsWF s := h.subset st
+
+lemma IsWF.of_wellFoundedLT [WellFoundedLT α] : IsWF s :=
+  (isWF_univ_iff.2 wellFounded_lt).mono (subset_univ _)
 
 end LT
 
@@ -503,6 +508,12 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
 /-- In a linear order, the predicates `Set.IsWF` and `Set.IsPWO` are equivalent. -/
 theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
   ⟨IsWF.isPWO, IsPWO.isWF⟩
+
+/--
+If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
+Note this does not hold without the linearity assumption.
+-/
+lemma IsPWO.of_linearOrder [WellFoundedLT α] : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
 
 end LinearOrder
 
