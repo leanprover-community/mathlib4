@@ -28,11 +28,11 @@ theorem gc_upperBounds_lowerBounds : GaloisConnection
 
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
     upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) :=
-  upperBounds_lowerBounds_gc.l_iSup
+  gc_upperBounds_lowerBounds.l_iSup
 
 theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
     lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
-  upperBounds_lowerBounds_gc.u_iInf
+  gc_upperBounds_lowerBounds.u_iInf
 
 theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
     (hs : ∀ i, IsLUB (s i) (u i)) (c : α) :
