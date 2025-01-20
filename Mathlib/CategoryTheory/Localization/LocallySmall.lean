@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.EssentiallySmall
 # Locally small localizations
 
 In this file, given `W : MorphismProperty C` and a universe `w`, we show
-that there exists a term in `HasLocaliaation.{w} W` if and only if
+that there exists a term in `HasLocalization.{w} W` if and only if
 there exists (or for all) localization functors `L : C ⥤ D` for `W`,
 the category `D` is locally `w`-small.
 
