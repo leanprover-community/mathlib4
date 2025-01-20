@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Peter Nelson. All rights reserved.
+Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
+Authors: Junyan Xu
 -/
 import Mathlib.Data.Matroid.Basic
 import Mathlib.SetTheory.Cardinal.Arithmetic
@@ -9,7 +9,7 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 /-!
 # Invariance of cardinality of bases of a finitary matroid
 
-In a finitary matroid, any two bases have the same cardinality.
+In a finitary matroid, all bases have the same cardinality.
 -/
 
 namespace Matroid.Base
