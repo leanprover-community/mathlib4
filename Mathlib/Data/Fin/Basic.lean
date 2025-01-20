@@ -105,20 +105,6 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
 
-/-- `castMaxLeft m a` embeds `a : Fin n` in `Fin (max n m)` -/
-def castMaxLeft {n : ℕ} (m : ℕ) (a : Fin n) : Fin (max n m) :=
-  ⟨a.val, a.val_lt_of_le (n.le_max_left m)⟩
-
-/-- `castMaxRight n a` embeds `a : Fin m` in `Fin (max n m)` -/
-def castMaxRight (n : ℕ) {m : ℕ} (a : Fin m) : Fin (max n m) :=
-  ⟨a.val, a.val_lt_of_le (n.le_max_right m)⟩
-
-@[simp]
-lemma castMaxLeft_val {n : ℕ} (m : ℕ) (a : Fin n) : (castMaxLeft m a).val = a.val := rfl
-
-@[simp]
-lemma castMaxRight_val (n : ℕ) {m : ℕ} (a : Fin m) : (castMaxRight n a).val = a.val := rfl
-
 section Order
 variable {a b c : Fin n}
 
@@ -591,21 +577,6 @@ def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
   inj' := castLE_injective _
 
 @[simp, norm_cast] lemma coe_castLEEmb {m n} (hmn : m ≤ n) : castLEEmb hmn = castLE hmn := rfl
-
-/-- `Fin.castMaxLeft` as an `Embedding`, `castMaxEmbLeft i` embeds `i` into `Fin (max n m)`. -/
-@[simps! apply]
-def castMaxEmbLeft {n m : ℕ} : Fin n ↪ Fin (max n m) := castLEEmb (n.le_max_left m)
-
-/-- `Fin.castMaxRight` as an `Embedding`, `castMaxEmbRight i` embeds `i` into `Fin (max n m)`. -/
-@[simps! apply]
-def castMaxEmbRight {n m : ℕ} : Fin m ↪ Fin (max n m) := castLEEmb (n.le_max_right m)
-
-@[simp, norm_cast]
-lemma coe_castMaxEmbLeft {n m : ℕ} : (castMaxEmbLeft : Fin n → Fin (max n m)) = castMaxLeft m := rfl
-
-@[simp, norm_cast]
-lemma coe_castMaxEmbRight {n m : ℕ} : (castMaxEmbRight : Fin m → Fin (max n m)) = castMaxRight n :=
-  rfl
 
 /- The next proof can be golfed a lot using `Fintype.card`.
 It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency
