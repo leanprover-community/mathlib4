@@ -217,7 +217,8 @@ section Preorder
 
 variable [Preorder α] {s t : Set α} {a : α}
 
-protected nonrec theorem IsWF.union (hs : IsWF s) (ht : IsWF t) : IsWF (s ∪ t) := hs.union ht
+protected theorem IsWF.union (hs : IsWF s) (ht : IsWF t) : IsWF (s ∪ t) :=
+  WellFoundedOn.union hs ht
 
 @[simp] theorem isWF_union : IsWF (s ∪ t) ↔ IsWF s ∧ IsWF t := wellFoundedOn_union
 
@@ -393,11 +394,12 @@ variable [Preorder α] [Preorder β] {s t : Set α}
 def IsPWO (s : Set α) : Prop :=
   PartiallyWellOrderedOn s (· ≤ ·)
 
-nonrec theorem IsPWO.mono (ht : t.IsPWO) : s ⊆ t → s.IsPWO := ht.mono
+theorem IsPWO.mono (ht : t.IsPWO) : s ⊆ t → s.IsPWO :=
+  PartiallyWellOrderedOn.mono ht
 
-nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
+theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
-  h.exists_monotone_subseq f hf
+  PartiallyWellOrderedOn.exists_monotone_subseq h f hf
 
 theorem isPWO_iff_exists_monotone_subseq :
     s.IsPWO ↔ ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
@@ -406,8 +408,8 @@ theorem isPWO_iff_exists_monotone_subseq :
 protected theorem IsPWO.isWF (h : s.IsPWO) : s.IsWF := by
   simpa only [← lt_iff_le_not_le] using h.wellFoundedOn
 
-nonrec theorem IsPWO.prod {t : Set β} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s ×ˢ t) :=
-  hs.prod ht
+theorem IsPWO.prod {t : Set β} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s ×ˢ t) :=
+  PartiallyWellOrderedOn.prod hs ht
 
 theorem IsPWO.image_of_monotoneOn (hs : s.IsPWO) {f : α → β} (hf : MonotoneOn f s) :
     IsPWO (f '' s) :=
@@ -416,8 +418,8 @@ theorem IsPWO.image_of_monotoneOn (hs : s.IsPWO) {f : α → β} (hf : MonotoneO
 theorem IsPWO.image_of_monotone (hs : s.IsPWO) {f : α → β} (hf : Monotone f) : IsPWO (f '' s) :=
   hs.image_of_monotone_on (hf.monotoneOn _)
 
-protected nonrec theorem IsPWO.union (hs : IsPWO s) (ht : IsPWO t) : IsPWO (s ∪ t) :=
-  hs.union ht
+protected theorem IsPWO.union (hs : IsPWO s) (ht : IsPWO t) : IsPWO (s ∪ t) :=
+  PartiallyWellOrderedOn.union hs ht
 
 @[simp]
 theorem isPWO_union : IsPWO (s ∪ t) ↔ IsPWO s ∧ IsPWO t :=
@@ -587,14 +589,14 @@ section Preorder
 variable [Preorder α] {s t : Set α} {a : α}
 
 /-- `Set.IsWF.min` returns a minimal element of a nonempty well-founded set. -/
-noncomputable nonrec def IsWF.min (hs : IsWF s) (hn : s.Nonempty) : α :=
-  hs.min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)
+noncomputable def IsWF.min (hs : IsWF s) (hn : s.Nonempty) : α :=
+  WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)
 
 theorem IsWF.min_mem (hs : IsWF s) (hn : s.Nonempty) : hs.min hn ∈ s :=
   (WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)).2
 
-nonrec theorem IsWF.not_lt_min (hs : IsWF s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
-  hs.not_lt_min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (mem_univ (⟨a, ha⟩ : s))
+theorem IsWF.not_lt_min (hs : IsWF s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
+  WellFounded.not_lt_min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (@mem_univ s ⟨a, ha⟩)
 
 theorem IsWF.min_of_subset_not_lt_min {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
     {htn : t.Nonempty} (hst : s ⊆ t) : ¬hs.min hsn < ht.min htn :=
