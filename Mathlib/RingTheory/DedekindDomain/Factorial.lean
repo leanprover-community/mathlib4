@@ -67,10 +67,7 @@ example : f.fixedDivisor univ = Ideal.span {2} := by
 
 end Polynomial
 
--- TODO - figure out why adding [Semiring R] breaks this
 variable [CommRing R] [IsDomain R] [IsDedekindDomain R]
---set_option trace.Meta.synthInstance true
---#synth CommRing R[X]
 
 variable (p : ℕ) [Fact p.Prime]
 
@@ -129,7 +126,7 @@ lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ Fin
     · have negn : 0 ≤ -n := by linarith
       · have : ∏ i ∈ Finset.range k, (n + ↑i) = 0 := Finset.prod_eq_zero_iff.mpr <| by
           have ⟨negn, _⟩ : ∃ (negn : ℕ), -n = ↑negn := Int.eq_ofNat_of_zero_le <| by linarith
-          exact ⟨negn, by simp_rw [Finset.mem_range]; omega⟩
+          exact ⟨negn, by rw [Finset.mem_range]; omega⟩
         exact Int.modEq_zero_iff_dvd.mp congr($this % ↑k !)
     · rw [not_lt] at hnk
       rw [← dvd_abs, Finset.abs_prod]
@@ -139,17 +136,15 @@ lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ Fin
         rw [abs_of_neg]
         simp at hx
         linarith
-      rw [prod_eq]
-      simp [add_comm]
+      simp only [prod_eq, neg_add_rev, add_comm]
       rw [← Finset.prod_range_reflect]
-      have new_dvd := factorial_coe_dvd_ofPos k (-n + -↑(k - 1)) (by omega)
       have prod_cast:  ∏ j ∈ Finset.range k, (-n + -↑(k - 1 - j)) =  ∏ j ∈ Finset.range k, (-n + -↑(k - 1) + j) := by
-        apply Finset.prod_congr (rfl)
+        apply Finset.prod_congr rfl
         intro x hx
         simp at hx
         omega
       rw [prod_cast]
-      exact new_dvd
+      exact factorial_coe_dvd_ofPos k (-n + -↑(k - 1)) (by omega)
 
 
 /-- ℕ is a p-ordering of ℤ for any prime `p`. -/
@@ -161,29 +156,23 @@ def natPOrdering : (univ : Set ℤ).pOrdering p where
     have hdivk := k.factorial_dvd_descFactorial k
     rw [k.descFactorial_eq_prod_range k] at hdivk
 
-    conv =>
-      rhs
-      rw [← Finset.prod_range_reflect]
     have prod_cast: (∏ j ∈ Finset.range k, (s - ↑(k - 1 - j))) = (∏ j ∈ Finset.range k, (s - ↑(k - 1) + j)) := by
       apply Finset.prod_congr (rfl)
       intro x hx
       simp at hx
       omega
-    rw [prod_cast]
-    have fac_dvd := factorial_coe_dvd_prod k (s - ↑(k - 1))
-    obtain ⟨a, ha⟩ := fac_dvd
-    rw [ha]
+    conv_rhs => rw [← Finset.prod_range_reflect, prod_cast]
+    obtain ⟨a, ha⟩ := factorial_coe_dvd_prod k (s - ↑(k - 1))
     have fac_range := k.descFactorial_eq_prod_range k
     zify at fac_range
     have sub_cast: ∏ i ∈ Finset.range k, ↑(k - i) = ∏ i ∈ Finset.range k, ((k : ℤ) - (i : ℤ)) := by
-      apply Finset.prod_congr (rfl)
+      apply Finset.prod_congr rfl
       intro x hx
       simp at hx
       omega
     rw [sub_cast] at fac_range
-    rw [← fac_range]
-    rw [Nat.descFactorial_self]
-    refine emultiplicity_le_emultiplicity_of_dvd_right (by simp)
+    rw [← fac_range, Nat.descFactorial_self]
+    exact emultiplicity_le_emultiplicity_of_dvd_right <| by simp [ha]
 
 
 namespace Polynomial
