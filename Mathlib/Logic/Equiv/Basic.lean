@@ -286,12 +286,12 @@ theorem sumCongr_refl {α β} :
 /-- A subtype of a sum is equivalent to a sum of subtypes. -/
 def subtypeSum {α β} {p : α ⊕ β → Prop} :
     {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
-  toFun c := match h : c.1 with
-    | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
-    | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
-  invFun c := match c with
-    | Sum.inl a => ⟨Sum.inl a, a.2⟩
-    | Sum.inr b => ⟨Sum.inr b, b.2⟩
+  toFun
+    | ⟨.inl a, h⟩ => .inl ⟨a, h⟩
+    | ⟨.inr b, h⟩ => .inr ⟨b, h⟩
+  invFun
+    | .inl a => ⟨.inl a, a.2⟩
+    | .inr b => ⟨.inr b, b.2⟩
   left_inv := by rintro ⟨a | b, h⟩ <;> rfl
   right_inv := by rintro (a | b) <;> rfl
 
