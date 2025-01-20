@@ -20,7 +20,7 @@ variable {α : Type*} [Preorder α]
 
 open Set
 
-theorem upperBounds_lowerBounds_gc : GaloisConnection
+theorem gc_upperBounds_lowerBounds : GaloisConnection
     (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
     (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
   simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
