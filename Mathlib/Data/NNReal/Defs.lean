@@ -71,6 +71,9 @@ instance : Max ℝ≥0 := SemilatticeSup.toMax
 instance : Sub ℝ≥0 := Nonneg.sub
 instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
+-- a computable copy of Nonneg.nnRatCast
+instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, NNRat.cast_nonneg _⟩
+
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
 
