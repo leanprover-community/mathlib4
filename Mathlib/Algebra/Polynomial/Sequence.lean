@@ -113,19 +113,19 @@ section Nontrivial
 variable [Nontrivial R]
 
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
-lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.range S) := fun P _ ↦ by
+protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
+    ⊤ ≤ span R (Set.range S) := fun P _ ↦ by
   induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
   by_cases p_ne_zero : P = 0; { simp [p_ne_zero] }
-  obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
-  have u_unit: IsUnit u := isUnit_iff_exists.mpr ⟨(S n).leadingCoeff, ⟨rightinv, leftinv⟩⟩
 
-  set head := P.leadingCoeff • u • S n
+  obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
+
+  let head := P.leadingCoeff • u • S n
   let tail := P - head
 
-  have head_mem_span : head ∈ Submodule.span R (Set.range S) := by
-    have n_in_range: S n ∈ Set.range S := by simp
-    have in_span := subset_span (R := R) (s := Set.range S) n_in_range
-    have smul_span := smul_mem (Submodule.span R (Set.range S)) (P.leadingCoeff • u) in_span
+  have head_mem_span : head ∈ span R (Set.range S) := by
+    have in_span : S n ∈ span R (Set.range S) := subset_span (by simp)
+    have smul_span := smul_mem (span R (Set.range S)) (P.leadingCoeff • u) in_span
     rwa [smul_assoc] at smul_span
 
   by_cases tail_eq_zero : tail = 0
@@ -135,20 +135,19 @@ lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.ran
     refine ih tail.natDegree ?_ _ rfl
 
     have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-      rw [leadingCoeff_smul_of_smul_regular, smul_eq_mul, rightinv]
-      · exact isRegular_one.right
-      · exact IsSMulRegular.of_mul_eq_one leftinv
+      simp [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
+      exact isRegular_one.right
 
     have head_degree_eq := degree_smul_of_leadingCoeff_rightRegular
       (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
 
     have u_degree_same := degree_smul_of_leadingCoeff_rightRegular
-      u_unit.ne_zero (hCoeff n).isRegular.right
+      (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
     rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
         ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
 
-    have head_nonzero: head ≠ 0 := by
-      by_cases n_eq_zero: n = 0
+    have head_nonzero : head ≠ 0 := by
+      by_cases n_eq_zero : n = 0
       · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
         dsimp [head]
         rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
