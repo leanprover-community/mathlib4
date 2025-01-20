@@ -46,7 +46,7 @@ theorem reduceOption_replicate_none {n : ℕ} : (replicate n (@none α)).reduceO
   rw [filterMap_replicate_of_none]
   rfl
 
-theorem reduceOption_eq_nil_iff (l : List (Option α)) :
+theorem reduceOption_eq_nil {l : List (Option α)} :
     l.reduceOption = [] ↔ ∃ n, l = replicate n none := by
   dsimp [reduceOption]
   rw [filterMap_eq_nil_iff]
@@ -57,7 +57,7 @@ theorem reduceOption_eq_nil_iff (l : List (Option α)) :
     simp_rw [h, mem_replicate]
     tauto
 
-theorem reduceOption_eq_singleton_iff (l : List (Option α)) (a : α) :
+theorem reduceOption_eq_singleton {l : List (Option α)} {a : α} :
     l.reduceOption = [a] ↔ ∃ m n, l = replicate m none ++ some a :: replicate n none := by
   dsimp [reduceOption]
   constructor
@@ -92,7 +92,7 @@ theorem reduceOption_eq_concat_iff (l : List (Option α)) (l' : List α) (a : α
   · intro h
     rw [reduceOption_eq_append_iff] at h
     obtain ⟨l₁, _, h, hl₁, hl₂⟩ := h
-    rw [reduceOption_eq_singleton_iff] at hl₂
+    rw [reduceOption_eq_singleton] at hl₂
     obtain ⟨m, n, hl₂⟩ := hl₂
     use l₁ ++ replicate m none, replicate n none
     simp_rw [h, reduceOption_append, reduceOption_replicate_none, append_assoc, append_nil, hl₁,
