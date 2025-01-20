@@ -191,6 +191,16 @@ lemma toMorphismProperty_respectsIso_iff :
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
 
+/-- Variant of `MorphismProperty.arrow_mk_iso_iff` specialized to morphism properties in
+`CommRingCat` given by ring hom properties. -/
+lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : CommRingCat}
+    {f : A ⟶ B} {g : A' ⟶ B'} (e : Arrow.mk f ≅ Arrow.mk g) :
+    P f.hom ↔ P g.hom := by
+  have : (toMorphismProperty P).RespectsIso := by
+    rwa [← toMorphismProperty_respectsIso_iff]
+  change toMorphismProperty P _ ↔ toMorphismProperty P _
+  rw [MorphismProperty.arrow_mk_iso_iff (toMorphismProperty P) e]
+
 end ToMorphismProperty
 
 end RingHom

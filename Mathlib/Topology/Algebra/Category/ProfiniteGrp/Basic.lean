@@ -96,7 +96,7 @@ instance (G H : ProfiniteGrp) : ContinuousMapClass (G ⟶ H) G H :=
   inferInstanceAs <| ContinuousMapClass (ContinuousMonoidHom G H) G H
 
 @[to_additive]
-instance : ConcreteCategory ProfiniteGrp where
+instance : HasForget ProfiniteGrp where
   forget :=
   { obj := fun G => G
     map := fun f => f }

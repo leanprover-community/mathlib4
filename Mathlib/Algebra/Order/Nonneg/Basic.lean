@@ -242,13 +242,12 @@ instance commMonoidWithZero : CommMonoidWithZero { x : α // 0 ≤ x } := inferI
 
 end CommSemiring
 
-section LinearOrder
-
-variable [Zero α] [LinearOrder α]
+section SemilatticeSup
+variable [Zero α] [SemilatticeSup α]
 
 /-- The function `a ↦ max a 0` of type `α → {x : α // 0 ≤ x}`. -/
 def toNonneg (a : α) : { x : α // 0 ≤ x } :=
-  ⟨max a 0, le_max_right _ _⟩
+  ⟨max a 0, le_sup_right⟩
 
 @[simp]
 theorem coe_toNonneg {a : α} : (toNonneg a : α) = max a 0 :=
@@ -266,11 +265,6 @@ theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ 
   cases' b with b hb
   simp [toNonneg, hb]
 
-@[simp]
-theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
-  cases' a with a ha
-  simp [toNonneg, ha.not_lt]
-
 instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
   ⟨fun x y => toNonneg (x - y)⟩
 
@@ -278,6 +272,16 @@ instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
 theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) - ⟨y, hy⟩ = toNonneg (x - y) :=
   rfl
+
+end SemilatticeSup
+
+section LinearOrder
+variable [Zero α] [LinearOrder α]
+
+@[simp]
+theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
+  cases' a with a ha
+  simp [toNonneg, ha.not_lt]
 
 end LinearOrder
 
