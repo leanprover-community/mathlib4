@@ -36,10 +36,10 @@ instance bundledHom : BundledHom @NormedAddGroupHom where
 
 deriving instance LargeCategory for SemiNormedGrp
 
--- Porting note: deriving fails for ConcreteCategory, adding instance manually.
+-- Porting note: deriving fails for HasForget, adding instance manually.
 -- See https://github.com/leanprover-community/mathlib4/issues/5020
--- deriving instance LargeCategory, ConcreteCategory for SemiRingCat
-instance : ConcreteCategory SemiNormedGrp := by
+-- deriving instance LargeCategory, HasForget for SemiRingCat
+instance : HasForget SemiNormedGrp := by
   dsimp [SemiNormedGrp]
   infer_instance
 
@@ -143,7 +143,7 @@ theorem hom_ext {M N : SemiNormedGrp₁} (f g : M ⟶ N) (w : (f : M → N) = (g
     f = g :=
   Subtype.eq (NormedAddGroupHom.ext (congr_fun w))
 
-instance : ConcreteCategory.{u} SemiNormedGrp₁ where
+instance : HasForget.{u} SemiNormedGrp₁ where
   forget :=
     { obj := fun X => X
       map := fun f => f }

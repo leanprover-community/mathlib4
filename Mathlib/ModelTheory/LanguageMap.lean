@@ -389,7 +389,7 @@ theorem card_withConstants :
   rw [withConstants, card_sum, card_constantsOn]
 
 /-- The language map adding constants. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 

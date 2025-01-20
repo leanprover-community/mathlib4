@@ -39,15 +39,15 @@ variable (r : α → α → Prop)
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
-theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
-theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
-
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext fun _ => funext fun _ => propext and_comm
 
 @[refl]
 theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
+
+variable {r} in
+lemma AntisymmRel.rfl [IsRefl α r] (a : α) : AntisymmRel r a a := antisymmRel_refl ..
 
 instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
   refl := antisymmRel_refl r
@@ -61,7 +61,7 @@ theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
 instance : IsSymm α (AntisymmRel r) where
   symm _ _ := AntisymmRel.symm
 
-theorem AntisymmRel.comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
+theorem antisymmRel_comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
   And.comm
 
 @[trans]
@@ -80,6 +80,9 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b �
   antisymm_iff
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
+
+theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
+theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
 
 end Relation
 
@@ -135,40 +138,36 @@ theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·)
   rw [lt_iff_le_not_le, AntisymmRel]
   tauto
 
-alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
-
 @[trans]
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
-
-alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
-
-instance : @Trans α α α (· ≤ ·) (AntisymmRel (· ≤ ·)) (· ≤ ·) where
-  trans := le_of_le_of_antisymmRel
 
 @[trans]
 theorem le_of_antisymmRel_of_le (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b ≤ c) : a ≤ c :=
   h₁.le.trans h₂
 
-alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
-
-instance : @Trans α α α (AntisymmRel (· ≤ ·)) (· ≤ ·) (· ≤ ·) where
-  trans := le_of_antisymmRel_of_le
-
 @[trans]
 theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b c) : a < c :=
   h₁.trans_le h₂.le
-
-alias LT.lt.trans_antisymmRel := lt_of_lt_of_antisymmRel
-
-instance : @Trans α α α (· < ·) (AntisymmRel (· ≤ ·)) (· < ·) where
-  trans := lt_of_lt_of_antisymmRel
 
 @[trans]
 theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b < c) : a < c :=
   h₁.le.trans_lt h₂
 
+alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
+alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
+alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
+alias LT.lt.trans_antisymmRel := lt_of_lt_of_antisymmRel
 alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
+
+instance : @Trans α α α (· ≤ ·) (AntisymmRel (· ≤ ·)) (· ≤ ·) where
+  trans := le_of_le_of_antisymmRel
+
+instance : @Trans α α α (AntisymmRel (· ≤ ·)) (· ≤ ·) (· ≤ ·) where
+  trans := le_of_antisymmRel_of_le
+
+instance : @Trans α α α (· < ·) (AntisymmRel (· ≤ ·)) (· < ·) where
+  trans := lt_of_lt_of_antisymmRel
 
 instance : @Trans α α α (AntisymmRel (· ≤ ·)) (· < ·) (· < ·) where
   trans := lt_of_antisymmRel_of_lt
