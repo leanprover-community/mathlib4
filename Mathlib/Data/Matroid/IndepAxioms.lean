@@ -61,6 +61,9 @@ for the inverse of `e`).
   in the special case where independence of a set is determined only by that of its
   finite subsets. This construction uses Zorn's lemma.
 
+* `IndepMatroid.ofFinitaryCardAugment` is a variant of `IndepMatroid.ofFinitary` where the
+  augmentation axiom resembles the finite augmentation axiom.
+
 * `IndepMatroid.ofBdd` constructs an `IndepMatroid` in the case where there is some known
   absolute upper bound on the size of an independent set. This uses the infinite version of
   the augmentation axiom; the corresponding `Matroid` is `FiniteRk`.
