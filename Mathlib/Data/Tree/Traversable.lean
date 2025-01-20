@@ -19,7 +19,7 @@ universe u v
 
 namespace Tree
 section Traverse
-variable {α β: Type*}
+variable {α β : Type*}
 
 instance : Traversable Tree where
   map := map
