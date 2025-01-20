@@ -50,7 +50,7 @@ namespace Sequence
 
 variable {R}
 
-/-- Make `S i` mean `S.elems i`. -/
+/-- Make `S i` mean `S.elems' i`. -/
 instance coeFun [Semiring R] : CoeFun (Sequence R) (fun _ ↦  ℕ → R[X]) := ⟨Sequence.elems'⟩
 
 section Semiring
@@ -104,7 +104,7 @@ lemma linearIndependent [NoZeroDivisors R] :
       simpa [hgx, hgy] using S.degree_ne_degree xney
 
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
-    refine degree_ne_bot.mp  ?_ eqzero |>.elim
+    refine degree_ne_bot.mp ?_ eqzero |>.elim
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
     exact hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
 
@@ -116,7 +116,8 @@ variable [Nontrivial R]
 protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
     ⊤ ≤ span R (Set.range S) := fun P _ ↦ by
   induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
-  by_cases p_ne_zero : P = 0; { simp [p_ne_zero] }
+  by_cases p_ne_zero : P = 0
+  · simp [p_ne_zero]
 
   obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
 
@@ -138,10 +139,10 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
       simp [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
       exact isRegular_one.right
 
-    have head_degree_eq := degree_smul_of_leadingCoeff_rightRegular
+    have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
       (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
 
-    have u_degree_same := degree_smul_of_leadingCoeff_rightRegular
+    have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
       (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
     rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
         ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
