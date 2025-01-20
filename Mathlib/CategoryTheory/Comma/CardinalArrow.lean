@@ -52,7 +52,7 @@ def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C wher
   right_inv _ := rfl
 
 @[simp]
-lemma hasCardinal_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
+lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow Cᵒᵖ) κ ↔ HasCardinalLT (Arrow C) κ :=
   hasCardinalLT_iff_of_equiv (Arrow.opEquiv C) κ
 
