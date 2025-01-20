@@ -5329,7 +5329,8 @@ import Mathlib.Topology.ContinuousMap.Units
 import Mathlib.Topology.ContinuousMap.Weierstrass
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Covering
+import Mathlib.Topology.Covering.Basic
+import Mathlib.Topology.Covering.Lift
 import Mathlib.Topology.Defs.Basic
 import Mathlib.Topology.Defs.Filter
 import Mathlib.Topology.Defs.Induced
