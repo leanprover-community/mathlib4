@@ -398,7 +398,7 @@ they also have the same `complexMGF`.-/
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
 /-- If two random variables have the same moment generating function then they have
-the `integrableExpSet`. -/
+the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     integrableExpSet X μ = integrableExpSet Y μ' := by
   ext t
