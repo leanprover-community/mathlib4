@@ -94,7 +94,7 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
 
 section Analytic
 
-lemma convexMGF_add_sub_sum (ht : t ≠ 0)
+lemma complexMGF_add_sub_sum (ht : t ≠ 0)
     (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
     (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
     (hε : |ε.re| ≤ |t|) (n : ℕ) :
@@ -160,7 +160,7 @@ lemma convexMGF_add_sub_sum (ht : t ≠ 0)
       refine Integrable.const_mul ?_ _
       exact h_int_mul _
 
-lemma abs_convexMGF_add_sub_sum_le
+lemma abs_complexMGF_add_sub_sum_le
     (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
     (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
     (hε : abs ε < |t|) (n : ℕ):
@@ -171,7 +171,7 @@ lemma abs_convexMGF_add_sub_sum_le
     suffices |t| ≠ 0 by simpa
     refine (lt_of_le_of_lt ?_ hε).ne'
     exact AbsoluteValue.nonneg abs ε
-  rw [convexMGF_add_sub_sum ht h_int_pos h_int_neg ((abs_re_le_abs ε).trans hε.le),
+  rw [complexMGF_add_sub_sum ht h_int_pos h_int_neg ((abs_re_le_abs ε).trans hε.le),
     ← integral_mul_left, ← Complex.norm_eq_abs]
   refine (norm_integral_le_integral_norm _).trans ?_
   simp only [norm_mul, Complex.norm_eq_abs, Complex.abs_exp, mul_re, ofReal_re, ofReal_im, mul_zero,
@@ -223,7 +223,7 @@ lemma tendsto_integral_pow_abs_mul_exp (hz : z.re ∈ interior (integrableExpSet
     convert continuous_abs.tendsto 0
     simp
 
-lemma isBigO_abs_convexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+lemma isBigO_abs_complexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     (fun ε ↦ complexMGF X μ (z + ε)
         - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ)
       =O[𝓝 0] fun ε ↦ (abs ε) ^ n := by
@@ -239,7 +239,7 @@ lemma isBigO_abs_convexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X �
     rw [eventually_nhds_iff]
     refine ⟨{x | abs x < t}, fun y hy ↦ ?_, ?_, by simp [ht]⟩
     · simp only [Real.norm_eq_abs, Complex.abs_abs]
-      refine abs_convexMGF_add_sub_sum_le ?_ ?_ (hy.trans_le (le_abs_self _)) n
+      refine abs_complexMGF_add_sub_sum_le ?_ ?_ (hy.trans_le (le_abs_self _)) n
       · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
       · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
     · refine isOpen_lt ?_ (by fun_prop)
@@ -259,7 +259,7 @@ theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
   simp only [smul_eq_mul]
   calc (fun h ↦ complexMGF X μ (z + h) - complexMGF X μ z - h * ∫ ω, X ω * cexp (z * X ω) ∂μ)
   _ =O[𝓝 0] fun h ↦ (abs h)^2 := by
-    convert isBigO_abs_convexMGF_sub_sum hz 2 using 2
+    convert isBigO_abs_complexMGF_sub_sum hz 2 using 2
     simp [sum_range, sub_add_eq_sub_sub, complexMGF]
   _ =o[𝓝 0] fun h ↦ h := Asymptotics.isLittleO_norm_pow_id one_lt_two
 
