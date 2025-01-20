@@ -229,14 +229,14 @@ theorem mdifferentiableAt_iff_target {x : M} :
   rw [← mdifferentiableWithinAt_univ, ← mdifferentiableWithinAt_univ,
     mdifferentiableWithinAt_iff_target, continuousWithinAt_univ]
 
-section SmoothManifoldWithCorners
+section IsManifold
 
 variable {e : PartialHomeomorph M H} {e' : PartialHomeomorph M' H'}
 
-open SmoothManifoldWithCorners
+open IsManifold
 
 theorem mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas
-    [SmoothManifoldWithCorners I M] (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
+    [IsManifold I 1 M] (he : e ∈ maximalAtlas I 1 M) (hx : x ∈ e.source) :
     MDifferentiableWithinAt I I' f s x ↔
       MDifferentiableWithinAt 𝓘(𝕜, E) I' (f ∘ (e.extend I).symm) ((e.extend I).symm ⁻¹' s ∩ range I)
         (e.extend I x) := by
@@ -249,14 +249,14 @@ theorem mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas
   rfl
 
 theorem mdifferentiableWithinAt_iff_source_of_mem_source
-    [SmoothManifoldWithCorners I M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
+    [IsManifold I 1 M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
     MDifferentiableWithinAt I I' f s x' ↔
       MDifferentiableWithinAt 𝓘(𝕜, E) I' (f ∘ (extChartAt I x).symm)
         ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x') :=
   mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas (chart_mem_maximalAtlas x) hx'
 
 theorem mdifferentiableAt_iff_source_of_mem_source
-    [SmoothManifoldWithCorners I M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
+    [IsManifold I 1 M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
     MDifferentiableAt I I' f x' ↔
       MDifferentiableWithinAt 𝓘(𝕜, E) I' (f ∘ (extChartAt I x).symm) (range I)
         (extChartAt I x x') := by
@@ -264,7 +264,7 @@ theorem mdifferentiableAt_iff_source_of_mem_source
     preimage_univ, univ_inter]
 
 theorem mdifferentiableWithinAt_iff_target_of_mem_source
-    [SmoothManifoldWithCorners I' M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
+    [IsManifold I' 1 M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
     MDifferentiableWithinAt I I' f s x ↔
       ContinuousWithinAt f s x ∧ MDifferentiableWithinAt I 𝓘(𝕜, E') (extChartAt I' y ∘ f) s x := by
   simp_rw [MDifferentiableWithinAt]
@@ -279,16 +279,16 @@ theorem mdifferentiableWithinAt_iff_target_of_mem_source
   rfl
 
 theorem mdifferentiableAt_iff_target_of_mem_source
-    [SmoothManifoldWithCorners I' M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
+    [IsManifold I' 1 M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x ↔
       ContinuousAt f x ∧ MDifferentiableAt I 𝓘(𝕜, E') (extChartAt I' y ∘ f) x := by
   rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_iff_target_of_mem_source hy,
     continuousWithinAt_univ, ← mdifferentiableWithinAt_univ]
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
-theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I M)
-    (he' : e' ∈ maximalAtlas I' M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
+theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I 1 M)
+    (he' : e' ∈ maximalAtlas I' 1 M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
     MDifferentiableWithinAt I I' f s x ↔
       ContinuousWithinAt f s x ∧
         DifferentiableWithinAt 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm)
@@ -297,8 +297,9 @@ theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maxi
 
 /-- An alternative formulation of `mdifferentiableWithinAt_iff_of_mem_maximalAtlas`
   if the set if `s` lies in `e.source`. -/
-theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I M)
-    (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
+theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I 1 M)
+    (he' : e' ∈ maximalAtlas I' 1 M') (hs : s ⊆ e.source) (hx : x ∈ e.source)
+    (hy : f x ∈ e'.source) :
     MDifferentiableWithinAt I I' f s x ↔
       ContinuousWithinAt f s x ∧
         DifferentiableWithinAt 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s)
@@ -347,8 +348,8 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (char
   (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans <| by
     rw [continuousWithinAt_univ, preimage_univ, univ_inter]
 
-theorem mdifferentiableOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
-    (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
+theorem mdifferentiableOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I 1 M)
+    (he' : e' ∈ maximalAtlas I' 1 M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
     MDifferentiableOn I I' f s ↔
       ContinuousOn f s ∧
         DifferentiableOn 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) := by
@@ -356,8 +357,8 @@ theorem mdifferentiableOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
   exact forall₂_congr fun x hx => mdifferentiableWithinAt_iff_image he he' hs (hs hx) (h2s hx)
 
 /-- Differentiability on a set is equivalent to differentiability in the extended charts. -/
-theorem mdifferentiableOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I M)
-    (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
+theorem mdifferentiableOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I 1 M)
+    (he' : e' ∈ maximalAtlas I' 1 M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
     MDifferentiableOn I I' f s ↔
       DifferentiableOn 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) :=
   (mdifferentiableOn_iff_of_mem_maximalAtlas he he' hs h2s).trans <| and_iff_right_of_imp fun h ↦
@@ -454,11 +455,11 @@ theorem mdifferentiable_iff_target :
   rw [← mdifferentiableOn_univ, mdifferentiableOn_iff_target]
   simp [continuous_iff_continuousOn_univ]
 
-end SmoothManifoldWithCorners
+end IsManifold
 
 /-! ### Deducing differentiability from smoothness -/
 
-variable {n : ℕ∞}
+variable {n : WithTop ℕ∞}
 
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by

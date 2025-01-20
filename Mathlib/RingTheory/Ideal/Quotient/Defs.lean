@@ -58,10 +58,7 @@ protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
       rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
-      have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
-      have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
-        rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
-      rwa [← this] at F }
+      exact mul_sub_mul_mem I h₁ h₂ }
 
 -- This instance makes use of the existing AddCommGroup instance to boost performance.
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) where
