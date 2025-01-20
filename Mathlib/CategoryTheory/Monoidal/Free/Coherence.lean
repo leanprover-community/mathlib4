@@ -269,7 +269,6 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
-set_option tactic.skipAssignedInstances false in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
     naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
     of our proof of the coherence theorem. -/
@@ -278,7 +277,8 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     intro X Y f
     ext ⟨n⟩
     convert normalize_naturality n f using 1
-    any_goals dsimp [NatIso.ofComponents]; congr; apply normalizeIsoApp_eq
+    any_goals dsimp; rw [normalizeIsoApp_eq]
+    rfl
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=

@@ -25,8 +25,7 @@ former uses `HMul.hMul` which is the canonical spelling.
 monoid, group, extensionality
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 

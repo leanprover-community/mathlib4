@@ -190,11 +190,8 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : 
     rintro ⟨y₂, p₂⟩ <;>
     cases' p₂ with x₂ _ p₂ e₂ <;>
     intro h <;>
-    -- Porting note: added `Sigma.mk.inj_iff`
-    simp only [Prefunctor.pathStar_apply, Prefunctor.mapPath_nil, Prefunctor.mapPath_cons,
-      Sigma.mk.inj_iff] at h
-  · -- Porting note: goal not present in lean3.
-    rfl
+    simp at h
+  · rfl
   · exfalso
     cases' h with h h'
     rw [← Path.eq_cast_iff_heq rfl h.symm, Path.cast_cons] at h'
