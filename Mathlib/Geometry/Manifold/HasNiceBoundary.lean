@@ -144,7 +144,7 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
   f x := by
     -- Is there a more elegant way to write this?
-    let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x ⟨i - 1, by omega⟩
+    let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega))
     exact ⟨x', by simp [x']⟩
   isEmbedding := sorry
   isSmooth := sorry
