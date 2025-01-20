@@ -429,11 +429,9 @@ theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
 theorem sInf_diff_singleton_top (s : Set α) : sInf (s \ {⊤}) = sInf s :=
   @sSup_diff_singleton_bot αᵒᵈ _ s
 
-@[simp]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair α _ a b).sSup_eq
 
-@[simp]
 theorem sInf_pair {a b : α} : sInf {a, b} = a ⊓ b :=
   (@isGLB_pair α _ a b).sInf_eq
 
