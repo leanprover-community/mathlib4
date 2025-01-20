@@ -3,7 +3,9 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Divisibility.Hom
+import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
 
@@ -19,11 +21,8 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists OrderedCommGroup
-assert_not_exists Commute.zero_right
-assert_not_exists Commute.add_right
-assert_not_exists abs_eq_max_neg
-assert_not_exists NeZero.natCast_ne
+assert_not_exists OrderedCommGroup Commute.zero_right Commute.add_right abs_eq_max_neg
+  NeZero.natCast_ne
 -- TODO: `MulOpposite.op_natCast` was not intended to be imported
 -- assert_not_exists MulOpposite.op_natCast
 
@@ -116,10 +115,8 @@ theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n :
 
 theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
     (f : F) (h : f 1 = 1) :
-    ∀ n : ℕ, f n = n
-  | 0 => by simp [map_zero f]
-  | n + 1 => by
-    rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
+    ∀ n : ℕ, f n = n :=
+  eq_natCast' ((f : A →+ B).comp <| Nat.castAddMonoidHom _) (by simpa)
 
 theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
     (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
@@ -157,8 +154,13 @@ theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n
 theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 
+/-- This lemma is not marked `@[simp]` lemma because its `#discr_tree_key` (for the LHS) would just
+be `DFunLike.coe _ _`, due to the `ofNat` that https://github.com/leanprover/lean4/issues/2867
+forces us to include, and therefore it would negatively impact performance.
+
+If that issue is resolved, this can be marked `@[simp]`. -/
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
-    (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
+    (f ofNat(n) : S) = OfNat.ofNat n :=
   map_natCast f n
 
 theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
@@ -220,7 +222,7 @@ lemma multiplesHom_apply (x : β) (n : ℕ) : multiplesHom β x n = n • x := r
 
 @[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
-    powersHom α x n = x ^ Multiplicative.toAdd n := rfl
+    powersHom α x n = x ^ n.toAdd := rfl
 
 lemma multiplesHom_symm_apply (f : ℕ →+ β) : (multiplesHom β).symm f = f 1 := rfl
 
@@ -229,7 +231,7 @@ lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
 
 lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* α) (n : Multiplicative ℕ) :
-    f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
+    f n = f (Multiplicative.ofAdd 1) ^ n.toAdd := by
   rw [← powersHom_symm_apply, ← powersHom_apply, Equiv.apply_symm_apply]
 
 @[ext]
@@ -256,7 +258,7 @@ def powersMulHom : α ≃* (Multiplicative ℕ →* α) :=
 @[simp] lemma multiplesAddHom_apply (x : β) (n : ℕ) : multiplesAddHom β x n = n • x := rfl
 
 @[simp]
-lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ toAdd n := rfl
+lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ n.toAdd := rfl
 
 @[simp] lemma multiplesAddHom_symm_apply (f : ℕ →+ β) : (multiplesAddHom β).symm f = f 1 := rfl
 
@@ -283,6 +285,8 @@ theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
+
+lemma ofNat_def (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ OfNat.ofNat n := rfl
 
 end Pi
 

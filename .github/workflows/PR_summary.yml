@@ -5,6 +5,7 @@ on:
 
 jobs:
   build:
+    name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
 
     steps:
@@ -98,6 +99,8 @@ jobs:
         ## Technical debt changes
         techDebtVar="$(./scripts/technical-debt-metrics.sh pr_summary)"
 
-        message="$(printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}")"
+        # store in a file, to avoid "long arguments" error.
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > messageFile.md
 
-        ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
+        cat messageFile.md
+        ./scripts/update_PR_comment.sh messageFile.md "${title}" "${PR}"

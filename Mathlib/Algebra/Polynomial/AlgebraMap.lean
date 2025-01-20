@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Algebra.Polynomial.Monomial
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -17,6 +18,7 @@ We show that `A[X]` is an R-algebra when `A` is an R-algebra.
 We promote `eval₂` to an algebra hom in `aeval`.
 -/
 
+assert_not_exists Ideal
 
 noncomputable section
 
@@ -47,7 +49,7 @@ instance algebraOfAlgebra : Algebra R A[X] where
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
       convert Algebra.commutes' r p.toFinsupp
-  toRingHom := C.comp (algebraMap R A)
+  algebraMap := C.comp (algebraMap R A)
 
 @[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
@@ -230,13 +232,6 @@ This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
   eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 
-@[simp]
-theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
-  refine top_unique fun p _hp => ?_
-  set S := Algebra.adjoin R ({X} : Set R[X])
-  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
-  exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
-
 @[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
     f = g :=
@@ -245,7 +240,6 @@ theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   map_zero (aeval x)
 
@@ -261,19 +255,15 @@ theorem aeval_C (r : R) : aeval x (C r) = algebraMap R A r :=
 theorem aeval_monomial {n : ℕ} {r : R} : aeval x (monomial n r) = algebraMap _ _ r * x ^ n :=
   eval₂_monomial _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_X_pow {n : ℕ} : aeval x ((X : R[X]) ^ n) = x ^ n :=
   eval₂_X_pow _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_add : aeval x (p + q) = aeval x p + aeval x q :=
   map_add _ _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_one : aeval x (1 : R[X]) = 1 :=
   map_one _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 
@@ -414,31 +404,6 @@ theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Al
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
   rw [aeval_def, ← eval_map] at h₂ ⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
-
-variable (R)
-
-theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
-    Algebra.adjoin R {x} = (Polynomial.aeval x).range := by
-  rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
-
-@[simp]
-theorem aeval_mem_adjoin_singleton :
-    aeval x p ∈ Algebra.adjoin R {x} := by
-  simpa only [Algebra.adjoin_singleton_eq_range_aeval] using Set.mem_range_self p
-
-instance instCommSemiringAdjoinSingleton :
-    CommSemiring <| Algebra.adjoin R {x} :=
-  { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
-      obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
-      obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, MulMemClass.mk_mul_mk, ← map_mul,
-        mul_comm p' q'] }
-
-instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
-    CommRing <| Algebra.adjoin R {x} :=
-  { mul_comm := mul_comm }
-
-variable {R}
 
 section Semiring
 

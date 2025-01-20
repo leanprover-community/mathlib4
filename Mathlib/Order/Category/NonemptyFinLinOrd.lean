@@ -59,8 +59,8 @@ instance : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder 
 deriving instance LargeCategory for NonemptyFinLinOrd
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory NonemptyFinLinOrd :=
-  BundledHom.concreteCategory _
+instance : HasForget NonemptyFinLinOrd :=
+  BundledHom.hasForget _
 
 instance : CoeSort NonemptyFinLinOrd Type* :=
   Bundled.coeSort
@@ -178,7 +178,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [Y, DFunLike.coe] at h
+    simp [Y, p₁, p₂, DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 

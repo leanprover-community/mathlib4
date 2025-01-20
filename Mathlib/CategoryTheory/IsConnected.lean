@@ -102,7 +102,7 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
-    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by simp)
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
@@ -118,6 +118,13 @@ theorem IsPreconnected.of_any_functor_const_on_obj
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') :
     IsPreconnected J where
   iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
+
+instance IsPreconnected.prod [IsPreconnected J] [IsPreconnected K] : IsPreconnected (J × K) := by
+  refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ => ?_)
+  exact (any_functor_const_on_obj (Prod.sectL J k ⋙ F) j j').trans
+    (any_functor_const_on_obj (Prod.sectR j' K ⋙ F) k k')
+
+instance IsConnected.prod [IsConnected J] [IsConnected K] : IsConnected (J × K) where
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
 The converse of `any_functor_const_on_obj`.
@@ -213,7 +220,7 @@ theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort*)
     {j₀ : J} (x : Z j₀) (j : J) : Nonempty (Z j) :=
   (induct_on_objects { j | Nonempty (Z j) } ⟨x⟩
       (fun f => ⟨by rintro ⟨y⟩; exact ⟨h₁ f y⟩, by rintro ⟨y⟩; exact ⟨h₂ f y⟩⟩)
-      j : _)
+      j :)
 
 /-- If `J` and `K` are equivalent, then if `J` is preconnected then `K` is as well. -/
 theorem isPreconnected_of_equivalent {K : Type u₂} [Category.{v₂} K] [IsPreconnected J]
@@ -259,15 +266,20 @@ theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconn
 theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
   isConnected_of_equivalent (opOpEquivalence J)
 
+variable (J) in
+@[simp]
+theorem isConnected_op_iff_isConnected : IsConnected Jᵒᵖ ↔ IsConnected J :=
+  ⟨fun _ => isConnected_of_isConnected_op, fun _ => isConnected_op⟩
+
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
 def Zag (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
 
-theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
+@[refl] theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
 
 theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 
-theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
+@[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
 
 theorem Zag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
 
@@ -286,11 +298,12 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
   _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
   (fun h g => Relation.transitive_reflTransGen h g)
 
-theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
+@[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
 
-theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
+@[symm] theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
 
-theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) : Zigzag j₁ j₃ :=
+@[trans] theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) :
+    Zigzag j₁ j₃ :=
   zigzag_equivalence.trans h₁ h₂
 
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
@@ -367,7 +380,6 @@ theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j
   equiv_relation _ zigzag_equivalence
     (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 
-@[deprecated (since := "2024-02-19")] alias isConnected_zigzag := isPreconnected_zigzag
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms
@@ -447,8 +459,5 @@ theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G
      fun {_ _ _} => Nonempty.map2 (· ≫ ·)⟩
 
 attribute [instance] nonempty_hom_of_preconnected_groupoid
-
-@[deprecated (since := "2024-02-19")]
-alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
 
 end CategoryTheory

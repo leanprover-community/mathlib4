@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.Reflection
 
 /-!
@@ -92,7 +92,11 @@ structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of dual vectors, called coroots. -/
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLin (root i) (coroot i) = 2
-  /-- A parametrized family of permutations, induced by reflection. -/
+  /-- A parametrized family of permutations, induced by reflections. This corresponds to the
+      classical requirement that the symmetry attached to each root (later defined in
+      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+      formalize this stability by fixing the image of the roots through each reflection (whence the
+      permutation); and similarly for coroots. -/
   reflection_perm : ι → (ι ≃ ι)
   reflection_perm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
@@ -106,14 +110,16 @@ Note that the latter assumptions `[Free ℤ X₁] [Finite ℤ X₁] [Free ℤ X�
 supplied as mixins. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
-/-- A root system is a root pairing for which the roots span their ambient module.
+/-- A root system is a root pairing for which the roots and coroots span their ambient modules.
 
 Note that this is slightly more general than the usual definition in the sense that `N` is not
 required to be the dual of `M`. -/
 structure RootSystem extends RootPairing ι R M N where
-  span_eq_top : span R (range root) = ⊤
+  span_root_eq_top : span R (range root) = ⊤
+  span_coroot_eq_top : span R (range coroot) = ⊤
 
-attribute [simp] RootSystem.span_eq_top
+attribute [simp] RootSystem.span_root_eq_top
+attribute [simp] RootSystem.span_coroot_eq_top
 
 namespace RootPairing
 
@@ -143,6 +149,33 @@ protected def flip : RootPairing ι R N M :=
 @[simp]
 lemma flip_flip : P.flip.flip = P :=
   rfl
+
+variable (ι R M N) in
+/-- `RootPairing.flip` as an equivalence. -/
+@[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- If we interchange the roles of `M` and `N`, we still have a root system. -/
+protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
+  { toRootPairing := P.toRootPairing.flip
+    span_root_eq_top := P.span_coroot_eq_top
+    span_coroot_eq_top := P.span_root_eq_top }
+
+@[simp]
+protected lemma _root_.RootSystem.flip_flip (P : RootSystem ι R M N) :
+    P.flip.flip = P :=
+  rfl
+
+variable (ι R M N) in
+/-- `RootSystem.flip` as an equivalence. -/
+@[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Roots written as functionals on the coweight space. -/
 abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
@@ -349,15 +382,27 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
-def IsCrystallographic : Prop :=
-  ∀ i, MapsTo (P.root' i) (range P.coroot) (zmultiples (1 : R))
+class IsCrystallographic : Prop where
+  exists_int : ∀ i j, ∃ z : ℤ, z = P.pairing i j
+
+protected lemma exists_int [P.IsCrystallographic] (i j : ι) :
+    ∃ z : ℤ, z = P.pairing i j :=
+  IsCrystallographic.exists_int i j
 
 lemma isCrystallographic_iff :
-    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
-  rw [IsCrystallographic]
-  refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
-  · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
-  · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
+    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
+  rw [isCrystallographic_iff, forall_comm]
+  exact P.exists_int
+
+lemma IsCrystallographic.mem_range_algebraMap [P.IsCrystallographic]
+    (S : Type*) [CommRing S] [Algebra S R] (i j : ι) :
+    P.pairing i j ∈ (algebraMap S R).range := by
+  obtain ⟨k, hk⟩ := P.exists_int i j
+  simp only [RingHom.mem_range]
+  exact ⟨k, by simpa⟩
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
@@ -374,13 +419,55 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
 
-/-- The `Weyl group` of a root pairing is the group of automorphisms of the weight space generated
-by reflections in roots. -/
-def weylGroup : Subgroup (M ≃ₗ[R] M) :=
-  Subgroup.closure (range P.reflection)
+variable {P} in
+lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j : ι) (t : R)
+    (h : P.root j = t • P.root i) :
+    t • P.coroot j = P.coroot i := by
+  have hij : t * P.pairing i j = 2 := by simpa using ((P.coroot' j).congr_arg h).symm
+  refine Module.eq_of_mapsTo_reflection_of_mem (f := P.root' i) (g := P.root' i)
+    (finite_range P.coroot) (by simp [hij]) (by simp) (by simp [hij]) (by simp) ?_
+    (P.mapsTo_coreflection_coroot i) (mem_range_self i)
+  convert P.mapsTo_coreflection_coroot j
+  ext x
+  replace h : P.root' j = t • P.root' i := by ext; simp [h, root']
+  simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
 
-lemma reflection_mem_weylGroup : P.reflection i ∈ P.weylGroup :=
-  Subgroup.subset_closure <| mem_range_self i
+variable {P} in
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+    {i j : ι} {t : R} :
+    P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
+  ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
+    fun h ↦ (P.smul_coroot_eq_of_root_eq_smul i j t h).symm⟩
+
+/-- The linear span of roots. -/
+abbrev rootSpan := span R (range P.root)
+
+/-- The linear span of coroots. -/
+abbrev corootSpan := span R (range P.coroot)
+
+lemma coe_rootSpan_dualAnnihilator_map :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
+  ext x
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
+  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
+  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  simp [Set.range_subset_iff]
+
+lemma coe_corootSpan_dualAnnihilator_map :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
+  P.flip.coe_rootSpan_dualAnnihilator_map
+
+lemma rootSpan_dualAnnihilator_map_eq :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
+      (span R (range P.root')).dualCoannihilator := by
+  apply SetLike.coe_injective
+  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
+  simp
+
+lemma corootSpan_dualAnnihilator_map_eq :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
+      (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.rootSpan_dualAnnihilator_map_eq
 
 lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
     {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
@@ -395,71 +482,6 @@ lemma mem_range_coroot_of_mem_range_coreflection_of_mem_range_coroot
   obtain ⟨i, rfl⟩ := hr
   obtain ⟨j, rfl⟩ := hα
   exact ⟨P.reflection_perm i j, P.coroot_reflection_perm i j⟩
-
-lemma exists_root_eq_smul_of_mem_weylGroup {w : M ≃ₗ[R] M} (hw : w ∈ P.weylGroup) (i : ι) :
-    ∃ j, P.root j = w • P.root i :=
-  Subgroup.smul_mem_of_mem_closure_of_mem (by simp)
-    (fun _ h _ ↦ P.mem_range_root_of_mem_range_reflection_of_mem_range_root h) hw (mem_range_self i)
-
-/-- The permutation representation of the Weyl group induced by `reflection_perm`. -/
-def weylGroupToPerm : P.weylGroup →* Equiv.Perm ι where
-  toFun w :=
-  { toFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w.2 i).choose
-    invFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w⁻¹.2 i).choose
-    left_inv := fun i => by
-      obtain ⟨w, hw⟩ := w
-      apply P.root.injective
-      rw [(P.exists_root_eq_smul_of_mem_weylGroup ((Subgroup.inv_mem_iff P.weylGroup).mpr hw)
-          ((P.exists_root_eq_smul_of_mem_weylGroup hw i).choose)).choose_spec,
-        (P.exists_root_eq_smul_of_mem_weylGroup hw i).choose_spec, inv_smul_smul]
-    right_inv := fun i => by
-      obtain ⟨w, hw⟩ := w
-      have hw' : w⁻¹ ∈ P.weylGroup := (Subgroup.inv_mem_iff P.weylGroup).mpr hw
-      apply P.root.injective
-      rw [(P.exists_root_eq_smul_of_mem_weylGroup hw
-          ((P.exists_root_eq_smul_of_mem_weylGroup hw' i).choose)).choose_spec,
-        (P.exists_root_eq_smul_of_mem_weylGroup hw' i).choose_spec, smul_inv_smul] }
-  map_one' := by ext; simp
-  map_mul' x y := by
-    obtain ⟨x, hx⟩ := x
-    obtain ⟨y, hy⟩ := y
-    ext i
-    apply P.root.injective
-    simp only [Equiv.coe_fn_mk, Equiv.Perm.coe_mul, comp_apply]
-    rw [(P.exists_root_eq_smul_of_mem_weylGroup (mul_mem hx hy) i).choose_spec,
-      (P.exists_root_eq_smul_of_mem_weylGroup hx
-        ((P.exists_root_eq_smul_of_mem_weylGroup hy i).choose)).choose_spec,
-      (P.exists_root_eq_smul_of_mem_weylGroup hy i).choose_spec, mul_smul]
-
-@[simp]
-lemma weylGroupToPerm_apply_reflection :
-    P.weylGroupToPerm ⟨P.reflection i, P.reflection_mem_weylGroup i⟩ = P.reflection_perm i := by
-  ext j
-  apply P.root.injective
-  rw [weylGroupToPerm, MonoidHom.coe_mk, OneHom.coe_mk, Equiv.coe_fn_mk, root_reflection_perm,
-    (P.exists_root_eq_smul_of_mem_weylGroup (P.reflection_mem_weylGroup i) j).choose_spec,
-    LinearEquiv.smul_def]
-
-@[simp]
-lemma range_weylGroupToPerm :
-    P.weylGroupToPerm.range = Subgroup.closure (range P.reflection_perm) := by
-  refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
-  · rintro - ⟨i, rfl⟩
-    simpa only [← weylGroupToPerm_apply_reflection] using mem_range_self _
-  · rintro - ⟨⟨w, hw⟩, rfl⟩
-    induction hw using Subgroup.closure_induction'' with
-    | one =>
-      change P.weylGroupToPerm 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
-    | mem w' hw' =>
-      obtain ⟨i, rfl⟩ := hw'
-      simpa only [weylGroupToPerm_apply_reflection] using Subgroup.subset_closure (mem_range_self i)
-    | inv_mem w' hw' =>
-      obtain ⟨i, rfl⟩ := hw'
-      simpa only [reflection_inv, weylGroupToPerm_apply_reflection] using
-        Subgroup.subset_closure (mem_range_self i)
-    | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
-      simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
 lemma pairing_smul_root_eq (k : ι) (hij : P.reflection_perm i = P.reflection_perm j) :
     P.pairing k i • P.root i = P.pairing k j • P.root j := by
@@ -525,11 +547,20 @@ def coxeterWeight : R := pairing P i j * pairing P j i
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
 
+lemma exists_int_eq_coxeterWeight [P.IsCrystallographic] (i j : ι) :
+    ∃ z : ℤ, P.coxeterWeight i j = z := by
+  obtain ⟨a, ha⟩ := P.exists_int i j
+  obtain ⟨b, hb⟩ := P.exists_int j i
+  exact ⟨a * b, by simp [coxeterWeight, ha, hb]⟩
+
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
-lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
+lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
+
+lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i :=
+  ⟨h.2, h.1⟩
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]

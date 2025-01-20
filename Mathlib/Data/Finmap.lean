@@ -417,11 +417,13 @@ theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
     insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 
-theorem insert_entries_of_neg {a : α} {b : β a} {s : Finmap β} :
+theorem entries_insert_of_not_mem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
-    -- Porting note: `-insert_entries` required
-    simp [AList.insert_entries_of_neg (mt mem_toFinmap.1 h), -insert_entries]
+    -- Porting note: `-entries_insert` required
+    simp [AList.entries_insert_of_not_mem (mt mem_toFinmap.1 h), -entries_insert]
+
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=

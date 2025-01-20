@@ -567,7 +567,7 @@ instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
   h.1.choose_spec.1 n
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
 instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
   isFiniteMeasure_sfiniteSeq n
 
@@ -800,7 +800,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
       simp only [fairmeas]
       rfl
     simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
-      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
+      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (fun n => (as_mem n).1) as_lim]
   rw [countable_union]
   refine countable_iUnion fun n => Finite.countable ?_
   exact finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
@@ -1331,14 +1331,14 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
-  refine induction_on_inter hA hC (by simp) hμν ?_ ?_ hs
-  · intro t h1t h2t
-    have h1t_ : @MeasurableSet α m₀ t := h _ h1t
-    rw [@measure_compl α m₀ μ t h1t_ (@measure_ne_top α m₀ μ _ t),
-      @measure_compl α m₀ ν t h1t_ (@measure_ne_top α m₀ ν _ t), h_univ, h2t]
-  · intro f h1f h2f h3f
-    have h2f_ : ∀ i : ℕ, @MeasurableSet α m₀ (f i) := fun i => h _ (h2f i)
-    simp [measure_iUnion, h1f, h3f, h2f_]
+  induction s, hs using induction_on_inter hA hC with
+  | empty => simp
+  | basic t ht => exact hμν t ht
+  | compl t htm iht =>
+    rw [measure_compl (h t htm) (measure_ne_top _ _), measure_compl (h t htm) (measure_ne_top _ _),
+      iht, h_univ]
+  | iUnion f hfd hfm ihf =>
+    simp [measure_iUnion, hfd, h _ (hfm _), ihf]
 
 /-- Two finite measures are equal if they are equal on the π-system generating the σ-algebra
   (and `univ`). -/

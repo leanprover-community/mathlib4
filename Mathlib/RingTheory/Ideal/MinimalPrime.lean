@@ -49,6 +49,9 @@ lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x
 
 variable {I J}
 
+theorem Ideal.minimalPrimes_isPrime {p : Ideal R} (h : p ∈ I.minimalPrimes) : p.IsPrime :=
+  h.1.1
+
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
   set S := { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p }
   suffices h : ∃ m, OrderDual.toDual J ≤ m ∧ Maximal (· ∈ S) m by
@@ -66,6 +69,16 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
   · rintro z hz
     rw [OrderDual.le_toDual]
     exact sInf_le hz
+
+theorem Ideal.nonempty_minimalPrimes (h : I ≠ ⊤) : Nonempty I.minimalPrimes := by
+  obtain ⟨m, hm, hle⟩ := Ideal.exists_le_maximal I h
+  obtain ⟨p, hp, -⟩ := Ideal.exists_minimalPrimes_le hle
+  exact ⟨p, hp⟩
+
+theorem Ideal.eq_bot_of_minimalPrimes_eq_empty (h : I.minimalPrimes = ∅) : I = ⊤ := by
+  by_contra hI
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes hI
+  exact Set.not_mem_empty p (h ▸ hp)
 
 @[simp]
 theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
@@ -235,3 +248,29 @@ theorem nilpotent_iff_not_unit_of_minimal {x : Localization I.primeCompl} :
   simpa only [← IsLocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
 
 end Localization.AtPrime
+
+section
+
+variable {R : Type*} [CommSemiring R]
+
+theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
+  ext p
+  constructor
+  · intro h
+    exact False.elim (h.1.1.ne_top (top_le_iff.mp h.1.2))
+  · intro h
+    exact False.elim (Set.not_mem_empty p h)
+
+theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
+    I.minimalPrimes = ∅ ↔ I = ⊤ := by
+  constructor
+  · intro e
+    by_contra h
+    have ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
+    have ⟨p, hp⟩ := Ideal.exists_minimalPrimes_le hM'
+    show p ∈ (∅ : Set (Ideal R))
+    rw [← e]; exact hp.1
+  · intro h; rw [h]
+    exact Ideal.minimalPrimes_top
+
+end

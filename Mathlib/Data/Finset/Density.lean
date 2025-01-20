@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Density of a finite set

@@ -48,7 +48,11 @@ instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
 
 instance (X : Scheme.{u}) : X.Over (⊤_ _) := ⟨terminal.from _⟩
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) : f.IsOver (⊤_ _) := ⟨terminal.hom_ext _ _⟩
+instance {X Y : Scheme.{u}} [X.Over (⊤_ Scheme)] [Y.Over (⊤_ Scheme)] (f : X ⟶ Y) :
+    @Scheme.Hom.IsOver _ _ f (⊤_ Scheme) ‹_› ‹_› := ⟨Subsingleton.elim _ _⟩
+
+instance {X : Scheme} : Subsingleton (X.Over (⊤_ Scheme)) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ by simp [Subsingleton.elim a b]⟩
 
 section Initial
 
@@ -111,7 +115,7 @@ instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
 
 instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
-  ⟨fun x => ((initial.to Scheme.empty : _).base x).elim⟩
+  ⟨fun x => ((initial.to Scheme.empty :).base x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
   @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
@@ -272,7 +276,7 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
 
-lemma exists_sigmaι_eq (x : (∐ f : _)) : ∃ i y, (Sigma.ι f i).base y = x := by
+lemma exists_sigmaι_eq (x : (∐ f :)) : ∃ i y, (Sigma.ι f i).base y = x := by
   obtain ⟨i, y, e⟩ := (disjointGlueData f).ι_jointly_surjective ((sigmaIsoGlued f).hom.base x)
   refine ⟨i, y, (sigmaIsoGlued f).hom.isOpenEmbedding.injective ?_⟩
   rwa [← Scheme.comp_base_apply, ι_sigmaIsoGlued_hom]
@@ -292,7 +296,7 @@ def sigmaOpenCover : (∐ f).OpenCover where
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
-def sigmaMk : (Σ i, f i) ≃ₜ (∐ f : _) :=
+def sigmaMk : (Σ i, f i) ≃ₜ (∐ f :) :=
   TopCat.homeoOfIso ((colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).symm ≪≫
     (PreservesCoproduct.iso Scheme.forgetToTop f).symm)
 

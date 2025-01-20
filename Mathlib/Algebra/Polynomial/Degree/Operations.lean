@@ -29,7 +29,7 @@ variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] [Semiring S] {p q r : R[X]}
 
 theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
   max_eq_sup_coe
@@ -65,11 +65,14 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero (pn : p.natDegree ≤ n) (p1 : p.coe
     p.natDegree = n :=
   pn.antisymm (le_natDegree_of_ne_zero p1)
 
-theorem natDegree_lt_natDegree {p q : R[X]} (hp : p ≠ 0) (hpq : p.degree < q.degree) :
+theorem natDegree_lt_natDegree {q : S[X]} (hp : p ≠ 0) (hpq : p.degree < q.degree) :
     p.natDegree < q.natDegree := by
   by_cases hq : q = 0
   · exact (not_lt_bot <| hq ▸ hpq).elim
   rwa [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt] at hpq
+
+lemma natDegree_eq_natDegree {q : S[X]} (hpq : p.degree = q.degree) :
+    p.natDegree = q.natDegree := by simp [natDegree, hpq]
 
 theorem coeff_eq_zero_of_degree_lt (h : degree p < n) : coeff p n = 0 :=
   Classical.not_not.1 (mt le_degree_of_ne_zero (not_le_of_gt h))
@@ -371,6 +374,36 @@ theorem leadingCoeff_mul_monic {p q : R[X]} (hq : Monic q) :
     fun H : leadingCoeff p ≠ 0 => by
       rw [leadingCoeff_mul', hq.leadingCoeff, mul_one]
       rwa [hq.leadingCoeff, mul_one]
+
+lemma degree_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) : (C a * p).degree = p.degree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nontriviality R
+  rw [degree_mul', degree_C ha.ne_zero]
+  · simp
+  · simpa [ha.mul_right_eq_zero]
+
+lemma degree_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) : (p * C a).degree = p.degree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nontriviality R
+  rw [degree_mul', degree_C ha.ne_zero]
+  · simp
+  · simpa [ha.mul_left_eq_zero]
+
+lemma natDegree_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) : (C a * p).natDegree = p.natDegree := by
+  simp [natDegree, degree_C_mul_of_isUnit ha]
+
+lemma natDegree_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) : (p * C a).natDegree = p.natDegree := by
+  simp [natDegree, degree_mul_C_of_isUnit ha]
+
+lemma leadingCoeff_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) :
+    (C a * p).leadingCoeff = a * p.leadingCoeff := by
+  rwa [leadingCoeff, coeff_C_mul, natDegree_C_mul_of_isUnit, leadingCoeff]
+
+lemma leadingCoeff_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) :
+    (p * C a).leadingCoeff = p.leadingCoeff * a := by
+  rwa [leadingCoeff, coeff_mul_C, natDegree_mul_C_of_isUnit, leadingCoeff]
 
 @[simp]
 theorem leadingCoeff_mul_X_pow {p : R[X]} {n : ℕ} : leadingCoeff (p * X ^ n) = leadingCoeff p :=

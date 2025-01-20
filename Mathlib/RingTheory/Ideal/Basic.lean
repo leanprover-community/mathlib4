@@ -3,12 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Ideal.Maximal
 import Mathlib.Tactic.FinCases
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -28,9 +27,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
 
-universe u v w
-
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {ι α β F : Type*}
 
 open Set Function
 
@@ -40,20 +37,18 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
 
 section Pi
 
-variable (ι : Type v)
+/-- `Πᵢ Iᵢ` as an ideal of `Πᵢ Rᵢ`. -/
+def pi : Ideal (Π i, α i) where
+  carrier := { x | ∀ i, x i ∈ I i }
+  zero_mem' i := (I i).zero_mem
+  add_mem' ha hb i := (I i).add_mem (ha i) (hb i)
+  smul_mem' a _b hb i := (I i).mul_mem_left (a i) (hb i)
 
-/-- `I^n` as an ideal of `R^n`. -/
-def pi : Ideal (ι → α) where
-  carrier := { x | ∀ i, x i ∈ I }
-  zero_mem' _i := I.zero_mem
-  add_mem' ha hb i := I.add_mem (ha i) (hb i)
-  smul_mem' a _b hb i := I.mul_mem_left (a i) (hb i)
-
-theorem mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
+theorem mem_pi (x : Π i, α i) : x ∈ pi I ↔ ∀ i, x i ∈ I i :=
   Iff.rfl
 
 end Pi
@@ -150,13 +145,23 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rw [mul_pow, mem_span_singleton]
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 
+theorem span_range_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : s → ℕ) :
+    span (Set.range fun x ↦ x.1 ^ n x) = ⊤ := by
+  have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span ((eq_top_iff_one _).mp hs)
+  refine top_unique ((span_pow_eq_top _ ((eq_top_iff_one _).mpr mem) <|
+    t.attach.sup fun x ↦ n ⟨x, hts x.2⟩).ge.trans <| span_le.mpr ?_)
+  rintro _ ⟨x, hxt, rfl⟩
+  rw [← Nat.sub_add_cancel (Finset.le_sup <| t.mem_attach ⟨x, hxt⟩)]
+  simp_rw [pow_add]
+  exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)
+
 end Ideal
 
 end CommSemiring
 
 section DivisionSemiring
 
-variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
+variable {K : Type*} [DivisionSemiring K] (I : Ideal K)
 
 namespace Ideal
 
@@ -244,7 +249,7 @@ end Ring
 
 namespace Ideal
 
-variable {R : Type u} [CommSemiring R] [Nontrivial R]
+variable {R : Type*} [CommSemiring R] [Nontrivial R]
 
 theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
   rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩

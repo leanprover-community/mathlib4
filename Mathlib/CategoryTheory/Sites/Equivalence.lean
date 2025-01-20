@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 import Mathlib.CategoryTheory.Sites.Whiskering
@@ -269,7 +269,7 @@ lemma PreservesSheafification.transport
       K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
 
 variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
-variable [G.IsCocontinuous K J] [ConcreteCategory A]
+variable [G.IsCocontinuous K J] [HasForget A]
   [K.WEqualsLocallyBijective A]
 
 lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
