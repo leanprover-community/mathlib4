@@ -92,12 +92,12 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
   convert Finset.sum_const x
   simp [-coe_lmul_eq_mul]
 
-/-- The trace map from `R` to itself is the identity map. -/
-@[simp] theorem trace_self_apply (a) : trace R R a = a := by
-  simpa using trace_algebraMap_of_basis (.singleton (Fin 1) R) a
 
 /-- The trace map from `R` to itself is the identity map. -/
-@[simp] theorem trace_self : trace R R = LinearMap.id := by ext; simp
+@[simp] theorem trace_self : trace R R = LinearMap.id := by
+  ext; simpa using trace_algebraMap_of_basis (.singleton (Fin 1) R) 1
+
+theorem trace_self_apply (a) : trace R R a = a := by simp
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
 
