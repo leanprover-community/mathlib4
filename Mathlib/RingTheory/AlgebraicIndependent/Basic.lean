@@ -31,16 +31,18 @@ open Cardinal Function Set Subalgebra MvPolynomial Algebra
 
 open scoped Classical
 
-variable {ι ι' R K A A' : Type*} {x : ι → A}
+universe u v
+
+variable {ι : Type u} {ι' R K : Type*} {A : Type v} {A' : Type*} {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 variable (R A) in
 /-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
 defined to be the maximal cardinality of an `R`-algebraically independent set in `A`. -/
-def TranscendenceDegree : Cardinal :=
+@[stacks 030G] def transcendenceDegree : Cardinal :=
   ⨆ ι : { s : Set A // AlgebraicIndependent R ((↑) : s → A) }, #ι.1
 
-noncomputable alias trdeg := TranscendenceDegree
+noncomputable alias trdeg := transcendenceDegree
 
 theorem algebraicIndependent_iff_ker_eq_bot :
     AlgebraicIndependent R x ↔
@@ -51,6 +53,10 @@ theorem algebraicIndependent_iff_ker_eq_bot :
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
   rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
+
+theorem Function.Injective.nonempty_algebraicIndependent (inj : Injective (algebraMap R A)) :
+    Nonempty { s : Set A // AlgebraicIndependent R ((↑) : s → A) } :=
+  ⟨∅, algebraicIndependent_empty_type_iff.mpr inj⟩
 
 namespace AlgebraicIndependent
 
@@ -119,6 +125,14 @@ theorem of_aeval {f : ι → MvPolynomial ι R}
 
 end AlgebraicIndependent
 
+theorem isEmpty_algebraicIndependent (h : ¬ Injective (algebraMap R A)) :
+    IsEmpty { s : Set A // AlgebraicIndependent R ((↑) : s → A) } where
+  false s := h s.2.algebraMap_injective
+
+theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trdeg R A = 0 := by
+  have := isEmpty_algebraicIndependent h
+  rw [trdeg, transcendenceDegree, ciSup_of_empty, bot_eq_zero]
+
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]
@@ -142,6 +156,11 @@ lemma isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
   by_contra hι; rw [not_nonempty_iff] at hι
   have := h.2 {0} algebraicIndependent_of_subsingleton
   simp [range_eq_empty, eq_comm (a := ∅)] at this
+
+theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
+  have := Module.subsingleton R A
+  (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm
+    (le_ciSup_of_le (bddAbove_range _) ⟨{0}, algebraicIndependent_of_subsingleton⟩ <| by simp)
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
@@ -250,14 +269,34 @@ theorem algebraicIndependent_empty_iff :
 
 end Subtype
 
-theorem AlgebraicIndependent.to_subtype_range {ι} {f : ι → A} (hf : AlgebraicIndependent R f) :
-    AlgebraicIndependent R ((↑) : range f → A) := by
+theorem AlgebraicIndependent.to_subtype_range (hx : AlgebraicIndependent R x) :
+    AlgebraicIndependent R ((↑) : range x → A) := by
   nontriviality R
-  rwa [algebraicIndependent_subtype_range hf.injective]
+  rwa [algebraicIndependent_subtype_range hx.injective]
 
-theorem AlgebraicIndependent.to_subtype_range' {ι} {f : ι → A} (hf : AlgebraicIndependent R f) {t}
-    (ht : range f = t) : AlgebraicIndependent R ((↑) : t → A) :=
-  ht ▸ hf.to_subtype_range
+theorem AlgebraicIndependent.to_subtype_range' (hx : AlgebraicIndependent R x) {t}
+    (ht : range x = t) : AlgebraicIndependent R ((↑) : t → A) :=
+  ht ▸ hx.to_subtype_range
+
+theorem IsTranscendenceBasis.to_subtype_range (hx : IsTranscendenceBasis R x) :
+    IsTranscendenceBasis R ((↑) : range x → A) := by
+  cases subsingleton_or_nontrivial R
+  · rw [isTranscendenceBasis_iff_of_subsingleton] at hx ⊢; infer_instance
+  · rwa [isTranscendenceBasis_subtype_range hx.1.injective]
+
+theorem IsTranscendenceBasis.to_subtype_range' (hx : IsTranscendenceBasis R x) {t}
+    (ht : range x = t) : IsTranscendenceBasis R ((↑) : t → A) :=
+  ht ▸ hx.to_subtype_range
+
+open Cardinal in
+theorem AlgebraicIndependent.lift_cardinalMk_le_trdeg [Nontrivial R]
+    (hx : AlgebraicIndependent R x) : lift.{v} #ι ≤ lift.{u} (trdeg R A) := by
+  rw [lift_mk_eq'.mpr ⟨.ofInjective _ hx.injective⟩, lift_le]
+  exact le_ciSup_of_le (bddAbove_range _) ⟨_, hx.to_subtype_range⟩ le_rfl
+
+theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x : ι → A}
+    (hx : AlgebraicIndependent R x) : #ι ≤ trdeg R A := by
+  rw [← (#ι).lift_id, ← (trdeg R A).lift_id]; exact hx.lift_cardinalMk_le_trdeg
 
 theorem algebraicIndependent_comp_subtype {s : Set ι} :
     AlgebraicIndependent R (x ∘ (↑) : s → A) ↔

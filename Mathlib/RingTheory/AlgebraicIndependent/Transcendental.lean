@@ -25,8 +25,11 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-variable {ι R A : Type*} {x : ι → A}
-variable [CommRing R] [CommRing A] [Algebra R A]
+universe u v
+
+variable {ι ι' R : Type*} {S : Type u} {A : Type v} {x : ι → A}
+variable [CommRing R] [CommRing S] [CommRing A]
+variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 /-- A one-element family `x` is algebraically independent if and only if
 its element is transcendental. -/
@@ -69,6 +72,9 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
   exact False.elim (hx.transcendental i (Algebra.IsAlgebraic.isAlgebraic _))
 
 end AlgebraicIndependent
+
+theorem trdeg_eq_zero_of_isAlgebraic [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
+  bot_unique <| ciSup_le' fun s ↦ have := s.2.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
 
 open AlgebraicIndependent
 
@@ -164,9 +170,25 @@ theorem iff_transcendental_adjoin_image (i : ι) :
 variable (hx : AlgebraicIndependent R x)
 include hx
 
-theorem trans {ι'} {y : ι' → A} (hy : AlgebraicIndependent (adjoin R (range x)) y) :
+theorem sumElim {ι'} {y : ι' → A} (hy : AlgebraicIndependent (adjoin R (range x)) y) :
     AlgebraicIndependent R (Sum.elim y x) :=
   sumElim_iff.mpr ⟨hx, hy⟩
+
+theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebraMap S A))
+    (hy : AlgebraicIndependent S y) : AlgebraicIndependent R (Sum.elim y x) := by
+  let e := AlgEquiv.ofInjective (IsScalarTower.toAlgHom R S A) hy.algebraMap_injective
+  set Rx := adjoin R (range x)
+  let _ : Algebra Rx S :=
+    (e.symm.toAlgHom.comp <| Subalgebra.inclusion <| adjoin_le hxS).toAlgebra
+  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp; rfl
+  refine hx.sumElim (hy.restrictScalars (e.symm.injective.comp ?_))
+  simpa only [AlgHom.coe_toRingHom] using Subalgebra.inclusion_injective _
+
+omit hx in
+theorem sumElim_comp {ι'} {x : ι → S} {y : ι' → A} (hx : AlgebraicIndependent R x)
+    (hy : AlgebraicIndependent S y) : AlgebraicIndependent R (Sum.elim y (algebraMap S A ∘ x)) :=
+  (hx.map' (f := IsScalarTower.toAlgHom R S A) hy.algebraMap_injective).sumElim_of_tower
+    (range_comp_subset_range ..) hy
 
 theorem adjoin_of_disjoint {s t : Set ι} (h : Disjoint s t) :
     AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i :=
@@ -192,11 +214,29 @@ theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
 
 end AlgebraicIndependent
 
-namespace MvPolynomial
+open Cardinal in
+theorem lift_trdeg_add_le [Nontrivial R]
+    (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
+    lift.{v} (trdeg R S) + lift.{u} (trdeg S A) ≤ lift.{u} (trdeg R A) := by
+  simp_rw [trdeg, transcendenceDegree, lift_iSup (bddAbove_range _)]
+  have := hRS.nonempty_algebraicIndependent
+  have := hSA.nonempty_algebraicIndependent
+  simp_rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _),
+    add_comm (lift.{v, u} _), ← mk_sum]
+  refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
+  have := hs.sumElim_comp ht
+  refine le_ciSup_of_le (bddAbove_range _) ⟨_, this.to_subtype_range⟩ ?_
+  rw [← lift_umax, mk_range_eq_of_injective this.injective, lift_id']
+
+theorem trdeg_add_le [Nontrivial R] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A]
+    [IsScalarTower R S A] (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
+    trdeg R S + trdeg S A ≤ trdeg R A := by
+  rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
+  exact lift_trdeg_add_le hRS hSA
 
 /-- If for each `i : ι`, `f_i : R[X]` is transcendental over `R`, then `{f_i(X_i) | i : ι}`
 in `MvPolynomial ι R` is algebraically independent over `R`. -/
-theorem algebraicIndependent_polynomial_aeval_X
+theorem MvPolynomial.algebraicIndependent_polynomial_aeval_X
     (f : ι → Polynomial R) (hf : ∀ i, Transcendental R (f i)) :
     AlgebraicIndependent R fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i) := by
   set x := fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i)
@@ -208,8 +248,6 @@ theorem algebraicIndependent_polynomial_aeval_X
     refine Algebra.adjoin_mono ?_ (Polynomial.aeval_mem_adjoin_singleton R _)
     simp_rw [singleton_subset_iff, Set.mem_image_of_mem _ h]
   exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_subalgebra_le hle
-
-end MvPolynomial
 
 /-- If `{x_i : A | i : ι}` is algebraically independent over `R`, and for each `i`,
 `f_i : R[X]` is transcendental over `R`, then `{f_i(x_i) | i : ι}` is also

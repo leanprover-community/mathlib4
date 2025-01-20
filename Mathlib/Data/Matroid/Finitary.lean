@@ -29,15 +29,15 @@ private theorem cardinalMk_le_of_finitary : #B ≤ #B' := by
     exact Finitary.indep_of_forall_finite _ fun J hJ fin ↦ (this (J \ {a}) fin.diff.to_subtype <|
       diff_singleton_subset_iff.mpr hJ).subset (subset_insert_diff_singleton ..)
   choose S S_fin hSB dep using this
-  let Bu := (B ∩ B') ∪ ⋃ a : ↥(B' \ B), S a a.2
-  suffices B ⊆ Bu from
+  let U := (B ∩ B') ∪ ⋃ a : ↥(B' \ B), S a a.2
+  suffices B ⊆ U from
     (mk_le_mk_of_subset this).trans <| (mk_union_le ..).trans <|
       (add_le_add (mk_le_mk_of_subset inter_subset_right) <| (mk_iUnion_le _).trans <| mul_le_mul'
         (mk_le_mk_of_subset diff_subset) <| ciSup_le' fun _ ↦ (lt_aleph0_of_finite _).le).trans <|
     by rw [mul_aleph0_eq (aleph0_le_mk _), add_eq_self (aleph0_le_mk _)]
-  have hBuB : Bu ⊆ B := union_subset inter_subset_left (iUnion_subset fun a ↦ hSB a a.2)
-  by_contra hBBu
-  have ⟨a, ha, ind⟩ := hB.exists_insert_of_ssubset ⟨hBuB, hBBu⟩ hB'
+  have hUB : U ⊆ B := union_subset inter_subset_left (iUnion_subset fun a ↦ hSB a a.2)
+  by_contra hBU
+  have ⟨a, ha, ind⟩ := hB.exists_insert_of_ssubset ⟨hUB, hBU⟩ hB'
   have : a ∈ B' \ B := ⟨ha.1, fun haB ↦ ha.2 (.inl ⟨haB, ha.1⟩)⟩
   refine dep a this (ind.subset <| insert_subset_insert <| .trans ?_ subset_union_right)
   exact subset_iUnion_of_subset ⟨a, this⟩ subset_rfl
