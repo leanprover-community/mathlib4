@@ -144,12 +144,14 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
   f x := by
     -- Is there a more elegant way to write this?
-    let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x ⟨i - 1, by omega⟩
-    exact ⟨x', by simp [x']⟩
+    --let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x (Fin.pred i, sorry)--⟨i - 1, by omega⟩
+    exact ⟨fin i ↦ if h: i = 0 then 0 else x (Fin.pred i, sorry), by simp⟩
   isEmbedding := sorry
   -- TODO: it suffices to show each component function is smooth
   -- the first one is constant, the others are basically the identity...
-  isSmooth := sorry
+  isSmooth := by
+    -- use charts and the identity? well, there should be a lemma already...
+    sorry
   -- lemma 1: EuclideanHalfSpace has the boundary you expect
   -- lemma 2: it maps there
   range_eq_boundary := by
