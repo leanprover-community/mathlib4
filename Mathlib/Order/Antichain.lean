@@ -193,7 +193,7 @@ lemma inter_subsingleton_of_isChain_of_isAntichain (hs : IsChain r s) (ht : IsAn
 /-- The intersection of an antichain and a chain is subsingleton.  -/
 lemma inter_subsingleton_of_isAntichain_of_isChain (hs : IsAntichain r s) (ht : IsChain r t) :
     (s ∩ t).Subsingleton :=
-  subsingleton_of_isChain_of_isAntichain (ht.mono (by simp)) (hs.subset (by simp))
+  inter_comm _ _ ▸ inter_subsingleton_of_isChain_of_isAntichain ht hs
 
 section Preorder
 
