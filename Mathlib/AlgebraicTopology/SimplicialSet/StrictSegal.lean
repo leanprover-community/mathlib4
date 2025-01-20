@@ -263,15 +263,16 @@ theorem spineToSimplex_arrow (i : Fin n) (f : Path X n) :
     X.map (mkOfSucc i).op (sx.spineToSimplex f) = f.arrow i :=
   sx n |>.spineToSimplex_arrow n _ i f
 
-variable (f : Path X n)
-
 /-- In the presence of the strict Segal condition, a path of length `n` can be
 "composed" by taking the diagonal edge of the resulting `n`-simplex. -/
-abbrev spineToDiagonal : X _[1] := sx n |>.spineToDiagonal n (by leq) f
+abbrev spineToDiagonal : Path X n → X _[1] := sx n |>.spineToDiagonal n
+
+lemma spineToDiagonal_def :
+    sx.spineToDiagonal = X.map (diag n).op ∘ sx.spineToSimplex := rfl
 
 section interval
 
-variable (j l : ℕ) (hjl : j + l ≤ n)
+variable (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n)
 
 @[simp]
 theorem spineToSimplex_interval :
