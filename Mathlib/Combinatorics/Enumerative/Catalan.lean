@@ -150,11 +150,7 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
     (antidiagonal n).attach.biUnion fun ijh =>
-      -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
-      -- have := Nat.lt_succ_of_le (fst_le ijh.2)
-      -- have := Nat.lt_succ_of_le (snd_le ijh.2)
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
-  -- Porting note: Add this to satisfy the linter.
   decreasing_by
     · simp_wf; have := fst_le ijh.2; omega
     · simp_wf; have := snd_le ijh.2; omega
@@ -192,15 +188,6 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
     rintro ⟨i, j⟩ H
     rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
   · simp_rw [disjoint_left]
-    rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
-    -- Porting note: was clear * -; tidy
-    intros h a
-    cases' a with a l r
-    · intro h; simp at h
-    · intro h1 h2
-      apply h
-      trans (numNodes l, numNodes r)
-      · simp at h1; simp [h1]
-      · simp at h2; simp [h2]
+    aesop
 
 end Tree
