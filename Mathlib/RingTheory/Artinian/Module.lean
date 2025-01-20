@@ -464,11 +464,8 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
     inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
   rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
 
-lemma subtype_isMaximal_finite : Finite {I : Ideal R // I.IsMaximal} :=
-  (maximal_ideals_finite R).to_subtype
-
 instance : Finite (MaximalSpectrum R) :=
-  haveI := subtype_isMaximal_finite R
+  haveI : Finite {I : Ideal R // I.IsMaximal} := (maximal_ideals_finite R).to_subtype
   .of_equiv _ (MaximalSpectrum.equivSubtype _).symm
 
 end CommSemiring
@@ -520,11 +517,8 @@ variable (R)
 lemma prime_ideals_finite : {I : Ideal R | I.IsPrime}.Finite := by
   simpa only [isPrime_iff_isMaximal] using maximal_ideals_finite R
 
-lemma subtype_isPrime_finite : Finite {I : Ideal R // I.IsPrime} :=
-  (prime_ideals_finite R).to_subtype
-
 instance : Finite (PrimeSpectrum R) :=
-  haveI := subtype_isPrime_finite R
+  haveI : Finite {I : Ideal R // I.IsPrime} := (prime_ideals_finite R).to_subtype
   .of_equiv _ (PrimeSpectrum.equivSubtype _).symm
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
