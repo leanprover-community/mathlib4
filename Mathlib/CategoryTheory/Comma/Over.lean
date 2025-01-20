@@ -99,7 +99,7 @@ def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-@[simps! hom_left]
+@[simps! hom_left inv_left]
 def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by aesop_cat) :
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
