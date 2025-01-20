@@ -137,18 +137,12 @@ theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : �
 
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
-/-- In a symmetric and transitive relation, replacing the left argument in a relation by a related
-argument given an equivalent relation. -/
 theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
   ⟨trans_of r (symm_of r h), trans_of r h⟩
 
-/-- In a symmetric and transitive relation, replacing the right argument in a relation by a related
-argument given an equivalent relation. -/
 theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
   ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
 
-/-- In a symmetric and transitive relation, replacing the arguments in a relation by related
-arguments given an equivalent relation. -/
 theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
     r a c ↔ r b d := by
   rw [rel_congr_left h₁, rel_congr_right h₂]
