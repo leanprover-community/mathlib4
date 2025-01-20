@@ -72,7 +72,8 @@ variable {R A B}
 Given an abelian group homomorphism `f : A → B`, `f⋆(L) := L ∘ f` defines a linear map
 from `B⋆` to `A⋆`.
 -/
-@[simps] def dual (f : A →ₗ[R] B) : CharacterModule B →ₗ[R] CharacterModule A where
+@[simps! apply apply_apply] def dual (f : A →ₗ[R] B) :
+    CharacterModule B →ₗ[R] CharacterModule A where
   toFun L := L.comp f.toAddMonoidHom
   map_add' := by aesop
   map_smul' r c := by ext x; exact congr(c $(f.map_smul r x)).symm
@@ -92,7 +93,7 @@ lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective
   intro φ ψ eq
   ext x
   obtain ⟨y, rfl⟩ := hf x
-  change (dual f) φ _ = (dual f) ψ _
+  rw [← dual_apply_apply, ← dual_apply_apply]
   rw [eq]
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
