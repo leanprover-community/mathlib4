@@ -734,6 +734,69 @@ theorem existsMaximalSubsetProperty_indep (M : Matroid α) :
 
 end dep_indep
 
+section congr
+
+/-- create a copy of `M : Matroid α` with an independence predicate and ground set defeq
+to supplied arguments that are provably equal to those of `M`. -/
+@[simps] def congrIndep (M : Matroid α) (E : Set α) (Indep : Set α → Prop)
+    (hE : E = M.E) (h : ∀ I, Indep I ↔ M.Indep I) : Matroid α where
+  E := E
+  Base := M.Base
+  Indep := Indep
+  indep_iff' _ := by simp_rw [h, M.indep_iff]
+  exists_base := M.exists_base
+  base_exchange := M.base_exchange
+  maximality := by
+    simp_rw [hE, show Indep = M.Indep from funext (by simp [h])]
+    exact M.maximality
+  subset_ground := by
+    simp_rw [hE]
+    exact M.subset_ground
+
+/-- create a copy of `M : Matroid α` with a base predicate and ground set defeq
+to supplied arguments that are provably equal to those of `M`. -/
+@[simps] def congrBase (M : Matroid α) (E : Set α) (Base : Set α → Prop)
+    (hE : E = M.E) (h : ∀ B, Base B ↔ M.Base B) : Matroid α where
+  E := E
+  Base := Base
+  Indep := M.Indep
+  indep_iff' _ := by simp_rw [h, M.indep_iff]
+  exists_base := by
+    simp_rw [h]
+    exact M.exists_base
+  base_exchange := by
+    simp_rw [show Base = M.Base from funext (by simp [h])]
+    exact M.base_exchange
+  maximality := by
+    simp_rw [hE]
+    exact M.maximality
+  subset_ground := by
+    simp_rw [hE, h]
+    exact M.subset_ground
+
+/-- create a copy of `M : Matroid α` with independence and base predicates and ground set defeq
+to supplied arguments that are provably equal to those of `M`. -/
+@[simps] def congrBaseIndep (M : Matroid α) (E : Set α) (Base Indep : Set α → Prop)
+    (hE : E = M.E) (hB : ∀ B, Base B ↔ M.Base B) (hI : ∀ I, Indep I ↔ M.Indep I) : Matroid α where
+  E := E
+  Base := Base
+  Indep := Indep
+  indep_iff' _ := by simp_rw [hI, hB, M.indep_iff]
+  exists_base := by
+    simp_rw [hB]
+    exact M.exists_base
+  base_exchange := by
+    simp_rw [show Base = M.Base from funext (by simp [hB])]
+    exact M.base_exchange
+  maximality := by
+    simp_rw [hE, show Indep = M.Indep from funext (by simp [hI])]
+    exact M.maximality
+  subset_ground := by
+    simp_rw [hE, hB]
+    exact M.subset_ground
+
+end congr
+
 section Basis
 
 /-- A Basis for a set `X ⊆ M.E` is a maximal independent subset of `X`
