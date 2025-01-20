@@ -38,7 +38,7 @@ theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set �
     (hs : ∀ i, IsLUB (s i) (u i)) (c : α) :
     IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by
   refine isLUB_congr ?_
-  simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, IsLUB.upperBounds_eq (hs _)]
+  simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, (hs _).upperBounds_eq]
 
 theorem isGLB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
     (hs : ∀ (i : ι), IsGLB (s i) (u i)) (c : α) :
