@@ -1424,7 +1424,7 @@ theorem neg_lt_neg_iff {x y : PGame} : -y < -x ↔ x < y := by
   rw [lt_iff_le_and_lf, lt_iff_le_and_lf, neg_le_neg_iff, neg_lf_neg_iff]
 
 @[simp]
-theorem neg_identical_neg_iff {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
+theorem neg_identical_neg {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
   ⟨Identical.of_neg, Identical.neg⟩
 
 @[simp]
@@ -1711,11 +1711,11 @@ lemma identical_zero_iff : ∀ (x : PGame),
     · rintro ⟨h₁, h₂⟩
       exact identical_of_isEmpty _ _
 
-/-- Any game without left or right moves is identival to 0. -/
+/-- Any game without left or right moves is identical to 0. -/
 lemma identical_zero (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≡ 0 :=
   x.identical_zero_iff.mpr ⟨by infer_instance, by infer_instance⟩
 
-lemma add_eq_zero_iff : ∀ (x y : PGame), x + y ≡ 0 ↔ x ≡ 0 ∧ y ≡ 0
+protected lemma add_eq_zero : ∀ {x y : PGame}, x + y ≡ 0 ↔ x ≡ 0 ∧ y ≡ 0
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [identical_zero_iff, leftMoves_add, rightMoves_add, isEmpty_sum]
     tauto
