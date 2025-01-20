@@ -47,18 +47,12 @@ variable {G : SimpleGraph α} {H : SimpleGraph β}
 /-- The disjoint sum is commutative up to isomorphism. `Iso.sumComm` as a graph isomorphism. -/
 @[simps!]
 def Iso.sumComm : G ⊕g H ≃g H ⊕g G := ⟨Equiv.sumComm α β, by
-  intro u v
-  cases u <;> cases v <;> simp⟩
+  rintro (u | u) (v | v) <;> simp⟩
 
 /-- The disjoint sum is associative up to isomorphism. `Iso.sumAssoc` as a graph isomorphism. -/
 @[simps!]
 def Iso.sumAssoc {I : SimpleGraph γ} : (G ⊕g H) ⊕g I ≃g G ⊕g (H ⊕g I) := ⟨Equiv.sumAssoc α β γ, by
-  intro u v
-  cases u <;> cases v <;> rename_i u v
-  · cases u <;> cases v <;> simp
-  · cases u <;> simp
-  · cases v <;> simp
-  · simp⟩
+  rintro ((u | u) | u) ((v | v) | v) <;> simp⟩
 
 /-- The embedding of `G` into `G ⊕g H`. -/
 @[simps]
@@ -75,12 +69,9 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   map_rel_iff' := by simp
 
 /-- Color `G ⊕g H` with colorings of `G` and `H` -/
-def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring γ := Coloring.mk
-  (Sum.elim cG cH) <| by
-  intro u v
-  cases u <;> cases v <;> simp
-  · exact cG.valid
-  · exact cH.valid
+def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring γ where
+  toFun := Sum.elim cG cH
+  map_rel' {u v} huv := by cases u <;> cases v <;> simp_all [cG.valid, cH.valid]
 
 /-- Get coloring of `G` from coloring of `G ⊕g H` -/
 def Coloring.sumLeft (c : (G ⊕g H).Coloring γ) : G.Coloring γ := Coloring.mk (c ∘ Sum.inl) <| by
@@ -93,31 +84,22 @@ def Coloring.sumRight (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.m
   exact c.valid h
 
 theorem Coloring.sum_sumLeft_eq (cG : G.Coloring γ) (cH : H.Coloring γ) :
-    (cG.sum cH).sumLeft = cG := by
-  unfold sumLeft sum
-  rfl
+    (cG.sum cH).sumLeft = cG := rfl
 
 theorem Coloring.sum_sumRight_eq (cG : G.Coloring γ) (cH : H.Coloring γ) :
-    (cG.sum cH).sumRight = cH := by
-  unfold sumRight sum
-  rfl
+    (cG.sum cH).sumRight = cH := rfl
 
 theorem Coloring.sumLeft_sum_sumRight_eq (c : (G ⊕g H).Coloring γ) :
     c.sumLeft.sum c.sumRight = c := by
   refine RelHom.ext_iff.mpr ?_
-  intro u
-  cases u <;> rfl
+  rintro (u | u) <;> rfl
 
 /-- Bijection between `(G ⊕g H).Coloring γ` and `(G.Coloring γ) × (H.Coloring γ)` -/
 def Coloring.sumEquiv : (G ⊕g H).Coloring γ ≃ (G.Coloring γ) × (H.Coloring γ) where
   toFun c := ⟨c.sumLeft, c.sumRight⟩
   invFun p := p.1.sum p.2
-  left_inv := fun c => by
-    simp only
-    exact sumLeft_sum_sumRight_eq c
-  right_inv := fun p => by
-    simp only
-    exact rfl
+  left_inv c := by simp [sumLeft_sum_sumRight_eq c]
+  right_inv p := rfl
 
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
 with `Fin m` -/
@@ -134,20 +116,18 @@ theorem Colorable.sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable 
 theorem Colorable.sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colorable n :=
   Nonempty.intro (h.some.sumRight)
 
-theorem chromaticNumber_left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
-  refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_left)
+theorem chromaticNumber_left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber :=
+  chromaticNumber_le_of_forall_imp (fun _ h ↦ h.sum_left)
 
-theorem chromaticNumber_right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
-  refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_right)
+theorem chromaticNumber_right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber :=
+  chromaticNumber_le_of_forall_imp (fun _ h ↦ h.sum_right)
 
 theorem chromaticNumber_sum_eq :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
   refine eq_max chromaticNumber_left_le_sum chromaticNumber_right_le_sum ?_
-  intro n hG hH
-  cases n
-  · simp
-  · rename_i n
-    let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
+  rintro (n | n) hG hH
+  · simp [show (none : ℕ∞) = (⊤ : ℕ∞) from rfl]
+  · let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
     let cH : H.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hH).some
     exact chromaticNumber_le_iff_colorable.mpr (Nonempty.intro (cG.sum cH))
 
