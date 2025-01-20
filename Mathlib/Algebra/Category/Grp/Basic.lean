@@ -133,7 +133,7 @@ theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
   rfl
 
 @[to_additive]
-lemma ofHom_injective {X Y : Type u} [CommGroup X] [CommGroup Y] :
+lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
     Function.Injective (fun (f : X →* Y) ↦ ofHom f) := by
   intro _ _ h
   ext
@@ -282,6 +282,13 @@ add_decl_doc AddCommGrp.ofHom
 theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     @DFunLike.coe (X →* Y) X (fun _ ↦ Y) _ (ofHom f) x = f x :=
   rfl
+
+@[to_additive]
+lemma ofHom_injective {X Y : Type u} [CommGroup X] [CommGroup Y] :
+    Function.Injective (fun (f : X →* Y) ↦ ofHom f) := by
+  intro _ _ h
+  ext
+  apply DFunLike.congr_fun h
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
