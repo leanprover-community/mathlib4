@@ -5,6 +5,7 @@ Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # Nucleus
@@ -15,58 +16,51 @@ https://ncatlab.org/nlab/show/nucleus
 variable {X : Type*} [CompleteLattice X]
 
 /--
-The Type of Nuclei on a Frame.
+The Type of Nuclei on a Frame. A Nucleus is a function between Frames which corresponds to a
+sublocle. It is idempotent, increasing and preserves infima.
 -/
-structure Nucleus (X : Type*) [SemilatticeInf X] where
-  /-- The function of the nucleus.-/
-  toFun : X → X
+structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   /-- A Nucleus is idempotent.-/
-  idempotent (x : X) : toFun (toFun x) ≤ toFun x
+  idempotent' (x : X) : toFun (toFun x) ≤ toFun x
   /-- A Nucleus is increasing.-/
-  increasing (x : X) : x ≤ toFun x
-  /-- A Nucleus preserves infima.-/
-  preserves_inf (x y : X) : toFun (x ⊓ y) = toFun x ⊓ toFun y
+  increasing' (x : X) : x ≤ toFun x
 
 /--
 A stronger version of Nucleus.idempotent which follows from Nucleus.increasing.
 -/
-lemma Nucleus.idempotent' {n : Nucleus X} {x : X} : n.toFun (n.toFun x) = n.toFun x := by
+lemma Nucleus.idempotent {n : Nucleus X} {x : X} : n.toFun (n.toFun x) = n.toFun x := by
   apply le_antisymm
-  · exact n.idempotent x
-  · exact n.increasing (n.toFun x)
+  · exact n.idempotent' x
+  · exact n.increasing' (n.toFun x)
 
 instance : FunLike (Nucleus X) X X where
-  coe := Nucleus.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe x := x.toFun
+  coe_injective' f g h := by cases f; cases g; simp_all
 
 /--
 `NucleusClass F X` states that F is a type of Nuclei.
 -/
-class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] : Prop where
+class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
+    Prop where
   /-- A Nucleus is idempotent.-/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
   /-- A Nucleus is increasing.-/
   increasing (x : X) (f : F) : x ≤ f x
-  /-- A Nucleus preserves infima.-/
-  preserves_inf (x y : X) (f : F) : f (x ⊓ y) = f x ⊓ f y
-
 
 instance (F X : Type*) [SemilatticeInf X] [FunLike F X X] [n : NucleusClass F X]
   : OrderHomClass F X X where
   map_rel := fun f a b h => by
     have h1 : a ⊓ b = a := inf_eq_left.mpr h
-    have h2 := n.preserves_inf a b
+    have h2 := n.map_inf f a b
     rw [h1] at h2
-    exact left_eq_inf.mp (h2 f)
+    exact left_eq_inf.mp h2
 
 lemma Nucleus.coe_eq_toFun (n : Nucleus X) {x : X} : n x = n.toFun x := by rfl
 
-
 instance : NucleusClass (Nucleus X) X where
-  idempotent := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.idempotent x)
-  increasing := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.increasing x)
-  preserves_inf := (by simp[Nucleus.coe_eq_toFun]; exact fun x y f ↦ f.preserves_inf x y)
-
+  idempotent := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.idempotent' x)
+  increasing := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.increasing' x)
+  map_inf := (by simp[Nucleus.coe_eq_toFun])
 
 /--
 We can proove that two Nuclei are equal by showing that their functions are the same.
@@ -80,7 +74,7 @@ lemma Nucleus.ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
 A Nucleus preserves ⊤
 -/
 lemma nucleus_preserves_top (n : Nucleus X) : n.toFun ⊤ = ⊤ :=
-   top_le_iff.mp (n.increasing ⊤)
+   top_le_iff.mp (n.increasing' ⊤)
 
 
 instance : LE (Nucleus X) where
@@ -97,18 +91,22 @@ instance : Preorder (Nucleus X) where
 The smallest Nucleus is the identity Nucleus.
 -/
 instance Nucleus.bot : Bot (Nucleus X) where
-  bot := ⟨fun x ↦ x, Preorder.le_refl,Preorder.le_refl, fun _ _ ↦ rfl⟩
+  bot.toFun x := x
+  bot.idempotent' := by simp
+  bot.increasing' := by simp
+  bot.map_inf' := by simp
 
 instance : OrderBot (Nucleus X) where
-  bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing v)
+  bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing' v)
 
 /--
 The biggest Nucleus sends everything to ⊤.
 -/
 instance Nucleus.top : Top (Nucleus X) where
-  top := ⟨fun _ ↦ ⊤,(by simp only [le_refl, implies_true]), OrderTop.le_top,
-    fun _ _ ↦ Eq.symm (top_inf_eq _)⟩
--- Question for the reviewer: Should these small proofs be simp's or written out statements?
+  top.toFun := ⊤
+  top.idempotent' := by simp
+  top.increasing' := by simp
+  top.map_inf' := by simp
 
 instance : OrderTop (Nucleus X) where
-  le_top := (by simp only [Nucleus.top, Nucleus.le_iff, le_top, implies_true])
+  le_top := (by simp [Nucleus.top, Nucleus.le_iff])
