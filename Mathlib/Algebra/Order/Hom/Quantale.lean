@@ -33,7 +33,7 @@ as a theorem showing that any function that maps everything to `⊥` is a quanta
 
 The implementation follows largely the style of `Mathlib.Algebra.Order.Hom.Monoid`.
 
-There's a coercion from bundled homs to fun, and the canonical notation is to use the bundled hom
+There's a coercion from bundled homs to functions, and the canonical notation is to use the bundled hom
 as a function via this coercion.
 
 In the file `Mathlib.Algebra.Order.Hom.Monoid` it is mentioned that there used to be classes:
@@ -153,10 +153,10 @@ protected def id : α →ₙ*q α where
   map_sSup' _ := by simp_all only [Set.image_id']
 
 @[to_additive (attr := simp)]
-theorem coe_id : ⇑(@QuantaleHom.id α _ _) = id := rfl
+theorem coe_id : ⇑(.id : α →ₙ*q α) = id := rfl
 
 @[to_additive]
-instance : Inhabited (α →ₙ*q α) := ⟨@QuantaleHom.id α _ _⟩
+instance : Inhabited (α →ₙ*q α) := ⟨.id⟩
 
 end Id
 
