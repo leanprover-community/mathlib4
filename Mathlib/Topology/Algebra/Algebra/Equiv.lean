@@ -111,15 +111,9 @@ theorem coe_injective : Function.Injective ((↑) : (A ≃A[R] B) → A →A[R] 
 theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
   coe_injective.eq_iff
 
--- @[simp]
--- theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
-
 @[simp]
-theorem cosdfsdfe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toHomeomorph = e := by
-  rw [@Homeomorph.homeomorph_mk_coe, @AlgEquiv.toEquiv_eq_coe, @EquivLike.coe_coe]
-  sorry
+theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
 
-#lint
 theorem isOpenMap (e : A ≃A[R] B) : IsOpenMap e :=
   e.toHomeomorph.isOpenMap
 
