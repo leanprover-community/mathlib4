@@ -265,7 +265,7 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
 /-- An enumeration of elements in `invSet` by a type in the same universe. -/
 private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
   | [] => 0
-  | x::l =>
+  | x :: l =>
     let a' := Ordinal.toNimber ((Ordinal.enumIsoToType a.toOrdinal).symm x)
     invAux a' * (1 + (a + a') * (toNimber l))
 
