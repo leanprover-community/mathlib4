@@ -8,7 +8,8 @@ import Mathlib.Probability.Moments.ComplexMGF
 /-!
 # The moment generating function is analytic
 
-The moment generating function is analytic on the interior of the interval on which it is defined.
+The moment generating function `mgf X μ` of a random variable `X` with respect to a measure `μ`
+is analytic on the interior of `integrableExpSet X μ`, the interval on which it is defined.
 
 ## Main results
 
@@ -24,6 +25,7 @@ open MeasureTheory Filter Finset Real
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 -- todo: generalize the type of `f`?
+-- todo: move
 lemma _root_.AnalyticAt.hasFPowerSeriesAt {f : ℝ → ℝ} {x : ℝ} (h : AnalyticAt ℝ f x) :
     HasFPowerSeriesAt f
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ iteratedDeriv n f x / n.factorial)) x := by
@@ -41,7 +43,8 @@ lemma _root_.AnalyticAt.hasFPowerSeriesAt {f : ℝ → ℝ} {x : ℝ} (h : Analy
   norm_cast
   exact Nat.factorial_ne_zero _
 
-lemma analyticAt_re_ofReal {f : ℂ → ℂ} {x : ℝ} (hf : AnalyticAt ℂ f x) :
+-- todo: move
+lemma _root_.AnalyticAt.re_ofReal {f : ℂ → ℂ} {x : ℝ} (hf : AnalyticAt ℂ f x) :
     AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
   (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
 
@@ -51,6 +54,8 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure
 
 section Deriv
 
+/-- For `t ∈ interior (integrableExpSet X μ)`, the derivative of `mgf X μ` at `t` is
+`μ[X * exp (t * X)]`. -/
 lemma hasDerivAt_mgf (h : t ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (mgf X μ) (μ[fun ω ↦ X ω * exp (t * X ω)]) t := by
   convert hasDerivAt_integral_pow_mul_exp_real h 0
@@ -71,6 +76,8 @@ lemma hasDerivAt_iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ))
     rw [EventuallyEq.hasDerivAt_iff this]
     exact hasDerivAt_integral_pow_mul_exp_real ht (n + 1)
 
+/-- For `t ∈ interior (integrableExpSet X μ)`, the n-th derivative of `mgf X μ` at `t` is
+`μ[X ^ n * exp (t * X)]`. -/
 lemma iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     iteratedDeriv n (mgf X μ) t = μ[fun ω ↦ X ω ^ n * exp (t * X ω)] := by
   induction n generalizing t with
@@ -84,23 +91,24 @@ lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) (n : �
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   simp [iteratedDeriv_mgf h n]
 
-lemma deriv_mgf (h : v ∈ interior (integrableExpSet X μ)) :
-    deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] :=
+/-- For `t ∈ interior (integrableExpSet X μ)`, the derivative of `mgf X μ` at `t` is
+`μ[X * exp (t * X)]`. -/
+lemma deriv_mgf (h : t ∈ interior (integrableExpSet X μ)) :
+    deriv (mgf X μ) t = μ[fun ω ↦ X ω * exp (t * X ω)] :=
   (hasDerivAt_mgf h).deriv
 
-lemma deriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
-    deriv (mgf X μ) 0 = μ[X] := by
+lemma deriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) : deriv (mgf X μ) 0 = μ[X] := by
   simp [deriv_mgf h]
 
 end Deriv
 
 section Analytic
 
+/-- The moment generating function is analytic at every `t ∈ interior (integrableExpSet X μ)`. -/
 lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
     AnalyticAt ℝ (mgf X μ) t := by
   rw [← re_complexMGF_ofReal']
-  refine analyticAt_re_ofReal ?_
-  exact analyticAt_complexMGF (by simp [ht])
+  exact (analyticAt_complexMGF (by simp [ht])).re_ofReal
 
 /-- The moment generating function is analytic on the interior of the interval on which it is
 defined. -/
