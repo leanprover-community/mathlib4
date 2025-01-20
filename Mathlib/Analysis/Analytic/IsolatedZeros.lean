@@ -241,7 +241,7 @@ lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
   tauto
 
 /- Helper lemma for `AnalyticAt.order_mul` -/
-lemma order_eq_top_of_order_eq_top_mul_analytic {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
+lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
     (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
     (hf.mul hg).order = ⊤ := by
   rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at *
