@@ -144,7 +144,7 @@ instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [Represe
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
 
 lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
-  out _ :=IsCofiltered.isConnected _
+  out _ := IsCofiltered.isConnected _
 
 lemma initial_of_representablyCoflat [h : RepresentablyCoflat F] : F.Initial where
   out _ := IsFiltered.isConnected _
