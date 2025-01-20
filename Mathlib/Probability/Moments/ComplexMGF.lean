@@ -227,7 +227,7 @@ lemma isBigO_abs_complexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X 
     (fun ε ↦ complexMGF X μ (z + ε)
         - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ)
       =O[𝓝 0] fun ε ↦ (abs ε) ^ n := by
-  let hz' := hz
+  have hz' := hz
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hz'
   obtain ⟨l, u, hlu, h_subset⟩ := hz'
   let t := ((z.re - l) ⊓ (u - z.re)) / 2
@@ -294,7 +294,7 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     HasDerivAt (fun z ↦ μ[fun ω ↦ X ω ^ n * cexp (z * X ω)])
         μ[fun ω ↦ X ω ^ (n + 1) * cexp (z * X ω)] z := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
-  let hz' := hz
+  have hz' := hz
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hz'
   obtain ⟨l, u, hlu, h_subset⟩ := hz'
   let t := ((z.re - l) ⊓ (u - z.re)) / 2
