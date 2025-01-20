@@ -32,7 +32,7 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
 /-- As submodules, subalgebras are idempotent. -/
 @[simp]
 theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
-    IsIdempotentElem (Subalgebra.toSubmodule S) := by
+    IsIdempotentElem S.toSubmodule := by
   apply le_antisymm
   · refine (mul_toSubmodule_le _ _).trans_eq ?_
     rw [sup_idem]
