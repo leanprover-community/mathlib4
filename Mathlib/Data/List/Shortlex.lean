@@ -214,7 +214,7 @@ section WellFounded
 
 variable {h : WellFounded r}
 
-theorem shortlexAccessible {a : α} (n : ℕ) (aca : Acc r a)
+theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
     (acb : (b : List α) → b.length < n → Acc (Shortlex r) b) (b : List α) (hb : b.length < n)
     (ih : ∀ s : List α, s.length < (a::b).length → Acc (Shortlex r) s) :
     Acc (Shortlex r) ([a] ++ b) := by
