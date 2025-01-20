@@ -83,7 +83,7 @@ theorem spineInjective : Function.Injective (sx.spineEquiv m) :=
 
 /-- The unique existence of an inverse to `spine X m` for all `m ≤ n + 1`
 implies the mere existence of such an inverse. -/
-lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X where
+lemma isStrictSegal (sx : StrictSegal X) : IsStrictSegal X where
   segal m h := sx.spineEquiv m h |>.bijective
 
 @[simp]
@@ -245,8 +245,8 @@ theorem spineInjective : Function.Injective (sx.spineEquiv n) :=
 
 /-- The unique existence of an inverse to `spine X n` forall `n : ℕ` implies
 the mere existence of such an inverse. -/
-lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X :=
-  fun n ↦ sx n |>.isStrictSegal_of_strictSegal
+lemma isStrictSegal (sx : StrictSegal X) : IsStrictSegal X :=
+  fun n ↦ sx n |>.isStrictSegal
 
 lemma spineEquiv_coe_fn (n : ℕ) : ⇑(sx.spineEquiv n) = X.spine n := rfl
 
