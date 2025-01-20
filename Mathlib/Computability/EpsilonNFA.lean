@@ -64,7 +64,7 @@ theorem εClosure_empty : M.εClosure ∅ = ∅ :=
 theorem εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
 
-theorem mem_εClosure_choice {s : σ} {S : Set σ} :
+theorem mem_εClosure_iff_exists {s : σ} {S : Set σ} :
     s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
   mp h := by
     induction' h with s _ _ _ _ _ ih
@@ -116,10 +116,10 @@ theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
   · rw [evalFrom_nil, εClosure_empty]
   · rw [evalFrom_append_singleton, ih, stepSet_empty]
 
-theorem mem_evalFrom_choice {s : σ} {S : Set σ} {x : List α} :
+theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
   induction' x using List.reverseRecOn with _ _ ih generalizing s
-  · apply mem_εClosure_choice
+  · apply mem_εClosure_iff_exists
   · simp_rw [evalFrom_append_singleton, mem_stepSet_iff, ih]
     tauto
 
@@ -217,7 +217,7 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
     constructor
     · intro ⟨_, ht, h⟩
       obtain ⟨x', _, _⟩ := ih.mp ht
-      rw [mem_εClosure_choice] at h
+      rw [mem_εClosure_iff_exists] at h
       simp_rw [εClosure_path] at h
       obtain ⟨_, _, ⟨n, _⟩⟩ := h
       use x' ++ some a :: List.replicate n none
@@ -230,7 +230,7 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
       rw [isPath_append] at h
       obtain ⟨t, _, _ | _⟩ := h
       use t
-      rw [mem_εClosure_choice, ih]
+      rw [mem_εClosure_iff_exists, ih]
       simp_rw [εClosure_path]
       tauto
 
@@ -239,13 +239,13 @@ theorem accepts_path {x : List α} :
       ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' where
   mp := by
     intro ⟨_, _, h⟩
-    rw [eval, mem_evalFrom_choice] at h
+    rw [eval, mem_evalFrom_iff_exists] at h
     obtain ⟨_, _, h⟩ := h
     rw [evalFrom_path] at h
     tauto
   mpr := by
     intro ⟨_, _, _, hs₁, _, h⟩
-    have := M.mem_evalFrom_choice.mpr ⟨_, hs₁, M.evalFrom_path.mpr ⟨_, h⟩⟩
+    have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.evalFrom_path.mpr ⟨_, h⟩⟩
     tauto
 
 /-! ### Conversions between `εNFA` and `NFA` -/
