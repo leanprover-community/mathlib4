@@ -103,7 +103,7 @@ section Monoid
 variable [Monoid α] {n : ℕ} {a : α}
 
 @[to_additive even_iff_exists_two_nsmul]
-lemma isSquare_iff_exists_sq (a : α): IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
+lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
 
 @[to_additive Even.exists_two_nsmul
   "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
