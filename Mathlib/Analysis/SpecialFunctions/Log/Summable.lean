@@ -39,17 +39,17 @@ lemma Real.log_of_summable {f : ℕ → ℝ} (hf : Summable f) :
 
 lemma Complex.summable_nat_multipliable_one_add (f : ℕ → ℂ) (hf : Summable f)
     (hff : ∀ n : ℕ, 1 + f n ≠ 0) : Multipliable (fun n : ℕ => 1 + f n) := by
-  refine Complex.summable_multipliable (fun n _ => 1 + f n) (by simpa) ?_ ()
+  refine Complex.summable_multipliable (fun n => 1 + f n) (by simpa) ?_
   simpa only [forall_const] using Complex.log_of_summable hf
 
 lemma Real.summable_nat_multipliable_one_add (f : ℕ → ℝ) (hf : Summable f) :
     Multipliable (fun n : ℕ => 1 + |f n|) := by
-  refine Real.summable_multipliable (fun n _ => 1 + |f n|) (fun _ _ ↦ by positivity) ?_ ()
+  refine Real.summable_multipliable (fun n => 1 + |f n|) (fun _ ↦ by positivity) ?_
   simpa only [forall_const] using Real.log_of_summable hf
 
 lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
     {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun n : ℕ => fun a : α => ∑ i in Finset.range n,
+    TendstoUniformlyOn (fun (n : ℕ) (a : α) => ∑ i in Finset.range n,
     (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
   apply tendstoUniformlyOn_tsum_nat_eventually (hu.mul_left (3/2))
   obtain ⟨N, hN⟩ := Metric.tendsto_atTop.mp (Summable.tendsto_atTop_zero hu) (1/2) (one_half_pos)
