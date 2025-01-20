@@ -501,9 +501,8 @@ lemma Indep.inter_Basis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set α
     (hA : A.Nonempty) (h : ∀ i ∈ A, M.Basis ((X i) ∩ I) (X i)) :
     M.Basis ((⋂ i ∈ A, X i) ∩ I) (⋂ i ∈ A, X i) := by
   refine (hI.inter_left _).basis_of_subset_of_subset_closure inter_subset_left ?_
-  have := biInter_inter hA X I
   simp_rw [← biInter_inter hA,
-    closure_biInter_eq_biInter_closure_of_biUnion_indep hA (I := fun i ↦ (X i) ∩ I)
+  closure_biInter_eq_biInter_closure_of_biUnion_indep hA (I := fun i ↦ (X i) ∩ I)
       (hI.subset (by simp)), subset_iInter_iff]
   exact fun i hiA ↦ (biInter_subset_of_mem hiA).trans (h i hiA).subset_closure
 
