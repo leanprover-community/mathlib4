@@ -250,7 +250,7 @@ lemma isStrictSegal_of_strictSegal (sx : StrictSegal X) : IsStrictSegal X :=
 
 lemma spineEquiv_coe_fn (n : ℕ) : ⇑(sx.spineEquiv n) = X.spine n := rfl
 
-lemma spineEquiv_coe_fn_symm (n : ℕ) :
+lemma spineEquiv_symm_coe_fn (n : ℕ) :
     ⇑(sx.spineEquiv n).symm = sx.spineToSimplex := rfl
 
 @[simp]
