@@ -527,9 +527,6 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
     _ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
       refine Finset.sum_le_sum fun b _ => ?_; simp_rw [ContinuousLinearMap.le_opNorm]
 
-@[deprecated (since := "2024-02-02")]
-alias norm_setToSimpleFunc_le_sum_op_norm := norm_setToSimpleFunc_le_sum_opNorm
-
 theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ F) :
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
@@ -1365,7 +1362,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
       filter_upwards [hfsi] with i hi
       refine lintegral_congr_ae ?_
       filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
-      simp_rw [F_lp, dif_pos hi, hxi, hxf]
+      simp_rw [F_lp, dif_pos hi, hxi, f_lp, hxf]
     suffices Tendsto (fun i => setToFun μ T hT (F_lp i)) l (𝓝 (setToFun μ T hT f)) by
       refine (tendsto_congr' ?_).mp this
       filter_upwards [hfsi] with i hi

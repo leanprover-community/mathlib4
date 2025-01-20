@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 
 /-!
 # Dual vector spaces
@@ -627,8 +628,8 @@ lemma dualMap_dualMap_eq_iff_of_injective
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
-  refine ⟨ fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
-    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap) ⟩
+  refine ⟨fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
+    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap)⟩
   rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
   exact hfg
 
@@ -793,7 +794,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
   let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
   have : ⨅ i, ker (L' i) ≤ ker K' := by
-    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
+    simp_rw +zetaDelta [← ker_pi, pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
     exact bot_le
   obtain ⟨c, hK'⟩ :=
     (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
@@ -802,7 +803,8 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   rw [← p.liftQ_mkQ K h]
   ext x
   convert LinearMap.congr_fun hK' (p.mkQ x)
-  simp only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply, smul_eq_mul]
+  simp only [L',coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
+    smul_eq_mul]
 
 end Submodule
 
@@ -1246,6 +1248,11 @@ noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] 
 
 open Module
 
+theorem finrank_add_finrank_dualAnnihilator_eq (W : Subspace K V) :
+    finrank K W + finrank K W.dualAnnihilator = finrank K V := by
+  rw [← W.quotEquivAnnihilator.finrank_eq (M₂ := dualAnnihilator W),
+    add_comm, Submodule.finrank_quotient_add_finrank]
+
 @[simp]
 theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
     finrank K Φ.dualCoannihilator = finrank K Φ.dualAnnihilator := by
@@ -1254,12 +1261,7 @@ theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
 
 theorem finrank_add_finrank_dualCoannihilator_eq (W : Subspace K (Module.Dual K V)) :
     finrank K W + finrank K W.dualCoannihilator = finrank K V := by
-  rw [finrank_dualCoannihilator_eq]
-  -- Porting note: LinearEquiv.finrank_eq needs help
-  let equiv := W.quotEquivAnnihilator
-  have eq := LinearEquiv.finrank_eq (R := K) (M := (Module.Dual K V) ⧸ W)
-    (M₂ := { x // x ∈ dualAnnihilator W }) equiv
-  rw [eq.symm, add_comm, Submodule.finrank_quotient_add_finrank, Subspace.dual_finrank_eq]
+  rw [finrank_dualCoannihilator_eq, finrank_add_finrank_dualAnnihilator_eq, dual_finrank_eq]
 
 end
 
@@ -1895,4 +1897,4 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 
 end TensorProduct
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100

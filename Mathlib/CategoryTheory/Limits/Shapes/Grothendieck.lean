@@ -129,12 +129,12 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
       coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this]
 
-lemma hasColimit_fiberwiseColim [HasColimit G] : HasColimit (fiberwiseColimit G) where
+lemma hasColimit_fiberwiseColimit [HasColimit G] : HasColimit (fiberwiseColimit G) where
   exists_colimit := ⟨⟨_, isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _)⟩⟩
 
 variable {G}
 
-/-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColim G` induces a
+/-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColimit G` induces a
 cocone over `G` itself. -/
 @[simps]
 def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G where
@@ -218,9 +218,9 @@ def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
 /-- Composing `fiberwiseColim F H` with the evaluation functor `(evaluation C H).obj c` is
 naturally isomorphic to precomposing the Grothendieck inclusion `Grothendieck.ι` to `colim`. -/
 @[simps!]
-def fiberwiseColimcompEvaluationIso (c : C) :
+def fiberwiseColimCompEvaluationIso (c : C) :
     fiberwiseColim F H ⋙ (evaluation C H).obj c ≅
-    (whiskeringLeft _ _ _).obj (Grothendieck.ι F c) ⋙ colim :=
+      (whiskeringLeft _ _ _).obj (Grothendieck.ι F c) ⋙ colim :=
   Iso.refl _
 
 end FiberwiseColim

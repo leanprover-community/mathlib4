@@ -161,12 +161,22 @@ theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) �
   simp only [imp_iff_not_or, eventually_or, eventually_not]
 
 theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
-  Finite.induction_on hs (by simp) fun _ _ his => by
+  Finite.induction_on _ hs (by simp) fun _ _ his => by
     simp [union_mem_iff, his, or_and_right, exists_or]
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
   simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), exists_mem_image]
+
+lemma eventually_exists_mem_iff {is : Set β} {P : β → α → Prop} (his : is.Finite) :
+    (∀ᶠ i in f, ∃ a ∈ is, P a i) ↔ ∃ a ∈ is, ∀ᶠ i in f, P a i := by
+  simp only [Filter.Eventually, Ultrafilter.mem_coe]
+  convert f.finite_biUnion_mem_iff his (s := P) with i
+  aesop
+
+lemma eventually_exists_iff [Finite β] {P : β → α → Prop} :
+    (∀ᶠ i in f, ∃ a, P a i) ↔ ∃ a, ∀ᶠ i in f, P a i := by
+  simpa using eventually_exists_mem_iff (f := f) (P := P) Set.finite_univ
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
@@ -251,7 +261,7 @@ theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 
 theorem pure_injective : Injective (pure : α → Ultrafilter α) := fun _ _ h =>
-  Filter.pure_injective (congr_arg Ultrafilter.toFilter h : _)
+  Filter.pure_injective (congr_arg Ultrafilter.toFilter h :)
 
 instance [Inhabited α] : Inhabited (Ultrafilter α) :=
   ⟨pure default⟩
