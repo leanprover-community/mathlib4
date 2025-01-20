@@ -253,10 +253,10 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
     (hf.mul hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
   by_cases h₂f : hf.order = ⊤
-  · simp [hf.order_eq_top_of_order_eq_top_mul_analytic hg h₂f, h₂f]
+  · simp [hf.order_mul_of_order_eq_top hg h₂f, h₂f]
   by_cases h₂g : hg.order = ⊤
   · have : (fun x ↦ f x * g x) = (fun x ↦ g x * f x) := by simp_rw [mul_comm]
-    simp [this, hg.order_eq_top_of_order_eq_top_mul_analytic hf h₂g, h₂g]
+    simp [this, hg.order_mul_of_order_eq_top hf h₂g, h₂g]
 
   -- Non-trivial case: both functions do not vanish around z₀
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_neq_top_iff.1 h₂f
