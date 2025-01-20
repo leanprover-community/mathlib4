@@ -86,7 +86,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
     calc
       a + b = (a + b) * (a + b) := by rw [mul_self]
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
-      _ = a + a * b + (b * a + b) := by simp only [mul_self, IsIdempotentElem.eq]
+      _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
   rwa [self_eq_add_right] at this
 
@@ -194,7 +194,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
           (a * b * c + a * a * b * c) := by ring
-    _ = a + b * c + a * (b * c) := by simp only [mul_self, IsIdempotentElem.eq, add_self, add_zero]
+    _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
 
 theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
@@ -221,13 +221,12 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
-      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self,
-        IsIdempotentElem.eq, add_self]
+      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
     top_le_sup_compl := fun a => by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self, IsIdempotentElem.eq, add_self]
+      norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
@@ -268,7 +267,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
 private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc (a + b + a * b) * (1 + a * b)
     _ = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) := by ring
-    _ = a + b := by simp only [mul_self, IsIdempotentElem.eq, add_self, add_zero]
+    _ = a + b := by simp only [mul_self, add_self, add_zero]
 
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
