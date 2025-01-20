@@ -64,7 +64,7 @@ theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
 instance : IsSymm α (AntisymmRel r) where
   symm _ _ := AntisymmRel.symm
 
-theorem AntisymmRel.comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
+theorem antisymmRel_comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
   And.comm
 
 @[trans]
