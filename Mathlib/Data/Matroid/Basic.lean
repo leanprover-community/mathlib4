@@ -263,6 +263,8 @@ instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
 
+@[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rkPos_iff
+
 section exchange
 namespace ExchangeProperty
 
