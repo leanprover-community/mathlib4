@@ -777,7 +777,7 @@ to supplied arguments that are provably equal to those of `M`. -/
 to supplied arguments that are provably equal to those of `M`. -/
 @[simps!] def copyBase (M : Matroid α) (E : Set α) (Base : Set α → Prop)
     (hE : E = M.E) (h : ∀ B, Base B ↔ M.Base B) : Matroid α :=
-  M.copyBaseIndep E Base M.Indep hE h (fun _ ↦ Iff.rfl)
+  M.copy E Base M.Indep hE h (fun _ ↦ Iff.rfl)
 
 end copy
 
