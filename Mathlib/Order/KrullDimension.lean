@@ -85,7 +85,9 @@ noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and beginning with `a`.
+relation series of `α` ordered by `<` and beginning with `a`. In other words, it is
+the largest `n` such that there's a series `a = a₀ < a₁ < ... < aₙ` (or `∞` if there is
+no largest `n`).
 
 The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
 theorems between `height` and `coheight`. See `coheight_eq` for the definition with a
