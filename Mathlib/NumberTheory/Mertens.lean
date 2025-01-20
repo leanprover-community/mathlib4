@@ -9,6 +9,8 @@ open Filter Nat Real Finset
 open Asymptotics
 open scoped ArithmeticFunction
 
+axiom hpsi_cheby : (fun n => ∑ k ∈ Finset.range (n+1), Λ k) =O[atTop] (fun n ↦ (n:ℝ))
+
 theorem ArithmeticFunction.sum_range_mul_zeta
     {R : Type*} [Semiring R] (f : ArithmeticFunction R) (N : ℕ) :
     ∑ d in range (N + 1), (f * ζ) d = ∑ d in range (N + 1), (N / d) • f d := by
@@ -160,8 +162,7 @@ theorem sum_floor_mul_vonmangoldt (n : ℕ) : ∑ d ∈ Finset.range (n+1), ↑(
 -- emultiplicity_eq_iff_multiplicity_eq_of_ne_one
 
 
-theorem hpsi_cheby : (fun n => ∑ k ∈ Finset.range (n+1), Λ k) =O[atTop] (fun n ↦ (n:ℝ)) := by
-  sorry
+
 
 theorem floor_approx (x : ℝ) (hx : 0 ≤ x) : |↑((Nat.floor x)) - x| ≤ 1  := by
   rw [abs_le]
@@ -219,6 +220,31 @@ theorem pow_prime_iff (n k : ℕ) : Nat.Prime (n ^ k) ↔ n.Prime ∧ k = 1 := b
 
 @[simp]
 theorem Nat.Primes.prime (p : Nat.Primes) : Nat.Prime p := p.2
+
+theorem isBigO_fun : (fun x ↦ Real.log x / (x * (x - 1)))
+    =O[atTop] fun x ↦ x ^ (-3 / 2:ℝ) := by
+  have hlog := isLittleO_log_rpow_atTop (show 0 < (1/2:ℝ) by norm_num)
+  have hpoly : (fun x ↦ x^2) =O[atTop] fun x:ℝ ↦ x * (x - 1) := by
+    let P : Polynomial ℝ := .X^2
+    let Q : Polynomial ℝ := .X * (.X - 1)
+    convert Polynomial.isBigO_of_degree_le P Q ?_ with x x <;> simp only [P, Q]
+    · simp
+    · simp
+    convert_to (Polynomial.X^2).degree ≤ 2 using 1
+    · compute_degree
+      · norm_num
+      · decide
+    compute_degree
+  have := hpoly.inv_rev ?inv
+  case inv =>
+    filter_upwards [eventually_ne_atTop 0] with a ha ha'
+    simp_all
+  apply (hlog.isBigO.mul this).congr'
+  · simp_rw [div_eq_mul_inv]
+    rfl
+  · filter_upwards [eventually_gt_atTop 0] with x hx
+    simp_rw [← rpow_natCast, ← rpow_neg hx.le, ← rpow_add hx]
+    norm_num
 
 theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
   if ¬ Nat.Prime n then Λ n / n else 0 := by
