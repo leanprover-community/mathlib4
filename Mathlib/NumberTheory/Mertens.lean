@@ -246,8 +246,16 @@ theorem isBigO_fun : (fun x ↦ Real.log x / (x * (x - 1)))
     simp_rw [← rpow_natCast, ← rpow_neg hx.le, ← rpow_add hx]
     norm_num
 
-theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
-  if ¬ Nat.Prime n then Λ n / n else 0 := by
+theorem sum_strictPow_convergent : Summable (fun (n:ℕ) ↦
+  if ¬ Nat.Prime n then Λ n / n else 0) := by
+  convert_to Summable ({k : ℕ | IsPrimePow k}.indicator
+    fun (n:ℕ) ↦ if ¬ Nat.Prime n then Λ n / n else 0)
+  · ext n
+    by_cases h : IsPrimePow n
+    · simp [h]
+    · simp [h, ArithmeticFunction.vonMangoldt_eq_zero_iff]
+  rw [← summable_subtype_iff_indicator]
+
   have hassum_p (p : Primes) :
       HasSum (fun y => if y = 0 then 0 else Real.log p / p^(y+1)) (Real.log p / (p * (p-1))) := by
     have hp : (p : ℝ) ≠ 0 := by
@@ -268,10 +276,8 @@ theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
     apply hasSum_geometric_of_lt_one (r := (p:ℝ)⁻¹) (by positivity)
     apply inv_lt_one_of_one_lt₀
     exact_mod_cast p.2.one_lt
-
-
-
-  set f := fun (n:{k : ℕ | IsPrimePow k}) ↦ if ¬ Nat.Prime n then Λ n / n else 0
+  set f := (fun (n:ℕ) ↦ if ¬ Nat.Prime n then Λ n / n else 0) ∘
+    (fun x : {k : ℕ | IsPrimePow k} ↦ (x : ℕ))
   let e := Nat.Primes.prodNatEquiv
   rw [← Equiv.summable_iff e]
   have : f ∘ e = fun p ↦ if p.2 = 0 then 0 else Real.log p.1 / p.1 ^ (p.2+1) := by
@@ -289,12 +295,16 @@ theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
     -- -- why do I need to give f here...
     -- apply Summable.comp_injective (i := (fun p : Primes ↦ (p : ℕ)))
     --   (f := fun (n: ℕ) => Real.log n / (n * (n - 1:ℝ)) )
-
     apply summable_of_isBigO (g := fun p : Primes ↦ (p:ℝ) ^ (-3/2:ℝ))
     · rw [Nat.Primes.summable_rpow]
       norm_num
-
-    sorry
+    convert_to (((fun x ↦ Real.log x / (x * (x-1))) ∘ (fun n : ℕ ↦ (n : ℝ))) ∘
+      (fun p : Primes ↦ (p : ℕ)))
+      =O[cofinite] (((fun x ↦ x^(-3/2:ℝ)) ∘ (fun n : ℕ ↦ (n : ℝ))) ∘ (fun p : Primes ↦ (p : ℕ)))
+    apply Asymptotics.IsBigO.comp_tendsto (l := cofinite)
+    · rw [Nat.cofinite_eq_atTop]
+      exact Asymptotics.IsBigO.comp_tendsto isBigO_fun tendsto_natCast_atTop_atTop
+    · apply Function.Injective.tendsto_cofinite Primes.coe_nat_injective
   · intro p
     simp only [Pi.zero_apply, e, f]
     positivity
@@ -318,7 +328,45 @@ theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
   -- rw [← Function.Injective.summable_iff _ this]
   -- sorry
 
+theorem sum_primesBelow_log_div_id_eq_vonMangoldt_sub (n : ℕ) :
+  ∑ p ∈ primesBelow (n+1), Real.log p / p = ∑ k ∈ Finset.range (n+1), Λ k / k
+    - ∑ k ∈ Finset.range (n+1), if ¬ Nat.Prime k then Λ k / k else 0 := by
+  trans ∑ p ∈ primesBelow (n+1), Λ p / p
+  · apply sum_congr rfl
+    simp +contextual [mem_primesBelow, ArithmeticFunction.vonMangoldt_apply_prime]
+  rw [eq_sub_iff_add_eq, ← Finset.sum_filter, ← Finset.sum_union]
+  · apply sum_subset <;>
+    · intro a
+      simp +contextual only [mem_union, mem_primesBelow, mem_filter, mem_range]
+      tauto
+  · rw [Finset.disjoint_left]
+    simp +contextual only [mem_primesBelow, mem_filter, mem_range, not_true_eq_false, and_false,
+      not_false_eq_true, implies_true]
+
+theorem sum_properPower_vonMangoldt_div_id_isBigO_one :
+  (fun n ↦ ∑ k ∈ Finset.range (n+1), if ¬ Nat.Prime k then Λ k / k else 0) =O[atTop]
+    (fun _ ↦ (1 : ℝ)) := by
+  apply Filter.IsBoundedUnder.isBigO_one
+  use (∑' (n:ℕ), if ¬ Nat.Prime n then Λ n / n else 0)
+  simp only [norm_eq_abs, eventually_map, ge_iff_le]
+  filter_upwards with a
+  rw [abs_of_nonneg ?pos]
+  case pos =>
+    apply Finset.sum_nonneg
+    intro k __
+    have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
+    positivity
+  apply sum_le_tsum (Finset.range (a+1)) _ (sum_strictPow_convergent)
+  intro k _
+  have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
+  positivity
+
+
 theorem mertens_first : (fun n : ℕ ↦ (∑ p ∈ primesBelow (n+1), Real.log p / p) - Real.log n)
     =O[atTop] (fun _ ↦ (1 : ℝ)) := by
-
-  sorry
+  simp_rw [sum_primesBelow_log_div_id_eq_vonMangoldt_sub]
+  have h₀ := sum_properPower_vonMangoldt_div_id_isBigO_one
+  have h₁ := sum_cheby_div_id
+  apply (h₁.sub h₀).congr <;>
+  · intro x
+    ring
