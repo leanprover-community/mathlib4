@@ -268,7 +268,7 @@ theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
       rcases List.exists_of_length_succ a len_a with ⟨head, tail, a_is⟩
       rw [a_is]
       rw [a_is, List.length_cons, add_left_inj] at len_a
-      apply shortlexAccessible (n+1) (WellFounded.apply h head) (fun b bl => ih b.length bl _ rfl)
+      apply Acc.shortlex (n+1) (WellFounded.apply h head) (fun b bl => ih b.length bl _ rfl)
       · rw [len_a]
         exact lt_add_one n
       intro l ll
