@@ -16,7 +16,7 @@ In a separate file as we need to import `Mathlib.Data.Set.Lattice`.
 
 -/
 
-variable {α : Type*} [Preorder α]
+variable {α : Type*} [Preorder α] {ι : Sort*} {s : ι → Set α}
 
 open Set
 
@@ -26,22 +26,22 @@ theorem gc_upperBounds_lowerBounds : GaloisConnection
   simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
     using fun S T ↦ forall₂_swap
 
-theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
+@[simp]
+theorem upperBounds_iUnion :
     upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) :=
   gc_upperBounds_lowerBounds.l_iSup
 
-theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
+@[simp]
+theorem lowerBounds_iUnion :
     lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
   gc_upperBounds_lowerBounds.u_iInf
 
-theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
-    (hs : ∀ i, IsLUB (s i) (u i)) (c : α) :
+theorem isLUB_iUnion_iff_of_isLUB {u : ι → α} (hs : ∀ i, IsLUB (s i) (u i)) (c : α) :
     IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by
   refine isLUB_congr ?_
   simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, (hs _).upperBounds_eq]
 
-theorem isGLB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
-    (hs : ∀ (i : ι), IsGLB (s i) (u i)) (c : α) :
+theorem isGLB_iUnion_iff_of_isLUB {u : ι → α} (hs : ∀ i, IsGLB (s i) (u i)) (c : α) :
     IsGLB (Set.range u) c ↔ IsGLB (⋃ i, s i) c := by
   refine isGLB_congr ?_
-  simp_rw [range_eq_iUnion, lowerBounds_iUnion, lowerBounds_singleton, IsGLB.lowerBounds_eq (hs _)]
+  simp_rw [range_eq_iUnion, lowerBounds_iUnion, lowerBounds_singleton, (hs _).lowerBounds_eq]
