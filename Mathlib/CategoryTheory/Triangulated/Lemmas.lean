@@ -116,7 +116,7 @@ lemma HasLimit_of_transition_eventually_iso [IsCofiltered J] (X : J)
   exact Functor.Initial.hasLimit_of_comp (Over.forget X)
 
 noncomputable def Hom_of_almost_NatTrans_aux [HasLimit F] [HasLimit F']
-    (α : (X : J) → (F.obj X ⟶ F'.obj X)) {X : J} (init : (Over.forget X).Initial)
+    (α : (X : J) → (F.obj X ⟶ F'.obj X)) {X : J} [(Over.forget X).Initial]
     (nat : ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1) :
     Limits.limit F ⟶ Limits.limit F' := by
   refine (Functor.Initial.limitIso (Over.forget X) F).inv ≫ ?_ ≫
@@ -167,8 +167,8 @@ lemma Hom_of_almost_NatTrans_aux_indep_bound_aux [HasLimit F] [HasLimit F'] [IsC
     (α : (X : J) → (F.obj X ⟶ F'.obj X)) {X X' : J} (u : X ⟶ X')
     (nat : ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1)
     (nat' : ∀ ⦃Y Z : Over X'⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1) :
-    Hom_of_almost_NatTrans_aux F F' α inferInstance nat =
-    Hom_of_almost_NatTrans_aux F F' α inferInstance nat' := by
+    Hom_of_almost_NatTrans_aux F F' α nat =
+    Hom_of_almost_NatTrans_aux F F' α nat' := by
   set e₂ := Functor.Initial.limitIso (Over.forget X') F
   set e'₂ := Functor.Initial.limitIso (Over.forget X') F'
   set e₁ := Functor.Initial.limitIso (Over.forget X) F
@@ -195,80 +195,93 @@ lemma Hom_of_almost_NatTrans_aux_indep_bound [HasLimit F] [HasLimit F'] [IsCofil
     (α : (X : J) → (F.obj X ⟶ F'.obj X)) {X X' : J}
     (nat : ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1)
     (nat' : ∀ ⦃Y Z : Over X'⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1) :
-    Hom_of_almost_NatTrans_aux F F' α inferInstance nat =
-    Hom_of_almost_NatTrans_aux F F' α inferInstance nat' := by
+    Hom_of_almost_NatTrans_aux F F' α nat =
+    Hom_of_almost_NatTrans_aux F F' α nat' := by
   have nat'' : ∀ ⦃Y Z : Over (min X X')⦄ (u : Y ⟶ Z),
       F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1 :=
     fun _ _ u ↦ nat ((Over.map (minToLeft X X')).map u)
   rw [← Hom_of_almost_NatTrans_aux_indep_bound_aux F F' α (minToLeft X X') nat'' nat,
     Hom_of_almost_NatTrans_aux_indep_bound_aux F F' α (minToRight X X') nat'' nat']
 
-#exit
-lemma Hom_of_almost_NatTrans_aux_indep_map [HasLimit F] [HasLimit F']
-    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n))
-    (α' : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a a' : ℤ}
-    (nat : ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u)
-    (nat' : ∀ (b c : Set.Iic a') (u : b.1 ⟶ c.1), F.map u ≫ α' c.1 = α' b.1 ≫ F'.map u)
-    (comp : ∃ a'', ∀ (b : Set.Iic a''), α b.1 = α' b.1) :
-    Hom_of_almost_NatTrans_aux F F' α a nat =
-    Hom_of_almost_NatTrans_aux F F' α' a' nat' := by
-  obtain ⟨a'', comp⟩ := comp
-  set A := min a'' (min a a')
-  have _ : ∀ (b c : Set.Iic A) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u :=
-    fun b c u ↦ nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) (le_trans (min_le_right _ _)
-    (min_le_left _ _))⟩ ⟨c.1, le_trans (Set.mem_Iic.mp c.2) (le_trans (min_le_right _ _)
-    (min_le_left _ _))⟩ u
-  rw [← Hom_of_almost_NatTrans_aux_indep_bound F F' α (a₁ := A) (le_trans (min_le_right _ _)
-    (min_le_left _ _))]
-  rw [← Hom_of_almost_NatTrans_aux_indep_bound F F' α' (a₁ := A) (le_trans (min_le_right _ _)
-    (min_le_right _ _))]
-  rw [Hom_of_almost_NatTrans_aux_ext]
-  intro b
-  exact comp ⟨b.1, by rw [Set.mem_Iic]; exact le_trans (Set.mem_Iic.mp b.2) (min_le_left _ _)⟩
+lemma Hom_of_almost_NatTrans_aux_indep_map_aux [HasLimit F] [HasLimit F']
+    (α α' : (X : J) → (F.obj X ⟶ F'.obj X)) {X : J} [(Over.forget X).Initial]
+    (nat : ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1)
+    (eq : ∀ (Y : Over X), α Y.1 = α' Y.1) :
+    Hom_of_almost_NatTrans_aux F F' α nat = Hom_of_almost_NatTrans_aux F F' α'
+    (fun Y Z u ↦ by rw [← eq Y, ← eq Z]; exact nat u) := by
+  simp only [Hom_of_almost_NatTrans_aux, Iso.cancel_iso_hom_right_assoc, Iso.cancel_iso_inv_left]
+  congr 1
+  ext
+  simp only [Functor.comp_obj, Monotone.functor_obj, eq]
 
-noncomputable def Hom_of_almost_NatTrans [HasLimit F] [HasLimit F']
-    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n))
-    (nat : ∃ a, ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
+open IsCofiltered in
+lemma Hom_of_almost_NatTrans_aux_indep_map [HasLimit F] [HasLimit F'] [IsCofiltered J]
+    (α α' : (X : J) → (F.obj X ⟶ F'.obj X)) {X X' : J}
+    (nat : ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1)
+    (nat' : ∀ ⦃Y Z : Over X'⦄ (u : Y ⟶ Z), F.map u.1 ≫ α' Z.1 = α' Y.1 ≫ F'.map u.1)
+    (eq : ∃ (X'' : J), ∀ (Y : Over X''), α Y.1 = α' Y.1) :
+    Hom_of_almost_NatTrans_aux F F' α nat =
+    Hom_of_almost_NatTrans_aux F F' α' nat' := by
+  obtain ⟨X'', eq⟩ := eq
+  set A := min X'' (min X X')
+  have nat₁'' : ∀ ⦃Y Z : Over A⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1 :=
+    fun Y Z u ↦ nat (Over.homMk u.1 : Over.mk (Y.hom ≫ minToRight _ _ ≫ minToLeft _ _) ⟶
+      Over.mk (Z.hom ≫ minToRight _ _ ≫ minToLeft _ _))
+  have nat₂'' : ∀ ⦃Y Z : Over A⦄ (u : Y ⟶ Z), F.map u.1 ≫ α' Z.1 = α' Y.1 ≫ F'.map u.1 :=
+    fun Y Z u ↦ nat' (Over.homMk u.1 : Over.mk (Y.hom ≫ minToRight _ _ ≫ minToRight _ _) ⟶
+      Over.mk (Z.hom ≫ minToRight _ _ ≫ minToRight _ _))
+  rw [Hom_of_almost_NatTrans_aux_indep_bound F F' α nat nat₁'',
+    Hom_of_almost_NatTrans_aux_indep_bound F F' α' nat' nat₂'']
+  rw [Hom_of_almost_NatTrans_aux_indep_map_aux F F' α α' nat₁''
+    (fun Y ↦ eq (Over.mk (Y.hom ≫ minToLeft _ _)))]
+
+noncomputable def Hom_of_almost_NatTrans [HasLimit F] [HasLimit F'] [IsCofiltered J]
+    (α : (X : J) → (F.obj X ⟶ F'.obj X))
+    (nat : ∃ (X : J), ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1) :
     Limits.limit F ⟶ Limits.limit F' :=
-  Hom_of_almost_NatTrans_aux F F' α nat.choose nat.choose_spec
+  Hom_of_almost_NatTrans_aux F F' α nat.choose_spec
 
-lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
-    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) (α' : (n : ℤ) → (F.obj n ⟶ F'.obj n))
-    (nat : ∃ a, ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u)
-    (nat' : ∃ a', ∀ (b c : Set.Iic a') (u : b.1 ⟶ c.1), F.map u ≫ α' c.1 = α' b.1 ≫ F'.map u)
-    (compat : ∃ a, ∀ (b : Set.Iic a), α b.1 = α' b.1) :
+lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F'] [IsCofiltered J]
+    (α α' : (X : J) → (F.obj X ⟶ F'.obj X))
+    (nat : ∃ (X : J), ∀ ⦃Y Z : Over X⦄ (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F'.map u.1)
+    (nat' : ∃ (X' : J), ∀ ⦃Y Z : Over X'⦄ (u : Y ⟶ Z), F.map u.1 ≫ α' Z.1 = α' Y.1 ≫ F'.map u.1)
+    (eq : ∃ (X'' : J), ∀ (Y : Over X''), α Y.1 = α' Y.1) :
     Hom_of_almost_NatTrans F F' α nat = Hom_of_almost_NatTrans F F' α' nat' := by
   simp only [Hom_of_almost_NatTrans]
   rw [Hom_of_almost_NatTrans_aux_indep_map]
-  exact compat
+  exact eq
 
-lemma almost_id_almost_natTrans (α : (n : ℤ) → (F.obj n ⟶ F.obj n))
-    (isId : ∃ (a : ℤ), ∀ (b : Set.Iic a), α b.1 = 𝟙 (F.obj b)) :
-    ∃ a, ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F.map u := by
+lemma almost_id_almost_natTrans (α : (X : J) → (F.obj X ⟶ F.obj X))
+    (isId : ∃ (X : J), ∀ (Y : Over X), α Y.1 = 𝟙 (F.obj Y.1)) :
+    ∃ (X : J), ∀ (Y Z : Over X) (u : Y ⟶ Z), F.map u.1 ≫ α Z.1 = α Y.1 ≫ F.map u.1 := by
   use isId.choose
-  intro b c u
-  rw [isId.choose_spec b, isId.choose_spec c]
+  intro Y Z _
+  rw [isId.choose_spec Y, isId.choose_spec Z]
   simp
 
-lemma Hom_of_almost_NatTrans_id [HasLimit F] (α : (n : ℤ) → (F.obj n ⟶ F.obj n))
-    (isId : ∃ (a : ℤ), ∀ (b : Set.Iic a), α b.1 = 𝟙 (F.obj b)) :
-    Hom_of_almost_NatTrans F F α (almost_id_almost_natTrans F α isId) = 𝟙 (limit F)
-    := by
-  simp only [Hom_of_almost_NatTrans]
-  set a := min isId.choose (almost_id_almost_natTrans F α isId).choose
-  have := Initial_inclusion_Iic a
-  rw [← Hom_of_almost_NatTrans_aux_indep_bound F F α (a₁ := a) (min_le_right _ _)]
-  simp only [Hom_of_almost_NatTrans_aux]
-  rw [← cancel_mono (Functor.Initial.limitIso (Inclusion_Iic a) F).inv]
+open IsCofiltered in
+lemma Hom_of_almost_NatTrans_id [HasLimit F] [IsCofiltered J]
+    (α : (X : J) → (F.obj X ⟶ F.obj X)) (isId : ∃ (X : J), ∀ (Y : Over X), α Y.1 = 𝟙 (F.obj Y.1)) :
+    Hom_of_almost_NatTrans F F α (almost_id_almost_natTrans F α isId) = 𝟙 (limit F) := by
+  dsimp [Hom_of_almost_NatTrans]
+  set nat : ∀ ⦃Y Z : Over isId.choose⦄ (u : Y ⟶ Z), F.map u.left ≫ α Z.left =
+      α Y.left ≫ F.map u.left :=
+    fun Y Z _ ↦ by rw [isId.choose_spec Y, isId.choose_spec Z, id_comp, comp_id]
+  rw [Hom_of_almost_NatTrans_aux_indep_bound F F α
+    (almost_id_almost_natTrans F α isId).choose_spec nat,
+    Hom_of_almost_NatTrans_aux_indep_map_aux F F α (fun X ↦ 𝟙 _) nat isId.choose_spec]
+  dsimp [Hom_of_almost_NatTrans_aux]
+  rw [← cancel_mono (Functor.Initial.limitIso (Over.forget isId.choose) F).inv]
   simp only [assoc, Iso.hom_inv_id, comp_id, id_comp]
-  ext j
+  ext
   erw [limit.pre_π]
-  simp only [Functor.comp_obj, Monotone.functor_obj, assoc, limMap_π]
-  erw [← assoc, limit.pre_π]
-  rw [isId.choose_spec ⟨j.1, Set.mem_Iic.mpr (le_trans j.2 (min_le_left _ _))⟩]
-  simp
+  simp only [Functor.comp_obj, Over.forget_obj, assoc, limMap_π, comp_id]
+  erw [limit.pre_π]
+  simp only [Over.forget_obj]
 
-variable (F'' : ℤ ⥤ C)
+#exit
+
+variable (F'' : J ⥤ C)
 
 lemma comp_almost_natTrans (α : (n : ℤ) → (F.obj n ⟶ F'.obj n))
     (β : (n : ℤ) → (F'.obj n ⟶ F''.obj n))
