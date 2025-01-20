@@ -18,8 +18,8 @@ open Order
 variable {X : Type*} [CompleteLattice X]
 
 /--
-The Type of Nuclei on a Frame. A Nucleus is a function between Frames which corresponds to a
-sublocle. It is idempotent, increasing and preserves infima.
+A Nucleus is a function between Frames which corresponds to a sublocle. It is idempotent,
+increasing and preserves infima.
 -/
 structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   /-- A Nucleus is idempotent.-/
