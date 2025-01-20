@@ -353,7 +353,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
-    refine hasDerivAt_ofReal_cpow (ne_of_mem_of_not_mem hx hab) ?_
+    refine hasDerivAt_ofReal_cpow_const' (ne_of_mem_of_not_mem hx hab) ?_
     contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
   replace h : -1 < r.re := by tauto
   suffices ∀ c : ℝ, (∫ x : ℝ in (0)..c, (x : ℂ) ^ r) =
@@ -365,7 +365,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   apply integral_eq_sub_of_hasDeriv_right
   · refine ((Complex.continuous_ofReal_cpow_const ?_).div_const _).continuousOn
     rwa [Complex.add_re, Complex.one_re, ← neg_lt_iff_pos_add]
-  · refine fun x hx => (hasDerivAt_ofReal_cpow ?_ ?_).hasDerivWithinAt
+  · refine fun x hx => (hasDerivAt_ofReal_cpow_const' ?_ ?_).hasDerivWithinAt
     · rcases le_total c 0 with (hc | hc)
       · rw [max_eq_left hc] at hx; exact hx.2.ne
       · rw [min_eq_left hc] at hx; exact hx.1.ne'

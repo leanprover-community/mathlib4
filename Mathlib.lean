@@ -1021,6 +1021,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
+import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 import Mathlib.AlgebraicGeometry.Morphisms.Integral
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
@@ -2013,6 +2014,7 @@ import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.HomEquiv
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Predicate
@@ -2383,6 +2385,7 @@ import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Halting
 import Mathlib.Computability.Language
+import Mathlib.Computability.MyhillNerode
 import Mathlib.Computability.NFA
 import Mathlib.Computability.Partrec
 import Mathlib.Computability.PartrecCode

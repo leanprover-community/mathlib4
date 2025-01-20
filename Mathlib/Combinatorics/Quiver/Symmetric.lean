@@ -160,7 +160,7 @@ variable {V' : Type*} [Quiver.{v' + 1} V']
 def lift [HasReverse V'] (φ : Prefunctor V V') :
     Prefunctor (Symmetrify V) V' where
   obj := φ.obj
-  map f := match f with
+  map
   | Sum.inl g => φ.map g
   | Sum.inr g => reverse (φ.map g)
 
