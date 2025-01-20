@@ -140,6 +140,10 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X 
       Quiver.Hom.unop_op]
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
 
+/-- Further truncating `X` above `m` does not change the `m`-spine. -/
+lemma trunc_spine (j m : ℕ) (h : m ≤ j + 1 := by leq) (hn : j ≤ n := by leq) :
+    ((trunc (n + 1) (j + 1)).obj X).spine m = X.spine m := rfl
+
 lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁)
     (a : ℕ) (ha : a ≤ n + 1 := by leq) (φ : [a]ₙ₊₁ ⟶ [m]ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a ha (X.map φ.op Δ)).vertex i =
@@ -209,6 +213,10 @@ lemma spine_vertex {n : ℕ} (Δ : X _[n]) (i : Fin (n + 1)) :
 
 lemma spine_arrow {n : ℕ} (Δ : X _[n]) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ := rfl
+
+/-- For `m ≤ n + 1`, the `m`-spine of `X` factors through the `n + 1`-truncation. -/
+lemma truncation_spine (n m : ℕ) (h : m ≤ n + 1 := by leq) :
+    ((truncation (n + 1)).obj X).spine m = X.spine m := rfl
 
 lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
     (i : Fin (m + 1)) :

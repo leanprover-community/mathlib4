@@ -85,12 +85,14 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       | zero => contradiction
       | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
     rw [spine_δ_arrow_eq _ _ heq, hi]
-    change X.map _ ((sx (n + 2)).spineToSimplex 2 _
-      (((truncation (n + 3)).obj X).spine 2 (by leq) _)) = _
-    rw [(sx (n + 2)).spineToSimplex_spine_apply 2]
-    dsimp only [inclusion, Functor.op_obj, fullSubcategoryInclusion.obj,
-      Functor.op_map, Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
-    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
+    dsimp only [Truncated.StrictSegal.spineToDiagonal, Function.comp_apply]
+    rw [← truncation_spine X (n + 2) 2, (sx _).spineToSimplex_spine_apply 2]
+    dsimp only [truncation, SimplicialObject.truncation, inclusion,
+      whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
+      fullSubcategoryInclusion.obj, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
+    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality,
+      types_comp_apply]
     apply congr_arg
     dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, horn.face_coe,
