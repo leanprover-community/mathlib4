@@ -39,9 +39,7 @@ and `R`-algebra isomorphisms.
 -/
 structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
-    [Algebra R B] extends A ≃ₐ[R] B where
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+    [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B where
 
 @[inherit_doc]
 notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
@@ -52,10 +50,9 @@ notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
   extend `ContinuousAlgEquiv`.
 -/
 class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
-    [Semiring A][TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
-    [Algebra R B] [EquivLike F A B] extends AlgEquivClass F R A B : Prop where
-  map_continuous : ∀ (f : F), Continuous f
-  inv_continuous : ∀ (f : F), Continuous (EquivLike.inv f)
+    [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B]
+    [Algebra R A] [Algebra R B] [EquivLike F A B]
+    extends AlgEquivClass F R A B, HomeomorphClass F A B : Prop where
 
 namespace ContinuousAlgEquiv
 
@@ -111,12 +108,6 @@ theorem coe_injective : Function.Injective ((↑) : (A ≃A[R] B) → A →A[R] 
 @[simp]
 theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
   coe_injective.eq_iff
-
-/-- The natural map taking a homeomorphism which is also an R-algebra isomorphism
-to the underlying homeomorphism. -/
-def toHomeomorph (e : A ≃A[R] B) : A ≃ₜ B where
-  __ := e
-  toEquiv := e.toAlgEquiv.toEquiv
 
 @[simp]
 theorem coe_toHomeomorph (e : A ≃A[R] B) : ⇑e.toHomeomorph = e := rfl
