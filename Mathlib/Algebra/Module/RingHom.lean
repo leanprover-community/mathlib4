@@ -55,7 +55,9 @@ variable {R} (M)
 
 See note [reducible non-instances]. -/
 abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
-  { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
+  reduceProj% zeta%
+  { delta% MulActionWithZero.compHom M f.toMonoidWithZeroHom,
+    delta% DistribMulAction.compHom M (f : S →* R) with
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
