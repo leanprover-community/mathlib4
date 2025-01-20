@@ -267,7 +267,7 @@ private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
   | [] => 0
   | x :: l =>
     let a' := Ordinal.toNimber ((Ordinal.enumIsoToType a.toOrdinal).symm x)
-    invAux a' * (1 + (a + a') * (toNimber l))
+    invAux a' * (1 + (a + a') * toNimber l)
 
 instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
