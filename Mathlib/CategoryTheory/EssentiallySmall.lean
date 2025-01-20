@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Logic.UnivLE
 import Mathlib.Logic.Small.Basic
@@ -189,7 +190,7 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
-  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
+  (Equivalence.induced _).symm
 
 end Shrink
 
