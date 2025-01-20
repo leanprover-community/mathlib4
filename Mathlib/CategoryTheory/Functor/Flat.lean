@@ -142,6 +142,10 @@ instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [Represe
     RepresentablyCoflat (F ⋙ G) :=
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
 
+instance [h : RepresentablyFlat F] : F.Final := ⟨inferInstance⟩
+
+instance [h : RepresentablyCoflat F] : F.Initial := ⟨inferInstance⟩
+
 end RepresentablyFlat
 
 section HasLimit

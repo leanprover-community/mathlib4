@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.IsConnected
 
 /-!
 # Filtered categories
@@ -962,5 +963,23 @@ attribute [local instance] IsCofiltered.nonempty in
 instance [IsCofiltered C] [IsCofiltered D] : IsCofiltered (C × D) where
 
 end Prod
+
+section Connected
+
+instance [IsFilteredOrEmpty C] : IsPreconnected C :=
+  zigzag_isPreconnected fun c₁ c₂ =>
+    .trans (.of_hom (IsFiltered.leftToMax c₁ c₂)) (.of_inv (IsFiltered.rightToMax c₁ c₂))
+
+instance [IsCofilteredOrEmpty C] : IsPreconnected C :=
+  zigzag_isPreconnected fun c₁ c₂ =>
+    .trans (.of_inv (IsCofiltered.minToLeft c₁ c₂)) (.of_hom (IsCofiltered.minToRight c₁ c₂))
+
+instance [IsFiltered C] : IsConnected C where
+  is_nonempty := IsFiltered.nonempty
+
+instance [IsCofiltered C] : IsConnected C where
+  is_nonempty := IsCofiltered.nonempty
+
+end Connected
 
 end CategoryTheory
