@@ -241,12 +241,10 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
   arrow j := ⟨standardSimplex.spineId _ |>.arrow j, by
     let edge := primitiveEdge h₀ hₙ j
     suffices (standardSimplex.spineId _).arrow j = edge.1 from this ▸ edge.2
-    simp only [edge, SimplicialObject.truncation, Truncated.inclusion, edge_coe,
-      primitiveEdge, whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
-      fullSubcategoryInclusion.obj, standardSimplex.spineId, Quiver.Hom.unop_op,
-      Truncated.spine_arrow, Functor.comp_map, Functor.op_map,
-      standardSimplex.edge, fullSubcategoryInclusion.map,
-      standardSimplex.map_apply, EmbeddingLike.apply_eq_iff_eq]
+    dsimp only [truncation, SimplicialObject.truncation, whiskeringLeft_obj_obj,
+      standardSimplex.spineId, Truncated.spine_arrow, Functor.comp_map,
+      standardSimplex.map_apply]
+    apply EmbeddingLike.apply_eq_iff_eq _ |>.mpr
     apply Hom.ext_one_left <;> rfl⟩
   arrow_src := by
     simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,

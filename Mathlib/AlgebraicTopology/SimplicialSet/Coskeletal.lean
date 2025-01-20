@@ -211,7 +211,7 @@ noncomputable def isPointwiseRightKanExtension :
 theorem isRightKanExtension (sx : StrictSegal X) :
     X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
-    (isPointwiseRightKanExtension sx)
+    sx.isPointwiseRightKanExtension
 
 /-- When `X` is `StrictSegal`, `X` is 2-coskeletal. -/
 theorem isCoskeletal (sx : StrictSegal X) :

@@ -73,10 +73,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
         X.spine 2 (σ₀.app _ triangle) := by
       ext m
-      dsimp only [truncation, SimplicialObject.truncation, inclusion,
-        whiskeringLeft_obj_obj, Functor.op_obj, fullSubcategoryInclusion.obj,
-        Truncated.spine_arrow, Functor.comp_map, Functor.op_map,
-        Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
+      dsimp only [spine_arrow]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
       apply congr_arg _ ∘ Subtype.ext
       dsimp only [standardSimplex, uliftFunctor, Functor.comp_obj,
@@ -84,7 +81,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       cases n with
       | zero => contradiction
       | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
-    rw [spine_δ_arrow_eq _ _ heq, hi]
+    rw [spine_δ_arrow_eq sx _ heq, hi]
     dsimp only [Truncated.StrictSegal.spineToDiagonal, Function.comp_apply]
     rw [← truncation_spine X (n + 2) 2, (sx _).spineToSimplex_spine_apply 2]
     dsimp only [truncation, SimplicialObject.truncation, inclusion,
