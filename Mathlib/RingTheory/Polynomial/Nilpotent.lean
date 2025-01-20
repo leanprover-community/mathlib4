@@ -119,10 +119,10 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
   refine hind P₁.natDegree ?_ ?_ (fun i hi => ?_) rfl
-  · simp_rw [← h, hdeg₂]
-  · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
+  · simp_rw [P₁, ← h, hdeg₂]
+  · simp_rw [P₁, eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
-    · simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
+    · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
     · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,

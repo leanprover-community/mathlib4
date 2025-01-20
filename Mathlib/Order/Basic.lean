@@ -79,6 +79,9 @@ theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
+theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
+  rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
+
 end Preorder
 
 section PartialOrder
@@ -289,7 +292,8 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 -- See Note [decidable namespace]
-protected theorem Decidable.le_iff_eq_or_lt [@DecidableRel α (· ≤ ·)] : a ≤ b ↔ a = b ∨ a < b :=
+protected theorem Decidable.le_iff_eq_or_lt [DecidableRel (α := α) (· ≤ ·)] :
+    a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
@@ -302,7 +306,7 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, 
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
-protected theorem Decidable.eq_iff_le_not_lt [@DecidableRel α (· ≤ ·)] :
+protected theorem Decidable.eq_iff_le_not_lt [DecidableRel (α := α) (· ≤ ·)] :
     a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
@@ -1109,11 +1113,11 @@ instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-instance decidableLE [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
-    @DecidableRel (Subtype p) (· ≤ ·) := fun a b ↦ h a b
+instance decidableLE [Preorder α] [h : DecidableRel (α := α) (· ≤ ·)] {p : α → Prop} :
+    DecidableRel (α := Subtype p) (· ≤ ·) := fun a b ↦ h a b
 
-instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
-    @DecidableRel (Subtype p) (· < ·) := fun a b ↦ h a b
+instance decidableLT [Preorder α] [h : DecidableRel (α := α) (· < ·)] {p : α → Prop} :
+    DecidableRel (α := Subtype p) (· < ·) := fun a b ↦ h a b
 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
@@ -1256,8 +1260,8 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
       obtain ⟨c, ha, hb⟩ := exists_between hi
       exact
         ⟨Function.update a i c,
-          ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_same]⟩,
-          update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_same]⟩⟩
+          ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_self]⟩,
+          update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_self]⟩⟩
 
 theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
@@ -1278,6 +1282,13 @@ theorem le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂
 theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
     (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
   (le_of_forall_ge_of_dense h₂).antisymm h₁
+
+theorem forall_lt_le_iff [LinearOrder α] [DenselyOrdered α] {a b : α} : (∀ c < a, c ≤ b) ↔ a ≤ b :=
+  ⟨le_of_forall_ge_of_dense, fun hab _c hca ↦ hca.le.trans hab⟩
+
+theorem forall_gt_ge_iff [LinearOrder α] [DenselyOrdered α] {a b : α} :
+    (∀ c, a < c → b ≤ c) ↔ b ≤ a :=
+  forall_lt_le_iff (α := αᵒᵈ)
 
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=
@@ -1366,41 +1377,3 @@ noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
   decidableLE := Classical.decRel _
-
-section dite
-variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
-
-@[to_additive dite_nonneg]
-lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-@[to_additive]
-lemma dite_le_one [LE α] (ha : ∀ h, a h ≤ 1) (hb : ∀ h, b h ≤ 1) : dite p a b ≤ 1 := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-@[to_additive dite_pos]
-lemma one_lt_dite [LT α] (ha : ∀ h, 1 < a h) (hb : ∀ h, 1 < b h) : 1 < dite p a b := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-@[to_additive]
-lemma dite_lt_one [LT α] (ha : ∀ h, a h < 1) (hb : ∀ h, b h < 1) : dite p a b < 1 := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-end dite
-
-section
-variable [One α] {p : Prop} [Decidable p] {a b : α}
-
-@[to_additive ite_nonneg]
-lemma one_le_ite [LE α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ ite p a b := by split <;> assumption
-
-@[to_additive]
-lemma ite_le_one [LE α] (ha : a ≤ 1) (hb : b ≤ 1) : ite p a b ≤ 1 := by split <;> assumption
-
-@[to_additive ite_pos]
-lemma one_lt_ite [LT α] (ha : 1 < a) (hb : 1 < b) : 1 < ite p a b := by split <;> assumption
-
-@[to_additive]
-lemma ite_lt_one [LT α] (ha : a < 1) (hb : b < 1) : ite p a b < 1 := by split <;> assumption
-
-end
