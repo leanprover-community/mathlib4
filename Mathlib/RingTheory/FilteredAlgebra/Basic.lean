@@ -3,7 +3,9 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Group.Submonoid.Defs
 /-!
 # The filtration on abelian group and ring
 
@@ -12,19 +14,25 @@ and extend it to get the filtration on ring.
 
 # Main definitions
 
-* `IsFiltration`
+* `IsFiltration` : For `σ` satisfying `SetLike σ A`, an increasing series of `F` in `σ`
+is filtration if there is another series `F_lt` equal to the supremum of `F` with smaller index
 
-* `IsRingFiltration`
+* `IsRingFiltration` : For `σ` satisfying `SetLike σ R` where `R` is a semiring,
+an increasing series `F` in `σ` is ring filtration if `IsFiltration F F_lt` and
+the pointwise multiplication of `F i` and `F j` is in `F (i + j)`
 
-* `IsModuleFiltration`
+* `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM`
+satisfying `SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
+module filtration if `IsFiltration F F_lt` and the pointwise scalar multiplication of
+`F i` and `FM j` is in `F (i +ᵥ j)`
 
 -/
 variable {ι : Type*} [OrderedAddCommMonoid ι]
 
 variable {A : Type*} {σ : Type*} [SetLike σ A]
 
-/--For `σ` satisfy `[SetLike σ A]`, an increasing series of `F` in `σ` where is filtration if
-there is another series `F_lt` equal to the supremum of `F` with smaller index.-/
+/--For `σ` satisfying `SetLike σ A`, an increasing series of `F` in `σ` is filtration if
+there is another series `F_lt` equal to the supremum of `F` with smaller index-/
 class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
   mono {i j} : i ≤ j → F i ≤ F j
   is_le {i j} : i < j → F i ≤ F_lt j
@@ -45,7 +53,7 @@ section FilteredRing
 
 variable {R : Type*} [Semiring R] {σ : Type*} [SetLike σ R]
 
-/--For `σ` satisfy `[SetLike σ R]` where `R` is a semiring, an increasing series `F` in `σ` is ring
+/--For `σ` satisfying `SetLike σ R` where `R` is a semiring, an increasing series `F` in `σ` is ring
 filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j` is in
 `F (i + j)`-/
 class IsRingFiltration (F : ι → σ) (F_lt : outParam <| ι → σ)
@@ -86,7 +94,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M] {ιM : Type*} [OrderedAddCom
 /-The index set `ιM` for the module can be more general, however usually we take `ιM = ι`-/
 
 /--For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` satisfying
- `[SetLike σ M]` where `M` is a module over `R`, an increasing series `FM` in `σM` is
+ `SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
 module filtration if `IsFiltration F F_lt` and the pointwise scalar multiplication of
 `F i` and `FM j` is in `F (i +ᵥ j)`-/
 class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [isfil : IsRingFiltration F F_lt]
