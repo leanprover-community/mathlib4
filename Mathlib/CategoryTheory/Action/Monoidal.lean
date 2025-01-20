@@ -252,7 +252,7 @@ noncomputable def diagonalSuccIsoTensorTrivial :
     ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ Action.trivial G (Fin n → G)
   | 0 =>
     diagonalOneIsoLeftRegular G ≪≫
-      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.equivOfUnique PUnit _).toIso)
+      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)
   | n + 1 =>
     diagonalSuccIsoTensorDiagonal _ _ ≪≫
       tensorIso (Iso.refl _) (diagonalSuccIsoTensorTrivial n) ≪≫
