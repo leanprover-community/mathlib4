@@ -67,11 +67,12 @@ theorem comp_map {β γ : Type*} (f : α → β) (g : β → γ) (t : Tree α) :
   | nil => rw [map, map, map]
   | node v l r hl hr => rw [map, map, map, hl, hr, Function.comp_apply]
 
-theorem id_traverse (t : Tree α) : t.traverse (pure : α → Id α) = t := by
+theorem traverse_pure (t : Tree α) {m : Type u → Type*} [Applicative m] [LawfulApplicative m] :
+    t.traverse (pure : α → m α) = pure t := by
   induction t with
-  | nil => rw [traverse, Id.pure_eq nil]
+  | nil => rw [traverse]
   | node v l r hl hr =>
-    rw [traverse, hl, hr, map_pure, pure_seq, Id.map_eq, seq_eq_bind, Id.bind_eq,Id.map_eq]
+    rw [traverse, hl, hr, map_pure, pure_seq, seq_pure, map_pure, map_pure]
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]
