@@ -748,7 +748,7 @@ section copy
 
 /-- create a copy of `M : Matroid α` with independence and base predicates and ground set defeq
 to supplied arguments that are provably equal to those of `M`. -/
-@[simps] def copyBaseIndep (M : Matroid α) (E : Set α) (Base Indep : Set α → Prop)
+@[simps] def copy (M : Matroid α) (E : Set α) (Base Indep : Set α → Prop)
     (hE : E = M.E) (hB : ∀ B, Base B ↔ M.Base B) (hI : ∀ I, Indep I ↔ M.Indep I) : Matroid α where
   E := E
   Base := Base
