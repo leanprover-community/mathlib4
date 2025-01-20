@@ -771,7 +771,7 @@ to supplied arguments that are provably equal to those of `M`. -/
 to supplied arguments that are provably equal to those of `M`. -/
 @[simps!] def copyIndep (M : Matroid α) (E : Set α) (Indep : Set α → Prop)
     (hE : E = M.E) (h : ∀ I, Indep I ↔ M.Indep I) : Matroid α :=
-  M.copyBaseIndep E M.Base Indep hE (fun _ ↦ Iff.rfl) h
+  M.copy E M.Base Indep hE (fun _ ↦ Iff.rfl) h
 
 /-- create a copy of `M : Matroid α` with a base predicate and ground set defeq
 to supplied arguments that are provably equal to those of `M`. -/
