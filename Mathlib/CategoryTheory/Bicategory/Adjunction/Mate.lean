@@ -127,7 +127,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r�
 
 /-- Squares between left adjoints can be composed "vertically" by pasting. -/
 def leftAdjointSquare.vcomp (α : g₁ ≫ l₂ ⟶ l₁ ≫ h₁) (β : g₂ ≫ l₃ ⟶ l₂ ≫ h₂) :
-    (g₁ ≫ g₂) ≫ l₃ ⟶ l₁ ≫ h₁ ≫ h₂ :=
+    (g₁ ≫ g₂) ≫ l₃ ⟶ l₁ ≫ (h₁ ≫ h₂) :=
   (α_ _ _ _).hom ≫ g₁ ◁ β ≫ (α_ _ _ _).inv ≫ α ▷ h₂ ≫ (α_ _ _ _).hom
 
 /-- Squares between right adjoints can be composed "vertically" by pasting. -/
@@ -185,7 +185,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r�
 /-- Squares between left adjoints can be composed "horizontally" by pasting. -/
 def leftAdjointSquare.hcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : h ≫ l₄ ⟶ l₃ ≫ k) :
     g ≫ (l₂ ≫ l₄) ⟶ (l₁ ≫ l₃) ≫ k :=
-  (α_ _ _ _).inv ≫ (α ▷ l₄) ≫ (α_ _ _ _).hom ≫ (l₁ ◁ β) ≫ (α_ _ _ _).inv
+  (α_ _ _ _).inv ≫ α ▷ l₄ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β ≫ (α_ _ _ _).inv
 
 /-- Squares between right adjoints can be composed "horizontally" by pasting. -/
 def rightAdjointSquare.hcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₃ ≫ h ⟶ k ≫ r₄) :
