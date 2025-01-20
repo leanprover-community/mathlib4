@@ -242,8 +242,7 @@ lemma isBigO_abs_complexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X 
       refine abs_complexMGF_add_sub_sum_le ?_ ?_ (hy.trans_le (le_abs_self _)) n
       · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
       · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
-    · refine isOpen_lt ?_ (by fun_prop)
-      exact Complex.continuous_abs -- fun_prop fails
+    · exact isOpen_lt (by fun_prop) (by fun_prop)
   _ =O[𝓝 0] fun ε ↦ (abs ε) ^ n * 1 := by
     refine Asymptotics.IsBigO.mul (Asymptotics.isBigO_refl _ _) ?_
     refine Tendsto.isBigO_one _ (c := μ[fun ω ↦ |X ω| ^ n * rexp (z.re * X ω)]) ?_
