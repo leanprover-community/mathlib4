@@ -104,9 +104,6 @@ def decidableLTOfDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRe
       else isTrue <| lt_of_le_not_le hab hba
     else isFalse fun hab' => hab (le_of_lt hab')
 
-lemma not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
-  rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
-
 end Preorder
 
 section PartialOrder
