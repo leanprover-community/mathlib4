@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.CompleteLattice
-import Mathlib.Tactic.ApplyFun
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -13,6 +12,9 @@ Locales are the dual concept to Frames.
 A Nucleus is a function between Frames which corresponds to a sublocale.
 https://ncatlab.org/nlab/show/nucleus
 -/
+
+open Order
+
 variable {X : Type*} [CompleteLattice X]
 
 /--
@@ -47,14 +49,6 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
   /-- A Nucleus is increasing.-/
   increasing (x : X) (f : F) : x ≤ f x
 
-instance (F X : Type*) [SemilatticeInf X] [FunLike F X X] [n : NucleusClass F X]
-  : OrderHomClass F X X where
-  map_rel := fun f a b h => by
-    have h1 : a ⊓ b = a := inf_eq_left.mpr h
-    have h2 := n.map_inf f a b
-    rw [h1] at h2
-    exact left_eq_inf.mp h2
-
 lemma Nucleus.coe_eq_toFun (n : Nucleus X) {x : X} : n x = n.toFun x := by rfl
 
 instance : NucleusClass (Nucleus X) X where
@@ -69,13 +63,11 @@ We can proove that two Nuclei are equal by showing that their functions are the 
 lemma Nucleus.ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
   DFunLike.ext n m h
 
-
 /--
 A Nucleus preserves ⊤
 -/
 lemma nucleus_preserves_top (n : Nucleus X) : n.toFun ⊤ = ⊤ :=
    top_le_iff.mp (n.increasing' ⊤)
-
 
 instance : LE (Nucleus X) where
   le x y := ∀ v : X, x.toFun v ≤ y.toFun v
