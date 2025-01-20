@@ -140,6 +140,26 @@ lemma nnnorm_cfc_lt_iff (f : 𝕜 → 𝕜) (a : A) {c : ℝ≥0} (hc : 0 < c)
     (ha : p a := by cfc_tac) : ‖cfc f a‖₊ < c ↔ ∀ x ∈ σ 𝕜 a, ‖f x‖₊ < c :=
   norm_cfc_lt_iff f a hc
 
+namespace IsometricContinuousFunctionalCalculus
+
+lemma isGreatest_norm_spectrum [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
+    IsGreatest ((‖·‖) '' spectrum 𝕜 a) ‖a‖ := by
+  simpa only [cfc_id 𝕜 a] using IsGreatest.norm_cfc (id : 𝕜 → 𝕜) a
+
+lemma norm_spectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a) (ha : p a := by cfc_tac) :
+    ‖x‖ ≤ ‖a‖ := by
+  simpa only [cfc_id 𝕜 a] using norm_apply_le_norm_cfc (id : 𝕜 → 𝕜) a hx
+
+lemma isGreatest_nnnorm_spectrum [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
+    IsGreatest ((‖·‖₊) '' spectrum 𝕜 a) ‖a‖₊ := by
+  simpa only [cfc_id 𝕜 a] using IsGreatest.nnnorm_cfc (id : 𝕜 → 𝕜) a
+
+lemma nnnorm_spectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a) (ha : p a := by cfc_tac) :
+    ‖x‖₊ ≤ ‖a‖₊ := by
+  simpa only [cfc_id 𝕜 a] using nnnorm_apply_le_nnnorm_cfc (id : 𝕜 → 𝕜) a hx
+
+end IsometricContinuousFunctionalCalculus
+
 end NormedRing
 
 namespace SpectrumRestricts
@@ -307,6 +327,26 @@ lemma nnnorm_cfcₙ_lt_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (ha : p a := by cfc_tac) : ‖cfcₙ f a‖₊ < c ↔ ∀ x ∈ σₙ 𝕜 a, ‖f x‖₊ < c :=
   norm_cfcₙ_lt_iff f a c.1 hf hf₀ ha
 
+namespace NonUnitalIsometricContinuousFunctionalCalculus
+
+lemma isGreatest_norm_quasispectrum (a : A) (ha : p a := by cfc_tac) :
+    IsGreatest ((‖·‖) '' σₙ 𝕜 a) ‖a‖ := by
+  simpa only [cfcₙ_id 𝕜 a] using IsGreatest.norm_cfcₙ (id : 𝕜 → 𝕜) a
+
+lemma norm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (ha : p a := by cfc_tac) :
+    ‖x‖ ≤ ‖a‖ := by
+  simpa only [cfcₙ_id 𝕜 a] using norm_apply_le_norm_cfcₙ (id : 𝕜 → 𝕜) a hx
+
+lemma isGreatest_nnnorm_quasispectrum (a : A) (ha : p a := by cfc_tac) :
+    IsGreatest ((‖·‖₊) '' σₙ 𝕜 a) ‖a‖₊ := by
+  simpa only [cfcₙ_id 𝕜 a] using IsGreatest.nnnorm_cfcₙ (id : 𝕜 → 𝕜) a
+
+lemma nnnorm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (ha : p a := by cfc_tac) :
+    ‖x‖₊ ≤ ‖a‖₊ := by
+  simpa only [cfcₙ_id 𝕜 a] using nnnorm_apply_le_nnnorm_cfcₙ (id : 𝕜 → 𝕜) a hx
+
+end NonUnitalIsometricContinuousFunctionalCalculus
+
 end NormedRing
 
 namespace QuasispectrumRestricts
@@ -457,6 +497,24 @@ lemma nnnorm_cfc_nnreal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) {c : ℝ≥0} (
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ < c ↔ ∀ x ∈ σ ℝ≥0 a, f x < c :=
   ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnreal f a hx hf ha |>.trans_lt h, nnnorm_cfc_nnreal_lt hc⟩
 
+namespace IsometricContinuousFunctionalCalculus
+
+lemma isGreatest_spectrum [Nontrivial A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    IsGreatest (σ ℝ≥0 a) ‖a‖₊ := by
+  simpa [cfc_id ℝ≥0 a] using IsGreatest.nnnorm_cfc_nnreal id a
+
+lemma spectrum_le (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a) (ha : 0 ≤ a := by cfc_tac) :
+    x ≤ ‖a‖₊ := by
+  simpa [cfc_id ℝ≥0 a] using apply_le_nnnorm_cfc_nnreal id a hx
+
+end IsometricContinuousFunctionalCalculus
+
+open IsometricContinuousFunctionalCalculus in
+lemma MonotoneOn.nnnorm_cfc [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
+    (hf : MonotoneOn f (σ ℝ≥0 a)) (hf₂ : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac)
+    (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ = f ‖a‖₊ :=
+  IsGreatest.nnnorm_cfc_nnreal f a |>.unique <| hf.map_isGreatest (isGreatest_spectrum a)
+
 end Unital
 
 section NonUnital
@@ -510,6 +568,25 @@ lemma nnnorm_cfcₙ_nnreal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfcₙ f a‖₊ < c ↔ ∀ x ∈ σₙ ℝ≥0 a, f x < c :=
   ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnreal f a hx hf hf₀ ha |>.trans_lt h, nnnorm_cfcₙ_nnreal_lt⟩
+
+namespace NonUnitalIsometricContinuousFunctionalCalculus
+
+lemma isGreatest_quasispectrum (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    IsGreatest (σₙ ℝ≥0 a) ‖a‖₊ := by
+  simpa [cfcₙ_id ℝ≥0 a] using IsGreatest.nnnorm_cfcₙ_nnreal id a
+
+lemma quasispectrum_le (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a) (ha : 0 ≤ a := by cfc_tac) :
+    x ≤ ‖a‖₊ := by
+  simpa [cfcₙ_id ℝ≥0 a] using apply_le_nnnorm_cfcₙ_nnreal id a hx
+
+end NonUnitalIsometricContinuousFunctionalCalculus
+
+open NonUnitalIsometricContinuousFunctionalCalculus in
+lemma MonotoneOn.nnnorm_cfcₙ (f : ℝ≥0 → ℝ≥0) (a : A)
+    (hf : MonotoneOn f (σₙ ℝ≥0 a)) (hf₂ : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac)
+    (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : 0 ≤ a := by cfc_tac) :
+    ‖cfcₙ f a‖₊ = f ‖a‖₊ :=
+  IsGreatest.nnnorm_cfcₙ_nnreal f a |>.unique <| hf.map_isGreatest (isGreatest_quasispectrum a)
 
 end NonUnital
 
