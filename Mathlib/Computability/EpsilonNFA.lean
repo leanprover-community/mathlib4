@@ -152,16 +152,13 @@ inductive IsPath : σ → σ → List (Option α) → Prop
       t ∈ M.step s a → IsPath t u x → IsPath s u (a :: x)
 
 theorem IsPath.eq_of_nil {s t : σ} : M.IsPath s t [] → s = t := by
-  intro h
-  cases h
+  rintro ⟨⟩
   rfl
 
 @[simp]
 theorem isPath_singleton {s t : σ} {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
   mp := by
-    rintro (_ | ⟨_, _, _, _, _, _, h⟩)
-    apply IsPath.eq_of_nil at h
-    subst t
+    rintro (_ | ⟨_, _, _, _, _, _, ⟨⟩⟩)
     assumption
   mpr := by tauto
 
