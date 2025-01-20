@@ -76,7 +76,8 @@ noncomputable def krullDim (α : Type*) [Preorder α] : WithBot ℕ∞ :=
 
 /--
 The **height** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and ending below or at `a`.
+relation series of `α` ordered by `<` and ending below or at `a`. In other words, it is
+the largest `n` such that there's a series `a₀ < a₁ < ... < aₙ = a`.
 -/
 noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
   ⨆ (p : LTSeries α) (_ : p.last ≤ a), p.length
