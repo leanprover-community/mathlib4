@@ -189,7 +189,7 @@ lemma corootForm_self_smul_root (i : ι) :
 
 lemma rootForm_self_sum_of_squares (x : M) :
     IsSumSq (P.RootForm x x) :=
-  P.rootForm_apply_apply x x ▸ isSumSq_sum_mul_self Finset.univ _
+  P.rootForm_apply_apply x x ▸ IsSumSq.sum_mul_self Finset.univ _
 
 lemma rootForm_root_self (j : ι) :
     P.RootForm (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by

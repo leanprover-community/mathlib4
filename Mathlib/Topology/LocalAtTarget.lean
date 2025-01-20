@@ -113,12 +113,9 @@ theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpe
 
 theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
-  -- Porting note: rewrote to avoid ´simp´ issues
-  rw [isOpen_iff_inter_of_iSup_eq_top hU s]
-  refine forall_congr' fun i => ?_
-  rw [(U _).2.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen]
-  erw [Set.image_preimage_eq_inter_range]
-  rw [Subtype.range_coe, Opens.carrier_eq_coe]
+  simp [isOpen_iff_inter_of_iSup_eq_top hU s,
+    (U _).2.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
+    Set.image_preimage_eq_inter_range]
 
 theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
@@ -195,7 +192,7 @@ To check that `f` is an embedding it suffices to check that `U i → Y` is an em
 theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     {X Y} [TopologicalSpace X] [TopologicalSpace Y]
     (f : X → Y) (h : Continuous f) {ι : Type*}
-    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U : _))
+    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U :))
     (V : ι → Type*) [∀ i, TopologicalSpace (V i)]
     (iV : ∀ i, V i → X) (hiV : ∀ i, Continuous (iV i)) (hV : ∀ i, f ⁻¹' U i ⊆ Set.range (iV i))
     (hV' : ∀ i, IsEmbedding (f ∘ iV i)) : IsEmbedding f := by
