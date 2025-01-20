@@ -142,8 +142,9 @@ namespace IndepMatroid
 @[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
-/-- If a set `I` is independent iff all its finite subsets are independent, then an `IndepMatroid`
-can be constructed without proving the maximality axiom.
+/-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if
+`Indep J` for every finite subset `J` of `I`,
+then an `IndepMatroid` can be constructed without proving the maximality axiom.
 This needs choice, since it can be used to prove that every vector space has a basis. -/
 @[simps E] protected def ofFinitary (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
