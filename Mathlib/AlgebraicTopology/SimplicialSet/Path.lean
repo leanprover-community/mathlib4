@@ -70,8 +70,8 @@ variable {X Y : SSet.Truncated.{u} 1} {n : ℕ}
 /-- Maps of 1-truncated simplicial sets induce maps of paths. -/
 @[simps]
 def map (f : Path₁ X n) (σ : X ⟶ Y) : Path₁ Y n where
-  vertex i := σ.app _ (f.vertex i)
-  arrow i := σ.app _ (f.arrow i)
+  vertex i := σ.app (op [0]₁) (f.vertex i)
+  arrow i := σ.app (op [1]₁) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
     exact congr (σ.naturality (tr (δ 1)).op) rfl |>.symm
