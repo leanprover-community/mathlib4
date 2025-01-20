@@ -18,6 +18,8 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
@@ -51,7 +53,7 @@ open HomComplex
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
-  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q  (by dsimp; omega))
+  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q (by dsimp; omega))
 
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ

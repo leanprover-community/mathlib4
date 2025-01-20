@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Nodup
 
 /-!
 # Utilities for lists of sigmas
@@ -63,7 +64,7 @@ theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, 
 
 theorem not_eq_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
-    let ⟨b, h₂⟩ := exists_of_mem_keys h₁
+    let ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
 
 /-! ### `NodupKeys` -/
@@ -118,12 +119,14 @@ protected theorem NodupKeys.nodup {l : List (Sigma β)} : NodupKeys l → Nodup 
 theorem perm_nodupKeys {l₁ l₂ : List (Sigma β)} (h : l₁ ~ l₂) : NodupKeys l₁ ↔ NodupKeys l₂ :=
   (h.map _).nodup_iff
 
-theorem nodupKeys_join {L : List (List (Sigma β))} :
-    NodupKeys (join L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
-  rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
+theorem nodupKeys_flatten {L : List (List (Sigma β))} :
+    NodupKeys (flatten L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
+  rw [nodupKeys_iff_pairwise, pairwise_flatten, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr with (l₁ l₂)
-  simp [keys, disjoint_iff_ne]
+  simp [keys, disjoint_iff_ne, Sigma.forall]
+
+@[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
 
 theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by simp [List.nodup_range]
 
@@ -217,7 +220,7 @@ theorem dlookup_map (l : List (Sigma β))
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
     {f : α → α'} (hf : Function.Injective f) (a : α) :
     (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
-  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id'']
+  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id']
 
 theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
     (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
@@ -250,7 +253,7 @@ theorem lookupAll_eq_nil {a : α} :
     by_cases h : a = a'
     · subst a'
       simp only [lookupAll_cons_eq, mem_cons, Sigma.mk.inj_iff, heq_eq_eq, true_and, not_or,
-        false_iff, not_forall, not_and, not_not]
+        false_iff, not_forall, not_and, not_not, reduceCtorEq]
       use b
       simp
     · simp [h, lookupAll_eq_nil]
@@ -345,7 +348,7 @@ theorem keys_kreplace (a : α) (b : β a) : ∀ l : List (Sigma β), (kreplace a
   lookmap_map_eq _ _ <| by
     rintro ⟨a₁, b₂⟩ ⟨a₂, b₂⟩
     dsimp
-    split_ifs with h <;> simp (config := { contextual := true }) [h]
+    split_ifs with h <;> simp +contextual [h]
 
 theorem kreplace_nodupKeys (a : α) (b : β a) {l : List (Sigma β)} :
     (kreplace a b l).NodupKeys ↔ l.NodupKeys := by simp [NodupKeys, keys_kreplace]
@@ -365,7 +368,7 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
 def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
   eraseP fun s => a = s.1
 
--- Porting note (#10618): removing @[simp], `simp` can prove it
+@[simp]
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=
   rfl
 
@@ -379,7 +382,9 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
 
 @[simp]
 theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
-  induction' l with _ _ ih <;> [rfl; (simp [not_or] at h; simp [h.1, ih h.2])]
+  induction l with
+  | nil => rfl
+  | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist _
@@ -417,11 +422,8 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
     else by simp [q, p]
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
-  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp]
-  simp only [beq_eq_decide]
+  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp_def]
   congr
-  funext
-  simp
 
 theorem kerase_kerase {a a'} {l : List (Sigma β)} :
     (kerase a' l).kerase a = (kerase a l).kerase a' := by

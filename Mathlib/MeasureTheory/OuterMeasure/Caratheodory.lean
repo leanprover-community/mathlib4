@@ -14,7 +14,8 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 
 ## Main definitions and statements
 
-* `caratheodory` is the Carathéodory-measurable space of an outer measure.
+* `MeasureTheory.OuterMeasure.caratheodory` is the Carathéodory-measurable space
+  of an outer measure.
 
 ## References
 
@@ -96,7 +97,7 @@ lemma isCaratheodory_partialSups {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodo
     m.IsCaratheodory (partialSups s i) := by
   induction i with
   | zero => exact h 0
-  | succ i hi => exact m.isCaratheodory_union hi (h (i + 1))
+  | succ i hi => exact partialSups_add_one s i ▸ m.isCaratheodory_union hi (h (i + 1))
 
 lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
     m.IsCaratheodory (disjointed s i) := by
@@ -148,7 +149,7 @@ theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : 
   simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
 
-/-- The Carathéodory-measurable sets for an outer measure `m` form a Dynkin system.  -/
+/-- The Carathéodory-measurable sets for an outer measure `m` form a Dynkin system. -/
 def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   Has := IsCaratheodory m
   has_empty := isCaratheodory_empty m

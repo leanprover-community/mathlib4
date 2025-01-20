@@ -128,7 +128,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine
     ⟨galActionHom_injective p ℂ, fun x =>
-      (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
+      (congr_arg (x ∈ ·) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
         (Subgroup.mem_top x)⟩
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]
@@ -216,6 +216,3 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
 /-- An irreducible real polynomial has natural degree at most two. -/
 lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
   natDegree_le_iff_degree_le.2 hp.degree_le_two
-
-@[deprecated (since := "2024-02-18")]
-alias Irreducible.nat_degree_le_two := Irreducible.natDegree_le_two

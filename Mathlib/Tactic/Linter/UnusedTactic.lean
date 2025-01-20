@@ -3,10 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Init
+
 import Lean.Elab.Command
-import Lean.Linter.Util
 import Batteries.Tactic.Unreachable
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # The unused tactic linter
@@ -51,7 +53,7 @@ before and after and see if there is some change.
 Yet another linter copied from the `unreachableTactic` linter!
 -/
 
-open Lean Elab
+open Lean Elab Std
 
 namespace Mathlib.Linter
 
@@ -64,35 +66,38 @@ register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (HashMap String.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
 
 /-- `Parser`s allowed to not change the tactic state.
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
-initialize allowedRef : IO.Ref (HashSet SyntaxNodeKind) ←
-  IO.mkRef <| HashSet.empty
-    |>.insert `Mathlib.Tactic.Says.says
-    |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
+initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
+  IO.mkRef <| .ofArray #[
+    `Mathlib.Tactic.Says.says,
+    `Batteries.Tactic.«tacticOn_goal-_=>_»,
     -- attempt to speed up, by ignoring more tactics
-    |>.insert `by
-    |>.insert `null
-    |>.insert `«]»
-    |>.insert ``Lean.Parser.Term.byTactic
-    |>.insert ``Lean.Parser.Tactic.tacticSeq
-    |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
-    |>.insert ``Lean.Parser.Tactic.tacticTry_
+    `by,
+    `null,
+    `«]»,
+    ``Lean.Parser.Term.byTactic,
+    ``Lean.Parser.Tactic.tacticSeq,
+    ``Lean.Parser.Tactic.tacticSeq1Indented,
+    ``Lean.Parser.Tactic.tacticTry_,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-    |>.insert ``Lean.Parser.Tactic.guardHyp
-    |>.insert ``Lean.Parser.Tactic.guardTarget
-    |>.insert ``Lean.Parser.Tactic.failIfSuccess
-    |>.insert `Mathlib.Tactic.successIfFailWithMsg
-    |>.insert `Mathlib.Tactic.failIfNoProgress
-    |>.insert `Mathlib.Tactic.ExtractGoal.extractGoal
-    |>.insert `Mathlib.Tactic.Propose.propose'
-    |>.insert `Lean.Parser.Tactic.traceState
-    |>.insert `Mathlib.Tactic.tacticMatch_target_
-    |>.insert `change?
-    |>.insert `«tactic#adaptation_note_»
+    ``Lean.Parser.Tactic.guardHyp,
+    ``Lean.Parser.Tactic.guardTarget,
+    ``Lean.Parser.Tactic.failIfSuccess,
+    `Mathlib.Tactic.successIfFailWithMsg,
+    `Mathlib.Tactic.failIfNoProgress,
+    `Mathlib.Tactic.ExtractGoal.extractGoal,
+    `Mathlib.Tactic.Propose.propose',
+    `Lean.Parser.Tactic.traceState,
+    `Mathlib.Tactic.tacticMatch_target_,
+    `change?,
+    `«tactic#adaptation_note_»,
+    `tacticSleep_heartbeats_,
+    `Mathlib.Tactic.«tacticRename_bvar_→__»
+  ]
 
 /-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
 These identifiers are then allowed by the unused tactic linter:
@@ -114,31 +119,35 @@ A list of blacklisted syntax kinds, which are expected to have subterms that con
 unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
-  IO.mkRef <| HashSet.empty
-    |>.insert `Mathlib.Tactic.Says.says
-    |>.insert ``Parser.Term.binderTactic
-    |>.insert ``Lean.Parser.Term.dynamicQuot
-    |>.insert ``Lean.Parser.Tactic.quotSeq
-    |>.insert ``Lean.Parser.Tactic.tacticStop_
-    |>.insert ``Lean.Parser.Command.notation
-    |>.insert ``Lean.Parser.Command.mixfix
-    |>.insert ``Lean.Parser.Tactic.discharger
-    |>.insert ``Lean.Parser.Tactic.Conv.conv
-    |>.insert `Batteries.Tactic.seq_focus
-    |>.insert `Mathlib.Tactic.Hint.registerHintStx
-    |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
+  IO.mkRef <| .ofArray #[
+    `Mathlib.Tactic.Says.says,
+    ``Parser.Term.binderTactic,
+    ``Lean.Parser.Term.dynamicQuot,
+    ``Lean.Parser.Tactic.quotSeq,
+    ``Lean.Parser.Tactic.tacticStop_,
+    ``Lean.Parser.Command.notation,
+    ``Lean.Parser.Command.mixfix,
+    ``Lean.Parser.Tactic.discharger,
+    ``Lean.Parser.Tactic.Conv.conv,
+    `Batteries.Tactic.seq_focus,
+    `Mathlib.Tactic.Hint.registerHintStx,
+    `Mathlib.Tactic.LinearCombination.linearCombination,
+    `Mathlib.Tactic.LinearCombination'.linearCombination',
+    `Aesop.Frontend.Parser.addRules,
+    `Aesop.Frontend.Parser.aesopTactic,
+    `Aesop.Frontend.Parser.aesopTactic?,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-    |>.insert ``Lean.Parser.Tactic.failIfSuccess
-    |>.insert `Mathlib.Tactic.successIfFailWithMsg
-    |>.insert `Mathlib.Tactic.failIfNoProgress
+    ``Lean.Parser.Tactic.failIfSuccess,
+    `Mathlib.Tactic.successIfFailWithMsg,
+    `Mathlib.Tactic.failIfNoProgress
+  ]
 
 /-- Is this a syntax kind that contains intentionally unused tactic subterms? -/
 def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
   k.components.contains `Conv ||
   "slice".isPrefixOf k.toString ||
-  match k with
-  | .str _ "quot" => true
-  | _ => ignoreTacticKinds.contains k
+  k matches .str _ "quot" ||
+  ignoreTacticKinds.contains k
 
 /--
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
@@ -161,7 +170,7 @@ variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool)
 `MetavarContext` `mctx`. -/
 def getNames (mctx : MetavarContext) : List Name :=
   let lcts := mctx.decls.toList.map (MetavarDecl.lctx ∘ Prod.snd)
-  let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).join.reduceOption
+  let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
 mutual
@@ -218,7 +227,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
-    if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
+    if stx.getKind ∈ [`Batteries.Tactic.unreachable, `Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
     Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"

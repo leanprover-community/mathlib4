@@ -28,6 +28,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
   base `B` of `M`.
 -/
 
+assert_not_exists Field
+
 open Set
 
 namespace Matroid
@@ -41,7 +43,7 @@ section dual
 @[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
   E := M.E
   Indep I := I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B
-  indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun B hB ↦ ⟨hB, empty_disjoint _⟩)⟩
+  indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun _ hB ↦ ⟨hB, empty_disjoint _⟩)⟩
   indep_subset := by
     rintro I J ⟨hJE, B, hB, hJB⟩ hIJ
     exact ⟨hIJ.trans hJE, ⟨B, hB, disjoint_of_subset_left hIJ hJB⟩⟩
@@ -149,7 +151,7 @@ theorem setOf_dual_base_eq : {B | M✶.Base B} = (fun X ↦ M.E \ X) '' {B | M.B
   rwa [← h, diff_diff_cancel_left hB'.subset_ground]
 
 @[simp] theorem dual_dual (M : Matroid α) : M✶✶ = M :=
-  eq_of_base_iff_base_forall rfl (fun B (h : B ⊆ M.E) ↦
+  ext_base rfl (fun B (h : B ⊆ M.E) ↦
     by rw [dual_base_iff, dual_base_iff, dual_ground, diff_diff_cancel_left h])
 
 theorem dual_involutive : Function.Involutive (dual : Matroid α → Matroid α) := dual_dual

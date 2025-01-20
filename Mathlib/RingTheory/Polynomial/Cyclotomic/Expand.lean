@@ -3,8 +3,8 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.Data.ZMod.Algebra
 
 /-!
 # Cyclotomic polynomials and `expand`.
@@ -167,7 +167,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,
       h, zero_pow]
-    exact Nat.sub_ne_zero_of_lt <| pow_right_strictMono hp.out.one_lt <| Nat.pred_lt hk.ne'
+    exact Nat.sub_ne_zero_of_lt <| pow_right_strictMono₀ hp.out.one_lt <| Nat.pred_lt hk.ne'
 
 end CharP
 

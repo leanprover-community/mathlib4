@@ -58,18 +58,18 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
     · rw [decide_eq_true_eq] at h
       obtain (rfl | rfl) := h
       · rw [Nat.even_add_one, ih]
-        simp only [huv.ne, imp_false, Ne, not_false_iff, true_and_iff, not_forall,
-          Classical.not_not, exists_prop, eq_self_iff_true, not_true, false_and_iff,
+        simp only [huv.ne, imp_false, Ne, not_false_iff, true_and, not_forall,
+          Classical.not_not, exists_prop, eq_self_iff_true, not_true, false_and,
           and_iff_right_iff_imp]
         rintro rfl rfl
         exact G.loopless _ huv
       · rw [Nat.even_add_one, ih, ← not_iff_not]
-        simp only [huv.ne.symm, Ne, eq_self_iff_true, not_true, false_and_iff, not_forall,
-          not_false_iff, exists_prop, and_true_iff, Classical.not_not, true_and_iff, iff_and_self]
+        simp only [huv.ne.symm, Ne, eq_self_iff_true, not_true, false_and, not_forall,
+          not_false_iff, exists_prop, and_true, Classical.not_not, true_and, iff_and_self]
         rintro rfl
         exact huv.ne
     · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne] at ih ⊢
+      simp only [h.1, h.2, not_false_iff, true_and, add_zero, Ne] at ih ⊢
       rw [ih]
       constructor <;>
         · rintro h' h'' rfl
@@ -126,7 +126,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
   rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter, ← card_incidenceFinset_eq_degree]
   change Multiset.card _ = _
   congr 1
-  convert_to _ = (ht.isTrail.edgesFinset.filter (Membership.mem x)).val
+  convert_to _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val
   have : Fintype G.edgeSet := fintypeEdgeSet ht
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 

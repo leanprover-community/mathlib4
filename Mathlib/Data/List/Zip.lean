@@ -31,7 +31,7 @@ variable {α : Type u} {β γ δ ε : Type*}
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁
-  | [], l₂ => zip_nil_right.symm
+  | [], _ => zip_nil_right.symm
   | l₁, [] => by rw [zip_nil_right]; rfl
   | a :: l₁, b :: l₂ => by
     simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
@@ -92,7 +92,7 @@ theorem zipWith3_same_right (f : α → β → β → γ) :
   | _ :: _, [] => rfl
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
 
-instance (f : α → α → β) [IsSymmOp α β f] : IsSymmOp (List α) (List β) (zipWith f) :=
+instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
   ⟨zipWith_comm_of_comm f IsSymmOp.symm_op⟩
 
 @[simp]
@@ -165,14 +165,5 @@ theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
         right
         use tl', tail
         simp_all
-
-theorem map_uncurry_zip_eq_zipWith (f : α → β → γ) (l : List α) (l' : List β) :
-    map (Function.uncurry f) (l.zip l') = zipWith f l l' := by
-  rw [zip]
-  induction' l with hd tl hl generalizing l'
-  · simp
-  · cases' l' with hd' tl'
-    · simp
-    · simp [hl]
 
 end List

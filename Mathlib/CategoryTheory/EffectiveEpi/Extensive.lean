@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 # Preserving and reflecting effective epis on extensive categories
 
-We prove that a functor between `FinitaryPreExtensive` categories preserves (resp. reflects) finite
+We prove that a functor between `FinitaryPreExtensive` categories preserves (resp. reflects) finite
 effective epi families if it preserves (resp. reflects) effective epis.
 -/
 

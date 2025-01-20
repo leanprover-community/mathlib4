@@ -162,8 +162,7 @@ end MonoidSMul
 
 section MonoidWithZero
 
-variable [MonoidWithZero R] [MonoidWithZero S] [Zero M] [MulActionWithZero R M]
-  [MulActionWithZero R S] [MulActionWithZero S M] [IsScalarTower R S M]
+variable [MonoidWithZero R] [Zero M] [MulActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=

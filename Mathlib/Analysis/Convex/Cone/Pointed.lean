@@ -186,6 +186,7 @@ def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
 theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
   rfl
 
+open scoped InnerProductSpace in
 @[simp]
 theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
   rfl

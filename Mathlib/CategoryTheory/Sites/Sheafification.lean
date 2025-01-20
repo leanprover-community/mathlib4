@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the inclusion functor from
 `A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
 
-Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
+Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
 `Mathlib.CategoryTheory.Sites.LeftExact`.
 -/
 
@@ -37,7 +37,7 @@ abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 left adjiont (sheafification).
 
 Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
-`adj : F ⊣ sheafToPresheaf J A`, use `HasSheafify.mk'` to construct a `HasSheafify` instance.
+`adj : F ⊣ sheafToPresheaf J A`, use `HasSheafify.mk'` to construct a `HasSheafify` instance.
 -/
 class HasSheafify : Prop where
   isRightAdjoint : HasWeakSheafify J A
@@ -55,7 +55,7 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
   isRightAdjoint := ⟨F, ⟨adj⟩⟩
   isLeftExact := ⟨by
     have : (sheafToPresheaf J A).IsRightAdjoint := ⟨_, ⟨adj⟩⟩
-    exact ⟨fun _ _ _ ↦ preservesLimitsOfShapeOfNatIso
+    exact ⟨fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
       (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩⟩
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
@@ -136,12 +136,13 @@ variable {D}
 
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).val, ?_, ?_⟩
-  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) : _).app ⟨P, hP⟩
+  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) :).app ⟨P, hP⟩
     rw [← sheafificationAdjunction J D |>.right_triangle]
     rfl
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
     change _ ≫ (sheafificationAdjunction J D).unit.app ((sheafToPresheaf J D).obj ⟨P, hP⟩) = _
-    erw [← (sheafificationAdjunction J D).inv_counit_map  (X := ⟨P, hP⟩), comp_inv_eq_id]
+    rw [← (sheafificationAdjunction J D).inv_counit_map (X := ⟨P, hP⟩)]
+    simp
 
 /-- If `P` is a sheaf, then `P` is isomorphic to `sheafify J P`. -/
 noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ sheafify J P :=

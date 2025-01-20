@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl
+Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
@@ -64,8 +64,8 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 -/
 def adj : free ⊣ forget AddCommGrp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X G => FreeAbelianGroup.lift.symm
-      -- Porting note (#11041): used to be just `by intros; ext; rfl`.
+    { homEquiv := fun _ _ => FreeAbelianGroup.lift.symm
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
@@ -112,18 +112,18 @@ def free : Type u ⥤ Grp where
   obj α := of (FreeGroup α)
   map := FreeGroup.map
   map_id := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
   map_comp := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
 
 /-- The free-forgetful adjunction for groups.
 -/
 def adj : free ⊣ forget Grp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X G => FreeGroup.lift.symm
-      -- Porting note (#11041): used to be just `by intros; ext1; rfl`.
+    { homEquiv := fun _ _ => FreeGroup.lift.symm
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1
@@ -153,8 +153,8 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun G A => Abelianization.lift.symm
-      -- Porting note (#11041): used to be just `by intros; ext1; rfl`.
+    { homEquiv := fun _ _ => Abelianization.lift.symm
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1
@@ -177,20 +177,18 @@ def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
-def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} where
-  homEquiv X Y :=
+def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
+  homEquiv := fun _ Y ↦
     { toFun := fun f => MonoidHom.toHomUnits f
       invFun := fun f => (Units.coeHom Y).comp f
-      left_inv := fun f => MonoidHom.ext fun _ => rfl
-      right_inv := fun f => MonoidHom.ext fun _ => Units.ext rfl }
+      left_inv := fun _ => MonoidHom.ext fun _ => rfl
+      right_inv := fun _ => MonoidHom.ext fun _ => Units.ext rfl }
   unit :=
     { app := fun X => { (@toUnits X _).toMonoidHom with }
-      naturality := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
+      naturality := fun _ _ _ => MonoidHom.ext fun _ => Units.ext rfl }
   counit :=
     { app := fun X => Units.coeHom X
-      naturality := by intros; exact MonoidHom.ext fun x => rfl }
-  homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
-  homEquiv_counit := MonoidHom.ext fun _ => rfl
+      naturality := by intros; exact MonoidHom.ext fun x => rfl } }
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
@@ -204,20 +202,19 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `CommGrp` and `CommMonCat`. -/
-def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} where
-  homEquiv X Y :=
-    { toFun := fun f => MonoidHom.toHomUnits f
-      invFun := fun f => (Units.coeHom Y).comp f
-      left_inv := fun f => MonoidHom.ext fun _ => rfl
-      right_inv := fun f => MonoidHom.ext fun _ => Units.ext rfl }
-  unit :=
-    { app := fun X => { (@toUnits X _).toMonoidHom with }
-      naturality := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
-  counit :=
-    { app := fun X => Units.coeHom X
-      naturality := by intros; exact MonoidHom.ext fun x => rfl }
-  homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
-  homEquiv_counit := MonoidHom.ext fun _ => rfl
+def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} :=
+  Adjunction.mk' {
+    homEquiv := fun _ Y ↦
+      { toFun := fun f => MonoidHom.toHomUnits f
+        invFun := fun f => (Units.coeHom Y).comp f
+        left_inv := fun _ => MonoidHom.ext fun _ => rfl
+        right_inv := fun _ => MonoidHom.ext fun _ => Units.ext rfl }
+    unit :=
+      { app := fun X => { (@toUnits X _).toMonoidHom with }
+        naturality := fun _ _ _ => MonoidHom.ext fun _ => Units.ext rfl }
+    counit :=
+      { app := fun X => Units.coeHom X
+        naturality := by intros; exact MonoidHom.ext fun x => rfl } }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

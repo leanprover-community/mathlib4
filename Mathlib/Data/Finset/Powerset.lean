@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Multiset.Powerset
 
 /-!
@@ -39,13 +39,9 @@ theorem coe_powerset (s : Finset α) :
   ext
   simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
-  mem_powerset.2 (empty_subset _)
+theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s := by simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
-  mem_powerset.2 Subset.rfl
+theorem mem_powerset_self (s : Finset α) : s ∈ powerset s := by simp
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
@@ -234,9 +230,12 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   have : x ∉ t := fun H => h (ht H)
   simp [card_insert_of_not_mem this, Nat.succ_inj']
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
   aesop (add simp [Finset.Nonempty, exists_subset_card_eq, card_le_card])
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, powersetCard_nonempty_of_le⟩ := powersetCard_nonempty
 
 @[simp]
 theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
