@@ -119,9 +119,8 @@ lemma complexMGF_add_sub_sum (ht : t ≠ 0)
       exact (le_abs_self _).trans hε
   have h_int_zε : Integrable (fun ω ↦ cexp ((z + ε) * X ω)) μ := by
     rw [← integrable_norm_iff (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
-    simp only [Complex.norm_eq_abs, Complex.abs_exp, mul_re, add_re, ofReal_re, add_im, ofReal_im,
+    simpa only [Complex.norm_eq_abs, Complex.abs_exp, mul_re, add_re, ofReal_re, add_im, ofReal_im,
       mul_zero, sub_zero]
-    exact hε_int_pos
   have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
     rw [← integrable_norm_iff]
     swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
@@ -397,7 +396,7 @@ they also have the same `complexMGF`.-/
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
 /-- If two random variables have the same moment generating function then they have
-the `integrableExpSet`. -/
+the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     integrableExpSet X μ = integrableExpSet Y μ' := by
   ext t
