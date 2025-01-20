@@ -43,7 +43,7 @@ lemma moduleCat_zero_apply (x : S.X₁) : S.g (S.f x) = 0 :=
 
 lemma moduleCat_exact_iff :
     S.Exact ↔ ∀ (x₂ : S.X₂) (_ : S.g x₂ = 0), ∃ (x₁ : S.X₁), S.f x₁ = x₂ :=
-  S.exact_iff_of_concreteCategory
+  S.exact_iff_of_hasForget
 
 lemma moduleCat_exact_iff_ker_sub_range :
     S.Exact ↔ LinearMap.ker S.g.hom ≤ LinearMap.range S.f.hom := by

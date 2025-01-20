@@ -67,7 +67,7 @@ instance : LargeCategory.{u} SemilatSupCat where
 instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (SupBotHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory SemilatSupCat where
+instance : HasForget SemilatSupCat where
   forget :=
     { obj := SemilatSupCat.X
       map := DFunLike.coe }
@@ -117,7 +117,7 @@ instance : LargeCategory.{u} SemilatInfCat where
 instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (InfTopHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory SemilatInfCat where
+instance : HasForget SemilatInfCat where
   forget :=
     { obj := SemilatInfCat.X
       map := DFunLike.coe }

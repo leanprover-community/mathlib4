@@ -6,7 +6,7 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 import Mathlib.Algebra.Category.Grp.Biproducts
 import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 /-!
 # AB axioms for the category of abelian groups
@@ -32,7 +32,7 @@ noncomputable instance :
     intro x (hx : _ = _)
     dsimp at hx
     rcases Concrete.colimit_exists_rep S.X₂ x with ⟨j, y, rfl⟩
-    erw [← comp_apply, colimit.ι_map, comp_apply,
+    rw [← comp_apply, colimMap_eq, colimit.ι_map, comp_apply,
       ← map_zero (by exact colimit.ι S.X₃ j : (S.X₃).obj j →+ ↑(colimit S.X₃))] at hx
     rcases Concrete.colimit_exists_of_rep_eq.{u, u, u} S.X₃ _ _ hx
       with ⟨k, e₁, e₂, hk : _ = S.X₃.map e₂ 0⟩

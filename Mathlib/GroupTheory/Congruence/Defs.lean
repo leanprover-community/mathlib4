@@ -426,13 +426,11 @@ additive congruence relation in which they are contained."]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
 
--- Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
     contained is idempotent. -/
 @[to_additive addConGen_idem "The map sending a binary relation to the smallest additive
 congruence relation in which it is contained is idempotent."]
-theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
-  conGen_of_con _
+theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r := by simp
 
 /-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
     the binary relation '`x` is related to `y` by `c` or `d`'. -/
@@ -763,6 +761,17 @@ instance group : Group c.Quotient :=
     toMonoid := Con.monoid _
     toInv := Con.hasInv _
     toDiv := Con.hasDiv _ }
+
+/-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
+@[to_additive "The quotient of an `AddCommGroup` by an additive congruence
+relation is an `AddCommGroup`."]
+instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient :=
+  { (Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) : CommGroup c.Quotient) with
+    /- The `toGroup` field is given explicitly for performance reasons.
+    This avoids any need to unfold `Function.Surjective.commGroup` when the type checker is
+    checking that instance diagrams commute -/
+    toGroup := Con.group _ }
 
 end Groups
 

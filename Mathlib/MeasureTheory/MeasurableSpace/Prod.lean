@@ -73,29 +73,22 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : α → β}
     {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
     MeasurableEmbedding (Prod.map g f) := by
-  have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) := by
-    intro x y hxy
-    rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
-    simp only [Prod.mk.inj_iff] at hxy ⊢
-    exact ⟨hg.injective hxy.1, hf.injective hxy.2⟩
-  refine ⟨h_inj, ?_, ?_⟩
+  refine ⟨hg.injective.prodMap hf.injective, ?_, ?_⟩
   · exact (hg.measurable.comp measurable_fst).prod_mk (hf.measurable.comp measurable_snd)
-  · -- Induction using the π-system of rectangles
-    refine fun s hs =>
-      @MeasurableSpace.induction_on_inter _
-        (fun s => MeasurableSet ((fun x : γ × α => (g x.fst, f x.snd)) '' s)) _ _
-        generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
-    · simp only [Set.image_empty, MeasurableSet.empty]
-    · rintro t ⟨t₁, ht₁, t₂, ht₂, rfl⟩
-      rw [← Set.prod_image_image_eq]
+  · intro s hs
+    -- Induction using the π-system of rectangles
+    induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+    | empty =>
+      simp only [Set.image_empty, MeasurableSet.empty]
+    | basic s hs =>
+      obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := hs
+      simp_rw [Prod.map, ← prod_image_image_eq]
       exact (hg.measurableSet_image.mpr ht₁).prod (hf.measurableSet_image.mpr ht₂)
-    · intro t _ ht_m
-      rw [← Set.range_diff_image h_inj, ← Set.prod_range_range_eq]
-      exact
-        MeasurableSet.diff (MeasurableSet.prod hg.measurableSet_range hf.measurableSet_range) ht_m
-    · intro g _ _ hg
-      simp_rw [Set.image_iUnion]
-      exact MeasurableSet.iUnion hg
+    | compl s _ ihs =>
+      rw [← range_diff_image (hg.injective.prodMap hf.injective), range_prod_map]
+      exact .diff (.prod hg.measurableSet_range hf.measurableSet_range) ihs
+    | iUnion f _ _ ihf =>
+      simpa only [image_iUnion] using .iUnion ihf
 
 @[deprecated (since := "2024-12-11")]
 alias MeasurableEmbedding.prod_mk := MeasurableEmbedding.prodMap

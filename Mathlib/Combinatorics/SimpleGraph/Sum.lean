@@ -29,11 +29,11 @@ namespace SimpleGraph
 /-- Disjoint sum of `G` and `H`. -/
 @[simps!]
 protected def sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α ⊕ β) where
-  Adj u v := match u, v with
+  Adj
     | Sum.inl u, Sum.inl v => G.Adj u v
     | Sum.inr u, Sum.inr v => H.Adj u v
     | _, _ => false
-  symm u v := match u, v with
+  symm
     | Sum.inl u, Sum.inl v => G.adj_symm
     | Sum.inr u, Sum.inr v => H.adj_symm
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
