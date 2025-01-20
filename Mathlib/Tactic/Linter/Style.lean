@@ -80,7 +80,7 @@ The latter option was only added for backwards compatibility, and new uses shoul
 **How to fix this?** Remove these options: usually, they are not necessary for production code.
 (Some tests will intentionally use one of these options; in this case, simply allow the linter.)
 -/
-def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
+def setOptionLinter : Linter where run stx := do
     unless Linter.getLinterValue linter.style.setOption (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then

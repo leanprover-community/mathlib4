@@ -67,6 +67,31 @@ set_option debug.moduleNameAtTimeout false
 -- The lint does not fire on arbitrary options.
 set_option autoImplicit false
 
+-- A top-level `set_option ... in` is also linted against, also with several options.
+
+/--
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended for development and not for final code. If you intend to submit this contribution to the Mathlib project, please remove 'set_option profiler.threshold'.
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option profiler.threshold 50 in
+lemma topLevelIn : True := trivial
+
+-- TODO: only the first warning is shown, FIX THIS!
+/--
+warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option tactic.skipAssignedInstances true in
+set_option profiler.threshold 5 in
+lemma topLevelIn' : True := trivial
+
+#guard_msgs in
+set_option autoImplicit true in
+set_option profiler.threshold 5 in
+lemma topLevelIn'' : True := trivial
+
 -- We also cover set_option tactics.
 
 /--
@@ -114,6 +139,8 @@ lemma tactic4 : True := by
   trivial
 
 -- This option is not affected, hence does not throw an error.
+set_option autoImplicit false
+
 set_option autoImplicit true in
 lemma foo' : True := trivial
 
@@ -125,7 +152,6 @@ note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option tactic.skipAssignedInstances true
-lemma skipAssInst : True := trivial
 
 -- Currently, we also warn about setting the linter to `false`.
 /--
@@ -134,9 +160,12 @@ note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option tactic.skipAssignedInstances false
-lemma skipAssInst' : True := trivial
 
--- TODO: this should warn!
+/--
+warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
 set_option tactic.skipAssignedInstances true in
 lemma skipAssInst'' : True := trivial
 
