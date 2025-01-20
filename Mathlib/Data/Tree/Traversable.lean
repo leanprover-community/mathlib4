@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
 
-
 import Mathlib.Data.Tree.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
@@ -15,7 +14,7 @@ import Mathlib.Control.Traversable.Basic
 Provides a `Traversable` instance for the `Tree` type.
 -/
 
-universe u v
+universe u v w
 
 namespace Tree
 section Traverse
@@ -25,7 +24,6 @@ instance : Traversable Tree where
   map := map
   traverse := traverse
 
-universe w in
 lemma comp_traverse
     {F : Type u → Type v} {G : Type v → Type w} [Applicative F] [Applicative G]
     [LawfulApplicative G] {β : Type v} {γ : Type u} (f : β → F γ) (g : α → G β)
@@ -44,16 +42,18 @@ lemma traverse_eq_map_id (f : α → β) (t : Tree α) :
   rw [← Id.pure_eq (t.map f)]
   induction t with
   | nil => rw [traverse, map]
-  | node v l r hl hr => rw [traverse, map, hl, hr, Function.comp_apply, map_pure, pure_seq,
-    map_pure, pure_seq, map_pure]
+  | node v l r hl hr =>
+    rw [traverse, map, hl, hr, Function.comp_apply, map_pure, pure_seq, map_pure, pure_seq,
+      map_pure]
 
 lemma naturality {F G : Type u → Type*} [Applicative F] [Applicative G] [LawfulApplicative F]
     [LawfulApplicative G] (η : ApplicativeTransformation F G) {β : Type u} (f : α → F β)
     (t : Tree α) : η (t.traverse f) = t.traverse (η.app β ∘ f : α → G β) := by
   induction t with
   | nil => rw [traverse, traverse, η.preserves_pure]
-  | node v l r hl hr => rw [traverse, traverse, η.preserves_seq, η.preserves_seq, η.preserves_map,
-    hl, hr, Function.comp_apply]
+  | node v l r hl hr =>
+    rw [traverse, traverse, η.preserves_seq, η.preserves_seq, η.preserves_map, hl, hr,
+      Function.comp_apply]
 
 instance : LawfulTraversable Tree where
   map_const := rfl
