@@ -47,7 +47,7 @@ variable {α β γ : Type*}
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
   /-- Multiplication in a boolean ring is idempotent. -/
-  mul_self : ∀ a : α, IsIdempotentElem a
+  isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
 
