@@ -142,8 +142,7 @@ lemma fac_aux₂ {n : ℕ}
         apply sx.spineInjective
         apply Path.ext'
         intro t
-        change X.map _ _ = X.map _ _
-        rw [← FunctorToTypes.map_comp_apply]
+        simp only [spineEquiv_coe_fn, spine_arrow, ← FunctorToTypes.map_comp_apply]
         match t with
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
@@ -169,7 +168,7 @@ lemma fac_aux₃ {n : ℕ}
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
     ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by leq),
       Hom.ext_one_left _ _ rfl rfl⟩
-  exact fac_aux₂ X sx s x i j hij (by omega)
+  exact fac_aux₂ _ _ _ _ _ _ hij (by omega)
 
 end isPointwiseRightKanExtensionAt
 
@@ -188,12 +187,13 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     apply sx.spineInjective
     dsimp
     ext k
-    · change (X.spine _ (X.map f.op _)).vertex _ = X.map _ _
-      rw [spine_map_vertex, spine_spineToSimplex_apply]
+    · dsimp only [spineEquiv_coe_fn]
+      have : op f = f.op := rfl
+      rw [this, spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) (by leq) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
-    · change X.map _ _ = _
+    · dsimp only [spineEquiv_coe_fn, spine_arrow]
       rw [← FunctorToTypes.map_comp_apply]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (mkOfSucc k ≫ f) (by leq) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
@@ -201,7 +201,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
   uniq s m hm := by
     ext x
     apply sx.spineInjective
-    change _ = X.spine _ (sx.spineToSimplex _)
+    dsimp only [spineEquiv_coe_fn, lift]
     rw [spine_spineToSimplex_apply]
     ext i
     · exact congr_fun (hm (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
