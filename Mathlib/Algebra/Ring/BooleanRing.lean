@@ -8,7 +8,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Boolean rings
