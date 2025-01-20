@@ -59,8 +59,6 @@ lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
-attribute [scoped simp] mul_self
-
 @[scoped simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
