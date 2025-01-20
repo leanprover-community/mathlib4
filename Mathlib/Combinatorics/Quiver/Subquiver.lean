@@ -49,7 +49,7 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
--- Porting note: no hasNonemptyInstance linter yet
+-- Porting note: no hasNonemptyInstance linter yet https://github.com/leanprover-community/mathlib4/issues/5171
 @[ext]
 structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
   /-- the source vertex of an arrow -/
