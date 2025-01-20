@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Filtered.CostructuredArrow
+import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Functor.Flat
 
 /-!
 # Transfering filteredness along representably flat functors
 
 We show that if `F : C ⥤ D` is a representably flat functor between two small categories,
-filteredness of `C` implies filtereness of `D`.
+filteredness of `C` implies filtereness of `D`. Dually, if `F` is representably coflat,
+cofilteredness of `D` implies cofilteredness of `C`.
 -/
 
 universe u
@@ -23,6 +25,7 @@ variable {C : Type u} [SmallCategory C]
 variable {D : Type u} [SmallCategory D]
 variable (F : C ⥤ D)
 
+attribute [local instance] final_of_representablyFlat in
 lemma isFiltered_of_representablyFlat [IsFiltered C] [RepresentablyFlat F] : IsFiltered D :=
   haveI : PreservesFiniteLimits F := preservesFiniteLimits_of_flat F
   isFiltered_of_isFiltered_costructuredArrow (𝟭 _) F

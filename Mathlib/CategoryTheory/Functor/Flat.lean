@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -142,9 +143,11 @@ instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [Represe
     RepresentablyCoflat (F ⋙ G) :=
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
 
-instance [h : RepresentablyFlat F] : F.Final := ⟨inferInstance⟩
+lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
+  out _ :=IsCofiltered.isConnected _
 
-instance [h : RepresentablyCoflat F] : F.Initial := ⟨inferInstance⟩
+lemma initial_of_representablyCoflat [h : RepresentablyCoflat F] : F.Initial where
+  out _ := IsFiltered.isConnected _
 
 end RepresentablyFlat
 
