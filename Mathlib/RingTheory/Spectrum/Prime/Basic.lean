@@ -5,7 +5,6 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -548,29 +547,6 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
     rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
-
-variable (S)
-
-theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Function.Injective (algebraMap R S).specComap := by
-  intro p q h
-  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
-  dsimp only [specComap] at h
-  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
-  ext1
-  exact h
-
-theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
-  ext x
-  constructor
-  · simp_rw [disjoint_iff_inf_le]
-    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
-    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
-  · intro h
-    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
-    ext1
-    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 
 section Pi
 
