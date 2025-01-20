@@ -196,7 +196,7 @@ variable {X : SSet.Truncated.{u} (n + 2)} (sx : StrictSegal X) (m : ℕ)
 lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     (X.spine m (by leq) (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) (by leq) f))).arrow i =
-        sx.spineToDiagonal 2 (by leq) (f.interval i 2 (by leq)) := by
+      sx.spineToDiagonal 2 (by leq) (f.interval i 2 (by leq)) := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_eq hij, spineToSimplex_edge _ (m + 1)]
 
