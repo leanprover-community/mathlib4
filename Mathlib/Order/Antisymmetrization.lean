@@ -49,6 +49,9 @@ theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
 theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
 
+variable {r} in
+lemma AntisymmRel.rfl [IsRefl α r] (a : α) : AntisymmRel r a a := antisymmRel_refl ..
+
 instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
   refl := antisymmRel_refl r
 
