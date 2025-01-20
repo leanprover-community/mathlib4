@@ -234,7 +234,7 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
       simp_rw [εClosure_path]
       tauto
 
-theorem accepts_path {x : List α} :
+theorem mem_accepts_iff_exists_path {x : List α} :
     x ∈ M.accepts ↔
       ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' where
   mp := by
