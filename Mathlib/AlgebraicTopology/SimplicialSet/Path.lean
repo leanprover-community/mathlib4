@@ -225,6 +225,10 @@ lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
   truncation (max m n + 1) |>.obj X
     |>.spine_map_vertex n (by leq) Δ m (by leq) φ i
 
+lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n]) :
+    X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
+  truncation (n + 1) |>.obj X |>.spine_map_subinterval n _ j l h Δ
+
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
 def standardSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
 
