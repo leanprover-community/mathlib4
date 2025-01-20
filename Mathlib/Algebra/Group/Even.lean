@@ -112,8 +112,8 @@ alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 @[to_additive (attr := simp) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 @[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
 @[to_additive Even.nsmul_right] lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
