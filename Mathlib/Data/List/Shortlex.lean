@@ -92,10 +92,10 @@ theorem cons_iff [IsIrrefl α r] {a : α} {s t : List α} : Shortlex r (a :: s) 
 
 @[simp]
 theorem not_nil_right {s : List α} : ¬ Shortlex r s [] := by
-  intro h
-  rcases shortlex_def.mp h with h1 | h2
+  rw [shortlex_def]
+  rintro (h1 | h2)
   · simp only [List.length_nil, not_lt_zero'] at h1
-  exact List.Lex.not_nil_right _ _ h2.2
+  · exact List.Lex.not_nil_right _ _ h2.2
 
 theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] := by
   cases s with
