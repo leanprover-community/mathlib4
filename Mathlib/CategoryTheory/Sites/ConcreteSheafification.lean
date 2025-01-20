@@ -34,7 +34,7 @@ variable [ConcreteCategory.{max v u} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
   { x : ∀ I : S.Arrow, P.obj (op I.Y) //
@@ -153,7 +153,8 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   ext i
   simp only [Functor.op_obj, unop_op, pullback_obj, diagram_obj, Functor.comp_obj,
     diagramPullback_app, Meq.equiv_apply, Meq.pullback_apply]
-  erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+  rw [← comp_apply, Multiequalizer.lift_ι]
+  erw [Meq.equiv_symm_eq_apply]
   cases i; rfl
 
 theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) :
@@ -162,7 +163,8 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X))
   let e : S ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
   delta Cover.toMultiequalizer
-  erw [comp_apply, comp_apply]
+  rw [comp_apply]
+  erw [comp_apply]
   apply congr_arg
   dsimp [diagram]
   apply Concrete.multiequalizer_ext
@@ -347,7 +349,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   use mk w
   ext I
   dsimp [Meq.mk]
-  erw [ht, res_mk_eq_mk_pullback]
+  rw [ht, res_mk_eq_mk_pullback]
   -- Use the separatedness of `P⁺` to prove that this is indeed a gluing of our
   -- original local sections.
   apply sep P (T I)
@@ -571,8 +573,8 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.val
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun e => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
-          right_inv := fun e => J.toSheafify_sheafifyLift _ _ }
+          left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
         apply J.sheafifyMap_sheafifyLift

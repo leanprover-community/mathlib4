@@ -25,9 +25,10 @@ of the derivative. This is why their names reflect their uses, and not how they 
 
 ## Implementation details
 
-Note that this file is imported by `Fderiv.Basic`. Hence, derivatives are not defined yet. The
-property of uniqueness of the derivative is therefore proved in `Fderiv.Basic`, but based on the
-properties of the tangent cone we prove here.
+Note that this file is imported by `Mathlib.Analysis.Calculus.FDeriv.Basic`. Hence, derivatives are
+not defined yet. The property of uniqueness of the derivative is therefore proved in
+`Mathlib.Analysis.Calculus.FDeriv.Basic`, but based on the properties of the tangent cone we prove
+here.
 -/
 
 
@@ -50,7 +51,8 @@ def tangentConeAt (s : Set E) (x : E) : Set E :=
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
 The main role of this property is to ensure that the differential within `s` at `x` is unique,
-hence this name. The uniqueness it asserts is proved in `UniqueDiffWithinAt.eq` in `Fderiv.Basic`.
+hence this name. The uniqueness it asserts is proved in `UniqueDiffWithinAt.eq` in
+`Mathlib.Analysis.Calculus.FDeriv.Basic`.
 To avoid pathologies in dimension 0, we also require that `x` belongs to the closure of `s` (which
 is automatic when `E` is not `0`-dimensional). -/
 @[mk_iff]
@@ -61,7 +63,7 @@ structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
 /-- A property ensuring that the tangent cone to `s` at any of its points spans a dense subset of
 the whole space. The main role of this property is to ensure that the differential along `s` is
 unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq` in
-`Fderiv.Basic`. -/
+`Mathlib.Analysis.Calculus.FDeriv.Basic`. -/
 def UniqueDiffOn (s : Set E) : Prop :=
   ∀ x ∈ s, UniqueDiffWithinAt 𝕜 s x
 
@@ -81,7 +83,7 @@ theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
   refine ⟨fun n ↦ (r ^ n)⁻¹, fun n ↦ r ^ n • y, hs, ?_, ?_⟩
   · simp only [norm_inv, norm_pow, ← inv_pow]
-    exact tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv (norm_pos_iff.2 hr₀) hr
+    exact tendsto_pow_atTop_atTop_of_one_lt <| (one_lt_inv₀ (norm_pos_iff.2 hr₀)).2 hr
   · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
 
 theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
@@ -196,7 +198,7 @@ theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSeg
   rw [openSegment_eq_image]
   refine ⟨(1 / 2) ^ n, ⟨?_, ?_⟩, ?_⟩
   · exact pow_pos one_half_pos _
-  · exact pow_lt_one one_half_pos.le one_half_lt_one hn
+  · exact pow_lt_one₀ one_half_pos.le one_half_lt_one hn
   · simp only [sub_smul, one_smul, smul_sub]; abel
 
 /-- If a subset of a real vector space contains a segment, then the direction of this

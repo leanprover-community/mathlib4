@@ -37,7 +37,7 @@ attribute [local instance] ConcreteCategory.instFunLike in
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
-  (forget C).mono_of_mono_map ((mono_iff_injective f).2 i)
+  (forget C).mono_of_mono_map ((mono_iff_injective ((forget C).map f)).2 i)
 
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
     [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
@@ -147,7 +147,7 @@ theorem mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
 /-- In any concrete category, surjective morphisms are epimorphisms. -/
 theorem epi_of_surjective {X Y : C} (f : X ⟶ Y) (s : Function.Surjective f) :
     Epi f :=
-  (forget C).epi_of_epi_map ((epi_iff_surjective f).2 s)
+  (forget C).epi_of_epi_map ((epi_iff_surjective ((forget C).map f)).2 s)
 
 theorem surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Function.Surjective f :=

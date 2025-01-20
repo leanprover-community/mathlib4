@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Relations holding pairwise on finite sets
@@ -79,6 +79,8 @@ theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
     (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
   letI : IsSymm α r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]
+
+open scoped Function -- required for scoped `on` notation
 
 theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [SemilatticeInf α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hl : (l.toFinset : Set ι).PairwiseDisjoint f)

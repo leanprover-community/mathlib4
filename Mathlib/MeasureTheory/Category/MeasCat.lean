@@ -70,7 +70,7 @@ instance : ConcreteCategory MeasCat := by
 instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
 
--- This was a global instance prior to #13170. We may experiment with removing it.
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
 attribute [local instance] ConcreteCategory.instFunLike
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
@@ -106,7 +106,7 @@ nicely under the monad operations. -/
 def Integral : Giry.Algebra where
   A := MeasCat.of ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
-  unit := Subtype.eq <| funext fun r : ℝ≥0∞ => lintegral_dirac' _ measurable_id
+  unit := Subtype.eq <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
   assoc := Subtype.eq <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) =>
     show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>

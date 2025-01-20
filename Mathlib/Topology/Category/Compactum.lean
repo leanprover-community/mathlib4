@@ -211,7 +211,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   have claim1 : ∀ (B) (_ : B ∈ C0) (C) (_ : C ∈ C0), B ∩ C ∈ C0 := by
     rintro B ⟨Q, hQ, rfl⟩ C ⟨R, hR, rfl⟩
     use Q ∩ R
-    simp only [and_true_iff, eq_self_iff_true, Set.preimage_inter]
+    simp only [and_true, eq_self_iff_true, Set.preimage_inter]
     exact inter_sets _ hQ hR
   -- All sets in C0 are nonempty.
   have claim2 : ∀ B ∈ C0, Set.Nonempty B := by
@@ -423,7 +423,7 @@ instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
-    -- Porting note (#11041): `ext` gets confused by coercion using forget.
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     apply congrArg (fun f => f.toFun) h
 
@@ -457,7 +457,7 @@ end compactumToCompHaus
 `compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
-  NatIso.ofComponents fun X => eqToIso rfl
+  NatIso.ofComponents fun _ => eqToIso rfl
 
 /-
 TODO: `forget CompHaus` is monadic, as it is isomorphic to the composition

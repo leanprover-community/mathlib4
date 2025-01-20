@@ -20,9 +20,6 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type*}
-
-
 /-- The category of bipointed types. -/
 structure Bipointed : Type (u + 1) where
   /-- The underlying type of a bipointed type. -/
@@ -194,7 +191,7 @@ def pointedToBipointedFstBipointedToPointedFstAdjunction :
             cases x
             · exact f.map_snd.symm
             · rfl
-          right_inv := fun f => Pointed.Hom.ext rfl }
+          right_inv := fun _ => Pointed.Hom.ext rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x
@@ -214,7 +211,7 @@ def pointedToBipointedSndBipointedToPointedSndAdjunction :
             cases x
             · exact f.map_fst.symm
             · rfl
-          right_inv := fun f => Pointed.Hom.ext rfl }
+          right_inv := fun _ => Pointed.Hom.ext rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x

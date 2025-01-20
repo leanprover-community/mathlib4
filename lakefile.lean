@@ -8,10 +8,12 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.41"
+require "leanprover-community" / "Qq" @ git "v4.15.0"
+require "leanprover-community" / "aesop" @ git "v4.16.0-rc1"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.50"
 require "leanprover-community" / "importGraph" @ git "main"
+require "leanprover-community" / "LeanSearchClient" @ git "main"
+require "leanprover-community" / "plausible" @ git "v4.16.0-rc1"
 
 /-!
 ## Options for building mathlib
@@ -20,17 +22,22 @@ require "leanprover-community" / "importGraph" @ git "main"
 /-- These options are used
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
 * as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`).
--/
+  (as well as `Archive`, `Counterexamples` and `test`). -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+  ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.missingEnd, true⟩,
-  ⟨`linter.cdot, true⟩,
-  ⟨`linter.dollarSyntax, true⟩,
-  ⟨`linter.style.lambdaSyntax, true⟩,
-  ⟨`linter.longLine, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
+  ⟨`linter.style.cdot, true⟩,
+  ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.style.header, true⟩,
+  ⟨`linter.style.lambdaSyntax, true⟩,
+  ⟨`linter.style.longLine, true⟩,
+  ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
+  ⟨`linter.style.missingEnd, true⟩,
+  ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.setOption, true⟩
 ]
 
@@ -43,9 +50,7 @@ abbrev mathlibLeanOptions := #[
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
-  leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
+  testDriver := "MathlibTest"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -57,12 +62,18 @@ package mathlib where
 -/
 
 @[default_target]
-lean_lib Mathlib
+lean_lib Mathlib where
+  leanOptions := mathlibLeanOptions
+  -- Mathlib also enforces these linter options, which are not active by default.
+  moreServerOptions := mathlibOnlyLinters
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
+
+lean_lib MathlibTest where
+  globs := #[.submodules `MathlibTest]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -79,6 +90,16 @@ lean_lib docs where
 /-!
 ## Executables provided by Mathlib
 -/
+
+/--
+`lake exe autolabel 150100` adds a topic label to PR `150100` if there is a unique choice.
+This requires GitHub CLI `gh` to be installed!
+
+Calling `lake exe autolabel` without a PR number will print the result without applying
+any labels online.
+-/
+lean_exe autolabel where
+  srcDir := "scripts"
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
@@ -117,16 +138,23 @@ lean_exe pole where
   weakLinkArgs := #["-lLake"]
 
 /--
-`lake exe test` is a thin wrapper around `lake exe batteries/test`, until
-https://github.com/leanprover/lean4/issues/4121 is resolved.
+`lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
+The script expects the sequence to be in "reverse order", i.e. files imported later in `Mathlib` should
+come earlier in the sequence.
 
-You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
+Outputs a markdown file (called  `unused.md` by default) and a number of `lake exe graph` commands
+highlighting particular ranges of transitively unused imports.
+
+Typically this should be run via `scripts/unused_in_pole.sh`.
 -/
-@[test_driver]
-lean_exe test where
-  -- We could add the above `leanOptions` and `moreServerOptions`: currently, these do not take
-  -- effect as `test` is a `lean_exe`. With a `lean_lib`, it would work...
-  srcDir := "scripts"
+lean_exe unused where
+  root := `LongestPole.Unused
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
+
+lean_exe mathlib_test_executable where
+  root := `MathlibTest.MathlibTestExecutable
 
 /-!
 ## Other configuration

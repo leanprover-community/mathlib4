@@ -36,7 +36,7 @@ dedekind domain, dedekind ring
 -/
 
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (A K : Type*) [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -95,7 +95,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [Algebra.IsSeparable K L] {ι 
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
   simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.BilinForm.flip_apply,
     traceForm_apply]
-  refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+  refine Submodule.mem_one.mpr <| IsIntegrallyClosed.isIntegral_iff.mp ?_
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 
 theorem integralClosure_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι]
@@ -112,25 +112,11 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
-  haveI := Classical.decEq L
-  refine s.induction ?_ ?_
-  · use 1, one_ne_zero
-    rintro x ⟨⟩
-  · rintro x s hx ⟨y, hy, hs⟩
-    have := exists_integral_multiple
-      ((IsFractionRing.isAlgebraic_iff A K L).mpr (.of_finite _ x))
-      ((injective_iff_map_eq_zero (algebraMap A L)).mp ?_)
-    · rcases this with ⟨x', y', hy', hx'⟩
-      refine ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => ?_⟩
-      rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
-      · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, mul_comm _ x'', hx']
-        exact isIntegral_algebraMap.mul x'.2
-      · rw [mul_comm, mul_smul, Algebra.smul_def]
-        exact isIntegral_algebraMap.mul (hs _ hx'')
-    · rw [IsScalarTower.algebraMap_eq A K L]
-      apply (algebraMap K L).injective.comp
-      exact IsFractionRing.injective _ _
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
+  have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
+  have := Algebra.IsAlgebraic.trans' A (algebraMap K L).injective
+  Algebra.IsAlgebraic.exists_integral_multiples (IsScalarTower.algebraMap_eq A K L ▸
+    (algebraMap K L).injective.comp (IsFractionRing.injective _ _)) _
 
 variable (L)
 
@@ -156,7 +142,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
     simp only [Algebra.smul_def, Finset.mem_image, exists_prop, Finset.mem_univ,
-      true_and_iff] at his'
+      true_and] at his'
     simp only [Basis.map_apply, LinearEquiv.coe_mk]
     exact his' _ ⟨_, rfl⟩
 
@@ -185,6 +171,14 @@ theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianR
     IsNoetherianRing C :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower A (IsIntegralClosure.isNoetherian A K L C)
 
+/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
+integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
+finite over `A`. -/
+theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
+    Module.Finite A C := by
+  haveI := IsIntegralClosure.isNoetherian A K L C
+  exact Module.IsNoetherian.finite A C
+
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/
@@ -198,13 +192,13 @@ theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdeal
 and `L` has no zero smul divisors by `A`, the `A`-rank of the integral closure `C` of `A` in `L`
 is equal to the `K`-rank of `L`. -/
 theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [NoZeroSMulDivisors A L] :
-    FiniteDimensional.finrank A C = FiniteDimensional.finrank K L := by
+    Module.finrank A C = Module.finrank K L := by
   haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
   haveI : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
     IsIntegralClosure.isLocalization A K L C
   let b := Basis.localizationLocalization K A⁰ L (Module.Free.chooseBasis A C)
-  rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex, FiniteDimensional.finrank_eq_card_basis b]
+  rw [Module.finrank_eq_card_chooseBasisIndex, Module.finrank_eq_card_basis b]
 
 variable {A K}
 
