@@ -829,6 +829,11 @@ lemma Spanning.compl_coindep (hS : M.Spanning S) : M.Coindep (M.E \ S) := by
 lemma Basis.base_of_spanning (hIX : M.Basis I X) (hX : M.Spanning X) : M.Base I :=
   hIX.indep.base_of_spanning <| by rwa [hIX.spanning_iff_spanning]
 
+lemma Indep.exists_base_subset_spanning (hI : M.Indep I) (hS : M.Spanning S) (hIS : I ⊆ S) :
+    ∃ B, M.Base B ∧ I ⊆ B ∧ B ⊆ S := by
+  obtain ⟨B, hB⟩ := hI.subset_basis_of_subset hIS
+  exact ⟨B, hB.1.base_of_spanning hS, hB.2, hB.1.subset⟩
+
 lemma Restriction.base_iff_of_spanning {N : Matroid α} (hR : N ≤r M) (hN : M.Spanning N.E) :
     N.Base B ↔ (M.Base B ∧ B ⊆ N.E) := by
   obtain ⟨R, hR : R ⊆ M.E, rfl⟩ := hR
