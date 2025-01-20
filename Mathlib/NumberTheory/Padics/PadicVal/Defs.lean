@@ -18,6 +18,8 @@ assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that o
 The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
 -/
 
+assert_not_exists Field
+
 universe u
 
 open Nat
@@ -84,7 +86,7 @@ theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : �
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
       |>.emultiplicity_eq_multiplicity,     ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb),
-      Nat.cast_le]
+    Nat.cast_le]
 
 @[deprecated (since := "2024-07-17")]
 alias le_padicValNat_iff_replicate_subperm_factors :=

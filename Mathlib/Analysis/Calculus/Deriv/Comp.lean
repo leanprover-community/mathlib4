@@ -34,7 +34,7 @@ derivative, chain rule
 
 universe u v w
 
-open scoped Classical Topology Filter ENNReal
+open scoped Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -127,15 +127,17 @@ theorem HasDerivAt.scomp_hasDerivWithinAt_of_eq (hg : HasDerivAt g₁ g₁' y)
   rw [hy] at hg; exact hg.scomp_hasDerivWithinAt x hh
 
 theorem derivWithin.scomp (hg : DifferentiableWithinAt 𝕜' g₁ t' (h x))
-    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (g₁ ∘ h) s x = derivWithin h s x • derivWithin g₁ t' (h x) :=
-  (HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh.hasDerivWithinAt hs).derivWithin hxs
+    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') :
+    derivWithin (g₁ ∘ h) s x = derivWithin h s x • derivWithin g₁ t' (h x) := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh.hasDerivWithinAt hs).derivWithin hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem derivWithin.scomp_of_eq (hg : DifferentiableWithinAt 𝕜' g₁ t' y)
-    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t')
     (hy : y = h x) :
     derivWithin (g₁ ∘ h) s x = derivWithin h s x • derivWithin g₁ t' (h x) := by
-  rw [hy] at hg; exact derivWithin.scomp x hg hh hs hxs
+  rw [hy] at hg; exact derivWithin.scomp x hg hh hs
 
 theorem deriv.scomp (hg : DifferentiableAt 𝕜' g₁ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (g₁ ∘ h) x = deriv h x • deriv g₁ (h x) :=
@@ -265,17 +267,19 @@ theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
   rw [hy] at hh₂; exact hh₂.comp_hasDerivWithinAt x hh
 
 theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
-    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x :=
-  (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hxs
+    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') :
+    derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 @[deprecated (since := "2024-10-31")] alias derivWithin.comp := derivWithin_comp
 
 theorem derivWithin_comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
-    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s')
     (hy : h x = y) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
-  subst hy; exact derivWithin_comp x hh₂ hh hs hxs
+  subst hy; exact derivWithin_comp x hh₂ hh hs
 
 @[deprecated (since := "2024-10-31")] alias derivWithin.comp_of_eq := derivWithin_comp_of_eq
 
@@ -373,18 +377,19 @@ theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l 
   rw [hy] at hl; exact hl.comp_hasStrictDerivAt x hf
 
 theorem fderivWithin_comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t (f x))
-    (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) :=
-  (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
+    (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) :
+    derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 @[deprecated (since := "2024-10-31")]
 alias fderivWithin.comp_derivWithin := fderivWithin_comp_derivWithin
 
 theorem fderivWithin_comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
-    (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (hy : y = f x) :
+    (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hy : y = f x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) := by
-  rw [hy] at hl; exact fderivWithin_comp_derivWithin x hl hf hs hxs
+  rw [hy] at hl; exact fderivWithin_comp_derivWithin x hl hf hs
 
 @[deprecated (since := "2024-10-31")]
 alias fderivWithin.comp_derivWithin_of_eq := fderivWithin_comp_derivWithin_of_eq
