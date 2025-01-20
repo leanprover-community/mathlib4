@@ -39,6 +39,12 @@ Let `G` be a group acting on a space `X`, and `A B : Set X`.
 * We introduce a non-standard predicate, `DecompOn`, to state that a function satisfies the main
   combinatorial property of equidecompositions, even if it is not injective or surjective.
 
+## TODO
+
+* Prove that if two sets embeddidecompose into eachother, they are equidecomposable (Schroeder-Bernstein type theorem)
+* Define embeddidecomposability as a Preorder on sets and prove that its induced equivalence relation is equidecomposability.
+* Prove the definition of equidecomposition used here is equivalent to the more familiar one using partitions.
+
 -/
 
 variable {X G : Type*} {A B C: Set X}
@@ -152,7 +158,8 @@ theorem reflSet_source (A : Set X) : (reflSet G A).source = A :=
 @[simp]
 theorem reflSet_toPartialEquiv (A : Set X) :
     (reflSet G A).toPartialEquiv = PartialEquiv.ofSet A := by
-  ext; rfl; rfl; rw [reflSet_source, ofSet_source]
+  ext <;> try rfl  
+  rw [reflSet_source, ofSet_source]  
 
 theorem reflSet_target (A : Set X) : (reflSet G A).target = A := by
   rw [reflSet_toPartialEquiv, ofSet_target]
