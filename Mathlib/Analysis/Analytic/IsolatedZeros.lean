@@ -234,8 +234,8 @@ lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     simpa [hg.self_of_nhds]
   · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
 
-/- An analytic function vanishes at a point if its order vanishes when converted to ℕ. -/
-lemma zero_if_order_toNat_eq_zero (hf : AnalyticAt 𝕜 f z₀) : hf.order.toNat ≠ 0 → f z₀ = 0 := by
+/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
+lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) : hf.order.toNat ≠ 0 → f z₀ = 0 := by
   simp [hf.order_eq_zero_iff]
   tauto
 
