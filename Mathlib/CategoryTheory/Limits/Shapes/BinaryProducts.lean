@@ -46,14 +46,14 @@ open WalkingPair
 /-- The equivalence swapping left and right.
 -/
 def WalkingPair.swap : WalkingPair ≃ WalkingPair where
-  toFun j := match j with
+  toFun
     | left => right
     | right => left
-  invFun j := match j with
+  invFun
     | left => right
     | right => left
-  left_inv j := by cases j; repeat rfl
-  right_inv j := by cases j; repeat rfl
+  left_inv j := by cases j <;> rfl
+  right_inv j := by cases j <;> rfl
 
 @[simp]
 theorem WalkingPair.swap_apply_left : WalkingPair.swap left = right :=
@@ -74,13 +74,13 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
 /-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
 def WalkingPair.equivBool : WalkingPair ≃ Bool where
-  toFun j := match j with
+  toFun
     | left => true
     | right => false
   -- to match equiv.sum_equiv_sigma_bool
   invFun b := Bool.recOn b right left
-  left_inv j := by cases j; repeat rfl
-  right_inv b := by cases b; repeat rfl
+  left_inv j := by cases j <;> rfl
+  right_inv b := by cases b <;> rfl
 
 @[simp]
 theorem WalkingPair.equivBool_apply_left : WalkingPair.equivBool left = true :=
@@ -136,7 +136,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 /-- The natural transformation between two functors out of the
  walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
-  app j := match j with
+  app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
   naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat

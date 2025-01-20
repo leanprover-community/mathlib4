@@ -68,12 +68,18 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
+protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 
+@[deprecated (since := "2025-01-20")]
+alias mul_eq_mul_left := ENNReal.mul_right_inj
+
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :=
-  mul_comm c a ▸ mul_comm c b ▸ mul_eq_mul_left
+protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
+  mul_comm c a ▸ mul_comm c b ▸ ENNReal.mul_right_inj h0 hinf
+
+@[deprecated (since := "2025-01-20")]
+alias mul_eq_mul_right := ENNReal.mul_left_inj
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
@@ -92,10 +98,10 @@ theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :
   mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
 
 protected lemma mul_eq_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * b = a ↔ b = 1 := by
-  simpa using ENNReal.mul_eq_mul_left ha₀ ha (c := 1)
+  simpa using ENNReal.mul_right_inj ha₀ ha (c := 1)
 
 protected lemma mul_eq_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b = b ↔ a = 1 := by
-  simpa using ENNReal.mul_eq_mul_right hb₀ hb (b := 1)
+  simpa using ENNReal.mul_left_inj hb₀ hb (b := 1)
 
 end Mul
 
