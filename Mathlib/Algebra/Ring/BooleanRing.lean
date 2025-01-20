@@ -53,6 +53,8 @@ namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
+lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
+
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
@@ -412,7 +414,7 @@ abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   one := ⊤
   one_mul := top_inf_eq
   mul_one := inf_top_eq
-  mul_self := inf_idem
+  isIdempotentElem := inf_idem
 
 scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
@@ -531,7 +533,7 @@ instance : BooleanRing Bool where
   mul_one := Bool.and_true
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
-  mul_self := Bool.and_self
+  isIdempotentElem := Bool.and_self
   zero_mul _ := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
