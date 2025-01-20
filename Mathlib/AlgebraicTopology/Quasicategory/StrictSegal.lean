@@ -38,7 +38,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
   let ksucc := k.succ.castSucc
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
-  · rw [spine_δ_arrow_lt _ _ hlt]
+  · rw [spine_δ_arrow_lt sx _ hlt]
     apply congr_arg _ ∘ Subtype.ext
     dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, Functor.op_map,
@@ -47,7 +47,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       standardSimplex.objEquiv, Equiv.ulift_symm_down]
     rw [mkOfSucc_δ_lt hlt]
     rfl
-  · rw [spine_δ_arrow_gt _ _ hgt]
+  · rw [spine_δ_arrow_gt sx _ hgt]
     apply congr_arg _ ∘ Subtype.ext
     dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, Functor.op_map,
