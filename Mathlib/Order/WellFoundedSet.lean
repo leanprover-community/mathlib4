@@ -589,8 +589,8 @@ section Preorder
 variable [Preorder α] {s t : Set α} {a : α}
 
 /-- `Set.IsWF.min` returns a minimal element of a nonempty well-founded set. -/
-noncomputable def IsWF.min (hs : IsWF s) (hn : s.Nonempty) : α :=
-  WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)
+noncomputable nonrec def IsWF.min (hs : IsWF s) (hn : s.Nonempty) : α :=
+  (WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)).1
 
 theorem IsWF.min_mem (hs : IsWF s) (hn : s.Nonempty) : hs.min hn ∈ s :=
   (WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)).2
