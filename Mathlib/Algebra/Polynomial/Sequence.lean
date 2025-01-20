@@ -135,9 +135,8 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
     refine ih tail.natDegree ?_ _ rfl
 
     have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-      rw [leadingCoeff_smul_of_smul_regular, smul_eq_mul, rightinv]
-      · exact isRegular_one.right
-      · exact IsSMulRegular.of_mul_eq_one leftinv
+      simp [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
+      exact isRegular_one.right
 
     have head_degree_eq := degree_smul_of_leadingCoeff_rightRegular
       (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
