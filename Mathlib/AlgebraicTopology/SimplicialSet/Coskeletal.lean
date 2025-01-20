@@ -46,7 +46,7 @@ section
 open StructuredArrow
 
 namespace StrictSegal
-variable (X : SSet.{u}) (sx : StrictSegal X)
+variable {X : SSet.{u}} (sx : StrictSegal X)
 
 namespace isPointwiseRightKanExtensionAt
 
@@ -134,7 +134,7 @@ lemma fac_aux₂ {n : ℕ}
         (by ext x; fin_cases x <;> rfl))
       have h₀ : X.map α₀.hom (lift sx s x) = s.π.app α₀ x := by
         subst hik
-        exact fac_aux₁ _ _ _ _ _ hj
+        exact fac_aux₁ _ _ _ _ hj
       have h₂ : X.map α₂.hom (lift sx s x) = s.π.app α₂ x :=
         hk i (i + k) (by leq) (by omega) rfl
       change X.map α₁.hom (lift sx s x) = s.π.app α₁ x
@@ -164,7 +164,7 @@ lemma fac_aux₃ {n : ℕ}
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
     ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by leq),
       Hom.ext_one_left _ _ rfl rfl⟩
-  exact fac_aux₂ _ _ _ _ _ _ hij (by omega)
+  exact fac_aux₂ _ _ _ _ _ _ (by omega)
 
 end isPointwiseRightKanExtensionAt
 
@@ -192,7 +192,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     · rw [spineEquiv_coe_fn, spine_arrow, ← FunctorToTypes.map_comp_apply]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (mkOfSucc k ≫ f) (by leq) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
-      exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _ _).trans (congr_fun (s.w α).symm x)
+      exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans (congr_fun (s.w α).symm x)
   uniq s m hm := by
     ext x
     apply sx.spineInjective
@@ -206,17 +206,17 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension.-/
 noncomputable def isPointwiseRightKanExtension :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
-  fun Δ => isPointwiseRightKanExtensionAt X sx Δ.unop.len
+  fun Δ => sx.isPointwiseRightKanExtensionAt Δ.unop.len
 
 theorem isRightKanExtension (sx : StrictSegal X) :
     X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
-    (isPointwiseRightKanExtension X sx)
+    (isPointwiseRightKanExtension sx)
 
 /-- When `X` is `StrictSegal`, `X` is 2-coskeletal. -/
 theorem isCoskeletal (sx : StrictSegal X) :
     SimplicialObject.IsCoskeletal X 2 where
-  isRightKanExtension := isRightKanExtension X sx
+  isRightKanExtension := sx.isRightKanExtension
 
 end StrictSegal
 
@@ -231,8 +231,7 @@ namespace Nerve
 open SSet
 
 instance (C : Type u) [Category.{v} C] :
-    SimplicialObject.IsCoskeletal (nerve C) 2 :=
-  StrictSegal.isCoskeletal (nerve C) (strictSegal C)
+    SimplicialObject.IsCoskeletal (nerve C) 2 := strictSegal C |>.isCoskeletal
 
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`.-/
