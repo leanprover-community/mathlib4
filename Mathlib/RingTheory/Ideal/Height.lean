@@ -6,6 +6,7 @@ Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.KrullDimension.Basic
 /-!
 # The Height of an Ideal
 
@@ -150,6 +151,7 @@ theorem withTop.supr₂_add {ι : Sort u} {p : ι → Prop} (hs : ∃ i, p i)
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     (I.height : WithBot ENat) ≤ ringKrullDim R := by
   sorry  -- The original uses le_supr₂ which needs to be adapted
+-- ???
 
 instance Ideal.finiteHeightOfFiniteRingKrullDim (priority := 90) {I : Ideal R}
     [FiniteRingKrullDim R] : Ideal.FiniteHeight I := by
@@ -224,8 +226,8 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsP
     apply Ideal.primeHeight_mono
     exact hM'
 
-  have M_height_le : (M.primeHeight : WithBot (WithTop ℕ)) ≤ ringKrullDim R :=
-    Ideal.primeHeightLeRingKrullDim
+  have M_height_le : (M.primeHeight) ≤ ringKrullDim R :=
+    Ideal.primeHeight_le_ringKrullDim
 
   have height_strict : I.primeHeight < M.primeHeight := by
     apply lt_of_le_of_ne height_le
