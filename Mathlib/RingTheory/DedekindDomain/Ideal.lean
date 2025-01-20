@@ -258,7 +258,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractio
   have mul_self : IsIdempotentElem I := by
     apply coeToSubmodule_injective
     simp only [coe_mul, adjoinIntegral_coe, I]
-    rw [Subalgebra.isIdempotentElem_subalgebra (Algebra.adjoin A {x})]
+    rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
   convert congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
