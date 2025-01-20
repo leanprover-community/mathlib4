@@ -73,7 +73,7 @@ instance instInhabited : Inhabited (JordanDecomposition α) where default := 0
 
 instance instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where
   neg j := ⟨j.negPart, j.posPart, j.mutuallySingular.symm⟩
-  neg_neg _ := JordanDecomposition.ext _ _ rfl rfl
+  neg_neg _ := JordanDecomposition.ext rfl rfl
 
 instance instSMul : SMul ℝ≥0 (JordanDecomposition α) where
   smul r j :=

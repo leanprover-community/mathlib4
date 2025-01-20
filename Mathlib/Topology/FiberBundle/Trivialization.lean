@@ -50,8 +50,8 @@ type of linear trivializations is not even particularly well-behaved.
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
-variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
-variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
+variable {ι : Type*} {B : Type*} (F : Type*) {E : B → Type*}
+variable {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
 below as `Trivialization F proj`) if the total space has not been given a topology, but we

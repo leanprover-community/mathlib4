@@ -223,6 +223,11 @@ theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
 
 @[simp] theorem toReal_nonneg {a : ℝ≥0∞} : 0 ≤ a.toReal := a.toNNReal.2
 
+@[norm_cast] theorem coe_toNNReal_eq_toReal (z : ℝ≥0∞) : (z.toNNReal : ℝ) = z.toReal := rfl
+
+@[simp] theorem toNNReal_toReal_eq (z : ℝ≥0∞) : z.toReal.toNNReal = z.toNNReal := by
+  ext; simp [coe_toNNReal_eq_toReal]
+
 @[simp] theorem top_toNNReal : ∞.toNNReal = 0 := rfl
 
 @[simp] theorem top_toReal : ∞.toReal = 0 := rfl

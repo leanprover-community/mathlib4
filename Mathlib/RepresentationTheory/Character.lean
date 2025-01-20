@@ -68,7 +68,9 @@ theorem char_tensor' (V W : FDRep k G) :
 
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by
-  ext g; simp only [character, FDRep.Iso.conj_ρ i]; exact (trace_conj' (V.ρ g) _).symm
+  ext g
+  simp only [character, FDRep.Iso.conj_ρ i]
+  exact (trace_conj' (V.ρ g) _).symm
 
 end Monoid
 

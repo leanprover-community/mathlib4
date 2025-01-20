@@ -6,6 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
@@ -403,6 +404,8 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
   rw [← dist_one_right]
   exact dist_nonneg
 
+attribute [bound] norm_nonneg
+
 @[to_additive (attr := simp) abs_norm]
 theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
 
@@ -453,6 +456,8 @@ theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 := by
 @[to_additive]
 theorem norm_div_le (a b : E) : ‖a / b‖ ≤ ‖a‖ + ‖b‖ := by
   simpa [dist_eq_norm_div] using dist_triangle a 1 b
+
+attribute [bound] norm_sub_le
 
 @[to_additive]
 theorem norm_div_le_of_le {r₁ r₂ : ℝ} (H₁ : ‖a₁‖ ≤ r₁) (H₂ : ‖a₂‖ ≤ r₂) : ‖a₁ / a₂‖ ≤ r₁ + r₂ :=
@@ -960,6 +965,7 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
 
 -- Porting note: had to add `ι` here because otherwise the universe order gets switched compared to
 -- `norm_prod_le` below
+@[bound]
 theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero norm_add_le f

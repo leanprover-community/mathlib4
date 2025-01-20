@@ -124,6 +124,7 @@ section Complex
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
+attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v. -/
 theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :

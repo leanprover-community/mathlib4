@@ -23,7 +23,6 @@ by radicals, then its minimal polynomial has solvable Galois group.
 that is solvable by radicals has a solvable Galois group.
 -/
 
-
 noncomputable section
 
 open Polynomial IntermediateField

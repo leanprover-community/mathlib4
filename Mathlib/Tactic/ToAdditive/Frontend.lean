@@ -731,7 +731,7 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
 
 /-- It's just the same as `Lean.Meta.setInlineAttribute` but with type `CoreM Unit`.
 
-TODO: make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
+TODO (lean4#4965): make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
 def setInlineAttribute (declName : Name) (kind := Compiler.InlineAttributeKind.inline) :
     CoreM Unit := do
   let env ← getEnv

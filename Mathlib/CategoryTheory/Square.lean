@@ -115,7 +115,7 @@ instance category : Category (Square C) where
 lemma hom_ext {sq₁ sq₂ : Square C} {f g : sq₁ ⟶ sq₂}
     (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂)
     (h₃ : f.τ₃ = g.τ₃) (h₄ : f.τ₄ = g.τ₄) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃ h₄
+  Hom.ext h₁ h₂ h₃ h₄
 
 /-- Constructor for isomorphisms in `Square c` -/
 def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq₁.X₂ ≅ sq₂.X₂)

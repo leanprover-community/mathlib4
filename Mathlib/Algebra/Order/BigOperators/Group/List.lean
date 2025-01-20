@@ -172,7 +172,7 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
   cases' lt_or_le n L.length with h h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
-  · simp [take_all_of_le h, take_all_of_le (le_trans h (Nat.le_succ _))]
+  · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
 
 end CanonicallyOrderedCommMonoid
 end List

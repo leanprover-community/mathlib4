@@ -153,7 +153,7 @@ end Definitions
 section Congr
 
 variable {S M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M₂]
-    [Module R M] [Module R M₂] [Module S M₂]
+    [Module R M] [Module S M₂]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 open DistribMulAction AddSubgroup in
@@ -192,7 +192,7 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs :
   e.toAddEquiv.isWeaklyRegular_congr <| List.forall₂_map_right_iff.mpr <|
     List.forall₂_same.mpr fun r _ x => e.map_smul' r x
 
-lemma _root_.LinearEquiv.isWeaklyRegular_congr (e : M ≃ₗ[R] M₂) (rs : List R) :
+lemma _root_.LinearEquiv.isWeaklyRegular_congr [Module R M₂] (e : M ≃ₗ[R] M₂) (rs : List R) :
     IsWeaklyRegular M rs ↔ IsWeaklyRegular M₂ rs :=
   Iff.trans (e.isWeaklyRegular_congr' rs) <| iff_of_eq <| congrArg _ rs.map_id
 
@@ -210,7 +210,7 @@ lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List 
   e.toAddEquiv.isRegular_congr <| List.forall₂_map_right_iff.mpr <|
     List.forall₂_same.mpr fun r _ x => e.map_smul' r x
 
-lemma _root_.LinearEquiv.isRegular_congr (e : M ≃ₗ[R] M₂) (rs : List R) :
+lemma _root_.LinearEquiv.isRegular_congr [Module R M₂] (e : M ≃ₗ[R] M₂) (rs : List R) :
     IsRegular M rs ↔ IsRegular M₂ rs :=
   Iff.trans (e.isRegular_congr' rs) <| iff_of_eq <| congrArg _ rs.map_id
 

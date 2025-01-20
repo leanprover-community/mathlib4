@@ -53,6 +53,7 @@ protected theorem integrable : Integrable f μ :=
 protected theorem integrable_normed : Integrable (f.normed μ) μ :=
   f.integrable.div_const _
 
+section
 variable [μ.IsOpenPosMeasure]
 
 theorem integral_pos : 0 < ∫ x, f x ∂μ := by
@@ -90,13 +91,17 @@ theorem integral_normed_smul {X} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [CompleteSpace X] (z : X) : ∫ x, f.normed μ x • z ∂μ = z := by
   simp_rw [integral_smul_const, f.integral_normed (μ := μ), one_smul]
 
+end
+
+variable (μ)
+
 theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
   (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
   _ = ∫ x in closedBall c f.rIn, f x ∂μ := setIntegral_congr measurableSet_closedBall
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
   _ ≤ ∫ x, f x ∂μ := setIntegral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
 
-theorem normed_le_div_measure_closedBall_rIn (x : E) :
+theorem normed_le_div_measure_closedBall_rIn [μ.IsOpenPosMeasure] (x : E) :
     f.normed μ x ≤ 1 / (μ (closedBall c f.rIn)).toReal := by
   rw [normed_def]
   gcongr

@@ -99,7 +99,7 @@ variable {f}
 
 /-- The morphism `m` in a factorisation `f = e ≫ m` through a monomorphism is uniquely
 determined. -/
-@[ext]
+@[ext (iff := false)]
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
@@ -383,7 +383,7 @@ theorem imageMonoIsoSource_hom_self [Mono f] : (imageMonoIsoSource f).hom ≫ f 
 -- This is the proof that `factorThruImage f` is an epimorphism
 -- from https://en.wikipedia.org/wiki/Image_%28category_theory%29, which is in turn taken from:
 -- Mitchell, Barry (1965), Theory of categories, MR 0202787, p.12, Proposition 10.1
-@[ext]
+@[ext (iff := false)]
 theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallelPair g h)]
     (w : factorThruImage f ≫ g = factorThruImage f ≫ h) : g = h := by
   let q := equalizer.ι g h
@@ -703,7 +703,7 @@ theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq
 
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
-    ImageMap.ext a b <| ImageMap.map_uniq a b
+    ImageMap.ext <| ImageMap.map_uniq a b
 
 end
 

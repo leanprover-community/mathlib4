@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic

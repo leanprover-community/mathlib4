@@ -163,8 +163,6 @@ theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n
 theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 
--- See note [no_index around OfNat.ofNat]
-@[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n

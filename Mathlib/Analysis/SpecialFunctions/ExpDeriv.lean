@@ -17,12 +17,10 @@ In this file we prove that `Complex.exp` and `Real.exp` are infinitely smooth fu
 exp, derivative
 -/
 
-
 noncomputable section
 
 open Filter Asymptotics Set Function
-
-open scoped Classical Topology
+open scoped Topology
 
 /-! ## `Complex.exp` -/
 

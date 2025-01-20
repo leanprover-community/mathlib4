@@ -99,7 +99,7 @@ lemma cauchy_iInf_uniformSpace' {ι : Sort*} {u : ι → UniformSpace β}
     Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
   simp_rw [cauchy_iff_le (uniformSpace := _), iInf_uniformity, le_iInf_iff]
 
-lemma cauchy_comap_uniformSpace {u : UniformSpace β} {f : α → β} {l : Filter α} :
+lemma cauchy_comap_uniformSpace {u : UniformSpace β} {α} {f : α → β} {l : Filter α} :
     Cauchy (uniformSpace := comap f u) l ↔ Cauchy (map f l) := by
   simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap]
   rfl
@@ -661,7 +661,6 @@ that this is a Cauchy sequence. If this sequence converges to some `a`, then `f 
 namespace SequentiallyComplete
 
 variable {f : Filter α} (hf : Cauchy f) {U : ℕ → Set (α × α)} (U_mem : ∀ n, U n ∈ 𝓤 α)
-  (U_le : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s)
 
 open Set Finset
 
@@ -705,11 +704,12 @@ theorem seq_pair_mem ⦃N m n : ℕ⦄ (hm : N ≤ m) (hn : N ≤ n) :
     (seq hf U_mem m, seq hf U_mem n) ∈ U N :=
   setSeq_prod_subset hf U_mem hm hn ⟨seq_mem hf U_mem m, seq_mem hf U_mem n⟩
 
-theorem seq_is_cauchySeq : CauchySeq <| seq hf U_mem :=
+theorem seq_is_cauchySeq (U_le : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s) : CauchySeq <| seq hf U_mem :=
   cauchySeq_of_controlled U U_le <| seq_pair_mem hf U_mem
 
 /-- If the sequence `SequentiallyComplete.seq` converges to `a`, then `f ≤ 𝓝 a`. -/
-theorem le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
+theorem le_nhds_of_seq_tendsto_nhds (U_le : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s)
+    ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
   le_nhds_of_cauchy_adhp_aux
     (fun s hs => by
       rcases U_le s hs with ⟨m, hm⟩

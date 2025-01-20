@@ -580,9 +580,7 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
     ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, AEStronglyMeasurable' m f μ →
       AEStronglyMeasurable' m g μ → Disjoint (Function.support f) (Function.support g) →
         P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g) from
-  -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable_aux`, but
-  -- it isn't?
-    Lp.induction_stronglyMeasurable_aux hm hp_ne_top h_ind h_add_ae h_closed f hf
+    Lp.induction_stronglyMeasurable_aux hm hp_ne_top _ h_ind h_add_ae h_closed f hf
   intro f g hf hg hfm hgm h_disj hPf hPg
   let s_f : Set α := Function.support (hfm.mk f)
   have hs_f : MeasurableSet[m] s_f := hfm.stronglyMeasurable_mk.measurableSet_support
@@ -645,9 +643,7 @@ theorem Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ 
   have hfm_Lp : AEStronglyMeasurable' m f_Lp μ := hfm.congr hf.coeFn_toLp.symm
   refine h_ae hf.coeFn_toLp (Lp.memℒp _) ?_
   change P f_Lp
-  -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable`, but
-  -- it isn't?
-  refine Lp.induction_stronglyMeasurable hm hp_ne_top (P := fun f => P f) ?_ ?_ h_closed f_Lp hfm_Lp
+  refine Lp.induction_stronglyMeasurable hm hp_ne_top (fun f => P f) ?_ ?_ h_closed f_Lp hfm_Lp
   · intro c s hs hμs
     rw [Lp.simpleFunc.coe_indicatorConst]
     refine h_ae indicatorConstLp_coeFn.symm ?_ (h_ind c hs hμs)

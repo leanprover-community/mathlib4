@@ -124,8 +124,6 @@ protected theorem congr_arg {f : Equiv α β} {x x' : α} : x = x' → f x = f x
 protected theorem congr_fun {f g : Equiv α β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem ext_iff {f g : Equiv α β} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
-
 @[ext] theorem Perm.ext {σ τ : Equiv.Perm α} (H : ∀ x, σ x = τ x) : σ = τ := Equiv.ext H
 
 protected theorem Perm.congr_arg {f : Equiv.Perm α} {x x' : α} : x = x' → f x = f x' :=
@@ -133,8 +131,6 @@ protected theorem Perm.congr_arg {f : Equiv.Perm α} {x x' : α} : x = x' → f 
 
 protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f x = g x :=
   Equiv.congr_fun h x
-
-protected theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x := Equiv.ext_iff
 
 /-- Any type is equivalent to itself. -/
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩

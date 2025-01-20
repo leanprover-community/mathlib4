@@ -557,8 +557,8 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       apply add_absorp h₁.snd'.repr_lt
       simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos _ omega_pos).2 (natCast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
-    · simp [e0, mul]
-      cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
+    · cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
+      simp only [e0, repr, PNat.mul_coe, natCast_mul, opow_zero, one_mul]
       simp only [xe, h₂.zero_of_zero e0, repr, add_zero]
       rw [natCast_succ x, add_mul_succ _ ao, mul_assoc]
     · simp only [repr]

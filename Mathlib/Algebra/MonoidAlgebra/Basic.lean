@@ -1508,7 +1508,7 @@ theorem of'_eq_of [AddZeroClass G] (a : G) : of' k G a = of k G (.ofAdd a) := rf
 theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) :=
   MonoidAlgebra.of_injective
 
-theorem of'_commute [Semiring k] [AddZeroClass G] {a : G} (h : ∀ a', AddCommute a a')
+theorem of'_commute [AddZeroClass G] {a : G} (h : ∀ a', AddCommute a a')
     (f : AddMonoidAlgebra k G) :
     Commute (of' k G a) f :=
   MonoidAlgebra.of_commute (G := Multiplicative G) h f

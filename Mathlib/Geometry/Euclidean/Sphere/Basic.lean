@@ -108,7 +108,7 @@ theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
 
 theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center = s₂.center ↔ s₁ = s₂ := by
-  refine ⟨fun h => Sphere.ext _ _ h ?_, fun h => h ▸ rfl⟩
+  refine ⟨fun h => Sphere.ext h ?_, fun h => h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
 

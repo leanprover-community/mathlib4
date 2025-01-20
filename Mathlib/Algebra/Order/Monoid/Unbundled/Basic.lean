@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Use
 
 /-!
 # Ordered monoids

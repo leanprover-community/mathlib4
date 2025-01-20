@@ -195,8 +195,6 @@ namespace Kernel
 @[ext]
 theorem ext {η : Kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 
-protected theorem ext_iff {η : Kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
-
 theorem ext_iff' {η : Kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by
   simp_rw [Kernel.ext_iff, Measure.ext_iff]
@@ -217,10 +215,9 @@ protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : Measurab
   (Measure.measurable_coe hs).comp κ.measurable
 
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
-  κ y' = κ y := by
+    κ y' = κ y := by
   ext s hs
-  exact mem_of_mem_measurableAtom hy'
-    (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+  exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :

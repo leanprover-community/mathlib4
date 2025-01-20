@@ -1728,6 +1728,11 @@ attribute [class] AddSubgroup.IsCommutative
 instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
   { H.toGroup with mul_comm := h.is_comm.comm }
 
+/-- A subgroup of a commutative group is commutative. -/
+@[to_additive "A subgroup of a commutative group is commutative."]
+instance commGroup_isCommutative {G : Type*} [CommGroup G] (H : Subgroup G) : H.IsCommutative :=
+  ⟨CommMagma.to_isCommutative⟩
+
 @[to_additive]
 instance map_isCommutative (f : G →* G') [H.IsCommutative] : (H.map f).IsCommutative :=
   ⟨⟨by
@@ -1748,6 +1753,11 @@ theorem comap_injective_isCommutative {f : G' →* G} (hf : Injective f) [H.IsCo
 @[to_additive]
 instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommutative :=
   H.comap_injective_isCommutative Subtype.coe_injective
+
+@[to_additive]
+lemma mul_comm_of_mem_isCommutative [H.IsCommutative] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
+    a * b = b * a := by
+  simpa only [Submonoid.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
 
 end Subgroup
 
@@ -1953,6 +1963,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
+
+@[to_additive]
+instance range_isCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
+    f.range.IsCommutative :=
+  range_eq_map f ▸ Subgroup.map_isCommutative ⊤ f
 
 @[to_additive (attr := simp)]
 theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by

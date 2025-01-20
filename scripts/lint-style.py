@@ -25,9 +25,9 @@ absolute path.
 The linters in this script are gradually being rewritten in Lean.
 Do not add new linters here; please write them in Lean instead.
 
-To run all style linters, run `lake exe lint_style`.
+To run all style linters, run `lake exe lint-style`.
 To update the list of allowed/ignored style exceptions, use
-    $ lake exe lint_style --regenerate
+    $ lake exe lint-style --update
 """
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.

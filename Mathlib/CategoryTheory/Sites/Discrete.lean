@@ -39,8 +39,10 @@ open CategoryTheory Limits Functor Adjunction Opposite Category Functor
 namespace CategoryTheory.Sheaf
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Category A]
-  [HasWeakSheafify J A] [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-  {t : C} (ht : IsTerminal t)
+  [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
+
+section
+variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
 /--
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
@@ -79,8 +81,6 @@ variable {D : Type*} [Category D] (K : GrothendieckTopology D) [HasWeakSheafify 
 variable (G : C ⥤ D)
   [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A]
   [G.IsDenseSubsite J K] (ht' : IsTerminal (G.obj t))
-
-variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
 open Functor.IsDenseSubsite
 
@@ -152,12 +152,11 @@ lemma isDiscrete_iff_of_equivalence (F : Sheaf K A) :
 
 end Equivalence
 
+end
+
 section Forget
 
-variable {B : Type*} [Category B] (U : A ⥤ B)
-  [HasWeakSheafify J A] [HasWeakSheafify J B]
-  [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-  [(constantSheaf J B).Faithful] [(constantSheaf J B).Full]
+variable {B : Type*} [Category B] (U : A ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J A)
 
 open Limits
@@ -262,6 +261,9 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
   have : IsIso f := by
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J B) _
   apply ReflectsIsomorphisms.reflects (sheafCompose J U) _
+
+variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
+  [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
 
 instance [h : F.IsDiscrete J ht] :
     ((sheafCompose J U).obj F).IsDiscrete J ht := by

@@ -6,7 +6,6 @@ Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Basic
-import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Util.AssertExists
 

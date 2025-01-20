@@ -31,7 +31,8 @@ See the docstring of that typeclass for more information.
 
 For now, we do not have internally-graded semirings and internally-graded rings; these can be
 represented with `𝒜 : ι → Submodule ℕ A` and `𝒜 : ι → Submodule ℤ A` respectively, since all
-`Semiring`s are ℕ-algebras via `algebraNat`, and all `Ring`s are `ℤ`-algebras via `algebraInt`.
+`Semiring`s are ℕ-algebras via `Semiring.toNatAlgebra`, and all `Ring`s are `ℤ`-algebras via
+`Ring.toIntAlgebra`.
 
 ## Tags
 

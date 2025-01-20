@@ -114,7 +114,7 @@ instance : Category (Action V G) where
 -- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 @[simp]
 theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
@@ -229,7 +229,7 @@ def forget : Action V G ⥤ V where
   obj M := M.V
   map f := f.hom
 
-instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
+instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget

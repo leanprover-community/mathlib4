@@ -151,7 +151,7 @@ theorem integrable_toReal_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
 
 end Integrability
 
-lemma condexpKernel_ae_eq_condexp' [IsFiniteMeasure μ] {s : Set Ω} (hs : MeasurableSet s) :
+lemma condexpKernel_ae_eq_condexp' {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
   have h := condDistrib_ae_eq_condexp (μ := μ)
     (measurable_id'' (inf_le_right : m ⊓ mΩ ≤ mΩ)) measurable_id hs
@@ -159,12 +159,12 @@ lemma condexpKernel_ae_eq_condexp' [IsFiniteMeasure μ] {s : Set Ω} (hs : Measu
   simp_rw [condexpKernel_apply_eq_condDistrib]
   exact h
 
-lemma condexpKernel_ae_eq_condexp [IsFiniteMeasure μ]
+lemma condexpKernel_ae_eq_condexp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ :=
   (condexpKernel_ae_eq_condexp' hs).trans (by rw [inf_of_le_left hm])
 
-lemma condexpKernel_ae_eq_trim_condexp [IsFiniteMeasure μ]
+lemma condexpKernel_ae_eq_trim_condexp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
   rw [ae_eq_trim_iff hm _ stronglyMeasurable_condexp]

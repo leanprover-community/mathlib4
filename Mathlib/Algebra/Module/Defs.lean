@@ -71,7 +71,7 @@ instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
   { smul_zero := smul_zero
     zero_smul := Module.zero_smul }
 
-instance AddCommMonoid.natModule : Module ℕ M where
+instance AddCommGroup.toNatModule : Module ℕ M where
   one_smul := one_nsmul
   mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
@@ -191,7 +191,7 @@ section AddCommGroup
 
 variable (R M) [Semiring R] [AddCommGroup M]
 
-instance AddCommGroup.intModule : Module ℤ M where
+instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul
   mul_smul m n a := mul_zsmul a m n
   smul_add n a b := zsmul_add a b n
@@ -316,7 +316,7 @@ def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
   toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
   left_inv f := RingHom.ext fun r ↦ mul_one (f r)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 
@@ -351,7 +351,7 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ 
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
-def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
+def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
@@ -371,28 +371,28 @@ section
 variable (R)
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-lemma Int.cast_smul_eq_nsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
+lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
   have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
     apply AddMonoidHom.ext_int
     simp
   DFunLike.congr_fun this n
 
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_nsmul
+@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_nsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_nsmul ..).symm
+@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
+theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
 
 end
 
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ M h.toSMul n x = n • x :=
-  Int.cast_smul_eq_nsmul ..
+  Int.cast_smul_eq_zsmul ..
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
-def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
+def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := by infer_instance
   uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 
@@ -401,7 +401,7 @@ end AddCommGroup
 theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_nsmul, map_zsmul]
+    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]

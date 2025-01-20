@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Utilities for lists of sigmas

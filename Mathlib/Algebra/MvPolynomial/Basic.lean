@@ -529,9 +529,6 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
 
-protected theorem ext_iff (p q : MvPolynomial σ R) : p = q ↔ ∀ m, coeff m p = coeff m q :=
-  ⟨fun h m => by rw [h], ext p q⟩
-
 @[simp]
 theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q) = coeff m p + coeff m q :=
   add_apply p q m
@@ -1101,7 +1098,7 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 
-theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p

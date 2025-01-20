@@ -156,8 +156,7 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     rfl
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
-protected theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n ψ :=
-  ⟨fun h n => congr_arg (coeff R n) h, ext⟩
+add_decl_doc PowerSeries.ext_iff
 
 instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
   simp only [subsingleton_iff, PowerSeries.ext_iff]

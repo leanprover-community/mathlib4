@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Zip
 import Batteries.Data.Nat.Lemmas
 
 /-!
@@ -29,16 +27,6 @@ namespace List
 
 variable {α : Type u}
 
-@[simp] theorem range'_one {s step : ℕ} : range' s 1 step = [s] := rfl
-
-theorem pairwise_lt_range' : ∀ s n (step := 1) (_ : 0 < step := by simp),
-  Pairwise (· < ·) (range' s n step)
-  | _, 0, _, _ => Pairwise.nil
-  | s, n + 1, _, h => chain_iff_pairwise.1 (chain_lt_range' s n h)
-
-theorem nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (range' s n step) :=
-  (pairwise_lt_range' s n step h).imp _root_.ne_of_lt
-
 set_option linter.deprecated false in
 @[simp]
 theorem nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
@@ -47,20 +35,6 @@ theorem nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
 set_option linter.deprecated false in
 theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
     nthLe (range' n m) i H = n + i := by simp
-
-theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
-  simp (config := {decide := true}) only [range_eq_range', pairwise_lt_range']
-
-theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
-  Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
-
-theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
-  apply List.ext_getElem
-  · simp
-  · simp (config := { contextual := true }) [← getElem_take, Nat.lt_min]
-
-theorem nodup_range (n : ℕ) : Nodup (range n) := by
-  simp (config := {decide := true}) only [range_eq_range', nodup_range']
 
 theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
@@ -76,12 +50,6 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
-
-theorem pairwise_gt_iota (n : ℕ) : Pairwise (· > ·) (iota n) := by
-  simpa only [iota_eq_reverse_range', pairwise_reverse] using pairwise_lt_range' 1 n
-
-theorem nodup_iota (n : ℕ) : Nodup (iota n) :=
-  (pairwise_gt_iota n).imp _root_.ne_of_gt
 
 /-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
 def finRange (n : ℕ) : List (Fin n) :=
@@ -114,21 +82,6 @@ theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
 
 theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
   (List.pairwise_le_range n).pmap (by simp) (by simp)
-
-theorem enum_eq_zip_range (l : List α) : l.enum = (range l.length).zip l :=
-  zip_of_prod (enum_map_fst _) (enum_map_snd _)
-
-@[simp]
-theorem unzip_enum_eq_prod (l : List α) : l.enum.unzip = (range l.length, l) := by
-  simp only [enum_eq_zip_range, unzip_zip, length_range]
-
-theorem enumFrom_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
-  zip_of_prod (enumFrom_map_fst _ _) (enumFrom_map_snd _ _)
-
-@[simp]
-theorem unzip_enumFrom_eq_prod (l : List α) {n : ℕ} :
-    (l.enumFrom n).unzip = (range' n l.length, l) := by
-  simp only [enumFrom_eq_zip_range', unzip_zip, length_range']
 
 set_option linter.deprecated false in
 @[simp]

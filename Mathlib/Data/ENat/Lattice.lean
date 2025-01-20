@@ -22,6 +22,9 @@ open Set
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
+noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
+  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
+
 namespace ENat
 variable {ι : Sort*} {f : ι → ℕ} {s : Set ℕ}
 

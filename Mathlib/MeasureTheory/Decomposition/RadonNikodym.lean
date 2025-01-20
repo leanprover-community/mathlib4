@@ -517,7 +517,7 @@ lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_mul := setLIntegral_rnDeriv_mul
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem integrable_rnDeriv_smul_iff [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
     [SigmaFinite μ] {f : α → E} :

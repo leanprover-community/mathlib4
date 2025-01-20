@@ -130,9 +130,6 @@ theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2
 theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
   DFunLike.ext _ _ h
 
-theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
-  ⟨fun h _ => h ▸ rfl, ext⟩
-
 theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
   DFunLike.coe_injective
 
@@ -740,7 +737,7 @@ theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.si
 
 /-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
 note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
-@[ext]
+@[ext (iff := false)]
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single i).toAffineMap =
     g.comp (LinearMap.single i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_

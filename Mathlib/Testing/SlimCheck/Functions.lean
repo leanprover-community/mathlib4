@@ -334,7 +334,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
         erw [← Option.mem_def, List.mem_dlookup_iff] at h₃
         · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
-          apply (List.mem_zip h₃).2
+          apply (List.of_mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp, Prod.fst_toSigma, List.map_map]
         rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
 
@@ -347,7 +347,7 @@ theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
   simp only [List.keys, not_exists, Prod.toSigma, exists_and_right, exists_eq_right, List.mem_map,
     Function.comp_apply, List.map_map, Prod.exists]
   intro y hy
-  exact h (List.mem_zip hy).1
+  exact h (List.of_mem_zip hy).1
 
 theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys) :
     Injective.{u + 1, u + 1} (List.applyId (xs.zip ys)) := by
@@ -392,12 +392,12 @@ def Perm.slice [DecidableEq α] (n m : ℕ) :
 /-- A list, in decreasing order, of sizes that should be
 sliced off a list of length `n`
 -/
-def sliceSizes : ℕ → List ℕ+
+def sliceSizes : ℕ → MLList Id ℕ+
   | n =>
     if h : 0 < n then
       have : n / 2 < n := Nat.div_lt_self h (by decide : 1 < 2)
-      ⟨_, h⟩ :: (sliceSizes <| n / 2)
-    else []
+      .cons ⟨_, h⟩ (sliceSizes <| n / 2)
+    else .nil
 
 /-- Shrink a permutation of a list, slicing a segment in the middle.
 
@@ -409,7 +409,7 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup) → List (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup)
   | xs => do
     let k := xs.1.length
-    let n ← sliceSizes k
+    let n ← (sliceSizes k).force
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 

@@ -192,9 +192,9 @@ namespace ConnectedComponent
 
 section Finite
 
-variable [Fintype V] [DecidableRel G.Adj]
+variable [Fintype V]
 
-lemma even_card_of_isPerfectMatching [DecidableEq V]
+lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card

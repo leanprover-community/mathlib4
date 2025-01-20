@@ -68,9 +68,9 @@ theorem covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (
     (b₀ : Basis ι ℝ E) :
     covolume L μ = |b₀.det ((↑) ∘ b)| * (μ (Zspan.fundamentalDomain b₀)).toReal := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain b μ),
-    Zspan.measure_fundamentalDomain _ _ b₀, measure_congr
-    (Zspan.fundamentalDomain_ae_parallelepiped b₀ μ), ENNReal.toReal_mul, ENNReal.toReal_ofReal
-    (by positivity)]
+    Zspan.measure_fundamentalDomain _ _ b₀,
+    measure_congr (Zspan.fundamentalDomain_ae_parallelepiped b₀ μ), ENNReal.toReal_mul,
+    ENNReal.toReal_ofReal (by positivity)]
   congr
   ext
   exact b.ofZlatticeBasis_apply ℝ L _

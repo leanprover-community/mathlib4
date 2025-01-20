@@ -23,11 +23,8 @@ cannot have:
 
 noncomputable section
 
-open scoped Classical Topology
-
+open scoped Topology
 open Polynomial Real Filter Set Function
-
-open scoped Polynomial
 
 /-- `expNegInvGlue` is the real function given by `x ↦ exp (-1/x)` for `x > 0` and `0`
 for `x ≤ 0`. It is a basic building block to construct smooth partitions of unity. Its main property

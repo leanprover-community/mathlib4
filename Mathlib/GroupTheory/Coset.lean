@@ -539,8 +539,11 @@ variable {t : Subgroup α}
 
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/
 @[to_additive "If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection."]
-def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t :=
-  congr' _ _ (.refl _) (by ext; simp [h])
+def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
+  toFun := Quotient.map' id fun _a _b h' => h ▸ h'
+  invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
+  left_inv q := induction_on q fun _g => rfl
+  right_inv q := induction_on q fun _g => rfl
 
 theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
     quotientEquivOfEq h (QuotientGroup.mk a) = QuotientGroup.mk a :=
@@ -597,7 +600,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
   inj' a b :=
     QuotientGroup.induction_on₂ a b <| by
       intro a b h
-      simpa only [map'_mk, QuotientGroup.eq] using h
+      simpa only [Quotient.map'_mk'', QuotientGroup.eq] using h
 
 -- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -637,8 +640,8 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
-  inj' a b :=
-    QuotientGroup.induction_on₂ a b <| by
+  inj' :=
+    Quotient.ind₂' <| by
       simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
         mem_iInf, imp_self, forall_const]
 
@@ -654,8 +657,8 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgro
 @[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
 def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where
   toFun q i := quotientMapOfLE (iInf_le f i) q
-  inj' a b :=
-    QuotientGroup.induction_on₂ a b <| by
+  inj' :=
+    Quotient.ind₂' <| by
       simp_rw [funext_iff, quotientMapOfLE_apply_mk, QuotientGroup.eq, mem_iInf, imp_self,
         forall_const]
 

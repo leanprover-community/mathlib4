@@ -215,16 +215,14 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
-variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
-
 variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Generators R'' S'')
-variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
-  [IsScalarTower R R'' S''] [IsScalarTower R S S'']
-variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
-  [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
-variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
 
 section Hom
+
+section
+
+variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
+variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
 /-- Given a commuting square
 R --→ P = R[X] ---→ S
@@ -249,6 +247,7 @@ an algebra homomorphism between the polynomial rings. -/
 noncomputable
 def Hom.toAlgHom (f : Hom P P') : P.Ring →ₐ[R] P'.Ring := MvPolynomial.aeval f.val
 
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] in
 @[simp]
 lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.toAlgHom x) =
     algebraMap S S' (MvPolynomial.aeval P.val x) := by
@@ -270,6 +269,7 @@ lemma Hom.toAlgHom_monomial (f : Generators.Hom P P') (v r) :
     f.toAlgHom (monomial v r) = r • v.prod (f.val · ^ ·) := by
   rw [toAlgHom, aeval_monomial, Algebra.smul_def]
 
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] in
 /-- Giving a hom between two families of generators is equivalent to
 giving an algebra homomorphism between the polynomial rings. -/
 @[simps]
@@ -301,7 +301,8 @@ variable {P P' P''}
 
 /-- The composition of two homs. -/
 @[simps]
-noncomputable def Hom.comp (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
+noncomputable def Hom.comp [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
+    [IsScalarTower S S' S''] (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
   val x := aeval f.val (g.val x)
   aeval_val x := by
     simp only
@@ -312,13 +313,23 @@ noncomputable def Hom.comp (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
     | h_X p i hp => simp only [_root_.map_mul, hp, aeval_X, aeval_val]
 
 @[simp]
-lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
+lemma Hom.comp_id [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] (f : Hom P P') :
+    f.comp (Hom.id P) = f := by ext; simp
+
+end
 
 @[simp]
-lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by ext; simp [Hom.id, aeval_X_left]
+lemma Hom.id_comp [Algebra S S'] (f : Hom P P') : (Hom.id P').comp f = f := by
+  ext; simp [Hom.id, aeval_X_left]
+
+variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
+variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
 @[simp]
-lemma Hom.toAlgHom_comp_apply (f : Hom P P') (g : Hom P' P'') (x) :
+lemma Hom.toAlgHom_comp_apply
+    [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
+    [IsScalarTower R' S' S''] [IsScalarTower S S' S'']
+    (f : Hom P P') (g : Hom P' P'') (x) :
     (g.comp f).toAlgHom x = g.toAlgHom (f.toAlgHom x) := by
   induction x using MvPolynomial.induction_on with
   | h_C r => simp only [← MvPolynomial.algebraMap_eq, AlgHom.map_algebraMap]
@@ -457,6 +468,9 @@ lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
 
 variable {P'}
+variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
+variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
+variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 /-- A hom between families of generators induce a map between cotangent spaces. -/
 noncomputable
@@ -489,6 +503,10 @@ lemma Cotangent.map_id :
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   simp only [map_mk, Hom.toAlgHom_id, AlgHom.coe_id, id_eq, Subtype.coe_eta, val_mk,
     LinearMap.id_coe]
+
+variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
+  [IsScalarTower R' S' S''] [IsScalarTower S S' S'']
+  [Algebra R S''] [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 
 lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
     Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by

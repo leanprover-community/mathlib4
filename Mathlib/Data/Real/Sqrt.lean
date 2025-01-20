@@ -99,6 +99,8 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
+attribute [bound] sqrt_pos_of_pos
+
 end NNReal
 
 namespace Real
@@ -197,12 +199,12 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : √x < √y ↔ x < y :=
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 
-@[gcongr]
+@[gcongr, bound]
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
-@[gcongr]
+@[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
   (sqrt_lt_sqrt_iff hx).2 h
 

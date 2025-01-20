@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Thomas Browning
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.Tactic.Linarith
 
 /-!
 # Zagier's "one-sentence proof" of Fermat's theorem on sums of two squares
@@ -75,7 +76,7 @@ section Involutions
 
 open Function
 
-variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
+variable (k : ℕ)
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
 def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
@@ -109,6 +110,8 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
     push_neg at less; zify [less, more.le] at h ⊢; linarith [h]
   · -- middle: `x` is neither less than `y - z` or more than `2 * y`
     push_neg at less more; zify [less, more] at h ⊢; linarith [h]⟩
+
+variable [hk : Fact (4 * k + 1).Prime]
 
 /-- `complexInvo k` is indeed an involution. -/
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by

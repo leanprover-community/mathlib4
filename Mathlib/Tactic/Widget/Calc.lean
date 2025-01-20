@@ -7,6 +7,8 @@ import Lean.Elab.Tactic.Calc
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Batteries.CodeAction.Attr
+import Batteries.Lean.Position
 
 /-! # Calc widget
 

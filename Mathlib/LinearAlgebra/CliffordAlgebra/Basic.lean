@@ -80,9 +80,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
 
 -- verify there are no diamonds
 -- but doesn't work at `reducible_and_instances` #10906
-example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 -- but doesn't work at `reducible_and_instances` #10906
-example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
 instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _

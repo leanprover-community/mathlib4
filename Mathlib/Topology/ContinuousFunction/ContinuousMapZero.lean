@@ -57,7 +57,7 @@ lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g 
 @[simp]
 lemma coe_mk {f : C(X, R)} {h0 : f 0 = 0} : ⇑(mk f h0) = f := rfl
 
-lemma toContinuousMap_injective [Zero R] : Injective ((↑) : C(X, R)₀ → C(X, R)) :=
+lemma toContinuousMap_injective : Injective ((↑) : C(X, R)₀ → C(X, R)) :=
   fun _ _ h ↦ congr(.mk $(h) _)
 
 lemma range_toContinuousMap : range ((↑) : C(X, R)₀ → C(X, R)) = {f : C(X, R) | f 0 = 0} :=

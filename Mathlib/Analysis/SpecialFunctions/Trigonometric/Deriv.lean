@@ -21,12 +21,10 @@ computed.
 sin, cos, tan, angle
 -/
 
-
 noncomputable section
 
-open scoped Classical Topology Filter
-
-open Set Filter
+open scoped Topology Filter
+open Set
 
 namespace Complex
 

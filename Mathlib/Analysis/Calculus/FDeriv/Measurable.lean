@@ -787,8 +787,7 @@ that the differentiability set `D` is measurable. -/
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [MeasurableSpace E]
-  [OpensMeasurableSpace α] [OpensMeasurableSpace E]
+  {α : Type*} [TopologicalSpace α]
   {f : α → E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
@@ -872,6 +871,8 @@ lemma isOpen_B_with_param {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E 
 end FDerivMeasurableAux
 
 open FDerivMeasurableAux
+
+variable [MeasurableSpace α] [OpensMeasurableSpace α] [MeasurableSpace E] [OpensMeasurableSpace E]
 
 theorem measurableSet_of_differentiableAt_of_isComplete_with_param
     (hf : Continuous f.uncurry) {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :

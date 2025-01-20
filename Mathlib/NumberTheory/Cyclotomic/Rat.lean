@@ -28,9 +28,11 @@ open Algebra IsCyclotomicExtension Polynomial NumberField
 
 open scoped Cyclotomic Nat
 
-variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] [CharZero K] {ζ : K} [hp : Fact (p : ℕ).Prime]
+variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] {ζ : K} [hp : Fact (p : ℕ).Prime]
 
 namespace IsCyclotomicExtension.Rat
+
+variable [CharZero K]
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -145,6 +147,10 @@ open IsCyclotomicExtension.Rat
 
 namespace IsPrimitiveRoot
 
+section CharZero
+
+variable [CharZero K]
+
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `p ^ k`-th root of
 unity and `K` is a `p ^ k`-th cyclotomic extension of `ℚ`. -/
 @[simps!]
@@ -168,6 +174,8 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
 
 /-- Abbreviation to see a primitive root of unity as a member of the ring of integers. -/
 abbrev toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.isIntegral k.pos⟩
+
+end CharZero
 
 lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
 
@@ -193,6 +201,8 @@ lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
   IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective
+
+variable [CharZero K]
 
 -- Porting note: the proof changed because `simp` unfolds too much.
 @[simp]
@@ -547,6 +557,7 @@ namespace IsCyclotomicExtension.Rat
 open nonZeroDivisors IsPrimitiveRoot
 
 variable (K p k)
+variable [CharZero K]
 
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
   Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.

@@ -254,8 +254,17 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
   (surjective_quot_mk _).denseRange.comp denseRange_pure continuous_coinduced_rng
 
+
 section Extension
-variable {β : Type v} [TopologicalSpace β] [T2Space β] [CompactSpace β]
+variable {β : Type v} [TopologicalSpace β] [T2Space β]
+
+theorem preStoneCech_hom_ext {g₁ g₂ : PreStoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (h : g₁ ∘ preStoneCechUnit = g₂ ∘ preStoneCechUnit) : g₁ = g₂ := by
+  apply Continuous.ext_on denseRange_preStoneCechUnit h₁ h₂
+  rintro x ⟨x, rfl⟩
+  apply congr_fun h x
+
+variable [CompactSpace β]
 variable {g : α → β} (hg : Continuous g)
 
 lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) (hG : ↑G ≤ 𝓝 x) :
@@ -288,12 +297,6 @@ lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCec
 
 theorem continuous_preStoneCechExtend : Continuous (preStoneCechExtend hg) :=
   continuous_quot_lift _ (continuous_ultrafilter_extend g)
-
-theorem preStoneCech_hom_ext {g₁ g₂ : PreStoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
-    (h : g₁ ∘ preStoneCechUnit = g₂ ∘ preStoneCechUnit) : g₁ = g₂ := by
-  apply Continuous.ext_on denseRange_preStoneCechUnit h₁ h₂
-  rintro x ⟨x, rfl⟩
-  apply congr_fun h x
 
 end Extension
 
@@ -338,8 +341,16 @@ theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech 
 
 section Extension
 
-variable {β : Type v} [TopologicalSpace β] [T2Space β] [CompactSpace β]
+variable {β : Type v} [TopologicalSpace β] [T2Space β]
 variable {g : α → β} (hg : Continuous g)
+
+theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
+  apply h₁.ext_on denseRange_stoneCechUnit h₂
+  rintro _ ⟨x, rfl⟩
+  exact congr_fun h x
+
+variable [CompactSpace β]
 
 /-- The extension of a continuous function from `α` to a compact
   Hausdorff space `β` to the Stone-Čech compactification of `α`.
@@ -359,12 +370,6 @@ lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → β} (hcf : Continuous f)
     (h : stoneCechUnit a = stoneCechUnit b) : f a = f b := by
   rw [← congrFun (stoneCechExtend_extends hcf), ← congrFun (stoneCechExtend_extends hcf)]
   exact congrArg (stoneCechExtend hcf) h
-
-theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
-    (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
-  apply h₁.ext_on denseRange_stoneCechUnit h₂
-  rintro _ ⟨x, rfl⟩
-  exact congr_fun h x
 
 end Extension
 

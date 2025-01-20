@@ -72,8 +72,8 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
   · intro h ε hε
     let u := { a : α × α | dist a.fst a.snd < ε }
     have hu : u ∈ 𝓤 α := Metric.mem_uniformity_dist.mpr ⟨ε, hε, by simp [u]⟩
-    rw [← @Filter.eventually_atTop_prod_self' _ _ _ fun m =>
-      ∀ x ∈ s, dist (F m.fst x) (F m.snd x) < ε]
+    rw [← Filter.eventually_atTop_prod_self' (p := fun m =>
+      ∀ x ∈ s, dist (F m.fst x) (F m.snd x) < ε)]
     specialize h u hu
     rw [prod_atTop_atTop_eq] at h
     exact h.mono fun n h x hx => h x hx

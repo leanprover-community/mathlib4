@@ -254,12 +254,8 @@ theorem exists_ne_none {p : Option α → Prop} : (∃ x ≠ none, p x) ↔ (∃
   simp only [← exists_prop, bex_ne_none]
 
 @[simp]
-theorem isSome_map (f : α → β) (o : Option α) : isSome (o.map f) = isSome o := by
-  cases o <;> rfl
-
-@[simp]
 theorem get_map (f : α → β) {o : Option α} (h : isSome (o.map f)) :
-    (o.map f).get h = f (o.get (by rwa [← isSome_map])) := by
+    (o.map f).get h = f (o.get (by rwa [← isSome_map'])) := by
   cases o <;> [simp at h; rfl]
 
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
@@ -356,14 +352,6 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
-
-@[simp]
-theorem get!_some [Inhabited α] (a : α) : (some a).get! = a :=
-  rfl
-
-@[simp]
-theorem get!_none [Inhabited α] : (none : Option α).get! = default :=
-  rfl
 
 @[simp]
 lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by

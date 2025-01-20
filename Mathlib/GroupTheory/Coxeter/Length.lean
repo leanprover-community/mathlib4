@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Tactic.Zify
 
 /-!
 # The length function, reduced words, and descents

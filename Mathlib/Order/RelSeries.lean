@@ -58,7 +58,7 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
-@[ext]
+@[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
   rcases x with ⟨nx, fx⟩
@@ -219,6 +219,12 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
+@[simp]
+lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by simp [singleton, head]
+
+@[simp]
+lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
+
 end
 
 variable {r s}
@@ -305,6 +311,10 @@ def map (p : RelSeries r) (f : r →r s) : RelSeries s where
 @[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
 
+@[simp] lemma head_map (p : RelSeries r) (f : r →r s) : (p.map f).head = f p.head := rfl
+
+@[simp] lemma last_map (p : RelSeries r) (f : r →r s) : (p.map f).last = f p.last := rfl
+
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
@@ -382,6 +392,15 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
 
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
+
+@[simp] lemma last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
+  simp [RelSeries.last, RelSeries.head]
+
+@[simp] lemma reverse_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.reverse = p := by
+  ext <;> simp
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
@@ -561,6 +580,40 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
     (smash p q h).last = q.last := by
   delta smash last; aesop
 
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
+@[simps! length]
+def take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
+  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
+
+@[simp]
+lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
+    (p.take i).head = p.head := by simp [take, head]
+
+@[simp]
+lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
+    (p.take i).last = p i := by simp [take, last, Fin.last]
+
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aᵢ`. -/
+@[simps! length]
+def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+  length := p.length - i
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
+  step := fun ⟨j, h⟩ => by
+    convert p.step ⟨j+i.1, by omega⟩
+    simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+
+@[simp]
+lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p.toFun i := by
+  simp [drop, head]
+
+@[simp]
+lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p.last := by
+  simp only [last, drop, Fin.last]
+  congr
+  omega
+
 end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
@@ -637,6 +690,12 @@ can be pushed out to a strict chain of `β` by
 @[simps!]
 def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
+
+@[simp] lemma head_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).head = f p.head := rfl
+
+@[simp] lemma last_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).last = f p.last := rfl
 
 /--
 For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a

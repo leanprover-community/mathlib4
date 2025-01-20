@@ -59,7 +59,6 @@ open scoped Matrix
 
 namespace Algebra
 
-variable (b : Basis ι R S)
 variable (R S)
 
 /-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
@@ -85,7 +84,8 @@ theorem trace_eq_matrix_trace [DecidableEq ι] (b : Basis ι R S) (s : S) :
   rw [trace_apply, LinearMap.trace_eq_matrix_trace _ b, ← toMatrix_lmul_eq]; rfl
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`. -/
-theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Fintype.card ι • x := by
+theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
+    trace R S (algebraMap R S x) = Fintype.card ι • x := by
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
@@ -165,7 +165,7 @@ theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
 
 theorem traceForm_isSymm : (traceForm R S).IsSymm := fun _ _ => congr_arg (trace R S) (mul_comm _ _)
 
-theorem traceForm_toMatrix [DecidableEq ι] (i j) :
+theorem traceForm_toMatrix [DecidableEq ι] (b : Basis ι R S) (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by
   rw [BilinForm.toMatrix_apply, traceForm_apply]
 

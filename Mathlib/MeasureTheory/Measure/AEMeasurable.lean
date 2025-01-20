@@ -39,7 +39,7 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 
-lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
+lemma aemeasurable_of_map_neZero {μ : Measure α}
     {f : α → β} (h : NeZero (μ.map f)) :
     AEMeasurable f μ := by
   by_contra h'

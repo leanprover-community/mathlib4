@@ -405,7 +405,7 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM) :=
+    @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM).toSeminormedAddCommGroup :=
   InnerProductSpace.ofCore _
 
 end Matrix

@@ -67,7 +67,7 @@ lemma mk_obj {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X : V} :
 lemma mk_map {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F G : Prefunctor V W}
     (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y : V) (f : X ⟶ Y),

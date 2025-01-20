@@ -27,7 +27,7 @@ namespace LieDerivation.IsKilling
 
 section
 
-variable (R L : Type*) [Field R] [LieRing L] [LieAlgebra R L] [Module.Finite R L]
+variable (R L : Type*) [Field R] [LieRing L] [LieAlgebra R L]
 
 /-- A local notation for the set of (Lie) derivations on `L`. -/
 local notation "𝔻" => (LieDerivation R L L)
@@ -38,7 +38,8 @@ local notation "𝕀" => (LieHom.range (ad R L))
 /-- A local notation for the Killing complement of the ideal range of `ad`. -/
 local notation "𝕀ᗮ" => LinearMap.BilinForm.orthogonal (killingForm R 𝔻) 𝕀
 
-lemma killingForm_restrict_range_ad : (killingForm R 𝔻).restrict 𝕀 = killingForm R 𝕀 := by
+lemma killingForm_restrict_range_ad [Module.Finite R L] :
+    (killingForm R 𝔻).restrict 𝕀 = killingForm R 𝕀 := by
   rw [← (ad_isIdealMorphism R L).eq, ← LieIdeal.killingForm_eq]
   rfl
 
@@ -62,6 +63,8 @@ lemma ad_mem_orthogonal_of_mem_orthogonal {D : LieDerivation R L L} (hD : D ∈ 
     ad R L (D x) ∈ 𝕀ᗮ := by
   simp only [ad_apply_lieDerivation, LieHom.range_coeSubmodule, neg_mem_iff]
   exact (rangeAdOrthogonal R L).lie_mem hD
+
+variable [Module.Finite R L]
 
 lemma ad_mem_ker_killingForm_ad_range_of_mem_orthogonal
     {D : LieDerivation R L L} (hD : D ∈ 𝕀ᗮ) (x : L) :

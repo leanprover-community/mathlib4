@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Permutation
@@ -135,7 +136,7 @@ attribute [simp] nil_subperm
 theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
   ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
 
-lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons _ _⟩
+lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
     (l : List α) (a : α) :
@@ -241,14 +242,17 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
-    simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
+    simp (config := { contextual := true }) [count_replicate, h, this, count_eq_zero, Ne.symm]
   trans ∀ c, c ∈ l → c = b ∨ c = a
   · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
   perm_iff_count.2 fun a =>
-    if h : a ∈ l₁ then by simp [nodup_dedup, h, p.subset h] else by simp [h, mt p.mem_iff.2 h]
+    if h : a ∈ l₁ then by
+      simp [h, nodup_dedup, p.subset h]
+    else by
+      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
 
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
@@ -333,7 +337,7 @@ theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ y
     have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
     have h₁ : n' ≤ xs.length := Nat.sub_le ..
     have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
-      rw [take_reverse _ h₁, h₀, reverse_reverse]
+      rw [take_reverse h₁, h₀, reverse_reverse]
     rw [h₂]
     apply (reverse_perm _).trans
     rw [inter_reverse]
@@ -520,7 +524,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
   · simp [takeWhile, count]
-  · rw [permutations'Aux, DecEq_eq, count_cons_self]
+  · rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
@@ -629,7 +633,23 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
         rw [← hx, nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
         exact nthLe_mem _ _ _
 
--- TODO: `nodup s.permutations ↔ nodup s`
+lemma permutations_take_two (x y : α) (s : List α) :
+    (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by
+  induction s <;> simp only [take, permutationsAux, permutationsAux.rec, permutationsAux2, id_eq]
+
+@[simp]
+theorem nodup_permutations_iff {s : List α} : Nodup s.permutations ↔ Nodup s := by
+  refine ⟨?_, nodup_permutations s⟩
+  contrapose
+  rw [← exists_duplicate_iff_not_nodup]
+  intro ⟨x, hs⟩
+  rw [duplicate_iff_sublist] at hs
+  obtain ⟨l, ht⟩ := List.Sublist.exists_perm_append hs
+  rw [List.Perm.nodup_iff (List.Perm.permutations ht), ← exists_duplicate_iff_not_nodup]
+  use x :: x :: l
+  rw [List.duplicate_iff_sublist, ← permutations_take_two]
+  exact take_sublist 2 _
+
 -- TODO: `count s s.permutations = (zipWith count s s.tails).prod`
 end Permutations
 

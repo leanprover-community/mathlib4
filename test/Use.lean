@@ -38,7 +38,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `42` cannot be used in a context where the expected type is
   Nat × Nat
 due to the absence of the instance above
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -94,7 +94,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Option Nat
 due to the absence of the instance above
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Option Nat := by use 1
@@ -105,7 +105,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Nat → Nat
 due to the absence of the instance above
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1

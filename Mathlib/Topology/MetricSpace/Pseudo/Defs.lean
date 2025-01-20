@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 ## Pseudo-metric spaces
@@ -169,6 +170,7 @@ theorem dist_comm (x y : α) : dist x y = dist y x :=
 theorem edist_dist (x y : α) : edist x y = ENNReal.ofReal (dist x y) :=
   PseudoMetricSpace.edist_dist x y
 
+@[bound]
 theorem dist_triangle (x y z : α) : dist x z ≤ dist x y + dist y z :=
   PseudoMetricSpace.dist_triangle x y z
 
@@ -231,6 +233,7 @@ theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add.2 (dist_triangle _ _ _), sub_le_iff_le_add.2 (dist_triangle_left _ _ _)⟩
 
+@[bound]
 theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 

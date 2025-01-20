@@ -793,9 +793,9 @@ theorem _root_.IsClosed.measurableSet_image_of_continuousOn_injOn
   · rwa [continuousOn_iff_continuous_restrict] at f_cont
   · rwa [injOn_iff_injective] at f_inj
 
-variable {α β : Type*} [tβ : TopologicalSpace β] [T2Space β] [MeasurableSpace β]
-  [MeasurableSpace α]
-  {s : Set γ} {f : γ → β}
+variable {α β : Type*} [MeasurableSpace β]
+section
+variable [tβ : TopologicalSpace β] [T2Space β] [MeasurableSpace α] {s : Set γ} {f : γ → β}
 
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a Polish space, then its image under
 a continuous injective map is also Borel-measurable. -/
@@ -879,7 +879,7 @@ theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
   refine le_antisymm ?_ (borel_anti hle)
   intro s hs
   have e := @Continuous.measurableEmbedding
-    _ _ t' _ (@borel _ t') _ (@BorelSpace.mk _ _ (borel γ) rfl)
+    _ _ (@borel _ t') t' _ _ (@BorelSpace.mk _ _ (borel γ) rfl)
     t _ (@borel _ t) (@BorelSpace.mk _ t (@borel _ t) rfl) (continuous_id_of_le hle) injective_id
   convert e.measurableSet_image.2 hs
   simp only [id_eq, image_id']
@@ -897,6 +897,8 @@ theorem isClopenable_iff_measurableSet
   rw [← borel_eq_borel_of_le t'_polish _ t't]
   · exact MeasurableSpace.measurableSet_generateFrom s_open
   infer_instance
+
+end
 
 /-- The set of points for which a sequence of measurable functions converges to a given function
 is measurable. -/

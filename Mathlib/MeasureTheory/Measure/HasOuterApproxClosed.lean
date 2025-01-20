@@ -72,7 +72,7 @@ This formulation assumes:
  * boundedness holds almost everywhere.
 -/
 theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter ι}
-    [L.IsCountablyGenerated] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω)
+    [L.IsCountablyGenerated] (μ : Measure Ω)
     [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E) (fs : ι → Ω →ᵇ ℝ≥0)
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
@@ -90,7 +90,7 @@ measure of the set.
 A similar result with more general assumptions is
 `MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
 -/
-theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
+theorem measure_of_cont_bdd_of_tendsto_indicator
     (μ : Measure Ω) [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E)
     (fs : ℕ → Ω →ᵇ ℝ≥0) (fs_bdd : ∀ n ω, fs n ω ≤ c)
     (fs_lim : Tendsto (fun n ω ↦ fs n ω) atTop (𝓝 (indicator E fun _ ↦ (1 : ℝ≥0)))) :

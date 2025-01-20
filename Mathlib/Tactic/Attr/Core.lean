@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Tactic.Attr.Register
-import Batteries.Logic
 
 /-!
 # Simp tags for core lemmas

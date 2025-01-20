@@ -283,7 +283,7 @@ instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A 
   smul_def := fun _r ⟨i, _xi⟩ => Sigma.subtype_ext (zero_add i).symm <| Algebra.smul_def _ _
 
 @[simp]
-theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem setLike.coe_galgebra_toFun {ι} [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (s : S) :
     (DirectSum.GAlgebra.toFun (A := fun i => A i) s) = (algebraMap S R s : R) :=
   rfl

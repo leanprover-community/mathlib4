@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
+import ProofWidgets.Component.Panel.Basic
 import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
 

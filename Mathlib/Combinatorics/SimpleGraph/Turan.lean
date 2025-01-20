@@ -187,7 +187,9 @@ instance : DecidableRel h.setoid.r :=
 /-- The finpartition derived from `h.setoid`. -/
 def finpartition [DecidableEq V] : Finpartition (univ : Finset V) := Finpartition.ofSetoid h.setoid
 
-lemma not_adj_iff_part_eq [DecidableEq V] :
+variable [DecidableEq V]
+
+lemma not_adj_iff_part_eq :
     ¬G.Adj s t ↔ h.finpartition.part s = h.finpartition.part t := by
   change h.setoid.r s t ↔ _
   rw [← Finpartition.mem_part_ofSetoid_iff_rel]
@@ -195,7 +197,7 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   change t ∈ fp.part s ↔ fp.part s = fp.part t
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
-lemma degree_eq_card_sub_part_card [DecidableEq V] :
+lemma degree_eq_card_sub_part_card :
     G.degree s = Fintype.card V - (h.finpartition.part s).card :=
   calc
     _ = (univ.filter (G.Adj s)).card := by
@@ -208,7 +210,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
       simp [setoid]
 
 /-- The parts of a Turán-maximal graph form an equipartition. -/
-theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
+theorem isEquipartition : h.finpartition.IsEquipartition := by
   set fp := h.finpartition
   by_contra hn
   rw [Finpartition.not_isEquipartition] at hn
@@ -228,7 +230,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   have : large.card ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
   omega
 
-lemma card_parts_le [DecidableEq V] : h.finpartition.parts.card ≤ r := by
+lemma card_parts_le : h.finpartition.parts.card ≤ r := by
   by_contra! l
   obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree z.card := by
@@ -241,7 +243,7 @@ lemma card_parts_le [DecidableEq V] : h.finpartition.parts.card ≤ r := by
 /-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
 `min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
 for having insufficiently many vertices. -/
-theorem card_parts [DecidableEq V] : h.finpartition.parts.card = min (Fintype.card V) r := by
+theorem card_parts : h.finpartition.parts.card = min (Fintype.card V) r := by
   set fp := h.finpartition
   apply le_antisymm (le_min fp.card_parts_le_card h.card_parts_le)
   by_contra! l
@@ -281,6 +283,8 @@ theorem nonempty_iso_turanGraph (h : G.IsTuranMaximal r) :
 
 end IsTuranMaximal
 
+variable [DecidableEq V]
+
 /-- **Turán's theorem**, reverse direction.
 
 Any graph isomorphic to `turanGraph n r` is itself Turán-maximal if `0 < r`. -/
@@ -292,7 +296,7 @@ theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTur
     fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
-theorem IsTuranMaximal.iso {W : Type*} [Fintype W] {H : SimpleGraph W}
+theorem IsTuranMaximal.iso {W : Type*} [DecidableEq W] [Fintype W] {H : SimpleGraph W}
     [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) : H.IsTuranMaximal r :=
   isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
 

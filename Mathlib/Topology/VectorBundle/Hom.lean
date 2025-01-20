@@ -41,7 +41,7 @@ open scoped Bundle
 open Bundle Set ContinuousLinearMap
 
 variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
-  (σ : 𝕜₁ →+* 𝕜₂) [iσ : RingHomIsometric σ]
+  (σ : 𝕜₁ →+* 𝕜₂)
 
 variable {B : Type*}
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
@@ -82,9 +82,10 @@ def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜�
 
 variable {σ e₁ e₁' e₂ e₂'}
 variable [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁]
-variable [∀ x, TopologicalSpace (E₂ x)] [ita : ∀ x, TopologicalAddGroup (E₂ x)] [FiberBundle F₂ E₂]
+variable [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂]
 
-theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
+theorem continuousOn_continuousLinearMapCoordChange [RingHomIsometric σ]
+    [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂]
     [MemTrivializationAtlas e₂'] :
     ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂')
@@ -194,6 +195,7 @@ variable (F₁ E₁ F₂ E₂)
 variable [∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜₁ F₁ E₁]
 variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜₂ F₂ E₂]
 variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
+variable [RingHomIsometric σ]
 
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a
 `VectorPrebundle` (this is an auxiliary construction for the

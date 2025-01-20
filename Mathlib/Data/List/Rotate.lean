@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Zip
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.List.Infix
 
@@ -181,8 +180,8 @@ theorem zipWith_rotate_distrib {β γ : Type*} (f : α → β → γ) (l : List 
     (h : l.length = l'.length) :
     (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) := by
   rw [rotate_eq_drop_append_take_mod, rotate_eq_drop_append_take_mod,
-    rotate_eq_drop_append_take_mod, h, zipWith_append, ← zipWith_distrib_drop, ←
-    zipWith_distrib_take, List.length_zipWith, h, min_self]
+    rotate_eq_drop_append_take_mod, h, zipWith_append, ← drop_zipWith, ←
+    take_zipWith, List.length_zipWith, h, min_self]
   rw [length_drop, length_drop, h]
 
 attribute [local simp] rotate_cons_succ

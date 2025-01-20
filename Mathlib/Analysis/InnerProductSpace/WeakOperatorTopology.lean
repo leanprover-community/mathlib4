@@ -27,9 +27,6 @@ lemma ext_inner {A B : E →WOT[𝕜] F} (h : ∀ x y, ⟪y, A x⟫_𝕜 = ⟪y,
   rw [ext_iff]
   exact fun x => ext_inner_left 𝕜 fun y => h x y
 
-lemma ext_inner_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x y, ⟪y, A x⟫_𝕜 = ⟪y, B x⟫_𝕜 :=
-  ⟨fun h _ _ => by simp [h], ext_inner⟩
-
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to
 `A : E →WOT[𝕜] F` along filter `l` iff `⟪y, (f a) x⟫` tends to `⟪y, A x⟫` along the same filter. -/

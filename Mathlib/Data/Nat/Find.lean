@@ -71,8 +71,6 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   Nat.le_of_not_lt fun l => Nat.find_min H l h
 
-variable [DecidablePred p] [DecidablePred q]
-
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
   constructor
   · rintro rfl
@@ -95,6 +93,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 
+variable [DecidablePred q] in
 lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 

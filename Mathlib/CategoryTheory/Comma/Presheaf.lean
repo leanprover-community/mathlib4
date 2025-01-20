@@ -286,7 +286,7 @@ lemma mk_snd (s : yoneda.obj X ⟶ A) (x : F.obj (op (CostructuredArrow.mk s))) 
     (mk s x).snd = F.map (eqToHom <| by rw [YonedaCollection.mk_fst]) x :=
   rfl
 
-@[ext]
+@[ext (iff := false)]
 lemma ext {p q : YonedaCollection F X} (h : p.fst = q.fst)
     (h' : F.map (eqToHom <| by rw [h]) q.snd = p.snd) : p = q := by
   rcases p with ⟨p, p'⟩

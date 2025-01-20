@@ -48,7 +48,7 @@ namespace Arrow
 @[ext]
 lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
-  CommaMorphism.ext _ _ h₁ h₂
+  CommaMorphism.ext h₁ h₂
 
 @[simp]
 theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=

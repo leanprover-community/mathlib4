@@ -120,7 +120,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRin
   have i₁ : 0 ≤ P := by
     have idem : P * P = 4 * P := CHSH_id T.A₀_inv T.A₁_inv T.B₀_inv T.B₁_inv
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
-      have h : 4 * P = (4 : ℝ) • P := by simp [Algebra.smul_def]
+      have h : 4 * P = (4 : ℝ) • P := by simp [map_ofNat, Algebra.smul_def]
       rw [idem, h, ← mul_smul]
       norm_num
     have sa : star P = P := by
@@ -176,7 +176,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
-    rw [← Int.cast_smul_eq_nsmul ℝ, ← mul_smul]
+    rw [← Int.cast_smul_eq_zsmul ℝ, ← mul_smul]
   let P := (√2)⁻¹ • (A₁ + A₀) - B₀
   let Q := (√2)⁻¹ • (A₁ - A₀) + B₁
   have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by

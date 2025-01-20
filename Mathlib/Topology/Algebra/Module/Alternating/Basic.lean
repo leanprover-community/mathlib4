@@ -94,9 +94,6 @@ theorem coe_toAlternatingMap : ⇑f.toAlternatingMap = f := rfl
 theorem ext {f g : M [⋀^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {f g : M [⋀^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [⋀^ι]→L[R] N) → (M [⋀^ι]→ₗ[R] N)) := fun f g h =>
   DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h

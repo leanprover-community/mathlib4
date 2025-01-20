@@ -157,8 +157,8 @@ variable {R : Type u} {M Mp : Type*} (Rp : Type v)
 
 instance localizedModule [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
     (LocalizedModule S M) := by
-  fapply Module.Flat.isBaseChange (R := R) (M := M) (S := Localization S)
-  exact LocalizedModule.mkLinearMap S M
+  apply Module.Flat.isBaseChange (R := R) (S := Localization S)
+    (f := LocalizedModule.mkLinearMap S M)
   rw [← isLocalizedModule_iff_isBaseChange S]
   exact localizedModuleIsLocalizedModule S
 

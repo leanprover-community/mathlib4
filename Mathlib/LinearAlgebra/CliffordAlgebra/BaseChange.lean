@@ -32,7 +32,7 @@ We show the additional results:
 
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
-variable [Algebra R A] [Module R V] [Module A V] [IsScalarTower R A V]
+variable [Algebra R A] [Module R V]
 variable [Invertible (2 : R)]
 
 open scoped TensorProduct
