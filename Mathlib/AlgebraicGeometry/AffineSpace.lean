@@ -394,7 +394,7 @@ instance : Surjective (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ <|
   have := isIso_of_isTerminal specULiftZIsTerminal terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @Surjective)]
-  exact ⟨MvPolynomial.surjective_comap_C⟩
+  exact ⟨MvPolynomial.comap_C_surjective⟩
 
 instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   MorphismProperty.pullback_fst _ _ <| by
@@ -429,7 +429,7 @@ instance [IsEmpty n] : IsIso (𝔸(n; S) ↘ S) := pullback_fst
       ⟨C_injective n _, C_surjective _⟩⟩
   · exact isIso_of_isTerminal specULiftZIsTerminal terminalIsTerminal (terminal.from _)
 
-lemma isIntegralHom_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEmpty S ∨ IsEmpty n := by
+lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEmpty S ∨ IsEmpty n := by
   constructor
   · intro h
     cases isEmpty_or_nonempty S
@@ -452,16 +452,14 @@ lemma isIntegralHom_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEmpty S
       (MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
         (arrowIsoΓSpecOfIsAffine _)).mpr h.2 (X i)
     have : (rename fun _ ↦ i).comp (pUnitAlgEquiv.{_, v} _).symm.toAlgHom p = 0 := by
-      rw [← hp']
-      show _ = Polynomial.eval₂AlgHom' (Algebra.ofId R _) (X i) (fun _ ↦ .all _ _) p
-      congr 1; ext; simp
+      simp [← hp', ← algebraMap_eq]
     rw [AlgHom.comp_apply, map_eq_zero_iff _ (rename_injective _ (fun _ _ _ ↦ rfl))] at this
     simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, EmbeddingLike.map_eq_zero_iff] at this
     simp [this] at hp
   · rintro (_ | _) <;> infer_instance
 
 lemma not_isIntegralHom [Nonempty S] [Nonempty n] : ¬ IsIntegralHom (𝔸(n; S) ↘ S) := by
-  simp [isIntegralHom_iff_isEmpty]
+  simp [isIntegralHom_over_iff_isEmpty]
 
 end instances
 

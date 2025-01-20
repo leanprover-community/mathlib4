@@ -161,7 +161,7 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) C) := by
   simp only [image_comap_C_basicOpen]
   exact (isClosed_zeroLocus _).isOpen_compl
 
-lemma surjective_comap_C : Function.Surjective (comap (R := R) C) := by
+lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
   intro x
   refine ⟨comap (evalRingHom 0) x, ?_⟩
   rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp),
@@ -224,7 +224,7 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) (C (σ := σ))) := by
   simp only [image_comap_C_basicOpen]
   exact (isClosed_zeroLocus _).isOpen_compl
 
-lemma surjective_comap_C : Function.Surjective (comap (R := R) (C (σ := σ))) := by
+lemma comap_C_surjective : Function.Surjective (comap (R := R) (C (σ := σ))) := by
   intro x
   refine ⟨comap (eval₂Hom (.id _) 0) x, ?_⟩
   rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp),
