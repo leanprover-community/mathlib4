@@ -3013,6 +3013,7 @@ import Mathlib.Data.Sym.Sym2.Order
 import Mathlib.Data.Tree.Basic
 import Mathlib.Data.Tree.Get
 import Mathlib.Data.Tree.RBMap
+import Mathlib.Data.Tree.Traversable
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
