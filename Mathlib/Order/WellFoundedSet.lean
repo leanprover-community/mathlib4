@@ -596,7 +596,7 @@ theorem IsWF.min_mem (hs : IsWF s) (hn : s.Nonempty) : hs.min hn ∈ s :=
   (WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)).2
 
 theorem IsWF.not_lt_min (hs : IsWF s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
-  WellFounded.not_lt_min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (@mem_univ s ⟨a, ha⟩)
+  WellFounded.not_lt_min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (mem_univ ⟨a, ha⟩)
 
 theorem IsWF.min_of_subset_not_lt_min {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
     {htn : t.Nonempty} (hst : s ⊆ t) : ¬hs.min hsn < ht.min htn :=
