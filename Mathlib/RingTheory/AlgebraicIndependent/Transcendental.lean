@@ -218,7 +218,7 @@ open Cardinal in
 theorem lift_trdeg_add_le [Nontrivial R]
     (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
     lift.{v} (trdeg R S) + lift.{u} (trdeg S A) ≤ lift.{u} (trdeg R A) := by
-  simp_rw [trdeg, transcendenceDegree, lift_iSup (bddAbove_range _)]
+  simp_rw [trdeg, lift_iSup (bddAbove_range _)]
   have := hRS.nonempty_algebraicIndependent
   have := hSA.nonempty_algebraicIndependent
   simp_rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _),

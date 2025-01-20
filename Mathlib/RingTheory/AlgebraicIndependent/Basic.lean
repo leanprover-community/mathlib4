@@ -27,7 +27,7 @@ transcendence basis, transcendence degree, transcendence
 
 noncomputable section
 
-open Cardinal Function Set Subalgebra MvPolynomial Algebra
+open Function Set Subalgebra MvPolynomial Algebra
 
 open scoped Classical
 
@@ -39,10 +39,8 @@ variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 variable (R A) in
 /-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
 defined to be the maximal cardinality of an `R`-algebraically independent set in `A`. -/
-@[stacks 030G] def transcendenceDegree : Cardinal :=
-  ⨆ ι : { s : Set A // AlgebraicIndependent R ((↑) : s → A) }, #ι.1
-
-noncomputable alias trdeg := transcendenceDegree
+@[stacks 030G] def Algebra.trdeg : Cardinal :=
+  ⨆ ι : { s : Set A // AlgebraicIndependent R ((↑) : s → A) }, Cardinal.mk ι.1
 
 theorem algebraicIndependent_iff_ker_eq_bot :
     AlgebraicIndependent R x ↔
@@ -131,7 +129,7 @@ theorem isEmpty_algebraicIndependent (h : ¬ Injective (algebraMap R A)) :
 
 theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trdeg R A = 0 := by
   have := isEmpty_algebraicIndependent h
-  rw [trdeg, transcendenceDegree, ciSup_of_empty, bot_eq_zero]
+  rw [trdeg, ciSup_of_empty, bot_eq_zero]
 
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
@@ -159,8 +157,8 @@ lemma isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
 
 theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
   have := Module.subsingleton R A
-  (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm
-    (le_ciSup_of_le (bddAbove_range _) ⟨{0}, algebraicIndependent_of_subsingleton⟩ <| by simp)
+  (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
+    (Cardinal.bddAbove_range _) ⟨{0}, algebraicIndependent_of_subsingleton⟩ (by simp)
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
@@ -294,6 +292,7 @@ theorem AlgebraicIndependent.lift_cardinalMk_le_trdeg [Nontrivial R]
   rw [lift_mk_eq'.mpr ⟨.ofInjective _ hx.injective⟩, lift_le]
   exact le_ciSup_of_le (bddAbove_range _) ⟨_, hx.to_subtype_range⟩ le_rfl
 
+open Cardinal in
 theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x : ι → A}
     (hx : AlgebraicIndependent R x) : #ι ≤ trdeg R A := by
   rw [← (#ι).lift_id, ← (trdeg R A).lift_id]; exact hx.lift_cardinalMk_le_trdeg

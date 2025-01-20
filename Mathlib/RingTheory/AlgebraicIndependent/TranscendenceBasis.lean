@@ -383,7 +383,7 @@ theorem lift_cardinalMk_eq_trdeg_iff [Algebra.IsAlgebraic (adjoin R (range x)) A
   have := mk_lt_aleph0_iff.mp (lift_lt_aleph0.mp (lift_aleph0 ▸ h ▸ lift_lt.{_, u}.mpr fin))
   exact (lift_cardinalMk_eq_trdeg_iff_of_finite R x inj).mp h
 
-theorem cardinalMk_eq_trdeg_iff {ι : Type w} [Finite ι] (x : ι → A)
+theorem cardinalMk_eq_trdeg_iff {ι : Type w} (x : ι → A)
     [Algebra.IsAlgebraic (adjoin R (range x)) A] (fin : trdeg R A < ℵ₀) :
     #ι = trdeg R A ↔ IsTranscendenceBasis R x := by
   rw [← lift_cardinalMk_eq_trdeg_iff R x inj fin, lift_id, lift_id]
