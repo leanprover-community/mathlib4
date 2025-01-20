@@ -92,6 +92,11 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
   convert Finset.sum_const x
   simp [-coe_lmul_eq_mul]
 
+/-- The trace map from `R` to itself is identity. -/
+theorem trace_self (a : R) : trace R R a = a := by
+  simpa only [id.map_eq_self, Fintype.card_ofSubsingleton, one_smul]
+    using trace_algebraMap_of_basis (.singleton (Fin 1) R) a
+
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
 
 (If `L` is not finite-dimensional over `K`, then `trace` and `finrank` return `0`.)
