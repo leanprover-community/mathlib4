@@ -36,23 +36,12 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
   change Function.Bijective (Quot.desc F c).toIntLinearMap
   rw [← CharacterModule.dual_bijective_iff_bijective]
   refine ⟨fun χ ψ eq ↦ ?_, fun χ ↦ ?_⟩
-  · dsimp at eq
-    suffices eq : ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp χ) =
-        ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp ψ) by
-      apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift (AddCircle (1 : ℚ)) _).symm _).injective
-      dsimp at eq ⊢
-      ext
-      rw [← ofHom_apply, ← ofHom_apply, eq]
+  · apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift (AddCircle (1 : ℚ)) _).symm _).injective
+    apply ofHom_injective
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
-    change (ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp χ)) _ =
-      (ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp ψ)) _
-    dsimp
-    simp only [EmbeddingLike.apply_eq_iff_eq]
-    erw [← Quot.ι_desc _ c j x]
-    change χ.comp (Quot.desc F c).toIntLinearMap.toAddMonoidHom _ = _
-    rw [eq]
-    dsimp
+    rw [comp_apply, comp_apply, ← Quot.ι_desc _ c j x]
+    exact ULift.down_injective (DFunLike.congr_fun eq (Quot.ι F j x))
   · set c' : Cocone F :=
       { pt := AddCommGrp.of (ULift (AddCircle (1 : ℚ)))
         ι :=
