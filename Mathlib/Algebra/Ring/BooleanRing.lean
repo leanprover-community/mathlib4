@@ -53,6 +53,7 @@ namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
+@[scoped simp]
 lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
