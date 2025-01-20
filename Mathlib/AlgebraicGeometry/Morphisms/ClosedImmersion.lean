@@ -39,9 +39,8 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
-class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
+class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
   base_closed : IsClosedEmbedding f.base
-  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
     [IsClosedImmersion f] : IsClosedEmbedding f.base :=
@@ -55,15 +54,14 @@ alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
 alias closedEmbedding := isClosedEmbedding
 
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
-    stalkwise (fun f ↦ Function.Surjective f) := by
+    @SurjectiveOnStalks := by
   ext X Y f
-  rw [isClosedImmersion_iff]
+  rw [isClosedImmersion_iff, and_comm]
   rfl
 
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
     IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
-  rw [isClosedImmersion_iff, isPreimmersion_iff, ← surjectiveOnStalks_iff, and_comm, and_assoc,
-    isClosedEmbedding_iff]
+  rw [isClosedImmersion_iff, isPreimmersion_iff, and_assoc, isClosedEmbedding_iff]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
     (hf : IsClosed (Set.range f.base)) : IsClosedImmersion f :=
@@ -75,14 +73,11 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
   base_closed := Homeomorph.isClosedEmbedding <| TopCat.homeoOfIso (asIso f.base)
-  surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
+  surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
-  comp_mem {X Y Z} f g hf hg := by
-    refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ ?_⟩
-    rw [Scheme.stalkMap_comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
+  comp_mem _ _ hf hg := ⟨hg.base_closed.comp hf.base_closed⟩
 
 /-- Composition of closed immersions is a closed immersion. -/
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]

@@ -195,7 +195,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
+    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -235,10 +235,7 @@ theorem image_inter (i j : D.J) :
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app, CategoryTheory.IsIso.inv_hom_id_apply, eq₁]⟩
-    · -- Porting note: was
-      -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
-      dsimp only at *
-      substs eq₁
+    · subst eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩

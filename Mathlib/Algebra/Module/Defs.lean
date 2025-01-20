@@ -36,13 +36,7 @@ to use a canonical `Module` typeclass throughout.
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists RingHom
-assert_not_exists Set.indicator
-assert_not_exists Units
+assert_not_exists Field Invertible Pi.single_smul₀ RingHom Set.indicator Multiset Units
 
 open Function Set
 

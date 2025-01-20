@@ -34,12 +34,7 @@ longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
-assert_not_exists inv_involutive
-assert_not_exists div_right_inj
-assert_not_exists pow_ite
-
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists inv_involutive div_right_inj pow_ite MonoidWithZero DenselyOrdered
 
 universe u v w
 
@@ -175,7 +170,7 @@ lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 @[to_additive]
 instance monoid [Semigroup α] : Monoid (WithOne α) where
   __ := mulOneClass
-  mul_assoc a b c := match a, b, c with
+  mul_assoc
     | 1, b, c => by simp
     | (a : α), 1, c => by simp
     | (a : α), (b : α), 1 => by simp
@@ -183,7 +178,7 @@ instance monoid [Semigroup α] : Monoid (WithOne α) where
 
 @[to_additive]
 instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
-  mul_comm := fun a b => match a, b with
+  mul_comm
     | (a : α), (b : α) => congr_arg some (mul_comm a b)
     | (_ : α), 1 => rfl
     | 1, (_ : α) => rfl
