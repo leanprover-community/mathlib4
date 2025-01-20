@@ -103,12 +103,12 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
-  invFun i := match i with
-    | r j => Sum.inl j
-    | sr j => Sum.inr j
-  toFun i := match i with
-    | Sum.inl j => r j
-    | Sum.inr j => sr j
+  invFun
+    | r j => .inl j
+    | sr j => .inr j
+  toFun
+    | .inl j => r j
+    | .inr j => sr j
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
