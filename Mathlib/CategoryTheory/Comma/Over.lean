@@ -92,23 +92,17 @@ end
 
 /-- To give a morphism in the over category, it suffices to give an arrow fitting in a commutative
     triangle. -/
-@[simps!]
+@[simps! left]
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
-
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
-attribute [-simp, nolint simpNF] homMk_right_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-@[simps!]
+@[simps! hom_left]
 def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by aesop_cat) :
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
-
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
-attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 @[reassoc (attr := simp)]
 lemma hom_left_inv_left {f g : Over X} (e : f ≅ g) :
@@ -464,12 +458,9 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
 
 /-- To give a morphism in the under category, it suffices to give a morphism fitting in a
     commutative triangle. -/
-@[simps!]
+@[simps! right]
 def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
   StructuredArrow.homMk f w
-
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
-attribute [-simp, nolint simpNF] homMk_left_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.

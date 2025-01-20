@@ -240,17 +240,11 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
   simp [mul_eq_one, Prod.ext_iff]
 
-/- Porting note: simpnf linter; added aux lemma below
-Left-hand side simplifies from
-  Prod.swap x ∈ Nat.divisorsAntidiagonal n
-to
-  x.snd * x.fst = n ∧ ¬n = 0-/
--- @[simp]
+-- The left hand side is not in side normal form, see the variant below.
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
--- Porting note: added below thm to replace the simp from the previous thm
 @[simp]
 theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
     x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by

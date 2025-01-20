@@ -52,15 +52,13 @@ variable {L : Type w} {R : Type w'} {fst snd : R → L}
 instance [Inhabited L] : Inhabited (WalkingMulticospan fst snd) :=
   ⟨left default⟩
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- Morphisms for `WalkingMulticospan`. -/
 inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type max w w'
   | id (A) : Hom A A
   | fst (b) : Hom (left (fst b)) (right b)
   | snd (b) : Hom (left (snd b)) (right b)
-
-/- Porting note: simpNF says the LHS of this internal identifier simplifies
-(which it does, using Hom.id_eq_id) -/
-attribute [-simp, nolint simpNF] WalkingMulticospan.Hom.id.sizeOf_spec
 
 instance {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
@@ -99,15 +97,13 @@ variable {L : Type w} {R : Type w'} {fst snd : L → R}
 instance [Inhabited L] : Inhabited (WalkingMultispan fst snd) :=
   ⟨left default⟩
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- Morphisms for `WalkingMultispan`. -/
 inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type max w w'
   | id (A) : Hom A A
   | fst (a) : Hom (left a) (right (fst a))
   | snd (a) : Hom (left a) (right (snd a))
-
-/- Porting note: simpNF says the LHS of this internal identifier simplifies
-(which it does, using Hom.id_eq_id) -/
-attribute [-simp, nolint simpNF] WalkingMultispan.Hom.id.sizeOf_spec
 
 instance {a : WalkingMultispan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩

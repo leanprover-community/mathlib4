@@ -30,6 +30,10 @@ universe u
 
 variable {α β γ : Type*}
 
+-- Don't generate unnecessary `sizeOf_spec` or `injEq` lemmas
+-- which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
+set_option genInjectivity false in
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
@@ -46,15 +50,6 @@ inductive RegularExpression (α : Type u) : Type u
   | plus : RegularExpression α → RegularExpression α → RegularExpression α
   | comp : RegularExpression α → RegularExpression α → RegularExpression α
   | star : RegularExpression α → RegularExpression α
-
-
--- Porting note: `simpNF` gets grumpy about how the `foo_def`s below can simplify these..
-attribute [nolint simpNF] RegularExpression.zero.sizeOf_spec
-attribute [nolint simpNF] RegularExpression.epsilon.sizeOf_spec
-attribute [nolint simpNF] RegularExpression.plus.sizeOf_spec
-attribute [nolint simpNF] RegularExpression.plus.injEq
-attribute [nolint simpNF] RegularExpression.comp.injEq
-attribute [nolint simpNF] RegularExpression.comp.sizeOf_spec
 
 namespace RegularExpression
 
