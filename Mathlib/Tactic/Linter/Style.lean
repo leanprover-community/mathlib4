@@ -40,7 +40,8 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option. -/
+which sets a `pp`, `profiler` or `trace` option.
+It also warns on the `tactic.skipAssignedInstances` option. -/
 register_option linter.style.setOption : Bool := {
   defValue := false
   descr := "enable the `setOption` linter"
@@ -71,9 +72,11 @@ def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
+It also warns on the `tactic.skipAssignedInstances` option.
 
-**Why is this bad?** These options are good for debugging, but should not be
+**Why is this bad?** The former options are good for debugging, but should not be
 used in production code.
+The latter option was only added for backwards compatibility, and new uses should not be introduced.
 **How to fix this?** Remove these options: usually, they are not necessary for production code.
 (Some tests will intentionally use one of these options; in this case, simply allow the linter.)
 -/
@@ -91,6 +94,12 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
+        else if name == `tactic.skipAssignedInstances then
+          -- Note: this does not check the option's value;
+          -- setting it to `false` also warns. As that is superfluous, it should be fine.
+          Linter.logLint linter.style.setOption head
+            m!"The 'tactic.skipAssignedInstances' option was only added for backwards compatibility \
+            with existing code: please do not add new uses of it."
 
 initialize addLinter setOptionLinter
 

@@ -117,7 +117,28 @@ lemma tactic4 : True := by
 set_option autoImplicit true in
 lemma foo' : True := trivial
 
--- TODO: add terms for the term form
+-- TODO: add tests for the term form
+
+/--
+warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option tactic.skipAssignedInstances true
+lemma skipAssInst : True := trivial
+
+-- Currently, we also warn about setting the linter to `false`.
+/--
+warning: The 'tactic.skipAssignedInstances' option was only added for backwards compatibility with existing code: please do not add new uses of it.
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option tactic.skipAssignedInstances false
+lemma skipAssInst' : True := trivial
+
+-- TODO: this should warn!
+set_option tactic.skipAssignedInstances true in
+lemma skipAssInst'' : True := trivial
 
 end setOption
 
