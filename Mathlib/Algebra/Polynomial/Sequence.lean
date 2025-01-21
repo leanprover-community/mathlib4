@@ -33,6 +33,14 @@ open scoped Function
 
 universe u
 
+theorem foo {R M : Type u} [Ring R] [Zero M] [SMulWithZero R M] [NoZeroDivisors R]
+  {a : R} {b : M} (hx : a • b ≠ 0) : IsSMulRegular R a := by
+  intro w v hwv
+  have hgwv : a • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
+  cases' smul_eq_zero.mp hgwv with hgx hwv'
+  · exact hx (smul_eq_zero_of_left hgx _) |>.elim
+  · exact sub_eq_zero.mp hwv'
+
 variable (R : Type u)
 
 namespace Polynomial
@@ -85,25 +93,12 @@ variable [Ring R] (S : Sequence R)
 lemma linearIndependent [NoZeroDivisors R] :
     LinearIndependent R S := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
   by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
-  · have le_sup := Finset.le_sup hi (f := (fun i ↦ (g i • S i).degree))
+  · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
-  · have hpairwise :
-        {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S i)) := by
+  · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S i)) := by
       intro x ⟨xmem, hx⟩ y ⟨ymem, hy⟩ xney
-      have hgxreg : IsSMulRegular R (g x) := by
-        intro w v hwv
-        have hgwv : g x • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
-        cases' mul_eq_zero.mp hgwv with hgx hwv'
-        · exact (hx (by simp [hgx])).elim
-        · exact sub_eq_zero.mp hwv'
-      have hgyreg : IsSMulRegular R (g y) := by
-        intro w v hwv
-        have hgwv : g y • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
-        cases' mul_eq_zero.mp hgwv with hgy hwv'
-        · exact hy (by simp [hgy]) |>.elim
-        · exact sub_eq_zero.mp hwv'
-      have hgx := degree_smul_of_smul_regular (S x) hgxreg
-      have hgy := degree_smul_of_smul_regular (S y) hgyreg
+      have hgx := degree_smul_of_smul_regular (S x) (foo hx)
+      have hgy := degree_smul_of_smul_regular (S y) (foo hy)
       simpa [hgx, hgy] using S.degree_ne_degree xney
 
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
@@ -175,16 +170,20 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
 
 section NoZeroDivisors
 
-variable [NoZeroDivisors R]
+variable [NoZeroDivisors R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 
 /-- Every polynomial sequence is a basis of `R[X]`. -/
-noncomputable def basis (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
-    Basis ℕ R R[X] :=
+noncomputable def basis : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
 /-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
-lemma basis_eq_self (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) (i : ℕ) : S.basis hCoeff i = S i :=
-  Basis.mk_apply _ _ _
+lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
+
+/-- The `i`'th basis vector has degree `i`. -/
+lemma basis_degree_eq (i : ℕ) : (S.basis hCoeff i).degree = i := by simp [basis_eq_self]
+
+/-- The `i`'th basis vector has natural degree `i`. -/
+lemma basis_natDegree_eq (i : ℕ) : (S.basis hCoeff i).natDegree = i := by simp [basis_eq_self]
 
 end NoZeroDivisors
 
