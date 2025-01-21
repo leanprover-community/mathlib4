@@ -30,7 +30,7 @@ open Cardinal Basis Submodule Function Set DirectSum Module
 section Tower
 
 variable (F : Type u) (K : Type v) (A : Type w)
-variable [Ring F] [Ring K] [AddCommGroup A]
+variable [Semiring F] [Semiring K] [AddCommMonoid A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
@@ -67,10 +67,10 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
 end Tower
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
-variable [Ring R] [StrongRankCondition R]
-variable [AddCommGroup M] [Module R M] [Module.Free R M]
-variable [AddCommGroup M'] [Module R M'] [Module.Free R M']
-variable [AddCommGroup M₁] [Module R M₁] [Module.Free R M₁]
+variable [Semiring R] [StrongRankCondition R]
+variable [AddCommMonoid M] [Module R M] [Module.Free R M]
+variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
+variable [AddCommMonoid M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free
 
@@ -212,7 +212,7 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
     Basis ι R M :=
   haveI : Module.Finite R M :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
-  (finBasisOfFinrankEq R M h).reindex (Equiv.equivOfUnique _ _)
+  (finBasisOfFinrankEq R M h).reindex (Equiv.ofUnique _ _)
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]

@@ -141,9 +141,8 @@ noncomputable def aevalDifferential : (P.rels → S) →ₗ[S] (P.rels → S) :=
     (fun j i : P.rels ↦ aeval P.val <| pderiv (P.map i) (P.relation j))
 
 @[simp]
-lemma aevalDifferential_single [DecidableEq P.rels] (i : P.rels) :
-    P.aevalDifferential (Pi.single i 1) =
-      fun j ↦ aeval P.val (pderiv (P.map j) (P.relation i)) := by
+lemma aevalDifferential_single [DecidableEq P.rels] (i j : P.rels) :
+    P.aevalDifferential (Pi.single i 1) j = aeval P.val (pderiv (P.map j) (P.relation i)) := by
   dsimp only [aevalDifferential]
   rw [← Pi.basisFun_apply, Basis.constr_basis]
 
@@ -283,6 +282,7 @@ the lower-right block has determinant jacobian of `P`.
 
 variable [DecidableEq (Q.comp P).rels] [Fintype (Q.comp P).rels]
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
   classical
@@ -291,6 +291,7 @@ private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
   apply MvPolynomial.vars_rename at hmem
   simp at hmem
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ = 0 := by
   ext i j : 1
   simp [Matrix.toBlocks₁₂, jacobiMatrix_comp_inl_inr]
@@ -299,6 +300,7 @@ section Q
 
 variable [DecidableEq Q.rels] [Fintype Q.rels]
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
       ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
@@ -306,12 +308,14 @@ private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
     ← Q.comp_aeval_relation_inl P.toPresentation]
   apply aeval_sum_elim_pderiv_inl
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_₁₁_det :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₁₁.det = Q.jacobian := by
   rw [jacobian_eq_jacobiMatrix_det, AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det]
   congr
   ext i j : 1
-  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
+  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P,
+    Q.algebraMap_apply]
   apply aeval_sum_elim
 
 end Q
@@ -320,13 +324,15 @@ section P
 
 variable [Fintype P.rels] [DecidableEq P.rels]
 
-private lemma jacobiMatrix_comp_inr_inr  (i j : P.rels) :
+open scoped Classical in
+private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
       MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply]
   simp only [comp_map, Sum.elim_inr]
   apply pderiv_rename Sum.inr_injective
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_₂₂_det :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = algebraMap S T P.jacobian := by
   rw [jacobian_eq_jacobiMatrix_det]
@@ -397,6 +403,7 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
     rfl
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
+  rw [P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange
@@ -494,8 +501,8 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S) :
         P.aevalDifferential).det := by
     convert P.jacobian_isUnit
     rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
-      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix]
-    simp [RingHom.map_det, RingHom.algebraMap_toAlgebra]
+      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
+    simp [RingHom.map_det]
   LinearEquiv.ofIsUnitDet this
 
 variable (P : SubmersivePresentation R S)
@@ -563,6 +570,11 @@ variable (R) in
 instance IsStandardSmoothOfRelativeDimension.id :
     IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
+
+instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
+    FinitePresentation R S := by
+  obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact P.finitePresentation_of_isFinite
 
 section Composition
 

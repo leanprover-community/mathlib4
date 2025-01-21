@@ -57,14 +57,14 @@ variable {k G : Type u} [Field k] [Monoid G]
 
 -- Porting note: `@[derive]` didn't work for `FDRep`. Add the 4 instances here.
 instance : LargeCategory (FDRep k G) := inferInstance
-instance : ConcreteCategory (FDRep k G) := inferInstance
+instance : HasForget (FDRep k G) := inferInstance
 instance : Preadditive (FDRep k G) := inferInstance
 instance : HasFiniteLimits (FDRep k G) := inferInstance
 
 instance : Linear k (FDRep k G) := by infer_instance
 
 instance : CoeSort (FDRep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  HasForget.hasCoeToSort _
 
 instance (V : FDRep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FDRep k G) (FGModuleCat k)).obj V).obj; infer_instance
@@ -128,12 +128,11 @@ example : MonoidalLinear k (FDRep k G) := by infer_instance
 
 open Module
 
-open scoped Classical
-
 -- We need to provide this instance explicitly as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 
+open scoped Classical in
 /-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
 they are not isomorphic, and `1` if they are. -/
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [Simple W] :

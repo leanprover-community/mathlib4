@@ -180,7 +180,6 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed has_nonempty_instance nolint, no such linter
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
@@ -205,7 +204,6 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
 
@@ -327,7 +325,7 @@ theorem someVector_ne_zero (x : Module.Ray R M) : x.someVector ≠ 0 :=
 /-- The ray of `someVector`. -/
 @[simp]
 theorem someVector_ray (x : Module.Ray R M) : rayOfNeZero R _ x.someVector_ne_zero = x :=
-  (congr_arg _ (Subtype.coe_eta _ _) : _).trans x.out_eq
+  (congr_arg _ (Subtype.coe_eta _ _) :).trans x.out_eq
 
 end Module.Ray
 
