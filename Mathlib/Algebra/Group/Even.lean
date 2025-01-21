@@ -102,19 +102,6 @@ end MonoidHom
 section Monoid
 variable [Monoid α] {n : ℕ} {a : α}
 
-@[to_additive even_iff_exists_two_nsmul]
-lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
-
-@[to_additive Even.exists_two_nsmul
-  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
-alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
-
-@[to_additive (attr := simp) Even.two_nsmul]
-lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
-
-@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
-
 @[to_additive Even.nsmul_right] lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
 
@@ -123,6 +110,19 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 @[to_additive (attr := simp) Even.nsmul_left]
 lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
+
+@[to_additive even_iff_exists_two_nsmul]
+lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare]
+
+@[to_additive Even.exists_two_nsmul
+  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
+alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
+
+@[to_additive Even.two_nsmul]
+lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := by simp
+
+@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
 @[deprecated (since := "2024-01-19")] alias Even.nsmul' := Even.nsmul_left
 
