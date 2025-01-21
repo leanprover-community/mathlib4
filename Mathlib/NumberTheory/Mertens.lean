@@ -431,8 +431,14 @@ theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
   · intro x
     ring
 
-
 theorem mertens_second : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), 1 / (p : ℝ)) - Real.log (Real.log t))
     =O[atTop] (fun n ↦ 1 / Real.log n) := by
+  let ϕ (x : ℝ) : ℝ := (Real.log x)⁻¹
+  let c (n : ℕ) : ℝ := if n.Prime then Real.log n / n else 0
+  have (b : ℝ) (hb : 3/2 ≤ b) :
+    ∑ k ∈ Finset.Ioc 1 ⌊b⌋₊, ϕ k * c k = sorry := by
+    apply
+
+    sorry
 
   sorry
