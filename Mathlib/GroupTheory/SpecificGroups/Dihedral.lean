@@ -7,6 +7,7 @@ import Mathlib.Data.Finite.Sum
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Dihedral Groups
@@ -222,6 +223,15 @@ lemma commutative_iff {n : ℕ} :
     Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
   mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
   mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
+
+lemma not_isCyclic {n : ℕ} (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
+  by_cases h2 : n = 2
+  · simpa [exponent, card, h2] using h.exponent_eq_card
+  · exact not_commutative h1 h2 h.commutative
+
+lemma isCyclic_iff {n : ℕ} : IsCyclic (DihedralGroup n) ↔ n = 1 where
+  mp := not_imp_not.mp not_isCyclic
+  mpr h := h ▸ isCyclic_of_prime_card (p := 2) nat_card
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/
