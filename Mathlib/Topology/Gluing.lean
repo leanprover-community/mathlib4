@@ -82,7 +82,6 @@ that the `U i`'s are open subspaces of the glued space.
 Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'` where the
 conditions are stated in a less categorical way.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData TopCat where
   f_open : ∀ i j, IsOpenEmbedding (f i j)
   f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.injective
@@ -235,10 +234,7 @@ theorem image_inter (i j : D.J) :
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app, CategoryTheory.IsIso.inv_hom_id_apply, eq₁]⟩
-    · -- Porting note: was
-      -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
-      dsimp only at *
-      substs eq₁
+    · subst eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
@@ -307,7 +303,6 @@ such that
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure MkCore where
   {J : Type u}
   U : J → TopCat.{u}

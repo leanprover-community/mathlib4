@@ -50,7 +50,7 @@ which we currently do not have.
 -/
 
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 open TopologicalSpace MeasureTheory.Measure
 

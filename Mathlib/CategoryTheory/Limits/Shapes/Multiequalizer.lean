@@ -139,7 +139,6 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MulticospanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
@@ -151,7 +150,6 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
   snd : ∀ b, left (sndTo b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
@@ -276,14 +274,10 @@ end MultispanIndex
 variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 abbrev Multifork (I : MulticospanIndex.{w, w'} C) :=
   Cone I.multicospan
 
 /-- A multicofork is a cocone over a multispan. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 abbrev Multicofork (I : MultispanIndex.{w, w'} C) :=
   Cocone I.multispan
 
