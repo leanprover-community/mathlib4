@@ -13,6 +13,19 @@ In a finitary matroid, all bases have the same cardinality.
 In fact, something stronger holds: if `B` and `B'` are bases, then `#(B \ B') = #(B' \ B)`.
 This file provides proofs of these facts,
 as well as variants when each of `B` and `B'` is a `Basis` or `Basis'` of some common set `X`.
+
+Some extra assumption like `Finitary` is necessary for these to be true,
+since the equicardinality of bases in general matroids is independent of ZFC
+(see the docstring of `Data.Matroid.Basic`).
+Lemmas like `Matroid.Base.cardinalMk_diff_comm_of_finitary`
+become true for all matroids if they are weakened by replacing `Cardinal.mk`
+with the cruder `ℕ∞`-valued `encard`; see, for example, `Matroid.Base.encard_diff_comm`.
+
+TODO
+
+* Higg's theorem that, if the generalized continuum hypothesis holds,
+  all bases of any matroid are equicardinal.
+* API for a `Cardinal`-valued rank function.
 -/
 
 variable {α : Type*} {M : Matroid α} {I J B B' X : Set α} [M.Finitary]
