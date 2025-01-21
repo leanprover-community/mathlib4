@@ -206,8 +206,6 @@ theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
 
 end Nat.Partrec.Code
 
--- Porting note: Opening `Primrec` inside `namespace Nat.Partrec.Code` causes it to resolve
--- to `Nat.Partrec`. Needs `open _root_.Partrec` support
 section
 open Primrec
 namespace Nat.Partrec.Code
@@ -495,10 +493,10 @@ theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]
-theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq]
+theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq, Code.id]
 
 @[simp]
-theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq]
+theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq, curry]
 
 theorem const_prim : Primrec Code.const :=
   (_root_.Primrec.id.nat_iterate (_root_.Primrec.const zero)
@@ -557,7 +555,6 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     | prec cf cg pf pg => exact pf.prec pg
     | rfind' cf pf => exact pf.rfind'
 
--- Porting note: `>>`s in `evaln` are now `>>=` because `>>`s are not elaborated well in Lean4.
 /-- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
 undecidability, `evaln` takes a parameter `k` and fails if it encounters a number ≥ k in the course
 of its execution. Other than this, the semantics are the same as in `Nat.Partrec.Code.eval`.

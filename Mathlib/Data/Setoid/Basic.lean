@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 import Mathlib.Logic.Relation
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations
@@ -88,6 +89,8 @@ theorem trans' (r : Setoid α) : ∀ {x y z}, r x y → r y z → r x z := r.ise
 
 theorem comm' (s : Setoid α) {x y} : s x y ↔ s y x :=
   ⟨s.symm', s.symm'⟩
+
+open scoped Function -- required for scoped `on` notation
 
 /-- The kernel of a function is an equivalence relation. -/
 def ker (f : α → β) : Setoid α :=

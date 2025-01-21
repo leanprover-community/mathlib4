@@ -330,9 +330,9 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   · apply h1
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
-    g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by aesop_cat) := by
+    g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
   apply eq_lift_of_comp_eq
-  · aesop_cat
+  · simp
   · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
 
 @[ext 1100]
@@ -400,7 +400,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
         rw [← Category.assoc]
         simp := by
   apply eq_desc_of_comp_eq
-  · aesop_cat
+  · simp
   · rfl -- Porting note: another missing rfl
 
 @[ext 1100]

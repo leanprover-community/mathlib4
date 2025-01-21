@@ -115,6 +115,11 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     ext j
     simp [vecMul, dotProduct]
 
+lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
+    [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
+  rw [← Matrix.vecMul_injective_iff]
+  exact Matrix.vecMul_injective_of_isUnit ha
+
 section
 variable [DecidableEq m]
 
@@ -275,6 +280,12 @@ theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     Function.Injective M.mulVec ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
   change Function.Injective (fun x ↦ _) ↔ _
   simp_rw [← M.vecMul_transpose, vecMul_injective_iff]
+
+lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype m]
+    {A : Matrix m m R} [DecidableEq m] (ha : IsUnit A) :
+    LinearIndependent R (fun i ↦ A.transpose i) := by
+  rw [← Matrix.mulVec_injective_iff]
+  exact Matrix.mulVec_injective_of_isUnit ha
 
 end mulVec
 
@@ -562,6 +573,11 @@ theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 
 @[simp]
+lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) (i j : ι) :
+    f.toMatrix (.singleton ι R) (.singleton ι R) i j = f 1 := by
+  simp [toMatrix, Subsingleton.elim j default]
+
+@[simp]
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
@@ -765,7 +781,7 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
       (a * x.fst + b * x.snd, c * x.fst + d * x.snd) := by
-  simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct]
+  simp [Matrix.toLin_apply, Matrix.mulVec, dotProduct]
 
 theorem Matrix.toLin_finTwoProd (a b c d : R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] =

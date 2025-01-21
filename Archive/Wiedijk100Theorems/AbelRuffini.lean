@@ -125,8 +125,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
       calc
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
           norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
-        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
-          refine add_le_add (sub_le_sub_left (pow_right_mono₀ ha ?_) _) ?_ <;> linarith
+        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by gcongr <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)

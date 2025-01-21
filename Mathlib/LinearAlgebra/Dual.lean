@@ -628,8 +628,8 @@ lemma dualMap_dualMap_eq_iff_of_injective
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
-  refine ⟨ fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
-    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap) ⟩
+  refine ⟨fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
+    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap)⟩
   rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
   exact hfg
 
@@ -794,7 +794,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
   let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
   have : ⨅ i, ker (L' i) ≤ ker K' := by
-    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
+    simp_rw +zetaDelta [← ker_pi, pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
     exact bot_le
   obtain ⟨c, hK'⟩ :=
     (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
@@ -824,7 +824,6 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval_same : ∀ i, ε i (e i) = 1
   eval_of_ne : Pairwise fun i j ↦ ε i (e j) = 0
