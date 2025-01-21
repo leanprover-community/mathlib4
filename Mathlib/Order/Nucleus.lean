@@ -24,11 +24,14 @@ structure Nucleus (X : Type*) [SemilatticeInf X] where
   /-- The underlying Function.
   Do not use this function directly. Instead use the coercion coming from the `FunLike` instance. -/
   toFun : X → X
-  /-- A `Nucleus` is idempotent.  -/
+  /-- A `Nucleus` is idempotent.
+  Do not use this directly. Instead use `Nucleus.idempotent`. -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
-  /-- A `Nucleus` is increasing.-/
+  /-- A `Nucleus` is increasing.
+  Do not use this directly. Instead use `Nucleus.increasing`. -/
   increasing' (x : X) : x ≤ toFun x
-  /-- A `Nucleus` preserves infima. -/
+  /-- A `Nucleus` preserves infima.
+  Do not use this directly. Instead use `Nucleus.map_inf`. -/
   map_inf' (x y: X) : toFun (x ⊓ y) = toFun x ⊓ toFun y
 
 /-- `NucleusClass F X` states that F is a type of Nuclei. -/
@@ -41,7 +44,7 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
 
 open Nucleus
 
-variable {n : Nucleus X} {x : X}
+variable {n : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
@@ -57,18 +60,13 @@ lemma idempotent : n (n x) = n x := by
 lemma increasing : x ≤ n x := by
   apply n.increasing'
 
-lemma
+lemma map_inf : n (x ⊓ y) = n x ⊓ n y := by
+  apply n.map_inf'
 
 instance : NucleusClass (Nucleus X) X where
-  idempotent := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.idempotent' x)
-  increasing := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.increasing' x)
-  map_inf := (by simp[Nucleus.coe_eq_toFun])
-
-
-
-
-
-
+  idempotent _ _ := le_of_eq idempotent
+  increasing _ _ := increasing
+  map_inf _ _ _ := map_inf
 
 
 /--
