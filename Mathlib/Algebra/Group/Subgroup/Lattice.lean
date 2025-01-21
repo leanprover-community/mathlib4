@@ -469,7 +469,7 @@ theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S)
   Submonoid.closure_le.2 subset_closure
 
 @[to_additive]
-theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S = ⊤) :
+theorem closure_eq_top_of_closure_eq_top {S : Set G} (h : Submonoid.closure S = ⊤) :
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
