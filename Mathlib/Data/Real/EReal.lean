@@ -51,7 +51,7 @@ real, ereal, complete lattice
 -/
 
 open Function ENNReal NNReal Set SignType
-
+set_option profiler true
 noncomputable section
 
 /-- ereal : The type `[-∞, ∞]` -/
@@ -1864,35 +1864,35 @@ lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : ER
 /-! #### Inversion and Positivity -/
 
 lemma bot_lt_inv (x : EReal) : ⊥ < x⁻¹ := by
-  induction x with
+  cases x with
   | h_bot => exact inv_bot ▸ bot_lt_zero
   | h_top => exact EReal.inv_top ▸ bot_lt_zero
   | h_real x => exact (coe_inv x).symm ▸ bot_lt_coe (x⁻¹)
 
 lemma inv_lt_top (x : EReal) : x⁻¹ < ⊤ := by
-  induction x with
+  cases x with
   | h_bot => exact inv_bot ▸ zero_lt_top
   | h_top => exact EReal.inv_top ▸ zero_lt_top
   | h_real x => exact (coe_inv x).symm ▸ coe_lt_top (x⁻¹)
 
 lemma inv_nonneg_of_nonneg {a : EReal} (h : 0 ≤ a) : 0 ≤ a⁻¹ := by
-  induction a with
+  cases a with
   | h_bot | h_top => simp
   | h_real a => rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]; exact EReal.coe_nonneg.1 h
 
 lemma inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
-  induction a with
+  cases a with
   | h_bot | h_top => simp
   | h_real a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
 
 lemma inv_pos_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
-  induction a with
+  cases a with
   | h_bot => exact (not_lt_bot h).rec
   | h_real a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
   | h_top => exact (h' (Eq.refl ⊤)).rec
 
 lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
-  induction a with
+  cases a with
   | h_bot => exact (h' (Eq.refl ⊥)).rec
   | h_real a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
   | h_top => exact (not_top_lt h).rec
@@ -2016,11 +2016,14 @@ lemma div_lt_div_right_of_neg {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
     (h₃ : a < a') : a' / b < a / b :=
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
-lemma div_eq_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
+lemma div_eq_iff {a b c : EReal} (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) :
     c / b = a ↔ c = a * b := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b hbot htop hzero]
   rw [mul_div b a b, mul_comm a b]
-  exact ⟨fun h₀ ↦ (strictMono_div_right_of_pos h h').injective h₀, fun h₀ ↦ h₀ ▸ rfl⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
+  rcases hzero.lt_or_lt with hneg | hpos
+  · exact (strictAnti_div_right_of_neg hneg hbot).injective h
+  · exact (strictMono_div_right_of_pos hpos htop).injective h
 
 lemma le_div_iff_mul_le {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
     a ≤ c / b ↔ a * b ≤ c := by
@@ -2064,7 +2067,7 @@ lemma div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
     (a + b) / c = (a / c) + (b / c) :=
   EReal.right_distrib_of_nonneg h h'
 
-lemma div_right_distrib_by_nonneg {a b c : EReal} (h : 0 ≤ c) :
+lemma add_div_of_nonneg_right {a b c : EReal} (h : 0 ≤ c) :
     (a + b) / c = a / c + b / c := by
   apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
