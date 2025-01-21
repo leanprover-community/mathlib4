@@ -142,7 +142,7 @@ lemma surjective_restrict_aux (hfg : Function.Exact f g)
   obtain ⟨c, hc⟩ := this
   simp [Finsupp.sum] at hc
   have : b (.inl i) - ∑ j ∈ c.support, c j • b (.inr j) ∈ LinearMap.ker g := by
-    simp [hc]
+    simp [hc, d]
   rw [hfg.linearMap_ker_eq] at this
   obtain ⟨a, ha⟩ := this
   use a
@@ -255,7 +255,7 @@ lemma PreSubmersivePresentation.jacobian_eq_det_aevalDifferential
   classical
   have : Fintype P.rels := Fintype.ofFinite P.rels
   rw [← LinearMap.det_toMatrix', P.aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix]
-  simp [jacobian_eq_jacobiMatrix_det, RingHom.map_det, RingHom.algebraMap_toAlgebra]
+  simp [jacobian_eq_jacobiMatrix_det, RingHom.map_det, P.algebraMap_eq]
 
 lemma PreSubmersivePresentation.isUnit_jacobian_iff_bijective_aevalDifferential
     (P : PreSubmersivePresentation R S) :
@@ -353,18 +353,12 @@ lemma exists_generators_of_basis_kaehlerDifferential [Algebra.FiniteType R S]
         (1 ⊗ₜ[P'.toExtension.Ring] (D R P'.toExtension.Ring) (X (Sum.inr k))) := by
     simp [foo, r, Extension.toKaehler]
     conv_rhs => erw [mapBaseChange_tmul]
-    have : (Extension.CotangentSpace.map hom.toExtensionHom)
-        (1 ⊗ₜ[P'.toExtension.Ring] (D R P'.toExtension.Ring) (X (Sum.inr k))) =
-        1 ⊗ₜ[P.toExtension.Ring] (D R P.toExtension.Ring)
-          (hom.toExtensionHom.toAlgHom (X (Sum.inr k))) := by
-      apply Algebra.Extension.CotangentSpace.map_tmul
-    erw [this]
     conv_lhs => erw [mapBaseChange_tmul]
     simp only [Generators.toExtension_Ring, Generators.toExtension_commRing, map_D,
       Generators.algebraMap_apply, one_smul, aeval_X]
     congr
     erw [Algebra.Extension.Hom.toAlgHom_apply]
-    simp
+    simp [hom]
   rw [← this]
   simp only [foo, r]
   rw [Algebra.Extension.CotangentSpace.map_tmul]
@@ -375,7 +369,7 @@ lemma exists_generators_of_basis_kaehlerDifferential [Algebra.FiniteType R S]
     AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Generators.Hom.toAlgHom_X, Sum.elim_inr, t, g]
   erw [KaehlerDifferential.mapBaseChange_tmul]
   simp only [map_D, Generators.algebraMap_apply, Generators.aeval_val_σ, one_smul]
-  rw [hf]
+  simp [g, hom, t, hf]
 
 /-- If `H¹(L_{S/R}) = 0` and `R[xᵢ] → S` are generators indexed by `ι ⊕ κ` such that the images
 of `dxₖ` for `k : κ` form a basis of `Ω[S⁄R]`, then the restriction of
@@ -496,6 +490,19 @@ lemma _root_.Algebra.Extension.Cotangent.mk_eq_mk_iff_sub_mem {R S : Type*}
       x.val - y.val ∈ P.ker ^ 2 := by
   simp [Extension.Cotangent.ext_iff, Ideal.toCotangent_eq]
 
+def _root_.Algebra.Generators.compCotangentEquivProd {R S T : Type*} [CommRing R] [CommRing S]
+    [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (M : Submonoid S) [IsLocalization M T] (P : Generators R S) (Q : Generators S T) :
+    (Q.comp P).toExtension.Cotangent ≃ₗ[T]
+      Q.toExtension.Cotangent × T ⊗[S] P.toExtension.Cotangent :=
+  sorry
+
+def _root_.Algebra.Generators.cotangentEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+    (P : Generators R S) :
+    P.toExtension.Cotangent :=
+  sorry
+
 lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
     (u : σ → P.vars) (hu : Function.Injective u) :
@@ -515,8 +522,10 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
   let J : Ideal (MvPolynomial P.vars R) := Ideal.span (Set.range <| Subtype.val ∘ v)
   have hJle : P.ker ≤ P.ker := le_rfl
   have hJ_fg : P.ker.FG := by
+    rw [P.ker_eq_ker_aeval_val]
     apply FinitePresentation.ker_fG_of_surjective
-    apply P.algebraMap_surjective
+    convert P.algebraMap_surjective
+    simp [P.algebraMap_eq]
   have hJ : P.ker ≤ J ⊔ P.ker • P.ker := by
     intro x hx
     have : Extension.Cotangent.mk (P := P.toExtension) ⟨x, hx⟩ ∈
@@ -553,6 +562,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     intro a ha
     induction' ha using Submodule.span_induction with _ hx _ _ _ _ hx hy _ _ _ h
     · obtain ⟨i, rfl⟩ := hx
+      rw [← P.algebraMap_apply]
       exact (v i).property
     · simp
     · simp [hx, hy]
@@ -578,6 +588,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     rw [Ideal.Quotient.liftₐ_apply]
     simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
       Function.comp_apply, Ideal.Quotient.lift_mk, RingHom.coe_coe, ← mul_assoc]
+    sorry
   have : IsLocalization.Away gbar S :=
     IsLocalization.Away.of_sub_one_mem_ker
       (by
@@ -598,7 +609,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
   let b' := Basis.prod bQ₂ bQ₁
   let equiv2 :
       (Q₂.toExtension.Cotangent × S ⊗[T] Q₁.toExtension.Cotangent) ≃ₗ[S] P'.toExtension.Cotangent :=
-    sorry
+    (Algebra.Generators.compCotangentEquivProd (.powers gbar) _ _).symm
   --let b' : Basis (Unit ⊕ σ) S P'.toExtension.Cotangent := (Basis.prod bQ₂ bQ₁).map equiv2
   use P', Equiv.refl _, Equiv.refl _
   refine ⟨(Basis.prod bQ₂ bQ₁).map equiv2, ?_, ?_⟩
@@ -644,18 +655,18 @@ theorem isStandardSmooth_of [Algebra.FinitePresentation R S]
       relations_finite := inferInstance }
   let hom : P.Hom P'.toGenerators :=
     { val := X ∘ e₁ ∘ Sum.inr
-      aeval_val := fun k ↦ by simp [← hcomp] }
+      aeval_val := fun k ↦ by simp [← hcomp, P'] }
   have heq (k : κ) :
         (1 ⊗ₜ[P'.toExtension.Ring] (D R P'.toExtension.Ring) (X ((e₁ ∘ Sum.inr ∘ v) k))) =
         Extension.CotangentSpace.map hom.toExtensionHom
           (1 ⊗ₜ[P.toExtension.Ring] (D R P.toExtension.Ring) (X (v k))) := by
     rw [Extension.CotangentSpace.map_tmul, Extension.Hom.toAlgHom_apply]
     rw [Generators.Hom.toExtensionHom_toRingHom]
-    simp
+    simp [hom]
   have : Finite P'.vars := Finite.of_equiv _ e₁
   have : P'.IsFinite := ⟨inferInstance, inferInstance⟩
   have hcompl : IsCompl (Set.range (e₁ ∘ Sum.inr ∘ v)) (Set.range P'.map) := by
-    simp only [u, Set.range_comp]
+    simp only [u, Set.range_comp, P']
     rw [e₁.image_eq_preimage, e₁.image_eq_preimage]
     apply IsCompl.preimage
     simp only [Set.isCompl_iff]

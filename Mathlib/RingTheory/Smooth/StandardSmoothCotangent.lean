@@ -221,8 +221,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → P.vars}
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,
       Pi.basisFun_apply, Finsupp.single_apply_left P.map_inj, Finsupp.single_eq_pi_single]
     simp [Finsupp.single_eq_pi_single]
-  · rw [Set.range_comp, Set.range_comp, ← Set.image_union, hcompl.eq_compl,
-      Set.compl_union_self (Set.range P.map), Set.image_univ]
+  · exact hcompl.2
 
 /-- Given a submersive presentation of `S` as `R`-algebra, the images of `dxᵢ`
 for `i` in the complement of `P.rels` in `P.vars` form a basis of `Ω[S⁄R]`. -/
