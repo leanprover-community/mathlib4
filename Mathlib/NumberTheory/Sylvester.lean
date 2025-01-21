@@ -79,7 +79,9 @@ theorem sylvester_strictMono : StrictMono sylvester := by
     sylvester n * (sylvester n - 1) + 1 > sylvester n * (sylvester n - 1) := by linarith
     _ ≥ sylvester n := Nat.le_mul_of_pos_right _ <| le_sub_one_of_lt <| sylvester_ge_two n
 
--- Coprimality
+/-!
+### Coprimality
+-/
 
 theorem sylvester_mod_eq_one {m n : ℕ} (h : m < n) :
     sylvester n % sylvester m = 1 := by
