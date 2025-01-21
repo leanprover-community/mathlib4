@@ -35,7 +35,7 @@ open Nat
 /--
 Sylvester sequence: https://oeis.org/A000058.
 -/
-def sylvester : ℕ -> ℕ
+def sylvester : ℕ → ℕ
   | 0 => 2
   | n + 1 => (sylvester n) * (sylvester n - 1) + 1
 
@@ -83,18 +83,15 @@ theorem sylvester_strictMono : StrictMono sylvester := by
 
 theorem sylvester_mod_eq_one {m n : ℕ} (h : m < n) :
     sylvester n % sylvester m = 1 := by
-  rw [sylvester_prod_finset_add_one, Nat.add_mod]
-  simp only [add_mod_mod, mod_add_mod, Nat.dvd_iff_mod_eq_zero.mp
-    (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr ((by omega) : m < n))]
+  rw [sylvester_prod_finset_add_one, ← mod_add_mod,
+    dvd_iff_mod_eq_zero.mp (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr ((by omega) : m < n))]
   exact Nat.mod_eq_of_lt <| sylvester_ge_two _
 
 private theorem sylvester_coprime_of_lt {m n : ℕ} (h : m < n) :
     Coprime (sylvester m) (sylvester n) := by
-  rw [Coprime, Nat.gcd_rec, sylvester_mod_eq_one]
-  · simp only [gcd_one_left]
-  · trivial
+  rw [Coprime, Nat.gcd_rec, sylvester_mod_eq_one h, gcd_one_left]
 
 theorem sylvester_coprime {m n : ℕ} (h : m ≠ n) : Coprime (sylvester m) (sylvester n) := by
-  by_cases c : m < n
+  rcases h.lt_or_lt with c | c
   · exact sylvester_coprime_of_lt c
-  · exact coprime_comm.mp <| sylvester_coprime_of_lt <| by omega
+  · exact (sylvester_coprime_of_lt c).symm
