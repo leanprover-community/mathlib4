@@ -120,7 +120,8 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
 @[deprecated (since := "2024-01-19")] alias Even.nsmul := Even.nsmul_right
 
-@[to_additive Even.nsmul_left] lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
+@[to_additive (attr := simp) Even.nsmul_left]
+lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
 
 @[deprecated (since := "2024-01-19")] alias Even.nsmul' := Even.nsmul_left
@@ -150,7 +151,7 @@ end DivisionMonoid
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
-@[to_additive Even.zsmul_left]
+@[to_additive (attr := simp) Even.zsmul_left]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, zpow_add _ _ _⟩
 
