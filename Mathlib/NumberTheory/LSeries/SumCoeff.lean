@@ -18,7 +18,7 @@ import Mathlib.NumberTheory.LSeries.Basic
   ## Main results
 
   * `LSeriesSummable_of_sum_norm_bigO`: for `f : ℕ → ℂ`, if the partial sums
-  `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then L-series `Lseries f`
+  `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the L-series `Lseries f`
   converges at `s : ℂ` for all `s` such that `r < s.re`.
 
   * `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `∑ k ∈ Icc 1 n, f k` are
@@ -186,6 +186,8 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     · exact floor_atTop hr hO
   · exact integrableAtFilter_rpow_atTop (by rwa [neg_add_lt_iff_lt_add, add_neg_cancel_right])
 
+/-- If the partial sums `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the
+L-series `Lseries f` converges at `s : ℂ` for all `s` such that `r < s.re`. -/
 theorem LSeriesSummable_of_sum_norm_bigO
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, ‖f k‖) =O[atTop] fun n ↦ (n : ℝ) ^ r)
     (hr : 0 ≤ r) (hs : r < s.re) :
@@ -194,6 +196,9 @@ theorem LSeriesSummable_of_sum_norm_bigO
   refine LSeriesSummable_of_sum_norm_bigO_aux (by rw [if_pos rfl]) ?_ hr hs
   simpa only [sum_norm_f₀_eq] using hO
 
+/-- If `f` takes nonnegative real values and the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)`
+for some real `0 ≤ r`, then the L-series `Lseries f` converges at `s : ℂ` for all `s`
+such that `r < s.re`. -/
 theorem LSeriesSummable_of_sum_norm_bigO_and_nonneg
     {f : ℕ → ℝ} (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r)
     (hf : ∀ n, 0 ≤ f n) (hr : 0 ≤ r) (hs : r < s.re) :
@@ -237,6 +242,9 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     · exact deriv_cpow_atTop h₂
     · exact floor_atTop hr hO
 
+/--  If the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)` for some real `0 ≤ r` and the
+L-series `LSeries f` converges at `s : ℂ` with `r < s.re`, then
+`LSeries f s = s * ∫ t in Set.Ioi 1, (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1))`. -/
 theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : ℂ} (hs : r < s.re)
     (hS : LSeriesSummable f s)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
@@ -247,12 +255,17 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
   · simp_rw [sum_f₀_eq]
   · simpa only [sum_f₀_eq] using hO
 
+/-- A version of `LSeries_eq_mul_integral` where we use the stronger condition that the partial sums
+`∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` to deduce the integral representation. -/
 theorem LSeries_eq_mul_integral' (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : ℂ} (hs : r < s.re)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, ‖f k‖) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1)) := by
   refine LSeries_eq_mul_integral _ hr hs (LSeriesSummable_of_sum_norm_bigO hO hr hs) ?_
   exact IsBigO.trans (isBigO_of_le _ fun _ ↦ (norm_sum_le _ _).trans <| Real.le_norm_self _) hO
 
+/--  If `f` takes nonnegative real values and the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)`
+for some real `0 ≤ r`, then for `s : ℂ` with `r < s.re`, we have
+`LSeries f s = s * ∫ t in Set.Ioi 1, (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1))`. -/
 theorem LSeries_eq_mul_integral_of_nonneg (f : ℕ → ℝ) {r : ℝ} (hr : 0 ≤ r) {s : ℂ} (hs : r < s.re)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) (hf : ∀ n, 0 ≤ f n) :
     LSeries (fun n ↦ f n) s =
