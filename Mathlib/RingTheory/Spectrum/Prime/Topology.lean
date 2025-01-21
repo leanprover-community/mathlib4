@@ -10,7 +10,8 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
@@ -284,6 +285,27 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
     Function.Injective (comap f) := fun _ _ h => specComap_injective_of_surjective _ hf h
 
 variable (S)
+
+theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Function.Injective (algebraMap R S).specComap := by
+  intro p q h
+  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
+  dsimp only [RingHom.specComap] at h
+  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
+  ext1
+  exact h
+
+theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
+  ext x
+  constructor
+  · simp_rw [disjoint_iff_inf_le]
+    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
+    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
+  · intro h
+    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
+    ext1
+    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 
 theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsInducing (comap (algebraMap R S)) := by

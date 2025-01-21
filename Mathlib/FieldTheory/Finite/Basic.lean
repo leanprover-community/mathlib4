@@ -249,6 +249,10 @@ theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (
   let ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
 
+lemma isPrimePow_card : IsPrimePow (Fintype.card K) := by
+  obtain ⟨p, n, hp, hn⟩ := card' K
+  exact ⟨p, n, Nat.prime_iff.mp hp, n.prop, hn.symm⟩
+
 -- Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by
   simp

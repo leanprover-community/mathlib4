@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Floor.Basic
+import Mathlib.Algebra.Order.Round
 import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Polynomial.Reverse

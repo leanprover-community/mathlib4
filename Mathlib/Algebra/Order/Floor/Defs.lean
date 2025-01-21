@@ -3,8 +3,19 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
 import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity.Basic
+
 /-!
 # Floor and ceil
 
@@ -25,7 +36,6 @@ are in this file. Other theorems are in `Mathlib/Algebra/Order/Floor/Basic.lean`
 * `Int.floor a`: Greatest integer `z` such that `z ≤ a`.
 * `Int.ceil a`: Least integer `z` such that `a ≤ z`.
 * `Int.fract a`: Fractional part of `a`, defined as `a - floor a`.
-* `round a`: Nearest integer to `a`. It rounds halves towards infinity.
 
 ## Notations
 
@@ -1033,93 +1043,9 @@ end Int
 
 open Int
 
+<<<<<<< HEAD:Mathlib/Algebra/Order/Floor/Defs.lean
 /-! ### Round -/
 
-
-section round
-
-section LinearOrderedRing
-
-variable [LinearOrderedRing α] [FloorRing α]
-
-/-- `round` rounds a number to the nearest integer. `round (1 / 2) = 1` -/
-def round (x : α) : ℤ :=
-  if 2 * fract x < 1 then ⌊x⌋ else ⌈x⌉
-
-@[simp]
-theorem round_zero : round (0 : α) = 0 := by simp [round]
-
-@[simp]
-theorem round_one : round (1 : α) = 1 := by simp [round]
-
-@[simp]
-theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
-
-@[simp]
-theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) :=
-  round_natCast n
-
-@[simp]
-theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
-
-@[simp]
-theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
-  rw [round, round, Int.fract_add_int, Int.floor_add_int, Int.ceil_add_int, ← apply_ite₂, ite_self]
-
-@[simp]
-theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
-  -- Porting note: broken `convert round_add_int a 1`
-  rw [← round_add_int a 1, cast_one]
-
-@[simp]
-theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
-  rw [sub_eq_add_neg]
-  norm_cast
-  rw [round_add_int, sub_eq_add_neg]
-
-@[simp]
-theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
-  -- Porting note: broken `convert round_sub_int a 1`
-  rw [← round_sub_int a 1, cast_one]
-
-@[simp]
-theorem round_add_nat (x : α) (y : ℕ) : round (x + y) = round x + y :=
-  mod_cast round_add_int x y
-
-@[simp]
-theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
-    round (x + ofNat(n)) = round x + ofNat(n) :=
-  round_add_nat x n
-
-@[simp]
-theorem round_sub_nat (x : α) (y : ℕ) : round (x - y) = round x - y :=
-  mod_cast round_sub_int x y
-
-@[simp]
-theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
-    round (x - ofNat(n)) = round x - ofNat(n) :=
-  round_sub_nat x n
-
-@[simp]
-theorem round_int_add (x : α) (y : ℤ) : round ((y : α) + x) = y + round x := by
-  rw [add_comm, round_add_int, add_comm]
-
-@[simp]
-theorem round_nat_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round x := by
-  rw [add_comm, round_add_nat, add_comm]
-
-@[simp]
-theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
-    round (ofNat(n) + x) = ofNat(n) + round x :=
-  round_nat_add x n
-
-end LinearOrderedRing
-
-end round
-
-namespace Nat
-
-variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
@@ -1152,6 +1078,57 @@ theorem ceil_congr (h : ∀ n : ℤ, a ≤ n ↔ b ≤ n) : ⌈a⌉ = ⌈b⌉ :=
 
 end Int
 
+<<<<<<< HEAD:Mathlib/Algebra/Order/Floor/Defs.lean
+=======
+section FloorRingToSemiring
+
+variable [LinearOrderedRing α] [FloorRing α]
+
+/-! #### A floor ring as a floor semiring -/
+
+
+-- see Note [lower instance priority]
+instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
+  floor a := ⌊a⌋.toNat
+  ceil a := ⌈a⌉.toNat
+  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+  gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
+  gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
+
+theorem Int.floor_toNat (a : α) : ⌊a⌋.toNat = ⌊a⌋₊ :=
+  rfl
+
+theorem Int.ceil_toNat (a : α) : ⌈a⌉.toNat = ⌈a⌉₊ :=
+  rfl
+
+@[simp]
+theorem Nat.floor_int : (Nat.floor : ℤ → ℕ) = Int.toNat :=
+  rfl
+
+@[simp]
+theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
+  rfl
+
+variable {a : α}
+
+theorem Int.natCast_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
+  rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
+
+theorem Int.natCast_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+  rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
+
+theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
+  rw [← Int.natCast_floor_eq_floor ha, Int.cast_natCast]
+
+theorem natCast_ceil_eq_intCast_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+  rw [← Int.natCast_ceil_eq_ceil ha, Int.cast_natCast]
+
+@[deprecated (since := "2024-08-20")] alias Int.ofNat_floor_eq_floor := natCast_floor_eq_floor
+@[deprecated (since := "2024-08-20")] alias Int.ofNat_ceil_eq_ceil := natCast_ceil_eq_ceil
+
+end FloorRingToSemiring
+
+>>>>>>> origin/master:Mathlib/Algebra/Order/Floor.lean
 /-- There exists at most one `FloorRing` structure on a given linear ordered ring. -/
 theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (FloorRing α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
@@ -1159,3 +1136,71 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
   cases H₁; cases H₂; congr
+<<<<<<< HEAD:Mathlib/Algebra/Order/Floor/Defs.lean
+=======
+
+namespace Mathlib.Meta.Positivity
+open Lean.Meta Qq
+
+private theorem int_floor_nonneg [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+    0 ≤ ⌊a⌋ :=
+  Int.floor_nonneg.2 ha
+
+private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α}
+    (ha : 0 < a) :
+    0 ≤ ⌊a⌋ :=
+  int_floor_nonneg ha.le
+
+/-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
+@[positivity ⌊ _ ⌋]
+def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.floor $α' $i $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.floor application"
+
+private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
+    0 < a → 0 < ⌈a⌉₊ :=
+  Nat.ceil_pos.2
+
+/-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
+@[positivity ⌈ _ ⌉₊]
+def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $i $j $a) =>
+    let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
+    assertInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+      assertInstancesCommute
+      pure (.positive q(nat_ceil_pos (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Nat.ceil application"
+
+private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+  Int.ceil_pos.2
+
+/-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
+@[positivity ⌈ _ ⌉]
+def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.ceil $α' $i $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.positive q(int_ceil_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.ceil application"
+
+end Mathlib.Meta.Positivity
+>>>>>>> origin/master:Mathlib/Algebra/Order/Floor.lean
