@@ -34,8 +34,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install zulip
 
-      - uses: actions/checkout@v4
+      - name: checkout zulip_emoji_merge_delegate script
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') }}
+        uses: actions/checkout@v4
         with:
           sparse-checkout: |
             scripts/zulip_emoji_merge_delegate.py
