@@ -30,8 +30,7 @@ universe u
 
 variable {α β γ : Type*}
 
--- Don't generate unnecessary `sizeOf_spec` or `injEq` lemmas
--- which the `simpNF` linter will complain about.
+-- Disable generation of unneeded lemmas which the simpNF linter would complain about.
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
@@ -74,7 +73,7 @@ instance : Pow (RegularExpression α) ℕ :=
   ⟨fun n r => npowRec r n⟩
 
 -- Porting note: declaration in an imported module
---attribute [match_pattern] Mul.mul
+-- attribute [match_pattern] Mul.mul
 
 @[simp]
 theorem zero_def : (zero : RegularExpression α) = 0 :=
@@ -92,7 +91,7 @@ theorem plus_def (P Q : RegularExpression α) : plus P Q = P + Q :=
 theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 
--- Porting note: `matches` is reserved, moved to `matches'`
+-- This was renamed to `matches'` during the port of Lean 4 as `matches` is a reserved word.
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
@@ -396,13 +395,8 @@ theorem matches'_map (f : α → β) :
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  -- Porting note: the following close with last `rw` but not with `simp`?
-  | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
+  | R + S => by simp only [matches'_map, map, matches'_add, map_add]
   | comp R S => by simp [matches'_map]
-  | star R => by
-    simp_rw [map, matches', matches'_map]
-    rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]
-    simp_rw [← map_pow]
-    exact image_iUnion.symm
+  | star R => by simp [matches'_map]
 
 end RegularExpression

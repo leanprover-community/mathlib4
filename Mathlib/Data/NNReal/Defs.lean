@@ -71,6 +71,9 @@ instance : Max ℝ≥0 := SemilatticeSup.toMax
 instance : Sub ℝ≥0 := Nonneg.sub
 instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
+-- a computable copy of `Nonneg.instNNRatCast`
+instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
+
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
 
@@ -976,6 +979,10 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
   exact NNReal.exists_lt_of_strictMono hf hs
 
 end StrictMono
+
+/-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
+unsafe instance : Repr ℝ≥0 where
+  reprPrec r _ := f!"({repr r.val}).toNNReal"
 
 namespace Mathlib.Meta.Positivity
 

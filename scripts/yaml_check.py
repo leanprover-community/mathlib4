@@ -58,7 +58,7 @@ class HundredTheorem:
     # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
-    author: Optional[str] = None
+    authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     links: Optional[Mapping[str, str]] = None
@@ -87,7 +87,7 @@ class ThousandPlusTheorem:
     # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
-    author: Optional[str] = None
+    authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     # for external projects, an URL referring to the result
