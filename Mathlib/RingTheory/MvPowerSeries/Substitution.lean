@@ -370,7 +370,7 @@ theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
 variable
     {T : Type*} [CommRing T]
     [UniformSpace T] [T2Space T] [CompleteSpace T]
-    [UniformAddGroup T] [TopologicalRing T] [IsLinearTopology T]
+    [UniformAddGroup T] [TopologicalRing T] [IsLinearTopology T T]
     [Algebra R T] -- [Algebra S T] [IsScalarTower R S T]
     {ε : MvPowerSeries τ S →ₐ[R] T}
 
