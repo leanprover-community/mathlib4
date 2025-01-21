@@ -39,12 +39,12 @@ lemma Real.log_of_summable {f : ℕ → ℝ} (hf : Summable f) :
 
 lemma Complex.summable_nat_multipliable_one_add (f : ℕ → ℂ) (hf : Summable f)
     (hff : ∀ n : ℕ, 1 + f n ≠ 0) : Multipliable (fun n : ℕ => 1 + f n) := by
-  refine Complex.summable_multipliable (fun n => 1 + f n) (by simpa) ?_
+  refine Complex.multipliable_of_summable_log  (fun n => 1 + f n) (by simpa) ?_
   simpa only [forall_const] using Complex.log_of_summable hf
 
 lemma Real.summable_nat_multipliable_one_add (f : ℕ → ℝ) (hf : Summable f) :
     Multipliable (fun n : ℕ => 1 + |f n|) := by
-  refine Real.summable_multipliable (fun n => 1 + |f n|) (fun _ ↦ by positivity) ?_
+  refine Real.multipliable_of_summable_log  (fun n => 1 + |f n|) (fun _ ↦ by positivity) ?_
   simpa only [forall_const] using Real.log_of_summable hf
 
 lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
