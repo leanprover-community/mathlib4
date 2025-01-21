@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Jiedong Jiang
 -/
 import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.Invariant
 
 /-!
