@@ -1288,7 +1288,7 @@ theorem eq_of_le_of_forall_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a₃ <
   (le_of_forall_lt_imp_le_of_dense h₂).antisymm h₁
 
 @[deprecated (since := "2025-01-21")]
-alias le_of_forall_ke_of_dense := le_of_forall_gt_imp_ge_of_dense
+alias le_of_forall_le_of_dense := le_of_forall_gt_imp_ge_of_dense
 
 @[deprecated (since := "2025-01-21")]
 alias le_of_forall_ge_of_dense := le_of_forall_lt_imp_le_of_dense
