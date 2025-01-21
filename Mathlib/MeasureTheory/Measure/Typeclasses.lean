@@ -43,6 +43,9 @@ theorem not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := 
   by_contra h'
   exact h ⟨lt_top_iff_ne_top.mpr h'⟩
 
+lemma isFiniteMeasure_restrict : IsFiniteMeasure (μ.restrict s) ↔ μ s ≠ ∞ := by
+  simp [isFiniteMeasure_iff, lt_top_iff_ne_top]
+
 instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
     IsFiniteMeasure (μ.restrict s) :=
   ⟨by simpa using hs.elim⟩

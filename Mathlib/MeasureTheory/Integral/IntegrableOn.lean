@@ -252,9 +252,8 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
-    integrable_const_iff, lt_top_iff_ne_top]
-  right
-  simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply] using hμs
+    integrable_const_iff, isFiniteMeasure_restrict]
+  exact .inr hμs
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
