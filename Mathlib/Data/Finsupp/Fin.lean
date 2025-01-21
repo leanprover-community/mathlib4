@@ -183,6 +183,16 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.cons_zero_zero]
 
+theorem cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
+  intro i hi
+  suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
+  apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
+  rintro i rfl
+  simpa [Finsupp.mem_support_iff] using hi
+
+theorem cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective)
+
 theorem snoc_ne_zero_of_left (h : s ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
   ext a
@@ -211,16 +221,6 @@ theorem insertNth_ne_zero_iff : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 :=
     fun h => h.casesOn (insertNth_ne_zero_of_left p) (insertNth_ne_zero_of_right p)⟩
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.insertNth_zero_zero]
-
-theorem cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
-  intro i hi
-  suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
-  apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
-  rintro i rfl
-  simpa [Finsupp.mem_support_iff] using hi
-
-theorem cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
-  equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective)
 
 theorem snoc_support :
     (s.snoc y).support ⊆ insert (Fin.last n) (s.support.map Fin.castSuccEmb) := by
