@@ -14,10 +14,7 @@ In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid ho
 We use this to prove some results on scalar multiplication by integers.
 -/
 
-assert_not_exists Multiset
-assert_not_exists Set.indicator
-assert_not_exists Pi.single_smul₀
-assert_not_exists Field
+assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 
 open Function Set
 
@@ -57,8 +54,19 @@ def smulAddHom : R →+ M →+ M :=
 variable {R M}
 
 @[simp]
-theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
+theorem smulAddHom_apply : smulAddHom R M r x = r • x :=
   rfl
+
+variable {x}
+
+lemma IsAddUnit.smul_left [Monoid S] [DistribMulAction S M] (hx : IsAddUnit x) (s : S) :
+    IsAddUnit (s • x) :=
+  hx.map (DistribMulAction.toAddMonoidHom M s)
+
+variable {r} (x)
+
+lemma IsAddUnit.smul_right (hr : IsAddUnit r) : IsAddUnit (r • x) :=
+  hr.map (AddMonoidHom.flip (smulAddHom R M) x)
 
 end AddCommMonoid
 

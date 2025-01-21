@@ -289,8 +289,6 @@ theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ 
 
 section
 
-open scoped Classical
-
 theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)
 

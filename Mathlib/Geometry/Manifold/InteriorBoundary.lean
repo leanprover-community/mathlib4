@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold
 
 /-!
 # Interior and boundary of a manifold
@@ -36,8 +36,8 @@ manifold, interior, boundary
 similarly for the boundary.
 - the interior of `M` is open, hence the boundary is closed (and nowhere dense)
   In finite dimensions, this requires e.g. the homology of spheres.
-- the interior of `M` is a smooth manifold without boundary
-- `boundary M` is a smooth submanifold (possibly with boundary and corners):
+- the interior of `M` is a manifold without boundary
+- `boundary M` is a submanifold (possibly with boundary and corners):
 follows from the corresponding statement for the model with corners `I`;
 this requires a definition of submanifolds
 - if `M` is finite-dimensional, its boundary has measure zero

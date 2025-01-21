@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Finset.Image.Basic
 import Mathlib.Data.Finset.Subtype
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
@@ -78,9 +79,7 @@ def univ : Finset α :=
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
--- Porting note: removing @[simp], simp can prove it
-theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
-  mem_univ
+theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 := by simp
 
 theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
@@ -739,9 +738,8 @@ theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype
   ext
   simp
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
-    s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by rw [← coe_ssubset, coe_toFinset, coe_univ]
+    s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by simp
 
 @[simp]
 theorem toFinset_image [DecidableEq β] (f : α → β) (s : Set α) [Fintype s] [Fintype (f '' s)] :
@@ -782,6 +780,11 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
+theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) := by
+  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+  exact ⟨.ofEquiv _ e.symm⟩
 
 @[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
   ext; simp
@@ -858,11 +861,9 @@ since that relies on a subsingleton elimination for `Unique`. -/
 instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 
--- Porting note: removing @[simp], simp can prove it
 theorem Fintype.univ_empty : @univ Empty _ = ∅ :=
   rfl
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_pempty : @univ PEmpty _ = ∅ :=
   rfl
 
@@ -875,7 +876,6 @@ theorem Fintype.univ_unit : @univ Unit _ = {()} :=
 instance PUnit.fintype : Fintype PUnit :=
   Fintype.ofSubsingleton PUnit.unit
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 

@@ -575,7 +575,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     calc
       ∑ _i : Fin N, μ s / N = μ s := by
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
-        rw [ENNReal.mul_div_cancel']
+        rw [ENNReal.mul_div_cancel]
         · simp only [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
         · exact ENNReal.natCast_ne_top _
       _ ≤ ∑ i, μ (s ∩ v i) := by
@@ -791,14 +791,17 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     rw [← Nat.succ_eq_add_one, u_succ]
     exact (hF (u n) (Pu n)).1
 
-/-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
-one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
-Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
-points of `s`.
-This version requires that the underlying measure is sigma-finite, and that the space has the
+/-- The measurable **Besicovitch covering theorem**.
+
+Assume that, for any `x` in a set `s`, one is given a set of admissible closed balls centered at
+`x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
+admissible closed balls centered at some points of `s`.
+
+This version requires the underlying measure to be sigma-finite, and the space to have the
 Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
 It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
 proof technique.
+
 For a version giving the conclusion in a nicer form, see `exists_disjoint_closedBall_covering_ae`.
 -/
 theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ] (f : α → Set ℝ)
@@ -813,12 +816,14 @@ theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ
     ⟨t, t_count, ts, tr, tν, tdisj⟩
   exact ⟨t, t_count, ts, tr, hμν tν, tdisj⟩
 
-/-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
-one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
-Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
-points of `s`. We can even require that the radius at `x` is bounded by a given function `R x`.
-(Take `R = 1` if you don't need this additional feature).
-This version requires that the underlying measure is sigma-finite, and that the space has the
+/-- The measurable **Besicovitch covering theorem**.
+
+Assume that, for any `x` in a set `s`, one is given a set of admissible closed balls centered at
+`x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
+admissible closed balls centered at some points of `s`. We can even require that the radius at `x`
+is bounded by a given function `R x`. (Take `R = 1` if you don't need this additional feature).
+
+This version requires the underlying measure to be sigma-finite, and the space to have the
 Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
 -/
 theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SFinite μ] (f : α → Set ℝ)
@@ -1061,8 +1066,7 @@ theorem tendsto_filterAt (μ : Measure α) [SFinite μ] (x : α) :
     ∃ (ε : ℝ), ε > 0 ∧
       ∀ a : Set α, a ∈ (Besicovitch.vitaliFamily μ).setsAt x → a ⊆ closedBall x ε → a ∈ s :=
     (VitaliFamily.mem_filterAt_iff _).1 hs
-  have : Ioc (0 : ℝ) ε ∈ 𝓝[>] (0 : ℝ) := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, εpos⟩
-  filter_upwards [this] with _ hr
+  filter_upwards [Ioc_mem_nhdsGT εpos] with _r hr
   apply hε
   · exact mem_image_of_mem _ hr.1
   · exact closedBall_subset_closedBall hr.2

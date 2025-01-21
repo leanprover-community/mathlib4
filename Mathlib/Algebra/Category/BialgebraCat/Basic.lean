@@ -24,10 +24,13 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-bialgebras. -/
-structure BialgebraCat extends Bundled Ring.{v} where
-  [instBialgebra : Bialgebra R α]
+structure BialgebraCat where
+  /-- The underlying type. -/
+  carrier : Type v
+  [instRing : Ring carrier]
+  [instBialgebra : Bialgebra R carrier]
 
-attribute [instance] BialgebraCat.instBialgebra
+attribute [instance] BialgebraCat.instBialgebra BialgebraCat.instRing
 
 variable {R}
 
@@ -36,7 +39,7 @@ namespace BialgebraCat
 open Bialgebra
 
 instance : CoeSort (BialgebraCat.{v} R) (Type v) :=
-  ⟨(·.α)⟩
+  ⟨(·.carrier)⟩
 
 variable (R)
 
@@ -44,8 +47,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
-  α := X
-  instBialgebra := (inferInstance : Bialgebra R X)
+  carrier := X
 
 variable {R}
 
@@ -93,7 +95,7 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
+instance hasForget : HasForget.{v} (BialgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toBialgHom }
