@@ -34,6 +34,7 @@ variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂ : Mea
 section IsFiniteMeasure
 
 /-- A measure `μ` is called finite if `μ univ < ∞`. -/
+@[mk_iff]
 class IsFiniteMeasure (μ : Measure α) : Prop where
   measure_univ_lt_top : μ univ < ∞
 
