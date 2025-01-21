@@ -48,7 +48,7 @@ private def unfoldPiInst (inst : Expr) (numInstArgs : Nat) : MetaM Expr := do
     mkLambdaFVars fvars e
 
 /--
-Reduce an over-application, by distributing it over 1 argument.
+Reduce an over-application, by distributing it over the arguments.
 - `(- f) xs` => `- (f xs)`
 - `(f ^ n) xs` => `(f xs) ^ n`
 - `(f + g) xs` => `f xs + g xs`
@@ -88,7 +88,7 @@ private def mustContainFVar (fvarId : FVarId) (e : Expr) : Bool :=
   mustHaveAnyFVar e (· == fvarId)
 
 /--
-Change a lambda expression by distributing it over `args`.
+Change a lambda expression by distributing it over the arguments.
 - `fun xs => - a` => `- (fun xs => a)`
 - `fun xs => a ^ n` => `(fun xs => a) ^ n`
 - `fun xs => a + b` => `(fun xs => a) + (fun xs => b)`
