@@ -30,6 +30,7 @@ building blocks for other homomorphisms:
 
 * `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
 * `→*`: Bundled `Monoid` homs. Also use for `Group` homs.
+* `→ₙ+`: Bundled `AddSemigroup` homs.
 * `→ₙ*`: Bundled `Semigroup` homs.
 
 ## Implementation notes
@@ -95,7 +96,9 @@ end Zero
 
 section Add
 
-/-- `AddHom M N` is the type of functions `M → N` that preserve addition.
+/-- `M →ₙ+ N` is the type of functions `M → N` that preserve addition. The `ₙ` in the notation
+stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
+`NonUnitalRingHom`, so a `AddHom` is a non-unital additive monoid hom.
 
 When possible, instead of parametrizing results over `(f : AddHom M N)`,
 you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
@@ -107,6 +110,9 @@ structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
   protected toFun : M → N
   /-- The proposition that the function preserves addition -/
   protected map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
+
+/-- `M →ₙ+ N` denotes the type of addition-preserving maps from `M` to `N`. -/
+infixr:25 " →ₙ+ " => AddHom
 
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
 You should declare an instance of this typeclass when you extend `AddHom`.
@@ -342,9 +348,6 @@ When you extend this structure, make sure to extend `MonoidHomClass`.
 @[to_additive]
 structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
   OneHom M N, M →ₙ* N
--- Porting note: remove once `to_additive` is updated
--- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom

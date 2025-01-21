@@ -166,19 +166,19 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     let I := equalizer s t
     let i : I ⟶ P := equalizer.ι s t
     apply preservesLimit_of_preserves_limit_cone
-        (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
-          (limit.isLimit _))
+        (buildIsLimit s t (by simp [P, s]) (by simp [P, t]) (limit.isLimit _)
+          (limit.isLimit _) (limit.isLimit _))
     apply IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
     · exact Fan.mk (G.obj Q) fun f => G.map (Pi.π _ f)
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [s, Fan.mk]
+      dsimp [P, Q, s, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       congr
     · intro f
-      dsimp [t, Fan.mk]
+      dsimp [P, Q, t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       apply congrArg G.map
       dsimp
@@ -191,7 +191,7 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · apply isLimitForkMapOfIsLimit
       apply equalizerIsEqualizer
     · refine Cones.ext (Iso.refl _) ?_
-      intro j; dsimp; simp
+      intro j; dsimp [P, Q, I, i]; simp
 -- See note [dsimp, simp].
 
 end
@@ -382,8 +382,8 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     let I := coequalizer s t
     let i : P ⟶ I := coequalizer.π s t
     apply preservesColimit_of_preserves_colimit_cocone
-        (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
-          (colimit.isColimit _))
+        (buildIsColimit s t (by simp [P, s]) (by simp [P, t]) (colimit.isColimit _)
+          (colimit.isColimit _) (colimit.isColimit _))
     apply IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
       apply Sigma.ι _ j
@@ -392,11 +392,11 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [s, Cofan.mk]
+      dsimp [P, Q, s, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       congr
     · intro f
-      dsimp [t, Cofan.mk]
+      dsimp [P, Q, t, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       dsimp
     · refine Cofork.ofπ (G.map i) ?_
@@ -409,7 +409,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
       apply coequalizerIsCoequalizer
     refine Cocones.ext (Iso.refl _) ?_
     intro j
-    dsimp
+    dsimp [P, Q, I, i]
     simp
 -- See note [dsimp, simp].
 

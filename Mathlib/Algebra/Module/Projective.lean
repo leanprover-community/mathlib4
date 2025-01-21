@@ -194,13 +194,13 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} [Ring R] {P : Type v} [AddCommMonoid P] [Module R P]
-variable {R₀ M N} [CommRing R₀] [Algebra R₀ R] [AddCommGroup M] [Module R₀ M] [Module R M]
-variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
+variable {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P] [Module R P]
+variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Module R₀ M] [Module R M]
+variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A module is projective iff it is the direct summand of a free module. -/
 theorem Projective.iff_split : Module.Projective R P ↔
-    ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
+    ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
   ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩

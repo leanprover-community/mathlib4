@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Int
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Iterates of monoid homomorphisms
@@ -25,8 +26,7 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
