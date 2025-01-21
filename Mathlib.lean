@@ -5132,6 +5132,7 @@ import Mathlib.Testing.Plausible.Testable
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Algebra.Equiv
 import Mathlib.Topology.Algebra.Algebra.Rat
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
