@@ -687,6 +687,7 @@ theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlge
 @[simps]
 def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
   { singleAddHom 1 with
+    toFun := single 1
     map_one' := rfl
     map_mul' := fun x y => by simp }
 
