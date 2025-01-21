@@ -6,6 +6,8 @@ Authors: Christian Merten
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Smooth.StandardSmooth
+import Mathlib.RingTheory.Smooth.Kaehler
+import Mathlib.RingTheory.Etale.Basic
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -25,7 +27,11 @@ We also provide the corresponding instances for standard smooth algebras as coro
 We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 -/
 
+universe u
+
 namespace Algebra
+
+section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -142,12 +148,12 @@ noncomputable def basisCotangent : Basis P.rels S P.toExtension.Cotangent :=
     ext i j
     simp only [Function.comp_apply, P.cotangentComplexAux_apply]
   have hli : LinearIndependent S
-      (fun i ↦ Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩) := by
+      (fun i ↦ (Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩ : P.toExtension.Cotangent)) := by
     apply LinearIndependent.of_comp P.cotangentComplexAux
     rw [h]
     apply P.linearIndependent_aeval_val_pderiv_relation
-  have hsp : ⊤ ≤ Submodule.span S
-      (Set.range fun i ↦ Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩) := by
+  have hsp : ⊤ ≤ Submodule.span S (Set.range <| fun i : P.rels ↦
+        (Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩ : P.toExtension.Cotangent)) := by
     rw [← _root_.eq_top_iff]
     apply Submodule.map_injective_of_injective P.cotangentComplexAux_injective
     rw [Submodule.map_top, LinearMap.range_eq_top_of_surjective _ P.cotangentComplexAux_surjective]
@@ -220,8 +226,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → P.vars}
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,
       Pi.basisFun_apply, Finsupp.single_apply_left P.map_inj, Finsupp.single_eq_pi_single]
     simp [Finsupp.single_eq_pi_single]
-  · rw [Set.range_comp, Set.range_comp, ← Set.image_union, hcompl.eq_compl,
-      Set.compl_union_self (Set.range P.map), Set.image_univ]
+  · exact hcompl.2
 
 /-- Given a submersive presentation of `S` as `R`-algebra, the images of `dxᵢ`
 for `i` in the complement of `P.rels` in `P.vars` form a basis of `Ω[S⁄R]`. -/
@@ -258,6 +263,11 @@ instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
   obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.free_kaehlerDifferential
 
+instance IsStandardSmooth.subsingleton_h1Cotangent [IsStandardSmooth R S] :
+    Subsingleton (H1Cotangent R S) := by
+  obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact P.equivH1Cotangent.symm.toEquiv.subsingleton
+
 /-- If `S` is non-trivial and `R`-standard smooth of relative dimension, `Ω[S⁄R]` is a free
 `S`-module of rank `n`. -/
 theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial S] (n : ℕ)
@@ -266,7 +276,7 @@ theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial
   obtain ⟨⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
   rw [P.rank_kaehlerDifferential, hP]
 
-lemma IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
+instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton (Ω[S⁄R]) := by
   wlog h : Nontrivial S
   · rw [not_nontrivial_iff_subsingleton] at h
@@ -274,5 +284,22 @@ lemma IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
+
+end
+
+variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+
+instance [IsStandardSmooth R S] : Smooth R S where
+  formallySmooth := by
+    rw [Algebra.FormallySmooth.iff_subsingleton_and_projective]
+    exact ⟨inferInstance, inferInstance⟩
+
+/-- If `S` is `R`-standard smooth of relative dimension zero, it is étale. -/
+instance [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R S where
+  finitePresentation := (IsStandardSmoothOfRelativeDimension.isStandardSmooth 0).finitePresentation
+  formallyEtale :=
+    have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
+    have : FormallyUnramified R S := ⟨inferInstance⟩
+    Algebra.FormallyEtale.of_unramified_and_smooth
 
 end Algebra
