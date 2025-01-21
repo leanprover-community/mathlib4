@@ -84,7 +84,7 @@ theorem sylvester_strictMono : StrictMono sylvester := by
 theorem sylvester_mod_eq_one {m n : ℕ} (h : m < n) :
     sylvester n % sylvester m = 1 := by
   rw [sylvester_prod_finset_add_one, ← mod_add_mod,
-    dvd_iff_mod_eq_zero.mp (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr ((by omega) : m < n))]
+    dvd_iff_mod_eq_zero.mp (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr h)]
   exact Nat.mod_eq_of_lt <| sylvester_ge_two _
 
 private theorem sylvester_coprime_of_lt {m n : ℕ} (h : m < n) :
