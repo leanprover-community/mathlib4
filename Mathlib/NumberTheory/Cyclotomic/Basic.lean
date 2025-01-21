@@ -299,19 +299,18 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
 /-- If `S` is finite and `IsCyclotomicExtension S A B`, then `B` is a finite `A`-algebra. -/
 protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExtension S A B] :
     Module.Finite A B := by
-  cases' nonempty_fintype S with h
-  revert h₂ A B
-  refine Set.Finite.induction_on _ h₁ (fun A B => ?_) @fun n S _ _ H A B => ?_
-  · intro _ _ _ _ _
+  rw [finite_coe_iff] at h₁
+  induction S, h₁ using Set.Finite.induction_on generalizing h₂ A B with
+  | empty =>
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
     simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
-  · intro _ _ _ _ h
+  | @insert n S _ _ H =>
     haveI : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) :=
       union_left _ (insert n S) _ _ (subset_insert n S)
     haveI := H A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1})
     have : Module.Finite (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) B := by
-      rw [← union_singleton] at h
-      letI := @union_right S {n} A B _ _ _ h
+      rw [← union_singleton] at h₂
+      letI := union_right S {n} A B
       exact finite_of_singleton n _ _
     exact Module.Finite.trans (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) _
 

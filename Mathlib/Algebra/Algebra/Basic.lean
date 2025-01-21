@@ -344,9 +344,7 @@ lemma NoZeroSMulDivisors.of_algebraMap_injective' {R A M : Type*} [CommSemiring 
     NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
     rw [← algebraMap_smul (A := A)] at hx
-    obtain (hc|hx) := eq_zero_or_eq_zero_of_smul_eq_zero hx
-    · exact Or.inl <| (map_eq_zero_iff _ h).mp hc
-    · exact Or.inr hx
+    simpa only [map_eq_zero_iff _ h] using eq_zero_or_eq_zero_of_smul_eq_zero hx
 
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
