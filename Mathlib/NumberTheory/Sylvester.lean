@@ -19,10 +19,11 @@ We follow the presentantion from [Wikipedia](https://en.wikipedia.org/wiki/Sylve
 
 ## Main results
 
-- Basic facts.
-- Recurrence formula.
-- Sylvester sequence is strictly monotonic.
-- Pairwise co-primality.
+- Basic facts: the first terms of the sequence are 2, 3, 7, 43.
+- `sylvester_prod_finset_add_one`: each term of the sequence is one plus the product of its
+  predecessors.
+- `sylvester_strictMono`: the sequence is strictly monotonic.
+- `sylvester_coprime`: Pairwise co-primality.
 
 ## References
 
@@ -32,24 +33,22 @@ We follow the presentantion from [Wikipedia](https://en.wikipedia.org/wiki/Sylve
 
 open Nat
 
-/--
-Sylvester sequence: https://oeis.org/A000058.
--/
+/-- Sylvester sequence: https://oeis.org/A000058. -/
 def sylvester : ℕ → ℕ
   | 0 => 2
   | n + 1 => (sylvester n) * (sylvester n - 1) + 1
 
 @[simp]
-theorem sylvester_zero : sylvester 0 = 2 := by rfl
+theorem sylvester_zero : sylvester 0 = 2 := rfl
 
 @[simp]
-theorem sylvester_one : sylvester 1 = 3 := by rfl
+theorem sylvester_one : sylvester 1 = 3 := rfl
 
 @[simp]
-theorem sylvester_two : sylvester 2 = 7 := by rfl
+theorem sylvester_two : sylvester 2 = 7 := rfl
 
 @[simp]
-theorem sylvester_three : sylvester 3 = 43 := by rfl
+theorem sylvester_three : sylvester 3 = 43 := rfl
 
 theorem sylvester_ge_two (n : ℕ) : 2 ≤ sylvester n := by
   induction' n with n ih
