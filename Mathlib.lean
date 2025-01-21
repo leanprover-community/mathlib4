@@ -2545,13 +2545,13 @@ import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Functor
 import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Image.Basic
+import Mathlib.Data.Finset.Image.Defs
 import Mathlib.Data.Finset.Image.Range
 import Mathlib.Data.Finset.Image.Union
 import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Finset.Image.Defs
-import Mathlib.Data.Finset.Image.Defs
 import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice.Basic
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Lattice.Lemmas
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.MulAntidiagonal
