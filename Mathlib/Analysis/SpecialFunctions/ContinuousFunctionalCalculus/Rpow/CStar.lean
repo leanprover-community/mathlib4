@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
 /-! # Properties of `rpow` and `sqrt` over C⋆-algebras
 
@@ -27,12 +27,13 @@ namespace CFC
 
 section nonunital
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]
+  [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma nnnorm_nnrpow (a : A) (r : ℝ≥0) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) := by
   simp only [nnrpow_def]
-  rw [nnnorm_cfcₙ_of_monotoneOn _ _
-      (Monotone.monotoneOn (NNReal.monotone_nnrpow_const r) _)]
+  rw [MonotoneOn.nnnorm_cfcₙ _ _ (Monotone.monotoneOn (NNReal.monotone_nnrpow_const r) _)]
 
 lemma norm_nnrpow (a : A) (r : ℝ≥0) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) := by
   have h₁ : ‖a ^ r‖ = (‖a ^ r‖₊ : ℝ) := rfl
@@ -56,7 +57,9 @@ end nonunital
 
 section unital
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
+  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma nnnorm_rpow (a : A) (r : ℝ) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖₊ = ‖a‖₊ ^ r := by
   let r' : ℝ≥0 := ⟨r, by positivity⟩
