@@ -54,6 +54,21 @@ def insertNth (p : Fin (n + 1)) (y : M) (s : Fin n →₀ M) : Fin (n + 1) →�
   Finsupp.equivFunOnFinite.symm (Fin.insertNth p y s : Fin (n + 1) → M)
 
 variable (p : Fin (n + 1)) (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M) (i : Fin n)
+
+-- TODO: move these old theorems to the appropriate new sections
+@[simp]
+theorem tail_apply : tail t i = t i.succ := rfl
+
+@[simp]
+theorem cons_zero : cons y s 0 = y := rfl
+
+@[simp]
+theorem cons_succ : cons y s i.succ = s i := rfl
+
+@[simp]
+theorem tail_cons : tail (cons y s) = s :=
+  ext fun k => by simp only [tail_apply, cons_succ]
+
 section Remove
 
 @[simp]
@@ -68,9 +83,6 @@ theorem removeNth_last : removeNth (Fin.last n) t = init t := by simp [removeNth
 /-- Updating the `i`-th entry does not affect removing the `i`-th entry. -/
 @[simp]
 theorem removeNth_update : removeNth p (update t p y) = removeNth p t := by simp [removeNth]
-
-@[simp]
-theorem tail_apply : tail t i = t i.succ := rfl
 
 @[simp]
 theorem tail_update_zero : tail (update t 0 y) = tail t := by simp [tail]
@@ -96,12 +108,6 @@ end Remove
 section Add
 
 @[simp]
-theorem cons_zero : cons y s 0 = y := rfl
-
-@[simp]
-theorem cons_succ : cons y s i.succ = s i := rfl
-
-@[simp]
 theorem snoc_last : snoc s y (Fin.last n) = y := by simp [snoc]
 
 @[simp]
@@ -118,10 +124,6 @@ theorem insertNth_apply_same : insertNth p y s p = y := by simp [insertNth]
 
 @[simp]
 theorem insertNth_apply_succAbove : insertNth p y s (p.succAbove i) = s i := by simp [insertNth]
-
-@[simp]
-theorem tail_cons : tail (cons y s) = s :=
-  ext fun k => by simp only [tail_apply, cons_succ]
 
 @[simp]
 theorem cons_tail : cons (t 0) (tail t) = t := by
