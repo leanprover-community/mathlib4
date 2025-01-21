@@ -142,7 +142,7 @@ theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y 
   ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
 
 @[simp]
-theorem cons_eq_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
+theorem cons_inj {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x = cons y₀ y ↔ x₀ = y₀ ∧ x = y :=
   cons_injective2.eq_iff
 
@@ -591,7 +591,7 @@ theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ 
   ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
 
 @[simp]
-theorem snoc_eq_snoc {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
+theorem snoc_inj {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
     snoc x xₙ = snoc y yₙ ↔ x = y ∧ xₙ = yₙ :=
   snoc_injective2.eq_iff
 
@@ -808,7 +808,7 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 /-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
-theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ (∃ j, i = p.succAbove j) :=
+theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
   succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
 
 /-- Remove the `p`-th entry of a tuple. -/
@@ -873,7 +873,7 @@ theorem insertNth_injective2 {p : Fin (n + 1)} :
   ⟨by simpa using congr_fun h p, funext fun i ↦ by simpa using congr_fun h (succAbove p i)⟩
 
 @[simp]
-theorem insertNth_eq_insertNth {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
+theorem insertNth_inj {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
     insertNth p xₚ x = insertNth p yₚ y ↔ xₚ = yₚ ∧ x = y :=
   insertNth_injective2.eq_iff
 

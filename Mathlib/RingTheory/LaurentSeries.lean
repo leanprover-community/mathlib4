@@ -89,7 +89,7 @@ structure on the `X`-adic completion of `K⸨X⸩`. Once this will be available,
 -/
 universe u
 
-open scoped Classical PowerSeries
+open scoped PowerSeries
 open HahnSeries Polynomial
 
 noncomputable section
@@ -541,6 +541,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
+  classical
   rw [count_associates_factors_eq  (span_ne_zero).1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
     count_associates_factors_eq]

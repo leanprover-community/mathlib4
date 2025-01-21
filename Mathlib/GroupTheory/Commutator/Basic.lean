@@ -5,6 +5,7 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.Tactic.Group
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Commutators of Subgroups

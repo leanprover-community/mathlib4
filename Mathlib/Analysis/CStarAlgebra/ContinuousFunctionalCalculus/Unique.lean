@@ -20,7 +20,7 @@ The same is true for `𝕜 := ℝ≥0`, so long as the algebra `A` is an `ℝ`-a
 by upgrading a map `C((s : Set ℝ≥0), ℝ≥0) →⋆ₐ[ℝ≥0] A` to `C(((↑) '' s : Set ℝ), ℝ) →⋆ₐ[ℝ] A` in
 the natural way, and then applying the uniqueness for `ℝ`-algebra homomorphisms.
 
-This is the reason the `UniqueContinuousFunctionalCalculus` class exists in the first place, as
+This is the reason the `ContinuousMap.UniqueHom` class exists in the first place, as
 opposed to simply appealing directly to Stone-Weierstrass to prove `StarAlgHom.ext_continuousMap`.
 -/
 
@@ -32,22 +32,22 @@ section RCLike
 
 variable {𝕜 A : Type*} [RCLike 𝕜]
 
-instance (priority := 100) RCLike.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
+instance (priority := 100) RCLike.instContinuousMapUniqueHom [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra 𝕜 A] :
-    UniqueContinuousFunctionalCalculus 𝕜 A where
+    ContinuousMap.UniqueHom 𝕜 A where
   eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
       convert h using 1
       all_goals exact congr_arg _ (by ext; simp)
 
-instance Real.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
+instance Real.instContinuousMapUniqueHom [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra ℝ A] :
-    UniqueContinuousFunctionalCalculus ℝ A :=
+    ContinuousMap.UniqueHom ℝ A :=
   inferInstance
 
-instance Complex.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
+instance Complex.instContinuousMapUniqueHom [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra ℂ A] :
-    UniqueContinuousFunctionalCalculus ℂ A :=
+    ContinuousMap.UniqueHom ℂ A :=
   inferInstance
 
 end RCLike
@@ -170,8 +170,8 @@ end StarAlgHom
 
 variable [TopologicalSpace A] [TopologicalRing A]
 
-instance NNReal.instUniqueContinuousFunctionalCalculus [T2Space A] :
-    UniqueContinuousFunctionalCalculus ℝ≥0 A where
+instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
+    ContinuousMap.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
@@ -194,7 +194,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [T2Space A] :
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ
     have hs' : CompactSpace s' := e.compactSpace
-    have h' := UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id s' _ _ hφ' hψ'
+    have h' := ContinuousMap.UniqueHom.eq_of_continuous_of_map_id s' _ _ hφ' hψ'
       (hφ_id ▸ hψ_id ▸ h)
     have h'' := congr($(h').comp <| ContinuousMap.compStarAlgHom' ℝ ℝ (e.symm : C(s', s)))
     have : (ContinuousMap.compStarAlgHom' ℝ ℝ (e : C(s, s'))).comp
@@ -217,7 +217,7 @@ open NonUnitalStarAlgebra in
 instance RCLike.uniqueNonUnitalContinuousFunctionalCalculus
     [TopologicalSpace A] [T2Space A] [NonUnitalRing A] [StarRing A] [Module 𝕜 A]
     [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] :
-    UniqueNonUnitalContinuousFunctionalCalculus 𝕜 A where
+    ContinuousMapZero.UniqueHom 𝕜 A where
   eq_of_continuous_of_map_id s hs _inst h0 φ ψ hφ hψ h := by
     rw [DFunLike.ext'_iff, ← Set.eqOn_univ, ← (ContinuousMapZero.adjoin_id_dense h0).closure_eq]
     refine Set.EqOn.closure (fun f hf ↦ ?_) hφ hψ
@@ -357,10 +357,10 @@ end NonUnitalStarAlgHom
 
 open ContinuousMapZero
 
-instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
+instance NNReal.instContinuousMapZero.UniqueHom
     [TopologicalSpace A] [TopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [T2Space A] :
-    UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A where
+    ContinuousMapZero.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs _inst h0 φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
@@ -390,8 +390,8 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ
     have hs' : CompactSpace s' := e.compactSpace
-    have : UniqueNonUnitalContinuousFunctionalCalculus ℝ A := inferInstance
-    have h' := UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
+    have : ContinuousMapZero.UniqueHom ℝ A := inferInstance
+    have h' := ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
       s' h0' _ _ hφ' hψ' (hφ_id ▸ hψ_id ▸ h)
     have h'' := congr($(h').comp <|
       ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨(e.symm : C(s', s)), e0'⟩)
@@ -419,7 +419,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [IsScalarTower R B B] [SMulCommClass R B B]
   [Module S A] [Module S B] [IsScalarTower R S A] [IsScalarTower R S B]
   [NonUnitalContinuousFunctionalCalculus R p] [NonUnitalContinuousFunctionalCalculus R q]
-  [UniqueNonUnitalContinuousFunctionalCalculus R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
+  [ContinuousMapZero.UniqueHom R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
   [StarHomClass F A B]
 
 include S in
@@ -440,7 +440,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     have hf' : ContinuousOn f (quasispectrum R (ψ a)) := hf.mono h_spec
     rw [cfcₙ_apply .., cfcₙ_apply ..]
     exact DFunLike.congr_fun this _
-  refine UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ rfl _ _
+  refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id _ rfl _ _
     ?_ ?_ ?apply_id
   case apply_id =>
     trans cfcₙHom hψa ⟨.restrict (quasispectrum R (ψ a)) (.id R), rfl⟩
@@ -470,7 +470,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [Ring B] [StarRing B] [TopologicalSpace B] [Algebra R B]
   [CommSemiring S] [Algebra R S] [Algebra S A] [Algebra S B] [IsScalarTower R S A]
   [IsScalarTower R S B] [ContinuousFunctionalCalculus R p] [ContinuousFunctionalCalculus R q]
-  [UniqueContinuousFunctionalCalculus R B] [FunLike F A B] [AlgHomClass F S A B]
+  [ContinuousMap.UniqueHom R B] [FunLike F A B] [AlgHomClass F S A B]
   [StarHomClass F A B]
 
 include S in
@@ -489,7 +489,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     have hf' : ContinuousOn f (spectrum R (ψ a)) := hf.mono h_spec
     rw [cfc_apply .., cfc_apply ..]
     congrm($(this) ⟨_, hf.restrict⟩)
-  refine UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
+  refine ContinuousMap.UniqueHom.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
   case apply_id =>
     trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))
     · simp [cfcHom_id]
