@@ -154,8 +154,6 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfOplax`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure PseudoCore (F : OplaxFunctor B C) where
   /-- The isomorphism giving rise to the oplax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)

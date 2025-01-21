@@ -228,6 +228,7 @@ import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Expr
+import Mathlib.Algebra.Field.Action.ConjAct
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Equiv
@@ -374,6 +375,7 @@ import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Faithful
@@ -892,6 +894,7 @@ import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Group
 import Mathlib.Algebra.Ring.Action.Invariant
@@ -1667,7 +1670,8 @@ import Mathlib.CategoryTheory.Adjunction.Triple
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.CategoryTheory.Bicategory.End
@@ -2688,6 +2692,7 @@ import Mathlib.Data.List.Iterate
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Map2
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Monad
 import Mathlib.Data.List.NatAntidiagonal

@@ -1353,6 +1353,11 @@ theorem compl_univ_iff {s : Set α} : sᶜ = univ ↔ s = ∅ :=
 theorem compl_ne_univ : sᶜ ≠ univ ↔ s.Nonempty :=
   compl_univ_iff.not.trans nonempty_iff_ne_empty.symm
 
+lemma inl_compl_union_inr_compl {α β : Type*} {s : Set α} {t : Set β} :
+    Sum.inl '' sᶜ ∪ Sum.inr '' tᶜ = (Sum.inl '' s ∪ Sum.inr '' t)ᶜ := by
+  rw [compl_union]
+  aesop
+
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_not_mem s).symm
 
@@ -2168,5 +2173,28 @@ end Disjoint
 
 @[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
   ext fun q ↦ by simpa [@Iff.comm q] using not_iff
+
+namespace Equiv
+
+/-- Given a predicate `p : α → Prop`, produces an equivalence between
+  `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
+protected def setSubtypeComm (p : α → Prop) :
+    Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
+  toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩
+  invFun s := {a | a.val ∈ s.val}
+  left_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
+  right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩
+
+@[simp]
+protected lemma setSubtypeComm_apply (p : α → Prop) (s : Set {a // p a}) :
+    (Equiv.setSubtypeComm p) s = ⟨{a | ∃ h : p a, ⟨a, h⟩ ∈ s}, fun _ h ↦ h.1⟩ :=
+  rfl
+
+@[simp]
+protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈ s, p a}) :
+    (Equiv.setSubtypeComm p).symm s = {a | a.val ∈ s.val} :=
+  rfl
+
+end Equiv
 
 set_option linter.style.longFile 2300
