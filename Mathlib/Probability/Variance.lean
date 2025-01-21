@@ -172,10 +172,6 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   rw [mul_comm]
   simp_rw [← smul_eq_mul, ← integral_smul_const, smul_eq_mul, mul_comm]
 
-lemma variance_eq_integral (hX : AEMeasurable (fun ω ↦ (‖X ω - ∫ ω', X ω' ∂μ‖₊ : ℝ≥0∞) ^ 2) μ) :
-    Var[X ; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
-  simp [variance, evariance, ← integral_toReal hX (by simp [← ENNReal.coe_pow])]
-
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.zero_toReal]
