@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
-# Sylvester sequence
+# Sylvester's sequence
 
 This file introduces the Sylvester's sequence.
 This is sequence [A000058](https://oeis.org/A000058) in [oeis].
