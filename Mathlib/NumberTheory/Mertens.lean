@@ -309,25 +309,6 @@ theorem sum_strictPow_convergent : Summable (fun (n:ℕ) ↦
     simp only [Pi.zero_apply, e, f]
     positivity
 
-  -- let ι : Nat.Primes × ℕ → {k : ℕ | IsPrimePow k ∧ ¬ k.Prime} := fun p =>
-  --   ⟨p.1 ^ (p.2 + 2), by
-  --     simp only [Set.mem_setOf_eq]
-  --     constructor
-  --     · refine (isPrimePow_pow_iff (succ_ne_zero _)).mpr ?_
-  --       refine Nat.Prime.isPrimePow ?_
-
-  --       sorry
-
-  --     sorry⟩
-  -- have : ι.Injective := by
-  --   sorry
-  -- set f := fun (n:{k : ℕ | IsPrimePow k ∧ ¬ k.Prime}) ↦ Λ n / n
-  -- let g (p : Nat.Primes × ℕ) : ℝ := Real.log p.1 / p.1 ^ (p.2+2)
-  -- have : f ∘ ι = g  := by
-  --   sorry
-  -- rw [← Function.Injective.summable_iff _ this]
-  -- sorry
-
 theorem sum_primesBelow_log_div_id_eq_vonMangoldt_sub (n : ℕ) :
   ∑ p ∈ primesBelow (n+1), Real.log p / p = ∑ k ∈ Finset.range (n+1), Λ k / k
     - ∑ k ∈ Finset.range (n+1), if ¬ Nat.Prime k then Λ k / k else 0 := by
@@ -370,3 +351,88 @@ theorem mertens_first : (fun n : ℕ ↦ (∑ p ∈ primesBelow (n+1), Real.log 
   apply (h₁.sub h₀).congr <;>
   · intro x
     ring
+set_option linter.style.longLine false
+
+@[reducible]
+private noncomputable def E₁ (t : ℝ) : ℝ := (∑ p ∈ primesBelow (⌊t⌋₊+1), Real.log p / p) - Real.log t
+
+private theorem E₁_eq : E₁ = fun t ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), Real.log p / p) - Real.log t := rfl
+
+theorem Nat.le_floor_add_one (x : ℝ) : x ≤ ⌊x⌋₊ + 1 := by calc
+  x ≤ ⌈x⌉₊ := Nat.le_ceil x
+  _ ≤ ⌊x⌋₊ + 1 := mod_cast (Nat.ceil_le_floor_add_one x)
+
+
+example : atTop.map Nat.cast = (atTop : Filter ℝ) := by
+
+  apply le_antisymm
+  · apply tendsto_natCast_atTop_atTop
+
+  apply Filter.le_map
+  simp only [mem_atTop_sets, ge_iff_le, Set.mem_image, forall_exists_index]
+
+
+  sorry
+
+-- example : atTop.comap Nat.floor = (atTop : Filter ℝ) := by
+--   -- apply Filter.comap_embedding_atTop
+
+
+--   apply le_antisymm
+--   · apply tendsto_natCast_atTop_atTop
+
+--   apply Filter.le_map
+--   simp only [mem_atTop_sets, ge_iff_le, Set.mem_image, forall_exists_index]
+
+
+  -- sorry
+-- something something GaloisConnection?
+theorem Asymptotics.IsBigO.nat_floor {f g : ℕ → ℝ} (h : f =O[atTop] g) :
+  (fun x ↦ f (Nat.floor x)) =O[atTop] (fun x ↦ (g (Nat.floor x)) : ℝ → ℝ) := by
+  apply h.comp_tendsto tendsto_nat_floor_atTop
+
+
+-- ouchie
+theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
+  have h₀ : (fun t ↦ Real.log t - Real.log (⌊t⌋₊)) =O[atTop] (fun t ↦ Real.log t - Real.log (t-1)) := by
+    have h1 (t : ℝ) (ht : 1 < t) : Real.log (t-1) ≤ Real.log (⌊t⌋₊) := by
+      gcongr
+      · linarith only [ht]
+      · linarith only [Nat.le_floor_add_one t]
+    have h2 (t : ℝ) (ht : 1 ≤ t) : Real.log (⌊t⌋₊) ≤ Real.log t := by
+      gcongr
+      · exact_mod_cast Nat.floor_pos.mpr ht
+      · apply Nat.floor_le (zero_le_one.trans ht)
+    apply Eventually.isBigO
+    filter_upwards [eventually_gt_atTop 1] with t ht
+    simp only [norm_eq_abs]
+    rw [abs_of_nonneg (by linarith only [h2 t ht.le])]
+    gcongr
+    · linarith
+    · linarith only [Nat.le_floor_add_one t]
+  have h₁ : (fun t ↦ Real.log t - Real.log (t-1)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
+    apply IsBigO.trans _ (Asymptotics.isBigO_const_const (2:ℝ) one_ne_zero atTop)
+    apply Filter.Eventually.isBigO
+    filter_upwards [eventually_ge_atTop 0, eventually_gt_atTop 1, eventually_ne_atTop 1, eventually_ge_atTop 100] with x hx0 hx1 hx_ne_1 _
+    simp only [norm_eq_abs, ]
+    rw [abs_of_nonneg ?nonneg]
+    case nonneg =>
+      rw [sub_nonneg]
+      gcongr <;> linarith
+    rw [← Real.log_div]
+    · apply (Real.log_le_self _).trans
+      · rw [div_le_iff₀] <;> linarith
+      apply div_nonneg hx0
+      linarith
+    · linarith
+    · exact sub_ne_zero_of_ne hx_ne_1
+  simp_rw [E₁_eq]
+  apply (mertens_first.nat_floor.sub (h₀.trans h₁)).congr <;>
+  · intro x
+    ring
+
+
+theorem mertens_second : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), 1 / (p : ℝ)) - Real.log (Real.log t))
+    =O[atTop] (fun n ↦ 1 / Real.log n) := by
+
+  sorry
