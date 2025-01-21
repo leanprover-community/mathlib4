@@ -274,9 +274,11 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     (hf.pow n).order = n * hf.order := by
-  induction' n with n hn
-  · simp [AnalyticAt.order_eq_zero_iff]
-  · simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
+  induction n
+  case zero =>
+    simp [AnalyticAt.order_eq_zero_iff]
+  case succ n hn =>
+    simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
 
 end AnalyticAt
 
