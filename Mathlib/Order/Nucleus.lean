@@ -46,25 +46,23 @@ instance : FunLike (Nucleus X) X X where
 
 lemma coe_eq_toFun (n : Nucleus X) : n x = n.toFun x := by rfl
 
-lemma idempotent : n (n x) = n x := by
-  apply le_antisymm
-  · exact n.idempotent' x
-  · exact n.increasing' (n.toFun x)
-
-lemma increasing : x ≤ n x := by
-  apply n.increasing'
-
-lemma map_inf : n (x ⊓ y) = n x ⊓ n y := by
-  apply n.map_inf'
-
 instance : NucleusClass (Nucleus X) X where
-  idempotent _ _ := le_of_eq idempotent
-  increasing _ _ := increasing
-  map_inf _ _ _ := map_inf
+  idempotent _ _ := by apply idempotent'
+  increasing _ _ := by apply increasing'
+  map_inf n _ _ := by apply n.map_inf'
 
 /-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
    ClosureOperator.mk' n (OrderHomClass.mono n) n.increasing' n.idempotent'
+
+lemma idempotent : n (n x) = n x :=
+  n.toClosureOperator.idempotent x
+
+lemma increasing : x ≤ n x :=
+  n.toClosureOperator.le_closure x
+
+lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
+  InfHomClass.map_inf n x y
 
 /--
 We can proove that two Nuclei are equal by showing that their functions are the same.
@@ -76,7 +74,7 @@ We can proove that two Nuclei are equal by showing that their functions are the 
 A Nucleus preserves ⊤
 -/
 @[simp] lemma map_top (n : Nucleus X) : n ⊤ = ⊤ :=
-   top_le_iff.mp increasing
+   n.toClosureOperator.closure_top
 
 instance : LE (Nucleus X) where
   le x y := ∀ v : X, x.toFun v ≤ y.toFun v
