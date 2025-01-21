@@ -7,10 +7,10 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
-/-! # Properties of `rpow` and `sqrt` over C⋆-algebras
+/-! # Properties of `rpow` and `sqrt` over an algebra with an isometric CFC
 
 This file collects results about `CFC.rpow`, `CFC.nnrpow` and `CFC.sqrt` that use facts that
-are specific to C⋆-algebras.
+rely on an isometric continuous functional calculus.
 
 ## Main theorems
 
