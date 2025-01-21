@@ -72,7 +72,7 @@ theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.
       use s
       solve_by_elim [εClosure.step]
   mpr := by
-    intro ⟨_, _, h⟩
+    intro ⟨t, _, h⟩
     induction' h <;> subst_vars <;> solve_by_elim [εClosure.step]
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
@@ -170,14 +170,14 @@ alias ⟨_, IsPath.singleton⟩ := isPath_singleton
 theorem isPath_append {x y : List (Option α)} :
     M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
   mp := by
-    induction' x with _ _ ih generalizing s
+    induction' x with x a ih generalizing s
     · rw [List.nil_append]
       tauto
-    · rintro (_ | ⟨_, _, _, _, _, _, h⟩)
+    · rintro (_ | ⟨t, _, _, _, _, _, h⟩)
       apply ih at h
       tauto
   mpr := by
-    intro ⟨_, hx, _⟩
+    intro ⟨t, hx, _⟩
     induction x generalizing s <;> cases hx <;> tauto
 
 theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
@@ -198,12 +198,12 @@ theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
       apply IsPath.eq_of_nil at h
       solve_by_elim
     · simp_rw [List.replicate_add, isPath_append, List.replicate_one, isPath_singleton] at h
-      obtain ⟨_, _, _⟩ := h
+      obtain ⟨t, _, _⟩ := h
       solve_by_elim [εClosure.step]
 
 theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
     s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' := by
-  induction' x using List.reverseRecOn with _ a ih generalizing s₂
+  induction' x using List.reverseRecOn with x a ih generalizing s₂
   · rw [evalFrom_nil, mem_εClosure_iff_exists_path]
     constructor
     · intro ⟨n, _⟩
@@ -211,24 +211,24 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       rw [List.reduceOption_replicate_none]
       trivial
     · simp_rw [List.reduceOption_eq_nil_iff]
-      rintro ⟨_, ⟨⟨_, rfl⟩, _⟩⟩
-      tauto
+      intro ⟨_, ⟨⟨n, rfl⟩, h⟩⟩
+      exact ⟨n, h⟩
   · rw [evalFrom_append_singleton, mem_stepSet_iff]
     constructor
-    · intro ⟨_, ht, h⟩
+    · intro ⟨t, ht, h⟩
       obtain ⟨x', _, _⟩ := ih.mp ht
       rw [mem_εClosure_iff_exists] at h
       simp_rw [mem_εClosure_iff_exists_path] at h
-      obtain ⟨_, _, ⟨n, _⟩⟩ := h
+      obtain ⟨u, _, ⟨n, _⟩⟩ := h
       use x' ++ some a :: List.replicate n none
       rw [List.reduceOption_append, List.reduceOption_cons_of_some,
         List.reduceOption_replicate_none, isPath_append]
       tauto
     · simp_rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff,
         List.reduceOption_eq_nil_iff]
-      rintro ⟨_, ⟨_, _, rfl, _, _, rfl⟩, h⟩
+      intro ⟨_, ⟨x', _, rfl, _, n, rfl⟩, h⟩
       rw [isPath_append] at h
-      obtain ⟨t, _, _ | _⟩ := h
+      obtain ⟨t, _, _ | u⟩ := h
       use t
       rw [mem_εClosure_iff_exists, ih]
       simp_rw [mem_εClosure_iff_exists_path]
@@ -238,15 +238,15 @@ theorem mem_accepts_iff_exists_path {x : List α} :
     x ∈ M.accepts ↔
       ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' where
   mp := by
-    intro ⟨_, _, h⟩
+    intro ⟨s₂, _, h⟩
     rw [eval, mem_evalFrom_iff_exists] at h
-    obtain ⟨_, _, h⟩ := h
+    obtain ⟨s₁, _, h⟩ := h
     rw [mem_evalFrom_iff_exists_path] at h
     tauto
   mpr := by
-    intro ⟨_, _, _, hs₁, _, h⟩
+    intro ⟨s₁, s₂, x', hs₁, hs₂, h⟩
     have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.mem_evalFrom_iff_exists_path.mpr ⟨_, h⟩⟩
-    tauto
+    exact ⟨s₂, hs₂, this⟩
 
 /-! ### Conversions between `εNFA` and `NFA` -/
 
