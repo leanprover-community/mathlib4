@@ -44,9 +44,13 @@ variable {F ι α β γ δ : Type*}
 
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
 structure SupHom (α β : Type*) [Max α] [Max β] where
-  /-- The underlying function of a `SupHom` -/
+  /-- The underlying function of a `SupHom`.
+  Do not use this Function directly.
+  Instead use the coercion coming from the `FunLike` instance. -/
   toFun : α → β
-  /-- A `SupHom` preserves suprema. -/
+  /-- A `SupHom` preserves suprema.
+  Do not use this directly. Use `SupHom.map_sup` instead.
+  -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
