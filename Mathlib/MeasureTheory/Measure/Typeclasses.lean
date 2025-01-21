@@ -38,7 +38,7 @@ section IsFiniteMeasure
 class IsFiniteMeasure (μ : Measure α) : Prop where
   measure_univ_lt_top : μ univ < ∞
 
-lemma not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := by simp [isFiniteMeasure_iff]
+lemma not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ univ = ∞ := by simp [isFiniteMeasure_iff]
 
 lemma isFiniteMeasure_restrict : IsFiniteMeasure (μ.restrict s) ↔ μ s ≠ ∞ := by
   simp [isFiniteMeasure_iff, lt_top_iff_ne_top]
