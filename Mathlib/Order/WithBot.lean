@@ -956,7 +956,7 @@ lemma le_of_forall_lt_iff_le [LinearOrder α] [DenselyOrdered α] [NoMinOrder α
   | coe x =>
     rw [le_coe_iff]
     rintro y rfl
-    exact le_of_forall_forall_gt_imp_ge_of_dense (by exact_mod_cast h)
+    exact le_of_forall_gt_imp_ge_of_dense (by exact_mod_cast h)
 
 lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
     {x y : WithBot α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y := by

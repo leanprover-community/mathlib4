@@ -240,7 +240,7 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
   apply le_antisymm
   · intro x hx
     rw [mem_closedBall_zero_iff]
-    apply le_of_forall_forall_gt_imp_ge_of_dense
+    apply le_of_forall_gt_imp_ge_of_dense
     intro a ha
     rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one

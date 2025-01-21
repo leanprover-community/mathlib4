@@ -311,7 +311,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     let Fb := candidatesBOfCandidates F Fgood
     have : hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD Fb :=
       hausdorffDist_optimal_le_HD _ _ (candidatesBOfCandidates_mem F Fgood)
-    refine le_trans this (le_of_forall_forall_gt_imp_ge_of_dense fun r hr => ?_)
+    refine le_trans this (le_of_forall_gt_imp_ge_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
       have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)

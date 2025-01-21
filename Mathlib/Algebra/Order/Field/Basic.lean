@@ -414,7 +414,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedSemifield α]
   obtain rfl|hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
-  refine le_of_forall_forall_gt_imp_ge_of_dense fun x hbx => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
@@ -755,7 +755,7 @@ private lemma exists_mul_right_lt₀ {a b c : α} (hc : a * b < c) : ∃ b' > b,
   simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt₀ hc
 
 lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
-  refine le_of_forall_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_mul_left_lt₀ hd
   obtain ⟨b', hb', hd⟩ := exists_mul_right_lt₀ hd
   exact (h a' ha' b' hb').trans hd.le

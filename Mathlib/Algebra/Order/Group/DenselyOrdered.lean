@@ -68,7 +68,7 @@ private lemma exists_mul_right_lt [CommGroup α] [LT α] [DenselyOrdered α]
 lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') :
     c ≤ a * b := by
-  refine le_of_forall_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_mul_left_lt hd
   obtain ⟨b', hb', hd⟩ := exists_mul_right_lt hd
   exact (h a' ha' b' hb').trans hd.le
