@@ -72,6 +72,9 @@ lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp (by simp [S.degree_eq i]
 lemma degree_ne_degree {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
   simp [S.degree_eq i, S.degree_eq j, h]
 
+/-- No two elements in the sequence have the same degree. -/
+lemma degree_inj : Function.Injective <| degree ∘ S := fun _ _  ↦ by simp
+
 end Semiring
 
 section Ring
