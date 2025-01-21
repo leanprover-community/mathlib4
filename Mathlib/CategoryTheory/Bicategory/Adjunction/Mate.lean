@@ -47,7 +47,7 @@ section mateEquiv
 variable {c d e f : B} {g : c ⟶ e} {h : d ⟶ f} {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : e ⟶ f} {r₂ : f ⟶ e}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
-/-- Suppose we have a square of functors (where the top and bottom are adjunctions `l₁ ⊣ r₁`
+/-- Suppose we have a square of 1-morphisms (where the top and bottom are adjunctions `l₁ ⊣ r₁`
 and `l₂ ⊣ r₂` respectively).
 
       c ↔ d
