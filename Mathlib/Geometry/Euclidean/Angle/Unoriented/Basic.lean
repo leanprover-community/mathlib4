@@ -339,42 +339,23 @@ for members of `Fin 3 → ℝ` instead of the sup norm-/
 noncomputable def l2Norm (v : EuclideanSpace ℝ (Fin 3)) : ℝ :=
   ‖v‖
 
--- The l2 norm of the cross of two real vectors equals the produce of their individual norms
--- times the sine of the angle between them.
+theorem sin_angle_nonneg : 0 ≤ sin (angle x y) :=
+  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
+
+/- The norm of the cross product of two real vectors equals the product of their individual norms
+  times the sine of the angle between them. -/
 theorem crossProduct_norm_eq_norm_mul_norm_mul_sin (a b : EuclideanSpace ℝ (Fin 3)) :
-  l2Norm (a ×₃ b) = ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) :=
-by
-  let lhs := l2Norm (a ×₃ b)
-  let rhs := ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b)
-  have h_lhs_pos : lhs ≥ 0 := norm_nonneg _
-  have h_rhs_pos : rhs ≥ 0 := mul_nonneg
-    (mul_nonneg (norm_nonneg _) (norm_nonneg _))
-    (Real.sin_nonneg_of_mem_Icc
-      (by simp [InnerProductGeometry.angle_nonneg, InnerProductGeometry.angle_le_pi]))
-  suffices h_square_lhs_eq_square_rhs : lhs ^2 = rhs ^ 2 from by
-    {rw [sq_eq_sq_iff_eq_or_eq_neg] at h_square_lhs_eq_square_rhs
-     cases h_square_lhs_eq_square_rhs with
-     | inl h_eq => exact h_eq
-     | inr h_eq_neg =>
-       unfold lhs at h_lhs_pos ; unfold lhs rhs at h_eq_neg
-       rw [h_eq_neg] at h_lhs_pos
-       have h_rhs_eq_0 : rhs = 0 := by
-        unfold rhs
-        exact le_antisymm (neg_le_neg_iff.mp (by simp [h_lhs_pos])) h_rhs_pos
-       unfold rhs at h_rhs_eq_0
-       simp [h_rhs_eq_0, h_eq_neg]}
-  unfold lhs rhs
-  have h_norm_sq_eq_inner (v : EuclideanSpace ℝ (Fin 3)): (‖v‖ ^ 2 = v ⬝ᵥ v) :=
-    by rw [@norm_sq_eq_inner ℝ] ; exact rfl
-  rw [l2Norm, h_norm_sq_eq_inner (a ×₃ b), cross_dot_cross,
-      ←h_norm_sq_eq_inner, ←h_norm_sq_eq_inner, dotProduct_comm b a]
-  have inner_eq_dotProduct (a b : EuclideanSpace ℝ (Fin 3)) :
-    inner a b = a ⬝ᵥ b:= by exact rfl
-  repeat rw [←inner_eq_dotProduct]
-  rw [←(InnerProductGeometry.cos_angle_mul_norm_mul_norm a b)]
-  calc
-    _ = ‖a‖ ^ 2 * ‖b‖ ^ 2 * (1 - Real.cos (InnerProductGeometry.angle a b) ^ 2) := by ring
-    _ = _ := by rw [←Real.sin_sq] ; ring
+    l2Norm (a ×₃ b) = ‖a‖ * ‖b‖ * sin (angle a b) := by
+  have h_lhs_nonneg : 0 ≤ l2Norm (a ×₃ b) := norm_nonneg _
+  have h_rhs_nonneg : 0 ≤ ‖a‖ * ‖b‖ * Real.sin (angle a b) :=
+    mul_nonneg (mul_nonneg (norm_nonneg _) (norm_nonneg _)) (sin_angle_nonneg)
+  have h_norm_sq_eq_inner (v : EuclideanSpace ℝ (Fin 3)) : (‖v‖ ^ 2 = v ⬝ᵥ v) :=
+    norm_sq_eq_inner (𝕜 := ℝ) v
+  have dotProduct_eq_inner (v w : EuclideanSpace ℝ (Fin 3)) : v ⬝ᵥ w = inner v w := rfl
+  simp_rw [← sq_eq_sq₀ h_lhs_nonneg h_rhs_nonneg, l2Norm, h_norm_sq_eq_inner, cross_dot_cross,
+      ← h_norm_sq_eq_inner, dotProduct_comm b a, dotProduct_eq_inner]
+  linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
+    congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
 
 
 end InnerProductGeometry
