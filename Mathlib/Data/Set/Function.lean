@@ -1335,7 +1335,6 @@ theorem piecewise_univ [∀ i : α, Decidable (i ∈ (Set.univ : Set α))] :
   ext i
   simp [piecewise]
 
-@[simp]
 theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 
