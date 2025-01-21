@@ -10,6 +10,9 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 # Invariance of cardinality of bases of a finitary matroid
 
 In a finitary matroid, all bases have the same cardinality.
+In fact, something stronger holds: if `B` and `B'` are bases, then `#(B \ B') = #(B' \ B)`.
+This file provides proofs of these facts,
+as well as variants when each of `B` and `B'` is a `Basis` or `Basis'` of some common set `X`.
 -/
 
 variable {α : Type*} {M : Matroid α} {I J B B' X : Set α} [M.Finitary]
@@ -73,5 +76,14 @@ theorem Basis.cardinalMk_eq_of_finitary (hIX : M.Basis I X) (hJX : M.Basis J X) 
 theorem Indep.cardinalMk_le_base_of_finitary (hI : M.Indep I) (hB : M.Base B) : #I ≤ #B :=
   have ⟨_B', hB', hIB'⟩ := hI.exists_base_superset
   hB'.cardinalMk_eq_of_finitary hB ▸ mk_le_mk_of_subset hIB'
+
+theorem Indep.cardinalMk_le_basis'_of_finitary (hI : M.Indep I) (hJ : M.Basis' J X) (hIX : I ⊆ X) :
+    #I ≤ #J :=
+  have ⟨_J', hJ', hIJ'⟩ := hI.subset_basis'_of_subset hIX
+  hJ'.cardinalMk_eq_of_finitary hJ ▸ mk_le_mk_of_subset hIJ'
+
+theorem Indep.cardinalMk_le_basis_of_finitary (hI : M.Indep I) (hJ : M.Basis J X) (hIX : I ⊆ X) :
+    #I ≤ #J :=
+  hI.cardinalMk_le_basis'_of_finitary hJ.basis' hIX
 
 end Matroid
