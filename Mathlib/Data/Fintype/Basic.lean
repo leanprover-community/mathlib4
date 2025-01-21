@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Finset.Image.Basic
 import Mathlib.Data.Finset.Subtype
-import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
