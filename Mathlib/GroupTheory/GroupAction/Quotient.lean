@@ -6,7 +6,7 @@ Authors: Chris Hughes, Thomas Browning
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -95,10 +95,9 @@ theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
 theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
-theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q :=
-  Quotient.mk_smul_out H b q
+theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q := by
+  simp
 
 theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out ∈ H := by
@@ -114,7 +113,6 @@ attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_
 attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
 AddAction.Quotient.mk_vadd_out'
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
 alias Quotient.coe_smul_out' := Quotient.coe_smul_out
 

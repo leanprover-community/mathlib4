@@ -217,6 +217,29 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
+/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
+  like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
+  `z₀`. -/
+lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
+      ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
+  simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
+
+/- An analytic function has order zero at a point iff it does not vanish there. -/
+lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order = 0 ↔ f z₀ ≠ 0 := by
+  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
+  constructor
+  · intro ⟨g, _, _, hg⟩
+    simpa [hg.self_of_nhds]
+  · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
+
+/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
+lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order.toNat ≠ 0 → f z₀ = 0 := by
+  simp [hf.order_eq_zero_iff]
+  tauto
+
 end AnalyticAt
 
 namespace AnalyticOnNhd

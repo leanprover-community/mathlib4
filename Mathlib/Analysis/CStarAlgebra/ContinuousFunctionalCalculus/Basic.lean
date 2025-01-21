@@ -185,7 +185,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
     [ha : IsStarNormal a] : (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
-  refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
+  refine @ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
     _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
   · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
@@ -351,51 +351,67 @@ end NonnegSpectrumClass
 
 section SpectralOrder
 
-variable (A : Type*) [CStarAlgebra A]
+variable (A : Type*) [NonUnitalCStarAlgebra A]
 
-/-- The partial order on a unital C⋆-algebra defined by `x ≤ y` if and only if `y - x` is
+open scoped CStarAlgebra
+/-- The partial order on a C⋆-algebra defined by `x ≤ y` if and only if `y - x` is
 selfadjoint and has nonnegative spectrum.
 
 This is not declared as an instance because one may already have a partial order with better
 definitional properties. However, it can be useful to invoke this as an instance in proofs. -/
 @[reducible]
 def CStarAlgebra.spectralOrder : PartialOrder A where
-  le x y := IsSelfAdjoint (y - x) ∧ SpectrumRestricts (y - x) ContinuousMap.realToNNReal
+  le x y := IsSelfAdjoint (y - x) ∧ QuasispectrumRestricts (y - x) ContinuousMap.realToNNReal
   le_refl := by
     simp only [sub_self, IsSelfAdjoint.zero, true_and, forall_const]
-    rw [SpectrumRestricts.nnreal_iff]
+    rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
     nontriviality A
     simp
   le_antisymm x y hxy hyx := by
+    simp only at hxy hyx
+    rw [← Unitization.isSelfAdjoint_inr (R := ℂ),
+      quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, Unitization.inr_sub ℂ] at hxy hyx
     rw [← sub_eq_zero]
-    exact hyx.2.eq_zero_of_neg hyx.1 (neg_sub x y ▸ hxy.2)
-  le_trans x y z hxy hyz :=
-    ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
+    apply Unitization.inr_injective (R := ℂ)
+    rw [Unitization.inr_zero, Unitization.inr_sub]
+    exact hyx.2.eq_zero_of_neg hyx.1 (neg_sub (x : A⁺¹) (y : A⁺¹) ▸ hxy.2)
+  le_trans x y z hxy hyz := by
+    simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
+      quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, Unitization.inr_sub] at hxy hyz ⊢
+    exact ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
 
-/-- The `CStarAlgebra.spectralOrder` on a unital C⋆-algebra is a `StarOrderedRing`. -/
+/-- The `CStarAlgebra.spectralOrder` on a C⋆-algebra is a `StarOrderedRing`. -/
 lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spectralOrder A) _ :=
   let _ := CStarAlgebra.spectralOrder A
   { le_iff := by
       intro x y
       constructor
       · intro h
-        obtain ⟨s, hs₁, _, hs₂⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts h.1 h.2
-        refine ⟨s ^ 2, ?_, by rwa [eq_sub_iff_add_eq', eq_comm] at hs₂⟩
+        obtain ⟨s, hs₁, _, hs₂⟩ :=
+          CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts h.1 h.2
+        refine ⟨s * s, ?_, by rwa [eq_sub_iff_add_eq', eq_comm] at hs₂⟩
         exact AddSubmonoid.subset_closure ⟨s, by simp [hs₁.star_eq, sq]⟩
       · rintro ⟨p, hp, rfl⟩
-        suffices IsSelfAdjoint p ∧ SpectrumRestricts p ContinuousMap.realToNNReal from
-          ⟨by simpa using this.1, by simpa using this.2⟩
+        show IsSelfAdjoint (x + p - x) ∧
+          QuasispectrumRestricts (x + p - x) ContinuousMap.realToNNReal
+        simp only [add_sub_cancel_left]
+        --suffices IsSelfAdjoint p ∧ SpectrumRestricts p ContinuousMap.realToNNReal from
+          --⟨by simpa using this.1, by simpa using this.2⟩
         induction hp using AddSubmonoid.closure_induction with
         | mem x hx =>
           obtain ⟨s, rfl⟩ := hx
           refine ⟨IsSelfAdjoint.star_mul_self s, ?_⟩
-          rw [SpectrumRestricts.nnreal_iff]
+          rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ,
+            SpectrumRestricts.nnreal_iff, Unitization.inr_mul, Unitization.inr_star]
           exact spectrum_star_mul_self_nonneg
         | one =>
-          rw [SpectrumRestricts.nnreal_iff]
+          rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
           nontriviality A
           simp
         | mul x y _ _ hx hy =>
+          simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
+            quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ] at hx hy ⊢
+          rw [Unitization.inr_add]
           exact ⟨hx.1.add hy.1, hx.2.nnreal_add hx.1 hy.1 hy.2⟩ }
 
 end SpectralOrder
@@ -435,7 +451,7 @@ lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [Metr
     [SMulCommClass R A A] [CompleteSpace R] [Algebra R ℂ] [IsScalarTower R ℂ A]
     {p : A → Prop} {p' : A⁺¹ → Prop} [NonUnitalContinuousFunctionalCalculus R p]
     [ContinuousFunctionalCalculus R p']
-    [UniqueNonUnitalContinuousFunctionalCalculus R (Unitization ℂ A)]
+    [ContinuousMapZero.UniqueHom R (Unitization ℂ A)]
     (hp : ∀ {a : A}, p' (a : A⁺¹) ↔ p a) (a : A) (f : R → R) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) := by
   by_cases h : ContinuousOn f (σₙ R a) ∧ p a

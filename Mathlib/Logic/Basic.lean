@@ -426,6 +426,14 @@ theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a}
 theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 
+@[simp]
+theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
+    HEq (cast e a) c ↔ HEq a c := by subst e; rfl
+
+@[simp]
+theorem heq_cast_iff_heq {α β γ : Sort _} (e : β = γ) (a : α) (b : β) :
+    HEq a (cast e b) ↔ HEq a b := by subst e; rfl
+
 universe u
 variable {α β : Sort u} {e : β = α} {a : α} {b : β}
 
