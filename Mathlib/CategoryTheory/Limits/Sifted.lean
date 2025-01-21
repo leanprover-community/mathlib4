@@ -104,7 +104,7 @@ end
 section
 
 variable {C : Type u} [Category.{v} C] [IsSiftedOrEmpty C] {D : Type u₁} [Category.{v₁} D]
-  {D' : Type u₂} [Category.{u₂} D'] (F : C ⥤ D) (G : C ⥤ D')
+  {D' : Type u₂} [Category.{v₂} D'] (F : C ⥤ D) (G : C ⥤ D')
 
 instance [F.Final] [G.Final] : (F.prod' G).Final :=
   show (diag C ⋙ F.prod G).Final from final_comp _ _
