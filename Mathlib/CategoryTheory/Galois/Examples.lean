@@ -153,7 +153,7 @@ variable {G}
 
 /-- If `X` is a connected `G`-set and `x` is an element of `X`, `X` is isomorphic
 to the quotient of `G` by the stabilizer of `x` as `G`-sets. -/
-noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat (MonCat.of G))
+noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
     [IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
     X ≅ G ⧸ₐ MulAction.stabilizer G x :=
   haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
