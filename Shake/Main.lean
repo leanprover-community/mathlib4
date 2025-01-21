@@ -457,7 +457,7 @@ def main (args : List String) : IO UInt32 := do
     pure (some (path.parent.get! / "scripts" / "noshake.json"))
   else pure none
 
-  -- Read the config file, `validCfgFile? = false` only if the config file is present and valid
+  -- Read the config file, `validCfgFile? = false` only if the config file is present and invalid
   let (cfg, validCfgFile?) ← if let some file := cfgFile then
     try
       pure (← IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg)), true)
