@@ -173,10 +173,20 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
     rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
+section NoZeroDivisors
+
+variable [NoZeroDivisors R]
+
 /-- Every polynomial sequence is a basis of `R[X]`. -/
-noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
+noncomputable def basis (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
     Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
+
+/-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
+lemma basis_eq_self (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) (i : ℕ) : S.basis hCoeff i = S i :=
+  Basis.mk_apply _ _ _
+
+end NoZeroDivisors
 
 end Nontrivial
 
