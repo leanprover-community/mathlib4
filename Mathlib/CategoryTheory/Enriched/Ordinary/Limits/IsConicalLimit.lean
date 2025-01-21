@@ -7,15 +7,20 @@ import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 # Conical limits / enriched limits
+
+If `V` is a monoidal category and `C` a `V`-enriched ordinary category,
+a `V`-enriched limit, or "conical limit", is a limit cone `c` in `C` with
+the property that for every `X : C`, the cone obtained by applying the coyoneda
+functor `(X ⟶[V] -)` to `c` is a limit cone in `V`.
 -/
 
-universe v₁ u₁ v₂ u₂ w v' v u u'
+universe v₁ u₁ w v' v u u'
 
 namespace CategoryTheory.Enriched
 
-open Limits Opposite
+open Limits
 
-variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
+variable {J : Type u₁} [Category.{v₁} J]
 variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable {F : J ⥤ C} (c : Cone F)
