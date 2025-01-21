@@ -67,7 +67,7 @@ by applying some element of `S` to `a` instead.
 
 More familiarly, the restriction of `f` to `A` is the result of partitioning `A` into finitely many
 pieces, then applying a single element of `G` to each piece. -/
-def DecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop :=  ∀ a ∈ A, ∃ g ∈ S, f a = g • a
+def DecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀ a ∈ A, ∃ g ∈ S, f a = g • a
 
 variable (X G)
 
