@@ -6,8 +6,6 @@ Authors: Damien Thomine
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Nat.Lattice
 import Mathlib.Order.LiminfLimsup
 import Mathlib.SetTheory.Cardinal.Finite
 
@@ -31,15 +29,15 @@ lemma sum_indicator_eventually_eq_card {α : Type*} [AddCommMonoid α] (a : α) 
     intro x hx
     rw [indicator_of_mem (hs.mem_toFinset.1 hx) (fun _ ↦ a)]
   rw [Nat.card_eq_card_finite_toFinset hs, ← sum_eq_card_nsmul key, eventually_atTop]
-  obtain ⟨M, hM⟩ := hs.bddAbove
-  refine ⟨M + 1, fun n n_M ↦ (sum_subset ?_ ?_).symm⟩ <;> intro x <;> rw [hs.mem_toFinset]
+  obtain ⟨m, hm⟩ := hs.bddAbove
+  refine ⟨m + 1, fun n n_M ↦ (sum_subset ?_ ?_).symm⟩ <;> intro x <;> rw [hs.mem_toFinset]
   · rw [Finset.mem_range]
-    exact fun x_s ↦ ((mem_upperBounds.1 hM) x x_s).trans_lt (Nat.lt_of_succ_le n_M)
+    exact fun x_s ↦ ((mem_upperBounds.1 hm) x x_s).trans_lt (Nat.lt_of_succ_le n_M)
   · exact fun _ x_s ↦ indicator_of_not_mem x_s (fun _ ↦ a)
 
-lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
-    {r : R} (h : 0 < r) {s : Set ℕ} : s.Infinite
-      ↔ atTop.Tendsto (fun n ↦ ∑ k ∈ Finset.range n, s.indicator (fun _ ↦ r) k) atTop := by
+lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*} [OrderedAddCommMonoid R]
+    [AddLeftStrictMono R] [Archimedean R] {r : R} (h : 0 < r) {s : Set ℕ} :
+    s.Infinite ↔ atTop.Tendsto (fun n ↦ ∑ k ∈ Finset.range n, s.indicator (fun _ ↦ r) k) atTop := by
   constructor
   · have h_mono : Monotone fun n ↦ ∑ k ∈ Finset.range n, s.indicator (fun _ ↦ r) k := by
       refine (sum_mono_set_of_nonneg ?_).comp range_mono
@@ -61,10 +59,12 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*} [StrictOrderedSemirin
     rw [not_infinite] at hs
     rw [tendsto_congr' (sum_indicator_eventually_eq_card r hs), tendsto_atTop_atTop]
     push_neg
-    exact ⟨(Nat.card s • r) + 1, fun n ↦ ⟨n, le_refl n, not_le_of_lt (lt_add_one _)⟩⟩
+    obtain ⟨m, hm⟩ := exists_lt_nsmul h (Nat.card s • r)
+    exact ⟨m • r, fun n ↦ ⟨n, le_refl n, not_le_of_lt hm⟩⟩
 
-lemma limsup_eq_tendsto_sum_indicator_atTop {α R : Type*} [StrictOrderedSemiring R] [Archimedean R]
-    {r : R} (h : 0 < r) (s : ℕ → Set α) : atTop.limsup s = { ω | atTop.Tendsto
+lemma limsup_eq_tendsto_sum_indicator_atTop {α R : Type*} [OrderedAddCommMonoid R]
+    [AddLeftStrictMono R] [Archimedean R] {r : R} (h : 0 < r) (s : ℕ → Set α) :
+    atTop.limsup s = { ω | atTop.Tendsto
       (fun n ↦ ∑ k ∈ Finset.range n, (s k).indicator (fun _ ↦ r) ω) atTop } := by
   nth_rw 1 [← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
   ext ω
