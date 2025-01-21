@@ -71,7 +71,7 @@ def condExpIndL1Fin (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs : MeasurableS
     (x : G) : α →₁[μ] G :=
   (integrable_condExpIndSMul hm hs hμs x).toL1 _
 
-@[deprecated (since := "2025-01-21")] alias condexpIndL1Fin := condExpIndL1Fin
+@[deprecated (since := "2025-01-21")] noncomputable alias condexpIndL1Fin := condExpIndL1Fin
 
 theorem condExpIndL1Fin_ae_eq_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
@@ -181,7 +181,7 @@ def condExpIndL1 {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) (
     [SigmaFinite (μ.trim hm)] (x : G) : α →₁[μ] G :=
   if hs : MeasurableSet s ∧ μ s ≠ ∞ then condExpIndL1Fin hm hs.1 hs.2 x else 0
 
-@[deprecated (since := "2025-01-21")] alias condexpIndL1 := condExpIndL1
+@[deprecated (since := "2025-01-21")] noncomputable alias condexpIndL1 := condExpIndL1
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
@@ -285,7 +285,7 @@ def condExpInd {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) [Si
   map_smul' := condExpIndL1_smul
   cont := continuous_condExpIndL1
 
-@[deprecated (since := "2025-01-21")] alias condexpInd := condExpInd
+@[deprecated (since := "2025-01-21")] noncomputable alias condexpInd := condExpInd
 
 variable {G}
 
@@ -417,7 +417,7 @@ def condExpL1CLM (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] :
     (α →₁[μ] F') →L[ℝ] α →₁[μ] F' :=
   L1.setToL1 (dominatedFinMeasAdditive_condExpInd F' hm μ)
 
-@[deprecated (since := "2025-01-21")] alias condexpL1CLM := condExpL1CLM
+@[deprecated (since := "2025-01-21")] noncomputable alias condexpL1CLM := condExpL1CLM
 
 variable {F'}
 
@@ -574,7 +574,7 @@ integrable. The function-valued `condExp` should be used instead in most cases. 
 def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : α → F') : α →₁[μ] F' :=
   setToFun μ (condExpInd F' hm μ) (dominatedFinMeasAdditive_condExpInd F' hm μ) f
 
-@[deprecated (since := "2025-01-21")] alias condexpL1 := condExpL1
+@[deprecated (since := "2025-01-21")] noncomputable alias condexpL1 := condExpL1
 
 theorem condExpL1_undef (hf : ¬Integrable f μ) : condExpL1 hm μ f = 0 :=
   setToFun_undef (dominatedFinMeasAdditive_condExpInd F' hm μ) hf
