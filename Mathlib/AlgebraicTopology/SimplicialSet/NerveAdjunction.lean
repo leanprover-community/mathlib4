@@ -4,12 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
-import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.CategoryTheory.Category.ReflQuiv
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.Combinatorics.Quiver.ReflQuiver
 
 /-!
 
@@ -29,7 +23,7 @@ exists because nerves of categories are 2-coskeletal.
 
 We also prove that `nerveFunctor` is fully faithful, demonstrating that `nerveAdjunction` is
 reflective. Since the category of simplicial sets is cocomplete, we conclude in
-`CategoryTheory.Category.Cat.Limit` that the category of categories has colimits.
+`CategoryTheory.Category.Cat.Colimit` that the category of categories has colimits.
 
 -/
 
