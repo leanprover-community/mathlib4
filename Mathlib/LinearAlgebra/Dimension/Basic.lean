@@ -48,6 +48,7 @@ variable (R M)
 /-- The rank of a module, defined as a term of type `Cardinal`.
 
 We define this as the supremum of the cardinalities of linearly independent subsets.
+The supremum may not be attained, see https://mathoverflow.net/a/263053.
 
 For a free module over any ring satisfying the strong rank condition
 (e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
