@@ -134,11 +134,6 @@ instance subsingleton_h1Cotangent : Subsingleton P.toExtension.H1Cotangent := by
   rw [Algebra.Extension.subsingleton_h1Cotangent]
   exact cotangentComplex_injective P
 
-@[simp]
-lemma Finsupp.linearEquivFunOnFinite_symm_apply (R M α : Type*) [Finite α] [AddCommMonoid M]
-    [Semiring R] [Module R M] (f : α →₀ M) (a : α) :
-    (Finsupp.linearEquivFunOnFinite R M α).symm f a = f a := rfl
-
 /-- The classes of `P.relation i` form a basis of `I ⧸ I ^ 2`. -/
 @[stacks 00T7 "(3)"]
 noncomputable def basisCotangent : Basis P.rels S P.toExtension.Cotangent :=
