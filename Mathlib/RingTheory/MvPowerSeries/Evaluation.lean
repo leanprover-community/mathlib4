@@ -165,7 +165,7 @@ variable {a : σ → S}
 
 /- The coercion of polynomials into power series is uniformly continuous. -/
 theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
-    [UniformAddGroup R] [UniformAddGroup S] [TopologicalRing S] [IsLinearTopology S S]
+    [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : EvalDomain a):
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
   classical
@@ -258,8 +258,9 @@ theorem eval₂_X (s : σ) :
   rw [← coe_X, eval₂_coe, MvPolynomial.eval₂_X]
 
 variable [TopologicalSemiring R] [UniformAddGroup R]
-    [UniformAddGroup S] [CompleteSpace S] [T2Space S]
-    [TopologicalRing S] [IsLinearTopology S S]
+    [UniformAddGroup S] [CompleteSpace S] [T2Space S] [IsLinearTopology S S]
+
+variable [TopologicalRing S]
 
 variable {φ a}
 
@@ -392,7 +393,7 @@ theorem aeval_eq_sum (ha : EvalDomain a) (f : MvPowerSeries σ R) :
 theorem comp_aeval (ha : EvalDomain a)
     {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
     [TopologicalRing T] [IsLinearTopology T T]
-    [T2Space T] [TopologicalRing T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
+    [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
   apply DFunLike.coe_injective

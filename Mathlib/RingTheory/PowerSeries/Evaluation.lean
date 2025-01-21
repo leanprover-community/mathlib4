@@ -26,7 +26,7 @@ structure EvalDomain [TopologicalSpace S] (a : S) : Prop where
   hpow : IsTopologicallyNilpotent a
 
 /-- The domain of evaluation of `PowerSeries`, as an ideal. -/
-def EvalDomain.ideal [TopologicalSpace S] [TopologicalRing S] [IsLinearTopology S S] : Ideal S where
+def EvalDomain.ideal [TopologicalSpace S] [IsLinearTopology S S] : Ideal S where
   carrier   := setOf IsTopologicallyNilpotent
   add_mem'  := IsTopologicallyNilpotent.add
   zero_mem' := IsTopologicallyNilpotent.zero
