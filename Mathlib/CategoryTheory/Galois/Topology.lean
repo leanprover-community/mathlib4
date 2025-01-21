@@ -20,6 +20,9 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 - Stacks Project: Tag 0BMQ
 
 -/
+
+open Topology
+
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -69,7 +72,7 @@ lemma autEmbedding_range :
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
-  · use NatIso.ofComponents (fun X => a X) (fun {X Y} f ↦ h ⟨X, Y, f⟩)
+  · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
@@ -79,26 +82,28 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   · fun_prop
   · fun_prop
 
-lemma autEmbedding_closedEmbedding : ClosedEmbedding (autEmbedding F) where
-  induced := rfl
-  inj := autEmbedding_injective F
+lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
+  eq_induced := rfl
+  injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
-instance : CompactSpace (Aut F) := ClosedEmbedding.compactSpace (autEmbedding_closedEmbedding F)
+@[deprecated (since := "2024-10-20")]
+alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
+
+instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
 instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom
 
 instance : TotallyDisconnectedSpace (Aut F) :=
-  (Embedding.isTotallyDisconnected_range (autEmbedding_closedEmbedding F).embedding).mp
+  (autEmbedding_isClosedEmbedding F).isEmbedding.isTotallyDisconnected_range.mp
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
 instance : ContinuousMul (Aut F) :=
-  Inducing.continuousMul (autEmbedding F)
-    (autEmbedding_closedEmbedding F).toInducing
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousMul (autEmbedding F)
 
 instance : ContinuousInv (Aut F) :=
-  Inducing.continuousInv (autEmbedding_closedEmbedding F).toInducing (fun _ ↦ rfl)
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
 instance : TopologicalGroup (Aut F) := ⟨⟩
 

@@ -22,8 +22,6 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 universe u v
 
-open scoped Classical
-
 variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
@@ -63,6 +61,7 @@ theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j 
   exact le_trans (ih ‹_›) (approx_mono' f)
 
 theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
+  classical
   by_cases h₀ : ∃ i : ℕ, (approx f i a).Dom
   · simp only [Part.fix_def f h₀]
     constructor <;> intro hh
@@ -167,10 +166,9 @@ theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix 
 
 theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
     Part.fix g = g (Part.fix g) := by
-  rw [fix_eq_ωSup_of_ωScottContinuous, hc.map_ωSup]
+  rw [fix_eq_ωSup_of_ωScottContinuous hc, hc.map_ωSup]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
-    exact hc
     intro i
     exists i
     intro x

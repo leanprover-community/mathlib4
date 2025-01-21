@@ -3,9 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Data.List.Perm
+import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of lists of prime elements.
@@ -43,7 +42,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M : Type*} [CancelCommMonoidWithZero M] [Unique (Units M)]
+variable {M : Type*} [CancelCommMonoidWithZero M] [Subsingleton Mˣ]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by

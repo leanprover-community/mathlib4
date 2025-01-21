@@ -4,36 +4,42 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Group law on Weierstrass curves
 
-This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
-under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine` and in
-`Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian`.
+This file proves that the nonsingular rational points on a Weierstrass curve form an abelian group
+under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`, and in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Projective.lean`.
 
 ## Mathematical background
 
-Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation $W(X, Y) = 0$ in
-affine coordinates. As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular
-rational points `W⟮F⟯` of `W` consist of the unique point at infinity $0$ and nonsingular affine
-points $(x, y)$. With this description, there is an addition-preserving injection between `W⟮F⟯`
-and the ideal class group of the coordinate ring $F[W] := F[X, Y] / \langle W(X, Y)\rangle$ of `W`.
-This is defined by mapping the point at infinity $0$ to the trivial ideal class and an affine point
-$(x, y)$ to the ideal class of the invertible fractional ideal $\langle X - x, Y - y\rangle$.
-Proving that this is well-defined and preserves addition reduce to checking several equalities of
-integral ideals, which is done in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
-`WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations.
-Now $F[W]$ is a free rank two $F[X]$-algebra with basis $\{1, Y\}$, so every element of $F[W]$ is
-of the form $p + qY$ for some $p, q \in F[X]$, and there is an algebra norm $N : F[W] \to F[X]$.
-Injectivity can then be shown by computing the degree of such a norm $N(p + qY)$ in two different
-ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
-auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
+Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation `W(X, Y) = 0` in
+affine coordinates. As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of
+nonsingular rational points `W⟮F⟯` of `W` consist of the unique point at infinity `𝓞` and
+nonsingular affine points `(x, y)`. With this description, there is an addition-preserving injection
+between `W⟮F⟯` and the ideal class group of the coordinate ring `F[W] := F[X, Y] / ⟨W(X, Y)⟩` of
+`W`. This is defined by mapping the point at infinity `𝓞` to the trivial ideal class and an affine
+point `(x, y)` to the ideal class of the invertible fractional ideal `⟨X - x, Y - y⟩`. Proving that
+this is well-defined and preserves addition reduce to checking several equalities of integral
+ideals, which is done in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
+`WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations. Now
+`F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of the
+form `p + qY` for some `p, q ∈ F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
+can then be shown by computing the degree of such a norm `N(p + qY)` in two different ways, which is
+done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the auxiliary lemmas
+in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
 
 When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv` pulls
 back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacobian.Point`.
+
+When `W` is given in projective coordinates, `WeierstrassCurve.Projective.Point.toAffineAddEquiv`
+pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Projective.Point`.
 
 ## Main definitions
 
@@ -48,8 +54,10 @@ back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacob
     element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
  * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on
     an affine Weierstrass curve forms an abelian group under addition.
- * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational
-    points on a Jacobian Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational points on a
+    Jacobian Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular rational points on
+    a projective Weierstrass curve forms an abelian group under addition.
 
 ## References
 
@@ -60,7 +68,9 @@ https://drops.dagstuhl.de/storage/00lipics/lipics-vol268-itp2023/LIPIcs.ITP.2023
 elliptic curve, group law, class group
 -/
 
-open Ideal nonZeroDivisors Polynomial
+open Ideal Polynomial
+
+open scoped nonZeroDivisors Polynomial.Bivariate
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -213,7 +223,6 @@ section Ring
 
 /-! ### Ideals in the coordinate ring over a ring -/
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
 noncomputable def XClass (x : R) : W.CoordinateRing :=
   mk W <| C <| X - C x
@@ -222,7 +231,6 @@ lemma XClass_ne_zero [Nontrivial R] (x : R) : XClass W x ≠ 0 :=
   AdjoinRoot.mk_ne_zero_of_natDegree_lt W.monic_polynomial (C_ne_zero.mpr <| X_sub_C_ne_zero x) <|
     by rw [natDegree_polynomial, natDegree_C]; norm_num1
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YClass (y : R[X]) : W.CoordinateRing :=
   mk W <| Y - C y
@@ -235,17 +243,14 @@ lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
     mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
   AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel_left, mul_one]⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
 noncomputable def XIdeal (x : R) : Ideal W.CoordinateRing :=
   span {XClass W x}
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YIdeal (y : R[X]) : Ideal W.CoordinateRing :=
   span {YClass W y}
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
@@ -329,13 +334,13 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
     refine
       ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, ?_⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
-    simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hx]
+    simp only [W_X, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hx]
     C_simp
     ring1
   · let W_Y := 2 * y + W.a₁ * x + W.a₃
     refine ⟨0, C <| C W_Y⁻¹, C <| C <| W_Y⁻¹ * -1, 0, ?_⟩
     rw [negY, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hy]
-    simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hy]
+    simp only [W_Y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hy]
     C_simp
     ring1
 
@@ -377,7 +382,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
       rw [map_add, map_one, _root_.map_mul <| mk W, AdjoinRoot.mk_self, mul_zero, add_zero]⟩
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
-    simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
+    simp only [y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
       -4 * congr_arg C (congr_arg C <| (equation_iff ..).mp h₁)
   · replace hx := sub_ne_zero_of_ne hx
@@ -387,7 +392,6 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     C_simp
     ring1
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The non-zero fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ for some $x, y \in F$. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
@@ -518,7 +522,6 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
       rw [add_of_imp h]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ h).symm
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
 
@@ -545,7 +548,7 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
       rw [← finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) h0,
         ← (quotientEquivAlgOfEq F hp).toLinearEquiv.finrank_eq,
         (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq,
-        FiniteDimensional.finrank_self]
+        Module.finrank_self]
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
@@ -567,6 +570,26 @@ end Point
 
 end WeierstrassCurve.Affine
 
+namespace WeierstrassCurve.Projective.Point
+
+/-! ## Weierstrass curves in projective coordinates -/
+
+variable {F : Type u} [Field F] {W : Projective F}
+
+noncomputable instance : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  zero_add _ := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
+  add_zero _ := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
+  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
+  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+
+end WeierstrassCurve.Projective.Point
+
 namespace WeierstrassCurve.Jacobian.Point
 
 /-! ## Weierstrass curves in Jacobian coordinates -/
@@ -587,14 +610,14 @@ noncomputable instance : AddCommGroup W.Point where
 
 end WeierstrassCurve.Jacobian.Point
 
-namespace EllipticCurve.Affine.Point
+namespace WeierstrassCurve.Affine.Point
 
 /-! ## Elliptic curves in affine coordinates -/
 
-variable {R : Type} [Nontrivial R] [CommRing R] (E : EllipticCurve R)
+variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
 
 /-- An affine point on an elliptic curve `E` over `R`. -/
 def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
   WeierstrassCurve.Affine.Point.some <| nonsingular E h
 
-end EllipticCurve.Affine.Point
+end WeierstrassCurve.Affine.Point

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.RepresentationTheory.Action.Limits
+import Mathlib.CategoryTheory.Action.Concrete
+import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -75,12 +75,12 @@ instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
-  apply compPreservesFiniteLimits
+  apply comp_preservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
 instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
-  hasQuotientsByFiniteGroups G _ _ := inferInstance
-  monoInducesIsoOnDirectSummand {X Y} i h :=
+  hasQuotientsByFiniteGroups _ _ _ := inferInstance
+  monoInducesIsoOnDirectSummand {_ _} i _ :=
     ⟨Action.imageComplement G i, Action.imageComplementIncl G i,
      ⟨isColimitOfReflects (Action.forget _ _ ⋙ FintypeCat.incl) <|
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm
@@ -90,7 +90,7 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
 noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
-  reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
+  reflectsIsos := ⟨fun f (_ : IsIso f.hom) => inferInstance⟩
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) :=

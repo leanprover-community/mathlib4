@@ -63,7 +63,7 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 separable measure, measure-dense, Lp space, second-countable
 -/
 
-open MeasurableSpace Set ENNReal TopologicalSpace BigOperators symmDiff Filter Real
+open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
 
@@ -83,7 +83,7 @@ sets with finite measures.
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
 equipped with the `Lᵖ` norm. -/
-structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop :=
+structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop where
   /-- Each set has to be measurable. -/
   measurable : ∀ s ∈ 𝒜, MeasurableSet s
   /-- Any measurable set can be approximated by sets in the family. -/
@@ -169,21 +169,21 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
     -- enough to show that such sets constitute a `σ`-algebra containing `𝒜`. This is contained in
     -- the theorem `generateFrom_induction`.
     have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
-      apply generateFrom_induction
-        (p := fun s ↦ MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε)
-        (C := 𝒜) (hs := hgen ▸ ms)
-      · -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
-        exact fun t t_mem ↦ ⟨hgen ▸ measurableSet_generateFrom t_mem,
-          fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
-      · -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
-        exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
-      · -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
-        -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
-        refine fun t ⟨mt, ht⟩ ↦ ⟨mt.compl, fun ε ε_pos ↦ ?_⟩
-        rcases ht ε ε_pos with ⟨u, u_mem, hμtcu⟩
+      induction s, hgen ▸ ms using generateFrom_induction with
+      -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
+      | hC t t_mem _ =>
+        exact ⟨hgen ▸ measurableSet_generateFrom t_mem, fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
+      -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
+      | empty => exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
+      -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
+      -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
+      | compl t _ ht =>
+        refine ⟨ht.1.compl, fun ε ε_pos ↦ ?_⟩
+        obtain ⟨u, u_mem, hμtcu⟩ := ht.2 ε ε_pos
         exact ⟨uᶜ, h𝒜.compl_mem u_mem, by rwa [compl_symmDiff_compl]⟩
-      · -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
-        refine fun f hf ↦ ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
+      -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
+      | iUnion f _ hf =>
+        refine ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
         have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
@@ -319,7 +319,7 @@ section IsSeparable
 
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm. -/
-class IsSeparable (μ : Measure X) : Prop :=
+class IsSeparable (μ : Measure X) : Prop where
   exists_countable_measureDense : ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜
 
 /-- By definition, a separable measure admits a countable and measure-dense family of sets. -/
@@ -374,7 +374,6 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
           ne_top_of_le_ne_top hμs <| μ.restrict_le_self _
         rcases h𝒜.approx s ms this ε ε_pos with ⟨t, t_mem, ht⟩
         refine ⟨t ∩ μ.sigmaFiniteSet, ⟨t, t_mem, rfl⟩, ?_⟩
-        rw [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet]
         have : μ (s ∆ (t ∩ μ.sigmaFiniteSet) \ μ.sigmaFiniteSet) = 0 := by
           rw [diff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
           calc
@@ -384,10 +383,11 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
             _ ≤ μ (μ.sigmaFiniteSetᶜ ∩ s) + μ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet)) :=
                 measure_union_le _ _
             _ = 0 := by
-                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm, ← inter_assoc,
-                  inter_compl_self, empty_inter, measure_empty, zero_add]
-        rwa [this, add_zero, inter_symmDiff_distrib_right, inter_assoc, inter_self,
-          ← inter_symmDiff_distrib_right, ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
+                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm,
+                  ← inter_assoc, inter_compl_self, empty_inter, measure_empty, zero_add]
+        rwa [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet, this, add_zero,
+          inter_symmDiff_distrib_right, inter_assoc, inter_self, ← inter_symmDiff_distrib_right,
+          ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
       · refine False.elim <| hμs ?_
         rw [eq_top_iff, ← hs]
         exact μ.restrict_le_self _
@@ -425,7 +425,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
     -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
-    -- domain is automatically infered.
+    -- domain is automatically inferred.
     let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype
     have := countable_u.to_subtype

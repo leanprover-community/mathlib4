@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Multiplicative action on the completion of a uniform space
@@ -88,12 +89,15 @@ theorem UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y →
   (uniformContinuous_const_smul c).comp hf
 
 @[to_additive]
-lemma UniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuousConstSMul M Y]
-    {f : X → Y} (hf : UniformInducing f) (hsmul : ∀ (c : M) x, f (c • x) = c • f x) :
+lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuousConstSMul M Y]
+    {f : X → Y} (hf : IsUniformInducing f) (hsmul : ∀ (c : M) x, f (c • x) = c • f x) :
     UniformContinuousConstSMul M X where
   uniformContinuous_const_smul c := by
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
       using hf.uniformContinuous.const_smul c
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformContinuousConstSMul := IsUniformInducing.uniformContinuousConstSMul
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/

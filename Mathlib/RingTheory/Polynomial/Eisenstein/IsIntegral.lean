@@ -137,7 +137,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
   letI := B.finite
   let P := minpoly R B.gen
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
-  have finrank_K_L : FiniteDimensional.finrank K L = B.dim := B.finrank
+  have finrank_K_L : Module.finrank K L = B.dim := B.finrank
   have deg_K_P : (minpoly K B.gen).natDegree = B.dim := B.natDegree_minpoly
   have deg_R_P : P.natDegree = B.dim := by
     rw [← deg_K_P, minpoly.isIntegrallyClosed_eq_field_fractions' K hBint,
@@ -145,7 +145,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
   choose! f hf using
     hei.isWeaklyEisensteinAt.exists_mem_adjoin_mul_eq_pow_natDegree_le (minpoly.aeval R B.gen)
       (minpoly.monic hBint)
-  simp only [(minpoly.monic hBint).natDegree_map, deg_R_P] at hf
+  simp only [P, (minpoly.monic hBint).natDegree_map, deg_R_P] at hf
 
   -- The Eisenstein condition shows that `p` divides `Q.coeff 0`
   -- if `p^n.succ` divides the following multiple of `Q.coeff 0^n.succ`:

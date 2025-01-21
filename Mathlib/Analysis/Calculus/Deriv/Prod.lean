@@ -22,19 +22,11 @@ derivative
 
 universe u v w
 
-open scoped Classical
-open Topology Filter
-
-open Filter Asymptotics Set
+open Topology Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter 𝕜}
 
 section CartesianProduct
 
@@ -86,10 +78,12 @@ theorem hasDerivWithinAt_pi :
     HasDerivWithinAt φ φ' s x ↔ ∀ i, HasDerivWithinAt (fun x => φ x i) (φ' i) s x :=
   hasDerivAtFilter_pi
 
-theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x)
-    (hs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x :=
-  (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hs
+theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x) :
+    derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hxs
+  · simp only [derivWithin_zero_of_isolated hxs]
+    rfl
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
     deriv φ x = fun i => deriv (fun x => φ x i) x :=

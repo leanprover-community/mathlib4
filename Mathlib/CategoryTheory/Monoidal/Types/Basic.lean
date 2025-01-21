@@ -6,7 +6,6 @@ Authors: Michael Jendrusch, Kim Morrison
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # The category of types is a monoidal category
@@ -99,8 +98,8 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
 of a type to the image of that type, tensored with the image of the nth cartesian power. -/
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
-    (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type*) :
+    (F : Type _ ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
-  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
+  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (Functor.Monoidal.μIso F β (Fin n → β)).symm
 
 end CategoryTheory

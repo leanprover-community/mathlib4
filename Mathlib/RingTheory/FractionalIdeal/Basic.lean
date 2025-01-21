@@ -215,7 +215,7 @@ theorem isFractional_of_le_one (I : Submodule R P) (h : I ≤ 1) : IsFractional 
   use 1, S.one_mem
   intro b hb
   rw [one_smul]
-  obtain ⟨b', b'_mem, rfl⟩ := h hb
+  obtain ⟨b', b'_mem, rfl⟩ := mem_one.mp (h hb)
   exact Set.mem_range_self b'
 
 theorem isFractional_of_le {I : Submodule R P} {J : FractionalIdeal S P} (hIJ : I ≤ J) :
@@ -427,14 +427,14 @@ theorem _root_.IsFractional.inf_right {I : Submodule R P} :
       rcases mem_inf.mp hb with ⟨hbI, _⟩
       exact hI b hbI⟩
 
-instance : Inf (FractionalIdeal S P) :=
+instance : Min (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊓ J, I.isFractional.inf_right J⟩⟩
 
 @[simp, norm_cast]
 theorem coe_inf (I J : FractionalIdeal S P) : ↑(I ⊓ J) = (I ⊓ J : Submodule R P) :=
   rfl
 
-instance : Sup (FractionalIdeal S P) :=
+instance : Max (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊔ J, I.isFractional.sup J.isFractional⟩⟩
 
 @[norm_cast]
@@ -526,7 +526,7 @@ theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
 theorem mul_def (I J : FractionalIdeal S P) :
-    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul]
+    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
 
 @[simp, norm_cast]
 theorem coe_mul (I J : FractionalIdeal S P) : (↑(I * J) : Submodule R P) = I * J := by

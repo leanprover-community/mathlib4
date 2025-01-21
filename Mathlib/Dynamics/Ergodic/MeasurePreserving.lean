@@ -26,13 +26,13 @@ Isabelle formalization.
 measure preserving map, measure
 -/
 
+open MeasureTheory.Measure Function Set
+open scoped ENNReal
 
 variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory
-
-open Measure Function Set
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -138,6 +138,16 @@ theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s :
     (hs : NullMeasurableSet s μb) :
     Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
   aeconst_comp hf hs.mem
+
+theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
+    (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_add _ _ hf.measurable, hf.map_eq, hf'.map_eq]
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
+    (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_smul, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 

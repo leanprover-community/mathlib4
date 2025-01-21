@@ -3,9 +3,9 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Deprecated.Subgroup
+import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Deprecated.Group
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Deprecated.Subgroup
 
 /-!
 # Unbundled subrings (deprecated)
@@ -63,8 +63,6 @@ theorem isSubring_set_range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R �
   { IsAddGroupHom.range_addSubgroup f.to_isAddGroupHom, Range.isSubmonoid f.to_isMonoidHom with }
 
 end RingHom
-
-variable {cR : Type u} [CommRing cR]
 
 theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : IsSubring S₂) :
     IsSubring (S₁ ∩ S₂) :=
@@ -181,6 +179,7 @@ theorem closure_subset_iff {s t : Set R} (ht : IsSubring t) : closure s ⊆ t �
   (AddGroup.closure_subset_iff ht.toIsAddSubgroup).trans
     ⟨Set.Subset.trans Monoid.subset_closure, Monoid.closure_subset ht.toIsSubmonoid⟩
 
+@[gcongr]
 theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubring <| Set.Subset.trans H subset_closure
 

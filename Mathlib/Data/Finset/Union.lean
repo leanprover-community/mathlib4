@@ -26,8 +26,7 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
@@ -69,7 +68,7 @@ lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α),
 lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
     (s.disjiUnion f h1).disjiUnion g h2 =
       s.attach.disjiUnion
-        (fun a ↦ ((f a).disjiUnion g) fun b hb c hc ↦
+        (fun a ↦ ((f a).disjiUnion g) fun _ hb _ hc ↦
             h2 (mem_disjiUnion.mpr ⟨_, a.prop, hb⟩) (mem_disjiUnion.mpr ⟨_, a.prop, hc⟩))
         fun a _ b _ hab ↦
         disjoint_left.mpr fun x hxa hxb ↦ by
@@ -132,7 +131,7 @@ lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : 
     -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
     simp_rw [mem_biUnion]
     apply exists_congr
-    simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]
+    simp +contextual only [hs, and_congr_right_iff, ht, implies_true]
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :

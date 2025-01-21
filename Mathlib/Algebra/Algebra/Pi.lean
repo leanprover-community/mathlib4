@@ -34,10 +34,10 @@ variable (x y : ∀ i, f i) (i : I)
 variable (I f)
 
 instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
-    Algebra R (∀ i : I, f i) :=
-  { (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i) with
-    commutes' := fun a f => by ext; simp [Algebra.commutes]
-    smul_def' := fun a f => by ext; simp [Algebra.smul_def] }
+    Algebra R (∀ i : I, f i) where
+  algebraMap := (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i)
+  commutes' := fun a f => by ext; simp [Algebra.commutes]
+  smul_def' := fun a f => by ext; simp [Algebra.smul_def]
 
 theorem algebraMap_def {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) : algebraMap R (∀ i, f i) a = fun i => algebraMap R (f i) a :=
@@ -51,6 +51,15 @@ theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ 
 -- One could also build a `∀ i, R i`-algebra structure on `∀ i, A i`,
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.
 variable {I} (R)
+
+/-- A family of algebra homomorphisms `g i : A →ₐ[R] f i` defines a ring homomorphism
+`Pi.algHom g : A →ₐ[R] Π i, f i` given by `Pi.algHom g x i = f i x`. -/
+@[simps!]
+def algHom [CommSemiring R] [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
+    {A : Type*} [Semiring A] [Algebra R A] (g : ∀ i, A →ₐ[R] f i) :
+    A →ₐ[R] ∀ i, f i where
+  __ := Pi.ringHom fun i ↦ (g i).toRingHom
+  commutes' r := by ext; simp
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/

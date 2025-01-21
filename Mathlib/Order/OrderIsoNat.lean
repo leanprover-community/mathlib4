@@ -92,6 +92,14 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
 
 end RelEmbedding
 
+theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
+    ¬ StrictAnti f := fun hf ↦
+  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded_of_decreasing_seq wellFounded_lt
+
+theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
+    ¬ StrictMono f :=
+  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
+
 namespace Nat
 
 variable (s : Set ℕ) [Infinite s]
@@ -232,3 +240,20 @@ theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
   · cases' WellFounded.monotone_chain_condition'.1 h a with n hn
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
     exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
+
+theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
+    [Nonempty α] [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] :
+    ∃ a : ℕ → α, IsMin (a 0) ∧ ∃ n, IsMax (a n) ∧ ∀ i < n, a i ⋖ a (i + 1) := by
+  choose next hnext using exists_covBy_of_wellFoundedLT (α := α)
+  have hα := Set.nonempty_iff_univ_nonempty.mp ‹_›
+  classical
+  let a : ℕ → α := Nat.rec (wfl.wf.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
+  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ hα trivial, ?_⟩
+  have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
+    change a n ⋖ if ha : IsMax (a n) then a n else _
+    rw [dif_neg hn]
+    exact hnext hn
+  have H : ∃ n, IsMax (a n) := by
+    by_contra!
+    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded_of_decreasing_seq wfg.wf
+  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩

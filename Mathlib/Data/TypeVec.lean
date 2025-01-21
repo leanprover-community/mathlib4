@@ -376,7 +376,7 @@ theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun :
 
 @[typevec]
 theorem repeat_eq_append1 {β} {n} (α : TypeVec n) :
-    repeatEq (α ::: β) = splitFun (α := (α ⊗ α) ::: _ )
+    repeatEq (α ::: β) = splitFun (α := (α ⊗ α) ::: _)
     (α' := («repeat» n Prop) ::: _) (repeatEq α) (uncurry Eq) := by
   induction n <;> rfl
 
@@ -419,8 +419,8 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
 
 
 section
-variable {α β γ : TypeVec.{u} n}
-variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
+variable {α β : TypeVec.{u} n}
+variable (p : α ⟹ «repeat» n Prop)
 
 /-- left projection of a `prod` vector -/
 def prod.fst : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ α
@@ -604,9 +604,7 @@ theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 
 @[simp]
 theorem lastFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
-    lastFun (ofSubtype p) = _root_.id := by
-  ext i : 2
-  induction i; simp [dropFun, *]; rfl
+    lastFun (ofSubtype p) = _root_.id := rfl
 
 @[simp]
 theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :
@@ -664,14 +662,14 @@ theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagS
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     toSubtype p ⊚ ofSubtype p = id := by
   ext i x
-  induction i <;> dsimp only [id, toSubtype, comp, ofSubtype] at *
+  induction i <;> simp only [id, toSubtype, comp, ofSubtype] at *
   simp [*]
 
 @[simp]
 theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     subtypeVal p ⊚ toSubtype p = fun _ => Subtype.val := by
   ext i x
-  induction i <;> dsimp only [toSubtype, comp, subtypeVal] at *
+  induction i <;> simp only [toSubtype, comp, subtypeVal] at *
   simp [*]
 
 @[simp]
@@ -691,7 +689,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x
-  induction i <;> dsimp only [id, toSubtype', comp, subtypeVal, prod.mk] at *
+  induction i <;> simp only [id, toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]
 
 end TypeVec

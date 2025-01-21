@@ -73,11 +73,11 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
         { hom :=
             { toFun := id
               map_one' := rfl
-              map_mul' := fun x y => rfl }
+              map_mul' := fun _ _ => rfl }
           inv :=
             { toFun := id
               map_one' := rfl
-              map_mul' := fun x y => rfl } })
+              map_mul' := fun _ _ => rfl } })
       (by aesop_cat)
 
 /-- The equivalence `Mon_ (Type u) ≌ MonCat.{u}`
@@ -85,7 +85,7 @@ is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
     MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon_.forget (Type u) :=
-  NatIso.ofComponents (fun A => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
@@ -134,11 +134,11 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
         { hom :=
             { toFun := id
               map_one' := rfl
-              map_mul' := fun x y => rfl }
+              map_mul' := fun _ _ => rfl }
           inv :=
             { toFun := id
               map_one' := rfl
-              map_mul' := fun x y => rfl } })
+              map_mul' := fun _ _ => rfl } })
       (by aesop_cat)
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `CommMon_ (Type u) ≌ CommMonCat.{u}`
@@ -147,7 +147,7 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
       CommMon_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
-  NatIso.ofComponents (fun A => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
   ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩

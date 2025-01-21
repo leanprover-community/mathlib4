@@ -62,12 +62,12 @@ open Finset
 
 namespace Prod
 variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [@DecidableRel (α × β) (· ≤ ·)]
+  [DecidableEq α] [DecidableEq β] [DecidableRel (α := α × β) (· ≤ ·)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
-    (box (n + 1) : Finset (α × β)).card =
-      (Icc (-n.succ : α) n.succ).card * (Icc (-n.succ : β) n.succ).card -
-        (Icc (-n : α) n).card * (Icc (-n : β) n).card := by
+    #(box (n + 1) : Finset (α × β)) =
+      #(Icc (-n.succ : α) n.succ) * #(Icc (-n.succ : β) n.succ) -
+        #(Icc (-n : α) n) * #(Icc (-n : β) n) := by
   rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
     Finset.card_Icc_prod]
   rfl
@@ -77,11 +77,11 @@ end Prod
 /-! ### `ℤ × ℤ` -/
 
 namespace Int
-variable {n : ℕ} {x : ℤ × ℤ}
+variable {x : ℤ × ℤ}
 
 attribute [norm_cast] toNat_ofNat
 
-lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
+lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | n + 1, _ => by
     simp_rw [Prod.card_box_succ, card_Icc, sub_neg_eq_add]
     norm_cast
@@ -93,11 +93,6 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by
     simp [box_succ_eq_sdiff, Prod.le_def]
-    #adaptation_note /-- v4.7.0-rc1: `omega` no longer identifies atoms up to defeq.
-    (This had become a performance bottleneck.)
-    We need a tactic for normalising instances, to avoid the `have`/`simp` dance below: -/
-    have : @Nat.cast ℤ instNatCastInt n = @Nat.cast ℤ AddMonoidWithOne.toNatCast n := rfl
-    simp only [this]
     omega
 
 -- TODO: Can this be generalised to locally finite archimedean ordered rings?
