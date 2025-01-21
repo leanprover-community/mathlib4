@@ -6,7 +6,7 @@ Authors: Christian Merten, Yi Song, Sihan Su
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
