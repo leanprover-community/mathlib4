@@ -54,8 +54,6 @@ gives a category whose
   `base : X.base ⟶ Y.base` and
   `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): no such linter yet
--- @[nolint has_nonempty_instance]
 structure Grothendieck where
   /-- The underlying object in `C` -/
   base : C
@@ -87,7 +85,7 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
 -/
 def id (X : Grothendieck F) : Hom X X where
   base := 𝟙 X.base
-  fiber := eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber])
+  fiber := eqToHom (by simp)
 
 instance (X : Grothendieck F) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -97,22 +95,22 @@ instance (X : Grothendieck F) : Inhabited (Hom X X) :=
 def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
   base := f.base ≫ g.base
   fiber :=
-    eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫ (F.map g.base).map f.fiber ≫ g.fiber
+    eqToHom (by simp) ≫ (F.map g.base).map f.fiber ≫ g.fiber
 
 attribute [local simp] eqToHom_map
 
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
-  comp := @fun _ _ _ f g => Grothendieck.comp f g
-  comp_id := @fun X Y f => by
+  comp f g := Grothendieck.comp f g
+  comp_id {X Y} f := by
     dsimp; ext
     · simp [comp, id]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
-  id_comp := @fun X Y f => by dsimp; ext <;> simp [comp, id]
-  assoc := @fun W X Y Z f g h => by
+  id_comp f := by dsimp; ext <;> simp [comp, id]
+  assoc f g h := by
     dsimp; ext
     · simp [comp, id]
     · dsimp [comp, id]
@@ -126,7 +124,7 @@ theorem id_base (X : Grothendieck F) :
 
 @[simp]
 theorem id_fiber (X : Grothendieck F) :
-    Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber]) :=
+    Hom.fiber (𝟙 X) = eqToHom (by simp) :=
   rfl
 
 @[simp]
@@ -137,10 +135,8 @@ theorem comp_base {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem comp_fiber {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Hom.fiber (f ≫ g) =
-    eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫
-    (F.map g.base).map f.fiber ≫ g.fiber :=
+      eqToHom (by simp) ≫ (F.map g.base).map f.fiber ≫ g.fiber :=
   rfl
-
 
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
@@ -160,7 +156,7 @@ variable (F)
 @[simps!]
 def forget : Grothendieck F ⥤ C where
   obj X := X.1
-  map := @fun _ _ f => f.1
+  map f := f.1
 
 end
 

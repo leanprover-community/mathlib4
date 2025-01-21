@@ -17,6 +17,8 @@ universe u v w x
 
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
+lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by simp
+
 namespace Sum
 
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
@@ -88,7 +90,7 @@ theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inl_apply_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inl i) x (inr j) = f (inr j) :=
-  Function.update_noteq inr_ne_inl _ _
+  Function.update_of_ne inr_ne_inl ..
 
 @[simp]
 theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β} {x : γ} :
@@ -97,7 +99,7 @@ theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inr_apply_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inr j) x (inl i) = f (inl i) :=
-  Function.update_noteq inl_ne_inr _ _
+  Function.update_of_ne inl_ne_inr ..
 
 @[simp]
 theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β}
@@ -198,8 +200,8 @@ open Function
 theorem map_injective {f : α → γ} {g : β → δ} :
     Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
   ⟨fun h =>
-    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha : _), fun b₁ b₂ hb =>
-      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb : _)⟩,
+    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
+      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
     fun h => h.1.sum_map h.2⟩
 
 @[simp]

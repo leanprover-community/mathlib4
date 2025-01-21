@@ -80,7 +80,7 @@ where
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_eq_cons] at hij'
+            rw [Fin.cons_inj] at hij'
             ext
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'
@@ -189,7 +189,8 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
+variable [DecidableEq ι] [OrderedAddCommMonoid μ] [CanonicallyOrderedAdd μ]
+  [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
   ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
@@ -223,7 +224,8 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
     · rw [not_imp_comm.1 (hfsup _) hi]
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
-  simpa [Nat.sum_div, Nat.div_ne_zero_iff_of_dvd, funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  aesop
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

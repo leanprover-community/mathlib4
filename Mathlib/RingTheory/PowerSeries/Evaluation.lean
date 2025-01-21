@@ -26,7 +26,7 @@ structure EvalDomain [TopologicalSpace S] (a : S) : Prop where
   hpow : IsTopologicallyNilpotent a
 
 /-- The domain of evaluation of `PowerSeries`, as an ideal. -/
-def EvalDomain.ideal [TopologicalSpace S] [TopologicalRing S] [IsLinearTopology S] : Ideal S where
+def EvalDomain.ideal [TopologicalSpace S] [TopologicalRing S] [IsLinearTopology S S] : Ideal S where
   carrier   := setOf IsTopologicallyNilpotent
   add_mem'  := IsTopologicallyNilpotent.add
   zero_mem' := IsTopologicallyNilpotent.zero
@@ -49,7 +49,7 @@ theorem EvalDomain.const (ha : EvalDomain a) :
 
 variable [TopologicalSemiring R] [UniformAddGroup R]
     [UniformAddGroup S] [T2Space S] [CompleteSpace S]
-    [TopologicalRing S] [IsLinearTopology S]
+    [TopologicalRing S] [IsLinearTopology S S]
 
 /-- For `EvalDomain a`, the evaluation homomorphism at `a` on `PowerSeries`. -/
 noncomputable def eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :

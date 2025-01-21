@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.Interval
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 
@@ -37,7 +38,7 @@ namespace MvPowerSeries
 
 open Finsupp
 
-variable {σ R : Type*}
+variable {σ R S : Type*}
 
 section TruncLT
 
@@ -92,12 +93,22 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
       exact Ne.bot_lt hnn
 
 @[simp]
-theorem trunc_c (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
+theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m => by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all only [ne_eq, not_true_eq_false]
     exfalso; apply H; subst m; exact Ne.bot_lt hnn
+
+@[simp]
+theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
+    trunc R n (C σ R a * p) = MvPolynomial.C a * trunc R n p := by
+  ext m; simp [coeff_trunc]
+
+@[simp]
+theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
+    trunc S n (map σ f p) = MvPolynomial.map f (trunc R n p) := by
+  ext m; simp [coeff_trunc, MvPolynomial.coeff_map, apply_ite f]
 
 end TruncLT
 
@@ -171,6 +182,16 @@ theorem coeff_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R)
   apply congr_arg₂
   · rw [coeff_trunc', if_pos (le_trans le_self_add h)]
   · rw [coeff_trunc', if_pos (le_trans le_add_self h)]
+
+@[simp]
+theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
+    trunc' R n (C σ R a * p) = MvPolynomial.C a * trunc' R n p := by
+  ext m; simp [coeff_trunc']
+
+@[simp]
+theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
+    trunc' S n (map σ f p) = MvPolynomial.map f (trunc' R n p) := by
+  ext m; simp [coeff_trunc', MvPolynomial.coeff_map, apply_ite f]
 
 end TruncLE
 

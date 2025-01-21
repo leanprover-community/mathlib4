@@ -64,8 +64,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped Classical
-
 /-- The partial product for the generating function for odd partitions.
 TODO: As `m` tends to infinity, this converges (in the `X`-adic topology).
 
@@ -92,10 +90,12 @@ open Finset.HasAntidiagonal
 universe u
 variable {ι : Type u}
 
+open scoped Classical in
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
+open scoped Classical in
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
@@ -106,6 +106,7 @@ theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) 
 theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 
+open scoped Classical in
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
@@ -162,6 +163,7 @@ theorem num_series' [Field α] (i : ℕ) :
 def mkOdd : ℕ ↪ ℕ :=
   ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
 
+open scoped Classical in
 -- The main workhorse of the partition theorem proof.
 theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
