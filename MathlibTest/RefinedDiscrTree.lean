@@ -80,7 +80,7 @@ run_meta do
 open BigOperators Finset in
 /-- info: @Finset.sum ℕ ℕ *0 (range 10) (@id ℕ) -/
 #guard_msgs in
-# ∑ i in range 10, i
+# ∑ i ∈ range 10, i
 
 /--
 info: @Nat.fold ℕ 10 (@HAdd.hAdd (ℕ → (@LT.lt ℕ *0 #0 10) → ℕ → ℕ) (ℕ → (@LT.lt ℕ *1 #0 10) → ℕ → ℕ) *2 *3 (λ, λ, @id ℕ) (λ, λ, λ, #2)) 1

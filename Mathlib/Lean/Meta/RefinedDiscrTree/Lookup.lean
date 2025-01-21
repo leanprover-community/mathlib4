@@ -73,13 +73,15 @@ private def evalNode (trie : TrieIndex) :
         let entry := (entry, value)
         match star? key with
         | some id =>
-          match stars[id]? with
-          | some idx => addLazyEntryToTrie idx entry
-          | none     => stars := stars.insert id (← newTrie entry)
+          if let some idx := stars[id]? then
+            addLazyEntryToTrie idx entry
+          else
+            stars := stars.insert id (← newTrie entry)
         | none =>
-          match children[key]? with
-          | some idx => addLazyEntryToTrie idx entry
-          | none     => children := children.insert key (← newTrie entry)
+          if let some idx := children[key]? then
+            addLazyEntryToTrie idx entry
+          else
+            children := children.insert key (← newTrie entry)
 
   setTrie trie <| .node values stars children #[]
   return (values, stars, children)

@@ -114,6 +114,8 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
     (act : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry))))
     (tree : PreDiscrTree α) (name : Name) (constInfo : ConstantInfo) :
     BaseIO (PreDiscrTree α) := do
+  -- here we use an if-then-else clause instead of the more stylish if-then-return,
+  -- because it compiles to more performant code
   if constInfo.isUnsafe then pure tree else
   if LazyDiscrTree.blacklistInsertion env name then pure tree else
   /- For efficiency, we leave it up to the implementation of `act` to reset the states if needed -/
