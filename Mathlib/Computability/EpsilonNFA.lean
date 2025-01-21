@@ -211,7 +211,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       rw [List.reduceOption_replicate_none]
       trivial
     · simp_rw [List.reduceOption_eq_nil_iff]
-      intro ⟨_, ⟨⟨n, rfl⟩, h⟩⟩
+      intro ⟨_, ⟨n, rfl⟩, h⟩
       exact ⟨n, h⟩
   · rw [evalFrom_append_singleton, mem_stepSet_iff]
     constructor
@@ -219,7 +219,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       obtain ⟨x', _, _⟩ := ih.mp ht
       rw [mem_εClosure_iff_exists] at h
       simp_rw [mem_εClosure_iff_exists_path] at h
-      obtain ⟨u, _, ⟨n, _⟩⟩ := h
+      obtain ⟨u, _, n, _⟩ := h
       use x' ++ some a :: List.replicate n none
       rw [List.reduceOption_append, List.reduceOption_cons_of_some,
         List.reduceOption_replicate_none, isPath_append]
