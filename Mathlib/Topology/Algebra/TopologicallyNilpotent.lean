@@ -14,27 +14,27 @@ open scoped Topology
 
 /-- An element is topologically nilpotent if its powers converge to `0`. -/
 def IsTopologicallyNilpotent
-    {α : Type*} [Semiring α] [TopologicalSpace α] (a : α) : Prop :=
+    {R : Type*} [Semiring R] [TopologicalSpace R] (a : R) : Prop :=
   Tendsto (fun n : ℕ => a ^ n) atTop (𝓝 0)
 
 namespace IsTopologicallyNilpotent
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {R S : Type*} [TopologicalSpace R] [TopologicalSpace S]
 
-theorem map [Semiring α] [Semiring β]
-    {φ : α →+* β} (hφ : Continuous φ) {a : α} (ha : IsTopologicallyNilpotent a) :
+theorem map [Semiring R] [Semiring S]
+    {φ : R →+* S} (hφ : Continuous φ) {a : R} (ha : IsTopologicallyNilpotent a) :
     IsTopologicallyNilpotent (φ a) := by
   unfold IsTopologicallyNilpotent at ha ⊢
   simp_rw [← map_pow]
   exact (map_zero φ ▸  hφ.tendsto 0).comp ha
 
-theorem zero [Semiring α] :
-    IsTopologicallyNilpotent (0 : α) := tendsto_atTop_of_eventually_const (i₀ := 1)
+theorem zero [Semiring R] :
+    IsTopologicallyNilpotent (0 : R) := tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
 
-variable [CommRing α] [TopologicalRing α] [IsLinearTopology α]
+variable [CommRing R] [IsLinearTopology R R]
 
-theorem mul_right {a : α} (ha : IsTopologicallyNilpotent a) (b : α) :
+theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
     IsTopologicallyNilpotent (a * b) := by
   intro v hv
   rw [IsLinearTopology.hasBasis_ideal.mem_iff] at hv
@@ -47,11 +47,11 @@ theorem mul_right {a : α} (ha : IsTopologicallyNilpotent a) (b : α) :
   rw [mul_pow]
   exact  I_subset (I.mul_mem_right _ (ha m hm))
 
- theorem mul_left (a : α) {b : α} (hb : IsTopologicallyNilpotent b) :
+ theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a * b) :=
   mul_comm a b ▸ mul_right hb a
 
-theorem add {a b : α} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
+theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a + b) := by
   intro v hv
   rw [IsLinearTopology.hasBasis_ideal.mem_iff] at hv
