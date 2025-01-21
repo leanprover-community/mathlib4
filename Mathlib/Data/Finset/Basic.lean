@@ -509,7 +509,8 @@ variable {n m l : ℕ}
 @[simp]
 theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by
   convert filter_eq (range n) m using 2
-  · rw [eq_comm]
+  · ext
+    rw [eq_comm]
   · simp
 
 end Range
