@@ -1,9 +1,12 @@
 /-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
+Copyright (c) 2024 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
 import Mathlib.RingTheory.FilteredAlgebra.Basic
+import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Tactic.LinearCombination'
 /-!
 # The filtration on abelian group and ring
 In this file, we defined the fitration induced by a homomorphism,
@@ -19,6 +22,8 @@ and extend it to get the filtration on ring and module.
 
 * `ModuleHomtoFiltration`
 -/
+
+universe v
 
 variable {ι : Type v} [OrderedCancelAddCommMonoid ι]
 
@@ -46,13 +51,13 @@ open SubmonoidClassHom Set
 /-
 When FA and FA_lt is a filtration of A, then f: A → B induce a filtration of B
 -/
-instance HomtoFiltration [fil : IsFiltration FA FA_lt] [SubmonoidClassHom σA σB f] :
- IsFiltration (FB σA σB FA f) (FB_lt σA σB FA_lt f) (ι := ι) where
+instance HomtoFiltration (FA : ι → σA) (FA_lt : ι → σA) (f : A → B) [fil : IsFiltration FA FA_lt]
+[SubmonoidClassHom σA σB f] : IsFiltration (FB σA σB FA f) (FB_lt σA σB FA_lt f) (ι := ι) where
   mono {i j i_le_j}:= by
     show (((map f <| FA i) : σB) : Set B) ≤ (((map f <| FA j) : σB) : Set B)
     rw[← coe_map <| FA i, ← coe_map <| FA j]
     exact le_iff_subset.mpr <| image_mono <| IsFiltration.mono i_le_j
-  is_le {j i i_lt_j}:= by
+  is_le {i j i_lt_j}:= by
     show (((map f <| FA i) : σB) : Set B) ≤ (((map f <| FA_lt j) : σB) : Set B)
     rw[← coe_map <| FA i, ← coe_map <| FA_lt j]
     exact le_iff_subset.mpr <| image_mono <| IsFiltration.is_le i_lt_j
@@ -99,7 +104,7 @@ When FA and FA_lt is a ring filtration of A, then ring hom f: A →+* B induce a
 -/
 instance RingHomtoFiltration [fil : IsRingFiltration FR FR_lt] :
     IsRingFiltration (FS σR σS FR f) (FS_lt σR σS FR_lt f) where
-  __ := HomtoFiltration σR σS
+  __ := HomtoFiltration σR σS FR FR_lt f
   one_mem := by
     apply ele_map_to_image
     use 1
