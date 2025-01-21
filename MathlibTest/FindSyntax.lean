@@ -4,7 +4,8 @@ import Mathlib.Tactic.FindSyntax
 info: Found 1 use among over 500 syntax declarations
 ---
 
-«term_∘_»:
+«term_∘_»: defined in 'Init.Notation'
+start: ⟨272, 0⟩, end: ⟨272, 48⟩
   '∘'
 
 ---
@@ -16,7 +17,8 @@ info: Found 1 use among over 500 syntax declarations
 info: Found 1 use among over 500 syntax declarations
 ---
 
-«term_∣_»:
+«term_∣_»: defined in 'Init.Notation'
+start: ⟨276, 0⟩, end: ⟨276, 41⟩
   '∣'
 
 ---
@@ -28,12 +30,14 @@ info: Found 1 use among over 500 syntax declarations
 info: Found 2 uses among over 500 syntax declarations
 ---
 
-«stx_,*,?»:
+«stx_,*,?»: defined in 'Init.Notation'
+start: ⟨242, 0⟩, end: ⟨242, 82⟩
   ',*,?'
 
 ---
 
-«stx_,*»:
+«stx_,*»: defined in 'Init.Notation'
+start: ⟨224, 0⟩, end: ⟨224, 64⟩
   ',*'
 
 ---
@@ -45,7 +49,8 @@ info: Found 2 uses among over 500 syntax declarations
 info: Found 1 use among over 500 syntax declarations
 ---
 
-«term~~~_»:
+«term~~~_»: defined in 'Init.Notation'
+start: ⟨290, 0⟩, end: ⟨290, 57⟩
   '~~~'
 
 ---
@@ -57,22 +62,26 @@ info: Found 1 use among over 500 syntax declarations
 info: Found 4 uses among over 500 syntax declarations
 ---
 
-Lean.Parser.Tactic.refine':
+Lean.Parser.Tactic.refine': defined in 'Init.Tactics'
+start: ⟨212, 0⟩, end: ⟨216, 49⟩
   'refine''
 
 ---
 
-Lean.Parser.Tactic.refine:
+Lean.Parser.Tactic.refine: defined in 'Init.Tactics'
+start: ⟨205, 0⟩, end: ⟨210, 47⟩
   'refine'
 
 ---
 
-Lean.Parser.Tactic.tacticRefine_lift'_:
+Lean.Parser.Tactic.tacticRefine_lift'_: defined in 'Init.Tactics'
+start: ⟨797, 0⟩, end: ⟨797, 104⟩
   'refine_lift''
 
 ---
 
-Lean.Parser.Tactic.tacticRefine_lift_:
+Lean.Parser.Tactic.tacticRefine_lift_: defined in 'Init.Tactics'
+start: ⟨720, 0⟩, end: ⟨720, 102⟩
   'refine_lift'
 
 ---
