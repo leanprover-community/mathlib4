@@ -179,14 +179,14 @@ theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   ext a
-  simp [← cons_succ a y s, c]
+  simp [← cons_succ y s a, c]
 
-theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
+theorem cons_ne_zero : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine ⟨fun h => ?_, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.cons_zero_zero]
 
-lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
+lemma cons_support_subset : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
   intro i hi
   suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
@@ -219,7 +219,7 @@ theorem insertNth_ne_zero_of_right (h : s ≠ 0) : insertNth p y s ≠ 0 := by
   ext a
   simp only [← insertNth_apply_succAbove p y s a, c, coe_zero, Pi.zero_apply]
 
-theorem insertNth_ne_zero_iff : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
+theorem insertNth_ne_zero : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine ⟨fun h => ?_,
     fun h => h.casesOn (insertNth_ne_zero_of_left p) (insertNth_ne_zero_of_right p)⟩
   refine imp_iff_not_or.1 fun h' c => h ?_
@@ -237,7 +237,7 @@ theorem snoc_left_injective : Injective (Finsupp.snoc · y : (Fin n →₀ M) �
   equivFunOnFinite.symm.injective.comp
     ((Fin.snoc_left_injective (α := fun _ => M) y).comp DFunLike.coe_injective)
 
-theorem insertNth_support :
+theorem insertNth_support_subset :
     (insertNth p y s).support ⊆ insert p (s.support.map (Fin.succAboveEmb p)) := by
   intro i hi
   suffices i = p ∨ ∃ a, ¬s a = 0 ∧ p.succAbove a = i by simpa
