@@ -24,8 +24,7 @@ structure Nucleus (X : Type*) [SemilatticeInf X] where
   /-- The underlying Function.
   Do not use this function directly. Instead use the coercion coming from the `FunLike` instance. -/
   toFun : X → X
-  /-- A `Nucleus` is idempotent.
-  -/
+  /-- A `Nucleus` is idempotent.  -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
   /-- A `Nucleus` is increasing.-/
   increasing' (x : X) : x ≤ toFun x
