@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
+import Mathlib.CategoryTheory.Limits.Indization.Products
 
 /-!
 # The category of Ind-objects
@@ -24,7 +25,10 @@ Adopting the theorem numbering of [Kashiwara2006], we show that
 * `C ⥤ Ind C` preserves finite colimits (6.1.6),
 * if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `α`
   (6.1.18(ii)),
-* if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)).
+* if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)),
+* if `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
+  `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17)
+* the functor `C ⥤ Ind C` preserves small limits.
 
 More limit-colimit properties will follow.
 
@@ -106,6 +110,23 @@ noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
 instance : HasFilteredColimits (Ind C) where
   HasColimitsOfShape _ _ _ :=
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (Ind.inclusion C)
+
+noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+    CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
+  letI _ : CreatesLimitsOfShape (Discrete J) (fullSubcategoryInclusion (IsIndObject (C := C))) :=
+    createsLimitsOfShapeFullSubcategoryInclusion (closedUnderLimitsOfShape_of_limit
+      (isIndObject_limit_of_discrete_of_hasLimitsOfShape _))
+  inferInstanceAs <|
+    CreatesLimitsOfShape (Discrete J) ((Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _)
+
+instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+    HasLimitsOfShape (Discrete J) (Ind C) :=
+  hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
+
+instance : PreservesLimits (Ind.yoneda (C := C)) :=
+  letI _ : PreservesLimitsOfSize.{v, v} (Ind.yoneda ⋙ Ind.inclusion C) :=
+    preservesLimits_of_natIso Ind.yonedaCompInclusion.symm
+  preservesLimits_of_reflects_of_preserves Ind.yoneda (Ind.inclusion C)
 
 theorem Ind.isIndObject_inclusion_obj (X : Ind C) : IsIndObject ((Ind.inclusion C).obj X) :=
   X.2

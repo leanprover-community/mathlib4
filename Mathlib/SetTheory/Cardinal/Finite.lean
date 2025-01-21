@@ -21,6 +21,8 @@ import Mathlib.SetTheory.Cardinal.ENat
   (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
+assert_not_exists Field
+
 open Cardinal Function
 
 noncomputable section
@@ -57,6 +59,10 @@ lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = h
 @[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
 
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
+
+lemma cast_card [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
+  rw [Nat.card, Cardinal.cast_toNat_of_lt_aleph0]
+  exact Cardinal.lt_aleph0_of_finite _
 
 lemma _root_.Set.Infinite.card_eq_zero {s : Set α} (hs : s.Infinite) : Nat.card s = 0 :=
   @card_eq_zero_of_infinite _ hs.to_subtype

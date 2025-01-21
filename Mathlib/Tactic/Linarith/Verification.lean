@@ -191,41 +191,52 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
     (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
-      trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
       Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
-      let l' ← addNegEqProofs l
-      trace[linarith.detail] "... finished `addNegEqProofs`."
-      let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
-      trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
-      trace[linarith.detail] (← inputs.mapM inferType)
-      let (comps, max_var) ← linearFormsAndMaxVar transparency inputs
-      trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
-      trace[linarith.detail] "{comps}"
+      let l' ← detailTrace "addNegEqProofs" <| addNegEqProofs l
+      let inputs ← detailTrace "mkNegOneLtZeroProof" <|
+        return (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
+      trace[linarith.detail] "inputs:{indentD <| toMessageData (← inputs.mapM inferType)}"
+      let (comps, max_var) ← detailTrace "linearFormsAndMaxVar" <|
+        linearFormsAndMaxVar transparency inputs
+      trace[linarith.detail] "comps:{indentD <| toMessageData comps}"
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Std.HashMap Nat Nat ← try
-        oracle.produceCertificate comps max_var
-      catch e =>
-        trace[linarith] e.toMessageData
-        throwError "linarith failed to find a contradiction"
-      trace[linarith] "linarith has found a contradiction: {certificate.toList}"
-      let enum_inputs := inputs.enum
-      -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
-      let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
-      -- `sm` is the sum of input terms, scaled to cancel out all variables.
-      let sm ← addExprs mls
-      -- let sm ← instantiateMVars sm
-      trace[linarith] "The expression\n  {sm}\nshould be both 0 and negative"
+      let certificate : Std.HashMap Nat Nat ←
+        withTraceNode `linarith (return m!"{exceptEmoji ·} Invoking oracle") do
+          let certificate ←
+            try
+              oracle.produceCertificate comps max_var
+            catch e =>
+              trace[linarith] e.toMessageData
+              throwError "linarith failed to find a contradiction"
+          trace[linarith] "found a contradiction: {certificate.toList}"
+          return certificate
+      let (sm, zip) ←
+        withTraceNode `linarith (return m!"{exceptEmoji ·} Building final expression") do
+          let enum_inputs := inputs.enum
+          -- construct a list pairing nonzero coeffs with the proof of their corresponding
+          -- comparison
+          let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
+          let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
+          -- `sm` is the sum of input terms, scaled to cancel out all variables.
+          let sm ← addExprs mls
+          -- let sm ← instantiateMVars sm
+          trace[linarith] "{indentD sm}\nshould be both 0 and negative"
+          return (sm, zip)
       -- we prove that `sm = 0`, typically with `ring`.
-      let sm_eq_zero ← proveEqZeroUsing discharger sm
+      let sm_eq_zero ← detailTrace "proveEqZeroUsing" <| proveEqZeroUsing discharger sm
       -- we also prove that `sm < 0`
-      let sm_lt_zero ← mkLTZeroProof zip
-      -- this is a contradiction.
-      let pftp ← inferType sm_lt_zero
-      let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
-      let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
-      mkAppM ``Linarith.lt_irrefl #[pf']
+      let sm_lt_zero ← detailTrace "mkLTZeroProof" <| mkLTZeroProof zip
+      detailTrace "Linarith.lt_irrefl" do
+        -- this is a contradiction.
+        let pftp ← inferType sm_lt_zero
+        let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
+        let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
+        mkAppM ``Linarith.lt_irrefl #[pf']
+where
+  /-- Log `f` under `linarith.detail`, with exception emojis and the provided name. -/
+  detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
+    withTraceNode `linarith.detail (return m!"{exceptEmoji ·} {s}") f
 
 end Linarith

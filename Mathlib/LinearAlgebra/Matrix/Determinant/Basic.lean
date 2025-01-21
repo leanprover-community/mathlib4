@@ -32,7 +32,7 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 ## Implementation notes
 
 It is possible to configure `simp` to compute determinants. See the file
-`test/matrix.lean` for some examples.
+`MathlibTest/matrix.lean` for some examples.
 
 -/
 
@@ -633,7 +633,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
 
 /-- The determinant of a 2×2 block matrix with the lower-left block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
-`Matrix.det_of_upper_triangular`. -/
+`Matrix.det_of_upperTriangular`. -/
 @[simp]
 theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Matrix n n R) :
     (Matrix.fromBlocks A B 0 D).det = A.det * D.det := by
@@ -644,10 +644,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
       · intro σ₁₂ _
-        simp only
-        erw [Set.mem_toFinset, MonoidHom.mem_range]
-        use σ₁₂
-        simp only [sumCongrHom_apply]
+        simp
       · intro σ₁ _ σ₂ _
         dsimp only
         intro h
@@ -687,7 +684,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
 
 /-- The determinant of a 2×2 block matrix with the upper-right block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
-`Matrix.det_of_lower_triangular`. -/
+`Matrix.det_of_lowerTriangular`. -/
 @[simp]
 theorem det_fromBlocks_zero₁₂ (A : Matrix m m R) (C : Matrix n m R) (D : Matrix n n R) :
     (Matrix.fromBlocks A 0 C D).det = A.det * D.det := by

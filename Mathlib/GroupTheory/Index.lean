@@ -233,6 +233,14 @@ theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
 @[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_surjective := card_dvd_of_surjective
 
 @[to_additive]
+theorem card_range_dvd (f : G →* G') : Nat.card f.range ∣ Nat.card G :=
+  card_dvd_of_surjective f.rangeRestrict f.rangeRestrict_surjective
+
+@[to_additive]
+theorem card_map_dvd (f : G →* G') : Nat.card (H.map f) ∣ Nat.card H :=
+  card_dvd_of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
+
+@[to_additive]
 theorem index_map (f : G →* G') :
     (H.map f).index = (H ⊔ f.ker).index * f.range.index := by
   rw [← comap_map_eq, index_comap, relindex_mul_index (H.map_le_range f)]
@@ -275,6 +283,10 @@ theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
+
+@[to_additive]
+theorem relindex_dvd_card : H.relindex K ∣ Nat.card K :=
+  (H.subgroupOf K).index_dvd_card
 
 variable {H K L}
 
@@ -605,12 +617,12 @@ namespace MulAction
 
 variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 
-theorem index_stabilizer :
+@[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Set.Nat.card_coe_set_eq (orbit G x))
 
-theorem index_stabilizer_of_transitive [IsPretransitive G X] :
+@[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 

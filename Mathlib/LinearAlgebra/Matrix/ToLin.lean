@@ -115,6 +115,11 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     ext j
     simp [vecMul, dotProduct]
 
+lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
+    [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
+  rw [← Matrix.vecMul_injective_iff]
+  exact Matrix.vecMul_injective_of_isUnit ha
+
 section
 variable [DecidableEq m]
 
@@ -275,6 +280,12 @@ theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     Function.Injective M.mulVec ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
   change Function.Injective (fun x ↦ _) ↔ _
   simp_rw [← M.vecMul_transpose, vecMul_injective_iff]
+
+lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype m]
+    {A : Matrix m m R} [DecidableEq m] (ha : IsUnit A) :
+    LinearIndependent R (fun i ↦ A.transpose i) := by
+  rw [← Matrix.mulVec_injective_iff]
+  exact Matrix.mulVec_injective_of_isUnit ha
 
 end mulVec
 
@@ -458,9 +469,6 @@ theorem Matrix.toLinAlgEquiv'_apply (M : Matrix n n R) (v : n → R) :
     Matrix.toLinAlgEquiv' M v = M *ᵥ v :=
   rfl
 
--- Porting note: the simpNF linter rejects this, as `simp` already simplifies the lhs
--- to `(1 : (n → R) →ₗ[R] n → R)`.
--- @[simp]
 theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.toLin'_one
 
@@ -560,6 +568,11 @@ theorem LinearMap.toMatrix_id : LinearMap.toMatrix v₁ v₁ id = 1 := by
 @[simp]
 theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
+
+@[simp]
+lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) (i j : ι) :
+    f.toMatrix (.singleton ι R) (.singleton ι R) i j = f 1 := by
+  simp [toMatrix, Subsingleton.elim j default]
 
 @[simp]
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
@@ -734,9 +747,6 @@ theorem Matrix.toLinAlgEquiv_self (M : Matrix n n R) (i : n) :
 theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 := by
   simp_rw [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
 
--- Porting note: the simpNF linter rejects this, as `simp` already simplifies the lhs
--- to `(1 : M₁ →ₗ[R] M₁)`.
--- @[simp]
 theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrixAlgEquiv_id v₁, Matrix.toLinAlgEquiv_toMatrixAlgEquiv]
 

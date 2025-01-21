@@ -79,6 +79,12 @@ lemma quasiIsoAt_iff_exactAt' (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHom
   · intro hK
     exact ⟨⟨0, IsZero.eq_of_src hK _ _, IsZero.eq_of_tgt hL _ _⟩⟩
 
+lemma exactAt_iff_of_quasiIsoAt (f : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt f i] :
+    K.ExactAt i ↔ L.ExactAt i :=
+  ⟨fun hK => (quasiIsoAt_iff_exactAt f i hK).1 inferInstance,
+    fun hL => (quasiIsoAt_iff_exactAt' f i hL).1 inferInstance⟩
+
 instance (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
     IsIso (homologyMap f i) := by
   simpa only [quasiIsoAt_iff, ShortComplex.quasiIso_iff] using hf
@@ -208,10 +214,8 @@ lemma quasiIso_iff_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.m
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] :
     QuasiIso φ ↔ QuasiIso φ' := by
-  rw [← quasiIso_iff_comp_left (show K' ⟶ K from e.inv.left) φ,
+  simp [← quasiIso_iff_comp_left (show K' ⟶ K from e.inv.left) φ,
     ← quasiIso_iff_comp_right φ' (show L' ⟶ L from e.inv.right)]
-  erw [Arrow.w e.inv]
-  rfl
 
 lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ ≅ Arrow.mk φ')
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]

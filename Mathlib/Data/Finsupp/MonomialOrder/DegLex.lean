@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-! Homogeneous lexicographic monomial ordering
 
@@ -72,6 +72,7 @@ theorem ofDegLex_add [AddCommMonoid α] (a b : DegLex α) :
 
 namespace Finsupp
 
+open scoped Function in -- required for scoped `on` notation
 /-- `Finsupp.DegLex r s` is the homogeneous lexicographic order on `α →₀ M`,
 where `α` is ordered by `r` and `M` is ordered by `s`.
 The type synonym `DegLex (α →₀ M)` has an order given by `Finsupp.DegLex (· < ·) (· < ·)`. -/
