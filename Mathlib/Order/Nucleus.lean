@@ -62,6 +62,7 @@ instance : NucleusClass (Nucleus X) X where
   increasing _ _ := increasing
   map_inf _ _ _ := map_inf
 
+/-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
    ClosureOperator.mk' n (OrderHomClass.mono n) n.increasing' n.idempotent'
 
