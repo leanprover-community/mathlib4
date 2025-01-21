@@ -154,21 +154,19 @@ theorem insertNth_self_removeNth : insertNth p (t p) (removeNth p t) = t := by
 theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
   ext a
   by_cases c : a = 0
-  · simp only [c, cons_zero, coe_zero, Pi.zero_apply]
+  · simp [c]
   · rw [← Fin.succ_pred a c, cons_succ]
-    simp only [coe_zero, Pi.zero_apply, Fin.succ_pred]
+    simp
 
 @[simp]
 theorem snoc_zero_zero : snoc (0 : Fin n →₀ M) 0 = 0 := by
   ext a
-  simp only [snoc, coe_zero, equivFunOnFinite_symm_apply_toFun, Fin.snoc, Fin.castSucc_castLT,
-    Pi.zero_apply, cast_eq, dite_eq_ite, ite_self]
+  simp [snoc, Fin.snoc]
 
 @[simp]
 theorem insertNth_zero_zero : insertNth p 0 (0 : Fin n →₀ M) = 0 := by
   ext a
-  simp only [insertNth, coe_zero, equivFunOnFinite_symm_apply_toFun, Fin.insertNth,
-    Fin.succAboveCases, eq_rec_constant, Pi.zero_apply, dite_eq_ite, ite_self]
+  simp [insertNth, Fin.insertNth, Fin.succAboveCases]
 
 variable {s} {y}
 
@@ -209,7 +207,7 @@ theorem snoc_eq_zero : snoc s y = 0 ↔ s = 0 ∧ y = 0 := by
 theorem snoc_ne_zero_of_left (h : s ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
   ext a
-  simp only [← snoc_castSucc y s a, c, coe_zero, Pi.zero_apply]
+  simp [← snoc_castSucc y s a, c]
 
 theorem snoc_ne_zero_of_right (h : y ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
@@ -232,7 +230,7 @@ theorem insertNth_ne_zero_of_left (h : y ≠ 0) : insertNth p y s ≠ 0 := by
 theorem insertNth_ne_zero_of_right (h : s ≠ 0) : insertNth p y s ≠ 0 := by
   contrapose! h with c
   ext a
-  simp only [← insertNth_apply_succAbove p y s a, c, coe_zero, Pi.zero_apply]
+  simp [← insertNth_apply_succAbove p y s a, c]
 
 theorem insertNth_ne_zero : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine ⟨fun h => ?_,
