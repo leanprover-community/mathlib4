@@ -64,15 +64,11 @@ lemma increasing : x ≤ n x :=
 lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
   InfHomClass.map_inf n x y
 
-/--
-We can proove that two Nuclei are equal by showing that their functions are the same.
--/
+/-- We can proove that two Nuclei are equal by showing that their functions are the same. -/
 @[ext] lemma ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
   DFunLike.ext n m h
 
-/--
-A Nucleus preserves ⊤
--/
+/-- A Nucleus preserves ⊤ -/
 @[simp] lemma map_top (n : Nucleus X) : n ⊤ = ⊤ :=
    n.toClosureOperator.closure_top
 
@@ -86,9 +82,7 @@ instance : Preorder (Nucleus X) where
   le_trans := (by simp only [Nucleus.le_iff]; exact fun a b c a_1 a_2 v ↦
     Preorder.le_trans (a.toFun v) (b.toFun v) (c.toFun v) (a_1 v) (a_2 v))
 
-/--
-The smallest Nucleus is the identity Nucleus.
--/
+/-- The smallest Nucleus is the identity Nucleus. -/
 instance bot : Bot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
