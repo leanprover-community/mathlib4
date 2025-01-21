@@ -135,14 +135,14 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
     · rw [h']
       simp
     · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
-      rw [update_noteq h', update_noteq this, cons_succ]
+      rw [update_of_ne h', update_of_ne this, cons_succ]
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
   ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
 
 @[simp]
-theorem cons_eq_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
+theorem cons_inj {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x = cons y₀ y ↔ x₀ = y₀ ∧ x = y :=
   cons_injective2.eq_iff
 
@@ -159,7 +159,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · simp only [h, update_noteq, Ne, not_false_iff]
+  · simp only [h, update_of_ne, Ne, not_false_iff]
     let j' := pred j h
     have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, cons_succ]
@@ -395,7 +395,7 @@ theorem cons_eq_append (x : α) (xs : Fin n → α) :
   subst h; simp
 
 lemma append_rev {m n} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n)) :
-    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (cast (Nat.add_comm ..) i) := by
+    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (i.cast (Nat.add_comm ..)) := by
   rcases rev_surjective i with ⟨i, rfl⟩
   rw [rev_rev]
   induction i using Fin.addCases
@@ -403,7 +403,7 @@ lemma append_rev {m n} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n))
   · simp [cast_rev, rev_addNat]
 
 lemma append_comp_rev {m n} (xs : Fin m → α) (ys : Fin n → α) :
-    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (Nat.add_comm ..) :=
+    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ Fin.cast (Nat.add_comm ..) :=
   funext <| append_rev xs ys
 
 theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
@@ -430,11 +430,11 @@ theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
 
 @[simp]
 theorem repeat_zero (a : Fin n → α) :
-    Fin.repeat 0 a = Fin.elim0 ∘ cast (Nat.zero_mul _) :=
-  funext fun x => (cast (Nat.zero_mul _) x).elim0
+    Fin.repeat 0 a = Fin.elim0 ∘ Fin.cast (Nat.zero_mul _) :=
+  funext fun x => (x.cast (Nat.zero_mul _)).elim0
 
 @[simp]
-theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul _) := by
+theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ Fin.cast (Nat.one_mul _) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -443,7 +443,7 @@ theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul
 
 theorem repeat_succ (a : Fin n → α) (m : ℕ) :
     Fin.repeat m.succ a =
-      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
+      append a (Fin.repeat m a) ∘ Fin.cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -453,7 +453,7 @@ theorem repeat_succ (a : Fin n → α) (m : ℕ) :
 
 @[simp]
 theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
-    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (Nat.add_mul ..) := by
+    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ Fin.cast (Nat.add_mul ..) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -582,9 +582,25 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_noteq, this, snoc]
+    simp [h, update_of_ne, this, snoc]
   · rw [eq_last_of_not_lt h]
     simp
+
+/-- As a binary function, `Fin.snoc` is injective. -/
+theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
+  ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
+
+@[simp]
+theorem snoc_inj {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
+    snoc x xₙ = snoc y yₙ ↔ x = y ∧ xₙ = yₙ :=
+  snoc_injective2.eq_iff
+
+theorem snoc_right_injective (x : ∀ i : Fin n, α i.castSucc) :
+    Function.Injective (snoc x) :=
+  snoc_injective2.right _
+
+theorem snoc_left_injective (xₙ : α (last n)) : Function.Injective (snoc · xₙ) :=
+  snoc_injective2.left _
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
 @[simp]
@@ -791,6 +807,10 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
+/-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
+theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
+  succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
+
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
 
@@ -846,6 +866,24 @@ theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbov
 theorem eq_insertNth_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
     g = insertNth p a f ↔ g p = a ∧ removeNth p g = f := by
   simpa [eq_comm] using insertNth_eq_iff
+
+/-- As a binary function, `Fin.insertNth` is injective. -/
+theorem insertNth_injective2 {p : Fin (n + 1)} :
+    Function.Injective2 (@insertNth n α p) := fun xₚ yₚ x y h ↦
+  ⟨by simpa using congr_fun h p, funext fun i ↦ by simpa using congr_fun h (succAbove p i)⟩
+
+@[simp]
+theorem insertNth_inj {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
+    insertNth p xₚ x = insertNth p yₚ y ↔ xₚ = yₚ ∧ x = y :=
+  insertNth_injective2.eq_iff
+
+theorem insertNth_left_injective {p : Fin (n + 1)} (x : ∀ i, α (succAbove p i)) :
+    Function.Injective (insertNth p · x) :=
+  insertNth_injective2.left _
+
+theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
+    Function.Injective (insertNth p x) :=
+  insertNth_injective2.right _
 
 /- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/

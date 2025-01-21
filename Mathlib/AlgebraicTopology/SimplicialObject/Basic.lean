@@ -33,7 +33,6 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
 def SimplicialObject :=
@@ -206,7 +205,6 @@ variable (C)
 def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Truncated simplicial objects. -/
 def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
@@ -360,7 +358,6 @@ variable (C)
 abbrev const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category of augmented simplicial objects, defined as a comma category. -/
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
@@ -472,7 +469,6 @@ theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X�
 
 end SimplicialObject
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Cosimplicial objects. -/
 def CosimplicialObject :=
   SimplexCategory ⥤ C
@@ -640,7 +636,6 @@ variable (C)
 def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
@@ -694,7 +689,6 @@ variable (C)
 abbrev const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Augmented cosimplicial objects. -/
 def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
@@ -834,7 +828,7 @@ object and back is isomorphic to the given object. -/
 @[simps!]
 def SimplicialObject.Augmented.rightOpLeftOpIso (X : SimplicialObject.Augmented C) :
     X.rightOp.leftOp ≅ X :=
-  Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by aesop_cat)
+  Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by simp)
 
 /-- Converting an augmented cosimplicial object to an augmented simplicial
 object and back is isomorphic to the given object. -/

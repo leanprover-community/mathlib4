@@ -51,7 +51,6 @@ variable {L : GrothendieckTopology A}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 
@@ -72,7 +71,6 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functorPushforward` used.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   compatible :
     ∀ (ℱ : Sheaf K (Type w)) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}

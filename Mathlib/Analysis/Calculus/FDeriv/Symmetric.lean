@@ -485,6 +485,20 @@ lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
 
+lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+  simp only [minSmoothness]
+  split_ifs <;> simp
+
+lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
+  intro m n hmn
+  simp only [minSmoothness]
+  split_ifs <;> simp [hmn]
+
+@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+    minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
+  simp only [minSmoothness]
+  split_ifs with h <;> simp [h]
+
 /-- If `minSmoothness 𝕜 m ≤ n` for some (finite) integer `m`, then one can
 find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`, just take `m`, and otherwise
 just take `ω`. The interest of this technical lemma is that, if a function is `C^{n'}` at a point

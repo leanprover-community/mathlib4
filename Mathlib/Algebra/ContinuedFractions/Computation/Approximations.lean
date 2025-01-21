@@ -5,7 +5,6 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
