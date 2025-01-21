@@ -95,7 +95,7 @@ theorem integrableOn_zero : IntegrableOn (fun _ => (0 : E)) s μ :=
 
 @[simp]
 theorem integrableOn_const {C : E} : IntegrableOn (fun _ => C) s μ ↔ C = 0 ∨ μ s < ∞ :=
-  integrable_const_iff.trans <| by rw [Measure.restrict_apply_univ]
+  integrable_const_iff.trans <| by rw [isFiniteMeasure_restrict, lt_top_iff_ne_top]
 
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
@@ -166,8 +166,8 @@ theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
-  rw [IntegrableOn, integrable_congr this, integrable_const_iff]
-  simp
+  rw [IntegrableOn, integrable_congr this, integrable_const_iff, isFiniteMeasure_restrict,
+    lt_top_iff_ne_top]
 
 @[simp]
 theorem integrableOn_finite_biUnion {s : Set β} (hs : s.Finite) {t : β → Set α} :
