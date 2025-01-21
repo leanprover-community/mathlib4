@@ -3,15 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Order.T5
 import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.Order.T5
 
 /-!
 # Topology on extended non-negative reals
