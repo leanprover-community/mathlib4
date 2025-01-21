@@ -210,7 +210,9 @@ instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
   -- ```
   -- from the fact that finite limits commute with filtered colimits and from the fact that
   -- `Ind.yoneda` preserves finite colimits.
-  apply hasColimitOfIso iso.symm
+  exact hasColimitOfIso iso.symm
+
+#print x
 
 instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
