@@ -340,8 +340,14 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
 
+@[deprecated (since := "2025-01-21")]
+alias Martingale.eq_condexp_of_tendsto_eLpNorm := Martingale.eq_condExp_of_tendsto_eLpNorm
+
 @[deprecated (since := "2024-07-27")]
 alias Martingale.eq_condExp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_eLpNorm
+
+@[deprecated (since := "2025-01-21")]
+alias Martingale.eq_condexp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_snorm
 
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
 adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
@@ -351,6 +357,9 @@ theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
   let ⟨_, hR⟩ := hbdd.2.2
   hf.eq_condExp_of_tendsto_eLpNorm ((memℒp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
+
+@[deprecated (since := "2025-01-21")]
+alias Martingale.ae_eq_condexp_limitProcess := Martingale.ae_eq_condExp_limitProcess
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
@@ -406,6 +415,9 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 
+@[deprecated (since := "2025-01-21")]
+alias Integrable.tendsto_ae_condexp := Integrable.tendsto_ae_condExp
+
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
@@ -422,8 +434,14 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
       (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
       (hg.tendsto_ae_condExp hgmeas))
 
+@[deprecated (since := "2025-01-21")]
+alias Integrable.tendsto_eLpNorm_condexp := Integrable.tendsto_eLpNorm_condExp
+
 @[deprecated (since := "2024-07-27")]
 alias Integrable.tendsto_snorm_condExp := Integrable.tendsto_eLpNorm_condExp
+
+@[deprecated (since := "2025-01-21")]
+alias Integrable.tendsto_snorm_condexp := Integrable.tendsto_snorm_condExp
 
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
@@ -437,6 +455,8 @@ theorem tendsto_ae_condExp (g : Ω → ℝ) :
   filter_upwards [heq, ht] with x hxeq hxt
   exact hxt.congr hxeq
 
+@[deprecated (since := "2025-01-21")] alias tendsto_ae_condexp := tendsto_ae_condExp
+
 /-- **Lévy's upward theorem**, L¹ version: given a function `g` and a filtration `ℱ`, the
 sequence defined by `𝔼[g | ℱ n]` converges in L¹ to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
@@ -449,8 +469,12 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
 
+@[deprecated (since := "2025-01-21")] alias tendsto_eLpNorm_condexp := tendsto_eLpNorm_condExp
+
 @[deprecated (since := "2024-07-27")]
 alias tendsto_snorm_condExp := tendsto_eLpNorm_condExp
+
+@[deprecated (since := "2025-01-21")] alias tendsto_snorm_condexp := tendsto_snorm_condExp
 
 end L1Convergence
 

@@ -217,6 +217,10 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
+@[deprecated (since := "2025-01-21")]
+alias Integrable.uniformIntegrable_condexp_filtration :=
+  Integrable.uniformIntegrable_condExp_filtration
+
 section OfSet
 
 variable [Preorder ι]

@@ -301,6 +301,8 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact StronglyMeasurable.aeStronglyMeasurable'
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
 
+@[deprecated (since := "2025-01-21")] alias condexp_densityProcess := condExp_densityProcess
+
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Martingale (fun n x ↦ densityProcess κ ν n a x s) (countableFiltration γ) (ν a) :=

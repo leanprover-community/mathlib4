@@ -94,13 +94,19 @@ noncomputable irreducible_def condExp (m : MeasurableSpace α) {m0 : MeasurableS
     else 0
   else 0
 
+@[deprecated (since := "2025-01-21")] alias condexp := condExp
+
 -- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
 scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m0) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
+@[deprecated (since := "2025-01-21")] alias condexp_of_not_le := condExp_of_not_le
+
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m0) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
     μ[f|m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
+
+@[deprecated (since := "2025-01-21")] alias condexp_of_not_sigmaFinite := condExp_of_not_sigmaFinite
 
 theorem condExp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     μ[f|m] =
@@ -114,13 +120,20 @@ theorem condExp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)]
   · rw [dif_pos hf, if_pos hf]
   · rw [dif_neg hf, if_neg hf]
 
+@[deprecated (since := "2025-01-21")] alias condexp_of_sigmaFinite := condExp_of_sigmaFinite
+
 theorem condExp_of_stronglyMeasurable (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] {f : α → F'}
     (hf : StronglyMeasurable[m] f) (hfi : Integrable f μ) : μ[f|m] = f := by
   rw [condExp_of_sigmaFinite hm, if_pos hfi, if_pos hf]
 
+@[deprecated (since := "2025-01-21")]
+alias condexp_of_stronglyMeasurable := condExp_of_stronglyMeasurable
+
 theorem condExp_const (hm : m ≤ m0) (c : F') [IsFiniteMeasure μ] :
     μ[fun _ : α => c|m] = fun _ => c :=
   condExp_of_stronglyMeasurable hm (@stronglyMeasurable_const _ _ m _ _) (integrable_const c)
+
+@[deprecated (since := "2025-01-21")] alias condexp_const := condExp_const
 
 theorem condExp_ae_eq_condExpL1 (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (f : α → F') :
     μ[f|m] =ᵐ[μ] condExpL1 hm μ f := by
@@ -136,10 +149,14 @@ theorem condExp_ae_eq_condExpL1 (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)
   rw [if_neg hfi, condExpL1_undef hfi]
   exact (coeFn_zero _ _ _).symm
 
+@[deprecated (since := "2025-01-21")] alias condexp_ae_eq_condexpL1 := condExp_ae_eq_condExpL1
+
 theorem condExp_ae_eq_condExpL1CLM (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f|m] =ᵐ[μ] condExpL1CLM F' hm μ (hf.toL1 f) := by
   refine (condExp_ae_eq_condExpL1 hm f).trans (Eventually.of_forall fun x => ?_)
   rw [condExpL1_eq hf]
+
+@[deprecated (since := "2025-01-21")] alias condexp_ae_eq_condexpL1CLM := condExp_ae_eq_condExpL1CLM
 
 theorem condExp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
   by_cases hm : m ≤ m0
@@ -148,6 +165,8 @@ theorem condExp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   haveI : SigmaFinite (μ.trim hm) := hμm
   rw [condExp_of_sigmaFinite, if_neg hf]
+
+@[deprecated (since := "2025-01-21")] alias condexp_undef := condExp_undef
 
 @[simp]
 theorem condExp_zero : μ[(0 : α → F')|m] = 0 := by
@@ -158,6 +177,8 @@ theorem condExp_zero : μ[(0 : α → F')|m] = 0 := by
   haveI : SigmaFinite (μ.trim hm) := hμm
   exact
     condExp_of_stronglyMeasurable hm (@stronglyMeasurable_zero _ _ m _ _) (integrable_zero _ _ _)
+
+@[deprecated (since := "2025-01-21")] alias condexp_zero := condExp_zero
 
 theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f|m]) := by
   by_cases hm : m ≤ m0
@@ -171,6 +192,8 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f|m]) := by
   · exact AEStronglyMeasurable'.stronglyMeasurable_mk _
   · exact stronglyMeasurable_zero
 
+@[deprecated (since := "2025-01-21")] alias stronglyMeasurable_condexp := stronglyMeasurable_condExp
+
 theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
   by_cases hm : m ≤ m0
   swap; · simp_rw [condExp_of_not_le hm]; rfl
@@ -181,11 +204,16 @@ theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
     (Filter.EventuallyEq.trans (by rw [condExpL1_congr_ae hm h])
       (condExp_ae_eq_condExpL1 hm g).symm)
 
+@[deprecated (since := "2025-01-21")] alias condexp_congr_ae := condExp_congr_ae
+
 theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] {f : α → F'}
     (hf : AEStronglyMeasurable' m f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
   refine ((condExp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
   rw [condExp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
+
+@[deprecated (since := "2025-01-21")]
+alias condexp_of_aestronglyMeasurable' := condExp_of_aestronglyMeasurable'
 
 theorem integrable_condExp : Integrable (μ[f|m]) μ := by
   by_cases hm : m ≤ m0
@@ -195,12 +223,16 @@ theorem integrable_condExp : Integrable (μ[f|m]) μ := by
   haveI : SigmaFinite (μ.trim hm) := hμm
   exact (integrable_condExpL1 f).congr (condExp_ae_eq_condExpL1 hm f).symm
 
+@[deprecated (since := "2025-01-21")] alias integrable_condexp := integrable_condExp
+
 /-- The integral of the conditional expectation `μ[f|hm]` over an `m`-measurable set is equal to
 the integral of `f` on that set. -/
 theorem setIntegral_condExp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ)
     (hs : MeasurableSet[m] s) : ∫ x in s, (μ[f|m]) x ∂μ = ∫ x in s, f x ∂μ := by
   rw [setIntegral_congr_ae (hm s hs) ((condExp_ae_eq_condExpL1 hm f).mono fun x hx _ => hx)]
   exact setIntegral_condExpL1 hf hs
+
+@[deprecated (since := "2025-01-21")] alias setIntegral_condexp := setIntegral_condExp
 
 @[deprecated (since := "2024-04-17")] alias set_integral_condExp := setIntegral_condExp
 
@@ -212,11 +244,15 @@ theorem integral_condExp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     exact setIntegral_condExp hm hf (@MeasurableSet.univ _ m)
   simp only [condExp_undef hf, Pi.zero_apply, integral_zero, integral_undef hf]
 
+@[deprecated (since := "2025-01-21")] alias integral_condexp := integral_condExp
+
 /-- Total probability law using `condExp` as conditional probability. -/
 theorem integral_condExp_indicator [mF : MeasurableSpace F] {Y : α → F} (hY : Measurable Y)
     [SigmaFinite (μ.trim hY.comap_le)] {A : Set α} (hA : MeasurableSet A) :
     ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ)) | mF.comap Y]) x ∂μ = (μ A).toReal := by
   rw [integral_condExp, integral_indicator hA, setIntegral_const, smul_eq_mul, mul_one]
+
+@[deprecated (since := "2025-01-21")] alias integral_condexp_indicator := integral_condExp_indicator
 
 /-- **Uniqueness of the conditional expectation**
 If a function is a.e. `m`-measurable, verifies an integrability condition and has same integral
@@ -231,8 +267,14 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m0) [SigmaFinite (μ.
     (StronglyMeasurable.aeStronglyMeasurable' stronglyMeasurable_condExp)
   rw [hg_eq s hs hμs, setIntegral_condExp hm hf hs]
 
+@[deprecated (since := "2025-01-21")]
+alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setIntegral_eq
+
 @[deprecated (since := "2024-04-17")]
 alias ae_eq_condExp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_setIntegral_eq
+
+@[deprecated (since := "2025-01-21")]
+alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_set_integral_eq
 
 theorem condExp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
@@ -252,14 +294,20 @@ theorem condExp_bot' [hμ : NeZero μ] (f : α → F') :
   rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 
+@[deprecated (since := "2025-01-21")] alias condexp_bot' := condExp_bot'
+
 theorem condExp_bot_ae_eq (f : α → F') :
     μ[f|⊥] =ᵐ[μ] fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · rw [ae_zero]; exact eventually_bot
   · exact Eventually.of_forall <| congr_fun (condExp_bot' f)
 
+@[deprecated (since := "2025-01-21")] alias condexp_bot_ae_eq := condExp_bot_ae_eq
+
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.one_toReal, inv_one, one_smul]
+
+@[deprecated (since := "2025-01-21")] alias condexp_bot := condExp_bot
 
 theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
@@ -273,6 +321,8 @@ theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) :
   exact (coeFn_add _ _).trans
     ((condExp_ae_eq_condExpL1 hm _).symm.add (condExp_ae_eq_condExpL1 hm _).symm)
 
+@[deprecated (since := "2025-01-21")] alias condexp_add := condExp_add
+
 theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
   induction' s using Finset.induction_on with i s his heq hf
@@ -281,6 +331,8 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
     exact (condExp_add (hf i <| Finset.mem_insert_self i s) <|
       integrable_finset_sum' _ fun j hmem => hf j <| Finset.mem_insert_of_mem hmem).trans
         ((EventuallyEq.refl _ _).add (heq fun j hmem => hf j <| Finset.mem_insert_of_mem hmem))
+
+@[deprecated (since := "2025-01-21")] alias condexp_finset_sum := condExp_finset_sum
 
 theorem condExp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • μ[f|m] := by
   by_cases hm : m ≤ m0
@@ -294,6 +346,8 @@ theorem condExp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • �
   refine (coeFn_smul c (condExpL1 hm μ f)).mono fun x hx1 hx2 => ?_
   simp only [hx1, hx2, Pi.smul_apply]
 
+@[deprecated (since := "2025-01-21")] alias condexp_smul := condExp_smul
+
 theorem condExp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
   letI : Module ℝ (α → F') := @Pi.module α (fun _ => F') ℝ _ _ fun _ => inferInstance
   calc
@@ -301,10 +355,14 @@ theorem condExp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
     _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := condExp_smul (-1) f
     _ = -μ[f|m] := neg_one_smul ℝ (μ[f|m])
 
+@[deprecated (since := "2025-01-21")] alias condexp_neg := condExp_neg
+
 theorem condExp_sub (hf : Integrable f μ) (hg : Integrable g μ) :
     μ[f - g|m] =ᵐ[μ] μ[f|m] - μ[g|m] := by
   simp_rw [sub_eq_add_neg]
   exact (condExp_add hf hg.neg).trans (EventuallyEq.rfl.add (condExp_neg g))
+
+@[deprecated (since := "2025-01-21")] alias condexp_sub := condExp_sub
 
 theorem condExp_condExp_of_le {m₁ m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm₁₂ : m₁ ≤ m₂)
     (hm₂ : m₂ ≤ m0) [SigmaFinite (μ.trim hm₂)] : μ[μ[f|m₂]|m₁] =ᵐ[μ] μ[f|m₁] := by
@@ -322,6 +380,8 @@ theorem condExp_condExp_of_le {m₁ m₂ m0 : MeasurableSpace α} {μ : Measure 
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
+@[deprecated (since := "2025-01-21")] alias condexp_condexp_of_le := condExp_condExp_of_le
+
 theorem condExp_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by
@@ -333,6 +393,8 @@ theorem condExp_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [Normed
   exact (condExp_ae_eq_condExpL1 hm _).trans_le
     ((condExpL1_mono hf hg hfg).trans_eq (condExp_ae_eq_condExpL1 hm _).symm)
 
+@[deprecated (since := "2025-01-21")] alias condexp_mono := condExp_mono
+
 theorem condExp_nonneg {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f : α → E} (hf : 0 ≤ᵐ[μ] f) : 0 ≤ᵐ[μ] μ[f|m] := by
   by_cases hfint : Integrable f μ
@@ -340,12 +402,16 @@ theorem condExp_nonneg {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [Norm
     exact condExp_mono (integrable_zero _ _ _) hfint hf
   · rw [condExp_undef hfint]
 
+@[deprecated (since := "2025-01-21")] alias condexp_nonneg := condExp_nonneg
+
 theorem condExp_nonpos {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f : α → E} (hf : f ≤ᵐ[μ] 0) : μ[f|m] ≤ᵐ[μ] 0 := by
   by_cases hfint : Integrable f μ
   · rw [(condExp_zero.symm : (0 : α → E) = μ[0|m])]
     exact condExp_mono hfint (integrable_zero _ _ _) hf
   · rw [condExp_undef hfint]
+
+@[deprecated (since := "2025-01-21")] alias condexp_nonpos := condExp_nonpos
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -357,6 +423,9 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m0) [SigmaFinite 
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
+
+@[deprecated (since := "2025-01-21")]
+alias tendsto_condexpL1_of_dominated_convergence := tendsto_condExpL1_of_dominated_convergence
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are
@@ -386,5 +455,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → F') (f g : α → F')
     tendsto_condExpL1_of_dominated_convergence hm _ (fun n => (hgs_int n).1) h_int_bound_gs
       hgs_bound hgs
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
+
+@[deprecated (since := "2025-01-21")] alias tendsto_condexp_unique := tendsto_condExp_unique
 
 end MeasureTheory
