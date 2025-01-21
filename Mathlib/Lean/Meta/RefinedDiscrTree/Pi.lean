@@ -3,7 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Init
+import Mathlib.Algebra.Group.Operations
 import Lean.Meta.WHNF
 
 /-!
@@ -182,8 +182,8 @@ private def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) 
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 5 then return none else
   let rec instH := match n with
-    | `HVAdd.hVAdd => `instHVAdd
-    | `HSMul.hSMul => `instHSMul
+    | ``HVAdd.hVAdd => ``instHVAdd
+    | ``HSMul.hSMul => ``instHSMul
     | _ => unreachable!
   let some (α, type, inst) := args[3].app3? instH | return none
   etaExpand args type lambdas 6 fun args lambdas _ => do
@@ -254,9 +254,9 @@ def reducePi (e : Expr) (lambdas : List FVarId) :
   if let .const n _ := e.getAppFn then
     match n with
     | ``Neg.neg
-    |  `Inv.inv     => Option.map (n, ·) <$> reduceUnOp   n e.getAppArgs lambdas
-    |  `HVAdd.hVAdd
-    |  `HSMul.hSMul => Option.map (n, ·) <$> reduceHActOp n e.getAppArgs lambdas
+    | ``Inv.inv     => Option.map (n, ·) <$> reduceUnOp   n e.getAppArgs lambdas
+    | ``HVAdd.hVAdd
+    | ``HSMul.hSMul => Option.map (n, ·) <$> reduceHActOp n e.getAppArgs lambdas
     | ``HPow.hPow   => Option.map (n, ·) <$> reduceHPow     e.getAppArgs lambdas
     | ``HAdd.hAdd
     | ``HMul.hMul
