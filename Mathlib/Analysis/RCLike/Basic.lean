@@ -1154,11 +1154,14 @@ end
 open Bornology Metric Set
 open scoped Topology
 
-variable {G : Type*} [SeminormedAddCommGroup G] [TopologicalAddGroup G] {s : Set G}
+variable {G H : Type*} [SeminormedAddCommGroup G] [SeminormedAddCommGroup H] [NormedSpace K H]
+  {s : Set G}
 
-/-- A group hom from a normed group to `ℝ` or `ℂ`, bounded on a neighborhood of `0`, must be
-continuous. -/
-lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ K) (hs : s ∈ 𝓝 (0 : G))
+variable (K) in
+include K in
+/-- A group homomorphism from a normed group to a `ℝ`- or `ℂ`-normed space,
+bounded on a neighborhood of `0`, must be continuous. -/
+lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))
     (hbounded : IsBounded (f '' s)) : Continuous f := by
   obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
   obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
@@ -1169,13 +1172,17 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ K) (hs : s ∈ 
   have hC₀ : 0 < C := (norm_nonneg _).trans_lt <| hC 0 (by simpa)
   obtain ⟨n, hn⟩ := exists_nat_gt (C / ε)
   have hnpos : 0 < (n : ℝ) := (div_pos hC₀ hε).trans hn
+  have hn₀ : n ≠ 0 := by rintro rfl; simp at hnpos
   refine ⟨δ / n, div_pos hδ hnpos, fun {x} hxδ => ?_⟩
-  have h2 : f (n • x) = n • f x := map_nsmul f _ _
-  have hn' : (n : K) ≠ 0 := Nat.cast_ne_zero.2 (by rintro rfl; simp at hnpos)
-  simp_rw [nsmul_eq_mul, mul_comm (n : K), ← div_eq_iff hn'] at h2
-  replace hxδ : ‖n • x‖ < δ := by
-    refine norm_nsmul_le.trans_lt ?_
-    simpa only [norm_mul, Real.norm_natCast, lt_div_iff₀ hnpos, mul_comm] using hxδ
-  rw [← h2, norm_div, RCLike.norm_natCast, div_lt_iff₀' hnpos]
-  rw [div_lt_iff₀ hε] at hn
-  exact (hC _ hxδ).trans hn
+  calc
+    ‖f x‖
+    _ = ‖(n : K)⁻¹ • f (n • x)‖ := by simp [← Nat.cast_smul_eq_nsmul K, hn₀]
+    _ ≤ ‖(n : K)⁻¹‖ * ‖f (n • x)‖ := norm_smul_le ..
+    _ < ‖(n : K)⁻¹‖ * C := by
+      gcongr
+      · simpa [pos_iff_ne_zero]
+      · refine hC _ <| norm_nsmul_le.trans_lt ?_
+        simpa only [norm_mul, Real.norm_natCast, lt_div_iff₀ hnpos, mul_comm] using hxδ
+    _ = (n : ℝ)⁻¹ * C := by simp
+    _ < (C / ε : ℝ)⁻¹ * C := by gcongr
+    _ = ε := by simp [hC₀.ne']
