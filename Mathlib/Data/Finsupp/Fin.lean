@@ -56,14 +56,17 @@ def insertNth (p : Fin (n + 1)) (y : M) (s : Fin n →₀ M) : Fin (n + 1) →�
 variable (p : Fin (n + 1)) (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M) (i : Fin n)
 
 -- TODO: move these old theorems to the appropriate new sections
-@[simp]
-theorem tail_apply : tail t i = t i.succ := rfl
+theorem tail_apply : tail t i = t i.succ :=
+  rfl
 
 @[simp]
-theorem cons_zero : cons y s 0 = y := rfl
+theorem cons_zero : cons y s 0 = y :=
+  rfl
 
 @[simp]
-theorem cons_succ : cons y s i.succ = s i := rfl
+theorem cons_succ : cons y s i.succ = s i :=
+  -- Porting note: was Fin.cons_succ _ _ _
+  rfl
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
@@ -183,7 +186,7 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.cons_zero_zero]
 
-theorem cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
+lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
   intro i hi
   suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
