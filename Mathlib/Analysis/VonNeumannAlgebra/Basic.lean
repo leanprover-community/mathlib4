@@ -95,7 +95,6 @@ instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) w
 theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
     x ∈ S.toStarSubalgebra ↔ x ∈ (S : Set (H →L[ℂ] H)) :=
   Iff.rfl
--- Porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
 @[simp]
 theorem coe_toStarSubalgebra (S : VonNeumannAlgebra H) :

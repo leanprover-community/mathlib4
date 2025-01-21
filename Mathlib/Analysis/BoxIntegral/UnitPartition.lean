@@ -17,7 +17,7 @@ vectors `ν : ι → ℤ`.
 
 Let `B` be a `BoxIntegral`. A `unitPartition.box` is admissible for `B` (more precisely its index is
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.box` for
-`B` and thus we can form the corresponing tagged prepartition, see
+`B` and thus we can form the corresponding tagged prepartition, see
 `BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.box` comes with its
 tag situated at its "upper most" vertex). If `B` satisfies `hasIntegralVertices`, that
 is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.

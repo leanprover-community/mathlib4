@@ -159,15 +159,7 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
           MonoidHom.map_one, MonoidHom.map_one])
   have key := card_complex_roots_eq_card_real_add_card_not_gal_inv p
   simp_rw [Set.toFinset_card] at key
-  rw [key, add_le_add_iff_left] at p_roots1 p_roots2
-  rw [key, add_right_inj]
-  suffices ∀ m : ℕ, 2 ∣ m → 1 ≤ m → m ≤ 3 → m = 2 by exact this n hn p_roots1 p_roots2
-  rintro m ⟨k, rfl⟩ h2 h3
-  exact le_antisymm
-      (Nat.lt_succ_iff.mp
-        (lt_of_le_of_ne h3 (show 2 * k ≠ 2 * 1 + 1 from Nat.two_mul_ne_two_mul_add_one)))
-      (Nat.succ_le_iff.mpr
-        (lt_of_le_of_ne h2 (show 2 * 0 + 1 ≠ 2 * k from Nat.two_mul_ne_two_mul_add_one.symm)))
+  omega
 
 end Rationals
 
@@ -216,6 +208,3 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
 /-- An irreducible real polynomial has natural degree at most two. -/
 lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
   natDegree_le_iff_degree_le.2 hp.degree_le_two
-
-@[deprecated (since := "2024-02-18")]
-alias Irreducible.nat_degree_le_two := Irreducible.natDegree_le_two

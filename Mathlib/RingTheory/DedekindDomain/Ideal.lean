@@ -5,7 +5,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.MaximalSpectrum
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal.Operations
@@ -255,7 +255,10 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractionRing A K] (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by
   set I := adjoinIntegral A⁰ x hx
-  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp [I]
+  have mul_self : IsIdempotentElem I := by
+    apply coeToSubmodule_injective
+    simp only [coe_mul, adjoinIntegral_coe, I]
+    rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
   convert congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
@@ -633,8 +636,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
             mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 
-instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
-  normalizationMonoidOfUniqueUnits
+instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := .ofUniqueUnits
 
 @[simp]
 theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} ↔ x ∈ I :=
@@ -948,7 +950,6 @@ variable [IsDedekindDomain R]
 
 /-- The height one prime spectrum of a Dedekind domain `R` is the type of nonzero prime ideals of
 `R`. Note that this equals the maximal spectrum if `R` has Krull dimension 1. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `has_nonempty_instance`, linter doesn't exist yet
 @[ext, nolint unusedArguments]
 structure HeightOneSpectrum where
   asIdeal : Ideal R
@@ -975,7 +976,7 @@ theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
 def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpectrum R where
   toFun v := ⟨v.asIdeal, v.isPrime.isMaximal v.ne_bot⟩
   invFun v :=
-    ⟨v.asIdeal, v.IsMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.IsMaximal hR⟩
+    ⟨v.asIdeal, v.isMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.isMaximal hR⟩
   left_inv := fun ⟨_, _, _⟩ => rfl
   right_inv := fun ⟨_, _⟩ => rfl
 
@@ -1253,8 +1254,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
         (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
           (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
 
-open scoped Classical
-
+open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
@@ -1449,3 +1449,45 @@ theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
 end NormalizationMonoid
 
 end PID
+
+section primesOverFinset
+
+open UniqueFactorizationMonoid Ideal
+
+open scoped Classical in
+/-- The finite set of all prime factors of the pushforward of `p`. -/
+noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B : Type*)
+    [CommRing B] [IsDedekindDomain B] [Algebra A B] : Finset (Ideal B) :=
+  (factors (p.map (algebraMap A B))).toFinset
+
+variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+
+include hpb in
+theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
+  classical
+  ext P
+  rw [primesOverFinset, factors_eq_normalizedFactors, Finset.mem_coe, Multiset.mem_toFinset]
+  exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
+    (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
+    (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+
+variable (p) [Algebra.IsIntegral A B]
+
+theorem primesOver_finite : (primesOver p B).Finite := by
+  by_cases hpb : p = ⊥
+  · rw [hpb] at hpm ⊢
+    haveI : IsDomain A := IsDomain.of_bot_isPrime A
+    rw [primesOver_bot A B]
+    exact Set.finite_singleton ⊥
+  · rw [← coe_primesOverFinset hpb B]
+    exact (primesOverFinset p B).finite_toSet
+
+theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
+  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
+
+theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
+  Nat.one_le_iff_ne_zero.mpr (primesOver_ncard_ne_zero p B)
+
+end primesOverFinset

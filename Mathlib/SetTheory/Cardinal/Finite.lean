@@ -21,6 +21,8 @@ import Mathlib.SetTheory.Cardinal.ENat
   (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
+assert_not_exists Field
+
 open Cardinal Function
 
 noncomputable section

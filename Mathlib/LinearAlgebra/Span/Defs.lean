@@ -135,15 +135,16 @@ alias span_induction' := span_induction
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
-theorem span_induction₂ {p : (x y : M) → x ∈ span R s → y ∈ span R s → Prop}
-    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_span hx) (subset_span hy))
+theorem span_induction₂ {N : Type*} [AddCommMonoid N] [Module R N] {t : Set N}
+    {p : (x : M) → (y : N) → x ∈ span R s → y ∈ span R t → Prop}
+    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ t), p x y (subset_span hx) (subset_span hy))
     (zero_left : ∀ y hy, p 0 y (zero_mem _) hy) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
     (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
     (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
     (smul_left : ∀ (r : R) x y hx hy, p x y hx hy → p (r • x) y (smul_mem _ r hx) hy)
     (smul_right : ∀ (r : R) x y hx hy, p x y hx hy → p x (r • y) hx (smul_mem _ r hy))
-    {a b : M} (ha : a ∈ Submodule.span R s)
-    (hb : b ∈ Submodule.span R s) : p a b ha hb := by
+    {a : M} {b : N} (ha : a ∈ Submodule.span R s)
+    (hb : b ∈ Submodule.span R t) : p a b ha hb := by
   induction hb using span_induction with
   | mem z hz => induction ha using span_induction with
     | mem _ h => exact mem_mem _ _ h hz
@@ -358,12 +359,6 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
   rw [mem_toAddSubmonoid, mem_sup, AddSubmonoid.mem_sup]
   rfl
 
-theorem sup_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    (p p' : Submodule R M) : (p ⊔ p').toAddSubgroup = p.toAddSubgroup ⊔ p'.toAddSubgroup := by
-  ext x
-  rw [mem_toAddSubgroup, mem_sup, AddSubgroup.mem_sup]
-  rfl
-
 end
 
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
@@ -521,7 +516,13 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M] {ι : Type*} [DecidableEq ι] {i j : ι}
+
+lemma sup_toAddSubgroup (p p' : Submodule R M) :
+    (p ⊔ p').toAddSubgroup = p.toAddSubgroup ⊔ p'.toAddSubgroup := by
+  ext x
+  rw [mem_toAddSubgroup, mem_sup, AddSubgroup.mem_sup]
+  rfl
 
 theorem mem_span_insert' {x y} {s : Set M} :
     x ∈ span R (insert y s) ↔ ∃ a : R, x + a • y ∈ span R s := by
@@ -530,6 +531,22 @@ theorem mem_span_insert' {x y} {s : Set M} :
     exact ⟨-a, by simp [hz, add_assoc]⟩
   · rintro ⟨a, h⟩
     exact ⟨-a, _, h, by simp [add_comm, add_left_comm]⟩
+
+lemma span_range_update_add_smul (hij : i ≠ j) (v : ι → M) (r : R) :
+    span R (Set.range (Function.update v j (v j + r • v i))) = span R (Set.range v) := by
+  refine le_antisymm ?_ ?_ <;> simp only [span_le, Set.range_subset_iff, SetLike.mem_coe] <;>
+    intro k <;> obtain rfl | hjk := eq_or_ne j k
+  · rw [update_self]
+    exact add_mem (subset_span ⟨j, rfl⟩) <| smul_mem _ _ <| subset_span ⟨i, rfl⟩
+  · exact subset_span ⟨k, (update_of_ne hjk.symm ..).symm⟩
+  · nth_rw 2 [← add_sub_cancel_right (v j) (r • v i)]
+    exact sub_mem (subset_span ⟨j, update_self ..⟩)
+      (smul_mem _ _ (subset_span ⟨i, update_of_ne hij ..⟩))
+  · exact subset_span ⟨k, update_of_ne hjk.symm ..⟩
+
+lemma span_range_update_sub_smul (hij : i ≠ j) (v : ι → M) (r : R) :
+    span R (Set.range (Function.update v j (v j - r • v i))) = span R (Set.range v) := by
+  rw [sub_eq_add_neg, ← neg_smul, span_range_update_add_smul hij]
 
 end AddCommGroup
 

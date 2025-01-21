@@ -174,7 +174,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
 structure presheaf. -/
-@[simps]
+@[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
   obj U := CommRingCat.of ((structureSheafInType 𝒜).1.obj U)
   map i := CommRingCat.ofHom
@@ -183,10 +183,6 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
       map_add' := fun _ _ => rfl
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF]
-  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_hom_apply
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
@@ -243,7 +239,7 @@ evaluates the section on the point corresponding to a given homogeneous prime id
 def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : ProjectiveSpectrum.top 𝒜)
     (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x) :=
   CommRingCat.ofHom
-  { toFun s := (s.1 ⟨x, hx⟩ : _)
+  { toFun s := (s.1 ⟨x, hx⟩ :)
     map_one' := rfl
     map_mul' _ _ := rfl
     map_zero' := rfl
@@ -309,7 +305,7 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) 
         ProjectiveSpectrum.basicOpen 𝒜 g.den.1 ⊓ ProjectiveSpectrum.basicOpen 𝒜 c)
       ⟨⟨mem_basicOpen_den _ x f, mem_basicOpen_den _ x g⟩, hc⟩
       (homOfLE inf_le_left ≫ homOfLE inf_le_left) (homOfLE inf_le_left ≫ homOfLE inf_le_right)
-    -- Go from `ConcreteCategory.instFunLike` to `CommRingCat.Hom.hom`
+    -- Go from `HasForget.instFunLike` to `CommRingCat.Hom.hom`
     show (Proj.structureSheaf 𝒜).presheaf.map (homOfLE inf_le_left ≫ homOfLE inf_le_left).op
         (sectionInBasicOpen 𝒜 x f) =
       (Proj.structureSheaf 𝒜).presheaf.map (homOfLE inf_le_left ≫ homOfLE inf_le_right).op

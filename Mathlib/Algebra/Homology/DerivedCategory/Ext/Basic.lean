@@ -40,7 +40,9 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
-universe w' w v u
+assert_not_exists TwoSidedIdeal
+
+universe w'' w' w v u
 
 namespace CategoryTheory
 
@@ -364,6 +366,24 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     rw [← Ext.mk₀_comp_mk₀]
     apply Ext.comp_assoc
     all_goals omega
+
+section ChangeOfUniverse
+
+namespace Ext
+
+variable [HasExt.{w'} C] {X Y : C} {n : ℕ}
+
+/-- Up to an equivalence, the type `Ext.{w} X Y n` does not depend on the universe `w`. -/
+noncomputable def chgUniv : Ext.{w} X Y n ≃ Ext.{w'} X Y n :=
+  SmallShiftedHom.chgUniv.{w', w}
+
+lemma homEquiv_chgUniv [HasDerivedCategory.{w''} C] (e : Ext.{w} X Y n) :
+    homEquiv.{w'', w'} (chgUniv.{w'} e) = homEquiv.{w'', w} e := by
+  apply SmallShiftedHom.equiv_chgUniv
+
+end Ext
+
+end ChangeOfUniverse
 
 end Abelian
 

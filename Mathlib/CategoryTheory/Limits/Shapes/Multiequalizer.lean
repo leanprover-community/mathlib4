@@ -52,15 +52,13 @@ variable {L : Type w} {R : Type w'} {fst snd : R → L}
 instance [Inhabited L] : Inhabited (WalkingMulticospan fst snd) :=
   ⟨left default⟩
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- Morphisms for `WalkingMulticospan`. -/
 inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type max w w'
   | id (A) : Hom A A
   | fst (b) : Hom (left (fst b)) (right b)
   | snd (b) : Hom (left (snd b)) (right b)
-
-/- Porting note: simpNF says the LHS of this internal identifier simplifies
-(which it does, using Hom.id_eq_id) -/
-attribute [-simp, nolint simpNF] WalkingMulticospan.Hom.id.sizeOf_spec
 
 instance {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
@@ -99,15 +97,13 @@ variable {L : Type w} {R : Type w'} {fst snd : L → R}
 instance [Inhabited L] : Inhabited (WalkingMultispan fst snd) :=
   ⟨left default⟩
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- Morphisms for `WalkingMultispan`. -/
 inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type max w w'
   | id (A) : Hom A A
   | fst (a) : Hom (left a) (right (fst a))
   | snd (a) : Hom (left a) (right (snd a))
-
-/- Porting note: simpNF says the LHS of this internal identifier simplifies
-(which it does, using Hom.id_eq_id) -/
-attribute [-simp, nolint simpNF] WalkingMultispan.Hom.id.sizeOf_spec
 
 instance {a : WalkingMultispan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
@@ -139,7 +135,6 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MulticospanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
@@ -151,7 +146,6 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
   snd : ∀ b, left (sndTo b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
@@ -276,14 +270,10 @@ end MultispanIndex
 variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 abbrev Multifork (I : MulticospanIndex.{w, w'} C) :=
   Cone I.multicospan
 
 /-- A multicofork is a cocone over a multispan. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 abbrev Multicofork (I : MultispanIndex.{w, w'} C) :=
   Cocone I.multispan
 
@@ -586,8 +576,8 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
   ι :=
     { app := fun x =>
         match x with
-        | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
-        | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
+        | WalkingMultispan.left a => (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π
+        | WalkingMultispan.right b => (Sigma.ι I.right b :) ≫ c.π
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
@@ -600,17 +590,17 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
 @[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
-      (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π :=
+      (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π :=
   rfl
 
 -- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
 theorem ofSigmaCofork_ι_app_right (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b : _) ≫ c.π :=
+    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
 @[simp]
 theorem ofSigmaCofork_ι_app_right' (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    π (ofSigmaCofork I c) b = (Sigma.ι I.right b : _) ≫ c.π :=
+    π (ofSigmaCofork I c) b = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
 end Multicofork

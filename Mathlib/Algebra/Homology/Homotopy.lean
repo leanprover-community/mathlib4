@@ -112,7 +112,6 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
       not_false_iff, comp_zero, reduceCtorEq]
   · congr <;> simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/

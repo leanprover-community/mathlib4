@@ -26,8 +26,7 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
@@ -88,8 +87,7 @@ private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.fi
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
--- `simpNF` claims that the statement can't simplify itself, but it can (as of 2024-02-14)
-@[simp, nolint simpNF] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+@[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
   ext fun b => by simpa using and_comm
