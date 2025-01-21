@@ -14,8 +14,6 @@ Basic properties the maximal spectrum of a ring.
 
 noncomputable section
 
-open scoped Classical
-
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
 namespace MaximalSpectrum
