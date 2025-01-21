@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 
-
 /-!
 # Angles between vectors
 
@@ -91,6 +90,10 @@ theorem angle_nonneg (x y : V) : 0 ≤ angle x y :=
 /-- The angle between two vectors is at most π. -/
 theorem angle_le_pi (x y : V) : angle x y ≤ π :=
   Real.arccos_le_pi _
+
+/-- The sine of the angle between two vectors is nonnegative. -/
+theorem sin_angle_nonneg : 0 ≤ sin (angle x y) :=
+  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
 
 /-- The angle between a vector and the negation of another vector. -/
 theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
@@ -338,9 +341,6 @@ open Matrix
 for members of `Fin 3 → ℝ` instead of the sup norm-/
 noncomputable def l2Norm (v : EuclideanSpace ℝ (Fin 3)) : ℝ :=
   ‖v‖
-
-theorem sin_angle_nonneg : 0 ≤ sin (angle x y) :=
-  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
 
 /- The norm of the cross product of two real vectors equals the product of their individual norms
   times the sine of the angle between them. -/
