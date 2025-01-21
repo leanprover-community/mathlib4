@@ -16,6 +16,11 @@ This file defines square and even elements in a monoid.
 * `IsSquare a` means that there is some `r` such that `a = r * r`
 * `Even a` means that there is some `r` such that `a = r + r`
 
+## Note
+
+* Many lemmas about `Even` / `IsSquare`, including important `simp` lemmas,
+  are in `Mathlib.Algebra.Ring.Parity`.
+
 ## TODO
 
 * Try to generalize `IsSquare/Even` lemmas further. For example, there are still a few lemmas in
@@ -26,7 +31,8 @@ This file defines square and even elements in a monoid.
 
 ## See also
 
-`Mathlib.Algebra.Ring.Parity` for the definition of odd elements as well as more `simp` lemmas.
+`Mathlib.Algebra.Ring.Parity` for the definition of odd elements as well as facts about
+`Even` / `IsSquare` in rings.
 -/
 
 assert_not_exists MonoidWithZero DenselyOrdered
