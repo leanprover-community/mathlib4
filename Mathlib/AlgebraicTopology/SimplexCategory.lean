@@ -82,7 +82,6 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -747,7 +746,7 @@ end Truncated
 
 section Concrete
 
-instance : ConcreteCategory.{0} SimplexCategory where
+instance : HasForget.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
