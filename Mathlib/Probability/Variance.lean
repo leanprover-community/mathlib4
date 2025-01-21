@@ -56,9 +56,25 @@ to `evariance`. -/
 def variance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
 
+/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
 scoped notation "eVar[" X " ; " μ "]" => ProbabilityTheory.evariance X μ
+
+/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
+measure.
+
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
 scoped notation "eVar[" X "]" => eVar[X ; MeasureTheory.MeasureSpace.volume]
+
+/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+
+It is set to `0` if `X` has infinite variance. -/
 scoped notation "Var[" X " ; " μ "]" => ProbabilityTheory.variance X μ
+
+/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
+
+It is set to `0` if `X` has infinite variance. -/
 scoped notation "Var[" X "]" => Var[X ; MeasureTheory.MeasureSpace.volume]
 
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
