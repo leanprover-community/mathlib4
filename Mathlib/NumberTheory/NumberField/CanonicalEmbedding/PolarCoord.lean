@@ -41,7 +41,7 @@ theorem volume_preserving_mixedSpaceToRealSpace_symm :
 open Classical in
 instance : IsAddHaarMeasure (volume : Measure (realMixedSpace K)) := prod.instIsAddHaarMeasure _ _
 
-@[simps! target]
+@[simps! apply target]
 def polarCoord₀ : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
   ((PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord))
 
@@ -122,6 +122,14 @@ protected theorem polarCoord_source :
   simp_rw [Homeomorph.transPartialHomeomorph_source, polarCoord₀_source, Set.mem_preimage,
     mixedSpaceToRealSpace_apply, Set.mem_prod, Set.mem_univ, true_and, Set.mem_univ_pi,
     polarCoord_source, Set.mem_union, Set.mem_setOf_eq]
+
+protected theorem polarCoord_apply (x) :
+    mixedEmbedding.polarCoord K x =
+      (x.1, fun w ↦ polarCoord ((x.2 w).re, (x.2 w).im)) := by
+  unfold mixedEmbedding.polarCoord
+  simp_rw [Homeomorph.transPartialHomeomorph_apply, Function.comp_apply,
+    mixedSpaceToRealSpace_apply, polarCoord₀_apply]
+  rfl
 
 protected theorem polarCoord_symm_apply (x : realMixedSpace K) :
     (mixedEmbedding.polarCoord K).symm x = (x.1, fun w ↦ Complex.polarCoord.symm (x.2 w)) := rfl
