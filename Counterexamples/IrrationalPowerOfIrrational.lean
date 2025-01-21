@@ -17,7 +17,7 @@ If `c` is irrational, then `c^√2 = 2` is rational, so we are done.
 -/
 
 
-open Classical Real
+open Real
 
 namespace Counterexample
 

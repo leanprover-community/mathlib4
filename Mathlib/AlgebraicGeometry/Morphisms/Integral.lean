@@ -42,7 +42,7 @@ instance hasAffineProperty : HasAffineProperty @IsIntegralHom
     fun X _ f _ ↦ IsAffine X ∧ RingHom.IsIntegral (f.app ⊤).hom := by
   show HasAffineProperty @IsIntegralHom (affineAnd RingHom.IsIntegral)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.isIntegral_respectsIso
-    RingHom.isIntegral_isStableUnderBaseChange.localizationPreserves
+    RingHom.isIntegral_isStableUnderBaseChange.localizationPreserves.away
     RingHom.isIntegral_ofLocalizationSpan]
   simp [isIntegralHom_iff]
 
