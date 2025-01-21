@@ -180,7 +180,7 @@ theorem isPath_append {x y : List (Option α)} :
     intro ⟨_, hx, _⟩
     induction x generalizing s <;> cases hx <;> tauto
 
-theorem εClosure_path {s₁ s₂ : σ} :
+theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
     s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (List.replicate n none) where
   mp h := by
     induction' h with t _ _ _ _ _ ih
@@ -201,10 +201,10 @@ theorem εClosure_path {s₁ s₂ : σ} :
       obtain ⟨_, _, _⟩ := h
       solve_by_elim [εClosure.step]
 
-theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
+theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
     s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' := by
   induction' x using List.reverseRecOn with _ a ih generalizing s₂
-  · rw [evalFrom_nil, εClosure_path]
+  · rw [evalFrom_nil, mem_εClosure_iff_exists_path]
     constructor
     · intro ⟨n, _⟩
       use List.replicate n none
@@ -218,7 +218,7 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
     · intro ⟨_, ht, h⟩
       obtain ⟨x', _, _⟩ := ih.mp ht
       rw [mem_εClosure_iff_exists] at h
-      simp_rw [εClosure_path] at h
+      simp_rw [mem_εClosure_iff_exists_path] at h
       obtain ⟨_, _, ⟨n, _⟩⟩ := h
       use x' ++ some a :: List.replicate n none
       rw [List.reduceOption_append, List.reduceOption_cons_of_some,
@@ -231,7 +231,7 @@ theorem evalFrom_path {s₁ s₂ : σ} {x : List α} :
       obtain ⟨t, _, _ | _⟩ := h
       use t
       rw [mem_εClosure_iff_exists, ih]
-      simp_rw [εClosure_path]
+      simp_rw [mem_εClosure_iff_exists_path]
       tauto
 
 theorem mem_accepts_iff_exists_path {x : List α} :
@@ -241,11 +241,11 @@ theorem mem_accepts_iff_exists_path {x : List α} :
     intro ⟨_, _, h⟩
     rw [eval, mem_evalFrom_iff_exists] at h
     obtain ⟨_, _, h⟩ := h
-    rw [evalFrom_path] at h
+    rw [mem_evalFrom_iff_exists_path] at h
     tauto
   mpr := by
     intro ⟨_, _, _, hs₁, _, h⟩
-    have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.evalFrom_path.mpr ⟨_, h⟩⟩
+    have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.mem_evalFrom_iff_exists_path.mpr ⟨_, h⟩⟩
     tauto
 
 /-! ### Conversions between `εNFA` and `NFA` -/
