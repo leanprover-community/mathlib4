@@ -20,7 +20,6 @@ generate the σ-algebra on the indexed product of `α i`s.
 noncomputable section
 
 open Function Set Filter MeasurableSpace Encodable
-open scoped Classical
 
 variable {ι : Type*} {α : ι → Type*}
 

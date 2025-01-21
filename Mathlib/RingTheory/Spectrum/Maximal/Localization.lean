@@ -15,8 +15,6 @@ Localization results.
 
 noncomputable section
 
-open scoped Classical
-
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
 namespace MaximalSpectrum
