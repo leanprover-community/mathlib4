@@ -17,31 +17,22 @@ open Order
 
 variable {X : Type*} [CompleteLattice X]
 
-/--
-A Nucleus is a function between Frames which corresponds to a sublocle. It is idempotent,
-increasing and preserves infima.
--/
-structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
-  /-- A Nucleus is idempotent.-/
+/-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
+In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
+-- TODO Nucleus extends InfHom
+structure Nucleus (X : Type*) [SemilatticeInf X] where
+  /-- The underlying Function.
+  Do not use this function directly. Instead use the coercion coming from the `FunLike` instance. -/
+  toFun : X → X
+  /-- A `Nucleus` is idempotent.
+  -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
-  /-- A Nucleus is increasing.-/
+  /-- A `Nucleus` is increasing.-/
   increasing' (x : X) : x ≤ toFun x
+  /-- A `Nucleus` preserves infima. -/
+  map_inf' (x y: X) : toFun (x ⊓ y) = toFun x ⊓ toFun y
 
-/--
-A stronger version of Nucleus.idempotent which follows from Nucleus.increasing.
--/
-lemma Nucleus.idempotent {n : Nucleus X} {x : X} : n.toFun (n.toFun x) = n.toFun x := by
-  apply le_antisymm
-  · exact n.idempotent' x
-  · exact n.increasing' (n.toFun x)
-
-instance : FunLike (Nucleus X) X X where
-  coe x := x.toFun
-  coe_injective' f g h := by cases f; cases g; simp_all
-
-/--
-`NucleusClass F X` states that F is a type of Nuclei.
--/
+/-- `NucleusClass F X` states that F is a type of Nuclei. -/
 class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
     Prop where
   /-- A Nucleus is idempotent.-/
@@ -49,12 +40,37 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
   /-- A Nucleus is increasing.-/
   increasing (x : X) (f : F) : x ≤ f x
 
-lemma Nucleus.coe_eq_toFun (n : Nucleus X) {x : X} : n x = n.toFun x := by rfl
+open Nucleus
+
+variable {n : Nucleus X} {x : X}
+
+instance : FunLike (Nucleus X) X X where
+  coe x := x.toFun
+  coe_injective' f g h := by cases f; cases g; simp_all
+
+lemma coe_eq_toFun (n : Nucleus X) : n x = n.toFun x := by rfl
+
+lemma idempotent : n (n x) = n x := by
+  apply le_antisymm
+  · exact n.idempotent' x
+  · exact n.increasing' (n.toFun x)
+
+lemma increasing : x ≤ n x := by
+  apply n.increasing'
+
+lemma
 
 instance : NucleusClass (Nucleus X) X where
   idempotent := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.idempotent' x)
   increasing := (by simp[Nucleus.coe_eq_toFun];exact fun x f ↦ f.increasing' x)
   map_inf := (by simp[Nucleus.coe_eq_toFun])
+
+
+
+
+
+
+
 
 /--
 We can proove that two Nuclei are equal by showing that their functions are the same.
