@@ -5,7 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups
