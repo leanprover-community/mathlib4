@@ -1434,6 +1434,71 @@ theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Fi
     (h : s.Nonempty) : ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
+section Image_Overlap
+
+variable {α β ι : Type*} [DecidableEq ι] [DecidableEq α]
+
+/- There is a more general non-private version `filter_erase_of_pairwise`, where `1` is
+replaced by `c`, but which cannot be labelled `to_additive` -/
+@[to_additive]
+private lemma filter_erase_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : α → β}
+    {n : ι} {I : Finset ι} (hn : n ∈ I)
+    (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = 1) :
+    ∀ j ∈ (filter (fun i => f i = f n) I).erase n, g (f j) = 1 := by
+  intro x hx
+  simp only [mem_erase, ne_eq, mem_filter] at hx
+  exact hf hx.2.1 hn hx.1 hx.2.2
+
+/-- If the images of `f` only overlap where `g (f i) = c` , then `g (f j) = c` whenever
+`g (f j) = g (f n)` for some `n ≠ j`.-/
+lemma filter_erase_of_pairwise {f : ι → α} {g : α → β}
+    {n : ι} {I : Finset ι} (hn : n ∈ I) (c : β)
+    (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = c) :
+    ∀ j ∈ (filter (fun i => f i = f n) I).erase n, g (f j) = c := by
+  intro x hx
+  simp only [mem_erase, ne_eq, mem_filter] at hx
+  exact hf hx.2.1 hn hx.1 hx.2.2
+
+@[to_additive]
+lemma prod_filter_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : α → β}
+    {n : ι} {I : Finset ι} (hn : n ∈ I)
+    (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = 1) :
+    ∏ j ∈ filter (fun j => f j = f n) I, g (f j) = g (f n) := by
+  rw [← mul_one (g (f n)), ← (prod_eq_one (filter_erase_of_pairwiseOne hn hf)),
+    ← (mul_prod_erase (filter (fun j => f j = f n) I) (fun i => g (f i))
+    <| mem_filter.mpr ⟨hn , by rfl⟩)]
+
+/-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do nto assume that `f` is
+injective. Rather, we assume that the image of `f`  on `I` only overlaps where `g (f i) = 1`.
+The conclusion is the same as in `prod_image`.-/
+@[to_additive (attr := simp)
+"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+injective. Rather, we assume that the image of `f`  on `I` only overlaps where `g (f i) = 1`.
+The conclusion is the same as in `prod_image`."]
+lemma prod_image_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : α → β} {I : Finset ι}
+    (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = 1) :
+    ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
+  rw [prod_image']
+  exact fun n hnI => (prod_filter_of_pairwiseOne hnI hf).symm
+
+/-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
+injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 1`. The
+conclusion is the same as in `prod_image`.-/
+@[to_additive (attr := simp)
+"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The
+conclusion is the same as in `prod_image`."
+]
+lemma prod_image_of_disjoint {α β : Type*} [CommMonoid β] [PartialOrder α]
+    [OrderBot α] [DecidableEq α] {f : ι → α} {g : α → β}
+    (hg_bot : g ⊥ = 1) {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
+    ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
+  refine prod_image_of_pairwiseOne <| hf_disj.imp fun i j (hdisj : Disjoint _ _) hfij => ?_
+  rw [← hfij, disjoint_self] at hdisj
+  rw [hdisj, hg_bot]
+
+end Image_Overlap
+
 end Finset
 
 namespace Fintype
