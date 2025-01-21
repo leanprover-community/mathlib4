@@ -1213,7 +1213,7 @@ section
 
 variable [Zero M] [MonoidWithZero R] [MulActionWithZero R M]
 
-@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
+@[simp]
 theorem single_smul (a b : α) (f : α → M) (r : R) : single a r b • f a = single a (r • f b) b := by
   by_cases h : a = b <;> simp [h]
 
