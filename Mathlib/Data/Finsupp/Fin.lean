@@ -53,50 +53,47 @@ def snoc (s : Fin n →₀ M) (y : M) : Fin (n + 1) →₀ M :=
 def insertNth (p : Fin (n + 1)) (y : M) (s : Fin n →₀ M) : Fin (n + 1) →₀ M :=
   Finsupp.equivFunOnFinite.symm (Fin.insertNth p y s : Fin (n + 1) → M)
 
+variable (p : Fin (n + 1)) (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M) (i : Fin n)
 section Remove
 
-variable (p : Fin (n + 1)) (s : Fin (n + 1) →₀ M) (y : M) (i : Fin n)
+@[simp]
+theorem removeNth_apply : removeNth p t i = t (p.succAbove i) := rfl
 
 @[simp]
-theorem removeNth_apply : removeNth p s i = s (p.succAbove i) := rfl
+theorem removeNth_zero : removeNth 0 t = tail t := rfl
 
 @[simp]
-theorem removeNth_zero : removeNth 0 s = tail s := rfl
-
-@[simp]
-theorem removeNth_last : removeNth (Fin.last n) s = init s := by simp [removeNth, init]
+theorem removeNth_last : removeNth (Fin.last n) t = init t := by simp [removeNth, init]
 
 /-- Updating the `i`-th entry does not affect removing the `i`-th entry. -/
 @[simp]
-theorem removeNth_update : removeNth p (update s p y) = removeNth p s := by simp [removeNth]
+theorem removeNth_update : removeNth p (update t p y) = removeNth p t := by simp [removeNth]
 
 @[simp]
-theorem tail_apply : tail s i = s i.succ := rfl
+theorem tail_apply : tail t i = t i.succ := rfl
 
 @[simp]
-theorem tail_update_zero : tail (update s 0 y) = tail s := by simp [tail]
+theorem tail_update_zero : tail (update t 0 y) = tail t := by simp [tail]
 
 @[simp]
-theorem tail_update_succ : tail (update s i.succ y) = update (tail s) i y := by ext; simp [tail]
+theorem tail_update_succ : tail (update t i.succ y) = update (tail t) i y := by ext; simp [tail]
 
 @[simp]
-theorem init_apply : init s i = s i.castSucc := rfl
+theorem init_apply : init t i = t i.castSucc := rfl
 
 @[simp]
-theorem init_update_last : init (update s (Fin.last n) y) = init s := by simp [init]
+theorem init_update_last : init (update t (Fin.last n) y) = init t := by simp [init]
 
 @[simp]
-theorem init_update_castSucc : init (update s i.castSucc y) = update (init s) i y := by
+theorem init_update_castSucc : init (update t i.castSucc y) = update (init t) i y := by
   ext; simp [init]
 
-theorem tail_init_eq_init_tail (s : Fin (n + 2) →₀ M) : tail (init s) = init (tail s) := by
+theorem tail_init_eq_init_tail (t : Fin (n + 2) →₀ M) : tail (init t) = init (tail t) := by
   simp only [tail, init, coe_equivFunOnFinite_symm, Fin.tail_init_eq_init_tail]
 
 end Remove
 
 section Add
-
-variable (p : Fin (n + 1)) (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M) (i : Fin n)
 
 @[simp]
 theorem cons_zero : cons y s 0 = y := rfl
