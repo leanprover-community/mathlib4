@@ -119,13 +119,13 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 @[to_additive Even.nsmul_right] lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
 
-@[deprecated (since := "2024-01-19")] alias Even.nsmul := Even.nsmul_right
+@[deprecated (since := "2025-01-19")] alias Even.nsmul := Even.nsmul_right
 
 @[to_additive (attr := simp) Even.nsmul_left]
 lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
 
-@[deprecated (since := "2024-01-19")] alias Even.nsmul' := Even.nsmul_left
+@[deprecated (since := "2025-01-19")] alias Even.nsmul' := Even.nsmul_left
 
 end Monoid
 
