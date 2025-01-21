@@ -41,7 +41,7 @@ instance : CoeSort (SemiRingCat) (Type u) :=
 attribute [coe] SemiRingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `SemiRingCat`. -/
 abbrev of (R : Type u) [Semiring R] : SemiRingCat :=
   ⟨R⟩
 
@@ -120,11 +120,16 @@ lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} SemiRingCat where
+instance : HasForget.{u} SemiRingCat where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
+unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
+  R ≟ R' ⊢
+  (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
 
 lemma forget_obj {R : SemiRingCat} : (forget SemiRingCat).obj R = R := rfl
 
@@ -180,7 +185,7 @@ instance : CoeSort (RingCat) (Type u) :=
 attribute [coe] RingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `RingCat`. -/
 abbrev of (R : Type u) [Ring R] : RingCat :=
   ⟨R⟩
 
@@ -224,7 +229,7 @@ lemma comp_apply {R S T : RingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : RingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `RingCat`. -/
 abbrev ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
@@ -259,11 +264,20 @@ lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} RingCat where
+instance : HasForget.{u} RingCat where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
+
+An example where this is needed is in applying
+`PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective`.
+-/
+unif_hint forget_obj_eq_coe (R R' : RingCat) where
+  R ≟ R' ⊢
+  (forget RingCat).obj R ≟ RingCat.carrier R'
 
 lemma forget_obj {R : RingCat} : (forget RingCat).obj R = R := rfl
 
@@ -319,7 +333,7 @@ instance : CoeSort (CommSemiRingCat) (Type u) :=
 attribute [coe] CommSemiRingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `CommSemiRingCat`. -/
 abbrev of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
   ⟨R⟩
 
@@ -363,7 +377,7 @@ lemma comp_apply {R S T : CommSemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
 abbrev ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
@@ -399,11 +413,16 @@ lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} CommSemiRingCat where
+instance : HasForget.{u} CommSemiRingCat where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
+unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
+  R ≟ R' ⊢
+  (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
 lemma forget_obj {R : CommSemiRingCat} : (forget CommSemiRingCat).obj R = R := rfl
 
@@ -461,7 +480,7 @@ instance : CoeSort (CommRingCat) (Type u) :=
 attribute [coe] CommRingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `CommRingCat`. -/
 abbrev of (R : Type u) [CommRing R] : CommRingCat :=
   ⟨R⟩
 
@@ -505,7 +524,7 @@ lemma comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
 abbrev ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
@@ -541,13 +560,21 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} CommRingCat where
+instance : HasForget.{u} CommRingCat where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
 lemma forget_obj {R : CommRingCat} : (forget CommRingCat).obj R = R := rfl
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
+
+An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to commutative rings.
+-/
+unif_hint forget_obj_eq_coe (R R' : CommRingCat) where
+  R ≟ R' ⊢
+  (forget CommRingCat).obj R ≟ CommRingCat.carrier R'
 
 lemma forget_map {R S : CommRingCat} (f : R ⟶ S) :
     (forget CommRingCat).map f = f :=
@@ -642,10 +669,10 @@ abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 lemma RingCat.forget_map_apply {R S : RingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget RingCat).obj R) :
-    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
+    @DFunLike.coe _ _ _ HasForget.instFunLike f x = f x :=
   rfl
 
 lemma CommRingCat.forget_map_apply {R S : CommRingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget CommRingCat).obj R) :
-    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
+    @DFunLike.coe _ _ _ HasForget.instFunLike f x = f x :=
   rfl

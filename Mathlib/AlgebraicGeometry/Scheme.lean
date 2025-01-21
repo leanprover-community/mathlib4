@@ -248,16 +248,16 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
 @[simp]
-theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
+theorem id.base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
   rfl
 
 @[simp]
 theorem id_app {X : Scheme} (U : X.Opens) :
-    (𝟙 X : _).app U = 𝟙 _ := rfl
+    (𝟙 X :).app U = 𝟙 _ := rfl
 
 @[simp]
 theorem id_appTop {X : Scheme} :
-    (𝟙 X : _).appTop = 𝟙 _ :=
+    (𝟙 X :).appTop = 𝟙 _ :=
   rfl
 
 @[reassoc]
@@ -548,8 +548,7 @@ theorem basicOpen_le : X.basicOpen f ≤ U :=
 
 @[sheaf_restrict]
 lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
-    -- Help `restrict` to infer which forgetful functor we're taking
-    X.basicOpen (TopCat.Presheaf.restrict (C := CommRingCat) f i) ≤ X.basicOpen f :=
+    X.basicOpen (TopCat.Presheaf.restrict f i) ≤ X.basicOpen f :=
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
@@ -760,6 +759,15 @@ lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
     f.stalkMap x (Y.presheaf.germ _ (f.base x) hx y) =
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
+
+/-- If `x = y`, the stalk maps are isomorphic. -/
+noncomputable def arrowStalkMapIsoOfEq {x y : X}
+    (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
+  Arrow.isoMk (Y.presheaf.stalkCongr <| (Inseparable.of_eq h).map f.continuous)
+      (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by
+    simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
+      Arrow.mk_hom]
+    rw [Scheme.stalkSpecializes_stalkMap]
 
 end Scheme
 

@@ -14,6 +14,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
 * tensor product is the pushout
+* tensor product over `Z` is the binary coproduct
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
@@ -115,6 +116,52 @@ lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRi
   isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
 
 end Pushout
+
+section BinaryCoproduct
+
+variable (A B : CommRingCat.{u})
+
+/-- The tensor product `A ⊗[ℤ] B` forms a cocone for `A` and `B`. -/
+@[simps! pt ι]
+def coproductCocone : BinaryCofan A B :=
+  BinaryCofan.mk
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+
+@[simp]
+theorem coproductCocone_inl : (coproductCocone A B).inl =
+  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
+
+@[simp]
+theorem coproductCocone_inr : (coproductCocone A B).inr =
+  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
+
+/-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
+@[simps]
+def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
+  desc (s : BinaryCofan A B) :=
+    ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom
+      (fun _ _ => by apply Commute.all)).toRingHom
+  fac (s : BinaryCofan A B) := fun ⟨j⟩ => by cases j <;> ext a <;> simp
+  uniq (s : BinaryCofan A B) := by
+    rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
+    apply CommRingCat.hom_ext
+    apply RingHom.toIntAlgHom_injective
+    apply Algebra.TensorProduct.liftEquiv.symm.injective
+    apply Subtype.ext
+    rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
+    constructor
+    · ext a
+      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
+    · ext b
+      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.right)]
+
+/-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
+def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
+  ⟨_, coproductCoconeIsColimit A B⟩
+
+end BinaryCoproduct
+
 
 section Terminal
 
@@ -236,7 +283,7 @@ def equalizerFork : Fork f g :=
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)
+  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x :)
   constructor
   · ext
     rfl
@@ -280,7 +327,7 @@ instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ Comm
   have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
     (limit.isoLimitCone_inv_π
         ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
-        WalkingParallelPair.zero : _)
+        WalkingParallelPair.zero :)
   erw [← this]
   -- note: this was not needed before https://github.com/leanprover-community/mathlib4/pull/19757
   haveI : IsLocalHom (limit.π (walkingParallelPairOpEquiv.functor ⋙ F) zero).hom := by
@@ -323,8 +370,8 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
   · intro s m e₁ e₂
     refine hom_ext <| RingHom.ext fun (x : s.pt) => Subtype.ext ?_
     change (m x).1 = (_, _)
-    have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) : _)
-    have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) : _)
+    have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) :)
+    have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]
     rfl
 
