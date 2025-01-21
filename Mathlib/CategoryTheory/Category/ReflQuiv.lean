@@ -15,7 +15,7 @@ The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful 
 -/
 
 namespace CategoryTheory
-universe v u
+universe v u v₁ v₂ u₁ u₂
 
 /-- Category of refl quivers. -/
 @[nolint checkUnivs]
@@ -70,10 +70,32 @@ theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
     (hyp : forgetToQuiv.map F = forgetToQuiv.map G) : F = G := by
   cases F; cases G; cases hyp; rfl
 
-theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
+instance forgetToQuiv.Faithful : Functor.Faithful forgetToQuiv where
   map_injective := fun hyp ↦ forgetToQuiv_faithful _ _ hyp
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
+
+/-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
+compatibility with the identities. -/
+def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
+    (e : Quiv.of V ≅ Quiv.of W)
+    (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = ReflQuiver.id (obj := W) (e.hom.obj X)) :
+    ReflQuiv.of V ≅ ReflQuiv.of W where
+  hom := ReflPrefunctor.mk e.hom h_id
+  inv := ReflPrefunctor.mk e.inv
+    (fun Y => (Quiv.homEquivOfIso e).injective (by simp [Quiv.hom_map_inv_map_of_iso, h_id]))
+  hom_inv_id := by
+    apply forgetToQuiv.map_injective
+    exact e.hom_inv_id
+  inv_hom_id := by
+    apply forgetToQuiv.map_injective
+    exact e.inv_hom_id
+
+/-- Compatible equivalences of types and hom-types induce an isomorphism of reflexive quivers. -/
+def isoOfEquiv {V W : Type u } [ReflQuiver V] [ReflQuiver W] (e : V ≃ W)
+    (he : ∀ (X Y : V), (X ⟶ Y) ≃ (e X ⟶ e Y))
+    (h_id : ∀ (X : V), he _ _ (𝟙rq X) = ReflQuiver.id (obj := W) (e X)) :
+    ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he) h_id
 
 end ReflQuiv
 
@@ -182,15 +204,14 @@ theorem adj.unit.component_eq (V : ReflQuiv.{max u v, u}) :
 /-- The counit components are defined using the universal property of the quotient
 from the corresponding counit component for the adjunction between categories and quivers.-/
 @[simps!]
-def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
-  fapply Quotient.lift
-  · exact Quiv.adj.counit.app C
-  · intro x y f g rel
+def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C :=
+  Quotient.lift Cat.FreeReflRel (Quiv.adj.counit.app C) (by
+    intro x y f g rel
     cases rel
     unfold Quiv.adj
     simp only [Adjunction.mkOfHomEquiv_counit_app, Equiv.coe_fn_symm_mk,
       Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
-    rfl
+    rfl)
 
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`.-/
 @[simp]
