@@ -265,12 +265,13 @@ theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : F)) p μ = 0 := by convert e
 @[deprecated (since := "2024-07-27")]
 alias snorm_zero' := eLpNorm_zero'
 
-theorem zero_memℒp : Memℒp (0 : α → E) p μ :=
-  ⟨aestronglyMeasurable_zero, by
-    rw [eLpNorm_zero]
-    exact ENNReal.coe_lt_top⟩
+@[simp] lemma Memℒp.zero : Memℒp (0 : α → E) p μ :=
+  ⟨aestronglyMeasurable_zero, by rw [eLpNorm_zero]; exact ENNReal.coe_lt_top⟩
 
-theorem zero_mem_ℒp' : Memℒp (fun _ : α => (0 : E)) p μ := zero_memℒp (E := E)
+@[simp] lemma Memℒp.zero' : Memℒp (fun _ : α => (0 : E)) p μ := Memℒp.zero
+
+@[deprecated (since := "2025-01-21")] alias zero_memℒp := Memℒp.zero
+@[deprecated (since := "2025-01-21")] alias zero_mem_ℒp := Memℒp.zero'
 
 variable [MeasurableSpace α]
 
@@ -886,7 +887,7 @@ lemma memℒp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (h
     Memℒp (s.indicator fun _ => c) p μ := by
   rw [memℒp_indicator_iff_restrict hs]
   obtain rfl | hμ := hμsc
-  · exact zero_memℒp
+  · exact Memℒp.zero
   · have := Fact.mk hμ.lt_top
     apply memℒp_const
 

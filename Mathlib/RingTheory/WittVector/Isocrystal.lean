@@ -129,14 +129,12 @@ variable (V)
 
 /-- A homomorphism between isocrystals respects the Frobenius map.
 Notation `M →ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 
 /-- An isomorphism between isocrystals respects the Frobenius map.
 
 Notation `M ≃ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
 
@@ -156,7 +154,6 @@ open scoped Isocrystal
 of slope `m : ℤ`.
 -/
 @[nolint unusedArguments]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 

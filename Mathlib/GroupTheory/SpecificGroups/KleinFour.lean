@@ -90,8 +90,8 @@ open Finset
 variable {G : Type*} [Group G] [IsKleinFour G]
 
 @[to_additive]
-lemma not_isCyclic : ¬ IsCyclic G :=
-  fun h ↦ by let _inst := Fintype.ofFinite G; simpa using h.exponent_eq_card
+lemma not_isCyclic : ¬IsCyclic G :=
+  fun h ↦ by simpa using h.exponent_eq_card
 
 @[to_additive]
 lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
