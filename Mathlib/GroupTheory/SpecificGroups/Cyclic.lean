@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 import Mathlib.GroupTheory.Exponent
@@ -73,21 +74,25 @@ theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCy
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
 
+@[to_additive]
+instance IsCyclic.commutative [Group α] [IsCyclic α] :
+    Std.Commutative (· * · : α → α → α) where
+  comm x y :=
+    let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+    let ⟨_, hx⟩ := hg x
+    let ⟨_, hy⟩ := hg y
+    hy ▸ hx ▸ zpow_mul_comm _ _ _
+
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
       "A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`."]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
-  { hg with
-    mul_comm := fun x y =>
-      let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-      let ⟨_, hn⟩ := hg x
-      let ⟨_, hm⟩ := hg y
-      hm ▸ hn ▸ zpow_mul_comm _ _ _ }
+  { hg with mul_comm := commutative.comm }
 
 instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
-  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
+  ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
 
@@ -283,8 +288,7 @@ open Finset Nat
 
 section Classical
 
-open scoped Classical
-
+open scoped Classical in
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
     #{a : α | a ^ n = 1} ≤ n :=
@@ -858,3 +862,13 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
+
+lemma DihedralGroup.not_isCyclic {n : ℕ} (h1 : n ≠ 1) : ¬IsCyclic (DihedralGroup n) := fun h' => by
+  by_cases h2 : n = 2
+  · simpa [exponent, card, h2] using h'.exponent_eq_card
+  · exact not_commutative h1 h2 h'.commutative
+
+lemma DihedralGroup.isCyclic_iff {n : ℕ} :
+    IsCyclic (DihedralGroup n) ↔ n = 1 where
+  mp := by contrapose; exact not_isCyclic
+  mpr := by rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card

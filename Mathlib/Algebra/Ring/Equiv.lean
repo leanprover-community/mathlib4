@@ -443,6 +443,7 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
 
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
+@[simps! (config := .asFn)]
 def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAssocSemiring (R i)] :
     (∀ i, R i) ≃+* R default where
   __ := Equiv.piUnique R

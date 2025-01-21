@@ -286,6 +286,8 @@ theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
+lemma ofNat_def (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ OfNat.ofNat n := rfl
+
 end Pi
 
 theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :

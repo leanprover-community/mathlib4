@@ -48,8 +48,6 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
-open scoped Classical
-
 open Polynomial
 
 universe u v w

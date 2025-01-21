@@ -39,7 +39,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
@@ -193,6 +193,7 @@ lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X
   unfold uniformPDF
   exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
 
+open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
