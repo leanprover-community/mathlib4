@@ -190,9 +190,8 @@ theorem extremePoints_doublyStochastic :
   by_contra! h
   have h₂ : openSegment R (x₁ i j) (x₂ i j) ⊆ Set.Ioo 0 1 := by
     rw [openSegment_eq_Ioo' h]
-    apply Set.Ioo_subset_Ioo
-    · simp [nonneg_of_mem_doublyStochastic hx₁, nonneg_of_mem_doublyStochastic hx₂]
-    · simp [le_one_of_mem_doublyStochastic hx₁, le_one_of_mem_doublyStochastic hx₂]
+    apply Set.Ioo_subset_Ioo <;>
+    simp_all [nonneg_of_mem_doublyStochastic, le_one_of_mem_doublyStochastic]
   specialize h₂ h₁
   simp only [PEquiv.toMatrix_apply, Equiv.toPEquiv] at h₂
   aesop
