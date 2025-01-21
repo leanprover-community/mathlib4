@@ -60,7 +60,7 @@ there are finitely many `f : σ →₀ ℕ` of bounded degree.
 ## TODO
 
 * Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,
-both `AddCommMonoidHom` or both functions.
+  both `AddMonoidHom` or both functions.
 
 -/
 
@@ -72,7 +72,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid M] [Module R M]
 /-- The `weight` of the finitely supported function `f : σ →₀ R`
-with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
+with respect to `w : σ → M` is the sum `∑ i, f i • w i`. -/
 noncomputable def weight : (σ →₀ R) →+ M :=
   (Finsupp.linearCombination R w).toAddMonoidHom
 
@@ -217,7 +217,7 @@ end CanonicallyOrderedAddCommMonoid
 variable {R : Type*} [AddCommMonoid R]
 
 /-- The degree of a finsupp function. -/
-def degree (d : σ →₀ R) := ∑ i ∈ d.support, d i
+def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
 
 @[deprecated degree (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree := degree
