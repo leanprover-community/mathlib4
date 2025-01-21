@@ -167,14 +167,15 @@ lemma allow_all_pure (x : α) : (pure x : Comp ι s α).allow_all = pure x := by
   simp only [allow_all, allow_pure]
 
 /-!
-## `map` don't change `Comp.value` and `Comp.cost`
+## `map` doesn't change `Comp.value` and `Comp.cost`
 -/
 
 @[simp]
 lemma value_map (f : α → β) (g : Comp ι s α) (o : I → Oracle ι) :
-    (f <$> g).value o = f  (g.value o) := by
+    (f <$> g).value o = f (g.value o) := by
   simp only [map_eq, value_bind, value_pure]
 
+@[simp]
 lemma cost_map (f : α → β) (g : Comp ι s α) (o : I → Oracle ι) (i : I) :
     (f <$> g).cost o i = g.cost o i := by
   simp only [map_eq, cost_bind, cost_pure, add_zero]

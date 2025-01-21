@@ -67,22 +67,22 @@ each one of the oracles. -/
 def run (f : Comp ι s α) (os : I → Oracle ι) : α × (I → ℕ) := match f with
   | .pure' x => (x, fun _ => 0)
   | .query' i _ y f =>
-    let x := (os i) y
+    let x := os i y
     let (z,c) := (f x).run os
     (z, c + fun j => if j = i then 1 else 0)
 
-/-- The value of a `Comp ι s` after it's execution -/
+/-- The value of a `Comp ι s` after execution -/
 def value (f : Comp ι s α) (o : I → Oracle ι) : α :=
-  Prod.fst (f.run o)
+  (f.run o).1
 
-/-- The value of a `Comp ι s` after it's execution with a single oracle -/
+/-- The value of a `Comp ι s` after execution with a single oracle -/
 @[simp]
 def value' (f : Comp ι s α) (o : Oracle ι) : α :=
   f.value fun _ ↦ o
 
 /-- The query count for a specific oracle of a `Comp ι s` -/
 def cost (f : Comp ι s α) (o : I → Oracle ι) (i : I) : ℕ :=
-  Prod.snd (f.run o) i
+  (f.run o).2 i
 
 /-- The cost of a `Comp ι s`, when run with a single oracle -/
 def cost' (f : Comp ι s α) (o : Oracle ι) : I → ℕ :=
