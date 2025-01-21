@@ -148,7 +148,8 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
   coe_injective.eq_iff
 
--- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
+-- Porting note: removed `simps`, added simp lemmas manually.
+-- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
 instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
@@ -484,11 +485,12 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
-  toFun s := coe (algebraMap S R s)
-  map_one' := by simp only [map_one, coe_one]
-  map_zero' := by simp only [map_zero, coe_zero]
-  map_mul' x y := by simp only [map_mul, coe_mul]
-  map_add' x y := by simp only [map_add, coe_add]
+  algebraMap :=
+  { toFun s := coe (algebraMap S R s)
+    map_one' := by simp only [map_one, coe_one]
+    map_zero' := by simp only [map_zero, coe_zero]
+    map_mul' x y := by simp only [map_mul, coe_mul]
+    map_add' x y := by simp only [map_add, coe_add] }
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
   commutes' s x := by ext <;> simp [Algebra.commutes]
 
@@ -1348,7 +1350,6 @@ variable (R : Type*) [One R] [Neg R]
 theorem mk_quaternion : #(ℍ[R]) = #R ^ 4 :=
   mk_quaternionAlgebra _ _
 
---@[simp] Porting note: LHS can be simplified to `#R^4`
 theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
   mk_quaternionAlgebra_of_infinite _ _
 
@@ -1356,7 +1357,6 @@ theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
 theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ 4 :=
   mk_univ_quaternionAlgebra _ _
 
---@[simp] Porting note: LHS can be simplified to `#R^4`
 theorem mk_univ_quaternion_of_infinite [Infinite R] : #(Set.univ : Set ℍ[R]) = #R :=
   mk_univ_quaternionAlgebra_of_infinite _ _
 

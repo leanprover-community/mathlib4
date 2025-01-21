@@ -44,6 +44,8 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
 @[inherit_doc]
 notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
 
+attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
+
 /--
 `ContinuousAlgEquivClass F R A B` states that `F` is a type of topological algebra
   structure-preserving equivalences. You should extend this class when you
@@ -110,7 +112,7 @@ theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
   coe_injective.eq_iff
 
 @[simp]
-theorem coe_toHomeomorph (e : A ≃A[R] B) : ⇑e.toHomeomorph = e := rfl
+theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
 
 theorem isOpenMap (e : A ≃A[R] B) : IsOpenMap e :=
   e.toHomeomorph.isOpenMap
