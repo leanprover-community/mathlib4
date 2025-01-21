@@ -79,8 +79,8 @@ lemma Nucleus.ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
 /--
 A Nucleus preserves ⊤
 -/
-lemma nucleus_preserves_top (n : Nucleus X) : n.toFun ⊤ = ⊤ :=
-   top_le_iff.mp (n.increasing' ⊤)
+@[simp] lemma map_top (n : Nucleus X) : n ⊤ = ⊤ :=
+   top_le_iff.mp increasing
 
 instance : LE (Nucleus X) where
   le x y := ∀ v : X, x.toFun v ≤ y.toFun v
