@@ -49,37 +49,45 @@ structure SupHom (α β : Type*) [Max α] [Max β] where
   Instead use the coercion coming from the `FunLike` instance. -/
   toFun : α → β
   /-- A `SupHom` preserves suprema.
-  Do not use this directly. Use `SupHom.map_sup` instead. -/
+  Do not use this directly. Use `SupHomClass.map_sup` instead. -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
 structure InfHom (α β : Type*) [Min α] [Min β] where
-  /-- The underlying function of an `InfHom` -/
+  /-- The underlying function of an `InfHom`.
+  Do not use this Function directly.
+  Instead use the coercion coming from the `FunLike` instance. -/
   toFun : α → β
-  /-- An `InfHom` preserves infima. -/
+  /-- An `InfHom` preserves infima.
+  Do not use this directly. Use `InfHomClass.map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
 structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β] extends SupHom α β where
-  /-- A `SupBotHom` preserves the bottom element. -/
+  /-- A `SupBotHom` preserves the bottom element.
+  Do not use this directly. Use `SupBotHomClass.map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
 structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends InfHom α β where
-  /-- An `InfTopHom` preserves the top element. -/
+  /-- An `InfTopHom` preserves the top element.
+  Do not use this directly. Use `InfTopHomClass.map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
 structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
-  /-- A `LatticeHom` preserves infima. -/
+  /-- A `LatticeHom` preserves infima.
+  Do not use this directly. Use `LatticeHomClass.map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
-  /-- A `BoundedLatticeHom` preserves the top element. -/
+  /-- A `BoundedLatticeHom` preserves the top element.
+  Do not use this directly. Use `BoundedLatticeHomClass.map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
-  /-- A `BoundedLatticeHom` preserves the bottom element. -/
+  /-- A `BoundedLatticeHom` preserves the bottom element.
+  Do not use this directly. Use `BoundedLatticeHomClass.map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
@@ -338,9 +346,6 @@ instance : FunLike (SupHom α β) α β where
 
 instance : SupHomClass (SupHom α β) α β where
   map_sup := SupHom.map_sup'
-
-lemma map_sup (f : SupHom α β) (a b : α) : f (a ⊔ b) = f a ⊔ f b := by
-  apply map_sup'
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
 
