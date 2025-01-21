@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Anne Baanen
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -78,11 +78,11 @@ instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where
-  sInf s := ⟨fun x => ⨅ f ∈ s, (f : _) x, fun _ _ h => iInf₂_mono fun f _ => f.mono h⟩
+  sInf s := ⟨fun x => ⨅ f ∈ s, (f :) x, fun _ _ h => iInf₂_mono fun f _ => f.mono h⟩
 
 @[simp]
 theorem sInf_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
-    sInf s x = ⨅ f ∈ s, (f : _) x :=
+    sInf s x = ⨅ f ∈ s, (f :) x :=
   rfl
 
 theorem iInf_apply {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) (x : α) :
@@ -95,11 +95,11 @@ theorem coe_iInf {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
   funext x; simp [iInf_apply]
 
 instance [CompleteLattice β] : SupSet (α →o β) where
-  sSup s := ⟨fun x => ⨆ f ∈ s, (f : _) x, fun _ _ h => iSup₂_mono fun f _ => f.mono h⟩
+  sSup s := ⟨fun x => ⨆ f ∈ s, (f :) x, fun _ _ h => iSup₂_mono fun f _ => f.mono h⟩
 
 @[simp]
 theorem sSup_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
-    sSup s x = ⨆ f ∈ s, (f : _) x :=
+    sSup s x = ⨆ f ∈ s, (f :) x :=
   rfl
 
 theorem iSup_apply {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) (x : α) :

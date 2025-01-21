@@ -15,12 +15,6 @@ is an embedding and the induced morphisms of stalks are all surjective. This is 
 in the literature but it is useful for generalizing results on immersions to other maps including
 `Spec 𝒪_{X, x} ⟶ X` and inclusions of fibers `κ(x) ×ₓ Y ⟶ Y`.
 
-## TODO
-
-* Show preimmersions are local at the target.
-* Show preimmersions are stable under pullback.
-* Show that `Spec f` is a preimmersion for `f : R ⟶ S` if every `s : S` is of the form `f a / f b`.
-
 -/
 
 universe v u
@@ -47,11 +41,6 @@ lemma isPreimmersion_eq_inf :
   rw [isPreimmersion_iff]
   rfl
 
-/-- Being surjective on stalks is local at the target. -/
-instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
-    (stalkwise (Function.Surjective ·)) :=
-  stalkwiseIsLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
-
 namespace IsPreimmersion
 
 instance : IsLocalAtTarget @IsPreimmersion :=
@@ -59,7 +48,7 @@ instance : IsLocalAtTarget @IsPreimmersion :=
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where
   base_embedding := f.isOpenEmbedding.isEmbedding
-  surj_on_stalks _ := (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
+  surj_on_stalks _ := (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   id_mem _ := inferInstance
@@ -116,7 +105,7 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
   refine .mk' fun X Y Z f g _ _ ↦ ?_
   have := pullback_fst (P := @SurjectiveOnStalks) f g inferInstance
   constructor
-  let L (x : (pullback f g : _)) : { x : X × Y | f.base x.1 = g.base x.2 } :=
+  let L (x : (pullback f g :)) : { x : X × Y | f.base x.1 = g.base x.2 } :=
     ⟨⟨(pullback.fst f g).base x, (pullback.snd f g).base x⟩,
     by simp only [Set.mem_setOf, ← Scheme.comp_base_apply, pullback.condition]⟩
   have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtype_val

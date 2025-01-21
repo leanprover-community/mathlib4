@@ -7,6 +7,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Disjointed
 import Mathlib.MeasureTheory.OuterMeasure.Defs
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Outer Measures
