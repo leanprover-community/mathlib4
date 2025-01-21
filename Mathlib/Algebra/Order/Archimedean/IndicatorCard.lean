@@ -30,9 +30,9 @@ lemma sum_indicator_eventually_eq_card {α : Type*} [AddCommMonoid α] (a : α) 
     rw [indicator_of_mem (hs.mem_toFinset.1 hx) (fun _ ↦ a)]
   rw [Nat.card_eq_card_finite_toFinset hs, ← sum_eq_card_nsmul key, eventually_atTop]
   obtain ⟨m, hm⟩ := hs.bddAbove
-  refine ⟨m + 1, fun n n_M ↦ (sum_subset ?_ ?_).symm⟩ <;> intro x <;> rw [hs.mem_toFinset]
+  refine ⟨m + 1, fun n n_m ↦ (sum_subset ?_ ?_).symm⟩ <;> intro x <;> rw [hs.mem_toFinset]
   · rw [Finset.mem_range]
-    exact fun x_s ↦ ((mem_upperBounds.1 hm) x x_s).trans_lt (Nat.lt_of_succ_le n_M)
+    exact fun x_s ↦ ((mem_upperBounds.1 hm) x x_s).trans_lt (Nat.lt_of_succ_le n_m)
   · exact fun _ x_s ↦ indicator_of_not_mem x_s (fun _ ↦ a)
 
 lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*} [OrderedAddCommMonoid R]
@@ -46,13 +46,13 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*} [OrderedAddCommMonoid
     intro hs n
     obtain ⟨n', hn'⟩ := exists_lt_nsmul h n
     obtain ⟨t, t_s, t_card⟩ := hs.exists_subset_card_eq n'
-    obtain ⟨M, hM⟩ := t.bddAbove
-    refine ⟨M + 1, hn'.le.trans ?_⟩
+    obtain ⟨m, hm⟩ := t.bddAbove
+    refine ⟨m + 1, hn'.le.trans ?_⟩
     apply (sum_le_sum fun i _ ↦ (indicator_le_indicator_of_subset t_s (fun _ ↦ h.le)) i).trans_eq'
-    have h : t ⊆ Finset.range (M + 1) := by
+    have h : t ⊆ Finset.range (m + 1) := by
       intro i i_t
       rw [Finset.mem_range]
-      exact (hM i_t).trans_lt (lt_add_one M)
+      exact (hm i_t).trans_lt (lt_add_one m)
     rw [sum_indicator_subset (fun _ ↦ r) h, sum_eq_card_nsmul (fun _ _ ↦ rfl), t_card]
   · contrapose
     intro hs
