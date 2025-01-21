@@ -256,8 +256,7 @@ variable {α ι: Type*}
 open Real
 
 lemma Real.hasProd_of_hasSum_log {f : ι → ℝ} (hfn : ∀ n, 0 < f n) {a : ℝ}
-    (hf : HasSum (fun n => log (f n)) a) :
-    HasProd f (rexp a) :=
+    (hf : HasSum (fun n => log (f n)) a) : HasProd f (rexp a) :=
   hf.rexp.congr (by simp [exp_log, hfn])
 
 lemma Real.multipliable_of_summable_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
@@ -273,8 +272,7 @@ lemma Real.rexp_tsum_eq_tprod (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
 open Complex
 
 lemma Complex.hasProd_of_hasSum_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0) {a : ℂ}
-    (hf : HasSum (fun n => log (f n)) a) :
-    HasProd (fun b ↦ f b) (cexp a) :=
+    (hf : HasSum (fun n => log (f n)) a) : HasProd (fun b ↦ f b) (cexp a) :=
     hf.cexp.congr (by simp [exp_log, hfn])
 
 lemma Complex.multipliable_of_summable_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0)
