@@ -170,7 +170,7 @@ theorem insertNth_zero_zero : insertNth p 0 (0 : Fin n →₀ M) = 0 := by
   simp only [insertNth, coe_zero, equivFunOnFinite_symm_apply_toFun, Fin.insertNth,
     Fin.succAboveCases, eq_rec_constant, Pi.zero_apply, dite_eq_ite, ite_self]
 
-variable {y} {s}
+variable {s} {y}
 
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
@@ -179,7 +179,7 @@ theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   ext a
-  simp only [← cons_succ y s a, c, coe_zero, Pi.zero_apply]
+  simp [← cons_succ a y s, c]
 
 theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine ⟨fun h => ?_, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
@@ -205,7 +205,7 @@ theorem snoc_ne_zero_of_right (h : y ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
   rw [← snoc_last y s, c, Finsupp.coe_zero, Pi.zero_apply]
 
-theorem snoc_ne_zero_iff : snoc s y ≠ 0 ↔ s ≠ 0 ∨ y ≠ 0 := by
+theorem snoc_ne_zero : snoc s y ≠ 0 ↔ s ≠ 0 ∨ y ≠ 0 := by
   refine ⟨fun h => ?_, fun h => h.casesOn snoc_ne_zero_of_left snoc_ne_zero_of_right⟩
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.snoc_zero_zero]
@@ -225,8 +225,8 @@ theorem insertNth_ne_zero_iff : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 :=
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.insertNth_zero_zero]
 
-theorem snoc_support :
-    (s.snoc y).support ⊆ insert (Fin.last n) (s.support.map Fin.castSuccEmb) := by
+theorem snoc_support_subset :
+    (s.snoc y).support ⊆ insert (.last n) (s.support.map Fin.castSuccEmb) := by
   intro i hi
   suffices i = Fin.last n ∨ ∃ a, ¬s a = 0 ∧ a.castSucc = i by simpa
   apply (Fin.eq_castSucc_or_eq_last i).symm.imp id (Exists.imp _)
