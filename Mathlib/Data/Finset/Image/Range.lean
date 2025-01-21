@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.Image.Defs
 import Mathlib.Data.Finset.Lattice.Basic
+import Mathlib.Algebra.Group.Int.Units
 
 /-! # Image and map operations on `Finset.range`.
 
