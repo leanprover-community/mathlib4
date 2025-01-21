@@ -70,7 +70,7 @@ lemma MonoidHom.coe_id {G : Type*} [MulOneClass G] :
     ⇑(MonoidHom.id G) = _root_.id := rfl
 
 theorem CategoryTheory.ShortComplex.ShortExact.δ_apply_aux
-    {C : Type*} [inst : Category C] [ConcreteCategory C] [HasForget₂ C Ab] [Abelian C]
+    {C : Type*} [Category C] [HasForget C] [HasForget₂ C Ab] [Abelian C]
     [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*} {c : ComplexShape ι}
     {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι)
     (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
@@ -149,7 +149,7 @@ noncomputable def ShortExact.δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZer
 
 end
 
-theorem map_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab] [Abelian C]
+theorem map_cyclesMk {C : Type u} [Category C] [HasForget C] [HasForget₂ C Ab] [Abelian C]
     [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
     {K K' : ShortComplex C} (f : K ⟶ K')
     (x : (forget₂ C Ab).obj K.X₂) (hx : (forget₂ C Ab).map K.g x = 0) :
@@ -167,7 +167,7 @@ end CategoryTheory.ShortComplex
 
 namespace HomologicalComplex
 
-theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
+theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [HasForget C] [HasForget₂ C Ab]
     [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
     {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
     (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
@@ -177,7 +177,7 @@ theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [Ha
   simpa using ShortComplex.map_cyclesMk (C := C) (K := K.sc j) (K' := K.sc' i j (c.next j))
     (K.isoSc' i j (c.next j) hi rfl).hom x (by simp_all)
 
-theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
+theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [HasForget C] [HasForget₂ C Ab]
     [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
     {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
     (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
