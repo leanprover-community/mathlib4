@@ -42,7 +42,7 @@ structure εNFA (α : Type u) (σ : Type v) where
   /-- Set of acceptance states. -/
   accept : Set σ
 
-variable {α : Type u} {σ : Type v} (M : εNFA α σ) {S : Set σ} {s : σ} {a : α}
+variable {α : Type u} {σ : Type v} (M : εNFA α σ) {S : Set σ} {s t u : σ} {a : α}
 
 namespace εNFA
 
@@ -64,8 +64,7 @@ theorem εClosure_empty : M.εClosure ∅ = ∅ :=
 theorem εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
 
-theorem mem_εClosure_iff_exists {s : σ} {S : Set σ} :
-    s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
+theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
   mp h := by
     induction' h with s _ _ _ _ _ ih
     · tauto
@@ -151,12 +150,12 @@ inductive IsPath : σ → σ → List (Option α) → Prop
   | cons (t s u : σ) (a : Option α) (x : List (Option α)) :
       t ∈ M.step s a → IsPath t u x → IsPath s u (a :: x)
 
-theorem IsPath.eq_of_nil {s t : σ} : M.IsPath s t [] → s = t := by
+theorem IsPath.eq_of_nil : M.IsPath s t [] → s = t := by
   rintro ⟨⟩
   rfl
 
 @[simp]
-theorem isPath_singleton {s t : σ} {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
+theorem isPath_singleton {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
   mp := by
     rintro (_ | ⟨_, _, _, _, _, _, ⟨⟩⟩)
     assumption
@@ -164,7 +163,7 @@ theorem isPath_singleton {s t : σ} {a : Option α} : M.IsPath s t [a] ↔ t ∈
 
 alias ⟨_, IsPath.singleton⟩ := isPath_singleton
 
-theorem isPath_append {s u : σ} {x y : List (Option α)} :
+theorem isPath_append {x y : List (Option α)} :
     M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
   mp := by
     induction' x with _ _ ih generalizing s
