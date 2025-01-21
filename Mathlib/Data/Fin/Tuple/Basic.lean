@@ -165,7 +165,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
     rw [← this, cons_succ, cons_succ]
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
-@[simp, nolint simpNF] -- Porting note: linter claims LHS doesn't simplify
+@[simp]
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   by_cases h : j = 0
