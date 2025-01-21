@@ -51,7 +51,7 @@ real, ereal, complete lattice
 -/
 
 open Function ENNReal NNReal Set SignType
-set_option profiler true
+
 noncomputable section
 
 /-- ereal : The type `[-∞, ∞]` -/
