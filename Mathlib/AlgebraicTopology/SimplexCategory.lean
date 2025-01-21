@@ -82,7 +82,6 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -230,6 +229,10 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 0, _ | 1, 1, _ => le_rfl
       | 0, 1, _ => h
   }
+
+@[simp]
+lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
+    mkOfLe j j (by omega) = [1].const [n] j := Hom.ext_one_left _ _
 
 /-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
 def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
@@ -743,7 +746,7 @@ end Truncated
 
 section Concrete
 
-instance : ConcreteCategory.{0} SimplexCategory where
+instance : HasForget.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }

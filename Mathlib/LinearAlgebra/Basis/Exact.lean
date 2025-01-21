@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
-# Basis from a splitting exact sequence
+# Basis from a split exact sequence
 
-Let `0 → K → M → P → 0` be an exact sequence of `R`-modules, let `s : M → K` be a
+Let `0 → K → M → P → 0` be a split exact sequence of `R`-modules, let `s : M → K` be a
 retraction of `f` and `v` be a basis of `M` indexed by `κ ⊕ σ`. Then
 if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ`, then
 the images of `vᵢ` for `i : κ` form a basis of `P`.
@@ -71,22 +70,23 @@ private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
 
 lemma Submodule.top_le_span_of_exact_of_retraction (hg : Function.Surjective g)
     (hsa : ∀ i, s (v (a i)) = 0) (hlib : LinearIndependent R (s ∘ v ∘ b))
-    (hab : Set.range (v ∘ a) ∪ Set.range (v ∘ b) = Set.range v)
+    (hab : Codisjoint (Set.range a) (Set.range b))
     (hsp : ⊤ ≤ Submodule.span R (Set.range v)) :
     ⊤ ≤ Submodule.span R (Set.range <| g ∘ v ∘ a) := by
   apply top_le_span_of_aux hs hfg (Sum.elim (v ∘ a) (v ∘ b)) hg hsa hlib
-  rwa [Set.Sum.elim_range, hab]
+  simp only [codisjoint_iff, Set.sup_eq_union, Set.top_eq_univ] at hab
+  rwa [Set.Sum.elim_range, Set.range_comp, Set.range_comp, ← Set.image_union, hab, Set.image_univ]
 
-/-- Let `0 → K → M → P → 0` be an exact sequence of `R`-modules, let `s : M → K` be a
+/-- Let `0 → K → M → P → 0` be a split exact sequence of `R`-modules, let `s : M → K` be a
 retraction of `f` and `v` be a basis of `M` indexed by `κ ⊕ σ`. Then
 if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ`, then
 the images of `vᵢ` for `i : κ` form a basis of `P`.
 
-For convenience this is stated not for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
+For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
 noncomputable def Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hlib : LinearIndependent R (s ∘ v ∘ b))
-    (hab : Set.range (v ∘ a) ∪ Set.range (v ∘ b) = Set.range v) :
+    (hab : Codisjoint (Set.range a) (Set.range b)) :
     Basis κ R P :=
   Basis.mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))

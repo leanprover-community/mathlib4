@@ -3,7 +3,7 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
@@ -1303,6 +1303,45 @@ theorem eventually_lt_of_limsup_lt {f : Filter α} [ConditionallyCompleteLinearO
     ∀ᶠ a in f, u a < b :=
   eventually_lt_of_lt_liminf (β := βᵒᵈ) h hu
 
+section ConditionallyCompleteLinearOrder
+
+variable [ConditionallyCompleteLinearOrder α]
+
+/-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, eventually we have `u b < x + ε`. -/
+theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddMonoid α] [AddLeftStrictMono α]
+    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x)
+    (hε : 0 < ε) :
+    ∀ᶠ b : β in atTop, u b < x + ε :=
+  eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
+
+/-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
+theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeftStrictMono α]
+    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop )
+    (hε : ε < 0) :
+    ∀ᶠ b : β in atTop, x + ε < u b :=
+  eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
+
+/-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
+  number `n` such that `u n < x + ε`.  -/
+theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+    (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
+    ∃ n : PNat, u n < x + ε := by
+  have h : ∀ᶠ n : ℕ in atTop, u n < x + ε := eventually_lt_add_pos_of_limsup_le hu_bdd hu hε
+  simp only [eventually_atTop] at h
+  obtain ⟨n, hn⟩ := h
+  exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
+
+/-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
+  number `n` such that ` x + ε < u n`.  -/
+theorem exists_lt_of_le_liminf [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+    (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
+    ∃ n : PNat, x + ε < u n := by
+  have h : ∀ᶠ n : ℕ in atTop, x + ε < u n := eventually_add_neg_lt_of_le_liminf hu_bdd hu hε
+  simp only [eventually_atTop] at h
+  obtain ⟨n, hn⟩ := h
+  exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
+end ConditionallyCompleteLinearOrder
+
 theorem le_limsup_of_frequently_le {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α}
     {u : α → β} {b : β} (hu_le : ∃ᶠ x in f, b ≤ u x)
     (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
@@ -1430,7 +1469,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply Subset.antisymm
     · apply iUnion_subset (fun j ↦ ?_)
       by_cases hj : j ∈ m
-      · have : j = liminf_reparam f s p j := by simp only [liminf_reparam, hj, ite_true]
+      · have : j = liminf_reparam f s p j := by simp only [m, liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
       · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
@@ -1443,8 +1482,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply (Iic_ciInf _).symm
     change liminf_reparam f s p j ∈ m
     by_cases Hj : j ∈ m
-    · simpa only [liminf_reparam, if_pos Hj] using Hj
-    · simp only [liminf_reparam, if_neg Hj]
+    · simpa only [m, liminf_reparam, if_pos Hj] using Hj
+    · simp only [m, liminf_reparam, if_neg Hj]
       have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
         rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩

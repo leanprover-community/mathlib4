@@ -353,6 +353,10 @@ theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+    and_or_left, and_not_self_iff, or_false]
+
 end Propositional
 
 /-! ### Declarations about equality -/
@@ -371,8 +375,6 @@ theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → P
     (∀ a (_ : a ∈ s) b (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
   forall_cond_comm
 
-@[deprecated (since := "2024-03-23")] alias ball_cond_comm := forall_cond_comm
-@[deprecated (since := "2024-03-23")] alias ball_mem_comm := forall_mem_comm
 
 lemma ne_of_eq_of_ne {α : Sort*} {a b c : α} (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c := h₁.symm ▸ h₂
 lemma ne_of_ne_of_eq {α : Sort*} {a b c : α} (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c := h₂ ▸ h₁
@@ -424,6 +426,14 @@ theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a}
 theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 
+@[simp]
+theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
+    HEq (cast e a) c ↔ HEq a c := by subst e; rfl
+
+@[simp]
+theorem heq_cast_iff_heq {α β γ : Sort _} (e : β = γ) (a : α) (b : β) :
+    HEq a (cast e b) ↔ HEq a b := by subst e; rfl
+
 universe u
 variable {α β : Sort u} {e : β = α} {a : α} {b : β}
 
@@ -474,7 +484,7 @@ than `forall_swap`. -/
 theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
   forall_swap
 
-@[simp] lemma imp_forall_iff_forall (A : Prop) (B : A → Prop) :
+lemma imp_forall_iff_forall (A : Prop) (B : A → Prop) :
   (A → ∀ h : A, B h) ↔ ∀ h : A, B h := by by_cases h : A <;> simp [h]
 
 theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x y :=
@@ -779,21 +789,12 @@ theorem BAll.imp_left (H : ∀ x, p x → q x) (h₁ : ∀ x, q x → r x) (x) (
 theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) → ∃ (x : _) (_ : q x), r x
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 
-@[deprecated id (since := "2024-03-23")]
-theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
-
-@[deprecated forall_imp (since := "2024-03-23")]
-theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
-
 theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
   | ⟨x, hq⟩ => ⟨x, H x, hq⟩
 
 theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
 
-@[deprecated (since := "2024-03-23")] alias bex_of_exists := exists_mem_of_exists
-@[deprecated (since := "2024-03-23")] alias exists_of_bex := exists_of_exists_mem
-@[deprecated (since := "2024-03-23")] alias bex_imp := exists₂_imp
 
 theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
 

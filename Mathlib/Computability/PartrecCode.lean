@@ -164,7 +164,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     conv_rhs => rw [← Nat.bit_decomp n, ← Nat.bit_decomp n.div2]
     simp only [ofNatCode.eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
-      simp [encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
+      simp [m, encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
 
 instance instDenumerable : Denumerable Code :=
   mk'
@@ -206,8 +206,6 @@ theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
 
 end Nat.Partrec.Code
 
--- Porting note: Opening `Primrec` inside `namespace Nat.Partrec.Code` causes it to resolve
--- to `Nat.Partrec`. Needs `open _root_.Partrec` support
 section
 open Primrec
 namespace Nat.Partrec.Code
@@ -325,7 +323,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]; simp [m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
+  simp [G₁, m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -435,7 +433,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]; simp [m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
+  simp [G₁, m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -495,10 +493,10 @@ theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]
-theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq]
+theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq, Code.id]
 
 @[simp]
-theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq]
+theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq, curry]
 
 theorem const_prim : Primrec Code.const :=
   (_root_.Primrec.id.nat_iterate (_root_.Primrec.const zero)
@@ -557,7 +555,6 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     | prec cf cg pf pg => exact pf.prec pg
     | rfind' cf pf => exact pf.rfind'
 
--- Porting note: `>>`s in `evaln` are now `>>=` because `>>`s are not elaborated well in Lean4.
 /-- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
 undecidability, `evaln` takes a parameter `k` and fails if it encounters a number ≥ k in the course
 of its execution. Other than this, the semantics are the same as in `Nat.Partrec.Code.eval`.
@@ -902,7 +899,7 @@ private theorem evaln_map (k c n) :
     ((List.range k)[n]?.bind fun a ↦ evaln k c a) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.getElem?_range kn]
-  · rw [List.getElem?_len_le]
+  · rw [List.getElem?_eq_none]
     · cases e : evaln k c n
       · rfl
       exact kn.elim (evaln_bound e)
@@ -948,7 +945,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         rw [hg (Nat.pair_lt_pair_right _ lg)]
         cases evaln k cg n
         · rfl
-        simp [hg (Nat.pair_lt_pair_right _ lf)]
+        simp [k, hg (Nat.pair_lt_pair_right _ lf)]
       · cases' encode_lt_prec cf cg with lf lg
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases n.unpair.2
@@ -957,7 +954,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
         cases evaln k' _ _
         · rfl
-        simp [hg (Nat.pair_lt_pair_right _ lg)]
+        simp [k, hg (Nat.pair_lt_pair_right _ lg)]
       · have lf := encode_lt_rfind' cf
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases' evaln k cf n with x
@@ -1005,7 +1002,7 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
   ⟨curry cg (encode cF),
     funext fun n =>
       show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
-        simp [g, eg', eF', Part.map_id']⟩
+        simp [F, g, eg', eF', Part.map_id']⟩
 
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
