@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Data.Finset.Pointwise.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Schnirelmann density
@@ -274,37 +274,23 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
 
 open scoped Pointwise
 
-instance {α : Type*} [CanonicallyOrderedAddCommMonoid α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)]
-    [Sub α] [OrderedSub α] [DecidableRel (· ≤ · : α → α → Prop)]
-    {a : α} {B : Set α} [DecidablePred (· ∈ B)] :
-    DecidablePred (· ∈ a +ᵥ B) := fun x =>
-  decidable_of_iff (a ≤ x ∧ x - a ∈ B) <| by
-    simp only [Set.mem_vadd_set, vadd_eq_add]
-    constructor
-    case mp => exact fun h => ⟨_, h.2, add_tsub_cancel_of_le h.1⟩
-    case mpr =>
-      rintro ⟨c, hc, rfl⟩
-      exact ⟨le_self_add, add_tsub_cancel_left a _ ▸ hc⟩
+section
 
-instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBot α]
-    [DecidableEq α] {a : α} {B : Set α} [DecidablePred (· ∈ B)] :
-    DecidablePred (· ∈ a +ᵥ B) := fun x =>
-  decidable_of_iff (∃ b ∈ Finset.Iic x, b ∈ B ∧ a + b = x) <| by
-    simp only [Set.mem_vadd_set, vadd_eq_add, Finset.mem_Iic]
-    constructor
-    case mp =>
-      rintro ⟨b, hb, hb', rfl⟩
-      exact ⟨b, hb', rfl⟩
-    case mpr =>
-      rintro ⟨b, hb, rfl⟩
-      exact ⟨b, le_add_self, hb, rfl⟩
+variable {α : Type*} [OrderedAddCommMonoid α] [CanonicallyOrderedAdd α]
+  {a : α} {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
 
-instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBot α]
-    [DecidableEq α] {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] :
+instance [AddLeftReflectLE α] [Sub α] [OrderedSub α] [DecidableRel (· ≤ · : α → α → Prop)] :
+    DecidablePred (· ∈ a +ᵥ B) := fun x =>
+  decidable_of_iff (a ≤ x ∧ x - a ∈ B) <| by aesop (add simp Set.mem_vadd_set)
+
+instance [LocallyFiniteOrderBot α] [DecidableEq α] :
+    DecidablePred (· ∈ a +ᵥ B) := fun x =>
+  decidable_of_iff (∃ b ∈ Finset.Iic x, b ∈ B ∧ a + b = x) <| by aesop (add simp Set.mem_vadd_set)
+
+instance [LocallyFiniteOrderBot α] [DecidableEq α] :
     DecidablePred (· ∈ A + B) := fun x =>
   decidable_of_iff' (∃ a ∈ Finset.Iic x, a ∈ A ∧ x ∈ a +ᵥ B) <| by
-    simp only [←vadd_eq_add, ←Set.iUnion_vadd_set, Set.mem_iUnion₂, exists_prop, mem_Iic]
+    simp only [← vadd_eq_add, ← Set.iUnion_vadd_set, Set.mem_iUnion₂, exists_prop, mem_Iic]
     constructor
     case mp =>
       rintro ⟨a, ha, b, hb, rfl⟩
@@ -313,17 +299,9 @@ instance {α : Type*} [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrderBo
       rintro ⟨a, _, ha', ha''⟩
       exact ⟨a, ha', ha''⟩
 
-lemma Set.diff_nonempty {α : Type*} {s t : Set α} :
-    (s \ t).Nonempty ↔ ¬ s ⊆ t := by
-  rw [nonempty_iff_ne_empty, ne_eq, diff_eq_empty]
+end
 
-lemma Finset.singleton_inter {α : Type*} [DecidableEq α] {a : α} {s : Finset α} :
-    {a} ∩ s = if a ∈ s then {a} else ∅ := by
-  split_ifs
-  case pos h => exact singleton_inter_of_mem h
-  case neg h => exact singleton_inter_of_not_mem h
-
-lemma add_max {α : Type*} [LinearOrderedAddCommMonoid α]
+lemma add_max'_add {α : Type*} [LinearOrder α] [Add α] [AddLeftMono α] [AddRightMono α]
     {A B : Finset α} (hA : A.Nonempty) (hB : B.Nonempty) :
     (A + B).max' (hA.add hB) = A.max' hA + B.max' hB := by
   refine le_antisymm ?_ ?_
@@ -334,6 +312,27 @@ lemma add_max {α : Type*} [LinearOrderedAddCommMonoid α]
     exact add_le_add (Finset.le_max' _ _ ha) (Finset.le_max' _ _ hb)
   next => exact Finset.le_max' _ _ (Finset.add_mem_add (Finset.max'_mem _ _) (Finset.max'_mem _ _))
 
+lemma add_min'_add {α : Type*} [LinearOrder α] [Add α] [AddLeftMono α] [AddRightMono α]
+    {A B : Finset α} (hA : A.Nonempty) (hB : B.Nonempty) :
+    (A + B).min' (hA.add hB) = A.min' hA + B.min' hB :=
+  add_max'_add (α := αᵒᵈ) hA hB
+
+-- lemma max'_vadd_finset_not_subset {α : Type*} [LinearOrder α] [OrderBot α] [Add α]
+--     {A B : Finset α} (hA : A.Nonempty)
+--     (hB0 : ∃ b ∈ B, b ≠ ⊥) :
+--     ¬ A.max' hA +ᵥ B ⊆ A := by
+--   intro hi
+--   obtain ⟨b, hb, hb0⟩ := hB0
+--   have : A.max' hA + b ≤ A.max' hA := Finset.le_max' _ _ (hi (vadd_mem_vadd_finset hb))
+--   simp? at this
+
+example {α : Type*} [DecidableEq α] [Add α] {A B C : Finset α} :
+    (∀ x ∈ A, x +ᵥ B ⊆ C) ↔ A + B ⊆ C := by
+  rw [@add_subset_iff_left]
+  -- aesop (add simp [subset_iff, mem_vadd_finset, mem_add])
+
+#exit
+
 lemma max'_vadd_finset_not_subset {A B : Finset ℕ} (hA : A.Nonempty) (hB0 : ∃ b ∈ B, b ≠ 0) :
     ¬ A.max' hA +ᵥ B ⊆ A := by
   intro hi
@@ -341,23 +340,47 @@ lemma max'_vadd_finset_not_subset {A B : Finset ℕ} (hA : A.Nonempty) (hB0 : �
   have : A.max' hA + b ≤ A.max' hA := Finset.le_max' _ _ (hi (vadd_mem_vadd_finset hb))
   omega
 
-lemma vadd_finset_subset_add {A B : Finset ℕ} {a : ℕ} (ha : a ∈ A) :
-    a +ᵥ B ⊆ A + B := by
-  simp only [subset_iff, mem_vadd_finset, vadd_eq_add, mem_add]
-  rintro _ ⟨b, hb, rfl⟩
-  exact ⟨a, ha, b, hb, rfl⟩
-
-lemma add_diff_nonempty {A B : Finset ℕ} (hA : A.Nonempty) (hB0 : ∃ b ∈ B, b ≠ 0) :
+lemma add_sdiff_nonempty {α : Type*}
+    [AddCancelMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [DecidableEq α]
+    {A B : Finset α} (hA : A.Nonempty) (hB0 : (B \ {0}).Nonempty) :
     ((A + B) \ A).Nonempty := by
+  obtain ⟨a, ha, ha'⟩ := Finset.exists_maximal A hA
+  simp only [Finset.Nonempty, mem_sdiff, mem_singleton] at hB0
+  obtain ⟨b, hb, hb0⟩ := hB0
   rw [sdiff_nonempty]
   intro h
-  refine max'_vadd_finset_not_subset hA hB0 ?_
-  exact (vadd_finset_subset_add (Finset.max'_mem _ _)).trans h
+  exact ha' _ (h (add_mem_add ha hb)) (lt_add_of_pos_right a (pos_iff_ne_zero.2 hb0))
 
-lemma add_diff_nonempty_iff {A B : Finset ℕ} :
-    ((A + B) \ A).Nonempty ↔ A.Nonempty ∧ ∃ b ∈ B, b ≠ 0 := by
-  refine ⟨?_, fun h => add_diff_nonempty h.1 h.2⟩
-  aesop (add simp [mem_add, Finset.Nonempty])
+lemma add_subset_left_iff {α : Type*}
+    [AddCancelMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [DecidableEq α]
+    {A B : Finset α} :
+    A + B ⊆ A ↔ A = ∅ ∨ B ⊆ {0} := by
+  constructor
+  · contrapose!
+    rintro ⟨hA, hB⟩
+    rw [← sdiff_nonempty] at hB ⊢
+    exact add_sdiff_nonempty (nonempty_iff_ne_empty.2 hA) hB
+  · rintro (rfl | h)
+    · simp
+    · exact (add_subset_add_left h).trans (by simp [singleton_zero])
+
+example {A B : Finset ℕ} :
+    ((A + B) \ A).Nonempty ↔ ∃ a ∈ A, ((a +ᵥ B) \ A).Nonempty := by
+  constructor
+  · rintro ⟨x, hx⟩
+    simp only [mem_sdiff, mem_add] at hx
+    obtain ⟨⟨x, hx, y, hy, rfl⟩, hA⟩ := hx
+    refine ⟨x, hx, x + y, ?_⟩
+    simp only [mem_sdiff]
+    constructor
+    · apply vadd_mem_vadd_finset hy
+    · exact hA
+  · rintro ⟨a, ha, x, hx⟩
+    simp only [mem_sdiff, mem_vadd_finset] at hx
+    obtain ⟨⟨b, hb, rfl⟩, hA⟩ := hx
+    refine ⟨a +ᵥ b, ?_⟩
+    simp only [mem_sdiff, hA, not_false_iff, and_true]
+    exact add_mem_add ha hb
 
 @[to_additive]
 lemma Finset.card_smul_finset' {α : Type*} [DecidableEq α] [Monoid α] [IsLeftCancelMul α]
@@ -544,7 +567,7 @@ theorem extracted_1 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     (hB'' : B'' = B \ B')
     (m : ℕ) (hm : m ∈ Ioc 0 n) :
     σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
-  induction m using Nat.strongInductionOn
+  induction m using Nat.strongRecOn
   case ind m ih' =>
   rcases eq_empty_or_nonempty (Ioc 0 m ∩ B ∩ Ioc (m - a) m)
   case inl h' => exact extracted_4 n h a hA' hB' hB'' m hm h'
@@ -558,18 +581,19 @@ theorem dyson_mann' {σ : ℝ} {n : ℕ} {A B : Finset ℕ}
     {m : ℕ}
     (hm : m ∈ Ioc 0 n) :
     σ * m ≤ (Ioc 0 m ∩ (A + B)).card := by
-  induction n using Nat.strongInductionOn generalizing A B m
+  induction n using Nat.strongRecOn generalizing A B m
   case ind n ih =>
   generalize hb : B.card = b
-  induction b using Nat.strongInductionOn generalizing A B
+  induction b using Nat.strongRecOn generalizing A B
   case ind b ih' =>
   wlog hB : ∃ b ∈ B, b ≠ 0 generalizing
   · have : B ⊆ {0} := by simpa [-subset_singleton_iff, subset_iff] using hB
     obtain rfl : B = {0} := this.antisymm (by simp [hB0])
     rw [singleton_zero]
     simpa [filter_eq'] using h m hm
-  have : (A.filter (¬ · +ᵥ B ⊆ A)).Nonempty :=
-    ⟨A.max' ⟨0, hA0⟩, mem_filter.2 ⟨max'_mem _ _, max'_vadd_finset_not_subset _ hB⟩⟩
+  have : (A.filter (¬ · +ᵥ B ⊆ A)).Nonempty := by
+    sorry
+    -- ⟨A.max' ⟨0, hA0⟩, mem_filter.2 ⟨max'_mem _ _, max'_vadd_finset_not_subset _ hB⟩⟩
   let a := min' _ this
   obtain ⟨ha, ha'⟩ : a ∈ A ∧ ¬ a +ᵥ B ⊆ A := by simpa using Finset.min'_mem _ this
   have ha'' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A := by
@@ -605,7 +629,7 @@ theorem dyson_mann {σ : ℝ} {n : ℕ} {A B : Set ℕ} [DecidablePred (· ∈ A
     {m : ℕ} (hm : m ∈ Ioc 0 n) :
     σ * m ≤ ((Ioc 0 m).filter (· ∈ A + B)).card := by
   simp only [mem_Ioc, and_imp] at hm
-  have h' : ∀ m ∈ Ioc 0 n, ∀ p : ℕ → Prop, ∀ [h : DecidablePred p],
+  have h' : ∀ m ∈ Ioc 0 n, ∀ p : ℕ → Prop, ∀ h : DecidablePred p,
       Ioc 0 m ∩ (Icc 0 n).filter p = (Ioc 0 m).filter p := by
     intro m hm p hp
     ext i
@@ -637,7 +661,7 @@ theorem mann_aux {σA σB : ℝ} {A B : Set ℕ} [DecidablePred (· ∈ A)] [Dec
   case inl =>
     simp only [zero_add, hσB1, min_eq_left]
     refine (hB _ hn).trans ?_
-    gcongr -- gcongr pattern bug in filter
+    gcongr
     intro i hi
     rw [Set.mem_add]
     exact ⟨0, hA0, i, hi, zero_add _⟩
@@ -654,13 +678,13 @@ theorem mann {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B
     (hA0 : 0 ∈ A) (hB0 : 0 ∈ B) :
     min (schnirelmannDensity A + schnirelmannDensity B) 1 ≤ schnirelmannDensity (A + B) :=
   le_schnirelmannDensity_iff.2 fun n hn =>
-    (le_div_iff (by positivity)).2 <|
+    (le_div_iff₀ (by positivity)).2 <|
       mann_aux schnirelmannDensity_nonneg schnirelmannDensity_le_one
         schnirelmannDensity_nonneg schnirelmannDensity_le_one hA0 hB0
         (fun n _ => schnirelmannDensity_mul_le_card_filter)
         (fun n _ => schnirelmannDensity_mul_le_card_filter) _ hn
 
-theorem large_of_add_large_aux {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
+theorem add_eq_univ_of_one_le {A B : Set ℕ} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
     (hA : 0 ∈ A) (hB : 0 ∈ B)
     (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) :
     A + B = Set.univ := by
