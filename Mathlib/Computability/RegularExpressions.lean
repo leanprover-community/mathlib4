@@ -91,7 +91,7 @@ theorem plus_def (P Q : RegularExpression α) : plus P Q = P + Q :=
 theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 
--- This was renamed to `matches'` during the port of Lean 4 as `matches` is a reserved work.
+-- This was renamed to `matches'` during the port of Lean 4 as `matches` is a reserved word.
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
