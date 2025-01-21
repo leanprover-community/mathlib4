@@ -1156,13 +1156,13 @@ protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
   map_update_add' {dec} m i x y := by
     rw [Subsingleton.elim dec (by infer_instance)]
     have : (List.finRange n).indexOf i < n := by
-      simpa using List.indexOf_lt_length.2 (List.mem_finRange i)
+      simpa using List.indexOf_lt_length_iff.2 (List.mem_finRange i)
     simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
       mul_add, add_mul]
   map_update_smul' {dec} m i c x := by
     rw [Subsingleton.elim dec (by infer_instance)]
     have : (List.finRange n).indexOf i < n := by
-      simpa using List.indexOf_lt_length.2 (List.mem_finRange i)
+      simpa using List.indexOf_lt_length_iff.2 (List.mem_finRange i)
     simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this]
 
 variable {R A n}
