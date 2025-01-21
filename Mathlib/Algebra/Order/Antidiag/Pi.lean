@@ -80,7 +80,7 @@ where
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_eq_cons] at hij'
+            rw [Fin.cons_inj] at hij'
             ext
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'

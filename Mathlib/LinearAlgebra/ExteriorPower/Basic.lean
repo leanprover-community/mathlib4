@@ -82,7 +82,7 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
     Module.Relations R where
   G := ι → M
   R := Rels R ι M
-  relation r := match r with
+  relation
     | .add m i x y => Finsupp.single (update m i x) 1 +
         Finsupp.single (update m i y) 1 -
         Finsupp.single (update m i (x + y)) 1
