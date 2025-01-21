@@ -49,8 +49,7 @@ structure SupHom (α β : Type*) [Max α] [Max β] where
   Instead use the coercion coming from the `FunLike` instance. -/
   toFun : α → β
   /-- A `SupHom` preserves suprema.
-  Do not use this directly. Use `SupHom.map_sup` instead.
-  -/
+  Do not use this directly. Use `SupHom.map_sup` instead. -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
@@ -339,6 +338,9 @@ instance : FunLike (SupHom α β) α β where
 
 instance : SupHomClass (SupHom α β) α β where
   map_sup := SupHom.map_sup'
+
+lemma map_sup (f : SupHom α β) (a b : α) : f (a ⊔ b) = f a ⊔ f b := by
+  apply map_sup'
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
 
