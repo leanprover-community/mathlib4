@@ -41,12 +41,12 @@ structure IsConicalLimit where
 
 namespace IsConicalLimit
 
-variable {V}
+variable {V} {c}
 
 /-- Transport evidence that a cone is a `V`-enriched limit cone across
 an isomorphism of cones. -/
-noncomputable def ofIso {r₁ r₂ : Cone F} (h : IsConicalLimit V r₁)
-    (i : r₁ ≅ r₂) : IsConicalLimit V r₂ where
+noncomputable def ofIso {r₁ r₂ : Cone F} (h : IsConicalLimit V r₁) (i : r₁ ≅ r₂) :
+    IsConicalLimit V r₂ where
   isLimit := h.isLimit.ofIsoLimit i
   isConicalLimit X := h.isConicalLimit X |>.ofIsoLimit
     { hom := Functor.mapConeMorphism _ i.hom
@@ -65,11 +65,10 @@ for every `X : C`.
 -- Adjusting the size of `J` would also work, but this is more universe polymorphic.
 variable [HasLimitsOfShape J V]
 
-variable (V) in
+variable (V) (c) in
 
 /-- The canonical comparison map with the limit in `V`. -/
-noncomputable def limitComparison :
-    (X ⟶[V] c.pt) ⟶ limit (F ⋙ eCoyoneda V X) :=
+noncomputable def limitComparison : (X ⟶[V] c.pt) ⟶ limit (F ⋙ eCoyoneda V X) :=
   limit.lift _ <| (eCoyoneda V X).mapCone c
 
 lemma limitComparison_eq_conePointUniqueUpToIso (h : IsConicalLimit V c)
@@ -87,7 +86,7 @@ lemma isIso_limitComparison (h : IsConicalLimit V c) : IsIso (limitComparison V 
 /-- For all `X : C`, the canonical comparison map with the limit in `V` as isomorphism -/
 noncomputable def limitComparisonIso (h : IsConicalLimit V c) :
     (X ⟶[V] c.pt) ≅ (limit (F ⋙ eCoyoneda V X)) := by
-  have := isIso_limitComparison c X h
+  have := isIso_limitComparison X h
   exact (asIso (limitComparison V c X))
 
 variable (V) in
@@ -121,11 +120,10 @@ theorem nonempty_isConicalLimit_iff (hc : IsLimit c) : Nonempty (IsConicalLimit 
     ∀ X, IsIso (IsConicalLimit.limitComparison V c X) := by
   constructor
   · intro ⟨h⟩ X
-    exact isIso_limitComparison c X h
+    exact isIso_limitComparison X h
   · intro h
-    exact ⟨ofIsIsoLimitComparison V c hc⟩
+    exact ⟨ofIsIsoLimitComparison V hc⟩
 
 end IsConicalLimit
-
 
 end CategoryTheory.Enriched
