@@ -79,6 +79,11 @@ theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K 
     (NoZeroSMulDivisors.algebraMap_injective B L).eq_iff] at hk
   exact ⟨a, hk⟩
 
+/-- A variant of `Algebra.isInvariant_of_isGalois`, replacing `Gal(L/K)` by `Aut(B/A)`. -/
+theorem Algebra.isInvariant_of_isGalois' [FiniteDimensional K L] [IsGalois K L] :
+    Algebra.IsInvariant A B (B ≃ₐ[A] B) :=
+  ⟨fun b h => (isInvariant_of_isGalois A K L B).1 b (fun g => h (galRestrict A K L B g))⟩
+
 end Galois
 
 section transitivity
