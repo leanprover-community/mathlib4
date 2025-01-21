@@ -20,20 +20,13 @@ variable {X : Type*} [CompleteLattice X]
 
 /-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
 In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
--- TODO Nucleus extends InfHom
-structure Nucleus (X : Type*) [SemilatticeInf X] where
-  /-- The underlying Function.
-  Do not use this function directly. Instead use the coercion coming from the `FunLike` instance. -/
-  toFun : X → X
+structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   /-- A `Nucleus` is idempotent.
-  Do not use this directly. Instead use `Nucleus.idempotent`. -/
+  Do not use this directly. Instead use `NucleusClass.idempotent`. -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
   /-- A `Nucleus` is increasing.
-  Do not use this directly. Instead use `Nucleus.increasing`. -/
+  Do not use this directly. Instead use `NucleusClass.increasing`. -/
   increasing' (x : X) : x ≤ toFun x
-  /-- A `Nucleus` preserves infima.
-  Do not use this directly. Instead use `Nucleus.map_inf`. -/
-  map_inf' (x y: X) : toFun (x ⊓ y) = toFun x ⊓ toFun y
 
 /-- `NucleusClass F X` states that F is a type of Nuclei. -/
 class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
@@ -43,18 +36,9 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
   /-- A Nucleus is increasing.-/
   increasing (x : X) (f : F) : x ≤ f x
 
-open Nucleus
+namespace Nucleus
 
 variable {n : Nucleus X} {x y : X}
-
-lemma monotone' : Monotone n.toFun := by
-  intro h
-  sorry
-
-
-def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
-   ClosureOperator.mk' (n.toFun) (monotone') (n.increasing') (n.idempotent')
-
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
@@ -78,14 +62,13 @@ instance : NucleusClass (Nucleus X) X where
   increasing _ _ := increasing
   map_inf _ _ _ := map_inf
 
-
-
+def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
+   ClosureOperator.mk' n (OrderHomClass.mono n) n.increasing' n.idempotent'
 
 /--
 We can proove that two Nuclei are equal by showing that their functions are the same.
 -/
-@[ext]
-lemma ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
+@[ext] lemma ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
   DFunLike.ext n m h
 
 /--
@@ -125,3 +108,5 @@ instance top : Top (Nucleus X) where
 
 instance : OrderTop (Nucleus X) where
   le_top := (by simp [Nucleus.top, Nucleus.le_iff])
+
+end Nucleus
