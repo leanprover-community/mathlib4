@@ -8,7 +8,6 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
@@ -82,7 +81,6 @@ def digits : ℕ → ℕ → List ℕ
 theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 
@@ -98,7 +96,7 @@ theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
 theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 
@@ -306,8 +304,8 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
   induction' n using Nat.strong_induction_on with n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
-  · have hb0 : b ≠ 0 := (Nat.succ_le_iff.1 hb).ne_bot
-    simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
+  · simp [IH, h]
+    aesop
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
     refine Nat.succ_le_of_lt (log_pos hb ?_)
@@ -408,6 +406,19 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
+  induction k generalizing m with
+  | zero => simp
+  | succ k ih =>
+    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
+    let h1 := digits_def' hb hmb
+    have h2 : m = m * b / b :=
+      Nat.eq_div_of_mul_eq_left (not_eq_zero_of_lt hb) rfl
+    simp only [mul_mod_left, ← h2] at h1
+    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
+    ring_nf
+
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
@@ -424,6 +435,13 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
     · exact (List.getLast_append' _ _ h) ▸
           (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
+
+theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    digits b n ++ List.replicate k 0 ++ digits b m =
+    digits b (n + b ^ ((digits b n).length + k) * m) := by
+  rw [List.append_assoc, ← digits_base_pow_mul hb hm]
+  simp only [digits_append_digits (zero_lt_of_lt hb), digits_inj_iff, add_right_inj]
+  ring
 
 theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
@@ -570,7 +588,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · rfl
+  · simp
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
@@ -722,7 +740,6 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial
-@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux
 
 lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
@@ -739,7 +756,6 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply toDigitsCore_lens_eq_aux
       exact lens_eq
-@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq
 
 lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
@@ -770,7 +786,6 @@ lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
         have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ hlt
         simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
-@[deprecated (since := "2024-02-19")] alias to_digits_core_length := toDigitsCore_length
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
@@ -803,8 +818,7 @@ theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 
   have b2 : 1 < b :=
     lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
   refine ⟨?_, b2, n0⟩
-  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb,
-    (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
+  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
 
 /-
 Porting note: this part of the file is tactic related.

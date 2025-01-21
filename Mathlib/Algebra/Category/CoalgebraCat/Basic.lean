@@ -46,8 +46,9 @@ variable (R)
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
 @[simps]
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
-    CoalgebraCat R where
-  instCoalgebra := (inferInstance : Coalgebra R X)
+    CoalgebraCat R :=
+  { ModuleCat.of R X with
+    instCoalgebra := (inferInstance : Coalgebra R X) }
 
 variable {R}
 
@@ -62,7 +63,7 @@ lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
 /-- A type alias for `CoalgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : CoalgebraCat.{v} R) :=
+structure Hom (V W : CoalgebraCat.{v} R) where
   /-- The underlying `CoalgHom` -/
   toCoalgHom : V →ₗc[R] W
 
@@ -95,17 +96,17 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
     Hom.toCoalgHom (𝟙 M) = CoalgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
+instance hasForget : HasForget.{v} (CoalgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toCoalgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => f.toCoalgHom.toLinearMap }
+      map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :
@@ -114,7 +115,7 @@ theorem forget₂_obj (X : CoalgebraCat R) :
 
 @[simp]
 theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f.toCoalgHom : X →ₗ[R] Y) :=
+    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = ModuleCat.ofHom (f.toCoalgHom : X →ₗ[R] Y) :=
   rfl
 
 end CoalgebraCat

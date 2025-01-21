@@ -31,14 +31,14 @@ instance instPowNat : Pow (Perm α) ℕ where
   pow f n := ⟨f^[n], f.symm^[n], f.left_inv.iterate _, f.right_inv.iterate _⟩
 
 instance permGroup : Group (Perm α) where
-  mul_assoc f g h := (trans_assoc _ _ _).symm
+  mul_assoc _ _ _ := (trans_assoc _ _ _).symm
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
   npow n f := f ^ n
-  npow_succ n f := coe_fn_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n
-  zpow_succ' n f := coe_fn_injective <| Function.iterate_succ _ _
+  zpow_succ' _ _ := coe_fn_injective <| Function.iterate_succ _ _
 
 @[simp]
 theorem default_eq : (default : Perm α) = 1 :=
@@ -351,7 +351,7 @@ theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
   | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
 private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x ↔ p ((f ^ n) x)
-  | Int.ofNat n => pow_aux hf
+  | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
     exact inv_aux.1 (pow_aux hf)

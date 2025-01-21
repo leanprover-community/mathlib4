@@ -400,7 +400,7 @@ It is assumed that there is a "linear order" on all the semirings which appear i
 for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`).
 
 TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
-instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR #16984 provides a
+instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR https://github.com/leanprover-community/mathlib4/pull/16984 provides a
 proof-of-concept implementation of this variant, but it would need some polishing before joining
 Mathlib.
 
@@ -464,9 +464,9 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
-    let k : ℕ ← AtomM.addAtom x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x), k)],
-      q(NF.atom_eq_eval $x)⟩
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+      q(NF.atom_eq_eval $x')⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -483,7 +483,8 @@ partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ :
     let pf : Q(NF.eval $(l₁.toNF) = NF.eval $(l₁.toNF)) := q(rfl)
     pure ([], pf)
   /- if one of the lists is empty and the other one is not, recurse down the nonempty one,
-    forming goals that each of the listed coefficents is equal to zero -/
+    forming goals that each of the listed coefficients is equal to
+    zero -/
   | [], ((a, x), _) ::ᵣ L =>
     let mvar : Q((0:$R) = $a) ← mkFreshExprMVar q((0:$R) = $a)
     let (mvars, pf) ← reduceCoefficientwise iRM [] L
@@ -562,8 +563,8 @@ def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 /-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
 These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
 get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
-most commonly occuring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms (`ℕ`,
-`ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
+most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
@@ -572,10 +573,7 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
   -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx : Simp.Context := {
-      config      := { failIfUnchanged := false }
-      simpTheorems := #[thms]
-    }
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in match_scalars tactic: postprocessing should not close goals"
   return r

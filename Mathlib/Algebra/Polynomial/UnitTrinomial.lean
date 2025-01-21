@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Polynomial.Mirror
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Order.Units
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Unit Trinomials
@@ -128,7 +130,7 @@ theorem not_isUnit (hp : p.IsUnitTrinomial) : ¬IsUnit p := by
       ((trinomial_natDegree hkm hmn w.ne_zero).symm.trans
         (natDegree_eq_of_degree_eq_some (degree_eq_zero_of_isUnit h)))
 
-theorem card_support_eq_three (hp : p.IsUnitTrinomial) : p.support.card = 3 := by
+theorem card_support_eq_three (hp : p.IsUnitTrinomial) : #p.support = 3 := by
   obtain ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩ := hp
   exact card_support_trinomial hkm hmn u.ne_zero v.ne_zero w.ne_zero
 
@@ -155,7 +157,7 @@ theorem trailingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.trailingCoeff :
 end IsUnitTrinomial
 
 theorem isUnitTrinomial_iff :
-    p.IsUnitTrinomial ↔ p.support.card = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
+    p.IsUnitTrinomial ↔ #p.support = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
   refine ⟨fun hp => ⟨hp.card_support_eq_three, fun k => hp.coeff_isUnit⟩, fun hp => ?_⟩
   obtain ⟨k, m, n, hkm, hmn, x, y, z, hx, hy, hz, rfl⟩ := card_support_eq_three.mp hp.1
   rw [support_trinomial hkm hmn hx hy hz] at hp
@@ -245,14 +247,8 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · suffices m = m' by
-      rw [this] at hp
-      exact Or.inl (hq.trans hp.symm)
-    rw [tsub_add_eq_add_tsub hmn.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm
-    · rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
-      · exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
-      · exact hmn'.le.trans (Nat.le_add_right n k)
-    · exact hmn.le.trans (Nat.le_add_right n k)
+  · obtain rfl : m = m' := by omega
+    exact Or.inl (hq.trans hp.symm)
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)

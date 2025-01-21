@@ -930,14 +930,14 @@ variable (F : C ⥤ D) [Preadditive C] [Preadditive D] [HasZeroObject C]
 instance : F.PreservesMonomorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
-    exact ((S.map F).exact_iff_mono (by simp)).1
+    exact ((S.map F).exact_iff_mono (by simp [S])).1
       (((S.exact_iff_mono rfl).2 hf).map F)
 
 
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
-    exact ((S.map F).exact_iff_epi (by simp)).1
+    exact ((S.map F).exact_iff_epi (by simp [S])).1
       (((S.exact_iff_epi rfl).2 hf).map F)
 
 

@@ -5,6 +5,7 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedHahn
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Jordan decomposition
@@ -44,7 +45,7 @@ noncomputable section
 
 open scoped Classical MeasureTheory ENNReal NNReal
 
-variable {α β : Type*} [MeasurableSpace α]
+variable {α : Type*} [MeasurableSpace α]
 
 namespace MeasureTheory
 
@@ -187,7 +188,7 @@ namespace SignedMeasure
 open scoped Classical
 open JordanDecomposition Measure Set VectorMeasure
 
-variable {s : SignedMeasure α} {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+variable {s : SignedMeasure α}
 
 /-- Given a signed measure `s`, `s.toJordanDecomposition` is the Jordan decomposition `j`,
 such that `s = j.toSignedMeasure`. This property is known as the Jordan decomposition

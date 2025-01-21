@@ -36,7 +36,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 namespace MeasureTheory
 
 variable {Ω E : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E] {f : ℕ → Ω → E} {ℱ : Filtration ℕ m0} {n : ℕ}
+  [NormedSpace ℝ E] [CompleteSpace E] {f : ℕ → Ω → E} {ℱ : Filtration ℕ m0}
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the predictable process. See `martingalePart` for the martingale. -/
@@ -135,7 +135,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
     (hf.integrable n).add <| hgint n)
   refine (eventuallyEq_iff_sub.2 ?_).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω
-  unfold_let h at hω
+  unfold h at hω
   rw [Pi.sub_apply] at hω
   rw [hω, Pi.sub_apply, martingalePart]
   simp [hg0]

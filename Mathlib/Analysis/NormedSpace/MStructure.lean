@@ -3,7 +3,7 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
@@ -166,7 +166,7 @@ instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
 theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑P :=
   rfl
 
-instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
+instance Subtype.inf [FaithfulSMul M X] : Min { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
 
 @[simp]
@@ -174,7 +174,7 @@ theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     ↑(P ⊓ Q) = (↑P : M) * ↑Q :=
   rfl
 
-instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
+instance Subtype.sup [FaithfulSMul M X] : Max { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
 
 @[simp]
@@ -241,7 +241,7 @@ theorem compl_mul {P : { P : M // IsLprojection X P }} {Q : M} : ↑Pᶜ * Q = Q
   rw [coe_compl, sub_mul, one_mul]
 
 theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑Pᶜ = 0 := by
-  rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
+  rw [coe_compl, P.prop.proj.mul_one_sub_self]
 
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑Pᶜ * R) * (↑P + ↑Q * ↑R * ↑Pᶜ) = ↑P + ↑Q * ↑R * ↑Pᶜ := by
@@ -258,6 +258,8 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
 -- (deterministic) timeout at 'whnf', maximum number of heartbeats (800000) has been reached"
 -- My workaround is to show instance Lattice first
 instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
+  sup := max
+  inf := min
   le_sup_left P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
       sub_self, add_zero]

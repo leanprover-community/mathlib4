@@ -43,7 +43,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
+  [IsManifold I 1 M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
@@ -55,10 +55,10 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
   have hI : range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
   have H₁ : 𝓝[range I] (e c) = 𝓝 (e c) := by rw [hI, nhdsWithin_univ]
   have H₂ : map e.symm (𝓝 (e c)) = 𝓝 c := by
-    rw [← map_extChartAt_symm_nhdsWithin_range I c, H₁]
+    rw [← map_extChartAt_symm_nhdsWithin_range (I := I) c, H₁]
   rw [← H₂, eventually_map]
   replace hd : ∀ᶠ y in 𝓝 (e c), DifferentiableAt ℂ (f ∘ e.symm) y := by
-    have : e.target ∈ 𝓝 (e c) := H₁ ▸ extChartAt_target_mem_nhdsWithin I c
+    have : e.target ∈ 𝓝 (e c) := H₁ ▸ extChartAt_target_mem_nhdsWithin c
     filter_upwards [this, Tendsto.eventually H₂.le hd] with y hyt hy₂
     have hys : e.symm y ∈ (chartAt H c).source := by
       rw [← extChartAt_source I c]
@@ -68,7 +68,7 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
       e.right_inv hyt] at hy₂
     exact hy₂.2
   convert norm_eventually_eq_of_isLocalMax hd _
-  · exact congr_arg f (extChartAt_to_inv _ _).symm
+  · exact congr_arg f (extChartAt_to_inv _).symm
   · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
 
 /-!
@@ -90,7 +90,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     replace hm : IsLocalMax (‖f ·‖) x :=
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDifferentiableAt I 𝓘(ℂ, F) f y :=
-      (eventually_mem_nhds.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
+      (eventually_mem_nhds_iff.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
     exact (Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax hd hm).mono fun _ ↦
       (Eq.trans · hx.2)
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩

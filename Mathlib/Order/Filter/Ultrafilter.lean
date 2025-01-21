@@ -119,7 +119,7 @@ theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f 
 def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨fun hf => by simp [hf] at h⟩
-  le_of_le g hg hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
+  le_of_le _ _ hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
 
 /-- If `f : Filter α` is an atom, then it is an ultrafilter. -/
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
@@ -161,12 +161,22 @@ theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) �
   simp only [imp_iff_not_or, eventually_or, eventually_not]
 
 theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
-  Finite.induction_on hs (by simp) fun _ _ his => by
+  Finite.induction_on _ hs (by simp) fun _ _ his => by
     simp [union_mem_iff, his, or_and_right, exists_or]
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
   simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), exists_mem_image]
+
+lemma eventually_exists_mem_iff {is : Set β} {P : β → α → Prop} (his : is.Finite) :
+    (∀ᶠ i in f, ∃ a ∈ is, P a i) ↔ ∃ a ∈ is, ∀ᶠ i in f, P a i := by
+  simp only [Filter.Eventually, Ultrafilter.mem_coe]
+  convert f.finite_biUnion_mem_iff his (s := P) with i
+  aesop
+
+lemma eventually_exists_iff [Finite β] {P : β → α → Prop} :
+    (∀ᶠ i in f, ∃ a, P a i) ↔ ∃ a, ∀ᶠ i in f, P a i := by
+  simpa using eventually_exists_mem_iff (f := f) (P := P) Set.finite_univ
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
@@ -251,7 +261,7 @@ theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 
 theorem pure_injective : Injective (pure : α → Ultrafilter α) := fun _ _ h =>
-  Filter.pure_injective (congr_arg Ultrafilter.toFilter h : _)
+  Filter.pure_injective (congr_arg Ultrafilter.toFilter h :)
 
 instance [Inhabited α] : Inhabited (Ultrafilter α) :=
   ⟨pure default⟩
@@ -464,5 +474,9 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ = (Filter.map m <| Filter.comap m g) ⊓ (𝓟 <| m '' s) := by rw [map_principal]
     _ ≤ ↑g ⊓ (𝓟 <| m '' s) := inf_le_inf_right _ map_comap_le
     _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
+
+theorem eq_of_le_pure {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
+    (hx : α ≤ pure x) (hy : α ≤ pure y) : x = y :=
+  Filter.pure_injective (hα.le_pure_iff.mp hx ▸ hα.le_pure_iff.mp hy)
 
 end Ultrafilter

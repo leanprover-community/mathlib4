@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # The pointwise product on `Finsupp`.

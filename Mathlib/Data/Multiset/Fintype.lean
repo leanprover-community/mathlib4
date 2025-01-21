@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.Card
 
 /-!
@@ -63,7 +63,7 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 
 -- Syntactic equality
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 
@@ -217,8 +217,7 @@ theorem Multiset.card_coe (m : Multiset α) : Fintype.card m = Multiset.card m :
 @[to_additive]
 theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by
   congr
-  -- Porting note: `simp` fails with "maximum recursion depth has been reached"
-  erw [map_univ_coe]
+  simp
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :

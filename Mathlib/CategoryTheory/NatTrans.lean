@@ -72,7 +72,7 @@ open CategoryTheory.Functor
 
 section
 
-variable {F G H I : C ⥤ D}
+variable {F G H : C ⥤ D}
 
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where

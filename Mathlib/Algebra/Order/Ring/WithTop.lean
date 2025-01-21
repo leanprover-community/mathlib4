@@ -9,8 +9,8 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
-The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
-`WithBot.orderedCommSemiring`.
+The main results of this section are `WithTop.instOrderedCommSemiring` and
+`WithBot.instOrderedCommSemiring`.
 -/
 
 variable {α : Type*}
@@ -119,7 +119,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- Porting note (#11215): TODO: `simp [← coe_mul]` times out
+      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
         simp only [map_coe, ← coe_mul, map_mul] }
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
@@ -164,36 +164,94 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
   __ := instMonoidWithZero
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
 
-variable [CanonicallyOrderedCommSemiring α]
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOrder α]
+    [CanonicallyOrderedAdd α] : NonUnitalNonAssocSemiring (WithTop α) where
+  toAddCommMonoid := WithTop.addCommMonoid
+  __ := WithTop.instMulZeroClass
+  right_distrib a b c := by
+    induction' c with c
+    · by_cases ha : a = 0 <;> simp [ha]
+    · by_cases hc : c = 0; · simp [hc]
+      simp only [mul_coe_eq_bind hc]
+      cases a <;> cases b <;> try rfl
+      exact congr_arg some (add_mul _ _ _)
+  left_distrib c a b := by
+    induction' c with c
+    · by_cases ha : a = 0 <;> simp [ha]
+    · by_cases hc : c = 0; · simp [hc]
+      simp only [coe_mul_eq_bind hc]
+      cases a <;> cases b <;> try rfl
+      exact congr_arg some (mul_add _ _ _)
 
-private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
-  induction' c with c
-  · by_cases ha : a = 0 <;> simp [ha]
-  · by_cases hc : c = 0
-    · simp [hc]
-    simp only [mul_coe_eq_bind hc]
-    cases a <;> cases b
-    repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
+instance instNonAssocSemiring [NonAssocSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [Nontrivial α] : NonAssocSemiring (WithTop α) where
+  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := WithTop.instMulZeroOneClass
+  __ := WithTop.addCommMonoidWithOne
 
-/-- This instance requires `CanonicallyOrderedCommSemiring` as it is the smallest class
-that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddCommMonoid`, both
-of which are required for distributivity. -/
-instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
-  { addCommMonoidWithOne, instCommMonoidWithZero with
-    right_distrib := distrib'
-    left_distrib := fun a b c => by
-      rw [mul_comm, distrib', mul_comm b, mul_comm c] }
+instance instNonUnitalSemiring [NonUnitalSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] : NonUnitalSemiring (WithTop α) where
+  toNonUnitalNonAssocSemiring := WithTop.instNonUnitalNonAssocSemiring
+  __ := WithTop.instSemigroupWithZero
 
-instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
-  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
+instance instSemiring [Semiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : Semiring (WithTop α) where
+  toNonUnitalSemiring := WithTop.instNonUnitalSemiring
+  __ := WithTop.instMonoidWithZero
+  __ := WithTop.addCommMonoidWithOne
+
+instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : CommSemiring (WithTop α) where
+  toSemiring := WithTop.instSemiring
+  __ := WithTop.instCommMonoidWithZero
+
+instance instOrderedCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : OrderedCommSemiring (WithTop α) :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := .asFn)]
-protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
-    [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
+protected def _root_.RingHom.withTopMap {R S : Type*}
+    [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+    [DecidableEq R] [Nontrivial R]
+    [NonAssocSemiring S] [PartialOrder S] [CanonicallyOrderedAdd S]
+    [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
+
+variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [PosMulStrictMono α]
+  {a a₁ a₂ b₁ b₂ : WithTop α}
+
+@[gcongr]
+protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
+  lift a₁ to α using ha.lt_top.ne
+  lift b₁ to α using hb.lt_top.ne
+  obtain rfl | ha₂ := eq_or_ne a₂ ⊤
+  · rw [top_mul (by simpa [bot_eq_zero] using hb.bot_lt.ne')]
+    exact coe_lt_top _
+  obtain rfl | hb₂ := eq_or_ne b₂ ⊤
+  · rw [mul_top (by simpa [bot_eq_zero] using ha.bot_lt.ne')]
+    exact coe_lt_top _
+  lift a₂ to α using ha₂
+  lift b₂ to α using hb₂
+  norm_cast at *
+  obtain rfl | hb₁ := eq_zero_or_pos b₁
+  · rw [mul_zero]
+    exact mul_pos (by simpa [bot_eq_zero] using ha.bot_lt) hb
+  · exact mul_lt_mul ha hb.le hb₁ (zero_le _)
+
+variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
+
+protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | n + 2, _ => fun x y h ↦ by
+    simp_rw [pow_succ _ (n + 1)]
+    exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h
+
+@[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
+  WithTop.pow_right_strictMono hn hab
 
 end WithTop
 
@@ -273,12 +331,14 @@ instance instMonoidWithZero : MonoidWithZero (WithBot α) := WithTop.instMonoidW
 
 end MonoidWithZero
 
-instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
-    CommMonoidWithZero (WithBot α) := WithTop.instCommMonoidWithZero
+instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+    CommMonoidWithZero (WithBot α) :=
+  WithTop.instCommMonoidWithZero
 
-instance commSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] :
     CommSemiring (WithBot α) :=
-  WithTop.commSemiring
+  WithTop.instCommSemiring
 
 instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
   ⟨by
@@ -404,10 +464,13 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0 ⟩
 
-instance orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
-    OrderedCommSemiring (WithBot α) :=
-  { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring with
-    mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
-    mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right }
+instance instOrderedCommSemiring [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] :
+    OrderedCommSemiring (WithBot α) where
+  __ := WithBot.instCommSemiring
+  __ := WithBot.zeroLEOneClass
+  __ := WithBot.orderedAddCommMonoid
+  mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right
 
 end WithBot

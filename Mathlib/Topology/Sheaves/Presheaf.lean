@@ -38,7 +38,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
@@ -62,8 +62,8 @@ lemma ext {X : TopCat} {P Q : Presheaf C X} {f g : P ⟶ Q}
   induction U with | _ U => ?_
   apply w
 
-attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.hasCoeToSort
+  CategoryTheory.HasForget.instFunLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
@@ -103,7 +103,7 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
 For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
 and the notation `x |_ₗ U ⟪i⟫` (`l` stands for `le`) for `i : U ≤ V`.
 -/
-def restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {F : X.Presheaf C}
+def restrict {X : TopCat} {C : Type*} [Category C] [HasForget C] {F : X.Presheaf C}
     {V : Opens X} (x : F.obj (op V)) {U : Opens X} (h : U ⟶ V) : F.obj (op U) :=
   F.map h.op x
 
@@ -118,7 +118,7 @@ open AlgebraicGeometry
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
 the tactic `Top.presheaf.restrict_tac'` -/
-abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {F : X.Presheaf C}
+abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [HasForget C] {F : X.Presheaf C}
     {V : Opens X} (x : F.obj (op V)) (U : Opens X)
     (e : U ≤ V := by restrict_tac) :
     F.obj (op U) :=
@@ -127,18 +127,14 @@ abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
--- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
--- `@[simp]` is removed
-theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
+theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [HasForget C]
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
   rw [← comp_apply, ← Functor.map_comp]
   rfl
 
--- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
--- `@[simp]` is removed
-theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
+theorem map_restrict {X : TopCat} {C : Type*} [Category C] [HasForget C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
@@ -242,9 +238,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
-  delta toPushforwardOfIso
-  simp [-Functor.map_comp, ← Functor.map_comp_assoc]
-  rfl
+  simp [toPushforwardOfIso, Adjunction.homEquiv_unit]
 
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
@@ -259,7 +253,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction, Adjunction.homEquiv_counit]
 
 end Iso
 
@@ -305,7 +299,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso
-    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 
 end

@@ -239,13 +239,14 @@ instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWid
 /-- Finite wide pullbacks are finite limits, so if `C` has all finite limits,
 it also has finite wide pullbacks
 -/
-theorem hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] : HasFiniteWidePullbacks C :=
+instance (priority := 900) hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] :
+    HasFiniteWidePullbacks C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteLimits.out _⟩
 
 /-- Finite wide pushouts are finite colimits, so if `C` has all finite colimits,
 it also has finite wide pushouts
 -/
-theorem hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
+instance (priority := 900) hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
     HasFiniteWidePushouts C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteColimits.out _⟩
 

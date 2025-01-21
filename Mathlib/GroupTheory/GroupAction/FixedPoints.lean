@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Dynamics.PeriodicPts
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Dynamics.PeriodicPts.Defs
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`
@@ -83,7 +83,7 @@ theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g ^ j) := by
   intro a a_in_fixedBy
   rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Nat.cast_one]
+    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Int.natCast_one]
   exact one_dvd j
 
 variable (M α) in
@@ -237,7 +237,7 @@ then `fixedBy α m = Set.univ` implies that `m = 1`. -/
 then `fixedBy α m = Set.univ` implies that `m = 1`."]
 theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 := by
   rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
-  simp_rw [Function.funext_iff, one_smul, mem_fixedBy]
+  simp_rw [funext_iff, one_smul, mem_fixedBy]
 
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`
