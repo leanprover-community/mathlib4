@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Finset.Image.Basic
 import Mathlib.Data.Finset.Subtype
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Finite types
