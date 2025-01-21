@@ -228,7 +228,7 @@ structure Transversal : Type _ where
   compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  choose t ht using fun i => (φ i).range.exists_right_transversal 1
+  choose t ht using fun i => (φ i).range.exists_isComplement_right 1
   apply Nonempty.intro
   exact
     { injective := hφ
@@ -320,9 +320,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
-    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
-    ofCoprodI_of, inv_mul_cancel_left]
+  simp [prod, cons, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv, mul_assoc]
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
@@ -425,7 +423,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [rcons, Word.equivPair_symm,
+      simp only [toFun, rcons, Word.equivPair_symm,
         Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
         MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
         mul_smul, inv_smul_smul, smul_inv_smul]
@@ -679,11 +677,12 @@ theorem inf_of_range_eq_base_range
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
-        simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
-          forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq, true_and, hg₁r, hg₂r,
-          List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true, inv_mem_iff]
+        simp only [w, not_exists, ne_eq, Reduced, List.find?, List.mem_cons,
+          List.mem_singleton, forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq,
+          true_and, hg₁r, hg₂r, List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true,
+          inv_mem_iff]
       have := hw.eq_empty_of_mem_range hφ (by
-        simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
+        simp only [w, Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
           mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)

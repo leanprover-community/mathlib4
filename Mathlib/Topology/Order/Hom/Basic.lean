@@ -36,7 +36,7 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 
-infixr:25 " →Co " => ContinuousOrderHom
+@[inherit_doc] infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
@@ -132,7 +132,7 @@ protected def id : α →Co α :=
 instance : Inhabited (α →Co α) :=
   ⟨ContinuousOrderHom.id _⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousOrderHom.id α) = id :=
   rfl
 

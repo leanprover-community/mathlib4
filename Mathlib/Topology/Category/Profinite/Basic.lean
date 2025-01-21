@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -37,7 +38,7 @@ profinite
 -/
 
 -- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 
 universe v u
