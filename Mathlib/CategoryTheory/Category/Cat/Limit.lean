@@ -6,7 +6,6 @@ Authors: Kim Morrison
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # The category of small categories has all small limits.
