@@ -15,14 +15,14 @@ filteredness of `C` implies filtereness of `D`. Dually, if `F` is representably 
 cofilteredness of `D` implies cofilteredness of `C`.
 -/
 
-universe u
+universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [SmallCategory C]
-variable {D : Type u} [SmallCategory D]
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
 variable (F : C ⥤ D)
 
 attribute [local instance] final_of_representablyFlat in
