@@ -255,7 +255,7 @@ variable {α ι: Type*}
 
 open Real
 
-lemma Real.HasSum_rexp_HasProd (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
+lemma Real.hasProd_of_hasSum_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
     (hf : HasSum (fun n => log (f n)) (∑' i, log (f i))) :
     HasProd (fun b ↦ f b) (∏' n : ι, f n) := by
   have : HasProd (fun b ↦ f b) (rexp (∑' (n : ι), log (f n))) := by
@@ -278,7 +278,7 @@ lemma Real.rexp_tsum_eq_tprod (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
 
 lemma Real.summable_multipliable (f : ι →  ℝ) (hfn : ∀ n, 0 < f n)
     (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b := by
-  have := (Real.HasSum_rexp_HasProd f hfn hf.hasSum)
+  have := (Real.hasProd_of_hasSum_log f hfn hf.hasSum)
   use (∏' n : ι, f n)
 
 open Complex
