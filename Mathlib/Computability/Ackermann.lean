@@ -83,7 +83,6 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   · simp
   · simpa [mul_succ]
 
--- Porting note: re-written to get rid of ack_three_aux
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction' n with n IH
