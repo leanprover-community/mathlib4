@@ -145,7 +145,7 @@ def accepts : Language α :=
   { x | ∃ S ∈ M.accept, S ∈ M.eval x }
 
 /-- `M.IsPath` represents a traversal in `M` from a start state to an end state by following a list
-  of transitions in order. -/
+of transitions in order. -/
 inductive IsPath : σ → σ → List (Option α) → Prop
   | nil : ∀ s, IsPath s s []
   | cons (t s u : σ) (a : Option α) (x : List (Option α)) :
