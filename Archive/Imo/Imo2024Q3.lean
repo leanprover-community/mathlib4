@@ -33,7 +33,7 @@ namespace Imo2024Q3
 indices starting from 0, rather than from 1 as in the informal statment (but `N` remains as the
 index of the last term for which `a n` is not defined in terms of previous terms). -/
 def Condition (a : ℕ → ℕ) (N : ℕ) : Prop :=
-  (∀ i, 0 < a i) ∧ ∀ n, N < n → a n = #{i ∈ (Finset.range n) | a i = a (n - 1)}
+  (∀ i, 0 < a i) ∧ ∀ n, N < n → a n = #{i ∈ Finset.range n | a i = a (n - 1)}
 
 /-- The property of a sequence being eventually periodic. -/
 def EventuallyPeriodic (b : ℕ → ℕ) : Prop := ∃ p M, 0 < p ∧ ∀ m, M ≤ m → b (m + p) = b m
@@ -100,11 +100,11 @@ protected lemma pos (n : ℕ) : 0 < a n := hc.1 n
 lemma one_le_apply (n : ℕ) : 1 ≤ a n :=
   Nat.one_le_iff_ne_zero.2 (hc.apply_ne_zero n)
 
-lemma apply_eq_card {n : ℕ} (h : N < n) : a n = #{i ∈ (Finset.range n) | a i = a (n - 1)} :=
+lemma apply_eq_card {n : ℕ} (h : N < n) : a n = #{i ∈ Finset.range n | a i = a (n - 1)} :=
   hc.2 n h
 
 lemma apply_add_one_eq_card {n : ℕ} (h : N ≤ n) :
-    a (n + 1) = #{i ∈ (Finset.range (n + 1)) | a i = a n} := by
+    a (n + 1) = #{i ∈ Finset.range (n + 1) | a i = a n} := by
   rw [hc.apply_eq_card (Nat.lt_add_one_of_le h)]
   simp
 
@@ -555,14 +555,14 @@ lemma N_add_one_lt_apply_of_apply_big_of_N'_le {i : ℕ} (h : Big a (a i)) (hN' 
 
 lemma setOf_apply_eq_of_apply_big_of_N'_le {i : ℕ} (h : Big a (a i)) (hN' : N' a N ≤ i) :
     {j | a j = a i} = {j | N < j ∧ Small a (a (j - 1)) ∧
-      a i = #{t ∈ (Finset.range j) | a t = a (j - 1)}} := by
-  have hs : {j | N < j ∧ Small a (a (j - 1)) ∧ a i = #{t ∈ (Finset.range j) | a t = a (j - 1)}} ⊆
+      a i = #{t ∈ Finset.range j | a t = a (j - 1)}} := by
+  have hs : {j | N < j ∧ Small a (a (j - 1)) ∧ a i = #{t ∈ Finset.range j | a t = a (j - 1)}} ⊆
       {j | a j = a i} := by
     rintro _ ⟨hNj, -, hj⟩
     exact hj ▸ hc.apply_eq_card hNj
   rcases hc.exists_card_le_of_big h with ⟨hf, hck⟩
   have hf' : {j | N < j ∧ Small a (a (j - 1)) ∧
-    a i = #{t ∈ (Finset.range j) | a t = a (j - 1)}}.Finite := hf.subset hs
+    a i = #{t ∈ Finset.range j | a t = a (j - 1)}}.Finite := hf.subset hs
   suffices hf.toFinset = hf'.toFinset by simpa using this
   rw [← Set.Finite.toFinset_subset_toFinset (hs := hf') (ht := hf)] at hs
   refine (Finset.eq_of_subset_of_card_le hs (hck.trans ?_)).symm
@@ -711,7 +711,7 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
     have hjI' : a (j - 1) ≤ a (i - 1) := by
       calc a (j - 1) ≤ #{u ∈ Finset.range j | a u = a (j - 2)} :=
             (Finset.mem_filter.mp hjJ).2
-        _ = #{u ∈ (Finset.range i ∪ Finset.Ico i j) | a u = a (j - 2)} := by rw [hiju]
+        _ = #{u ∈ Finset.range i ∪ Finset.Ico i j | a u = a (j - 2)} := by rw [hiju]
         _ ≤ #{u ∈ Finset.range i | a u = a (j - 2)} + #{u ∈ Finset.Ico i j | a u = a (j - 2)} := by
             rw [Finset.filter_union]
             exact Finset.card_union_le _ _
