@@ -66,8 +66,8 @@ structure YoungDiagram where
 namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
-  -- Porting note (#11215): TODO: figure out how to do this correctly
-  coe := fun y => y.cells
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out how to do this correctly
+  coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
 @[simp]
@@ -98,8 +98,8 @@ theorem cells_subset_iff {μ ν : YoungDiagram} : μ.cells ⊆ ν.cells ↔ μ �
 theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
   Iff.rfl
 
-instance : Sup YoungDiagram where
-  sup μ ν :=
+instance : Max YoungDiagram where
+  max μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
         rw [Finset.coe_union]
@@ -117,8 +117,8 @@ theorem coe_sup (μ ν : YoungDiagram) : ↑(μ ⊔ ν) = (μ ∪ ν : Set (ℕ 
 theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x ∈ μ ∨ x ∈ ν :=
   Finset.mem_union
 
-instance : Inf YoungDiagram where
-  inf μ ν :=
+instance : Min YoungDiagram where
+  min μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
         rw [Finset.coe_inter]
@@ -152,19 +152,13 @@ instance : OrderBot YoungDiagram where
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
--- Porting note: removed `↑`, added `.cells` and changed proof
--- @[simp] -- Porting note (#10618): simp can prove this
-@[norm_cast]
-theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
-  refine Set.eq_of_subset_of_subset ?_ ?_
-  · intros x h
-    simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
-      simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
-  · simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
-
 @[simp]
 theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
   Finset.not_mem_empty x
+
+@[norm_cast]
+theorem coe_bot : (⊥ : YoungDiagram) = (∅ : Set (ℕ × ℕ)) := by
+  ext; simp
 
 instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
@@ -403,7 +397,7 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
         (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
 
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
-    c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.get ⟨c.fst, h⟩  := by
+    c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
   induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
   · rcases c with ⟨⟨_, _⟩, _⟩
@@ -421,14 +415,14 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram where
     refine ⟨hi.trans_lt h1, ?_⟩
     calc
       j1 ≤ j2 := hj
-      _ < w.get ⟨i2, _⟩  := h2
-      _ ≤ w.get ⟨i1, _⟩ := by
+      _ < w[i2]  := h2
+      _ ≤ w[i1] := by
         obtain rfl | h := eq_or_lt_of_le hi
-        · convert le_refl (w.get ⟨i1, h1⟩)
+        · rfl
         · exact List.pairwise_iff_get.mp hw _ _ h
 
 theorem mem_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} {c : ℕ × ℕ} :
-    c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w.get ⟨c.fst, h⟩ :=
+    c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] :=
   YoungDiagram.mem_cellsOfRowLens
 
 /-- The number of rows in `ofRowLens w hw` is the length of `w` -/
@@ -436,11 +430,11 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
+  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.getElem_mem hn)⟩⟩
 
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
 theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : Fin w.length) :
-    (ofRowLens w hw).rowLen i = w.get i := by
+    (ofRowLens w hw).rowLen i = w[i] := by
   simp [rowLen, Nat.find_eq_iff, mem_ofRowLens]
 
 /-- The left_inv direction of the equivalence -/

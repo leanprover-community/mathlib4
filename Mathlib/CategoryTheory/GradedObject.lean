@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The category of graded objects
@@ -61,7 +61,7 @@ variable {C : Type u} [Category.{v} C]
 instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
   CategoryTheory.pi fun _ => C
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -158,7 +158,7 @@ abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C
 -- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
-    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
+    (eqToHom h : x ⟶ x') i = eqToHom (funext_iff.mp h i) := by
   subst h
   rfl
 
@@ -315,7 +315,8 @@ lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun 
     Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
   exact hasColimitOfIso α.symm
 
-variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
+section
+variable [X.HasMap p] [Y.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
 which in degree `j` consists of the coproduct of the `X i` such that `p i = j`. -/
@@ -367,13 +368,15 @@ lemma ι_descMapObj {A : C} {j : J}
     X.ιMapObj p i j hi ≫ X.descMapObj p φ = φ i hi := by
   apply Cofan.IsColimit.fac
 
+end
 namespace CofanMapObjFun
 
 lemma hasMap (c : ∀ j, CofanMapObjFun X p j) (hc : ∀ j, IsColimit (c j)) :
     X.HasMap p := fun j => ⟨_, hc j⟩
 
 variable {j X p}
-variable {c : CofanMapObjFun X p j} (hc : IsColimit c) [X.HasMap p]
+variable [X.HasMap p]
+variable {c : CofanMapObjFun X p j} (hc : IsColimit c)
 
 /-- If `c : CofanMapObjFun X p j` is a colimit cofan, this is the induced
 isomorphism `c.pt ≅ X.mapObj p j`. -/
@@ -393,6 +396,7 @@ lemma ιMapObj_iso_inv (i : I) (hi : p i = j) :
 end CofanMapObjFun
 
 variable {X Y}
+variable [X.HasMap p] [Y.HasMap p]
 
 /-- The canonical morphism of `J`-graded objects `X.mapObj p ⟶ Y.mapObj p` induced by
 a morphism `X ⟶ Y` of `I`-graded objects and a map `p : I → J`. -/
@@ -416,7 +420,7 @@ lemma mapMap_id : mapMap (𝟙 X) p = 𝟙 _ := by aesop_cat
 variable {X Z}
 
 @[simp, reassoc]
-lemma mapMap_comp : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by aesop_cat
+lemma mapMap_comp [Z.HasMap p] : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by aesop_cat
 
 /-- The isomorphism of `J`-graded objects `X.mapObj p ≅ Y.mapObj p` induced by an
 isomorphism `X ≅ Y` of graded objects and a map `p : I → J`. -/
@@ -481,7 +485,8 @@ def isColimitCofanMapObjComp :
       dsimp
       rw [assoc])
 
-lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
+include hpqr in
+lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
   fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
 

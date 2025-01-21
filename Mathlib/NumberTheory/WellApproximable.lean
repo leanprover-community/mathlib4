@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Covering.LiminfLimsup
 # Well-approximable numbers and Gallagher's ergodic theorem
 
 Gallagher's ergodic theorem is a result in metric number theory. It thus belongs to that branch of
-mathematics concerning arithmetic properties of real numbers which hold almost eveywhere with
+mathematics concerning arithmetic properties of real numbers which hold almost everywhere with
 respect to the Lebesgue measure.
 
 Gallagher's theorem concerns the approximation of real numbers by rational numbers. The input is a
@@ -248,7 +248,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     let f : 𝕊 → 𝕊 := fun y => (p : ℕ) • y
     suffices
       f '' A p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∤n by
-      apply (ergodic_nsmul hp.one_lt).ae_empty_or_univ_of_image_ae_le (hA₀ p)
+      apply (ergodic_nsmul hp.one_lt).ae_empty_or_univ_of_image_ae_le (hA₀ p).nullMeasurableSet
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∤n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
@@ -261,7 +261,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     let f : 𝕊 → 𝕊 := fun y => p • y + x
     suffices
       f '' B p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∣∣n by
-      apply (ergodic_nsmul_add x hp.one_lt).ae_empty_or_univ_of_image_ae_le (hB₀ p)
+      apply (ergodic_nsmul_add x hp.one_lt).ae_empty_or_univ_of_image_ae_le
+        (hB₀ p).nullMeasurableSet
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∣∣n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
@@ -273,8 +274,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       exact fun contra => h_ndiv (mul_dvd_mul_left p contra)
     replace h_div : n / p * p = n := Nat.div_mul_cancel h_div
     have hf : f = (fun y => x + y) ∘ fun y => p • y := by
-      ext; simp [add_comm x]
-    simp only at hf
+      ext; simp [f, add_comm x]
     simp_rw [Function.comp_apply, le_eq_subset]
     rw [sSupHom.setImage_toFun, hf, image_comp]
     have := @monotone_image 𝕊 𝕊 fun y => x + y
@@ -290,7 +290,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     let e := (AddAction.toPerm (u p) : Equiv.Perm 𝕊).toOrderIsoSet
     change e (C p) = C p
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
-    exact blimsup_congr (eventually_of_forall fun n hn =>
+    exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
   by_cases h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
@@ -307,9 +307,10 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [hE₁ p]
     cases hp
     · cases' hA p with _ h; · contradiction
-      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]
+      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left]
     · cases' hB p with _ h; · contradiction
-      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
+      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
+        union_ae_eq_univ_of_ae_eq_univ_right]
 
 /-- A general version of **Dirichlet's approximation theorem**.
 
@@ -335,7 +336,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     rw [← (isClosed_iUnion_of_finite hB).measure_eq_univ_iff_eq (μ := μ)]
     refine le_antisymm (μ.mono (subset_univ _)) ?_
     simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
-      μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
+      B, μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
       tsub_zero]
     exact hδ
   replace hδ : 0 ≤ δ/2 := by

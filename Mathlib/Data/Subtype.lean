@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes
@@ -33,39 +34,25 @@ attribute [coe] Subtype.val
 initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
-  instead of `x.1`. A similar result is `Subtype.mem` in `Data.Set.Basic`. -/
+  instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib.Data.Set.Basic`. -/
 theorem prop (x : Subtype p) : p x :=
   x.2
-
-@[simp]
-protected theorem «forall» {q : { a // p a } → Prop} : (∀ x, q x) ↔ ∀ a b, q ⟨a, b⟩ :=
-  ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
 
 /-- An alternative version of `Subtype.forall`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.forall` from right to left. -/
 protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.2 :=
   (@Subtype.forall _ _ fun x ↦ q x.1 x.2).symm
 
-@[simp]
-protected theorem «exists» {q : { a // p a } → Prop} : (∃ x, q x) ↔ ∃ a b, q ⟨a, b⟩ :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
-
 /-- An alternative version of `Subtype.exists`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.exists` from right to left. -/
 protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
   (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
 
-@[ext]
-protected theorem ext : ∀ {a1 a2 : { x // p x }}, (a1 : α) = (a2 : α) → a1 = a2
-  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-
-theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
-  ⟨congr_arg _, Subtype.ext⟩
-
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
-  Eq.rec (motive := fun (pp : (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
-         (fun _ ↦ heq_iff_eq.trans ext_iff) (funext <| fun x ↦ propext (h x)) a2
+  Eq.rec
+    (motive := fun (pp : (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
+    (fun _ ↦ heq_iff_eq.trans Subtype.ext_iff) (funext <| fun x ↦ propext (h x)) a2
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
     {b : {y // q y}} (h : α = β) (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β) := by
@@ -101,7 +88,7 @@ theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h
 
 theorem coe_injective : Injective (fun (a : Subtype p) ↦ (a : α)) := fun _ _ ↦ Subtype.ext
 
-theorem val_injective : Injective (@val _ p) :=
+@[simp] theorem val_injective : Injective (@val _ p) :=
   coe_injective
 
 theorem coe_inj {a b : Subtype p} : (a : α) = b ↔ a = b :=
@@ -221,7 +208,7 @@ end Subtype
 namespace Subtype
 
 /-! Some facts about sets, which require that `α` is a type. -/
-variable {α β γ : Type*} {p : α → Prop}
+variable {α : Type*}
 
 @[simp]
 theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=

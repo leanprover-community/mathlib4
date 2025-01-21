@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.IntervalCases
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -100,9 +99,9 @@ instance : Group (QuaternionGroup n) where
     · exact congr_arg a (add_zero i)
     · exact congr_arg xa (add_zero i)
   inv := inv
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro (i | i)
-    · exact congr_arg a (neg_add_self i)
+    · exact congr_arg a (neg_add_cancel i)
     · exact congr_arg a (sub_self (n + i))
 
 @[simp]
@@ -204,13 +203,13 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
     apply_fun ZMod.val at h'
     apply_fun (· / n) at h'
     simp only [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
-      Nat.div_self (NeZero.pos n)] at h'
+      Nat.div_self (NeZero.pos n), reduceCtorEq] at h'
   · norm_num
 
 /-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
   apply isCyclic_of_orderOf_eq_card
-  · rw [card, mul_one]
+  · rw [Nat.card_eq_fintype_card, card, mul_one]
     exact orderOf_xa 0
 
 /-- If `0 < n`, then `a 1` has order `2 * n`.

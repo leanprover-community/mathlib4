@@ -3,8 +3,8 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Multilinear maps in relation to bases.
@@ -14,7 +14,7 @@ This file proves lemmas about the action of multilinear maps on basis vectors.
 ## TODO
 
  * Refactor the proofs in terms of bases of tensor products, once there is an equivalent of
-   `Basis.tensorProduct` for `pi_tensor_product`.
+   `Basis.tensorProduct` for `PiTensorProduct`.
 
 -/
 

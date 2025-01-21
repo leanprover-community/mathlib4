@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Compositions
@@ -37,11 +36,11 @@ between the two types.
 Let `c : Composition n` be a composition of `n`. Then
 * `c.blocks` is the list of blocks in `c`.
 * `c.length` is the number of blocks in the composition.
-* `c.blocks_fun : Fin c.length → ℕ` is the realization of `c.blocks` as a function on
+* `c.blocksFun : Fin c.length → ℕ` is the realization of `c.blocks` as a function on
   `Fin c.length`. This is the main object when using compositions to understand the composition of
     analytic functions.
 * `c.sizeUpTo : ℕ → ℕ` is the sum of the size of the blocks up to `i`.;
-* `c.embedding i : Fin (c.blocks_fun i) → Fin n` is the increasing embedding of the `i`-th block in
+* `c.embedding i : Fin (c.blocksFun i) → Fin n` is the increasing embedding of the `i`-th block in
   `Fin n`;
 * `c.index j`, for `j : Fin n`, is the index of the block containing `j`.
 
@@ -54,7 +53,7 @@ of `n`.
   blocks of `c`.
 * `join_splitWrtComposition` states that splitting a list and then joining it gives back the
   original list.
-* `joinSplitWrtComposition_join` states that joining a list of lists, and then splitting it back
+* `splitWrtComposition_join` states that joining a list of lists, and then splitting it back
   according to the right composition, gives back the original list of lists.
 
 We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n+1)`.
@@ -112,7 +111,7 @@ structure CompositionAsSet (n : ℕ) where
   boundaries : Finset (Fin n.succ)
   /-- Proof that `0` is a member of `boundaries`-/
   zero_mem : (0 : Fin n.succ) ∈ boundaries
-  /-- Last element of the composition-/
+  /-- Last element of the composition -/
   getLast_mem : Fin.last n ∈ boundaries
 
 instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
@@ -151,7 +150,7 @@ theorem sum_blocksFun : ∑ i, c.blocksFun i = n := by
   conv_rhs => rw [← c.blocks_sum, ← ofFn_blocksFun, sum_ofFn]
 
 theorem blocksFun_mem_blocks (i : Fin c.length) : c.blocksFun i ∈ c.blocks :=
-  get_mem _ _ _
+  get_mem _ _
 
 @[simp]
 theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
@@ -159,7 +158,7 @@ theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
 
 @[simp]
 theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
-  c.one_le_blocks (get_mem (blocks c) i h)
+  c.one_le_blocks (get_mem (blocks c) _)
 
 @[simp]
 theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
@@ -167,6 +166,12 @@ theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
 
 theorem one_le_blocksFun (i : Fin c.length) : 1 ≤ c.blocksFun i :=
   c.one_le_blocks (c.blocksFun_mem_blocks i)
+
+theorem blocksFun_le {n} (c : Composition n) (i : Fin c.length) :
+    c.blocksFun i ≤ n := by
+  have := c.blocks_sum
+  have := List.le_sum_of_mem (c.blocksFun_mem_blocks i)
+  simp_all
 
 theorem length_le : c.length ≤ n := by
   conv_rhs => rw [← c.blocks_sum]
@@ -187,7 +192,7 @@ theorem sizeUpTo_zero : c.sizeUpTo 0 = 0 := by simp [sizeUpTo]
 theorem sizeUpTo_ofLength_le (i : ℕ) (h : c.length ≤ i) : c.sizeUpTo i = n := by
   dsimp [sizeUpTo]
   convert c.blocks_sum
-  exact take_all_of_le h
+  exact take_of_length_le h
 
 @[simp]
 theorem sizeUpTo_length : c.sizeUpTo c.length = n :=
@@ -253,7 +258,7 @@ theorem orderEmbOfFin_boundaries :
   refine (Finset.orderEmbOfFin_unique' _ ?_).symm
   exact fun i => (Finset.mem_map' _).2 (Finset.mem_univ _)
 
-/-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocks_fun i)`) into
+/-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocksFun i)`) into
 `Fin n` at the relevant position. -/
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAddOrderEmb <| c.sizeUpTo i).trans <| Fin.castLEOrderEmb <|
@@ -267,7 +272,7 @@ theorem coe_embedding (i : Fin c.length) (j : Fin (c.blocksFun i)) :
     (c.embedding i j : ℕ) = c.sizeUpTo i + j :=
   rfl
 
-/-- `index_exists` asserts there is some `i` with `j < c.size_up_to (i+1)`.
+/-- `index_exists` asserts there is some `i` with `j < c.sizeUpTo (i+1)`.
 In the next definition `index` we use `Nat.find` to produce the minimal such index.
 -/
 theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo (i + 1) ∧ i < c.length := by
@@ -301,7 +306,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   exact Nat.lt_le_asymm H this
 
 /-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with
-`Fin (c.blocks_fun (c.index j))` through the canonical increasing bijection. -/
+`Fin (c.blocksFun (c.index j))` through the canonical increasing bijection. -/
 def invEmbedding (j : Fin n) : Fin (c.blocksFun (c.index j)) :=
   ⟨j - c.sizeUpTo (c.index j), by
     rw [tsub_lt_iff_right, add_comm, ← sizeUpTo_succ']
@@ -377,7 +382,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
   simp_rw [coe_invEmbedding, index_embedding, coe_embedding, add_tsub_cancel_left]
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
-`Fin (c.blocks_fun i)`) with `Fin n`. -/
+`Fin (c.blocksFun i)`) with `Fin n`. -/
 def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
   toFun x := c.embedding x.1 x.2
   invFun j := ⟨c.index j, c.invEmbedding j⟩
@@ -459,7 +464,7 @@ theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i =
 theorem ne_ones_iff {c : Composition n} : c ≠ ones n ↔ ∃ i ∈ c.blocks, 1 < i := by
   refine (not_congr eq_ones_iff).trans ?_
   have : ∀ j ∈ c.blocks, j = 1 ↔ j ≤ 1 := fun j hj => by simp [le_antisymm_iff, c.one_le_blocks hj]
-  simp (config := { contextual := true }) [this]
+  simp +contextual [this]
 
 theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := by
   constructor
@@ -547,7 +552,7 @@ end Composition
 ### Splitting a list
 
 Given a list of length `n` and a composition `c` of `n`, one can split `l` into `c.length` sublists
-of respective lengths `c.blocks_fun 0`, ..., `c.blocks_fun (c.length-1)`. This is inverse to the
+of respective lengths `c.blocksFun 0`, ..., `c.blocksFun (c.length-1)`. This is inverse to the
 join operation.
 -/
 
@@ -629,8 +634,8 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   · rw [Nat.add_zero, List.take_zero, sum_nil]
     simp
   · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
-        sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, drop_take, drop_drop]
-    rw [add_comm (sum _) n, Nat.add_sub_add_left]
+        sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
+    rw [Nat.add_sub_add_left]
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
 between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
@@ -668,8 +673,8 @@ theorem get_splitWrtComposition (l : List α) (c : Composition n)
     get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
   simp [getElem_splitWrtComposition]
 
-theorem join_splitWrtCompositionAux {ns : List ℕ} :
-    ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).join = l := by
+theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
+    ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).flatten = l := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
   · exact (length_eq_zero.1 h.symm).symm
   simp only [splitWrtCompositionAux_cons]; dsimp
@@ -677,20 +682,28 @@ theorem join_splitWrtCompositionAux {ns : List ℕ} :
   · simp
   · rw [length_drop, ← h, add_tsub_cancel_left]
 
-/-- If one splits a list along a composition, and then joins the sublists, one gets back the
+@[deprecated (since := "2024-10-15")]
+alias join_splitWrtCompositionAux := flatten_splitWrtCompositionAux
+
+/-- If one splits a list along a composition, and then flattens the sublists, one gets back the
 original list. -/
 @[simp]
-theorem join_splitWrtComposition (l : List α) (c : Composition l.length) :
-    (l.splitWrtComposition c).join = l :=
-  join_splitWrtCompositionAux c.blocks_sum
+theorem flatten_splitWrtComposition (l : List α) (c : Composition l.length) :
+    (l.splitWrtComposition c).flatten = l :=
+  flatten_splitWrtCompositionAux c.blocks_sum
 
-/-- If one joins a list of lists and then splits the join along the right composition, one gets
-back the original list of lists. -/
+@[deprecated (since := "2024-10-15")] alias join_splitWrtComposition := flatten_splitWrtComposition
+
+/-- If one joins a list of lists and then splits the flattening along the right composition,
+one gets back the original list of lists. -/
 @[simp]
-theorem splitWrtComposition_join (L : List (List α)) (c : Composition L.join.length)
-    (h : map length L = c.blocks) : splitWrtComposition (join L) c = L := by
-  simp only [eq_self_iff_true, and_self_iff, eq_iff_join_eq, join_splitWrtComposition,
+theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flatten.length)
+    (h : map length L = c.blocks) : splitWrtComposition (flatten L) c = L := by
+  simp only [eq_self_iff_true, and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
     map_length_splitWrtComposition, h]
+
+@[deprecated (since := "2024-10-15")]
+alias splitWrtComposition_join := splitWrtComposition_flatten
 
 end List
 
@@ -758,11 +771,10 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
-      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false,
-      add_left_inj, false_or, true_and]
+      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
+      add_left_inj, false_or, true_and, reduceCtorEq]
     erw [Set.mem_setOf_eq]
-    simp [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
-      Fin.val_mk]
+    simp only [Finset.mem_val]
     constructor
     · intro h
       cases' h with n h
@@ -802,7 +814,7 @@ theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 :=
 
 theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   rw [c.card_boundaries_eq_succ_length]
-  exact lt_add_one _
+  exact Nat.lt_add_one _
 
 theorem lt_length (i : Fin c.length) : (i : ℕ) + 1 < c.boundaries.card :=
   lt_tsub_iff_right.mp i.2
@@ -868,7 +880,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     exact this.symm
 
 theorem blocks_sum : c.blocks.sum = n := by
-  have : c.blocks.take c.length = c.blocks := take_all_of_le (by simp [blocks])
+  have : c.blocks.take c.length = c.blocks := take_of_length_le (by simp [blocks])
   rw [← this, c.blocks_partial_sum c.length_lt_card_boundaries, c.boundary_length]
   rfl
 

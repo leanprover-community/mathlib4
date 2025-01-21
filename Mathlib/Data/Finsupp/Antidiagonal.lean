@@ -63,7 +63,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
     simp_rw [single_apply, Finsupp.add_apply] at h ⊢
     obtain rfl | hai := Decidable.eq_or_ne a i
     · exact ⟨if_pos rfl, if_pos rfl⟩
-    · simp_rw [if_neg hai, _root_.add_eq_zero_iff] at h ⊢
+    · simp_rw [if_neg hai, add_eq_zero] at h ⊢
       exact h.imp Eq.symm Eq.symm
   · rintro ⟨a, b, rfl, rfl, rfl⟩
     exact (single_add _ _ _).symm

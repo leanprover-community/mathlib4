@@ -86,7 +86,7 @@ def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BoolAlg ⥤ BoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `BoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -106,6 +106,6 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
 /-- The powerset functor. `Set` as a contravariant functor. -/
 @[simps]
 def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
-  obj X := op $ BoolAlg.of (Set X)
+  obj X := op <| BoolAlg.of (Set X)
   map {X Y} f := Quiver.Hom.op
     (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))

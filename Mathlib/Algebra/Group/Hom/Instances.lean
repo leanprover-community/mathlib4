@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
+Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Basic
@@ -19,7 +19,7 @@ operations.
 Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
-assert_not_exists AddMonoidWithOne
+assert_not_exists AddMonoidWithOne Ring
 
 universe uM uN uP uQ
 
@@ -55,7 +55,7 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       intros
       ext
       apply div_eq_mul_inv,
-    mul_left_inv := by intros; ext; apply mul_left_inv,
+    inv_mul_cancel := by intros; ext; apply inv_mul_cancel,
     zpow := fun n f =>
       { toFun := fun x => f x ^ n,
         map_one' := by simp,
@@ -233,5 +233,3 @@ theorem compr₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoi
   rfl
 
 end MonoidHom
-
-assert_not_exists Ring

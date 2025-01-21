@@ -3,8 +3,10 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Order.Filter.Ring
+import Mathlib.Order.Filter.Ultrafilter
 
 /-!
 # Ultraproducts
@@ -23,8 +25,6 @@ universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
-open scoped Classical
-
 namespace Filter
 
 local notation3 "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) => r
@@ -39,20 +39,20 @@ instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
   __ := instDivInvMonoid
   __ := instMonoidWithZero
   mul_inv_cancel f := inductionOn f fun f hf ↦ coe_eq.2 <| (φ.em fun y ↦ f y = 0).elim
-    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun x ↦ mul_inv_cancel
-  inv_zero := coe_eq.2 <| by simp only [Function.comp, inv_zero, EventuallyEq.rfl]
+    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun _ ↦ mul_inv_cancel₀
+  inv_zero := coe_eq.2 <| by simp only [Function.comp_def, inv_zero, EventuallyEq.rfl]
 
 instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
   __ := instGroupWithZero
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
 
 instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   __ := instRing
   __ := instDivisionSemiring
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 instance instSemifield [Semifield β] : Semifield β* where
   __ := instCommSemiring
@@ -81,8 +81,9 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
 
 instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
   ⟨fun f g =>
-    inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
+    inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
 
+open Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
 noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _

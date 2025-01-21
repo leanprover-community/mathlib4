@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs
@@ -74,10 +75,10 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
   exact ⟨_, _, h ha, rfl, rfl⟩
 
 @[simp] lemma map_id : G.map (Function.Embedding.refl _) = G :=
-  SimpleGraph.ext _ _ <| Relation.map_id_id _
+  SimpleGraph.ext <| Relation.map_id_id _
 
 @[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
-  SimpleGraph.ext _ _ <| Relation.map_map _ _ _ _ _
+  SimpleGraph.ext <| Relation.map_map _ _ _ _ _
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
@@ -92,7 +93,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
 
-@[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext _ _ rfl
+@[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext rfl
 
 @[simp] lemma comap_comap {G : SimpleGraph X} (f : V → W) (g : W → X) :
   (G.comap g).comap f = G.comap (g ∘ f) := rfl
@@ -129,7 +130,7 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h u v ha => h ⟨_, _, ha, rfl, rfl⟩, by
+  ⟨fun h _ _ ha => h ⟨_, _, ha, rfl, rfl⟩, by
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
@@ -202,7 +203,7 @@ abbrev Hom :=
   RelHom G.Adj G'.Adj
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
+`G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding :=
@@ -234,12 +235,6 @@ instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_inje
 instance [IsEmpty V] : Unique (G →g H) where
   default := ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩
   uniq _ := Subsingleton.elim _ _
-
-instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj]
-    [DecidableRel H.Adj] : Fintype (G →g H) :=
-  Fintype.ofEquiv {f : V → W // ∀ {a b}, G.Adj a b → H.Adj (f a) (f b)}
-    { toFun := fun f ↦ ⟨f.1, f.2⟩, invFun := fun f ↦ ⟨f.1, f.2⟩,
-      left_inv := fun _ ↦ rfl, right_inv := fun _ ↦ rfl }
 
 instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
@@ -340,7 +335,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 @[simps]
 def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
-  inj' := Hom.mapEdgeSet.injective f f.injective
+  inj' := Hom.mapEdgeSet.injective f.toRelHom f.injective
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
@@ -477,6 +472,18 @@ theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.ed
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
 
+@[simp]
+theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.symm_apply_apply, RelHom.id_apply]
+
+@[simp]
+theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.apply_symm_apply, RelHom.id_apply]
+
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
 def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
@@ -507,6 +514,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
   left_inv w := by simp
   right_inv w := by simp
 
+include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
   convert rfl

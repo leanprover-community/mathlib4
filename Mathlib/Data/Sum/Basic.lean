@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Yury G. Kudryashov
+Authors: Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.Data.Sum.Lemmas
 
 /-!
 # Additional lemmas about sum types
@@ -19,6 +18,9 @@ universe u v w x
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
+
+-- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
+attribute [simp] Sum.forall Sum.exists
 
 theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
@@ -35,7 +37,7 @@ theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ 
 
 section get
 
-variable {x y : α ⊕ β}
+variable {x : α ⊕ β}
 
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
@@ -62,12 +64,12 @@ open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_o
 @[simp]
 theorem update_elim_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : α}
     {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
-  update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_elim_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : β}
     {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
-  update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α}
@@ -86,7 +88,7 @@ theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inl_apply_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inl i) x (inr j) = f (inr j) :=
-  Function.update_noteq inr_ne_inl _ _
+  Function.update_of_ne inr_ne_inl ..
 
 @[simp]
 theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β} {x : γ} :
@@ -95,7 +97,7 @@ theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inr_apply_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inr j) x (inl i) = f (inl i) :=
-  Function.update_noteq inl_ne_inr _ _
+  Function.update_of_ne inl_ne_inr ..
 
 @[simp]
 theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β}
@@ -133,7 +135,7 @@ theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
   rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, or_false] at h₁
+  simp only [liftRel_iff, false_and, and_false, exists_false, or_false, reduceCtorEq] at h₁
   exact h₁
 
 theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
@@ -142,7 +144,7 @@ theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
 theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
   rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, false_or] at h₁
+  simp only [liftRel_iff, false_and, and_false, exists_false, false_or, reduceCtorEq] at h₁
   exact h₁
 
 theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
@@ -196,8 +198,8 @@ open Function
 theorem map_injective {f : α → γ} {g : β → δ} :
     Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
   ⟨fun h =>
-    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha : _), fun b₁ b₂ hb =>
-      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb : _)⟩,
+    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
+      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
     fun h => h.1.sum_map h.2⟩
 
 @[simp]

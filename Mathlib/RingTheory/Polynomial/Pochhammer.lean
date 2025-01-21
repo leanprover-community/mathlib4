@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Tactic.Abel
 
 /-!
@@ -24,6 +24,8 @@ that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactor
 
 As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
 we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
+In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
+`n` is a sufficiently large non-positive integer.
 
 ## TODO
 
@@ -33,8 +35,6 @@ There is lots more in this direction:
 
 
 universe u v
-
-open Polynomial
 
 open Polynomial
 
@@ -76,9 +76,9 @@ variable {S} {T : Type v} [Semiring T]
 @[simp]
 theorem ascPochhammer_map (f : S →+* T) (n : ℕ) :
     (ascPochhammer S n).map f = ascPochhammer T n := by
-  induction' n with n ih
-  · simp
-  · simp [ih, ascPochhammer_succ_left, map_comp]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, ascPochhammer_succ_left, map_comp]
 
 theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
     (ascPochhammer T n).eval t = (ascPochhammer S n).eval₂ f t := by
@@ -116,9 +116,10 @@ theorem ascPochhammer_succ_right (n : ℕ) :
     apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [ascPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_natCast] using h
-  induction' n with n ih
-  · simp
-  · conv_lhs =>
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    conv_lhs =>
       rw [ascPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← ascPochhammer_succ_left, add_comp,
           X_comp, natCast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 
@@ -152,9 +153,19 @@ theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
     rw [ascPochhammer_succ_right, eval_mul, ascPochhammer_nat_eq_ascFactorial n t, eval_add, eval_X,
       eval_natCast, Nat.cast_id, Nat.ascFactorial_succ, mul_comm]
 
+theorem ascPochhammer_nat_eq_natCast_ascFactorial (S : Type*) [Semiring S] (n k : ℕ) :
+    (ascPochhammer S k).eval (n : S) = n.ascFactorial k := by
+  norm_cast
+  rw [ascPochhammer_nat_eq_ascFactorial]
+
 theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
     (ascPochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
   rw [ascPochhammer_nat_eq_ascFactorial, Nat.add_descFactorial_eq_ascFactorial']
+
+theorem ascPochhammer_nat_eq_natCast_descFactorial (S : Type*) [Semiring S] (a b : ℕ) :
+    (ascPochhammer S b).eval (a : S) = (a + b - 1).descFactorial b := by
+  norm_cast
+  rw [ascPochhammer_nat_eq_descFactorial]
 
 @[simp]
 theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
@@ -175,10 +186,12 @@ section StrictOrderedSemiring
 variable {S : Type*} [StrictOrderedSemiring S]
 
 theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n).eval s := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, ascPochhammer_zero, eval_one]
+  induction n with
+  | zero =>
+    simp only [ascPochhammer_zero, eval_one]
     exact zero_lt_one
-  · rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
+  | succ n ih =>
+    rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
       Nat.cast_comm, ← mul_add]
     exact mul_pos ih (lt_of_lt_of_le h (le_add_of_nonneg_right (Nat.cast_nonneg n)))
 
@@ -252,9 +265,9 @@ variable {R} {T : Type v} [Ring T]
 @[simp]
 theorem descPochhammer_map (f : R →+* T) (n : ℕ) :
     (descPochhammer R n).map f = descPochhammer T n := by
-  induction' n with n ih
-  · simp
-  · simp [ih, descPochhammer_succ_left, map_comp]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, descPochhammer_succ_left, map_comp]
 end
 
 @[simp, norm_cast]
@@ -281,9 +294,10 @@ theorem descPochhammer_succ_right (n : ℕ) :
     apply_fun Polynomial.map (algebraMap ℤ R) at h
     simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_intCast] using h
-  induction' n with n ih
-  · simp [descPochhammer]
-  · conv_lhs =>
+  induction n with
+  | zero => simp [descPochhammer]
+  | succ n ih =>
+    conv_lhs =>
       rw [descPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← descPochhammer_succ_left, sub_comp,
           X_comp, natCast_comp]
     rw [Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub_swap]
@@ -367,5 +381,39 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = (a + 1).ascFactorial b := by
   rw [← Nat.cast_add, descPochhammer_eval_eq_descFactorial ℤ (a + b) b,
     Nat.add_descFactorial_eq_ascFactorial]
+
+variable {R}
+
+/-- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
+theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
+    (ascPochhammer R n).eval (-(k : R)) = 0 := by
+  induction n with
+  | zero => contradiction
+  | succ n ih =>
+    rw [ascPochhammer_succ_eval]
+    rcases lt_trichotomy k n with hkn | rfl | hkn
+    · simp [ih hkn]
+    · simp
+    · omega
+
+/-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
+`0`, `-1`, ..., `-(n - 1)`. -/
+@[simp]
+theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
+    (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ k < n, k = -r := by
+  refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
+  · induction n with
+    | zero => simp only [ascPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero'
+    | succ n ih =>
+      rw [ascPochhammer_succ_eval, mul_eq_zero] at zero'
+      cases zero' with
+      | inl h =>
+        obtain ⟨rn, hrn, rrn⟩ := ih h
+        exact ⟨rn, by omega, rrn⟩
+      | inr h =>
+        exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
+  · obtain ⟨rn, hrn, rnn⟩ := hrn
+    convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    simp [rnn]
 
 end Ring

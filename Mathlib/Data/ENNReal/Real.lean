@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Maps between real and extended non-negative real numbers
@@ -129,13 +130,13 @@ theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
-    (fun h => by simp only [h, (ENNReal.toReal_le_toReal hr hp).2 h, max_eq_right]) fun h => by
-    simp only [h, (ENNReal.toReal_le_toReal hp hr).2 h, max_eq_left]
+    (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
+    simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
 
 theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
-  (le_total a b).elim (fun h => by simp only [h, (ENNReal.toReal_le_toReal hr hp).2 h, min_eq_left])
-    fun h => by simp only [h, (ENNReal.toReal_le_toReal hp hr).2 h, min_eq_right]
+  (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
+    fun h => by simp only [h, ENNReal.toReal_mono hr h, min_eq_right]
 
 theorem toReal_sup {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊔ b).toReal = a.toReal ⊔ b.toReal :=
   toReal_max
@@ -155,7 +156,7 @@ theorem toReal_pos_iff : 0 < a.toReal ↔ 0 < a ∧ a < ∞ :=
 theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 < a.toReal :=
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 
-@[gcongr]
+@[gcongr, bound]
 theorem ofReal_le_ofReal {p q : ℝ} (h : p ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q := by
   simp [ENNReal.ofReal, Real.toNNReal_le_toNNReal h]
 
@@ -191,6 +192,8 @@ theorem ofReal_lt_ofReal_iff_of_nonneg {p q : ℝ} (hp : 0 ≤ p) :
 @[simp]
 theorem ofReal_pos {p : ℝ} : 0 < ENNReal.ofReal p ↔ 0 < p := by simp [ENNReal.ofReal]
 
+@[bound] private alias ⟨_, Bound.ofReal_pos_of_pos⟩ := ofReal_pos
+
 @[simp]
 theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [ENNReal.ofReal]
 
@@ -213,7 +216,7 @@ lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
 
 @[simp]
 lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    ENNReal.ofReal p < no_index (OfNat.ofNat n) ↔ p < OfNat.ofNat n :=
+    ENNReal.ofReal p < ofNat(n) ↔ p < OfNat.ofNat n :=
   ofReal_lt_natCast (NeZero.ne n)
 
 @[simp]
@@ -229,10 +232,10 @@ lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
 
 @[simp]
 lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
-    no_index (OfNat.ofNat n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
+    ofNat(n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
   natCast_le_ofReal (NeZero.ne n)
 
-@[simp]
+@[simp, norm_cast]
 lemma ofReal_le_natCast {r : ℝ} {n : ℕ} : ENNReal.ofReal r ≤ n ↔ r ≤ n :=
   coe_le_coe.trans Real.toNNReal_le_natCast
 
@@ -245,7 +248,7 @@ lemma ofReal_le_one {r : ℝ} : ENNReal.ofReal r ≤ 1 ↔ r ≤ 1 :=
 
 @[simp]
 lemma ofReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    ENNReal.ofReal r ≤ no_index (OfNat.ofNat n) ↔ r ≤ OfNat.ofNat n :=
+    ENNReal.ofReal r ≤ ofNat(n) ↔ r ≤ OfNat.ofNat n :=
   ofReal_le_natCast
 
 @[simp]
@@ -260,7 +263,7 @@ lemma one_lt_ofReal {r : ℝ} : 1 < ENNReal.ofReal r ↔ 1 < r := coe_lt_coe.tra
 
 @[simp]
 lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
-    no_index (OfNat.ofNat n) < ENNReal.ofReal r ↔ OfNat.ofNat n < r :=
+    ofNat(n) < ENNReal.ofReal r ↔ OfNat.ofNat n < r :=
   natCast_lt_ofReal
 
 @[simp]
@@ -276,7 +279,7 @@ lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
 
 @[simp]
 lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    ENNReal.ofReal r = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
+    ENNReal.ofReal r = ofNat(n) ↔ r = OfNat.ofNat n :=
   ofReal_eq_natCast (NeZero.ne n)
 
 theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
@@ -353,11 +356,11 @@ theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * 
   change ((a : ℝ≥0∞) * b).toNNReal = a * b.toNNReal
   simp only [ENNReal.toNNReal_mul, ENNReal.toNNReal_coe]
 
--- Porting note (#11215): TODO: upgrade to `→*₀`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
 def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
   toFun := ENNReal.toNNReal
-  map_one' := toNNReal_coe
+  map_one' := toNNReal_coe _
   map_mul' _ _ := toNNReal_mul
 
 @[simp]
@@ -369,7 +372,7 @@ theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i ∈ s, f i).toNNReal = ∏ i ∈ s, (f i).toNNReal :=
   map_prod toNNRealHom _ _
 
--- Porting note (#11215): TODO: upgrade to `→*₀`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
 def toRealHom : ℝ≥0∞ →* ℝ :=
   (NNReal.toRealHom : ℝ≥0 →* ℝ).comp toNNRealHom
@@ -425,7 +428,7 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
   repeat' right
   have hq' : 0 < q := lt_of_lt_of_le hp hpq
   have hp' : p < ∞ := lt_of_le_of_lt hpq hq
-  simp [ENNReal.toReal_le_toReal hp'.ne hq.ne, ENNReal.toReal_pos_iff, hpq, hp, hp', hq', hq]
+  simp [ENNReal.toReal_mono hq.ne hpq, ENNReal.toReal_pos_iff, hp, hp', hq', hq]
 
 protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal :=
   haveI : p = ⊤ ∨ 0 < p.toReal ∧ 1 ≤ p.toReal := by
@@ -438,18 +441,18 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
     this rfl,
     fun h => zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
 
-theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
+@[simp] theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
   induction' a with a; · simp
   rcases eq_or_ne a 0 with (rfl | ha); · simp
   rw [← coe_inv ha, toNNReal_coe, toNNReal_coe]
 
-theorem toNNReal_div (a b : ℝ≥0∞) : (a / b).toNNReal = a.toNNReal / b.toNNReal := by
+@[simp] theorem toNNReal_div (a b : ℝ≥0∞) : (a / b).toNNReal = a.toNNReal / b.toNNReal := by
   rw [div_eq_mul_inv, toNNReal_mul, toNNReal_inv, div_eq_mul_inv]
 
-theorem toReal_inv (a : ℝ≥0∞) : a⁻¹.toReal = a.toReal⁻¹ := by
+@[simp] theorem toReal_inv (a : ℝ≥0∞) : a⁻¹.toReal = a.toReal⁻¹ := by
   simp only [ENNReal.toReal, toNNReal_inv, NNReal.coe_inv]
 
-theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := by
+@[simp] theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := by
   rw [div_eq_mul_inv, toReal_mul, toReal_inv, div_eq_mul_inv]
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
@@ -505,6 +508,19 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toReal = sSup (ENNReal.toReal '' s) := by
   simp only [ENNReal.toReal, toNNReal_sSup s hf, NNReal.coe_sSup, Set.image_image]
 
+@[simp] lemma ofReal_iInf [Nonempty ι] (f : ι → ℝ) :
+    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
+  obtain ⟨i, hi⟩ | h := em (∃ i, f i ≤ 0)
+  · rw [(iInf_eq_bot _).2 fun _ _ ↦ ⟨i, by simpa [ofReal_of_nonpos hi]⟩]
+    simp [Real.iInf_nonpos' ⟨i, hi⟩]
+  replace h i : 0 ≤ f i := le_of_not_le fun hi ↦ h ⟨i, hi⟩
+  refine eq_of_forall_le_iff fun a ↦ ?_
+  obtain rfl | ha := eq_or_ne a ∞
+  · simp
+  rw [le_iInf_iff, le_ofReal_iff_toReal_le ha, le_ciInf_iff ⟨0, by simpa [mem_lowerBounds]⟩]
+  · exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
+  · exact Real.iInf_nonneg h
+
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
   le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
     (tsub_le_iff_right.1 <| le_iInf fun _ => tsub_le_iff_right.2 <| iInf_le _ _)
@@ -525,7 +541,7 @@ theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
 
 theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
   suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
-    le_antisymm (le_iInf fun a => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
   calc
     ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
@@ -542,50 +558,11 @@ theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [No
     rw [Finset.forall_mem_cons] at hk
     exact add_le_add hk.1.1 (Finset.sum_le_sum fun a ha => (hk.2 a ha).2)
 
-/-- If `x ≠ 0` and `x ≠ ∞`, then right multiplication by `x` maps infimum to infimum.
-See also `ENNReal.iInf_mul` that assumes `[Nonempty ι]` but does not require `x ≠ 0`. -/
-theorem iInf_mul_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x ≠ 0) (h : x ≠ ∞) :
-    iInf f * x = ⨅ i, f i * x :=
-  le_antisymm mul_right_mono.map_iInf_le
-    ((ENNReal.div_le_iff_le_mul (Or.inl h0) <| Or.inl h).mp <|
-      le_iInf fun _ => (ENNReal.div_le_iff_le_mul (Or.inl h0) <| Or.inl h).mpr <| iInf_le _ _)
-
-/-- If `x ≠ ∞`, then right multiplication by `x` maps infimum over a nonempty type to infimum. See
-also `ENNReal.iInf_mul_of_ne` that assumes `x ≠ 0` but does not require `[Nonempty ι]`. -/
-theorem iInf_mul {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h : x ≠ ∞) :
-    iInf f * x = ⨅ i, f i * x := by
-  by_cases h0 : x = 0
-  · simp only [h0, mul_zero, iInf_const]
-  · exact iInf_mul_of_ne h0 h
-
-/-- If `x ≠ ∞`, then left multiplication by `x` maps infimum over a nonempty type to infimum. See
-also `ENNReal.mul_iInf_of_ne` that assumes `x ≠ 0` but does not require `[Nonempty ι]`. -/
-theorem mul_iInf {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h : x ≠ ∞) :
-    x * iInf f = ⨅ i, x * f i := by simpa only [mul_comm] using iInf_mul h
-
-/-- If `x ≠ 0` and `x ≠ ∞`, then left multiplication by `x` maps infimum to infimum.
-See also `ENNReal.mul_iInf` that assumes `[Nonempty ι]` but does not require `x ≠ 0`. -/
-theorem mul_iInf_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x ≠ 0) (h : x ≠ ∞) :
-    x * iInf f = ⨅ i, x * f i := by simpa only [mul_comm] using iInf_mul_of_ne h0 h
-
-/-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
-
 end iInf
 
 section iSup
-
-@[simp]
-theorem iSup_eq_zero {ι : Sort*} {f : ι → ℝ≥0∞} : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 :=
-  iSup_eq_bot
-
-@[simp]
-theorem iSup_zero_eq_zero {ι : Sort*} : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
-
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
-
-theorem iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
-  (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
 @[deprecated (since := "2024-04-05")] alias iSup_coe_nat := iSup_natCast
 

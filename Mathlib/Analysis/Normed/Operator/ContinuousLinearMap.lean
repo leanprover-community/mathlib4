@@ -3,8 +3,10 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.MulAction
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
@@ -152,9 +154,13 @@ variable [Ring 𝕜] [Ring 𝕜₂]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 
-theorem ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
-    UniformEmbedding f :=
-  (AddMonoidHomClass.antilipschitz_of_bound f hf).uniformEmbedding f.uniformContinuous
+theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
+    IsUniformEmbedding f :=
+  (AddMonoidHomClass.antilipschitz_of_bound f hf).isUniformEmbedding f.uniformContinuous
+
+@[deprecated (since := "2024-10-01")]
+alias ContinuousLinearMap.uniformEmbedding_of_bound :=
+  ContinuousLinearMap.isUniformEmbedding_of_bound
 
 end Normed
 
@@ -182,7 +188,7 @@ theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E �
   intro hf y
   calc
     ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := by
-      rw [← mul_assoc, inv_mul_cancel (ne_of_lt ha).symm, one_mul]
+      rw [← mul_assoc, inv_mul_cancel₀ (ne_of_lt ha).symm, one_mul]
     _ = a⁻¹ * ‖f (f.symm y)‖ := by rw [hf]
     _ = a⁻¹ * ‖y‖ := by simp
 

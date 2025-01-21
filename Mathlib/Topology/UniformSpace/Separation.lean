@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Separation
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
@@ -78,7 +78,7 @@ These definitions were equal (but not definitionally equal)
 to `{x : α × α | Inseparable x.1 x.2}` and `SeparationQuotient α`, respectively,
 and were added to the library before their geneeralizations to topological spaces.
 
-In #10644, we migrated from these definitions
+In https://github.com/leanprover-community/mathlib4/pull/10644, we migrated from these definitions
 to more general `Inseparable` and `SeparationQuotient`.
 
 ## TODO
@@ -88,7 +88,7 @@ rely on `UniformSpace` structures in the domain and in the codomain.
 We should generalize them to topological spaces.
 This generalization will drop `UniformContinuous` assumptions in some lemmas,
 and add these assumptions in other lemmas,
-so it was not done in #10644 to keep it reasonably sized.
+so it was not done in https://github.com/leanprover-community/mathlib4/pull/10644 to keep it reasonably sized.
 
 ## Keywords
 
@@ -96,7 +96,6 @@ uniform space, separated space, Hausdorff space, separation quotient
 -/
 
 open Filter Set Function Topology Uniformity UniformSpace
-open scoped Classical
 
 noncomputable section
 
@@ -165,8 +164,8 @@ theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [T0Space α] {x y 
 theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y) (𝓤 α)) : x = y :=
   (inseparable_iff_clusterPt_uniformity.2 h).eq
 
-theorem Filter.Tendsto.inseparable_iff_uniformity {l : Filter β} [NeBot l] {f g : β → α} {a b : α}
-    (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
+theorem Filter.Tendsto.inseparable_iff_uniformity {β} {l : Filter β} [NeBot l] {f g : β → α}
+    {a b : α} (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
     Inseparable a b ↔ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α) := by
   refine ⟨fun h ↦ (ha.prod_mk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ ?_⟩
   rw [inseparable_iff_clusterPt_uniformity]
@@ -219,7 +218,7 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
     exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
   nhds_eq_comap_uniformity := surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
     conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
-    simp only [Filter.comap_comap, Function.comp, Prod.map_apply]
+    simp only [Filter.comap_comap, Function.comp_def, Prod.map_apply]
 
 theorem uniformity_eq : 𝓤 (SeparationQuotient α) = (𝓤 α).map (Prod.map mk mk) := rfl
 
@@ -248,12 +247,13 @@ theorem uniformContinuous_uncurry_lift₂ {f : α → β → γ}
 theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk mk) = 𝓤 α :=
   comap_map_mk_uniformity
 
+open Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/
 def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   if hc : UniformContinuous f then lift f fun _ _ h => (h.map hc.continuous).eq
-  else fun x => f (Nonempty.some ⟨x.out'⟩)
+  else fun x => f (Nonempty.some ⟨x.out⟩)
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
     lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
@@ -285,6 +285,6 @@ theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl
 
 theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg : UniformContinuous g) :
     map g ∘ map f = map (g ∘ f) :=
-  (map_unique (hg.comp hf) <| by simp only [Function.comp, map_mk, hf, hg]).symm
+  (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
 
 end SeparationQuotient

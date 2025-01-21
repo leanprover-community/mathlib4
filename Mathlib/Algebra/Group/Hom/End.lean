@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
+Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Commute.Defs
@@ -19,9 +19,9 @@ They are separate, and if someone would like to split this file in two that may 
 -/
 
 
-universe uM uN uP uQ
+universe uM
 
-variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
+variable {M : Type uM}
 
 namespace AddMonoid.End
 
@@ -34,9 +34,8 @@ instance instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoi
 @[simp]
 lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m := rfl
+    (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
 instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
   { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid, AddMonoid.End.instAddMonoidWithOne M with
@@ -121,7 +120,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
+variable {R : Type*} [NonUnitalNonAssocCommSemiring R]
 
 namespace AddMonoid.End
 

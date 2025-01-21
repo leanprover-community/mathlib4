@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 
@@ -208,10 +208,8 @@ lemma quasiIso_iff_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.m
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] :
     QuasiIso φ ↔ QuasiIso φ' := by
-  rw [← quasiIso_iff_comp_left (show K' ⟶ K from e.inv.left) φ,
+  simp [← quasiIso_iff_comp_left (show K' ⟶ K from e.inv.left) φ,
     ← quasiIso_iff_comp_right φ' (show L' ⟶ L from e.inv.right)]
-  erw [Arrow.w e.inv]
-  rfl
 
 lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ ≅ Arrow.mk φ')
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]

@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
@@ -59,7 +58,7 @@ satisfy `r a b → s (f a) (f b)`.
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
-class RelHomClass (F : Type*) {α β : Type*} (r : outParam <| α → α → Prop)
+class RelHomClass (F : Type*) {α β : outParam Type*} (r : outParam <| α → α → Prop)
   (s : outParam <| β → β → Prop) [FunLike F α β] : Prop where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
@@ -81,12 +80,16 @@ protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAs
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
-  induction' ac with _ H IH generalizing a
+  induction ac generalizing a with | intro _ H IH => ?_
   subst h
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
 
 protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
+
+protected theorem isWellFounded [RelHomClass F r s] (f : F) [IsWellFounded β s] :
+    IsWellFounded α r :=
+  ⟨RelHomClass.wellFounded f IsWellFounded.wf⟩
 
 end RelHomClass
 
@@ -118,9 +121,6 @@ theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : r →r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Identity map is a relation homomorphism. -/
 @[refl, simps]
@@ -201,7 +201,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
-  coe := fun x => x.toFun
+  coe x := x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
@@ -224,6 +224,13 @@ theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
+theorem toEmbedding_injective : Injective (toEmbedding : r ↪r s → (α ↪ β)) := by
+  rintro ⟨f, -⟩ ⟨g, -⟩; simp
+
+@[simp]
+theorem toEmbedding_inj {f g : r ↪r s} : f.toEmbedding = g.toEmbedding ↔ f = g :=
+  toEmbedding_injective.eq_iff
+
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 
@@ -243,9 +250,6 @@ theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
-
-theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Identity map is a relation embedding. -/
 @[refl, simps!]
@@ -322,7 +326,7 @@ protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β
 protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
-  induction' ac with _ H IH generalizing a
+  induction ac generalizing a with | intro _ H IH => ?_
   subst h
   exact ⟨_, fun a' h => IH (f a') (f.map_rel_iff.2 h) _ rfl⟩
 
@@ -345,35 +349,39 @@ instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
     WellFoundedGT (Subtype p) :=
   (Subtype.relEmbedding (· > ·) p).isWellFounded
 
-/-- `Quotient.mk'` as a relation homomorphism between the relation and the lift of a relation. -/
+/-- `Quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]
-def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
+def Quotient.mkRelHom {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=
-  ⟨@Quotient.mk' α _, id⟩
+  ⟨Quotient.mk _, id⟩
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps!]
-noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
+noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
+set_option linter.deprecated false in
 /-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
-@[simps]
+@[deprecated Quotient.outRelEmbedding (since := "2024-10-19"), simps]
 noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
     (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
   { Quotient.outRelEmbedding H with toFun := Quotient.out' }
 
+attribute [deprecated Quotient.outRelEmbedding_apply (since := "2024-10-19")]
+  Quotient.out'RelEmbedding_apply
+
 @[simp]
-theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
+theorem acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
     Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a := by
   constructor
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
-    induction' ac with _ _ IH
+    induction ac with | intro _ _ IH => ?_
     refine ⟨_, fun q h => ?_⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
@@ -385,7 +393,7 @@ theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
+theorem wellFounded_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
   constructor
@@ -532,7 +540,7 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
-  coe := fun x => x
+  coe x := x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
@@ -566,17 +574,13 @@ theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
 theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 
-/-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
-`function.injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
+/-- The map `DFunLike.coe : (r ≃r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
   DFunLike.coe_injective
 
 @[ext]
 theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=
@@ -635,9 +639,14 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
   ext fun x => by subst h₁; rfl
 
-/-- a relation isomorphism is also a relation isomorphism between dual relations. -/
+/-- A relation isomorphism is also a relation isomorphism between dual relations. -/
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=
-  ⟨f.toEquiv, f.map_rel_iff⟩
+  ⟨f, f.map_rel_iff⟩
+
+/-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
+@[simps!]
+protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
+  ⟨f, f.map_rel_iff.not⟩
 
 @[simp]
 theorem coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=
@@ -700,7 +709,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
+    obtain ⟨f, hf⟩ := e₁; obtain ⟨g, hg⟩ := e₂; cases a <;> cases b <;> simp [hf, hg]⟩
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the product.
@@ -715,14 +724,18 @@ def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty �
   ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
-def relIsoOfUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
+def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
     [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
-  ⟨Equiv.equivOfUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
+  ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 
+@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfIrrefl := ofUniqueOfIrrefl
+
 /-- Two reflexive relations on a unique type are isomorphic. -/
-def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
+def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
     [Unique α] [Unique β] : r ≃r s :=
-  ⟨Equiv.equivOfUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
+  ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
+
+@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfRefl := ofUniqueOfRefl
 
 end RelIso

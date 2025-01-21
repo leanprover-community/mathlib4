@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains
@@ -67,7 +68,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Classical DiscreteValuation nonZeroDivisors
+open scoped Multiplicative nonZeroDivisors
 
 universe u v
 
@@ -79,6 +80,7 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 namespace HeightOneSpectrum
 
+open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
@@ -89,6 +91,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
+  classical
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
@@ -121,7 +124,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
     rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebraMap,
-      mul_le_mul_left₀ <| left_ne_zero_of_mul_eq_one hx]
+      mul_le_mul_left <| zero_lt_iff.2 <| left_ne_zero_of_mul_eq_one hx]
     exact v.intValuation_le_one _
 
 -- Porting note: invalid attribute 'semireducible', declaration is in an imported module
@@ -141,7 +144,7 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
 @[simp]
 theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
     v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
     valuation_of_unit_eq, QuotientGroup.mk_one, map_one]
@@ -170,8 +173,8 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
-  map_one' := funext fun v => map_one _
-  map_mul' x y := by simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, map_mul]; rfl
+  map_one' := funext fun _ => map_one _
+  map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl
 
 theorem valuation_ker_eq :
     valuation.ker = K⟮(∅ : Set <| HeightOneSpectrum R),n⟯.subgroupOf (K⟮S,n⟯) := by
@@ -189,8 +192,8 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
   map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
-  map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, MonoidHom.mem_range,
-    powMonoidHom_apply, QuotientGroup.mk_mul, Submonoid.mk_mul_mk]
+  map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, QuotientGroup.mk_mul,
+    MulMemClass.mk_mul_mk]
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
     (@fromUnit R _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Products
@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Relation
 
 /-!
 # Special shapes for limits in `Type`.
@@ -116,7 +117,7 @@ noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
   equivOfSubsingletonOfSubsingleton
     (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
-    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.equivOfUnique _ _)))
+    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.ofUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
 noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
@@ -207,15 +208,12 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
     (binaryProductIso X Y).inv ≫ Limits.prod.snd = _root_.Prod.snd :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 
--- Porting note: it was originally @[simps (config := { typeMd := reducible })]
--- We add the option `type_md` to tell `@[simps]` to not treat homomorphisms `X ⟶ Y` in `Type*` as
--- a function type
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
 @[simps]
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
     { obj := fun Y => X × Y
-      map := fun { Y₁ Y₂} f => (binaryProductLimit X Y₂).lift
+      map := fun { _ Y₂} f => (binaryProductLimit X Y₂).lift
         (BinaryFan.mk _root_.Prod.fst (_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>
@@ -345,7 +343,7 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
       π := Discrete.natTrans (fun ⟨j⟩ f => f j) }
   isLimit :=
     { lift := fun s x j => s.π.app ⟨j⟩ x
-      uniq := fun s m w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x : _) }
+      uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ᶜ F ≅ ∀ j, F j :=
@@ -384,7 +382,7 @@ noncomputable def productLimitCone :
     have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => funext fun x => Shrink.ext <| funext fun j => by
-        simpa using (congr_fun (w ⟨j⟩) x : _) }
+        simpa using (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
@@ -523,8 +521,8 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
         (fun a b (h : CoequalizerRel f g a b) => by
           cases h
           apply congr_fun s.condition))
-      (fun s => rfl)
-      (fun s m hm => funext (fun x => Quot.inductionOn x (congr_fun hm)))
+      (fun _ => rfl)
+      (fun _ _ hm => funext (fun x => Quot.inductionOn x (congr_fun hm)))
 
 /-- If `π : Y ⟶ Z` is an equalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
 then `π ⁻¹' (π '' U) = U`.
@@ -552,7 +550,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
       (mono_iff_injective
             (h.coconePointUniqueUpToIso (coequalizerColimit f g).isColimit).inv).mp
         inferInstance e'
-    exact (eqv.eqvGen_iff.mp (EqvGen.mono lem (Quot.exact _ e'))).mp hy
+    exact (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem (Quot.eqvGen_exact e'))).mp hy
   · exact fun hx => ⟨_, hx, rfl⟩
 
 /-- The categorical coequalizer in `Type u` is the quotient by `f g ~ g x`. -/
@@ -584,10 +582,10 @@ instance : HasPullbacks.{u} (Type u) :=
 instance : HasPushouts.{u} (Type u) :=
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
-variable {X Y Z : Type u}
-variable (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Type u} {X' Y' Z' : Type v}
+variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
@@ -612,7 +610,7 @@ def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g
   cone := pullbackCone f g
   isLimit :=
     PullbackCone.isLimitAux _ (fun s x => ⟨⟨s.fst x, s.snd x⟩, congr_fun s.condition x⟩)
-      (by aesop) (by aesop) fun s m w =>
+      (by aesop) (by aesop) fun _ _ w =>
       funext fun x =>
         Subtype.ext <|
           Prod.ext (congr_fun (w WalkingCospan.left) x) (congr_fun (w WalkingCospan.right) x)
@@ -657,6 +655,7 @@ lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
 
+include hc in
 lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=
   (equivPullbackObj hc).injective (by ext <;> assumption)
 
@@ -922,7 +921,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
   rw [pushoutCocone_inl_eq_inr_iff_of_iso
     (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
-    (by aesop_cat))]
+    (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
 

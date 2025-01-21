@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Logic.Equiv.Embedding
 
 /-!
@@ -48,7 +49,7 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
 
 /-- The cardinality of embeddings from an infinite type to a finite type is zero.
 This is a re-statement of the pigeonhole principle. -/
-theorem card_embedding_eq_of_infinite {α β : Type*} [Infinite α] [Fintype β] [Fintype (α ↪ β)] :
+theorem card_embedding_eq_of_infinite {α β : Type*} [Infinite α] [Finite β] [Fintype (α ↪ β)] :
     ‖α ↪ β‖ = 0 :=
   card_eq_zero
 

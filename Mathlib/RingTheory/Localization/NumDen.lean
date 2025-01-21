@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Numerator and denominator in a localization
@@ -19,9 +19,6 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
-
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsFractionRing
 
@@ -42,7 +39,7 @@ theorem exists_reduced_fraction (x : K) :
   refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
   refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
   simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
-  erw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
+  rw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
 
 /-- `f.num x` is the numerator of `x : f.codomain` as a reduced fraction. -/
 noncomputable def num (x : K) : A :=
@@ -81,7 +78,7 @@ theorem num_mul_den_eq_num_mul_den_iff_eq {x y : K} :
   ⟨fun h ↦ by simpa only [mk'_num_den] using mk'_eq_of_eq' (S := K) h, fun h ↦ by rw [h]⟩
 
 theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
-  num_mul_den_eq_num_iff_eq'.mp (by rw [zero_mul, h, RingHom.map_zero])
+  (num_mul_den_eq_num_iff_eq' (A := A)).mp (by rw [zero_mul, h, RingHom.map_zero])
 
 @[simp]
 lemma num_zero : IsFractionRing.num A (0 : K) = 0 := by
@@ -105,19 +102,10 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   refine _root_.trans ?_ (mk'_num_den A x)
   rw [map_mul, map_units_inv, hd]
   apply mul_left_cancel₀ d_ne_zero
-  rw [← mul_assoc, mul_inv_cancel d_ne_zero, one_mul, mk'_spec']
+  rw [← mul_assoc, mul_inv_cancel₀ d_ne_zero, one_mul, mk'_spec']
 
 theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteger A x where
-  mp h := by
-    obtain ⟨den, hd⟩ := IsUnit.exists_right_inv h
-    use (num A x) * den
-    conv => rhs; rw [← mk'_num_den' A x]
-    rw [map_mul, div_eq_mul_inv]
-    congr 1
-    apply eq_inv_of_mul_eq_one_right
-    rw [← map_mul]
-    norm_cast
-    simp only [hd, OneMemClass.coe_one, map_one]
+  mp := isInteger_of_isUnit_den
   mpr h := by
     have ⟨v, h⟩ := h
     apply IsRelPrime.isUnit_of_dvd (num_den_reduced A x).symm
@@ -156,7 +144,5 @@ lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (
   exact this
 
 end NumDen
-
-variable (S)
 
 end IsFractionRing

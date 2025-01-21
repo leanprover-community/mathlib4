@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alex Kontorovich
+Authors: Yury Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # (Co)product of a family of filters
@@ -20,10 +21,7 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 -/
 
 
-open Set Function
-
-open scoped Classical
-open Filter
+open Set Function Filter
 
 namespace Filter
 
@@ -31,14 +29,6 @@ variable {ι : Type*} {α : ι → Type*} {f f₁ f₂ : (i : ι) → Filter (α
   {p : ∀ i, α i → Prop}
 
 section Pi
-
-/-- The product of an indexed family of filters. -/
-def pi (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
-  ⨅ i, comap (eval i) (f i)
-
-instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
-    IsCountablyGenerated (pi f) :=
-  iInf.isCountablyGenerated _
 
 theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=
   tendsto_iInf' i tendsto_comap
@@ -83,6 +73,7 @@ theorem mem_pi' {s : Set (∀ i, α i)} :
 
 theorem mem_of_pi_mem_pi [∀ i, NeBot (f i)] {I : Set ι} (h : I.pi s ∈ pi f) {i : ι} (hi : i ∈ I) :
     s i ∈ f i := by
+  classical
   rcases mem_pi.1 h with ⟨I', -, t, htf, hts⟩
   refine mem_of_superset (htf i) fun x hx => ?_
   have : ∀ i, (t i).Nonempty := fun i => nonempty_of_mem (htf i)
@@ -102,7 +93,7 @@ theorem Eventually.eval_pi {i : ι} (hf : ∀ᶠ x : α i in f i, p i x) :
 theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
     ∀ᶠ x : ∀ i, α i in pi f, ∀ i, p i (x i) := eventually_all.2 fun _i => (hf _).eval_pi
 
-theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
+theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
@@ -138,6 +129,7 @@ theorem pi_inf_principal_univ_pi_eq_bot :
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
+  classical
   rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
   refine exists_congr fun i => ?_
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']
@@ -153,7 +145,7 @@ theorem pi_inf_principal_pi_neBot [∀ i, NeBot (f i)] {I : Set ι} :
 instance PiInfPrincipalPi.neBot [h : ∀ i, NeBot (f i ⊓ 𝓟 (s i))] {I : Set ι} :
     NeBot (pi f ⊓ 𝓟 (I.pi s)) :=
   (pi_inf_principal_univ_pi_neBot.2 ‹_›).mono <|
-    inf_le_inf_left _ <| principal_mono.2 fun x hx i _ => hx i trivial
+    inf_le_inf_left _ <| principal_mono.2 fun _ hx i _ => hx i trivial
 
 @[simp]
 theorem pi_eq_bot : pi f = ⊥ ↔ ∃ i, f i = ⊥ := by
@@ -184,6 +176,11 @@ theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
   haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)
+
+theorem tendsto_piMap_pi {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀ i, Filter (α i)}
+    {l' : ∀ i, Filter (β i)} (h : ∀ i, Tendsto (f i) (l i) (l' i)) :
+    Tendsto (Pi.map f) (pi l) (pi l') :=
+  tendsto_pi.2 fun i ↦ (h i).comp (tendsto_eval_pi _ _)
 
 end Pi
 

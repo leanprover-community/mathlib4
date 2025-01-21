@@ -72,7 +72,6 @@ lemma isRightDerivedFunctor_iff_of_iso (α' : F ⟶ L ⋙ RF') (W : MorphismProp
 section
 
 variable [L.IsLocalization W] [RF.IsRightDerivedFunctor α W]
-  [RF'.IsRightDerivedFunctor α' W] [RF''.IsRightDerivedFunctor α'' W]
 
 /-- Constructor for natural transformations from a right derived functor. -/
 noncomputable def rightDerivedDesc (G : D ⥤ H) (β : F ⟶ L ⋙ G) : RF ⟶ G :=
@@ -91,13 +90,14 @@ lemma rightDerived_fac_app (G : D ⥤ H) (β : F ⟶ L ⋙ G) (X : C) :
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
   RF.descOfIsLeftKanExtension_fac_app α G β X
 
+include W in
 lemma rightDerived_ext (G : D ⥤ H) (γ₁ γ₂ : RF ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
   RF.hom_ext_of_isLeftKanExtension α γ₁ γ₂ hγ
 
 /-- The natural transformation `RF ⟶ RF'` on right derived functors that is
-induced by a natural transformation `F ⟶ F'`.  -/
+induced by a natural transformation `F ⟶ F'`. -/
 noncomputable def rightDerivedNatTrans (τ : F ⟶ F') : RF ⟶ RF' :=
   RF.rightDerivedDesc α W RF' (τ ≫ α')
 
@@ -117,16 +117,18 @@ lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
 @[simp]
 lemma rightDerivedNatTrans_id :
     rightDerivedNatTrans RF RF α α W (𝟙 F) = 𝟙 RF :=
-  rightDerived_ext RF α W _ _ _ (by aesop_cat)
+  rightDerived_ext RF α W _ _ _ (by simp)
+
+variable [RF'.IsRightDerivedFunctor α' W]
 
 @[reassoc (attr := simp)]
 lemma rightDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
     rightDerivedNatTrans RF RF' α α' W τ ≫ rightDerivedNatTrans RF' RF'' α' α'' W τ' =
     rightDerivedNatTrans RF RF'' α α'' W (τ ≫ τ') :=
-  rightDerived_ext RF α W _ _ _ (by aesop_cat)
+  rightDerived_ext RF α W _ _ _ (by simp)
 
 /-- The natural isomorphism `RF ≅ RF'` on right derived functors that is
-induced by a natural isomorphism `F ≅ F'`.  -/
+induced by a natural isomorphism `F ≅ F'`. -/
 @[simps]
 noncomputable def rightDerivedNatIso (τ : F ≅ F') :
     RF ≅ RF' where
@@ -165,6 +167,7 @@ lemma hasRightDerivedFunctor_iff :
 
 variable {F}
 
+include e in
 lemma hasRightDerivedFunctor_iff_of_iso :
     HasRightDerivedFunctor F W ↔ HasRightDerivedFunctor F' W := by
   rw [hasRightDerivedFunctor_iff F W.Q W, hasRightDerivedFunctor_iff F' W.Q W,

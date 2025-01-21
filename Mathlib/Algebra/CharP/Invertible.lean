@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Invertible
 
 /-!
 # Invertibility of elements given a characteristic
@@ -28,7 +30,7 @@ def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invert
 
 theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
   rw [← ringChar.spec, ← Ne]
-  exact nonzero_of_invertible (t : K)
+  exact Invertible.ne_zero (t : K)
 
 /-- A natural number `t` is invertible in a field `K` of characteristic `p` if `p` does not divide
 `t`. -/

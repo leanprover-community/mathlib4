@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Computability.Language
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.Indexes
 import Mathlib.Tactic.NormNum
@@ -28,11 +29,9 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
 
-
-open Computability
-
 universe u v
 
+open Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -144,7 +143,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   · rfl
   · have ha := hS a (List.mem_cons_self _ _)
     rw [Set.mem_singleton_iff] at ha
-    rw [List.join, evalFrom_of_append, ha, hx]
+    rw [List.flatten, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
@@ -247,3 +246,25 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 end Maps
 
 end DFA
+
+/-- A regular language is a language that is defined by a DFA with finite states. -/
+def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
+  ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
+
+/-- Lifts the state type `σ` inside `Language.IsRegular` to a different universe. -/
+private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
+    (hL : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
+    ∃ σ' : Type v', ∃ _ : Fintype σ', ∃ M : DFA T σ', M.accepts = L :=
+  have ⟨σ, _, M, hM⟩ := hL
+  have ⟨σ', ⟨f⟩⟩ := Small.equiv_small.{v', v} (α := σ)
+  ⟨σ', Fintype.ofEquiv σ f, M.reindex f, hM ▸ DFA.accepts_reindex M f⟩
+
+/--
+A language is regular if and only if it is defined by a DFA with finite states.
+
+This is more general than using the definition of `Language.IsRegular` directly, as the state type
+`σ` is universe-polymorphic.
+-/
+theorem Language.isRegular_iff {T : Type u} {L : Language T} :
+    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
+  ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩

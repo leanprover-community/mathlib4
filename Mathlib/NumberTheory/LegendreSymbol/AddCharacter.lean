@@ -69,7 +69,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
     Function.Injective ψ.mulShift := by
   intro a b h
   apply_fun fun x => x * mulShift ψ (-b) at h
-  simp only [mulShift_mul, mulShift_zero, add_right_neg, mulShift_apply] at h
+  simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
 -- `AddCommGroup.equiv_direct_sum_zmod_of_fintype`
@@ -92,7 +92,7 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- can't prove that they always exist (referring to providing an `Inhabited` instance)
 -- @[nolint has_nonempty_instance]
 structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where
@@ -293,7 +293,7 @@ end Ring
 
 section Field
 
-variable (F : Type*) [Field F] [Finite F] [DecidableEq F]
+variable (F : Type*) [Field F] [Finite F]
 
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm

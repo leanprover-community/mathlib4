@@ -48,19 +48,12 @@ end StateT
 
 namespace ExceptT
 
-variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
-
--- Porting note: This is proven by proj reduction in Lean 3.
-@[simp]
-theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
-  rfl
-
-variable [Monad m]
+variable {α ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
 attribute [simp] run_bind
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+theorem run_monadLift {n} [Monad m] [MonadLiftT n m] (x : n α) :
     (monadLift x : ExceptT ε m α).run = Except.ok <$> (monadLift x : m α) :=
   rfl
 
@@ -75,7 +68,6 @@ namespace ReaderT
 
 section
 
-variable {ρ : Type u}
 variable {m : Type u → Type v}
 variable {α σ : Type u}
 
@@ -115,6 +107,7 @@ variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
   rfl
 
+section Monad
 variable [Monad m]
 
 @[simp]
@@ -142,6 +135,8 @@ theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
 
+end Monad
+
 @[simp]
 theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
     (monadMap (@f) x : OptionT m α).run = monadMap (@f) x.run :=
@@ -160,22 +155,3 @@ instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (Option
       rw [bind_congr]
       intro a; cases a <;> simp)
     (pure_bind := by intros; apply OptionT.ext; simp)
-
-/-! ### Lawfulness of `IO`
-
-At some point core intends to make `IO` opaque, which would break these proofs
-As discussed in https://github.com/leanprover/std4/pull/416,
-it should be possible for core to expose the lawfulness of `IO` as part of the opaque interface,
-which would remove the need for these proofs anyway.
-
-These are not in Batteries because Batteries does not want to deal with the churn from such a core
-refactor.
--/
-
-variable {ε σ : Type}
-instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
-instance : LawfulMonad IO := inferInstance
-
-instance : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad (ST ε) := inferInstance

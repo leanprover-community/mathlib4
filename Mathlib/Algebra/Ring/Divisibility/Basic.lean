@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Defs
 
@@ -20,13 +20,13 @@ variable {α β : Type*}
 
 section Semigroup
 
-variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] (f : F)
+variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
 
-theorem map_dvd_iff {a b} : f a ∣ f b ↔ a ∣ b :=
+theorem map_dvd_iff (f : F) {a b} : f a ∣ f b ↔ a ∣ b :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
 
-theorem MulEquiv.decompositionMonoid [DecompositionMonoid β] : DecompositionMonoid α where
+theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : DecompositionMonoid α where
   primal a b c h := by
     rw [← map_dvd_iff f, map_mul] at h
     obtain ⟨a₁, a₂, h⟩ := DecompositionMonoid.primal _ h
@@ -58,7 +58,7 @@ end Semiring
 
 section NonUnitalCommSemiring
 
-variable [NonUnitalCommSemiring α] [NonUnitalCommSemiring β] {a b c : α}
+variable [NonUnitalCommSemiring α]
 
 theorem Dvd.dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
   dvd_add (hdx.mul_left a) (hdy.mul_left b)
@@ -67,7 +67,7 @@ end NonUnitalCommSemiring
 
 section Semigroup
 
-variable [Semigroup α] [HasDistribNeg α] {a b c : α}
+variable [Semigroup α] [HasDistribNeg α] {a b : α}
 
 /-- An element `a` of a semigroup with a distributive negation divides the negation of an element
 `b` iff `a` divides `b`. -/
@@ -129,7 +129,7 @@ end NonUnitalRing
 
 section Ring
 
-variable [Ring α] {a b c : α}
+variable [Ring α] {a b : α}
 
 /-- An element a divides the sum a + b if and only if a divides b. -/
 @[simp]
@@ -155,7 +155,7 @@ end Ring
 
 section NonUnitalCommRing
 
-variable [NonUnitalCommRing α] {a b c : α}
+variable [NonUnitalCommRing α]
 
 theorem dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y) :
     k ∣ a * x - b * y := by

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Renaming variables of polynomials
@@ -72,7 +72,7 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     -- Porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking
     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPolynomial α R)) (X ∘ g)) C (X ∘ f) p]
-    simp only [(· ∘ ·), eval₂Hom_X']
+    simp only [comp_def, eval₂Hom_X']
     refine eval₂Hom_congr ?_ rfl rfl
     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
 
@@ -106,8 +106,7 @@ section
 
 variable {f : σ → τ} (hf : Function.Injective f)
 
-open scoped Classical
-
+open Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
   `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
@@ -207,15 +206,14 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p + rename (Subtype.map id ?_) q <;>
-        simp (config := { contextual := true }) only [id, true_or_iff, or_true_iff,
+        simp +contextual only [id, true_or, or_true,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, map_add]
       rfl
   · rintro p n ⟨s, p, rfl⟩
     refine ⟨insert n s, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p * X ⟨n, s.mem_insert_self n⟩
-      simp (config := { contextual := true }) only [id, or_true_iff, Finset.mem_insert,
-        forall_true_iff]
+      simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
     · simp only [rename_rename, rename_X, Subtype.coe_mk, map_mul]
       rfl
 
@@ -232,10 +230,10 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use rename (Set.inclusion s₁.subset_union_left) q₁
     use rename (Set.inclusion s₁.subset_union_right) q₂
     constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [rename_rename (Set.inclusion s₁.subset_union_left)]
       rfl
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [rename_rename (Set.inclusion s₁.subset_union_right)]
       rfl
 
@@ -247,7 +245,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   let e := Fintype.equivFin { x // x ∈ s }
   refine ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, ?_⟩
   rw [← rename_rename, rename_rename e]
-  simp only [Function.comp, Equiv.symm_apply_apply, rename_rename]
+  simp only [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
 
 end Rename
 

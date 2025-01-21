@@ -7,6 +7,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Disjointed
 import Mathlib.MeasureTheory.OuterMeasure.Defs
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Outer Measures
@@ -33,7 +34,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped Classical NNReal Topology ENNReal
+open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
 
@@ -61,7 +62,7 @@ theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) �
     μ (⋃ i, t i) = μ (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
     _ ≤ ∑' i, μ (disjointed t i) :=
       OuterMeasureClass.measure_iUnion_nat_le _ _ (disjoint_disjointed _)
-    _ ≤ ∑' i, μ (t i) := by gcongr; apply disjointed_subset
+    _ ≤ ∑' i, μ (t i) := by gcongr; exact disjointed_subset ..
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑' i : I, μ (s i) := by
@@ -79,6 +80,9 @@ theorem measure_iUnion_fintype_le [Fintype ι] (μ : F) (s : ι → Set α) :
 
 theorem measure_union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
   simpa [union_eq_iUnion] using measure_iUnion_fintype_le μ (cond · s t)
+
+lemma measure_univ_le_add_compl (s : Set α) : μ univ ≤ μ s + μ sᶜ :=
+  s.union_compl_self ▸ measure_union_le s sᶜ
 
 theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
   simpa using measure_union_le (s ∩ t) (s \ t)
@@ -191,11 +195,6 @@ theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : �
 @[deprecated measure_iUnion_null (since := "2024-05-14")]
 alias ⟨_, iUnion_null⟩ := iUnion_null_iff
 
-@[deprecated (since := "2024-01-14")]
-theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
-    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  measure_iUnion_null_iff
-
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
     m (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, m (s i) :=
@@ -229,6 +228,7 @@ then `m (⋃ n, s n) = ⨆ n, m (s n)`. -/
 theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ → Set α}
     (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞) :
     m (⋃ n, s n) = ⨆ n, m (s n) := by
+  classical
   refine measure_iUnion_of_tendsto_zero m atTop ?_
   refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
   refine (m.mono ?_).trans (measure_iUnion_le _)
