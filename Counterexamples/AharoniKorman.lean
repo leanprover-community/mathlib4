@@ -85,16 +85,6 @@ lemma chain_intersect_antichain {α : Type*} [PartialOrder α] {s t : Set α}
   case inl h => exact ht hxt hyt hne h
   case inr h => exact ht hyt hxt hne.symm h
 
-lemma IsChain.le_of_not_lt {α : Type*} [Preorder α] {s : Set α} (hs : IsChain (· ≤ ·) s)
-    {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
-  cases hs.total hx hy with
-  | inr h' => exact h'
-  | inl h' => simpa [lt_iff_le_not_le, h'] using h
-
-lemma IsChain.lt_of_not_le {α : Type*} [Preorder α] {s : Set α} (hs : IsChain (· ≤ ·) s)
-    {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
-  (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_le · h)
-
 end to_move
 
 attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
