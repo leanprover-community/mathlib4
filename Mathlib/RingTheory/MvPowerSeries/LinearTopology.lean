@@ -148,7 +148,8 @@ theorem basis_mem_nhds_zero (Jd : {J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0}
     rw [mem_basis_iff]
     exact forall_imp (fun e h he => h he he)
 
-lemma mem_nhds_zero_iff [IsLinearTopology R] {U : Set (MvPowerSeries σ R)} :
+lemma mem_nhds_zero_iff [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
+    {U : Set (MvPowerSeries σ R)} :
     U ∈ 𝓝 0 ↔ ∃ Jd, ((Jd.1 : Set R) ∈ 𝓝 0) ∧ (basis σ R Jd : Set (MvPowerSeries σ R)) ⊆ U := by
   constructor
   · rw [nhds_pi, Filter.mem_pi]
@@ -171,13 +172,31 @@ lemma mem_nhds_zero_iff [IsLinearTopology R] {U : Set (MvPowerSeries σ R)} :
   · rintro ⟨Jd, hJd_mem_nhds, hJd⟩
     exact Filter.sets_of_superset _ (basis_mem_nhds_zero ⟨⟨Jd.1, hJd_mem_nhds⟩,Jd.2⟩) hJd
 
-/-- The topology on `MvPowerSeries` is a linear topology when the ring of coefficients has
-the discrete topology. -/
-instance [IsLinearTopology R] :
-    IsLinearTopology (MvPowerSeries σ R) :=
-  IsLinearTopology.mk_of_twoSidedIdeal
-    (p := fun Jd ↦ (Jd.1 : Set R) ∈ 𝓝 0) (s := fun Jd ↦ basis σ R Jd)
-    (Filter.HasBasis.mk fun s ↦ by simp [mem_nhds_zero_iff])
+/-- The topology on `MvPowerSeries` is a (left and right) linear topology
+  when the ring of coefficients has the discrete topology. -/
+theorem hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+  (𝓝 0).HasBasis (fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) ∈ 𝓝 0)
+    fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) := by
+  constructor
+  intro U
+  simp only [mem_nhds_zero_iff]
+  constructor
+  · rintro ⟨Jd, hJ, hd⟩
+    exact ⟨basis σ R Jd, ⟨Jd, ⟨hJ, by simp⟩⟩, hd⟩
+  · rintro ⟨J, ⟨⟨Id, hI, hJ⟩, hU⟩⟩
+    exact ⟨Id, hI, fun ⦃a⦄ a_1 ↦ hU (hJ a_1)⟩
+
+/-- The topology on `MvPowerSeries` is a left linear topology
+  when the ring of coefficients has the discrete topology. -/
+instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
+  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_twoSidedIdeal)).1
+
+/-- The topology on `MvPowerSeries` is a right linear topology
+  when the ring of coefficients has the discrete topology. -/
+instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
+  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_twoSidedIdeal)).2
 
 end LinearTopology
 
