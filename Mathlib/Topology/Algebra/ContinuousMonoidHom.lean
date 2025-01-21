@@ -108,6 +108,12 @@ instance instMonoidHomClass : MonoidHomClass (ContinuousMonoidHom A B) A B where
 instance instContinuousMapClass : ContinuousMapClass (ContinuousMonoidHom A B) A B where
   map_continuous f := f.continuous_toFun
 
+@[to_additive (attr := simp)]
+lemma coe_toMonoidHom (f : ContinuousMonoidHom A B) : f.toMonoidHom = f := rfl
+
+@[to_additive (attr := simp)]
+lemma coe_toContinuousMap (f : ContinuousMonoidHom A B) : f.toContinuousMap = f := rfl
+
 section
 
 variable {A B : Type*} [Monoid A] [Monoid B] [TopologicalSpace A] [TopologicalSpace B]
@@ -123,32 +129,24 @@ def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f :
     ContinuousMonoidHom A B :=
   { MonoidHomClass.toMonoidHom f with }
 
-/--Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
-`ContinuousMnoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`.-/
+/-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
+`ContinuousMnoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
 @[to_additive "Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`."]
-instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeTC F (ContinuousMonoidHom A B) :=
+instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F (ContinuousMonoidHom A B) :=
   ⟨ContinuousMonoidHom.toContinuousMonoidHom⟩
 
 @[to_additive (attr := simp)]
-lemma coe_fun [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-  ⇑(f : ContinuousMonoidHom A B) = f := rfl
+lemma coe_coe [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    ⇑(f : ContinuousMonoidHom A B) = f := rfl
 
-@[to_additive (attr := simp)]
-lemma coe_monoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-  ((f : ContinuousMonoidHom A B) : A →* B) = f := rfl
+@[to_additive (attr := simp, norm_cast)]
+lemma toMonoidHom_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    ((f : ContinuousMonoidHom A B) : A →* B) = f := rfl
 
-@[to_additive (attr := simp)]
-lemma coe_toMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-  (f : ContinuousMonoidHom A B).toMonoidHom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_continuousMap [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-  ((f : ContinuousMonoidHom A B) : C(A, B)) = f := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_toContinuousMap [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-  (f : ContinuousMonoidHom A B).toContinuousMap = f := rfl
+@[to_additive (attr := simp, norm_cast)]
+lemma toContinuousMap_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B]
+    (f : F) : ((f : ContinuousMonoidHom A B) : C(A, B)) = f := rfl
 
 end
 
