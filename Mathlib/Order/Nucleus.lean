@@ -5,6 +5,7 @@ Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Closure
 
 /-!
 # Nucleus
@@ -44,6 +45,17 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
 
 open Nucleus
 
+
+
+def toClosureOperator (n : Nucleus X) : ClosureOperator X where
+  toFun := n.toFun
+  monotone' := sorry
+  le_closure' := n.increasing'
+  idempotent' := sorry
+
+
+
+
 variable {n : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
@@ -69,11 +81,13 @@ instance : NucleusClass (Nucleus X) X where
   map_inf _ _ _ := map_inf
 
 
+
+
 /--
 We can proove that two Nuclei are equal by showing that their functions are the same.
 -/
 @[ext]
-lemma Nucleus.ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
+lemma ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
   DFunLike.ext n m h
 
 /--
@@ -85,7 +99,7 @@ A Nucleus preserves ⊤
 instance : LE (Nucleus X) where
   le x y := ∀ v : X, x.toFun v ≤ y.toFun v
 
-lemma Nucleus.le_iff {n m : Nucleus X} : m ≤ n ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
+lemma le_iff {n m : Nucleus X} : m ≤ n ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
 
 instance : Preorder (Nucleus X) where
   le_refl := (by simp only [Nucleus.le_iff, le_refl, implies_true])
@@ -95,7 +109,7 @@ instance : Preorder (Nucleus X) where
 /--
 The smallest Nucleus is the identity Nucleus.
 -/
-instance Nucleus.bot : Bot (Nucleus X) where
+instance bot : Bot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
   bot.increasing' := by simp
@@ -105,7 +119,7 @@ instance : OrderBot (Nucleus X) where
   bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing' v)
 
 /-- The biggest Nucleus sends everything to ⊤. -/
-instance Nucleus.top : Top (Nucleus X) where
+instance top : Top (Nucleus X) where
   top.toFun := ⊤
   top.idempotent' := by simp
   top.increasing' := by simp
