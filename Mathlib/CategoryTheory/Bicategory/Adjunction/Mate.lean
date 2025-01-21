@@ -386,13 +386,8 @@ theorem conjugateEquiv_comp (α : l₂ ⟶ l₁) (β : l₃ ⟶ l₂) :
             (mateEquiv adj₂ adj₃ ((λ_ _).hom ≫ β ≫ (ρ_ _).inv)) ⊗≫ 𝟙 r₃ := by
       dsimp only [rightAdjointSquare.vcomp]
       bicategory
-    _ = 𝟙 r₁ ⊗≫
-          mateEquiv adj₁ adj₃
-            (leftAdjointSquare.vcomp
-              ((λ_ _).hom ≫ α ≫ (ρ_ _).inv)
-              ((λ_ _).hom ≫ β ≫ (ρ_ _).inv)) ⊗≫ 𝟙 r₃ := by
-      rw [mateEquiv_vcomp]
     _ = _ := by
+      rw [← mateEquiv_vcomp]
       dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply]
       bicategory
 
