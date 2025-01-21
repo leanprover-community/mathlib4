@@ -820,11 +820,11 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
       zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
-    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
+    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
   rfl
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
-    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
+    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
   coe_injective rfl
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :

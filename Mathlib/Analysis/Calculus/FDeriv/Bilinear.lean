@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 # The derivative of bounded bilinear maps
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/Fderiv/Basic.lean`.
+see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 bounded bilinear maps.

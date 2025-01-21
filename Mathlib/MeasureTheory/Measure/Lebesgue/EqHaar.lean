@@ -128,6 +128,7 @@ namespace Measure
 ### Strict subspaces have zero measure
 -/
 
+open scoped Function -- required for scoped `on` notation
 
 /-- If a set is disjoint of its translates by infinitely many bounded vectors, then it has measure
 zero. This auxiliary lemma proves this assuming additionally that the set is bounded. -/

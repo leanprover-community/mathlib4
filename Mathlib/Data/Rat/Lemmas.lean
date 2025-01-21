@@ -125,10 +125,9 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℚ) ↔ IsSquare n := by
 theorem isSquare_intCast_iff {z : ℤ} : IsSquare (z : ℚ) ↔ IsSquare z := by
   simp_rw [isSquare_iff, intCast_num, intCast_den, IsSquare.one, and_true]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem isSquare_ofNat_iff {n : ℕ} :
-    IsSquare (no_index (OfNat.ofNat n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+    IsSquare (ofNat(n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
 
 section Casts
@@ -265,7 +264,7 @@ theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
   inv_intCast_num a
 
 @[simp]
-theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
+theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :=
   inv_natCast_num_of_pos (Nat.pos_of_neZero a)
 
 @[simp]
@@ -301,7 +300,7 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
-    (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
+    (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a :=
   inv_natCast_den_of_pos (Nat.pos_of_neZero a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=

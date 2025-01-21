@@ -20,7 +20,7 @@ namespace Finite
 theorem Module.End.isNilpotent_iff_of_finite [Module.Finite R M] {f : End R M} :
     IsNilpotent f ↔ ∀ m : M, ∃ n : ℕ, (f ^ n) m = 0 := by
   refine ⟨fun ⟨n, hn⟩ m ↦ ⟨n, by simp [hn]⟩, fun h ↦ ?_⟩
-  rcases Module.Finite.out (R := R) (M := M) with ⟨S, hS⟩
+  rcases Module.Finite.fg_top (R := R) (M := M) with ⟨S, hS⟩
   choose g hg using h
   use Finset.sup S g
   ext m

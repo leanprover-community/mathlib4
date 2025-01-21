@@ -35,7 +35,7 @@ open Function (Commute)
 
 /-- Every point is a fixed point of `id`. -/
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
-  (rfl : _)
+  (rfl :)
 
 namespace IsFixedPt
 

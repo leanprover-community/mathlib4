@@ -392,6 +392,8 @@ def rootSystem :
         Function.comp_apply, Set.mem_range, Subtype.exists, exists_prop]
       exact ⟨reflectRoot α β, (by simpa using reflectRoot_isNonZero α β <| by simpa using hβ), rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
+    (fun α β ↦
+      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :

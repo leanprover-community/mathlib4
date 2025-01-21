@@ -263,7 +263,7 @@ lemma condexpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
       condexpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
   have : (fun ω ↦ (condexpKernel μ (generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
       μ⟦t | generateFrom {s}⟧ :=
-    ae_restrict_le hs <| condexpKernel_ae_eq_condexp
+    ae_restrict_le <| condexpKernel_ae_eq_condexp
       (generateFrom_singleton_le hs) ht
   filter_upwards [condexp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂

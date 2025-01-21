@@ -977,6 +977,7 @@ def nameDict : String → List String
   | "multipliable"=> ["summable"]
   | "gpfree"      => ["apfree"]
   | "quantale"    => ["add", "Quantale"]
+  | "square"      => ["even"]
   | x             => [x]
 
 /--
@@ -1007,8 +1008,10 @@ def fixAbbreviation : List String → List String
   | "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
   | "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
   | "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
+  | "zero" :: "LE" :: s               => "nonneg" :: fixAbbreviation s
   | "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
   | "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
+  | "zero" :: "LT" :: s               => "pos" :: fixAbbreviation s
   | "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
   | "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
   | "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
@@ -1025,8 +1028,8 @@ def fixAbbreviation : List String → List String
   | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
   | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
   | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
-  | "is" :: "Square" :: s             => "even" :: fixAbbreviation s
-  | "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
+  | "is" :: "Even" :: s             => "even" :: fixAbbreviation s
+  | "Is" :: "Even" :: s             => "Even" :: fixAbbreviation s
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
   -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.

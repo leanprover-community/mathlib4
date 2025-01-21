@@ -24,6 +24,6 @@ lemma succ_one : succ (1 : WithBot α) = 2 := by simpa [one_add_one_eq_two] usin
 
 @[simp]
 lemma succ_ofNat (n : ℕ) [n.AtLeastTwo] :
-    succ (no_index (OfNat.ofNat n) : WithBot α) = OfNat.ofNat n + 1 := succ_natCast n
+    succ (ofNat(n) : WithBot α) = ofNat(n) + 1 := succ_natCast n
 
 end WithBot
