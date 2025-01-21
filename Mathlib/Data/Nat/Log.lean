@@ -415,8 +415,8 @@ private lemma logC_zero {b : ℕ} :
     rw [(Prod.mk.inj heq).2]
 
 /--
-The result of `Nat.logC` agrees with the result of `Nat.log`. The former will be computed more
-efficiently, but the latter is easier to prove things about and has more lemmas.
+The result of `Nat.log` agrees with the result of `Nat.logC`. The latter will be computed more
+efficiently, but the former is easier to prove things about and has more lemmas.
 This lemma is tagged @[csimp] so that the code generated for `Nat.log` uses `Nat.logC` instead.
 -/
 @[csimp] theorem log_eq_logC : log = logC := by
