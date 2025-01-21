@@ -56,6 +56,11 @@ to `evariance`. -/
 def variance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
 
+scoped notation "eVar[" X " ; " μ "]" => ProbabilityTheory.evariance X μ
+scoped notation "eVar[" X "]" => eVar[X ; MeasureTheory.MeasureSpace.volume]
+scoped notation "Var[" X " ; " μ "]" => ProbabilityTheory.variance X μ
+scoped notation "Var[" X "]" => Var[X ; MeasureTheory.MeasureSpace.volume]
+
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
 
 theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
@@ -151,7 +156,9 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   rw [mul_comm]
   simp_rw [← smul_eq_mul, ← integral_smul_const, smul_eq_mul, mul_comm]
 
-scoped notation "eVar[" X "]" => ProbabilityTheory.evariance X MeasureTheory.MeasureSpace.volume
+lemma variance_eq_integral (hX : AEMeasurable (fun ω ↦ (‖X ω - ∫ ω', X ω' ∂μ‖₊ : ℝ≥0∞) ^ 2) μ) :
+    Var[X ; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
+  simp [variance, evariance, ← integral_toReal hX (by simp [← ENNReal.coe_pow])]
 
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
@@ -174,8 +181,6 @@ theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X :
   convert variance_smul (algebraMap A ℝ c) X μ using 1
   · congr; simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
-
-scoped notation "Var[" X "]" => ProbabilityTheory.variance X MeasureTheory.MeasureSpace.volume
 
 theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : Memℒp X 2 μ) :
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by
