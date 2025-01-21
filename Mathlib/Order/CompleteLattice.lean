@@ -1737,13 +1737,13 @@ theorem disjoint_sSup_right {a : Set α} {b : α} (d : Disjoint b (sSup a)) {i} 
     Disjoint b i :=
   disjoint_iff_inf_le.mpr (iSup₂_le_iff.mp (iSup_inf_le_inf_sSup.trans d.le_bot) i hi :)
 
-lemma disjoint_of_sSup_disjoint_of_le_of_le {a b : α} {c d : Set α} (hs : ∀ e ∈ c, e ≤ a) (ht : ∀ e ∈ d, e ≤ b)
-    (hd : Disjoint a b) (he : ⊥ ∉ c ∨ ⊥ ∉ d) : Disjoint c d := by
+lemma disjoint_of_sSup_disjoint_of_le_of_le {a b : α} {c d : Set α} (hs : ∀ e ∈ c, e ≤ a)
+    (ht : ∀ e ∈ d, e ≤ b) (hd : Disjoint a b) (he : ⊥ ∉ c ∨ ⊥ ∉ d) : Disjoint c d := by
   rw [disjoint_iff_forall_ne]
   intros x hx y hy
   rw [Disjoint.ne_iff]
-  aesop
-  exact Disjoint.mono (hs x hx) (ht y hy) hd
+  · aesop
+  · exact Disjoint.mono (hs x hx) (ht y hy) hd
 
 lemma disjoint_of_sSup_disjoint {a b : Set α} (hd : Disjoint (sSup a) (sSup b)) (he : ⊥ ∉ a ∨ ⊥ ∉ b)
     : Disjoint a b :=

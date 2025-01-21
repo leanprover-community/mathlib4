@@ -382,7 +382,7 @@ theorem allDiffFinset₀_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       rw [ht1' a ha]
       exact hK4 a ha
     · simp only [iUnion_iUnion_eq_or_left, ht2, sUnion_union, ht2, K1]
-      simp_rw [apply_ite, ← hC.diff_sUnion_eq_sUnion_diffFinset₀ h11 h12, hK5]
+      simp_rw [apply_ite, hK5, K', ← hC.diff_sUnion_eq_sUnion_diffFinset₀ h11 h12, hK5]
       simp only [↓reduceIte, diff_union_self]
 
 noncomputable def allDiffFinset₀' (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :=
