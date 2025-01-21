@@ -59,6 +59,8 @@ in this file would generalize as well. But we don't think it would be useful, so
 Krull dimension of a preorder.
 -/
 
+assert_not_exists Field
+
 namespace Order
 
 section definitions
@@ -74,14 +76,18 @@ noncomputable def krullDim (α : Type*) [Preorder α] : WithBot ℕ∞ :=
 
 /--
 The **height** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and ending below or at `a`.
+relation series of `α` ordered by `<` and ending below or at `a`. In other words, it is
+the largest `n` such that there's a series `a₀ < a₁ < ... < aₙ = a` (or `∞` if there is
+no largest `n`).
 -/
 noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
   ⨆ (p : LTSeries α) (_ : p.last ≤ a), p.length
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and beginning with `a`.
+relation series of `α` ordered by `<` and beginning with `a`. In other words, it is
+the largest `n` such that there's a series `a = a₀ < a₁ < ... < aₙ` (or `∞` if there is
+no largest `n`).
 
 The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
 theorems between `height` and `coheight`. See `coheight_eq` for the definition with a
@@ -273,10 +279,36 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
+lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
+  cases hfin : height a with
+  | top =>
+    have : ⊤ ≤ height b := by
+      rw [← hfin]
+      gcongr
+    simp [this]
+  | coe n =>
+    apply Order.add_one_le_of_lt
+    rw [← hfin]
+    gcongr
+    simp [hfin]
+
 /- For elements of finite height, `coheight` is strictly antitone. -/
 @[gcongr] lemma coheight_strictAnti {x y : α} (hyx : y < x) (hfin : coheight x < ⊤) :
     coheight x < coheight y :=
   height_strictMono (α := αᵒᵈ) hyx hfin
+
+lemma coheight_add_one_le {a b : α} (hab : b < a) : coheight a + 1 ≤ coheight b := by
+  cases hfin : coheight a with
+  | top =>
+    have : ⊤ ≤ coheight b := by
+      rw [← hfin]
+      gcongr
+    simp [this]
+  | coe n =>
+    apply Order.add_one_le_of_lt
+    rw [← hfin]
+    gcongr
+    simp [hfin]
 
 lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
@@ -588,7 +620,8 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   | some ⊤, _ => le_refl _
   | some (some m), hm => by
     refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-    erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
+    rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
+      WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
 @[deprecated (since := "2024-12-22")]

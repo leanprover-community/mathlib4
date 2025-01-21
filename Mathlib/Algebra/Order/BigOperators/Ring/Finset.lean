@@ -131,16 +131,18 @@ theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
   map_prod PNat.coeMonoidHom _ _
 
-section CanonicallyOrderedCommSemiring
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+section CanonicallyOrderedAdd
+variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+  {f g h : ι → R} {s : Finset ι} {i : ι}
 
-/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+/-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.prod_pos [NoZeroDivisors R] [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+  CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
+attribute [local instance] CanonicallyOrderedAdd.toOrderedCommMonoid in
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
+  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
@@ -150,7 +152,7 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
   rw [right_distrib]
   gcongr with j hj j hj <;> simp_all
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
 
 /-! ### Named inequalities -/
 
@@ -216,8 +218,6 @@ lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue
 lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
-
-@[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :

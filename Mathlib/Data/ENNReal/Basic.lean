@@ -110,19 +110,25 @@ instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
 instance : Min ℝ≥0∞ := SemilatticeInf.toMin
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
-noncomputable instance : CanonicallyOrderedCommSemiring ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyOrderedCommSemiring (WithTop ℝ≥0))
+noncomputable instance : OrderedCommSemiring ℝ≥0∞ :=
+  inferInstanceAs (OrderedCommSemiring (WithTop ℝ≥0))
+
+instance : CanonicallyOrderedAdd ℝ≥0∞ :=
+  inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
+
+instance : NoZeroDivisors ℝ≥0∞ :=
+  inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
 
 noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyLinearOrderedAddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyLinearOrderedAddCommMonoid (WithTop ℝ≥0))
+noncomputable instance : LinearOrderedAddCommMonoid ℝ≥0∞ :=
+  inferInstanceAs (LinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
-noncomputable instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
-noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
+instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
+instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
@@ -146,7 +152,7 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
-noncomputable instance : Unique (AddUnits ℝ≥0∞) where
+instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
   uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
 
@@ -186,7 +192,7 @@ protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
-protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
+protected def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 
 @[simp, norm_cast] lemma toNNReal_coe (r : ℝ≥0) : (r : ℝ≥0∞).toNNReal = r := rfl
 

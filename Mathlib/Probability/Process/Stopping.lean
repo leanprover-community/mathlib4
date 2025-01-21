@@ -98,7 +98,6 @@ protected theorem measurableSet_eq_of_countable_range (hτ : IsStoppingTime f τ
   refine MeasurableSet.biUnion h_countable fun j _ => ?_
   classical
   rw [Set.iUnion_eq_if]
-
   split_ifs with hji
   · exact f.mono hji.le _ (hτ.measurableSet_le j)
   · exact @MeasurableSet.empty _ (f i)

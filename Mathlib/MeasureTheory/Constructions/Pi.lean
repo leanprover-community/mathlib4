@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.Constructions
 
 /-!
-# Product measures
+# Indexed product measures
 
 In this file we define and prove properties about finite products of measures
 (and at some point, countable products of measures).
@@ -48,7 +49,6 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 finitary product measure
 
 -/
-
 
 noncomputable section
 
@@ -637,7 +637,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   obtain ⟨s, ⟨hs, hsU⟩⟩ := isOpen_pi_iff'.1 U_open a ha
   refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono hsU))
   simp only [pi_pi]
-  rw [CanonicallyOrderedCommSemiring.prod_pos]
+  rw [CanonicallyOrderedAdd.prod_pos]
   intro i _
   apply (hs i).1.measure_pos (μ i) ⟨a i, (hs i).2⟩
 
