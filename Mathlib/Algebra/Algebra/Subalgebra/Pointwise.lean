@@ -31,14 +31,16 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
 
 /-- As submodules, subalgebras are idempotent. -/
 @[simp]
-theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule S)
-    = (Subalgebra.toSubmodule S) := by
+theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
+    IsIdempotentElem S.toSubmodule := by
   apply le_antisymm
   · refine (mul_toSubmodule_le _ _).trans_eq ?_
     rw [sup_idem]
   · intro x hx1
     rw [← mul_one x]
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
+
+@[deprecated (since := "2025-01-12")] alias mul_self := isIdempotentElem_toSubmodule
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
@@ -58,7 +60,8 @@ theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A
     exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem T _)
   have := Submodule.mul_mem_mul hx hy
   rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S),
-    mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
+    isIdempotentElem_toSubmodule, mul_comm T.toSubmodule, ← mul_assoc,
+    isIdempotentElem_toSubmodule] at this
 
 variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
 

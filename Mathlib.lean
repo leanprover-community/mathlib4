@@ -228,6 +228,7 @@ import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Expr
+import Mathlib.Algebra.Field.Action.ConjAct
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Equiv
@@ -374,6 +375,7 @@ import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Faithful
@@ -892,6 +894,7 @@ import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Group
 import Mathlib.Algebra.Ring.Action.Invariant
@@ -2689,6 +2692,7 @@ import Mathlib.Data.List.Iterate
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Map2
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.Monad
 import Mathlib.Data.List.NatAntidiagonal
@@ -3039,7 +3043,8 @@ import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Factorial
 import Mathlib.Data.ZMod.IntUnitsPower
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
