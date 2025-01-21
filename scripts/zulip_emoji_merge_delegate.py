@@ -104,7 +104,7 @@ for message in messages:
             })
             print(f"result: '{result}'")
         if has_closed:
-            print('Removing awaiting-author')
+            print('Removing closed-pr')
             result = client.remove_reaction({
                 "message_id": message['id'],
                 "emoji_name": "closed-pr"
