@@ -257,7 +257,7 @@ open Real
 
 lemma Real.hasProd_of_hasSum_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
     (hf : HasSum (fun n => log (f n)) (∑' i, log (f i))) :
-    HasProd (fun b ↦ f b) (∏' n : ι, f n) := by
+    HasProd f (∏' n : ι, f n) := by
   have : HasProd (fun b ↦ f b) (rexp (∑' (n : ι), log (f n))) := by
     apply (hf.rexp).congr
     intro _
