@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits of eventually constant functors
@@ -23,6 +24,8 @@ the dual results for filtered categories and colimits are also obtained.
 namespace CategoryTheory
 
 open Category Limits
+
+section
 
 variable {J C : Type*} [Category J] [Category C] (F : J ⥤ C)
 
@@ -96,20 +99,20 @@ lemma coneπApp_eq (j j' : J) (α : j' ⟶ i₀) (β : j' ⟶ j) :
 lemma coneπApp_eq_id : h.coneπApp i₀ = 𝟙 _ := by
   rw [h.coneπApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_inv_hom_id]
 
+@[reassoc (attr := simp)]
+lemma coneπApp_naturality {j j' : J} (φ : j ⟶ j') :
+    h.coneπApp j ≫ F.map φ = h.coneπApp j' := by
+  let i := IsCofiltered.min i₀ j
+  let α : i ⟶ i₀ := IsCofiltered.minToLeft _ _
+  let β : i ⟶ j := IsCofiltered.minToRight _ _
+  rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp]
+
 /-- Given `h : F.IsEventuallyConstantTo i₀`, this is the (limit) cone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]
 noncomputable def cone : Cone F where
   pt := F.obj i₀
-  π :=
-    { app := h.coneπApp
-      naturality := fun j j' φ ↦ by
-        dsimp
-        rw [id_comp]
-        let i := IsCofiltered.min i₀ j
-        let α : i ⟶ i₀ := IsCofiltered.minToLeft _ _
-        let β : i ⟶ j := IsCofiltered.minToRight _ _
-        rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp] }
+  π := { app := h.coneπApp }
 
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
 def isLimitCone : IsLimit h.cone where
@@ -190,20 +193,20 @@ lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
 lemma coconeιApp_eq_id : h.coconeιApp i₀ = 𝟙 _ := by
   rw [h.coconeιApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_hom_inv_id]
 
+@[reassoc (attr := simp)]
+lemma coconeιApp_naturality {j j' : J} (φ : j ⟶ j') :
+    F.map φ ≫ h.coconeιApp j' = h.coconeιApp j := by
+  let i := IsFiltered.max i₀ j'
+  let α : i₀ ⟶ i := IsFiltered.leftToMax _ _
+  let β : j' ⟶ i := IsFiltered.rightToMax _ _
+  rw [h.coconeιApp_eq j' _ β α, h.coconeιApp_eq j _ (φ ≫ β) α, map_comp, assoc]
+
 /-- Given `h : F.IsEventuallyConstantFrom i₀`, this is the (limit) cocone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]
 noncomputable def cocone : Cocone F where
   pt := F.obj i₀
-  ι :=
-    { app := h.coconeιApp
-      naturality := fun j j' φ ↦ by
-        dsimp
-        rw [comp_id]
-        let i := IsFiltered.max i₀ j'
-        let α : i₀ ⟶ i := IsFiltered.leftToMax _ _
-        let β : j' ⟶ i := IsFiltered.rightToMax _ _
-        rw [h.coconeιApp_eq j' _ β α, h.coconeιApp_eq j _ (φ ≫ β) α, map_comp, assoc] }
+  ι := { app := h.coconeιApp }
 
 /-- When `h : F.IsEventuallyConstantFrom i₀`, the colimit of `F` exists and is `F.obj i₀`. -/
 def isColimitCocone : IsColimit h.cocone where
@@ -238,9 +241,17 @@ exists `j : J`, such that for any `f : i ⟶ j`, the induced map `F.map f` is an
 class IsEventuallyConstant : Prop where
   exists_isEventuallyConstantTo : ∃ (j : J), F.IsEventuallyConstantTo j
 
+lemma exists_of_isEventuallyConstant [hF : IsEventuallyConstant F] :
+    ∃ (i : J), F.IsEventuallyConstantTo i :=
+  hF.exists_isEventuallyConstantTo
+
 instance [hF : IsEventuallyConstant F] [IsCofiltered J] : HasLimit F := by
   obtain ⟨j, h⟩ := hF.exists_isEventuallyConstantTo
   exact h.hasLimit
+
+instance (X : C) [IsCofiltered J] : IsEventuallyConstant ((Functor.const J).obj X) where
+  exists_isEventuallyConstantTo :=
+    ⟨Classical.choice IsCofiltered.nonempty, fun _ _ ↦ by dsimp; infer_instance⟩
 
 end IsCofiltered
 
@@ -251,10 +262,60 @@ exists `i : J`, such that for any `f : i ⟶ j`, the induced map `F.map f` is an
 class IsEventuallyConstant : Prop where
   exists_isEventuallyConstantFrom : ∃ (i : J), F.IsEventuallyConstantFrom i
 
+lemma exists_of_isEventuallyConstant [hF : IsEventuallyConstant F] :
+    ∃ (i : J), F.IsEventuallyConstantFrom i :=
+  hF.exists_isEventuallyConstantFrom
+
 instance [hF : IsEventuallyConstant F] [IsFiltered J] : HasColimit F := by
   obtain ⟨j, h⟩ := hF.exists_isEventuallyConstantFrom
   exact h.hasColimit
 
+instance (X : C) [IsFiltered J] : IsEventuallyConstant ((Functor.const J).obj X) where
+  exists_isEventuallyConstantFrom :=
+    ⟨Classical.choice IsFiltered.nonempty, fun _ _ ↦ by dsimp; infer_instance⟩
+
 end IsFiltered
+
+namespace Limits
+
+variable (J) (X : C)
+
+/-- The obvious cocone of a constant functor.  -/
+@[simps]
+def constCocone : Cocone ((Functor.const J).obj X) where
+  pt := X
+  ι := 𝟙 _
+
+/-- If `J` is a filtered category, the colimit of the constant functor `J ⥤ C`
+with value `X : C` is `X`. -/
+noncomputable def constCoconeIsColimit [IsFiltered J] :
+    IsColimit (constCocone J X) := Nonempty.some (by
+  obtain ⟨j, h⟩ := IsFiltered.exists_of_isEventuallyConstant ((Functor.const J).obj X)
+  refine ⟨IsColimit.ofIsoColimit h.isColimitCocone (Cocones.ext (Iso.refl _) (fun i ↦ ?_))⟩
+  have h₁ := h.coconeιApp_naturality (IsFiltered.leftToMax i j)
+  have h₂ := h.coconeιApp_naturality (IsFiltered.rightToMax i j)
+  simp only [Functor.const_obj_obj, Functor.const_obj_map, id_comp] at h₁ h₂
+  simp [← h₁, h₂])
+
+/-- The obvious cone of a constant functor.  -/
+@[simps]
+def constCone : Cone ((Functor.const J).obj X) where
+  pt := X
+  π := 𝟙 _
+
+/-- If `J` is a cofiltered category, the limit of the constant functor `J ⥤ C`
+with value `X : C` is `X`. -/
+noncomputable def constConeIsColimit [IsCofiltered J] :
+    IsLimit (constCone J X) := Nonempty.some (by
+  obtain ⟨j, h⟩ := IsCofiltered.exists_of_isEventuallyConstant ((Functor.const J).obj X)
+  refine ⟨IsLimit.ofIsoLimit h.isLimitCone (Cones.ext (Iso.refl _) (fun i ↦ ?_))⟩
+  have h₁ := h.coneπApp_naturality (IsCofiltered.minToLeft i j)
+  have h₂ := h.coneπApp_naturality (IsCofiltered.minToRight i j)
+  simp only [Functor.const_obj_obj, Functor.const_obj_map, comp_id] at h₁ h₂
+  simp [← h₁, h₂])
+
+end Limits
+
+end
 
 end CategoryTheory

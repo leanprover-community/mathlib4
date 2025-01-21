@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
@@ -222,5 +223,32 @@ lemma hasLiftingProperty_ι_app_bot : HasLiftingProperty (c.ι.app ⊥) p where
 end transfiniteComposition
 
 end HasLiftingProperty
+
+namespace MorphismProperty
+
+variable (W : MorphismProperty C)
+  (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+instance llp_isStableUnderTransfiniteCompositionOfShape :
+    W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
+  rw [isStableUnderTransfiniteCompositionOfShape_iff]
+  rintro _ _ _ ⟨F, hF, c, hc⟩ X Y p hp
+  exact HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot hc
+    (fun j hj ↦ hF j hj p hp)
+
+lemma transfiniteCompositionsOfShape_le_rlp_llp :
+    W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
+  have := W.rlp.llp_isStableUnderTransfiniteCompositionOfShape J
+  rw [isStableUnderTransfiniteCompositionOfShape_iff] at this
+  exact le_trans (monotone_transfiniteCompositionsOfShape J W.le_rlp_llp) this
+
+lemma transfiniteCompositions_le_rlp_llp :
+    transfiniteCompositions.{w} W ≤ W.rlp.llp := by
+  intro _ _ f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨_, _, _, _, _, hf⟩ := hf
+  exact W.transfiniteCompositionsOfShape_le_rlp_llp _ _ hf
+
+end MorphismProperty
 
 end CategoryTheory
