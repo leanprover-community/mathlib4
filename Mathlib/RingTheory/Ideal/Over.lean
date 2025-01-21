@@ -42,24 +42,10 @@ restricted back to `R` is `p` if and only if `p` is the restriction of a prime i
 lemma comap_map_eq_self_iff_of_isPrime (p : Ideal R) [p.IsPrime] :
     (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
   refine ⟨fun hp ↦ ?_, ?_⟩
-  · let M : Submonoid S := Submonoid.map f p.primeCompl
-    have : (p.map f).map (algebraMap S (Localization M)) ≠ ⊤ := by
-      rw [IsLocalization.map_algebraMap_ne_top_iff_disjoint M, Set.disjoint_left]
-      rintro a ⟨x, (hx : x ∉ p), rfl⟩
-      rwa [← hp] at hx
-    obtain ⟨m, _, hle⟩ := Ideal.exists_le_maximal _ this
-    let q : Ideal S := m.comap (algebraMap S (Localization M))
-    have hd : Disjoint (M : Set S) (q : Set S) :=
-      ((IsLocalization.isPrime_iff_isPrime_disjoint M _ m).mp inferInstance).right
-    refine ⟨q, inferInstance, le_antisymm (fun x (hx : x ∈ f ⁻¹' q) ↦ ?_) ?_⟩
-    · have : x ∉ p.primeCompl := by
-        intro ha
-        apply (Set.disjoint_right.mp hd) hx
-        use x
-        simpa
-      simpa [Ideal.primeCompl] using this
-    · rw [← hp, ← Ideal.map_le_iff_le_comap, Ideal.map_comap_map, ]
-      simpa only [q, ← Ideal.map_le_iff_le_comap]
+  · obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_le_prime_disjoint _ _
+      (disjoint_map_primeCompl_iff_comap_le.mpr hp.le)
+    exact ⟨q, hq₁, le_antisymm (disjoint_map_primeCompl_iff_comap_le.mp hq₃)
+      (map_le_iff_le_comap.mp hq₂)⟩
   · rintro ⟨q, hq, rfl⟩
     simp
 

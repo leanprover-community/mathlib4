@@ -1200,16 +1200,16 @@ variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
 
 end LinearMap
 
-lemma Algebra.baseChange_lmul {R B : Type*} [CommRing R] [CommRing B] [Algebra R B]
-    {A : Type*} [CommRing A] [Algebra R A] (f : B) :
+lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algebra R B]
+    {A : Type*} [CommSemiring A] [Algebra R A] (f : B) :
     (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
   ext i
   simp
 
 namespace LinearMap
 
-variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (R A M N : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open Module
 open scoped TensorProduct
