@@ -46,7 +46,8 @@ def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
 
-@[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
@@ -88,7 +89,8 @@ end Add
 @[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
-@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
+@[deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
+@[deprecated (since := "2024-12-27")] alias even_zero := Even.zero
 
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
