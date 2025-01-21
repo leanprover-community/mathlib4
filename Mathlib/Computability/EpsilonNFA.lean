@@ -145,14 +145,18 @@ def accepts : Language α :=
 
 /-- `M.IsPath` represents a traversal in `M` from a start state to an end state by following a list
 of transitions in order. -/
+@[mk_iff]
 inductive IsPath : σ → σ → List (Option α) → Prop
-  | nil : ∀ s, IsPath s s []
+  | nil (s : σ) : IsPath s s []
   | cons (t s u : σ) (a : Option α) (x : List (Option α)) :
       t ∈ M.step s a → IsPath t u x → IsPath s u (a :: x)
 
-theorem IsPath.eq_of_nil : M.IsPath s t [] → s = t := by
-  rintro ⟨⟩
-  rfl
+@[simp]
+theorem isPath_nil : M.IsPath s t [] ↔ s = t := by
+  rw [isPath_iff]
+  simp [eq_comm]
+
+alias ⟨IsPath.eq_of_nil, _⟩ := isPath_nil
 
 @[simp]
 theorem isPath_singleton {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
