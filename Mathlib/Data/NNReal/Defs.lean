@@ -23,7 +23,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
   - `LinearOrderedSemiring ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
-  - `CanonicallyOrderedCommSemiring ℝ≥0`;
+  - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
   - `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
   - `Archimedean ℝ≥0`;
@@ -54,23 +54,31 @@ open Function
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  CanonicallyOrderedCommSemiring, Inhabited
+  OrderedCommMonoid, Nontrivial, Inhabited
 
 namespace NNReal
 
 scoped notation "ℝ≥0" => NNReal
 
+instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
-noncomputable instance : Sub ℝ≥0 := Nonneg.sub
-noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+instance : Sub ℝ≥0 := Nonneg.sub
+instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
-  Nonneg.canonicallyLinearOrderedSemifield
+-- a computable copy of `Nonneg.instNNRatCast`
+instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
+
+noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
+  Nonneg.linearOrderedSemifield
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -100,7 +108,7 @@ protected theorem «exists» {p : ℝ≥0 → Prop} :
   Subtype.exists
 
 /-- Reinterpret a real number `r` as a non-negative real number. Returns `0` if `r < 0`. -/
-noncomputable def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
+def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
   ⟨max r 0, le_max_right _ _⟩
 
 theorem _root_.Real.coe_toNNReal (r : ℝ) (hr : 0 ≤ r) : (Real.toNNReal r : ℝ) = r :=
@@ -122,7 +130,7 @@ example : One ℝ≥0 := by infer_instance
 
 example : Add ℝ≥0 := by infer_instance
 
-noncomputable example : Sub ℝ≥0 := by infer_instance
+example : Sub ℝ≥0 := by infer_instance
 
 example : Mul ℝ≥0 := by infer_instance
 
@@ -229,7 +237,7 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
-  toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
+  algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
 -- verify that the above produces instances we might care about
 example : Algebra ℝ≥0 ℝ := by infer_instance
@@ -320,7 +328,7 @@ theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
   toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
-noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
+def gi : GaloisInsertion Real.toNNReal (↑) :=
   GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
     Real.toNNReal_coe
 
@@ -329,8 +337,6 @@ noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
 example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
-
-noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
@@ -347,10 +353,6 @@ example : OrderedCommSemiring ℝ≥0 := by infer_instance
 noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
-
-noncomputable example : LinearOrderedCommGroupWithZero ℝ≥0 := by infer_instance
-
-example : CanonicallyOrderedCommSemiring ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
 
@@ -977,6 +979,10 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
   exact NNReal.exists_lt_of_strictMono hf hs
 
 end StrictMono
+
+/-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
+unsafe instance : Repr ℝ≥0 where
+  reprPrec r _ := f!"({repr r.val}).toNNReal"
 
 namespace Mathlib.Meta.Positivity
 

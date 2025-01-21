@@ -43,12 +43,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists Monoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
 open Multiset Subtype Function
 
@@ -96,6 +91,11 @@ omit [DecidableEq α] in
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
     Disjoint s t ↔ s = ∅ :=
   disjoint_of_le_iff_left_eq_bot h
+
+lemma pairwiseDisjoint_iff {ι : Type*} {s : Set ι} {f : ι → Finset α} :
+    s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+    not_disjoint_iff_nonempty_inter]
 
 end Lattice
 

@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Quotient.Pi
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientRing
 
 /-! # Ideals in free modules over PIDs
 
