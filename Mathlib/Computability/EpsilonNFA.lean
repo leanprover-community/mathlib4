@@ -211,7 +211,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       rw [List.reduceOption_replicate_none]
       trivial
     · simp_rw [List.reduceOption_eq_nil_iff]
-      rintro ⟨_, ⟨⟨_, ⟨⟩⟩, _⟩⟩
+      rintro ⟨_, ⟨⟨_, rfl⟩, _⟩⟩
       tauto
   · rw [evalFrom_append_singleton, mem_stepSet_iff]
     constructor
@@ -226,7 +226,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       tauto
     · simp_rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff,
         List.reduceOption_eq_nil_iff]
-      rintro ⟨_, ⟨_, _, ⟨⟩, _, ⟨_, ⟨⟩⟩⟩, h⟩
+      rintro ⟨_, ⟨_, _, rfl, _, _, rfl⟩, h⟩
       rw [isPath_append] at h
       obtain ⟨t, _, _ | _⟩ := h
       use t
