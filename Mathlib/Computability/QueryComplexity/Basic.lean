@@ -57,7 +57,7 @@ lemma pure'_bind (x : α) (f : α → Comp ι s β) : (pure' x : Comp ι s α) >
 
 @[simp]
 lemma query'_bind (o : I) (m : o ∈ s) (y : ι) (f : Bool → Comp ι s α)
-    (g : α → Comp ι s β) : query' o m y f >>= g = .query' o m y (fun b => (f b) >>= g) := rfl
+    (g : α → Comp ι s β) : query' o m y f >>= g = .query' o m y fun b => f b >>= g := rfl
 
 /-- `pure` has cost 0 -/
 @[simp]

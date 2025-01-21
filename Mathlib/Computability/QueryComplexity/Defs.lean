@@ -50,7 +50,7 @@ namespace Comp
 /-- The standard bind operation for `Comp` -/
 def bind' (f : Comp ι s α) (g : α → Comp ι s β) : Comp ι s β := match f with
   | .pure' x => g x
-  | .query' o m y f => .query' o m y (fun b => (f b).bind' g)
+  | .query' o m y f => .query' o m y fun b => (f b).bind' g
 
 /-- `Comp` is a monad -/
 instance : Monad (Comp ι s) where
