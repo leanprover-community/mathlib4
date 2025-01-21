@@ -1264,31 +1264,37 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
 section LinearOrder
 variable [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
 
-theorem le_of_forall_le_of_dense (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
+theorem le_of_forall_forall_gt_imp_ge_of_dense (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_lt_of_le ‹a < a₁› (h _ ‹a₂ < a›)
 
 lemma forall_gt_imp_ge_iff_le_of_dense : (∀ a, a₂ < a → a₁ ≤ a) ↔ a₁ ≤ a₂ :=
-  ⟨le_of_forall_le_of_dense, fun ha _a ha₂ ↦ ha.trans ha₂.le⟩
+  ⟨le_of_forall_forall_gt_imp_ge_of_dense, fun ha _a ha₂ ↦ ha.trans ha₂.le⟩
 
 theorem eq_of_le_of_forall_le_of_dense (h₁ : a₂ ≤ a₁)
     (h₂ : ∀ a, a₂ < a → a₁ ≤ a) : a₁ = a₂ :=
-  le_antisymm (le_of_forall_le_of_dense h₂) h₁
+  le_antisymm (le_of_forall_forall_gt_imp_ge_of_dense h₂) h₁
 
-theorem le_of_forall_ge_of_dense (h : ∀ a < a₁, a ≤ a₂) : a₁ ≤ a₂ :=
+theorem le_of_forall_lt_imp_le_of_dense (h : ∀ a < a₁, a ≤ a₂) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_le_of_lt (h _ ‹a < a₁›) ‹a₂ < a›
 
 lemma forall_lt_imp_le_iff_le_of_dense : (∀ a < a₁, a ≤ a₂) ↔ a₁ ≤ a₂ :=
-  ⟨le_of_forall_ge_of_dense, fun ha _a ha₁ ↦ ha₁.le.trans ha⟩
+  ⟨le_of_forall_lt_imp_le_of_dense, fun ha _a ha₁ ↦ ha₁.le.trans ha⟩
 
 theorem eq_of_le_of_forall_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
-  (le_of_forall_ge_of_dense h₂).antisymm h₁
+  (le_of_forall_lt_imp_le_of_dense h₂).antisymm h₁
 
-@[deprecated (since := "2024-12-30")] alias forall_lt_le_iff := forall_lt_imp_le_iff_le_of_dense
-@[deprecated (since := "2024-12-30")] alias forall_gt_ge_iff := forall_gt_imp_ge_iff_le_of_dense
+@[deprecated (since := "2025-01-21")]
+alias le_of_forall_ke_of_dense := le_of_forall_gt_imp_ge_of_dense
+
+@[deprecated (since := "2025-01-21")]
+alias le_of_forall_ge_of_dense := le_of_forall_lt_imp_le_of_dense
+
+@[deprecated (since := "2025-01-21")] alias forall_lt_le_iff := forall_lt_imp_le_iff_le_of_dense
+@[deprecated (since := "2025-01-21")] alias forall_gt_ge_iff := forall_gt_imp_ge_iff_le_of_dense
 
 end LinearOrder
 

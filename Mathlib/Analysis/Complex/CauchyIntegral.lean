@@ -343,7 +343,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     (hd : ∀ z ∈ (ball c R \ {c}) \ s, DifferentiableAt ℂ f z) (hy : Tendsto f (𝓝[{c}ᶜ] c) (𝓝 y)) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • y := by
   rw [← sub_eq_zero, ← norm_le_zero_iff]
-  refine le_of_forall_le_of_dense fun ε ε0 => ?_
+  refine le_of_forall_forall_gt_imp_ge_of_dense fun ε ε0 => ?_
   obtain ⟨δ, δ0, hδ⟩ : ∃ δ > (0 : ℝ), ∀ z ∈ closedBall c δ \ {c}, dist (f z) y < ε / (2 * π) :=
     ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_ball).1 hy _
       (div_pos ε0 Real.two_pi_pos)

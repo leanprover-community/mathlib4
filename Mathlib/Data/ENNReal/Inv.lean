@@ -44,7 +44,7 @@ protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, 
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
 @[simp] theorem inv_top : ∞⁻¹ = 0 :=
-  bot_unique <| le_of_forall_le_of_dense fun a (h : 0 < a) => sInf_le <| by simp [*, h.ne', top_mul]
+  bot_unique <| le_of_forall_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by simp [*, h.ne', top_mul]
 
 theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
   le_sInf fun b (hb : 1 ≤ ↑r * b) =>
@@ -444,7 +444,7 @@ instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   elim _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
-  refine le_of_forall_ge_of_dense fun r hr => ?_
+  refine le_of_forall_lt_imp_le_of_dense fun r hr => ?_
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
@@ -533,7 +533,7 @@ private lemma exists_lt_mul_right {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ b'
   simp_rw [mul_comm a] at hc ⊢; exact exists_lt_mul_left hc
 
 lemma mul_le_of_forall_lt {a b c : ℝ≥0∞} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) : a * b ≤ c := by
-  refine le_of_forall_ge_of_dense fun d hd ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_lt_mul_left hd
   obtain ⟨b', hb', hd⟩ := exists_lt_mul_right hd
   exact le_trans hd.le <| h _ ha' _ hb'
