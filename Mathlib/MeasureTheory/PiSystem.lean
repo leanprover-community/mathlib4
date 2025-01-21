@@ -482,6 +482,8 @@ end UnionInter
 
 namespace MeasurableSpace
 
+open scoped Function -- required for scoped `on` notation
+
 variable {α : Type*}
 
 /-! ## Dynkin systems and Π-λ theorem -/

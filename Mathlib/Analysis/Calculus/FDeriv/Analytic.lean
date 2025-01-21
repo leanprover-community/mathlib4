@@ -79,7 +79,7 @@ variable {f : E → F} {x : E} {s : Set E}
 /-- A function which is analytic within a set is strictly differentiable there. Since we
 don't have a predicate `HasStrictFDerivWithinAt`, we spell out what it would mean. -/
 theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
-    (fun y ↦ f y.1 - f y.2 - ((continuousMultilinearCurryFin1 𝕜 E F) (p 1)) (y.1 - y.2))
+    (fun y ↦ f y.1 - f y.2 - (continuousMultilinearCurryFin1 𝕜 E F (p 1)) (y.1 - y.2))
       =o[𝓝[insert x s ×ˢ insert x s] (x, x)] fun y ↦ y.1 - y.2 := by
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
   refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
@@ -156,7 +156,7 @@ theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
   (h.analyticAt_of_mem hy).differentiableWithinAt
 
 theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s :=
-  fun y hy ↦  (h y hy).differentiableWithinAt.mono (by simp)
+  fun y hy ↦ (h y hy).differentiableWithinAt.mono (by simp)
 
 theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) : DifferentiableOn 𝕜 f s :=
   fun y hy ↦ (h y hy).differentiableWithinAt
@@ -376,7 +376,7 @@ protected lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : WithTop ℕ∞}
 
 lemma AnalyticOn.exists_hasFTaylorSeriesUpToOn
     (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
-    ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
+    ∃ p : E → FormalMultilinearSeries 𝕜 E F,
       HasFTaylorSeriesUpToOn ⊤ f p s ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) s :=
   ⟨ftaylorSeriesWithin 𝕜 f s, h.hasFTaylorSeriesUpToOn hu, h.iteratedFDerivWithin hu⟩
 
@@ -595,8 +595,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr; ext j
   obtain rfl | hj := eq_or_ne j i
-  · rw [Function.update_same, if_pos rfl]
-  · rw [Function.update_noteq hj, if_neg hj]
+  · rw [Function.update_self, if_pos rfl]
+  · rw [Function.update_of_ne hj, if_neg hj]
 
 protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
@@ -688,7 +688,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDIte, Pi.compRightL,
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
-      rw [Function.update_noteq]
+      rw [Function.update_of_ne]
       contrapose! hke
       rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
@@ -812,7 +812,7 @@ theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
     simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
       coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,
       MultilinearMap.coe_mkContinuous, MultilinearMap.coe_mk, ne_eq, reduceCtorEq,
-      not_false_eq_true, Function.update_noteq, coe_comp', coe_snd', Function.comp_apply,
+      not_false_eq_true, Function.update_of_ne, coe_comp', coe_snd', Function.comp_apply,
       proj_apply]
     congr
     ext j

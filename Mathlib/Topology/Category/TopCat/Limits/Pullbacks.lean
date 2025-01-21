@@ -21,7 +21,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 section Pullback
 
@@ -29,15 +29,13 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val, by
-    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
+  ⟨Prod.fst ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val, by
-    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
+  ⟨Prod.snd ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
 
@@ -121,7 +119,7 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 
 -- Porting note: why do I need to tell Lean to coerce pullback to a type
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
-    (x : ConcreteCategory.forget.obj (pullback f g)) :
+    (x : HasForget.forget.obj (pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
         simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
@@ -452,14 +450,14 @@ theorem colimit_topology (F : J ⥤ TopCat.{max v u}) :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit F)
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F : _) : Type max v u)) :
+theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F :) : Type max v u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   dsimp [topologicalSpace_coe]
   conv_lhs => rw [colimit_topology F]
   exact isOpen_iSup_iff
 
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
-    (U : Set ((colimit F : _) : Type u)) :
+    (U : Set ((colimit F :) : Type u)) :
     IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
   rw [colimit_isOpen_iff]
   constructor

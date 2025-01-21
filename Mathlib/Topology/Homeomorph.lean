@@ -313,6 +313,11 @@ protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isE
 theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.isEmbedding with dense := h.surjective.denseRange }
 
+protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
+    TotallyDisconnectedSpace Y :=
+  (totallyDisconnectedSpace_iff Y).mpr
+    (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
+
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding
 
@@ -427,11 +432,7 @@ theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
 @[simps toEquiv]
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
-  continuous_invFun := by
-    rw [continuous_def]
-    intro s hs
-    convert ← h₂ s hs using 1
-    apply e.image_eq_preimage
+  continuous_invFun := e.continuous_symm_iff.2 h₂
   toEquiv := e
 
 /-- If a bijective map `e : X ≃ Y` is continuous and closed, then it is a homeomorphism. -/
@@ -667,9 +668,31 @@ def punitProd : PUnit × X ≃ₜ X :=
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
-  { Equiv.equivOfUnique X Y with
+  { Equiv.ofUnique X Y with
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
+
+/-- The product over `S ⊕ T` of a family of topological spaces
+is homeomorphic to the product of (the product over `S`) and (the product over `T`).
+
+This is `Equiv.sumPiEquivProdPi` as a `Homeomorph`.
+-/
+def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
+    [∀ st, TopologicalSpace (A st)] :
+    (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
+  __ := Equiv.sumPiEquivProdPi _
+  continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
+  continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
+
+/-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
+space `f ⬝` when `α` only contains `⬝`.
+
+This is `Equiv.piUnique` as a `Homeomorph`.
+-/
+@[simps! (config := .asFn)]
+def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
+    (Π t, f t) ≃ₜ f default :=
+  homeomorphOfContinuousOpen (Equiv.piUnique f) (continuous_apply default) (isOpenMap_eval _)
 
 end prod
 
@@ -1065,9 +1088,9 @@ variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLik
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 @[coe]
 def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
-  {(f : α ≃ β) with
-  continuous_toFun := h.map_continuous f
-  continuous_invFun := h.inv_continuous f }
+  { (f : α ≃ β) with
+    continuous_toFun := h.map_continuous f
+    continuous_invFun := h.inv_continuous f }
 
 @[simp]
 theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl

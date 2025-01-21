@@ -106,11 +106,10 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
   ⟨isHermitian_natCast _, fun x => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
+    exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
-    PosSemidef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosSemidef (ofNat(d) : Matrix n n R) :=
   .natCast d
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
@@ -118,7 +117,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
   ⟨isHermitian_intCast _, fun x => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
+    exact zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
 protected theorem _root_.Matrix.posSemidef_intCast_iff
@@ -172,7 +171,7 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
-@[delab app.Matrix.PosSemidef.sqrt]
+@[app_delab Matrix.PosSemidef.sqrt]
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
@@ -378,7 +377,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_natCast _, fun x hx => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -386,10 +385,9 @@ theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [No
     PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) [d.AtLeastTwo] :
-    PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosDef (ofNat(d) : Matrix n n R) :=
   .natCast d (NeZero.ne _)
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -398,7 +396,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_intCast _, fun x hx => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
