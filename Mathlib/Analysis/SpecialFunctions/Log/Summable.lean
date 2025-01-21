@@ -13,6 +13,9 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 We give conditions under which the logarithms of a summble sequence is summable. We also give some
 results about when the sums converge uniformly.
 
+TODO: Generalise the indexing set from ℕ to some arbitrary type, but this needs
+Summable.tendsto_atTop_zero to first be done.
+
 -/
 
 open Filter Function Complex Real

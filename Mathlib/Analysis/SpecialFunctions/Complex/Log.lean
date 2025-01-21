@@ -255,61 +255,36 @@ variable {α ι: Type*}
 
 open Real
 
-lemma Real.hasProd_of_hasSum_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n) (a : ℝ)
+lemma Real.hasProd_of_hasSum_log {f : ι → ℝ} (hfn : ∀ n, 0 < f n) {a : ℝ}
     (hf : HasSum (fun n => log (f n)) a) :
-    HasProd f (rexp a) := by
-  have : HasProd (fun b ↦ f b) (rexp a) := by
-    apply (hf.rexp).congr
-    intro _
-    congr
-    exact funext fun x ↦ exp_log (hfn x)
-  exact this
+    HasProd f (rexp a) :=
+  hf.rexp.congr (by simp [exp_log, hfn])
 
-/--The exponential of a infinite sum of real logs (which converges absolutely) is an infinite
-product.-/
+lemma Real.multipliable_of_summable_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
+    (hf : Summable fun n => log (f n)) : Multipliable f :=
+  ⟨_, Real.hasProd_of_hasSum_log hfn hf.hasSum⟩
+
+/-- The exponential of a infinite sum of real logs (which converges absolutely) is an infinite
+product. -/
 lemma Real.rexp_tsum_eq_tprod (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
-    (hf : Summable fun n => log (f n)) : rexp (∑' n : ι, log (f n)) = (∏' n : ι, f n) := by
-  apply (HasProd.tprod_eq ?_).symm
-  apply (hf.hasSum.rexp).congr
-  intro _
-  congr
-  exact funext fun x ↦ exp_log (hfn x)
-
-lemma Real.multipliable_of_summable_log (f : ι →  ℝ) (hfn : ∀ n, 0 < f n)
-    (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b := by
-  have := (Real.hasProd_of_hasSum_log f hfn _ hf.hasSum)
-  use (∏' n : ι, f n)
-  rw [Real.rexp_tsum_eq_tprod _ hfn hf ] at this
-  apply this
+    (hf : Summable fun n => log (f n)) : rexp (∑' n : ι, log (f n)) = ∏' n : ι, f n :=
+  (Real.hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
 
 open Complex
 
-lemma Complex.hasProd_of_hasSum_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0) (a : ℂ)
+lemma Complex.hasProd_of_hasSum_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0) {a : ℂ}
     (hf : HasSum (fun n => log (f n)) a) :
-    HasProd (fun b ↦ f b) (cexp a) := by
-  have : HasProd (fun b ↦ f b) (cexp  a) := by
-    apply ((hf).cexp).congr
-    intro _
-    congr
-    exact funext fun x ↦ exp_log (hfn x)
-  exact this
+    HasProd (fun b ↦ f b) (cexp a) :=
+    hf.cexp.congr (by simp [exp_log, hfn])
+
+lemma Complex.multipliable_of_summable_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0)
+    (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b  :=
+   ⟨_, Complex.hasProd_of_hasSum_log _ hfn hf.hasSum⟩
 
 /--The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
 product.-/
 lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
-    (hf : Summable fun n => log (f n)) :
-    (cexp ((∑' n : ι, log (f n )))) = ∏' n : ι, f n  := by
-  apply (HasProd.tprod_eq ?_).symm
-  apply ((hf).hasSum.cexp).congr
-  intro _
-  congr
-  exact funext fun x ↦ exp_log (hfn x)
-
-lemma Complex.multipliable_of_summable_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0)
-    (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b  := by
-  have := (Complex.hasProd_of_hasSum_log f hfn _ hf.hasSum)
-  use (∏' n : ι, (f n))
-  rw [Complex.cexp_tsum_eq_tprod _ hfn hf ] at this
-  exact this
+    (hf : Summable fun n => log (f n)) : (cexp ((∑' n : ι, log (f n )))) = ∏' n : ι, f n  :=
+  (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
 
 end tsum_tprod
