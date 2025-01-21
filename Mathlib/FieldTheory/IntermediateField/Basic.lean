@@ -460,8 +460,6 @@ between `E` and `E.map e` -/
 def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E ≃ₐ[K] E.map e.toAlgHom :=
   e.subalgebraMap E.toSubalgebra
 
-/- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
-  led to a timeout. -/
 theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
