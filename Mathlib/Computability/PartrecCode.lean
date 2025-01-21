@@ -198,11 +198,7 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  have := Nat.mul_le_mul_right cf.encodeCode (by decide : 1 ≤ 2 * 2)
-  rw [one_mul, mul_assoc] at this
-  refine lt_of_le_of_lt (le_trans this ?_) (lt_add_of_pos_right _ (by decide : 0 < 4))
-  exact le_of_lt (Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_of_lt <|
-    Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_rfl)
+  omega
 
 end Nat.Partrec.Code
 
