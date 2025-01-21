@@ -116,8 +116,8 @@ section Nontrivial
 variable [Nontrivial R]
 
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
-protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
-    ⊤ ≤ span R (Set.range S) := fun P _ ↦ by
+protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ :=
+  eq_top_iff'.mpr fun P ↦ by
   induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
   by_cases p_ne_zero : P = 0
   · simp [p_ne_zero]
@@ -176,7 +176,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
 /-- Every polynomial sequence is a basis of `R[X]`. -/
 noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
     Basis ℕ R R[X] :=
-  Basis.mk S.linearIndependent <| S.span hCoeff
+  Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
 end Nontrivial
 
