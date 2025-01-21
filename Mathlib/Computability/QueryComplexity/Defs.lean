@@ -43,14 +43,14 @@ be queried by the oracle (`i`) and two other computations, to be run depending o
 of the oracle. -/
 inductive Comp (ι : Type) {I : Type} (s : Set I) (α : Type) : Type where
   | pure' : α → Comp ι s α
-  | query' : (o : I) → o ∈ s → (i : ι) → Comp ι s α → Comp ι s α → Comp ι s α
+  | query' : (o : I) → o ∈ s → (i : ι) → (Bool → Comp ι s α) → Comp ι s α
 
 namespace Comp
 
 /-- The standard bind operation for `Comp` -/
 def bind' (f : Comp ι s α) (g : α → Comp ι s β) : Comp ι s β := match f with
   | .pure' x => g x
-  | .query' o m y f0 f1 => .query' o m y (f0.bind' g) (f1.bind' g)
+  | .query' o m y f => .query' o m y (fun b => (f b).bind' g)
 
 /-- `Comp` is a monad -/
 instance : Monad (Comp ι s) where
@@ -60,15 +60,15 @@ instance : Monad (Comp ι s) where
 /-- Produce a `Comp` given the identifier of an oracle and a value to be queried. The `Comp`
 just returns `true` or `false` according to the answer of the oracle. -/
 def query (o : I) (y : ι) : Comp ι {o} Bool :=
-  Comp.query' o (mem_singleton _) y (pure true) (pure false)
+  Comp.query' o (mem_singleton _) y pure
 
 /-- Execute `f` with the oracles `os`. Returns the final value and the number of queries to
 each one of the oracles. -/
 def run (f : Comp ι s α) (os : I → Oracle ι) : α × (I → ℕ) := match f with
   | .pure' x => (x, fun _ => 0)
-  | .query' i _ y f0 f1 =>
+  | .query' i _ y f =>
     let x := (os i) y
-    let (z,c) := if x then f0.run os else f1.run os
+    let (z,c) := (f x).run os
     (z, c + fun j => if j = i then 1 else 0)
 
 /-- The value of a `Comp ι s` after it's execution -/
@@ -91,7 +91,7 @@ def cost' (f : Comp ι s α) (o : Oracle ι) : I → ℕ :=
 /-- Extend the set of allowed oracles in a computation -/
 def allow (f : Comp ι s α) (st : s ⊆ t) : Comp ι t α := match f with
   | .pure' x => pure x
-  | .query' i m y f0 f1 => .query' i (st m) y (f0.allow st) (f1.allow st)
+  | .query' i m y f => .query' i (st m) y (fun b => (f b).allow st)
 
 /-- Extend the set of allowed oracles in a computation to the universe set -/
 def allow_all (f : Comp ι s α) : Comp ι (@univ I) α :=

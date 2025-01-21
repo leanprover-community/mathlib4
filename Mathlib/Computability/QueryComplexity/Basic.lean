@@ -31,16 +31,16 @@ instance : LawfulMonad (Comp ι s) := LawfulMonad.mk'
   (id_map := by
     intro α f
     simp only [map_eq, id, bind, bind']
-    induction' f with _ _ _ _ _ _ h0 h1
+    induction' f with _ _ _ _ _ h
     · rfl
-    · simp only [bind', h0, h1])
+    · simp only [bind', h])
   (pure_bind := by intro α β x f; simp only [bind, bind'])
   (bind_assoc := by
     intro _ _ _ f _ _
     simp only [bind]
-    induction' f with _ _ _ _ _ _ h0 h1
+    induction' f with _ _ _ _ _ h
     · rfl
-    · simp only [bind', h0, h1])
+    · simp only [bind', h])
 
 /-- Running `pure` and `pure'` yields the original value -/
 @[simp]
@@ -56,8 +56,8 @@ lemma value_pure (x : α) (o : I → Oracle ι) : (pure x : Comp ι s α).value 
 lemma pure'_bind (x : α) (f : α → Comp ι s β) : (pure' x : Comp ι s α) >>= f = f x := rfl
 
 @[simp]
-lemma query'_bind (o : I) (m : o ∈ s) (y : ι) (f0 f1 : Comp ι s α)
-    (g : α → Comp ι s β) : query' o m y f0 f1 >>= g = .query' o m y (f0 >>= g) (f1 >>= g) := rfl
+lemma query'_bind (o : I) (m : o ∈ s) (y : ι) (f : Bool → Comp ι s α)
+    (g : α → Comp ι s β) : query' o m y f >>= g = .query' o m y (fun b => (f b) >>= g) := rfl
 
 /-- `pure` has cost 0 -/
 @[simp]
@@ -81,9 +81,9 @@ lemma cost'_pure' (x : α) (o : Oracle ι) (i : I) : (pure' x : Comp ι s α).co
 
 /-- `query'` costs one query, plus the rest -/
 @[simp]
-lemma cost_query' {i : I} (m : i ∈ s) (y : ι) (f0 f1 : Comp ι s α) (o : I → Oracle ι) (j : I) :
-    (query' i m y f0 f1).cost o j =
-      (if j = i then 1 else 0) + (if (o i y) then f0.cost o j else f1.cost o j) := by
+lemma cost_query' {i : I} (m : i ∈ s) (y : ι) (f : Bool → Comp ι s α) (o : I → Oracle ι) (j : I) :
+    (query' i m y f).cost o j =
+      (if j = i then 1 else 0) + (f (o i y)).cost o j := by
   simp [cost, run]
   cases o i y <;> exact Nat.add_comm _ _
 
@@ -93,18 +93,17 @@ lemma cost_query (i : I) (y : ι) (o : I → Oracle ι) :
   simp only [query, cost_query', ite_true, cost_pure, ite_self, add_zero]
 
 /-- Expansion of `query'.run` -/
-lemma run_query {i : I} (m : i ∈ s) (y : ι) (f0 f1 : Comp ι s α)
-    (o : I → Oracle ι) : (query' i m y f0 f1).run o =
+lemma run_query {i : I} (m : i ∈ s) (y : ι) (f : Bool → Comp ι s α)
+    (o : I → Oracle ι) : (query' i m y f).run o =
       let x := (o i) y
-      let (z,c) := if x then f0.run o else f1.run o
+      let (z,c) := (f x).run o
       (z, c + fun j => if j = i then 1 else 0) := rfl
 
 /-- The value of `query` and `query'` -/
 @[simp]
-lemma value_query' (i : I) (m : i ∈ s) (y : ι) (f0 f1 : Comp ι s α) (o : I → Oracle ι) :
-    (query' i m y f0 f1).value o = (if o i y then f0.value o else f1.value o) := by
+lemma value_query' (i : I) (m : i ∈ s) (y : ι) (f : Bool → Comp ι s α) (o : I → Oracle ι) :
+    (query' i m y f).value o = (f (o i y)).value o := by
   simp only [value, run_query]
-  cases o i y <;> rfl
 
 @[simp]
 lemma value_query (i : I) (y : ι) (o : I → Oracle ι) :
@@ -115,21 +114,20 @@ lemma value_query (i : I) (y : ι) (o : I → Oracle ι) :
 /-- The cost of `f >>= g` is `f.cost + g.cost` -/
 lemma cost_bind (f : Comp ι s α) (g : α → Comp ι s β) (o : I → Oracle ι) (i : I) :
     (f >>= g).cost o i = f.cost o i + ((g (f.value o)).cost o i) := by
-  induction' f with a b c d e f h0 h1
+  induction' f with _ _ _ _ _ h
   · simp only [cost_pure', zero_add, value_pure', bind, bind']
-  · simp only [bind, bind'] at h0 h1
-    simp only [cost_query', bind, bind', add_assoc, h0, h1]
+  · simp only [bind, bind'] at h
+    simp only [cost_query', bind, bind', add_assoc, h]
     apply congr_arg₂ _ rfl
-    split <;> (simp only [value_query', add_right_inj]; aesop)
+    simp only [value_query', add_right_inj]
 
 /-- The value of `f >>= g` is the composition of the two `Comp`s -/
 @[simp]
 lemma value_bind (f : Comp ι s α) (g : α → Comp ι s β) (o : I → Oracle ι) :
     (f >>= g).value o = (g (f.value o)).value o := by
-  induction' f with a b c d e f h0 h1
+  induction' f with _ _ _ _ _ h
   · rfl
-  · simp only [value_query', query'_bind, h0, h1];
-    cases o b d <;> rfl
+  · simp only [value_query', query'_bind, h]
 
 /-!
 ## `allow` and `allow_all` don't change `Comp.value`, `Comp.cost` and `pure`
@@ -138,9 +136,10 @@ lemma value_bind (f : Comp ι s α) (g : α → Comp ι s β) (o : I → Oracle 
 @[simp]
 lemma value_allow (f : Comp ι s α) (st : s ⊆ t) (o : I → Oracle ι) :
     (f.allow st).value o = f.value o := by
-  induction' f with a b c d e f h0 h1
-  · simp only [allow]; rfl
-  · simp only [allow, value_query', h0, h1]
+  induction' f with _ _ _ _ _ h
+  · simp only [allow]
+    rfl
+  · simp only [allow, value_query', h]
 
 @[simp]
 lemma value_allow_all (f : Comp ι s α) (o : I → Oracle ι) :
@@ -150,9 +149,9 @@ lemma value_allow_all (f : Comp ι s α) (o : I → Oracle ι) :
 @[simp]
 lemma cost_allow (f : Comp ι s α) (st : s ⊆ t) (o : I → Oracle ι) (i : I) :
     (f.allow st).cost o i = f.cost o i := by
-  induction' f with _ _ _ _ _ _ h0 h1
+  induction' f with _ _ _ _ _ h
   · simp only [allow, cost_pure, cost_pure']
-  · simp only [allow, cost_query', h0, h1]
+  · simp only [allow, cost_query', h]
 
 @[simp]
 lemma cost_allow_all (f : Comp ι s α) (o : I → Oracle ι) (i : I) :
