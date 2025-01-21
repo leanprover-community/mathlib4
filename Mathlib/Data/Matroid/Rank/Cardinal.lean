@@ -177,10 +177,9 @@ theorem Basis'.cardRk_eq_cardinalMk (hIX : M.Basis' I X) : M.cardRk X = #I :=
 theorem Basis.cardRk_eq_cardinalMk (hIX : M.Basis I X) : M.cardRk X = #I:=
   hIX.basis'.cardRk_eq_cardinalMk
 
-@[simp] theorem cardRank_restrict (M : Matroid α) [CardinalRank M] :
-    (M ↾ X).cardRank = M.cardRk X := rfl
+@[simp] theorem cardRank_restrict (M : Matroid α) : (M ↾ X).cardRank = M.cardRk X := rfl
 
-@[simp] theorem cardRk_ground (M : Matroid α) [CardinalRank M] : M.cardRk M.E = M.cardRank := by
+@[simp] theorem cardRk_ground (M : Matroid α) : M.cardRk M.E = M.cardRank := by
   rw [cardRk, restrict_ground_eq_self]
 
 theorem cardRk_mono (M : Matroid α) [CardinalRank M] : Monotone M.cardRk := by
