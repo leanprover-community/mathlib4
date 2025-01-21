@@ -104,9 +104,7 @@ instance Nucleus.bot : Bot (Nucleus X) where
 instance : OrderBot (Nucleus X) where
   bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing' v)
 
-/--
-The biggest Nucleus sends everything to ⊤.
--/
+/-- The biggest Nucleus sends everything to ⊤. -/
 instance Nucleus.top : Top (Nucleus X) where
   top.toFun := ⊤
   top.idempotent' := by simp
