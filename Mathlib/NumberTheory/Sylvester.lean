@@ -33,7 +33,7 @@ We follow the presentantion from [Wikipedia](https://en.wikipedia.org/wiki/Sylve
 
 open Nat
 
-/-- Sylvester sequence: https://oeis.org/A000058. -/
+/-- Sylvester's sequence: https://oeis.org/A000058. -/
 def sylvester : ℕ → ℕ
   | 0 => 2
   | n + 1 => (sylvester n) * (sylvester n - 1) + 1
