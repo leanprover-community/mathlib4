@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Filtered.CostructuredArrow
-import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Functor.Flat
 
 /-!
@@ -27,7 +26,6 @@ variable (F : C ⥤ D)
 
 attribute [local instance] final_of_representablyFlat in
 lemma isFiltered_of_representablyFlat [IsFiltered C] [RepresentablyFlat F] : IsFiltered D :=
-  haveI : PreservesFiniteLimits F := preservesFiniteLimits_of_flat F
   isFiltered_of_isFiltered_costructuredArrow (𝟭 _) F
 
 lemma isCofiltered_of_representablyCoflat [IsCofiltered C] [RepresentablyCoflat F] :
