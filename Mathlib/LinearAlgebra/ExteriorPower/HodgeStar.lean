@@ -28,17 +28,9 @@ open Module
 namespace exteriorPower
 
 variable {F V : Type*} [Field F] [AddCommGroup V] [Module F V] [FiniteDimensional F V]
---variable (B : LinearMap.BilinForm F V)
-
---noncomputable abbrev n : ℕ := Module.finrank F V
-
-#check Module.finrank F V
-#check LinearMap.BilinForm.toDual
 
 variable {k : ℕ} in
 #check dualTensorHomEquiv F (⋀[F]^(finrank F V - k) V) (⋀[F]^(finrank F V) V)
-
-#check fun (α β : ExteriorAlgebra F V) ↦ α * β
 
 variable (B : LinearMap.BilinForm F V)
 local notation "⟪" v ", " w "⟫" => exteriorPower.BilinForm B _ v w
@@ -68,13 +60,16 @@ noncomputable def volumeEquiv (h : ⟪vol, vol⟫ = 1) : ⋀[F]^(finrank F V) V 
   right_inv := by
     intro f
     simp only [map_smul, smul_eq_mul, h, mul_one]
-  map_add' := sorry
-  map_smul' := sorry
+  map_add' := map_add _
+  map_smul' := map_smul _
+
 
 #check TensorProduct.rid
 variable (hVol : ⟪vol, vol⟫ = 1)
 --def Wedge {k : ℕ} (α : ⋀[F]^k V) := (fun (β : ExteriorAlgebra F V) ↦ α * β)
-def Wedge {k : ℕ} (α : ⋀[F]^k V) : ⋀[F]^(finrank F V - k) V →ₗ[F] ⋀[F]^(finrank F V) V := sorry
+def HodgePairing {k : ℕ} (α : ⋀[F]^k V) : ⋀[F]^(finrank F V - k) V →ₗ[F] (⋀[F]^(finrank F V) V) :=
+  sorry
+--(volumeEquiv B vol hVol).comp
 
 variable (hN : B.Nondegenerate)
 variable (k : ℕ) in
@@ -92,7 +87,7 @@ noncomputable def HodgeStar {k : ℕ} := fun (α : ⋀[F]^k V) ↦
   (LinearMap.BilinForm.toDual (exteriorPower.BilinForm B _)
   (bilin_nondegen B (finrank F V - k) hN))).symm
   ((dualTensorHomEquiv F (⋀[F]^(finrank F V - k) V) (⋀[F]^(finrank F V) V)).symm
-  (Wedge α))))
+  (HodgePairing α))))
 
 #check HodgeStar
 
