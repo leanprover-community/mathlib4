@@ -460,7 +460,7 @@ theorem lintegral_Lp_add_le_of_le_one {p : ℝ} {f g : α → ℝ≥0∞} (hf : 
   rcases eq_or_lt_of_le hp0 with (rfl | hp)
   · simp only [Pi.add_apply, rpow_zero, lintegral_one, _root_.div_zero, zero_sub]
     norm_num
-    rw [rpow_neg, rpow_one, ENNReal.inv_mul_cancel two_ne_zero two_ne_top]
+    rw [rpow_neg, rpow_one, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   calc
     (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≤ ((∫⁻ a, f a ^ p ∂μ) + ∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
       rw [← lintegral_add_left' (hf.pow_const p)]
