@@ -66,6 +66,7 @@ for message in messages:
     has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
     has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
+    has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
     match = pr_pattern.search(content)
     if match:
         print(f"matched: '{message}'")
@@ -102,6 +103,13 @@ for message in messages:
                 "emoji_name": "writing"
             })
             print(f"result: '{result}'")
+        if has_closed:
+            print('Removing closed-pr')
+            result = client.remove_reaction({
+                "message_id": message['id'],
+                "emoji_name": "closed-pr"
+            })
+            print(f"result: '{result}'")
 
 
         # applying appropriate emoji reaction
@@ -123,6 +131,12 @@ for message in messages:
             client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": "writing"
+            })
+        elif LABEL == 'closed':
+            print('adding closed-pr')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "closed-pr"
             })
         elif LABEL == 'unlabeled':
             print('awaiting-author removed')
