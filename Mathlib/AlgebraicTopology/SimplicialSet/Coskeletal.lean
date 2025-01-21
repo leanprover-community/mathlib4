@@ -120,12 +120,12 @@ lemma fac_aux₂ {n : ℕ}
   | succ k hk =>
       intro i j hij hj hik
       let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩
-          ⟨j, by omega⟩ (by leq)
+          ⟨j, by omega⟩ (by simp)
         (by simp only [Fin.mk_le_mk]; omega)) (by rfl)
       let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by omega⟩ ⟨j, by omega⟩
         (by simp only [Fin.mk_le_mk]; omega)) (by leq)
       let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by leq)
-      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by leq)) (by leq)
+      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by simp)) (by leq)
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((δ 1).op) (Quiver.Hom.unop_inj
