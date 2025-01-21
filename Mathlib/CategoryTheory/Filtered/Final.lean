@@ -309,7 +309,7 @@ instance Functor.final_diag_of_isFiltered [IsFiltered C] : Final (Functor.diag C
   final_of_isFiltered_structuredArrow _
 
 attribute [local instance] IsFiltered.nonempty in
-instance [IsFiltered C] : IsSifted C where
+instance (priority := low) [IsFiltered C] : IsSifted C where
 
 /-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
 is cofiltered as well. -/
