@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
-# Sylvester sequence
+# Sylvester's sequence
 
 This file introduces the Sylvester's sequence.
 This is sequence [A000058](https://oeis.org/A000058) in [oeis].
@@ -20,10 +20,11 @@ We follow the presentantion from [Wikipedia](https://en.wikipedia.org/wiki/Sylve
 
 ## Main results
 
-- Basic facts.
-- Recurrence formula.
-- Sylvester sequence is strictly monotonic.
-- Pairwise co-primality.
+- Basic facts: the first terms of the sequence are 2, 3, 7, 43.
+- `sylvester_prod_finset_add_one`: each term of the sequence is one plus the product of its
+  predecessors.
+- `sylvester_strictMono`: the sequence is strictly monotonic.
+- `sylvester_coprime`: Pairwise co-primality.
 
 ## References
 
@@ -33,24 +34,22 @@ We follow the presentantion from [Wikipedia](https://en.wikipedia.org/wiki/Sylve
 
 open Nat
 
-/--
-Sylvester sequence: https://oeis.org/A000058.
--/
+/-- Sylvester's sequence: https://oeis.org/A000058. -/
 def sylvester : ℕ → ℕ
   | 0 => 2
   | n + 1 => (sylvester n) * (sylvester n - 1) + 1
 
 @[simp]
-theorem sylvester_zero : sylvester 0 = 2 := by rfl
+theorem sylvester_zero : sylvester 0 = 2 := rfl
 
 @[simp]
-theorem sylvester_one : sylvester 1 = 3 := by rfl
+theorem sylvester_one : sylvester 1 = 3 := rfl
 
 @[simp]
-theorem sylvester_two : sylvester 2 = 7 := by rfl
+theorem sylvester_two : sylvester 2 = 7 := rfl
 
 @[simp]
-theorem sylvester_three : sylvester 3 = 43 := by rfl
+theorem sylvester_three : sylvester 3 = 43 := rfl
 
 theorem sylvester_ge_two (n : ℕ) : 2 ≤ sylvester n := by
   induction' n with n ih
@@ -85,7 +84,7 @@ theorem sylvester_strictMono : StrictMono sylvester := by
 theorem sylvester_mod_eq_one {m n : ℕ} (h : m < n) :
     sylvester n % sylvester m = 1 := by
   rw [sylvester_prod_finset_add_one, ← mod_add_mod,
-    dvd_iff_mod_eq_zero.mp (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr ((by omega) : m < n))]
+    dvd_iff_mod_eq_zero.mp (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr h)]
   exact Nat.mod_eq_of_lt <| sylvester_ge_two _
 
 private theorem sylvester_coprime_of_lt {m n : ℕ} (h : m < n) :
