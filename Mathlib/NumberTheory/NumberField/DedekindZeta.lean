@@ -11,20 +11,6 @@ import Mathlib.NumberTheory.NumberField.Ideal
 
 -/
 
-
-
-section Nat.card
-
-
-variable {α : Type*} (F : α → ℕ)
-
-
-theorem toto (h : ∀ n, {a | F a = n}.Finite) {m n : ℕ} :
-    ∑ k in Finset.Icc m n, Nat.card {a // F a = k} = Nat.card {a // F a ∈ Finset.Icc m n} := by
-
-  sorry
-
-end Nat.card
 variable (K : Type*) [Field K] [NumberField K]
 
 noncomputable section

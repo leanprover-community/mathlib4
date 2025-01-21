@@ -427,9 +427,10 @@ protected theorem norm_eq_zero_iff {x : mixedSpace K} :
     mem_univ, true_and, pow_eq_zero_iff mult_ne_zero]
 
 protected theorem norm_ne_zero_iff {x : mixedSpace K} :
-    mixedEmbedding.norm x ≠ 0 ↔ ∀ w, normAtPlace w x ≠ 0 := by
+    mixedEmbedding.norm x ≠ 0 ↔ ∀ w, 0 < normAtPlace w x := by
   rw [← not_iff_not]
-  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_not]
+  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_lt,
+    LE.le.le_iff_eq (normAtPlace_nonneg _ x)]
 
 theorem norm_eq_of_normAtPlace_eq {x y : mixedSpace K}
     (h : ∀ w, normAtPlace w x = normAtPlace w y) :

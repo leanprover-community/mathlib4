@@ -119,8 +119,8 @@ theorem logMap_mul (hx : mixedEmbedding.norm x ≠ 0) (hy : mixedEmbedding.norm 
   simp_rw [Pi.add_apply, logMap_apply]
   rw [map_mul, map_mul, Real.log_mul, Real.log_mul hx hy, add_mul]
   · ring
-  · exact mixedEmbedding.norm_ne_zero_iff.mp hx w
-  · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
+  · exact (mixedEmbedding.norm_ne_zero_iff.mp hx w).ne'
+  · exact (mixedEmbedding.norm_ne_zero_iff.mp hy w).ne'
 
 theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
     (w : {w : InfinitePlace K // w ≠ w₀}) :
@@ -174,7 +174,7 @@ theorem continuousOn_logMap :
     ContinuousOn (logMap : (mixedSpace K) → _) {x | mixedEmbedding.norm x ≠ 0} := by
   refine continuousOn_pi.mpr fun w ↦ continuousOn_const.mul (ContinuousOn.sub ?_ ?_)
   · exact Real.continuousOn_log.comp' (continuous_normAtPlace _).continuousOn
-      fun _ hx ↦ mixedEmbedding.norm_ne_zero_iff.mp hx _
+      fun _ hx ↦ (mixedEmbedding.norm_ne_zero_iff.mp hx _).ne'
   · exact ContinuousOn.mul
       (Real.continuousOn_log.comp' (mixedEmbedding.continuous_norm K).continuousOn
         fun _ hx ↦ hx) continuousOn_const
@@ -216,8 +216,7 @@ theorem norm_pos_of_mem (hx : x ∈ fundamentalCone K) :
 
 theorem normAtPlace_pos_of_mem (hx : x ∈ fundamentalCone K) (w : InfinitePlace K) :
     0 < normAtPlace w x :=
-  lt_of_le_of_ne (normAtPlace_nonneg _ _)
-    (mixedEmbedding.norm_ne_zero_iff.mp (norm_pos_of_mem hx).ne' w).symm
+  (mixedEmbedding.norm_ne_zero_iff.mp (norm_pos_of_mem hx).ne') w
 
 theorem mem_of_normAtPlace_eq (hx : x ∈ fundamentalCone K)
     (hy : ∀ w, normAtPlace w y = normAtPlace w x) :

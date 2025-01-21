@@ -98,13 +98,13 @@ theorem continuous_polarCoord_symm :
   Continuous.prod_mk (by fun_prop) (by fun_prop)
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
-def fDeriv_polarCoord_symm : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ :=
+def FDerivPolarCoordSymm : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ :=
   fun p : ℝ × ℝ ↦ (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
     (Basis.finTwoProd ℝ) !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]))
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
-    HasFDerivAt polarCoord.symm (fDeriv_polarCoord_symm p) p := by
-  unfold fDeriv_polarCoord_symm
+    HasFDerivAt polarCoord.symm (FDerivPolarCoordSymm p) p := by
+  unfold FDerivPolarCoordSymm
   rw [Matrix.toLin_finTwoProd_toContinuousLinearMap]
   convert HasFDerivAt.prod (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
@@ -112,9 +112,9 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
 
 theorem det_fderiv_polarCoord_symm (p : ℝ × ℝ) :
-    (fDeriv_polarCoord_symm p).det = p.1 := by
+    (FDerivPolarCoordSymm p).det = p.1 := by
   conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
-  unfold fDeriv_polarCoord_symm
+  unfold FDerivPolarCoordSymm
   simp only [neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
     Matrix.det_fin_two_of, sub_neg_eq_add]
   ring
@@ -230,31 +230,6 @@ protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
     measurableEquivRealProd.symm.measurableEmbedding, ← lintegral_comp_polarCoord_symm]
   simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
 
-open scoped ComplexOrder
-
-theorem polarCoord_symm_mem_polarCoord_source_iff {x : ℝ × ℝ} :
-    Complex.polarCoord.symm x ∈ Complex.polarCoord.source ↔
-        x.1 ≠ 0 ∧ (x.1 > 0 → ∀ k : ℤ, π + k * (2 * π) ≠ x.2) ∧
-          (x.1 < 0 →  ∀ k : ℤ, k * (2 * π) ≠ x.2) := by
-  simp_rw (config := {singlePass := true}) [← not_iff_not, Complex.polarCoord_symm_apply,
-    Complex.polarCoord_source, mem_slitPlane_iff_arg, not_and_or, ne_eq, not_not, mul_eq_zero,
-    not_and_or, Classical.not_imp, not_forall, not_not, ofReal_eq_zero, ofReal_cos, ofReal_sin,
-    cos_add_sin_I, exp_ne_zero, or_false]
-  obtain hx | hx | hx := lt_trichotomy x.1 0
-  · simp_rw [hx, hx.ne, not_lt_of_gt hx, false_and, false_or, true_and, or_false]
-    have : (x.1 * cexp (x.2 * I)).arg = π ↔ (cexp (x.2 * I)).arg = 0 := by
-      simp_rw [arg_eq_pi_iff_lt_zero, arg_eq_zero_iff_zero_le, ← coe_algebraMap,
-        RCLike.ofReal_mul_neg_iff, hx, not_lt_of_gt hx, true_and, false_and, or_false,
-        lt_iff_le_and_ne, ne_eq, eq_comm (a := 0) (b := cexp _), exp_ne_zero, not_false_eq_true,
-        and_true]
-    simp_rw [this, arg_exp_mul_I, toIocMod_eq_iff, zero_add, zsmul_eq_mul, eq_comm,
-      and_iff_right_iff_imp]
-    exact fun _ ↦ ⟨neg_neg_iff_pos.mpr Real.pi_pos, by ring_nf; positivity⟩
-  · simp_rw [hx, true_or, or_true]
-  · simp_rw [hx, hx.ne', not_lt_of_gt hx, false_and, or_false, true_and, false_or, arg_real_mul _
-      hx, arg_exp_mul_I, toIocMod_eq_iff, zsmul_eq_mul, eq_comm, and_iff_right_iff_imp]
-    exact fun _ ↦ ⟨Left.neg_lt_self Real.pi_pos, by linarith⟩
-
 end Complex
 
 section Pi
@@ -265,8 +240,8 @@ variable {ι : Type*}
 
 open ContinuousLinearMap in
 /-- The derivative of `polarCoord.symm` on `ι → ℝ × ℝ`, see `hasFDerivAt_pi_polarCoord_symm`. -/
-noncomputable def fDeriv_pi_polarCoord_symm : (ι → ℝ × ℝ) → (ι → ℝ × ℝ) →L[ℝ] ι → ℝ × ℝ :=
-  fun p ↦ pi fun i ↦ (fDeriv_polarCoord_symm (p i)).comp (proj i)
+noncomputable def FDerivPiPolarCoordSymm : (ι → ℝ × ℝ) → (ι → ℝ × ℝ) →L[ℝ] ι → ℝ × ℝ :=
+  fun p ↦ pi fun i ↦ (FDerivPolarCoordSymm (p i)).comp (proj i)
 
 theorem injOn_pi_polarCoord_symm :
     Set.InjOn (fun p (i : ι) ↦ polarCoord.symm (p i)) (Set.univ.pi fun _ ↦ polarCoord.target) :=
@@ -281,13 +256,13 @@ theorem abs_fst_of_mem_pi_polarCoord_target {p : ι → ℝ × ℝ}
 variable [Fintype ι]
 
 theorem hasFDerivAt_pi_polarCoord_symm (p : ι → ℝ × ℝ) :
-    HasFDerivAt (fun x i ↦ polarCoord.symm (x i)) (fDeriv_pi_polarCoord_symm p) p := by
-  rw [fDeriv_pi_polarCoord_symm, hasFDerivAt_pi]
+    HasFDerivAt (fun x i ↦ polarCoord.symm (x i)) (FDerivPiPolarCoordSymm p) p := by
+  rw [FDerivPiPolarCoordSymm, hasFDerivAt_pi]
   exact fun i ↦ HasFDerivAt.comp _ (hasFDerivAt_polarCoord_symm _) (hasFDerivAt_apply i _)
 
 theorem det_fderiv_pi_polarCoord_symm (p : ι → ℝ × ℝ) :
-    (fDeriv_pi_polarCoord_symm p).det = ∏ i, (p i).1 := by
-  simp_rw [fDeriv_pi_polarCoord_symm, ContinuousLinearMap.pi_det, det_fderiv_polarCoord_symm]
+    (FDerivPiPolarCoordSymm p).det = ∏ i, (p i).1 := by
+  simp_rw [FDerivPiPolarCoordSymm, ContinuousLinearMap.pi_det, det_fderiv_polarCoord_symm]
 
 theorem pi_polarCoord_symm_target_ae_eq_univ :
     (Pi.map (fun _ : ι ↦ polarCoord.symm) '' Set.univ.pi fun _ ↦ polarCoord.target)
