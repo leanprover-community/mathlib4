@@ -45,18 +45,16 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
 
 open Nucleus
 
-
-
-def toClosureOperator (n : Nucleus X) : ClosureOperator X where
-  toFun := n.toFun
-  monotone' := sorry
-  le_closure' := n.increasing'
-  idempotent' := sorry
-
-
-
-
 variable {n : Nucleus X} {x y : X}
+
+lemma monotone' : Monotone n.toFun := by
+  intro h
+  sorry
+
+
+def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
+   ClosureOperator.mk' (n.toFun) (monotone') (n.increasing') (n.idempotent')
+
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
