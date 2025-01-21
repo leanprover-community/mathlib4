@@ -39,7 +39,7 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 cyclic group
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 variable {α G G' : Type*} {a : α}
 

@@ -22,7 +22,7 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 zmod, quotient group
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 open QuotientAddGroup Set ZMod
 
