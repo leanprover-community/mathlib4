@@ -119,10 +119,21 @@ open IntermediateField
 variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
-    Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
+    trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
   rw [← trace_trace (S := K⟮x⟯)]
-  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
+  conv in x => rw [← AdjoinSimple.algebraMap_gen K x]
   rw [trace_algebraMap, LinearMap.map_smul_of_tower]
+
+variable {K} in
+/-- Trace of the generator of a simple adjoin equals negative of the next coefficient of
+its minimal polynomial coefficient. -/
+theorem trace_adjoinSimpleGen {x : L} (hx : IsIntegral K x) :
+    trace K K⟮x⟯ (AdjoinSimple.gen K x) = -(minpoly K x).nextCoeff := by
+  simpa [minpoly_gen K x] using PowerBasis.trace_gen_eq_nextCoeff_minpoly <| adjoin.powerBasis hx
+
+theorem trace_eq_finrank_mul_minpoly_nextCoeff [FiniteDimensional K L] (x : L) :
+    trace K L x = finrank K⟮x⟯ L * -(minpoly K x).nextCoeff := by
+  rw [trace_eq_trace_adjoin, trace_adjoinSimpleGen (.of_finite K x), Algebra.smul_def]; rfl
 
 variable {K}
 
