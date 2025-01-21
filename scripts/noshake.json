@@ -18,6 +18,7 @@
   "Batteries.Tactic.NormCast",
   "Batteries.Tactic.NormCast.Lemmas",
   "Batteries.Tactic.OpenPrivate",
+random text here
   "Batteries.Tactic.RCases",
   "Batteries.Tactic.Relation.Rfl",
   "Batteries.Tactic.Relation.Symm",
