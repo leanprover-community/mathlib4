@@ -80,13 +80,14 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective [Module.FaithfullyFlat A 
   rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
   exact Module.tensorProduct_mk_injective_of_isScalarTower _
 
+open Algebra.TensorProduct in
 /-- If `B` is a faithfully flat `A`-algebra, the preimage of the pushforward of any
 ideal `I` is again `I`. -/
 lemma Ideal.comap_map_eq_self_of_faithfullyFlat [Module.FaithfullyFlat A B] (I : Ideal A) :
     (I.map (algebraMap A B)).comap (algebraMap A B) = I := by
   refine le_antisymm ?_ le_comap_map
   have inj : Function.Injective
-      (AlgEquiv.toLinearMap (Algebra.TensorProduct.tensorQuotEquivQuotIdealMap B I) ∘ₗ
+      ((quotIdealMapEquivTensorQuot B I).symm.toLinearMap.restrictScalars _ ∘ₗ
         TensorProduct.mk A B (A ⧸ I) 1) := by
     rw [LinearMap.coe_comp]
     exact (AlgEquiv.injective _).comp <|
@@ -95,7 +96,7 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat [Module.FaithfullyFlat A B] (I :
   rw [Ideal.mem_comap] at hx
   rw [← Ideal.Quotient.eq_zero_iff_mem] at hx ⊢
   apply inj
-  have : (AlgEquiv.toLinearMap (Algebra.TensorProduct.tensorQuotEquivQuotIdealMap B I) ∘ₗ
+  have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
   simp [this]
