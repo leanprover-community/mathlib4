@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emily Riehl, Dagur Asgeirsson, Jon Eugster
 -/
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # Conical limits / enriched limits
