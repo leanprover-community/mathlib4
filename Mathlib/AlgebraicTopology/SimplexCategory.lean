@@ -753,17 +753,10 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 
 section Meta
 
-/-- Some quick and useful attempts to prove `m ≤ n`. -/
-macro "leq_tac" : tactic =>
-  `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
-    apply Nat.le_add_left | apply Nat.le_add_right |
-    apply Nat.le_add_right_of_le; assumption |
-    apply Nat.add_le_add_right; assumption | transitivity <;> assumption)
-
-/-- A wrapper for `omega` which first makes some quick attempts to prove that
-`[m]` is `n`-truncated (`[m].len ≤ n`). -/
+/-- Some quick attempts to prove that `[m]` is `n`-truncated (`[m].len ≤ n`). -/
 macro "trunc" : tactic =>
-  `(tactic| first | leq_tac | dsimp only [SimplexCategory.len_mk]; omega |
+  `(tactic| first | decide | assumption |
+    dsimp only [SimplexCategory.len_mk]; omega |
     fail "Failed to prove truncation property.")
 
 open Mathlib.Tactic (subscriptTerm) in
