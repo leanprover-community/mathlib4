@@ -280,12 +280,8 @@ section SpecΓ
 open AlgebraicGeometry.LocallyRingedSpace
 
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
-@[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_hom_apply_coe
 
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global

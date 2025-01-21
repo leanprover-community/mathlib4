@@ -1618,12 +1618,7 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
 
 /-! ### filterMap -/
 
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_none
-
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :

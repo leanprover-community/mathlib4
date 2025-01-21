@@ -92,7 +92,6 @@ variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with sieve_compatible family of elements
     for the sieve `S` and the presheaf of types `Hom (E, P -)`. -/
-@[simps]
 def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
@@ -111,10 +110,6 @@ def conesEquivSieveCompatibleFamily :
         rw [Over.w] }
   left_inv _ := rfl
   right_inv _ := rfl
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
-  CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)

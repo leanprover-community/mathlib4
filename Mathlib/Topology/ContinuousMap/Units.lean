@@ -27,7 +27,6 @@ variable [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 and the units of the monoid of continuous maps. -/
 -- `simps` generates some lemmas here with LHS not in simp normal form,
 -- so we write them out manually below.
--- https://github.com/leanprover-community/mathlib4/issues/18942
 @[to_additive (attr := simps apply_val_apply symm_apply_apply_val)
 "Equivalence between continuous maps into the additive units of an additive monoid with continuous
 addition and the additive units of the additive monoid of continuous maps."]
