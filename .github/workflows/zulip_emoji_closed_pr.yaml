@@ -1,4 +1,5 @@
 name: Add "closed-pr" emoji in Zulip
+# adds a reaction to Zulip messages that refer to a PR that was closed, but not merged
 
 # triggers the action when
 on:
