@@ -172,6 +172,11 @@ theorem insertNth_zero_zero : insertNth p 0 (0 : Fin n →₀ M) = 0 := by
 
 variable {s} {y}
 
+theorem cons_eq_zero : cons y s = 0 ↔ y = 0 ∧ s = 0 := by
+  refine ⟨fun h => ⟨?_, ?_⟩, fun ⟨hy, hs⟩ => by simp [hy, hs]⟩
+  · simpa using Finsupp.ext_iff.mp h 0
+  · exact Finsupp.ext fun i ↦ by simpa using Finsupp.ext_iff.mp h (.succ i)
+
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
@@ -196,6 +201,11 @@ lemma cons_support_subset : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.
 theorem cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
   equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective)
 
+theorem snoc_eq_zero : snoc s y = 0 ↔ s = 0 ∧ y = 0 := by
+  refine ⟨fun h => ⟨?_, ?_⟩, fun ⟨hs, hy⟩ => by simp [hs, hy]⟩
+  · exact Finsupp.ext fun i ↦ by simpa using Finsupp.ext_iff.mp h (Fin.castSucc i)
+  · simpa using Finsupp.ext_iff.mp h (Fin.last n)
+
 theorem snoc_ne_zero_of_left (h : s ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
   ext a
@@ -209,6 +219,11 @@ theorem snoc_ne_zero : snoc s y ≠ 0 ↔ s ≠ 0 ∨ y ≠ 0 := by
   refine ⟨fun h => ?_, fun h => h.casesOn snoc_ne_zero_of_left snoc_ne_zero_of_right⟩
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.snoc_zero_zero]
+
+theorem insertNth_eq_zero : insertNth p y s = 0 ↔ y = 0 ∧ s = 0 := by
+  refine ⟨fun h => ⟨?_, ?_⟩, fun ⟨hy, hs⟩ => by simp [hy, hs]⟩
+  · simpa using Finsupp.ext_iff.mp h p
+  · exact Finsupp.ext fun i ↦ by simpa using Finsupp.ext_iff.mp h (.succAbove p i)
 
 theorem insertNth_ne_zero_of_left (h : y ≠ 0) : insertNth p y s ≠ 0 := by
   contrapose! h with c
