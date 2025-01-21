@@ -118,7 +118,7 @@ def toNerve₂.mk.app {X : SSet.Truncated 2} {C : Cat}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) (φ : X _[2]₂) :
     mk.app F [2]₂ φ = .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ)) := rfl
 
-/-- This is similiar to one of the famous Segal maps, except valued in a product rather than a
+/-- This is similar to one of the famous Segal maps, except valued in a product rather than a
 pullback.-/
 noncomputable def nerve₂.seagull (C : Cat.{v, u}) :
     (nerveFunctor₂.obj C).obj (op [2]₂) ⟶
