@@ -980,6 +980,10 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
 
 end StrictMono
 
+/-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
+unsafe instance : Repr ℝ≥0 where
+  reprPrec r _ := f!"({repr r.val}).toNNReal"
+
 namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
