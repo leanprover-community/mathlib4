@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.TypesFiltered
-import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Sifted
 
 /-!
 # Final functors with filtered (co)domain
@@ -307,6 +307,9 @@ instance [IsFiltered C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) :
 /-- The diagonal functor on any filtered category is final. -/
 instance Functor.final_diag_of_isFiltered [IsFiltered C] : Final (Functor.diag C) :=
   final_of_isFiltered_structuredArrow _
+
+attribute [local instance] IsFiltered.nonempty in
+instance [IsFiltered C] : IsSifted C where
 
 /-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
 is cofiltered as well. -/
