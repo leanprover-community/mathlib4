@@ -21,7 +21,7 @@ jobs:
           # may be superfluous: GitHub may print the values of the environment variables by default
           printf '%s' "${TITLE}" | hexdump -cC
           printf 'PR title:"%s"\n' "${TITLE}"
-          printf 'issue number: %s\npull request number: %s\n' "${{ github.event.issue.number }}" "${{ github.event.pull_request.number }}"
+          printf 'issue number: "%s"\npull request number: "%s"\n' "${{ github.event.issue.number }}" "${{ github.event.pull_request.number }}"
 
       - name: Set up Python
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') }}
