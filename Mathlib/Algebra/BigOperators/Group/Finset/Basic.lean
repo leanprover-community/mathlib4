@@ -1451,7 +1451,7 @@ private lemma filter_erase_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : �
 
 /-- If the images of `f` only overlap where `g (f i) = c` , then `g (f j) = c` whenever
 `g (f j) = g (f n)` for some `n ≠ j`.-/
-lemma filter_erase_of_pairwise [CommMonoid β] {f : ι → α} {g : α → β}
+lemma filter_erase_of_pairwise {f : ι → α} {g : α → β}
     {n : ι} {I : Finset ι} (hn : n ∈ I) (c : β)
     (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = c) :
     ∀ j ∈ (filter (fun i => f i = f n) I).erase n, g (f j) = c := by
@@ -1490,7 +1490,7 @@ injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g 
 conclusion is the same as in `prod_image`."
 ]
 lemma prod_image_of_disjoint {α β : Type*} [CommMonoid β] [PartialOrder α]
-    [OrderBot α] [DecidableEq α] [CommMonoid β] {f : ι → α} {g : α → β}
+    [OrderBot α] [DecidableEq α] {f : ι → α} {g : α → β}
     (hg_bot : g ⊥ = 1) {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
     ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
   refine prod_image_of_pairwiseOne <| hf_disj.imp fun i j (hdisj : Disjoint _ _) hfij => ?_
