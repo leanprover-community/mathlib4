@@ -131,13 +131,10 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
   · rw [← Fin.succ_pred a c_a, cons_succ, ← tail_apply]
 
 @[simp]
-theorem init_snoc : init (snoc s y) = s := by
-  simp only [init, snoc, coe_equivFunOnFinite_symm, Fin.init_snoc, equivFunOnFinite_symm_coe]
+theorem init_snoc : init (snoc s y) = s := by simp [init, snoc]
 
 @[simp]
-theorem snoc_init_self : snoc (init t) (t (Fin.last n)) = t := by
-  have : (⇑(equivFunOnFinite.symm (Fin.init (⇑t))) : Fin n → M) = Fin.init ⇑t := rfl
-  simp only [snoc, init, this, Fin.snoc_init_self, equivFunOnFinite_symm_coe]
+theorem snoc_init_self : snoc (init t) (t (Fin.last n)) = t := by simp [snoc, init]
 
 @[simp]
 theorem insertNth_removeNth : insertNth p y (removeNth p t) = update t p y := by
