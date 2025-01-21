@@ -255,7 +255,10 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractionRing A K] (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by
   set I := adjoinIntegral A⁰ x hx
-  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp [I]
+  have mul_self : IsIdempotentElem I := by
+    apply coeToSubmodule_injective
+    simp only [coe_mul, adjoinIntegral_coe, I]
+    rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
   convert congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
