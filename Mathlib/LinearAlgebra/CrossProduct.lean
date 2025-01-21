@@ -167,35 +167,13 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   exact hv ⟨(h20 trivial).2, (h21 trivial).2, (h22 trivial).2, rfl⟩
 
 
-#eval @norm (ℝ) !₂[1, 2, 3]
-
-#check ((!₂[1, 2, 3]) : (Fin 3 → ℕ)) 1
-#check norm_sq_eq_inner
-#check neg_le_neg_iff
-#check Eq.trans
-#check @norm (EuclideanSpace ℝ (Fin 3)) (PiLp.instNorm 2 fun x ↦ ℝ) ![1, 2, 3]
-#check @norm (Fin 3 → ℝ) NormedRing.toNorm ((crossProduct a) b)
-
--- instance : Coe (EuclideanSpace R (Fin 3)) (Fin 3 → R) where
---   coe x := ![x 0, x 1, x 2]
-#check le_antisymm
-
-/-- The L2 norm of a vector in ℝ³, using Mathlib's PiLp norm instance -/
--- noncomputable def l2Norm (v : Fin 3 → ℝ) : ℝ :=
---   (∑ i, (v i) ^ 2) ^ ((1:ℝ) / (2:ℝ))
-
+-- this is necessary to make sure the l2 norm is taken for members of `Fin 3 → ℝ`
+-- instead of the sup norm
 noncomputable def l2Norm (v : EuclideanSpace ℝ (Fin 3)) : ℝ :=
   ‖v‖
 
-#check EuclideanSpace ℝ (Fin 3)
-#check InnerProductGeometry.cos_angle_mul_norm_mul_norm
-
-#check  (!₂[1, 2, 3])
-#check inner
-#print dotProduct
-#check InnerProductGeometry.angle
-
--- TODO: generalize from natural numbers to all R
+-- The l2 norm of the cross of two real vectors equals the produce of their individual norms
+-- times the sine of the angle between them.
 theorem crossProduct_norm_eq_norm_mul_norm_mul_sin (a b : EuclideanSpace ℝ (Fin 3)) :
   l2Norm (a ×₃ b) = ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) :=
 by
@@ -213,61 +191,20 @@ by
      | inr h_eq_neg =>
        unfold lhs at h_lhs_pos ; unfold lhs rhs at h_eq_neg
        rw [h_eq_neg] at h_lhs_pos
-       have h_rhs_eq_0 : rhs = 0 := le_antisymm (neg_le_neg_iff.mp (by simp [h_lhs_pos])) h_rhs_pos
+       have h_rhs_eq_0 : rhs = 0 := by
+        unfold rhs
+        exact le_antisymm (neg_le_neg_iff.mp (by simp [h_lhs_pos])) h_rhs_pos
        unfold rhs at h_rhs_eq_0
        simp [h_rhs_eq_0, h_eq_neg]}
   unfold lhs rhs
   have h_norm_sq_eq_inner (v : EuclideanSpace ℝ (Fin 3)): (‖v‖ ^ 2 = v ⬝ᵥ v) :=
     by rw [@norm_sq_eq_inner ℝ] ; exact rfl
-  -- Now I want to replace the things with dot products
-  rw [l2Norm, h_norm_sq_eq_inner (a ×₃ b), cross_dot_cross]
-  rw [←h_norm_sq_eq_inner, ←h_norm_sq_eq_inner]
-  rw [dotProduct_comm b a]
-  have sanity_check (a b : EuclideanSpace ℝ (Fin 3)) :
-    inner a b = ∑ i : Fin 3, a i * b i:= by exact rfl
-  repeat rw [dotProduct] ; repeat rw [←sanity_check]
+  rw [l2Norm, h_norm_sq_eq_inner (a ×₃ b), cross_dot_cross,
+      ←h_norm_sq_eq_inner, ←h_norm_sq_eq_inner, dotProduct_comm b a]
+  have inner_eq_dotProduct (a b : EuclideanSpace ℝ (Fin 3)) :
+    inner a b = a ⬝ᵥ b:= by exact rfl
+  repeat rw [←inner_eq_dotProduct]
   rw [←(InnerProductGeometry.cos_angle_mul_norm_mul_norm a b)]
   calc
     _ = ‖a‖ ^ 2 * ‖b‖ ^ 2 * (1 - Real.cos (InnerProductGeometry.angle a b) ^ 2) := by ring
     _ = _ := by rw [←Real.sin_sq] ; ring
-
-
-
-
-
-
-
-  -- sorry
-
-
-#check neg_nonneg.mp
--- have htest : ‖a ×₃ b‖ ^ 2 = (‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b)) ^ 2
---     → ‖a ×₃ b‖ = ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) := by
---   apply Real.sq_eq_sq_iff_eq_or_eq_neg
---   -- Need to show both terms are non-negative
---   · exact norm_nonneg _
---   · exact mul_nonneg (mul_nonneg (norm_nonneg _) (norm_nonneg _)) (Real.sin_nonneg_of_mem_Icc _)
-
-
--- theorem crossProuduct_norm_eq_norm_mul_norm_mul_sin (a b : EuclideanSpace ℝ (Fin 3)) :
---   ‖a ×₃ b‖ = ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) :=
--- by
---   have h0 : (‖a‖ ^ 2 = a ⬝ᵥ a) := by rw [@norm_sq_eq_inner ℝ] ; exact rfl
---   have h1 : ‖a ×₃ b‖ ≥ 0 := norm_nonneg (a ×₃ b)
---   have h2 : ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) ≥ 0 :=
---     by exact mul_nonneg
---         (mul_nonneg (norm_nonneg _) (norm_nonneg _))
---         (Real.sin_nonneg_of_mem_Icc
---           (by simp [InnerProductGeometry.angle_nonneg, InnerProductGeometry.angle_le_pi]))
---   have htt (a : ℝ): a ≤ 0 ∧ a ≥ 0 → a = 0 := by apply?
---   have htest : ‖a ×₃ b‖ ^ 2 = (‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b)) ^ 2
---     → ‖a ×₃ b‖ = ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) := by
---     intro h
---     rw [sq_eq_sq_iff_eq_or_eq_neg] at h
---     cases h with
---     | inl hl => exact hl
---     | inr hr =>
---       rw [hr] at h1
---       have hstep : ‖a‖ * ‖b‖ * Real.sin (InnerProductGeometry.angle a b) = 0 :=
---         le_antisymm (neg_le_neg_iff.mp (by simp [h1])) h2
---       simp [hstep, hr]
