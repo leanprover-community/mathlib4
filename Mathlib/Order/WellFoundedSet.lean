@@ -46,6 +46,8 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 
 assert_not_exists OrderedSemiring
 
+open scoped Function -- required for scoped `on` notation
+
 variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
@@ -205,6 +207,9 @@ theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFounded ((· < ·) : α →
   simp [IsWF, wellFoundedOn_iff]
 
 theorem IsWF.mono (h : IsWF t) (st : s ⊆ t) : IsWF s := h.subset st
+
+lemma IsWF.of_wellFoundedLT [WellFoundedLT α] : IsWF s :=
+  (isWF_univ_iff.2 wellFounded_lt).mono (subset_univ _)
 
 end LT
 
@@ -469,9 +474,23 @@ protected theorem Subsingleton.wellFoundedOn (hs : s.Subsingleton) : s.WellFound
 theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s r := by
   simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and]
 
+@[simp]
+theorem wellFoundedOn_sdiff_singleton : WellFoundedOn (s \ {a}) r ↔ WellFoundedOn s r := by
+  simp only [← wellFoundedOn_insert (a := a), insert_diff_singleton, mem_insert_iff, true_or,
+    insert_eq_of_mem]
+
 protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
     WellFoundedOn (insert a s) r :=
   wellFoundedOn_insert.2 h
+
+protected theorem WellFoundedOn.sdiff_singleton (h : WellFoundedOn s r) (a : α) :
+    WellFoundedOn (s \ {a}) r :=
+  wellFoundedOn_sdiff_singleton.2 h
+
+lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → α)
+    {s : Set α} {t : Set β} (h : MapsTo f t s) (hw : s.WellFoundedOn r) :
+    t.WellFoundedOn (r on f) := by
+  exact InvImage.wf (fun x : t ↦ ⟨f x, h x.prop⟩) hw
 
 end WellFoundedOn
 
@@ -489,6 +508,12 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
 /-- In a linear order, the predicates `Set.IsWF` and `Set.IsPWO` are equivalent. -/
 theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
   ⟨IsWF.isPWO, IsPWO.isWF⟩
+
+/--
+If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
+Note this does not hold without the linearity assumption.
+-/
+lemma IsPWO.of_linearOrder [WellFoundedLT α] : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
 
 end LinearOrder
 
@@ -580,7 +605,24 @@ theorem isWF_min_singleton (a) {hs : IsWF ({a} : Set α)} {hn : ({a} : Set α).N
     hs.min hn = a :=
   eq_of_mem_singleton (IsWF.min_mem hs hn)
 
+theorem IsWF.min_eq_of_lt (hs : s.IsWF) (ha : a ∈ s) (hlt : ∀ b ∈ s, b ≠ a → a < b) :
+    hs.min (nonempty_of_mem ha) = a := by
+  by_contra h
+  exact (hs.not_lt_min (nonempty_of_mem ha) ha) (hlt (hs.min (nonempty_of_mem ha))
+    (hs.min_mem (nonempty_of_mem ha)) h)
+
 end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] {s : Set α} {a : α}
+
+theorem IsWF.min_eq_of_le (hs : s.IsWF) (ha : a ∈ s) (hle : ∀ b ∈ s, a ≤ b) :
+    hs.min (nonempty_of_mem ha) = a :=
+  (eq_of_le_of_not_lt (hle (hs.min (nonempty_of_mem ha))
+    (hs.min_mem (nonempty_of_mem ha))) (hs.not_lt_min (nonempty_of_mem ha) ha)).symm
+
+end PartialOrder
 
 section LinearOrder
 

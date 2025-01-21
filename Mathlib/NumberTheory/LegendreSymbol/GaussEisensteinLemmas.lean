@@ -30,7 +30,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
     (Ico 1 (p / 2).succ).1.map fun a => a := by
   have he : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x ≠ 0 ∧ x ≤ p / 2 := by
-    simp (config := { contextual := true }) [Nat.lt_succ_iff, Nat.succ_le_iff, pos_iff_ne_zero]
+    simp +contextual [Nat.lt_succ_iff, Nat.succ_le_iff, pos_iff_ne_zero]
   have hep : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x < p := fun hx =>
     lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.1.pos (by decide))
   have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx =>
@@ -172,9 +172,9 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
       _ = _ := by
         rw [← card_sigma]
         exact card_nbij' (fun a ↦ ⟨a.1, a.2⟩) (fun a ↦ ⟨a.1, a.2⟩)
-          (by simp (config := { contextual := true }) only [mem_filter, mem_sigma, and_self_iff,
+          (by simp +contextual only [mem_filter, mem_sigma, and_self_iff,
             forall_true_iff, mem_product])
-          (by simp (config := { contextual := true }) only [mem_filter, mem_sigma, and_self_iff,
+          (by simp +contextual only [mem_filter, mem_sigma, and_self_iff,
             forall_true_iff, mem_product]) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
@@ -188,7 +188,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} :=
     card_equiv (Equiv.prodComm _ _)
       (fun ⟨_, _⟩ => by
-        simp (config := { contextual := true }) only [mem_filter, and_self_iff, Prod.swap_prod_mk,
+        simp +contextual only [mem_filter, and_self_iff, Prod.swap_prod_mk,
           forall_true_iff, mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
   have hdisj :
     Disjoint {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q}

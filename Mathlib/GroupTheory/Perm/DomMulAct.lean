@@ -105,10 +105,12 @@ theorem stabilizer_card [DecidableEq α] [DecidableEq ι] [Fintype ι] :
   · exact Finset.prod_congr rfl fun i _ ↦ by rw [Nat.card_eq_fintype_card, Fintype.card_perm]
   · rfl
 
+omit [Fintype α] in
 /-- The cardinality of the set of permutations preserving a function -/
-theorem stabilizer_ncard [Fintype ι] :
+theorem stabilizer_ncard [Finite α] [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   classical
+  cases nonempty_fintype α
   simp only [← Set.Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
   exact stabilizer_card f
 

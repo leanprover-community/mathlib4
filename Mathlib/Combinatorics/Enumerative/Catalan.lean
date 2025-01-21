@@ -30,7 +30,7 @@ triangulations of convex polygons.
 * `catalan_eq_centralBinom_div`: The explicit formula for the Catalan number using the central
   binomial coefficient, `catalan n = Nat.centralBinom n / (n + 1)`.
 
-* `treesOfNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
+* `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
 
 ## Implementation details
@@ -117,7 +117,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                              (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by apply Nat.le_of_lt_succ; apply x.2
+      have m_le_d : x.val ≤ d := by omega
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
@@ -140,8 +140,6 @@ theorem catalan_three : catalan 3 = 5 := by
 
 namespace Tree
 
-open Tree
-
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
 abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
@@ -152,11 +150,7 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
     (antidiagonal n).attach.biUnion fun ijh =>
-      -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
-      -- have := Nat.lt_succ_of_le (fst_le ijh.2)
-      -- have := Nat.lt_succ_of_le (snd_le ijh.2)
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
-  -- Porting note: Add this to satisfy the linter.
   decreasing_by
     · simp_wf; have := fst_le ijh.2; omega
     · simp_wf; have := snd_le ijh.2; omega
@@ -194,15 +188,6 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
     rintro ⟨i, j⟩ H
     rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
   · simp_rw [disjoint_left]
-    rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
-    -- Porting note: was clear * -; tidy
-    intros h a
-    cases' a with a l r
-    · intro h; simp at h
-    · intro h1 h2
-      apply h
-      trans (numNodes l, numNodes r)
-      · simp at h1; simp [h1]
-      · simp at h2; simp [h2]
+    aesop
 
 end Tree

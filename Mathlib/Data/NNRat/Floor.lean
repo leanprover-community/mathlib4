@@ -3,6 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.NNRat.Order
 import Mathlib.Data.Rat.Floor
 
 /-!
@@ -18,6 +19,8 @@ Note that we cannot talk about `Int.fract`, which currently only works for rings
 
 nnrat, rationals, ℚ≥0, floor
 -/
+
+assert_not_exists Finset
 
 namespace NNRat
 

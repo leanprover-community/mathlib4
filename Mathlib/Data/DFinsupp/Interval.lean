@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Order.Interval.Finset.Basic
 
@@ -182,7 +183,8 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+  [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
 lemma card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by

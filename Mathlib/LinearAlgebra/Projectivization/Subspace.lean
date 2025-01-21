@@ -105,7 +105,7 @@ theorem span_coe (W : Subspace K V) : span ↑W = W :=
   GaloisInsertion.l_u_eq gi W
 
 /-- The infimum of two subspaces exists. -/
-instance instInf : Inf (Subspace K V) :=
+instance instInf : Min (Subspace K V) :=
   ⟨fun A B =>
     ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
@@ -153,6 +153,9 @@ span of that set. -/
 @[mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
+
+@[gcongr]
+lemma span_le_span {s t : Set (ℙ K V)} (hst : s ⊆ t) : span s ≤ span t := monotone_span hst
 
 theorem subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
     S ⊆ span U :=

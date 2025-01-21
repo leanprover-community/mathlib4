@@ -26,7 +26,7 @@ or is either `true` or `false`.
 universe u
 variable {α : Type u}
 
-open Lean hiding Rat mkRat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 namespace Mathlib
@@ -280,9 +280,10 @@ and `proof : isInt x (.negOfNat lit)`. -/
     ∀ (inst : Q(Ring $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsInt $x (.negOfNat $lit))),
       Result x := Result'.isNegNat
 
-/-- The result is `proof : isRat x n d`, where `n` is either `.ofNat lit` or `.negOfNat lit`
-with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
-and `q` is the value of `n / d`. -/
+/-- The result is `proof : isRat x n d`,
+where `n` is either `.ofNat lit` or `.negOfNat lit` with `lit` a raw nat literal,
+`d` is a raw nat literal (not 0 or 1),
+`n` and `d` are coprime, and `q` is the value of `n / d`. -/
 @[match_pattern, inline] def Result.isRat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
       (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat

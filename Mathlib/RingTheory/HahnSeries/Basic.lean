@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -247,6 +248,11 @@ theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :
   · contrapose!
     exact ne_zero_iff_orderTop.mp
   · simp_all only [orderTop_zero, implies_true]
+
+theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
+    (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
+  rw [orderTop_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
+    x.isWF_support.min_eq_of_le hg hx]
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =

@@ -22,7 +22,7 @@ import Mathlib.Tactic.CC
 /-!
 # Equivalence between types
 
-In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lean`, defining
+In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`, defining
 
 * canonical isomorphisms between various types: e.g.,
 
@@ -38,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
@@ -286,12 +286,12 @@ theorem sumCongr_refl {α β} :
 /-- A subtype of a sum is equivalent to a sum of subtypes. -/
 def subtypeSum {α β} {p : α ⊕ β → Prop} :
     {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
-  toFun c := match h : c.1 with
-    | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
-    | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
-  invFun c := match c with
-    | Sum.inl a => ⟨Sum.inl a, a.2⟩
-    | Sum.inr b => ⟨Sum.inr b, b.2⟩
+  toFun
+    | ⟨.inl a, h⟩ => .inl ⟨a, h⟩
+    | ⟨.inr b, h⟩ => .inr ⟨b, h⟩
+  invFun
+    | .inl a => ⟨.inl a, a.2⟩
+    | .inr b => ⟨.inr b, b.2⟩
   left_inv := by rintro ⟨a | b, h⟩ <;> rfl
   right_inv := by rintro (a | b) <;> rfl
 
@@ -627,6 +627,7 @@ section
 
 /-- A family of equivalences `∀ a, β₁ a ≃ β₂ a` generates an equivalence between `∀ a, β₁ a` and
 `∀ a, β₂ a`. -/
+@[simps]
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
@@ -1428,7 +1429,7 @@ theorem swap_apply_right (a b : α) : swap a b b = a := by
   by_cases h : b = a <;> simp [swap_apply_def, h]
 
 theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x = x := by
-  simp (config := { contextual := true }) [swap_apply_def]
+  simp +contextual [swap_apply_def]
 
 theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
   contrapose! h
@@ -1717,6 +1718,14 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
 
 end
 
+/-- Transport dependent functions through an equality of sets. -/
+@[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :
+    (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
+  toFun f i := f ⟨i, h ▸ i.2⟩
+  invFun f i := f ⟨i, h.symm ▸ i.2⟩
+  left_inv f := rfl
+  right_inv f := rfl
+
 section BinaryOp
 
 variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
@@ -1787,7 +1796,7 @@ def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
 
 /-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/
 def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α ≃ (α ≃ β) :=
-  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
+  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.ofUnique _ _) Equiv.unique
 
 namespace Function
 
@@ -1809,9 +1818,8 @@ theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort*)
   ext b'
   rcases eq_or_ne b' b with (rfl | h)
   · simp
-  · simp only [Equiv.piCongrLeft'_apply, ne_eq, h, not_false_iff, update_noteq]
-    rw [update_noteq _]
-    rw [ne_eq]
+  · simp only [Equiv.piCongrLeft'_apply, ne_eq, h, not_false_iff, update_of_ne]
+    rw [update_of_ne]
     intro h'
     /- an example of something that should work, or also putting `EmbeddingLike.apply_eq_iff_eq`
       in the `simp` should too:

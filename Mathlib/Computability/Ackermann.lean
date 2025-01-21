@@ -83,7 +83,6 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   · simp
   · simpa [mul_succ]
 
--- Porting note: re-written to get rid of ack_three_aux
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction' n with n IH
@@ -235,7 +234,7 @@ private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n +
         norm_num
         apply succ_le_of_lt
         rw [Nat.pow_succ, mul_comm _ 2, mul_lt_mul_left (zero_lt_two' ℕ)]
-        apply lt_two_pow
+        exact Nat.lt_two_pow_self
       · rw [Nat.pow_succ, Nat.pow_succ]
         linarith [one_le_pow k 2 zero_lt_two]
 

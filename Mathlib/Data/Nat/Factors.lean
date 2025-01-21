@@ -30,8 +30,6 @@ open Nat
 
 namespace Nat
 
-attribute [instance 0] instBEqNat
-
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
@@ -39,7 +37,7 @@ def primeFactorsList : ℕ → List ℕ
   | k + 2 =>
     let m := minFac (k + 2)
     m :: primeFactorsList ((k + 2) / m)
-decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
+decreasing_by exact factors_lemma
 
 @[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
 

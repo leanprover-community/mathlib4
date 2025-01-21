@@ -443,6 +443,24 @@ def getPrettyPrintOpt (opt? : Option (TSyntax ``prettyPrintOpt)) : Bool :=
     true
 
 /--
+If `pp.tagAppFns` is true and the head of the current expression is a constant,
+then delaborates the head and uses it for the ref.
+This causes tokens inside the syntax to refer to this constant.
+A consequence is that docgen will linkify the tokens.
+-/
+def withHeadRefIfTagAppFns (d : Delab) : Delab := do
+  let tagAppFns ← getPPOption getPPTagAppFns
+  if tagAppFns && (← getExpr).getAppFn.consumeMData.isConst then
+    -- Delaborate the head to register term info and get a syntax we can use for the ref.
+    -- The syntax `f` itself is thrown away.
+    let f ← withNaryFn <| withOptionAtCurrPos `pp.tagAppFns true delab
+    let stx ← withRef f d
+    -- Annotate to ensure that the full syntax still refers to the whole expression.
+    annotateTermInfo stx
+  else
+    d
+
+/--
 `notation3` declares notation using Lean-3-style syntax.
 
 Examples:
@@ -501,7 +519,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
       -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
-      if let `(stx| $lit:str) := syntaxArgs.back then
+      if let `(stx| $lit:str) := syntaxArgs.back! then
         syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
@@ -584,7 +602,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let delabName := name ++ `delab
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
       trace[notation3] "matcher:{indentD matcher}"
-      let mut result ← `(`($pat))
+      let mut result ← `(withHeadRefIfTagAppFns `($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.getD name .normal with
         | .normal => result ← `(MatchState.delabVar s $(quote name) (some e) >>= fun $id => $result)

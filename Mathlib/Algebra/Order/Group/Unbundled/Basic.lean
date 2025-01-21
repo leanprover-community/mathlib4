@@ -537,6 +537,8 @@ section LE
 
 variable [LE α] [MulLeftMono α] {a b c d : α}
 
+/-- See also `div_le_div_iff` for a version that works for `LinearOrderedSemifield` with
+additional assumptions. -/
 @[to_additive sub_le_sub_iff]
 theorem div_le_div_iff' : a / b ≤ c / d ↔ a * d ≤ c * b := by
   simpa only [div_eq_mul_inv] using mul_inv_le_mul_inv_iff'

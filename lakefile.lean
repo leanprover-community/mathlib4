@@ -8,12 +8,12 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
+require "leanprover-community" / "Qq" @ git "v4.15.0"
+require "leanprover-community" / "aesop" @ git "v4.16.0-rc1"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.50"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-  from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
+require "leanprover-community" / "plausible" @ git "v4.16.0-rc1"
 
 /-!
 ## Options for building mathlib
@@ -22,10 +22,10 @@ require "leanprover-community" / "LeanSearchClient" @ git "main"
 /-- These options are used
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
 * as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`).
--/
+  (as well as `Archive`, `Counterexamples` and `test`). -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  ⟨`linter.docPrime, true⟩,
+  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+  ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
@@ -35,6 +35,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.setOption, true⟩
@@ -49,11 +50,7 @@ abbrev mathlibLeanOptions := #[
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
-  leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
-  -- Use Batteries' test driver for `lake test`
-  testDriver := "batteries/test"
+  testDriver := "MathlibTest"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -65,12 +62,18 @@ package mathlib where
 -/
 
 @[default_target]
-lean_lib Mathlib
+lean_lib Mathlib where
+  leanOptions := mathlibLeanOptions
+  -- Mathlib also enforces these linter options, which are not active by default.
+  moreServerOptions := mathlibOnlyLinters
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
+
+lean_lib MathlibTest where
+  globs := #[.submodules `MathlibTest]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -149,6 +152,9 @@ lean_exe unused where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
+
+lean_exe mathlib_test_executable where
+  root := `MathlibTest.MathlibTestExecutable
 
 /-!
 ## Other configuration

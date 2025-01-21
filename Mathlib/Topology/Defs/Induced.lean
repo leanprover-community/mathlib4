@@ -80,6 +80,7 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 
 end TopologicalSpace
 
+namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 
 /-- We say that restrictions of the topology on `X` to sets from a family `S`
@@ -109,7 +110,7 @@ structure IsInducing (f : X → Y) : Prop where
 @[mk_iff]
 structure IsEmbedding (f : X → Y) extends IsInducing f : Prop where
   /-- A topological embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding := IsEmbedding
@@ -142,3 +143,5 @@ structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : 
 
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap := IsQuotientMap
+
+end Topology

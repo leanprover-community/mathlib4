@@ -8,7 +8,7 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order homomorphisms and sets

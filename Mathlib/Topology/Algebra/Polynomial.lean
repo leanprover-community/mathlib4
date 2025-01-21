@@ -37,8 +37,6 @@ open IsAbsoluteValue Filter
 
 namespace Polynomial
 
-open Polynomial
-
 section TopologicalSemiring
 
 variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])

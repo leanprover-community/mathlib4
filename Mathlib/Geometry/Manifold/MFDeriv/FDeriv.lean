@@ -21,7 +21,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
   {s : Set E} {x : E}
 
-section MFDerivFderiv
+section MFDerivFDeriv
 
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffWithinAt 𝓘(𝕜, E) s x ↔ UniqueDiffWithinAt 𝕜 s x := by
@@ -34,6 +34,10 @@ theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ Uniqu
   simp [UniqueMDiffOn, UniqueDiffOn, uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
 
 alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDiffOn_iff_uniqueDiffOn
+
+theorem ModelWithCorners.uniqueMDiffOn {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) : UniqueMDiffOn 𝓘(𝕜, E) (Set.range I) :=
+  I.uniqueDiffOn.uniqueMDiffOn
 
 @[simp, mfld_simps]
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
@@ -106,4 +110,4 @@ theorem mfderiv_eq_fderiv : mfderiv 𝓘(𝕜, E) 𝓘(𝕜, E') f x = fderiv �
   rw [← mfderivWithin_univ, ← fderivWithin_univ]
   exact mfderivWithin_eq_fderivWithin
 
-end MFDerivFderiv
+end MFDerivFDeriv

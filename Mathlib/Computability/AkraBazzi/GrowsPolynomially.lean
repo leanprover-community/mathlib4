@@ -114,7 +114,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · linarith
+        · omega
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
@@ -189,9 +189,9 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro x ⟨hxlb, hxub⟩
         have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
                         _ ≤ 2 * max n₀ 2 := by gcongr; norm_num
-        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp [-max_le_iff, hxlb], by linarith⟩
+        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp [hxlb], by linarith⟩
         rw [h₂]
-        exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [-max_le_iff, hxlb], le_of_lt hxub⟩
+        exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [hxlb], le_of_lt hxub⟩
       case step =>
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by

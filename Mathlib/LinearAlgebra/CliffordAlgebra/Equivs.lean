@@ -372,12 +372,12 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
       fun _ => (Algebra.commutes _ _).symm⟩)
     (by
       ext : 1
-      -- This used to be a single `simp` before leanprover/lean4#2644
+      -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644
       simp only [QuadraticMap.zero_apply, AlgHom.coe_comp, Function.comp_apply, lift_apply_eps,
         AlgHom.coe_id, id_eq]
       erw [lift_ι_apply]
       simp)
-    -- This used to be a single `simp` before leanprover/lean4#2644
+    -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644
     (by
       ext : 2
       simp only [QuadraticMap.zero_apply, AlgHom.comp_toLinearMap, LinearMap.coe_comp,

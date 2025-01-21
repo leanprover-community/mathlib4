@@ -6,7 +6,6 @@ Authors: Floris van Doorn
 import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
-import Batteries.Data.String.Basic
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -83,10 +82,9 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     getSimpTheorems
   let simprocs := #[← if simpOnly then pure {} else Simp.getSimprocs]
   let congrTheorems ← getSimpCongrTheorems
-  let ctx : Simp.Context := {
-    config       := cfg
-    simpTheorems := #[simpTheorems], congrTheorems
-  }
+  let ctx : Simp.Context ← Simp.mkContext cfg
+    (simpTheorems := #[simpTheorems])
+    (congrTheorems := congrTheorems)
   if !hasStar then
     return { ctx, simprocs, dischargeWrapper }
   else
@@ -95,7 +93,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     for h in hs do
       unless simpTheorems.isErased (.fvar h) do
         simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-    let ctx := { ctx with simpTheorems }
+    let ctx := ctx.setSimpTheorems simpTheorems
     return { ctx, simprocs, dischargeWrapper }
 
 /-- Make `Simp.Context` giving data instead of Syntax. Doesn't support arguments.
@@ -132,7 +130,7 @@ attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
 
 /-- arguments to `@[simps]` attribute. -/
-syntax simpsArgsRest := (Tactic.config)? (ppSpace ident)*
+syntax simpsArgsRest := Tactic.optConfig (ppSpace ident)*
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
 declaration.
@@ -486,8 +484,8 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
-  let ret ← Substring.dropPrefix? s pre
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring := do
+  let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.data.head?.elim false Char.isDigit
   if flag then none else some ret
@@ -873,7 +871,7 @@ structure Config where
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
-declare_config_elab elabSimpsConfig Config
+declare_command_config_elab elabSimpsConfig Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
   between fully applied Expressions. Use this using `@[simps (config := .asFn)]`. -/
@@ -975,9 +973,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       value := declValue }
   catch ex =>
     throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
-  addDeclarationRanges declName {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
+  addDeclarationRangesFromSyntax declName (← getRef) ref
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
   if cfg.isSimp then
@@ -1152,7 +1148,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
       \n  `initialize_simps_projections? {str}`.\n\
       Note: these projection names might be customly defined for `simps`, \
       and could differ from the projection names of the structure."
-  let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
+  let nms ← projInfo.flatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
       fun (x, stx) ↦ (dropPrefixIfNotNumber? x (proj.lastComponentAsString ++ "_")).map
@@ -1186,8 +1182,8 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
-  | `(attr| simps $[!%$bang]? $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-    let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[3][0]
+  | `(attr| simps $[!%$bang]? $[?%$trc]? $c:optConfig $[$ids]*) => do
+    let cfg ← liftCommandElabM <| elabSimpsConfig c
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
     let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
     simpsTac stx nm cfg ids.toList trc.isSome

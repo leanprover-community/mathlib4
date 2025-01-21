@@ -74,7 +74,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     { pt := Over.mk (c.π.app none)
       π :=
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
-          -- Porting note (#10888): added proof for `naturality`
+          -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `naturality`
           naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
   map f := { hom := Over.homMk f.hom }
 

@@ -34,7 +34,7 @@ open CategoryTheory Function
 
 namespace CompHaus
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
@@ -51,7 +51,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     -- The next two lines should not be needed.
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
-    -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
     rfl
 

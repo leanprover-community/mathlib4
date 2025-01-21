@@ -6,10 +6,8 @@ Authors: Alex J. Best, Xavier Roblot
 import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.Topology.Instances.Complex
-import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Embeddings of number fields
@@ -260,6 +258,13 @@ open NumberField
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+
+lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) :
+  v x = v.1 x := rfl
+
+@[ext]
+lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+  Subtype.ext <| AbsoluteValue.ext h
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
@@ -633,7 +638,7 @@ lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
   letI := w.embedding.toAlgebra
   ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
-    by simp [comap_mk, RingHom.algebraMap_toAlgebra]⟩
+    by simp [this, comap_mk, RingHom.algebraMap_toAlgebra]⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -1056,15 +1061,63 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     rw [← Complex.abs_re_eq_abs] at him
-    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
     rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
-    exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+    exact hζ'.ne_one (by omega) <| Complex.ext (by simp [hone]) (by simp [him])
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
       orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
-    linarith
+    omega
 
 end IsPrimitiveRoot
+
+/-!
+
+## The infinite place of the rationals.
+
+-/
+
+namespace Rat
+
+open NumberField
+
+/-- The infinite place of `ℚ`, coming from the canonical map `ℚ → ℂ`. -/
+noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
+
+@[simp]
+lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
+  rw [NumberField.InfinitePlace.coe_apply]
+  obtain ⟨_, _, rfl⟩ := v
+  simp
+
+instance : Subsingleton (InfinitePlace ℚ) where
+  allEq a b := by ext; simp
+
+lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
+  ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
+
+end Rat
+
+/-
+
+## Totally real number fields
+
+-/
+
+namespace NumberField
+
+/-- A number field `K` is totally real if all of its infinite places
+are real. In other words, the image of every ring homomorphism `K → ℂ`
+is a subset of `ℝ`. -/
+class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+  isReal : ∀ v : InfinitePlace K, v.IsReal
+
+instance : IsTotallyReal ℚ where
+  isReal v := by
+    rw [Subsingleton.elim v Rat.infinitePlace]
+    exact Rat.isReal_infinitePlace
+
+end NumberField

@@ -495,8 +495,7 @@ theorem affineIndependent_iff_not_collinear_of_ne {p : Fin 3 → P} {i₁ i₂ i
     AffineIndependent k p ↔ ¬Collinear k ({p i₁, p i₂, p i₃} : Set P) := by
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     -- Porting note: Originally `by decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) only at h₁₂ h₁₃ h₂₃ ⊢
+    revert i₁ i₂ i₃; decide
   rw [affineIndependent_iff_not_collinear, ← Set.image_univ, ← Finset.coe_univ, hu,
     Finset.coe_insert, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_pair]
 
