@@ -480,7 +480,7 @@ def conjugateIsoEquiv : (l₂ ≅ l₁) ≃ (r₁ ≅ r₂) where
 
 end ConjugateIsomorphism
 
-section IteratedmateEquiv
+section IteratedMateEquiv
 variable {a b c d : B}
 variable {f₁ : a ⟶ c} {u₁ : c ⟶ a} {f₂ : b ⟶ d} {u₂ : d ⟶ b}
 variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c}
@@ -508,10 +508,9 @@ theorem iterated_mateEquiv_conjugateEquiv_symm (α : u₂ ≫ r₁ ⟶ r₂ ≫ 
   rw [Equiv.eq_symm_apply, ← iterated_mateEquiv_conjugateEquiv]
   simp only [Equiv.apply_symm_apply]
 
-end IteratedmateEquiv
+end IteratedMateEquiv
 
-
-section mateEquivconjugateEquivVComp
+section mateEquiv_conjugateEquiv_vcomp
 
 variable {a b c d : B}
 variable {g : a ⟶ c} {h : b ⟶ d}
@@ -547,9 +546,9 @@ theorem mateEquiv_conjugateEquiv_vcomp
       dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply, leftAdjointSquareConjugate.vcomp]
       bicategory
 
-end mateEquivconjugateEquivVComp
+end mateEquiv_conjugateEquiv_vcomp
 
-section conjugateEquivmateEquivVComp
+section conjugateEquiv_mateEquiv_vcomp
 
 variable {a b c d : B}
 variable {g : a ⟶ c} {h : b ⟶ d}
@@ -584,7 +583,7 @@ theorem conjugateEquiv_mateEquiv_vcomp
       dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply, leftAdjointConjugateSquare.vcomp]
       bicategory
 
-end conjugateEquivmateEquivVComp
+end conjugateEquiv_mateEquiv_vcomp
 
 end Bicategory
 
