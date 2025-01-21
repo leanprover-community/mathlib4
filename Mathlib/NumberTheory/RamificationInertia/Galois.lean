@@ -106,6 +106,7 @@ include p in
 theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map σ P = Q := by
   haveI : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
   haveI : IsInvariant A B (B ≃ₐ[A] B) := sorry
+  --letI : MulSemiringAction (B ≃ₐ[A] B) B := by exact AlgEquiv.applyMulSemiringAction
   rcases IsInvariant.exists_smul_of_under_eq A B (B ≃ₐ[A] B) P Q
     ((over_def P p).symm.trans (over_def Q p)) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
