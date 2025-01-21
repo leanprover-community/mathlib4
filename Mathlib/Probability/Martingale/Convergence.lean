@@ -215,7 +215,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
     simp_rw [g', dif_pos hω]
     exact hω.choose_spec
-  have hg'm : @AEStronglyMeasurable _ _ _ (⨆ n, ℱ n) g' (μ.trim hle) :=
+  have hg'm : AEStronglyMeasurable[⨆ n, ℱ n] g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
       (fun n => ((hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩ : ℱ n ≤ ⨆ n, ℱ n)
         le_rfl).aemeasurable) hg').aestronglyMeasurable

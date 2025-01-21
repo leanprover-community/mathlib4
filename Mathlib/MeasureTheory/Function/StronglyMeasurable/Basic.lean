@@ -85,11 +85,18 @@ def FinStronglyMeasurable [Zero β]
   ∃ fs : ℕ → α →ₛ β, (∀ n, μ (support (fs n)) < ∞) ∧ ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))
 
 /-- A function is `AEStronglyMeasurable` with respect to a measure `μ` if it is almost everywhere
-equal to the limit of a sequence of simple functions. -/
+equal to the limit of a sequence of simple functions.
+
+One can specify the sigma-algebra according to which simple functions are taken using the
+`AEStronglyMeasurable[m]` notation in the `MeasureTheory` scope. -/
 @[fun_prop]
-def AEStronglyMeasurable
-    {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
-  ∃ g, StronglyMeasurable g ∧ f =ᵐ[μ] g
+def AEStronglyMeasurable [m : MeasurableSpace α] {m₀ : MeasurableSpace α} (f : α → β)
+    (μ : Measure[m₀] α := by volume_tac) : Prop :=
+  ∃ g : α → β, StronglyMeasurable[m] g ∧ f =ᵐ[μ] g
+
+/-- A function is `m`-`AEStronglyMeasurable` with respect to a measure `μ` if it is almost
+everywhere equal to the limit of a sequence of `m`-simple functions. -/
+scoped notation "AEStronglyMeasurable[" m "]" => @MeasureTheory.AEStronglyMeasurable _ _ _ m
 
 /-- A function is `AEFinStronglyMeasurable` with respect to a measure if it is almost everywhere
 equal to the limit of a sequence of simple functions with support with finite measure. -/
@@ -1448,7 +1455,7 @@ theorem nullMeasurableSet_le [Preorder β] [OrderClosedTopology β] [PseudoMetri
   simp only [hfx, hgx]
 
 theorem _root_.aestronglyMeasurable_of_aestronglyMeasurable_trim {α} {m m0 : MeasurableSpace α}
-    {μ : Measure α} (hm : m ≤ m0) {f : α → β} (hf : AEStronglyMeasurable f (μ.trim hm)) :
+    {μ : Measure α} (hm : m ≤ m0) {f : α → β} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
     AEStronglyMeasurable f μ :=
   ⟨hf.mk f, StronglyMeasurable.mono hf.stronglyMeasurable_mk hm, ae_eq_of_ae_eq_trim hf.ae_eq_mk⟩
 
