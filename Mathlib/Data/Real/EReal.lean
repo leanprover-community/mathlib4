@@ -1968,6 +1968,12 @@ lemma mul_div_mul_cancel {a b c : EReal} (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤) (
   congr
   exact mul_div_cancel h₁ h₂ h₃
 
+lemma div_eq_iff {a b c : EReal} (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) :
+    c / b = a ↔ c = a * b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← @mul_div_cancel c b hbot htop hzero, h, mul_comm a b]
+  · rw [h, mul_comm a b, ← mul_div b a b, @mul_div_cancel a b hbot htop hzero]
+
 /-! #### Division and Order -/
 
 lemma monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
@@ -2015,15 +2021,6 @@ lemma strictAnti_div_right_of_neg {b : EReal} (h : b < 0) (h' : b ≠ ⊥) :
 lemma div_lt_div_right_of_neg {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
     (h₃ : a < a') : a' / b < a / b :=
   strictAnti_div_right_of_neg h₁ h₂ h₃
-
-lemma div_eq_iff {a b c : EReal} (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) :
-    c / b = a ↔ c = a * b := by
-  nth_rw 1 [← @mul_div_cancel a b hbot htop hzero]
-  rw [mul_div b a b, mul_comm a b]
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
-  rcases hzero.lt_or_lt with hneg | hpos
-  · exact (strictAnti_div_right_of_neg hneg hbot).injective h
-  · exact (strictMono_div_right_of_pos hpos htop).injective h
 
 lemma le_div_iff_mul_le {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
     a ≤ c / b ↔ a * b ≤ c := by
