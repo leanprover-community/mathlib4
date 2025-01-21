@@ -167,8 +167,8 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   exact hv ⟨(h20 trivial).2, (h21 trivial).2, (h22 trivial).2, rfl⟩
 
 
--- this is necessary to make sure the l2 norm is taken for members of `Fin 3 → ℝ`
--- instead of the sup norm
+/-- Returns the l2 norm of a vector. This function is necessary to make sure the l2 norm is taken
+for members of `Fin 3 → ℝ` instead of the sup norm-/
 noncomputable def l2Norm (v : EuclideanSpace ℝ (Fin 3)) : ℝ :=
   ‖v‖
 
