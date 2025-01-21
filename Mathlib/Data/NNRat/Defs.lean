@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
+import Mathlib.Algebra.Order.Nonneg.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Data.Set.Operations
+import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Nonnegative rationals
@@ -32,7 +35,7 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists CompleteLattice OrderedCommMonoid
 
 library_note "specialised high priority simp lemma" /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
