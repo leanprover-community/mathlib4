@@ -265,7 +265,6 @@ lemma Real.hasProd_of_hasSum_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
     exact funext fun x ↦ exp_log (hfn x)
   rwa [HasProd.tprod_eq this]
 
-
 /--The exponential of a infinite sum of real logs (which converges absolutely) is an infinite
 product.-/
 lemma Real.rexp_tsum_eq_tprod (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
