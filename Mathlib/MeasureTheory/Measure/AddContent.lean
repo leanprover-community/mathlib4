@@ -41,7 +41,7 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 -/
 
-open Set Finset Filter MeasureTheory Function
+open Set Finset Filter Function
 
 open scoped ENNReal Topology
 
@@ -182,14 +182,14 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
   classical
-  rw [hC.allDiffFinset₀'_sUnion h_ss, addContent_sUnion (hC.allDiffFinset₀'_subset_semiring h_ss)
-    (hC.allDiffFinset₀'_pairwiseDisjoint h_ss)]
+  rw [hC.allDiffFinset₀_sUnion h_ss, addContent_sUnion (hC.allDiffFinset₀_subset_semiring h_ss)
+    (hC.allDiffFinset₀_pairwiseDisjoint h_ss)]
   · rw [sum_disjiUnion]
     apply sum_le_sum
     intro x hx
-    exact sum_addContent_le_of_subset hC (hC.allDiffFinset₀'_subsets_semiring h_ss hx)
-      (hC.allDiffFinset₀'_pairwiseDisjoints h_ss hx) (h_ss hx) (hC.allDiffFinset₀'_subsets h_ss hx)
-  · exact hC.allDiffFinset₀'_sUnion h_ss ▸ h_mem
+    exact sum_addContent_le_of_subset hC (hC.allDiffFinset₀_subsets_semiring h_ss hx)
+      (hC.allDiffFinset₀_pairwiseDisjoints h_ss hx) (h_ss hx) (hC.allDiffFinset₀_subsets h_ss hx)
+  · exact hC.allDiffFinset₀_sUnion h_ss ▸ h_mem
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
