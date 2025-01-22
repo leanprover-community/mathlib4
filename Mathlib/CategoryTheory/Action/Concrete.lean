@@ -22,6 +22,7 @@ open CategoryTheory Limits
 namespace Action
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
+@[simps]
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)

@@ -171,6 +171,10 @@ instance : (linearization k G).Monoidal := by
 variable {k G}
 
 @[simp]
+theorem coe_linearization_obj (X : Action (Type u) G) :
+    (linearization k G).obj X = (X.V →₀ k) := rfl
+
+@[simp]
 theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) (x : X.V →₀ k) :
     ((linearization k G).obj X).ρ g x = Finsupp.lmapDomain k k (X.ρ g) x :=
   rfl
