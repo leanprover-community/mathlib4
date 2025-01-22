@@ -38,6 +38,7 @@ section gammaSet_def
 /-- The set of pairs of coprime integers congruent to `a` mod `N`. -/
 def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ IsCoprime (v 0) (v 1)}
 
+open scoped Function in -- required for scoped `on` notation
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N) := by
   refine fun u v huv ↦ ?_
   contrapose! huv
