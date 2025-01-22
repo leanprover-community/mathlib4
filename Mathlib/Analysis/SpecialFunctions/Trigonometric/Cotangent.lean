@@ -14,14 +14,11 @@ import Mathlib.Topology.Algebra.InfiniteSum.InfiniteProdOneAdd
 # Cotangent
 
 This file contains lemmas about the cotangent function, including useful series expansions.
-
-The main result is the Mittag-Leffler expansion of the cotangent function, which says that
-`π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
 
-open Real Complex BigOperators Filter
+open Real Complex
 
-open scoped UpperHalfPlane Topology
+open scoped UpperHalfPlane
 
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by

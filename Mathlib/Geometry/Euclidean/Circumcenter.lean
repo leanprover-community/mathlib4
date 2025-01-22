@@ -115,7 +115,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        -- TODO(#15486): used to be `field_simp`, but was really slow
+        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
         -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
         simp (disch := field_simp_discharge) only [div_div, sub_div', one_mul, mul_div_assoc',
           div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂]
@@ -316,11 +316,11 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere, true_and_iff] at h
+    Set.forall_mem_range, mem_sphere] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere, true_and_iff] at h
+    Set.forall_mem_range, mem_sphere, true_and] at h
   exact h.2
 
 /-- The circumradius is non-negative. -/
@@ -453,7 +453,7 @@ theorem orthogonalProjection_eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex �
 /-- The orthogonal projection of the circumcenter onto a face is the
 circumcenter of that face. -/
 theorem orthogonalProjection_circumcenter {n : ℕ} (s : Simplex ℝ P n) {fs : Finset (Fin (n + 1))}
-    {m : ℕ} (h : fs.card = m + 1) :
+    {m : ℕ} (h : #fs = m + 1) :
     ↑((s.face h).orthogonalProjectionSpan s.circumcenter) = (s.face h).circumcenter :=
   haveI hr : ∃ r, ∀ i, dist ((s.face h).points i) s.circumcenter = r := by
     use s.circumradius
@@ -564,7 +564,7 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
 terms of `pointsWithCircumcenter`. -/
 def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
     PointsWithCircumcenterIndex n → ℝ
-  | pointIndex i => if i ∈ fs then (card fs : ℝ)⁻¹ else 0
+  | pointIndex i => if i ∈ fs then (#fs : ℝ)⁻¹ else 0
   | circumcenterIndex => 0
 
 /-- `centroidWeightsWithCircumcenter` sums to 1, if the `Finset` is nonempty. -/
@@ -584,7 +584,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
   simp_rw [centroid_def, affineCombination_apply, weightedVSubOfPoint_apply,
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
     pointsWithCircumcenter_point, zero_smul, add_zero, centroidWeights,
-    ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
+    ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (#fs : ℝ)⁻¹)
       (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ =>
       zero_smul ℝ _,
     Set.indicator_apply]
@@ -638,14 +638,14 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     reflection (affineSpan ℝ (s.points '' {i₁, i₂})) s.circumcenter =
       (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (reflectionCircumcenterWeightsWithCircumcenter i₁ i₂) := by
-  have hc : card ({i₁, i₂} : Finset (Fin (n + 1))) = 2 := by simp [h]
+  have hc : #{i₁, i₂} = 2 := by simp [h]
   -- Making the next line a separate definition helps the elaborator:
   set W : AffineSubspace ℝ P := affineSpan ℝ (s.points '' {i₁, i₂})
   have h_faces :
     (orthogonalProjection W s.circumcenter : P) =
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
-    simp
+    simp [W]
   rw [EuclideanGeometry.reflection_apply, h_faces, s.orthogonalProjection_circumcenter hc,
     circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,
@@ -667,7 +667,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-open Affine AffineSubspace FiniteDimensional
+open Affine AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -866,7 +866,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
   by_cases hp : p = s.orthogonalProjectionSpan p
   · rw [Simplex.orthogonalProjectionSpan] at hp
     rw [hp₁, hp₂, ← hp]
-    simp only [true_or_iff, eq_self_iff_true, smul_zero, vsub_self]
+    simp only [true_or, eq_self_iff_true, smul_zero, vsub_self]
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁

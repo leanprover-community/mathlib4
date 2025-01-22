@@ -56,8 +56,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
   revert i hi
   induction' q with q hq
   · intro i (hi : n + 1 ≤ i)
-    exfalso
-    linarith [Fin.is_lt i]
+    omega
   · intro i (hi : n + 1 ≤ i + q + 1)
     by_cases h : n + 1 ≤ (i : ℕ) + q
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
@@ -95,7 +94,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           comp_id, v.comp_Hσ_eq hi, assoc, SimplicialObject.δ_comp_σ_succ_assoc, Fin.eta,
           decomposition_Q n q, sum_comp, sum_comp, Finset.sum_eq_zero, add_zero, add_neg_eq_zero]
         intro j hj
-        simp only [true_and_iff, Finset.mem_univ, Finset.mem_filter] at hj
+        simp only [Finset.mem_univ, Finset.mem_filter] at hj
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
         rw [add_comm] at hk
         have hi' : i = Fin.castSucc ⟨i, by omega⟩ := by

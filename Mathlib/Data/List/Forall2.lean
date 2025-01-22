@@ -87,8 +87,7 @@ theorem forall₂_cons_right_iff {b l u} :
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
-    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff,
-      true_and_iff]
+    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
@@ -221,12 +220,16 @@ theorem forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse 
       exact rel_reverse h)
     fun h => rel_reverse h
 
-theorem rel_join : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) join join
+theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | [], [], Forall₂.nil => Forall₂.nil
-  | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_join h₂)
+  | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_flatten h₂)
 
-theorem rel_bind : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.bind List.bind :=
-  fun _ _ h₁ _ _ h₂ => rel_join (rel_map (@h₂) h₁)
+@[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
+
+theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.flatMap List.flatMap :=
+  fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
+
+@[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h
@@ -244,7 +247,7 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
     dsimp [LiftFun] at hpq
     by_cases h : p a
     · have : q b := by rwa [← hpq h₁]
-      simp only [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and_iff,
+      simp only [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and,
         rel_filter hpq h₂]
     · have : ¬q b := by rwa [← hpq h₁]
       simp only [filter_cons_of_neg h, filter_cons_of_neg this, rel_filter hpq h₂]

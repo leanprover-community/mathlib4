@@ -25,13 +25,13 @@ universe v u
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] [ConcreteCategory C]
+variable (C : Type u) [Category.{v} C] [HasForget C]
 
 namespace MorphismProperty
 
 open Function
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 /-- Injectiveness (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
@@ -126,7 +126,7 @@ def functorialSurjectiveInjectiveFactorizationData :
         ext x
         exact congr_fun φ.w x }
   p :=
-    { app := fun f y => y.1
+    { app := fun _ y => y.1
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

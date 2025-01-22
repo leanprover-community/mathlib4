@@ -3,9 +3,8 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.GaloisConnection
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.CompleteLattice
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -194,7 +193,7 @@ theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
 @[simp]
 theorem image_top {s : Set α} (h : Set.Nonempty s) :
     (⊤ : Rel α β).image s = Set.univ :=
-  Set.eq_univ_of_forall fun x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
+  Set.eq_univ_of_forall fun _ ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
 
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
 def preimage (s : Set β) : Set α :=

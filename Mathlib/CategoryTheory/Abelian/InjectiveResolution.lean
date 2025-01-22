@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Scott Morrison
+Authors: Jujian Zhang, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
@@ -65,7 +65,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
   J.exact₀.descToInjective (descFZero f I J ≫ I.cocomplex.d 0 1)
-    (by dsimp; simp [← assoc, assoc, descFZero])
+    (by dsimp; simp only [← assoc, descFZero]; simp [assoc])
 
 @[simp]
 theorem descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
@@ -240,7 +240,7 @@ lemma InjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
       I.iso.hom ≫ (HomotopyCategory.quotient _ _).map φ := by
   apply HomotopyCategory.eq_of_homotopy
   apply descHomotopy f
-  all_goals aesop_cat
+  all_goals aesop
 
 @[reassoc]
 lemma InjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)

@@ -10,51 +10,38 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 # Integer Complement
 
 We define the complement of the integers in the complex plane and give some basic lemmas about it.
-We also show that the upper half plane is mapped to the integer complement.
+We also show that the upper half plane embeds into the integer complement.
 
 -/
 
 open UpperHalfPlane
 
 /--The complement of the integers in `ℂ`. -/
-def ℂ_ℤ := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
+def Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
 
-noncomputable instance : UniformSpace ℂ_ℤ  :=  instUniformSpaceSubtype
+namespace Complex
 
-theorem Complex.closedEmbedding_coe_complex : ClosedEmbedding ((↑) : ℤ → ℂ) := by
-  apply Metric.closedEmbedding_of_pairwise_le_dist zero_lt_one
-  convert Int.pairwise_one_le_dist
-  simp_rw [dist_eq_norm]
-  norm_cast
-  rw [Int.norm_eq_abs]
-  exact Int.cast_abs
+local notation "ℂ_ℤ " => integerComplement
 
-lemma ℂ_ℤ_Isclosed : IsClosed (((↑) : ℤ → ℂ)'' ⊤) := by
-  simp only [Set.top_eq_univ, Set.image_univ]
-  exact Complex.closedEmbedding_coe_complex.isClosed_range
+lemma integerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rfl
 
-lemma ℂ_ℤ_IsOpen : IsOpen {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n} := by
-  refine IsClosed.not ?_
-  convert ℂ_ℤ_Isclosed
-  ext y
-  aesop
+lemma integerComplement.mem_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
 
-instance : LocallyCompactSpace ℂ_ℤ := IsOpen.locallyCompactSpace ℂ_ℤ_IsOpen
+lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ :=
+  not_exists.mpr fun x hx ↦ ne_int z x hx.symm
 
-instance : Coe ℂ_ℤ ℂ := ⟨fun x => x.1⟩
+lemma integerComplement.add_coe_int_mem {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
+  simp only [mem_iff, not_iff_not]
+  exact ⟨(Exists.elim · fun n hn ↦ ⟨n - a, by simp [hn]⟩),
+    (Exists.elim · fun n hn ↦ ⟨n + a, by simp [hn]⟩)⟩
 
-lemma upper_half_plane_ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
-  intro n
-  have h1 := z.2
-  aesop
+lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
+  fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩
 
-instance coe_upp : Coe ℍ ℂ_ℤ := ⟨fun x => ⟨x, by simpa using upper_half_plane_ne_int x⟩⟩
+lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 :=
+  integerComplement.ne_zero ((integerComplement.add_coe_int_mem a).mpr hx)
 
-lemma ℂ_ℤ_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := by
-  intro h
-  rw [add_eq_zero_iff_eq_neg] at h
-  have := not_exists.mp x.2 (-a)
-  aesop
+lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x ≠ 1 :=
+  fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
 
-lemma ℂ_ℤ_not_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
-  simpa using ℂ_ℤ_add_ne_zero x 0
+end Complex

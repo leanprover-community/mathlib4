@@ -3,9 +3,9 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Topology.MetricSpace.Thickening
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Thickened indicators
@@ -60,7 +60,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
-  apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
+  apply tsub_le_self (α := ℝ≥0∞)
 
 theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
     thickenedIndicatorAux δ E x < ∞ :=
@@ -86,7 +86,7 @@ theorem thickenedIndicatorAux_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x 
   have key := tsub_le_tsub
     (@rfl _ (1 : ℝ≥0∞)).le (ENNReal.div_le_div x_out (@rfl _ (ENNReal.ofReal δ : ℝ≥0∞)).le)
   rw [ENNReal.div_self (ne_of_gt (ENNReal.ofReal_pos.mpr δ_pos)) ofReal_ne_top] at key
-  simpa using key
+  simpa [tsub_self] using key
 
 theorem thickenedIndicatorAux_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickenedIndicatorAux δ₁ E ≤ thickenedIndicatorAux δ₂ E :=
@@ -128,7 +128,7 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     specialize δseq_lim ε ε_pos
     simp only [dist_zero_right, Real.norm_eq_abs, eventually_atTop] at δseq_lim
     rcases δseq_lim with ⟨N, hN⟩
-    apply @tendsto_atTop_of_eventually_const _ _ _ _ _ _ _ N
+    apply tendsto_atTop_of_eventually_const (i₀ := N)
     intro n n_large
     have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
     refine le_antisymm ?_ bot_le

@@ -354,7 +354,6 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
   exact (Nat.cast_injective.hasProd_range_iff.mpr hf₁).mul_isCompl
     this (hi₂.hasProd_range_iff.mpr hf₂)
 
-@[deprecated (since := "2024-03-04")] alias HasSum.nonneg_add_neg := HasSum.of_nat_of_neg_add_one
 
 @[to_additive Summable.of_nat_of_neg_add_one]
 lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
@@ -427,18 +426,11 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
         suffices x = 0 by simp only [this, eq_self_iff_true, if_true]
-        apply le_antisymm
-        · rcases hx.2 with ⟨a, _, rfl⟩
-          simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-        · rcases hx.1 with ⟨a, _, rfl⟩
-          simp only [Nat.cast_nonneg]
+        omega
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by
       simp only [u1, u2, Nat.cast_inj, imp_self, implies_true, forall_const, prod_image, neg_inj]
     _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩
-
-@[deprecated HasSum.nat_add_neg (since := "2024-03-04")]
-alias HasSum.sum_nat_of_sum_int := HasSum.nat_add_neg
 
 @[to_additive]
 theorem Multipliable.nat_mul_neg {f : ℤ → M} (hf : Multipliable f) :
@@ -455,9 +447,6 @@ theorem HasProd.of_add_one_of_neg_add_one {f : ℤ → M}
     (hf₁ : HasProd (fun n : ℕ ↦ f (n + 1)) m) (hf₂ : HasProd (fun n : ℕ ↦ f (-(n + 1))) m') :
     HasProd f (m * f 0 * m') :=
   HasProd.of_nat_of_neg_add_one (mul_comm _ m ▸ HasProd.zero_mul hf₁) hf₂
-
-@[deprecated HasSum.of_add_one_of_neg_add_one (since := "2024-03-04")]
-alias HasSum.pos_add_zero_add_neg := HasSum.of_add_one_of_neg_add_one
 
 @[to_additive Summable.of_add_one_of_neg_add_one]
 lemma Multipliable.of_add_one_of_neg_add_one {f : ℤ → M}
@@ -489,9 +478,6 @@ lemma HasProd.of_nat_of_neg {f : ℤ → G} (hf₁ : HasProd (fun n : ℕ ↦ f 
 lemma Multipliable.of_nat_of_neg {f : ℤ → G} (hf₁ : Multipliable fun n : ℕ ↦ f n)
     (hf₂ : Multipliable fun n : ℕ ↦ f (-n)) : Multipliable f :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).multipliable
-
-@[deprecated Summable.of_nat_of_neg (since := "2024-03-04")]
-alias summable_int_of_summable_nat := Summable.of_nat_of_neg
 
 @[to_additive]
 lemma tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
@@ -527,29 +513,13 @@ end Int
 
 section pnat
 
-theorem pnat_summable_iff_summable_add_one {α : Type*} [TopologicalSpace α] [AddCommMonoid α]
-    {f : ℕ → α} : (Summable fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
-  rw [← Equiv.summable_iff _root_.Equiv.pnatEquivNat]
-  constructor
-  repeat {refine fun hf => by apply Summable.congr hf (by refine fun b => by simp)}
+@[to_additive]
+theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace α] [CommMonoid α]
+    {f : ℕ → α} : Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) :=
+  Equiv.pnatEquivNat.symm.multipliable_iff.symm
 
-theorem tsum_pnat_eq_tsum_add_one {α : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
-    (f : ℕ → α) : ∑' n : ℕ+, f n = ∑' n, f (n + 1) := by
-  by_cases hf2 : Summable fun n : ℕ+ => f n
-  · have hpos : HasSum (fun n : ℕ => f (n + 1)) (∑' n : ℕ+, f n) := by
-      rw [← _root_.Equiv.pnatEquivNat.hasSum_iff]
-      simp_rw [Equiv.pnatEquivNat] at *
-      simp only [Equiv.coe_fn_mk] at *
-      have hf3 : Summable ((fun n : ℕ => f (n + 1)) ∘ PNat.natPred) := by
-        apply Summable.congr hf2 (by refine fun b => by simp)
-      rw [Summable.hasSum_iff hf3]
-      congr
-      funext
-      simp only [comp_apply, PNat.natPred_add_one]
-    apply symm
-    · apply hpos.tsum_eq
-  · rw [tsum_eq_zero_of_not_summable hf2]
-    rw [pnat_summable_iff_summable_add_one] at hf2
-    rw [tsum_eq_zero_of_not_summable hf2]
+@[to_additive]
+theorem tprod_pnat_eq_tprod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] (f : ℕ → α) :
+    ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
 
 end pnat

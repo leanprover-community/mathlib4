@@ -29,8 +29,6 @@ noncomputable section
 
 section GaussianPoisson
 
-variable {E : Type*} [NormedAddCommGroup E]
-
 /-! First we show that Gaussian-type functions have rapid decay along `cocompact ℝ`. -/
 
 lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ) :

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Oplax functors
@@ -84,9 +85,9 @@ initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂
 
 namespace OplaxFunctor
 
-attribute [reassoc (attr := simp)]
+attribute [reassoc (attr := simp), to_app (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-attribute [simp, reassoc] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
 
 section
 
@@ -95,7 +96,7 @@ add_decl_doc OplaxFunctor.toPrelaxFunctor
 
 variable (F : OplaxFunctor B C)
 
-@[reassoc]
+@[reassoc, to_app]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h = F.map₂ (α_ f g h).inv ≫
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h ≫
@@ -103,7 +104,7 @@ lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   rw [← F.map₂_associator, ← F.map₂_comp_assoc]
   simp
 
-@[reassoc]
+@[reassoc, to_app]
 lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h =
     F.map₂ (α_ f g h).hom ≫ F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h
@@ -138,7 +139,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_associator := fun f g h => by
     dsimp
     simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
-      whiskerLeft_comp, assoc]
+      Bicategory.whiskerLeft_comp, assoc]
     simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
       comp_whiskerRight, assoc]
   map₂_leftUnitor := fun f => by
@@ -148,13 +149,11 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_rightUnitor := fun f => by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
-      whiskerLeft_comp, assoc]
+      Bicategory.whiskerLeft_comp, assoc]
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfOplax`. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure PseudoCore (F : OplaxFunctor B C) where
   /-- The isomorphism giving rise to the oplax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)

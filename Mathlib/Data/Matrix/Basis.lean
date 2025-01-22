@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash, Wen Yang
+Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Matrices with a single non-zero element.
@@ -13,22 +12,29 @@ This file provides `Matrix.stdBasisMatrix`. The matrix `Matrix.stdBasisMatrix i 
 at position `(i, j)`, and zeroes elsewhere.
 -/
 
+assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
 variable {R α : Type*}
 
 namespace Matrix
 
-open Matrix
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-variable [Semiring α]
+
+section Zero
+variable [Zero α]
 
 /-- `stdBasisMatrix i j a` is the matrix with `a` in the `i`-th row, `j`-th column,
 and zeroes elsewhere.
 -/
-def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
-  if i = i' ∧ j = j' then a else 0
+def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α :=
+  of <| fun i' j' => if i = i' ∧ j = j' then a else 0
+
+theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
+    stdBasisMatrix i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
+  ext a b
+  unfold stdBasisMatrix
+  by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
@@ -43,12 +49,16 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
   ext
   simp
 
-theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
+end Zero
+
+theorem stdBasisMatrix_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
     stdBasisMatrix i j (a + b) = stdBasisMatrix i j a + stdBasisMatrix i j b := by
-  unfold stdBasisMatrix; ext
+  ext
+  simp only [stdBasisMatrix, of_apply]
   split_ifs with h <;> simp [h]
 
-theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
+theorem mulVec_stdBasisMatrix [NonUnitalNonAssocSemiring α] [Fintype m]
+    (i : n) (j : m) (c : α) (x : m → α) :
     mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [stdBasisMatrix, mulVec, dotProduct]
@@ -56,20 +66,15 @@ theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α
   · simp
   simp [h, h.symm]
 
-theorem matrix_eq_sum_stdBasisMatrix [Fintype m] [Fintype n] (x : Matrix m n α) :
+theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
-  ext i j; symm
-  iterate 2 rw [Finset.sum_apply]
-  convert (Fintype.sum_eq_single i ?_).trans ?_; swap
-  · -- Porting note(#12717): `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp (config := { unfoldPartialApp := true }) [stdBasisMatrix, (Fintype.sum_apply)]
-  · intro j' hj'
-    -- Porting note(#12717): `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp (config := { unfoldPartialApp := true }) [stdBasisMatrix, (Fintype.sum_apply), hj']
+  ext i j
+  rw [← Fintype.sum_prod_type']
+  simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk.inj_iff]
 
 @[deprecated (since := "2024-08-11")] alias matrix_eq_sum_std_basis := matrix_eq_sum_stdBasisMatrix
 
-theorem stdBasisMatrix_eq_single_vecMulVec_single (i : m) (j : n) :
+theorem stdBasisMatrix_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
   ext i' j'
   -- Porting note: lean3 didn't apply `mul_ite`.
@@ -78,7 +83,7 @@ theorem stdBasisMatrix_eq_single_vecMulVec_single (i : m) (j : n) :
 -- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
 @[deprecated stdBasisMatrix_eq_single_vecMulVec_single (since := "2024-08-11")]
-theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
+theorem std_basis_eq_basis_mul_basis [MulZeroOneClass α] (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) =
       vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   rw [stdBasisMatrix_eq_single_vecMulVec_single]
@@ -86,7 +91,8 @@ theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
-protected theorem induction_on' [Finite m] [Finite n] {P : Matrix m n α → Prop} (M : Matrix m n α)
+protected theorem induction_on'
+    [AddCommMonoid α] [Finite m] [Finite n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M := by
   cases nonempty_fintype m; cases nonempty_fintype n
@@ -96,7 +102,8 @@ protected theorem induction_on' [Finite m] [Finite n] {P : Matrix m n α → Pro
     apply h_std_basis
 
 @[elab_as_elim]
-protected theorem induction_on [Finite m] [Finite n] [Nonempty m] [Nonempty n]
+protected theorem induction_on
+    [AddCommMonoid α] [Finite m] [Finite n] [Nonempty m] [Nonempty n]
     {P : Matrix m n α → Prop} (M : Matrix m n α) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ i j x, P (stdBasisMatrix i j x)) : P M :=
   Matrix.induction_on' M
@@ -110,7 +117,7 @@ namespace StdBasisMatrix
 
 section
 
-variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
+variable [Zero α] (i : m) (j : n) (c : α) (i' : m) (j' : n)
 
 @[simp]
 theorem apply_same : stdBasisMatrix i j c i j = c :=
@@ -118,7 +125,7 @@ theorem apply_same : stdBasisMatrix i j c i j = c :=
 
 @[simp]
 theorem apply_of_ne (h : ¬(i = i' ∧ j = j')) : stdBasisMatrix i j c i' j' = 0 := by
-  simp only [stdBasisMatrix, and_imp, ite_eq_right_iff]
+  simp only [stdBasisMatrix, and_imp, ite_eq_right_iff, of_apply]
   tauto
 
 @[simp]
@@ -132,8 +139,7 @@ theorem apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
 end
 
 section
-
-variable (i j : n) (c : α) (i' j' : n)
+variable [Zero α] (i j : n) (c : α)
 
 @[simp]
 theorem diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
@@ -144,48 +150,45 @@ theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
   ext j
   by_cases hij : i = j <;> (try rw [hij]) <;> simp [hij]
 
-variable [Fintype n]
+end
 
-@[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply, h]
+section mul
+variable [Fintype m] [NonUnitalNonAssocSemiring α] (c : α)
 
+omit [DecidableEq n] in
 @[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply]
-
-@[simp]
-theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
+theorem mul_left_apply_same (i : l) (j : m) (b : n) (M : Matrix m n α) :
     (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 
+omit [DecidableEq l] in
 @[simp]
-theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
+theorem mul_right_apply_same (i : m) (j : n) (a : l) (M : Matrix l m α) :
     (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 
+omit [DecidableEq n] in
 @[simp]
-theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
+theorem mul_left_apply_of_ne (i : l) (j : m) (a : l) (b : n) (h : a ≠ i) (M : Matrix m n α) :
     (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 
+omit [DecidableEq l] in
 @[simp]
-theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
+theorem mul_right_apply_of_ne (i : m) (j : n) (a : l) (b : n) (hbj : b ≠ j) (M : Matrix l m α) :
     (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 
 @[simp]
-theorem mul_same (k : n) (d : α) :
+theorem mul_same (i : l) (j : m) (k : n) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
   ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 
 @[simp]
-theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
+theorem mul_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
   ext a b
-  simp only [mul_apply, boole_mul, stdBasisMatrix]
+  simp only [mul_apply, boole_mul, stdBasisMatrix, of_apply]
   by_cases h₁ : i = a
-  -- porting note (#10745): was `simp [h₁, h, h.symm]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
     refine Finset.sum_eq_zero (fun x _ => ?_)
     apply if_neg
@@ -194,13 +197,13 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
   · simp only [h₁, false_and, ite_false, mul_ite, zero_mul, mul_zero, ite_self,
       Finset.sum_const_zero, zero_apply]
 
-end
+end mul
 
 end StdBasisMatrix
 
 section Commute
 
-variable [Fintype n]
+variable [Fintype n] [Semiring α]
 
 theorem row_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
     (hM : Commute (stdBasisMatrix i j 1) M) (hkj : k ≠ j) : M j k = 0 := by

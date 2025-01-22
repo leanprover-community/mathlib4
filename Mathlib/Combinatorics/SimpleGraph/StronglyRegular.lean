@@ -6,7 +6,6 @@ Authors: Alena Gusakov, Jeremy Tan
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Set.Finite
 
 /-!
 # Strongly regular graphs
@@ -57,7 +56,7 @@ for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
   regular := bot_degree
-  of_adj := fun v w h => h.elim
+  of_adj := fun _ _ h => h.elim
   of_not_adj := fun v w _h => by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
@@ -77,14 +76,11 @@ theorem IsSRGWith.top :
   of_not_adj := fun v w h h' => False.elim (h' ((top_adj v w).2 h))
 
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
-    (G.neighborFinset v ∪ G.neighborFinset w).card =
+    #(G.neighborFinset v ∪ G.neighborFinset w) =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  -- Porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
-  -- instance arguments:
-  · simp [commonNeighbors, @Set.toFinset_inter _ _ _ _ _ _ (_),
-      ← neighborFinset_def, Finset.card_union_add_card_inter, card_neighborFinset_eq_degree,
+  · simp [commonNeighbors, ← neighborFinset_def, Finset.card_union_add_card_inter,
       h.regular.degree_eq, two_mul]
   · apply le_trans (card_commonNeighbors_le_degree_left _ _ _)
     simp [h.regular.degree_eq, two_mul]
@@ -94,12 +90,12 @@ adjacent to either `v` or `w` when `¬G.Adj v w`. So it's the cardinality of
 `G.neighborSet v ∪ G.neighborSet w`. -/
 theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
     (hne : v ≠ w) (ha : ¬G.Adj v w) :
-    (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - μ := by
+    #(G.neighborFinset v ∪ G.neighborFinset w) = 2 * k - μ := by
   rw [← h.of_not_adj hne ha]
   apply h.card_neighborFinset_union_eq
 
 theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
-    (ha : G.Adj v w) : (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - ℓ := by
+    (ha : G.Adj v w) : #(G.neighborFinset v ∪ G.neighborFinset w) = 2 * k - ℓ := by
   rw [← h.of_adj v w ha]
   apply h.card_neighborFinset_union_eq
 
@@ -172,11 +168,7 @@ theorem IsSRGWith.param_eq
   · simp [h.compl.regular v]
   · intro w hw
     rw [mem_neighborFinset] at hw
-    simp_rw [bipartiteAbove]
-    -- This used to be part of the enclosing `simp_rw` chain,
-    -- but after leanprover/lean4#3124 it caused a maximum recursion depth error.
-    change Finset.card (filter (fun a => Adj G w a) _) = _
-    simp_rw [← mem_neighborFinset, filter_mem_eq_inter]
+    simp_rw [bipartiteAbove, ← mem_neighborFinset, filter_mem_eq_inter]
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
       exact ⟨hw.symm, G.not_mem_neighborFinset_self v⟩
