@@ -32,6 +32,15 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - id: PR # this step is duplicated from the `post-CI job` below
+        uses: 8BitJonny/gh-get-current-pr@3.0.0
+        # TODO: this may not work properly if the same commit is pushed to multiple branches:
+        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Only return if PR is still open
+          filterOutClosed: true
+
       - name: Update the merge-conflict label
         run: |
           if git merge origin/master --no-ff --no-commit
