@@ -1084,7 +1084,7 @@ lemma adj_spanningCoe_induce_supp {v w : V} (c : G.ConnectedComponent) :
   by_cases h : v ∈ c.supp
   · refine ⟨by aesop, ?_⟩
     intro h'
-    have : w ∈ c.supp := by rwa [c.mem_supp_iff_of_adj h'.2] at h
+    have : w ∈ c.supp := by rwa [c.mem_supp_congr_adj h'.2] at h
     aesop
   · aesop
 
