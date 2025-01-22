@@ -357,15 +357,16 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
+@[simps (config := .lemmasOnly) obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
-    SimplicialObject (Action (Type u) <| MonCat.of G) where
+    SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
-
+#check classifyingSpaceUniversalCover_map
 namespace classifyingSpaceUniversalCover
 
 open CategoryTheory CategoryTheory.Limits
@@ -481,23 +482,11 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
-  ext : 1
-  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
-  dsimp [groupCohomology.resolution]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  simpa [← @intCast_smul k, simplicial_object.δ] -/
-  simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
-    Functor.comp_map, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
-    Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
-  rw [ModuleCat.hom_sum, LinearMap.coeFn_sum, Fintype.sum_apply]
-  erw [d_of (k := k) x]
-/- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
-so using Finset.sum_congr to get rid of the binder -/
-  refine Finset.sum_congr rfl fun _ _ => ?_
-  simp only [ModuleCat.hom_smul, SimplexCategory.len_mk]
-  erw [LinearMap.smul_apply]
-  rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
-  rfl
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  simp [classifyingSpaceUniversalCover_obj, Action.ofMulAction_V, groupCohomology.resolution,
+    Rep.coe_linearization_obj, d_of (k := k) x, SimplicialObject.δ,
+    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), classifyingSpaceUniversalCover_map,
+    SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 section Exactness
 

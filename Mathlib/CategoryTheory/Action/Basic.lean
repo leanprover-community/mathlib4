@@ -17,7 +17,8 @@ The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
 We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
-and construct the restriction functors `res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G`.
+and construct the restriction functors
+`res {G H} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G`.
 -/
 
 
@@ -34,20 +35,21 @@ the monoid `G` on an object of some category `V`.
 As an example, when `V = ModuleCat R`, this is an `R`-linear representation of `G`,
 while when `V = Type` this is a `G`-action.
 -/
-structure Action (G : MonCat.{u}) where
+structure Action (G : Type u) [Monoid G] where
   V : V
-  ρ : G ⟶ MonCat.of (End V)
+  ρ : G →* End V
 
 namespace Action
 
 variable {V}
 
 @[simp 1100]
-theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
+theorem ρ_one {G : Type u} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by
+  rw [MonoidHom.map_one]; rfl
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
-def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) where
+def ρAut {G : Type u} [Group G] (A : Action V G) : G →* Aut A.V where
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
@@ -61,7 +63,7 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
 -- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
 attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
-variable (G : MonCat.{u})
+variable (G : Type u) [Monoid G]
 
 section
 
@@ -268,14 +270,14 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
 /-- Actions/representations of the trivial group are just objects in the ambient category. -/
-def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
+def actionPunitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
     { obj := fun X => ⟨X, 1⟩
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
+      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, id_eq, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
@@ -288,10 +290,10 @@ taking actions of `H` to actions of `G`.
 (This makes sense for any homomorphism, but the name is natural when `f` is a monomorphism.)
 -/
 @[simps]
-def res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G where
+def res {G H : Type u} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G where
   obj M :=
     { V := M.V
-      ρ := f ≫ M.ρ }
+      ρ := M.ρ.comp f }
   map p :=
     { hom := p.hom
       comm := fun g => p.comm (f g) }
@@ -300,14 +302,15 @@ def res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G where
 the identity functor on `Action V G`.
 -/
 @[simps!]
-def resId {G : MonCat} : res V (𝟙 G) ≅ 𝟭 (Action V G) :=
+def resId {G : Type u} [Monoid G] : res V (MonoidHom.id G) ≅ 𝟭 (Action V G) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
 /-- The natural isomorphism from the composition of restrictions along homomorphisms
 to the restriction along the composition of homomorphism.
 -/
 @[simps!]
-def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f ≅ res V (f ≫ g) :=
+def resComp {G H K : Type u} [Monoid G] [Monoid H] [Monoid K]
+    (f : G →* H) (g : H →* K) : res V g ⋙ res V f ≅ res V (g.comp f) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
 -- TODO promote `res` to a pseudofunctor from
@@ -322,15 +325,15 @@ variable {V} {W : Type (u + 1)} [LargeCategory W]
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
 @[simps]
-def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
+def mapAction (F : V ⥤ W) (G : Type u) [Monoid G] : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
       ρ :=
         { toFun := fun g => F.map (M.ρ g)
-          map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id, MonCat.one_of]
+          map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id]
           map_mul' := fun g h => by
             dsimp
-            rw [map_mul, MonCat.mul_of, End.mul_def, End.mul_def, F.map_comp] } }
+            rw [map_mul, End.mul_def, F.map_comp] } }
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
