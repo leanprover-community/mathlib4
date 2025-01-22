@@ -268,7 +268,7 @@ theorem mk_natCast [NatCast R] (n : ℕ) : mk (n : R) = n := rfl
 
 @[simp]
 theorem mk_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
-    mk (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
+    mk (ofNat(n) : R) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast R] : IntCast (SeparationQuotient R) where
@@ -386,7 +386,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
-  toRingHom := mkRingHom.comp (algebraMap R A)
+  algebraMap := mkRingHom.comp (algebraMap R A)
   commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
   smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
 

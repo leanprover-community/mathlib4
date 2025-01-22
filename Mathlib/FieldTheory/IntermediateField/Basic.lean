@@ -460,16 +460,10 @@ between `E` and `E.map e` -/
 def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E ≃ₐ[K] E.map e.toAlgHom :=
   e.subalgebraMap E.toSubalgebra
 
-/- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
-  led to a timeout. -/
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
     (a : E.map e.toAlgHom) : ↑((intermediateFieldMap e E).symm a) = e.symm a :=
   rfl
@@ -565,10 +559,20 @@ theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateFiel
   ext
   simp_rw [← mem_toSubfield, h]
 
+variable {F E : IntermediateField K L}
+
+@[simp]
+theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toSubalgebra_eq_iff := toSubalgebra_inj
+
+@[simp]
+theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff
+
 theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
-    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
+    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_inj] at h
 
 variable (S)
 

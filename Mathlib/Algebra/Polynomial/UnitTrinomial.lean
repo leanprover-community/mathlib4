@@ -247,14 +247,8 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · suffices m = m' by
-      rw [this] at hp
-      exact Or.inl (hq.trans hp.symm)
-    rw [tsub_add_eq_add_tsub hmn.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm
-    · rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
-      · exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
-      · exact hmn'.le.trans (Nat.le_add_right n k)
-    · exact hmn.le.trans (Nat.le_add_right n k)
+  · obtain rfl : m = m' := by omega
+    exact Or.inl (hq.trans hp.symm)
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)

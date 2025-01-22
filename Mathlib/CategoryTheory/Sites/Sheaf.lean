@@ -75,10 +75,10 @@ https://stacks.math.columbia.edu/tag/00VR
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike in
 /-- Condition that a presheaf with values in a concrete category is separated for
 a Grothendieck topology. -/
-def IsSeparated (P : Cᵒᵖ ⥤ A) [ConcreteCategory A] : Prop :=
+def IsSeparated (P : Cᵒᵖ ⥤ A) [HasForget A] : Prop :=
   ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 
@@ -92,7 +92,6 @@ variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with sieve_compatible family of elements
     for the sieve `S` and the presheaf of types `Hom (E, P -)`. -/
-@[simps]
 def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
@@ -111,10 +110,6 @@ def conesEquivSieveCompatibleFamily :
         rw [Over.w] }
   left_inv _ := rfl
   right_inv _ := rfl
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
-  CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -582,7 +577,6 @@ theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequaliz
     · apply (@asIso _ _ _ _ _ h).symm
     · intro a
       symm
-      erw [IsIso.inv_comp_eq]
       simp
 
 end MultiequalizerConditions

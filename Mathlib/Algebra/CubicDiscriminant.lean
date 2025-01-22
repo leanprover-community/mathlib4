@@ -80,7 +80,7 @@ private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 
   norm_num
   intro n hn
   repeat' rw [if_neg]
-  any_goals linarith only [hn]
+  any_goals omega
   repeat' rw [zero_add]
 
 @[simp]
