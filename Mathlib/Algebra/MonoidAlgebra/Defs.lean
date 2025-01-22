@@ -839,6 +839,18 @@ def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W →
 
 end Submodule
 
+instance isLocalHom_singleOneRingHom [Semiring k] [Monoid G] :
+    IsLocalHom (singleOneRingHom (k := k) (G := G)) where
+  map_nonunit x hx := by
+    obtain ⟨⟨x, xi, hx, hxi⟩, rfl⟩ := hx
+    simp_rw [MonoidAlgebra.ext_iff, singleOneRingHom_apply] at hx hxi ⊢
+    specialize hx 1
+    specialize hxi 1
+    classical
+    simp_rw [single_one_mul_apply, one_def, single_apply, if_pos] at hx
+    simp_rw [mul_single_one_apply, one_def, single_apply, if_pos] at hxi
+    exact ⟨⟨x, xi 1, hx, hxi⟩, rfl⟩
+
 end MonoidAlgebra
 
 /-! ### Additive monoids -/
@@ -1559,6 +1571,10 @@ theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι �
     rw [prod_cons has, ih, single_mul_single, sum_cons has, prod_cons has]
 
 end
+
+instance isLocalHom_singleZeroRingHom [Semiring k] [AddMonoid G] :
+    IsLocalHom (singleZeroRingHom (k := k) (G := G)) :=
+  MonoidAlgebra.isLocalHom_singleOneRingHom (G := Multiplicative G)
 
 end AddMonoidAlgebra
 
