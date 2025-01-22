@@ -19,10 +19,9 @@ declare_aesop_rule_sets [SetLike] (default := true)
 declare_aesop_rule_sets [SetLike!] (default := false)
 
 library_note "SetLike Aesop lemmas"/--
-The Aesop tactic (`aesop`) can automatically prove obvious facts about membership of
-algebraic substructures such as subgroups and subrings. Certain lemmas regarding membership of
-a particular term in a particular substructure are registered as Aesop rules using
-the `aesop` attribute according to the following principles:
+The Aesop tactic (`aesop`) can automatically prove obvious facts about membership in structures
+such as subgroups and subrings. Certain lemmas regarding membership in algebraic substructures
+are given the `aesop` attribute according to the following principles:
 - Rules are in the `SetLike` ruleset: (rule_sets := [SetLike]).
 - Apply-style rules with trivial hypotheses are registered both as `simp` rules and as
   `safe` Aesop rules. The latter is needed in case there are metavariables in the goal.
