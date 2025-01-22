@@ -172,6 +172,12 @@ lemma mem_nhds_zero_iff [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
   · rintro ⟨Jd, hJd_mem_nhds, hJd⟩
     exact Filter.sets_of_superset _ (basis_mem_nhds_zero ⟨⟨Jd.1, hJd_mem_nhds⟩,Jd.2⟩) hJd
 
+lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    (𝓝 0 : Filter (MvPowerSeries σ R)).HasBasis
+      (fun Id : TwoSidedIdeal R × (σ →₀ ℕ) ↦ (Id.1 : Set R) ∈ 𝓝 0)
+      (fun Id ↦ basis _ _ Id) := by
+  sorry
+
 /-- The topology on `MvPowerSeries` is a (left and right) linear topology
   when the ring of coefficients has the discrete topology. -/
 theorem hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
