@@ -31,27 +31,20 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [I
   [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma nnnorm_nnrpow (a : A) (r : ℝ≥0) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) := by
-  simp only [nnrpow_def]
-  rw [MonotoneOn.nnnorm_cfcₙ _ _ (Monotone.monotoneOn (NNReal.monotone_nnrpow_const r) _)]
+lemma nnnorm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) :=
+  NNReal.monotone_nnrpow_const r |>.monotoneOn _ |>.nnnorm_cfcₙ _ _
 
-lemma norm_nnrpow (a : A) (r : ℝ≥0) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) := by
-  have h₁ : ‖a ^ r‖ = (‖a ^ r‖₊ : ℝ) := rfl
-  rw [h₁, nnnorm_nnrpow a r hr ha]
-  rfl
+lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) :=
+  congr(NNReal.toReal $(nnnorm_nnrpow a hr ha))
 
-lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
-  rw [sqrt_eq_nnrpow]
-  calc _ = ‖a‖₊ ^ (1 / 2 : ℝ) := by exact nnnorm_nnrpow a _ (by norm_num) ha
-    _ = NNReal.sqrt ‖a‖₊ := Eq.symm (NNReal.sqrt_eq_rpow ‖a‖₊)
+lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
+  rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
+  exact nnnorm_nnrpow a (by norm_num) ha
 
-lemma norm_sqrt (a : A) (ha : 0 ≤ a) : ‖sqrt a‖ = Real.sqrt ‖a‖ := by
-  have hmain : ‖sqrt a‖₊ = (⟨Real.sqrt ‖a‖, by positivity⟩ : ℝ≥0) := by
-    calc _ = NNReal.sqrt ‖a‖₊ := nnnorm_sqrt a ha
-      _ = _ := by rw [← norm_toNNReal]; rfl
-  have h₁ : ‖sqrt a‖ = (‖sqrt a‖₊ : ℝ) := rfl
-  rw [h₁, hmain]
-  rfl
+lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = Real.sqrt ‖a‖ := by
+  simpa using congr(NNReal.toReal $(nnnorm_sqrt a ha))
 
 end nonunital
 
@@ -61,17 +54,15 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma nnnorm_rpow (a : A) (r : ℝ) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖₊ = ‖a‖₊ ^ r := by
-  let r' : ℝ≥0 := ⟨r, by positivity⟩
-  have hr' : 0 < r' := by exact_mod_cast hr
-  show ‖a ^ (r' : ℝ)‖₊ = ‖a‖₊ ^ (r' : ℝ)
-  rw [← nnrpow_eq_rpow hr', nnnorm_nnrpow a r' hr' ha]
+lemma nnnorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a ^ r‖₊ = ‖a‖₊ ^ r := by
+  lift r to ℝ≥0 using hr.le
+  rw [← nnrpow_eq_rpow, ← nnnorm_nnrpow a]
+  all_goals simpa
 
-lemma norm_rpow (a : A) (r : ℝ) (hr : 0 < r) (ha : 0 ≤ a) : ‖a ^ r‖ = ‖a‖ ^ r := by
-  let r' : ℝ≥0 := ⟨r, by positivity⟩
-  have hr' : 0 < r' := by exact_mod_cast hr
-  show ‖a ^ (r' : ℝ)‖ = ‖a‖ ^ (r' : ℝ)
-  rw [← nnrpow_eq_rpow hr', norm_nnrpow a r' hr' ha]
+lemma norm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a ^ r‖ = ‖a‖ ^ r :=
+  congr(NNReal.toReal $(nnnorm_rpow a hr ha))
 
 end unital
 
