@@ -368,7 +368,7 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 
-theorem isProj_iff_idempotent (f : M →ₗ[S] M) :
+theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
     (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
   constructor
   · intro ⟨p, hp⟩
@@ -382,6 +382,8 @@ theorem isProj_iff_idempotent (f : M →ₗ[S] M) :
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
       rw [← hy, ← mul_apply, h]
+
+@[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
 namespace IsProj
 
