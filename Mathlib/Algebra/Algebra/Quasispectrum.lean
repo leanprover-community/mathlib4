@@ -370,6 +370,21 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
 
 end Unitization
 
+lemma quasispectrum.swap_mul_eq {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] (a b : A) :
+    quasispectrum R (a * b) = quasispectrum R (b * a) := by
+  have (c : A) : ((↑) : Rˣ → R) '' ((↑) ⁻¹' spectrum R (c : Unitization R A)) ∪ {r | ¬ IsUnit r} =
+      spectrum R (c : Unitization R A) := by
+    refine Set.Subset.antisymm (Set.union_subset (by simp) fun r hr ↦ ?_) fun r hr ↦ ?_
+    · simpa [← Unitization.quasispectrum_eq_spectrum_inr] using fun h _ ↦ hr h
+    · by_cases hr' : IsUnit r
+      · lift r to Rˣ using hr'
+        simpa using ⟨r, hr, rfl⟩
+      · exact Or.inr hr'
+  simp only [Unitization.quasispectrum_eq_spectrum_inr]
+  rw [← this (a * b), ← this (b * a), Unitization.inr_mul, Unitization.inr_mul,
+    spectrum.preimage_units_mul_eq_swap_mul]
+
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
 class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommSemiring 𝕜] [NonUnitalRing A] [PartialOrder A]
@@ -458,7 +473,15 @@ lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a
   rightInvOn := h ▸ ha.rightInvOn
   left_inv := ha.left_inv
 
-variable [IsScalarTower S A A] [SMulCommClass S A A] [IsScalarTower R S A]
+variable [IsScalarTower S A A] [SMulCommClass S A A]
+
+lemma swap_mul_iff {f : S → R} {a b : A} :
+    QuasispectrumRestricts (a * b) f ↔ QuasispectrumRestricts (b * a) f := by
+  simp only [quasispectrumRestricts_iff, quasispectrum.swap_mul_eq]
+
+alias ⟨swap_mul, _⟩ := swap_mul_iff
+
+variable [IsScalarTower R S A]
 
 theorem algebraMap_image (h : QuasispectrumRestricts a f) :
     algebraMap R S '' quasispectrum R a = quasispectrum S a := by
@@ -543,6 +566,13 @@ lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     rw [quasispectrum_eq_spectrum_union_zero, ← h, ← quasispectrum_eq_spectrum_union_zero]
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv
+
+lemma swap_mul_iff {R S A : Type*} [Semifield R] [Field S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A] {a b : A} {f : S → R} :
+    SpectrumRestricts (a * b) f ↔ SpectrumRestricts (b * a) f :=
+  QuasispectrumRestricts.swap_mul_iff
+
+alias ⟨swap_mul, _⟩ := swap_mul_iff
 
 variable [IsScalarTower R S A]
 
