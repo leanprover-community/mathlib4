@@ -26,6 +26,8 @@ the `aesop` attribute according to the following principles:
 - Rules are in the `SetLike` ruleset: (rule_sets := [SetLike]).
 - Apply-style rules with trivial hypotheses are registered both as `simp` rules and as
   `safe` Aesop rules. The latter is needed in case there are metavariables in the goal.
+  For instance, Aesop can use the rule `one_mem` to prove
+  `(M : Type*) [Monid M] (s : Submonoid M) ⊢ ∃ m : M, m ∈ s`.
 - Apply-style rules with nontrivial hypotheses are marked `unsafe`. This is because applying them
   might not be provability-preserving in the context of more complex membership rules.
   For instance, `mul_mem` is marked `unsafe`.
