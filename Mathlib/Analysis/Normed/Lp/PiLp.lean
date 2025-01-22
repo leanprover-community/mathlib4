@@ -24,7 +24,8 @@ We give instances of this construction for emetric spaces, metric spaces, normed
 spaces.
 
 To avoid conflicting instances, all these are defined on a copy of the original Π-type, named
-`PiLp p α`. The assumption `[Fact (p ∉ Set.Ioo 0 1)]` is required for the metric and normed space instances.
+`PiLp p α`. The assumption `[Fact (p ∉ Set.Ioo 0 1)]` is required for the metric and normed space
+instances.
 
 We ensure that the topology, bornology and uniform structure on `PiLp p α` are (defeq to) the
 product topology, product bornology and product uniformity, to be able to use freely continuity
@@ -60,8 +61,12 @@ are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we g
 We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
-
 open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+
+instance : Fact (∞ ∉ Set.Ioo 0 1) := ⟨by simp⟩
+instance : Fact ((0 : ℝ≥0∞) ∉ Set.Ioo 0 1) := ⟨by simp⟩
+instance : Fact (2 ∉ Set.Ioo 0 1) := ⟨by simp⟩
+instance {p : ℝ≥0∞} [Fact (1 ≤ p)]: Fact (p ∉ Set.Ioo 0 1) := ⟨sorry⟩
 
 noncomputable section
 
@@ -150,8 +155,8 @@ variable [Fintype ι]
 ### Definition of `edist`, `dist` and `norm` on `PiLp`
 
 In this section we define the `edist`, `dist` and `norm` functions on `PiLp p α` without assuming
-`[Fact (p ∉ Set.Ioo 0 1)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
-lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
+`[Fact (p ∉ Set.Ioo 0 1)]` or metric properties of the spaces `α i`. This allows us to provide the
+rewrite lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
 
@@ -160,7 +165,7 @@ section Edist
 variable [∀ i, EDist (β i)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` edistance. We register this instance
-separate from `pi_Lp.pseudo_emetric` since the latter requires the type class hypothesis
+separate from `PiLp.pseudo_emetric` since the latter requires the type class hypothesis
 `[Fact (p ∉ Set.Ioo 0 1)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future emetric-like structure on `PiLp p β` for `p < 1`
@@ -192,16 +197,18 @@ section EdistProp
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
 
-/-- This holds independent of `p` and does not require `[Fact (p ∉ Set.Ioo 0 1)]`. We keep it separate
-from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
+/-- This holds independent of `p` and does not require `[Fact (p ∉ Set.Ioo 0 1)]`.
+
+We keep it separate from `PiLp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [edist_eq_card]
   · simp [edist_eq_iSup]
   · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
-/-- This holds independent of `p` and does not require `[Fact (p ∉ Set.Ioo 0 1)]`. We keep it separate
-from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
+/-- This holds independent of `p` and does not require `[Fact (p ∉ Set.Ioo 0 1)]`
+
+We keep it separate from `PiLp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp only [edist_eq_card, edist_comm]
@@ -215,7 +222,7 @@ section Dist
 variable [∀ i, Dist (α i)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` distance. We register this instance
-separate from `pi_Lp.pseudo_metric` since the latter requires the type class hypothesis
+separate from `PiLp.pseudo_metric` since the latter requires the type class hypothesis
 `[Fact (p ∉ Set.Ioo 0 1)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
@@ -293,6 +300,7 @@ explaining why having definitionally the right uniformity is often important.
 variable [Fact (p ∉ Set.Ioo 0 1)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
 variable [Fintype ι]
 
+/-- A version of `ENNReal.trichotomy` assuming `Fact (p ∉ Set.Ioo 0 1)`. -/
 protected theorem _root_.ENNReal.trichotomy' (p : ℝ≥0∞) [Fact (p ∉ Set.Ioo 0 1)] :
     p = 0 ∨ p = ∞ ∨ 1 ≤ p.toReal := by
   obtain rfl | hp := eq_zero_or_pos p
@@ -371,7 +379,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     (fun f g => by
       rcases p.trichotomy' with (rfl | rfl | h)
       · simp only [edist_eq_card, Finite.toFinset_setOf]
-        exact nat_ne_top _
+        exact natCast_ne_top _
       · exact iSup_edist_ne_top_aux f g
       · rw [edist_eq_sum (zero_lt_one.trans_le h)]
         exact ENNReal.rpow_ne_top_of_nonneg (by positivity) <| ENNReal.sum_ne_top.2 fun _ _ ↦
@@ -495,9 +503,6 @@ theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
 instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
 
-instance : Fact (∞ ∉ Set.Ioo 0 1) := ⟨by simp⟩
-instance : Fact ((0 : ℝ≥0∞) ∉ Set.Ioo 0 1) := ⟨by simp⟩
-
 -- throughout the rest of the file, we assume `1 ≤ p`
 variable [Fact (p ∉ Set.Ioo 0 1)]
 section Fintype
@@ -582,8 +587,9 @@ instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGr
 
 
 theorem nnnorm_eq_card [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp 0 β) :
-    ‖f‖₊ = {i | ‖f i‖₊ ≠ 0}.toFinset.card :=
-  sorry
+    ‖f‖₊ = {i | ‖f i‖₊ ≠ 0}.toFinset.card := by
+  ext
+  simp [norm_eq_card, ← NNReal.coe_inj]
 
 theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (p ∉ Set.Ioo 0 1)] {β : ι → Type*} (hp : p ≠ ∞)
     [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
@@ -697,9 +703,18 @@ variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 functions -/
 def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
-  toLinearEquiv := LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e
+  toLinearEquiv :=
+    WithLp.linearEquiv p _ _ ≪≫ₗ
+    LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e ≪≫ₗ
+    (WithLp.linearEquiv p _ _).symm
   norm_map' x' := by
-    rcases p.dichotomy with (rfl | h)
+    rcases p.trichotomy' with (rfl | rfl | h)
+    · simp_rw [norm_eq_card, toFinset_setOf]
+      dsimp
+      rw [← Finset.univ_map_equiv_to_embedding e, Finset.filter_map]
+      simp_rw [Function.comp_def, Equiv.toEmbedding_apply, Finset.card_map]
+      congr!
+      rw [e.symm_apply_apply]
     · simp_rw [norm_eq_ciSup]
       exact e.symm.iSup_congr fun _ => rfl
     · simp only [norm_eq_sum (zero_lt_one.trans_le h)]
@@ -748,7 +763,8 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
     simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
       Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
-    obtain rfl | hp := p.dichotomy
+    obtain rfl | rfl | hp := p.trichotomy'
+    · simp [norm_eq_card]
     · simp_rw [PiLp.norm_equiv_symm, Pi.norm_def, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map]
     · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
@@ -810,14 +826,14 @@ def _root_.LinearIsometryEquiv.piLpCurry :
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_apply
     (f : PiLp p (fun i : Sigma κ => α i.1 i.2)) :
     _root_.LinearIsometryEquiv.piLpCurry 𝕜 p α f =
-      (WithLp.equiv _ _).symm (fun i => (WithLp.equiv _ _).symm <|
+      (WithLp.equiv p _).symm (fun i => (WithLp.equiv p _).symm <|
         Sigma.curry (WithLp.equiv _ _ f) i) :=
   rfl
 
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_symm_apply
     (f : PiLp p (fun i => PiLp p (α i))) :
     (_root_.LinearIsometryEquiv.piLpCurry 𝕜 p α).symm f =
-      (WithLp.equiv _ _).symm (Sigma.uncurry fun i j => f i j) :=
+      (WithLp.equiv p _).symm (Sigma.uncurry fun i j => f i j) :=
   rfl
 
 end piLpCurry
