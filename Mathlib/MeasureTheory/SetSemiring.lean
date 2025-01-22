@@ -40,9 +40,6 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 
 -/
 
-theorem Set.accumulate_succ {α : Type*} (s : ℕ → Set α) (n : ℕ) :
-    Set.Accumulate s (n + 1) = Set.Accumulate s n ∪ s (n + 1) := Set.biUnion_le_succ s n
-
 open Finset Set
 
 namespace MeasureTheory

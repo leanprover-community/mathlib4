@@ -237,12 +237,11 @@ protected theorem tendsto_nhds_zero {f : Filter α} {u : α → ℝ≥0∞} :
     Tendsto u f (𝓝 0) ↔ ∀ ε > 0, ∀ᶠ x in f, u x ≤ ε :=
   nhds_zero_basis_Iic.tendsto_right_iff
 
-theorem tendsto_atTop_zero_const_sub_iff {l : Filter α} {f : α → ℝ≥0∞} {a : ℝ≥0∞} (ha : a ≠ ∞)
+theorem tendsto_const_sub_nhds_zero_iff {l : Filter α} {f : α → ℝ≥0∞} {a : ℝ≥0∞} (ha : a ≠ ∞)
     (hfa : ∀ n, f n ≤ a) :
     Tendsto (fun n ↦ a - f n) l (𝓝 0) ↔ Tendsto (fun n ↦ f n) l (𝓝 a) := by
-  lift a to ℝ≥0 using ha
-  rw [ENNReal.tendsto_nhds_zero, ENNReal.tendsto_nhds]
-  refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩ --<;> obtain ⟨N, hN⟩ := h ε hε
+  rw [ENNReal.tendsto_nhds_zero, ENNReal.tendsto_nhds ha]
+  refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
   · filter_upwards [h ε hε] with n hn
     refine ⟨?_, (hfa n).trans (le_add_right le_rfl)⟩
     rw [tsub_le_iff_right] at hn ⊢
