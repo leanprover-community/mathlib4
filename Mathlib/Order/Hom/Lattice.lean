@@ -50,7 +50,8 @@ structure SupHom (α β : Type*) [Max α] [Max β] where
   instance. -/
   toFun : α → β
   /-- A `SupHom` preserves suprema.
-  Do not use this directly. Use `SupHomClass.map_sup` instead. -/
+
+  Do not use this directly. Use `map_sup` instead. -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
