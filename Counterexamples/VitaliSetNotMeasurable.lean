@@ -26,9 +26,6 @@ noncomputable section
 because we want to make clear exactly which properties of measurability and the volume
 measure are used in the proof of the non-measurability of the Vitali set. -/
 
-lemma volume_mono {s t : Set ℝ} (h : s ⊆ t) : volume s ≤ volume t := by
-  exact OuterMeasureClass.measure_mono volume h
-
 lemma nullmeasurable_measurable_null {s : Set ℝ} (h : NullMeasurableSet s volume) :
     ∃ t ⊆ s, MeasurableSet t ∧ volume t = volume s ∧ volume (s \ t) = 0 := by
   have ⟨t, t_sub_s, t_m, t_eq_s⟩ := h.exists_measurable_subset_ae_eq
@@ -59,10 +56,6 @@ lemma measure_union_null {α : Type*} [MeasureSpace α] {μ : Measure α}
   rw [union_diff_self.symm, measure_union' disjoint_sdiff_right hs, hz]
   abel
 
-lemma biUnion_null {ι : Type*} {I : Set ι} {f : ι → Set ℝ}
-    (hs : I.Countable) : volume (⋃ i ∈ I, f i) = 0 ↔ ∀ i ∈ I, volume (f i) = 0 :=
-  measure_biUnion_null_iff hs
-
 lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
     (hc : I.Countable) (hd : I.PairwiseDisjoint s) (hm : ∀ i ∈ I, NullMeasurableSet (s i) volume) :
     volume (⋃ i ∈ I, s i) = ∑' (i : ↑I), volume (s ↑i) := by
@@ -87,7 +80,7 @@ lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
   have hm_tu : MeasurableSet (⋃ i ∈ I, t i) := MeasurableSet.biUnion hc t_m
   have hv_t : volume (⋃ i ∈ I, t i) = ∑' (i : ↑I), volume (t ↑i) :=
     measure_biUnion (μ := volume) hc (hd.mono_on t_s) t_m
-  rw [h_st, measure_union_null hm_tu ((biUnion_null hc).mpr t_z), hv_t]
+  rw [h_st, measure_union_null hm_tu ((measure_biUnion_null_iff hc).mpr t_z), hv_t]
   congr; ext ⟨i, i_I⟩
   rw [t_v i i_I]
 
@@ -177,9 +170,9 @@ lemma vitaliUnion_volume_range : 1 ≤ volume vitaliUnion ∧ volume vitaliUnion
   have h2 : volume (Icc (-1 : ℝ) 2) = 3 := by simp [volume_Icc]; norm_num
   constructor
   · rw [← h1]
-    exact volume_mono vitaliUnion_lower_bound
+    apply measure_mono vitaliUnion_lower_bound
   · rw [← h2]
-    exact volume_mono vitaliUnion_upper_bound
+    exact measure_mono vitaliUnion_upper_bound
 
 /-- The shifted copies of vitaliSet in vitaliUnion are pairwise disjoint. -/
 lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
