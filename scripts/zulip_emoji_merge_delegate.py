@@ -72,6 +72,7 @@ for message in messages:
         print(f"matched: '{message}'")
 
         # removing previous emoji reactions
+        # if the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well
         print("Removing previous reactions, if present.")
         if has_peace_sign:
             print('Removing peace_sign')
@@ -108,7 +109,7 @@ for message in messages:
             result = client.remove_reaction({
                 "message_id": message['id'],
                 "emoji_name": "closed-pr",
-                "emoji_code": "61282",
+                "emoji_code": "61293",  # 61282 was the earlier version of the emoji
                 "reaction_type": "realm_emoji",
             })
             print(f"result: '{result}'")
