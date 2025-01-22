@@ -69,9 +69,10 @@ lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategory�
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
-/-- The `n`-th standard simplex `Δ[n]` associated with a nonempty finite linear order `n`
-is the Yoneda embedding of `n`. -/
-def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
+/-- The functor `SimplexCategory ⥤ SSet` which sends `SimplexCategory.mk n` to
+the standard simplex `Δ[n]` is a cosimplicial object in the category of simplicial sets.
+(This standard is essentially given by the Yoneda embedding). -/
+def standardSimplex : CosimplicialObject SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
 @[inherit_doc SSet.standardSimplex]
@@ -338,7 +339,7 @@ open Simplicial
 noncomputable def S1 : SSet :=
   Limits.colimit <|
     Limits.parallelPair (standardSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
-      (standardSimplex.map <| SimplexCategory.δ 1)
+      (standardSimplex.δ 1)
 
 end Examples
 
