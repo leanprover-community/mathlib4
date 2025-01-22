@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
+Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
@@ -124,66 +124,44 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
 
-universe u
-
-theorem withTop.supr_add {ι : Sort u} [Nonempty ι]
-    (f : ι → ENat) (x : ENat) :
-    ⨆ i, f i + x = (⨆ i, f i) + x := by
-  cases x
-  case top =>
-    simp only [add_top]
-    apply le_antisymm
-    · apply ciSup_le
-      intro i
-      exact le_top
-    · simp
-  case coe x =>
-    have : ↑x ≤ ⨆ i, f i + ↑x := by
-      sorry
-    sorry
-
-theorem withTop.supr₂_add {ι : Sort u} {p : ι → Prop} (hs : ∃ i, p i)
-    (f : ∀ (i : ι), p i → ENat) (x : ENat) :
+theorem ENat.iSup₂_add {ι : Type*} {p : ι → Prop} (hs : ∃ i, p i)
+    (f : ∀ (i : ι), p i → ℕ∞) (x : ℕ∞) :
     (⨆ (i : ι) (h : p i), f i h) + x = ⨆ (i : ι) (h : p i), f i h + x := by
   haveI : Nonempty { i // p i } := ⟨⟨_, hs.choose_spec⟩⟩
-  sorry
+  rw [iSup_subtype', iSup_subtype', ENat.iSup_add]
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
-    (I.height : WithBot ENat) ≤ ringKrullDim R := by
-  sorry  -- The original uses le_supr₂ which needs to be adapted
--- ???
+    I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
 
-instance Ideal.finiteHeightOfFiniteRingKrullDim (priority := 90) {I : Ideal R}
-    [FiniteRingKrullDim R] : Ideal.FiniteHeight I := by
-  rw [Ideal.finiteHeight_iff_lt, or_iff_not_imp_left]
-  intro e
-  obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I e
-  refine (Ideal.height_mono hM').trans_lt ?_
+lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤):
+    I.height ≤ ringKrullDim R := by
+  rw [Ideal.height]
+  have : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
+  rcases this with ⟨P, hP⟩; haveI := hP.1.1
+  refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
+  norm_cast; apply iInf₂_le; exact hP
 
-  sorry
-  -- refine' (lt_of_le_of_lt _ (ringKrullDim_lt_top (R := R)))
-  -- apply M.primeHeightLeRingKrullDim
-
--- theorem ringKrullDimSucc [Nontrivial R] :
---     (ringKrullDim R : WithBot ENat) + (1 : ENat) = Order.height {I : Ideal R | I.IsPrime}:= by
---   have h : ∃ I : Ideal R, I.IsPrime := by
---     -- We know such an ideal exists in any nontrivial ring
---     sorry
---   sorry
+instance (priority := 900) Ideal.finiteHeightOfFiniteRingKrullDim {I : Ideal R}
+    [FiniteRingKrullDim R] : I.FiniteHeight := by
+  by_cases h : I = ⊤
+  · exact ⟨Or.inl h⟩
+  · refine ⟨Or.inr ?_⟩
+    have h1 := ringKrullDim_lt_top (R := R)
+    have h2 := Ideal.height_le_ringKrullDim_of_ne_top h
+    rw [← lt_top_iff_ne_top];
+    exact WithBot.coe_lt_coe.mp (lt_of_le_of_lt h2 h1)
 
 /-- If J has finite height and I ≤ J, then I has finite height -/
-lemma Ideal.finiteHeightOfLe {R : Type u} [CommRing R] {I J : Ideal R}
-  (e : I ≤ J) (hJ : J ≠ ⊤) [FiniteHeight J] :
-  FiniteHeight I where
+lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [FiniteHeight J] :
+    FiniteHeight I where
   eq_top_or_height_ne_top := Or.inr <| by
     rw [← lt_top_iff_ne_top]
     exact (height_mono e).trans_lt (height_lt_top hJ)
 
 /-- If J is a prime ideal containing I, and its height is less than or equal to the height of I,
 then J is a minimal prime over I -/
-lemma Ideal.memMinimalPrimesOfHeightEq {R : Type u} [CommRing R] {I J : Ideal R}
-  (e : I ≤ J) [J.IsPrime] [hJ : FiniteHeight J] (e' : height J ≤ height I) :
-  J ∈ I.minimalPrimes := by
+lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
+    [hJ : FiniteHeight J] (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
   convert h₁
   sorry
@@ -195,49 +173,45 @@ lemma Ideal.memMinimalPrimesOfHeightEq {R : Type u} [CommRing R] {I J : Ideal R}
   --   ((height_strict_mono_of_is_prime h₃).trans_le (e'.trans $ height_mono h₁.1.2))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
-lemma Ideal.primeHeightEqZeroIff {R : Type u} [CommRing R] {I : Ideal R} [I.IsPrime] :
-  primeHeight I = 0 ↔ I ∈ minimalPrimes R := by sorry
-  -- rw [primeHeight, Set.chain_height_eq_zero_iff]
-  -- constructor
-  -- · intro e
-  --   exact ⟨⟨inferInstance, bot_le⟩, fun J hJ e' => (eq_of_le_of_not_lt e' ?_).symm.le⟩
-  --   intro e''
-  --   show J ∈ (∅ : Set (Ideal R))
-  --   rw [← e]
-  --   exact ⟨hJ.1, e''⟩
-  -- · intro hI
-  --   ext J
-  --   suffices : J.IsPrime → ¬J < I
-  --   · simpa
-  --   intros hJ e
-  --   exact not_le_of_lt e (hI.2 ⟨hJ, bot_le⟩ e.le)
+lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
+  primeHeight I = 0 ↔ I ∈ minimalPrimes R := by
+  rw [Ideal.primeHeight, Order.height_eq_zero]
+  constructor
+  · intro h
+    sorry
+  · sorry
 
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsPrime]
  [h : FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
-  cases' subsingleton_or_nontrivial R
-  exact (h.1 <| Subsingleton.elim _ _).elim
-  by_contra h'
-  obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h'
+  have h : I ≠ ⊤ := sorry
+  obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
 
-  have IneBot : I ≠ ⊥ := I.isPrime_proper
-  have MneBot : M ≠ ⊥ := M.isMaximal_proper
+  sorry
+  -- cases' subsingleton_or_nontrivial R
+  -- exact (h.1 <| Subsingleton.elim _ _).elim
+  -- by_contra h'
+  -- obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h'
 
-  have height_le : I.primeHeight ≤ M.primeHeight := by
-    apply Ideal.primeHeight_mono
-    exact hM'
+  -- have IneBot : I ≠ ⊥ := I.isPrime_proper
+  -- have MneBot : M ≠ ⊥ := M.isMaximal_proper
 
-  have M_height_le : (M.primeHeight) ≤ ringKrullDim R :=
-    Ideal.primeHeight_le_ringKrullDim
+  -- have height_le : I.primeHeight ≤ M.primeHeight := by
+  --   apply Ideal.primeHeight_mono
+  --   exact hM'
 
-  have height_strict : I.primeHeight < M.primeHeight := by
-    apply lt_of_le_of_ne height_le
-    intro h_eq
-    apply h'
-    sorry -- need a lemma about equality of heights implying equality of ideals
+  -- have M_height_le : (M.primeHeight) ≤ ringKrullDim R :=
+  --   Ideal.primeHeight_le_ringKrullDim
 
-  have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
-  rw [e] at this
-  exact lt_irrefl _ this
+  -- have height_strict : I.primeHeight < M.primeHeight := by
+  --   apply lt_of_le_of_ne height_le
+  --   intro h_eq
+  --   apply h'
+  --   sorry -- need a lemma about equality of heights implying equality of ideals
+
+  -- have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
+  -- rw [e] at this
+  -- exact lt_irrefl _ this
+
   --   casesI subsingleton_or_nontrivial R,
   -- { exact ((h.1 : _) $ subsingleton.elim _ _).elim },
   -- have := congr_arg (λ x : with_top ℕ, x + 1) e,
@@ -255,7 +229,7 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsP
   --       ... < J : hJ
   --       ... ≤ M : hM' },
   -- have : krull_dimension R + 1 + 1 ≤ set.chain_height (set_of ideal.is_prime),
-  -- { rw ← H, apply set.chain_height_le_of_subset, rintros K (rfl|⟨h, _⟩), exacts [hM.is_prime, h] },
+  -- { rw ← H, apply set.chain_height_le_of_subset, rintros K (rfl|⟨h, _⟩), exacts [hM.is_prime, h]}
   -- cases h : krull_dimension R with x,
   -- { exact krull_dimension_ne_top R h },
   -- { rw [← krull_dimension_succ, h] at this, linarith [with_top.coe_le_coe.mp this] }
@@ -271,20 +245,28 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsP
 
 
 /-- The prime height of the maximal ideal equals the Krull dimension -/
-theorem LocalRing.maximalIdeal_primeHeight [IsLocalRing R]:
-    (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R :=
-  sorry
+theorem LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R]:
+    (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R := by
+  apply le_antisymm
+  · apply Ideal.primeHeight_le_ringKrullDim
+  · sorry
 
-/-- For a local ring with finite Krull dimension, a prime ideal has height equal to the Krull dimension
-    if and only if it is the maximal ideal -/
+/-- The height of the maximal ideal equals the Krull dimension -/
+theorem LocalRing.maximalIdeal_height_eq_ringKrullDim [IsLocalRing R]:
+    (IsLocalRing.maximalIdeal R).height = ringKrullDim R := by
+  rw [Ideal.height_eq_primeHeight, LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim]
+
+
+/-- For a local ring with finite Krull dimension, a prime ideal has height equal to the Krull
+dimension if and only if it is the maximal ideal -/
 theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] {I : Ideal R}
-    (hI : I.IsPrime) : Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
+    [hI : I.IsPrime] : Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
   constructor
   · intro h
     exact IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_of_primeHeight_eq_ringKrullDim h)
   · intro h
     simp_rw [h]
-    exact LocalRing.maximalIdeal_primeHeight
+    exact LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
 
 
 -- lemma set.chain_height_univ {α : Type*} [preorder α] (s : set α) :
@@ -315,8 +297,79 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
 --   rw [← Set.range_iff_surjective.mpr e.surjective, ← Set.image_univ, Set.chainHeight_image]
 --   exact fun _ _ => (e.lt_iff_lt).symm
 
-theorem WithTop.add_injective {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (fun a => a + n) := by
+theorem ENat.add_inj_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (fun a => a + n) := by
   intro a b e
   exact le_antisymm
     ((WithTop.add_le_add_iff_right hn).mp e.le)
     ((WithTop.add_le_add_iff_right hn).mp e.ge)
+
+
+
+
+
+
+
+
+
+-- lemma Ideal.mem_minimal_primes_of_height_eq
+--   {I J : Ideal R} (e : I ≤ J) [JPrime : J.IsPrime] [hJ : Ideal.FiniteHeight J]
+--     (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
+--   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
+--   convert h₁
+--   apply (eq_of_le_of_not_lt h₂ ?_).symm
+--   intro h₃
+--   letI := h₁.1.1
+--   letI := Ideal.finite_height_of_le h₂ <| Ideal.IsPrime.ne_top JPrime
+--   replace h₃ :=Ideal.height_strict_mono_of_is_prime h₃
+--   contrapose! h₃
+--   exact e'.trans <| Ideal.height_mono h₁.1.2
+
+-- lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
+--   I.primeHeight = 0 ↔ I ∈ minimalPrimes R := by
+--   unfold Ideal.primeHeight
+--   rw [Set.chainHeight_eq_zero_iff]
+--   constructor
+--   . intro h
+--     refine' ⟨by simp_all only [bot_le, and_self], fun J hJ hJI => ?_⟩
+--     rw [@Set.eq_empty_iff_forall_not_mem] at h
+--     specialize h J
+--     simp only [Set.mem_setOf_eq, true_and, hJ] at h
+--     rw [propext (LE.le.not_gt_iff_eq hJI)] at h
+--     simp_rw [h, le_refl]
+--   . intro hI
+--     ext ⟨J, hJ⟩
+--     simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and]
+--     intro hJ_prime hJ_lt_I
+--     exact not_le_of_lt hJ_lt_I (hI.2 ⟨hJ_prime, bot_le⟩ hJ_lt_I.le)
+
+-- theorem Ideal.isMaximal_of_prime_height_eq_krullDimension {I : Ideal R} [h : I.IsPrime] [FiniteKrullDimensional R]
+--     (e : I.primeHeight = krullDimension R) : I.IsMaximal := by
+--   rcases subsingleton_or_nontrivial R with h' | _
+--   . exact (h.1 <| Subsingleton.elim I ⊤).elim
+--   . have := congrArg (fun x : WithTop ℕ => x + 1) e
+--     dsimp at this
+--     rw [Ideal.primeHeight_succ] at this
+--     refine ⟨h.1, ?_⟩
+--     intro J hJ
+--     by_contra e'
+--     obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal J e'
+--     have H : (insert M (setOf Ideal.IsPrime ∩ Set.Iic I)).chainHeight =
+--       krullDimension R + (1 : WithTop ℕ) + (1 : WithTop ℕ) := by
+--       rw [← this, Set.chainHeight_insert_of_forall_lt]; rfl
+--       intro I' hI'
+--       calc
+--         I' ≤ I := hI'.2
+--         _ < J := hJ
+--         _ ≤ M := hM'
+--     have : krullDimension R + (1 : WithTop ℕ) + (1 : WithTop ℕ) ≤
+--       Set.chainHeight (setOf <| Ideal.IsPrime (α := R)) := by
+--       rw [← H]
+--       apply Set.chainHeight_mono
+--       rintro K (rfl | ⟨hK, _⟩)
+--       · exact hM.isPrime
+--       · exact hK
+--     cases h_dim : krullDimension R with
+--     | top => exact krullDimensionNeTop h_dim
+--     | coe x =>
+--       rw [← krullDimensionSucc, h_dim] at this
+--       linarith [WithTop.coe_le_coe.mp this]

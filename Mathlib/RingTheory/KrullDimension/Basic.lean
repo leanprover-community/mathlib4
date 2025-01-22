@@ -75,7 +75,7 @@ lemma finiteRingKrullDim_iff_lt :
   · intro h
     exact ⟨ne_top_of_lt h⟩
 
-instance (priority := 100) finiteRingKrullDimalOfSubsingleton [Subsingleton R] :
+instance (priority := 100) finiteRingKrullDimOfSubsingleton [Subsingleton R] :
   FiniteRingKrullDim R := by
   rw [finiteRingKrullDim_iff_lt, ringKrullDim_eq_bot_of_subsingleton]
   exact bot_lt_top
