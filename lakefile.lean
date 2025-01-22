@@ -101,6 +101,14 @@ any labels online.
 lean_exe autolabel where
   srcDir := "scripts"
 
+/--
+`lake exe apply-tryAtEachStep` parses a `results.json` file obtained from running the
+`tryAtEachStep` tool and tries to apply all proposed changes to the current mathlib tree.
+
+This assumes the working tree matches the mathlib4 copy this was obtained from. -/
+lean_exe «apply-tryAtEachStep» where
+  srcDir := "scripts"
+
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
