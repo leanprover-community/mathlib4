@@ -645,6 +645,14 @@ theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) 
 theorem vecMul_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) : v ᵥ* M = ∑ i, v i • M i :=
   (Finset.sum_fn ..).symm
 
+/-- The noncommutative version of `Matrix.mulVec_eq_sum`.  -/
+theorem mulVec_eq_sum' [Fintype n] (v : n → α) (M : Matrix m n α) :
+    M *ᵥ v = ∑ i, MulOpposite.op (v i) • Mᵀ i := by
+  ext
+  simp only [Finset.sum_apply, Pi.smul_apply, transpose_apply, MulOpposite.smul_eq_mul_unop,
+    MulOpposite.unop_op]
+  rfl
+
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (diagonal v *ᵥ w) x = v x * w x :=
   diagonal_dotProduct v w x
@@ -882,6 +890,7 @@ theorem vecMul_transpose [Fintype n] (A : Matrix m n α) (x : n → α) : x ᵥ*
   ext
   apply dotProduct_comm
 
+/-- The commutative version of `Matrix.mulVec_eq_sum'` -/
 theorem mulVec_eq_sum [Fintype n] (v : n → α) (M : Matrix m n α) : M *ᵥ v = ∑ i, v i • Mᵀ i := by
   rw [← vecMul_transpose, vecMul_eq_sum]
 
