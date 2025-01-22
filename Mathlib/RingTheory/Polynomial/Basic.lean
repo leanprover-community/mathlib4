@@ -723,12 +723,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne, Prod.mk.inj_iff, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
-          rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
-          rintro (hmi | rfl)
-          · rw [← not_le]
-            intro hnj
-            exact (add_lt_add_of_lt_of_le hmi hnj).ne hij.2.symm
-          · simp only [eq_self_iff_true, not_true, false_or, add_right_inj, not_and_self_iff] at hij
+          omega
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
