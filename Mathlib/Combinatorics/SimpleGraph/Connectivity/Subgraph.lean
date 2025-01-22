@@ -104,8 +104,8 @@ protected lemma Connected.sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
-lemma Connected.exists_connectedComponent_eq {H : Subgraph G}
-    (hc : H.Connected) (h : ∀ v ∈ H.verts, ∀ w, H.Adj v w ↔ G.Adj v w) :
+lemma Connected.exists_verts_eq_connectedComponentSupp {H : Subgraph G}
+    (hc : H.Connected) (h : G ≤ H.spanningCoe) :
     ∃ c : G.ConnectedComponent, H.verts = c.supp := by
   rw [SimpleGraph.ConnectedComponent.exists]
   obtain ⟨v, hv⟩ := hc.nonempty
