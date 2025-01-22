@@ -737,12 +737,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
 
 instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
-  have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
-  have h_add_2 : ((f + g₂ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₂ := Lp.coeFn_add _ _
-  filter_upwards [h_add_1, h_add_2, hg₁₂] with _ h1 h2 h3
-  rw [h1, h2, Pi.add_apply, Pi.add_apply]
-  exact add_le_add le_rfl h3
+  exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 
