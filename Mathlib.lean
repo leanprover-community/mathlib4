@@ -4768,6 +4768,7 @@ import Mathlib.RingTheory.Trace.Defs
 import Mathlib.RingTheory.Trace.Quotient
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
 import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
+import Mathlib.RingTheory.TwoSidedIdeal.Commute
 import Mathlib.RingTheory.TwoSidedIdeal.Instances
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
