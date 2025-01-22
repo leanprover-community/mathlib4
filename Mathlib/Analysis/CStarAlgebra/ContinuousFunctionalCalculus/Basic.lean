@@ -384,8 +384,6 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
         show IsSelfAdjoint (x + p - x) ∧
           QuasispectrumRestricts (x + p - x) ContinuousMap.realToNNReal
         simp only [add_sub_cancel_left]
-        --suffices IsSelfAdjoint p ∧ SpectrumRestricts p ContinuousMap.realToNNReal from
-          --⟨by simpa using this.1, by simpa using this.2⟩
         induction hp using AddSubmonoid.closure_induction with
         | mem x hx =>
           obtain ⟨s, rfl⟩ := hx
