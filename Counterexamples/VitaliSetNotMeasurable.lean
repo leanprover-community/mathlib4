@@ -26,18 +26,8 @@ noncomputable section
 because we want to make clear exactly which properties of measurability and the volume
 measure are used in the proof of the non-measurability of the Vitali set. -/
 
-example {a b : ℝ} : volume (Icc a b) = ENNReal.ofReal (b - a) :=
-  volume_Icc
-
 lemma volume_mono {s t : Set ℝ} (h : s ⊆ t) : volume s ≤ volume t := by
   exact OuterMeasureClass.measure_mono volume h
-
-lemma measurable_nullmeasurable {s : Set ℝ} (h : MeasurableSet s) : NullMeasurableSet s volume :=
-  h.nullMeasurableSet
-
-lemma measurable_null_nullmeasurable {s t : Set ℝ}
-    (hm : NullMeasurableSet s) (hn : volume t = 0) : NullMeasurableSet (s ∪ t) :=
-  NullMeasurableSet.union_null hm hn
 
 lemma nullmeasurable_measurable_null {s : Set ℝ} (h : NullMeasurableSet s volume) :
     ∃ t ⊆ s, MeasurableSet t ∧ volume t = volume s ∧ volume (s \ t) = 0 := by
@@ -47,23 +37,25 @@ lemma nullmeasurable_measurable_null {s : Set ℝ} (h : NullMeasurableSet s volu
   · exact measure_congr t_eq_s
   · exact ae_le_set.mp t_eq_s.symm.le
 
-lemma shift_volume (s : Set ℝ) (c : ℝ) : volume ((fun x ↦ x + c) '' s) = volume s := by
+lemma shift_volume (s : Set ℝ) (c : ℝ) : volume ((· + c) '' s) = volume s := by
   simp only [image_add_right, measure_preimage_add_right]
 
 lemma shift_nullmeasurable {s : Set ℝ} (h : NullMeasurableSet s volume) (c : ℝ) :
-    NullMeasurableSet ((fun x ↦ x + c) '' s) volume := by
+    NullMeasurableSet ((· + c) '' s) volume := by
   rcases nullmeasurable_measurable_null h with ⟨t, ts, tm, vs, vt⟩
   rw [← union_diff_cancel ts, image_union]
-  exact measurable_null_nullmeasurable
-    (measurable_nullmeasurable (((measurableEmbedding_addRight c).measurableSet_image).mpr tm))
-    (by rw [shift_volume (s \ t), vt])
+  have := ((measurableEmbedding_addRight c).measurableSet_image).mpr tm
+  apply (this.nullMeasurableSet (μ := volume)).union_null
+  rw [shift_volume (s \ t), vt]
 
-lemma union_volume_null {s t : Set ℝ} (hs : MeasurableSet s) (ht : volume t = 0) :
-    volume (s ∪ t) = volume s := by
-  have hz : volume (t \ s) = 0 := by
-    apply le_antisymm ?_ (zero_le (volume (t \ s)))
+-- TODO: move to a better place, unless this already exists!
+lemma measure_union_null {α : Type*} [MeasureSpace α] {μ : Measure α}
+    {s t : Set α} (hs : MeasurableSet s) (ht : μ t = 0) :
+    μ (s ∪ t) = μ s := by
+  have hz : μ (t \ s) = 0 := by
+    apply le_antisymm ?_ (zero_le (μ (t \ s)))
     rw [← ht]
-    exact volume_mono diff_subset
+    exact measure_mono diff_subset
   rw [union_diff_self.symm, measure_union' disjoint_sdiff_right hs, hz]
   abel
 
@@ -95,7 +87,7 @@ lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
   have hm_tu : MeasurableSet (⋃ i ∈ I, t i) := MeasurableSet.biUnion hc t_m
   have hv_t : volume (⋃ i ∈ I, t i) = ∑' (i : ↑I), volume (t ↑i) :=
     measure_biUnion (μ := volume) hc (hd.mono_on t_s) t_m
-  rw [h_st, union_volume_null hm_tu ((biUnion_null hc).mpr t_z), hv_t]
+  rw [h_st, measure_union_null hm_tu ((biUnion_null hc).mpr t_z), hv_t]
   congr; ext ⟨i, i_I⟩
   rw [t_v i i_I]
 
@@ -274,6 +266,6 @@ theorem vitaliSet_not_nullmeasurable : ¬ (NullMeasurableSet vitaliSet volume) :
 /-- vitaliSet is not measurable. -/
 theorem vitaliSet_not_measurable : ¬ (MeasurableSet vitaliSet) := by
   intro hm
-  exact vitaliSet_not_nullmeasurable (measurable_nullmeasurable hm)
+  exact vitaliSet_not_nullmeasurable hm.nullMeasurableSet
 
 end
