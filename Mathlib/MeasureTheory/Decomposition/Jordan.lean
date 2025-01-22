@@ -185,7 +185,6 @@ end JordanDecomposition
 
 namespace SignedMeasure
 
-open scoped Classical
 open JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α}
