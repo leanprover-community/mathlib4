@@ -350,7 +350,7 @@ lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
 
 open scoped symmDiff
 
-lemma Subgraph.IsPerfectMatching.symmDiff_IsCycles
+lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
     {M : Subgraph G} {M' : Subgraph G'} (hM : M.IsPerfectMatching)
     (hM' : M'.IsPerfectMatching) : (M.spanningCoe ∆ M'.spanningCoe).IsCycles := by
   intro v
