@@ -400,7 +400,7 @@ It is assumed that there is a "linear order" on all the semirings which appear i
 for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`).
 
 TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
-instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR #16984 provides a
+instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR https://github.com/leanprover-community/mathlib4/pull/16984 provides a
 proof-of-concept implementation of this variant, but it would need some polishing before joining
 Mathlib.
 

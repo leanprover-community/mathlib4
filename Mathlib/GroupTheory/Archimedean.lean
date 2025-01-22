@@ -68,7 +68,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
     rcases existsUnique_mul_zpow_mem_Ico h₀ 1 (g / a) with ⟨m, ⟨hm, hm'⟩, -⟩
     simp only [one_mul, div_le_iff_le_mul, div_mul_cancel, ← zpow_add_one] at hm hm'
     lift m to ℕ
-    · rw [← Int.lt_add_one_iff, ← zpow_lt_zpow_iff h₀, zpow_zero]
+    · rw [← Int.lt_add_one_iff, ← zpow_lt_zpow_iff_right h₀, zpow_zero]
       exact hg.trans_le hm
     · simp only [← Nat.cast_succ, zpow_natCast] at hm hm'
       exact ⟨m, hm', hm⟩

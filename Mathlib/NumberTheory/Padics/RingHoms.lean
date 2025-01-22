@@ -40,7 +40,7 @@ which removes some boilerplate code.
 noncomputable section
 
 open scoped Classical
-open Nat LocalRing Padic
+open Nat IsLocalRing Padic
 
 namespace PadicInt
 
@@ -289,7 +289,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
   · simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
   simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
-  have hp : p ^ n < p ^ (n + 1) := by apply pow_lt_pow_right hp_prime.1.one_lt (lt_add_one n)
+  have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
   split_ifs with h
   · apply lt_trans (ih _) hp
   · calc
@@ -489,7 +489,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   intro j hj
   refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
-  -- Added to adapt to leanprover/lean4#2734.
+  -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
   beta_reduce
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]

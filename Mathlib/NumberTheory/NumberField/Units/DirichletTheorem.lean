@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Units.Basic
-import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field

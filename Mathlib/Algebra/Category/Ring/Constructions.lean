@@ -3,11 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
+import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -160,7 +159,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [← eq1, ← eq2]
     rfl
 

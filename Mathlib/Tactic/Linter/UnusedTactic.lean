@@ -6,6 +6,9 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Batteries.Tactic.Unreachable
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # The unused tactic linter
@@ -90,6 +93,7 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     |>.insert `Mathlib.Tactic.Propose.propose'
     |>.insert `Lean.Parser.Tactic.traceState
     |>.insert `Mathlib.Tactic.tacticMatch_target_
+    |>.insert ``Lean.Parser.Tactic.change
     |>.insert `change?
     |>.insert `«tactic#adaptation_note_»
     |>.insert `tacticSleep_heartbeats_
@@ -129,6 +133,9 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
     |>.insert `Mathlib.Tactic.LinearCombination'.linearCombination'
+    |>.insert `Aesop.Frontend.Parser.addRules
+    |>.insert `Aesop.Frontend.Parser.aesopTactic
+    |>.insert `Aesop.Frontend.Parser.aesopTactic?
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     |>.insert ``Lean.Parser.Tactic.failIfSuccess
     |>.insert `Mathlib.Tactic.successIfFailWithMsg
@@ -163,7 +170,7 @@ variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool)
 `MetavarContext` `mctx`. -/
 def getNames (mctx : MetavarContext) : List Name :=
   let lcts := mctx.decls.toList.map (MetavarDecl.lctx ∘ Prod.snd)
-  let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).join.reduceOption
+  let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
 mutual

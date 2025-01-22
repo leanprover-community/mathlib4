@@ -146,7 +146,7 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 variable [One β]
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
 
@@ -303,7 +303,7 @@ theorem mul_pure : f * pure b = f.map (· * b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) :=
   map₂_pure
 
@@ -408,7 +408,7 @@ theorem div_pure : f / pure b = f.map (· / b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) :=
   map₂_pure
 
@@ -826,7 +826,7 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) :=
   map₂_pure
 
@@ -914,7 +914,7 @@ theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map (a -ᵥ ·) :=
 theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
   map₂_pure_right
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) :=
   map₂_pure
 

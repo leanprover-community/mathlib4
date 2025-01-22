@@ -58,4 +58,35 @@ instance : CommSemiring (BitVec w) :=
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
+@[simp] lemma ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
+  rfl
+
+@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
+  rfl
+
+lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+  rfl
+
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
+  cases w
+  case zero =>
+    simp only [eq_nil]
+  case succ w =>
+    simp only [Int.cast, IntCast.intCast]
+    unfold Int.castDef
+    cases' z with z z
+    · rfl
+    · rw [ofInt_negSucc_eq_not_ofNat]
+      simp only [Nat.cast_add, Nat.cast_one, neg_add_rev]
+      rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
+        natCast_eq_ofNat, negOne_eq_allOnes, ← sub_toAdd, allOnes_sub_eq_not]
+
+theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
+  apply toFin_inj.mpr <| (ofFin_intCast z).symm
+
+instance : CommRing (BitVec w) :=
+  toFin_injective.commRing _
+    toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
+    toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
+
 end BitVec

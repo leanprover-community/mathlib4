@@ -62,10 +62,10 @@ example : x + 0 = y → x = z := by
   sorry
 ```
 -/
-elab "simp_intro" cfg:(config)? disch:(discharger)?
+elab "simp_intro" cfg:optConfig disch:(discharger)?
     ids:(ppSpace colGt binderIdent)* more:" .."? only:(&" only")? args:(simpArgs)? : tactic => do
   let args := args.map fun args ↦ ⟨args.raw[1].getArgs⟩
-  let stx ← `(tactic| simp $(cfg)? $(disch)? $[only%$only]? $[[$args,*]]?)
+  let stx ← `(tactic| simp $cfg:optConfig $(disch)? $[only%$only]? $[[$args,*]]?)
   let { ctx, simprocs, dischargeWrapper } ←
     withMainContext <| mkSimpContext stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? ↦ do

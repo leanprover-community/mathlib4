@@ -107,6 +107,22 @@ theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
 theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 
+theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
+    HasSum (fun i ↦ b / f i) (b * a) := by
+  have := h.mul_left b
+  simpa only [div_eq_mul_inv, one_mul] using this
+
+theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x)) (b : α) :
+    Summable fun i ↦ b / f i :=
+  (h.hasSum.const_div b).summable
+
+theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
+    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) ↔ HasSum (1/ f) a₁ := by
+  simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
+
+theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
+  simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
+
 end DivisionSemiring
 
 /-!

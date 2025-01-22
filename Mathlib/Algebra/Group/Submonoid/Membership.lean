@@ -8,7 +8,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Util.AssertExists
@@ -407,8 +407,8 @@ theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
 noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powers a) :=
   Classical.decPred _
 
--- Porting note (#11215): TODO the following instance should follow from a more general principle
--- See also mathlib4#2417
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO the following instance should follow from a more general principle
+-- See also https://github.com/leanprover-community/mathlib4/issues/2417
 noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
   inferInstanceAs <| Fintype {y // y ∈ powers a}
 

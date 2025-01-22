@@ -5,10 +5,10 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Field.Subfield
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Algebra.Field.Subfield.Defs
 
 /-!
 # Normed fields

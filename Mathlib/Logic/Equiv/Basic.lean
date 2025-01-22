@@ -1428,7 +1428,7 @@ theorem swap_apply_right (a b : α) : swap a b b = a := by
   by_cases h : b = a <;> simp [swap_apply_def, h]
 
 theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x = x := by
-  simp (config := { contextual := true }) [swap_apply_def]
+  simp +contextual [swap_apply_def]
 
 theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
   contrapose! h
@@ -1716,6 +1716,14 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
   simp [piCongr', piCongr_apply_apply]
 
 end
+
+/-- Transport dependent functions through an equality of sets. -/
+@[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :
+    (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
+  toFun f i := f ⟨i, h ▸ i.2⟩
+  invFun f i := f ⟨i, h.symm ▸ i.2⟩
+  left_inv f := rfl
+  right_inv f := rfl
 
 section BinaryOp
 

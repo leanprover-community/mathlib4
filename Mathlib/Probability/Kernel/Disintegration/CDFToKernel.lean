@@ -141,16 +141,15 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
         ENNReal.ofReal (stieltjesOfMeasurableRat f hf.measurable (a, b) r) ∂(ν a) := by
     congr with b : 1
     simp_rw [← measure_stieltjesOfMeasurableRat_Iic]
-    rw [← measure_iInter_eq_iInf]
+    rw [← Monotone.measure_iInter]
     · congr with y : 1
       simp only [mem_Iic, mem_iInter, Subtype.forall]
       refine ⟨fun h a ha ↦ h.trans ?_, fun h ↦ ?_⟩
       · exact mod_cast ha.le
       · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
         exact mod_cast hq
+    · exact fun r r' hrr' ↦ Iic_subset_Iic.mpr <| mod_cast hrr'
     · exact fun _ ↦ nullMeasurableSet_Iic
-    · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
-      exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
       exact ⟨⟨q, hq⟩, measure_ne_top _ _⟩
   have h_nonempty : Nonempty { r' : ℚ // x < ↑r' } := by
@@ -168,15 +167,13 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
   · refine Measurable.ennreal_ofReal ?_
     exact (measurable_stieltjesOfMeasurableRat hf.measurable _).comp measurable_prod_mk_left
   simp_rw [setLIntegral_stieltjesOfMeasurableRat_rat hf _ _ hs]
-  rw [← measure_iInter_eq_iInf]
+  rw [← Monotone.measure_iInter]
   · rw [← prod_iInter]
     congr with y
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
     exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
+  · exact fun i j hij ↦ prod_mono_right (by gcongr)
   · exact fun i ↦ (hs.prod measurableSet_Iic).nullMeasurableSet
-  · refine Monotone.directed_ge fun i j hij ↦ ?_
-    refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
-    exact mod_cast hij
   · exact ⟨h_nonempty.some, measure_ne_top _ _⟩
 
 @[deprecated (since := "2024-06-29")]
@@ -348,7 +345,7 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
 lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
     ⨅ r : { r' : ℚ // t < r' }, ρ (s ×ˢ Iic (r : ℝ)) = ρ (s ×ˢ Iic (t : ℝ)) := by
-  rw [← measure_iInter_eq_iInf]
+  rw [← Monotone.measure_iInter]
   · rw [← prod_iInter]
     congr with x : 1
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
@@ -356,10 +353,8 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
     · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
       exact mod_cast htq
     · exact mod_cast hta.le
+  · exact fun r r' hrr' ↦ prod_mono_right <| by gcongr
   · exact fun _ => (hs.prod measurableSet_Iic).nullMeasurableSet
-  · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
-    refine Iic_subset_Iic.mpr ?_
-    exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
 lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)

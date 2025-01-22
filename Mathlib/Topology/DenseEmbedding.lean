@@ -25,8 +25,7 @@ has to be `IsDenseInducing` (not necessarily injective).
 
 noncomputable section
 
-open Set Filter
-open scoped Topology
+open Filter Set Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -210,12 +209,12 @@ end IsDenseInducing
 structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
   IsDenseInducing e : Prop where
   /-- A dense embedding is injective. -/
-  inj : Function.Injective e
+  injective : Function.Injective e
 
 lemma IsDenseEmbedding.mk' [TopologicalSpace α] [TopologicalSpace β] (e : α → β) (c : Continuous e)
-    (dense : DenseRange e) (inj : Function.Injective e)
+    (dense : DenseRange e) (injective : Function.Injective e)
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (e a), ∀ b, e b ∈ t → b ∈ s) : IsDenseEmbedding e :=
-  { IsDenseInducing.mk' e c dense H with inj }
+  { IsDenseInducing.mk' e c dense H with injective }
 
 @[deprecated (since := "2024-09-30")]
 alias DenseEmbedding.mk' := IsDenseEmbedding.mk'
@@ -227,8 +226,10 @@ open TopologicalSpace
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 variable {e : α → β}
 
+lemma isDenseInducing (de : IsDenseEmbedding e) : IsDenseInducing e := de.toIsDenseInducing
+
 theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
-  de.inj.eq_iff
+  de.injective.eq_iff
 
 theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
 
@@ -237,13 +238,13 @@ alias to_embedding := isEmbedding
 
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=
-  de.toIsDenseInducing.separableSpace
+  de.isDenseInducing.separableSpace
 
 /-- The product of two dense embeddings is a dense embedding. -/
 protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDenseEmbedding e₁)
-    (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) :=
-  { de₁.toIsDenseInducing.prodMap de₂.toIsDenseInducing with
-    inj := de₁.inj.prodMap de₂.inj }
+    (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) where
+  toIsDenseInducing := de₁.isDenseInducing.prodMap de₂.isDenseInducing
+  injective := de₁.injective.prodMap de₂.injective
 
 @[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
 
@@ -260,14 +261,14 @@ protected theorem subtype (de : IsDenseEmbedding e) (p : α → Prop) :
       ext ⟨x, hx⟩
       rw [image_eq_range] at hx
       simpa [closure_subtype, ← range_comp, (· ∘ ·)]
-  inj := (de.inj.comp Subtype.coe_injective).codRestrict _
+  injective := (de.injective.comp Subtype.coe_injective).codRestrict _
   eq_induced :=
     (induced_iff_nhds_eq _).2 fun ⟨x, hx⟩ => by
       simp [subtypeEmb, nhds_subtype_eq_comap, de.isInducing.nhds_eq_comap, comap_comap,
         Function.comp_def]
 
 theorem dense_image (de : IsDenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ Dense s :=
-  de.toIsDenseInducing.dense_image
+  de.isDenseInducing.dense_image
 
 protected lemma id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : α → α) :=
   { IsEmbedding.id with dense := denseRange_id }

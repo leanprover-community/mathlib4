@@ -275,6 +275,9 @@ theorem radical_le_jacobson : radical I ≤ jacobson I :=
 theorem isRadical_of_eq_jacobson (h : jacobson I = I) : I.IsRadical :=
   radical_le_jacobson.trans h.le
 
+lemma isRadical_jacobson (I : Ideal R) : I.jacobson.IsRadical :=
+  isRadical_of_eq_jacobson jacobson_idem
+
 theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
     IsUnit r := by
   cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r h with s hs
@@ -436,5 +439,9 @@ def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
 
 lemma asIdeal_jacobson (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
   ext; simp [jacobson]
+
+theorem mem_jacobson_iff {x : R} {I : TwoSidedIdeal R} :
+    x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x + z - 1 ∈ I := by
+  simp [jacobson, Ideal.mem_jacobson_iff]
 
 end TwoSidedIdeal

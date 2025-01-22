@@ -934,4 +934,32 @@ theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd :
 
 end Measure
 
+section MeasurePreserving
+
+-- Note that these results cannot be put in the previous `measurePreserving` section since
+-- they use `lintegral_prod`.
+
+/-- The measurable equiv induced by the equiv `(α × β) × γ ≃ α × (β × γ)` is measure preserving. -/
+theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb : Measure β)
+    (μc : Measure γ) [SFinite μb] [SFinite μc] :
+    MeasurePreserving (MeasurableEquiv.prodAssoc : (α × β) × γ ≃ᵐ α × β × γ)
+      ((μa.prod μb).prod μc) (μa.prod (μb.prod μc)) where
+  measurable := MeasurableEquiv.prodAssoc.measurable
+  map_eq := by
+    ext s hs
+    have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prod_mk_left hs
+    have B : MeasurableSet (MeasurableEquiv.prodAssoc ⁻¹' s) :=
+      MeasurableEquiv.prodAssoc.measurable hs
+    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, prod_apply hs, prod_apply (A _),
+      prod_apply B, lintegral_prod _ (measurable_measure_prod_mk_left B).aemeasurable]
+    rfl
+
+theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]
+    [MeasureSpace β₁] [MeasureSpace γ₁] [SFinite (volume : Measure β₁)]
+    [SFinite (volume : Measure γ₁)] :
+    MeasurePreserving (MeasurableEquiv.prodAssoc : (α₁ × β₁) × γ₁ ≃ᵐ α₁ × β₁ × γ₁) :=
+  MeasureTheory.measurePreserving_prodAssoc volume volume volume
+
+end MeasurePreserving
+
 end MeasureTheory

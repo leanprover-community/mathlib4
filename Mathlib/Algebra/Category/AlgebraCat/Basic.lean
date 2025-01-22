@@ -139,10 +139,10 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     { carrier := FreeAlgebra R S
       isRing := Algebra.semiringToRing R }
   map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
-  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): `apply FreeAlgebra.hom_ext` was `ext1`.
   map_id := by intro X; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; rfl
   map_comp := by
-  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): `apply FreeAlgebra.hom_ext` was `ext1`.
     intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
     -- Porting node: this ↓ `erw` used to be handled by the `simp` below it
     erw [CategoryTheory.coe_comp]
@@ -157,7 +157,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun _ _ => (FreeAlgebra.lift _).symm
       -- Relying on `obviously` to fill out these proofs is very slow :(
       homEquiv_naturality_left_symm := by
-        -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
+        -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): `apply FreeAlgebra.hom_ext` was `ext1`.
         intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
         simp only [free_map, Equiv.symm_symm, FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp,
           Function.comp_apply, types_comp_apply]
@@ -201,13 +201,13 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
       -- Porting note: was `by tidy`
       change (i.hom ≫ i.inv) x = x
       simp only [hom_inv_id]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [id_apply]
     right_inv := fun x => by
       -- Porting note: was `by tidy`
       change (i.inv ≫ i.hom) x = x
       simp only [inv_hom_id]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [id_apply] }
 
 end CategoryTheory.Iso

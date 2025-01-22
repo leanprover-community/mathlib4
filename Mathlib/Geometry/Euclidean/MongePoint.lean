@@ -111,7 +111,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     nsmul_eq_mul]
   -- Porting note: replaced
   -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  -- TODO(#15486): used to be `field_simp [n.cast_add_one_ne_zero]`, but was really slow
+  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [n.cast_add_one_ne_zero]`, but was really slow
   -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
   simp (disch := field_simp_discharge) only [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one,
     inv_eq_one_div, mul_div_assoc', mul_one, add_div', div_mul_cancel₀, div_eq_iff, one_mul]
@@ -142,7 +142,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
     field_simp [hn1, hn3, mul_comm]
-  · -- TODO(#15486): used to be `field_simp [hn1]`, but was really slow
+  · -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hn1]`, but was really slow
   -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
     simp (disch := field_simp_discharge) only
       [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, zero_sub, mul_neg, mul_one, neg_div',
@@ -443,13 +443,11 @@ planes. -/
 theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by
-    -- Porting note (#11043): was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
+    revert i₁ i₂ i₃; decide
   have he : univ.erase i₁ = {i₂, i₃} := by
-    -- Porting note (#11043): was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
+    revert i₁ i₂ i₃; decide
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
     coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
   simp [h₂₃, Submodule.span_insert_eq_span]
@@ -458,7 +456,7 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
 theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} :
     t.orthocenter ∈ t.altitude i₁ := by
   obtain ⟨i₂, i₃, h₁₂, h₂₃, h₁₃⟩ : ∃ i₂ i₃, i₁ ≠ i₂ ∧ i₂ ≠ i₃ ∧ i₁ ≠ i₃ := by
-    -- Porting note (#11043): was `decide!`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
     fin_cases i₁ <;> decide
   rw [orthocenter_eq_mongePoint, t.altitude_eq_mongePlane h₁₂ h₁₃ h₂₃]
   exact t.mongePoint_mem_mongePlane
@@ -469,7 +467,7 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
     (h₁₂ : i₁ ≠ i₂) (h₁ : p ∈ t.altitude i₁) (h₂ : p ∈ t.altitude i₂) : p = t.orthocenter := by
   obtain ⟨i₃, h₂₃, h₁₃⟩ : ∃ i₃, i₂ ≠ i₃ ∧ i₁ ≠ i₃ := by
     clear h₁ h₂
-    -- Porting note (#11043): was `decide!`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
     fin_cases i₁ <;> fin_cases i₂ <;> decide
   rw [t.altitude_eq_mongePlane h₁₃ h₁₂ h₂₃.symm] at h₁
   rw [t.altitude_eq_mongePlane h₂₃ h₁₂.symm h₁₃.symm] at h₂
@@ -478,7 +476,7 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
     intro i hi
     have hi₁₂ : i₁ = i ∨ i₂ = i := by
       clear h₁ h₂
-      -- Porting note (#11043): was `decide!`
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
       fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> fin_cases i <;> simp at h₁₂ h₁₃ h₂₃ hi ⊢
     cases' hi₁₂ with hi₁₂ hi₁₂
     · exact hi₁₂ ▸ h₂
@@ -500,7 +498,7 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
   have hu : ({i₁, i₂} : Finset (Fin 3)) ⊆ univ := subset_univ _
   obtain ⟨i₃, hi₃, hi₃₁, hi₃₂⟩ :
       ∃ i₃, univ \ ({i₁, i₂} : Finset (Fin 3)) = {i₃} ∧ i₃ ≠ i₁ ∧ i₃ ≠ i₂ := by
-    -- Porting note (#11043): was `decide!`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
     fin_cases i₁ <;> fin_cases i₂ <;> simp at h <;> decide
   simp_rw [← sum_sdiff hu, hi₃]
   norm_num [hi₃₁, hi₃₂]
@@ -544,9 +542,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
       ?_
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
-        -- Porting note (#11043): was `decide!`
-        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃
-          <;> simp (config := {decide := true}) at hj₁₂ hj₁₃ hj₂₃ ⊢
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
+        revert i₁ i₂ i₃ j₁ j₂ j₃; decide
       rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
         Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
         h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
@@ -560,18 +557,16 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   use mem_affineSpan ℝ (Set.mem_range_self _)
   have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
     clear h₁ h₂ h₃
-    -- Porting note (#11043): was `decide!`
-    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃
-      <;> simp (config := {decide := true}) at hj₁₂ hj₁₃ hj₂₃ ⊢
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
+    revert i₁ i₂ i₃ j₁ j₂ j₃; decide
   rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
   refine hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) ?_)
   have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
     clear hle h₂ h₃
-    -- Porting note (#11043): was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) at hi₁₂ hi₁₃ hi₂₃ ⊢
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
+    revert i₁ i₂ i₃; decide
   rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
   exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 
@@ -734,8 +729,8 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
   · obtain ⟨j₁, hj₁₂, hj₁₃, hj₁₂₃⟩ :
         ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by
       clear h₂ h₃
-      -- Porting note (#11043): was `decide!`
-      fin_cases j₂ <;> fin_cases j₃ <;> simp (config := {decide := true}) at hj₂₃ ⊢
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
+      revert j₂ j₃; decide
     suffices h : t₀.points j₁ = t.orthocenter by
       have hui : (Set.univ : Set (Fin 3)) = {i₁, i₂, i₃} := by ext x; simpa using h₁₂₃ x
       have huj : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by ext x; simpa using hj₁₂₃ x

@@ -219,7 +219,7 @@ instance (priority := 500) [∀ a b, Decidable (c a b)] : DecidableEq c.Quotient
 theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=
   rfl
 
--- Porting note (#11215): TODO: restore `elab_as_elim`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `elab_as_elim`
 /-- The function on the quotient by a congruence relation `c` induced by a function that is
     constant on `c`'s equivalence classes. -/
 @[to_additive "The function on the quotient by a congruence relation `c`
@@ -228,7 +228,7 @@ protected def liftOn {β} {c : Con M} (q : c.Quotient) (f : M → β) (h : ∀ a
     β :=
   Quotient.liftOn' q f h
 
--- Porting note (#11215): TODO: restore `elab_as_elim`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `elab_as_elim`
 /-- The binary function on the quotient by a congruence relation `c` induced by a binary function
     that is constant on `c`'s equivalence classes. -/
 @[to_additive "The binary function on the quotient by a congruence relation `c`
@@ -642,7 +642,7 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 an `AddSemigroup`."]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
   { (Function.Surjective.semigroup _
-      Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
+      Quotient.mk''_surjective fun _ _ => rfl :
       Semigroup c.Quotient) with
     /- The `toMul` field is given explicitly for performance reasons.
     This avoids any need to unfold `Function.Surjective.semigroup` when the type checker is checking
@@ -653,7 +653,7 @@ instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient 
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  { (Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
+  { (Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl :
       CommSemigroup c.Quotient) with
     /- The `toSemigroup` field is given explicitly for performance reasons.
     This avoids any need to unfold `Function.Surjective.commSemigroup` when the type checker is
@@ -664,7 +664,7 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
-  { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
+  { (Function.Surjective.monoid _ Quotient.mk''_surjective rfl
       (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
     /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
     This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
@@ -676,7 +676,7 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
-  { (Function.Surjective.commMonoid _ Quotient.surjective_Quotient_mk'' rfl
+  { (Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
       (fun _ _ => rfl) fun _ _ => rfl : CommMonoid c.Quotient) with
     /- The `toMonoid` field is given explicitly for performance reasons.
     This avoids any need to unfold `Function.Surjective.commMonoid` when the type checker is
@@ -758,7 +758,7 @@ instance zpowinst : Pow c.Quotient ℤ :=
 an `AddGroup`."]
 instance group : Group c.Quotient :=
   { (Function.Surjective.group Quotient.mk''
-      Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
+      Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
         (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl : Group c.Quotient) with
     toMonoid := Con.monoid _
     toInv := Con.hasInv _

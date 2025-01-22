@@ -309,10 +309,6 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
--- Porting note: linter claims these lemmas don't simplify?
-open Subsequent in attribute [nolint simpNF] mk_left mk_right mk_right'
-  moveRight_mk_left moveRight_mk_right moveLeft_mk_left moveLeft_mk_right
-
 /-! ### Basic pre-games -/
 
 
@@ -668,7 +664,7 @@ theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏
   rw [← PGame.not_le] at h₂ ⊢
   exact fun h₃ => h₂ (h₃.trans h₁)
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
@@ -676,7 +672,7 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
   rw [← PGame.not_le] at h₁ ⊢
   exact fun h₃ => h₁ (h₂.trans h₃)
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf
@@ -713,7 +709,10 @@ theorem le_of_forall_lt {x y : PGame} (h₁ : ∀ i, x.moveLeft i < y) (h₂ : �
     x ≤ y :=
   le_of_forall_lf (fun i => (h₁ i).lf) fun i => (h₂ i).lf
 
-/-- The definition of `x ≤ y` on pre-games, in terms of `≤` two moves later. -/
+/-- The definition of `x ≤ y` on pre-games, in terms of `≤` two moves later.
+
+Note that it's often more convenient to use `le_iff_forall_lf`, which only unfolds the definition by
+one step. -/
 theorem le_def {x y : PGame} :
     x ≤ y ↔
       (∀ i, (∃ i', x.moveLeft i ≤ y.moveLeft i') ∨ ∃ j, (x.moveLeft i).moveRight j ≤ y) ∧
@@ -723,7 +722,10 @@ theorem le_def {x y : PGame} :
     lhs
     simp only [lf_iff_exists_le]
 
-/-- The definition of `x ⧏ y` on pre-games, in terms of `⧏` two moves later. -/
+/-- The definition of `x ⧏ y` on pre-games, in terms of `⧏` two moves later.
+
+Note that it's often more convenient to use `lf_iff_exists_le`, which only unfolds the definition by
+one step. -/
 theorem lf_def {x y : PGame} :
     x ⧏ y ↔
       (∃ i, (∀ i', x.moveLeft i' ⧏ y.moveLeft i) ∧ ∀ j, x ⧏ (y.moveLeft i).moveRight j) ∨
@@ -994,6 +996,7 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
    fun h => (h x₂).2 <| equiv_rfl⟩
 
+
 theorem Equiv.ext {x y : PGame}
     (hl : Relator.BiTotal (fun i j ↦ x.moveLeft i ≈ y.moveLeft j))
     (hr : Relator.BiTotal (fun i j ↦ x.moveRight i ≈ y.moveRight j)) : x ≈ y := by
@@ -1029,6 +1032,20 @@ theorem Equiv.ext' {x y : PGame}
   · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
   · exact ⟨i, Equiv.trans h hi.equiv⟩
   · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
+
+theorem Equiv.of_exists {x y : PGame}
+    (hl₁ : ∀ i, ∃ j, x.moveLeft i ≈ y.moveLeft j) (hr₁ : ∀ i, ∃ j, x.moveRight i ≈ y.moveRight j)
+    (hl₂ : ∀ j, ∃ i, x.moveLeft i ≈ y.moveLeft j) (hr₂ : ∀ j, ∃ i, x.moveRight i ≈ y.moveRight j) :
+    x ≈ y := by
+  constructor <;> refine le_def.2 ⟨?_, ?_⟩ <;> intro i
+  · obtain ⟨j, hj⟩ := hl₁ i
+    exact Or.inl ⟨j, Equiv.le hj⟩
+  · obtain ⟨j, hj⟩ := hr₂ i
+    exact Or.inr ⟨j, Equiv.le hj⟩
+  · obtain ⟨j, hj⟩ := hl₂ i
+    exact Or.inl ⟨j, Equiv.ge hj⟩
+  · obtain ⟨j, hj⟩ := hr₁ i
+    exact Or.inr ⟨j, Equiv.ge hj⟩
 
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
@@ -1182,9 +1199,11 @@ theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
 theorem isOption_neg_neg {x y : PGame} : IsOption (-x) (-y) ↔ IsOption x y := by
   rw [isOption_neg, neg_neg]
 
+/-- Use `toLeftMovesNeg` to cast between these two types. -/
 theorem leftMoves_neg : ∀ x : PGame, (-x).LeftMoves = x.RightMoves
   | ⟨_, _, _, _⟩ => rfl
 
+/-- Use `toRightMovesNeg` to cast between these two types. -/
 theorem rightMoves_neg : ∀ x : PGame, (-x).RightMoves = x.LeftMoves
   | ⟨_, _, _, _⟩ => rfl
 
@@ -1405,6 +1424,7 @@ instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpt
 theorem leftMoves_add : ∀ x y : PGame.{u}, (x + y).LeftMoves = (x.LeftMoves ⊕ y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
+/-- Use `toRightMovesAdd` to cast between these two types. -/
 theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = (x.RightMoves ⊕ y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
@@ -1474,6 +1494,7 @@ theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
   cases y
   rfl
 
+/-- Case on possible left moves of `x + y`. -/
 theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
     P k := by
@@ -1482,6 +1503,7 @@ theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
   · exact hl i
   · exact hr i
 
+/-- Case on possible right moves of `x + y`. -/
 theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
     P k := by

@@ -32,6 +32,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
+-- TODO: upgrade to A-linear map if A is a semiring.
 noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 

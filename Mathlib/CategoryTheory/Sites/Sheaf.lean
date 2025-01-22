@@ -112,7 +112,7 @@ def conesEquivSieveCompatibleFamily :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
   CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 

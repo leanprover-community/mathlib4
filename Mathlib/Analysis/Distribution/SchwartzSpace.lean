@@ -510,7 +510,7 @@ instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 
 instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
-  (schwartz_withSeminorms ℝ E F).first_countable
+  (schwartz_withSeminorms ℝ E F).firstCountableTopology
 
 end Topology
 

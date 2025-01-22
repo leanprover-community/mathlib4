@@ -49,7 +49,7 @@ they can be inferred from the type it is faster to use this method than to use t
 This file used to define typeclasses for order-preserving (additive) monoid homomorphisms:
 `OrderAddMonoidHomClass`, `OrderMonoidHomClass`, and `OrderMonoidWithZeroHomClass`.
 
-In #10544 we migrated from these typeclasses
+In https://github.com/leanprover-community/mathlib4/pull/10544 we migrated from these typeclasses
 to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`,
 making some definitions and lemmas irrelevant.
 

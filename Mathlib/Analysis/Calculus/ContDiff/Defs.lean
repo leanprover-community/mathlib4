@@ -349,7 +349,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
     rw [inter_comm] at hwu
     refine ⟨insert x s ∩ w, inter_mem_nhdsWithin _ (hw.mem_nhds hxw), inter_subset_left, f',
       fun y hy => ?_, ?_⟩
-    · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem ?_
+    · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem_nhdsWithin ?_
       refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
       exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
     · exact hf'.mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)

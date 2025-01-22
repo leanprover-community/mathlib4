@@ -224,12 +224,21 @@ theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
 end Nat
 
 namespace Set
+variable {s : Set α}
 
 lemma card_singleton_prod (a : α) (t : Set β) : Nat.card ({a} ×ˢ t) = Nat.card t := by
   rw [singleton_prod, Nat.card_image_of_injective (Prod.mk.inj_left a)]
 
 lemma card_prod_singleton (s : Set α) (b : β) : Nat.card (s ×ˢ {b}) = Nat.card s := by
   rw [prod_singleton, Nat.card_image_of_injective (Prod.mk.inj_right b)]
+
+theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
+  simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, Set.nonempty_def, nonempty_iff_ne_empty]
+
+protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
+
+@[simp] lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
+  rw [← Nat.card_image_of_injOn fst_injOn_graph, image_fst_graphOn]
 
 end Set
 

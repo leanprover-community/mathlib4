@@ -247,9 +247,3 @@ theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddB
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
-
-@[deprecated (since := "2024-01-16")] alias Directed.fintype_le := Directed.finite_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_le := Finite.exists_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_ge := Finite.exists_ge
-@[deprecated (since := "2024-01-16")] alias Fintype.bddAbove_range := Finite.bddAbove_range
-@[deprecated (since := "2024-01-16")] alias Fintype.bddBelow_range := Finite.bddBelow_range

@@ -11,9 +11,9 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 # Relation of morphism properties with limits
 
 The following predicates are introduces for morphism properties `P`:
-* `StableUnderBaseChange`: `P` is stable under base change if in all pullback
+* `IsStableUnderBaseChange`: `P` is stable under base change if in all pullback
   squares, the left map satisfies `P` if the right map satisfies it.
-* `StableUnderCobaseChange`: `P` is stable under cobase change if in all pushout
+* `IsStableUnderCobaseChange`: `P` is stable under cobase change if in all pushout
   squares, the right map satisfies `P` if the left map satisfies it.
 
 We define `P.universally` for the class of morphisms which satisfy `P` after any base change.
@@ -33,78 +33,100 @@ namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A morphism property is `StableUnderBaseChange` if the base change of such a morphism
+/-- A morphism property is `IsStableUnderBaseChange` if the base change of such a morphism
 still falls in the class. -/
-def StableUnderBaseChange (P : MorphismProperty C) : Prop :=
-  ∀ ⦃X Y Y' S : C⦄ ⦃f : X ⟶ S⦄ ⦃g : Y ⟶ S⦄ ⦃f' : Y' ⟶ Y⦄ ⦃g' : Y' ⟶ X⦄ (_ : IsPullback f' g' g f)
-    (_ : P g), P g'
+class IsStableUnderBaseChange (P : MorphismProperty C) : Prop where
+  of_isPullback {X Y Y' S : C} {f : X ⟶ S} {g : Y ⟶ S} {f' : Y' ⟶ Y} {g' : Y' ⟶ X}
+    (sq : IsPullback f' g' g f) (hg : P g) : P g'
 
-/-- A morphism property is `StableUnderCobaseChange` if the cobase change of such a morphism
+/-- A morphism property is `IsStableUnderCobaseChange` if the cobase change of such a morphism
 still falls in the class. -/
-def StableUnderCobaseChange (P : MorphismProperty C) : Prop :=
-  ∀ ⦃A A' B B' : C⦄ ⦃f : A ⟶ A'⦄ ⦃g : A ⟶ B⦄ ⦃f' : B ⟶ B'⦄ ⦃g' : A' ⟶ B'⦄ (_ : IsPushout g f f' g')
-    (_ : P f), P f'
+class IsStableUnderCobaseChange (P : MorphismProperty C) : Prop where
+  of_isPushout {A A' B B' : C} {f : A ⟶ A'} {g : A ⟶ B} {f' : B ⟶ B'} {g' : A' ⟶ B'}
+    (sq : IsPushout g f f' g') (hf : P f) : P f'
 
-theorem StableUnderBaseChange.mk {P : MorphismProperty C} [HasPullbacks C] [RespectsIso P]
-    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), P (pullback.fst f g)) :
-    StableUnderBaseChange P := fun X Y Y' S f g f' g' sq hg => by
-  let e := sq.flip.isoPullback
-  rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
-  exact hP₂ _ _ _ f g hg
+lemma of_isPullback {P : MorphismProperty C} [P.IsStableUnderBaseChange]
+    {X Y Y' S : C} {f : X ⟶ S} {g : Y ⟶ S} {f' : Y' ⟶ Y} {g' : Y' ⟶ X}
+    (sq : IsPullback f' g' g f) (hg : P g) : P g' :=
+  IsStableUnderBaseChange.of_isPullback sq hg
+
+/-- Alternative constructor for `IsStableUnderBaseChange`. -/
+theorem IsStableUnderBaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
+    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (_ : P g),
+      P (pullback.fst f g)) :
+    IsStableUnderBaseChange P where
+  of_isPullback {X Y Y' S f g f' g'} sq hg := by
+    haveI : HasPullback f g := sq.flip.hasPullback
+    let e := sq.flip.isoPullback
+    rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
+    exact hP₂ _ _ _ f g hg
+
+instance IsStableUnderBaseChange.isomorphisms :
+    (isomorphisms C).IsStableUnderBaseChange where
+  of_isPullback {_ _ _ _ f g _ _} h hg :=
+    have : IsIso g := hg
+    have := hasPullback_of_left_iso g f
+    h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
 
 variable (C) in
-lemma StableUnderBaseChange.monomorphisms :
-    (monomorphisms C).StableUnderBaseChange := by
-  intro X Y Y' S f g f' g' h hg
-  have : Mono g := hg
-  constructor
-  intro Z f₁ f₂ h₁₂
-  apply PullbackCone.IsLimit.hom_ext h.isLimit
-  · rw [← cancel_mono g]
-    dsimp
-    simp only [Category.assoc, h.w, reassoc_of% h₁₂]
-  · exact h₁₂
+instance IsStableUnderBaseChange.monomorphisms :
+    (monomorphisms C).IsStableUnderBaseChange where
+  of_isPullback {X Y Y' S f g f' g'} h hg := by
+    have : Mono g := hg
+    constructor
+    intro Z f₁ f₂ h₁₂
+    apply PullbackCone.IsLimit.hom_ext h.isLimit
+    · rw [← cancel_mono g]
+      dsimp
+      simp only [Category.assoc, h.w, reassoc_of% h₁₂]
+    · exact h₁₂
 
-theorem StableUnderBaseChange.respectsIso {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
-    RespectsIso P := by
+instance (priority := 900) IsStableUnderBaseChange.respectsIso {P : MorphismProperty C}
+    [IsStableUnderBaseChange P] : RespectsIso P := by
   apply RespectsIso.of_respects_arrow_iso
   intro f g e
-  exact hP (IsPullback.of_horiz_isIso (CommSq.mk e.inv.w))
+  exact of_isPullback (IsPullback.of_horiz_isIso (CommSq.mk e.inv.w))
 
-theorem StableUnderBaseChange.fst {P : MorphismProperty C} (hP : StableUnderBaseChange P)
+theorem pullback_fst {P : MorphismProperty C} [IsStableUnderBaseChange P]
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P g) :
     P (pullback.fst f g) :=
-  hP (IsPullback.of_hasPullback f g).flip H
+  of_isPullback (IsPullback.of_hasPullback f g).flip H
 
-theorem StableUnderBaseChange.snd {P : MorphismProperty C} (hP : StableUnderBaseChange P)
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.fst := pullback_fst
+
+theorem pullback_snd {P : MorphismProperty C} [IsStableUnderBaseChange P]
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P f) :
     P (pullback.snd f g) :=
-  hP (IsPullback.of_hasPullback f g) H
+  of_isPullback (IsPullback.of_hasPullback f g) H
 
-theorem StableUnderBaseChange.baseChange_obj [HasPullbacks C] {P : MorphismProperty C}
-    (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.snd := pullback_snd
+
+theorem baseChange_obj [HasPullbacks C] {P : MorphismProperty C}
+    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
-  hP.snd X.hom f H
+  pullback_snd X.hom f H
 
-theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismProperty C}
-    (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.baseChange_obj := baseChange_obj
+
+theorem baseChange_map [HasPullbacks C] {P : MorphismProperty C}
+    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
     (H : P g.left) : P ((Over.pullback f).map g).left := by
-  have := hP.respectsIso
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
   have : e.inv ≫ (pullback.snd _ _) = ((Over.pullback f).map g).left := by
     ext <;> dsimp [e] <;> simp
   rw [← this, P.cancel_left_of_respectsIso]
-  exact hP.snd _ _ H
+  exact pullback_snd _ _ H
 
-theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismProperty C}
-    (hP : StableUnderBaseChange P) [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.baseChange_map := baseChange_map
+
+theorem pullback_map [HasPullbacks C] {P : MorphismProperty C}
+    [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
     {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'} {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
     (e₁ : f = i₁ ≫ f') (e₂ : g = i₂ ≫ g') :
     P (pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂)) := by
-  have := hP.respectsIso
   have :
     pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
@@ -115,63 +137,83 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
     ext <;> dsimp <;> simp
   rw [this]
   apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]
-  exacts [hP.baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
-    hP.baseChange_map _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
+  exacts [baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
+    baseChange_map _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
 
-theorem StableUnderCobaseChange.mk {P : MorphismProperty C} [HasPushouts C] [RespectsIso P]
-    (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) (_ : P f), P (pushout.inr f g)) :
-    StableUnderCobaseChange P := fun A A' B B' f g f' g' sq hf => by
-  let e := sq.flip.isoPushout
-  rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
-  exact hP₂ _ _ _ f g hf
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.pullback_map := pullback_map
+
+lemma of_isPushout {P : MorphismProperty C} [P.IsStableUnderCobaseChange]
+    {A A' B B' : C} {f : A ⟶ A'} {g : A ⟶ B} {f' : B ⟶ B'} {g' : A' ⟶ B'}
+    (sq : IsPushout g f f' g') (hf : P f) : P f' :=
+  IsStableUnderCobaseChange.of_isPushout sq hf
+
+/-- An alternative constructor for `IsStableUnderCobaseChange`. -/
+theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
+    (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (_ : P f),
+      P (pushout.inr f g)) :
+    IsStableUnderCobaseChange P where
+  of_isPushout {A A' B B' f g f' g'} sq hf := by
+    haveI : HasPushout f g := sq.flip.hasPushout
+    let e := sq.flip.isoPushout
+    rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
+    exact hP₂ _ _ _ f g hf
 
 variable (C) in
-lemma StableUnderCobaseChange.epimorphisms :
-    (epimorphisms C).StableUnderCobaseChange := by
-  intro X Y Y' S f g f' g' h hf
-  have : Epi f := hf
-  constructor
-  intro Z f₁ f₂ h₁₂
-  apply PushoutCocone.IsColimit.hom_ext h.isColimit
-  · exact h₁₂
-  · rw [← cancel_epi f]
-    dsimp
-    simp only [← reassoc_of% h.w, h₁₂]
+instance IsStableUnderCobaseChange.epimorphisms :
+    (epimorphisms C).IsStableUnderCobaseChange where
+  of_isPushout {X Y Y' S f g f' g'} h hf := by
+    have : Epi f := hf
+    constructor
+    intro Z f₁ f₂ h₁₂
+    apply PushoutCocone.IsColimit.hom_ext h.isColimit
+    · exact h₁₂
+    · rw [← cancel_epi f]
+      dsimp
+      simp only [← reassoc_of% h.w, h₁₂]
 
-theorem StableUnderCobaseChange.respectsIso {P : MorphismProperty C}
-    (hP : StableUnderCobaseChange P) : RespectsIso P :=
-  RespectsIso.of_respects_arrow_iso _ fun _ _ e => hP (IsPushout.of_horiz_isIso (CommSq.mk e.hom.w))
+instance IsStableUnderCobaseChange.respectsIso {P : MorphismProperty C}
+    [IsStableUnderCobaseChange P] : RespectsIso P :=
+  RespectsIso.of_respects_arrow_iso _ fun _ _ e ↦
+    of_isPushout (IsPushout.of_horiz_isIso (CommSq.mk e.hom.w))
 
-theorem StableUnderCobaseChange.inl {P : MorphismProperty C} (hP : StableUnderCobaseChange P)
+theorem pushout_inl {P : MorphismProperty C} [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P g) :
     P (pushout.inl f g) :=
-  hP (IsPushout.of_hasPushout f g) H
+  of_isPushout (IsPushout.of_hasPushout f g) H
 
-theorem StableUnderCobaseChange.inr {P : MorphismProperty C} (hP : StableUnderCobaseChange P)
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inl := pushout_inl
+
+theorem pushout_inr {P : MorphismProperty C} [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P f) : P (pushout.inr f g) :=
-  hP (IsPushout.of_hasPushout f g).flip H
+  of_isPushout (IsPushout.of_hasPushout f g).flip H
 
-theorem StableUnderCobaseChange.op {P : MorphismProperty C} (hP : StableUnderCobaseChange P) :
-    StableUnderBaseChange P.op := fun _ _ _ _ _ _ _ _ sq hg => hP sq.unop hg
+@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inr := pushout_inr
 
-theorem StableUnderCobaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUnderCobaseChange P) :
-    StableUnderBaseChange P.unop := fun _ _ _ _ _ _ _ _ sq hg => hP sq.op hg
+instance IsStableUnderCobaseChange.op {P : MorphismProperty C} [IsStableUnderCobaseChange P] :
+    IsStableUnderBaseChange P.op where
+  of_isPullback sq hg := P.of_isPushout sq.unop hg
 
-theorem StableUnderBaseChange.op {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
-    StableUnderCobaseChange P.op := fun _ _ _ _ _ _ _ _ sq hf => hP sq.unop hf
+instance IsStableUnderCobaseChange.unop {P : MorphismProperty Cᵒᵖ} [IsStableUnderCobaseChange P] :
+    IsStableUnderBaseChange P.unop where
+  of_isPullback sq hg := P.of_isPushout sq.op hg
 
-theorem StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUnderBaseChange P) :
-    StableUnderCobaseChange P.unop := fun _ _ _ _ _ _ _ _ sq hf => hP sq.op hf
+instance IsStableUnderBaseChange.op {P : MorphismProperty C} [IsStableUnderBaseChange P] :
+    IsStableUnderCobaseChange P.op where
+  of_isPushout sq hf := P.of_isPullback sq.unop hf
 
-lemma StableUnderBaseChange.inf {P Q : MorphismProperty C} (hP : StableUnderBaseChange P)
-    (hQ : StableUnderBaseChange Q) :
-    StableUnderBaseChange (P ⊓ Q) :=
-  fun _ _ _ _ _ _ _ _ hp hg ↦ ⟨hP hp hg.left, hQ hp hg.right⟩
+instance IsStableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} [IsStableUnderBaseChange P] :
+    IsStableUnderCobaseChange P.unop where
+  of_isPushout sq hf := P.of_isPullback sq.op hf
 
-lemma StableUnderCobaseChange.inf {P Q : MorphismProperty C} (hP : StableUnderCobaseChange P)
-    (hQ : StableUnderCobaseChange Q) :
-    StableUnderCobaseChange (P ⊓ Q) :=
-  fun _ _ _ _ _ _ _ _ hp hg ↦ ⟨hP hp hg.left, hQ hp hg.right⟩
+instance IsStableUnderBaseChange.inf {P Q : MorphismProperty C} [IsStableUnderBaseChange P]
+    [IsStableUnderBaseChange Q] :
+    IsStableUnderBaseChange (P ⊓ Q) where
+  of_isPullback hp hg := ⟨of_isPullback hp hg.left, of_isPullback hp hg.right⟩
+
+instance IsStableUnderCobaseChange.inf {P Q : MorphismProperty C} [IsStableUnderCobaseChange P]
+    [IsStableUnderCobaseChange Q] :
+    IsStableUnderCobaseChange (P ⊓ Q) where
+  of_isPushout hp hg := ⟨of_isPushout hp hg.left, of_isPushout hp hg.right⟩
 
 section
 
@@ -245,21 +287,38 @@ instance RespectsIso.diagonal [P.RespectsIso] : P.diagonal.RespectsIso := by
     delta diagonal
     rwa [pullback.diagonal_comp, P.cancel_right_of_respectsIso]
 
-theorem diagonal_isStableUnderComposition [P.IsStableUnderComposition] [RespectsIso P]
-    (hP'' : StableUnderBaseChange P) : P.diagonal.IsStableUnderComposition where
+instance diagonal_isStableUnderComposition [P.IsStableUnderComposition] [RespectsIso P]
+    [IsStableUnderBaseChange P] : P.diagonal.IsStableUnderComposition where
   comp_mem _ _ h₁ h₂ := by
     rw [diagonal_iff, pullback.diagonal_comp]
     exact P.comp_mem _ _ h₁
-      (by simpa only [cancel_left_of_respectsIso] using hP''.snd _ _ h₂)
+      (by simpa only [cancel_left_of_respectsIso] using P.pullback_snd _ _ h₂)
 
-theorem StableUnderBaseChange.diagonal (hP : StableUnderBaseChange P) [P.RespectsIso] :
-    P.diagonal.StableUnderBaseChange :=
-  StableUnderBaseChange.mk
+instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.RespectsIso] :
+    P.diagonal.IsStableUnderBaseChange :=
+  IsStableUnderBaseChange.mk'
     (by
       introv h
       rw [diagonal_iff, diagonal_pullback_fst, P.cancel_left_of_respectsIso,
         P.cancel_right_of_respectsIso]
-      exact hP.baseChange_map f _ (by simpa))
+      exact P.baseChange_map f _ (by simpa))
+
+lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
+  ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
+
+/-- If `P` is multiplicative and stable under base change, having the of-postcomp property
+wrt. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
+lemma hasOfPostcompProperty_iff_le_diagonal [P.IsStableUnderBaseChange]
+    [P.IsMultiplicative] {Q : MorphismProperty C} [Q.IsStableUnderBaseChange] :
+    P.HasOfPostcompProperty Q ↔ Q ≤ P.diagonal := by
+  refine ⟨fun hP X Y f hf ↦ ?_, fun hP ↦ ⟨fun {Y X S} g f hf hcomp ↦ ?_⟩⟩
+  · exact hP.of_postcomp _ _ (Q.pullback_fst _ _ hf) (by simpa using P.id_mem X)
+  · set gr : Y ⟶ pullback (g ≫ f) f := pullback.lift (𝟙 Y) g (by simp)
+    have : g = gr ≫ pullback.snd _ _ := by simp [gr]
+    rw [this]
+    apply P.comp_mem
+    · exact P.of_isPullback (pullback_lift_diagonal_isPullback g f) (hP _ hf)
+    · exact P.pullback_snd _ _ hcomp
 
 end Diagonal
 
@@ -283,9 +342,9 @@ instance universally_respectsIso (P : MorphismProperty C) : P.universally.Respec
     exact hf _ _ _ (by simpa only [Category.assoc, Iso.hom_inv_id,
       Category.comp_id, Category.comp_id] using H.paste_horiz this)
 
-theorem universally_stableUnderBaseChange (P : MorphismProperty C) :
-    P.universally.StableUnderBaseChange := fun _ _ _ _ _ _ _ _ H h₁ _ _ _ _ _ H' =>
-  h₁ _ _ _ (H'.paste_vert H.flip)
+instance universally_isStableUnderBaseChange (P : MorphismProperty C) :
+    P.universally.IsStableUnderBaseChange where
+  of_isPullback H h₁ _ _ _ _ _ H' := h₁ _ _ _ (H'.paste_vert H.flip)
 
 instance IsStableUnderComposition.universally [HasPullbacks C] (P : MorphismProperty C)
     [hP : P.IsStableUnderComposition] : P.universally.IsStableUnderComposition where
@@ -299,13 +358,20 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   intro X Y f hf
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
 
-theorem universally_eq_iff {P : MorphismProperty C} :
-    P.universally = P ↔ P.StableUnderBaseChange :=
-  ⟨(· ▸ P.universally_stableUnderBaseChange),
-    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf⟩
+theorem universally_inf (P Q : MorphismProperty C) :
+    (P ⊓ Q).universally = P.universally ⊓ Q.universally := by
+  ext X Y f
+  show _ ↔ _ ∧ _
+  simp_rw [universally, ← forall_and]
+  rfl
 
-theorem StableUnderBaseChange.universally_eq {P : MorphismProperty C}
-    (hP : P.StableUnderBaseChange) : P.universally = P := universally_eq_iff.mpr hP
+theorem universally_eq_iff {P : MorphismProperty C} :
+    P.universally = P ↔ P.IsStableUnderBaseChange :=
+  ⟨(· ▸ P.universally_isStableUnderBaseChange),
+    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP.of_isPullback H.flip hf⟩
+
+theorem IsStableUnderBaseChange.universally_eq {P : MorphismProperty C}
+    [hP : P.IsStableUnderBaseChange] : P.universally = P := universally_eq_iff.mpr hP
 
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
   fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)

@@ -112,9 +112,8 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
 @[simp]
 theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
-  rw [toPGame_def, PGame.birthday]
+  rw [toPGame, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
-  -- Porting note: was `nth_rw 1 [← lsub_typein o]`
   conv_rhs => rw [← lsub_typein o]
   congr with x
   exact IH _ (typein_lt_self x)
@@ -269,6 +268,40 @@ theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.bir
 
 /- The bound `(x * y).birthday ≤ x.birthday ⨳ y.birthday` is currently an open problem. See
   https://mathoverflow.net/a/476829/147705. -/
+
+/-- Games with bounded birthday are a small set. -/
+theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
+  induction o using Ordinal.induction with | h o IH =>
+  let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}
+  let H : Small.{u} S := @small_biUnion _ _ _ _ _ IH
+  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_limit o
+  · simp_rw [Ordinal.not_lt_zero]
+    exact small_empty
+  · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
+    convert small_union.{u} {x | birthday x < a} {x | birthday x = a}
+    · exact IH _ (Order.lt_succ a)
+    · let f (g : Set S × Set S) : Game := ⟦PGame.mk _ _
+        (fun x ↦ ((equivShrink g.1).symm x).1.1.out) (fun x ↦ ((equivShrink g.2).symm x).1.1.out)⟧
+      suffices {x | x.birthday = a} ⊆ Set.range f from small_subset this
+      rintro x rfl
+      obtain ⟨y, rfl, hy'⟩ := birthday_eq_pGameBirthday x
+      refine ⟨⟨{z | ∃ i, ⟦y.moveLeft i⟧ = z.1}, {z | ∃ i, ⟦y.moveRight i⟧ = z.1}⟩, ?_⟩
+      apply PGame.game_eq <| PGame.Equiv.of_exists _ _ _ _ <;> intro i
+      · obtain ⟨j, hj⟩ := ((equivShrink _).symm i).2
+        exact ⟨j, by simp [PGame.equiv_iff_game_eq, hj]⟩
+      · obtain ⟨j, hj⟩ := ((equivShrink _).symm i).2
+        exact ⟨j, by simp [PGame.equiv_iff_game_eq, hj]⟩
+      · refine ⟨equivShrink _ ⟨⟨⟦y.moveLeft i⟧, ?_⟩, i, rfl⟩, by simpa using Quotient.mk_out _⟩
+        suffices ∃ b ≤ y.birthday, birthday ⟦y.moveLeft i⟧ < b by simpa [S, hy'] using this
+        refine ⟨_, le_rfl, ?_⟩
+        exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveLeft_lt i)
+      · refine ⟨equivShrink _ ⟨⟨⟦y.moveRight i⟧, ?_⟩, i, rfl⟩, by simpa using Quotient.mk_out _⟩
+        suffices ∃ b ≤ y.birthday, birthday ⟦y.moveRight i⟧ < b by simpa [S, hy'] using this
+        refine ⟨_, le_rfl, ?_⟩
+        exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveRight_lt i)
+  · convert H
+    change birthday _ < o ↔ ∃ a, _
+    simpa using lt_limit ho
 
 end Game
 

@@ -20,8 +20,8 @@ This file defines the space of continuous homomorphisms between two topological 
 * `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
 
-
-open Pointwise Function
+open Function Topology
+open scoped Pointwise
 
 variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]

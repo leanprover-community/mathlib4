@@ -6,7 +6,7 @@ Authors: Andrew Yang
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 

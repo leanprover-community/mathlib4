@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.PNat.Defs
 
 /-!

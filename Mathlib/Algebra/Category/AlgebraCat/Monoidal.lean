@@ -64,14 +64,8 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
       leftUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl)
       rightUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl) }
 
-variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a monoidal functor. -/
-def toModuleCatMonoidalFunctor : MonoidalFunctor (AlgebraCat.{u} R) (ModuleCat.{u} R) := by
-  unfold instMonoidalCategory
-  exact Monoidal.fromInduced (forget₂ (AlgebraCat R) (ModuleCat R)) _
-
-instance : (toModuleCatMonoidalFunctor R).Faithful :=
-  forget₂_faithful _ _
+example : (forget₂ (AlgebraCat R) (ModuleCat R)).Monoidal := inferInstance
 
 end
 

@@ -24,7 +24,7 @@ and prove basic properties of this quotient.
 assert_not_exists OrderedCommMonoid
 assert_not_exists Multiset
 
-variable {M N : Type*}
+variable {M : Type*}
 
 /-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/

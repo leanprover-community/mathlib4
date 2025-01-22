@@ -23,6 +23,9 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
+`SMul (AddSubmonoid R) (AddSubmonoid A)` is also provided given `DistribSMul R A`,
+and when `R = A` it is definitionally equal to the multiplication on `AddSubmonoid R`.
+
 These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
@@ -39,6 +42,11 @@ Most of the lemmas in this file are direct copies of lemmas from `Algebra/Pointw
 While the statements of these lemmas are defeq, we repeat them here due to them not being
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
+
+Many results about multiplication is derived from the corresponding results about
+scalar multiplication, but results requiring right distributivity do not have
+SMul versions, due to the lack of a suitable typeclass (unless one goes all the
+way to `Module`).
 
 -/
 

@@ -379,8 +379,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     [IsSFiniteKernel η] (a : α) {f : β → γ → ℝ≥0∞} (hf : Measurable (Function.uncurry f)) :
     ∫⁻ bc, f bc.1 bc.2 ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f b c ∂η (a, b) ∂κ a := by
   let F : ℕ → SimpleFunc (β × γ) ℝ≥0∞ := SimpleFunc.eapprox (Function.uncurry f)
-  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a :=
-    SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
+  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a := SimpleFunc.iSup_eapprox_apply hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
   simp_rw [← h]
   have h_mono : Monotone F := fun i j hij b =>

@@ -218,7 +218,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
         s.piecewise_insert _ _ _
       have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
         simp [eq_update_iff, his]
-      rw [B, A, ← f.map_sub]
+      rw [B, A, ← f.map_update_sub]
       apply le_trans (H _)
       gcongr with j
       by_cases h : j = i
@@ -263,7 +263,7 @@ theorem norm_image_sub_le_of_bound {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m�
           · rw [h]
             simp only [ite_true, Function.update_same]
             exact norm_le_pi_norm (m₁ - m₂) i
-          · simp [h, -le_max_iff, -max_le_iff, max_le_max, norm_le_pi_norm (_ : ∀ i, E i)]
+          · simp [h, - le_sup_iff, - sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
         rw [prod_update_of_mem (Finset.mem_univ _)]
         simp [card_univ_diff]
@@ -960,13 +960,13 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           (‖f‖ * ∏ i, ‖m i‖) fun x => by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le _ (f.le_opNorm x)
-      map_add' := fun m i x y => by
+      map_update_add' := fun m i x y => by
         ext1
-        simp only [add_apply, ContinuousMultilinearMap.map_add, LinearMap.coe_mk,
+        simp only [add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
-      map_smul' := fun m i c x => by
+      map_update_smul' := fun m i c x => by
         ext1
-        simp only [coe_smul', ContinuousMultilinearMap.map_smul, LinearMap.coe_mk,
+        simp only [coe_smul', ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
@@ -1029,10 +1029,10 @@ def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G
     ContinuousMultilinearMap 𝕜 E (ContinuousMultilinearMap 𝕜 E' G) :=
   mkContinuous
     { toFun := fun m => mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
-      map_add' := fun m i x y => by
+      map_update_add' := fun m i x y => by
         ext1
         simp
-      map_smul' := fun m i c x => by
+      map_update_smul' := fun m i c x => by
         ext1
         simp }
     (max C 0) fun m => by
@@ -1133,17 +1133,17 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i) (ContinuousMultilinearMap 𝕜 E G) :=
   MultilinearMap.mkContinuous
     { toFun := fun f => g.compContinuousLinearMap f
-      map_add' := by
+      map_update_add' := by
         intro h f i f₁ f₂
         ext x
         simp only [compContinuousLinearMap_apply, add_apply]
-        convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+        convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
-      map_smul' := by
+      map_update_smul' := by
         intro h f i a f₀
         ext x
         simp only [compContinuousLinearMap_apply, smul_apply]
-        convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+        convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
     (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
 
@@ -1168,16 +1168,16 @@ noncomputable def compContinuousLinearMapMultilinear :
     MultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) where
   toFun := compContinuousLinearMapL
-  map_add' f i f₁ f₂ := by
+  map_update_add' f i f₁ f₂ := by
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
-    convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+    convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
-  map_smul' f i a f₀ := by
+  map_update_smul' f i a f₀ := by
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
-    convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+    convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
 /-- If `f` is a collection of continuous linear maps, then the construction

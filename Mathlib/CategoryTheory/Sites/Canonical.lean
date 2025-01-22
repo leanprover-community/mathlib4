@@ -239,7 +239,7 @@ variable {J : GrothendieckTopology C}
 
 end Subcanonical
 
-variable {J : GrothendieckTopology C}
+variable (J : GrothendieckTopology C)
 
 /--
 If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site

@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.PartialHomeomorph
@@ -21,9 +21,7 @@ various instances.
 
 noncomputable section
 
-open Set Filter Function TopologicalSpace Complex
-
-open scoped Filter Topology UpperHalfPlane
+open Complex Filter Function Set TopologicalSpace Topology
 
 namespace UpperHalfPlane
 
@@ -59,7 +57,7 @@ instance : T3Space ℍ := Subtype.t3Space
 instance : T4Space ℍ := inferInstance
 
 instance : ContractibleSpace ℍ :=
-  (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
+  (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
 instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
@@ -160,17 +158,3 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
 end UpperHalfPlane
-
-lemma Complex.isConnected_of_upperHalfPlane {s : Set ℂ} (hs₁ : {z | 0 < z.im} ⊆ s)
-    (hs₂ : s ⊆ {z | 0 ≤ z.im}) : IsConnected s := by
-  refine IsConnected.subset_closure ?_ hs₁ (by simpa using hs₂)
-  rw [isConnected_iff_connectedSpace]
-  exact inferInstanceAs (ConnectedSpace UpperHalfPlane)
-
-lemma Complex.isConnected_of_lowerHalfPlane {s : Set ℂ} (hs₁ : {z | z.im < 0} ⊆ s)
-    (hs₂ : s ⊆ {z | z.im ≤ 0}) : IsConnected s := by
-  rw [← Equiv.star.surjective.image_preimage s]
-  refine IsConnected.image (f := Equiv.star) ?_ continuous_star.continuousOn
-  apply Complex.isConnected_of_upperHalfPlane
-  · exact fun z hz ↦ hs₁ <| show star z ∈ _ by simpa
-  · exact fun z hz ↦ by simpa using show (star z).im ≤ 0 from hs₂ hz

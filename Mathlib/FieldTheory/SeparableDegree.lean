@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.RingTheory.Polynomial.SeparableDegree
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 
@@ -227,6 +228,7 @@ def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
+@[stacks 09HJ "We use `finSepDegree` to state a more general result."]
 theorem finSepDegree_eq_of_isAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfIsAlgClosed F E K)
 
@@ -247,6 +249,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `Module.finrank_mul_finrank`. -/
+@[stacks 09HK "Part 1, `finSepDegree` variant"]
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
@@ -347,11 +350,11 @@ theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
   natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
 
-variable (E) in
-theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegree := by
+theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical
-  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map,
-    ← IsScalarTower.algebraMap_eq]
+  let _ := i.toAlgebra
+  simp_rw [show i = algebraMap E K by rfl, natSepDegree_eq_of_isAlgClosed (AlgebraicClosure K),
+    aroots_def, map_map, ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
@@ -706,6 +709,7 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   exact dvd_zero _
 
 /-- The separable degree of a finite extension `E / F` is smaller than the degree of `E / F`. -/
+@[stacks 09HA "The inequality"]
 theorem finSepDegree_le_finrank [FiniteDimensional F E] :
     finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
 
@@ -741,6 +745,7 @@ alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSepara
 
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
+@[stacks 09HA "The equality condition"]
 theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     finSepDegree F E = finrank F E ↔ Algebra.IsSeparable F E :=
   ⟨fun heq ↦ ⟨fun x ↦ by
@@ -802,6 +807,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   exact isSeparable_of_mem_isSeparable F K hx
 
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
+@[stacks 09HB]
 theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
     [Algebra.IsSeparable F E] [Algebra.IsSeparable E K] : Algebra.IsSeparable F K :=
   ⟨fun x ↦ IsSeparable.of_algebra_isSeparable_of_isSeparable F
@@ -879,3 +885,9 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
     exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
+
+variable {E K} in
+theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
+    (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
+  (splits_id_iff_splits _).mp <| (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _
+    (natSepDegree_map K f i ▸ hf)

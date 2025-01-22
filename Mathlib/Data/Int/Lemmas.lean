@@ -7,7 +7,7 @@ import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Miscellaneous lemmas about the integers
@@ -49,7 +49,7 @@ theorem natAbs_le_iff_sq_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a ^ 2 ≤ b 
   exact natAbs_le_iff_mul_self_le
 
 theorem natAbs_inj_of_nonneg_of_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    natAbs a = natAbs b ↔ a = b := by rw [← sq_eq_sq ha hb, ← natAbs_eq_iff_sq_eq]
+    natAbs a = natAbs b ↔ a = b := by rw [← sq_eq_sq₀ ha hb, ← natAbs_eq_iff_sq_eq]
 
 theorem natAbs_inj_of_nonpos_of_nonpos {a b : ℤ} (ha : a ≤ 0) (hb : b ≤ 0) :
     natAbs a = natAbs b ↔ a = b := by

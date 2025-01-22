@@ -603,7 +603,7 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
-theorem HasFPowerSeriesWithinAt.mono_of_mem
+theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
     (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
     HasFPowerSeriesWithinAt f p t x := by
   rcases h with ⟨r, hr⟩
@@ -620,6 +620,9 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem
     add_sub_cancel_left, hy, and_true] at h'y ⊢
   exact h'y.2
 
+@[deprecated (since := "2024-10-31")]
+alias HasFPowerSeriesWithinAt.mono_of_mem := HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
+
 @[simp] lemma hasFPowerSeriesWithinOnBall_insert_self :
     HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
@@ -630,7 +633,7 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem
   rcases eq_or_ne x y with rfl | hy
   · simp [HasFPowerSeriesWithinAt]
   · refine ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ ?_⟩
-    apply HasFPowerSeriesWithinAt.mono_of_mem h
+    apply HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin h
     rw [nhdsWithin_insert_of_ne hy]
     exact self_mem_nhdsWithin
 
@@ -750,10 +753,13 @@ theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd �
 @[deprecated (since := "2024-09-26")]
 alias analyticOn_congr := analyticOnNhd_congr
 
-theorem AnalyticWithinAt.mono_of_mem
+theorem AnalyticWithinAt.mono_of_mem_nhdsWithin
     (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
   rcases h with ⟨p, hp⟩
-  exact ⟨p, hp.mono_of_mem hst⟩
+  exact ⟨p, hp.mono_of_mem_nhdsWithin hst⟩
+
+@[deprecated (since := "2024-10-31")]
+alias AnalyticWithinAt.mono_of_mem := AnalyticWithinAt.mono_of_mem_nhdsWithin
 
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
@@ -1031,8 +1037,8 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
         ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
         zero_add, ← Subsingleton.pi_single_eq (0 : Fin 1) (y.1 - x), Pi.single,
-        ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_sub, ← Pi.single,
-        Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
+        ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_update_sub,
+        ← Pi.single, Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
     rw [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, ENNReal.coe_lt_coe] at hy'
     set B : ℕ → ℝ := fun n => C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * ((n + 2) * a ^ n)
     have hAB : ∀ n, ‖A (n + 2)‖ ≤ B n := fun n =>

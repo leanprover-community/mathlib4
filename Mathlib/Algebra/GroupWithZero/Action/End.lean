@@ -18,7 +18,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {M N A B α β : Type*}
+variable {M N A α β : Type*}
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 

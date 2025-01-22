@@ -217,8 +217,8 @@ def ContinuousMultilinearMap.uncurryRight
     ContinuousMultilinearMap 𝕜 Ei G :=
   let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →ₗ[𝕜] G) :=
     { toFun := fun m => (f m).toLinearMap
-      map_add' := fun m i x y => by simp
-      map_smul' := fun m i c x => by simp }
+      map_update_add' := fun m i x y => by simp
+      map_update_smul' := fun m i c x => by simp }
   (@MultilinearMap.uncurryRight 𝕜 n Ei G _ _ _ _ _ f').mkContinuous ‖f‖ fun m =>
     f.norm_map_init_le m
 
@@ -237,10 +237,10 @@ def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G)
     { toFun := fun m =>
         (f.toMultilinearMap.curryRight m).mkContinuous (‖f‖ * ∏ i, ‖m i‖) fun x =>
           f.norm_map_snoc_le m x
-      map_add' := fun m i x y => by
+      map_update_add' := fun m i x y => by
         ext
         simp
-      map_smul' := fun m i c x => by
+      map_update_smul' := fun m i c x => by
         ext
         simp }
   f'.mkContinuous ‖f‖ fun m => by
@@ -616,7 +616,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
     ContinuousMultilinearMap 𝕜 (fun (_ : Option ι) ↦ (G × (Π i, E i))) F :=
   MultilinearMap.mkContinuous
   { toFun := fun p ↦ B (p none).1 (fun i ↦ (p i).2 i)
-    map_add' := by
+    map_update_add' := by
       intro inst v j x y
       match j with
       | none => simp
@@ -629,7 +629,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
           · simp
           · simp [hij]
         simp [B]
-    map_smul' := by
+    map_update_smul' := by
       intro inst v j c x
       match j with
       | none => simp

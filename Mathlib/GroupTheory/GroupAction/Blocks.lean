@@ -51,7 +51,7 @@ variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
-  simp (config := { contextual := true })
+  simp +contextual
     only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
 
 @[to_additive]
@@ -286,7 +286,8 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
-  rw [← Subgroup.map_comap_eq_self_of_surjective (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  rw [← Subgroup.map_comap_eq_self_of_surjective
+          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
 

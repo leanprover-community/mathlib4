@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.AlgebraicGeometry.Limits
 
@@ -156,11 +156,11 @@ instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
   comp_mem _ _ _ _ := inferInstance
 
-theorem quasiCompact_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @QuasiCompact := by
+instance quasiCompact_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
   letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
-  apply HasAffineProperty.stableUnderBaseChange
-  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  apply HasAffineProperty.isStableUnderBaseChange
+  apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g h
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
   have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance
@@ -170,10 +170,60 @@ theorem quasiCompact_stableUnderBaseChange :
 variable {Z : Scheme.{u}}
 
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
-  quasiCompact_stableUnderBaseChange.fst f g inferInstance
+  MorphismProperty.pullback_fst f g inferInstance
 
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
-  quasiCompact_stableUnderBaseChange.snd f g inferInstance
+  MorphismProperty.pullback_snd f g inferInstance
+
+lemma compactSpace_iff_exists :
+    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f.base := by
+  refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
+  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+  have (x : 𝒰.J) : IsAffine (𝒰.obj x) := X.isAffine_affineCover _
+  refine ⟨Γ(∐ 𝒰.obj, ⊤), (∐ 𝒰.obj).isoSpec.inv ≫ Sigma.desc 𝒰.map, ?_⟩
+  refine Function.Surjective.comp (g := (Sigma.desc 𝒰.map).base)
+    (fun x ↦ ?_) (∐ 𝒰.obj).isoSpec.inv.surjective
+  obtain ⟨y, hy⟩ := 𝒰.covers x
+  exact ⟨(Sigma.ι 𝒰.obj (𝒰.f x)).base y, by rw [← Scheme.comp_base_apply, Sigma.ι_desc, hy]⟩
+
+lemma isCompact_iff_exists {U : X.Opens} :
+    IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f.base = U := by
+  refine isCompact_iff_compactSpace.trans ((compactSpace_iff_exists (X := U)).trans ?_)
+  refine ⟨fun ⟨R, f, hf⟩ ↦ ⟨R, f ≫ U.ι, by simp [hf.range_comp]⟩, fun ⟨R, f, hf⟩ ↦ ?_⟩
+  refine ⟨R, IsOpenImmersion.lift U.ι f (by simp [hf]), ?_⟩
+  rw [← Set.range_eq_univ]
+  apply show Function.Injective (U.ι.base '' ·) from Set.image_val_injective
+  simp only [Set.image_univ, Scheme.Opens.range_ι]
+  rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, IsOpenImmersion.lift_fac]
+
+@[stacks 01K9]
+lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
+    IsClosedMap f.base ↔ SpecializingMap f.base := by
+  refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
+  wlog hY : ∃ R, Y = Spec R
+  · show topologically @IsClosedMap f
+    rw [IsLocalAtTarget.iff_of_openCover (P := topologically @IsClosedMap) Y.affineCover]
+    intro i
+    haveI hqc : QuasiCompact (Y.affineCover.pullbackHom f i) :=
+        IsLocalAtTarget.of_isPullback (.of_hasPullback _ _) inferInstance
+    refine this (Y.affineCover.pullbackHom f i) ?_ ⟨_, rfl⟩
+    exact IsLocalAtTarget.of_isPullback
+      (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
+  obtain ⟨S, rfl⟩ := hY
+  clear * - H
+  intros Z hZ
+  replace H := hZ.stableUnderSpecialization.image H
+  wlog hX : ∃ R, X = Spec R
+  · obtain ⟨R, g, hg⟩ :=
+      compactSpace_iff_exists.mp ((quasiCompact_over_affine_iff f).mp inferInstance)
+    have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
+    have := this _ (g ≫ f) (g.base ⁻¹' Z) (hZ.preimage g.continuous)
+    simp_rw [Scheme.comp_base, TopCat.comp_app, ← Set.image_image,
+      Set.image_preimage_eq _ hg] at this
+    exact this H ⟨_, rfl⟩
+  obtain ⟨R, rfl⟩ := hX
+  obtain ⟨φ, rfl⟩ := Spec.homEquiv.symm.surjective f
+  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ Z hZ H
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)

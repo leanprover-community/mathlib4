@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!

@@ -8,6 +8,7 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Weierstrass
+import Mathlib.Topology.ContinuousMap.Lattice
 
 /-!
 # The Stone-Weierstrass theorem
@@ -69,7 +70,7 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
   simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
     Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [ContinuousMap.attachBound_apply_coe]
 
 /-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial

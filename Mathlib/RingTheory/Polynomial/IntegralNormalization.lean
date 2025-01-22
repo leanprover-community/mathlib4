@@ -45,13 +45,13 @@ theorem integralNormalization_coeff {f : R[X]} {i : ℕ} :
     (integralNormalization f).coeff i =
       if f.degree = i then 1 else coeff f i * f.leadingCoeff ^ (f.natDegree - 1 - i) := by
   have : f.coeff i = 0 → f.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
-  simp (config := { contextual := true }) [integralNormalization, coeff_monomial, this,
+  simp +contextual [integralNormalization, coeff_monomial, this,
     mem_support_iff]
 
 theorem integralNormalization_support {f : R[X]} :
     (integralNormalization f).support ⊆ f.support := by
   intro
-  simp (config := { contextual := true }) [integralNormalization, coeff_monomial, mem_support_iff]
+  simp +contextual [integralNormalization, coeff_monomial, mem_support_iff]
 
 theorem integralNormalization_coeff_degree {f : R[X]} {i : ℕ} (hi : f.degree = i) :
     (integralNormalization f).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]

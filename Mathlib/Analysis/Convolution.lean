@@ -90,9 +90,8 @@ The following notations are localized in the locale `Convolution`:
 -/
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open ContinuousLinearMap Metric Bornology
-
-open scoped Pointwise Topology NNReal Filter
+open Bornology ContinuousLinearMap Metric Topology
+open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
@@ -572,7 +571,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rw [this]
     refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
       continuous_snd)).continuousOn ?_
-    simp (config := {contextual := true}) [s', MapsTo]
+    simp +contextual [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
       (hf.integrableOn_isCompact k'_comp)

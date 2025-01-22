@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout mathlib repository
+    - name: Checkout mathlib4 repository
       uses: actions/checkout@v4
       with:
-        repository: leanprover-community/mathlib
+        repository: leanprover-community/mathlib4
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches
 

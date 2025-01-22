@@ -99,7 +99,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     · ext
       simpa [(Finset.nodup_toList _).getElem_inj_iff] using h
     · #adaptation_note
-      /-- This proof was nicer prior to leanprover/lean4#4400.
+      /-- This proof was nicer prior to https://github.com/leanprover/lean4/pull/4400.
       Please feel welcome to improve it, by avoiding use of `List.get` in favour of `GetElem`. -/
       have : ∀ i h, t ((Finset.univ.filter fun x ↦ t x = s).toList.get ⟨i, h⟩) = s := fun i h ↦
         (Finset.mem_filter.mp (Finset.mem_toList.mp (List.get_mem _ i h))).2

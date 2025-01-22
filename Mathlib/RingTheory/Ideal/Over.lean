@@ -338,7 +338,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
     isMaximal_comap_of_isIntegral_of_isMaximal (R := Rₚ) (S := Sₚ) Qₚ
   refine ⟨comap (algebraMap S Sₚ) Qₚ, ⟨comap_isPrime _ Qₚ, ?_⟩⟩
   convert Localization.AtPrime.comap_maximalIdeal (I := P)
-  rw [comap_comap, ← LocalRing.eq_maximalIdeal Qₚ_max,
+  rw [comap_comap, ← IsLocalRing.eq_maximalIdeal Qₚ_max,
     ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
     (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) ]
@@ -431,8 +431,8 @@ section ideal_liesOver
 
 section Semiring
 
-variable (A : Type*) [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
-  (P : Ideal B) (p : Ideal A)
+variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
+  [Algebra A C] (P : Ideal B) {Q : Ideal C} (p : Ideal A)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
 abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
@@ -461,6 +461,34 @@ theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
 theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x ∈ P := by
   rw [P.over_def p]
   rfl
+
+theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
+  rw [P.over_def p]
+  exact comap_eq_top_iff.symm
+
+variable {P}
+
+theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
+    [AlgHomClass F A B C] (f : F) (h : P = Q.comap f) : P.LiesOver p where
+  over := by
+    rw [h]
+    exact (over_def Q p).trans <|
+      congrFun (congrFun (congrArg comap ((f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
+
+theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
+    [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
+  rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
+  exact of_eq_comap p (σ : B ≃ₐ[A] C).symm h
+
+variable (P) (Q)
+
+instance comap_liesOver [Q.LiesOver p] {F : Type*} [FunLike F B C] [AlgHomClass F A B C]
+    (f : F) : (Q.comap f).LiesOver p :=
+  LiesOver.of_eq_comap p f rfl
+
+instance map_equiv_liesOver [P.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
+    (σ : E) : (P.map σ).LiesOver p :=
+  LiesOver.of_eq_map_equiv p σ rfl
 
 end Semiring
 
@@ -491,8 +519,10 @@ section CommRing
 
 namespace Quotient
 
-variable (R : Type*) [CommSemiring R] {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  [Algebra R A] [Algebra R B] [IsScalarTower R A B] (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+  [Algebra A B] [Algebra A C] [Algebra R A] [Algebra R B] [IsScalarTower R A B]
+  (P : Ideal B) {Q : Ideal C} (p : Ideal A) [Q.LiesOver p] [P.LiesOver p]
+  (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
@@ -517,15 +547,62 @@ instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
 instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
   isNoetherian_of_tower A inferInstance
 
-theorem algebraMap_injective_of_liesOver :
-    Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
+theorem algebraMap_injective_of_liesOver : Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
   rw [RingHom.map_sub]
   exact Quotient.eq.mp hab
 
 instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
+  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap_injective_of_liesOver P p)
+
+variable {p} in
+theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
+  Quotient.nontrivial ((eq_top_iff_of_liesOver P p).mp.mt hp)
+
+theorem nontrivial_of_liesOver_of_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
+  nontrivial_of_liesOver_of_ne_top P hp.ne_top
+
+section algEquiv
+
+variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+
+/-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
+  isomorphism between `B` and `C`, where `Q = σ P`. -/
+def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
+  __ := quotientEquiv P Q σ h
+  commutes' := by
+    rintro ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
+
+@[simp]
+theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ h x = σ x :=
+  rfl
+
+/-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
+  isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
+def algEquivOfEqComap (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
+  algEquivOfEqMap p σ ((congrArg (map σ) h).trans (Q.map_comap_eq_self_of_equiv σ)).symm
+
+@[simp]
+theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) : algEquivOfEqComap p σ h x = σ x :=
+  rfl
+
+end algEquiv
+
+/-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p)`. -/
+def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
+  toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.2.symm
+  map_one' := by
+    ext ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk P) (one_smul G x)
+  map_mul' g h := by
+    ext ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk P) (mul_smul g h x)
+
+@[simp] theorem stabilizerHom_apply (g : MulAction.stabilizer G P) (b : B) :
+    stabilizerHom P p G g b = ↑(g • b) :=
+  rfl
 
 end Quotient
 

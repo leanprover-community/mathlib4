@@ -138,7 +138,8 @@ variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
 
 /-- Coprime elements have disjoint prime factors (as multisets). -/
 theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
-    (normalizedFactors a).Disjoint (normalizedFactors b) := by
+    Disjoint (normalizedFactors a) (normalizedFactors b) := by
+  rw [Multiset.disjoint_left]
   intro x hxa hxb
   have x_dvd_a := dvd_of_mem_normalizedFactors hxa
   have x_dvd_b := dvd_of_mem_normalizedFactors hxb
@@ -164,7 +165,7 @@ theorem radical_neg_one : radical (-1 : R) = 1 :=
 
 /-- Radical is multiplicative for coprime elements. -/
 theorem radical_mul {a b : R} (hc : IsCoprime a b) :
-    radical (a * b) = (radical a) * (radical b) := by
+    radical (a * b) = radical a * radical b := by
   by_cases ha : a = 0
   · subst ha; rw [isCoprime_zero_left] at hc
     simp only [zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]

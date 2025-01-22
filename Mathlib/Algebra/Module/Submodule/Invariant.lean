@@ -38,6 +38,18 @@ lemma mem_invtSubmodule {p : Submodule R M} :
 
 namespace invtSubmodule
 
+variable {f}
+
+lemma inf_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
+    p ⊓ q ∈ f.invtSubmodule :=
+  ((⟨p, hp⟩ : f.invtSubmodule) ⊓ (⟨q, hq⟩ : f.invtSubmodule)).property
+
+lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
+    p ⊔ q ∈ f.invtSubmodule :=
+  ((⟨p, hp⟩ : f.invtSubmodule) ⊔ (⟨q, hq⟩ : f.invtSubmodule)).property
+
+variable (f)
+
 @[simp]
 protected lemma top_mem : ⊤ ∈ f.invtSubmodule := by simp [invtSubmodule]
 

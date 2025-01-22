@@ -336,6 +336,66 @@ end RestrictScalars
 
 end
 
+section Lift
+
+variable {R : Type*} {A : Type*} {M : Type*}
+variable [CommSemiring R] [CommRing A] [CommRing M]
+variable [Algebra R A] [Algebra R M]
+variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
+
+/--
+Lift a derivation via an algebra homomorphism `f` with a right inverse such that
+`f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`.
+This is needed for an argument in [Rosenlicht, M. Integration in finite terms][Rosenlicht_1972].
+-/
+def liftOfRightInverse {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
+    ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
+  toFun x := f (d (f_inv x))
+  map_add' x y := by
+    suffices f (d (f_inv (x + y) - (f_inv x + f_inv y))) = 0 by simpa [sub_eq_zero]
+    apply hd
+    simp [hf _]
+  map_smul' x y := by
+    suffices f (d (f_inv (x • y) - x • f_inv y)) = 0 by simpa [sub_eq_zero]
+    apply hd
+    simp [hf _]
+  map_one_eq_zero' := by
+    suffices f (d (f_inv 1 - 1)) = 0 by simpa [sub_eq_zero]
+    apply hd
+    simp [hf _]
+  leibniz' x y := by
+    suffices f (d (f_inv (x * y) - f_inv x * f_inv y)) = 0 by simpa [sub_eq_zero, hf _]
+    apply hd
+    simp [hf _]
+
+@[simp]
+lemma liftOfRightInverse_apply {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
+    {d : Derivation R A A} (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
+    Derivation.liftOfRightInverse hf hd (f x) = f (d x) := by
+  suffices f (d (f_inv (f x) - x)) = 0 by simpa [sub_eq_zero]
+  apply hd
+  simp [hf _]
+
+lemma liftOfRightInverse_eq {f : F} {f_inv₁ f_inv₂ : M → A} (hf₁ : Function.RightInverse f_inv₁ f)
+    (hf₂ : Function.RightInverse f_inv₂ f) :
+    liftOfRightInverse hf₁ = liftOfRightInverse hf₂ := by
+  ext _ _ x
+  obtain ⟨x, rfl⟩ := hf₁.surjective x
+  simp
+
+/--
+A noncomputable version of `liftOfRightInverse` for surjective homomorphisms.
+-/
+noncomputable abbrev liftOfSurjective {f : F} (hf : Function.Surjective f)
+    ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M :=
+  d.liftOfRightInverse (Function.rightInverse_surjInv hf) hd
+
+lemma liftOfSurjective_apply {f : F} (hf : Function.Surjective f)
+    {d : Derivation R A A} (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
+    Derivation.liftOfSurjective hf hd (f x) = f (d x) := by simp
+
+end Lift
+
 section Cancel
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A] {M : Type*}

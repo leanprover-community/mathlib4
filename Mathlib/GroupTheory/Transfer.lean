@@ -86,7 +86,7 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     map_one' := by beta_reduce; rw [one_smul, diff_self]
     -- Porting note: added `simp only` (not just beta reduction)
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
@@ -222,12 +222,9 @@ theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : S
 complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
-    (transferSylow_restrict_eq_pow P hP).symm ▸
-      (P.2.powEquiv'
-          (not_dvd_index_sylow P
-            (mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite))).bijective
-  rw [Function.Bijective, ← range_top_iff_surjective, restrict_range] at hf
-  have := range_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans
+    (transferSylow_restrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
+  rw [Function.Bijective, ← range_eq_top, restrict_range] at hf
+  have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
@@ -235,8 +232,7 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=
-  (ker_transferSylow_isComplement' P hP).index_eq_card ▸ not_dvd_index_sylow P <|
-    mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite
+  (ker_transferSylow_isComplement' P hP).index_eq_card ▸ P.not_dvd_index
 
 theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
     Disjoint (transferSylow P hP).ker Q :=

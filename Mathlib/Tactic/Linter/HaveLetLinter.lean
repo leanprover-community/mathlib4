@@ -102,7 +102,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     -- so that we can then isolate the `fvarId`s that are created by `have`
     let oldMvdecls := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
     let oldLctx := oldMvdecls.map (·.lctx)
-    let oldDecls := (oldLctx.map (·.decls.toList.reduceOption)).join
+    let oldDecls := (oldLctx.map (·.decls.toList.reduceOption)).flatten
     let oldFVars := oldDecls.map (·.fvarId)
     -- `newDecls` are the local declarations whose `FVarID` did not exist before the `have`
     -- effectively they are the declarations that we want to test for being in `Prop` or not.

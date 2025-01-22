@@ -212,7 +212,7 @@ theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 
 lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
-  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
+  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop]
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :

@@ -15,7 +15,3 @@ Mathlib/Tactic/Linter/TextBased.lean : line 84 : ERR_ADN : Found the string "Ada
 Mathlib/Tactic/Linter/TextBased.lean : line 274 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 279 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 280 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
-
--- The "duplicate imports" linter fires on this line inside a multi-line module docstring,
--- which says 'import statements': this is a false positive.
-Mathlib/Tactic/Linter/Header.lean : line 228 : ERR_DIMP : Duplicate imports: import statements* (already imported on line 19)

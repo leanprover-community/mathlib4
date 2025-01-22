@@ -26,7 +26,7 @@ in the literature but it is useful for generalizing results on immersions to oth
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
@@ -82,7 +82,7 @@ instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f := by
   refine (Scheme.forgetToLocallyRingedSpace ⋙
     LocallyRingedSpace.forgetToSheafedSpace).mono_of_mono_map ?_
   apply SheafedSpace.mono_of_base_injective_of_stalk_epi
-  · exact f.isEmbedding.inj
+  · exact f.isEmbedding.injective
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]

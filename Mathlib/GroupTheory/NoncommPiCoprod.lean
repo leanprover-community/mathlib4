@@ -154,6 +154,22 @@ theorem noncommPiCoprod_mrange :
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 
+@[to_additive]
+lemma commute_noncommPiCoprod {m : M}
+    (comm : ∀ i (x : N i), Commute m ((ϕ i x))) (h : (i : ι) → N i) :
+    Commute m (MonoidHom.noncommPiCoprod ϕ hcomm h) := by
+  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
+  apply Finset.noncommProd_induction
+  · exact fun x y ↦ Commute.mul_right
+  · exact Commute.one_right _
+  · exact fun x _ ↦ comm x (h x)
+
+@[to_additive]
+lemma noncommPiCoprod_apply (h : (i : ι) → N i) :
+    MonoidHom.noncommPiCoprod ϕ hcomm h = Finset.noncommProd Finset.univ (fun i ↦ ϕ i (h i))
+      (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ hcomm a (h i) (h j)) _) := by
+  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
+
 end MonoidHom
 
 end FamilyOfMonoids
@@ -298,6 +314,13 @@ theorem injective_noncommPiCoprod_of_independent
   · simpa using hind
   · intro i
     exact Subtype.coe_injective
+
+@[to_additive]
+theorem noncommPiCoprod_apply (comm) (u : (i : ι) → H i) :
+    Subgroup.noncommPiCoprod comm u = Finset.noncommProd Finset.univ (fun i ↦ u i)
+      (fun i _ j _ h ↦ comm h _ _ (u i).prop (u j).prop) := by
+  simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
+    coeSubtype, MonoidHom.coe_mk, OneHom.coe_mk]
 
 end CommutingSubgroups
 

@@ -7,6 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Colexigraphic order
@@ -230,7 +231,8 @@ instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex �
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
-    sdiff_sdiff_sdiff_cancel_right hus, sdiff_sdiff_sdiff_cancel_right hut]
+    sdiff_sdiff_sdiff_cancel_right (show u ≤ s from hus),
+    sdiff_sdiff_sdiff_cancel_right (show u ≤ t from hut)]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :

@@ -56,6 +56,7 @@ lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} 
     rw [h, Nat.cast_id, Nat.pow_eq, ← Nat.cast_pow, CharP.natCast_eq_natCast_mod α n]
     rfl⟩
 
+attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM in
 /-- Evaluates `e` to an integer using `norm_num` and reduces the result modulo `n`. -/
 def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
     (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do

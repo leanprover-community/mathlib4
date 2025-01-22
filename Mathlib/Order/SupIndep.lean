@@ -185,10 +185,12 @@ Porting note: simpNF linter returns
 
 "Left-hand side does not simplify, when using the simp lemma on itself."
 
-However, simp does indeed solve the following. leanprover/std4#71 is related.
+However, simp does indeed solve the following.
 
 example {α ι} [Lattice α] [OrderBot α] (s : Finset ι) (f : ι → α) :
   (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by simp
+
+See https://github.com/leanprover-community/batteries/issues/71 for the simpNF issue.
 -/
 @[simp, nolint simpNF]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by

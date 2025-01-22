@@ -148,7 +148,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm f₁ f₂ h₁ h₂ := by
     rw [← sub_eq_zero]
-    have h_isSymm := isSelfAdjoint_iff_isSymmetric.mp h₂.isSelfAdjoint
+    have h_isSymm := isSelfAdjoint_iff_isSymmetric.mp <| IsPositive.isSelfAdjoint h₂
     exact_mod_cast h_isSymm.inner_map_self_eq_zero.mp fun x ↦ by
       apply RCLike.ext
       · rw [map_zero]

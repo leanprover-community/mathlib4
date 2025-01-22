@@ -295,7 +295,7 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
   rw [toFinsuppIso_apply]
   -- Porting note: rewrote proof below relative to mathlib3.
@@ -387,7 +387,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   generalize hd : f.support = s
   revert f
   refine Finset.induction_on s ?_ ?_ <;> clear s
-  · simp (config := { contextual := true }) only [Polynomial.support_eq_empty, map_zero,
+  · simp +contextual only [Polynomial.support_eq_empty, map_zero,
       Finsupp.support_zero, eq_self_iff_true, imp_true_iff, Finset.map_empty,
       Finsupp.support_eq_empty]
   · intro a s as hf f fs

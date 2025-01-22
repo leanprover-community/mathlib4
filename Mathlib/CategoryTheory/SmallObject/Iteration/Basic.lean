@@ -19,8 +19,8 @@ a functor `F : Set.Iic j ⥤ C ⥤ C` equipped with the data
 which makes it the `i`th-iteration of `Φ` for all `i` such that `i ≤ j`.
 Under suitable assumptions on `C`, we shall show that this category
 `Iteration ε j` is equivalent to the punctual category (TODO).
-We shall study morphisms in this category, showing first that
-there is at most one morphism between two morphisms (done), and secondly,
+In this file, we show that the there is at most one morphism between
+two objects. In `SmallObject.Iteration.UniqueHom`, we shall show
 that there does always exist a unique morphism between
 two objects (TODO). Then, we shall show the existence of
 an object (TODO). In these proofs, which are all done using
@@ -172,7 +172,7 @@ lemma ext' {f g : Hom iter₁ iter₂} (h : f.natTrans = g.natTrans) : f = g := 
 
 attribute [local ext] ext'
 
-/-- The composition of morphisms in the category `Φ.Iteration ε j`. -/
+/-- The composition of morphisms in the category `Iteration ε j`. -/
 @[simps]
 def comp {iter₃ : Iteration ε j} (f : Hom iter₁ iter₂) (g : Hom iter₂ iter₃) :
     Hom iter₁ iter₃ where
@@ -233,7 +233,7 @@ def eval {i : J} (hi : i ≤ j) : Iteration ε j ⥤ C ⥤ C where
 induced element in `Iteration ε i`. -/
 @[simps F isoZero isoSucc]
 def trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) : Iteration ε i where
-  F := restrictionLE (iter.F) hi
+  F := restrictionLE iter.F hi
   isoZero := iter.isoZero
   isoSucc k hk := iter.isoSucc k (lt_of_lt_of_le hk hi)
   mapSucc'_eq k hk := iter.mapSucc'_eq k (lt_of_lt_of_le hk hi)
@@ -259,7 +259,7 @@ end
 namespace Hom
 
 variable [PartialOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
-  (iter₁ iter₂ : Φ.Iteration ε j)
+  {iter₁ iter₂ : Φ.Iteration ε j}
 
 lemma congr_app (φ φ' : iter₁ ⟶ iter₂) (i : J) (hi : i ≤ j) :
     φ.natTrans.app ⟨i, hi⟩ = φ'.natTrans.app ⟨i, hi⟩ := by

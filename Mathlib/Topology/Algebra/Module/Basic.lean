@@ -5,12 +5,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Opposite
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -94,9 +94,9 @@ end
 
 section LatticeOps
 
-variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁]
-  [Module R M₂] [u : TopologicalSpace R] {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
-  (f : M₁ →ₗ[R] M₂)
+variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace R]
+  {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
+  {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
   let _ : TopologicalSpace M₁ := t.induced f
@@ -254,7 +254,7 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
--- Porting note (#5171): linter not ported yet; was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet; was @[nolint has_nonempty_instance]
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -1484,7 +1484,7 @@ variable {R S T M M₂ : Type*} [Semiring R] [Semiring S] [Semiring T] [Module R
   [ContinuousAdd M₂] [Module T M₂] [ContinuousConstSMul T M₂] [SMulCommClass R T M₂]
   [SMulCommClass S T M₂]
 
-/-- Given `c : E →L[𝕜] 𝕜`, `c.smulRightₗ` is the linear map from `F` to `E →L[𝕜] F`
+/-- Given `c : E →L[R] S`, `c.smulRightₗ` is the linear map from `F` to `E →L[R] F`
 sending `f` to `fun e => c e • f`. See also `ContinuousLinearMap.smulRightL`. -/
 def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
@@ -1947,7 +1947,7 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
 alias _root_.LinearEquiv.uniformEmbedding := _root_.LinearEquiv.isUniformEmbedding
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
-inverse of each other. -/
+inverse of each other. See also `equivOfInverse'`. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
@@ -1965,6 +1965,24 @@ theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ 
 @[simp]
 theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
+  rfl
+
+/-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
+inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`. -/
+def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
+    (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
+  equivOfInverse f₁ f₂
+    (fun x ↦ by simpa using congr($(h₂) x)) (fun x ↦ by simpa using congr($(h₁) x))
+
+@[simp]
+theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
+    equivOfInverse' f₁ f₂ h₁ h₂ x = f₁ x :=
+  rfl
+
+/-- The inverse of `equivOfInverse'` is obtained by swapping the order of its parameters. -/
+@[simp]
+theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
   rfl
 
 variable (M₁)
@@ -2110,7 +2128,7 @@ theorem map_neg (e : M ≃SL[σ₁₂] M₂) (x : M) : e (-x) = -e x :=
 
 section
 
-/-! The next theorems cover the identification between `M ≃L[𝕜] M`and the group of units of the ring
+/-! The next theorems cover the identification between `M ≃L[R] M`and the group of units of the ring
 `M →L[R] M`. -/
 
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
@@ -2272,13 +2290,20 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [TopologicalSpace M₂]
+variable {R : Type*} {M M₂ M₃ : Type*}
+  [TopologicalSpace M] [TopologicalSpace M₂] [TopologicalSpace M₃]
 
 section
 
 variable [Semiring R]
-variable [AddCommMonoid M₂] [Module R M₂]
-variable [AddCommMonoid M] [Module R M]
+  [AddCommMonoid M] [Module R M]
+  [AddCommMonoid M₂] [Module R M₂]
+  [AddCommMonoid M₃] [Module R M₃]
+
+/-- A continuous linear map is invertible if it is the forward direction of a continuous linear
+equivalence. -/
+def IsInvertible (f : M →L[R] M₂) : Prop :=
+  ∃ (A : M ≃L[R] M₂), A = f
 
 open Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
@@ -2286,20 +2311,110 @@ open Classical in
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
 for calculus. -/
 noncomputable def inverse : (M →L[R] M₂) → M₂ →L[R] M := fun f =>
-  if h : ∃ e : M ≃L[R] M₂, (e : M →L[R] M₂) = f then ((Classical.choose h).symm : M₂ →L[R] M) else 0
+  if h : f.IsInvertible then ((Classical.choose h).symm : M₂ →L[R] M) else 0
+
+@[simp] lemma isInvertible_equiv {f : M ≃L[R] M₂} : IsInvertible (f : M →L[R] M₂) := ⟨f, rfl⟩
 
 /-- By definition, if `f` is invertible then `inverse f = f.symm`. -/
 @[simp]
 theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.symm := by
-  have h : ∃ e' : M ≃L[R] M₂, (e' : M →L[R] M₂) = ↑e := ⟨e, rfl⟩
-  simp only [inverse, dif_pos h]
-  congr
-  exact mod_cast Classical.choose_spec h
+  simp [inverse]
 
 /-- By definition, if `f` is not invertible then `inverse f = 0`. -/
-@[simp]
-theorem inverse_non_equiv (f : M →L[R] M₂) (h : ¬∃ e' : M ≃L[R] M₂, ↑e' = f) : inverse f = 0 :=
-  dif_neg h
+@[simp] lemma inverse_of_not_isInvertible
+    {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
+  dif_neg hf
+
+@[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
+
+@[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
+  by_cases h : IsInvertible (0 : M →L[R] M₂)
+  · rcases h with ⟨e', he'⟩
+    simp only [← he', inverse_equiv]
+    ext v
+    apply e'.injective
+    rw [← ContinuousLinearEquiv.coe_coe, he']
+    rfl
+  · exact inverse_of_not_isInvertible h
+
+lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
+    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
+  rcases hg with ⟨N, rfl⟩
+  rcases hf with ⟨M, rfl⟩
+  exact ⟨M.trans N, rfl⟩
+
+lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
+    (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
+    f.IsInvertible :=
+  ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
+
+lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M} (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
+    f.inverse = g := by
+  have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
+  rw [this, inverse_equiv]
+  rfl
+
+lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf : f.IsInvertible) :
+    f.inverse y = x ↔ y = f x := by
+  rcases hf with ⟨M, rfl⟩
+  simp only [inverse_equiv, ContinuousLinearEquiv.coe_coe]
+  exact ContinuousLinearEquiv.symm_apply_eq M
+
+@[simp] lemma isInvertible_equiv_comp {e : M₂ ≃L[R] M₃} {f : M →L[R] M₂} :
+    ((e : M₂ →L[R] M₃) ∘L f).IsInvertible ↔ f.IsInvertible := by
+  constructor
+  · rintro ⟨A, hA⟩
+    have : f = e.symm ∘L ((e : M₂ →L[R] M₃) ∘L f) := by ext; simp
+    rw [this, ← hA]
+    simp
+  · rintro ⟨M, rfl⟩
+    simp
+
+@[simp] lemma isInvertible_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
+    (f ∘L (e : M₃ →L[R] M)).IsInvertible ↔ f.IsInvertible := by
+  constructor
+  · rintro ⟨A, hA⟩
+    have : f = (f ∘L (e : M₃ →L[R] M)) ∘L e.symm := by ext; simp
+    rw [this, ← hA]
+    simp
+  · rintro ⟨M, rfl⟩
+    simp
+
+@[simp] lemma inverse_equiv_comp {e : M₂ ≃L[R] M₃} {f : M →L[R] M₂} :
+    (e ∘L f).inverse = f.inverse ∘L (e.symm : M₃ →L[R] M₂) := by
+  by_cases hf : f.IsInvertible
+  · rcases hf with ⟨A, rfl⟩
+    simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
+    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
+    rfl
+
+@[simp] lemma inverse_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
+    (f ∘L e).inverse = (e.symm : M →L[R] M₃) ∘L f.inverse := by
+  by_cases hf : f.IsInvertible
+  · rcases hf with ⟨A, rfl⟩
+    simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
+    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
+    simp
+
+lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
+    (hg : g.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+  rcases hg with ⟨N, rfl⟩
+  simp
+
+lemma IsInvertible.inverse_comp_apply_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
+    (hg : g.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+  simp only [hg.inverse_comp_of_left, coe_comp', Function.comp_apply]
+
+lemma IsInvertible.inverse_comp_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
+    (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+  rcases hf with ⟨M, rfl⟩
+  simp
+
+lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
+    (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+  simp only [hf.inverse_comp_of_right, coe_comp', Function.comp_apply]
 
 end
 
@@ -2320,7 +2435,7 @@ theorem ring_inverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : 
 ring of self-maps of the domain. -/
 theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L e.symm := by
-  by_cases h₁ : ∃ e' : M ≃L[R] M₂, e' = f
+  by_cases h₁ : f.IsInvertible
   · obtain ⟨e', he'⟩ := h₁
     rw [← he']
     change _ = Ring.inverse (e'.trans e.symm : M →L[R] M) ∘L (e.symm : M₂ →L[R] M)
@@ -2338,6 +2453,10 @@ theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
 theorem ring_inverse_eq_map_inverse : Ring.inverse = @inverse R M M _ _ _ _ _ _ _ := by
   ext
   simp [to_ring_inverse (ContinuousLinearEquiv.refl R M)]
+
+@[simp] theorem inverse_id : (id R M).inverse = id R M := by
+  rw [← ring_inverse_eq_map_inverse]
+  exact Ring.inverse_one _
 
 end
 
@@ -2441,4 +2560,4 @@ def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
 
 end MulOpposite
 
-set_option linter.style.longFile 2500
+set_option linter.style.longFile 2700

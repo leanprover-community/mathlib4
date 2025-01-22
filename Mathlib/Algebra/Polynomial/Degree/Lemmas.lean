@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials
@@ -184,7 +185,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
   induction' s using Finset.induction_on with x s hx IH
   · simp
   · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
-    specialize IH (h.mono fun _ => by simp (config := { contextual := true }))
+    specialize IH (h.mono fun _ => by simp +contextual)
     rcases lt_trichotomy (degree (f x)) (degree (s.sum f)) with (H | H | H)
     · rw [← IH, sup_eq_right.mpr H.le, degree_add_eq_right_of_degree_lt H]
     · rcases s.eq_empty_or_nonempty with (rfl | hs)

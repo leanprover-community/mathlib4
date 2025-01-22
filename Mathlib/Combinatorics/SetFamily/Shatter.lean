@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Shattering families

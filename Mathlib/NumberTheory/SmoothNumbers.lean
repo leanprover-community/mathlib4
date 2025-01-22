@@ -350,8 +350,7 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
   simp only [smoothNumbers_eq_factoredNumbers, Finset.range_succ, factoredNumbers_insert _ hN]
 
 @[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by
-  simp (config := { decide := true }) only [not_false_eq_true, smoothNumbers_succ,
-    smoothNumbers_zero]
+  simp +decide only [not_false_eq_true, smoothNumbers_succ, smoothNumbers_zero]
 
 @[gcongr] lemma smoothNumbers_mono {N M : ℕ} (hNM : N ≤ M) : N.smoothNumbers ⊆ M.smoothNumbers :=
   fun _ hx ↦ ⟨hx.1, fun p hp => (hx.2 p hp).trans_le hNM⟩
