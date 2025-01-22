@@ -220,8 +220,8 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
         rw [Finset.sum_update_of_mem hi0]
         simp only [Finset.sum_const_zero, add_zero, const_apply]
       have hw1s : s.affineCombination k p w1 = p i0 :=
-        s.affineCombination_of_eq_one_of_eq_zero w1 p hi0 (Function.update_same _ _ _)
-          fun _ _ hne => Function.update_noteq hne _ _
+        s.affineCombination_of_eq_one_of_eq_zero w1 p hi0 (Function.update_self ..)
+          fun _ _ hne => Function.update_of_ne hne ..
       let w2 := w + w1
       have hw2 : ∑ i ∈ s, w2 i = 1 := by
         simp_all only [w2, Pi.add_apply, Finset.sum_add_distrib, zero_add]

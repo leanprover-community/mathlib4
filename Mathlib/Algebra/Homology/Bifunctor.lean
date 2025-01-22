@@ -21,6 +21,7 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 

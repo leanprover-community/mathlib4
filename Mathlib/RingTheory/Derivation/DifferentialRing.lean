@@ -13,6 +13,7 @@ use the x′ notation for the derivative of x.
 -/
 
 /-- A derivation from a ring to itself, as a typeclass. -/
+@[ext]
 class Differential (R : Type*) [CommRing R] where
   /-- The `Derivation` associated with the ring. -/
   deriv : Derivation ℤ R R

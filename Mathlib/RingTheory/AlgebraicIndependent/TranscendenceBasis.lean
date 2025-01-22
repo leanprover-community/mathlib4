@@ -3,7 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
@@ -31,8 +31,6 @@ transcendence basis, transcendence degree, transcendence
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
-
-open scoped Classical
 
 universe u v w
 
