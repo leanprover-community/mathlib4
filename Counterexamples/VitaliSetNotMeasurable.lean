@@ -54,23 +54,17 @@ lemma shift_nullmeasurable {s : Set ℝ} (h : NullMeasurableSet s volume) (c : �
     NullMeasurableSet ((fun x ↦ x + c) '' s) volume := by
   rcases nullmeasurable_measurable_null h with ⟨t, ts, tm, vs, vt⟩
   rw [← union_diff_cancel ts, image_union]
-  refine measurable_null_nullmeasurable ?_ ?_
-  · have : MeasurableSet ((fun x ↦ x + c) '' t) := by
-      apply (MeasurableEmbedding.measurableSet_image ?_).mpr tm
-      exact measurableEmbedding_addRight c
-    exact measurable_nullmeasurable this
-  · rw [shift_volume (s \ t), vt]
+  exact measurable_null_nullmeasurable
+    (measurable_nullmeasurable (((measurableEmbedding_addRight c).measurableSet_image).mpr tm))
+    (by rw [shift_volume (s \ t), vt])
 
 lemma union_volume_null {s t : Set ℝ} (hs : MeasurableSet s) (ht : volume t = 0) :
     volume (s ∪ t) = volume s := by
-  have hu : s ∪ t = s ∪ (t \ s) := union_diff_self.symm
-  have hd : Disjoint s (t \ s) := disjoint_sdiff_right
   have hz : volume (t \ s) = 0 := by
-    apply le_antisymm
-    · rw [← ht]
-      exact volume_mono diff_subset
-    · exact zero_le (volume (t \ s))
-  rw [hu, measure_union' hd hs, hz]
+    apply le_antisymm ?_ (zero_le (volume (t \ s)))
+    rw [← ht]
+    exact volume_mono diff_subset
+  rw [union_diff_self.symm, measure_union' disjoint_sdiff_right hs, hz]
   abel
 
 lemma biUnion_null {ι : Type*} {I : Set ι} {f : ι → Set ℝ}
@@ -91,31 +85,18 @@ lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
       simp only [mem_union, mem_iUnion₂]
       rintro ⟨i, i_I, x_s⟩
       rcases em (x ∈ t i) with x_t | x_nt
-      · left ; use i, i_I
-      · right ; use i, i_I
+      · left; use i, i_I
+      · right; use i, i_I
         rw [mem_diff]
         constructor <;> assumption
     · refine union_subset ?_ ?_
       · exact biUnion_mono (subset_refl I) t_s
-      · refine biUnion_mono (subset_refl I) ?_
-        intro i ?_
-        exact diff_subset
-  have hm_ti : ∀ i ∈ I, MeasurableSet (t i) := by
-    intro i i_I
-    exact t_m i i_I
-  have hm_tu : MeasurableSet (⋃ i ∈ I, t i) :=
-    MeasurableSet.biUnion hc hm_ti
-  have h_null : volume (⋃ i ∈ I, (s i \ t i)) = 0 := by
-    exact (biUnion_null hc).mpr t_z
-  have hv_s : volume (⋃ i ∈ I, s i) = volume (⋃ i ∈ I, t i) := by
-    rw [h_st, union_volume_null hm_tu h_null]
-  have hd_t : I.PairwiseDisjoint t := by
-    refine PairwiseDisjoint.mono_on hd t_s
-  have hv_t : volume (⋃ i ∈ I, t i) = ∑' (i : ↑I), volume (t ↑i) := by
-    exact measure_biUnion (μ := volume) hc hd_t hm_ti
-  rw [hv_s, hv_t]
-  refine tsum_congr ?_
-  rintro ⟨i, i_I⟩
+      · exact biUnion_mono (subset_refl I) (fun i _ ↦ diff_subset)
+  have hm_tu : MeasurableSet (⋃ i ∈ I, t i) := MeasurableSet.biUnion hc t_m
+  have hv_t : volume (⋃ i ∈ I, t i) = ∑' (i : ↑I), volume (t ↑i) :=
+    measure_biUnion (μ := volume) hc (hd.mono_on t_s) t_m
+  rw [h_st, union_volume_null hm_tu ((biUnion_null hc).mpr t_z), hv_t]
+  congr; ext ⟨i, i_I⟩
   rw [t_v i i_I]
 
 /-- We now start constructing the Vitali set.
@@ -125,28 +106,15 @@ iff their difference is rational. -/
 instance vS : Setoid { x : ℝ // x ∈ Icc 0 1 } where
   r := fun x y ↦ (↑ x : ℝ) - (↑ y) ∈ range ((↑) : ℚ → ℝ)
   iseqv := {
-    refl := by
-      intro x
-      simp only [sub_self, mem_range, Rat.cast_eq_zero, exists_eq]
-    symm := by
-      intro x y
-      simp only [mem_range]
-      rintro ⟨t, h⟩
-      use (-t)
-      simp [h]
-    trans := by
-      intro x y z
-      simp only [mem_range]
-      rintro ⟨t1, h1⟩ ⟨t2, h2⟩
-      use (t1 + t2)
-      simp [h1, h2]
+    refl {x} := by simp
+    symm {x y}:= fun ⟨t, h⟩ ↦ ⟨(-t), by simp [h]⟩
+    trans {x y z} := fun ⟨t1, h1⟩ ⟨t2, h2⟩ ↦ ⟨(t1 + t2), by simp [h1, h2]⟩
   }
 
 /-- Make a quotient type vT from the setoid vS. -/
 def vT : Type := Quotient vS
 
-lemma vS_vT_surj : ∀ t : vT, ∃ x : { x : ℝ // x ∈ Icc 0 1 }, ⟦x⟧ = t := by
-  intro t
+lemma vS_vT_surj (t : vT) : ∃ x : { x : ℝ // x ∈ Icc 0 1 }, ⟦x⟧ = t := by
   have ⟨x, eq⟩ := Quotient.mk_surjective t
   use x, eq
 
@@ -154,8 +122,8 @@ lemma vS_vT_surj : ∀ t : vT, ∃ x : { x : ℝ // x ∈ Icc 0 1 }, ⟦x⟧ = t
 def vRep : vT → { x : ℝ // x ∈ Icc 0 1 } :=
   fun t ↦ Classical.choose (vS_vT_surj t)
 
-lemma vRep_spec : ∀ t : vT, ⟦vRep t⟧ = t :=
-  fun t ↦ Classical.choose_spec (vS_vT_surj t)
+lemma vRep_spec (t : vT) : ⟦vRep t⟧ = t :=
+  Classical.choose_spec (vS_vT_surj t)
 
 /-- The Vitali set is the image of vRep. -/
 def vitaliSet : Set ℝ := { x : ℝ | ∃ t : vT, ↑(vRep t) = x }
@@ -196,13 +164,9 @@ lemma vitaliUnion_lower_bound : Icc 0 1 ⊆ vitaliUnion := by
   have ⟨x', h_x2⟩ : ∃ x' : { x : ℝ // x ∈ Icc 0 1 }, ↑ x' = x := CanLift.prf x h_x1
   let y : ℝ := ↑(vRep ⟦x'⟧)
   have h_y1 : y ∈ Icc 0 1 := (vRep ⟦x'⟧).property
-  have h_y2 : y ∈ vitaliSet := by
-    simp [y, vitaliSet]
+  have h_y2 : y ∈ vitaliSet := by simp [y, vitaliSet]
   have h_xy1 : x - y ∈ range ((↑) : ℚ → ℝ) := by
-    have eq : vS.r x' (vRep ⟦x'⟧) := by
-      refine Quotient.eq.mp ?_
-      symm
-      apply vRep_spec
+    have eq : vS.r x' (vRep ⟦x'⟧) := Quotient.eq.mp (vRep_spec _).symm
     simp only [Setoid.r] at eq
     simpa [← h_x2]
   have h_xy2 : x - y ∈ Icc (-1) 1 := by
@@ -218,7 +182,7 @@ lemma vitaliUnion_lower_bound : Icc 0 1 ⊆ vitaliUnion := by
 /-- Therefore, the volume of vitaliUnion is between 1 and 3 (inclusive). -/
 lemma vitaliUnion_volume_range : 1 ≤ volume vitaliUnion ∧ volume vitaliUnion ≤ 3 := by
   have h1 : volume (Icc (0 : ℝ) 1) = 1 := by simp [volume_Icc]
-  have h2 : volume (Icc (-1 : ℝ) 2) = 3 := by simp [volume_Icc] ; norm_num
+  have h2 : volume (Icc (-1 : ℝ) 2) = 3 := by simp [volume_Icc]; norm_num
   constructor
   · rw [← h1]
     exact volume_mono vitaliUnion_lower_bound
@@ -232,8 +196,7 @@ lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
   intro z
   simp only [mem_inter_iff, mem_empty_iff_false, imp_false, not_and]
   intro z_x z_y
-  simp only [vitaliSet', vitaliSet, image_add_right, preimage_setOf_eq, mem_setOf_eq] at z_x
-  simp only [vitaliSet', vitaliSet, image_add_right, preimage_setOf_eq, mem_setOf_eq] at z_y
+  simp only [vitaliSet', vitaliSet, image_add_right, preimage_setOf_eq, mem_setOf_eq] at z_x z_y
   have ⟨t_x, rep_x⟩ := z_x
   have ⟨t_y, rep_y⟩ := z_y
   have vRep_eq : vS.r (vRep t_x) (vRep t_y) := by
@@ -242,8 +205,7 @@ lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
     have : x ∈ range ((↑) : ℚ → ℝ) := by exact mem_of_mem_inter_right x_vI
     have ⟨q_x, q_x_eq⟩ := mem_range.mp (mem_of_mem_inter_right x_vI)
     have ⟨q_y, q_y_eq⟩ := mem_range.mp (mem_of_mem_inter_right y_vI)
-    use (-q_x + q_y)
-    simp [← q_x_eq, ← q_y_eq]
+    use -q_x + q_y, by simp [← q_x_eq, ← q_y_eq]
   have vT_eq := Quotient.sound vRep_eq
   simp only [vRep_spec] at vT_eq
   have x_eq_y : x = y := by
@@ -253,9 +215,8 @@ lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
   contradiction
 
 /-- vI is a countable set. -/
-lemma vI_countable : vI.Countable := by
-  refine Countable.mono inter_subset_right ?_
-  apply countable_range
+lemma vI_countable : vI.Countable :=
+  (countable_range _).mono inter_subset_right
 
 /-- This is the main result that will lead to a contradiction:
 if the vitaliSet is null-measurable, then the volume of vitaliUnion is
