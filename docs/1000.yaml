@@ -268,8 +268,8 @@ Q257387:
   title: Vitali theorem
   # i.e. existence of the Vitali set
   authors: Ching-Tsun Chou
-  url: https://github.com/ctchou/my_lean/blob/main/MyLean/NonMeasurable.lean
-  comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
+  date: "2024-12-25"
+  decl: vitaliSet_not_measurable
 
 Q258374:
   title: Carathéodory's theorem
