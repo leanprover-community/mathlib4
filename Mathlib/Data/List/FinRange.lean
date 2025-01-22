@@ -26,9 +26,6 @@ theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (b
   apply List.ext_getElem <;> simp [finRange]
 
 @[simp]
-theorem finRange_zero : finRange 0 = [] := rfl
-
-@[simp]
 theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
   rw [finRange_eq_pmap_range]
   exact mem_pmap.2
@@ -39,10 +36,6 @@ theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
 theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
   exact (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
-
-@[simp]
-theorem length_finRange (n : ℕ) : (finRange n).length = n := by
-  simp [finRange]
 
 @[simp]
 theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
@@ -56,11 +49,6 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
   rw [finRange_eq_pmap_range]
   exact (List.pairwise_le_range n).pmap (by simp) (by simp)
 
-@[simp]
-theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
-  simp [finRange, getElem_range, getElem_pmap]
-
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
@@ -73,7 +61,7 @@ theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 
 @[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
-  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
+  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length_iff.mpr (by simp)
   have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
   have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
   simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
@@ -87,11 +75,6 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
   simp only [Function.comp_def, Fin.val_succ]
-
-theorem finRange_succ (n : ℕ) :
-    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
-  apply map_injective_iff.mpr Fin.val_injective
-  simp [range_succ, Function.comp_def]
 
 -- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 

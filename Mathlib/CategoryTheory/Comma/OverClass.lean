@@ -58,7 +58,7 @@ initialize_simps_projections OverClass (hom → over)
 /--
 `X.CanonicallyOverClass S` is the typeclass containing the data of a
 structure morphism `X ↘ S : X ⟶ S`,
-and that `S` is (uniquely) inferrable from the structure of `X`.
+and that `S` is (uniquely) inferable from the structure of `X`.
 -/
 class CanonicallyOverClass (X : C) (S : semiOutParam C) extends OverClass X S where
 
@@ -120,7 +120,22 @@ instance [OverClass X S]
     [IsOverTower X S S'] [IsOverTower Y S S'] [HomIsOver f S] : HomIsOver f S' :=
   homIsOver_of_isOverTower f S S'
 
+variable (X) in
 /-- Bundle `X` with an `OverClass X S` instance into `Over S`. -/
+@[simps! hom left]
 def OverClass.asOver [OverClass X S] : Over S := Over.mk (X ↘ S)
+
+/-- Bundle a morphism `f : X ⟶ Y` with `HomIsOver f S` into a morphism in `Over S`. -/
+@[simps! left]
+def OverClass.asOverHom [OverClass X S] [OverClass Y S] (f : X ⟶ Y) [HomIsOver f S] :
+    OverClass.asOver X S ⟶ OverClass.asOver Y S :=
+  Over.homMk f (comp_over f S)
+
+@[simps]
+instance OverClass.fromOver {S : C} (X : Over S) : OverClass X.left S where
+  hom := X.hom
+
+instance {S : C} {X Y : Over S} (f : X ⟶ Y) : HomIsOver f.left S where
+  comp_over := Over.w f
 
 end CategoryTheory

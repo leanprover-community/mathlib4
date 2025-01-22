@@ -527,9 +527,6 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
     _ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
       refine Finset.sum_le_sum fun b _ => ?_; simp_rw [ContinuousLinearMap.le_opNorm]
 
-@[deprecated (since := "2024-02-02")]
-alias norm_setToSimpleFunc_le_sum_op_norm := norm_setToSimpleFunc_le_sum_opNorm
-
 theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ F) :
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
@@ -1365,7 +1362,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
       filter_upwards [hfsi] with i hi
       refine lintegral_congr_ae ?_
       filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
-      simp_rw [F_lp, dif_pos hi, hxi, hxf]
+      simp_rw [F_lp, dif_pos hi, hxi, f_lp, hxf]
     suffices Tendsto (fun i => setToFun μ T hT (F_lp i)) l (𝓝 (setToFun μ T hT f)) by
       refine (tendsto_congr' ?_).mp this
       filter_upwards [hfsi] with i hi
@@ -1422,20 +1419,14 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   rw [this]
   have h_eLpNorm_ne_top : eLpNorm (⇑g - ⇑f) 1 μ ≠ ∞ := by
     rw [← eLpNorm_congr_ae (Lp.coeFn_sub _ _)]; exact Lp.eLpNorm_ne_top _
-  have h_eLpNorm_ne_top' : eLpNorm (⇑g - ⇑f) 1 μ' ≠ ∞ := by
-    refine ((eLpNorm_mono_measure _ hμ'_le).trans_lt ?_).ne
-    rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
-    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top.lt_top
-    simp [hc'.lt_top, hc'0]
   calc
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
-      rw [toReal_le_toReal h_eLpNorm_ne_top' (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top)]
-      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le).trans ?_
+      refine toReal_mono (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top) ?_
+      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le).trans_eq ?_
       rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
       simp
     _ = c'.toReal * (eLpNorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul
-    _ ≤ c'.toReal * (ε / 2 / c'.toReal) :=
-      (mul_le_mul le_rfl hfg.le toReal_nonneg toReal_nonneg)
+    _ ≤ c'.toReal * (ε / 2 / c'.toReal) := by gcongr
     _ = ε / 2 := by
       refine mul_div_cancel₀ (ε / 2) ?_; rw [Ne, toReal_eq_zero_iff]; simp [hc', hc'0]
     _ < ε := half_lt_self hε_pos

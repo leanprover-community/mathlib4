@@ -5,7 +5,7 @@ Authors: Felix Weilacher
 -/
 import Mathlib.Topology.GDelta.UniformSpace
 import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
@@ -42,6 +42,15 @@ scoped[Topology] notation3 "∀ᵇ "(...)", "r:(scoped p => Filter.Eventually p 
 scoped[Topology] notation3 "∃ᵇ "(...)", "r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}
+
+theorem coborder_mem_residual {s : Set α} (hs : IsLocallyClosed s) : coborder s ∈ residual α :=
+  residual_of_dense_open hs.isOpen_coborder dense_coborder
+
+theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =ᵇ s := by
+  rw [Filter.eventuallyEq_set]
+  filter_upwards [coborder_mem_residual hs] with x hx
+  nth_rewrite 2 [← closure_inter_coborder (s := s)]
+  simp [hx]
 
 /-- We say a set is a `BaireMeasurableSet` if it differs from some Borel set by
 a meager set. This forms a σ-algebra.
@@ -119,21 +128,16 @@ open Filter
 
 /--Any Borel set differs from some open set by a meager set. -/
 theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
-    ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
-  apply h.induction_on_open (fun s hs => ⟨s, hs, EventuallyEq.rfl⟩)
-  · rintro s - ⟨u, uo, su⟩
-    refine ⟨(closure u)ᶜ, isClosed_closure.isOpen_compl,
-      EventuallyEq.compl (su.trans <| EventuallyLE.antisymm subset_closure.eventuallyLE ?_)⟩
-    have : (coborder u) ∈ residual _ :=
-      residual_of_dense_open uo.isLocallyClosed.isOpen_coborder dense_coborder
-    rw [coborder_eq_union_closure_compl] at this
-    rw [EventuallyLE]
-    convert this
-    simp only [le_Prop_eq, imp_iff_or_not]
-    rfl --terrible
-  rintro s - - hs
-  choose u uo su using hs
-  exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
+    ∃ u : Set α, IsOpen u ∧ s =ᵇ u := by
+  induction s, h using MeasurableSet.induction_on_open with
+  | isOpen U hU => exact ⟨U, hU, .rfl⟩
+  | compl s _ ihs =>
+    obtain ⟨U, Uo, hsU⟩ := ihs
+    use (closure U)ᶜ, isClosed_closure.isOpen_compl
+    exact .compl <| hsU.trans <| .symm <| closure_residualEq Uo.isLocallyClosed
+  | iUnion f _ _ ihf =>
+    choose u uo su using ihf
+    exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
 
 /--Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :

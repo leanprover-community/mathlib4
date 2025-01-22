@@ -72,32 +72,32 @@ abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
 initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
-  IO.mkRef <| Std.HashSet.empty
-    |>.insert `Mathlib.Tactic.Says.says
-    |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
+  IO.mkRef <| .ofArray #[
+    `Mathlib.Tactic.Says.says,
+    `Batteries.Tactic.«tacticOn_goal-_=>_»,
     -- attempt to speed up, by ignoring more tactics
-    |>.insert `by
-    |>.insert `null
-    |>.insert `«]»
-    |>.insert ``Lean.Parser.Term.byTactic
-    |>.insert ``Lean.Parser.Tactic.tacticSeq
-    |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
-    |>.insert ``Lean.Parser.Tactic.tacticTry_
+    `by,
+    `null,
+    `«]»,
+    ``Lean.Parser.Term.byTactic,
+    ``Lean.Parser.Tactic.tacticSeq,
+    ``Lean.Parser.Tactic.tacticSeq1Indented,
+    ``Lean.Parser.Tactic.tacticTry_,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-    |>.insert ``Lean.Parser.Tactic.guardHyp
-    |>.insert ``Lean.Parser.Tactic.guardTarget
-    |>.insert ``Lean.Parser.Tactic.failIfSuccess
-    |>.insert `Mathlib.Tactic.successIfFailWithMsg
-    |>.insert `Mathlib.Tactic.failIfNoProgress
-    |>.insert `Mathlib.Tactic.ExtractGoal.extractGoal
-    |>.insert `Mathlib.Tactic.Propose.propose'
-    |>.insert `Lean.Parser.Tactic.traceState
-    |>.insert `Mathlib.Tactic.tacticMatch_target_
-    |>.insert ``Lean.Parser.Tactic.change
-    |>.insert `change?
-    |>.insert `«tactic#adaptation_note_»
-    |>.insert `tacticSleep_heartbeats_
-    |>.insert `Mathlib.Tactic.«tacticRename_bvar_→__»
+    ``Lean.Parser.Tactic.guardHyp,
+    ``Lean.Parser.Tactic.guardTarget,
+    ``Lean.Parser.Tactic.failIfSuccess,
+    `Mathlib.Tactic.successIfFailWithMsg,
+    `Mathlib.Tactic.failIfNoProgress,
+    `Mathlib.Tactic.ExtractGoal.extractGoal,
+    `Mathlib.Tactic.Propose.propose',
+    `Lean.Parser.Tactic.traceState,
+    `Mathlib.Tactic.tacticMatch_target_,
+    `change?,
+    `«tactic#adaptation_note_»,
+    `tacticSleep_heartbeats_,
+    `Mathlib.Tactic.«tacticRename_bvar_→__»
+  ]
 
 /-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
 These identifiers are then allowed by the unused tactic linter:
@@ -119,35 +119,35 @@ A list of blacklisted syntax kinds, which are expected to have subterms that con
 unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
-  IO.mkRef <| Std.HashSet.empty
-    |>.insert `Mathlib.Tactic.Says.says
-    |>.insert ``Parser.Term.binderTactic
-    |>.insert ``Lean.Parser.Term.dynamicQuot
-    |>.insert ``Lean.Parser.Tactic.quotSeq
-    |>.insert ``Lean.Parser.Tactic.tacticStop_
-    |>.insert ``Lean.Parser.Command.notation
-    |>.insert ``Lean.Parser.Command.mixfix
-    |>.insert ``Lean.Parser.Tactic.discharger
-    |>.insert ``Lean.Parser.Tactic.Conv.conv
-    |>.insert `Batteries.Tactic.seq_focus
-    |>.insert `Mathlib.Tactic.Hint.registerHintStx
-    |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
-    |>.insert `Mathlib.Tactic.LinearCombination'.linearCombination'
-    |>.insert `Aesop.Frontend.Parser.addRules
-    |>.insert `Aesop.Frontend.Parser.aesopTactic
-    |>.insert `Aesop.Frontend.Parser.aesopTactic?
+  IO.mkRef <| .ofArray #[
+    `Mathlib.Tactic.Says.says,
+    ``Parser.Term.binderTactic,
+    ``Lean.Parser.Term.dynamicQuot,
+    ``Lean.Parser.Tactic.quotSeq,
+    ``Lean.Parser.Tactic.tacticStop_,
+    ``Lean.Parser.Command.notation,
+    ``Lean.Parser.Command.mixfix,
+    ``Lean.Parser.Tactic.discharger,
+    ``Lean.Parser.Tactic.Conv.conv,
+    `Batteries.Tactic.seq_focus,
+    `Mathlib.Tactic.Hint.registerHintStx,
+    `Mathlib.Tactic.LinearCombination.linearCombination,
+    `Mathlib.Tactic.LinearCombination'.linearCombination',
+    `Aesop.Frontend.Parser.addRules,
+    `Aesop.Frontend.Parser.aesopTactic,
+    `Aesop.Frontend.Parser.aesopTactic?,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-    |>.insert ``Lean.Parser.Tactic.failIfSuccess
-    |>.insert `Mathlib.Tactic.successIfFailWithMsg
-    |>.insert `Mathlib.Tactic.failIfNoProgress
+    ``Lean.Parser.Tactic.failIfSuccess,
+    `Mathlib.Tactic.successIfFailWithMsg,
+    `Mathlib.Tactic.failIfNoProgress
+  ]
 
 /-- Is this a syntax kind that contains intentionally unused tactic subterms? -/
 def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
   k.components.contains `Conv ||
   "slice".isPrefixOf k.toString ||
-  match k with
-  | .str _ "quot" => true
-  | _ => ignoreTacticKinds.contains k
+  k matches .str _ "quot" ||
+  ignoreTacticKinds.contains k
 
 /--
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.

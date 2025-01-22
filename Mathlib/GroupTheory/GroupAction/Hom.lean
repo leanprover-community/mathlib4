@@ -75,8 +75,6 @@ structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : T
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
 a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 @[to_additive]
 structure MulActionHom where
   /-- The underlying function. -/
@@ -150,10 +148,6 @@ theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
     (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
   map_smulₛₗ f c x
 
--- attribute [simp] map_smulₛₗ
-
--- Porting note: removed has_coe_to_fun instance, coercions handled differently now
-
 @[to_additive]
 instance : MulActionSemiHomClass (X →ₑ[φ] Y) φ X Y where
   map_smulₛₗ := MulActionHom.map_smul'
@@ -166,8 +160,6 @@ namespace MulActionHom
 variable {φ X Y}
 variable {F : Type*} [FunLike F X Y]
 
-/- porting note: inserted following def & instance for consistent coercion behaviour,
-see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `MulActionSemiHomClass F φ X Y`
   into an actual `MulActionHom`.
   This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
@@ -417,14 +409,6 @@ abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
 
 namespace DistribMulActionHom
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO decide whether the next two instances should be removed
-Coercion is already handled by all the HomClass constructions I believe -/
--- instance coe : Coe (A →+[M] B) (A →+ B) :=
---   ⟨toAddMonoidHom⟩
-
--- instance coe' : Coe (A →+[M] B) (A →[M] B) :=
---   ⟨toMulActionHom⟩
-
 instance : FunLike (A →ₑ+[φ] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -439,8 +423,6 @@ instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B where
 variable {φ φ' A B B₁}
 variable {F : Type*} [FunLike F A B]
 
-/- porting note: inserted following def & instance for consistent coercion behaviour,
-see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `MulActionHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
@@ -518,9 +500,8 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
--- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →ₑ+[φ] B) :=
-  ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = (φ m) • (0 : B); rw [smul_zero]}⟩
+  ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
 
 instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
@@ -608,8 +589,6 @@ variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 -- variable [AddMonoid N'] [DistribMulAction S N']
 
 /-- Equivariant ring homomorphisms. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
 
 /-
@@ -659,18 +638,6 @@ abbrev MulSemiringActionHomClass
 
 namespace MulSemiringActionHom
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO decide whether the next two instances should be removed
-Coercion is already handled by all the HomClass constructions I believe -/
--- @[coe]
--- instance coe : Coe (R →+*[M] S) (R →+* S) :=
---   ⟨toRingHom⟩
-
--- @[coe]
--- instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
---   ⟨toDistribMulActionHom⟩
-
--- Porting note: removed has_coe_to_fun instance, coercions handled differently now
-
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -687,8 +654,6 @@ instance : MulSemiringActionSemiHomClass (R →ₑ+*[φ] S) φ R S where
 variable {φ R S}
 variable {F : Type*} [FunLike F R S]
 
-/- porting note: inserted following def & instance for consistent coercion behaviour,
-see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `MulSemiringActionHomClass F M R S` into an actual
 `MulSemiringActionHom`. This is declared as the default coercion from `F` to
 `MulSemiringActionHom M X Y`. -/

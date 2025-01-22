@@ -11,6 +11,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Cardinalities of pointwise operations on sets
 -/
 
+assert_not_exists Field
+
 open scoped Cardinal Pointwise
 
 namespace Set
@@ -48,11 +50,11 @@ variable [InvolutiveInv G]
 
 @[to_additive (attr := simp)]
 lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
-  rw [← image_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
+  rw [← image_inv_eq_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
 
 @[to_additive (attr := simp)]
 lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
-  rw [← image_inv, Nat.card_image_of_injective inv_injective]
+  rw [← image_inv_eq_inv, Nat.card_image_of_injective inv_injective]
 
 @[to_additive] alias card_inv := natCard_inv
 
@@ -62,7 +64,7 @@ attribute [deprecated natCard_inv (since := "2024-09-30")] card_inv
 attribute [deprecated natCard_neg (since := "2024-09-30")] card_neg
 
 @[to_additive (attr := simp)]
-lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by simp [encard, PartENat.card]
+lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by simp [encard, ENat.card]
 
 @[to_additive (attr := simp)]
 lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
@@ -112,7 +114,7 @@ attribute [deprecated Cardinal.mk_vadd_set (since := "2024-09-30")] card_vadd_se
 
 @[to_additive (attr := simp)]
 lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
-  simp [encard, PartENat.card]
+  simp [encard, ENat.card]
 
 @[to_additive (attr := simp)]
 lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]

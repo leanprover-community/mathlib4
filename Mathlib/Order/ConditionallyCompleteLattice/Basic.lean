@@ -317,11 +317,9 @@ theorem csSup_singleton (a : α) : sSup {a} = a :=
 theorem csInf_singleton (a : α) : sInf {a} = a :=
   isLeast_singleton.csInf_eq
 
-@[simp]
 theorem csSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair _ _ a b).csSup_eq (insert_nonempty _ _)
 
-@[simp]
 theorem csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
   (@isGLB_pair _ _ a b).csInf_eq (insert_nonempty _ _)
 
@@ -356,11 +354,13 @@ theorem le_csInf_inter :
 
 /-- The supremum of `insert a s` is the maximum of `a` and the supremum of `s`, if `s` is
 nonempty and bounded above. -/
+@[simp]
 theorem csSup_insert (hs : BddAbove s) (sne : s.Nonempty) : sSup (insert a s) = a ⊔ sSup s :=
   ((isLUB_csSup sne hs).insert a).csSup_eq (insert_nonempty a s)
 
 /-- The infimum of `insert a s` is the minimum of `a` and the infimum of `s`, if `s` is
 nonempty and bounded below. -/
+@[simp]
 theorem csInf_insert (hs : BddBelow s) (sne : s.Nonempty) : sInf (insert a s) = a ⊓ sInf s :=
   csSup_insert (α := αᵒᵈ) hs sne
 
@@ -809,7 +809,7 @@ theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (
   refine eq_of_forall_ge_iff fun c => ?_
   rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
       (hs₀.image2 ht₀),
-    forall_image2_iff, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
+    forall_mem_image2, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
   simp_rw [← (h₂ _).le_iff_le, (h₁ _).le_iff_le, csSup_le_iff hs₁ hs₀]
 
 theorem csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))

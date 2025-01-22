@@ -151,55 +151,32 @@ section Pi
 variable (ι : Type v)
 
 /-- `R^n/I^n` is a `R/I`-module. -/
-instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
+instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ pi fun _ ↦ I) where
   smul c m :=
-    Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
+    Quotient.liftOn₂' c m (fun r m ↦ Submodule.Quotient.mk <| r • m) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
       rw [Submodule.quotientRel_def] at hc hm
       intro i
       exact I.mul_sub_mul_mem hc (hm i)
-  one_smul := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr with i; exact one_mul (a i)
-  mul_smul := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr 1; funext i; exact mul_assoc a b (c i)
-  smul_add := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr with i; exact mul_add a (b i) (c i)
-  smul_zero := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr with _; exact mul_zero a
-  add_smul := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr with i; exact add_mul a b (c i)
-  zero_smul := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr with i; exact zero_mul (a i)
+  one_smul := by rintro ⟨a⟩; exact congr_arg _ (one_smul _ _)
+  mul_smul := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact congr_arg _ (mul_smul _ _ _)
+  smul_add := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact congr_arg _ (smul_add _ _ _)
+  smul_zero := by rintro ⟨a⟩; exact congr_arg _ (smul_zero _)
+  add_smul := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact congr_arg _ (add_smul _ _ _)
+  zero_smul := by rintro ⟨a⟩; exact congr_arg _ (zero_smul _ _)
 
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
-noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
-  toFun := fun x ↦
-      Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun _ _ hab =>
-        funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
+noncomputable def piQuotEquiv : ((ι → R) ⧸ pi fun _ ↦ I) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
+  toFun x := Quotient.liftOn' x (fun f i ↦ Ideal.Quotient.mk I (f i)) fun _ _ hab ↦
+    funext fun i ↦ (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
   map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
   map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl
-  invFun := fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out (x i)
+  invFun x := Ideal.Quotient.mk _ (Quotient.out <| x ·)
   left_inv := by
     rintro ⟨x⟩
-    exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
-  right_inv := by
-    intro x
-    ext i
-    obtain ⟨_, _⟩ := @Quot.exists_rep _ _ (x i)
-    convert Quotient.out_eq' (x i)
+    exact Ideal.Quotient.eq.2 fun i ↦ Ideal.Quotient.eq.1 (Quotient.out_eq' _)
+  right_inv x := funext fun i ↦ Quotient.out_eq' (x i)
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/

@@ -3,7 +3,7 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Prime.Defs
