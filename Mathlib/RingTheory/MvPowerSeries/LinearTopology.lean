@@ -172,6 +172,48 @@ lemma mem_nhds_zero_iff [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
   · rintro ⟨Jd, hJd_mem_nhds, hJd⟩
     exact Filter.sets_of_superset _ (basis_mem_nhds_zero ⟨⟨Jd.1, hJd_mem_nhds⟩,Jd.2⟩) hJd
 
+lemma hasBasis_nhds_zero_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι → TwoSidedIdeal R}
+    (H : (𝓝 0 : Filter R).HasBasis p (s ·)) :
+    (𝓝 0 : Filter (MvPowerSeries σ R)).HasBasis (fun ideg : ι × (σ →₀ ℕ) ↦ p ideg.1)
+      (fun ideg ↦ basis _ _ ⟨s ideg.1, ideg.2⟩) := by
+  rw [nhds_pi]
+  refine H.pi_self.to_hasBasis ?_ ?_
+  · intro ⟨D, i⟩ ⟨hD, hi⟩
+    refine ⟨⟨i, Finset.sup hD.toFinset id⟩, hi, fun f hf d hd ↦ ?_⟩
+    rw [SetLike.mem_coe, mem_basis_iff] at hf
+    convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
+  · intro ⟨i, d⟩ hi
+    refine ⟨⟨Iic d, i⟩, ⟨finite_Iic d, hi⟩, ?_⟩
+    simpa [basis, coeff_apply, Iic, pi] using subset_rfl
+
+/-- The topology on `MvPowerSeries` is a left linear topology
+  when the ring of coefficients has the discrete topology. -/
+instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
+  .mk_of_hasBasis' _ (hasBasis_nhds_zero_of_hasBasis IsLinearTopology.hasBasis_twoSidedIdeal)
+    (fun I _ _ ↦ I.mul_mem_left _ _)
+
+/-- The topology on `MvPowerSeries` is a left linear topology
+  when the ring of coefficients has the discrete topology. -/
+instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
+  .mk_of_hasBasis' _ (hasBasis_nhds_zero_of_hasBasis IsLinearTopology.hasBasis_twoSidedIdeal)
+    (fun I _ _ ↦ I.mul_mem_right _ _)
+
+lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    (𝓝 0 : Filter (MvPowerSeries σ R)).HasBasis
+      (fun Id : TwoSidedIdeal R × (σ →₀ ℕ) ↦ (Id.1 : Set R) ∈ 𝓝 0)
+      (fun Id ↦ basis _ _ Id) := by
+  rw [nhds_pi]
+  refine IsLinearTopology.hasBasis_twoSidedIdeal.pi_self.to_hasBasis ?_ ?_
+  · intro ⟨D, I⟩ ⟨hD, hI⟩
+    refine ⟨⟨I, Finset.sup hD.toFinset id⟩, hI, fun f hf d hd ↦ ?_⟩
+    rw [SetLike.mem_coe, mem_basis_iff] at hf
+    convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
+  · intro ⟨I, d⟩ hI
+    refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
+    simpa [basis, coeff_apply, Iic, pi] using subset_rfl
+
 /-- The topology on `MvPowerSeries` is a (left and right) linear topology
   when the ring of coefficients has the discrete topology. -/
 theorem hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
