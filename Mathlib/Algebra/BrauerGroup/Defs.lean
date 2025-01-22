@@ -6,6 +6,7 @@ Authors: Yunzhou Xie, Jujian Zhang
 import Mathlib.Algebra.Central.Defs
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.Algebra.Category.AlgebraCat.Basic
 
 /-!
 # Definition of BrauerGroup over a field K
@@ -16,7 +17,7 @@ central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m �
 that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`.
 
 # TODOs
-1. Prove that the Brauer group is an abelian group.
+1. Prove that the Brauer group is an abelian group where multiplication is defined as tensorproduct.
 2. Prove that the Brauer group is a functor from the category of fields to the category of groups.
 3. Prove that over a field, being Brauer equivalent is the same as being Morita equivalent.
 
@@ -31,13 +32,7 @@ universe u v
 
 /-- `CSA` is the set of all finite dimensional central simple algebras over field `K`, for its
   generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib.Algebra.Azumaya.Defs`. -/
-structure CSA (K : Type u) [Field K] where
-  /-- the underlying set of the algebra -/
-  (carrier : Type v)
-  /-- Any member of `CSA` is a ring. -/
-  [ring : Ring carrier]
-  /-- Any member of `CSA` is a `K`-algebra. -/
-  [algebra : Algebra K carrier]
+structure CSA (K : Type u) [Field K] extends AlgebraCat.{v} K where
   /-- Amy member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]
   /-- Any member of `CSA` is simple. -/
@@ -47,17 +42,13 @@ structure CSA (K : Type u) [Field K] where
 
 variable {K : Type u} [Field K]
 
-instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨CSA.carrier⟩
+instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
-instance (A : CSA K): Ring A := A.ring
+instance (A : CSA K): Ring A := A.toAlgebraCat.isRing
 
-instance (A : CSA K): Algebra K A := A.algebra
+instance (A : CSA K): Algebra K A := A.toAlgebraCat.isAlgebra
 
-instance (A : CSA K): Algebra.IsCentral K A := A.isCentral
-
-instance (A : CSA K): IsSimpleRing A := A.isSimple
-
-instance (A : CSA K): FiniteDimensional K A := A.fin_dim
+attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
 /-- Two finite dimensional central simple algebras `A` and `B` are Brauer Equivalent
   if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`. -/
