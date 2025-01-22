@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 import Cli.Basic
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
+import Mathlib.Data.Int.Notation
 
 /-!
 # Apply results of `tryAtEachStep` automatically
@@ -43,12 +44,13 @@ def writeJsonFile (α) [ToJson α] (path : System.FilePath) (a : α) : IO Unit :
 structure SuggestedChange where
   startLine: ℕ
   startCol: ℕ
-  proofTermLengthReduction: ℕ
+  -- delta of old and new length: negative reduction means the proof term got *longer*
+  proofTermLengthReduction: ℤ
   parentName: String -- or a Name? ": "SetTheory.Game.small_setOf_birthday_lt",
   oldText: String -- "let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}",
   newText: String
   message: String
-  lengthReduction: ℕ -- of the text file, in bytes?
+  lengthReduction: ℤ -- of the text file, in bytes?
   goalIsProp: Bool
   -- e.g. "/home/dwrensha/src/compfiles/.lake/packages/mathlib/Mathlib/SetTheory/Game/Birthday.lean"
   -- XXX: should this be a path instead?
