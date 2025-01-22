@@ -34,7 +34,7 @@ namespace List
 `[a0, ..., an] < [b0, ..., b_k]` if `n < k` or `n = k` and `[a0, ..., an] < [b0, ..., bk]`
 under the lexicographic order induced by `r`. -/
 def Shortlex {α : Type*} (r : α → α → Prop) : List α → List α → Prop :=
-  fun a b => Prod.Lex (fun n1 n2 => n1 < n2) (fun a b => List.Lex r a b) (a.length, a) (b.length, b)
+  InvImage (Prod.Lex (· < ·) (List.Lex r)) fun a ↦ (a.length, a)
 
 namespace Shortlex
 
@@ -49,8 +49,9 @@ theorem of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t 
 over a relation `r`  when `s` is smaller than `t` under the lexicographic order over `r` -/
 theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
     Shortlex r s t := by
-  rw [Shortlex, h]
-  exact Prod.Lex.right _ h2
+  apply Prod.lex_def.mpr
+  right
+  exact ⟨h, h2⟩
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`.-/
@@ -58,8 +59,7 @@ theorem _root_.List.shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   constructor
   · intro h2
-    unfold Shortlex at h2
-    rw [h, Prod.lex_def, lt_self_iff_false, false_or] at h2
+    rw [Shortlex, InvImage, Prod.lex_def, h, lt_self_iff_false, false_or] at h2
     simp only [true_and] at h2
     exact h2
   exact fun h1 => of_lex h h1
@@ -68,19 +68,21 @@ theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
     s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := by
   constructor
   · intro hs
-    unfold Shortlex at hs
+    unfold Shortlex InvImage at hs
+    simp only at hs
     generalize hp : (s.length, s) = p at hs
+    generalize hq : (t.length, t) = q at hs
     cases hs with
     | left b₁ b₂ h =>
       left
-      rw [Prod.mk.injEq] at hp
-      rw [← hp.1] at h
+      rw [Prod.mk.injEq] at hp hq
+      rw [← hp.1, ← hq.1] at h
       exact h
     | right a h =>
       right
-      rw [Prod.mk.injEq] at hp
-      rw [← hp.2] at h
-      exact ⟨hp.1, h⟩
+      rw [Prod.mk.injEq] at hp hq
+      rw [← hp.2, ← hq.2] at h
+      exact ⟨hp.1.trans hq.1.symm, h⟩
   intro hpq
   rcases hpq with h1 | h2
   · exact of_length_lt h1
