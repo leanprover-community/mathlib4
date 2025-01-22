@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Defs
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
@@ -92,9 +91,6 @@ protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) :
 
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
-@[deprecated ofNat_eq_natCast (since := "2024-03-24")]
-protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
-
 @[norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
 
 @[simp, norm_cast] lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
@@ -114,7 +110,8 @@ lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
 
 lemma natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) := natCast_pos.2 n.succ_pos
 
-@[simp] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
+-- We want to use this lemma earlier than the lemmas simp can prove it with
+@[simp, nolint simpNF] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
 
 lemma natCast_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
@@ -222,7 +219,7 @@ than `b`, and the `pred` of a number less than `b`. -/
 where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, C (b + n)
-  | 0 => cast (by erw [Int.add_zero]) H0
+  | 0 => cast (by simp) H0
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
 
@@ -267,9 +264,9 @@ end inductionOn'
 
 /-- Inductively define a function on `ℤ` by defining it on `ℕ` and extending it from `n` to `-n`. -/
 @[elab_as_elim] protected def negInduction {C : ℤ → Sort*} (nat : ∀ n : ℕ, C n)
-    (neg : ∀ n : ℕ, C n → C (-n)) : ∀ n : ℤ, C n
+    (neg : (∀ n : ℕ, C n) → ∀ n : ℕ, C (-n)) : ∀ n : ℤ, C n
   | .ofNat n => nat n
-  | .negSucc n => neg _ <| nat <| n + 1
+  | .negSucc n => neg nat <| n + 1
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
@@ -347,6 +344,11 @@ lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
 
 alias natAbs_pow_two := natAbs_sq
 
+theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
+  | 0      => rfl
+  | Nat.succ _ => Int.one_mul _
+  | -[_+1] => (Int.neg_eq_neg_one_mul _).symm
+
 /-! ### `/`  -/
 
 @[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
@@ -365,21 +367,11 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 lemma add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
     (m + i) % n = (k + i) % n := by rw [← emod_add_emod, ← emod_add_emod k, H]
 
-@[simp] lemma neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
-  apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
-  convert Int.mul_emod_right 2 (-i) using 2
-  rw [Int.two_mul, Int.sub_eq_add_neg]
+@[simp] lemma neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by omega
 
 /-! ### properties of `/` and `%` -/
 
-lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
-  have h : n % 2 < 2 :=  by omega
-  have h₁ : 0 ≤ n % 2 := Int.emod_nonneg _ (by decide)
-  match n % 2, h, h₁ with
-  | (0 : ℕ), _ ,_ => Or.inl rfl
-  | (1 : ℕ), _ ,_ => Or.inr rfl
-  | (k + 2 : ℕ), h₁, _ => by omega
-  | -[a+1], _, h₁ => by cases h₁
+lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 := by omega
 
 /-! ### dvd -/
 
@@ -537,7 +529,7 @@ lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign
   have : (1 : ℤ) ≠ -1 := by decide
   rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
   rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> omega
+  omega
 
 /-! ### toNat -/
 

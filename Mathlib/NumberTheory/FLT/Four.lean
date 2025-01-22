@@ -3,6 +3,7 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
+import Mathlib.Data.Nat.Factors
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
@@ -13,6 +14,7 @@ import Mathlib.Tactic.LinearCombination
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 

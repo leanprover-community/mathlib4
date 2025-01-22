@@ -97,7 +97,7 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
     exact (neg_identical_self G).symm
   · rw [moveLeft_neg']
     exact impartial_neg _
-  · rw [moveRight_neg']
+  · rw [moveRight_neg]
     exact impartial_neg _
 termination_by G
 

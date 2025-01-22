@@ -376,7 +376,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 @[coe]
 def ofList (l : List α) : Seq α :=
   ⟨List.get? l, fun {n} h => by
-    rw [List.get?_eq_none] at h ⊢
+    rw [List.get?_eq_none_iff] at h ⊢
     exact h.trans (Nat.le_succ n)⟩
 
 instance coeList : Coe (List α) (Seq α) :=
@@ -816,11 +816,11 @@ instance : LawfulFunctor Seq where
 theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 
---@[simp] -- Porting note: simp can prove: `join_cons` is more general
+-- Not a simp lemmas as `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 
---@[simp] -- Porting note: simp can prove: `join_cons` is more general
+-- Not a simp lemmas as `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]

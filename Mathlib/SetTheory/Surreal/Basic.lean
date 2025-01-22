@@ -382,6 +382,7 @@ def toGame : Surreal →+o Game where
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
 
+@[simp]
 theorem zero_toGame : toGame 0 = 0 :=
   rfl
 

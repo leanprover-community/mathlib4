@@ -25,6 +25,14 @@ disconnected.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
+# TODO
+
+As discussion in `https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Refactor.20
+Category.20of.20ProfiniteGrp.20and.20ContinuousMulEquiv/near/493290115`
+
+* Refactor the category of `ProfiniteGrp` into one-field structure as in `AlgebraCat`
+
+* Prove `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` using `profiniteGrpToProfinite`
 -/
 
 universe u v
@@ -68,6 +76,7 @@ instance : CoeSort ProfiniteGrp (Type u) where
 attribute [instance] group topologicalGroup
     ProfiniteAddGrp.addGroup ProfiniteAddGrp.topologicalAddGroup
 
+--TODO: Refactor into one-field structure as in `AlgebraCat`
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ContinuousMonoidHom A B
@@ -87,7 +96,7 @@ instance (G H : ProfiniteGrp) : ContinuousMapClass (G ⟶ H) G H :=
   inferInstanceAs <| ContinuousMapClass (ContinuousMonoidHom G H) G H
 
 @[to_additive]
-instance : ConcreteCategory ProfiniteGrp where
+instance : HasForget ProfiniteGrp where
   forget :=
   { obj := fun G => G
     map := fun f => f }
@@ -166,6 +175,13 @@ instance : HasForget₂ ProfiniteGrp Grp where
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
   letI : CompactSpace H := inferInstance
   of H.1
+
+/-- A topological group that has a `ContinuousMulEquiv` to a profinite group is profinite. -/
+def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H]
+    [Group H] [TopologicalGroup H] (e : G ≃ₜ* H) : ProfiniteGrp.{v} :=
+  let _ : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
+  let _ : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
+  .of H
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
 def profiniteGrpToProfinite : ProfiniteGrp ⥤ Profinite where
@@ -253,7 +269,7 @@ end
 
 instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} where
   preservesLimitsOfShape := {
-    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimitOfPreservesLimitCone
+    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)) }
 
 end ProfiniteGrp

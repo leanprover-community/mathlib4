@@ -19,8 +19,7 @@ operations.
 Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
-assert_not_exists AddMonoidWithOne
-assert_not_exists Ring
+assert_not_exists AddMonoidWithOne Ring
 
 universe uM uN uP uQ
 

@@ -111,7 +111,7 @@ theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f
 @[simp]
 theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
 
-@[deprecated (since := "2024-07-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-15")]
 theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
 
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
@@ -273,11 +273,11 @@ theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _
 
 theorem decompId_i_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
     f ≫ decompId_i Q = decompId_i P ≫ (by exact Hom.mk f.f (by simp)) := by
-  aesop_cat
+  simp
 
 theorem decompId_p_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
     decompId_p P ≫ f = (by exact Hom.mk f.f (by simp)) ≫ decompId_p Q := by
-  aesop_cat
+  simp
 
 @[simp]
 theorem zsmul_hom [Preadditive C] {P Q : Karoubi C} (n : ℤ) (f : P ⟶ Q) : (n • f).f = n • f.f :=

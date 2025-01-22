@@ -166,7 +166,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
   · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
     induction' q_a using Quotient.ind with a
     induction' q_b using Quotient.ind with b
-    simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
+    simp only [f, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
     show a ∈ { x | r x b }
     rw [← h_eq]
@@ -201,7 +201,7 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
 lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
     (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
     Setoid.IsPartition s := by
-  refine ⟨h₃, fun a ↦ exists_unique_of_exists_of_unique (h₂ a) ?_⟩
+  refine ⟨h₃, fun a ↦ existsUnique_of_exists_of_unique (h₂ a) ?_⟩
   intro b₁ b₂ hb₁ hb₂
   apply h₁.elim hb₁.1 hb₂.1
   simp only [Set.not_disjoint_iff]
@@ -212,7 +212,7 @@ theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃
     Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
-        simp only [exists_unique_iff_exists] at ht
+        simp only [existsUnique_iff_exists] at ht
         tauto⟩
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/
@@ -310,6 +310,8 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   /-- membership invariance for `index`-/
   mem_index : ∀ x, x ∈ s (index x)
 
+open scoped Function -- required for scoped `on` notation
+
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
@@ -405,7 +407,7 @@ theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
   funext hs.equivQuotient_index_apply
 
 /-- A map choosing a representative for each element of the quotient associated to an indexed
-partition. This is a computable version of `Quotient.out'` using `IndexedPartition.some`. -/
+partition. This is a computable version of `Quotient.out` using `IndexedPartition.some`. -/
 def out : hs.Quotient ↪ α :=
   hs.equivQuotient.symm.toEmbedding.trans ⟨hs.some, Function.LeftInverse.injective hs.index_some⟩
 
@@ -414,9 +416,11 @@ def out : hs.Quotient ↪ α :=
 theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
   rfl
 
-/-- The indices of `Quotient.out'` and `IndexedPartition.out` are equal. -/
-theorem index_out' (x : hs.Quotient) : hs.index x.out' = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out' x).trans (hs.index_some _).symm
+/-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
+theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
+  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+
+@[deprecated (since := "2024-10-19")] alias index_out' := index_out
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]

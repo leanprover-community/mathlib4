@@ -11,10 +11,7 @@ import Mathlib.Data.Fintype.Vector
 # Finiteness of products
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
-
-open scoped Classical
+assert_not_exists OrderedRing MonoidWithZero
 
 variable {α β : Type*}
 
@@ -38,6 +35,7 @@ end Finite
 
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
+  classical
   haveI := Fintype.ofFinite (PLift α)
   haveI := fun a => Fintype.ofFinite (PLift (β a))
   exact
@@ -45,6 +43,7 @@ instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
+  classical
   haveI := Fintype.ofFinite α
   infer_instance
 
@@ -64,6 +63,14 @@ instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
+
+@[to_additive]
+instance MulEquiv.finite_left {α β : Type*} [Mul α] [Mul β] [Finite α] : Finite (α ≃* β) :=
+  Finite.of_injective toEquiv toEquiv_injective
+
+@[to_additive]
+instance MulEquiv.finite_right {α β : Type*} [Mul α] [Mul β] [Finite β] : Finite (α ≃* β) :=
+  Finite.of_injective toEquiv toEquiv_injective
 
 open Set Function
 
@@ -108,8 +115,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 
 namespace Finite.Set
-
-open scoped Classical
 
 instance finite_prod (s : Set α) (t : Set β) [Finite s] [Finite t] :
     Finite (s ×ˢ t : Set (α × β)) :=

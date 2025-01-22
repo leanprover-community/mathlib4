@@ -150,7 +150,7 @@ theorem sum_blocksFun : ∑ i, c.blocksFun i = n := by
   conv_rhs => rw [← c.blocks_sum, ← ofFn_blocksFun, sum_ofFn]
 
 theorem blocksFun_mem_blocks (i : Fin c.length) : c.blocksFun i ∈ c.blocks :=
-  get_mem _ _ _
+  get_mem _ _
 
 @[simp]
 theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
@@ -158,7 +158,7 @@ theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
 
 @[simp]
 theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
-  c.one_le_blocks (get_mem (blocks c) i h)
+  c.one_le_blocks (get_mem (blocks c) _)
 
 @[simp]
 theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
@@ -574,9 +574,6 @@ This makes sense mostly when `n = l.length`, but this is not necessary for the d
 def splitWrtComposition (l : List α) (c : Composition n) : List (List α) :=
   splitWrtCompositionAux l c.blocks
 
--- Porting note: can't refer to subeqn in Lean 4 this way, and seems to definitionally simp
---attribute [local simp] splitWrtCompositionAux.equations._eqn_1
-
 @[local simp]
 theorem splitWrtCompositionAux_cons (l : List α) (n ns) :
     l.splitWrtCompositionAux (n::ns) = take n l::(drop n l).splitWrtCompositionAux ns := by
@@ -645,7 +642,6 @@ theorem getElem_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
     (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
   getElem_splitWrtCompositionAux _ _ hi
 
--- Porting note: restatement of `get_splitWrtComposition`
 theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
     (i : Nat) (h : i < (l.splitWrtComposition c).length) :
     (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
@@ -666,7 +662,6 @@ theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
     (l.splitWrtComposition c).get ⟨i, hi⟩ = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
   simp [getElem_splitWrtComposition']
 
--- Porting note: restatement of `get_splitWrtComposition`
 @[deprecated getElem_splitWrtComposition (since := "2024-06-12")]
 theorem get_splitWrtComposition (l : List α) (c : Composition n)
     (i : Fin (l.splitWrtComposition c).length) :
@@ -922,7 +917,6 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
     eq_of_sum_take_eq length_eq H
   intro i hi
   have i_lt : i < d.boundaries.card := by
-    -- Porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
     simpa [CompositionAsSet.blocks, length_ofFn,
       d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt
