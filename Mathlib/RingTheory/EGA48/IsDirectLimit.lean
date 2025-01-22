@@ -114,6 +114,32 @@ lemma MvPolynomial.mem_range_map_iff {R S σ : Type*} [CommRing R] [CommRing S]
     use monomial m (c m)
     simp
 
+lemma exists_lift_of_isDirected [Nonempty ι] {A : Type*} [CommRing A] [Algebra A₀ A]
+      (f : ∀ i, Aᵢ i →ₐ[A₀] A)
+      (g : ∀ ⦃i j⦄, i ≤ j → Aᵢ i →ₐ[A₀] Aᵢ j)
+      [DirectedSystem Aᵢ (@g · · ·)]
+      (hg : IsDirectLimit (@g · · ·) (f ·))
+      {I : Type*} (p : MvPolynomial I A) :
+      ∃ (k : ι), p ∈ RingHom.range (MvPolynomial.map (f k).toRingHom) := by
+  classical
+  have : IsDirected ι (· ≤ ·) := by
+    constructor
+    intro a b
+    simpa using hg.exists_of_eq (i := a) (j := b) 0 0 (by simp)
+  choose i c hic using hg.jointly_surjective
+  obtain ⟨k, hk⟩ := (p.coeffs.image i).exists_le
+  use k
+  rw [MvPolynomial.mem_range_map_iff]
+  intro m
+  simp [coeffs] at hk
+  have := hk m
+  by_cases h : coeff m p = 0
+  · use 0
+    simp [h]
+  · have := hk m h
+    use g (hk m h) (c _)
+    simp [hg.naturality, hic]
+
 set_option maxHeartbeats 240000
 lemma foobar [Nonempty ι] {A : Type*} [CommRing A] [Algebra A₀ A] (f : ∀ i, Aᵢ i →ₐ[A₀] A)
     [∀ i, Algebra (Aᵢ i) A] (hf : ∀ i, algebraMap (Aᵢ i) A = f i)
