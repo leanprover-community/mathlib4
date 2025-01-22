@@ -64,28 +64,19 @@ noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
 section MulAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
-  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
-  [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-  [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
-  smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
-  one_smul Q := by
-    apply Subtype.val_inj.mp
-    show map _ Q.1 = Q.1
-    simpa only [map_one] using map_id Q.1
-  mul_smul σ τ Q := by
-    apply Subtype.val_inj.mp
-    show map _ Q.1 = map _ (map _ Q.1)
-    rw [_root_.map_mul]
-    exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
+instance : MulAction (B ≃ₐ[A] B) (primesOver p B) where
+  smul σ Q := primesOver.mk p (map σ Q.1)
+  one_smul Q := Subtype.val_inj.mp (map_id Q.1)
+  mul_smul σ τ Q := Subtype.val_inj.mp (Q.1.map_map τ.toRingHom σ.toRingHom).symm
 
-theorem coe_smul_primesOver (σ : L ≃ₐ[K] L) (P : primesOver p B):
-    (σ • P).1 = map (galRestrict A K L B σ) P :=
+@[simp]
+theorem coe_smul_primesOver (σ : B ≃ₐ[A] B) (P : primesOver p B): (σ • P).1 = map σ P :=
   rfl
 
-theorem coe_smul_primesOver_mk (σ : L ≃ₐ[K] L) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-    (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
+@[simp]
+theorem coe_smul_primesOver_mk (σ : B ≃ₐ[A] B) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+    (σ • primesOver.mk p P).1 = map σ P :=
   rfl
 
 end MulAction
@@ -109,6 +100,13 @@ theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map �
   rcases IsInvariant.exists_smul_of_under_eq A B (B ≃ₐ[A] B) P Q <|
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
+
+theorem isPretransitive_of_isGalois [IsGalois K L] :
+    MulAction.IsPretransitive (B ≃ₐ[A] B) (primesOver p B) where
+  exists_smul_eq := by
+    intro ⟨P, _, _⟩ ⟨Q, _, _⟩
+    rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
+    exact ⟨σ, Subtype.val_inj.mp hs⟩
 
 /-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGalois [IsGalois K L] :
