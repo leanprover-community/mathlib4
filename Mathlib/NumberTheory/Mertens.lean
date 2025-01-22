@@ -358,10 +358,13 @@ private noncomputable def E₁ (t : ℝ) : ℝ := (∑ p ∈ primesBelow (⌊t�
 
 private theorem E₁_eq : E₁ = fun t ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), Real.log p / p) - Real.log t := rfl
 
+theorem E₁_eq_add (t : ℝ) : (∑ p ∈ primesBelow (⌊t⌋₊+1), Real.log p / p) = Real.log t + E₁ t := by
+  rw [E₁_eq]
+  ring
+
 theorem Nat.le_floor_add_one (x : ℝ) : x ≤ ⌊x⌋₊ + 1 := by calc
   x ≤ ⌈x⌉₊ := Nat.le_ceil x
   _ ≤ ⌊x⌋₊ + 1 := mod_cast (Nat.ceil_le_floor_add_one x)
-
 
 example : atTop.map Nat.cast = (atTop : Filter ℝ) := by
 
@@ -393,6 +396,8 @@ theorem Asymptotics.IsBigO.nat_floor {f g : ℕ → ℝ} (h : f =O[atTop] g) :
 
 
 -- ouchie
+/- There should be some general theorem: given f : ℕ → ℝ and g h : ℝ → ℝ, got from f n - g n =O h n
+ to f ⌊x⌋₊ - g x =O h x under certain "smoothnes"/monotonicity assumptions on g -/
 theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
   have h₀ : (fun t ↦ Real.log t - Real.log (⌊t⌋₊)) =O[atTop] (fun t ↦ Real.log t - Real.log (t-1)) := by
     have h1 (t : ℝ) (ht : 1 < t) : Real.log (t-1) ≤ Real.log (⌊t⌋₊) := by
@@ -431,14 +436,107 @@ theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
   · intro x
     ring
 
+theorem Icc_filter_prime (n : ℕ) : filter (fun a ↦ Nat.Prime a) (Icc 0 n) = Nat.primesBelow (n+1) := by
+  ext p
+  simp only [mem_filter, mem_Icc, _root_.zero_le, true_and, mem_primesBelow, and_congr_left_iff]
+  omega
+
+theorem helper1 (n : ℕ) :
+    ∑ x ∈ Icc 0 n, (if Nat.Prime x then Real.log ↑x / ↑x else 0) =
+    ∑ p ∈ (n+1).primesBelow, Real.log p / p := by
+  rw [← sum_filter, sum_congr]
+  · ext p
+    simp only [mem_filter, mem_Icc, _root_.zero_le, true_and, mem_primesBelow, and_congr_left_iff]
+    omega
+  · simp only [implies_true]
+
+
 theorem mertens_second : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), 1 / (p : ℝ)) - Real.log (Real.log t))
     =O[atTop] (fun n ↦ 1 / Real.log n) := by
   let ϕ (x : ℝ) : ℝ := (Real.log x)⁻¹
   let c (n : ℕ) : ℝ := if n.Prime then Real.log n / n else 0
+  have hlog (x : ℝ) (hx : x ≠ 0) :
+    HasDerivAt Real.log (x⁻¹) (x) := by
+    convert Real.hasDerivAt_log (hx)
+  have h (x : ℝ) (hx : 3/2 ≤ x) := HasDerivAt.comp x (hasDerivAt_inv ?ne_zero) (hlog x (by linarith))
+  case ne_zero =>
+    simp only [ne_eq, log_eq_zero, not_or]
+    refine ⟨?_, ?_, ?_⟩ <;> linarith only [hx]
+  have hϕ (x : ℝ) (hx : 3/2 ≤ x): HasDerivAt ϕ (- x⁻¹ * (Real.log x)⁻¹ ^ 2) x := by
+    convert h x hx using 1
+    ring
+  have h' (b : ℝ) : ContinuousOn (fun x:ℝ ↦ - x⁻¹ * (Real.log x)⁻¹^2) (Set.Icc (3/2) b) := by
+    intro x
+    simp only [Set.mem_Icc, inv_pow, neg_mul, and_imp]
+    intro hx _
+    apply ContinuousAt.continuousWithinAt
+    have : x ≠ 0 := by linarith
+    apply (continuousAt_inv₀ this).mul ((continuousAt_inv₀ _).comp ((continuousAt_id.log this).pow 2)) |>.neg
+    simp only [id_eq, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, log_eq_zero,
+      not_or]
+    refine ⟨this, ?_, ?_⟩ <;> linarith
+
+  have hfloor : ⌊(3/2 : ℝ)⌋₊ = 1 := by
+    rw [Nat.floor_eq_iff (by norm_num)]
+    norm_num
   have (b : ℝ) (hb : 3/2 ≤ b) :
-    ∑ k ∈ Finset.Ioc 1 ⌊b⌋₊, ϕ k * c k = sorry := by
-    apply
+      ∑ k ∈ Finset.Ioc 1 ⌊b⌋₊, ϕ k * c k = ϕ b * ∑ k ∈ Finset.Icc 0 ⌊b⌋₊, c k - ϕ (3/2) * 0 -
+        ∫ t in Set.Ioc (3/2) b, deriv ϕ t * ∑ k ∈ Finset.Icc 0 ⌊t⌋₊, c k := by
+    convert sum_mul_eq_sub_sub_integral_mul c ?_ hb ?_ ?_
+    · rw [hfloor]
+    · apply (sum_eq_zero ..).symm
+      simp only [hfloor, mem_Icc, _root_.zero_le, true_and, ite_eq_right_iff, div_eq_zero_iff,
+        log_eq_zero, cast_eq_zero, cast_eq_one, c]
+      omega
+    · norm_num
+    · simp only [Set.mem_Icc, and_imp, c]
+      intro t ht _
+      exact (h t ht).differentiableAt
+    · apply MeasureTheory.LocallyIntegrableOn.integrableOn_isCompact
+      · apply ContinuousOn.locallyIntegrableOn _ (by measurability)
+        apply (h' b).congr
+        intro x
+        simp only [Set.mem_Icc, inv_pow, neg_mul, and_imp, c]
+        intro hx _
+        rw [(hϕ x hx).deriv]
+        ring
+      · exact isCompact_Icc
+  simp only [mul_zero, sub_zero, ϕ, c, ← sum_filter, Icc_filter_prime, E₁_eq_add] at this
 
-    sorry
-
+  have eqn (t : ℝ) (ht : 3/2 ≤ t) :=
+    have hlogt : Real.log t ≠ 0 := by sorry
+    calc
+    ∑ p ∈ (⌊t⌋₊ + 1).primesBelow, 1 / ↑p = (∑ x ∈ Ioc 1 ⌊t⌋₊, (Real.log ↑x)⁻¹ * if Nat.Prime x then Real.log ↑x / ↑x else 0) := by
+      simp_rw [mul_ite, mul_zero, ← sum_filter]
+      apply sum_congr
+      · ext p
+        simp only [mem_primesBelow, mem_filter, mem_Ioc, and_congr_left_iff, ϕ, c]
+        intro hp
+        refine ⟨fun hpt ↦ ⟨hp.one_lt, (by omega)⟩, fun ⟨_, hpt⟩ ↦ (by omega)⟩
+      simp only [mem_filter, mem_Ioc, one_div, and_imp]
+      intro x hx _ _
+      rw [div_eq_mul_inv, ← mul_assoc, inv_mul_cancel₀, one_mul]
+      apply (Real.log_pos (mod_cast hx)).ne.symm
+    _ =
+     (1 + (Real.log t)⁻¹ * E₁ t) -
+        ∫ (t : ℝ) in Set.Ioc (3 / 2) t, deriv (fun x ↦ (Real.log x)⁻¹) t * (Real.log t + E₁ t) := by
+      convert this t ht using 2
+      rw [mul_add, inv_mul_cancel₀ hlogt]
+    _ =
+     (1 + (Real.log t)⁻¹ * E₁ t) -
+        ∫ (t : ℝ) in Set.Ioc (3 / 2) t, (- t⁻¹ * (Real.log t)⁻¹ ^ 2) * (Real.log t + E₁ t) := by
+      congr 1
+      apply MeasureTheory.integral_congr_ae
+      filter_upwards [MeasureTheory.ae_restrict_mem (by measurability)]
+      intro x
+      simp only [Set.mem_Ioc, add_sub_cancel, inv_pow, neg_mul, and_imp]
+      intro hx _
+      rw [(hϕ x hx.le).deriv]
+      ring
+    _ =
+     (1 + (Real.log t)⁻¹ * E₁ t) +
+        ∫ (t : ℝ) in Set.Ioc (3 / 2) t, (t⁻¹ * (Real.log t)⁻¹ + t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) := by
+      simp_rw [neg_mul, MeasureTheory.integral_neg, sub_neg_eq_add]
+      congr 1
+      sorry
   sorry
