@@ -90,8 +90,6 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
@@ -552,8 +550,6 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData (SheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, SheafedSpace.IsOpenImmersion (f i j)
 
@@ -625,8 +621,6 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData LocallyRingedSpace where
   f_open : ∀ i j, LocallyRingedSpace.IsOpenImmersion (f i j)
 
