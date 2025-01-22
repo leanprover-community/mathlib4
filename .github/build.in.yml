@@ -43,6 +43,9 @@ jobs:
 
       - name: Update the merge-conflict label
         run: |
+          printf 'PR number: "%s"\n' "${{ steps.PR.outputs.number }}"
+          git checkout master
+          git checkout -
           if git merge origin/master --no-ff --no-commit
           then
             git merge --abort || true
