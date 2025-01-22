@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.IdentDistrib
-import Mathlib.Probability.Variance
 
 /-!
 # Moments and moment generating function
@@ -212,6 +211,26 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
 
 theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
+
+/-- The moment generating function is monotone in the random variable for `t ≥ 0`. -/
+lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
+    (htY : Integrable (fun ω ↦ exp (t * Y ω)) μ) :
+    mgf X μ t ≤ mgf Y μ t := by
+  by_cases htX : Integrable (fun ω ↦ exp (t * X ω)) μ
+  · refine integral_mono_ae htX htY ?_
+    filter_upwards [hXY] with ω hω using by gcongr
+  · rw [mgf_undef htX]
+    exact mgf_nonneg
+
+/-- The moment generating function is antitone in the random variable for `t ≤ 0`. -/
+lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
+    (htX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    mgf Y μ t ≤ mgf X μ t := by
+  by_cases htY : Integrable (fun ω ↦ exp (t * Y ω)) μ
+  · refine integral_mono_ae htY htX ?_
+    filter_upwards [hXY] with ω hω using exp_monotone <| mul_le_mul_of_nonpos_left hω ht
+  · rw [mgf_undef htY]
+    exact mgf_nonneg
 
 section IndepFun
 
