@@ -313,6 +313,6 @@ end Congr
 
 @[simp]
 lemma card : Nat.card (N ⋊[φ] G) = Nat.card N * Nat.card G :=
-  Nat.card_prod _ _ ▸ Nat.card_eq_of_bijective _ equivProd.bijective
+  Nat.card_prod _ _ ▸ Nat.card_congr equivProd
 
 end SemidirectProduct
