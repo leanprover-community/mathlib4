@@ -16,7 +16,7 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 If `κ` is a regular cardinal, we introduce the notion of `κ`-filtered
 category `J`: it means that any functor `A ⥤ J` from a small category such
 that `Arrow A` is of cardinality `< κ` admits a cocone.
-This notion generalizes the notion of filtered category.
+This generalizes the notion of filtered category.
 Indeed, we obtain the equivalence `IsCardinalFiltered J ℵ₀ ↔ IsFiltered J`.
 The API is mostly parallel to that of filtered categories.
 
@@ -124,7 +124,7 @@ end IsCardinalFiltered
 
 open IsCardinalFiltered in
 lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
-    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]:
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     IsFiltered J := by
   rw [IsFiltered.iff_cocone_nonempty.{w}]
   intro A _ _ F
@@ -134,8 +134,7 @@ lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
-instance : Fact Cardinal.aleph0.IsRegular where
-  out := Cardinal.isRegular_aleph0
+attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by
