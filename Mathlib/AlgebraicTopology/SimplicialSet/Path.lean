@@ -125,7 +125,7 @@ end Path
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m` formed
 by traversing through its vertices in order. -/
 @[simps]
-def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X m where
+def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _[m]ₙ₊₁) : Path X m where
   vertex i := X.map (tr (const [0] [m] i)).op Δ
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
@@ -141,19 +141,20 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X 
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
 
 /-- Further truncating `X` above `m` does not change the `m`-spine. -/
-lemma trunc_spine (j m : ℕ) (h : m ≤ j + 1 := by leq) (hn : j ≤ n := by leq) :
+lemma trunc_spine (j m : ℕ) (h : m ≤ j + 1 := by omega)
+    (hn : j ≤ n := by omega) :
     ((trunc (n + 1) (j + 1)).obj X).spine m = X.spine m := rfl
 
-lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁)
-    (a : ℕ) (ha : a ≤ n + 1 := by leq) (φ : [a]ₙ₊₁ ⟶ [m]ₙ₊₁) (i : Fin (a + 1)) :
+lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1) (Δ : X _[m]ₙ₊₁)
+    (a : ℕ) (ha : a ≤ n + 1) (φ : [a]ₙ₊₁ ⟶ [m]ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a ha (X.map φ.op Δ)).vertex i =
       (X.spine m hm Δ).vertex (φ.toOrderHom i) := by
   dsimp only [spine_vertex]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, const_comp]
 
-lemma spine_map_subinterval (m : ℕ) (h : m ≤ n + 1 := by leq)
-    (j l : ℕ) (hjl : j + l ≤ m) (Δ : X _[m]ₙ₊₁) :
-    X.spine l (by leq) (X.map (tr (subinterval j l hjl)).op Δ) =
+lemma spine_map_subinterval (m : ℕ) (h : m ≤ n + 1) (j l : ℕ) (hjl : j + l ≤ m)
+    (Δ : X _[m]ₙ₊₁) :
+    X.spine l (by omega) (X.map (tr (subinterval j l hjl)).op Δ) =
       (X.spine m h Δ).interval j l hjl := by
   ext i
   · dsimp only [Path.interval, Path₁.interval, spine_vertex]
@@ -215,7 +216,7 @@ lemma spine_arrow {n : ℕ} (Δ : X _[n]) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ := rfl
 
 /-- For `m ≤ n + 1`, the `m`-spine of `X` factors through the `n + 1`-truncation. -/
-lemma truncation_spine (n m : ℕ) (h : m ≤ n + 1 := by leq) :
+lemma truncation_spine (n m : ℕ) (h : m ≤ n + 1 := by omega) :
     ((truncation (n + 1)).obj X).spine m = X.spine m := rfl
 
 lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
@@ -223,7 +224,7 @@ lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
     (spine X m (X.map φ.op Δ)).vertex i =
       (spine X n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by leq) Δ m (by leq) φ i
+    |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
 
 lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n]) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=

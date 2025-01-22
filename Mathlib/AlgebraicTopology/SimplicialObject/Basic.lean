@@ -248,7 +248,7 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
   whiskeringRight _ _ _
 
 /-- Further truncation of truncated simplicial objects. -/
-def trunc (n m : ℕ) (h : m ≤ n := by leq) : Truncated C n ⥤ Truncated C m :=
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
 
 variable {C}
@@ -730,7 +730,7 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
   whiskeringRight _ _ _
 
 /-- Further truncation of truncated cosimplicial objects. -/
-def trunc (n m : ℕ) (h : m ≤ n := by leq) : Truncated C n ⥤ Truncated C m :=
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
   (whiskeringLeft _ _ _).obj <| SimplexCategory.Truncated.incl m n
 
 variable {C}

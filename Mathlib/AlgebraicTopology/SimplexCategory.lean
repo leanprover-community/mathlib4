@@ -753,9 +753,6 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 
 section Meta
 
-/-- A wrapper for `omega` which first tries `decide` and `assumption`. -/
-macro "leq" : tactic => `(tactic| first | decide | assumption | omega)
-
 /-- Some quick attempts to prove that `[m]` is `n`-truncated (`[m].len ≤ n`). -/
 macro "trunc" : tactic =>
   `(tactic| first | decide | assumption |
@@ -833,7 +830,7 @@ lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c
     tr (f ≫ g) = tr f ≫ tr g := rfl
 
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by leq) : Truncated n ⥤ Truncated m where
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
   obj a := ⟨a.1, a.2.trans h⟩
   map := id
 

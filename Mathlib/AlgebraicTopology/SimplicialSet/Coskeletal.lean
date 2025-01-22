@@ -67,15 +67,15 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     vertex := fun i ↦ s.π.app (.mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))) x
     arrow := fun i ↦ s.π.app (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
     arrow_src := fun i ↦ by
-      let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) (by leq) ⟶
-        strArrowMk₂ ([0].const _ i.castSucc) (by leq) :=
+      let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) (by decide) ⟶
+        strArrowMk₂ ([0].const _ i.castSucc) (by decide) :=
           StructuredArrow.homMk (δ 1).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact congr_fun (s.w φ) x
     arrow_tgt := fun i ↦ by
       dsimp
-      let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) (by leq) ⟶
-          strArrowMk₂ ([0].const _ i.succ) (by leq) :=
+      let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) (by decide) ⟶
+          strArrowMk₂ ([0].const _ i.succ) (by decide) :=
         StructuredArrow.homMk (δ 0).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact congr_fun (s.w φ) x }
@@ -84,7 +84,7 @@ lemma fac_aux₁ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i : ℕ) (hi : i < n) :
     X.map (mkOfSucc ⟨i, hi⟩).op (lift sx s x) =
-      s.π.app (strArrowMk₂ (mkOfSucc ⟨i, hi⟩) (by leq)) x := by
+      s.π.app (strArrowMk₂ (mkOfSucc ⟨i, hi⟩) (by decide)) x := by
   dsimp [lift]
   rw [spineToSimplex_arrow]
   rfl
@@ -93,18 +93,18 @@ lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
     X.map (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij).op (lift sx s x) =
-      s.π.app (strArrowMk₂ (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by leq)) x := by
+      s.π.app (strArrowMk₂ (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by decide)) x := by
   obtain ⟨k, hk⟩ := Nat.le.dest hij
   revert i j
   induction k with
   | zero =>
       rintro i j hij hj hik
       obtain rfl : i = j := hik
-      have : mkOfLe ⟨i, Nat.lt_add_one_of_le hj⟩ ⟨i, Nat.lt_add_one_of_le hj⟩ (by leq) =
+      have : mkOfLe ⟨i, Nat.lt_add_one_of_le hj⟩ ⟨i, Nat.lt_add_one_of_le hj⟩ (by rfl) =
         [1].const [0] 0 ≫ [0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩ := Hom.ext_one_left _ _
       rw [this]
-      let α : (strArrowMk₂ ([0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by leq)) ⟶
-        (strArrowMk₂ ([1].const [0] 0 ≫ [0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by leq)) :=
+      let α : (strArrowMk₂ ([0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by decide)) ⟶
+        (strArrowMk₂ ([1].const [0] 0 ≫ [0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by decide)) :=
             StructuredArrow.homMk (([1].const [0] 0).op) (by simp; rfl)
       have nat := congr_fun (s.π.naturality α) x
       dsimp only [Fin.val_zero, Nat.add_zero, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int,
@@ -123,9 +123,9 @@ lemma fac_aux₂ {n : ℕ}
           ⟨j, by omega⟩ (by simp)
         (by simp only [Fin.mk_le_mk]; omega)) (by rfl)
       let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by omega⟩ ⟨j, by omega⟩
-        (by simp only [Fin.mk_le_mk]; omega)) (by leq)
-      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by leq)
-      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by simp)) (by leq)
+        (by simp only [Fin.mk_le_mk]; omega)) (by decide)
+      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by decide)
+      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by simp)) (by decide)
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((δ 1).op) (Quiver.Hom.unop_inj
@@ -136,7 +136,7 @@ lemma fac_aux₂ {n : ℕ}
         subst hik
         exact fac_aux₁ _ _ _ _ hj
       have h₂ : X.map α₂.hom (lift sx s x) = s.π.app α₂ x :=
-        hk i (i + k) (by leq) (by omega) rfl
+        hk i (i + k) (by omega) (by omega) rfl
       change X.map α₁.hom (lift sx s x) = s.π.app α₁ x
       have : X.map α.hom (lift sx s x) = s.π.app α x := by
         apply sx.spineInjective
@@ -160,9 +160,9 @@ lemma fac_aux₂ {n : ℕ}
 lemma fac_aux₃ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (φ : [1] ⟶ [n]) :
-    X.map φ.op (lift sx s x) = s.π.app (strArrowMk₂ φ (by leq)) x := by
+    X.map φ.op (lift sx s x) = s.π.app (strArrowMk₂ φ (by decide)) x := by
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
-    ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by leq),
+    ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by decide),
       Hom.ext_one_left _ _ rfl rfl⟩
   exact fac_aux₂ _ _ _ _ _ _ (by omega)
 
@@ -186,11 +186,11 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     · dsimp only [spineEquiv_coe_fn]
       have : op f = f.op := rfl
       rw [this, spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
-      let α : strArrowMk₂ f hi ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) (by leq) :=
+      let α : strArrowMk₂ f hi ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) (by decide) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
     · rw [spineEquiv_coe_fn, spine_arrow, ← FunctorToTypes.map_comp_apply]
-      let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (mkOfSucc k ≫ f) (by leq) :=
+      let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (mkOfSucc k ≫ f) (by decide) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans (congr_fun (s.w α).symm x)
   uniq s m hm := by
