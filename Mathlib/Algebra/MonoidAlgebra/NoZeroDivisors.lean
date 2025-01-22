@@ -135,20 +135,23 @@ section Covariant_lt
 variable [Add A]
 
 section PartialOrder
-variable [PartialOrder A] [AddLeftStrictMono A] {a t b : A}
-  {f g : AddMonoidAlgebra R A}
+variable [PartialOrder A]
+
+section Left
+variable [AddLeftStrictMono A]
 
 /--  The "top" element of `AddMonoidAlgebra.single a r * f` is the product of `r` and
 the "top" element of `f`.  Here, "top" is simply an upper bound for the elements
 of the support of `f` (e.g. the product is `0` if "top" is not a maximum).
 The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le`.
 It is proved with a further `CovariantClass` assumption. -/
-theorem single_mul_apply_of_le (r : R) (ft : ∀ a ∈ f.support, a ≤ t) :
-    ((AddMonoidAlgebra.single a r) * f) (a + t) = r * f t := by
+theorem single_mul_apply_of_le {a t : A} (r : R) {f : AddMonoidAlgebra R A}
+    (ft : ∀ a ∈ f.support, a ≤ t) :
+    (AddMonoidAlgebra.single a r * f) (a + t) = r * f t := by
   rw [AddMonoidAlgebra.single_mul_apply_aux]
   intro t' ht'
-  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
   specialize ft t' ht'
+  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
   contrapose h
   exact add_lt_add_left (ft.lt_of_ne h) a |>.ne
 
@@ -157,11 +160,47 @@ the "bottom" element of `f`.  Here, "bottom" is simply a lower bound for the ele
 of the support of `f` (e.g. the product is `0` if "bottom" is not a minimum).
 The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le'`.
 It is proved with a further `CovariantClass` assumption. -/
-theorem single_mul_apply_of_le' (r : R) (fb : ∀ a ∈ f.support, b ≤ a) :
-    ((AddMonoidAlgebra.single a r) * f) (a + b) = r * f b :=
+theorem single_mul_apply_of_le' {a b : A} {f : AddMonoidAlgebra R A} (r : R)
+    (fb : ∀ a ∈ f.support, b ≤ a) :
+    (AddMonoidAlgebra.single a r * f) (a + b) = r * f b :=
   single_mul_apply_of_le (A := Aᵒᵈ) _ fb
 
+end Left
+
+section Right
 variable [AddRightStrictMono A]
+
+/--  The "top" element of `f * AddMonoidAlgebra.single a r` is the product of
+the "top" element of `f` and `r`.  Here, "top" is simply an upper bound for the elements
+of the support of `f` (e.g. the product is `0` if "top" is not a maximum).
+The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le`.
+It is proved with a further `CovariantClass` assumption. -/
+theorem mul_single_apply_of_le {a t : A} (r : R) {f : AddMonoidAlgebra R A}
+    (ft : ∀ a ∈ f.support, a ≤ t) :
+    (f * AddMonoidAlgebra.single a r) (t + a) = f t * r := by
+  rw [AddMonoidAlgebra.mul_single_apply_aux]
+  intro t' ht'
+  specialize ft t' ht'
+  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
+  contrapose h
+  exact add_lt_add_right (ft.lt_of_ne h) a |>.ne
+
+/--  The "bottom" element of `Finsupp.single a r * f` is the product of `r` and
+the "bottom" element of `f`.  Here, "bottom" is simply a lower bound for the elements
+of the support of `f` (e.g. the product is `0` if "bottom" is not a minimum).
+The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le'`.
+It is proved with a further `CovariantClass` assumption. -/
+theorem mul_single_apply_of_le' {a b : A} {f : AddMonoidAlgebra R A} (r : R)
+    (fb : ∀ a ∈ f.support, b ≤ a) :
+    (f * AddMonoidAlgebra.single a r) (b + a) = f b * r :=
+  mul_single_apply_of_le (A := Aᵒᵈ) _ fb
+
+end Right
+
+section Both
+
+variable [AddLeftStrictMono A] [AddRightStrictMono A]
+variable {a t b : A} {f g : AddMonoidAlgebra R A}
 
 /--  The "top" element of `f * g` is the product of the "top" elements of `f` and of `g`.
 Here, "top" is simply an upper bound for the elements of the support of the corresponding
@@ -192,6 +231,8 @@ theorem mul_apply_eq_zero_of_lt (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i 
   convert mul_zero _
   exact Finsupp.not_mem_support_iff.mp (fun bg ↦ (lt_irrefl b (gb b bg)).elim)
 
+end Both
+
 end PartialOrder
 
 section LinearOrder
@@ -203,8 +244,7 @@ protected theorem NoZeroDivisors.biOrdered : NoZeroDivisors (AddMonoidAlgebra R 
     apply_fun (fun x ↦ x (f.support.max' (Finsupp.support_nonempty_iff.mpr fg.1)
       + g.support.max' (Finsupp.support_nonempty_iff.mpr fg.2)))
     simp only [Finsupp.coe_zero, Pi.zero_apply]
-    rw [mul_apply_of_le] <;>
-      try exact Finset.le_max' _
+    rw [mul_apply_of_le (Finset.le_max' _) (Finset.le_max' _)]
     refine mul_ne_zero_iff.mpr ⟨?_, ?_⟩ <;>
       exact Finsupp.mem_support_iff.mp (Finset.max'_mem _ _)
 

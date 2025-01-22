@@ -562,22 +562,22 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
   map_mul' _a _b := single_mul_single.symm
 
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
+    (H : ∀ a ∈ f.support, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
   classical exact
-      have A :
-        ∀ a₁ b₁,
-          ((single x r).sum fun a₂ b₂ => ite (a₁ * a₂ = z) (b₁ * b₂) 0) =
-            ite (a₁ * x = z) (b₁ * r) 0 :=
-        fun a₁ b₁ => sum_single_index <| by simp
-      calc
-        (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z =
-            sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
-        _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
-        _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
+    calc
+      (f * single x r) z
+      _ = sum f fun a b => ite (a * x = z) (b * r) 0 :=
+        (mul_apply _ _ _).trans <| Finsupp.sum_congr fun _ _ => sum_single_index (by simp)
+
+      _ = f.sum fun a b => ite (a = y) (b * r) 0 := Finsupp.sum_congr fun x hx => by
+        simp only [H _ hx]
+      _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
+      _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
+
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
-  f.mul_single_apply_aux fun a => by rw [mul_one]
+  f.mul_single_apply_aux fun a ha => by rw [mul_one]
 
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
@@ -596,8 +596,8 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
   classical exact
       have : (f.sum fun a b => ite (x * a = y) (0 * b) 0) = 0 := by simp
       calc
-        (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y =
-            sum f fun a b => ite (x * a = y) (r * b) 0 :=
+        (single x r * f) y
+        _ = sum f fun a b => ite (x * a = y) (r * b) 0 :=
           (mul_apply _ _ _).trans <| sum_single_index this
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := Finsupp.sum_congr fun x hx => by
           simp only [H _ hx]
@@ -754,7 +754,7 @@ variable [Semiring k] [Group G]
 @[simp]
 theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r) y = f (y * x⁻¹) * r :=
-  f.mul_single_apply_aux fun _a => eq_mul_inv_iff_mul_eq.symm
+  f.mul_single_apply_aux fun _a _ => eq_mul_inv_iff_mul_eq.symm
 
 @[simp]
 theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
@@ -1339,12 +1339,12 @@ theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * 
   Finsupp.smul_single' c a b
 
 theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
-    (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
+    (H : ∀ a ∈ f.support, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
   @MonoidAlgebra.mul_single_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
 
 theorem mul_single_zero_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (f * single (0 : G) r) x = f x * r :=
-  f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
+  f.mul_single_apply_aux r _ _ _ fun a _ => by rw [add_zero]
 
 theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = d + g) : (x * single g r) g' = 0 :=

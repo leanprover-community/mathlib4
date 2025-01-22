@@ -101,7 +101,7 @@ theorem of'_mul_divOf (a : G) (x : k[G]) : of' k G a * x /ᵒᶠ a = x := by
 theorem mul_of'_divOf (x : k[G]) (a : G) : x * of' k G a /ᵒᶠ a = x := by
   refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, mul_single_apply_aux, mul_one]
-  intro c
+  intro c hc
   rw [add_comm]
   exact add_right_inj _
 
