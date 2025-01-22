@@ -85,10 +85,6 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
   apply LinearMap.bound_of_ball_bound' r_pos
   exact fun z hz => h z hz
 
-@[deprecated (since := "2024-02-02")]
-alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
-  ContinuousLinearMap.opNorm_bound_of_ball_bound
-
 variable (𝕜)
 include 𝕜 in
 theorem NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :

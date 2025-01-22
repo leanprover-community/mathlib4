@@ -12,6 +12,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Laurent Series
@@ -51,7 +52,7 @@ series to which the filter `ℱ` converges.
 * The field of rational functions is dense in `LaurentSeries`: this is the declaration
 `LaurentSeries.coe_range_dense` and relies principally upon `LaurentSeries.exists_ratFunc_val_lt`,
 stating that for every Laurent series `f` and every `γ : ℤₘ₀` one can find a rational function `Q`
-such that the `X`-adic valuation `v` satifies `v (f - Q) < γ`.
+such that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`.
 * In `LaurentSeries.valuation_compare` we prove that the extension of the `X`-adic valuation from
 `RatFunc K` up to its abstract completion coincides, modulo the isomorphism with `K⸨X⸩`, with the
 `X`-adic valuation on `K⸨X⸩`.
@@ -88,7 +89,7 @@ structure on the `X`-adic completion of `K⸨X⸩`. Once this will be available,
 -/
 universe u
 
-open scoped Classical PowerSeries
+open scoped PowerSeries
 open HahnSeries Polynomial
 
 noncomputable section
@@ -540,6 +541,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
+  classical
   rw [count_associates_factors_eq  (span_ne_zero).1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
     count_associates_factors_eq]
@@ -918,7 +920,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     exact Int.zero_lt_one
 
 /-- For every Laurent series `f` and every `γ : ℤₘ₀` one can find a rational function `Q` such
-that the `X`-adic valuation `v` satifies `v (f - Q) < γ`. -/
+that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`. -/
 theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
     ∃ Q : RatFunc K, Valued.v (f - Q) < γ := by
   set F := f.powerSeriesPart with hF

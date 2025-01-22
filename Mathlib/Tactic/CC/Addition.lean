@@ -398,8 +398,8 @@ equality `r*a = s*b`. -/
 def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
   for hi : i in [:args.size] do
-    if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-      let some ent := (← get).acEntries.find? (args[i]'hi.2) | failure
+    if i == 0 || args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+      let some ent := (← get).acEntries.find? args[i] | failure
       let occs := ent.RLHSOccs
       for tr in occs do
         let .apps optr _ := tr | continue
@@ -607,7 +607,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
     if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
       for h : i in [:apps.size] do
-        let arg := (apps[i]'h.2).appArg!
+        let arg := apps[i].appArg!
         addOccurrence e arg false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
@@ -625,13 +625,13 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       -- Expensive case where we store a quadratic number of occurrences,
       -- as described in the paper "Congruence Closure in Internsional Type Theory"
       for h : i in [:apps.size] do
-        let curr := apps[i]'h.2
+        let curr := apps[i]
         let .app currFn currArg := curr | unreachable!
         if i < apps.size - 1 then
           mkEntry curr false
         for h : j in [i:apps.size] do
-          addOccurrence (apps[j]'h.2) currArg false
-          addOccurrence (apps[j]'h.2) currFn false
+          addOccurrence apps[j] currArg false
+          addOccurrence apps[j] currFn false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry currArg false
