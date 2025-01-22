@@ -3,11 +3,10 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
+import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.LinearAlgebra.CrossProduct
-import Mathlib.Analysis.InnerProductSpace.PiL2
-
 
 /-!
 # Angles between vectors
@@ -356,6 +355,5 @@ theorem crossProduct_norm_eq_norm_mul_norm_mul_sin (a b : EuclideanSpace ℝ (Fi
       ← h_norm_sq_eq_inner, dotProduct_comm b a, dotProduct_eq_inner]
   linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
     congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
-
 
 end InnerProductGeometry
