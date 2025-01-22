@@ -359,6 +359,7 @@ theorem memℒp_of_isFiniteMeasure (f : α →ₛ E) (p : ℝ≥0∞) (μ : Meas
   let ⟨C, hfC⟩ := f.exists_forall_norm_le
   Memℒp.of_bound f.aestronglyMeasurable C <| Eventually.of_forall hfC
 
+@[fun_prop]
 theorem integrable_of_isFiniteMeasure [IsFiniteMeasure μ] (f : α →ₛ E) : Integrable f μ :=
   memℒp_one_iff_integrable.mp (f.memℒp_of_isFiniteMeasure 1 μ)
 
@@ -945,6 +946,7 @@ theorem L1.SimpleFunc.toLp_one_eq_toL1 (f : α →ₛ E) (hf : Integrable f μ) 
     (Lp.simpleFunc.toLp f (memℒp_one_iff_integrable.2 hf) : α →₁[μ] E) = hf.toL1 f :=
   rfl
 
+@[fun_prop]
 protected theorem L1.SimpleFunc.integrable (f : α →₁ₛ[μ] E) :
     Integrable (Lp.simpleFunc.toSimpleFunc f) μ := by
   rw [← memℒp_one_iff_integrable]; exact Lp.simpleFunc.memℒp f

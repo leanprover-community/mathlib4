@@ -215,6 +215,7 @@ theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m0) [hμm : SigmaFinite (μ
 @[deprecated (since := "2025-01-21")]
 alias condexp_of_aestronglyMeasurable' := condExp_of_aestronglyMeasurable'
 
+@[fun_prop]
 theorem integrable_condExp : Integrable (μ[f|m]) μ := by
   by_cases hm : m ≤ m0
   swap; · rw [condExp_of_not_le hm]; exact integrable_zero _ _ _
