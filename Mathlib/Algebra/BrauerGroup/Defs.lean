@@ -60,7 +60,7 @@ instance (A : CSA K): IsSimpleRing A := A.isSimple
 instance (A : CSA K): FiniteDimensional K A := A.fin_dim
 
 /-- Two finite dimensional central simple algebras `A` and `B` are Brauer Equivalent
-  if there exist `n, m ∈ ℕ` such that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`. -/
+  if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`. -/
 structure BrauerEquivalence (A B : CSA K) where
   /-- dimension of the matrices -/
   (n m : ℕ)
