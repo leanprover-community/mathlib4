@@ -437,7 +437,7 @@ theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
-    type (Subrel r { b | r b a }) = typein r a :=
+    type (Subrel r (r · a)) = typein r a :=
   rfl
 
 @[simp]
@@ -515,6 +515,7 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Ii
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
   rw [enum_lt_enum (r := r), not_lt]
 
+-- TODO: generalize to other well-orders
 @[simp]
 theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
     enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by

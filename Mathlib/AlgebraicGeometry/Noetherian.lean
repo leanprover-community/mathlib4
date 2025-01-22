@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geno Racklin Asher
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
 /-!
 # Noetherian and Locally Noetherian Schemes
