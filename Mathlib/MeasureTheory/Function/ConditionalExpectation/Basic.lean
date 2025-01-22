@@ -273,6 +273,9 @@ alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setInteg
 @[deprecated (since := "2024-04-17")]
 alias ae_eq_condExp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_setIntegral_eq
 
+@[deprecated (since := "2025-01-21")]
+alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_set_integral_eq
+
 section MemL2
 
 variable [IsFiniteMeasure μ]
