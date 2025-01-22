@@ -283,6 +283,18 @@ theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
   haveI := mulRightMono_of_mulRightStrictMono α
   rw [le_antisymm_iff, eq_true (mul_le_mul' hac hbd), true_and, mul_le_mul_iff_of_ge hac hbd]
 
+@[to_additive] lemma mul_left_inj'' [MulRightStrictMono α] {a b c : α} {h : c ≤ b} :
+    c * a  = b * a ↔ c = b := by
+  refine ⟨fun h' => ?_, fun h => h ▸ rfl⟩
+  contrapose h'
+  exact mul_lt_mul_right' (h.lt_of_ne h') a |>.ne
+
+@[to_additive] lemma mul_right_inj'' [MulLeftStrictMono α] {a b c : α} {h : c ≤ b} :
+    a * c = a * b ↔ c = b := by
+  refine ⟨fun h' => ?_, fun h => h ▸ rfl⟩
+  contrapose h'
+  exact mul_lt_mul_left' (h.lt_of_ne h') a |>.ne
+
 end PartialOrder
 
 section LinearOrder
@@ -324,6 +336,18 @@ lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
     (h : a * b ≤ c * d) : min a b ≤ max c d :=
   haveI := mulRightMono_of_mulRightStrictMono α
   Left.min_le_max_of_mul_le_mul h
+
+@[to_additive] lemma Left.mul_left_cancel_of_mulLeftStrictMono [MulLeftStrictMono α]
+    (h : a * b = a * c) : b = c := by
+  contrapose! h
+  obtain lt|lt := h.lt_or_lt
+  exacts [(mul_lt_mul_left' lt _).ne, (mul_lt_mul_left' lt _).ne']
+
+@[to_additive] lemma Right.mul_right_cancel_of_mulRightStrictMono [MulRightStrictMono α]
+    (h : b * a = c * a) : b = c := by
+  contrapose! h
+  obtain lt|lt := h.lt_or_lt
+  exacts [(mul_lt_mul_right' lt _).ne, (mul_lt_mul_right' lt _).ne']
 
 end LinearOrder
 
