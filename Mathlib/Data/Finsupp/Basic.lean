@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Action.Basic
@@ -622,7 +622,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
 theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
-  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false_iff, mem_preimage]
+  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
   intro h a ha
   cases' hf.2.2 ha with b hb
   exact h b (hb.2.symm ▸ ha)

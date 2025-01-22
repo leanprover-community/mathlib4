@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
@@ -72,7 +72,7 @@ open List
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
   rw [perm_ext_iff_of_nodup ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
-  simpa [mem_map, mem_finRange, true_and_iff, iff_true_iff] using σ.surjective
+  simpa [mem_map, mem_finRange] using σ.surjective
 
 /-- The list obtained from a permutation of a tuple `f` is permutation equivalent to
 the list obtained from `f`. -/

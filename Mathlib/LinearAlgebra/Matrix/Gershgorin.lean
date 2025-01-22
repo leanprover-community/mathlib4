@@ -62,7 +62,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k
   suffices ∃ k, 0 ∈ Metric.closedBall (A k k) (∑ j ∈ Finset.univ.erase k, ‖A k j‖) by
     exact this.imp (fun a h ↦ by rwa [mem_closedBall_iff_norm', sub_zero] at h)
   refine eigenvalue_mem_ball ?_
-  rw [Module.End.HasEigenvalue,  Module.End.eigenspace_zero, ne_comm]
+  rw [Module.End.hasEigenvalue_iff, Module.End.eigenspace_zero, ne_comm]
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 
 /-- If `A` is a column strictly dominant diagonal matrix, then it's determinant is nonzero. -/

@@ -48,6 +48,12 @@ theorem logb_zero : logb b 0 = 0 := by simp [logb]
 theorem logb_one : logb b 1 = 0 := by simp [logb]
 
 @[simp]
+theorem logb_zero_left : logb 0 x = 0 := by simp only [← log_div_log, log_zero, div_zero]
+
+@[simp]
+theorem logb_one_left : logb 1 x = 0 := by simp only [← log_div_log, log_one, div_zero]
+
+@[simp]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
   div_self (log_pos hb).ne'
 
@@ -342,35 +348,49 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
 
 end BPosAndBLtOne
 
-theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
+theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌊logb b r⌋ = Int.log b r := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [logb_zero, Int.log_zero_right, Int.floor_zero]
-  have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
-  apply le_antisymm
-  · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
-    refine le_of_le_of_eq ?_ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
-    exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
-  · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
-    exact Int.zpow_log_le_self hb hr
+  by_cases hb : 1 < b
+  · have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
+    apply le_antisymm
+    · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
+      refine le_of_le_of_eq ?_ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
+      exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
+    · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
+      exact Int.zpow_log_le_self hb hr
+  · rw [Nat.one_lt_iff_ne_zero_and_ne_one, ← or_iff_not_and_not] at hb
+    cases hb
+    · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_left]
+    · simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_left]
 
 @[deprecated (since := "2024-04-17")]
 alias floor_logb_nat_cast := floor_logb_natCast
 
-theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
+theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [logb_zero, Int.clog_zero_right, Int.ceil_zero]
-  have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
-  apply le_antisymm
-  · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_intCast]
-    exact Int.self_le_zpow_clog hb r
-  · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_intCast b]
-    refine (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le ?_
-    exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
+  by_cases hb : 1 < b
+  · have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
+    apply le_antisymm
+    · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_intCast]
+      exact Int.self_le_zpow_clog hb r
+    · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_intCast b]
+      refine (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le ?_
+      exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
+  · rw [Nat.one_lt_iff_ne_zero_and_ne_one, ← or_iff_not_and_not] at hb
+    cases hb
+    · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
+    · simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
 
 @[deprecated (since := "2024-04-17")]
 alias ceil_logb_nat_cast := ceil_logb_natCast
+
+lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
+  apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
+  rw [Real.floor_logb_natCast (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast]
 
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by

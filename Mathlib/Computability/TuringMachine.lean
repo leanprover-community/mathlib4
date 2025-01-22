@@ -1383,7 +1383,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     cases' q' with q' v'
     simp only [trStmts, Finset.mem_coe] at h₂ ⊢
     rw [Finset.mem_product] at h₂ ⊢
-    simp only [Finset.mem_univ, and_true_iff] at h₂ ⊢
+    simp only [Finset.mem_univ, and_true] at h₂ ⊢
     cases q'; · exact Multiset.mem_cons_self _ _
     simp only [tr, Option.mem_def] at h₁
     have := TM1.stmts_supportsStmt ss h₂
@@ -1734,7 +1734,7 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       cases d <;> simp only [trNormal, iterate, supportsStmt_move, IH]
     | write f q IH =>
       unfold writes at hw ⊢
-      simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and_iff]
+      simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and]
         at hw ⊢
       replace IH := IH hs fun q hq ↦ hw q (Or.inr hq)
       refine ⟨supportsStmt_read _ fun a _ s ↦ hw _ (Or.inl ⟨_, rfl⟩), fun q' hq ↦ ?_⟩

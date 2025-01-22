@@ -169,8 +169,20 @@ end Metric
 
 open Metric
 
+theorem Metric.inseparable_iff_nndist {x y : α} : Inseparable x y ↔ nndist x y = 0 := by
+  rw [EMetric.inseparable_iff, edist_nndist, ENNReal.coe_eq_zero]
+
+alias ⟨Inseparable.nndist_eq_zero, _⟩ := Metric.inseparable_iff_nndist
+
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
-  rw [EMetric.inseparable_iff, edist_nndist, dist_nndist, ENNReal.coe_eq_zero, NNReal.coe_eq_zero]
+  rw [Metric.inseparable_iff_nndist, dist_nndist, NNReal.coe_eq_zero]
+
+alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
+
+/-- A weaker version of `tendsto_nhds_unique` for `PseudoMetricSpace`. -/
+theorem tendsto_nhds_unique_dist {f : β → α} {l : Filter β} {x y : α} [NeBot l]
+    (ha : Tendsto f l (𝓝 x)) (hb : Tendsto f l (𝓝 y)) : dist x y = 0 :=
+  (tendsto_nhds_unique_inseparable ha hb).dist_eq_zero
 
 section Real
 

@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
@@ -14,11 +15,13 @@ section Finite
 
 open Basis Cardinal Set Submodule Finsupp
 
-universe u v v' v'' u₁' w w'
+universe u v w w'
 
-variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁] [Nontrivial R]
-variable [Module R M] [Module R M'] [Module R M₁]
+variable {R : Type u} {M : Type v}
+
+section Semiring
+
+variable [Semiring R] [AddCommGroup M] [Nontrivial R] [Module R M]
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring
@@ -51,7 +54,7 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     intro x m
     rw [← b.linearCombination_repr x, span_image_eq_map_linearCombination, Submodule.mem_map]
     use b.repr x
-    simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
+    simp only [and_true, eq_self_iff_true, Finsupp.mem_supported]
     rw [Finset.coe_subset, ← Finset.le_iff_subset]
     exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
   -- Thus this finite subset of the basis elements spans the entire module.
@@ -63,7 +66,14 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     rw [k]
     exact mem_top
   -- giving the desire contradiction.
-  exact b.linearIndependent.not_mem_span_image nm k'
+  simp only [self_mem_span_image, Finset.mem_coe, bS] at k'
+  exact nm k'
+
+end Semiring
+
+section Ring
+
+variable [Ring R] [AddCommGroup M] [Nontrivial R] [Module R M]
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
@@ -152,5 +162,7 @@ then the cardinality of `b` is bounded by the cardinality of `s`.
 theorem infinite_basis_le_maximal_linearIndependent {ι : Type w} (b : Basis ι R M) [Infinite ι]
     {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #ι ≤ #κ :=
   Cardinal.lift_le.mp (infinite_basis_le_maximal_linearIndependent' b v i m)
+
+end Ring
 
 end Finite

@@ -100,7 +100,7 @@ instance Ultrafilter.t2Space : T2Space (Ultrafilter α) :=
 instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   intro A
-  simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and_iff]
+  simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and]
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs

@@ -758,7 +758,7 @@ lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.le
   have ⟨j, hj⟩ := j
   simp only [Fin.mk_le_mk] at hij
   simp only at *
-  induction j, hij using Nat.le_induction  with
+  induction j, hij using Nat.le_induction with
   | base => simp
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)

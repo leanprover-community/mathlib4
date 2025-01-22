@@ -1124,11 +1124,18 @@ theorem DvdNotUnit.ne [CancelCommMonoidWithZero α] {p q : α} (h : DvdNotUnit p
   rw [(mul_left_cancel₀ hp hx'').symm] at hx'
   exact hx' isUnit_one
 
-theorem pow_injective_of_not_unit [CancelCommMonoidWithZero α] {q : α} (hq : ¬IsUnit q)
+theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero α] {q : α} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) : Function.Injective fun n : ℕ => q ^ n := by
   refine injective_of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
+
+@[deprecated (since := "2024-09-22")]
+alias pow_injective_of_not_unit := pow_injective_of_not_isUnit
+
+theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero α] {q : α} (hq : ¬IsUnit q)
+    (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=
+  (pow_injective_of_not_isUnit hq hq').eq_iff
 
 theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n : ℕ) :
     q ∣ p ^ n ↔ ∃ i ≤ n, Associated q (p ^ i) := by

@@ -3,6 +3,7 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.NumberTheory.DirichletCharacter.GaussSum
@@ -176,6 +177,25 @@ lemma dft_comp_unitMul (Φ : ZMod N → E) (u : (ZMod N)ˣ) (k : ZMod N) :
     𝓕 (fun j ↦ Φ (u.val * j)) k = 𝓕 Φ (u⁻¹.val * k) := by
   refine Fintype.sum_equiv u.mulLeft _ _ fun x ↦ ?_
   simp only [mul_comm u.val, u.mulLeft_apply, ← mul_assoc, u.mul_inv_cancel_right]
+
+section signs
+
+/-- The discrete Fourier transform of `Φ` is even if and only if `Φ` itself is. -/
+lemma dft_even_iff {Φ : ZMod N → ℂ} : (𝓕 Φ).Even ↔ Φ.Even := by
+  have h {f : ZMod N → ℂ} (hf : f.Even) : (𝓕 f).Even := by
+    simp only [Function.Even, ← congr_fun (dft_comp_neg f), funext hf, implies_true]
+  refine ⟨fun hΦ x ↦ ?_, h⟩
+  simpa only [neg_neg, smul_right_inj (NeZero.ne (N : ℂ)), dft_dft] using h hΦ (-x)
+
+/-- The discrete Fourier transform of `Φ` is odd if and only if `Φ` itself is. -/
+lemma dft_odd_iff {Φ : ZMod N → ℂ} : (𝓕 Φ).Odd ↔ Φ.Odd := by
+  have h {f : ZMod N → ℂ} (hf : f.Odd) : (𝓕 f).Odd := by
+    simp only [Function.Odd, ← congr_fun (dft_comp_neg f), funext hf, ← Pi.neg_apply, map_neg,
+      implies_true]
+  refine ⟨fun hΦ x ↦ ?_, h⟩
+  simpa only [neg_neg, dft_dft, ← smul_neg, smul_right_inj (NeZero.ne (N : ℂ))] using h hΦ (-x)
+
+end signs
 
 end ZMod
 

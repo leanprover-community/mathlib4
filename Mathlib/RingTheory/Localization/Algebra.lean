@@ -56,7 +56,7 @@ variable (S) in
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization. -/
 def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
     RingHom.ker g →ₗ[R] RingHom.ker (IsLocalization.map Q g hy : S →+* Q) where
-  toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, (RingHom.mem_ker g).mp x.property]⟩
+  toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, RingHom.mem_ker.mp x.property]⟩
   map_add' x y := by
     simp only [Submodule.coe_add, map_add, AddMemClass.mk_add_mk]
   map_smul' a x := by

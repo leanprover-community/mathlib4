@@ -362,7 +362,7 @@ theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
 
 theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter β} :
     Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
-  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop]
 
 variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
 

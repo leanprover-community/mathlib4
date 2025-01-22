@@ -140,11 +140,12 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           Submodule.mem_toAddSubmonoid]
         apply add_mem
         -- Now `⁅a, y⁆ ∈ J` since `a ∈ I`, `y ∈ J`, and `J` is an ideal of `I`.
-        · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Submodule.coeSubtype,
-            Subtype.exists, exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
+        · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists]
+          erw [Submodule.coeSubtype]
+          simp only [exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
         -- Finally `⁅b, y⁆ = 0`, by the independence of the atoms.
-        · suffices ⁅b, y.val⁆ = 0 by simp only [this, zero_mem]
+        · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
           rw [← LieSubmodule.mem_bot (R := R) (L := L),
               ← (IsSemisimple.setIndependent_isAtom hI).eq_bot]
           exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
@@ -157,7 +158,11 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       rw [eq_bot_iff] at this ⊢
       intro x hx
       suffices x ∈ J → x = 0 from this hx
-      simpa [J'] using @this x.1
+      have := @this x.1
+      simp only [LieIdeal.incl_coe, LieIdeal.coe_to_lieSubalgebra_to_submodule,
+        LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists,
+        LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
+      exact fun _ ↦ this (↑x) x.property hx rfl
     -- We need to show that `J = ⊥`.
     -- Since `J` is an ideal of `L`, and `I` is an atom,
     -- it suffices to show that `J < I`.
@@ -276,7 +281,6 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
   intro x y
   ext
   simp only [LieIdeal.coe_bracket_of_module, LieSubmodule.coe_bracket, ZeroMemClass.coe_zero]
-  letI : Bracket I I := LieRingModule.toBracket
   have : (⁅(⟨x, hJ' x.2⟩ : I), ⟨y, hJ' y.2⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
   apply_fun Subtype.val at this
   exact this
@@ -302,14 +306,6 @@ theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI : Unique (⊥ : LieIdeal R L) := Submodule.uniqueBot
-  letI : Subsingleton (⊥ : LieIdeal R L) := Unique.instSubsingleton
-  letI : LieModule.IsTrivial L (⊥ : LieIdeal R L) := LieModule.instIsTrivialOfSubsingleton' ..
   rw [HasTrivialRadical.radical_eq_bot]; exact LieIdeal.isLieAbelian_of_trivial ..
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra

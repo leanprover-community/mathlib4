@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`

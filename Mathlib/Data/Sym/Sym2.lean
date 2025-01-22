@@ -299,8 +299,7 @@ instance : SetLike (Sym2 α) α where
     induction' z with x y
     induction' z' with x' y'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
-    simp only [mem_iff', eq_self_iff_true, or_true_iff, iff_true_iff,
-      true_or_iff, true_iff_iff] at hx hy hx' hy'
+    simp only [mem_iff', eq_self_iff_true] at hx hy hx' hy'
     aesop
 
 @[simp]

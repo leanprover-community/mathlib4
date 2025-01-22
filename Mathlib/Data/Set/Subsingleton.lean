@@ -215,7 +215,7 @@ theorem Nontrivial.ne_singleton {x} (hs : s.Nontrivial) : s ≠ {x} := fun H => 
   exact not_nontrivial_singleton hs
 
 theorem Nontrivial.not_subset_singleton {x} (hs : s.Nontrivial) : ¬s ⊆ {x} :=
-  (not_congr subset_singleton_iff_eq).2 (not_or_of_not hs.ne_empty hs.ne_singleton)
+  (not_congr subset_singleton_iff_eq).2 (not_or_intro hs.ne_empty hs.ne_singleton)
 
 theorem nontrivial_univ [Nontrivial α] : (univ : Set α).Nontrivial :=
   let ⟨x, y, hxy⟩ := exists_pair_ne α

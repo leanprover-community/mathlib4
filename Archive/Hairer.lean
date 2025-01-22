@@ -100,7 +100,7 @@ lemma inj_L : Injective (L ι) :=
         fun g hg _h2g g_supp ↦ by
           simpa [mul_comm (g _), L] using congr($hp ⟨g, g_supp.trans ball_subset_closedBall, hg⟩)
     simp_rw [MvPolynomial.funext_iff, map_zero]
-    refine fun x ↦ AnalyticOn.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
+    refine fun x ↦ AnalyticOnNhd.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
       |>.eqOn_zero_of_preconnected_of_eventuallyEq_zero
       (preconnectedSpace_iff_univ.mp inferInstance) (z₀ := 0) trivial
       (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_) trivial

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Yuyang Zhao
+Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
@@ -1025,6 +1025,8 @@ theorem Equiv.ext' {x y : PGame}
   · exact ⟨i, Equiv.trans h hi.equiv⟩
   · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
 
+@[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
+
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
 If `x ‖ 0`, then the first player can always win `x`. -/
@@ -1372,7 +1374,8 @@ theorem mk_add_moveRight {xl xr yl yr} {xL xR yL yR} {i} :
 
 Note that this is **not** the usual recursive definition `n = {0, 1, … | }`. For instance,
 `2 = 0 + 1 + 1 = {0 + 0 + 1, 0 + 1 + 0 | }` does not contain any left option equivalent to `0`. For
-an implementation of said definition, see `Ordinal.toPGame`. -/
+an implementation of said definition, see `Ordinal.toPGame`. For the proof that these games are
+equivalent, see `Ordinal.toPGame_natCast`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
@@ -1611,10 +1614,12 @@ instance : Sub PGame :=
 theorem sub_zero_eq_add_zero (x : PGame) : x - 0 = x + 0 :=
   show x + -0 = x + 0 by rw [neg_zero]
 
-protected lemma sub_zero (x : PGame) : x - 0 ≡ x :=
+protected lemma sub_zero_eq (x : PGame) : x - 0 ≡ x :=
   _root_.trans (of_eq x.sub_zero_eq_add_zero) x.add_zero
 
 protected lemma neg_sub' (x y : PGame) : -(x - y) = -x - -y := PGame.neg_add _ _
+
+@[deprecated (since := "2024-09-26")] alias sub_zero := sub_zero_eq_add_zero
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w - y` has the same moves as `x - z`. -/
@@ -1882,15 +1887,18 @@ instance uniqueStarLeftMoves : Unique star.LeftMoves :=
 instance uniqueStarRightMoves : Unique star.RightMoves :=
   PUnit.unique
 
+theorem zero_lf_star : 0 ⧏ star := by
+  rw [zero_lf]
+  use default
+  rintro ⟨⟩
+
+theorem star_lf_zero : star ⧏ 0 := by
+  rw [lf_zero]
+  use default
+  rintro ⟨⟩
+
 theorem star_fuzzy_zero : star ‖ 0 :=
-  ⟨by
-    rw [lf_zero]
-    use default
-    rintro ⟨⟩,
-   by
-    rw [zero_lf]
-    use default
-    rintro ⟨⟩⟩
+  ⟨star_lf_zero, zero_lf_star⟩
 
 @[simp]
 theorem neg_star : -star = star := by simp [star]

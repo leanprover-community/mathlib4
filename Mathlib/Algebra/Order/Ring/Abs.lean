@@ -43,7 +43,7 @@ lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or_iff, or_true_iff, eq_self_iff_true, neg_mul,
+    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, eq_self_iff_true, neg_mul,
       mul_neg, neg_neg, *]
 
 /-- `abs` as a `MonoidWithZeroHom`. -/

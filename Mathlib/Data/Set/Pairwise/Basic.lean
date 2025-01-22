@@ -39,7 +39,7 @@ variable {f g : ι → α} {s t u : Set α} {a b : α}
 theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
     Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
 
-theorem pairwise_disjoint_on_bool [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
     Pairwise (Disjoint on fun c => cond c a b) ↔ Disjoint a b :=
   pairwise_on_bool Disjoint.symm
 
@@ -47,13 +47,23 @@ theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α
     Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
   ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_lt.elim (@h _ _) fun h' => hr (h h')⟩
 
-theorem pairwise_disjoint_on [SemilatticeInf α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
+theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
   Symmetric.pairwise_on Disjoint.symm f
 
-theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise (Disjoint on f))
+theorem pairwise_disjoint_mono [PartialOrder α] [OrderBot α] (hs : Pairwise (Disjoint on f))
     (h : g ≤ f) : Pairwise (Disjoint on g) :=
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
+
+theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
+    {e : α → β} {f : α → γ} (hf : Pairwise (Disjoint on f)) (he : FactorsThrough f e) :
+    Pairwise (Disjoint on extend e f ⊥) := by
+  intro b₁ b₂ hne
+  rcases em (∃ a₁, e a₁ = b₁) with ⟨a₁, rfl⟩ | hb₁
+  · rcases em (∃ a₂, e a₂ = b₂) with ⟨a₂, rfl⟩ | hb₂
+    · simpa only [onFun, he.extend_apply] using hf (ne_of_apply_ne e hne)
+    · simpa only [onFun, extend_apply' _ _ _ hb₂] using disjoint_bot_right
+  · simpa only [onFun, extend_apply' _ _ _ hb₁] using disjoint_bot_left
 
 namespace Set
 
@@ -129,8 +139,7 @@ theorem pairwise_union_of_symmetric (hr : Symmetric r) :
 
 theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
-  simp only [insert_eq, pairwise_union, pairwise_singleton, true_and_iff, mem_singleton_iff,
-    forall_eq]
+  simp only [insert_eq, pairwise_union, pairwise_singleton, true_and, mem_singleton_iff, forall_eq]
 
 theorem pairwise_insert_of_not_mem (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b ∧ r b a :=

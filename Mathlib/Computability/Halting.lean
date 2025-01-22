@@ -173,6 +173,15 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
         simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
 
+/-- The computable functions are closed under if-then-else definitions
+with computable predicates. -/
+theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
+    {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
+    Computable fun k ↦ if c k then f₁ k else f₂ k := by
+  simp_rw [← Bool.cond_decide]
+  obtain ⟨inst, hc⟩ := hc
+  convert hc.cond hf₁ hf₂
+
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold RePred

@@ -84,6 +84,11 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
 
 alias LT.lt.ne_top := ne_top_of_lt
 
+theorem lt_top_of_lt (h : a < b) : a < ⊤ :=
+  lt_of_lt_of_le h le_top
+
+alias LT.lt.lt_top := lt_top_of_lt
+
 end Preorder
 
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
@@ -252,6 +257,11 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
   (bot_le.trans_lt h).ne'
 
 alias LT.lt.ne_bot := ne_bot_of_gt
+
+theorem bot_lt_of_lt (h : a < b) : ⊥ < b :=
+  lt_of_le_of_lt bot_le h
+
+alias LT.lt.bot_lt := bot_lt_of_lt
 
 end Preorder
 

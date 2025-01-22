@@ -461,7 +461,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
             nsmul_eq_mul, ← natCast_zsmul, smul_smul,
-            (zsmul_strictMono_left hp.out).injective.eq_iff, mul_comm] at hm
+            zsmul_left_inj hp.out, mul_comm] at hm
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]

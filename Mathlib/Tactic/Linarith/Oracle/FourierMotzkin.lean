@@ -3,8 +3,9 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.Std.Data.HashMap
+import Batteries.Lean.HashMap
 import Mathlib.Tactic.Linarith.Datatypes
-import Batteries.Data.HashMap.WF
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -61,8 +62,8 @@ For example, suppose `cs` is produced by scaling assumption 2 by 5,
 and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
  -/
-def CompSource.flatten : CompSource → HashMap Nat Nat
-  | (CompSource.assump n) => HashMap.empty.insert n 1
+def CompSource.flatten : CompSource → Std.HashMap Nat Nat
+  | (CompSource.assump n) => Std.HashMap.empty.insert n 1
   | (CompSource.add c1 c2) =>
       (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
   | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)

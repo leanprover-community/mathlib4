@@ -164,7 +164,7 @@ theorem hitting_le_iff_of_lt [IsWellOrder ι (· < ·)] {m : ι} (i : ι) (hi : 
   · rw [hitting_le_iff_of_exists h_exists]
   · simp_rw [hitting, if_neg h_exists]
     push_neg at h_exists
-    simp only [not_le.mpr hi, Set.mem_Icc, false_iff_iff, not_exists, not_and, and_imp]
+    simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
 theorem hitting_lt_iff [IsWellOrder ι (· < ·)] {m : ι} (i : ι) (hi : i ≤ m) :
@@ -251,7 +251,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
   have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} = ∅ := by
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
-      Set.mem_empty_iff_false, iff_false_iff, not_exists, not_and, not_le]
+      Set.mem_empty_iff_false, iff_false, not_exists, not_and, not_le]
     rintro m hm rfl
     exact lt_of_lt_of_le hm (le_hitting (hτbdd _) _)
   rw [h₁, h₂, Set.union_empty]
@@ -283,7 +283,7 @@ theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω 
   cases' lt_or_le i n with hi hi
   · rw [hitting_le_iff_of_lt _ hi]
     simp
-  · simp only [(hitting_le ω).trans hi, true_iff_iff]
+  · simp only [(hitting_le ω).trans hi, true_iff]
     obtain ⟨j, hj₁, hj₂⟩ := hx
     exact ⟨j, hj₁.trans hi, hj₂⟩
 

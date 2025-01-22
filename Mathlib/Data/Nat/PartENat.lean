@@ -88,8 +88,8 @@ instance addCommMonoid : AddCommMonoid PartENat where
   add := (· + ·)
   zero := 0
   add_comm x y := Part.ext' and_comm fun _ _ => add_comm _ _
-  zero_add x := Part.ext' (true_and_iff _) fun _ _ => zero_add _
-  add_zero x := Part.ext' (and_true_iff _) fun _ _ => add_zero _
+  zero_add x := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
+  add_zero x := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
   add_assoc x y z := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
   nsmul := nsmulRec
 
@@ -98,7 +98,7 @@ instance : AddCommMonoidWithOne PartENat :=
     one := 1
     natCast := some
     natCast_zero := rfl
-    natCast_succ := fun _ => Part.ext' (true_and_iff _).symm fun _ _ => rfl }
+    natCast_succ := fun _ => Part.ext' (iff_of_eq (true_and _)).symm fun _ _ => rfl }
 
 theorem some_eq_natCast (n : ℕ) : some n = n :=
   rfl
@@ -157,7 +157,7 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
 
 -- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
-  Part.ext' (false_and_iff _) fun h => h.left.elim
+  Part.ext' (iff_of_eq (false_and _)) fun h => h.left.elim
 
 -- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
@@ -379,7 +379,7 @@ theorem eq_top_iff_forall_le (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
 
 theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
   PartENat.casesOn x
-    (by simp only [iff_true_iff, le_top, natCast_lt_top, ← @Nat.cast_zero PartENat])
+    (by simp only [le_top, natCast_lt_top, ← @Nat.cast_zero PartENat])
     fun n => by
       rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
       rfl

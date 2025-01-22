@@ -125,10 +125,10 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     intro a b h
     rw [mem_edgeSet] at h
     rw [← Nat.cast_two, ← card_pair h.ne]
-    simp only [incMatrix_apply', sum_boole, mk'_mem_incidenceSet_iff, h, true_and_iff]
+    simp only [incMatrix_apply', sum_boole, mk'_mem_incidenceSet_iff, h]
     congr 2
     ext e
-    simp only [mem_filter, mem_univ, true_and_iff, mem_insert, mem_singleton]
+    simp only [mem_filter, mem_univ, true_and, mem_insert, mem_singleton]
 
 theorem sum_incMatrix_apply_of_not_mem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=

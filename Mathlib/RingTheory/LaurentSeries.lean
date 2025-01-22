@@ -396,7 +396,7 @@ instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
 end RatFunc
 section AdicValuation
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable (K : Type*) [Field K]
 namespace PowerSeries

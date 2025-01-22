@@ -638,15 +638,7 @@ theorem algebraMap_injective : Function.Injective (algebraMap K[X] (RatFunc K)) 
   rw [← ofFractionRing_comp_algebraMap]
   exact ofFractionRing_injective.comp (IsFractionRing.injective _ _)
 
-@[simp]
-theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 :=
-  ⟨(injective_iff_map_eq_zero _).mp (algebraMap_injective K) _, fun hx => by
-    rw [hx, RingHom.map_zero]⟩
-
 variable {K}
-
-theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 :=
-  mt (algebraMap_eq_zero_iff K).mp hx
 
 section LiftAlgHom
 
@@ -712,7 +704,14 @@ instance : IsFractionRing K[X] (RatFunc K) where
     simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul]
     rw [ofFractionRing.injEq]  -- Porting note: added
 
+@[deprecated "Use NoZeroSMulDivisors.algebraMap_eq_zero_iff instead." (since := "2024-09-08")]
+theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 := by
+  simp
+
 variable {K}
+
+theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 := by
+  simpa
 
 @[simp]
 theorem liftOn_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)

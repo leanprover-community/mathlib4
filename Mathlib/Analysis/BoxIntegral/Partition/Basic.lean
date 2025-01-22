@@ -623,7 +623,7 @@ def IsPartition (π : Prepartition I) :=
   ∀ x ∈ I, ∃ J ∈ π, x ∈ J
 
 theorem isPartition_iff_iUnion_eq {π : Prepartition I} : π.IsPartition ↔ π.iUnion = I := by
-  simp_rw [IsPartition, Set.Subset.antisymm_iff, π.iUnion_subset, true_and_iff, Set.subset_def,
+  simp_rw [IsPartition, Set.Subset.antisymm_iff, π.iUnion_subset, true_and, Set.subset_def,
     mem_iUnion, Box.mem_coe]
 
 @[simp]

@@ -309,7 +309,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
-    rwa [Function.comp.assoc, I.symm_comp_self] at this
+    rwa [Function.comp_assoc, I.symm_comp_self] at this
   · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm inter_subset_left
 
 protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :

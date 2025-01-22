@@ -490,6 +490,9 @@ theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
 
 variable {b}
 
+lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
+  obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
+
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
     (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn

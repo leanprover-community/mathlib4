@@ -363,10 +363,10 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
         IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] := by
-  tfae_have 1 ↔ 2; · exact iff_isInteger_or_isInteger R _
-  tfae_have 1 ↔ 3; · exact iff_dvd_total
-  tfae_have 1 ↔ 4; · exact iff_ideal_total
-  tfae_have 1 ↔ 5; · exact iff_local_bezout_domain
+  tfae_have 1 ↔ 2 := iff_isInteger_or_isInteger R _
+  tfae_have 1 ↔ 3 := iff_dvd_total
+  tfae_have 1 ↔ 4 := iff_ideal_total
+  tfae_have 1 ↔ 5 := iff_local_bezout_domain
   tfae_finish
 
 end

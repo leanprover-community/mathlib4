@@ -449,7 +449,7 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rintro ⟨y, z⟩ h
   simp only [mem_ker, mem_prod, coprod_apply] at h ⊢
   have : f y ∈ (range f) ⊓ (range g) := by
-    simp only [true_and_iff, mem_range, mem_inf, exists_apply_eq_apply]
+    simp only [true_and, mem_range, mem_inf, exists_apply_eq_apply]
     use -z
     rwa [eq_comm, map_neg, ← sub_eq_zero, sub_neg_eq_add]
   rw [hd.eq_bot, mem_bot] at this

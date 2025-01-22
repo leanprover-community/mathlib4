@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
-# Archimedean groups are either discrete or densely ordere
+# Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
   `Archimedean` property --
@@ -19,7 +21,7 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
 
-open Set
+open Multiplicative Set
 
 -- no earlier file imports the necessary requirements for the next two
 
@@ -32,25 +34,15 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`."]
 lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     [LinearOrderedCommGroup G] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
-  constructor <;> intro h
-  · wlog ha : 1 < a generalizing a b
-    · simp only [not_lt] at ha
-      rcases ha.eq_or_lt with rfl|ha
-      · contradiction
-      specialize @this a⁻¹ b (by simpa) (by simpa) (by simpa)
-      simp only [inv_zpow'] at this
-      obtain ⟨k, rfl, hk'⟩ := this
-      refine ⟨-k, rfl, ?_⟩
-      intro y hy
-      rw [← neg_eq_iff_eq_neg]
-      exact hk' _ (by simpa using hy)
-    · rw [mem_closure_singleton] at h
-      obtain ⟨k, hk⟩ := h
-      refine ⟨k, hk, ?_⟩
-      rintro l rfl
-      rwa [← zpow_right_inj ha, eq_comm]
-  · rw [mem_closure_singleton]
-    exact h.exists
+  rw [mem_closure_singleton]
+  constructor
+  · suffices Function.Injective (a ^ · : ℤ → G) by
+      rintro ⟨m, rfl⟩
+      exact ⟨m, rfl, fun k hk ↦ this hk⟩
+    rcases ha.lt_or_lt with ha | ha
+    · exact (zpow_right_strictAnti ha).injective
+    · exact (zpow_right_strictMono ha).injective
+  · exact fun h ↦ h.exists
 
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
@@ -114,12 +106,13 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       generalize_proofs A B C D
       simp [zpow_le_zpow_iff ypos, ← zpow_le_zpow_iff xpos, A.choose_spec, B.choose_spec]
 
-variable {G : Type*} [LinearOrderedAddCommGroup G] [Archimedean G]
+variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
 
-lemma AddSubgroup.isLeast_closure_iff_eq_abs {a b : G} :
-    IsLeast {y : G | y ∈ closure ({a} : Set G) ∧ 0 < y} b ↔ b = |a| ∧ 0 < b := by
+@[to_additive]
+lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
+    IsLeast {y : G | y ∈ closure ({a} : Set G) ∧ 1 < y} b ↔ b = |a|ₘ ∧ 1 < b := by
   constructor <;> intro h
-  · have := cyclic_of_min h
+  · have := Subgroup.cyclic_of_min h
     have ha : a ∈ closure ({b} : Set G) := by
       simp [← this]
     rw [mem_closure_singleton] at ha
@@ -128,31 +121,32 @@ lemma AddSubgroup.isLeast_closure_iff_eq_abs {a b : G} :
     simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
-      rw [← zsmul_left_inj this.right, hm, one_zsmul]
+      rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
-    simp [this.right.le, this.right]
-  · wlog ha : 0 ≤ a generalizing a
-    · convert @this (-a) ?_ (by simpa using le_of_not_le ha) using 4
+    simp [this.right.le, this.right, mabs]
+  · wlog ha : 1 ≤ a generalizing a
+    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_le ha) using 4
       · simp
-      · simpa using h
-    rw [abs_eq_self.mpr ha] at h
+      · rwa [mabs_inv]
+    rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
     rcases h with ⟨rfl, h⟩
     refine ⟨?_, ?_⟩
     · simp [h]
     · intro x
       simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
       rintro k rfl hk
-      rw [← one_zsmul b, ← mul_zsmul, mul_one, zsmul_le_zsmul_iff h, ← zero_add 1,
+      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff h, ← zero_add 1,
           ← Int.lt_iff_add_one_le]
       contrapose! hk
-      rw [← Left.nonneg_neg_iff, ← neg_zsmul]
-      exact zsmul_nonneg ha (by simp [hk])
+      rw [← Left.one_le_inv_iff, ← zpow_neg]
+      exact one_le_zpow ha (by simp [hk])
 
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
-noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {x : G}
+noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {G : Type*}
+    [LinearOrderedAddCommGroup G] [Archimedean G] {x : G}
     (h : IsLeast {y : G | 0 < y} x) : G ≃+o ℤ := by
   have : IsLeast {y : G | y ∈ (⊤ : AddSubgroup G) ∧ 0 < y} x := by simpa using h
   replace this := AddSubgroup.cyclic_of_min this
@@ -169,10 +163,19 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
 
-variable (G) in
+/-- If an element of a linearly ordered mul-archimedean group is the least element greater than 1,
+then the whole group is isomorphic (and order-isomorphic) to the multiplicative integers. -/
+@[to_additive existing LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos]
+noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_isLeast_one_lt
+    {x : G} (h : IsLeast {y : G | 1 < y} x) : G ≃*o Multiplicative ℤ := by
+  have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
+  let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
+  exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
+
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
-lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered :
+lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
+    [LinearOrderedAddCommGroup G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ∨ DenselyOrdered G := by
   by_cases H : ∃ x, IsLeast {y : G | 0 < y} x
   · obtain ⟨x, hx⟩ := H
@@ -187,3 +190,46 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered :
     refine ⟨x + z, ?_, ?_⟩
     · simp [hz.left]
     · simpa [lt_sub_iff_add_lt'] using hz.right
+
+variable (G) in
+/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
+to the multiplicative integers, or is densely ordered. -/
+@[to_additive existing]
+lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
+    Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
+  refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
+  rintro ⟨f, hf⟩
+  exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
+lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
+  classical
+  refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
+  · intro ⟨f⟩
+    refine ⟨OrderMonoidIso.trans
+      ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
+    · intro
+      simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
+        MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
+        Equiv.coe_fn_symm_mk ]
+      split_ifs <;>
+      simp_all [← Units.val_le_val]
+    · intro a b
+      induction a <;> induction b <;>
+      simp [MulEquiv.withZero]
+  · intro H
+    refine ⟨fun x y h ↦ ?_⟩
+    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
+    · lift y to Gˣ using h.ne'.isUnit
+      obtain ⟨z, hz⟩ := exists_ne (1 : Gˣ)
+      refine ⟨(y * |z|ₘ⁻¹ : Gˣ), ?_, ?_⟩
+      · simp [zero_lt_iff]
+      · rw [Units.val_lt_val]
+        simp [hz]
+    · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')
+        (by simp [← Units.val_lt_val, h])
+      refine ⟨z, ?_, ?_⟩ <;>
+      simpa [← Units.val_lt_val]

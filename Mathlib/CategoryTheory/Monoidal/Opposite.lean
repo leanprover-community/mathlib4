@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # Monoidal opposites
@@ -160,8 +160,8 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   associator_naturality f g h := Quiver.Hom.unop_inj <| by simp
   leftUnitor_naturality f := Quiver.Hom.unop_inj <| by simp
   rightUnitor_naturality f := Quiver.Hom.unop_inj <| by simp
-  triangle X Y := Quiver.Hom.unop_inj <| by dsimp; coherence
-  pentagon W X Y Z := Quiver.Hom.unop_inj <| by dsimp; coherence
+  triangle X Y := Quiver.Hom.unop_inj <| by dsimp; monoidal_coherence
+  pentagon W X Y Z := Quiver.Hom.unop_inj <| by dsimp; monoidal_coherence
 
 section OppositeLemmas
 
@@ -241,7 +241,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   rightUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
   -- Porting note: Changed `by coherence` to `by simp` below
   triangle X Y := Quiver.Hom.unmop_inj <| by simp
-  pentagon W X Y Z := Quiver.Hom.unmop_inj <| by dsimp; coherence
+  pentagon W X Y Z := Quiver.Hom.unmop_inj <| by dsimp; monoidal_coherence
 
 -- it would be nice if we could autogenerate all of these somehow
 section MonoidalOppositeLemmas

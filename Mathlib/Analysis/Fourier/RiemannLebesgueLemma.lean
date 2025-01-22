@@ -11,6 +11,7 @@ import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.MeasureTheory.Measure.Haar.Unique
+import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # The Riemann-Lebesgue Lemma

@@ -539,13 +539,19 @@ theorem csSup_le_iff (hb : BddAbove s) (hs : s.Nonempty) : sSup s ≤ a ↔ ∀ 
 theorem le_csInf_iff (hb : BddBelow s) (hs : s.Nonempty) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
   le_isGLB_iff (isGLB_csInf hs hb)
 
-theorem csSup_lower_bounds_eq_csInf {s : Set α} (h : BddBelow s) (hs : s.Nonempty) :
+theorem csSup_lowerBounds_eq_csInf {s : Set α} (h : BddBelow s) (hs : s.Nonempty) :
     sSup (lowerBounds s) = sInf s :=
   (isLUB_csSup h <| hs.mono fun _ hx _ hy => hy hx).unique (isGLB_csInf hs h).isLUB
 
-theorem csInf_upper_bounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempty) :
+theorem csInf_upperBounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempty) :
     sInf (upperBounds s) = sSup s :=
   (isGLB_csInf h <| hs.mono fun _ hx _ hy => hy hx).unique (isLUB_csSup hs h).isGLB
+
+@[deprecated (since := "2024-08-25")]
+alias csSup_lower_bounds_eq_csInf := csSup_lowerBounds_eq_csInf
+
+@[deprecated (since := "2024-08-25")]
+alias csInf_upper_bounds_eq_csSup := csInf_upperBounds_eq_csSup
 
 theorem not_mem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (csInf_le hs hx))
@@ -1206,12 +1212,21 @@ theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : �
   contrapose! h
   exact ciSup_le' h
 
+theorem not_mem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
+  not_mem_of_lt_csInf h (OrderBot.bddBelow s)
+
 theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range g))
     (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
   ciSup_le' fun i => Exists.elim (h i) (le_ciSup_of_le hg)
 
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
+
+theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sSup s ≤ sSup t := by
+  rcases eq_empty_or_nonempty s with rfl | h
+  · rw [csSup_empty]
+    exact bot_le
+  · exact csSup_le_csSup h₁ h h₂
 
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by

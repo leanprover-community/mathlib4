@@ -56,7 +56,7 @@ theorem aeval_algebraMap_apply (x : A) (p : R[X]) :
 theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : A) (p : R[X]) :
     aeval (algebraMap A B x) p = 0 ↔ aeval x p = 0 := by
   rw [aeval_algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_eq_zero,
-    iff_false_intro (one_ne_zero' B), or_false_iff]
+    iff_false_intro (one_ne_zero' B), or_false]
 
 variable {B}
 

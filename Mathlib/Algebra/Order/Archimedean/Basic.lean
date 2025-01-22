@@ -427,3 +427,8 @@ instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [F
     Archimedean α := by
   rw [archimedean_iff_int_le]
   exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩
+
+@[to_additive]
+instance Units.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
+    MulArchimedean αˣ :=
+  ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩

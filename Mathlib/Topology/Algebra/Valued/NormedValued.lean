@@ -97,7 +97,7 @@ def toNormedField : NormedField L :=
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
-      · simp only [true_and_iff, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
+      · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
         refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
         · set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by

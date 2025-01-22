@@ -226,7 +226,7 @@ theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countab
 
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by
-  simp only [insert_eq, countable_union, countable_singleton, true_and_iff]
+  simp only [insert_eq, countable_union, countable_singleton, true_and]
 
 protected theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (insert a s).Countable :=
   countable_insert.2 h

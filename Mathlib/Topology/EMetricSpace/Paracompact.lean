@@ -3,10 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # (Extended) metric spaces are paracompact

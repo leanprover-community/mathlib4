@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
 
 /-!
 # The Hales-Jewett theorem
@@ -154,7 +150,7 @@ def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι :
 
 protected lemma IsMono.reindex {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι ≃ ι'} {C : (ι → α) → κ}
     (hl : l.IsMono C) : (l.reindex eη eα eι).IsMono fun x ↦ C <| eα.symm ∘ x ∘ eι := by
-  simp [reindex_isMono, Function.comp.assoc]; simpa [← Function.comp.assoc]
+  simp [reindex_isMono, Function.comp_assoc]; simpa [← Function.comp_assoc]
 
 end Subspace
 

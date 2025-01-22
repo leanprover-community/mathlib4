@@ -91,7 +91,7 @@ end IsGenericPoint
 theorem isGenericPoint_iff_forall_closed (hS : IsClosed S) (hxS : x ∈ S) :
     IsGenericPoint x S ↔ ∀ Z : Set α, IsClosed Z → x ∈ Z → S ⊆ Z := by
   have : closure {x} ⊆ S := closure_minimal (singleton_subset_iff.2 hxS) hS
-  simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and_iff, closure, subset_sInter_iff,
+  simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and, closure, subset_sInter_iff,
     mem_setOf_eq, and_imp, singleton_subset_iff]
 
 end genericPoint

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.SingleObj
@@ -125,6 +125,16 @@ theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 
+@[simp]
+theorem hom_inv_hom {M N : Action V G} (f : M ≅ N) :
+    f.hom.hom ≫ f.inv.hom = 𝟙 M.V := by
+  rw [← comp_hom, Iso.hom_inv_id, id_hom]
+
+@[simp]
+theorem inv_hom_hom {M N : Action V G} (f : M ≅ N) :
+    f.inv.hom ≫ f.hom.hom = 𝟙 N.V := by
+  rw [← comp_hom, Iso.inv_hom_id, id_hom]
+
 /-- Construct an isomorphism of `G` actions/representations
 from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
@@ -144,6 +154,12 @@ instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [
 instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
   (mkIso (asIso f) w).isIso_hom
+
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.hom.hom where
+  out := ⟨f.inv.hom, by simp⟩
+
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.inv.hom where
+  out := ⟨f.hom.hom, by simp⟩
 
 namespace FunctorCategoryEquivalence
 

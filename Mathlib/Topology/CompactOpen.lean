@@ -93,6 +93,7 @@ theorem embedding_comp (g : C(Y, Z)) (hg : Embedding g) : Embedding (g.comp : C(
   ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 /-- `C(·, Z)` is a functor. -/
+@[fun_prop]
 theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU

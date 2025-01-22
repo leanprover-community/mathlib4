@@ -32,10 +32,9 @@ section CartesianClosed
 /-- The adjunction `Limits.Types.binaryProductFunctor.obj X ⊣ coyoneda.obj (Opposite.op X)`
 for any `X : Type v₁`. -/
 def Types.binaryProductAdjunction (X : Type v₁) :
-    Limits.Types.binaryProductFunctor.obj X ⊣ coyoneda.obj (Opposite.op X) :=
-  Adjunction.mkOfUnitCounit
-    { unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
-      counit := { app := fun Z xf => xf.2 xf.1 } }
+    Limits.Types.binaryProductFunctor.obj X ⊣ coyoneda.obj (Opposite.op X) where
+  unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
+  counit := { app := fun Z xf => xf.2 xf.1 }
 
 instance (X : Type v₁) : (Types.binaryProductFunctor.obj X).IsLeftAdjoint :=
   ⟨_, ⟨Types.binaryProductAdjunction X⟩⟩

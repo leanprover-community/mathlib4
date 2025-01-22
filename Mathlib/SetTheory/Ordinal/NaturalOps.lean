@@ -54,7 +54,7 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
-instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrder with}
 instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
 instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
@@ -106,19 +106,19 @@ theorem toOrdinal_one : toOrdinal 1 = 1 :=
   rfl
 
 @[simp]
-theorem toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
+theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
+theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_max {a b : NatOrdinal} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_max (a b : NatOrdinal) : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
 @[simp]
-theorem toOrdinal_min {a b : NatOrdinal} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min (a b : NatOrdinal) : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
 theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
@@ -192,7 +192,7 @@ scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
 open NaturalOps
 
 /-- Natural multiplication on ordinals `a ⨳ b`, also known as the Hessenberg product, is recursively
-defined as the least ordinal such that `a ⨳ b + a' ⨳ b'` is greater than `a' ⨳ b + a ⨳ b'` for all
+defined as the least ordinal such that `a ⨳ b ♯ a' ⨳ b'` is greater than `a' ⨳ b ♯ a ⨳ b'` for all
 `a' < a` and `b < b'`. In contrast to normal ordinal multiplication, it is commutative and
 distributive (over natural addition).
 
@@ -316,8 +316,8 @@ namespace NatOrdinal
 
 open Ordinal NaturalOps
 
-instance : Add NatOrdinal :=
-  ⟨nadd⟩
+instance : Add NatOrdinal := ⟨nadd⟩
+instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
 instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
@@ -346,9 +346,9 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
-@[simp]
-theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
-  nadd_one
+@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
+theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
+  (Order.succ_eq_add_one a).symm
 
 @[simp]
 theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
@@ -446,7 +446,7 @@ theorem nmul_def (a b : Ordinal) :
     a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by rw [nmul]
 
 /-- The set in the definition of `nmul` is nonempty. -/
-theorem nmul_nonempty (a b : Ordinal.{u}) :
+private theorem nmul_nonempty (a b : Ordinal.{u}) :
     {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty :=
   ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
 

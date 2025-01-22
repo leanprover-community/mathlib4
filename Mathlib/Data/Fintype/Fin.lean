@@ -37,8 +37,7 @@ theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
 @[simp]
 theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
   ext i
-  simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
-    exists_true_left]
+  simp only [mem_filter, mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
   constructor
   · refine cases ?_ ?_ i
     · rintro ⟨⟨⟩⟩

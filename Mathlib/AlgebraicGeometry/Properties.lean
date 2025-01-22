@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
 # Basic properties of schemes

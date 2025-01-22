@@ -2,9 +2,9 @@
 Copyright (c) 2018 Kevin Buzzard, Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Patrick Massot
-
-This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 -/
+-- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Coset.Basic
@@ -320,7 +320,7 @@ open MonoidHom
 /-- The induced map from the quotient by the kernel to the codomain. -/
 @[to_additive "The induced map from the quotient by the kernel to the codomain."]
 def kerLift : G ⧸ ker φ →* H :=
-  lift _ φ fun _g => φ.mem_ker.mp
+  lift _ φ fun _g => mem_ker.mp
 
 @[to_additive (attr := simp)]
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
@@ -340,7 +340,7 @@ theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
 /-- The induced map from the quotient by the kernel to the range. -/
 @[to_additive "The induced map from the quotient by the kernel to the range."]
 def rangeKerLift : G ⧸ ker φ →* φ.range :=
-  lift _ φ.rangeRestrict fun g hg => (mem_ker _).mp <| by rwa [ker_rangeRestrict]
+  lift _ φ.rangeRestrict fun g hg => mem_ker.mp <| by rwa [ker_rangeRestrict]
 
 @[to_additive]
 theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>

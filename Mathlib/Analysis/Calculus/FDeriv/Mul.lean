@@ -3,6 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 
 /-!
@@ -50,20 +52,20 @@ variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G �
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)).comp x <| hc.prod hd
+  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x) :).comp x <| hc.prod hd
 
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x :=
-  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x <| hc.prod hd
+  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp_hasFDerivWithinAt x <| hc.prod hd
 
 @[fun_prop]
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp x <| hc.prod hd
+  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp x <| hc.prod hd
 
 @[fun_prop]
 theorem DifferentiableWithinAt.clm_comp (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -107,12 +109,12 @@ theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
     (hu : HasFDerivWithinAt u u' s x) :
     HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x :=
-  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp_hasFDerivWithinAt x (hc.prod hu)
 
 @[fun_prop]
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp x (hc.prod hu)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -239,12 +241,13 @@ theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFD
 @[fun_prop]
 theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x :=
-  (isBoundedBilinearMap_smul.hasFDerivAt (c x, f x)).comp_hasFDerivWithinAt x <| hc.prod hf
+  (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp_hasFDerivWithinAt x <|
+    hc.prod hf
 
 @[fun_prop]
 theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMap_smul.hasFDerivAt (c x, f x)).comp x <| hc.prod hf
+  (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp x <| hc.prod hf
 
 @[fun_prop]
 theorem DifferentiableWithinAt.smul (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -774,16 +777,15 @@ end Prod
 
 section AlgebraInverse
 
-variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 
 /-- At an invertible element `x` of a normed algebra `R`, the Fréchet derivative of the inversion
 operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 
-TODO: prove that `Ring.inverse` is analytic and use it to prove a `HasStrictFDerivAt` lemma.
-TODO (low prio): prove a version without assumption `[CompleteSpace R]` but within the set of
-units. -/
+TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` but within the set
+of units. -/
 @[fun_prop]
 theorem hasFDerivAt_ring_inverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
@@ -807,6 +809,11 @@ theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x 
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
   (hasFDerivAt_ring_inverse x).fderiv
+
+theorem hasStrictFDerivAt_ring_inverse (x : Rˣ) :
+    HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
+  convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
+  exact (fderiv_inverse x).symm
 
 variable {h : E → R} {z : E} {S : Set E}
 
@@ -832,35 +839,51 @@ end AlgebraInverse
 
 /-! ### Derivative of the inverse in a division ring
 
-Note these lemmas are primed as they need `CompleteSpace R`, whereas the other lemmas in
-`Mathlib/Analysis/Calculus/Deriv/Inv.lean` do not, but instead need `NontriviallyNormedField R`.
+Note that some lemmas are primed as they are expressed without commutativity, whereas their
+counterparts in commutative fields involve simpler expressions, and are given in
+`Mathlib/Analysis/Calculus/Deriv/Inv.lean`.
 -/
 
 section DivisionRingInverse
 
-variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 
+/-- At an invertible element `x` of a normed division algebra `R`, the inversion is strictly
+differentiable, with derivative the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. For a nicer formula in
+the commutative case, see `hasStrictFDerivAt_inv`. -/
+theorem hasStrictFDerivAt_inv' {x : R} (hx : x ≠ 0) :
+    HasStrictFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
+  simpa using hasStrictFDerivAt_ring_inverse (Units.mk0 _ hx)
+
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
-inversion operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. -/
+inversion operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. For a nicer formula in the
+commutative case, see `hasFDerivAt_inv`. -/
 @[fun_prop]
 theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) :
     HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
   simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
 
 @[fun_prop]
-theorem differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
+theorem differentiableAt_inv {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
   (hasFDerivAt_inv' hx).differentiableAt
 
-@[fun_prop]
-theorem differentiableWithinAt_inv' {x : R} (hx : x ≠ 0) (s : Set R) :
-    DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
-  (differentiableAt_inv' hx).differentiableWithinAt
+@[deprecated (since := "2024-09-21")] alias differentiableAt_inv' := differentiableAt_inv
 
 @[fun_prop]
-theorem differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
-  differentiableWithinAt_inv' hx _
+theorem differentiableWithinAt_inv {x : R} (hx : x ≠ 0) (s : Set R) :
+    DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
+  (differentiableAt_inv hx).differentiableWithinAt
+
+@[deprecated (since := "2024-09-21")]
+alias differentiableWithinAt_inv' := differentiableWithinAt_inv
+
+@[fun_prop]
+theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
+  differentiableWithinAt_inv hx _
+
+@[deprecated (since := "2024-09-21")] alias differentiableOn_inv' := differentiableOn_inv
 
 /-- Non-commutative version of `fderiv_inv` -/
 theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
@@ -869,28 +892,37 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
 /-- Non-commutative version of `fderivWithin_inv` -/
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
-  rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]
+  rw [DifferentiableAt.fderivWithin (differentiableAt_inv hx) hxs]
   exact fderiv_inv' hx
 
 variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
-theorem DifferentiableWithinAt.inv' (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
+theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
     DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹) S z :=
-  (differentiableAt_inv' hz).comp_differentiableWithinAt z hf
+  (differentiableAt_inv hz).comp_differentiableWithinAt z hf
+
+@[deprecated (since := "2024-09-21")]
+alias DifferentiableWithinAt.inv' := DifferentiableWithinAt.inv
 
 @[simp, fun_prop]
-theorem DifferentiableAt.inv' (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
+theorem DifferentiableAt.inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
     DifferentiableAt 𝕜 (fun x => (h x)⁻¹) z :=
-  (differentiableAt_inv' hz).comp z hf
+  (differentiableAt_inv hz).comp z hf
+
+@[deprecated (since := "2024-09-21")] alias DifferentiableAt.inv' := DifferentiableAt.inv
 
 @[fun_prop]
-theorem DifferentiableOn.inv' (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
-    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv' (hz x h)
+theorem DifferentiableOn.inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
+    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv (hz x h)
+
+@[deprecated (since := "2024-09-21")] alias DifferentiableOn.inv' := DifferentiableOn.inv
 
 @[simp, fun_prop]
-theorem Differentiable.inv' (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
-    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv' (hz x)
+theorem Differentiable.inv (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
+    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv (hz x)
+
+@[deprecated (since := "2024-09-21")] alias Differentiable.inv' := Differentiable.inv
 
 end DivisionRingInverse
 

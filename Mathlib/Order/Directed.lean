@@ -108,7 +108,7 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩
   use e k
-  simp only [he.extend_apply, *, true_and_iff]
+  simp only [he.extend_apply, *, true_and]
 
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}

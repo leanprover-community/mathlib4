@@ -178,7 +178,7 @@ theorem comp_sort_eq_comp_iff_monotone : f ∘ σ = f ∘ sort f ↔ Monotone (f
 
 /-- The sorted versions of a tuple `f` and of any permutation of `f` agree. -/
 theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f := by
-  rw [Function.comp.assoc, ← Equiv.Perm.coe_mul]
+  rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
   exact unique_monotone (monotone_sort (f ∘ σ)) (monotone_sort f)
 
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`

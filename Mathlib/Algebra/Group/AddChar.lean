@@ -314,9 +314,10 @@ end toCommMonoid
 
 section CommSemiring
 variable {A R : Type*} [AddGroup A] [Fintype A] [CommSemiring R] [IsDomain R]
-  [DecidableEq (AddChar A R)] {ψ : AddChar A R}
+  {ψ : AddChar A R}
 
-lemma sum_eq_ite (ψ : AddChar A R) : ∑ a, ψ a = if ψ = 0 then ↑(card A) else 0 := by
+lemma sum_eq_ite (ψ : AddChar A R) [Decidable (ψ = 0)] :
+    ∑ a, ψ a = if ψ = 0 then ↑(card A) else 0 := by
   split_ifs with h
   · simp [h, card_univ]
   obtain ⟨x, hx⟩ := ne_one_iff.1 h
@@ -327,6 +328,7 @@ lemma sum_eq_ite (ψ : AddChar A R) : ∑ a, ψ a = if ψ = 0 then ↑(card A) e
 variable [CharZero R]
 
 lemma sum_eq_zero_iff_ne_zero : ∑ x, ψ x = 0 ↔ ψ ≠ 0 := by
+  classical
   rw [sum_eq_ite, Ne.ite_eq_right_iff]; exact Nat.cast_ne_zero.2 Fintype.card_ne_zero
 
 lemma sum_ne_zero_iff_eq_zero : ∑ x, ψ x ≠ 0 ↔ ψ = 0 := sum_eq_zero_iff_ne_zero.not_left

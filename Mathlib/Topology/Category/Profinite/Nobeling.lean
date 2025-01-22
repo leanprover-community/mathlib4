@@ -412,7 +412,7 @@ theorem evalFacProps {l : Products I} (J K : I → Prop)
   have : l.eval (π C J) ∘ Homeomorph.setCongr (proj_eq_of_subset C J K hJK) =
       l.eval (π (π C K) J) := by
     ext; simp [Homeomorph.setCongr, Products.eval_eq]
-  rw [ProjRestricts, ← Function.comp.assoc, this, ← evalFacProp (π C K) J h]
+  rw [ProjRestricts, ← Function.comp_assoc, this, ← evalFacProp (π C K) J h]
 
 theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
@@ -1043,7 +1043,7 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
     ext x
     rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood  C _ gl), eval]
   · rw [← LocallyConstant.coe_inj, coe_πs C o₂, ← LocallyConstant.toFun_eq_coe, coe_πs',
-      Function.comp.assoc, projRestricts_comp_projRestrict C _, coe_πs]
+      Function.comp_assoc, projRestricts_comp_projRestrict C _, coe_πs]
     rfl
 
 end GoodProducts

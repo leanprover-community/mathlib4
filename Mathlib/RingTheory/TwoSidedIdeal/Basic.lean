@@ -45,6 +45,10 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
+instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
+  obtain ⟨I, J, h⟩ : Nontrivial (RingCon R) := inferInstance
+  exact ⟨⟨I⟩, ⟨J⟩, by contrapose! h; aesop⟩
+
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
   coe_injective'  := by

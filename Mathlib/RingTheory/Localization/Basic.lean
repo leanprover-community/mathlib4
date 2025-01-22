@@ -262,6 +262,9 @@ theorem eq_mk'_iff_mul_eq {x} {y : M} {z} :
     z = mk' S x y ↔ z * algebraMap R S y = algebraMap R S x :=
   (toLocalizationMap M S).eq_mk'_iff_mul_eq
 
+theorem eq_mk'_of_mul_eq {x : R} {y : M} {z : R} (h : z * y = x) : (algebraMap R S) z = mk' S x y :=
+  eq_mk'_iff_mul_eq.mpr (by rw [← h, map_mul])
+
 theorem mk'_eq_iff_eq_mul {x} {y : M} {z} :
     mk' S x y = z ↔ algebraMap R S x = z * algebraMap R S y :=
   (toLocalizationMap M S).mk'_eq_iff_eq_mul

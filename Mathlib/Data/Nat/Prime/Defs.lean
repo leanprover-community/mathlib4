@@ -161,7 +161,7 @@ theorem Prime.not_dvd_one {p : ℕ} (pp : Prime p) : ¬p ∣ 1 :=
   Irreducible.not_dvd_one pp
 
 theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ b.Prime ∧ a = 1 := by
-  simp only [iff_self_iff, irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
+  simp only [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 
 theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
   simp [prime_mul_iff, _root_.not_or, *]
@@ -337,7 +337,7 @@ theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n 
   | ⟨0, h0⟩ => absurd pos <| by rw [h0, mul_zero]; decide
   | ⟨1, h1⟩ => by
     rw [mul_one] at h1
-    rw [prime_def_minFac, not_and_or, ← h1, eq_self_iff_true, _root_.not_true, or_false_iff,
+    rw [prime_def_minFac, not_and_or, ← h1, eq_self_iff_true, _root_.not_true, _root_.or_false,
       not_le] at np
     rw [le_antisymm (le_of_lt_succ np) (succ_le_of_lt pos), minFac_one, Nat.div_one]
   | ⟨x + 2, hx⟩ => by

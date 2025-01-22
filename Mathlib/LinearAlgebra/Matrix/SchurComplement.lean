@@ -53,8 +53,8 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
       fromBlocks 1 0 (C * ⅟ A) 1 * fromBlocks A 0 0 (D - C * ⅟ A * B) *
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
-    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
-    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel]
+    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_cancel_left,
+    Matrix.invOf_mul_cancel_right, Matrix.mul_assoc, add_sub_cancel]
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
 Schur complement. -/
@@ -78,7 +78,7 @@ def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : 
     [Invertible A] [Invertible D] : Invertible (fromBlocks A B 0 D) :=
   invertibleOfLeftInverse _ (fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D)) <| by
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_neg_cancel,
+      Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, add_neg_cancel,
       fromBlocks_one]
 
 /-- A lower-block-triangular matrix is invertible if its diagonal is. -/
@@ -88,7 +88,7 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       (fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A))
         (⅟ D)) <| by -- a symmetry argument is more work than just copying the proof
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, neg_add_cancel,
+      Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, neg_add_cancel,
       fromBlocks_one]
 
 theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)

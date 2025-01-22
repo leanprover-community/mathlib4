@@ -88,8 +88,9 @@ theorem comp_id (f : α → β) : f ∘ id = f := rfl
 @[deprecated (since := "2024-01-14")] alias right_id := comp_id
 @[deprecated (since := "2024-01-14")] alias comp.right_id := comp_id
 
-theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
+@[deprecated (since := "2024-09-24")] alias comp.assoc := comp_assoc
 
 @[deprecated (since := "2024-01-14")] alias comp_const_right := comp_const
 

@@ -912,20 +912,8 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
 
-theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
-    Function.Injective (a ^ · : ℕ → R) := by
-  letI := Classical.decEq R
-  intro i j hij
-  letI : Nontrivial R := ⟨⟨a, 0, ha0⟩⟩
-  letI : NormalizationMonoid R := UniqueFactorizationMonoid.normalizationMonoid
-  obtain ⟨p', hp', dvd'⟩ := WfDvdMonoid.exists_irreducible_factor ha1 ha0
-  obtain ⟨p, mem, _⟩ := exists_mem_normalizedFactors_of_dvd ha0 hp' dvd'
-  have := congr_arg (fun x => Multiset.count p (normalizedFactors x)) hij
-  simp only [normalizedFactors_pow, Multiset.count_nsmul] at this
-  exact mul_right_cancel₀ (Multiset.count_ne_zero.mpr mem) this
-
-theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : a ^ i = a ^ j ↔ i = j :=
-  (pow_right_injective ha0 ha1).eq_iff
+@[deprecated (since := "2024-09-21")] alias pow_right_injective := pow_injective_of_not_isUnit
+@[deprecated (since := "2024-09-21")] alias pow_eq_pow_iff := pow_inj_of_not_isUnit
 
 section multiplicity
 
@@ -1216,9 +1204,9 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
+  · simp only [eq_self_iff_true, Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
-      iff_false_iff, not_exists]
+      iff_false, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
 
 section count
@@ -1871,7 +1859,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
       (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => ?_
-  simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true_iff,
+  simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true,
     Multiset.mem_toFinset, Multiset.mem_powerset, exists_eq_right, Multiset.mem_map]
   constructor
   · rintro ⟨s, hs, rfl⟩

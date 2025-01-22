@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou, Calle Sönne
+Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Limits.Opposites

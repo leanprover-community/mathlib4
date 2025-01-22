@@ -589,7 +589,7 @@ end Polynomial
 
 namespace minpoly
 
-variable {F E}
+variable {F : Type u} {E : Type v} [Field F] [Ring E] [IsDomain E] [Algebra F E]
 variable (q : ℕ) [hF : ExpChar F q] {x : E}
 
 /-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
@@ -632,17 +632,18 @@ separable degree one if and only if the minimal polynomial is of the form
 theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 ↔
     ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
+  haveI := expChar_of_injective_ringHom (C_injective (R := E)) q
   refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
     use n
-    rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow, ← sub_pow_expChar_pow]
+    rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow,
+      ← sub_pow_expChar_pow_of_commute E[X] X (C x) (commute_X _)]
   apply_fun constantCoeff at h
   simp_rw [map_pow, map_sub, constantCoeff_apply, coeff_map, coeff_X_zero, coeff_C_zero] at h
   rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
-  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
+  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h, neg_mul, one_mul, neg_neg]⟩
 
 end minpoly
 
@@ -730,7 +731,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
+      IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
@@ -812,7 +813,7 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
     (hx : IsSeparable F x) (hy : IsSeparable F y) :
     Algebra.IsSeparable F F⟮x, y⟯ := by
   rw [← adjoin_simple_adjoin_simple]
-  replace hy := IsSeparable.of_isScalarTower F⟮x⟯ hy
+  replace hy := IsSeparable.tower_top F⟮x⟯ hy
   rw [← isSeparable_adjoin_simple_iff_isSeparable] at hx hy
   exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
@@ -839,6 +840,19 @@ theorem isSeparable_add {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) 
     IsSeparable F (x + y) :=
   haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
   isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
+    (subset_adjoin F _ (.inr rfl))
+
+/-- If `x` is a separable elements, then `-x` is also a separable element. -/
+theorem isSeparable_neg {x : E} (hx : IsSeparable F x) :
+    IsSeparable F (-x) :=
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).2 hx
+  isSeparable_of_mem_isSeparable F E <| F⟮x⟯.neg_mem <| mem_adjoin_simple_self F x
+
+/-- If `x` and `y` are both separable elements, then `x - y` is also a separable element. -/
+theorem isSeparable_sub {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) :
+    IsSeparable F (x - y) :=
+  haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
+  isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.sub_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
 /-- If `x` is a separable element, then `x⁻¹` is also a separable element. -/

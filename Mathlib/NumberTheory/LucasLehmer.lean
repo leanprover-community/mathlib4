@@ -1,16 +1,9 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
+Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.Zify
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -31,7 +24,7 @@ primes using `lucas_lehmer_sufficiency`.
 ## History
 
 This development began as a student project by Ainsley Pahljina,
-and was then cleaned up for mathlib by Scott Morrison.
+and was then cleaned up for mathlib by Kim Morrison.
 The tactic for certified computation of Lucas-Lehmer residues was provided by Mario Carneiro.
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.
@@ -456,7 +449,8 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     have ω_pow := orderOf_dvd_iff_pow_eq_one.1 o
     replace ω_pow :=
       congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) ω_pow
-    simp? at ω_pow says simp only [map_pow, Units.coeHom_apply, ωUnit_coe, map_one] at ω_pow
+    simp? at ω_pow says
+      simp only [Units.coeHom_apply, Units.val_pow_eq_pow_val, ωUnit_coe, Units.val_one] at ω_pow
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩

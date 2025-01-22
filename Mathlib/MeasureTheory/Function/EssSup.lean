@@ -177,10 +177,10 @@ theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
   simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 
 lemma essSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essSup f μ = ⨆ i, f i := by
-  rw [essSup, ae_eq_top.2 hμ, limsup_top]
+  rw [essSup, ae_eq_top.2 hμ, limsup_top_eq_iSup]
 
 lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ = ⨅ i, f i := by
-  rw [essInf, ae_eq_top.2 hμ, liminf_top]
+  rw [essInf, ae_eq_top.2 hμ, liminf_top_eq_iInf]
 
 @[simp] lemma essSup_count [MeasurableSingletonClass α] (f : α → β) : essSup f .count = ⨆ i, f i :=
   essSup_eq_iSup (by simp) _

@@ -299,8 +299,8 @@ theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn f
   rfl
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
-  rfl
+theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := by
+  simp [ιMulti]
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :

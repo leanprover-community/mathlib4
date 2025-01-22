@@ -35,7 +35,7 @@ open Limits Functor
 
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
-  choose G' hg hf e using Finite.exists_type_zero_nonempty_mulEquiv G
+  choose G' hg hf e using Finite.exists_type_univ_nonempty_mulEquiv G
   exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
@@ -94,6 +94,17 @@ instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [← isGalois_iff_pretransitive]
   infer_instance
+
+lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
+    Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
+  conj_mem n ninstab g := by
+    rw [MulAction.mem_stabilizer_iff]
+    show g • n • (g⁻¹ • x) = x
+    have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
+      MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
+    obtain ⟨φ, h⟩ := this
+    rw [← h, mulAction_naturality, ninstab, h]
+    simp
 
 theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
     Function.Surjective (fun f : Aut A ↦ F.map f.hom a) :=

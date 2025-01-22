@@ -81,9 +81,37 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
-lemma height_le {x : α} {n : ℕ∞} :
-    height x ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n := by
-  simp [height, iSup_le_iff]
+lemma height_le_iff {a : α} {n : ℕ∞} :
+    height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
+ rw [height, iSup₂_le_iff]
+
+lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
+    height a ≤ n := by
+  apply height_le_iff.mpr
+  intro p hlast
+  wlog hlenpos : p.length ≠ 0
+  · simp_all
+  -- We replace the last element in the series with `a`
+  let p' := p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
+  rw [show p.length = p'.length by simp [p']; omega]
+  apply h
+  simp [p']
+
+lemma height_le_iff' {a : α} {n : ℕ∞} :
+    height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
+ constructor
+ · rw [height_le_iff]
+   exact fun h p hlast => h (le_of_eq hlast)
+ · exact height_le
+
+/--
+Alternative definition of height, with the supremum ranging only over those series that end at `a`.
+-/
+lemma height_eq_iSup_last_eq (a : α) :
+    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
+  apply eq_of_forall_ge_iff
+  intro n
+  rw [height_le_iff', iSup₂_le_iff]
 
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
@@ -103,8 +131,30 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     simp [p']
   · simp_all
 
+/--
+The height of the last element in a series is larger or equal to the length of the series.
+-/
 lemma length_le_height_last {p : LTSeries α} : p.length ≤ height p.last :=
   length_le_height le_rfl
+
+/--
+The height of an element in a series is larger or equal to its index in the series.
+-/
+lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height (p i) :=
+  length_le_height_last (p := p.take i)
+
+/--
+In a maximally long series, i.e one as long as the height of the last element, the height of each
+element is its index in the series.
+-/
+lemma height_eq_index_of_length_eq_height_last {p : LTSeries α} (h : p.length = height p.last)
+    (i : Fin (p.length + 1)) : height (p i) = i := by
+  refine le_antisymm (height_le ?_) (index_le_height p i)
+  intro p' hp'
+  have hp'' := length_le_height_last (p := p'.smash (p.drop i) (by simpa))
+  simp [← h] at hp''; clear h
+  norm_cast at *
+  omega
 
 lemma height_mono : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
@@ -194,7 +244,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
     · rw [krullDim_eq_iSup_length]
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
-      exact height_le.mpr fun p _ ↦ le_iSup_of_le p le_rfl
+      exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
 
 end krullDim
 

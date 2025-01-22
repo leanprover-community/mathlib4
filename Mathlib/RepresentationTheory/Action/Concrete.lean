@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.RepresentationTheory.Action.Basic
 
 /-!
@@ -68,6 +70,12 @@ def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftReg
 
 namespace FintypeCat
 
+/-- If `X` is a type with `[Fintype X]` and `G` acts on `X`, then `G` also acts on
+`FintypeCat.of X`. -/
+instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
+    MulAction G (FintypeCat.of X) :=
+  inferInstanceAs <| MulAction G X
+
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
@@ -78,6 +86,82 @@ def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
 theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
+
+section
+
+/-- Shorthand notation for the quotient of `G` by `H` as a finite `G`-set. -/
+notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
+
+variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
+
+/-- If `N` is a normal subgroup of `G`, then this is the group homomorphism
+sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
+multiplication with `g⁻¹` on the right. -/
+def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
+  toFun v := {
+    hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
+      apply (QuotientGroup.leftRel_apply).mpr
+      simp only [mul_inv_rev, inv_inv]
+      convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
+      · group
+      · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
+    comm := fun (g : G) ↦ by
+      ext (x : G ⧸ N)
+      induction' x using Quotient.inductionOn with x
+      simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
+      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
+      simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
+      rfl
+  }
+  map_one' := by
+    apply Action.hom_ext
+    ext (x : G ⧸ N)
+    induction' x using Quotient.inductionOn with x
+    simp
+  map_mul' σ τ := by
+    apply Action.hom_ext
+    ext (x : G ⧸ N)
+    induction' x using Quotient.inductionOn with x
+    show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
+    rw [mul_inv_rev, mul_assoc]
+
+@[simp]
+lemma toEndHom_apply [N.Normal] (g h : G) : (toEndHom N g).hom ⟦h⟧ = ⟦h * g⁻¹⟧ := rfl
+
+variable {N} in
+lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
+  apply Action.hom_ext
+  ext (x : G ⧸ N)
+  induction' x using Quotient.inductionOn with μ
+  exact Quotient.sound ((QuotientGroup.leftRel_apply).mpr <| by simpa)
+
+/-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
+group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/
+def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
+  QuotientGroup.lift (Subgroup.subgroupOf N H) ((toEndHom N).comp H.subtype) <| fun _ uinU' ↦
+    toEndHom_trivial_of_mem uinU'
+
+@[simp]
+lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
+    (quotientToEndHom H N ⟦x⟧).hom ⟦g⟧ = ⟦g * x⁻¹⟧ :=
+  rfl
+
+/-- If `N` and `H` are subgroups of a group `G` with `N ≤ H`, this is the canonical
+`G`-morphism `G ⧸ N ⟶ G ⧸ H`. -/
+def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ (G ⧸ₐ H) where
+  hom := Quotient.lift _ <| fun a b hab ↦ Quotient.sound <|
+    (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
+  comm g := by
+    ext (x : G ⧸ N)
+    induction' x using Quotient.inductionOn with μ
+    rfl
+
+@[simp]
+lemma quotientToQuotientOfLE_hom_mk [Fintype (G ⧸ H)] (h : N ≤ H) (x : G) :
+    (quotientToQuotientOfLE H N h).hom ⟦x⟧ = ⟦x⟧ :=
+  rfl
+
+end
 
 end FintypeCat
 

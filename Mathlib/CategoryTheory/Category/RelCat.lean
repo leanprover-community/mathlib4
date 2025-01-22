@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Uni Marx
+Authors: Kim Morrison, Uni Marx
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.EssentialImage

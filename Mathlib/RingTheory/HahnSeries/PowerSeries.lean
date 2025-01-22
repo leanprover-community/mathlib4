@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.Data.Finsupp.PWO
 
 /-!
@@ -17,6 +18,11 @@ we get the more familiar semiring of formal power series with coefficients in `R
 ## Main Definitions
   * `toPowerSeries` the isomorphism from `HahnSeries ℕ R` to `PowerSeries R`.
   * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `HahnSeries ℕ R`.
+
+## Instances
+  * For `Finite σ`, the instance `NoZeroDivisors (HahnSeries (σ →₀ ℕ) R)`,
+  deduced from the case of `MvPowerSeries`
+  The case of `HahnSeries ℕ R` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
@@ -165,6 +171,12 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
 variable {σ : Type*} [Finite σ]
+
+-- TODO : generalize to all (?) rings of Hahn Series
+/-- If R has no zero divisors and `σ` is finite,
+then `HahnSeries (σ →₀ ℕ) R` has no zero divisors -/
+instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
+  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R)
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=

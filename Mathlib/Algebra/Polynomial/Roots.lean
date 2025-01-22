@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 
 import Mathlib.Algebra.Polynomial.RingDivision
@@ -108,10 +108,13 @@ theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
 theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 
--- Porting note: added during port.
+theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
+    (hf : Function.Injective f) {x : R} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
+  rw [mem_roots ((Polynomial.map_ne_zero_iff hf).mpr hp), IsRoot, eval_map]
+
 lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
-  rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
-  simp
+  rw [aeval_def, ← mem_roots_map_of_injective (NoZeroSMulDivisors.algebraMap_injective _ _) w,
+    Algebra.id.map_eq_id, map_id]
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     Z.card ≤ p.natDegree :=
@@ -434,6 +437,13 @@ theorem aroots_monomial [CommRing S] [IsDomain S] [Algebra T S]
     (monomial n a).aroots S = n • ({0} : Multiset S) := by
   rw [← C_mul_X_pow_eq_monomial, aroots_C_mul_X_pow ha]
 
+variable (R S) in
+@[simp]
+theorem aroots_map (p : T[X]) [CommRing S] [Algebra T S] [Algebra S R] [Algebra T R]
+    [IsScalarTower T S R] :
+    (p.map (algebraMap T S)).aroots R = p.aroots R := by
+  rw [aroots_def, aroots_def, map_map, IsScalarTower.algebraMap_eq T S R]
+
 /-- The set of distinct roots of `p` in `S`.
 
 If you have a non-separable polynomial, use `Polynomial.aroots` for the multiset
@@ -524,6 +534,12 @@ theorem rootSet_mapsTo {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S]
   obtain rfl : p = 0 :=
     map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
   exact Polynomial.map_zero _
+
+theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
+    (h : Function.Injective (algebraMap S R)) {x : R} (hp : p ≠ 0) :
+    x ∈ p.rootSet R ↔ aeval x p = 0 := by
+  classical
+  exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
 end Roots
 

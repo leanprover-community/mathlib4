@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Nontriviality
 
 /-!
@@ -1209,19 +1209,19 @@ end GroupWithZero.LinearOrder
 
 section CommSemigroupHasZero
 
-variable [Mul α] [IsSymmOp α α (· * ·)] [Zero α] [Preorder α]
+variable [Mul α] [@Std.Commutative α (· * ·)] [Zero α] [Preorder α]
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp only [PosMulStrictMono, MulPosStrictMono, IsSymmOp.symm_op]
+  simp only [PosMulStrictMono, MulPosStrictMono, Std.Commutative.comm]
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp only [PosMulReflectLT, MulPosReflectLT, IsSymmOp.symm_op]
+  simp only [PosMulReflectLT, MulPosReflectLT, Std.Commutative.comm]
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp only [PosMulMono, MulPosMono, IsSymmOp.symm_op]
+  simp only [PosMulMono, MulPosMono, Std.Commutative.comm]
 
 theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
-  simp only [PosMulReflectLE, MulPosReflectLE, IsSymmOp.symm_op]
+  simp only [PosMulReflectLE, MulPosReflectLE, Std.Commutative.comm]
 
 end CommSemigroupHasZero
 

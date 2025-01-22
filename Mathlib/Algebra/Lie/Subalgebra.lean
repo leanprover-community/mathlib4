@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Lie subalgebras
@@ -106,6 +106,9 @@ instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalge
 
 instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
   isNoetherian_submodule' _
+
+instance (L' : LieSubalgebra R L) [IsArtinian R L] : IsArtinian R L' :=
+  isArtinian_submodule' _
 
 end
 

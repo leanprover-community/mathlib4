@@ -8,11 +8,11 @@ import Mathlib.Topology.Category.CompHausLike.Limits
 
 # The sigma-comparison map
 
-This file defines the map `CompHausLike.sigmaComparison` associated to a presheaf `X` on
+This file defines the map `CompHausLike.sigmaComparison` associated to a presheaf `X` on
 `CompHausLike P`, and a finite family `S₁,...,Sₙ` of spaces in `CompHausLike P`, where `P` is
 stable under taking finite disjoint unions.
 
-The map `sigmaComparison` is the canonical map `X(S₁ ⊔ ... ⊔ Sₙ) ⟶ X(S₁) × ... × X(Sₙ)` induced by
+The map `sigmaComparison` is the canonical map `X(S₁ ⊔ ... ⊔ Sₙ) ⟶ X(S₁) × ... × X(Sₙ)` induced by
 the inclusion maps `Sᵢ ⟶ S₁ ⊔ ... ⊔ Sₙ`, and it is an isomorphism when `X` preserves finite
 products.
 -/

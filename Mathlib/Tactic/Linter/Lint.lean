@@ -13,7 +13,7 @@ In this file we define additional linters for mathlib.
 Perhaps these should be moved to Batteries in the future.
 -/
 
-namespace Std.Tactic.Lint
+namespace Batteries.Tactic.Lint
 open Lean Meta
 
 /--
@@ -45,7 +45,7 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
-end Std.Tactic.Lint
+end Batteries.Tactic.Lint
 
 namespace Mathlib.Linter
 
@@ -406,9 +406,13 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if (line.splitOn "http").length ≤ 1 then
+        let stringMsg := if line.contains '"' then
+          "\nYou can use \"string gaps\" to format long strings: within a string quotation, \
+          using a '\' at the end of a line allows you to continue the string on the following \
+          line, removing all intervening whitespace."
+        else ""
         Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
-          m!"This line exceeds the 100 character limit, please shorten it!"
-
+          m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
 initialize addLinter longLineLinter
 
 end Style.longLine

@@ -156,7 +156,7 @@ theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
   refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, pow_one]⟩
   rw [← h] at hp
-  rw [← h, hp.eq_one_of_pow, eq_self_iff_true, and_true_iff, pow_one]
+  rw [← h, hp.eq_one_of_pow, eq_self_iff_true, _root_.and_true, pow_one]
 
 theorem pow_minFac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
   rcases eq_or_ne n 1 with (rfl | hn)
@@ -247,7 +247,7 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
   | n + 2 => by
     let a := n + 2
     let ha : a ≠ 1 := Nat.succ_succ_ne_one n
-    simp only [true_iff_iff, Ne, not_false_iff, ha]
+    simp only [true_iff, Ne, not_false_iff, ha]
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
 
 theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Prime → ¬p ∣ n := by

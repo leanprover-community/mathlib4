@@ -435,7 +435,7 @@ theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
       intro hn
       rw [hn] at h
       exact (Fintype.card_eq_zero_iff.mp h).elim' 0⟩
-  rw [Fintype.bijective_iff_injective_and_card, ZMod.card, h, eq_self_iff_true, and_true_iff]
+  rw [Fintype.bijective_iff_injective_and_card, ZMod.card, h, eq_self_iff_true, and_true]
   apply ZMod.castHom_injective
 
 /-- The unique ring isomorphism between `ZMod n` and a ring `R`

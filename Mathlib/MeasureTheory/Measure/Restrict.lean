@@ -281,7 +281,7 @@ theorem restrict_iUnion_apply [Countable ι] {s : ι → Set α} (hd : Pairwise 
 theorem restrict_iUnion_apply_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed (· ⊆ ·) s)
     {t : Set α} (ht : MeasurableSet t) : μ.restrict (⋃ i, s i) t = ⨆ i, μ.restrict (s i) t := by
   simp only [restrict_apply ht, inter_iUnion]
-  rw [measure_iUnion_eq_iSup]
+  rw [Directed.measure_iUnion]
   exacts [hd.mono_comp _ fun s₁ s₂ => inter_subset_inter_right _]
 
 /-- The restriction of the pushforward measure is the pushforward of the restriction. For a version
