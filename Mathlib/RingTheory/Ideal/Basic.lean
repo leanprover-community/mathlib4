@@ -3,12 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Ideal.Maximal
 import Mathlib.Tactic.FinCases
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -78,12 +77,7 @@ theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
   by_cases h : m ≤ c
   · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    simp only [not_le, Nat.lt_iff_add_one_le] at h
-    have hck : c ≤ k := by
-      rw [← add_le_add_iff_right 1]
-      exact le_trans h (le_trans (Nat.le_add_right _ _) hk)
-    rw [Nat.le_sub_iff_add_le hck, ← add_le_add_iff_right 1]
-    exact le_trans (by rwa [add_comm _ n, add_assoc, add_le_add_iff_left]) hk
+    omega
 
 theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :

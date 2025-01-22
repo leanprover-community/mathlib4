@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Bordg
 -/
 import Mathlib.Data.Rel
-import Mathlib.Order.GaloisConnection
 
 /-!
 # The Galois Connection Induced by a Relation

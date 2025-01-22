@@ -68,6 +68,8 @@ instance : DecidableEq (WalkingParallelFamily J)
 instance : Inhabited (WalkingParallelFamily J) :=
   ⟨zero⟩
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type family of morphisms for the diagram indexing a wide (co)equalizer. -/
 inductive WalkingParallelFamily.Hom (J : Type w) :
   WalkingParallelFamily J → WalkingParallelFamily J → Type w
@@ -680,5 +682,3 @@ instance (priority := 10) hasCoequalizers_of_hasWideCoequalizers [HasWideCoequal
   hasColimitsOfShape_of_equivalence.{w} walkingParallelFamilyEquivWalkingParallelPair
 
 end CategoryTheory.Limits
-
-attribute [nolint simpNF] CategoryTheory.Limits.WalkingParallelFamily.Hom.id.sizeOf_spec

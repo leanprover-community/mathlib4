@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.Interval
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 

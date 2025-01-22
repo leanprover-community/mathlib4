@@ -39,7 +39,6 @@ The manifold structure on the interval `[x, y] = Icc x y` requires the assumptio
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
 
-
 noncomputable section
 
 open Set Function
@@ -77,6 +76,12 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
 
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
+
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) where
+  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+
+instance {n : ℕ} : Zero (EuclideanQuadrant n) where
+  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -229,6 +234,8 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
+lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
+
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
@@ -256,7 +263,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
-  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, le_of_lt h.out]⟩
+  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, h.out.le]⟩
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
@@ -295,6 +302,33 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
+variable {x y : ℝ} [hxy : Fact (x < y)]
+
+namespace Fact.Manifold
+
+scoped instance : Fact (x ≤ y) := Fact.mk hxy.out.le
+
+end Fact.Manifold
+
+open Fact.Manifold
+
+lemma IccLeftChart_extend_bot : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
+  norm_num [IccLeftChart, modelWithCornersEuclideanHalfSpace_zero]
+  congr
+
+lemma iccLeftChart_extend_zero {p : Set.Icc x y} :
+    (IccLeftChart x y).extend (𝓡∂ 1) p 0 = p.val - x := rfl
+
+lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    0 < (IccLeftChart x y).extend (𝓡∂ 1) p 0 := by
+  simp_rw [iccLeftChart_extend_zero]
+  norm_num [hp.1]
+
+lemma IccLeftChart_extend_bot_mem_frontier :
+    (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
+    mem_setOf, PiLp.zero_apply]
+
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -304,7 +338,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
-    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, le_of_lt h.out, sub_eq_add_neg]⟩
+    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
@@ -342,6 +376,16 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
       (continuous_const.sub continuous_id).max continuous_const
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
+
+lemma IccRightChart_extend_top :
+    (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
+  norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
+  congr
+
+lemma IccRightChart_extend_right_mem_frontier :
+    (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
+    mem_setOf, PiLp.zero_apply]
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
