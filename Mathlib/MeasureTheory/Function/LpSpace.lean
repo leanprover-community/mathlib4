@@ -289,7 +289,7 @@ theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p
 
 @[simp]
 theorem edist_toLp_zero (f : α → E) (hf : Memℒp f p μ) : edist (hf.toLp f) 0 = eLpNorm f p μ := by
-  convert edist_toLp_toLp f 0 hf zero_memℒp
+  convert edist_toLp_toLp f 0 hf Memℒp.zero
   simp
 
 @[simp]
@@ -322,7 +322,7 @@ theorem norm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖ = 0 ↔ f = 0 :=
   NNReal.coe_eq_zero.trans (nnnorm_eq_zero_iff hp)
 
 theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ] 0 := by
-  rw [← (Lp.memℒp f).toLp_eq_toLp_iff zero_memℒp, Memℒp.toLp_zero, toLp_coeFn]
+  rw [← (Lp.memℒp f).toLp_eq_toLp_iff Memℒp.zero, Memℒp.toLp_zero, toLp_coeFn]
 
 @[simp]
 theorem nnnorm_neg (f : Lp E p μ) : ‖-f‖₊ = ‖f‖₊ := by
