@@ -488,8 +488,8 @@ another series -/
 @[simps]
 def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
-  toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
-  step i := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
+  toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ (Nat.sub_le _ _))⟩
+  step i := p.step ⟨i, lt_of_lt_of_le i.2 (Nat.sub_le _ _)⟩
 
 @[simp] lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
 
@@ -555,7 +555,7 @@ lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
   · simp only [Fin.val_succ, Fin.coe_castAdd] at H
     convert h.symm
     · congr
-      simp only [Fin.val_succ, Fin.coe_castAdd, Nat.zero_mod, tsub_eq_zero_iff_le]
+      simp only [Fin.val_succ, Fin.coe_castAdd, Nat.zero_mod, Nat.sub_eq_zero_iff_le]
       omega
     · congr
       ext
@@ -581,7 +581,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
   delta head smash
-  simp only [Fin.val_zero, Fin.zero_eta, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
+  simp only [Fin.val_zero, Fin.zero_eta, zero_le, Nat.sub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   intro H; convert h.symm; congr; aesop
 

@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 import Mathlib.GroupTheory.Exponent
@@ -39,6 +40,7 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 cyclic group
 -/
 
+assert_not_exists TwoSidedIdeal
 
 variable {α G G' : Type*} {a : α}
 
@@ -73,21 +75,25 @@ theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCy
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
 
+@[to_additive]
+instance IsCyclic.commutative [Group α] [IsCyclic α] :
+    Std.Commutative (· * · : α → α → α) where
+  comm x y :=
+    let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+    let ⟨_, hx⟩ := hg x
+    let ⟨_, hy⟩ := hg y
+    hy ▸ hx ▸ zpow_mul_comm _ _ _
+
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
       "A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`."]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
-  { hg with
-    mul_comm := fun x y =>
-      let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-      let ⟨_, hn⟩ := hg x
-      let ⟨_, hm⟩ := hg y
-      hm ▸ hn ▸ zpow_mul_comm _ _ _ }
+  { hg with mul_comm := commutative.comm }
 
 instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
-  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
+  ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
 
@@ -283,8 +289,7 @@ open Finset Nat
 
 section Classical
 
-open scoped Classical
-
+open scoped Classical in
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
     #{a : α | a ^ n = 1} ≤ n :=
@@ -334,6 +339,34 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   use g
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
   exact Nat.card_congr (Equiv.Set.univ α)
+
+variable (G) in
+/-- A distributive action of a monoid on a finite cyclic group of order `n` factors through an
+action on `ZMod n`. -/
+noncomputable def MulDistribMulAction.toMonoidHomZModOfIsCyclic (M : Type*) [Monoid M]
+    [IsCyclic G] [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) : M →* ZMod n where
+  toFun m := (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose
+  map_one' := by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq,
+      zpow_one, ← (MulDistribMulAction.toMonoidHom G 1).map_cyclic.choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, one_smul]
+  map_mul' m n := by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_mul, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq,
+      zpow_mul', ← (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose_spec,
+      ← (MulDistribMulAction.toMonoidHom G n).map_cyclic.choose_spec,
+      ← (MulDistribMulAction.toMonoidHom G (m * n)).map_cyclic.choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, MulDistribMulAction.toMonoidHom_apply,
+      MulDistribMulAction.toMonoidHom_apply, mul_smul]
+
+theorem MulDistribMulAction.toMonoidHomZModOfIsCyclic_apply {M : Type*} [Monoid M] [IsCyclic G]
+    [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) (m : M) (g : G) (k : ℤ)
+    (h : toMonoidHomZModOfIsCyclic G M hn m = k) : m • g = g ^ k := by
+  rw [← MulDistribMulAction.toMonoidHom_apply,
+    (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose_spec g, zpow_eq_zpow_iff_modEq]
+  apply Int.ModEq.of_dvd (Int.natCast_dvd_natCast.mpr (orderOf_dvd_natCard g))
+  rwa [hn, ← ZMod.intCast_eq_intCast_iff]
 
 section
 
@@ -830,3 +863,13 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
+
+lemma DihedralGroup.not_isCyclic {n : ℕ} (h1 : n ≠ 1) : ¬IsCyclic (DihedralGroup n) := fun h' => by
+  by_cases h2 : n = 2
+  · simpa [exponent, card, h2] using h'.exponent_eq_card
+  · exact not_commutative h1 h2 h'.commutative
+
+lemma DihedralGroup.isCyclic_iff {n : ℕ} :
+    IsCyclic (DihedralGroup n) ↔ n = 1 where
+  mp := by contrapose; exact not_isCyclic
+  mpr := by rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card

@@ -175,7 +175,7 @@ alias tendsto_approxOn_range_Lp_snorm := tendsto_approxOn_range_Lp_eLpNorm
 theorem memℒp_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     [SeparableSpace (range f ∪ {0} : Set E)] (hf : Memℒp f p μ) (n : ℕ) :
     Memℒp (approxOn f fmeas (range f ∪ {0}) 0 (by simp) n) p μ :=
-  memℒp_approxOn fmeas hf (y₀ := 0) (by simp) zero_memℒp n
+  memℒp_approxOn fmeas hf (y₀ := 0) (by simp) Memℒp.zero n
 
 theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞)
     {μ : Measure β} (fmeas : Measurable f) [SeparableSpace (range f ∪ {0} : Set E)]
@@ -496,7 +496,7 @@ theorem toLp_eq_mk (f : α →ₛ E) (hf : Memℒp f p μ) :
     (toLp f hf : α →ₘ[μ] E) = AEEqFun.mk f f.aestronglyMeasurable :=
   rfl
 
-theorem toLp_zero : toLp (0 : α →ₛ E) zero_memℒp = (0 : Lp.simpleFunc E p μ) :=
+theorem toLp_zero : toLp (0 : α →ₛ E) Memℒp.zero = (0 : Lp.simpleFunc E p μ) :=
   rfl
 
 theorem toLp_add (f g : α →ₛ E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
@@ -737,12 +737,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
 
 instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
-  have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
-  have h_add_2 : ((f + g₂ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₂ := Lp.coeFn_add _ _
-  filter_upwards [h_add_1, h_add_2, hg₁₂] with _ h1 h2 h3
-  rw [h1, h2, Pi.add_apply, Pi.add_apply]
-  exact add_le_add le_rfl h3
+  exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 
