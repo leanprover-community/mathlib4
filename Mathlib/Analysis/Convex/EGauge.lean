@@ -61,6 +61,14 @@ lemma egauge_eq_top : egauge 𝕜 s x = ∞ ↔ ∀ c : 𝕜, x ∉ c • s := b
 lemma egauge_lt_iff : egauge 𝕜 s x < r ↔ ∃ c : 𝕜, x ∈ c • s ∧ ‖c‖₊ < r := by
   simp [egauge, iInf_lt_iff]
 
+lemma egauge_union (s t : Set E) (x : E) : egauge 𝕜 (s ∪ t) x = egauge 𝕜 s x ⊓ egauge 𝕜 t x := by
+  unfold egauge
+  simp [smul_set_union, iInf_or, iInf_inf_eq]
+
+lemma le_egauge_inter (s t : Set E) (x : E) :
+    egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=
+  max_le_iff.2 ⟨egauge_anti _ inter_subset_left _, egauge_anti _ inter_subset_right _⟩
+
 end SMul
 
 section SMulZero
@@ -111,8 +119,7 @@ lemma egauge_zero_right (hs : s.Nonempty) : egauge 𝕜 s 0 = 0 := by
   have : 0 ∈ (0 : 𝕜) • s := by simp [zero_smul_set hs]
   simpa using egauge_le_of_mem_smul this
 
-@[simp]
-lemma egauge_zero_zero : egauge 𝕜 (0 : Set E) 0 = 0 := egauge_zero_right _ ⟨0, rfl⟩
+lemma egauge_zero_zero : egauge 𝕜 (0 : Set E) 0 = 0 := by simp
 
 lemma egauge_le_one (h : x ∈ s) : egauge 𝕜 s x ≤ 1 := by
   rw [← one_smul 𝕜 s] at h

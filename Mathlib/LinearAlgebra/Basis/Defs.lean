@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Bases
@@ -53,9 +53,7 @@ basis, bases
 
 -/
 
-assert_not_exists LinearMap.pi
-assert_not_exists LinearIndependent
-assert_not_exists Cardinal
+assert_not_exists LinearMap.pi LinearIndependent Cardinal
 
 noncomputable section
 

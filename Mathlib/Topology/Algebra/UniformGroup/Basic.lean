@@ -7,6 +7,7 @@ import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.HeineCantor
 import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.DiscreteSubset
@@ -207,37 +208,41 @@ lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group 
   replace hf : Function.Injective f.rangeRestrict := by simpa
   exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
 
-@[to_additive]
-theorem TopologicalGroup.tendstoUniformly_iff {ι α : Type*} (F : ι → α → G) (f : α → G)
-    (p : Filter ι) :
-    @TendstoUniformly α G ι (TopologicalGroup.toUniformSpace G) F f p ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
-  ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ =>
-    mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
+end TopologicalGroup
+
+namespace TopologicalGroup
+
+variable {ι α G : Type*} [Group G] [u : UniformSpace G] [TopologicalGroup G]
 
 @[to_additive]
-theorem TopologicalGroup.tendstoUniformlyOn_iff {ι α : Type*} (F : ι → α → G) (f : α → G)
-    (p : Filter ι) (s : Set α) :
-    @TendstoUniformlyOn α G ι (TopologicalGroup.toUniformSpace G) F f p s ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
-  ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ =>
-    mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
+theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
+    (hu : TopologicalGroup.toUniformSpace G = u) :
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
+  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
 
 @[to_additive]
-theorem TopologicalGroup.tendstoLocallyUniformly_iff {ι α : Type*} [TopologicalSpace α]
-    (F : ι → α → G) (f : α → G) (p : Filter ι) :
-    @TendstoLocallyUniformly α G ι (TopologicalGroup.toUniformSpace G) _ F f p ↔
+theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α)
+    (hu : TopologicalGroup.toUniformSpace G = u) :
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
+  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
+
+@[to_additive]
+theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
+    (p : Filter ι) (hu : TopologicalGroup.toUniformSpace G = u) :
+    TendstoLocallyUniformly F f p ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-    ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
-      Exists.imp (fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩)
-        (h u hu x)⟩
+  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+    Exists.imp (fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩)
+      (h u hu x)⟩
 
 @[to_additive]
-theorem TopologicalGroup.tendstoLocallyUniformlyOn_iff {ι α : Type*} [TopologicalSpace α]
-    (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α) :
-    @TendstoLocallyUniformlyOn α G ι (TopologicalGroup.toUniformSpace G) _ F f p s ↔
+theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
+    (p : Filter ι) (s : Set α) (hu : TopologicalGroup.toUniformSpace G = u) :
+    TendstoLocallyUniformlyOn F f p s ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-  ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
     (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
       h u hu x⟩
 
@@ -274,7 +279,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
     have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
       (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
-    exact (this : _)
+    exact (this :)
   have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by
     simpa using hφ.tendsto (0, y₁)
   have lim := lim2.comp lim1
