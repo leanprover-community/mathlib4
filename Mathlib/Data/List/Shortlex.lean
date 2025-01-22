@@ -41,7 +41,7 @@ namespace Shortlex
 variable {α : Type*} {r : α → α → Prop}
 
 /-- If a list `s` is shorter than a list `t`, then `s` is smaller than `t` under any shortlex
-order -/
+order. -/
 theorem of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t :=
   Prod.Lex.left _ _ h
 
@@ -53,7 +53,7 @@ theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
   exact Prod.Lex.right _ h2
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
-over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`-/
+over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`.-/
 theorem _root_.List.shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   constructor
@@ -100,11 +100,7 @@ theorem not_nil_right {s : List α} : ¬ Shortlex r s [] := by
 theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] := by
   cases s with
   | nil => right; rfl
-  | cons head tail =>
-    left
-    apply of_length_lt
-    simp only [List.length_nil, List.length_cons, Nat.succ_eq_add_one, lt_add_iff_pos_left,
-      add_pos_iff, zero_lt_one, or_true]
+  | cons head tail => exact Or.inl (of_length_lt (Nat.succ_pos tail.length))
 
 @[simp]
 theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
