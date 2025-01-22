@@ -212,10 +212,14 @@ instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
 filtration is uniformly integrable. -/
-theorem Integrable.uniformIntegrable_condexp_filtration [Preorder ι] {μ : Measure Ω}
+theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
-  hg.uniformIntegrable_condexp f.le
+  hg.uniformIntegrable_condExp f.le
+
+@[deprecated (since := "2025-01-21")]
+alias Integrable.uniformIntegrable_condexp_filtration :=
+  Integrable.uniformIntegrable_condExp_filtration
 
 section OfSet
 
@@ -322,7 +326,7 @@ theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : 
         (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
-  · exact zero_memℒp
+  · exact Memℒp.zero
 
 @[deprecated (since := "2024-07-27")]
 alias memℒp_limitProcess_of_snorm_bdd := memℒp_limitProcess_of_eLpNorm_bdd
