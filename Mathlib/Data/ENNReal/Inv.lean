@@ -44,7 +44,8 @@ protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, 
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
 @[simp] theorem inv_top : ∞⁻¹ = 0 :=
-  bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by simp [*, h.ne', top_mul]
+  bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by
+    simp [*, h.ne', top_mul]
 
 theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
   le_sInf fun b (hb : 1 ≤ ↑r * b) =>
