@@ -672,6 +672,9 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := 
 theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
   fun h => h.dual.wellFoundedOn_lt
 
+theorem BddBelow.isWF : BddBelow s → IsWF s :=
+  BddBelow.wellFoundedOn_lt
+
 end LocallyFiniteOrder
 
 namespace Set.PartiallyWellOrderedOn
