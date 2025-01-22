@@ -277,7 +277,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
   · filter_upwards [hfs_tendsto] with x hx
     exact hx.mul tendsto_const_nhds
   · exact hg.norm.const_mul c
-  · exact integrable_condexp.norm.const_mul c
+  · fun_prop
   · refine fun n => Eventually.of_forall fun x => ?_
     exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right (hfs_bound n x) (norm_nonneg _))
   · refine fun n => Eventually.of_forall fun x => ?_

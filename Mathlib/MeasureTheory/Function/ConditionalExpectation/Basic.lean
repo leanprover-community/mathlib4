@@ -187,6 +187,7 @@ theorem condexp_of_aestronglyMeasurable' (hm : m ≤ m0) [hμm : SigmaFinite (μ
   rw [condexp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
 
+@[fun_prop]
 theorem integrable_condexp : Integrable (μ[f|m]) μ := by
   by_cases hm : m ≤ m0
   swap; · rw [condexp_of_not_le hm]; exact integrable_zero _ _ _
