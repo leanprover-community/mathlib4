@@ -14,11 +14,8 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 noncomputable section
 
+open Function Filter Inv MeasureTheory.Measure Module Set TopologicalSpace
 open scoped NNReal ENNReal Pointwise Topology
-
-open Inv Set Function MeasureTheory.Measure Filter
-
-open FiniteDimensional
 
 namespace MeasureTheory
 
@@ -44,11 +41,37 @@ instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasu
 
 end LinearEquiv
 
+section SeminormedGroup
+variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
+  [TopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
+  [MeasurableSpace H] [SeminormedGroup H] [OpensMeasurableSpace H]
+
+-- TODO: This could be streamlined by proving that inner regular always exist
+open Metric Bornology in
+@[to_additive]
+lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) (x : G) :
+    ∃ s ∈ 𝓝 x, IsBounded (f '' s) := by
+  let K : PositiveCompacts G := Classical.arbitrary _
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, 0 < haar (interior K ∩ f ⁻¹' ball 1 n) := by
+    by_contra!
+    simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
+      iUnion_ball_nat, preimage_univ, inter_univ] at this
+    exact this.not_gt <| isOpen_interior.measure_pos _ K.interior_nonempty
+  rw [← one_mul x, ← op_smul_eq_mul]
+  refine ⟨_, smul_mem_nhds_smul _ <| div_mem_nhds_one_of_haar_pos_ne_top haar _
+    (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
+      mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
+    ?_⟩
+  have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
+    isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
+  rw [image_op_smul_distrib, image_div]
+  exact (this.div this).smul _
+
+end SeminormedGroup
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
-
-variable {s : Set E}
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -122,11 +145,11 @@ alias set_integral_comp_smul_of_pos := setIntegral_comp_smul_of_pos
 
 theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
+  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, Module.finrank_self, pow_one]
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
+  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, Module.finrank_self, pow_one]
 
 theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y := by

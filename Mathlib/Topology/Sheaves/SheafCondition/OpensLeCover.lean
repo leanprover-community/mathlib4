@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
@@ -154,7 +154,7 @@ def generateEquivalenceOpensLe (hY : Y = iSup U) :
   inverse := generateEquivalenceOpensLe_inverse' _ hY
   unitIso := eqToIso <| CategoryTheory.Functor.ext
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)
-    (by intros; refine Over.OverMorphism.ext ?_; aesop_cat)
+    (by intros; refine Over.OverMorphism.ext ?_; simp)
   counitIso := eqToIso <| CategoryTheory.Functor.hext
     (by intro; refine FullSubcategory.ext ?_; rfl) (by intros; rfl)
 

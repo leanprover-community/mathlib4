@@ -126,7 +126,7 @@ def size : Ordnode α → ℕ
   | nil => 0
   | node sz _ _ _ => sz
 
--- Porting note(#11647): during the port we marked these lemmas with `@[eqns]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
 -- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
@@ -313,11 +313,11 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 
 instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
-  | nil => decidableTrue
-  | node _ l _ r =>
+  | nil => isTrue trivial
+  | node _ l m r =>
     have : Decidable (All P l) := All.decidable l
     have : Decidable (All P r) := All.decidable r
-    And.decidable
+    inferInstanceAs <| Decidable (All P l ∧ P m ∧ All P r)
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
@@ -328,11 +328,11 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 
 instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
-  | nil => decidableFalse
-  | node _ l _ r =>
+  | nil => isFalse id
+  | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
     have : Decidable (Any P r) := Any.decidable r
-    Or.decidable
+    inferInstanceAs <| Decidable (Any P l ∨ P m ∨ Any P r)
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
 correctness properties; use `∈` for a version that actually uses the BST property
@@ -366,7 +366,7 @@ and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 
-instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
+instance Amem.decidable [LE α] [DecidableRel (α := α) (· ≤ ·)] (x : α) :
     ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
 
@@ -604,7 +604,8 @@ instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
 def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
+instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
+  inferInstanceAs (Decidable (x.size = y.size ∧ x.toList = y.toList))
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
@@ -806,7 +807,7 @@ def ofAscList : List α → Ordnode α
 
 section
 
-variable [LE α] [@DecidableRel α (· ≤ ·)]
+variable [LE α] [DecidableRel (α := α) (· ≤ ·)]
 
 /-- O(log n). Does the set (approximately) contain the element `x`? That is,
 is there an element that is equivalent to `x` in the order?
@@ -1219,7 +1220,7 @@ Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
     image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
-def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
+def image {α β} [LE β] [DecidableRel (α := β) (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 
 end

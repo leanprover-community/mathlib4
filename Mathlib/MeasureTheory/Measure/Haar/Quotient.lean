@@ -57,7 +57,7 @@ instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [M
     [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
-  measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable
+  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 end
 
@@ -134,7 +134,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
     convert measure_preimage_smul μ x₁ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
-      simp [← MulAction.Quotient.coe_smul_out', ← Quotient.mk''_eq_mk]
+      simp [← MulAction.Quotient.coe_smul_out, ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
 
 variable [Countable Γ] [IsMulRightInvariant ν] [SigmaFinite ν]
@@ -223,7 +223,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
-    K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+    K.map π QuotientGroup.continuous_mk QuotientGroup.isOpenMap_coe
   haveI : IsMulLeftInvariant μ :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']

@@ -5,6 +5,9 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 
 import Lean.Elab.Command
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # Linter for `attribute [...] in` declarations
@@ -18,11 +21,11 @@ hence, we lint against it.
 *Example*: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
 contained the following code:
 ```
-attribute [instance] ConcreteCategory.instFunLike in
+attribute [instance] HasForget.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 ```
-Despite the `in`, this makes `ConcreteCategory.instFunLike` a global instance.
+Despite the `in`, this makes `HasForget.instFunLike` a global instance.
 
 This seems to apply to all attributes. For example:
 ```lean

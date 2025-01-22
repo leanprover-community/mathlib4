@@ -33,9 +33,9 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
-variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
+variable {A : Type u'} [Category.{v'} A] [HasForget.{w'} A]
 
 namespace Presheaf
 
@@ -60,7 +60,7 @@ theorem imageSieve_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s
 theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : F.obj (op U)) :
     imageSieve f (f.app _ s) = ⊤ := by
   ext V i
-  simp only [Sieve.top_apply, iff_true_iff, imageSieve_apply]
+  simp only [Sieve.top_apply, iff_true, imageSieve_apply]
   have := elementwise_of% (f.naturality i.op)
   exact ⟨F.map i.op s, this s⟩
 
@@ -93,8 +93,8 @@ instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
 
 theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (imagePresheaf (whiskerRight f (forget A))).sheafify J = ⊤ := by
-  simp only [Subpresheaf.ext_iff, Function.funext_iff, Set.ext_iff, top_subpresheaf_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true_iff]
+  simp only [Subpresheaf.ext_iff, funext_iff, Set.ext_iff, top_subpresheaf_obj,
+    Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 
 theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
@@ -295,7 +295,7 @@ instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   infer_instance
 
 instance isLocallySurjective_toSheafify' {D : Type*} [Category D]
-    [ConcreteCategory.{max u v} D]
+    [HasForget.{max u v} D]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallySurjective J (toSheafify J P) := by

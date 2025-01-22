@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 
@@ -50,9 +50,9 @@ noncomputable section
 
 open RCLike
 
-open scoped ComplexConjugate Classical
+open scoped ComplexConjugate
 
-variable {𝕜 E F G : Type*} [RCLike 𝕜]
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
@@ -103,7 +103,7 @@ variable (hT : Dense (T.domain : Set E))
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : E →L[𝕜] 𝕜 :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
-    uniformEmbedding_subtype_val.toUniformInducing
+    isUniformEmbedding_subtype_val.isUniformInducing
 
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (y : T.adjointDomain) (x : T.domain) :
@@ -142,6 +142,7 @@ theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
 
 variable (T)
 
+open scoped Classical in
 /-- The adjoint operator as a partially defined linear operator. -/
 def adjoint : F →ₗ.[𝕜] E where
   domain := T.adjointDomain
@@ -163,10 +164,12 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   exact funext fun x => (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
+  classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
+  classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 
@@ -202,7 +205,7 @@ as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
-  · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
+  · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq ?_ _ fun v => ?_

@@ -3,7 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Data.Set.MulAntidiagonal
 
@@ -72,12 +72,10 @@ theorem mulAntidiagonal_mono_right (h : u ⊆ t) :
     mulAntidiagonal hs hu a ⊆ mulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_right h
 
--- Porting note: removed `(attr := simp)`. simp can prove this.
 @[to_additive]
 theorem swap_mem_mulAntidiagonal :
     x.swap ∈ Finset.mulAntidiagonal hs ht a ↔ x ∈ Finset.mulAntidiagonal ht hs a := by
-  simp only [mem_mulAntidiagonal, Prod.fst_swap, Prod.snd_swap, Set.swap_mem_mulAntidiagonal_aux,
-             Set.mem_mulAntidiagonal]
+  simp
 
 @[to_additive]
 theorem support_mulAntidiagonal_subset_mul : { a | (mulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
