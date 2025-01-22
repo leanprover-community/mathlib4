@@ -1781,6 +1781,8 @@ import Mathlib.CategoryTheory.Enriched.HomCongr
 import Mathlib.CategoryTheory.Enriched.Limits.IsConicalLimit
 import Mathlib.CategoryTheory.Enriched.Opposite
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+import Mathlib.CategoryTheory.Enriched.Ordinary.Limits.IsConicalLimit
+import Mathlib.CategoryTheory.Enriched.Ordinary.Limits.IsConicalTerminal
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
