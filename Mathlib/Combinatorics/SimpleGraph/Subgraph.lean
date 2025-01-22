@@ -174,6 +174,7 @@ theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G�
 lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
     (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
 
+@[simp]
 lemma spanningCoe_subgraphOfAdj {v w : V} (hadj : G.Adj v w) :
     (G.subgraphOfAdj hadj).spanningCoe = fromEdgeSet {s(v, w)} := by
   ext v w

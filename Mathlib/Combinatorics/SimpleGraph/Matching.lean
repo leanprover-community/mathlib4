@@ -442,9 +442,9 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponent_supp [Fintype
     ⟨hw, h.reachable_deleteEdge hw⟩
   have hvp : v ∈ p.support := SimpleGraph.Walk.fst_mem_support_of_mem_edges _ hp.2
   have : p.toSubgraph.verts = c.supp := by
-    obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_connectedComponent_eq (by
-      intro v hv w
-      refine Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype w
+    obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_verts_eq_connectedComponentSupp (by
+      intro v hv w hadj
+      refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype w).mpr hadj
       have : (G.neighborSet v).Nonempty := by
         rw [Walk.mem_verts_toSubgraph] at hv
         exact (Set.nonempty_of_ncard_ne_zero

@@ -806,14 +806,12 @@ theorem Iso.symm_apply_reachable {G : SimpleGraph V} {G' : SimpleGraph V'} {φ :
   rw [← Iso.reachable_iff, RelIso.apply_symm_apply]
 
 lemma Reachable.mem_verts_subgraph {u v} {H : G.Subgraph} (hr : G.Reachable u v)
-    (h : ∀ v ∈ H.verts, ∀ (w : V), H.Adj v w ↔ G.Adj v w)
+    (h : ∀ v ∈ H.verts, ∀ (w : V), G.Adj v w → H.Adj v w)
     (hu : u ∈ H.verts) : v ∈ H.verts := by
   let rec aux {v' : V} (hv' : v' ∈ H.verts) (p : G.Walk v' v) : v ∈ H.verts := by
     by_cases hnp : p.Nil
     · exact hnp.eq ▸ hv'
-    exact aux (H.edge_vert (by
-          rw [Subgraph.adj_comm, h _ hv' _]
-          exact Walk.adj_snd hnp)) p.tail
+    exact aux (H.edge_vert (h _ hv' _ (Walk.adj_snd hnp)).symm) p.tail
   termination_by p.length
   decreasing_by {
     simp_wf
