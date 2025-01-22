@@ -50,7 +50,7 @@ lemma AlgHom.tensorMopToEnd_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
   change TensorProduct.Algebra.moduleAux _ _ = _
   simp [TensorProduct.Algebra.moduleAux, ← mul_assoc]
 
-/-- An azumaya algebra is a finitely generated, projective and faithful R-algebra where
+/-- An Azumaya algebra is a finitely generated, projective and faithful R-algebra where
   `AlgHom.tensorMopToEnd` is an isomorphism. -/
 class IsAzumaya extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A : Prop where
     bij : Function.Bijective <| AlgHom.tensorMopToEnd R A
