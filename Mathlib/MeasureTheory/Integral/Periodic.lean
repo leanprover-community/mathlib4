@@ -274,7 +274,6 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T
   · rw [Nat.cast_add]
     ring
 
-
 /-!
 ## Interval integrals of periodic functions
 -/
