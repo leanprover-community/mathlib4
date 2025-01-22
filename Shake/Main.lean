@@ -458,12 +458,12 @@ def main (args : List String) : IO UInt32 := do
   else pure none
 
   -- Read the config file
-  -- Set `validCfgFile?` to `false` only if the config file is present and invalid
+  -- `validCfgFile?` is `false` if and only if the config file is present and invalid.
   let (cfg, validCfgFile?) ← if let some file := cfgFile then
     try
       pure (← IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg)), true)
     catch e =>
-      -- the `cfgFile` is invalid, so we print the error and return `validCfgFile? = false`
+      -- The `cfgFile` is invalid, so we print the error and return `validCfgFile? = false`.
       println! "{e.toString}"
       pure ({}, false)
   else pure ({}, true)
