@@ -540,7 +540,6 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 end
 
 /-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
-@[simp]
 theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
   Finsupp.smul_single' c a b
 
@@ -631,8 +630,7 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
     DFunLike.congr_fun this φ
   ext
   simp_rw [AddMonoidHom.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    AddMonoidHom.coe_mulLeft, smul_single, liftNC_single, smul_eq_mul, AddMonoidHom.coe_coe,
-    map_mul, mul_assoc]
+    AddMonoidHom.coe_mulLeft, smul_single', liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
 
 end MiscTheorems
 
@@ -1341,7 +1339,6 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
   map_mul' _a _b := single_mul_single.symm
 
 /-- Copy of `Finsupp.smul_single'` that avoids the `AddMonoidAlgebra = Finsupp` defeq abuse. -/
-@[simp]
 theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
   Finsupp.smul_single' c a b
 
