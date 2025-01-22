@@ -174,20 +174,19 @@ variable {k G}
 theorem coe_linearization_obj (X : Action (Type u) G) :
     (linearization k G).obj X = (X.V →₀ k) := rfl
 
-@[simp]
-theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) (x : X.V →₀ k) :
-    ((linearization k G).obj X).ρ g x = Finsupp.lmapDomain k k (X.ρ g) x :=
+theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+    ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) :=
   rfl
 
-theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
-    ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
-      = Finsupp.single (X.ρ g x) (1 : k) := by
-  rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+@[simp]
+theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+    @DFunLike.coe (no_index G →* ((X.V →₀ k) →ₗ[k] (X.V →₀ k))) _
+      (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
+      ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
-  rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+  simp
 
 variable {X Y : Action (Type u) G} (f : X ⟶ Y)
 
