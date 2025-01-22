@@ -10,7 +10,13 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 # Projective dimension
 
 In an abelian category `C`, we shall say that `X : C` has projective dimension `< n`
-if all `Ext X Y i` vanish when `n ≤ i`.
+if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
+`HasProjectiveDimensionLT X n`. We also define a type class
+`HasProjectiveDimensionLE X n` as an abbreviation for
+`HasProjectiveDimensionLT X (n + 1)`.
+(Note that the fact that `X` is a zero object is equivalent to the condition
+`HasProjectiveDimensionLT X 0`, but this cannot be expressed in terms of
+`HasProjectiveDimensionLE`.)
 
 -/
 
@@ -23,7 +29,7 @@ open Abelian Limits ZeroObject
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- An object `X` in an abelian category has projective dimension `< n` if
-all `Ext X Y i` vanish when `n ≤ i`.
+all `Ext X Y i` vanish when `n ≤ i`. See also `HasProjectiveDimensionLE`.
 (Do not use the `subsingleton'` field directly. Use the constructor
 `HasProjectiveDimensionLT.mk`, and the lemmas `hasProjectiveDimensionLT_iff` and
 `Ext.eq_zero_of_hasProjectiveDimensionLT`.) -/
@@ -31,6 +37,11 @@ class HasProjectiveDimensionLT (X : C) (n : ℕ) : Prop where mk' ::
   subsingleton' (i : ℕ) (hi : n ≤ i) ⦃Y : C⦄ :
     letI := HasExt.standard C
     Subsingleton (Ext.{max u v} X Y i)
+
+/-- An object `X` in an abelian category has projective dimension `≤ n` if
+all `Ext X Y i` vanish when `n + 1 ≤ i` -/
+abbrev HasProjectiveDimensionLE (X : C) (n : ℕ) : Prop :=
+  HasProjectiveDimensionLT X (n + 1)
 
 namespace HasProjectiveDimensionLT
 
