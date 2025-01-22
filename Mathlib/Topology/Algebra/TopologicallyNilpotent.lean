@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
-import Mathlib
+import Mathlib.Topology.Algebra.LinearTopology
+import Mathlib.RingTheory.Ideal.Basic
 
 /-! # Topologically nilpotent elements
 
