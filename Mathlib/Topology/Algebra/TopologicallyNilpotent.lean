@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.TwoSidedIdeal.Commute
 
 /-! # Topologically nilpotent elements
 
@@ -100,10 +101,27 @@ theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
   rw [hab.mul_pow]
   exact I_subset (I.mul_mem_left _ (hb m hm))
 
+/-- If `a` and `b` are topologically nilpotent and commute,
+  then `a + b` is topologically nilpotent. -/
+theorem add_of_commute [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
+    {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b)
+    (h : Commute a b) :
+    IsTopologicallyNilpotent (a + b) := fun v ↦ by
+  rw [IsLinearTopology.hasBasis_twoSidedIdeal.mem_iff]
+  rintro ⟨I, I_mem_nhds, I_subset⟩
+  specialize ha I_mem_nhds
+  specialize hb I_mem_nhds
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, SetLike.mem_coe] at ha hb ⊢
+  rcases ha with ⟨na, ha⟩
+  rcases hb with ⟨nb, hb⟩
+  use na + nb
+  intro m hm
+  apply I_subset
+  simp only [SetLike.mem_coe]
+  exact I.add_pow_mem_of_pow_mem_of_le (ha na le_rfl) (hb nb le_rfl)
+      (le_trans hm (Nat.le_add_right _ _)) h
+
 end Ring
-
-
--- TODO : Ring, under commutation property
 
 section CommRing
 
@@ -119,21 +137,10 @@ theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
     IsTopologicallyNilpotent (a * b) :=
   hb.mul_left_of_commute (Commute.all a b)
 
--- TODO : Semiring version when `a` and `a` commute
---  (it needs `TwoSidedIdeal.add_pow_mem_of_pow_mem_of_le`)
 /-- If `a` and `b` are topologically nilpotent, then `a + b` is topologically nilpotent. -/
 theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
-    IsTopologicallyNilpotent (a + b) := fun v ↦ by
-  rw [IsLinearTopology.hasBasis_ideal.mem_iff]
-  rintro ⟨I, I_mem_nhds, I_subset⟩
-  specialize ha I_mem_nhds
-  specialize hb I_mem_nhds
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, SetLike.mem_coe] at ha hb ⊢
-  rcases ha with ⟨na, ha⟩
-  rcases hb with ⟨nb, hb⟩
-  exact ⟨na + nb, fun m hm ↦
-    I_subset (I.add_pow_mem_of_pow_mem_of_le (ha na le_rfl) (hb nb le_rfl)
-      (le_trans hm (Nat.le_add_right _ _)))⟩
+    IsTopologicallyNilpotent (a + b) :=
+  ha.add_of_commute hb (Commute.all a b)
 
 end CommRing
 
