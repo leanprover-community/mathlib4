@@ -35,12 +35,15 @@ namespace HasConicalTerminal
 variable [HasConicalTerminal V C]
 
 variable (C) in
+/-- The conical terminal object which exists through `HasConicalTerminal V C` -/
 noncomputable def conicalTerminal : C := conicalLimit V (Functor.empty.{0} C)
 
+/-- assertion `conicalTerminal` is indeed the conical terminal object -/
 noncomputable def conicalTerminalIsConicalTerminal :
     IsConicalTerminal V (conicalTerminal V C) :=
   conicalLimit.isConicalLimit V _ |>.ofIso <| Cones.ext (by rfl) (by simp)
 
+/-- any terminal object is conical terminal -/
 noncomputable def isTerminalIsConicalTerminal {T : C} (hT : IsTerminal T) :
     IsConicalTerminal V T := by
   let TT := conicalLimit V (Functor.empty.{0} C)
