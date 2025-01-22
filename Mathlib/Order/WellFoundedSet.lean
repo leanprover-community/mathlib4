@@ -505,9 +505,13 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
   simp only [forall_mem_range, not_lt] at hm
   exact ⟨m, m + 1, by omega, hm _⟩
 
-/-- In a linear order, the predicates `Set.IsWF` and `Set.IsPWO` are equivalent. -/
+/-- In a linear order, the predicates `Set.IsPWO` and `Set.IsWF` are equivalent. -/
+theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF :=
+  ⟨IsPWO.isWF, IsWF.isPWO⟩
+
+@[deprecated isPWO_iff_isWF (since := "2025-01-21")]
 theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
-  ⟨IsWF.isPWO, IsPWO.isWF⟩
+  isPWO_iff_isWF.symm
 
 /--
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
