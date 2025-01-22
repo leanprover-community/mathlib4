@@ -241,7 +241,8 @@ protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMe
   measurable_nnnorm.comp_aemeasurable hf
 
 @[measurability]
-lemma measurable_enorm : Measurable (enorm : α → ℝ≥0∞) := continuous_enorm.measurable
+theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
+  measurable_nnnorm.coe_nnreal_ennreal
 
 @[measurability, fun_prop]
 theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=

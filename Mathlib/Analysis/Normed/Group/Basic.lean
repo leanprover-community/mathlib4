@@ -829,14 +829,16 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r
 
 end NNNorm
 
-section ENNNorm
+section ENorm
+
+@[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
 
 instance : ENorm ℝ≥0∞ where
   enorm x := x
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-end ENNNorm
+end ENorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
