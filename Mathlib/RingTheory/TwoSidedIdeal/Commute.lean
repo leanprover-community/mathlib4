@@ -3,10 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
-
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
+
+/-! # Powers of commuting elements in two sided ideals -/
 
 namespace TwoSidedIdeal
 
