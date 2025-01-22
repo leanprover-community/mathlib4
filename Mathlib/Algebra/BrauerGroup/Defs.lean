@@ -67,7 +67,7 @@ structure BrauerEquivalence (A B : CSA K) where
   [hn: NeZero n]
   [hm : NeZero m]
   /-- The isomorphism between the `Mₙ(A)` and `Mₘ(B)`. -/
-  (iso: Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
+  iso : Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B
 
 instance (A B : CSA K) (h : BrauerEquivalence A B): NeZero h.n := h.hn
 instance (A B : CSA K) (h : BrauerEquivalence A B): NeZero h.m := h.hm
