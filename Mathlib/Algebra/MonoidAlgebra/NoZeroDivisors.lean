@@ -135,7 +135,7 @@ section Covariant_lt
 variable [Add A]
 
 section PartialOrder
-variable [PartialOrder A] [CovariantClass A A (· + ·) (· < ·)] {a t b : A}
+variable [PartialOrder A] [AddLeftStrictMono A] {a t b : A}
   {f g : AddMonoidAlgebra R A}
 
 /--  The "top" element of `AddMonoidAlgebra.single a r * f` is the product of `r` and
@@ -168,7 +168,7 @@ theorem single_mul_apply_of_le' (r : R) (fb : ∀ a ∈ f.support, b ≤ a) :
     ((AddMonoidAlgebra.single a r) * f) (a + b) = r * f b :=
   single_mul_apply_of_le (A := Aᵒᵈ) _ fb
 
-variable [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
+variable [AddRightStrictMono A]
 
 /--  The "top" element of `f * g` is the product of the "top" elements of `f` and of `g`.
 Here, "top" is simply an upper bound for the elements of the support of the corresponding
@@ -202,8 +202,7 @@ theorem mul_apply_eq_zero_of_lt (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i 
 end PartialOrder
 
 section LinearOrder
-variable [NoZeroDivisors R] [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)]
-  [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
+variable [NoZeroDivisors R] [LinearOrder A] [AddRightStrictMono A] [AddLeftStrictMono A]
 
 protected theorem NoZeroDivisors.biOrdered : NoZeroDivisors (AddMonoidAlgebra R A) where
   eq_zero_or_eq_zero_of_mul_eq_zero {f g} fg := by
