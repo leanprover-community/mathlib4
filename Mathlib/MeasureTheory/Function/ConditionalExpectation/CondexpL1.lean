@@ -469,11 +469,11 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
 alias setIntegral_condexpL1CLM_of_measure_ne_top := setIntegral_condExpL1CLM_of_measure_ne_top
 
 @[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL1CLM_of_measure_ne_top :=
+alias set_integral_condexpL1CLM_of_measure_ne_top :=
   setIntegral_condExpL1CLM_of_measure_ne_top
 
 @[deprecated (since := "2025-01-21")]
-alias setIntegral_condexpL1CLM := set_integral_condExpL1CLM_of_measure_ne_top
+alias setIntegral_condexpL1CLM := set_integral_condexpL1CLM_of_measure_ne_top
 
 /-- The integral of the conditional expectation `condExpL1CLM` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `setIntegral_condExp`, the similar statement for

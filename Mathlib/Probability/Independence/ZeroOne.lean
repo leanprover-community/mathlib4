@@ -76,6 +76,9 @@ theorem condExp_eq_zero_or_one_of_condIndepSet_self
   | inl h => exact Or.inl (Or.inl h)
   | inr h => exact Or.inr h
 
+@[deprecated (since := "2025-01-21")]
+alias condexp_eq_zero_or_one_of_condIndepSet_self := condExp_eq_zero_or_one_of_condIndepSet_self
+
 open Filter
 
 theorem Kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) (t : Set ι) :

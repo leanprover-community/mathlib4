@@ -229,6 +229,9 @@ lemma condExpKernel_ae_eq_condExp
     (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ :=
   (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_le_left hm])
 
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_ae_eq_condexp := condExpKernel_ae_eq_condExp
+
 lemma condExpKernel_ae_eq_trim_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
@@ -236,6 +239,9 @@ lemma condExpKernel_ae_eq_trim_condExp
   · exact condExpKernel_ae_eq_condExp hm hs
   · refine Measurable.stronglyMeasurable ?_
     exact @Measurable.ennreal_toReal _ m _ (measurable_condExpKernel hs)
+
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_ae_eq_trim_condexp := condExpKernel_ae_eq_trim_condExp
 
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :

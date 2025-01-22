@@ -234,7 +234,7 @@ theorem setIntegral_condExp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Int
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexp := setIntegral_condExp
 
-@[deprecated (since := "2024-04-17")] alias set_integral_condExp := setIntegral_condExp
+@[deprecated (since := "2024-04-17")] alias set_integral_condexp := setIntegral_condExp
 
 theorem integral_condExp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by

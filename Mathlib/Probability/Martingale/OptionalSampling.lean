@@ -55,6 +55,9 @@ theorem condExp_stopping_time_ae_eq_restrict_eq_const
     (hτ.measurableSet_eq' i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
+@[deprecated (since := "2025-01-21")]
+alias condexp_stopping_time_ae_eq_restrict_eq_const := condExp_stopping_time_ae_eq_restrict_eq_const
+
 theorem condExp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hτ_le : ∀ x, τ x ≤ n)
     [SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le))] (i : ι) :
