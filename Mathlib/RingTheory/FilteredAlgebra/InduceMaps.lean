@@ -34,17 +34,21 @@ variable {A : Type*} (σA : Type*) [SetLike σA A] {B : Type*} (σB : Type*) [Se
 
 /-- It add some necessary conditions to describe σA and σB,ensure f can induce a map from σA → σB.-/
 class SetLikeHom (f : A → B) where
+  /-- It is the corresponding map from σA → σB with `coe_map` property -/
   map : σA → σB
+  /-- It is a map from σB → σA with `galois` property-/
   comap : σB → σA
   coe_map (x : σA) : f '' (x : Set A) = map x
+  /- the design of `GaloisConnection` can handle different conditions in the same structure, it
+  avoid adding `Preorder` to `σA` and `σB` -/
   galois : GaloisConnection map comap
-/- the design of `GaloisConnection` can handle different conditions in the same structure, it avoid
-adding `Preorder` to `σA` and `σB` -/
+
 
 
 open SetLikeHom Set
+/-- It is `F` part of the filtration induced by f: A → B -/
 def FB (FA : ι → σA) (f : A → B) [SetLikeHom σA σB f]: ι → σB := fun i ↦ map f (FA i)
-
+/-- It is `F_lt` part of the filtration induced by f: A → B -/
 def FB_lt (FA_lt : ι → σA) (f : A → B) [SetLikeHom σA σB f] : outParam <| ι → σB :=
  fun i ↦ map f (FA_lt i)
 
@@ -74,30 +78,30 @@ section RingHomtoFiltration
 variable {R : Type*} [Ring R] (σR : Type*) [SetLike σR R] [AddSubgroupClass σR R] {S : Type*}
  [Ring S] (σS : Type*) [SetLike σS S] [AddSubgroupClass σS S]
 
-def FS (FR : ι → σR)(f : R →+* S)[SetLikeHom σR σS f][SetLikeHom σR σS f] :  ι → σS := FB σR σS FR f
+/-- It is `F` part of the ring filtration induced by f: A →+* B -/
+def FS (FR : ι → σR)(f : R →+* S)[SetLikeHom σR σS f] :  ι → σS := FB σR σS FR f
 
-def FS_lt (FR_lt : ι → σR) (f : R →+* S) [SetLikeHom σR σS f] [SetLikeHom σR σS f] :
+/-- It is `F_lt` part of the ring filtration induced by f: A →+* B -/
+def FS_lt (FR_lt : ι → σR) (f : R →+* S) [SetLikeHom σR σS f] :
 outParam <| ι → σS := FB_lt σR σS FR_lt f
 
 variable (FR : ι → σR) (FR_lt : outParam <| ι → σR) (f : R →+* S) [IsRingFiltration FR FR_lt]
 [SetLikeHom σR σS f]
 
 open SetLikeHom Set
-instance ele_map_to_image {A: σR}{x : S} : x ∈ f '' (A : Set R) → x ∈ (map f <| A : σS):= by
-  show x ∈ f '' (A : Set R) → x ∈ (((map f <| A) : σS) : Set S)
-  simp only[← coe_map <| A, imp_self]
-
 /- When FA and FA_lt is a ring filtration of A, then ring hom f: A →+* B induce a ring filtration
  of B which is called `FB` and `FB_lt` -/
 instance RingHomtoFiltration (FR FR_lt: ι → σR) [fil : IsRingFiltration FR FR_lt] :
     IsRingFiltration (FS σR σS FR f) (FS_lt σR σS FR_lt f) where
   __ := HomtoFiltration σR σS FR FR_lt f
   one_mem := by
-    apply ele_map_to_image
+    show 1 ∈ ((map f <| FR 0 : σS) : Set S)
+    rw[← coe_map <| FR 0]
     use 1
     simp only [SetLike.mem_coe, IsRingFiltration.one_mem, map_one, and_self]
   mul_mem {i j x y x_in_i y_in_j}:= by
-    apply ele_map_to_image
+    show x * y ∈ ((map f <| FR <| i + j : σS) : Set S)
+    rw[← coe_map <| FR <| i + j]
     have x_in_i : x ∈ ((map f (FR i) : σS) : Set S) := x_in_i
     rw[← coe_map <| FR i] at x_in_i
     have y_in_j : y ∈ ((map f (FR j) : σS) : Set S) := y_in_j
@@ -125,11 +129,12 @@ variable {N : Type*} [AddCommMonoid N] [Module R N] (σN : Type*) [SetLike σN N
 
 variable [filM : IsModuleFiltration FR FR_lt FM FM_lt] (f : M →ₗ[R] N)
 
-def FN (FM : ι → σM) (f : M →ₗ[R] N)[SetLikeHom σM σN f] [SetLikeHom σM σN f]
-: ι → σN := FB σM σN FM f
+/-- It is `F'` part of the module filtration induced by f: A →+* B -/
+def FN (FM : ι → σM) (f : M →ₗ[R] N) [SetLikeHom σM σN f] : ι → σN := FB σM σN FM f
 
-def FN_lt (FM_lt : ι → σM) (f : M →ₗ[R] N) [SetLikeHom σM σN f]
-[SetLikeHom σM σN f] : outParam <| ι → σN := FB_lt σM σN FM_lt f
+/-- It is `F'_lt` part of the module filtration induced by f: A →+* B -/
+def FN_lt (FM_lt : ι → σM) (f : M →ₗ[R] N) [SetLikeHom σM σN f] : outParam <| ι → σN :=
+ FB_lt σM σN FM_lt f
 
 /- When FM and FM_lt is a filtration of M, then module hom f: M → N induce a module filtration of B
  which is called `FB` and `FB_lt`-/
