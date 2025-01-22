@@ -10,8 +10,7 @@ import Mathlib.Data.Finite.Defs
 # `Finite` and `Infinite` are preserved by `Additive` and `Multiplicative`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v
 

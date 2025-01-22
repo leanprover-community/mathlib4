@@ -252,6 +252,11 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
 
 @[deprecated (since := "2024-08-29")] alias total_total := linearCombination_linearCombination
 
+theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
+    linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
+      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
+  ext; simp [finsuppProdLEquiv, finsuppProdEquiv, Finsupp.curry]
+
 @[simp]
 theorem linearCombination_fin_zero (f : Fin 0 → M) : linearCombination R f = 0 := by
   ext i

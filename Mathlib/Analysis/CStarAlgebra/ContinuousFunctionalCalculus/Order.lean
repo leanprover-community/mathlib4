@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -478,7 +479,8 @@ section Pow
 
 namespace CStarAlgebra
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} {B : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+  [NonUnitalCStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
 
 lemma pow_nonneg {a : A} (ha : 0 ≤ a := by cfc_tac) (n : ℕ) : 0 ≤ a ^ n := by
   rw [← cfc_pow_id (R := ℝ≥0) a]

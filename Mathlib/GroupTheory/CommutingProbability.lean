@@ -3,6 +3,7 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
@@ -21,8 +22,7 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
-assert_not_exists Ideal
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 noncomputable section
 

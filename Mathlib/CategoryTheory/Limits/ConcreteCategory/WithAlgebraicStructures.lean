@@ -47,7 +47,7 @@ theorem colimit_rep_eq_zero
     ∃ (j' : J) (i : j ⟶ j'), (F.map i).hom x = 0 := by
   -- Break the abstraction barrier between homs and functions for `colimit_rep_eq_iff_exists`.
   have : ∀ (X Y : ModuleCat R) (f : X ⟶ Y),
-    DFunLike.coe f.hom = DFunLike.coe (self := ConcreteCategory.instFunLike) f := fun _ _ _ => rfl
+    DFunLike.coe f.hom = DFunLike.coe (self := HasForget.instFunLike) f := fun _ _ _ => rfl
   rw [show 0 = colimit.ι F j 0 by simp, this, colimit_rep_eq_iff_exists] at hx
   obtain ⟨j', i, y, g⟩ := hx
   exact ⟨j', i, g ▸ by simp [← this]⟩
@@ -68,7 +68,7 @@ lemma colimit_no_zero_smul_divisor
 
   -- Break the abstraction barrier between homs and functions for `Concrete.colimit_exists_rep`.
   have : ∀ (X Y : ModuleCat R) (f : X ⟶ Y),
-    DFunLike.coe f.hom = DFunLike.coe (self := ConcreteCategory.instFunLike) f := fun _ _ _ => rfl
+    DFunLike.coe f.hom = DFunLike.coe (self := HasForget.instFunLike) f := fun _ _ _ => rfl
   classical
   obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
   rw [← this, ← map_smul (colimit.ι F j).hom] at hx
