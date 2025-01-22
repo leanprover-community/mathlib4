@@ -56,6 +56,27 @@ to `evariance`. -/
 def variance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
 
+/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
+scoped notation "eVar[" X " ; " μ "]" => ProbabilityTheory.evariance X μ
+
+/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
+measure.
+
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
+scoped notation "eVar[" X "]" => eVar[X ; MeasureTheory.MeasureSpace.volume]
+
+/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+
+It is set to `0` if `X` has infinite variance. -/
+scoped notation "Var[" X " ; " μ "]" => ProbabilityTheory.variance X μ
+
+/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
+
+It is set to `0` if `X` has infinite variance. -/
+scoped notation "Var[" X "]" => Var[X ; MeasureTheory.MeasureSpace.volume]
+
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
 
 theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
@@ -77,9 +98,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     simp only [ENNReal.toReal_ofNat, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
-  -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
-  -- and `convert` cannot disambiguate based on typeclass inference failure.
-  convert this.add (memℒp_const <| μ [X])
+  convert this.add (memℒp_const μ[X])
   ext ω
   rw [Pi.add_apply, sub_add_cancel]
 
@@ -120,9 +139,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
   rw [variance, evariance_eq_lintegral_ofReal, ← ofReal_integral_eq_lintegral_ofReal,
     ENNReal.toReal_ofReal (by positivity)]
   · rfl
-  · -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
-    -- and `convert` cannot disambiguate based on typeclass inference failure.
-    convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
+  · convert (hX.sub <| memℒp_const μ[X]).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
       with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, ENNReal.toReal_ofNat, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
@@ -155,8 +172,6 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   rw [mul_comm]
   simp_rw [← smul_eq_mul, ← integral_smul_const, smul_eq_mul, mul_comm]
 
-scoped notation "eVar[" X "]" => ProbabilityTheory.evariance X MeasureTheory.MeasureSpace.volume
-
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.zero_toReal]
@@ -178,8 +193,6 @@ theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X :
   convert variance_smul (algebraMap A ℝ c) X μ using 1
   · congr; simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
-
-scoped notation "Var[" X "]" => ProbabilityTheory.variance X MeasureTheory.MeasureSpace.volume
 
 theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : Memℒp X 2 μ) :
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by

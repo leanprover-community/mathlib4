@@ -40,7 +40,7 @@ open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
 
 universe v u x
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
 
 namespace TopCat
 
@@ -48,7 +48,7 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type x} (U : ι → Opens X)
 
@@ -135,7 +135,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
 variable {X : TopCat.{v}} (F : Presheaf C X)
@@ -159,10 +159,10 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
-variable [HasLimits C] [(ConcreteCategory.forget (C := C)).ReflectsIsomorphisms]
-variable [PreservesLimits (ConcreteCategory.forget (C := C))]
+variable [HasLimits C] [(HasForget.forget (C := C)).ReflectsIsomorphisms]
+variable [PreservesLimits (HasForget.forget (C := C))]
 variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
@@ -238,35 +238,6 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
       any_goals exact h₂
 
 end
-
-theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
-    {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.1.obj (op W))
-    (h₁ : UW = U ⊓ W) (h₂ : VW = V ⊓ W) :
-    F.1.map (homOfLE e).op ((F.objSupIsoProdEqLocus U V).inv x) = y ↔
-    F.1.map (homOfLE (h₁ ▸ inf_le_left : UW ≤ U)).op x.1.1 =
-      F.1.map (homOfLE <| h₁ ▸ inf_le_right).op y ∧
-    F.1.map (homOfLE (h₂ ▸ inf_le_left : VW ≤ V)).op x.1.2 =
-      F.1.map (homOfLE <| h₂ ▸ inf_le_right).op y := by
-  subst h₁ h₂
-  constructor
-  · rintro rfl
-    rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
-    repeat rw [← comp_apply]
-    simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
-  · rintro ⟨e₁, e₂⟩
-    refine F.eq_of_locally_eq₂
-      (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) ?_ _ _ ?_ ?_
-    · rw [← inf_sup_right]
-      exact le_inf e le_rfl
-    · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
-      repeat rw [← comp_apply]
-      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
-    · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
-      repeat rw [← comp_apply]
-      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
 
 end Sheaf
 

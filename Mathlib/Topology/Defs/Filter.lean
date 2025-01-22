@@ -134,20 +134,20 @@ def nhdsWithin (x : X) (s : Set X) : Filter X :=
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≠] " x:100 =>
+scoped[Topology] notation3 (name := nhdsNE) "𝓝[≠] " x:100 =>
   nhdsWithin x (@singleton _ (Set _) Set.instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 (name := nhdsGE) "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 (name := nhdsLE) "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 (name := nhdsGT) "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 (name := nhdsLT) "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set X) : Filter X :=
@@ -202,8 +202,8 @@ infixl:300 " ⤳ " => Specializes
 equivalent properties hold:
 
 - `𝓝 x = 𝓝 y`; we use this property as the definition;
-- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_open`;
-- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_closed`;
+- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isOpen`;
+- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isClosed`;
 - `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;
 - `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.
 -/

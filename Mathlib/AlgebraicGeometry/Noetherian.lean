@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geno Racklin Asher
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
 /-!
 # Noetherian and Locally Noetherian Schemes
@@ -158,7 +158,7 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
   · suffices Scheme.Hom.opensRange f ⊓ V = V by
       rw [this]
     rw [← Opens.coe_inj]
-    rw [Opens.coe_inf, Scheme.Hom.opensRange_coe, IsOpenMap.functor_obj_coe,
+    rw [Opens.coe_inf, Scheme.Hom.coe_opensRange, IsOpenMap.coe_functor_obj,
       Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
     exact Set.subset_univ _
 
@@ -172,7 +172,7 @@ theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
   · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
     intro h i
     exact @isNoetherianRing_of_ringEquiv _ _ _ _
-      (IsOpenImmersion.ΓIsoTop (Scheme.OpenCover.map _ i.2)).symm.commRingCatIsoToRingEquiv
+      (IsOpenImmersion.ΓIsoTop (Scheme.Cover.map _ i.2)).symm.commRingCatIsoToRingEquiv
       (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
 /-- If `R` is a noetherian ring, `Spec R` is a noetherian topological space. -/
