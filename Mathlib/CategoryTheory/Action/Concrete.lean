@@ -169,7 +169,7 @@ section ToMulAction
 
 variable {V : Type (u + 1)} [LargeCategory V] [HasForget V]
 
-instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
+instance instMulAction {G : Type u} [Monoid G] (X : Action V G) :
     MulAction G ((CategoryTheory.forget _).obj X) where
   smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
   one_smul x := by
