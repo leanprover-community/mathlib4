@@ -230,12 +230,10 @@ lemma spine_spineToSimplex : X.spine n ∘ sx.spineToSimplex = id :=
 lemma spineToSimplex_spine : sx.spineToSimplex ∘ X.spine n = id :=
   sx n |>.spineToSimplex_spine n (by omega)
 
-@[simp]
 lemma spine_spineToSimplex_apply (f : Path X n) :
     X.spine n (sx.spineToSimplex f) = f :=
   sx n |>.spine_spineToSimplex_apply n _ f
 
-@[simp]
 lemma spineToSimplex_spine_apply (Δ : X _[n]) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
   sx n |>.spineToSimplex_spine_apply n _ Δ
