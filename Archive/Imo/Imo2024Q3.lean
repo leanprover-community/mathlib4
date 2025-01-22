@@ -617,9 +617,8 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
       refine ⟨⟨Nat.lt_add_one_iff.mpr (hc.small_apply_sub_one_of_apply_eq_of_apply_big_of_N'_le
         hji hib hi.le), ?_⟩, ?_⟩
       · rw [hc.apply_eq_card hjN]
-        refine Finset.card_le_card (Finset.filter_subset_filter _ ?_)
-        rw [Nat.lt_add_one_iff] at hj
-        simp [hj]
+        have : j ≤ i := by omega
+        gcongr
       · have hj1 : j = j - 1 + 1 := by omega
         nth_rw 2 [hj1]
         rw [hc.nth_apply_add_one_eq (by omega), hj1.symm]
