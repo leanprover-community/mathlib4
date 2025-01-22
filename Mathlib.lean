@@ -2507,6 +2507,7 @@ import Mathlib.Computability.PostTuringMachine
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.QueryComplexity.Basic
 import Mathlib.Computability.QueryComplexity.Defs
+import Mathlib.Computability.QueryComplexity.Sort
 import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
