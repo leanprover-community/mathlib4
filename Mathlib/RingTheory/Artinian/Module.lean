@@ -454,7 +454,7 @@ section CommSemiring
 variable (R : Type*) [CommSemiring R] [IsArtinianRing R]
 
 @[stacks 00J7]
-lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
+lemma setOf_isMaximal_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   set Spec := {I : Ideal R | I.IsMaximal}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := IsArtinian.set_has_minimal
     (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
@@ -465,7 +465,7 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
 
 instance : Finite (MaximalSpectrum R) :=
-  haveI : Finite {I : Ideal R // I.IsMaximal} := (maximal_ideals_finite R).to_subtype
+  haveI : Finite {I : Ideal R // I.IsMaximal} := (setOf_isMaximal_finite R).to_subtype
   .of_equiv _ (MaximalSpectrum.equivSubtype _).symm
 
 end CommSemiring
@@ -491,7 +491,7 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
+/-- The prime spectrum is in bijection with the maximal spectrum. -/
 @[simps]
 def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
   toFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mp I.isPrime⟩
@@ -499,11 +499,11 @@ def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R wh
   left_inv _ := rfl
   right_inv _ := rfl
 
-lemma primeSpectrum_equiv_maximalSpectrum_comp_asIdeal :
+lemma primeSpectrumEquivMaximalSpectrum_comp_asIdeal :
     MaximalSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum =
       PrimeSpectrum.asIdeal (R := R) := rfl
 
-lemma primeSpectrum_equiv_maximalSpectrum_inv_comp_asIdeal :
+lemma primeSpectrumEquivMaximalSpectrum_symm_comp_asIdeal :
     PrimeSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum.symm =
       MaximalSpectrum.asIdeal (R := R) := rfl
 
@@ -514,11 +514,11 @@ lemma primeSpectrum_asIdeal_range_eq :
 
 variable (R)
 
-lemma prime_ideals_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  simpa only [isPrime_iff_isMaximal] using maximal_ideals_finite R
+lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
+  simpa only [isPrime_iff_isMaximal] using setOf_isMaximal_finite R
 
 instance : Finite (PrimeSpectrum R) :=
-  haveI : Finite {I : Ideal R // I.IsPrime} := (prime_ideals_finite R).to_subtype
+  haveI : Finite {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).to_subtype
   .of_equiv _ (PrimeSpectrum.equivSubtype _).symm
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
