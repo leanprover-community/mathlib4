@@ -801,7 +801,8 @@ theorem indexOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨index
 
 @[simp]
 theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    l[indexOf a l]? = some a := by rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length_iff.2 h)]
+    l[indexOf a l]? = some a := by
+  rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length_iff.2 h)]
 
 -- This is incorrectly named and should be `get?_indexOf`;
 -- this already exists, so will require a deprecation dance.
