@@ -308,6 +308,9 @@ variable [Ring α] [TopologicalRing α]
 instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
+instance Subring.instContinuousSMul (S : Subring α) : ContinuousSMul S α :=
+  Topology.IsInducing.continuousSMul Topology.IsInducing.id continuous_subtype_val rfl
+
 /-- The (topological-space) closure of a subring of a topological ring is
 itself a subring. -/
 def Subring.topologicalClosure (S : Subring α) : Subring α :=
