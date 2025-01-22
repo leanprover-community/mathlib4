@@ -704,9 +704,11 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
 
-theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
+theorem indexOf_lt_length_iff {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
   ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
    fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
+
+@[deprecated (since := "2025-01-22")] alias indexOf_lt_length := indexOf_lt_length_iff
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
@@ -799,7 +801,8 @@ theorem indexOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨index
 
 @[simp]
 theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    l[indexOf a l]? = some a := by rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length.2 h)]
+    l[indexOf a l]? = some a := by
+  rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length_iff.2 h)]
 
 -- This is incorrectly named and should be `get?_indexOf`;
 -- this already exists, so will require a deprecation dance.
@@ -810,8 +813,8 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
     indexOf x l = indexOf y l ↔ x = y :=
   ⟨fun h => by
     have x_eq_y :
-        get l ⟨indexOf x l, indexOf_lt_length.2 hx⟩ =
-        get l ⟨indexOf y l, indexOf_lt_length.2 hy⟩ := by
+        get l ⟨indexOf x l, indexOf_lt_length_iff.2 hx⟩ =
+        get l ⟨indexOf y l, indexOf_lt_length_iff.2 hy⟩ := by
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
