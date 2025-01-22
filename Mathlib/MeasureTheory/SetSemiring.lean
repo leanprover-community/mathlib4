@@ -3,6 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.MeasureTheory.PiSystem
 
@@ -37,6 +39,9 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
   by the definition `IsSetSemiring.diffFinset₀` (see above).
 
 -/
+
+theorem Set.accumulate_succ {α : Type*} (s : ℕ → Set α) (n : ℕ) :
+    Set.Accumulate s (n + 1) = Set.Accumulate s n ∪ s (n + 1) := Set.biUnion_le_succ s n
 
 open Finset Set
 
@@ -340,6 +345,29 @@ lemma disjointed_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ j, s j ∈ C) (i : ι) :
     disjointed s i ∈ C :=
   disjointedRec (fun _ j ht ↦ hC.diff_mem ht <| hs j) (hs i)
+
+theorem iUnion_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    (⋃ i ≤ n, s i) ∈ C := by
+  induction' n with n hn
+  · simp only [Nat.le_zero_eq, iUnion_iUnion_eq_left]
+    exact hs 0
+  rw [Set.biUnion_le_succ]
+  exact hC.union_mem hn (hs _)
+
+theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    (⋂ i ≤ n, s i) ∈ C := by
+  induction' n with n hn
+  · simp only [Nat.le_zero_eq, iInter_iInter_eq_left]
+    exact hs 0
+  rw [Set.biInter_le_succ]
+  exact hC.inter_mem hn (hs _)
+
+theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
+    Set.Accumulate s n ∈ C := by
+  induction' n with n hn
+  · simp only [Accumulate, Nat.le_zero_eq, iUnion_iUnion_eq_left, hs 0]
+  · rw [Set.accumulate_succ]
+    exact hC.union_mem hn (hs _)
 
 end IsSetRing
 
