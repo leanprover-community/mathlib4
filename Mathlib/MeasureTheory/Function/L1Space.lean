@@ -150,13 +150,17 @@ theorem hasFiniteIntegral_congr {f g : α → β} (h : f =ᵐ[μ] g) :
   hasFiniteIntegral_congr' <| h.fun_comp norm
 
 theorem hasFiniteIntegral_const_iff {c : β} :
-    HasFiniteIntegral (fun _ : α => c) μ ↔ c = 0 ∨ μ univ < ∞ := by
+    HasFiniteIntegral (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
   simp [hasFiniteIntegral_iff_nnnorm, lintegral_const, lt_top_iff_ne_top, ENNReal.mul_eq_top,
-    or_iff_not_imp_left]
+    or_iff_not_imp_left, isFiniteMeasure_iff]
+
+lemma hasFiniteIntegral_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
+    HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
+  simp [hasFiniteIntegral_const_iff, hc, isFiniteMeasure_iff]
 
 theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
-  hasFiniteIntegral_const_iff.2 (Or.inr <| measure_lt_top _ _)
+  hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
 theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
@@ -449,9 +453,13 @@ theorem Integrable.congr {f g : α → β} (hf : Integrable f μ) (h : f =ᵐ[μ
 theorem integrable_congr {f g : α → β} (h : f =ᵐ[μ] g) : Integrable f μ ↔ Integrable g μ :=
   ⟨fun hf => hf.congr h, fun hg => hg.congr h.symm⟩
 
-theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 ∨ μ univ < ∞ := by
+lemma integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
+
+lemma integrable_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
+    Integrable (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
+  simp [integrable_const_iff, hc, isFiniteMeasure_iff]
 
 theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
@@ -460,7 +468,7 @@ theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} 
 
 @[simp]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
-  integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
+  integrable_const_iff.2 <| .inr ‹_›
 
 @[simp]
 lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
