@@ -188,7 +188,7 @@ def elemental (x : A) : StarSubalgebra R A :=
 
 namespace elemental
 
-@[aesop unsafe 90% apply (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ (self_mem_adjoin_singleton R x)
 

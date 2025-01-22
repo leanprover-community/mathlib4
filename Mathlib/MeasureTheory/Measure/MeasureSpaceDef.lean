@@ -367,7 +367,7 @@ function. -/
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 
-@[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
+@[fun_prop, aesop 30% (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 
