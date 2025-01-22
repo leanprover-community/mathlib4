@@ -132,6 +132,13 @@ theorem isPretransitive_of_isGalois [IsGalois K L] :
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
+instance [IsGalois K L] : MulAction.IsPretransitive (L ≃ₐ[K] L) (primesOver p B) where
+  exists_smul_eq := by
+    intro ⟨P, _, _⟩ ⟨Q, _, _⟩
+    rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
+    exact ⟨(galRestrict A K L B).symm σ, Subtype.val_inj.mp <|
+      (congrFun (congrArg map ((galRestrict A K L B).apply_symm_apply σ)) P).trans hs⟩
+
 /-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGalois [IsGalois K L] :
     ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
