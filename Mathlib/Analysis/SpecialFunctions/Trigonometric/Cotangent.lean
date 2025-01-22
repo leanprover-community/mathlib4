@@ -110,7 +110,7 @@ lemma euler_sin_tprod (x : ℂ) (hx : x ∈ ℂ_ℤ) :
   · exact multipliable_sinTerm x hx
   · exact multipliable_sinTerm x hx
 
-lemma aux_u_lem (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summable u ∧
+private lemma sinTerm_bound_aux (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summable u ∧
     ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j := by
   have hf : ContinuousOn (fun x : ℂ_ℤ => Complex.abs (-x.1 ^ 2)) Z := by
     apply ContinuousOn.comp
@@ -138,7 +138,7 @@ theorem tendstoUniformlyOn_compact_euler_sin_prod (Z : Set ℂ_ℤ) (hZ : IsComp
     enter [2]
     ext y
     rw [← euler_sin_tprod y y.2]
-  obtain ⟨u, hu, hu2⟩ := aux_u_lem Z hZ
+  obtain ⟨u, hu, hu2⟩ := sinTerm_bound_aux Z hZ
   apply tendstoUniformlyOn_tprod' hZ hu hu2
   · refine fun x n => by apply sinTerm_ne_zero (by simp)
   · intro n
