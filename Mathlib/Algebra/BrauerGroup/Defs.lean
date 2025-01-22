@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 
 We introduce the definition of Brauer group of a field K, which is the quotient of the set of
 all finite-dimensional central simple algebras over K modulo the Brauer Equivalence where two
-central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m ∈ ℕ` such
+central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m ∈ ℕ+` such
 that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`.
 
 # TODOs
