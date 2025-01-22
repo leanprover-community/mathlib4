@@ -6,6 +6,7 @@ Authors: Eric Wieser, Kyle Miller
 
 import Lean.Elab.SyntheticMVars
 import Lean
+import Mathlib.Init
 /-!
 # The `fast_instance%` term elaborator
 -/
