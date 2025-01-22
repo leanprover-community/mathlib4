@@ -150,12 +150,6 @@ lemma toContinuousMap_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMa
 
 end
 
-@[to_additive (attr := simp)]
-lemma toMonoidHom_apply (f : ContinuousMonoidHom A B) (a : A) : f.toMonoidHom a = f a := rfl
-
-@[to_additive (attr := simp)]
-lemma toContinuousMap_apply (f : ContinuousMonoidHom A B) (a : A) : f.toContinuousMap a = f a := rfl
-
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
