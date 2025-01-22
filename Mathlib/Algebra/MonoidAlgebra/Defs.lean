@@ -1480,6 +1480,7 @@ section Algebra
 @[simps]
 def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { singleAddHom 0 with
+    toFun := single 0
     map_one' := rfl
     map_mul' := fun x y => by simp only [Finsupp.singleAddHom, single_mul_single, zero_add] }
 
