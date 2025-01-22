@@ -61,9 +61,9 @@ instance unbundledHom : UnbundledHom @Measurable :=
 
 deriving instance LargeCategory for MeasCat
 
--- Porting note: `deriving instance ConcreteCategory for MeasCat` didn't work. Define it manually.
+-- Porting note: `deriving instance HasForget for MeasCat` didn't work. Define it manually.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory MeasCat := by
+instance : HasForget MeasCat := by
   unfold MeasCat
   infer_instance
 
@@ -71,7 +71,7 @@ instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
 
 -- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An
