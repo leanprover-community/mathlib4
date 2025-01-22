@@ -49,4 +49,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "closed" "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "closed" "${{ github.event.pull_request.number }}"
