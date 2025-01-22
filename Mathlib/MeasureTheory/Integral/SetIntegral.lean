@@ -54,7 +54,7 @@ assert_not_exists InnerProductSpace
 noncomputable section
 
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
-open scoped Classical ENNReal NNReal
+open scoped ENNReal NNReal
 
 variable {X Y E F : Type*}
 
@@ -141,6 +141,7 @@ theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i ∈ t, ∫ x in s i, f x ∂μ := by
+  classical
   induction' t using Finset.induction_on with a t hat IH hs h's
   · simp
   · simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
