@@ -277,6 +277,50 @@ alias ae_eq_condExp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_setInte
 @[deprecated (since := "2025-01-21")]
 alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_set_integral_eq
 
+section MemL2
+
+lemma Memℒp.condExpL2_ae_eq_condExp' {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F']
+    (hm : m ≤ m0) (hf1 : Integrable f μ) (hf2 : Memℒp f 2 μ) [SigmaFinite (μ.trim hm)] :
+    condExpL2 F' 𝕜 hm hf2.toLp =ᵐ[μ] μ[f | m] := by
+  refine ae_eq_condExp_of_forall_setIntegral_eq hm hf1
+    (fun s hs htop ↦ integrableOn_condExpL2_of_measure_ne_top hm htop.ne _) (fun s hs htop ↦ ?_)
+    (aeStronglyMeasurable'_condExpL2 hm _)
+  rw [integral_condExpL2_eq hm (hf2.toLp _) hs htop.ne]
+  refine setIntegral_congr_ae (hm _ hs) ?_
+  filter_upwards [hf2.coeFn_toLp] with ω hω _ using hω
+
+lemma Memℒp.condExpL2_ae_eq_condExp {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F']
+    (hm : m ≤ m0) (hf : Memℒp f 2 μ) [IsFiniteMeasure μ] :
+    condExpL2 F' 𝕜 hm hf.toLp =ᵐ[μ] μ[f | m] :=
+  hf.condExpL2_ae_eq_condExp' hm (memℒp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
+
+-- TODO: Generalize via the conditional Jensen inequality
+lemma eLpNorm_condExp_le {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F'] :
+    eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
+  by_cases hm : m ≤ m0; swap
+  · simp [condExp_of_not_le hm]
+  by_cases hfμ : SigmaFinite (μ.trim hm); swap
+  · rw [condExp_of_not_sigmaFinite hm hfμ]
+    simp
+  by_cases hfi : Integrable f μ; swap
+  · rw [condExp_undef hfi]
+    simp
+  obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
+  · simp [hf]
+  replace hf : Memℒp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
+  rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := 𝕜) hm hfi)]
+  refine le_trans (eLpNorm_condExpL2_le hm _) ?_
+  rw [eLpNorm_congr_ae hf.coeFn_toLp]
+
+protected lemma Memℒp.condExp {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F']
+    (hf : Memℒp f 2 μ) : Memℒp (μ[f | m]) 2 μ := by
+  by_cases hm : m ≤ m0
+  · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
+      eLpNorm_condExp_le (𝕜 := 𝕜).trans_lt hf.eLpNorm_lt_top⟩
+  · simp [condExp_of_not_le hm]
+
+end MemL2
+
 theorem condExp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   by_cases hμ_finite : IsFiniteMeasure μ
