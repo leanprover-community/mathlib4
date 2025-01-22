@@ -3,8 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.CompleteLattice
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
@@ -493,6 +494,32 @@ lemma disjointed_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   cases n with
   | zero => exact hs 0
   | succ n => exact hC.diff_mem (hs n.succ) (hC.partialSups_mem hs n)
+
+variable {α : Type*} {C : Set (Set α)} {s t : Set α}
+
+theorem iUnion_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    (⋃ i ≤ n, s i) ∈ C := by
+  induction' n with n hn
+  · simp only [nonpos_iff_eq_zero, iUnion_iUnion_eq_left]
+    exact hs 0
+  rw [Set.biUnion_le_succ]
+  exact hC.union_mem hn (hs _)
+
+theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    (⋂ i ≤ n, s i) ∈ C := by
+  induction' n with n hn
+  · simp only [nonpos_iff_eq_zero, iInter_iInter_eq_left]
+    exact hs 0
+  rw [Set.biInter_le_succ]
+  exact hC.inter_mem hn (hs _)
+
+theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
+    Set.Accumulate s n ∈ C := by
+  induction' n with n hn
+  · simp only [Set.Accumulate, le_zero_iff, Set.iUnion_iUnion_eq_left, hs 0, Nat.zero_eq,
+      nonpos_iff_eq_zero, iUnion_iUnion_eq_left]
+  · rw [Set.accumulate_succ]
+    exact hC.union_mem hn (hs _)
 
 end IsSetRing
 
