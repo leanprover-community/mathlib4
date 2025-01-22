@@ -242,7 +242,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T
   (h₂f : IntervalIntegrable f MeasureTheory.volume t (t + T)) (a₁ a₂ : ℝ) :
     IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
   -- Replace [a₁, a₂] by [t - n₁ * T, t + n₂ * T], where n₁ and n₂ are integers
-  obtain ⟨n₁, hn₁⟩ := exists_nat_ge ((t -min a₁ a₂) / T)
+  obtain ⟨n₁, hn₁⟩ := exists_nat_ge ((t - min a₁ a₂) / T)
   obtain ⟨n₂, hn₂⟩ := exists_nat_ge ((max a₁ a₂ - t) / T)
   have : Set.uIcc a₁ a₂ ⊆ Set.uIcc (t - n₁ * T) (t + n₂ * T) := by
     rw [Set.uIcc_subset_uIcc_iff_le]
