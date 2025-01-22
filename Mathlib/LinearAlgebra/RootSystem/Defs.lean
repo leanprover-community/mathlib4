@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.Reflection
 
 /-!
@@ -149,6 +149,33 @@ protected def flip : RootPairing ι R N M :=
 @[simp]
 lemma flip_flip : P.flip.flip = P :=
   rfl
+
+variable (ι R M N) in
+/-- `RootPairing.flip` as an equivalence. -/
+@[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- If we interchange the roles of `M` and `N`, we still have a root system. -/
+protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
+  { toRootPairing := P.toRootPairing.flip
+    span_root_eq_top := P.span_coroot_eq_top
+    span_coroot_eq_top := P.span_root_eq_top }
+
+@[simp]
+protected lemma _root_.RootSystem.flip_flip (P : RootSystem ι R M N) :
+    P.flip.flip = P :=
+  rfl
+
+variable (ι R M N) in
+/-- `RootSystem.flip` as an equivalence. -/
+@[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Roots written as functionals on the coweight space. -/
 abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
@@ -370,6 +397,13 @@ instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
   rw [isCrystallographic_iff, forall_comm]
   exact P.exists_int
 
+lemma IsCrystallographic.mem_range_algebraMap [P.IsCrystallographic]
+    (S : Type*) [CommRing S] [Algebra S R] (i j : ι) :
+    P.pairing i j ∈ (algebraMap S R).range := by
+  obtain ⟨k, hk⟩ := P.exists_int i j
+  simp only [RingHom.mem_range]
+  exact ⟨k, by simpa⟩
+
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
 def IsReduced : Prop :=
@@ -384,6 +418,26 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
   · by_cases h' : i = j
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
+
+variable {P} in
+lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j : ι) (t : R)
+    (h : P.root j = t • P.root i) :
+    t • P.coroot j = P.coroot i := by
+  have hij : t * P.pairing i j = 2 := by simpa using ((P.coroot' j).congr_arg h).symm
+  refine Module.eq_of_mapsTo_reflection_of_mem (f := P.root' i) (g := P.root' i)
+    (finite_range P.coroot) (by simp [hij]) (by simp) (by simp [hij]) (by simp) ?_
+    (P.mapsTo_coreflection_coroot i) (mem_range_self i)
+  convert P.mapsTo_coreflection_coroot j
+  ext x
+  replace h : P.root' j = t • P.root' i := by ext; simp [h, root']
+  simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
+
+variable {P} in
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+    {i j : ι} {t : R} :
+    P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
+  ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
+    fun h ↦ (P.smul_coroot_eq_of_root_eq_smul i j t h).symm⟩
 
 /-- The linear span of roots. -/
 abbrev rootSpan := span R (range P.root)

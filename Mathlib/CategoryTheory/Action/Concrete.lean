@@ -167,7 +167,7 @@ end FintypeCat
 
 section ToMulAction
 
-variable {V : Type (u + 1)} [LargeCategory V] [ConcreteCategory V]
+variable {V : Type (u + 1)} [LargeCategory V] [HasForget V]
 
 instance instMulAction {G : MonCat.{u}} (X : Action V G) :
     MulAction G ((CategoryTheory.forget _).obj X) where
