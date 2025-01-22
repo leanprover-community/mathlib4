@@ -1456,7 +1456,7 @@ The conclusion is the same as in `prod_image`.-/
 injective. Rather, we assume that the image of `f`  on `I` only overlaps where `g (f i) = 0`.
 The conclusion is the same as in `sum_image`."]
 lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {I : Finset ι}
-    (hf : (I.toSet).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
+    (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
     ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
   rw [prod_image']
   exact fun n hnI => (prod_filter_of_pairwise_eq_one hnI hf).symm
