@@ -10,6 +10,7 @@ import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
+import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series
