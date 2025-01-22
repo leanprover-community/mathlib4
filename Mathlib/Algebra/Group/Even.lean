@@ -138,7 +138,7 @@ lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
 end Monoid
 
 @[to_additive]
-lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
+lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
   rintro ⟨r, rfl⟩ ⟨s, rfl⟩; exact ⟨r * s, mul_mul_mul_comm _ _ _ _⟩
 
 section DivisionMonoid
