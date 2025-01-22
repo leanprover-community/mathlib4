@@ -104,11 +104,7 @@ theorem sum_range_choose_halfway (m : ℕ) : (∑ i ∈ range (m + 1), (2 * m + 
             ∑ i ∈ Ico (m + 1) (2 * m + 2), (2 * m + 1).choose i := by
         rw [range_eq_Ico, sum_Ico_reflect _ _ (by omega)]
         congr
-        have A : m + 1 ≤ 2 * m + 1 := by omega
-        rw [add_comm, add_tsub_assoc_of_le A, ← add_comm]
-        congr
-        rw [tsub_eq_iff_eq_add_of_le A]
-        ring
+        omega
       _ = ∑ i ∈ range (2 * m + 2), (2 * m + 1).choose i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
       _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
