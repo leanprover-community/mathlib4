@@ -340,6 +340,9 @@ theorem condexp_mul_of_stronglyMeasurable_left {f g : α → ℝ} (hf : Strongly
   · simpa only [hxs, Set.indicator_of_mem] using h_norm n x hxs
   · simp only [hxs, Set.indicator_of_not_mem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]
 
+@[deprecated (since := "2025-01-22")]
+alias condexp_stronglyMeasurable_mul := condexp_mul_of_stronglyMeasurable_left
+
 /-- Pull-out property of the conditional expectation. -/
 lemma condexp_mul_of_stronglyMeasurable_right {f g : α → ℝ} (hg : StronglyMeasurable[m] g)
     (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g := by
@@ -355,6 +358,9 @@ theorem condexp_mul_of_aestronglyMeasurable_left {f g : α → ℝ} (hf : AEStro
   refine (condexp_mul_of_stronglyMeasurable_left hf.stronglyMeasurable_mk ?_ hg).trans this.symm
   refine (integrable_congr ?_).mp hfg
   exact hf.ae_eq_mk.mul EventuallyEq.rfl
+
+@[deprecated (since := "2025-01-22")]
+alias condexp_stronglyMeasurable_mul₀ := condexp_mul_of_aestronglyMeasurable_left
 
 /-- Pull-out property of the conditional expectation. -/
 lemma condexp_mul_of_aestronglyMeasurable_right {f g : α → ℝ} (hg : AEStronglyMeasurable' m g μ)
