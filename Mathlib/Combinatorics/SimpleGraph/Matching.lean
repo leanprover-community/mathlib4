@@ -6,6 +6,7 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Functor
 
 /-!
 # Matchings
@@ -202,6 +203,11 @@ lemma IsMatching.induce_connectedComponent (h : M.IsMatching) (c : ConnectedComp
 lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMatching)
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching := by
   simpa [h.2.verts_eq_univ] using h.1.induce_connectedComponent c
+
+@[simp]
+lemma IsPerfectMatching.toSubgraph_spanningCoe_iff (h : M.spanningCoe ≤ G') :
+    (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
+  simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
 end Subgraph
 

@@ -1172,7 +1172,8 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
     (hder : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hcont : ContinuousAt f' x) :
     HasStrictFDerivAt f (f' x) x := by
   -- turn little-o definition of strict_fderiv into an epsilon-delta statement
-  refine isLittleO_iff.mpr fun c hc => Metric.eventually_nhds_iff_ball.mpr ?_
+  rw [hasStrictFDerivAt_iff_isLittleO, isLittleO_iff]
+  refine fun c hc => Metric.eventually_nhds_iff_ball.mpr ?_
   -- the correct ε is the modulus of continuity of f'
   rcases Metric.mem_nhds_iff.mp (inter_mem hder (hcont <| ball_mem_nhds _ hc)) with ⟨ε, ε0, hε⟩
   refine ⟨ε, ε0, ?_⟩

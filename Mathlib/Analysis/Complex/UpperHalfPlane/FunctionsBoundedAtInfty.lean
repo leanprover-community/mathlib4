@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
@@ -66,5 +66,18 @@ theorem zero_at_im_infty (f : ℍ → ℂ) :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by
     simp only [true_and, mem_closedBall_zero_iff]; rfl
+
+lemma tendsto_comap_im_ofComplex :
+    Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
+  simp only [atImInfty, tendsto_comap_iff, Function.comp_def]
+  refine tendsto_comap.congr' ?_
+  filter_upwards [preimage_mem_comap (Ioi_mem_atTop 0)] with z hz
+  simp only [ofComplex_apply_of_im_pos hz, ← UpperHalfPlane.coe_im, coe_mk_subtype]
+
+lemma tendsto_coe_atImInfty :
+    Tendsto UpperHalfPlane.coe atImInfty (comap Complex.im atTop) := by
+  simpa only [atImInfty, tendsto_comap_iff, Function.comp_def,
+    funext UpperHalfPlane.coe_im] using tendsto_comap
+
 
 end UpperHalfPlane

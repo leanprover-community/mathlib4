@@ -36,7 +36,7 @@ TODO:
 * preserve formatting of existing command?
 -/
 
-namespace Mathlib.Tactic.DeprecateMe
+namespace Mathlib.Tactic.DeprecateTo
 
 open Lean Elab Term Command
 
@@ -147,4 +147,4 @@ elab tk:"deprecate to " id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command 
       addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
         toMessageData
 
-end Mathlib.Tactic.DeprecateMe
+end Mathlib.Tactic.DeprecateTo

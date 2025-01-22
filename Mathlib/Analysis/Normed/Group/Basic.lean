@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
@@ -502,6 +501,38 @@ theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
     ‖u‖ = ‖u * v / v‖ := by rw [mul_div_cancel_right]
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
 
+/-- An analogue of `norm_le_mul_norm_add` for the multiplication from the left. -/
+@[to_additive "An analogue of `norm_le_add_norm_add` for the addition from the left."]
+theorem norm_le_mul_norm_add' (u v : E) : ‖v‖ ≤ ‖u * v‖ + ‖u‖ :=
+  calc
+    ‖v‖ = ‖u⁻¹ * (u * v)‖ := by rw [← mul_assoc, inv_mul_cancel, one_mul]
+    _ ≤ ‖u⁻¹‖ + ‖u * v‖ := norm_mul_le' u⁻¹ (u * v)
+    _ = ‖u * v‖ + ‖u‖ := by rw [norm_inv', add_comm]
+
+@[to_additive]
+lemma norm_mul_eq_norm_right {x : E} (y : E) (h : ‖x‖ = 0) : ‖x * y‖ = ‖y‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_mul_le' x y
+  · simpa [h] using norm_le_mul_norm_add' x y
+
+@[to_additive]
+lemma norm_mul_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x * y‖ = ‖x‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_mul_le' x y
+  · simpa [h] using norm_le_mul_norm_add x y
+
+@[to_additive]
+lemma norm_div_eq_norm_right {x : E} (y : E) (h : ‖x‖ = 0) : ‖x / y‖ = ‖y‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_div_le x y
+  · simpa [h, norm_div_rev x y] using norm_sub_norm_le' y x
+
+@[to_additive]
+lemma norm_div_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = ‖x‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_div_le x y
+  · simpa [h] using norm_sub_norm_le' x y
+
 @[to_additive ball_eq]
 theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } :=
   Set.ext fun a => by simp [dist_eq_norm_div]
@@ -697,6 +728,27 @@ alias nnnorm_le_insert := nnnorm_le_nnnorm_add_nnnorm_sub
 @[to_additive]
 theorem nnnorm_le_mul_nnnorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
   norm_le_mul_norm_add _ _
+
+/-- An analogue of `nnnorm_le_mul_nnnorm_add` for the multiplication from the left. -/
+@[to_additive "An analogue of `nnnorm_le_add_nnnorm_add` for the addition from the left."]
+theorem nnnorm_le_mul_nnnorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + ‖a‖₊ :=
+  norm_le_mul_norm_add' _ _
+
+@[to_additive]
+lemma nnnorm_mul_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
+  NNReal.eq <| norm_mul_eq_norm_right _ <| congr_arg NNReal.toReal h
+
+@[to_additive]
+lemma nnnorm_mul_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_mul_eq_norm_left _ <| congr_arg NNReal.toReal h
+
+@[to_additive]
+lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
+  NNReal.eq <| norm_div_eq_norm_right _ <| congr_arg NNReal.toReal h
+
+@[to_additive]
+lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
 
 @[to_additive ofReal_norm_eq_coe_nnnorm]
 theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊ :=

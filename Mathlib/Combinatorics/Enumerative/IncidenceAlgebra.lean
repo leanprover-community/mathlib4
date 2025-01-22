@@ -65,7 +65,7 @@ Here are some additions to this file that could be made in the future:
 ## References
 
 * [Aigner, *Combinatorial Theory, Chapter IV*][aigner1997]
-* [Jacobson, *Basic Algebra I, 8.6*][jacobson1989]
+* [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
 * [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory VI*][doubilet_rota_stanley_vi]
 * [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]

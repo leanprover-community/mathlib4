@@ -25,3 +25,13 @@ def OrderIso.mulLeft₀ [PosMulMono G₀] [PosMulReflectLE G₀] (a : G₀) (ha 
 def OrderIso.mulRight₀ [MulPosMono G₀] [MulPosReflectLE G₀] (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ where
   toEquiv := .mulRight₀ a ha.ne'
   map_rel_iff' := mul_le_mul_right ha
+
+/-- `Equiv.divRight₀` as an order isomorphism. -/
+@[simps! (config := { simpRhs := true })]
+def OrderIso.divRight₀ {G₀} [GroupWithZero G₀] [PartialOrder G₀] [ZeroLEOneClass G₀]
+    [MulPosStrictMono G₀] [MulPosReflectLE G₀] [PosMulReflectLT G₀]
+    (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ where
+  toEquiv := .divRight₀ a ha.ne'
+  map_rel_iff' {b c} := by
+    simp only [Equiv.divRight₀_apply, div_eq_mul_inv]
+    exact mul_le_mul_right (a := a⁻¹) (inv_pos.mpr ha)

@@ -29,8 +29,7 @@ Submonoid, Submonoids, IsSubmonoid
 -/
 
 
-variable {M : Type*} [Monoid M] {s : Set M}
-variable {A : Type*} [AddMonoid A] {t : Set A}
+variable {M : Type*} [Monoid M] {s : Set M} {A : Type*} [AddMonoid A]
 
 /-- `s` is an additive submonoid: a set containing 0 and closed under addition.
 Note that this structure is deprecated, and the bundled variant `AddSubmonoid A` should be

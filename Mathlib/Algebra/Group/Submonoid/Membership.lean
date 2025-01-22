@@ -494,20 +494,6 @@ theorem map_powers {N : Type*} {F : Type*} [Monoid N] [FunLike F M N] [MonoidHom
     (powers m).map f = powers (f m) := by
   simp only [powers_eq_closure, map_mclosure f, Set.image_singleton]
 
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-@[to_additive
-      "If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative monoid."]
-def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
-    CommMonoid (closure s) :=
-  { (closure s).toMonoid with
-    mul_comm := fun x y => by
-      ext
-      simp only [Submonoid.coe_mul]
-      exact closure_induction₂ (fun _ _ h₁ h₂ ↦ hcomm _ h₁ _ h₂) (fun _ _ ↦ Commute.one_left _)
-        (fun _ _ ↦ Commute.one_right _) (fun _ _ _ _ _ _ ↦ Commute.mul_left)
-        (fun _ _ _ _ _ _ ↦ Commute.mul_right) x.prop y.prop }
-
 end Submonoid
 
 @[to_additive]

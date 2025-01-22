@@ -96,7 +96,7 @@ section
 
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
-    ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
+    ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
   obtain ⟨φ, hfφ, hφ⟩ := zorn_le_nonempty_Ici₀ _
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
   refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
@@ -114,7 +114,7 @@ variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
 
 include hK in
 theorem exists_algHom_adjoin_of_splits' :
-    ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
+    ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
   let L' := (IsScalarTower.toAlgHom F L E).fieldRange
   let f' : L' →ₐ[F] K := f.comp (AlgEquiv.ofInjectiveField _).symm.toAlgHom
   have := exists_algHom_adjoin_of_splits'' f' (S := S) fun s hs ↦ ?_
@@ -123,21 +123,20 @@ theorem exists_algHom_adjoin_of_splits' :
     · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
       exact ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
     · ext x
-      rw [AlgHom.comp_assoc]
       exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
-  letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingEquiv.toRingHom.toAlgebra
+  letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
   convert (hK s hs).2; ext; exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
-    ∃ φ : E →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L E) = f :=
+    ∃ φ : E →ₐ[F] K, φ.restrictDomain L = f :=
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits' f hK
   ⟨φ.comp (((equivOfEq hS).trans topEquiv).symm.toAlgHom.restrictScalars F), hφ⟩
 
 theorem exists_algHom_of_splits' (hK : ∀ s : E, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
-    ∃ φ : E →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L E) = f :=
+    ∃ φ : E →ₐ[F] K, φ.restrictDomain L = f :=
   exists_algHom_of_adjoin_splits' f (fun x _ ↦ hK x) (adjoin_univ L E)
 
 end

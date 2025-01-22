@@ -54,7 +54,7 @@ This is shown in `CategoryTheory.Limits.Filtered`.
 open Function
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe w v v₁ u u₁ u₂
+universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
@@ -922,7 +922,7 @@ end Pi
 
 section Prod
 
-variable {C : Type u₁} [Category.{u₁} C] {D : Type u₂} [Category.{u₂} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 open IsFiltered in
 instance [IsFilteredOrEmpty C] [IsFilteredOrEmpty D] : IsFilteredOrEmpty (C × D) where

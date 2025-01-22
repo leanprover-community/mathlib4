@@ -360,23 +360,12 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 /-- Two pre-games are identical if their left and right sets are identical.
 That is, `Identical x y` if every left move of `x` is identical to some left move of `y`,
 every right move of `x` is identical to some right move of `y`, and vice versa. -/
-def Identical : ∀ (_ _ : PGame.{u}), Prop
+def Identical : PGame.{u} → PGame.{u} → Prop
   | mk _ _ xL xR, mk _ _ yL yR =>
     Relator.BiTotal (fun i j ↦ Identical (xL i) (yL j)) ∧
       Relator.BiTotal (fun i j ↦ Identical (xR i) (yR j))
 
 @[inherit_doc] scoped infix:50 " ≡ " => PGame.Identical
-
-/-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
-def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveLeft b
-
-/-- `x ∈ᵣ y` if `x` is identical to some right move of `y`. -/
-def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveRight b
-
-@[inherit_doc] scoped infix:50 " ∈ₗ " => PGame.memₗ
-@[inherit_doc] scoped infix:50 " ∈ᵣ " => PGame.memᵣ
-@[inherit_doc PGame.memₗ] binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
-@[inherit_doc PGame.memᵣ] binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
 
 theorem identical_iff : ∀ {x y : PGame}, x ≡ y ↔
     Relator.BiTotal (x.moveLeft · ≡ y.moveLeft ·) ∧ Relator.BiTotal (x.moveRight · ≡ y.moveRight ·)
@@ -391,13 +380,30 @@ protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
   | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => ⟨hL.symm fun _ _ h ↦ h.symm, hR.symm fun _ _ h ↦ h.symm⟩
 
 theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
-  ⟨Identical.symm, Identical.symm⟩
+  ⟨.symm, .symm⟩
 
 @[trans] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
     ⟨hL₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hL₂, hR₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hR₂⟩
 
-theorem identical_of_is_empty (x y : PGame)
+
+/-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
+def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveLeft b
+
+/-- `x ∈ᵣ y` if `x` is identical to some right move of `y`. -/
+def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveRight b
+
+@[inherit_doc] scoped infix:50 " ∈ₗ " => PGame.memₗ
+@[inherit_doc] scoped infix:50 " ∈ᵣ " => PGame.memᵣ
+@[inherit_doc PGame.memₗ] binder_predicate x " ∈ₗ " y:term => `($x ∈ₗ $y)
+@[inherit_doc PGame.memᵣ] binder_predicate x " ∈ᵣ " y:term => `($x ∈ᵣ $y)
+
+theorem memₗ_def {x y : PGame} : x ∈ₗ y ↔ ∃ b, x ≡ y.moveLeft b := .rfl
+theorem memᵣ_def {x y : PGame} : x ∈ᵣ y ↔ ∃ b, x ≡ y.moveRight b := .rfl
+theorem moveLeft_memₗ (x : PGame) (b) : x.moveLeft b ∈ₗ x := ⟨_, .rfl⟩
+theorem moveRight_memᵣ (x : PGame) (b) : x.moveRight b ∈ᵣ x := ⟨_, .rfl⟩
+
+theorem identical_of_isEmpty (x y : PGame)
     [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
     [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
   identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
@@ -427,12 +433,11 @@ lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
 
-/-- If `x` and `y` are identical, then a right move of `y` is identical to some right move of `x`.
--/
 lemma Identical.moveRight_symm : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight j ≡ y.moveRight i
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.2 i
 
+/-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
       ((∀ i, x.moveRight i ∈ᵣ y) ∧ (∀ j, y.moveRight j ∈ᵣ x))
@@ -441,14 +446,6 @@ theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal] <;>
     congr! <;>
     exact exists_congr <| fun _ ↦ identical_comm
-
-theorem memₗ_def {x y : PGame} : x ∈ₗ y ↔ ∃ b, x ≡ y.moveLeft b := .rfl
-
-theorem memᵣ_def {x y : PGame} : x ∈ᵣ y ↔ ∃ b, x ≡ y.moveRight b := .rfl
-
-theorem moveLeft_memₗ (x : PGame) (b) : x.moveLeft b ∈ₗ x := ⟨_, .rfl⟩
-
-theorem moveRight_memᵣ (x : PGame) (b) : x.moveRight b ∈ᵣ x := ⟨_, .rfl⟩
 
 theorem memₗ.congr_right : ∀ {x y : PGame},
     x ≡ y → (∀ {w : PGame}, w ∈ₗ x ↔ w ∈ₗ y)
@@ -1945,4 +1942,4 @@ end PGame
 
 end SetTheory
 
-set_option linter.style.longFile 2600
+set_option linter.style.longFile 2100

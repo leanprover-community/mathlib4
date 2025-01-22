@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
