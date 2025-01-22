@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024-present Ching-Tsun Chou. All rights reserved.
+Copyright (c) 2024 Ching-Tsun Chou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ching-Tsun Chou <chingtsun.chou@gmail.com>
+Authors: Ching-Tsun Chou
 -/
 
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
@@ -206,7 +206,7 @@ lemma vI_countable : vI.Countable :=
 /-- This is the main result that will lead to a contradiction:
 if the vitaliSet is null-measurable, then the volume of vitaliUnion is
 the sum of countably many copies of vitaliSet.  -/
-lemma vitaliUnion_volume_sum (hm : NullMeasurableSet vitaliSet volume) :
+lemma volume_vitaliUnion (hm : NullMeasurableSet vitaliSet volume) :
     volume vitaliUnion = ∑' (_ : ↑vI), volume vitaliSet := by
   have hm' : ∀ i ∈ vI, NullMeasurableSet (vitaliSet' i) volume := by
     intro i i_vI
@@ -242,23 +242,22 @@ lemma vI_infinite : vI.Infinite := by
 /-- The following theorems are the main results.
 
 vitaliSet is not null-measurable. -/
-theorem vitaliSet_not_nullmeasurable : ¬ (NullMeasurableSet vitaliSet volume) := by
+theorem not_nullMeasurableSet_vitaliSet : ¬ (NullMeasurableSet vitaliSet volume) := by
   intro hm
   rcases eq_or_ne (volume vitaliSet) 0 with hz | hnz
   · have hv : volume vitaliUnion = 0 := by
-      rw [vitaliUnion_volume_sum hm, hz, tsum_zero]
+      rw [volume_vitaliUnion hm, hz, tsum_zero]
     have := vitaliUnion_volume_range.1
     simp [hv] at this
   · have hv : volume vitaliUnion = ⊤ := by
-      rw [vitaliUnion_volume_sum hm]
+      rw [volume_vitaliUnion hm]
       have : Infinite ↑vI := vI_infinite.to_subtype
       exact ENNReal.tsum_const_eq_top_of_ne_zero hnz
     have := vitaliUnion_volume_range.2
     simp [hv] at this
 
 /-- vitaliSet is not measurable. -/
-theorem vitaliSet_not_measurable : ¬ (MeasurableSet vitaliSet) := by
-  intro hm
-  exact vitaliSet_not_nullmeasurable hm.nullMeasurableSet
+theorem not_measurableSet_vitaliSet : ¬ MeasurableSet vitaliSet :=
+  fun hm ↦ not_nullMeasurableSet_vitaliSet hm.nullMeasurableSet
 
 end
