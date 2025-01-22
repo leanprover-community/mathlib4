@@ -10,9 +10,9 @@ import Aesop
 /-!
 # SetLike Rule Set
 
-This module defines the `SetLike` and `SetLike!` Aesop rule sets, which are used by the
-`SetLike` tactic. Aesop rule sets only become visible once the file in which
-they're declared is imported, so we must put this declaration into its own file.
+This module defines the `SetLike` and `SetLike!` Aesop rule sets.
+Aesop rule sets only become visible once the file in which they're declared is imported,
+so we must put this declaration into its own file.
 -/
 
 declare_aesop_rule_sets [SetLike] (default := true)
