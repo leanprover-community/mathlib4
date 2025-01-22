@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
+import Mathlib
+
 /-! # Topologically nilpotent elements
 
 Let `M` be a monoid with zero `M`, endowed with a topology.
@@ -17,7 +19,6 @@ monoids with zero endowed with a topology is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.zero`: `0` is topologically nilpotent.
 -/
-
 
 open Filter
 
