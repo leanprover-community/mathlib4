@@ -111,17 +111,6 @@ lemma euler_sin_tprod (x : ℂ) (hx : x ∈ ℂ_ℤ) :
   · exact multipliable_sinTerm x hx
   · exact multipliable_sinTerm x hx
 
-theorem aux_diff_lem (n : ℕ) :
-    DifferentiableOn ℂ (fun z : ℂ => ∏ j in Finset.range n, sinTerm z j)
-      ℂ_ℤ := by
-  apply DifferentiableOn.finset_prod
-  refine fun i _ =>
-    DifferentiableOn.add (differentiableOn_const 1)
-      (DifferentiableOn.div_const
-        (DifferentiableOn.neg
-          (DifferentiableOn.pow (Differentiable.differentiableOn differentiable_id) 2))
-            (((i : ℂ) + 1) ^ 2))
-
 lemma aux_u_lem (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summable u ∧
     ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j := by
   have hf : ContinuousOn (fun x : ℂ_ℤ => Complex.abs (-x.1 ^ 2)) Z := by
@@ -187,24 +176,24 @@ theorem tendsto_logDeriv_euler_sin_div (x : ℂ) (hx : x ∈ ℂ_ℤ) :
       obtain ⟨N, hN⟩ := this ε hε
       refine ⟨N, fun n hn y hy => hN n hn y (by simpa using hK hy) (by aesop)⟩
   · simp only [not_exists, eventually_atTop, ge_iff_le]
-    refine ⟨1, fun b _ => by simpa using (aux_diff_lem b)⟩
+    refine ⟨1, fun b _ => by simpa using (by simp only [sinTerm]; fun_prop)⟩
   · simp only [Set.mem_setOf_eq, ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
     refine ⟨sin_pi_z_ne_zero hx, Real.pi_ne_zero , integerComplement.ne_zero hx⟩
 
-theorem logDeriv_sin_div (z : ℂ_ℤ) :
+theorem logDeriv_sin_div (z : ℂ) (hz : z ∈ ℂ_ℤ) :
     logDeriv (fun t => (Complex.sin (π * t) / (π * t))) z = π * cot (π * z) - 1 / z := by
   have : (fun t => (Complex.sin (π * t)/ (π * t))) = fun z =>
     (Complex.sin ∘ fun t => π * t) z / (π * z) := by
     ext1
     simp only [Pi.div_apply, Function.comp_apply]
-  rw [this, logDeriv_div _ (by apply sin_pi_z_ne_zero z.2) ?_
+  rw [this, logDeriv_div _ (by apply sin_pi_z_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
     deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
   · field_simp [mul_comm]
   · simpa only [ne_eq, ofReal_eq_zero] using Real.pi_ne_zero
   · simp only [Set.mem_setOf_eq, ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
-    refine ⟨Real.pi_ne_zero, integerComplement.ne_zero z.2⟩
+    refine ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
 
 /--The term in the infinite series expansion of cot. -/
 noncomputable def cotTerm (x : ℂ) (n : ℕ) : ℂ := 1 / (x - (n + 1)) + 1 / (x + (n + 1))
@@ -241,24 +230,24 @@ theorem logDeriv_sinTerm_eq_cotTerm (x : ℂ) (hx: x ∈ ℂ_ℤ) (i : ℕ) :
   field_simp
   ring
 
-lemma logDeriv_of_prod (x : ℂ) (hx : x ∈ ℂ_ℤ) (n : ℕ) :
+lemma logDeriv_of_prod {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) :
     logDeriv (fun (z : ℂ) => ∏ j in Finset.range n, sinTerm z j) x =
-     ∑ j in Finset.range n, cotTerm x j := by
-    rw [logDeriv_prod]
-    · congr
-      ext i
-      apply logDeriv_sinTerm_eq_cotTerm x hx i
-    · exact fun i _ ↦ sinTerm_ne_zero hx i
-    · intro i _
-      simp only [sinTerm, differentiableAt_const, differentiableAt_const_add_iff,
-        differentiableAt_neg_iff, differentiableAt_id', DifferentiableAt.pow,
-        DifferentiableAt.div_const]
+    ∑ j in Finset.range n, cotTerm x j := by
+  rw [logDeriv_prod]
+  · congr
+    ext i
+    apply logDeriv_sinTerm_eq_cotTerm x hx i
+  · exact fun i _ ↦ sinTerm_ne_zero hx i
+  · intro i _
+    simp only [sinTerm, differentiableAt_const, differentiableAt_const_add_iff,
+      differentiableAt_neg_iff, differentiableAt_id', DifferentiableAt.pow,
+      DifferentiableAt.div_const]
 
-theorem tendsto_logDeriv_euler_cot_sub (x : ℂ_ℤ) :
+theorem tendsto_logDeriv_euler_cot_sub (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ => ∑ j in Finset.range n, cotTerm x j)
       atTop (𝓝 <| π * cot (π * x)- 1 / x) := by
-  simp_rw [← logDeriv_sin_div x, ← logDeriv_of_prod x.1 x.2]
-  simpa using tendsto_logDeriv_euler_sin_div x
+  simp_rw [← logDeriv_sin_div x hx, ← logDeriv_of_prod hx]
+  simpa using tendsto_logDeriv_euler_sin_div x hx
 
 lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤ |a - 1| := by
   rw [← neg_lt_neg_iff] at ha
@@ -273,23 +262,23 @@ lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤ |a - 1| := by
   rw [this]
   apply hb.le
 
-theorem Summable_cotTerm (z : ℂ_ℤ) : Summable fun n : ℕ => cotTerm z n := by
+theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ => cotTerm z n := by
   have h : (fun (n : ℕ) => 1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) =
-    fun (n : ℕ) => 2 * z.1 * (1 / (z ^ 2 - (n + 1) ^ 2)):= by
+    fun (n : ℕ) => 2 * z * (1 / (z ^ 2 - (n + 1) ^ 2)):= by
       ext1 n
       rw [one_div_add_one_div]
       ring
-      · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero z.2 (-(n + 1) : ℤ)
-      · simpa using (integerComplement_add_ne_zero z.2 ((n : ℤ) + 1))
+      · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
+      · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
   simp only [one_div, cotTerm] at *
   rw [h]
   apply Summable.mul_left
   apply summable_norm_iff.mp
-  have := (tendsto_const_div_pow (‖z.1^2‖) 2 (by omega))
+  have := (tendsto_const_div_pow (‖z^2‖) 2 (by omega))
   simp only [Metric.tendsto_atTop, gt_iff_lt, ge_iff_le, dist_zero_right, norm_div, norm_pow,
     Real.norm_eq_abs, _root_.sq_abs, RCLike.norm_natCast] at this
   obtain ⟨B, hB⟩ := this (1/2) (one_half_pos)
-  have hB2 : ∀ (n : ℕ), B ≤ n → 1/2 ≤ |‖z.1‖^2 / n^2 -1| := fun n hn => half_le _ (hB n hn)
+  have hB2 : ∀ (n : ℕ), B ≤ n → 1/2 ≤ |‖z‖^2 / n^2 -1| := fun n hn => half_le _ (hB n hn)
   apply Summable.comp_nat_add (k := B)
   have hs : Summable fun n : ℕ => (1 / (2 : ℝ) * (n + B + 1) ^ 2)⁻¹ := by
     simp_rw [mul_inv, inv_eq_one_div, add_assoc]
@@ -299,15 +288,15 @@ theorem Summable_cotTerm (z : ℂ_ℤ) : Summable fun n : ℕ => cotTerm z n := 
   apply Summable.of_nonneg_of_le (by simp) _ hs
   simp only [ one_div, norm_inv]
   intro b
-  have HT := abs_norm_sub_norm_le ((z.1 / (b + B + 1))^2) 1
-  have H2 : 2⁻¹ ≤ ‖(z.1/(b + B + 1))^2 - 1‖ := by
+  have HT := abs_norm_sub_norm_le ((z / (b + B + 1))^2) 1
+  have H2 : 2⁻¹ ≤ ‖(z /(b + B + 1))^2 - 1‖ := by
     apply le_trans _ HT
     simp only [Complex.norm_eq_abs, one_div, mul_inv_rev, inv_inv, div_pow, norm_div, norm_pow,
       norm_one] at *
     convert (hB2 (b + B + 1) (by omega))
     norm_cast
     exact abs_natCast (b + B + 1)
-  have : z.1^2 - (((b + B) : ℕ) + 1)^2 = ((z.1 / ((b + B) + 1))^2 - 1) * ((b + B) + 1)^2 := by
+  have : z^2 - (((b + B) : ℕ) + 1)^2 = ((z / ((b + B) + 1))^2 - 1) * ((b + B) + 1)^2 := by
       have H3 : ((b : ℂ) + (B : ℂ) + 1)^2 ≠ 0 := by
         norm_cast
         norm_num
@@ -326,16 +315,16 @@ theorem Summable_cotTerm (z : ℂ_ℤ) : Summable fun n : ℕ => cotTerm z n := 
     norm_cast
     exact Nat.zero_lt_succ (b + B)
 
-theorem cot_series_rep' (z : ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
+theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
     ∑' n : ℕ, (1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) := by
   rw [HasSum.tsum_eq]
-  apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm z)).mpr
-    (tendsto_logDeriv_euler_cot_sub z)
+  apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
+    (tendsto_logDeriv_euler_cot_sub z hz)
 
-theorem cot_series_rep (z : ℂ_ℤ) :
+theorem cot_series_rep {z : ℂ} (hz : z ∈ ℂ_ℤ) :
     π * Complex.cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
   have := tsum_pnat_eq_tsum_succ fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)
-  have h1 := cot_series_rep' z
+  have h1 := cot_series_rep' hz
   simp only [one_div, Nat.cast_add, Nat.cast_one] at *
   rw [this, ← h1]
   ring
