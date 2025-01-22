@@ -206,8 +206,9 @@ end MeasurableEquiv
 
 namespace MeasureTheory.Measure
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
-  [MeasurableSpace G] -- not needed actually
-  [MeasurableSMul G A] -- We only need `MeasurableConstSMul` but we don't have this class.
+  -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
+  -- assume `MeasurableSpace G` + `MeasurableSMul G A`
+  [MeasurableSpace G] [MeasurableSMul G A]
 variable {μ ν : Measure A} {g : G}
 
 noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
