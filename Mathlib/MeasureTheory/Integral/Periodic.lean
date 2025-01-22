@@ -27,7 +27,6 @@ open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgro
 
 open scoped MeasureTheory NNReal ENNReal
 
-
 /-!
 ## Measures and integrability on ℝ and on the circle
 -/
