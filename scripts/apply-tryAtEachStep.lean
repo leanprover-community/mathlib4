@@ -5,9 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Cli.Basic
-import Batteries.Tactic.Lint
-import Batteries.Data.String.Matcher
-import Lean.Elab.ParseImportsFast
+import Mathlib.Data.Nat.Notation
 
 /-!
 # Apply results of `tryAtEachStep` automatically
@@ -29,8 +27,44 @@ open Cli System.FilePath
 
 open Lean
 
+-- copy-pasted from batteries' `runLinter`
+/-- Read the given file path and deserialize it as JSON. -/
+def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
+  let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
+  liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
+
+-- copy-pasted from batteries' runLinter
+/-- Serialize the given value `a : α` to the file as JSON. -/
+def writeJsonFile (α) [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
+  IO.FS.writeFile path <| toJson a |>.pretty.push '\n'
+
+-- Format of an entry in a tryAtEachStep-generated results file.
+structure SuggestedChange where
+  startLine: ℕ
+  startCol: ℕ
+  proofTermLengthReduction: ℕ
+  parentName: String -- or a Name? ": "SetTheory.Game.small_setOf_birthday_lt",
+  oldText: String -- "let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}",
+  newText: String
+  message: String
+  lengthReduction: ℕ -- of the text file, in bytes?
+  goalIsProp: Bool
+  -- e.g. "/home/dwrensha/src/compfiles/.lake/packages/mathlib/Mathlib/SetTheory/Game/Birthday.lean"
+  -- XXX: should this be a path instead?
+  filepath: String
+  fewerSteps: Bool
+deriving FromJson, ToJson
+
+
 /-- Implementation of the `apply-tryAtEachStep` command line program. -/
-def applyTryAtEachStepCli (_args : Cli.Parsed) : IO UInt32 := do
+def applyTryAtEachStepCli (args : Cli.Parsed) : IO UInt32 := do
+  let resultsFileName := args.positionalArg! "resultsFile" |>.value
+  -- let onlyDirectories := args.flag? "only" |>.map (·.value)
+
+  let path := System.mkFilePath (resultsFileName.split (System.FilePath.pathSeparators.contains ·))
+  let contents ← readJsonFile (Array SuggestedChange) path
+
+
   return 0
 
 /-- Setting up command line options and help text for `lake exe apply-tryAtEachStep`. -/
@@ -42,9 +76,9 @@ def apply_tryAtEachStep : Cmd := `[Cli|
 
   This assumes the working tree matches the mathlib4 copy this was obtained from."
 
-  FLAGS:
-    only : Array String;  "Only apply changes to the following directories"
-    files : Nat;  "Maximal number of files to which apply changes"
+  -- FLAGS:
+  --   only : Array String;  "Only apply changes to the following directories"
+  --   files : Nat;  "Maximal number of files to which apply changes"
 
   ARGS:
     resultsFile: String; "Name of the .json file with the tool's results, e.g. results.json"
