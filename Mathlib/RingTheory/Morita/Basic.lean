@@ -137,7 +137,7 @@ lemma trans {A B C : Type u₁} [Ring A] [Ring B] [Ring C] [Algebra R A] [Algebr
     IsMoritaEquivalent R A C where
   cond := Nonempty.map2 (.trans R) h.cond h'.cond
 
-lemma of_AlgEquiv {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
+lemma of_algEquiv {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
     (f : A ≃ₐ[R] B) : IsMoritaEquivalent R A B where
   cond := ⟨.ofAlgEquiv f⟩
 
