@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -40,6 +40,7 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 cyclic group
 -/
 
+assert_not_exists TwoSidedIdeal
 
 variable {α G G' : Type*} {a : α}
 
