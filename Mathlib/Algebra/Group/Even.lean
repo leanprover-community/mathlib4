@@ -139,7 +139,7 @@ end Monoid
 
 @[to_additive]
 lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
-  fun ⟨r, _⟩ ⟨s, _⟩ => ⟨r * s, by simp [*, mul_mul_mul_comm]⟩
+  rintro ⟨r, rfl⟩ ⟨s, rfl⟩; exact ⟨r * s, mul_mul_mul_comm _ _ _ _⟩
 
 section DivisionMonoid
 variable [DivisionMonoid α] {a : α}
