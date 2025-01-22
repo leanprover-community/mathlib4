@@ -25,6 +25,7 @@ We follow the presentantion from [Wikipedia](https://en.wikipedia.org/wiki/Sylve
   predecessors.
 - `sylvester_strictMono`: the sequence is strictly monotonic.
 - `sylvester_coprime`: Pairwise co-primality.
+- `sylvester_eq_floor_constant_pow`: explicit non-recursive formula.
 
 ## References
 
@@ -98,12 +99,15 @@ theorem sylvester_coprime {m n : ℕ} (h : m ≠ n) : Coprime (sylvester m) (syl
   · exact sylvester_coprime_of_lt c
   · exact (sylvester_coprime_of_lt c).symm
 
--- Explicit formula
-
-/-
-These two auxiliary sequences converge (from below and from above, respectively) to the constant
-that appears in the explicit formula for the Sylvester sequence.
+/-!
+### Explicit formula
 -/
+
+-- These two auxiliary sequences converge (from below and from above, respectively) to the constant
+-- that appears in the explicit formula for the Sylvester's sequence.
+-- The strategy of the proof of `sylvester n = ⌊ E ^ (2 ^ (n + 1)) + 1 / 2 ⌋₀` is proving that
+-- `sylvesterBelow n < sylvesterAbove m` for any `n`, and `m`, and then defining the constant `E`
+-- as the limit of `sylvesterBelow n`.
 private noncomputable def sylvesterBelow (n : ℕ) : ℝ :=
   (sylvester n - 2⁻¹) ^ (((2 : ℝ) ^ (n + 1))⁻¹)
 private noncomputable def sylvesterAbove (n : ℕ) : ℝ :=
@@ -120,7 +124,7 @@ private theorem sylvesterBelow_monotone : Monotone sylvesterBelow := by
   intro m
   let ha := rsylvester_gt_one m
   let hb := rsylvester_gt_one (m + 1)
-  simp only [sylvesterBelow]
+  dsimp only [sylvesterBelow]
   refine le_of_pow_le_pow_left₀ ((by simp) : 2 ^ (m + 1 + 1) ≠ 0) ?_ ?_
   · exact Real.rpow_nonneg (by linarith) _
   · repeat rw [← Real.rpow_mul_natCast (by linarith) _]
@@ -161,7 +165,7 @@ private theorem sylvesterBelow_le_sylvesterAbove (n m : ℕ) :
     · exact StrictAnti.antitone sylvesterAbove_strictAnti <| Nat.le_max_right n m
 
 /--
-The constant that gives an explicit formula for the Sylvester sequence:
+The constant that gives an explicit formula for the Sylvester's sequence:
 $$
 \mathrm{sylvester}~n = \left\lfloor\mathrm{sylvesterConstant}^{2^{n+1}} +
   \frac{1}{2}\right\rfloor,
@@ -173,7 +177,7 @@ noncomputable def sylvesterConstant : ℝ := ⨆ i, sylvesterBelow i
 private theorem sylvesterBelow_bddAbove : BddAbove (Set.range sylvesterBelow) := by
   use sylvesterAbove 0
   intro _ h
-  obtain ⟨z, hz⟩ := h
+  obtain ⟨z, _⟩ := h
   linarith [sylvesterBelow_le_sylvesterAbove z 0]
 
 theorem sylvesterConstant_pos : 0 < sylvesterConstant := by
@@ -196,10 +200,10 @@ private theorem const_pow_lt_sylvester_add_one {n : ℕ} :
       (by positivity) (by positivity)).mp h
   suffices h : sylvesterConstant ≤ sylvesterAbove (n + 1) by
     linarith [sylvesterAbove_strictAnti ((by linarith) : n < n + 1)]
-  exact ciSup_le <| fun _ => sylvesterBelow_le_sylvesterAbove _ _
+  exact ciSup_le (sylvesterBelow_le_sylvesterAbove · _)
 
 /--
-Explicit formula for the Sylvester sequence:
+Explicit formula for the Sylvester's sequence:
 $$
 \mathrm{sylvester}~n = \left\lfloor\mathrm{sylvesterConstant}^{2^{n+1}} +
   \frac{1}{2}\right\rfloor,
