@@ -3,12 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-import Mathlib.RingTheory.Spectrum.Prime.Module
 import Mathlib.RingTheory.Etale.Kaehler
+import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 import Mathlib.RingTheory.Support
-import Mathlib.RingTheory.RingHom.FinitePresentation
 
 /-!
 # Smooth locus of an algebra
@@ -104,8 +101,6 @@ lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := 
   have := LinearEquiv.ofBijective (this.extendScalarsOfIsLocalization
     (.powers f) (Localization.Away f)) this.bijective
   have := Module.Projective.of_equiv this
-  have := Module.support_eq_zeroLocus (R := Localization.Away f)
-    (M := H1Cotangent R (Localization.Away f))
   obtain ⟨_, ⟨_, ⟨g, rfl⟩, rfl⟩, hxg, hg⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
       (u := (Module.support (Localization.Away f) (H1Cotangent R (Localization.Away f)))ᶜ)

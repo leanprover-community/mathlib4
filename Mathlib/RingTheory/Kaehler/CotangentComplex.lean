@@ -519,7 +519,6 @@ instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
-  have : Finite P.vars := inferInstanceAs (Finite (Fin n))
   have : Module.Finite S P.toExtension.Cotangent := Extension.Cotangent.finite <| by
     convert hf'
     apply MvPolynomial.ringHom_ext
