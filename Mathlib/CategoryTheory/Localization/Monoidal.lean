@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Localization.Trifunctor
-import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Localization of monoidal categories
