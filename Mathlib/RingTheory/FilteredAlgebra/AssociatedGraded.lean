@@ -447,7 +447,9 @@ end GradedRing
 
 section GradedModule
 
-variable {R : Type u} [Ring R] {σ : Type*} [SetLike σ R]
+variable {ι : Type*} [OrderedCancelAddCommMonoid ι]
+
+variable {R : Type*} [Ring R] {σ : Type*} [SetLike σ R]
 
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
@@ -478,9 +480,9 @@ lemma hasGSMul_int [AddCommMonoid M] [Module R M] (F : ℤ → σ)
     simpa [add_sub_assoc i j 1] using IsModuleFiltration.smul_mem hx hy}
 
 variable [AddSubgroupClass σ R] [AddCommGroup M] [Module R M] [AddSubgroupClass σM M]
-  [IsOrderedCancelVAdd ι ιM]
 
-lemma hasGSMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → AddSubgroup R)
+lemma hasGSMul_AddSubgroup [IsOrderedCancelVAdd ι ιM]
+    (F : ι → AddSubgroup R) (F_lt : outParam <| ι → AddSubgroup R)
     [IsRingFiltration F F_lt] (FM : ιM → AddSubgroup M) (FM_lt : outParam <| ιM → AddSubgroup M)
     [IsModuleFiltration F F_lt FM FM_lt] : hasGSMul F F_lt FM FM_lt where
   F_lt_smul_mem := by
@@ -524,7 +526,6 @@ instance (i : ι) (j : ιM) [IsModuleFiltration F F_lt FM FM_lt] :
 
 variable [hasGSMul F F_lt FM FM_lt]
 
-omit [IsOrderedCancelVAdd ι ιM] in
 theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : (AddSubgroupClass.subtype (F i)).range⦄
     (hx : x₁ ≈ x₂) ⦃y₁ y₂ : (AddSubgroupClass.subtype (FM j)).range⦄ (hy : y₁ ≈ y₂) :
     x₁ • y₁ ≈ x₂ • y₂ := by
@@ -556,12 +557,10 @@ instance hSMul {i : ι} {j : ιM}:
 
 section HEq
 
-omit [IsOrderedCancelVAdd ι ιM] in
 lemma GradedPiece.mk_smul {i : ι} {j : ιM} (x : (AddSubgroupClass.subtype (F i)).range)
     (y : (AddSubgroupClass.subtype (FM j)).range) :
     mk F F_lt x • mk FM FM_lt y = mk FM FM_lt (x • y) := rfl
 
-omit [IsOrderedCancelVAdd ι ιM] in
 lemma gradedSMul_def {i : ι} {j : ιM} (x : (AddSubgroupClass.subtype (F i)).range)
     (y : (AddSubgroupClass.subtype (FM j)).range) :
     GradedPiece.mk FM FM_lt (IsModuleFiltration.hSMul F F_lt FM FM_lt i j x y) =
@@ -577,8 +576,6 @@ instance : GradedMonoid.GSMul (GradedPiece F F_lt) (GradedPiece FM FM_lt) where
   smul := hasGSMul.gradedSMul F F_lt FM FM_lt
 
 section
-
-omit [IsOrderedCancelVAdd ι ιM]
 
 lemma GradedPiece.HEq_one_smul {i : ιM} (x : GradedPiece FM FM_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) • x) x := by
@@ -671,7 +668,6 @@ lemma GradedPiece.HEq_mul_smul [hasGMul F F_lt] {i j : ι} {k : ιM}
 
 end
 
-omit [IsOrderedCancelVAdd ι ιM] in
 @[simp]
 lemma fst_smul (a : GradedMonoid (GradedPiece F F_lt)) (b : GradedMonoid (GradedPiece FM FM_lt)) :
     (a • b).fst = a.fst +ᵥ b.fst := rfl
