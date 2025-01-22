@@ -3,7 +3,6 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Basic
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -33,6 +32,11 @@ It then calls a Python file that uses the SageMath API to compute the coefficien
 coefficients are then sent back to Lean, which parses them into pexprs. The information is then
 given to the `linear_combination` tactic, which completes the process by checking the certificate.
 
+In fact, `polyrith` uses Sage to test for membership in the *radical* of the ideal.
+This means it searches for a linear combination of hypotheses that add up to a *power* of the goal.
+When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to report the
+certificate.
+
 `polyrith` calls an external python script `scripts/polyrith_sage.py`. Because this is not a Lean
 file, changes to this script may not be noticed during Lean compilation if you have already
 generated olean files. If you are modifying this python script, you likely know what you're doing;
@@ -50,15 +54,13 @@ remember to force recompilation of any files that call `polyrith`.
 * See the book [*Ideals, Varieties, and Algorithms*][coxlittleOshea1997] by David Cox, John Little,
   and Donal O'Shea for the background theory on Groebner bases
 * This code was heavily inspired by the code for the tactic `linarith`, which was written by
-  Robert Lewis, who advised me on this project as part of a Computer Science independent study
+  Robert Y. Lewis, who advised me on this project as part of a Computer Science independent study
   at Brown University.
 
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.Polyrith
-open Lean hiding Rat
+open Lean
 open Meta Ring Qq PrettyPrinter AtomM
 initialize registerTraceClass `Meta.Tactic.polyrith
 
@@ -66,7 +68,7 @@ initialize registerTraceClass `Meta.Tactic.polyrith
 
 /--
 A datatype representing the semantics of multivariable polynomials.
-Each `poly` can be converted into a string.
+Each `Poly` can be converted into a string.
 -/
 inductive Poly
   | const : ℚ → Poly
@@ -125,12 +127,13 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
   | .neg p => do `(-$(← p.toSyntax))
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
-partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
-    catch _ => pure <| Poly.var (← addAtom e)
+    catch _ => pure <| Poly.var (← addAtom e).1
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα with
   | ``HAdd.hAdd, _ | ``Add.add, _ => match e with
@@ -239,7 +242,7 @@ def Poly.pow' : ℕ → ℕ → Poly
   | i, k => .pow (.var i) (.const k)
 
 /-- Constructs a sum from a monadic function supplying the monomials. -/
-def Poly.sumM [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
+def Poly.sumM {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
 instance : FromJson Poly where
@@ -250,14 +253,24 @@ instance : FromJson Poly where
         mon := mon.mul' (.pow' (← fromJson? (← j.getArrVal? 0)) (← fromJson? (← j.getArrVal? 1)))
       pure mon
 
+/-- A schema for the data reported by the Sage calculation -/
+structure SageCoeffAndPower where
+  /-- The function call produces an array of polynomials
+  parallel to the input list of hypotheses. -/
+  coeffs : Array Poly
+  /-- Sage produces an exponent (default 1) in the case where the hypothesess
+  sum to a power of the goal. -/
+  power  : ℕ
+  deriving FromJson, Repr
+
 /-- The result of a sage call in the success case. -/
 structure SageSuccess where
   /-- The script returns a string containing python script to be sent to the remote server,
   when the tracing option is set. -/
   trace : Option String := none
   /-- The main result of the function call is an array of polynomials
-  parallel to the input list of hypotheses. -/
-  data : Option (Array Poly) := none
+  parallel to the input list of hypotheses and an exponent for the goal. -/
+  data : Option SageCoeffAndPower := none
   deriving FromJson, Repr
 
 /-- The result of a sage call in the failure case. -/
@@ -286,8 +299,11 @@ def sageOutput (args : Array String) : IO SageResult := do
   let path := (← getMathlibDir) / "scripts" / "polyrith_sage.py"
   unless ← path.pathExists do
     throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
-  let s ← IO.Process.run { cmd := "python3", args := #[path.toString] ++ args }
-  match Json.parse s >>= fromJson? with
+  let out ← IO.Process.output { cmd := "python3", args := #[path.toString] ++ args }
+  if out.exitCode != 0 then
+    throw <| IO.userError <|
+      s!"scripts/polyrith_sage.py exited with code {out.exitCode}:\n\n{out.stderr}"
+  match Json.parse out.stdout >>= fromJson? with
   | .ok v => return v
   | .error e => throw <| .userError e
 
@@ -332,12 +348,10 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     if hyps'.isEmpty then
       return ← byRing "polyrith did not find any relevant hypotheses"
     let vars := (← get).atoms.size
-    if vars = 0 then
-      return ← byRing "polyrith did not find find any variables"
     match ← sageOutput (createSageArgs traceOnly α vars hyps' tgt) with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
-      if let some polys := data then
+      if let some {coeffs := polys, power := pow} := data then
         let vars ← liftM <| (← get).atoms.mapM delab
         let p ← Poly.sumM (polys.zip hyps') fun (p, src, _) => do
           let h := .hyp (← delab (match src with | .input i => hyps[i]! | .fvar h => .fvar h))
@@ -347,7 +361,8 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
         let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
-          else `(tactic| linear_combination $stx:term)
+          else if pow = 1 then `(tactic| linear_combination $stx:term)
+          else `(tactic| linear_combination (exp := $(quote pow)) $stx:term)
         try
           guard (← Elab.runTactic g tac).1.isEmpty
         catch _ => throwError
@@ -377,24 +392,23 @@ Notes:
   Many thanks to the Sage team and organization for allowing this use.
 * This tactic assumes that the user has `python3` installed and available on the path.
   (Test by opening a terminal and executing `python3 --version`.)
-  It also assumes that the `requests` library is installed: `python3 -m pip install requests`.
 
 Examples:
 
 ```lean
 example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
-  x*y = -2*y + 1 :=
-by polyrith
+    x*y = -2*y + 1 := by
+  polyrith
 -- Try this: linear_combination h1 - 2 * h2
 
-example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w :=
-by polyrith
+example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w := by
+  polyrith
 -- Try this: linear_combination (2 * y + x) * hzw
 
 constant scary : ∀ a b : ℚ, a + b = 0
 
-example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 :=
-by polyrith only [scary c d, h]
+example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 := by
+  polyrith only [scary c d, h]
 -- Try this: linear_combination scary c d + h
 ```
 -/
@@ -405,8 +419,10 @@ elab_rules : tactic
   | `(tactic| polyrith%$tk $[only%$onlyTk]? $[[$hyps,*]]?) => do
     let hyps ← hyps.map (·.getElems) |>.getD #[] |>.mapM (elabTerm · none)
     let traceMe ← Lean.isTracingEnabledFor `Meta.Tactic.polyrith
-    match ← polyrith (← getMainGoal) tk.isNone hyps traceMe with
+    match ← polyrith (← getMainGoal) onlyTk.isSome hyps traceMe with
     | .ok stx =>
       replaceMainGoal []
-      if !traceMe then Std.Tactic.TryThis.addSuggestion tk stx
+      if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
+
+end Mathlib.Tactic.Polyrith

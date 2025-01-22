@@ -3,8 +3,8 @@ Copyright (c) 2022 Joshua Clune. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
-import Lean
-import Mathlib.Tactic.Basic
+import Lean.Elab.Tactic.ElabTerm
+import Mathlib.Tactic.TypeStar
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
@@ -54,3 +54,5 @@ elab_rules : tactic
   | `(tactic| inhabit $[$h_name:ident :]? $term) => do
     let goal ← evalInhabit (← getMainGoal) h_name term
     replaceMainGoal [goal]
+
+end Lean.Elab.Tactic

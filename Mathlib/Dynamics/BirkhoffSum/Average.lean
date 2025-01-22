@@ -23,14 +23,14 @@ see `birkhoffAverage_congr_ring`.
 
 -/
 
-set_option autoImplicit true
+open Finset
 
 section birkhoffAverage
 
 variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
-i.e. the Birkhoff sum `∑ k in Finset.range n, g (f^[k] x)` divided by `n`.
+i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
 
 This average appears in many ergodic theorems
 which say that `(birkhoffAverage R f g · x)`
@@ -55,10 +55,10 @@ theorem birkhoffAverage_one' (f : α → α) (g : α → M) : birkhoffAverage R 
   funext <| birkhoffAverage_one R f g
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
-    [DivisionSemiring S] [AddCommMonoid N] [Module S N]
+    [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
-  simp only [birkhoffAverage, map_inv_nat_cast_smul g' R S, map_birkhoffSum]
+  simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
 theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
     (f : α → α) (g : α → M) (n : ℕ) (x : α) :
@@ -71,7 +71,7 @@ theorem birkhoffAverage_congr_ring' (S : Type*) [DivisionSemiring S] [Module S M
 
 theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n x = g x := by
-  rw [birkhoffAverage, h.birkhoffSum_eq, nsmul_eq_smul_cast R, inv_smul_smul₀]
+  rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
   rwa [Nat.cast_ne_zero]
 
 end birkhoffAverage
@@ -79,7 +79,7 @@ end birkhoffAverage
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
 is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
-theorem birkhoffAverage_apply_sub_birkhoffAverage (R : Type*) [DivisionRing R]
+theorem birkhoffAverage_apply_sub_birkhoffAverage {α M : Type*} (R : Type*) [DivisionRing R]
     [AddCommGroup M] [Module R M] (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by

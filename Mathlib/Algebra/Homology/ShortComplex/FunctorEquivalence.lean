@@ -50,18 +50,18 @@ def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
 @[simps!]
 def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
   NatIso.ofComponents (fun _ => isoMk
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
+    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
+    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
 /-- The counit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps!]
-def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _:=
+def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ => NatIso.ofComponents
     (fun _ => isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat) (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
+      (by simp) (by simp)) (by aesop_cat)) (by aesop_cat)
 
 end FunctorEquivalence
 

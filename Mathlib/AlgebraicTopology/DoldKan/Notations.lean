@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
-#align_import algebraic_topology.dold_kan.notations from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
-
 /-!
 
 # Notations for the Dold-Kan equivalence
@@ -20,6 +18,8 @@ as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 -/
 
 
+@[inherit_doc]
 scoped[DoldKan] notation "K[" X "]" => AlgebraicTopology.AlternatingFaceMapComplex.obj X
 
+@[inherit_doc]
 scoped[DoldKan] notation "N[" X "]" => AlgebraicTopology.NormalizedMooreComplex.obj X

@@ -1,104 +1,60 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.Category.Stonean.Basic
 /-!
-# Explicit (co)limits in Extremally disconnected sets
 
-This file describes some explicit (co)limits in `Stonean`
+# Explicit limits and colimits
 
-## Overview
-
-We define explicit finite coproducts in `Stonean` as sigma types (disjoint unions).
-
-TODO: Define pullbacks of open embeddings.
-
+This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
+the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of `Stonean`.
 -/
 
-set_option autoImplicit true
+universe w u
 
-open CategoryTheory
+open CategoryTheory Limits CompHausLike Topology
+
+attribute [local instance] HasForget.instFunLike
 
 namespace Stonean
 
-/-!
-This section defines the finite Coproduct of a finite family
-of profinite spaces `X : α → Stonean.{u}`
+instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ ExtremallyDisconnected Y) where
+  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance}
 
-Notes: The content is mainly copied from
-`Mathlib/Topology/Category/CompHaus/ExplicitLimits.lean`
--/
-section FiniteCoproducts
+variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : IsOpenEmbedding f)
+include hi
 
-open Limits
+lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.range f)) where
+  open_closure U hU := by
+    have h : IsClopen (i ⁻¹' (Set.range f)) :=
+      ⟨IsClosed.preimage i.continuous (isCompact_range f.continuous).isClosed,
+        IsOpen.preimage i.continuous hi.isOpen_range⟩
+    rw [← (closure U).preimage_image_eq Subtype.coe_injective,
+      ← h.1.isClosedEmbedding_subtypeVal.closure_image_eq U]
+    exact isOpen_induced (ExtremallyDisconnected.open_closure _
+      (h.2.isOpenEmbedding_subtypeVal.isOpenMap U hU))
 
-variable {α : Type} [Fintype α] {B : Stonean.{u}}
-  (X : α → Stonean.{u})
+lemma extremallyDisconnected_pullback : ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
+  have := extremallyDisconnected_preimage i hi
+  let e := (TopCat.pullbackHomeoPreimage i i.2 f hi.isEmbedding).symm
+  let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := by
+    exact TopCat.homeoOfIso
+      ((TopCat.pullbackIsoProdSubtype f i).symm ≪≫ pullbackSymmetry _ _ ≪≫
+        (TopCat.pullbackIsoProdSubtype i f))
+  extremallyDisconnected_of_homeo (e.trans e'.symm)
 
-/--
-The coproduct of a finite family of objects in `Stonean`, constructed as the disjoint
-union with its usual topology.
--/
-def finiteCoproduct : Stonean := Stonean.of <| Σ (a : α), X a
+instance : HasExplicitPullbacksOfInclusions (fun (Y : TopCat.{u}) ↦ ExtremallyDisconnected Y) := by
+  apply CompHausLike.hasPullbacksOfInclusions
+  intro _ _ _ _ _ hi
+  exact ⟨extremallyDisconnected_pullback _ hi⟩
 
-/-- The inclusion of one of the factors into the explicit finite coproduct. -/
-def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
-  toFun := fun x => ⟨a,x⟩
-  continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
+example : FinitaryExtensive Stonean.{u} := inferInstance
 
-/--
-To construct a morphism from the explicit finite coproduct, it suffices to
-specify a morphism from each of its factors.
-This is essentially the universal property of the coproduct.
--/
-def finiteCoproduct.desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) :
-    finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a,x⟩ => e a x
-  continuous_toFun := by
-    apply continuous_sigma
-    intro a; exact (e a).continuous
+noncomputable example : PreservesFiniteCoproducts Stonean.toCompHaus := inferInstance
 
-@[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
-
-lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
-    (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
-  ext ⟨a,x⟩
-  specialize h a
-  apply_fun (fun q => q x) at h
-  exact h
-
-/-- The coproduct cocone associated to the explicit finite coproduct. -/
-@[simps]
-def finiteCoproduct.cocone (F : Discrete α ⥤ Stonean) :
-    Cocone F where
-  pt := finiteCoproduct F.obj
-  ι := Discrete.natTrans fun a => finiteCoproduct.ι F.obj a
-
-/-- The explicit finite coproduct cocone is a colimit cocone. -/
-@[simps]
-def finiteCoproduct.isColimit (F : Discrete α ⥤ Stonean) :
-    IsColimit (finiteCoproduct.cocone F) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app a
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm a
-    ext t
-    apply_fun (fun q => q t) at hm
-    exact hm
-
-/-- The category of extremally disconnected spaces has finite coproducts.
--/
-instance hasFiniteCoproducts : HasFiniteCoproducts Stonean.{u} where
-  out _ := {
-    has_colimit := fun F => {
-      exists_colimit := ⟨{
-        cocone := finiteCoproduct.cocone F
-        isColimit := finiteCoproduct.isColimit F }⟩ } }
-
-end FiniteCoproducts
+noncomputable example : PreservesFiniteCoproducts Stonean.toProfinite := inferInstance
 
 end Stonean

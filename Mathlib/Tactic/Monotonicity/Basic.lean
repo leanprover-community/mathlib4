@@ -3,8 +3,8 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Lean.Elab.Tactic.SolveByElim
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SolveByElim
 
 /-! # Monotonicity tactic
 
@@ -24,7 +24,7 @@ for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior 
 -/
 
 open Lean Elab Tactic Parser Tactic
-open Mathlib Tactic SolveByElim
+open Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 
@@ -47,9 +47,12 @@ elab_rules : tactic
   if let some h := h then throwErrorAt h (msg "'left'/'right'/'both'")
   if let some w := w then throwErrorAt w (msg "'with'")
   if let some u := u then throwErrorAt u (msg "'using'")
-  let cfg ← elabApplyRulesConfig <| mkNullNode #[]
-  let cfg := { cfg with
+  let cfg := { { : Meta.SolveByElim.ApplyRulesConfig } with
     backtracking := false
     transparency := .reducible
     exfalso := false }
-  liftMetaTactic fun g => do solveByElim.processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+  liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+
+end Monotonicity
+
+end Mathlib.Tactic

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Ring.Opposite
 
 /-!
@@ -37,10 +37,8 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
-
-instance MulOpposite.instAlgebra : Algebra R Aᵐᵒᵖ where
-  toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
+instance instAlgebra : Algebra R Aᵐᵒᵖ where
+  algebraMap := (algebraMap R A).toOpposite fun _ _ => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
       Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
@@ -50,7 +48,6 @@ instance MulOpposite.instAlgebra : Algebra R Aᵐᵒᵖ where
 @[simp]
 theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
   rfl
-#align mul_opposite.algebra_map_apply MulOpposite.algebraMap_apply
 
 end MulOpposite
 
@@ -72,7 +69,7 @@ namespace AlgHom
 /--
 An algebra homomorphism `f : A →ₐ[R] B` such that `f x` commutes with `f y` for all `x, y` defines
 an algebra homomorphism from `Aᵐᵒᵖ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐᵒᵖ →ₐ[R] B :=
   { f.toRingHom.fromOpposite hf with
     toFun := f ∘ unop
@@ -80,7 +77,7 @@ def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐ�
 
 @[simp]
 theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.fromOpposite hf : Aᵐᵒᵖ →ₗ[R] B) = f ∘ₗ (opLinearEquiv R).symm.toLinearMap :=
+    (f.fromOpposite hf).toLinearMap = f.toLinearMap ∘ₗ (opLinearEquiv R (M := A)).symm :=
   rfl
 
 @[simp]
@@ -91,7 +88,7 @@ theorem toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) 
 /--
 An algebra homomorphism `f : A →ₐ[R] B` such that `f x` commutes with `f y` for all `x, y` defines
 an algebra homomorphism to `Bᵐᵒᵖ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →ₐ[R] Bᵐᵒᵖ :=
   { f.toRingHom.toOpposite hf with
     toFun := op ∘ f
@@ -99,7 +96,7 @@ def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →�
 
 @[simp]
 theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.toOpposite hf : A →ₗ[R] Bᵐᵒᵖ) = (opLinearEquiv R : B ≃ₗ[R] Bᵐᵒᵖ) ∘ₗ f.toLinearMap :=
+    (f.toOpposite hf).toLinearMap = (opLinearEquiv R : B ≃ₗ[R] Bᵐᵒᵖ) ∘ₗ f.toLinearMap :=
   rfl
 
 @[simp]
@@ -119,7 +116,7 @@ protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
 theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
   rfl
 
-/-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `ring_hom.op`. -/
+/-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 abbrev unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := AlgHom.op.symm
 
 theorem toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
@@ -155,7 +152,7 @@ theorem toRingEquiv_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toRingEquiv = RingEquiv.op f.toRingEquiv :=
   rfl
 
-/-- The 'unopposite' of an algebra iso  `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `alg_equiv.op`. -/
+/-- The 'unopposite' of an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
 abbrev unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ A ≃ₐ[R] B := AlgEquiv.op.symm
 
 theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=
