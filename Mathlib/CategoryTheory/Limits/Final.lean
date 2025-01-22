@@ -1027,4 +1027,17 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 end Grothendieck
 
+section Prod
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {C' : Type u₃} [Category.{v₃} C']
+variable {D' : Type u₄} [Category.{v₄} D']
+variable (F : C ⥤ D) (G : C' ⥤ D')
+
+instance [F.Final] [G.Final] : (F.prod G).Final where
+  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
+
+end Prod
+
 end CategoryTheory
