@@ -642,6 +642,13 @@ theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) 
     (A * B) i = A i ᵥ* B :=
   rfl
 
+theorem vecMul_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) : v ᵥ* M = ∑ i, v i • M i :=
+  (Finset.sum_fn ..).symm
+
+theorem mulVec_eq_sum [Fintype n] (v : n → α) (M : Matrix m n α) :
+    M *ᵥ v = ∑ i, MulOpposite.op (v i) • Mᵀ i :=
+  (Finset.sum_fn ..).symm
+
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (diagonal v *ᵥ w) x = v x * w x :=
   diagonal_dotProduct v w x
