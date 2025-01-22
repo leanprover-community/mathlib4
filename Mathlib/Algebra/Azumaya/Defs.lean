@@ -31,11 +31,12 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 open TensorProduct MulOpposite
 
+/-- `A` as a `A ⊗[R] Aᵐᵒᵖ`-module (or equivalently, an `A`-`A` bimodule). -/
 noncomputable abbrev instModuleTensorProductMop :
   Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
-  `a ⊗ b` maps to `f : x ↦ a * x * b`-/
+  `a ⊗ b` maps to `f : x ↦ a * x * b`. -/
 noncomputable abbrev AlgHom.tensorMopToEnd : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
   letI := instModuleTensorProductMop R A
   letI : IsScalarTower R (A ⊗[R] Aᵐᵒᵖ) A := {
