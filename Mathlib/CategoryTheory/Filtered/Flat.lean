@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Functor.Flat
 /-!
 # Pulling back filteredness along representably flat functors
 
-We show that if `F : C ⥤ D` is a representably coflat functor between two small categories,
+We show that if `F : C ⥤ D` is a representably coflat functor between two categories,
 filteredness of `D` implies filteredness of `C`. Dually, if `F` is representably flat,
 cofilteredness of `D` implies cofilteredness of `C`.
 
