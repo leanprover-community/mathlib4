@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 
 /-!
-# Definition of BrauerGroup over a field K
+# Definition of Brauer group of a field K
 
 We introduce the definition of Brauer group of a field K, which is the quotient of the set of
 all finite-dimensional central simple algebras over K modulo the Brauer Equivalence where two
