@@ -240,7 +240,19 @@ noncomputable def iso : iter₁ ≅ iter₂ where
 @[simp]
 lemma iso_refl : iso iter₁ iter₁ = Iso.refl _ := by aesop_cat
 
-lemma iso_trans : iso iter₁ iter₂ ≪≫ iso iter₂ iter₃ = iso iter₁ iter₃ := by aesop_cat
+lemma iso_hom_comp_iso_hom :
+    (iso iter₁ iter₂).hom ≫ (iso iter₂ iter₃).hom = (iso iter₁ iter₃).hom :=
+  Subsingleton.elim _ _
+
+lemma truncFunctor_map_iso_hom {i : J} (hi : i ≤ j) :
+    (truncFunctor ε hi).map (iso iter₁ iter₂).hom =
+      (iso (iter₁.trunc hi) (iter₂.trunc hi)).hom :=
+  Subsingleton.elim _ _
+
+lemma iso_trunc_hom_natTrans_app {i : J} (hi : i ≤ j) (k : J) (hk : k ≤ i) :
+    (iso (iter₁.trunc hi) (iter₂.trunc hi)).hom.natTrans.app ⟨k, hk⟩ =
+      (iso iter₁ iter₂).hom.natTrans.app ⟨k, hk.trans hi⟩ := by
+  simp [← truncFunctor_map_iso_hom _ _ hi]
 
 end Iteration
 
