@@ -132,8 +132,19 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
       Algebra.isIntegral_def.symm
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
-    Algebra.IsIntegral R (Algebra.adjoin R S) :=
+    Algebra.IsIntegral R (adjoin R S) :=
   le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
+
+theorem Algebra.finite_adjoin_of_isIntegral {S : Set A} (hf : S.Finite)
+    (hi : ∀ x ∈ S, IsIntegral R x) : Module.Finite R (adjoin R S) :=
+  haveI : Algebra.IsIntegral R (adjoin R S) := IsIntegral.adjoin hi
+  haveI : Algebra.FiniteType R (adjoin R S) :=
+    ⟨(Subalgebra.fg_top _).mpr <| by simpa using Subalgebra.fg_adjoin_finset hf.toFinset⟩
+  Algebra.IsIntegral.finite
+
+theorem Algebra.finite_adjoin_simple_of_isIntegral {x : A} (hi : IsIntegral R x) :
+    Module.Finite R (adjoin R {x}) :=
+  ⟨(Submodule.fg_top _).mpr hi.fg_adjoin_singleton⟩
 
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
