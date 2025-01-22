@@ -120,8 +120,7 @@ private theorem sylvesterBelow_pos (n : ℕ) : 0 < sylvesterBelow n :=
   Real.rpow_pos_of_pos (by linarith [rsylvester_gt_one n]) _
 
 private theorem sylvesterBelow_monotone : Monotone sylvesterBelow := by
-  refine monotone_nat_of_le_succ ?h
-  intro m
+  refine monotone_nat_of_le_succ <| fun m ↦ ?_
   let ha := rsylvester_gt_one m
   let hb := rsylvester_gt_one (m + 1)
   dsimp only [sylvesterBelow]
@@ -138,8 +137,7 @@ private theorem sylvesterBelow_monotone : Monotone sylvesterBelow := by
     linarith
 
 private theorem sylvesterAbove_strictAnti : StrictAnti sylvesterAbove := by
-  refine strictAnti_nat_of_succ_lt ?h
-  intro m
+  refine strictAnti_nat_of_succ_lt <| fun m ↦ ?_
   let ha := rsylvester_gt_one m
   let hb := rsylvester_gt_one (m + 1)
   simp only [sylvesterAbove]
@@ -212,6 +210,6 @@ for all natural $n$.
 -/
 theorem sylvester_eq_floor_constant_pow {n : ℕ} :
     sylvester n = ⌊sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2⌋₊ := by
-  refine ((Nat.floor_eq_iff ?h).mpr ?hb).symm
+  refine ((Nat.floor_eq_iff ?_).mpr ?_).symm
   · linarith [pow_pos sylvesterConstant_pos (2 ^ (n + 1))]
   · exact ⟨sylvester_le_const_pow, const_pow_lt_sylvester_add_one⟩
