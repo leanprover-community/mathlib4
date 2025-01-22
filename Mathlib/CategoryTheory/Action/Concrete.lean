@@ -27,7 +27,6 @@ def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G wh
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
-@[simp]
 theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
