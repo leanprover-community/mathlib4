@@ -60,10 +60,12 @@ variable {X} (sx : StrictSegal X)
 
 section spineToSimplex
 
+@[simp]
 lemma spine_spineToSimplex_apply (m : ℕ) (h : m ≤ n + 1) (f : Path X m) :
     X.spine m h (sx.spineToSimplex m h f) = f :=
   congr_fun (sx.spine_spineToSimplex m h) f
 
+@[simp]
 lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _[m]ₙ₊₁) :
     sx.spineToSimplex m h (X.spine m h Δ) = Δ :=
   congr_fun (sx.spineToSimplex_spine m h) Δ
@@ -228,10 +230,12 @@ lemma spine_spineToSimplex : X.spine n ∘ sx.spineToSimplex = id :=
 lemma spineToSimplex_spine : sx.spineToSimplex ∘ X.spine n = id :=
   sx n |>.spineToSimplex_spine n (by omega)
 
+@[simp]
 lemma spine_spineToSimplex_apply (f : Path X n) :
     X.spine n (sx.spineToSimplex f) = f :=
   sx n |>.spine_spineToSimplex_apply n _ f
 
+@[simp]
 lemma spineToSimplex_spine_apply (Δ : X _[n]) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
   sx n |>.spineToSimplex_spine_apply n _ Δ
