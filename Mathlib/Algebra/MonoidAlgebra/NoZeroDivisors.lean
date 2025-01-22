@@ -149,15 +149,11 @@ theorem single_mul_apply_of_le (r : R) (ft : ∀ a ∈ f.support, a ≤ t) :
   nth_rw 1 [← f.erase_add_single t]
   rw [mul_add, single_mul_single, Finsupp.add_apply, Finsupp.single_eq_same]
   convert zero_add _
-  refine Finsupp.not_mem_support_iff.mp (fun h ↦ ?_)
-  refine not_not.mpr ((support_mul (Finsupp.single a r) (f.erase t)) h) ?_
-  simp only [Finsupp.mem_support_single, Finset.mem_biUnion, ne_eq, Finset.mem_singleton,
-    exists_prop, not_exists, not_and, and_imp, forall_eq, Finsupp.support_erase,
-    Finset.mem_add]
-  intros _ x xs
-  refine (add_lt_add_left ?_ _).ne
-  refine ((ft _ (Finset.mem_of_mem_erase xs)).lt_of_ne ?_)
-  exact Finset.ne_of_mem_erase xs
+  refine Finsupp.not_mem_support_iff.mp fun h ↦ ?_
+  replace h := support_mul _ _ h
+  simp_rw [Finset.mem_add, mem_support_single, support_erase, Finset.mem_erase] at h
+  obtain ⟨a, ⟨rfl, ha⟩, t', ⟨ht', ht'f⟩, h⟩ := h
+  exact add_lt_add_left ((ft _ ht'f).lt_of_ne ht') a |>.ne h
 
 /--  The "bottom" element of `Finsupp.single a r * f` is the product of `r` and
 the "bottom" element of `f`.  Here, "bottom" is simply a lower bound for the elements
