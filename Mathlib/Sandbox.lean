@@ -178,21 +178,21 @@ theorem expMap_logEmbedding (u : (𝓞 K)ˣ) :
   simp_rw [← logMap_eq_logEmbedding, expMap_logMap (norm_unit u), normAtPlace_apply]
 
 end expMap
-section expMapFull
+section polarCoord
 
 open MeasureTheory Real
 
 local notation "N" K => (InfinitePlace K → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℝ)
 
 open Classical MeasurableEquiv in
-def expMapFull₀_mes : (N K) ≃ᵐ realMixedSpace K :=
+def equivMixedRealSpace₀ : (N K) ≃ᵐ realMixedSpace K :=
   trans (trans (prodCongr (piEquivPiSubtypeProd _ _) (refl _)) (prodCongr (prodCongr (refl _)
     (arrowCongr' (Equiv.subtypeEquivRight fun _ ↦ not_isReal_iff_isComplex) (refl _))) (refl _)))
       <| prodAssoc.trans <| (prodCongr (refl _) (arrowProdEquivProdArrow ℝ ℝ _)).symm
 
 open Classical in
-def expMapFull₀ : (N K) ≃ₜ realMixedSpace K :=
-{ expMapFull₀_mes with
+def equivMixedRealSpace : (N K) ≃ₜ realMixedSpace K :=
+{ equivMixedRealSpace₀ with
   continuous_toFun := by
     change Continuous fun x : N K ↦
       (⟨fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩⟩ : realMixedSpace K)
@@ -203,58 +203,65 @@ def expMapFull₀ : (N K) ≃ₜ realMixedSpace K :=
     refine continuous_prod_mk.mpr ⟨continuous_pi_iff.mpr fun w ↦ ?_, by fun_prop⟩
     split_ifs <;> fun_prop }
 
-theorem expMapFull₀_apply (x : N K) :
-    expMapFull₀ x = (fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩) := rfl
+theorem equivMixedRealSpace_apply (x : N K) :
+    equivMixedRealSpace x = (fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩) := rfl
 
 open Classical in
-theorem expMapFull₀_symm_apply (x : realMixedSpace K) :
-    expMapFull₀.symm x = ⟨fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
+theorem equivMixedRealSpace_symm_apply (x : realMixedSpace K) :
+    equivMixedRealSpace.symm x = ⟨fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
       (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2⟩ := rfl
 
 variable [NumberField K]
 
 open Classical in
-theorem volume_preserving_expMapFull₀ :
-    MeasurePreserving (expMapFull₀ : (N K) ≃ₜ realMixedSpace K) :=
+theorem volume_preserving_equivMixedRealSpace :
+    MeasurePreserving (equivMixedRealSpace : (N K) ≃ₜ realMixedSpace K) :=
   .trans (.trans (.prod (volume_preserving_piEquivPiSubtypeProd _ _) (.id volume))
       (.prod (.prod (.id volume) (volume_preserving_arrowCongr' _ _ (.id volume))) (.id volume)))
         <| .trans volume_preserving_prodAssoc <|
         .prod (.id volume) (volume_measurePreserving_arrowProdEquivProdArrow _ _ _).symm
 
-def expMapFull : PartialHomeomorph (N K) (mixedSpace K) :=
-  ((expMap.prod (PartialHomeomorph.refl _)).transHomeomorph expMapFull₀).trans
-    (mixedEmbedding.polarCoord K).symm
+def polarCoord : PartialHomeomorph (mixedSpace K) (N K) :=
+  (mixedEmbedding.polarCoord K).transHomeomorph equivMixedRealSpace.symm
 
-theorem expMapFull_apply (x : N K) :
-    expMapFull x =
-      ⟨fun w ↦ expMap x.1 w, fun w ↦ Complex.polarCoord.symm (expMap x.1 w, x.2 w)⟩ := rfl
+theorem polarCoord_symm_apply (x : N K) :
+    polarCoord.symm x =
+      (mixedEmbedding.polarCoord K).symm (fun w ↦ x.1 w, fun w ↦ (x.1 w, x.2 w)) := rfl
 
-theorem normMap_expMapFull (x : N K) :
-    normMap (expMapFull x) = expMap x.1 := by
-  ext w
-  obtain hw | hw := isReal_or_isComplex w
-  · rw [expMapFull_apply, normMap, normAtPlace_apply_isReal hw,
-      Real.norm_of_nonneg (expMap_pos _ _).le]
-  · rw [expMapFull_apply, normMap, normAtPlace_apply_isComplex hw, Complex.norm_eq_abs,
-      Complex.polarCoord_symm_abs, abs_of_pos (expMap_pos _ _)]
+-- def expMapFull : PartialHomeomorph (N K) (mixedSpace K) :=
+--   ((expMap.prod (PartialHomeomorph.refl _)).transHomeomorph expMapFull₀).trans
+--     (mixedEmbedding.polarCoord K).symm
 
--- Do you need this?
-theorem expMapFull_source :
-    expMapFull.source = (Set.univ : Set (N K)) := by
-  unfold expMapFull
-  rw [PartialHomeomorph.trans_source, PartialHomeomorph.transHomeomorph_source,
-    PartialHomeomorph.prod_source, PartialHomeomorph.refl_source, PartialHomeomorph.symm_source,
-    mixedEmbedding.polarCoord_target, expMap_source, Set.univ_prod_univ, Set.univ_inter,
-    PartialHomeomorph.transHomeomorph_apply, PartialHomeomorph.prod_apply,
-    PartialHomeomorph.refl_apply]
-  sorry
+-- theorem expMapFull_apply (x : N K) :
+--     expMapFull x =
+--       ⟨fun w ↦ expMap x.1 w, fun w ↦ Complex.polarCoord.symm (expMap x.1 w, x.2 w)⟩ := rfl
 
--- Do you need this?
-theorem expMapFull_target :
-    expMapFull.target = (Set.univ : Set (mixedSpace K)) := by
-  sorry
+-- theorem normMap_expMapFull (x : N K) :
+--     normMap (expMapFull x) = expMap x.1 := by
+--   ext w
+--   obtain hw | hw := isReal_or_isComplex w
+--   · rw [expMapFull_apply, normMap, normAtPlace_apply_isReal hw,
+--       Real.norm_of_nonneg (expMap_pos _ _).le]
+--   · rw [expMapFull_apply, normMap, normAtPlace_apply_isComplex hw, Complex.norm_eq_abs,
+--       Complex.polarCoord_symm_abs, abs_of_pos (expMap_pos _ _)]
 
-end expMapFull
+-- -- Do you need this?
+-- theorem expMapFull_source :
+--     expMapFull.source = (Set.univ : Set (N K)) := by
+--   unfold expMapFull
+--   rw [PartialHomeomorph.trans_source, PartialHomeomorph.transHomeomorph_source,
+--     PartialHomeomorph.prod_source, PartialHomeomorph.refl_source, PartialHomeomorph.symm_source,
+--     mixedEmbedding.polarCoord_target, expMap_source, Set.univ_prod_univ, Set.univ_inter,
+--     PartialHomeomorph.transHomeomorph_apply, PartialHomeomorph.prod_apply,
+--     PartialHomeomorph.refl_apply]
+--   sorry
+
+-- -- Do you need this?
+-- theorem expMapFull_target :
+--     expMapFull.target = (Set.univ : Set (mixedSpace K)) := by
+--   sorry
+
+end polarCoord
 
 section expMapBasis
 
@@ -320,6 +327,9 @@ theorem expMapBasis_apply (x : InfinitePlace K → ℝ) :
   simp_rw [expMap_smul, expMap_basis_of_ne, expMap_basis_of_eq, Pi.pow_def,  Real.exp_one_rpow]
   rfl
 
+theorem expMapBasis_pos (x : InfinitePlace K → ℝ) (w : InfinitePlace K) :
+    0 < expMapBasis x w := Real.exp_pos _
+
 end expMapBasis
 
 section expMapBasisFull
@@ -329,10 +339,21 @@ variable [NumberField K]
 local notation "N" K => (InfinitePlace K → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℝ)
 
 def expMapBasisFull : PartialHomeomorph (N K) (mixedSpace K) :=
-  (expMapBasis.prod (PartialHomeomorph.refl _)).trans expMapFull
+  (expMapBasis.prod (PartialHomeomorph.refl _)).trans polarCoord.symm
 
+theorem expMapBasisFull_apply (x : N K) :
+    expMapBasisFull x =
+      (mixedEmbedding.polarCoord K).symm (fun w ↦ expMapBasis x.1 ↑w,
+        fun w ↦ (expMapBasis x.1 ↑w, x.2 w)) := rfl
 
-
+theorem normMap_expMapBasisFull (x : N K) :
+    normMap (expMapBasisFull x) = expMapBasis x.1 := by
+  ext w
+  rw [normMap, expMapBasisFull_apply]
+  obtain hw | hw := isReal_or_isComplex w
+  · rw [normAtPlace_polarCoord_symm_of_isReal _ hw, Real.norm_of_nonneg (expMapBasis_pos _ _).le]
+  · rw [normAtPlace_polarCoord_symm_of_isComplex _ hw,
+      Real.norm_of_nonneg (expMapBasis_pos _ _).le]
 
 end expMapBasisFull
 

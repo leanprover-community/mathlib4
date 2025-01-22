@@ -123,7 +123,9 @@ protected theorem polarCoord_source :
     mixedSpaceToRealSpace_apply, Set.mem_prod, Set.mem_univ, true_and, Set.mem_univ_pi,
     polarCoord_source, Set.mem_union, Set.mem_setOf_eq]
 
-protected theorem polarCoord_apply (x) :
+variable {K}
+
+protected theorem polarCoord_apply (x : mixedSpace K) :
     mixedEmbedding.polarCoord K x =
       (x.1, fun w ↦ polarCoord ((x.2 w).re, (x.2 w).im)) := by
   unfold mixedEmbedding.polarCoord
@@ -133,6 +135,17 @@ protected theorem polarCoord_apply (x) :
 
 protected theorem polarCoord_symm_apply (x : realMixedSpace K) :
     (mixedEmbedding.polarCoord K).symm x = (x.1, fun w ↦ Complex.polarCoord.symm (x.2 w)) := rfl
+
+theorem normAtPlace_polarCoord_symm_of_isReal (x : realMixedSpace K) {w : InfinitePlace K}
+    (hw : IsReal w) :
+    normAtPlace w ((mixedEmbedding.polarCoord K).symm x) = ‖x.1 ⟨w, hw⟩‖ := by
+  rw [normAtPlace_apply_isReal hw, mixedEmbedding.polarCoord_symm_apply]
+
+theorem normAtPlace_polarCoord_symm_of_isComplex (x : realMixedSpace K)
+    {w : InfinitePlace K} (hw : IsComplex w) :
+    normAtPlace w ((mixedEmbedding.polarCoord K).symm x) = ‖(x.2 ⟨w, hw⟩).1‖ := by
+  rw [normAtPlace_apply_isComplex hw, mixedEmbedding.polarCoord_symm_apply, Complex.norm_eq_abs,
+    Complex.abs_polarCoord_symm, Real.norm_eq_abs]
 
 open Classical
 

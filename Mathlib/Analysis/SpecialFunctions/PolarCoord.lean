@@ -211,10 +211,11 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
     (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
 
-theorem polarCoord_symm_abs (p : ℝ × ℝ) :
+theorem abs_polarCoord_symm (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
 
-@[deprecated (since := "2024-07-15")] alias polardCoord_symm_abs := polarCoord_symm_abs
+@[deprecated (since := "2024-07-15")] alias polardCoord_symm_abs := abs_polarCoord_symm
+@[deprecated (since := "2025-01-21")] alias polarCoord_symm_abs := abs_polarCoord_symm
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
