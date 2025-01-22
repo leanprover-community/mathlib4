@@ -147,6 +147,37 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isSmooth := sorry
   range_eq_boundary := sorry
 
+def Homeomorph.boolProdEquivSum (X : Type*) [TopologicalSpace X] : Bool × X ≃ₜ X ⊕ X where
+  toEquiv := Equiv.boolProdEquivSum X
+  continuous_toFun := by
+    letI f : Bool × X → X ⊕ X := fun p ↦ p.1.casesOn (Sum.inl p.2) (Sum.inr p.2)
+    show Continuous f
+    unfold f
+    -- only interesting statement to prove
+    sorry --
+  continuous_invFun := by fun_prop
+
+def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
+  toEquiv := finTwoEquiv.symm
+
+def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 :=
+  letI b := Homeomorph.finTwo.symm.prodCongr (Homeomorph.refl X)
+  ((Homeomorph.boolProdEquivSum X).symm.trans b.symm).trans (Homeomorph.prodComm _ _)
+
+-- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
+
+-- fails to infer a ChartedSpace instance on Fin 2: another time
+-- noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
+--     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k where
+--   M₀ := Fin 2
+--   E₀ := EuclideanSpace ℝ (Fin 0)
+--   H₀ := EuclideanSpace ℝ (Fin 0)
+--   I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin 0))
+--   f x := if h : x = 0 then ⊥ else ⊤
+--   isEmbedding := sorry -- should follow from the above!
+--   isSmooth := sorry
+--   range_eq_boundary := sorry
+
 open Set Topology
 
 variable (M I) in
