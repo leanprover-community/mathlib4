@@ -151,16 +151,15 @@ theorem rightMoves_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).RightMoves 
 theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = xR :=
   rfl
 
-lemma ext' {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
-    (hL : HEq x.moveLeft y.moveLeft) (hR : HEq x.moveRight y.moveRight) :
-    x = y := by
-  cases x; cases y; cases hl; cases hr; cases hL; cases hR; rfl
-
 lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
     (hL : ∀ i j, HEq i j → x.moveLeft i = y.moveLeft j)
     (hR : ∀ i j, HEq i j → x.moveRight i = y.moveRight j) :
-    x = y :=
-  ext' hl hr (hfunext hl (heq_of_eq <| hL · · ·)) (hfunext hr (heq_of_eq <| hR · · ·))
+    x = y := by
+  cases x
+  cases y
+  subst hl hr
+  simp only [leftMoves_mk, rightMoves_mk, heq_eq_eq, forall_eq', mk.injEq, true_and] at *
+  exact ⟨funext hL, funext hR⟩
 
 -- TODO define this at the level of games, as well, and perhaps also for finsets of games.
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
@@ -1294,12 +1293,6 @@ lemma memᵣ_neg_iff : ∀ {x y : PGame},
   | mk _ _ _ _, mk _ _ _ _ =>
     ⟨fun ⟨_i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.neg⟩⟩
 
-@[simp] theorem neg_identical_neg_iff : ∀ {x y : PGame.{u}}, -x ≡ -y ↔ x ≡ y
-  ⟨Identical.of_neg, Identical.neg⟩
-
-theorem Identical.neg {x y : PGame} : x ≡ y ↔ -x ≡ -y :=
-  neg_identical_neg_iff.symm
-
 private theorem neg_le_lf_neg_iff : ∀ {x y : PGame.{u}}, (-y ≤ -x ↔ x ≤ y) ∧ (-y ⧏ -x ↔ x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [neg_def, mk_le_mk, mk_lf_mk, ← neg_def]
@@ -1323,11 +1316,11 @@ theorem neg_lt_neg_iff {x y : PGame} : -y < -x ↔ x < y := by
   rw [lt_iff_le_and_lf, lt_iff_le_and_lf, neg_le_neg_iff, neg_lf_neg_iff]
 
 @[simp]
-theorem neg_identical_neg_iff {x y : PGame} : (-x ≡ -y) ↔ (x ≡ y) :=
+theorem neg_identical_neg {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
   ⟨Identical.of_neg, Identical.neg⟩
 
 @[simp]
-theorem neg_equiv_neg_iff {x y : PGame} : (-x ≈ -y) ↔ (x ≈ y) := by
+theorem neg_equiv_neg_iff {x y : PGame} : -x ≈ -y ↔ x ≈ y := by
   show Equiv (-x) (-y) ↔ Equiv x y
   rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
 
@@ -1397,13 +1390,11 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
-@[simp]
 theorem mk_add_moveLeft {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveLeft i =
       i.rec (xL · + mk yl yr yL yR) (mk xl xr xL xR + yL ·) :=
   rfl
 
-@[simp]
 theorem mk_add_moveRight {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveRight i =
       i.rec (xR · + mk yl yr yL yR) (mk xl xr xL xR + yR ·) :=
@@ -1580,7 +1571,7 @@ protected lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
     refine ext rfl rfl ?_ ?_ <;>
     · rintro (i | i) _ ⟨rfl⟩
       · exact PGame.neg_add _ _
-      · simpa [Equiv.refl] using PGame.neg_add _ _
+      · simpa [Equiv.refl, mk_add_moveLeft, mk_add_moveRight] using PGame.neg_add _ _
   termination_by (x, y)
 
 /-- `-(x + y)` has exactly the same moves as `-y + -x`. -/
@@ -1605,7 +1596,7 @@ lemma identical_zero (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : 
 theorem equiv_zero (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 :=
   (identical_zero x).equiv
 
-lemma add_eq_zero_iff : ∀ (x y : PGame), x + y ≡ 0 ↔ x ≡ 0 ∧ y ≡ 0
+protected lemma add_eq_zero : ∀ {x y : PGame}, x + y ≡ 0 ↔ x ≡ 0 ∧ y ≡ 0
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [identical_zero_iff, leftMoves_add, rightMoves_add, isEmpty_sum]
     tauto
@@ -1656,12 +1647,16 @@ instance : Sub PGame :=
 theorem sub_zero_eq_add_zero (x : PGame) : x - 0 = x + 0 :=
   show x + -0 = x + 0 by rw [neg_zero]
 
-protected lemma sub_zero_eq (x : PGame) : x - 0 ≡ x :=
+protected lemma sub_zero (x : PGame) : x - 0 ≡ x :=
   _root_.trans (of_eq x.sub_zero_eq_add_zero) x.add_zero
 
+/-- This lemma is named to match `neg_sub'`. -/
 protected lemma neg_sub' (x y : PGame) : -(x - y) = -x - -y := PGame.neg_add _ _
 
-@[deprecated (since := "2024-09-26")] alias sub_zero := sub_zero_eq_add_zero
+/-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
+then `w - y` has the same moves as `x - z`. -/
+lemma Identical.sub {x₁ x₂ y₁ y₂ : PGame.{u}} (hx : x₁ ≡ x₂) (hy : y₁ ≡ y₂) : x₁ - y₁ ≡ x₂ - y₂ :=
+  hx.add hy.neg
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w - y` has the same moves as `x - z`. -/
@@ -2025,4 +2020,4 @@ end PGame
 
 end SetTheory
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2300

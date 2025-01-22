@@ -68,8 +68,8 @@ instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
-noncomputable instance : Sub ℝ≥0 := Nonneg.sub
-noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+instance : Sub ℝ≥0 := Nonneg.sub
+instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
@@ -105,7 +105,7 @@ protected theorem «exists» {p : ℝ≥0 → Prop} :
   Subtype.exists
 
 /-- Reinterpret a real number `r` as a non-negative real number. Returns `0` if `r < 0`. -/
-noncomputable def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
+def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
   ⟨max r 0, le_max_right _ _⟩
 
 theorem _root_.Real.coe_toNNReal (r : ℝ) (hr : 0 ≤ r) : (Real.toNNReal r : ℝ) = r :=
@@ -127,7 +127,7 @@ example : One ℝ≥0 := by infer_instance
 
 example : Add ℝ≥0 := by infer_instance
 
-noncomputable example : Sub ℝ≥0 := by infer_instance
+example : Sub ℝ≥0 := by infer_instance
 
 example : Mul ℝ≥0 := by infer_instance
 
@@ -325,7 +325,7 @@ theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
   toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
-noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
+def gi : GaloisInsertion Real.toNNReal (↑) :=
   GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
     Real.toNNReal_coe
 

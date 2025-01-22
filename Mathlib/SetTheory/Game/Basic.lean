@@ -433,33 +433,17 @@ theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = 0 :=
   game_eq x.zero_mul_equiv
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
+@[simp]
 lemma mul_neg (x y : PGame) : x * -y = -(x * y) :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine ext rfl rfl ?_ ?_
-    · rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
-      · refine (@mul_moveLeft_inl (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-      · refine (@mul_moveLeft_inr (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-    · rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
-      · refine (@mul_moveRight_inl (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-      · refine (@mul_moveRight_inr (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-  termination_by (x, y)
+    refine ext rfl rfl ?_ ?_ <;> rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
+    all_goals
+      dsimp
+      rw [PGame.neg_sub', PGame.neg_add]
+      congr
+      exacts [mul_neg _ (mk ..), mul_neg .., mul_neg ..]
+termination_by (x, y)
 
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
@@ -469,7 +453,6 @@ lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
 theorem quot_neg_mul (x y : PGame) : (⟦-x * y⟧ : Game) = -⟦x * y⟧ :=
   game_eq (x.neg_mul y).equiv
 
-@[simp]
 theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   game_eq (x.mul_neg y ▸ Setoid.refl _) -- Porting note: was `of_eq (x.mul_neg y)`
 
@@ -593,6 +576,18 @@ theorem right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
 theorem quot_right_distrib_sub (x y z : PGame) : (⟦(y - z) * x⟧ : Game) = ⟦y * x⟧ - ⟦z * x⟧ := by
   change (⟦(y + -z) * x⟧ : Game) = ⟦y * x⟧ + -⟦z * x⟧
   rw [quot_right_distrib, quot_neg_mul]
+
+/-- `1 * x` has the same moves as `x`. -/
+protected lemma one_mul : ∀ (x : PGame), 1 * x ≡ x
+  | ⟨xl, xr, xL, xR⟩ => by
+    refine Identical.of_equiv ((Equiv.sumEmpty _ _).trans (Equiv.punitProd _))
+      ((Equiv.sumEmpty _ _).trans (Equiv.punitProd _)) ?_ ?_ <;>
+    · rintro (⟨⟨⟩, _⟩ | ⟨⟨⟩, _⟩)
+      exact ((((PGame.zero_mul (mk _ _ _ _)).add (PGame.one_mul _)).trans (PGame.zero_add _)).sub
+        (PGame.zero_mul _)).trans (PGame.sub_zero _)
+
+/-- `x * 1` has the same moves as `x`. -/
+protected lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
 
 /-- `1 * x` has the same moves as `x`. -/
 protected lemma one_mul : ∀ (x : PGame), 1 * x ≡ x
@@ -904,8 +899,8 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 lemma inv'_one : inv' 1 ≡ 1 := by
   rw [Identical.ext_iff]
   constructor
-  · simp [memₗ_def, inv']
-  · simp [memᵣ_def, inv']
+  · simp [memₗ_def, inv', isEmpty_subtype]
+  · simp [memᵣ_def, inv', isEmpty_subtype]
 
 theorem inv'_one_equiv : inv' 1 ≈ 1 :=
   inv'_one.equiv
