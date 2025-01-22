@@ -43,9 +43,9 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 -/
 
-open Set Finset
+open Set Finset Function Filter
 
-open scoped ENNReal
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
@@ -220,15 +220,6 @@ def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C)
         Finset.sum_insert hsI, h h_ss.2 h_dis.1]
       rwa [Set.sUnion_insert] at h_mem
 
-end IsSetRing
-
-open scoped ENNReal
-
-open scoped Topology
-open Filter
-
-variable {α : Type*} {C : Set (Set α)}
-
 /-- In a ring of sets, continuity of an additive content at `∅` implies σ-additivity.
 This is not true in general in semirings, or without the hypothesis that `m` is finite. See the
 examples 7 and 8 in Halmos' book Measure Theory (1974), page 40. -/
@@ -237,7 +228,7 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     (hm_tendsto : ∀ ⦃s : ℕ → Set α⦄ (_ : ∀ n, s n ∈ C),
       Antitone s → (⋂ n, s n) = ∅ → Tendsto (fun n ↦ m (s n)) atTop (𝓝 0))
     ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ C) (hUf : (⋃ i, f i) ∈ C)
-    (h_disj : Pairwise (Function.onFun Disjoint f)) :
+    (h_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (set.accumulate f n)`
   let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.Accumulate f n
@@ -256,9 +247,11 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
   simp_rw [hmsn] at h_tendsto
   refine tendsto_nhds_unique ?_ (ENNReal.tendsto_nat_tsum fun i ↦ m (f i))
   refine (Filter.tendsto_add_atTop_iff_nat 1).mp ?_
-  rwa [ENNReal.tendsto_atTop_zero_const_sub_iff _ _ (hm_ne_top _ hUf) (fun n ↦ ?_)] at h_tendsto
+  rwa [ENNReal.tendsto_const_sub_nhds_zero_iff (hm_ne_top _ hUf) (fun n ↦ ?_)] at h_tendsto
   rw [← addContent_accumulate m hC h_disj hf]
   exact addContent_mono hC.isSetSemiring (hC.accumulate_mem hf n) hUf
     (Set.accumulate_subset_iUnion _)
+
+end IsSetRing
 
 end MeasureTheory
