@@ -57,13 +57,14 @@ section Basic
 This holds for `Finitary` matroids.  -/
 @[mk_iff]
 class CardinalRank (M : Matroid α) : Prop where
-  forall_card_base_diff : ∀ ⦃I J X⦄, M.Basis I X → M.Basis J X → #(I \ J : Set α) = #(J \ I : Set α)
+  forall_card_basis_diff :
+    ∀ ⦃I J X⦄, M.Basis I X → M.Basis J X → #(I \ J : Set α) = #(J \ I : Set α)
 
 variable [CardinalRank M]
 
 theorem Basis.cardinalMk_diff_comm (hIX : M.Basis I X) (hJX : M.Basis J X) :
     #(I \ J : Set α) = #(J \ I : Set α) :=
-  CardinalRank.forall_card_base_diff hIX hJX
+  CardinalRank.forall_card_basis_diff hIX hJX
 
 theorem Basis'.cardinalMk_diff_comm (hIX : M.Basis' I X) (hJX : M.Basis' J X) :
     #(I \ J : Set α) = #(J \ I : Set α) :=
