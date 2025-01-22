@@ -4456,6 +4456,7 @@ import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Extension
 import Mathlib.RingTheory.FilteredAlgebra.Basic
+import Mathlib.RingTheory.FilteredAlgebra.InduceMaps
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.FinitePresentation
