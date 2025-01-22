@@ -831,11 +831,6 @@ end NNNorm
 
 section ENNNorm
 
-instance {E : Type*} [NNNorm E] : ENorm E where
-  enorm := (‖·‖₊ : E → ℝ≥0∞)
-
-lemma enorm_eq_nnnorm {E : Type*} [NNNorm E] {x : E} : ‖x‖ₑ = ‖x‖₊ := rfl
-
 instance : ENorm ℝ≥0∞ where
   enorm x := x
 
