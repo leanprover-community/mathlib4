@@ -80,6 +80,17 @@ lemma mk'_mem_map_algebraMap_iff (I : Ideal R) (x : R) (s : M) :
   exact ⟨fun ⟨⟨y, t⟩, c, h⟩ ↦ ⟨_, (c * t).2, h ▸ I.mul_mem_left c.1 y.2⟩, fun ⟨s, hs, h⟩ ↦
     ⟨⟨⟨_, h⟩, ⟨s, hs⟩⟩, 1, by simp⟩⟩
 
+lemma algebraMap_mem_map_algebraMap_iff (I : Ideal R) (x : R) :
+    algebraMap R S x ∈ I.map (algebraMap R S) ↔
+      ∃ m ∈ M, m * x ∈ I := by
+  rw [← IsLocalization.mk'_one (M := M), mk'_mem_map_algebraMap_iff]
+
+lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
+    I.map (algebraMap R S) ≠ ⊤ ↔ Disjoint (M : Set R) (I : Set R) := by
+  simp only [ne_eq, Ideal.eq_top_iff_one, ← map_one (algebraMap R S), not_iff_comm,
+    IsLocalization.algebraMap_mem_map_algebraMap_iff M]
+  simp [Set.disjoint_left]
+
 include M in
 theorem map_comap (J : Ideal S) :
     Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=

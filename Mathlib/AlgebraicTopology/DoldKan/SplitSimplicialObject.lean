@@ -3,7 +3,7 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SplitSimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
@@ -154,7 +154,7 @@ noncomputable def nondegComplex : ChainComplex C ℕ where
     simp only [d, assoc]
     have eq : K[X].d i j ≫ 𝟙 (X.obj (op [j])) ≫ K[X].d j k ≫
         s.πSummand (IndexSet.id (op [k])) = 0 := by
-      erw [id_comp, HomologicalComplex.d_comp_d_assoc, zero_comp]
+      simp
     rw [s.decomposition_id] at eq
     classical
     rw [Fintype.sum_eq_add_sum_compl (IndexSet.id (op [j])), add_comp, comp_add, assoc,

@@ -130,14 +130,12 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
-      · rintro x (_ | _)
-        exacts [Or.inl rfl, ht₂ x (by tauto)]
+      · simpa
     · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₁]
-      · rintro x (_ | _)
-        exacts [Or.inr rfl, ht₂ x (by tauto)]
+      · simpa
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
   | 0, q => by simp
@@ -165,9 +163,9 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private def measureableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-attribute [local instance] measureableSpace_list_int
+attribute [local instance] measurableSpace_list_int
 
 private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }

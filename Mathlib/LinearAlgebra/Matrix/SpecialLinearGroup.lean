@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -294,7 +295,7 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun hn ↦ by
     rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, max_eq_right_of_lt zero_lt_one,
       rootsOfUnity_one]
-    exact MulEquiv.mulEquivOfUnique)
+    exact MulEquiv.ofUnique)
   (fun _ ↦
     (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
       center_equiv_rootsOfUnity' (Classical.arbitrary n))
