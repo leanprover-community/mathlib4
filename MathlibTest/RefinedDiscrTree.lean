@@ -109,10 +109,11 @@ info: @Nat.fold ℕ 10 (@HAdd.hAdd (ℕ → (@LT.lt ℕ *0 #0 10) → ℕ → �
 # Int.sqrt $ (-id : Int → Int) 6
 
 -- addition on `PiLp` reduces to a Pi instance that distributes the sum
-open ENNReal in
-/-- info: @Eq ℝ (@HAdd.hAdd ℝ ℝ *0 *1 10 20) 0 -/
+/--
+info: @Eq ℝ (@HAdd.hAdd ℝ ℝ *0 *1 (@DFunLike.coe (Equiv (PUnit.{u} → ℝ) (WithLp 1 (PUnit.{u} → ℝ))) *2 *3 *4 (@Equiv.symm (WithLp 1 (PUnit.{u} → ℝ)) (PUnit.{u} → ℝ) (WithLp.equiv 1 (PUnit.{u} → ℝ))) 10 PUnit.unit) (@DFunLike.coe (Equiv (PUnit.{u} → ℝ) (WithLp 1 (PUnit.{u} → ℝ))) *5 *6 *7 (@Equiv.symm (WithLp 1 (PUnit.{u} → ℝ)) (PUnit.{u} → ℝ) (WithLp.equiv 1 (PUnit.{u} → ℝ))) 20 PUnit.unit)) 0
+-/
 #guard_msgs in
-# ((show PiLp 1 fun _ : Unit => ℝ from fun _ => 10) + (show PiLp 1 fun _ : Unit => ℝ from fun _ => 20)) () = 0
+# (((WithLp.equiv 1 (Unit → ℝ)).symm 10) + ((WithLp.equiv 1 (Unit → ℝ)).symm 20)) () = 0
 
 -- only distibute the sum application if the instance allows it:
 private instance (priority := high) : Add (Nat → Nat) where
