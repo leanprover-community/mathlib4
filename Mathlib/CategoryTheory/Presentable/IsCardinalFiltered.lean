@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Presentable.ParallelMaps
 import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
@@ -41,6 +41,12 @@ class IsCardinalFiltered (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   nonempty_cocone {A : Type w} [SmallCategory A] (F : A ⥤ J)
     (hA : HasCardinalLT (Arrow A) κ) : Nonempty (Cocone F)
+
+lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
+    {κ : Cardinal.{w}} (hT : HasCardinalLT T κ) (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Arrow (WalkingParallelFamily T)) κ := by
+  simpa only [hasCardinalLT_iff_of_equiv (WalkingParallelFamily.arrowEquiv T),
+    hasCardinalLT_option_iff _ _ hκ] using hT
 
 namespace IsCardinalFiltered
 
@@ -90,26 +96,27 @@ variable {K : Type v'} {j j' : J} (f : K → (j ⟶ j')) (hK : HasCardinalLT K �
 with `HasCardinalLT K κ`, this is an object of `J` where these morphisms
 shall be equalized. -/
 noncomputable def coeq : J :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).pt
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).pt
 
 /-- Given a family of maps `f : K → (j ⟶ j')` in a `κ`-filtered category `J`,
 with `HasCardinalLT K κ`, and `k : K`, this is a choice of morphism `j' ⟶ coeq f hK`. -/
 noncomputable def coeqHom : j' ⟶ coeq f hK :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).ι.app .one
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).ι.app .one
 
 /-- Given a family of maps `f : K → (j ⟶ j')` in a `κ`-filtered category `J`,
 with `HasCardinalLT K κ`, this is a morphism `j ⟶ coeq f hK` which is equal
 to all compositions `f k ≫ coeqHom f hK` for `k : K`. -/
 noncomputable def toCoeq : j ⟶ coeq f hK :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).ι.app .zero
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).ι.app .zero
 
 @[reassoc]
 lemma coeq_condition (k : K) : f k ≫ coeqHom f hK = toCoeq f hK :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).w (ParallelMaps.Hom.map k)
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).w
+    (.line k)
 
 end coeq
 
