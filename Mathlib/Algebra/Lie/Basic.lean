@@ -342,7 +342,7 @@ theorem map_zero (f : L₁ →ₗ⁅R⁆ L₂) : f 0 = 0 :=
 def id : L₁ →ₗ⁅R⁆ L₁ :=
   { (LinearMap.id : L₁ →ₗ[R] L₁) with map_lie' := rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : L₁ →ₗ⁅R⁆ L₁) = _root_.id :=
   rfl
 
@@ -703,7 +703,7 @@ theorem map_zero (f : M →ₗ⁅R,L⁆ N) : f 0 = 0 :=
 def id : M →ₗ⁅R,L⁆ M :=
   { (LinearMap.id : M →ₗ[R] M) with map_lie' := rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ((id : M →ₗ⁅R,L⁆ M) : M → M) = _root_.id :=
   rfl
 

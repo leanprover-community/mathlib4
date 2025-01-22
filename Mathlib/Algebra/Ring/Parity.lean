@@ -27,8 +27,7 @@ to `Algebra.Group.Even`.
 `Algebra.Group.Even` for the definition of even elements.
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists OrderedRing
+assert_not_exists DenselyOrdered OrderedRing
 
 open MulOpposite
 
