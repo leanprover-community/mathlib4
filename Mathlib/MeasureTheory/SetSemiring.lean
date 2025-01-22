@@ -239,8 +239,9 @@ lemma sUnion_diffFinset₀_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : �
   rw [← hC.diff_sUnion_eq_sUnion_diffFinset₀]
   exact diff_subset
 
-lemma sUnion_diffFinset₀_subsets (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
-    ∀ t ∈ (hC.diffFinset₀ hs hI : Set (Set α)), t ⊆ s \ ⋃₀ I := by
+lemma sUnion_diffFinset₀_subsets (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
+    (t : Set α) (ht : t ∈ (hC.diffFinset₀ hs hI : Set (Set α))) : t ⊆ s \ ⋃₀ I := by
+  revert t ht
   rw [← sUnion_subset_iff, hC.diff_sUnion_eq_sUnion_diffFinset₀ hs hI]
 
 lemma sUnion_diffFinset₀_subsets' (hC : IsSetSemiring C) {I : Finset (Set α)} (hs : s ∈ C)
@@ -313,11 +314,10 @@ theorem allDiffFinset₀_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
   | empty => simp
   | cons s J hJ hind =>
     rw [cons_eq_insert, coe_insert, Set.insert_subset_iff] at h1
-    obtain ⟨h11, h12⟩ := h1
-    obtain ⟨K, hK0, ⟨hK1, hK2, hK3, hK4, hK5⟩⟩ := hind h12
-    let K' : Finset (Set α) := hC.diffFinset₀ h11 h12
-    let K1 : Set α → Finset (Set α) := fun (t : Set α) ↦ if t = s then K' else K t
-    have hK1s : K1 s = K' := by simp [K1]
+    obtain ⟨K, hK0, ⟨hK1, hK2, hK3, hK4, hK5⟩⟩ := hind h1.2
+    let K1 : Set α → Finset (Set α) := fun (t : Set α) ↦
+      if t = s then (hC.diffFinset₀ h1.1 h1.2) else K t
+    have hK1s : K1 s = hC.diffFinset₀ h1.1 h1.2 := by simp [K1]
     have hK1_of_ne t (ht : t ≠ s) : K1 t = K t := by simp [K1, ht]
     use K1
     simp only [cons_eq_insert, disjiUnion_eq_biUnion, Finset.biUnion_insert, coe_union, coe_biUnion,
@@ -330,15 +330,16 @@ theorem allDiffFinset₀_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       intros x hx
       exact mod_cast hK1_of_ne _ (ne_of_mem_of_not_mem hx hJ)
     simp only [hK1s]
-    refine ⟨?_, ⟨?_, ?_⟩, ?_, ⟨?_, ?_⟩, ?_, ?_⟩
+    refine ⟨?_, ⟨hC.diffFinset₀_subset h1.1 h1.2, ?_⟩, ?_,
+      ⟨hC.sUnion_diffFinset₀_subsets' h1.1 h1.2, ?_⟩, ?_, ?_⟩
     · apply Set.Pairwise.insert
       · intro j hj i hi hij
         rw [Function.onFun, ht1' j hj, ht1' i hi]
         exact hK0 hj hi hij
       · intro i hi _
-        have h7 : Disjoint K'.toSet (K i).toSet := by
-          refine disjoint_of_sSup_disjoint_of_le_of_le (hC.sUnion_diffFinset₀_subsets h11 h12) ?_
-            (@disjoint_sdiff_left _ (⋃₀ J) s) (Or.inl (hC.empty_not_mem_diffFinset₀ h11 h12))
+        have h7 : Disjoint (hC.diffFinset₀ h1.1 h1.2).toSet (K i).toSet := by
+          refine disjoint_of_sSup_disjoint_of_le_of_le (hC.sUnion_diffFinset₀_subsets h1.1 h1.2) ?_
+            (@disjoint_sdiff_left _ (⋃₀ J) s) (Or.inl (hC.empty_not_mem_diffFinset₀ h1.1 h1.2))
           simp only [mem_coe, Set.le_eq_subset]
           apply sUnion_subset_iff.mp
           exact (hK3 i hi).trans (subset_sUnion_of_mem hi)
@@ -348,20 +349,19 @@ theorem allDiffFinset₀_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
           rw [Set.disjoint_iff_inter_eq_empty] at h7
           exact mod_cast h7
         exact ⟨h8, Disjoint.symm h8⟩
-    · exact hC.diffFinset₀_subset h11 h12
     · intros i hi
       rw [ht1' i hi]
       exact hK1 i hi
     · simp only [iUnion_iUnion_eq_or_left]
       refine pairwiseDisjoint_union.mpr ⟨?_, ?_, ?_⟩
       · rw [hK1s]
-        exact hC.pairwiseDisjoint_diffFinset₀ h11 h12
+        exact hC.pairwiseDisjoint_diffFinset₀ h1.1 h1.2
       · simpa [ht2]
       · simp only [mem_coe, mem_iUnion, exists_prop, ne_eq, id_eq, forall_exists_index, and_imp]
         intros i hi j x hx h3 h4
         -- We show i ⊆ s \ ⋃₀ J
         have ki : i ⊆ s \ ⋃₀ J := by
-          apply hC.sUnion_diffFinset₀_subsets h11 h12
+          apply hC.sUnion_diffFinset₀_subsets h1.1 h1.2
           rw [hK1s] at hi
           exact hi
         -- We show j ⊆ ⋃₀ K x ⊆ x ∈ J
@@ -371,18 +371,17 @@ theorem allDiffFinset₀_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
         have kj : j ⊆ ⋃₀ J := hx2.trans <| subset_sUnion_of_mem hx
         apply disjoint_of_subset ki kj
         exact disjoint_sdiff_left
-    · exact hC.sUnion_diffFinset₀_subsets' h11 h12
     · intros a ha
       simp_rw [hK1_of_ne _ (ne_of_mem_of_not_mem ha hJ)]
       change ∀ t' ∈ (K a).toSet, t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
-    · refine ⟨hC.empty_not_mem_diffFinset₀ h11 h12, ?_⟩
+    · refine ⟨hC.empty_not_mem_diffFinset₀ h1.1 h1.2, ?_⟩
       intros a ha
       rw [ht1' a ha]
       exact hK4 a ha
     · simp only [iUnion_iUnion_eq_or_left, ht2, sUnion_union, ht2, K1]
-      simp_rw [apply_ite, hK5, K', ← hC.diff_sUnion_eq_sUnion_diffFinset₀ h11 h12, hK5]
+      simp_rw [apply_ite, hK5, ← hC.diff_sUnion_eq_sUnion_diffFinset₀ h1.1 h1.2, hK5]
       simp only [↓reduceIte, diff_union_self]
 
 /-- For some `J ⊆ C`, where `C` is a `SetSemiring`, write `⋃₀ J` as the disjoint union
