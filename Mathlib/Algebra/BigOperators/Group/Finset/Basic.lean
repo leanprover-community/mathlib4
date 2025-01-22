@@ -1438,17 +1438,6 @@ section Image_Overlap
 
 variable {α β ι : Type*} [DecidableEq ι] [DecidableEq α]
 
-/- There is a more general non-private version `filter_erase_of_pairwise`, where `1` is
-replaced by `c`, but which cannot be labelled `to_additive` -/
-@[to_additive]
-private lemma filter_erase_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : α → β}
-    {n : ι} {I : Finset ι} (hn : n ∈ I)
-    (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = 1) :
-    ∀ j ∈ (filter (fun i => f i = f n) I).erase n, g (f j) = 1 := by
-  intro x hx
-  simp only [mem_erase, ne_eq, mem_filter] at hx
-  exact hf hx.2.1 hn hx.1 hx.2.2
-
 /-- If the images of `f` only overlap where `g (f i) = c` , then `g (f j) = c` whenever
 `g (f j) = g (f n)` for some `n ≠ j`.-/
 lemma filter_erase_of_pairwise {f : ι → α} {g : α → β}
@@ -1458,6 +1447,15 @@ lemma filter_erase_of_pairwise {f : ι → α} {g : α → β}
   intro x hx
   simp only [mem_erase, ne_eq, mem_filter] at hx
   exact hf hx.2.1 hn hx.1 hx.2.2
+
+/- There is a more general non-private version `filter_erase_of_pairwise`, where `1` is
+replaced by `c`, but which cannot be labelled `to_additive` -/
+@[to_additive]
+private lemma filter_erase_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : α → β}
+    {n : ι} {I : Finset ι} (hn : n ∈ I)
+    (hf : (I.toSet).Pairwise fun i j => f i = f j → g (f i) = 1) :
+    ∀ j ∈ (filter (fun i => f i = f n) I).erase n, g (f j) = 1 :=
+  filter_erase_of_pairwise hn 1 hf
 
 @[to_additive]
 lemma prod_filter_of_pairwiseOne [CommMonoid β] {f : ι → α} {g : α → β}
