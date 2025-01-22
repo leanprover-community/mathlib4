@@ -490,7 +490,7 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
   simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _), Finset.sum_apply, Pi.mul_apply,
     Pi.sub_apply, Nat.Ico_succ_singleton, Finset.sum_singleton]
   exact EventuallyLE.trans (EventuallyLE.mul_nonneg (Eventually.of_forall (hnonneg _))
-    (hf.condexp_sub_nonneg (Nat.le_succ _))) (condexp_stronglyMeasurable_mul (hξ _)
+    (hf.condexp_sub_nonneg (Nat.le_succ _))) (condexp_mul_of_stronglyMeasurable_left (hξ _)
     (((hf.integrable _).sub (hf.integrable _)).bdd_mul
       hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _))
     ((hf.integrable _).sub (hf.integrable _))).symm.le

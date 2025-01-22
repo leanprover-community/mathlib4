@@ -15,7 +15,6 @@ import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.NoncommRing
-import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # A collection of specific limit computations
