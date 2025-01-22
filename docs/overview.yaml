@@ -412,12 +412,12 @@ Geometry:
     angle: 'InnerProductGeometry.angle'
 
   Differentiable manifolds:
-    smooth manifold (with boundary and corners): 'SmoothManifoldWithCorners'
-    smooth map between manifolds: 'MDifferentiableAt'
+    smooth or analytic manifold (with boundary and corners): 'IsManifold'
+    smooth map between manifolds: 'ContMDiff'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
     Lie group: 'LieGroup'
-    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+    sphere: 'EuclideanSpace.instIsManifoldSphere'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'

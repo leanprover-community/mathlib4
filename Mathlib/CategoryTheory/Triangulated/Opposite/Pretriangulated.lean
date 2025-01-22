@@ -31,6 +31,8 @@ in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
@@ -88,7 +90,7 @@ noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
       rw [IsZero.iff_id_eq_zero]
       change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
       rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]))
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp) (by simp)
 
 lemma contractible_distinguished (X : Cᵒᵖ) :
     contractibleTriangle X ∈ distinguishedTriangles C := by
@@ -103,7 +105,7 @@ noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triang
       ((triangleOpEquivalence C).inverse.obj T).unop :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       (-((opShiftFunctorEquivalence C 1).unitIso.app T.obj₁).unop) (by simp)
-        (Quiver.Hom.op_inj (by aesop_cat)) (by aesop_cat)
+        (Quiver.Hom.op_inj (by simp)) (by simp)
 
 lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
     T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
@@ -119,7 +121,7 @@ lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, ?_⟩
   simp only [mem_distinguishedTriangles_iff]
   refine Pretriangulated.isomorphic_distinguished _ H _ ?_
-  exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+  exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
     (Quiver.Hom.op_inj (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))
 
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)

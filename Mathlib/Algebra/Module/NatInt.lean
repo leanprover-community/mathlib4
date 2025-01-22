@@ -26,11 +26,7 @@ This file concerns modules where the scalars are the natural numbers or the inte
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists Set.indicator
+assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
@@ -102,9 +98,8 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
   | succ n ih => rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
--- See note [no_index around OfNat.ofNat]
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (no_index (OfNat.ofNat n) : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
+    (ofNat(n) : R) • b = ofNat(n) • b := Nat.cast_smul_eq_nsmul ..
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 @[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]
