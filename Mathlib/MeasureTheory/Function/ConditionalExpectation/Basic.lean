@@ -234,6 +234,45 @@ theorem ae_eq_condexp_of_forall_setIntegral_eq (hm : m ≤ m0) [SigmaFinite (μ.
 @[deprecated (since := "2024-04-17")]
 alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condexp_of_forall_setIntegral_eq
 
+section MemL2
+
+variable [IsFiniteMeasure μ]
+
+lemma Memℒp.condexpL2_ae_eq_condexp {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F']
+    (hm : m ≤ m0) (hf : Memℒp f 2 μ) :
+    condexpL2 F' 𝕜 hm hf.toLp =ᵐ[μ] μ[f | m] := by
+  refine ae_eq_condexp_of_forall_setIntegral_eq hm
+    (memℒp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
+    (fun s hs htop ↦ integrableOn_condexpL2_of_measure_ne_top hm htop.ne _) (fun s hs htop ↦ ?_)
+    (aeStronglyMeasurable'_condexpL2 hm _)
+  rw [integral_condexpL2_eq hm (hf.toLp _) hs htop.ne]
+  refine setIntegral_congr_ae (hm _ hs) ?_
+  filter_upwards [hf.coeFn_toLp] with ω hω _ using hω
+
+-- TODO: Generalize via the conditional Jensen inequality
+lemma eLpNorm_condexp_le {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F'] :
+    eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
+  by_cases hm : m ≤ m0; swap
+  · simp [condexp_of_not_le hm]
+  by_cases hfm : AEStronglyMeasurable f μ; swap
+  · rw [condexp_undef (by simp [Integrable, not_and_of_not_left _ hfm])]
+    simp
+  obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
+  · simp [hf]
+  replace hf : Memℒp f 2 μ := ⟨hfm, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
+  rw [← eLpNorm_congr_ae (hf.condexpL2_ae_eq_condexp (𝕜 := 𝕜) hm)]
+  refine le_trans (eLpNorm_condexpL2_le hm _) ?_
+  rw [eLpNorm_congr_ae hf.coeFn_toLp]
+
+protected lemma Memℒp.condexp {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F']
+    (hf : Memℒp f 2 μ) : Memℒp (μ[f | m]) 2 μ := by
+  by_cases hm : m ≤ m0
+  · exact ⟨(stronglyMeasurable_condexp.mono hm).aestronglyMeasurable,
+      eLpNorm_condexp_le (𝕜 := 𝕜).trans_lt hf.eLpNorm_lt_top⟩
+  · simp [condexp_of_not_le hm]
+
+end MemL2
+
 theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   by_cases hμ_finite : IsFiniteMeasure μ
