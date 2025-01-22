@@ -82,6 +82,8 @@ universe uR uS uι v v' v₁ v₂ v₃
 variable {R : Type uR} {S : Type uS} {ι : Type uι} {n : ℕ}
   {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M₃ : Type v₃} {M' : Type v'}
 
+-- Don't generate injectivity lemmas, which the `simpNF` linter will time out on.
+set_option genInjectivity false in
 /-- Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
 over `R`. -/
 structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁) (M₂ : Type v₂) [Semiring R]
@@ -96,9 +98,6 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
   map_update_smul' :
     ∀ [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
       toFun (update m i (c • x)) = c • toFun (update m i x)
-
--- Porting note: added to avoid a linter timeout.
-attribute [nolint simpNF] MultilinearMap.mk.injEq
 
 namespace MultilinearMap
 
