@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Cli.Basic
+import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
 
 /-!
@@ -65,24 +66,44 @@ def applyTryAtEachStepCli (args : Cli.Parsed) : IO UInt32 := do
 
   let path := System.mkFilePath (resultsFileName.split (System.FilePath.pathSeparators.contains ·))
   let changes ← readJsonFile (Array SuggestedChange) path
+  -- Hard-coded prefix: remove this part from the file paths in the results file
+  let pathPrefix := "/home/dwrensha/src/compfiles/.lake/packages/mathlib/"
+
   let mut changesSoFar := 0
   for change in changes do
     if let some max := maximum then
       if changesSoFar >= max then break
     -- Sanity-check: the file at the given location should have the oldText.
-    let path := System.mkFilePath (change.filepath.split (System.FilePath.pathSeparators.contains ·))
+    let stripped := change.filepath.stripPrefix pathPrefix
+    let path := System.mkFilePath (stripped.split (System.FilePath.pathSeparators.contains ·))
     let lines ← IO.FS.lines path
+    let mut new_lines := lines
     match lines.get? change.startLine with
     | none => IO.println s!"warning: file {path} does not have a line {change.startLine}; ignoring\
       The results file must match the version of this project that you ran tryAtEachStep on!"
     | some line =>
       if line.length < change.startCol then
-        IO.println s!"warning: file {path} at line {change.startLine} is shorter than {change.startCol} columns; ignoring
+        IO.println s!"warning: file {path} at line {change.startLine} is shorter than {change.startCol} columns; ignoring\
         The results file must match the version of this project that you ran tryAtEachStep on!"
-      -- split line into before, current and next!
 
-      --let currentText := line.split[change.startCol:]
-        -- read the file and
+      -- FIXME: use string slicing instead...
+      if !line.containsSubstr change.oldText then
+        IO.println s!"warning: line {change.startLine} of file {path} does not contain the string \
+        \"{change.oldText}\", ignoring\
+        The results file must match the version of this project that you ran tryAtEachStep on!"
+      let parts := line.splitOn change.oldText
+      if (parts.getD 0 "").length != change.startCol then
+        dbg_trace s!"several occurrences of \"{change.oldText}\", try harder: {parts}"
+        continue -- TODO: need to try harder!
+      match parts with
+      | [before, after] =>
+        if before.length != change.startCol then
+          IO.println s!"warning! {before.length} is supposed to be {change.startCol}"
+        -- FIXME: deal with erasing multiple lines!
+        let newLine := s!"{before}{change.newText}{after}"
+        new_lines := new_lines.set! change.startLine newLine
+      | [_s] => unreachable!
+      | _ => dbg_trace parts -- also need to try harder!
 
     changesSoFar := changesSoFar + 1
 
