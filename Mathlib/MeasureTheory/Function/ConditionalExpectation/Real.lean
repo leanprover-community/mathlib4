@@ -19,7 +19,7 @@ This file proves some results regarding the conditional expectation of real-valu
   Radon-Nikodym derivative of `fμ` restricted on `m` with respect to `μ` restricted on `m`.
 * `MeasureTheory.Integrable.uniformIntegrable_condexp`: the conditional expectation of a function
   form a uniformly integrable class.
-* `MeasureTheory.condexp_stronglyMeasurable_mul`: the pull-out property of the conditional
+* `MeasureTheory.condexp_mul_of_stronglyMeasurable_left`: the pull-out property of the conditional
   expectation.
 
 -/
@@ -70,9 +70,10 @@ theorem eLpNorm_one_condexp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
           (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
-      rw [eLpNorm_one_eq_lintegral_nnnorm, eLpNorm_one_eq_lintegral_nnnorm, ←
-        ENNReal.toReal_eq_toReal (ne_of_lt integrable_condexp.2) (ne_of_lt hf.2), ←
-        integral_norm_eq_lintegral_nnnorm
+      rw [eLpNorm_one_eq_lintegral_nnnorm, eLpNorm_one_eq_lintegral_nnnorm,
+        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_nnnorm.mp integrable_condexp.2).ne
+          (hasFiniteIntegral_iff_nnnorm.mp hf.2).ne,
+        ← integral_norm_eq_lintegral_nnnorm
           (stronglyMeasurable_condexp.mono hm).aestronglyMeasurable,
         ← integral_norm_eq_lintegral_nnnorm hf.1]
       simp_rw [Real.norm_eq_abs]
@@ -99,11 +100,10 @@ theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
       mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
-  · rw [ENNReal.toReal_le_toReal] <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
+  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
+    · exact hfint.2.ne
     · rw [← eLpNorm_one_eq_lintegral_nnnorm, ← eLpNorm_one_eq_lintegral_nnnorm]
       exact eLpNorm_one_condexp_le_eLpNorm _
-    · exact integrable_condexp.2.ne
-    · exact hfint.2.ne
   · filter_upwards with x using abs_nonneg _
   · simp_rw [← Real.norm_eq_abs]
     exact hfint.1.norm
@@ -170,7 +170,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     (integrable_condexp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
   refine setLIntegral_mono
     (stronglyMeasurable_condexp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
-  rw [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
+  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
@@ -219,7 +219,7 @@ theorem Integrable.uniformIntegrable_condexp {ι : Type*} [IsFiniteMeasure μ] {
 section PullOut
 
 -- TODO: this section could be generalized beyond multiplication, to any bounded bilinear map.
-/-- Auxiliary lemma for `condexp_stronglyMeasurable_mul`. -/
+/-- Auxiliary lemma for `condexp_mul_of_stronglyMeasurable_left`. -/
 theorem condexp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFunc α m ℝ) {g : α → ℝ}
     (hg : Integrable g μ) : μ[(f * g : α → ℝ)|m] =ᵐ[μ] f * μ[g|m] := by
   have : ∀ (s c) (f : α → ℝ), Set.indicator s (Function.const α c) * f = s.indicator (c • f) := by
@@ -304,7 +304,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeas
   rwa [← hx_eq]
 
 /-- Pull-out property of the conditional expectation. -/
-theorem condexp_stronglyMeasurable_mul {f g : α → ℝ} (hf : StronglyMeasurable[m] f)
+theorem condexp_mul_of_stronglyMeasurable_left {f g : α → ℝ} (hf : StronglyMeasurable[m] f)
     (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
   by_cases hm : m ≤ m0; swap; · simp_rw [condexp_of_not_le hm]; rw [mul_zero]
   by_cases hμm : SigmaFinite (μ.trim hm)
@@ -340,16 +340,32 @@ theorem condexp_stronglyMeasurable_mul {f g : α → ℝ} (hf : StronglyMeasurab
   · simpa only [hxs, Set.indicator_of_mem] using h_norm n x hxs
   · simp only [hxs, Set.indicator_of_not_mem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]
 
+@[deprecated (since := "2025-01-22")]
+alias condexp_stronglyMeasurable_mul := condexp_mul_of_stronglyMeasurable_left
+
 /-- Pull-out property of the conditional expectation. -/
-theorem condexp_stronglyMeasurable_mul₀ {f g : α → ℝ} (hf : AEStronglyMeasurable' m f μ)
+lemma condexp_mul_of_stronglyMeasurable_right {f g : α → ℝ} (hg : StronglyMeasurable[m] g)
+    (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g := by
+  simpa [mul_comm] using condexp_mul_of_stronglyMeasurable_left hg (mul_comm f g ▸ hfg) hf
+
+/-- Pull-out property of the conditional expectation. -/
+theorem condexp_mul_of_aestronglyMeasurable_left {f g : α → ℝ} (hf : AEStronglyMeasurable' m f μ)
     (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
   have : μ[f * g|m] =ᵐ[μ] μ[hf.mk f * g|m] :=
     condexp_congr_ae (hf.ae_eq_mk.mul EventuallyEq.rfl)
   refine this.trans ?_
   have : f * μ[g|m] =ᵐ[μ] hf.mk f * μ[g|m] := hf.ae_eq_mk.mul EventuallyEq.rfl
-  refine (condexp_stronglyMeasurable_mul hf.stronglyMeasurable_mk ?_ hg).trans this.symm
+  refine (condexp_mul_of_stronglyMeasurable_left hf.stronglyMeasurable_mk ?_ hg).trans this.symm
   refine (integrable_congr ?_).mp hfg
   exact hf.ae_eq_mk.mul EventuallyEq.rfl
+
+@[deprecated (since := "2025-01-22")]
+alias condexp_stronglyMeasurable_mul₀ := condexp_mul_of_aestronglyMeasurable_left
+
+/-- Pull-out property of the conditional expectation. -/
+lemma condexp_mul_of_aestronglyMeasurable_right {f g : α → ℝ} (hg : AEStronglyMeasurable' m g μ)
+    (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g := by
+  simpa [mul_comm] using condexp_mul_of_aestronglyMeasurable_left hg (mul_comm f g ▸ hfg) hf
 
 end PullOut
 

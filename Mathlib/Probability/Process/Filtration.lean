@@ -89,7 +89,7 @@ instance : Bot (Filtration ι m) :=
 instance : Top (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
-instance : Sup (Filtration ι m) :=
+instance : Max (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊔ g i
       mono' := fun _ _ hij =>
@@ -100,7 +100,7 @@ instance : Sup (Filtration ι m) :=
 theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
-instance : Inf (Filtration ι m) :=
+instance : Min (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊓ g i
       mono' := fun _ _ hij =>
@@ -322,7 +322,7 @@ theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : 
         (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
-  · exact zero_memℒp
+  · exact Memℒp.zero
 
 @[deprecated (since := "2024-07-27")]
 alias memℒp_limitProcess_of_snorm_bdd := memℒp_limitProcess_of_eLpNorm_bdd

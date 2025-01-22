@@ -341,8 +341,9 @@ lemma mem_spectrum_inr_of_not_isUnit {R A : Type*} [CommRing R]
     (a : A) (r : R) (hr : ¬ IsUnit r) : r ∈ spectrum R (a : Unitization R A) :=
   fun h ↦ hr <| by simpa [map_sub] using h.map (fstHom R A)
 
-lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [Ring A]
-    [Algebra R A] (a : A) : quasispectrum R a = spectrum R (a : Unitization R A) := by
+lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] (a : A) :
+    quasispectrum R a = spectrum R (a : Unitization R A) := by
   ext r
   have : { r | ¬ IsUnit r} ⊆ spectrum R _ := mem_spectrum_inr_of_not_isUnit a
   rw [← Set.union_eq_left.mpr this, ← quasispectrum_eq_spectrum_union]
@@ -358,6 +359,14 @@ lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
   rw [← Set.union_eq_self_of_subset_right this, ← quasispectrum_eq_spectrum_union_zero]
   apply forall_congr' fun x ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
+
+lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
+    [Field S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
+    [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
+    quasispectrum R (a : Unitization S A) = quasispectrum R a := by
+  rw [quasispectrum_eq_spectrum_union_zero, quasispectrum_eq_spectrum_inr' R S]
+  apply Set.union_eq_self_of_subset_right
+  simpa using zero_mem_spectrum_inr _ _ _
 
 end Unitization
 
@@ -564,6 +573,16 @@ theorem quasispectrumRestricts_iff_spectrumRestricts_inr (S : Type*) {R A : Type
     QuasispectrumRestricts a f ↔ SpectrumRestricts (a : Unitization S A) f := by
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff,
     ← Unitization.quasispectrum_eq_spectrum_inr']
+
+/-- The difference from `quasispectrumRestricts_iff_spectrumRestricts_inr` is that the
+`Unitization` may be taken with respect to a different scalar field. -/
+lemma quasispectrumRestricts_iff_spectrumRestricts_inr'
+    {R S' A : Type*} (S : Type*) [Semifield R] [Semifield S'] [Field S] [NonUnitalRing A]
+    [Module R A] [Module S' A] [Module S A] [IsScalarTower S A A] [SMulCommClass S A A]
+    [Algebra R S'] [Algebra S' S] [Algebra R S] [IsScalarTower S' S A] [IsScalarTower R S A]
+    {a : A} {f : S' → R} :
+    QuasispectrumRestricts a f ↔ SpectrumRestricts (a : Unitization S A) f := by
+  simp only [quasispectrumRestricts_iff, SpectrumRestricts, Unitization.quasispectrum_inr_eq]
 
 theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield R] [Semifield S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R} :

@@ -76,10 +76,9 @@ nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
 @[simp]
 theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+    Complex.abs ofNat(n) = ofNat(n) :=
   abs_natCast n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
@@ -117,20 +116,13 @@ theorem range_abs : range Complex.abs = Ici 0 :=
 theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 
--- Porting note (#10618): @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 
--- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_pow]` -/
 theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 
--- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 
@@ -177,11 +169,6 @@ theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 
--- Porting note: added so `two_pos` in the next proof works
--- TODO: move somewhere else
-instance : NeZero (1 : ℝ) :=
- ⟨by apply one_ne_zero⟩
-
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
@@ -210,9 +197,6 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
     div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 
 @[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
-
-@[deprecated (since := "2024-02-14")]
-lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]

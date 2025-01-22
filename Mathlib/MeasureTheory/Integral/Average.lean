@@ -117,7 +117,7 @@ theorem measure_mul_laverage [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     μ univ * ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂μ := by
   rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, lintegral_zero_measure, laverage_zero_measure, mul_zero]
-  · rw [laverage_eq, ENNReal.mul_div_cancel' (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
+  · rw [laverage_eq, ENNReal.mul_div_cancel (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
 
 theorem setLaverage_eq (f : α → ℝ≥0∞) (s : Set α) :
     ⨍⁻ x in s, f x ∂μ = (∫⁻ x in s, f x ∂μ) / μ s := by rw [laverage_eq, restrict_apply_univ]
@@ -396,7 +396,6 @@ theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (
     ⨍ _ in s, c ∂μ = c :=
   have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
     ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by simp
 

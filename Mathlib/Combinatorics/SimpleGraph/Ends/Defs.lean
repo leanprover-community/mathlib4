@@ -17,7 +17,7 @@ assigning, to each finite set of vertices, the connected components of its compl
 
 universe u
 
-variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
+variable {V : Type u} (G : SimpleGraph V) (K L M : Set V)
 
 namespace SimpleGraph
 
@@ -84,7 +84,7 @@ protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
     · rintro h'
       exact (h u.prop v.prop a).trans (ih h'.of_cons)
 
-@[elab_as_elim] -- Porting note: added
+@[elab_as_elim]
 protected theorem ind {β : G.ComponentCompl K → Prop}
     (f : ∀ ⦃v⦄ (hv : v ∉ K), β (G.componentComplMk hv)) : ∀ C : G.ComponentCompl K, β C := by
   apply ConnectedComponent.ind

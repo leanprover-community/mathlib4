@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 
 /-!
 # Cartesian closure of Type
@@ -21,7 +21,7 @@ namespace CategoryTheory
 
 noncomputable section
 
-open Category Limits
+open Category Limits MonoidalCategory
 
 universe v₁ v₂ u₁ u₂
 
@@ -29,26 +29,26 @@ variable {C : Type v₂} [Category.{v₁} C]
 
 section CartesianClosed
 
-/-- The adjunction `Limits.Types.binaryProductFunctor.obj X ⊣ coyoneda.obj (Opposite.op X)`
+/-- The adjunction `tensorLeft.obj X ⊣ coyoneda.obj (Opposite.op X)`
 for any `X : Type v₁`. -/
-def Types.binaryProductAdjunction (X : Type v₁) :
-    Limits.Types.binaryProductFunctor.obj X ⊣ coyoneda.obj (Opposite.op X) where
+def Types.tensorProductAdjunction (X : Type v₁) :
+    tensorLeft X ⊣ coyoneda.obj (Opposite.op X) where
   unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
   counit := { app := fun _ xf => xf.2 xf.1 }
 
-instance (X : Type v₁) : (Types.binaryProductFunctor.obj X).IsLeftAdjoint :=
-  ⟨_, ⟨Types.binaryProductAdjunction X⟩⟩
+instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
+  ⟨_, ⟨Types.tensorProductAdjunction X⟩⟩
 
 instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
-  (fun X => Exponentiable.mk _ _
-    ((Types.binaryProductAdjunction X).ofNatIsoLeft (Types.binaryProductIsoProd.app X)))
+  (fun X => Exponentiable.mk _ _ (Types.tensorProductAdjunction X))
 
 instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
   CartesianClosed.mk _
     (fun F => by
-      letI := FunctorCategory.prodPreservesColimits F
-      have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
-      exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
+      haveI : ∀ X : Type v₁, PreservesColimits (tensorLeft X) := by infer_instance
+      letI : PreservesColimits (tensorLeft F) := ⟨by infer_instance⟩
+      have := Presheaf.isLeftAdjoint_of_preservesColimits (tensorLeft F)
+      exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (tensorLeft F)))
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.

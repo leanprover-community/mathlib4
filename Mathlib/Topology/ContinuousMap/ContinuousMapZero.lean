@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -80,27 +80,30 @@ lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g 
 protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
-lemma embedding_toContinuousMap : Embedding ((↑) : C(X, R)₀ → C(X, R)) where
-  induced := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+  eq_induced := rfl
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
-instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
-instance [R0Space R] : R0Space C(X, R)₀ := embedding_toContinuousMap.r0Space
-instance [T1Space R] : T1Space C(X, R)₀ := embedding_toContinuousMap.t1Space
-instance [R1Space R] : R1Space C(X, R)₀ := embedding_toContinuousMap.r1Space
-instance [T2Space R] : T2Space C(X, R)₀ := embedding_toContinuousMap.t2Space
-instance [RegularSpace R] : RegularSpace C(X, R)₀ := embedding_toContinuousMap.regularSpace
-instance [T3Space R] : T3Space C(X, R)₀ := embedding_toContinuousMap.t3Space
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMap := isEmbedding_toContinuousMap
+
+instance [T0Space R] : T0Space C(X, R)₀ := isEmbedding_toContinuousMap.t0Space
+instance [R0Space R] : R0Space C(X, R)₀ := isEmbedding_toContinuousMap.r0Space
+instance [T1Space R] : T1Space C(X, R)₀ := isEmbedding_toContinuousMap.t1Space
+instance [R1Space R] : R1Space C(X, R)₀ := isEmbedding_toContinuousMap.r1Space
+instance [T2Space R] : T2Space C(X, R)₀ := isEmbedding_toContinuousMap.t2Space
+instance [RegularSpace R] : RegularSpace C(X, R)₀ := isEmbedding_toContinuousMap.regularSpace
+instance [T3Space R] : T3Space C(X, R)₀ := isEmbedding_toContinuousMap.t3Space
 
 instance instContinuousEvalConst : ContinuousEvalConst C(X, R)₀ X R :=
-  .of_continuous_forget embedding_toContinuousMap.continuous
+  .of_continuous_forget isEmbedding_toContinuousMap.continuous
 
 instance instContinuousEval [LocallyCompactPair X R] : ContinuousEval C(X, R)₀ X R :=
-  .of_continuous_forget embedding_toContinuousMap.continuous
+  .of_continuous_forget isEmbedding_toContinuousMap.continuous
 
 lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     IsClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
-  toEmbedding := embedding_toContinuousMap
+  toIsEmbedding := isEmbedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| continuous_eval_const 0
@@ -227,13 +230,13 @@ def toContinuousMapCLM (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMu
   map_smul' _ _ := rfl
 
 /-- The evaluation at a point, as a continuous linear map from `C(X, R)₀` to `R`. -/
-def evalCLM (𝕜 : Type*) {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
-    [NormedSpace 𝕜 R] (x : X) : C(X, R)₀ →L[𝕜] R :=
-  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜 : C(X, R)₀ →L[𝕜] C(X, R))
+def evalCLM (𝕜 : Type*) [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R] (x : X) :
+    C(X, R)₀ →L[𝕜] R :=
+  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜)
 
 @[simp]
-lemma evalCLM_apply {𝕜 : Type*} {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
-    [NormedSpace 𝕜 R] (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
+lemma evalCLM_apply {𝕜 : Type*} [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R]
+    (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
 
 /-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
 def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
@@ -284,7 +287,7 @@ protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContin
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
@@ -363,6 +366,9 @@ noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
+
+lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+  rfl
 
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g

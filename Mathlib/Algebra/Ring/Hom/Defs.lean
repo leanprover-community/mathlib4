@@ -42,10 +42,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
-assert_not_exists Function.Injective.mulZeroClass
-assert_not_exists semigroupDvd
-assert_not_exists Units.map
-assert_not_exists Set.range
+assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map Set.range
 
 open Function
 
@@ -329,7 +326,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
+-- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
@@ -542,6 +539,9 @@ def id (α : Type*) [NonAssocSemiring α] : α →+* α where
 instance : Inhabited (α →+* α) :=
   ⟨id α⟩
 
+@[simp, norm_cast]
+theorem coe_id : ⇑(RingHom.id α) = _root_.id := rfl
+
 @[simp]
 theorem id_apply (x : α) : RingHom.id α x = x :=
   rfl
@@ -649,8 +649,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
+@[simp]
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext
