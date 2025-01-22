@@ -704,6 +704,8 @@ theorem indexOf_lt_length_iff {a} {l : List α} : indexOf a l < length l ↔ a �
   ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length_iff.2 al,
    fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length_iff.1 h al⟩
 
+@[deprecated (since := "2025-01-22")] alias indexOf_lt_length := indexOf_lt_length_iff
+
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
   · exfalso
