@@ -104,7 +104,7 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
   rfl
 
 variable (J) in
-/-- `Arrow (WalkingParallelFamily J)` identify to the type obtained
+/-- `Arrow (WalkingParallelFamily J)` identifies to the type obtained
 by adding two elements to `T`. -/
 def WalkingParallelFamily.arrowEquiv :
     Arrow (WalkingParallelFamily J) ≃ Option (Option J) where
