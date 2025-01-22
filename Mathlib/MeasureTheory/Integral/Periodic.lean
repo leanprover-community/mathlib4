@@ -226,11 +226,9 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) 
 
 end UnitAddCircle
 
-
 /-!
 ## Interval integrability of periodic functions
 -/
-
 namespace Function
 
 namespace Periodic
@@ -248,7 +246,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T
   obtain ⟨n₁, hn₁⟩ := exists_nat_ge ((t -min a₁ a₂) / T)
   obtain ⟨n₂, hn₂⟩ := exists_nat_ge ((max a₁ a₂ - t) / T)
   have : Set.uIcc a₁ a₂ ⊆ Set.uIcc (t - n₁ * T) (t + n₂ * T) := by
-    apply Set.uIcc_subset_uIcc_iff_le.mpr
+    rw [Set.uIcc_subset_uIcc_iff_le]
     constructor
     · calc min (t - ↑n₁ * T) (t + ↑n₂ * T)
       _ ≤ (t - ↑n₁ * T) := by apply min_le_left
