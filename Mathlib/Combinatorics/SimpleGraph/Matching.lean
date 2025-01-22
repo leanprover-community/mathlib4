@@ -370,7 +370,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
 lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Fintype V] [DecidableEq V] {v w w' : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
     (hadj : G.Adj v w') : p.snd = w' := by
-  apply hp.toSubgraph_adj_sndOfNotNil
+  apply hp.snd_of_toSubgraph_adj
   rw [Walk.mem_support_iff_exists_getVert] at hw'
   obtain ⟨n, ⟨rfl, hnl⟩⟩ := hw'
   by_cases hn : n = 0 ∨ n = p.length
@@ -380,7 +380,7 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Fintype V] [DecidableEq V] {
     rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         hp.ncard_neighborSet_toSubgraph_internal_eq_two (by omega) (by omega),
         hcyc (Set.nonempty_of_mem hadj.symm)]
-  rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _).fintype v]
+  rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _).fintype]
   exact hadj.symm
 
 lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V] {v w : V}
@@ -396,11 +396,11 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V
   -- The edge (v, w) can't be in p, because then it would be the second node
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
-    exact hw'1 (hp.toSubgraph_adj_sndOfNotNil h)
+    exact hw'1 (hp.snd_of_toSubgraph_adj h)
   -- If w = w', then then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
-    have : (G \ p.toSubgraph.spanningCoe).Adj w v := by
+    have : (G \  p.toSubgraph.spanningCoe).Adj w v := by
       simp only [sdiff_adj, Subgraph.spanningCoe_adj]
       exact ⟨hw'2.symm, fun h ↦ hnpvw' h.symm⟩
     exact this.reachable
@@ -411,7 +411,7 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V
   have hp'p : (p.cons hw'2.symm).IsPath := by
     rw [Walk.cons_isPath_iff]
     refine ⟨hp, fun hw' ↦ ?_⟩
-    exact hw'1 (hcyc.snd_of_support_of_path_of_adj _ hww' hw' hp hw'2)
+    exact hw'1 (hcyc.snd_of_mem_support_of_isPath_of_adj _ hww' hw' hp hw'2)
   have : (G \ p.toSubgraph.spanningCoe).Adj w' v := by
     simp only [sdiff_adj, Subgraph.spanningCoe_adj]
     refine ⟨hw'2.symm, fun h ↦ ?_⟩
@@ -426,10 +426,13 @@ decreasing_by
 
 lemma IsCycles.reachable_deleteEdges [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
+  have : G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} := by
+    rfl
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
       Set.mem_singleton_iff, or_true, sup_of_le_left]
     exact (Subgraph.spanningCoe_subgraphOfAdj hadj).symm
+  rw [show G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} from by rfl]
   exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk
     (Walk.IsPath.of_adj hadj)).symm
 
@@ -439,12 +442,12 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponent_supp [Fintype
     ∃ (p : G.Walk v v), p.IsCycle ∧ p.toSubgraph.verts = c.supp := by
   obtain ⟨w, hw⟩ := hn
   obtain ⟨u, p, hp⟩ := SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle.mp
-    ⟨hw, h.reachable_deleteEdge hw⟩
+    ⟨hw, h.reachable_deleteEdges hw⟩
   have hvp : v ∈ p.support := SimpleGraph.Walk.fst_mem_support_of_mem_edges _ hp.2
   have : p.toSubgraph.verts = c.supp := by
     obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_verts_eq_connectedComponentSupp (by
       intro v hv w hadj
-      refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype w).mpr hadj
+      refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype).mpr hadj
       have : (G.neighborSet v).Nonempty := by
         rw [Walk.mem_verts_toSubgraph] at hv
         exact (Set.nonempty_of_ncard_ne_zero

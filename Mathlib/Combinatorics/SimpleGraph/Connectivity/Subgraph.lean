@@ -104,6 +104,10 @@ protected lemma Connected.sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
+/--
+  This lemma establishes a condition under which a subgraph is the same as a connected component.
+  Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.
+-/
 lemma Connected.exists_verts_eq_connectedComponentSupp {H : Subgraph G}
     (hc : H.Connected) (h : ∀ v ∈ H.verts, ∀ w, G.Adj v w → H.Adj v w) :
     ∃ c : G.ConnectedComponent, H.verts = c.supp := by
@@ -113,7 +117,7 @@ lemma Connected.exists_verts_eq_connectedComponentSupp {H : Subgraph G}
   ext w
   simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]
   exact ⟨fun hw ↦ by simpa using (hc ⟨w, hw⟩ ⟨v, hv⟩).map H.hom,
-    fun a ↦ a.symm.mem_verts_subgraph h hv⟩
+    fun a ↦ a.symm.mem_subgraphVerts h hv⟩
 
 end Subgraph
 
