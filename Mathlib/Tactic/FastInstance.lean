@@ -25,7 +25,7 @@ since `makeFastInstance` just uses `ClassName.paramName` for the trace.
 private def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
   throwError "\
     {m}\n\n\
-    Use `set_option trace.Elab.fast_instance true to analyze error.\n\n\
+    Use `set_option trace.Elab.fast_instance true` to analyze the error.\n\n\
     Trace of fields visited: {trace}"
 
 /--
