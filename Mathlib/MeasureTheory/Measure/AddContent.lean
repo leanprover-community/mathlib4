@@ -43,37 +43,6 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 -/
 
-@[simp]
-lemma accumulate_zero_nat {α : Type*}
-  (s : ℕ → Set α) : Set.Accumulate s 0 = s 0 := by simp [Set.accumulate_def]
-
-open Function in
-theorem Set.disjoint_accumulate {α : Type*} {s : ℕ → Set α}
-    (hs : Pairwise (Disjoint on s)) {i j : ℕ}
-    (hij : i < j) : Disjoint (Set.Accumulate s i) (s j) := by
-  rw [Set.accumulate_def]
-  induction i with
-  | zero => simp only [Nat.zero_eq, nonpos_iff_eq_zero, iUnion_iUnion_eq_left]; exact hs hij.ne
-  | succ i hi =>
-    rw [Set.biUnion_le_succ s i]
-    exact Disjoint.union_left (hi ((Nat.lt_succ_self i).trans hij)) (hs hij.ne)
-
-open scoped ENNReal in
-open Filter Topology in
-theorem ENNReal.tendsto_atTop_zero_const_sub_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) (ha : a ≠ ∞)
-    (hfa : ∀ n, f n ≤ a) :
-    Tendsto (fun n ↦ a - f n) atTop (𝓝 0) ↔ Tendsto (fun n ↦ f n) atTop (𝓝 a) := by
-  rw [ENNReal.tendsto_atTop_zero, ENNReal.tendsto_atTop ha]
-  refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩ <;> obtain ⟨N, hN⟩ := h ε hε
-  · refine ⟨N, fun n hn ↦ ⟨?_, (hfa n).trans (le_add_right le_rfl)⟩⟩
-    specialize hN n hn
-    rw [tsub_le_iff_right] at hN ⊢
-    rwa [add_comm]
-  · refine ⟨N, fun n hn ↦ ?_⟩
-    have hN_left := (hN n hn).1
-    rw [tsub_le_iff_right] at hN_left ⊢
-    rwa [add_comm]
-
 open Set Finset
 
 open scoped ENNReal
@@ -226,6 +195,31 @@ lemma addContent_accumulate (m : AddContent C) (hC : IsSetRing C)
     · exact Set.disjoint_accumulate hs_disj (Nat.lt_succ_self n)
     · exact hC.accumulate_mem hsC n
 
+/-- A function which is additive on disjoint elements in a ring of sets `C` defines an
+additive content on `C`. -/
+def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C) (m_empty : m ∅ = 0)
+    (m_add : ∀ {s t : Set α} (_hs : s ∈ C) (_ht : t ∈ C), Disjoint s t → m (s ∪ t) = m s + m t) :
+    AddContent C where
+  toFun := m
+  empty' := m_empty
+  sUnion' I h_ss h_dis h_mem := by
+    classical
+    induction I using Finset.induction with
+    | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
+    | @insert s I hsI h =>
+      rw [Finset.coe_insert] at *
+      rw [Set.insert_subset_iff] at h_ss
+      rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
+      swap; · exact hsI
+      have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
+        rw [Set.sUnion_eq_biUnion]
+        apply hC.biUnion_mem
+        intro n hn
+        exact h_ss.2 hn
+      rw [Set.sUnion_insert, m_add h_ss.1 h_sUnion_mem (Set.disjoint_sUnion_right.mpr h_dis.2),
+        Finset.sum_insert hsI, h h_ss.2 h_dis.1]
+      rwa [Set.sUnion_insert] at h_mem
+
 end IsSetRing
 
 open scoped ENNReal
@@ -266,61 +260,5 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
   rw [← addContent_accumulate m hC h_disj hf]
   exact addContent_mono hC.isSetSemiring (hC.accumulate_mem hf n) hUf
     (Set.accumulate_subset_iUnion _)
-
-theorem sUnion_eq_sum_of_union_eq_add (hC_empty : ∅ ∈ C)
-    (hC_union : ∀ {s t : Set α}, s ∈ C → t ∈ C → s ∪ t ∈ C)
-    (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
-    (m_add : ∀ {s t : Set α} (_ : s ∈ C) (_ : t ∈ C), Disjoint s t → m (s ∪ t) = m s + m t)
-    (I : Finset (Set α)) (h_ss : ↑I ⊆ C) (h_dis : Set.PairwiseDisjoint (I : Set (Set α)) id)
-    (h_mem : ⋃₀ ↑I ∈ C) :
-    m (⋃₀ I) = ∑ u in I, m u := by
-  classical
-  induction I using Finset.induction with
-  | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
-  | @insert s I hsI h =>
-    rw [Finset.coe_insert] at *
-    rw [Set.insert_subset_iff] at h_ss
-    rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
-    swap; · exact hsI
-    have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
-      have (J : Finset (Set α)) : ↑J ⊆ C → ⋃₀ ↑J ∈ C := by
-        induction J using Finset.induction with
-        | empty => simp [hC_empty]
-        | @insert s I _ h =>
-          intro h_insert
-          simp only [Finset.coe_insert, Set.sUnion_insert, Set.insert_subset_iff] at h_insert ⊢
-          exact hC_union h_insert.1 (h h_insert.2)
-      exact this I h_ss.2
-    rw [Set.sUnion_insert, m_add h_ss.1 h_sUnion_mem (Set.disjoint_sUnion_right.mpr h_dis.2),
-      Finset.sum_insert hsI, h h_ss.2 h_dis.1]
-    rwa [Set.sUnion_insert] at h_mem
-
-theorem sUnion_eq_sum_of_union_eq_add' (hC_empty : ∅ ∈ C)
-    (hC_union : ∀ {s t : Set α}, s ∈ C → t ∈ C → s ∪ t ∈ C)
-    {m : ∀ s : Set α, s ∈ C → ℝ≥0∞} (m_empty : m ∅ hC_empty = 0)
-    (m_add : ∀ {s t : Set α} (hs : s ∈ C) (ht : t ∈ C),
-      Disjoint s t → m (s ∪ t) (hC_union hs ht) = m s hs + m t ht)
-    (I : Finset (Set α)) (h_ss : ↑I ⊆ C) (h_dis : Set.PairwiseDisjoint (I : Set (Set α)) id)
-    (h_mem : ⋃₀ ↑I ∈ C) :
-    m (⋃₀ I) h_mem = ∑ u : I, m u (h_ss u.property) := by
-  have h : extend m (⋃₀ ↑I) = ∑ u ∈ I, extend m u :=
-    sUnion_eq_sum_of_union_eq_add hC_empty (fun hs ht ↦ hC_union hs ht) (extend m)
-      (extend_empty hC_empty m_empty) ?_ I h_ss h_dis h_mem
-  · rw [extend_eq m h_mem] at h
-    refine h.trans ?_
-    simp_rw [← extend_eq m, Finset.univ_eq_attach]
-    exact (Finset.sum_attach _ _).symm
-  · simp_rw [← extend_eq m] at m_add
-    exact m_add
-
-lemma IsSetRing.sUnion_eq_sum_of_union_eq_add (hC : IsSetRing C)
-    {m : ∀ s : Set α, s ∈ C → ℝ≥0∞} (m_empty : m ∅ hC.empty_mem = 0)
-    (m_add : ∀ {s t : Set α} (hs : s ∈ C) (ht : t ∈ C),
-      Disjoint s t → m (s ∪ t) (hC.union_mem hs ht) = m s hs + m t ht)
-    (I : Finset (Set α)) (h_ss : ↑I ⊆ C) (h_dis : Set.PairwiseDisjoint (I : Set (Set α)) id)
-    (h_mem : ⋃₀ ↑I ∈ C) :
-    m (⋃₀ I) h_mem = ∑ u : I, m u (h_ss u.property) :=
-  sUnion_eq_sum_of_union_eq_add' hC.empty_mem (fun hs ht ↦ hC.union_mem hs ht) m_empty m_add I
-    h_ss h_dis h_mem
 
 end MeasureTheory
