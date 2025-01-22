@@ -90,7 +90,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
     refine EventuallyEq.add ?_ ?_
     · rw [condExp_of_stronglyMeasurable (ℱ.le _) _ (hf_int 0)]
       · exact (hf 0).mono (ℱ.mono (zero_le i))
-    · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condexp
+    · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condExp
   refine h_eq_sum.trans ?_
   have h_ge : ∀ k, i ≤ k → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 := by
     intro k hk
