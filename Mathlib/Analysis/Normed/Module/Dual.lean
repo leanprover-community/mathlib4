@@ -168,6 +168,10 @@ lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
 
+lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    polarSubmodule 𝕜 m = { y : Dual 𝕜 E | ∀ x ∈ m, y x  = 0 } :=
+  (dualPairing 𝕜 E).flip.polar_subMulAction _
+
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=
   LinearMap.zero_mem_polar _ s
