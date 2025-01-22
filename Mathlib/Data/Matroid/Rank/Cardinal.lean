@@ -12,12 +12,12 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 
 In a finitary matroid, all bases have the same cardinality.
 In fact, something stronger holds: if `I` and `J` are both bases for a set `X`,
-then `#I = #J` and, in fact, `#(I \ J) = #(J \ I)`.
+then `#(I \ J) = #(J \ I)` and (consequently) `#I = #J`.
 This file introduces a typeclass `CardinalRank` that applies to any matroid
 such that this property holds for all `I`, `J` and `X`.
 
-A matroid `M` satisfying this condition has a well-defined cardinality-valued rank function,
-both for the matroid itself and all its minors.
+A matroid satisfying this condition has a well-defined cardinality-valued rank function,
+both for itself and all its minors.
 
 # Main Declarations
 
@@ -26,7 +26,7 @@ both for the matroid itself and all its minors.
 * `Matroid.cardRank M` is the rank of a matroid `M`, as a `Cardinal`.
 * `Matroid.cardRk M X` is the rank of a set `X` in a matroid `M`, as a `Cardinal`.
 * `cardinalRank_of_finitary` is the instance showing that `Finitary` matroids are `CardinalRank`.
-* `cardRk_inter_add_cardRk_union_le` : cardinal rank is submodular.
+* `cardRk_inter_add_cardRk_union_le` states that cardinal rank is submodular.
 
 # Notes
 
@@ -35,7 +35,7 @@ since the equicardinality of bases in general matroids is independent of ZFC
 (see the docstring of `Data.Matroid.Basic`).
 Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
 only if they are weakened by replacing `Cardinal.mk`
-with the cruder `ℕ∞`-valued `encard`; see, for example, `Matroid.Base.encard_diff_comm`.
+with the cruder `ℕ∞`-valued `Set.encard`; see, for example, `Matroid.Base.encard_diff_comm`.
 
 # TODO
 
@@ -174,7 +174,7 @@ theorem Base.cardRank_eq_cardinalMk (hB : M.Base B) : M.cardRank = #B :=
 theorem Basis'.cardRk_eq_cardinalMk (hIX : M.Basis' I X) : M.cardRk X = #I :=
   (M ↾ X).exists_base.choose_spec.cardinalMk_eq (base_restrict_iff'.2 hIX)
 
-theorem Basis.cardRk_eq_cardinalMk (hIX : M.Basis I X) : M.cardRk X = #I:=
+theorem Basis.cardRk_eq_cardinalMk (hIX : M.Basis I X) : M.cardRk X = #I :=
   hIX.basis'.cardRk_eq_cardinalMk
 
 @[simp] theorem cardRank_restrict (M : Matroid α) : (M ↾ X).cardRank = M.cardRk X := rfl
