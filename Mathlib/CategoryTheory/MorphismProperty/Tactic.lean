@@ -20,13 +20,13 @@ open Mathlib.Tactic
 
 namespace AddMorphismPropertyInstances
 
-/-- Configuration options for `@[morphisProperty]` -/
+/-- Configuration options for `@[morphismPropertyInstance]` -/
 structure Config where
   /-- The priority of the generated lemma -/
   priority : Nat := 1000
   deriving Inhabited
 
-/-- Function elaborating `Config` -/
+/-- Function elaborating `AddMorphismPropertyInstances.Config` -/
 declare_command_config_elab elabConfig Config
 
 /-- The syntax for the `morphismPropertyInstance` attribute. -/
@@ -60,10 +60,6 @@ initialize thmAttr : ParametricAttribute Config ←
     getParam := fun nm stx ↦ match stx with
       | `(attr| morphismPropertyInstance $c:optConfig) => liftCommandElabM (elabConfig c)
       | _ => throwUnsupportedSyntax }
-
--- initialize thmAttr : TagAttribute ←
---   registerTagAttribute `morphismPropertyInstance
---     "Register a lemma to be used in `addMorphismPropertyInstances`"
 
 /--
 We attempt to feed `classExpr` into `lemmaName` and fill in all typeclass arguments
