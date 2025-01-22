@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Cleanup
-import Lean.Meta.Tactic.Cases
 import Lean.Meta.Tactic.Refl
 import Mathlib.Logic.IsEmpty
 
@@ -285,8 +284,8 @@ where
     let rec loop (i : Nat)
         (ftyx ftyy : Expr) (xs ys : Array Expr) (fixed' : Array Bool) : MetaM α := do
       if i < numVars then
-        let ftyx ← whnf ftyx
-        let ftyy ← whnf ftyy
+        let ftyx ← whnfD ftyx
+        let ftyy ← whnfD ftyy
         unless ftyx.isForall do
           throwError "doubleTelescope: function doesn't have enough parameters"
         withLocalDeclD ftyx.bindingName! ftyx.bindingDomain! fun fvarx => do

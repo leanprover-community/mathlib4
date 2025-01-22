@@ -56,7 +56,7 @@ protected theorem Reachable.exists_walk_length_eq_edist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
 
-protected theorem Connected.exists_walk_length_eq_edist  (hconn : G.Connected) (u v : V) :
+protected theorem Connected.exists_walk_length_eq_edist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (hconn u v).exists_walk_length_eq_edist
 

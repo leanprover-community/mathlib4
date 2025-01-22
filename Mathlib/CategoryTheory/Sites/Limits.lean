@@ -107,7 +107,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
         (multiforkEvaluationCone F E X W S)]
       dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
-      erw [Presheaf.IsSheaf.amalgamate_map]
+      rw [Presheaf.IsSheaf.amalgamate_map]
       rfl)
     (by
       intro S m hm

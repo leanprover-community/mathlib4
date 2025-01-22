@@ -74,10 +74,10 @@ def WithUpperSet (α : Type*) := α
 
 namespace WithUpperSet
 
-/-- `toUpperSet` is the identity function to the `WithUpperSet` of a type.  -/
+/-- `toUpperSet` is the identity function to the `WithUpperSet` of a type. -/
 @[match_pattern] def toUpperSet : α ≃ WithUpperSet α := Equiv.refl _
 
-/-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type.  -/
+/-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type. -/
 @[match_pattern] def ofUpperSet : WithUpperSet α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithUpperSet_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
@@ -120,10 +120,10 @@ def WithLowerSet (α : Type*) := α
 
 namespace WithLowerSet
 
-/-- `toLowerSet` is the identity function to the `WithLowerSet` of a type.  -/
+/-- `toLowerSet` is the identity function to the `WithLowerSet` of a type. -/
 @[match_pattern] def toLowerSet : α ≃ WithLowerSet α := Equiv.refl _
 
-/-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type.  -/
+/-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type. -/
 @[match_pattern] def ofLowerSet : WithLowerSet α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithLowerSet_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl

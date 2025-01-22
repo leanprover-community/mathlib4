@@ -53,6 +53,8 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       congr
       congr
       next => skip
+      congr
+      next => skip
       ext
       rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,

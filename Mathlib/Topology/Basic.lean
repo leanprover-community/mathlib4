@@ -128,7 +128,7 @@ theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
+  (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -155,6 +155,12 @@ theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
 
 @[simp] theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
+
+lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
+  ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
+
+lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
+  ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
 
 theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
   simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
@@ -1738,3 +1744,5 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/
+
+set_option linter.style.longFile 1900

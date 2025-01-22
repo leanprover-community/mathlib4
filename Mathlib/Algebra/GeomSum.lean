@@ -282,7 +282,7 @@ protected theorem Commute.geom_sum₂_succ_eq {α : Type u} [Ring α] {x y : α}
     (h.symm.pow_right _).eq, mul_assoc, ← pow_succ']
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
-  cases' n with n
+  rcases n with - | n
   · exact absurd (List.mem_range.mp hi) i.not_lt_zero
   · rw [tsub_add_eq_add_tsub (Nat.le_sub_one_of_lt (List.mem_range.mp hi)),
       tsub_add_cancel_of_le (Nat.succ_le_iff.mpr n.succ_pos)]
@@ -393,7 +393,7 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
 theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i ∈ range n, a / b ^ i ≤ a * b / (b - 1) := by
   refine (Nat.le_div_iff_mul_le <| tsub_pos_of_lt hb).2 ?_
-  cases' n with n
+  rcases n with - | n
   · rw [sum_range_zero, zero_mul]
     exact Nat.zero_le _
   rw [mul_comm]
@@ -401,7 +401,7 @@ theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 
 theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i ∈ Ico 1 n, a / b ^ i ≤ a / (b - 1) := by
-  cases' n with n
+  rcases n with - | n
   · rw [Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
@@ -520,7 +520,7 @@ theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
   refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
   contrapose! h
   have hx := eq_or_ne x (-1)
-  cases' hx with hx hx
+  rcases hx with hx | hx
   · rw [hx, neg_one_geom_sum]
     simp only [h hx, ite_false, ne_eq, one_ne_zero, not_false_eq_true]
   · exact geom_sum_ne_zero hx hn

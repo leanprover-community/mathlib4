@@ -656,7 +656,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
           intros
           rw [← add_smul]
         -- Porting note: `reducible` cannot be `local` so proof gets long.
-        simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul, ← f.map_mul, mul_def,
+        simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul_comm, ← f.map_mul, mul_def,
           sum_comm a₂ a₁]
         rw [sum_sum_index h₁ h₂]; congr; ext
         rw [sum_sum_index h₁ h₂]; congr; ext
@@ -1966,3 +1966,5 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMon
 def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
     MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
   { MonoidAlgebra.toAdditive k G with commutes' := fun r => by simp [MonoidAlgebra.toAdditive] }
+
+set_option linter.style.longFile 2100

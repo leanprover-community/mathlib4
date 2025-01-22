@@ -201,7 +201,10 @@ variable {G} {p}
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
   "Elements of the `p`-primary component have additive order `p^n` for some `n`"]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
-    ∃ n : ℕ, orderOf g = p ^ n := by simpa [primaryComponent] using g.property
+    ∃ n : ℕ, orderOf g = p ^ n := by
+      obtain ⟨_, hn⟩ := g.property
+      rw [orderOf_submonoid g] at hn
+      exact ⟨_, hn⟩
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive "The `p`- and `q`-primary components are disjoint for `p ≠ q`."]

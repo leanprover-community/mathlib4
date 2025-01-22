@@ -207,7 +207,7 @@ end DirectSum
 
 open DirectSum
 
-/-- The projection maps of graded algebra-/
+/-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
   (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 

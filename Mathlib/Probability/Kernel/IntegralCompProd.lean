@@ -226,7 +226,7 @@ theorem integral_compProd :
   · simp [integral, hE]
   apply Integrable.induction
   · intro c s hs h2s
-    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
       integral_indicator (measurable_prod_mk_left hs), MeasureTheory.setIntegral_const,
       integral_smul_const]
     congr 1
@@ -249,7 +249,7 @@ theorem integral_compProd :
 theorem setIntegral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs : MeasurableSet s)
     (ht : MeasurableSet t) (hf : IntegrableOn f (s ×ˢ t) ((κ ⊗ₖ η) a)) :
     ∫ z in s ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫ x in s, ∫ y in t, f (x, y) ∂η (a, x) ∂κ a := by
-  -- Porting note: `compProd_restrict` needed some explicit argumnts
+  -- Porting note: `compProd_restrict` needed some explicit arguments
   rw [← Kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← compProd_restrict hs ht, integral_compProd]
   · simp_rw [Kernel.restrict_apply]
   · rw [compProd_restrict, Kernel.restrict_apply]; exact hf

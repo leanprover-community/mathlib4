@@ -1513,3 +1513,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700

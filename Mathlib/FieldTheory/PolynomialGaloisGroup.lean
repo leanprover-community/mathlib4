@@ -253,7 +253,7 @@ theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
 
 variable (p q)
 
-/-- The Galois group of a product maps into the product of the Galois groups.  -/
+/-- The Galois group of a product maps into the product of the Galois groups. -/
 def restrictProd : (p * q).Gal →* p.Gal × q.Gal :=
   MonoidHom.prod (restrictDvd (dvd_mul_right p q)) (restrictDvd (dvd_mul_left q p))
 

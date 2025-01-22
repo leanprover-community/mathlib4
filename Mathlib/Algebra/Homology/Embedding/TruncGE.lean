@@ -110,8 +110,8 @@ noncomputable def truncGE'XIsoOpcycles {i : ι} {i' : ι'} (hi' : e.f i = i') (h
     (K.truncGE' e).X i ≅ K.opcycles i' :=
   (truncGE'.XIsoOpcycles K e hi) ≪≫ eqToIso (by subst hi'; rfl)
 
-lemma truncGE'_d_eq {i j : ι} (hij : c.Rel i j)  {i' j' : ι'}
-    (hi' : e.f i = i') (hj' : e.f j = j')  (hi : ¬ e.BoundaryGE i) :
+lemma truncGE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
+    (hi' : e.f i = i') (hj' : e.f j = j') (hi : ¬ e.BoundaryGE i) :
     (K.truncGE' e).d i j = (K.truncGE'XIso e hi' hi).hom ≫ K.d i' j' ≫
       (K.truncGE'XIso e hj' (e.not_boundaryGE_next hij)).inv := by
   dsimp [truncGE', truncGE'.d]

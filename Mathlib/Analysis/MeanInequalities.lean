@@ -330,7 +330,7 @@ end Real
 namespace NNReal
 
 /-- **Young's inequality**, `ℝ≥0` version. We use `{p q : ℝ≥0}` in order to avoid constructing
-witnesses of `0 ≤ p` and `0 ≤ q` for the denominators.  -/
+witnesses of `0 ≤ p` and `0 ≤ q` for the denominators. -/
 theorem young_inequality (a b : ℝ≥0) {p q : ℝ≥0} (hpq : p.IsConjExponent q) :
     a * b ≤ a ^ (p : ℝ) / p + b ^ (q : ℝ) / q :=
   Real.young_inequality_of_nonneg a.coe_nonneg b.coe_nonneg hpq.coe
@@ -476,7 +476,7 @@ theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsC
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
-`p`-th powers, see `inner_le_Lp_mul_Lq_tsum`.  -/
+`p`-th powers, see `inner_le_Lp_mul_Lq_tsum`. -/
 theorem inner_le_Lp_mul_Lq_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p q : ℝ}
     (hpq : p.IsConjExponent q) (hf : HasSum (fun i => f i ^ p) (A ^ p))
     (hg : HasSum (fun i => g i ^ q) (B ^ q)) : ∃ C, C ≤ A * B ∧ HasSum (fun i => f i * g i) C := by
@@ -584,7 +584,7 @@ theorem Lp_add_le_tsum' {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Su
 /-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
-infinite sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`.  -/
+infinite sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`. -/
 theorem Lp_add_le_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p : ℝ} (hp : 1 ≤ p)
     (hf : HasSum (fun i => f i ^ p) (A ^ p)) (hg : HasSum (fun i => g i ^ p) (B ^ p)) :
     ∃ C, C ≤ A + B ∧ HasSum (fun i => (f i + g i) ^ p) (C ^ p) := by
@@ -688,7 +688,7 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg' (hpq : p.IsConjExponent q) (hf : ∀ 
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
-`p`-th powers, see `inner_le_Lp_mul_Lq_tsum_of_nonneg`.  -/
+`p`-th powers, see `inner_le_Lp_mul_Lq_tsum_of_nonneg`. -/
 theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjExponent q) {A B : ℝ} (hA : 0 ≤ A)
     (hB : 0 ≤ B) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i)
     (hf_sum : HasSum (fun i => f i ^ p) (A ^ p)) (hg_sum : HasSum (fun i => g i ^ q) (B ^ q)) :

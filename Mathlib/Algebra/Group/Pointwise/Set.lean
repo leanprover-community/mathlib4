@@ -6,10 +6,7 @@ Authors: Johan Commelin, Floris van Doorn
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
 
 /-!
 # Pointwise operations of sets
@@ -50,7 +47,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-
+assert_not_exists MonoidWithZero
 assert_not_exists OrderedAddCommMonoid
 
 library_note "pointwise nat action"/--
@@ -707,10 +704,9 @@ scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 @[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
-    rw [pow_zero]
-    exact one_mem_one
+    simp only [pow_zero, mem_one]
   | n + 1 => by
-    rw [pow_succ]
+    simp only [pow_succ]
     exact mul_mem_mul (pow_mem_pow ha _) ha
 
 @[to_additive]
@@ -726,9 +722,10 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
   -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
   -- `refine Nat.le_induction ...`
-  induction' n, hn using Nat.le_induction with _ _ ih
-  · exact Subset.rfl
-  · dsimp only
+  induction n, hn using Nat.le_induction with
+  | base => exact Subset.rfl
+  | succ _ _ ih =>
+    dsimp only
     rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 
@@ -828,56 +825,6 @@ protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
 
-/-- `Set α` has distributive negation if `α` has. -/
-protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) :=
-  { Set.involutiveNeg with
-    neg_mul := fun _ _ => by
-      simp_rw [← image_neg]
-      exact image2_image_left_comm neg_mul
-    mul_neg := fun _ _ => by
-      simp_rw [← image_neg]
-      exact image_image2_right_comm mul_neg }
-
-scoped[Pointwise]
-  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
-
-section Distrib
-
-variable [Distrib α] (s t u : Set α)
-
-/-!
-Note that `Set α` is not a `Distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
-lacks.
--/
-
-
-theorem mul_add_subset : s * (t + u) ⊆ s * t + s * u :=
-  image2_distrib_subset_left mul_add
-
-theorem add_mul_subset : (s + t) * u ⊆ s * u + t * u :=
-  image2_distrib_subset_right add_mul
-
-end Distrib
-
-section MulZeroClass
-
-variable [MulZeroClass α] {s t : Set α}
-
-/-! Note that `Set` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
-
-
-theorem mul_zero_subset (s : Set α) : s * 0 ⊆ 0 := by simp [subset_def, mem_mul]
-
-theorem zero_mul_subset (s : Set α) : 0 * s ⊆ 0 := by simp [subset_def, mem_mul]
-
-theorem Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
-  s.mul_zero_subset.antisymm <| by simpa [mem_mul] using hs
-
-theorem Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
-  s.zero_mul_subset.antisymm <| by simpa [mem_mul] using hs
-
-end MulZeroClass
-
 section Group
 
 variable [Group α] {s t : Set α} {a b : α}
@@ -957,22 +904,6 @@ theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right _ _⟩
 
 end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] {s t : Set α}
-
-theorem div_zero_subset (s : Set α) : s / 0 ⊆ 0 := by simp [subset_def, mem_div]
-
-theorem zero_div_subset (s : Set α) : 0 / s ⊆ 0 := by simp [subset_def, mem_div]
-
-theorem Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
-  s.div_zero_subset.antisymm <| by simpa [mem_div] using hs
-
-theorem Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
-  s.zero_div_subset.antisymm <| by simpa [mem_div] using hs
-
-end GroupWithZero
 
 section Mul
 

@@ -36,7 +36,7 @@ variable {R : Type*} [NormedRing R] [CompleteSpace R]
 namespace Units
 
 /-- In a complete normed ring, a perturbation of `1` by an element `t` of distance less than `1`
-from `1` is a unit.  Here we construct its `Units` structure.  -/
+from `1` is a unit.  Here we construct its `Units` structure. -/
 @[simps val]
 def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
@@ -197,7 +197,7 @@ theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
     refine tendsto_zero_iff_norm_tendsto_zero.mpr ?_
     exact tendsto_iff_norm_sub_tendsto_zero.mp tendsto_id
   rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
-  simpa [(· ∘ ·)] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
+  simpa [Function.comp_def] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
 
 end NormedRing
 

@@ -101,7 +101,7 @@ instance : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
 
 instance (priority := 100) : Membership α (NonemptyInterval α) :=
-  ⟨fun a s => a ∈ (s : Set α)⟩
+  ⟨fun s a => a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=

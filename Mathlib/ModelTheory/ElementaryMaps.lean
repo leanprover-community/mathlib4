@@ -224,7 +224,7 @@ def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
           ?_)
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
-        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp,
+        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp_def,
         Term.realize_constants]
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
         LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff]

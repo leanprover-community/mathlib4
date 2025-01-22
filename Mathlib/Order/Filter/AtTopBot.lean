@@ -184,6 +184,12 @@ instance (priority := 200) atBot.isCountablyGenerated [Preorder α] [Countable �
     (atBot : Filter <| α).IsCountablyGenerated :=
   isCountablyGenerated_seq _
 
+instance _root_.OrderDual.instIsCountablyGeneratedAtTop [Preorder α]
+    [IsCountablyGenerated (atBot : Filter α)] : IsCountablyGenerated (atTop : Filter αᵒᵈ) := ‹_›
+
+instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
+    [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
+
 theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = 𝓟 (Ici a) :=
   (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 <| ha b
 
@@ -801,13 +807,15 @@ variable [OrderedRing α] {l : Filter β} {f g : β → α}
 theorem Tendsto.atTop_mul_atBot (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot := by
   have := hf.atTop_mul_atTop <| tendsto_neg_atBot_atTop.comp hg
-  simpa only [(· ∘ ·), neg_mul_eq_mul_neg, neg_neg] using tendsto_neg_atTop_atBot.comp this
+  simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
+    tendsto_neg_atTop_atBot.comp this
 
 theorem Tendsto.atBot_mul_atTop (hf : Tendsto f l atBot) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atBot := by
   have : Tendsto (fun x => -f x * g x) l atTop :=
     (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop hg
-  simpa only [(· ∘ ·), neg_mul_eq_neg_mul, neg_neg] using tendsto_neg_atTop_atBot.comp this
+  simpa only [Function.comp_def, neg_mul_eq_neg_mul, neg_neg] using
+    tendsto_neg_atTop_atBot.comp this
 
 theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atTop := by
@@ -1321,9 +1329,31 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 
+instance instIsCountablyGeneratedAtTopProd [Preorder α] [IsCountablyGenerated (atTop : Filter α)]
+    [Preorder β] [IsCountablyGenerated (atTop : Filter β)] :
+    IsCountablyGenerated (atTop : Filter (α × β)) := by
+  rw [← prod_atTop_atTop_eq]
+  infer_instance
+
+lemma tendsto_finset_prod_atTop :
+    Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
+  classical
+  apply Monotone.tendsto_atTop_atTop
+  · intro p q hpq
+    simpa using Finset.product_subset_product hpq.1 hpq.2
+  · intro b
+    use (Finset.image Prod.fst b, Finset.image Prod.snd b)
+    exact Finset.subset_product
+
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
   @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
+
+instance instIsCountablyGeneratedAtBotProd [Preorder α] [IsCountablyGenerated (atBot : Filter α)]
+    [Preorder β] [IsCountablyGenerated (atBot : Filter β)] :
+    IsCountablyGenerated (atBot : Filter (α × β)) := by
+  rw [← prod_atBot_atBot_eq]
+  infer_instance
 
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
@@ -1436,7 +1466,7 @@ theorem map_val_atTop_of_Ici_subset [SemilatticeSup α] {a : α} {s : Set α} (h
 /-- The image of the filter `atTop` on `Ici a` under the coercion equals `atTop`. -/
 @[simp]
 theorem map_val_Ici_atTop [SemilatticeSup α] (a : α) : map ((↑) : Ici a → α) atTop = atTop :=
-  map_val_atTop_of_Ici_subset (Subset.refl _)
+  map_val_atTop_of_Ici_subset Subset.rfl
 
 /-- The image of the filter `atTop` on `Ioi a` under the coercion equals `atTop`. -/
 @[simp]
@@ -1673,21 +1703,25 @@ theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
   choose x hx using fun n => Filter.nonempty_of_mem (h.mem n)
   exact ⟨x, h.tendsto hx⟩
 
-theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
-    [(atTop : Filter α).IsCountablyGenerated] :
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [Nonempty α]
+    [IsDirected α (· ≤ ·)] [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
-  let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
-  have h_mono : Monotone xs := fun i j hij ↦ by
-    simp only [xs] -- Need to unfold `xs` and do alpha reduction, otherwise `gcongr` fails
-    gcongr
-  refine ⟨xs, h_mono, tendsto_atTop_mono (fun n ↦ Finset.le_sup' _ ?_) h⟩
-  simp
+  choose c hleft hright using exists_ge_ge (α := α)
+  set xs : ℕ → α := fun n => (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
+  have hsucc (n : ℕ) : xs (n + 1) = c (xs n) (ys n) := by simp [xs, List.range_succ]
+  refine ⟨xs, ?_, ?_⟩
+  · refine monotone_nat_of_le_succ fun n ↦ ?_
+    rw [hsucc]
+    apply hleft
+  · refine (tendsto_add_atTop_iff_nat 1).1 <| tendsto_atTop_mono (fun n ↦ ?_) h
+    rw [hsucc]
+    apply hright
 
-theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [SemilatticeInf α] [Nonempty α]
-    [h2 : (atBot : Filter α).IsCountablyGenerated] :
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [Preorder α] [Nonempty α]
+    [IsDirected α (· ≥ ·)] [(atBot : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
-  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
+  exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ
 
 /-- An abstract version of continuity of sequentially continuous functions on metric spaces:
 if a filter `k` is countably generated then `Tendsto f k l` iff for every sequence `u`
@@ -1831,3 +1865,5 @@ filters `atTop.map (fun s ↦ ∑ i ∈ s, f (g i))` and `atTop.map (fun s ↦ �
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions. -/
 add_decl_doc Function.Injective.map_atTop_finset_sum_eq
+
+set_option linter.style.longFile 2000

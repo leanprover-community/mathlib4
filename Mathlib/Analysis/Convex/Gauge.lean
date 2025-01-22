@@ -67,7 +67,7 @@ private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • 
   ⟨0, fun _ hr => hr.1.le⟩
 
 /-- If the given subset is `Absorbent` then the set we take an infimum over in `gauge` is nonempty,
-which is useful for proving many properties about the gauge.  -/
+which is useful for proving many properties about the gauge. -/
 theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
@@ -359,12 +359,12 @@ theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) �
   convert interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 
--- Porting note: droped unneeded assumptions
+-- Porting note: dropped unneeded assumptions
 theorem gauge_lt_one_of_mem_of_isOpen (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :
     gauge s x < 1 :=
   interior_subset_gauge_lt_one s <| by rwa [hs₂.interior_eq]
 
--- Porting note: droped unneeded assumptions
+-- Porting note: dropped unneeded assumptions
 theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s) (hx : x ∈ ε • s) :
     gauge s x < ε := by
   have : ε⁻¹ • x ∈ s := by rwa [← mem_smul_set_iff_inv_smul_mem₀ hε.ne']

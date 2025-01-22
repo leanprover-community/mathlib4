@@ -34,7 +34,7 @@ variable (T)
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
 
-/- Porting note: could not derive `Category` above so this instance works in its place-/
+/- Porting note: could not derive `Category` above so this instance works in its place -/
 instance : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter

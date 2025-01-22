@@ -71,7 +71,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
         κ a Set.univ - κ a (Prod.mk a ⁻¹' t') := by
       ext1 a
       rw [← Set.diff_inter_self_eq_diff, Set.inter_univ, measure_diff (Set.subset_univ _)]
-      · exact (@measurable_prod_mk_left α β _ _ a) ht'
+      · exact (measurable_prod_mk_left ht').nullMeasurableSet
       · exact measure_ne_top _ _
     rw [this]
     exact Measurable.sub (Kernel.measurable_coe κ MeasurableSet.univ) h_meas

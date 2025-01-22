@@ -336,7 +336,7 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
   refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
-  cases' smul_eq_zero.1 h with H H
+  rcases smul_eq_zero.1 h with H | H
   · have : Function.Injective (algebraMap R A) :=
       NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
     left

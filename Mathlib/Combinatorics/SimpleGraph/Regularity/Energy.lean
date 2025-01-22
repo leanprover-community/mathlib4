@@ -32,7 +32,7 @@ variable {α : Type*} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G :
 namespace Finpartition
 
 /-- The energy of a partition, also known as index. Auxiliary quantity for Szemerédi's regularity
-lemma.  -/
+lemma. -/
 def energy : ℚ :=
   ((∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (P.parts.card : ℚ) ^ 2
 

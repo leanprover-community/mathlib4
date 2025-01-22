@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Data.DList
-import Mathlib.Tactic.Cases
 
 /-!
 # Difference list
@@ -39,7 +38,7 @@ theorem toList_ofList (l : List α) : DList.toList (DList.ofList l) = l := by
   cases l; rfl; simp only [DList.toList, DList.ofList, List.cons_append, List.append_nil]
 
 theorem ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by
-   cases' l with app inv
+   obtain ⟨app, inv⟩ := l
    simp only [ofList, toList, mk.injEq]
    funext x
    rw [(inv x)]
@@ -48,14 +47,13 @@ theorem toList_empty : toList (@empty α) = [] := by simp
 
 theorem toList_singleton (x : α) : toList (singleton x) = [x] := by simp
 
-theorem toList_append (l₁ l₂ : DList α) : toList (l₁ ++ l₂) = toList l₁ ++ toList l₂ :=
-  show toList (DList.append l₁ l₂) = toList l₁ ++ toList l₂ by
-    cases' l₁ with _ l₁_invariant; cases' l₂; simp; rw [l₁_invariant]
+theorem toList_append (l₁ l₂ : DList α) : toList (l₁ ++ l₂) = toList l₁ ++ toList l₂ := by
+  obtain ⟨_, l₁_invariant⟩ := l₁; cases l₂; simp; rw [l₁_invariant]
 
 theorem toList_cons (x : α) (l : DList α) : toList (cons x l) = x :: toList l := by
   cases l; simp
 
 theorem toList_push (x : α) (l : DList α) : toList (push l x) = toList l ++ [x] := by
-  cases' l with _ l_invariant; simp; rw [l_invariant]
+  obtain ⟨_, l_invariant⟩ := l; simp; rw [l_invariant]
 
 end Batteries.DList

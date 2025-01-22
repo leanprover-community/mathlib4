@@ -3,8 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Infix
-
+import Mathlib.Data.List.Basic
 /-!
 
 # Dropping or taking from lists on the right
@@ -199,7 +198,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, ne_eq, not_false_eq_true,
-      getLast_append_of_ne_nil, getLast_singleton]
+      getLast_append_of_ne_nil, getLast_singleton, reduceCtorEq]
     refine ⟨fun h => ?_ , fun h => ?_⟩
     · split at h <;> simp_all
     · simp [h]

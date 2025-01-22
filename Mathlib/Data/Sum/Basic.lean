@@ -133,7 +133,7 @@ theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
   rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, or_false] at h₁
+  simp only [liftRel_iff, false_and, and_false, exists_false, or_false, reduceCtorEq] at h₁
   exact h₁
 
 theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
@@ -142,7 +142,7 @@ theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
 theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
   rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, false_or] at h₁
+  simp only [liftRel_iff, false_and, and_false, exists_false, false_or, reduceCtorEq] at h₁
   exact h₁
 
 theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :

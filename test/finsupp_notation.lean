@@ -21,7 +21,7 @@ info:
     reprStr (Finsupp.mk {1, 2} (fun | 1 | 2 => 3 | _ => 0) (fun x => by aesop))
       = "fun₀ | 1 => 3 | 2 => 3"
 
-/-! ## (computable) number theory examples-/
+/-! ## (computable) number theory examples -/
 
 /-- info: fun₀ | 2 => 2 | 7 => 1 -/
 #guard_msgs in

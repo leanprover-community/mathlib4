@@ -313,9 +313,10 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hS : S.Nonempty) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋂ i ∈ S, s i ∈ C := by
   classical
-  induction' hS using Finset.Nonempty.cons_induction with _ i S hiS _ h hs
-  · simpa using hs
-  · simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
+  induction hS using Finset.Nonempty.cons_induction with
+  | singleton => simpa using hs
+  | cons i S hiS _ h =>
+    simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
     simp only [cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hs
     refine hC.inter_mem hs.1 ?_
     exact h (fun n hnS ↦ hs.2 n hnS)

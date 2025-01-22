@@ -455,7 +455,7 @@ theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
   have :=
     (quasiMeasurePreserving_inv_of_right_invariant μ).comp
       (this.comp (quasiMeasurePreserving_inv_of_right_invariant μ))
-  simp_rw [Function.comp, mul_inv_rev, inv_inv] at this
+  simp_rw [Function.comp_def, mul_inv_rev, inv_inv] at this
   exact this
 
 end QuasiMeasurePreserving

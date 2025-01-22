@@ -465,7 +465,7 @@ end Indicator
 section Equiv
 
 /--
-The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
+The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
 homeomorphism `X ≃ₜ Y`
 -/
 @[simps]
@@ -480,7 +480,7 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
     simp [comap_comap]
 
 /--
-The equivalence between `LocallyConstant X Y` and `LocallyConstant X Z` given an
+The equivalence between `LocallyConstant X Y` and `LocallyConstant X Z` given an
 equivalence `Y ≃ Z`
 -/
 @[simps]
@@ -556,7 +556,7 @@ lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : I
   · exact hfg x ⟨h, hx⟩
   · rfl
 
-/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
+/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)

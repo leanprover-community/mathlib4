@@ -188,7 +188,7 @@ variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [N
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
-  convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
+  convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
 theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical

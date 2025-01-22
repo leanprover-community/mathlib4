@@ -427,7 +427,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
 
 /-- If there exists a distance that a point has from all vertices of a
 simplex, the orthogonal projection of that point onto the subspace
-spanned by that simplex is its circumcenter.  -/
+spanned by that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
@@ -445,7 +445,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
 
 /-- If a point has the same distance from all vertices of a simplex,
 the orthogonal projection of that point onto the subspace spanned by
-that simplex is its circumcenter.  -/
+that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P} {r : ℝ}
     (hr : ∀ i, dist (s.points i) p = r) : ↑(s.orthogonalProjectionSpan p) = s.circumcenter :=
   s.orthogonalProjection_eq_circumcenter_of_exists_dist_eq ⟨r, hr⟩

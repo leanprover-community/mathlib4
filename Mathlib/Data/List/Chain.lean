@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Infix
 
 /-!
 # Relation chain
@@ -37,9 +36,12 @@ theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : �
 theorem Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
   ⟨fun p => by
-    induction' p with _ a b l r _ IH <;> constructor <;>
-      [exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩;
-      exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩],
+    induction p with
+    | nil => exact nil
+    | @cons _ _ _ r _ IH =>
+      constructor
+      · exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
+      · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
     Chain.imp fun a b h => h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
@@ -318,31 +320,53 @@ theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
     rwa [getLast_cons_cons]
 
+/-- Given a chain from `a` to `b`, and a predicate true at `a`, if `r x y → p x → p y` then
+the predicate is true everywhere in the chain.
+That is, we can propagate the predicate down the chain.
+-/
+theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
+    (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : p a) : ∀ i ∈ l, p i := by
+  induction h with
+  | nil => simp
+  | @cons a b t hab _ h_ind =>
+    simp only [mem_cons, forall_eq_or_imp]
+    exact ⟨carries hab initial, h_ind (carries hab initial)⟩
+
+/-- A version of `List.Chain.induction` for `List.Chain'`
+-/
+theorem Chain'.induction (p : α → Prop) (l : List α) (h : Chain' r l)
+    (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
+    ∀ i ∈ l, p i := by
+  unfold Chain' at h
+  split at h
+  · simp
+  · simp_all only [ne_eq, not_false_eq_true, head_cons, true_implies, mem_cons, forall_eq_or_imp,
+      true_and, reduceCtorEq]
+    exact h.induction p _ carries initial
+
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true everywhere in the chain and at `a`.
 That is, we can propagate the predicate up the chain.
 -/
-theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
+theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : ∀ i ∈ a :: l, p i := by
-  induction' l with _ _ l_ih generalizing a
-  · cases hb
-    simpa using final
-  · rw [chain_cons] at h
-    simp only [mem_cons]
-    rintro _ (rfl | H)
-    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    · apply l_ih h.2 hb _ (mem_cons.2 H)
+  have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
+  replace this := chain'_reverse.mpr this
+  simp_rw (config := {singlePass := true}) [← List.mem_reverse]
+  apply this.induction _ _ (fun _ _ h ↦ carries h)
+  simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
+    reduceCtorEq]
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true at `a`.
 That is, we can propagate the predicate all the way up the chain.
 -/
 @[elab_as_elim]
-theorem Chain.induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
+theorem Chain.backwards_induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : p a :=
-  (Chain.induction p l h hb carries final) _ (mem_cons_self _ _)
+  (Chain.backwards_induction p l h hb carries final) _ (mem_cons_self _ _)
 
 /--
 If there is an `r`-chain starting from `a` and ending at `b`, then `a` and `b` are related by the
@@ -350,7 +374,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
-  Chain.induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
+  Chain.backwards_induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 
 theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
@@ -362,7 +386,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     apply hm.cons
     cases as with
     | nil =>
-      simp only [le_iff_lt_or_eq, or_false] at hmas
+      simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
       exact (List.Lex.not_nil_right (·<·) _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
@@ -375,6 +399,25 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
         apply le_of_lt
         exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
       · simp_all only [List.cons.injEq, le_refl]
+
+lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
+    (hl : l.Chain' R) (hv : (lne : l ≠ []) → R v (l.head lne)) : l.Chain R v := by
+  rw [List.chain_iff_get]
+  constructor
+  · intro h
+    rw [List.get_mk_zero]
+    apply hv
+  · exact List.chain'_iff_get.mp hl
+
+lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
+    (hl : l.Chain' (fun x y ↦ f x = y)) (i : ℕ) (hi : i < l.length) :
+    f^[i] l[0] = l[i] := by
+  induction' i with i h
+  · rfl
+  · rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
+    rw [List.chain'_iff_get] at hl
+    apply hl
+    omega
 
 end List
 

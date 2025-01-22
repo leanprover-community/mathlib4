@@ -26,7 +26,7 @@ open List Subtype Nat Function
 variable {α : Type*} {β : Type v} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
-  is a type of finite sets with duplicates allowed.  -/
+  is a type of finite sets with duplicates allowed. -/
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.isSetoid α)
 
@@ -112,7 +112,7 @@ theorem coe_eq_zero (l : List α) : (l : Multiset α) = 0 ↔ l = [] :=
   Iff.trans coe_eq_coe perm_nil
 
 theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEmpty :=
-  Iff.trans (coe_eq_zero l) isEmpty_iff_eq_nil.symm
+  Iff.trans (coe_eq_zero l) isEmpty_iff.symm
 
 /-! ### `Multiset.cons` -/
 
@@ -148,7 +148,7 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
 @[elab_as_elim]
 protected theorem induction {p : Multiset α → Prop} (empty : p 0)
     (cons : ∀ (a : α) (s : Multiset α), p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact empty; exact cons _ _ ih]
+  rintro ⟨l⟩; induction l with | nil => exact empty | cons _ _ ih => exact cons _ _ ih
 
 @[elab_as_elim]
 protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (empty : p 0)
@@ -203,7 +203,7 @@ end Rec
 section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
-def Mem (a : α) (s : Multiset α) : Prop :=
+def Mem (s : Multiset α) (a : α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 
 instance : Membership α (Multiset α) :=
@@ -1739,13 +1739,12 @@ theorem mem_filter_of_mem {a : α} {l} (m : a ∈ l) (h : p a) : a ∈ filter p 
 
 theorem filter_eq_self {s} : filter p s = s ↔ ∀ a ∈ s, p a :=
   Quot.inductionOn s fun _l =>
-    Iff.trans ⟨fun h => (filter_sublist _).eq_of_length (@congr_arg _ _ _ _ card h),
+    Iff.trans ⟨fun h => (filter_sublist _).eq_of_length (congr_arg card h),
       congr_arg ofList⟩ <| by simp
 
 theorem filter_eq_nil {s} : filter p s = 0 ↔ ∀ a ∈ s, ¬p a :=
   Quot.inductionOn s fun _l =>
-    Iff.trans ⟨fun h => eq_nil_of_length_eq_zero (@congr_arg _ _ _ _ card h), congr_arg ofList⟩ <|
-      by simpa using List.filter_eq_nil (p := (p ·))
+    Iff.trans ⟨fun h => eq_nil_of_length_eq_zero (congr_arg card h), congr_arg ofList⟩ (by simp)
 
 theorem le_filter {s t} : s ≤ filter p t ↔ s ≤ t ∧ ∀ a ∈ s, p a :=
   ⟨fun h => ⟨le_trans h (filter_le _ _), fun _a m => of_mem_filter (mem_of_le h m)⟩, fun ⟨h, al⟩ =>
@@ -1834,7 +1833,7 @@ theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map 
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), filter_map, hf.eq_iff]
+  simp [comp_def, filter_map, hf.eq_iff]
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     card (s.filter P) ≤ n ↔ ∀ s' ≤ s, n < card s' → ∃ a ∈ s', ¬ P a := by
@@ -2146,8 +2145,8 @@ theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n :=
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
   convert List.count_replicate a b n
-  rw [← coe_count, coe_replicate]
-  simp
+  · rw [← coe_count, coe_replicate]
+  · simp
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
@@ -2737,3 +2736,5 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
 @[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset
+
+set_option linter.style.longFile 2900

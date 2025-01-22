@@ -6,7 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.Normed.Ring.Seminorm

@@ -581,7 +581,7 @@ alias Integrable.ae_eq_of_forall_set_integral_eq :=
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
 /-- If an integrable function has zero integral on all closed sets, then it is zero
-almost everwhere. -/
+almost everywhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
@@ -604,7 +604,7 @@ alias ae_eq_zero_of_forall_set_integral_isClosed_eq_zero :=
   ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero
 
 /-- If an integrable function has zero integral on all compact sets in a sigma-compact space, then
-it is zero almost everwhere. -/
+it is zero almost everywhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
     [SigmaCompactSpace β] [R1Space β] {μ : Measure β} {f : β → E} (hf : Integrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
@@ -628,7 +628,7 @@ lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
   · exact hf.integrableOn
 
 /-- If a locally integrable function has zero integral on all compact sets in a sigma-compact space,
-then it is zero almost everwhere. -/
+then it is zero almost everywhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero'
     [SigmaCompactSpace β] [R1Space β] {μ : Measure β} {f : β → E} (hf : LocallyIntegrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :

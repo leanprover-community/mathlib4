@@ -256,7 +256,7 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
   rw [this, integrableOn_union, integrableOn_union]
   refine ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc.mp ?_⟩, hc1'⟩
   refine
-    (hfc.continuousOn_mul ?_ isOpen_Ioi).integrableOn_compact_subset
+    (hfc.continuousOn_mul ?_ isOpen_Ioi.isLocallyClosed).integrableOn_compact_subset
       (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
   exact ContinuousAt.continuousOn fun t ht => continuousAt_rpow_const _ _ <| Or.inl <| ne_of_gt ht
 
@@ -327,7 +327,8 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     exact mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
   have h3 : AEStronglyMeasurable (F' s) (volume.restrict <| Ioi 0) := by
     apply LocallyIntegrableOn.aestronglyMeasurable
-    refine hfc.continuousOn_smul isOpen_Ioi ((ContinuousAt.continuousOn fun t ht => ?_).mul ?_)
+    refine hfc.continuousOn_smul isOpen_Ioi.isLocallyClosed
+      ((ContinuousAt.continuousOn fun t ht => ?_).mul ?_)
     · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
     · refine continuous_ofReal.comp_continuousOn ?_
       exact continuousOn_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)
@@ -362,7 +363,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       obtain ⟨w', hw1', hw2'⟩ := exists_between hj'
       refine mellin_convergent_of_isBigO_scalar ?_ ?_ hw1' ?_ hw2
       · simp_rw [mul_comm]
-        refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi
+        refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
         refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
         exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_

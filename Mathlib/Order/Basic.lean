@@ -10,7 +10,6 @@ import Mathlib.Order.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Cases
 import Batteries.Data.Sum.Lemmas
 import Batteries.Tactic.Classical
 
@@ -443,7 +442,7 @@ theorem eq_of_forall_lt_iff [LinearOrder α] {a b : α} (h : ∀ c, c < a ↔ c 
 theorem eq_of_forall_gt_iff [LinearOrder α] {a b : α} (h : ∀ c, a < c ↔ b < c) : a = b :=
   (le_of_forall_lt' fun _ ↦ (h _).2).antisymm <| le_of_forall_lt' fun _ ↦ (h _).1
 
-/-- A symmetric relation implies two values are equal, when it implies they're less-equal.  -/
+/-- A symmetric relation implies two values are equal, when it implies they're less-equal. -/
 theorem rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [IsSymm α r] {f : α → β}
     (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
   le_antisymm (h a b hab) (h b a <| symm hab)
@@ -1191,6 +1190,12 @@ instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
   ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
 
+/-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
+typeclass search. -/
+lemma Subsingleton.instDenselyOrdered {X : Type*} [Subsingleton X] [Preorder X] :
+    DenselyOrdered X :=
+  ⟨fun _ _ h ↦ (not_lt_of_subsingleton h).elim⟩
+
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) :=
   ⟨fun a b ↦ by
     simp_rw [Prod.lt_iff]
@@ -1243,8 +1248,9 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
   simp only [not_or, ← Ne.eq_def] at hne
-  cases' hne.1.lt_or_lt with h₁ h₁ <;> cases' hne.2.1.lt_or_lt with h₂ h₂ <;>
-    cases' hne.2.2.lt_or_lt with h₃ h₃
+  rcases hne.1.lt_or_lt with h₁ | h₁ <;>
+  rcases hne.2.1.lt_or_lt with h₂ | h₂ <;>
+  rcases hne.2.2.lt_or_lt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
 namespace PUnit

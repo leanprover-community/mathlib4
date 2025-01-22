@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Cases
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.SplitIfs
 
@@ -91,7 +90,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α) (· * ·) := ⟨mul_assoc⟩
 
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.

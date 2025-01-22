@@ -47,7 +47,7 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   rw [← Algebra.range_top_iff_surjective, eq_top_iff]
   rintro x -
   obtain ⟨l, hl⟩ :=
-    (Finsupp.mem_span_iff_total R s 1).mp (show _ ∈ Ideal.span s by rw [hs]; trivial)
+    (Finsupp.mem_span_iff_linearCombination R s 1).mp (show _ ∈ Ideal.span s by rw [hs]; trivial)
   fapply
     Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem _ l.support (fun x : s => f x) fun x : s =>
       f (l x)

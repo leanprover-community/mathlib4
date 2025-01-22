@@ -402,12 +402,12 @@ alias val_nat_cast := val_natCast
 
 -- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
-whose value is the original number.  -/
+whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   Nat.mod_eq_of_lt h
 
 /-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
-in the same value.  -/
+in the same value. -/
 @[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   Fin.ext <| val_cast_of_lt a.isLt
 
@@ -533,7 +533,7 @@ lemma castAdd_injective (m n : ℕ) : Injective (@Fin.castAdd m n) := castLE_inj
 
 lemma castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) := castAdd_injective _ _
 
-/-- `Fin.castLE` as an `Embedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
+/-- `Fin.castLE` as an `Embedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type. -/
 @[simps! apply]
 def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
   toFun := castLE h
@@ -1431,7 +1431,8 @@ instance uniqueFinOne : Unique (Fin 1) where
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
-  fin_two_eq_of_eq_zero_iff (by simpa only [one_eq_zero_iff, succ.injEq, iff_false] using hi)
+  fin_two_eq_of_eq_zero_iff
+    (by simpa only [one_eq_zero_iff, succ.injEq, iff_false, reduceCtorEq] using hi)
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
@@ -1519,3 +1520,5 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
       q(OfNat.ofNat $i)
 
 end Fin
+
+set_option linter.style.longFile 1700

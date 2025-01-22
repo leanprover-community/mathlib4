@@ -481,7 +481,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   letI := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
-  simp_rw [Function.comp]
+  simp_rw [Function.comp_def]
   convert Subtype.range_coe.symm
   simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq, Finset.mem_univ]
 

@@ -388,10 +388,10 @@ section
 variable (S)
 variable [S.HasLeftHomology]
 
-/-- The left homology of a short complex, given by the `H` field of a chosen left homology data.  -/
+/-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
 
-/-- The cycles of a short complex, given by the `K` field of a chosen left homology data.  -/
+/-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
 noncomputable def cycles : C := S.leftHomologyData.K
 
 /-- The "homology class" map `S.cycles ⟶ S.leftHomology`. -/

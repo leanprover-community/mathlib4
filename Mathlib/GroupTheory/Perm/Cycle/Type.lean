@@ -64,7 +64,7 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
     σ.cycleType = l.map (Finset.card ∘ support) := by
   have hl : l.Nodup := nodup_of_pairwise_disjoint_cycles h1 h2
   rw [cycleType_eq' l.toFinset]
-  · simp [List.dedup_eq_self.mpr hl, (· ∘ ·)]
+  · simp [List.dedup_eq_self.mpr hl, Function.comp_def]
   · simpa using h1
   · simpa [hl] using h2
   · simp [hl, h0]

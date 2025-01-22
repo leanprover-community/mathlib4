@@ -154,6 +154,7 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
 
 variable (𝕂)
 
+@[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) :=
   (star_exp x).trans <| h.symm ▸ rfl
@@ -269,7 +270,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
-  rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
+  rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
   have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero

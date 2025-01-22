@@ -141,7 +141,7 @@ example : @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid =
 
 end Multiplicative
 
-/-! ## `Finsupp` instances-/
+/-! ## `Finsupp` instances -/
 
 
 section Finsupp

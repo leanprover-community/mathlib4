@@ -34,7 +34,7 @@ class EssFiniteType : Prop where
     IsLocalization ((IsUnit.submonoid S).comap (algebraMap (adjoin R (s : Set S)) S)) S
 
 /-- Let `S` be an `R`-algebra essentially of finite type, this is a choice of a finset `s ⊆ S`
-such that `S` is the localization of `R[s]`.  -/
+such that `S` is the localization of `R[s]`. -/
 noncomputable
 def EssFiniteType.finset [h : EssFiniteType R S] : Finset S := h.cond.choose
 

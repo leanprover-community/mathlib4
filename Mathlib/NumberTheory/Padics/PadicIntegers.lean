@@ -334,7 +334,7 @@ theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
 /-! ### Valuation on `ℤ_[p]` -/
 
 
-/-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`.  -/
+/-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`. -/
 def valuation (x : ℤ_[p]) :=
   Padic.valuation (x : ℚ_[p])
 

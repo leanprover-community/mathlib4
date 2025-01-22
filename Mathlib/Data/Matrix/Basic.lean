@@ -5,6 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
@@ -13,7 +14,6 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
 # Matrices
@@ -733,7 +733,7 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 @[simp]
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   -- Porting note: was `simp only` with all three lemmas
-  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp, Equiv.apply_symm_apply]
+  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp_def, Equiv.apply_symm_apply]
 
 end NonUnitalNonAssocSemiring
 
@@ -2526,10 +2526,12 @@ theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S)
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
     (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* M.map f) i := by
-  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
+  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)
     (v : n → R) (i : m) : f ((M *ᵥ v) i) = (M.map f *ᵥ (f ∘ v)) i := by
-  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
+  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 end RingHom
+
+set_option linter.style.longFile 2700

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Ring.Int
+-- import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 
@@ -132,7 +132,7 @@ end Game
 
 namespace PGame
 
--- Porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
+-- Porting note: In a lot of places, I had to add explicitly that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
 -- but as an explicit argument, see https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 theorem le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=
@@ -217,23 +217,17 @@ end Game
 
 namespace PGame
 
-@[simp]
-theorem quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ :=
-  rfl
-
-@[simp]
-theorem quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ :=
-  rfl
-
-@[simp]
-theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
-  rfl
+@[simp] theorem quot_zero : (⟦0⟧ : Game) = 0 := rfl
+@[simp] theorem quot_one : (⟦1⟧ : Game) = 1 := rfl
+@[simp] theorem quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ := rfl
+@[simp] theorem quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ := rfl
+@[simp] theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ := rfl
 
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
-    (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ := by
-  exact Quot.sound (.of_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
-                                  (fun _ => equiv_iff_game_eq.2 (hr _)))
+    (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ :=
+  game_eq (Equiv.of_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
+    (fun _ => equiv_iff_game_eq.2 (hr _)))
 
 /-! Multiplicative operations can be defined at the level of pre-games,
 but to prove their properties we need to use the abelian group structure of games.
@@ -244,8 +238,8 @@ Hence we define them here. -/
 `{xL*y + x*yL - xL*yL, xR*y + x*yR - xR*yR | xL*y + x*yR - xL*yR, xR*y + x*yL - xR*yL}`. -/
 instance : Mul PGame.{u} :=
   ⟨fun x y => by
-    induction' x with xl xr _ _ IHxl IHxr generalizing y
-    induction' y with yl yr yL yR IHyl IHyr
+    induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
+    induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
     refine ⟨(xl × yl) ⊕ (xr × yr), (xl × yr) ⊕ (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
@@ -387,7 +381,7 @@ protected lemma mul_comm (x y : PGame) : x * y ≡ y * x :=
   termination_by (x, y)
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
-  Quot.sound (x.mul_comm y).equiv
+  game_eq (x.mul_comm y).equiv
 
 /-- `x * y` is equivalent to `y * x`. -/
 theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
@@ -415,8 +409,8 @@ theorem mul_zero_equiv (x : PGame) : x * 0 ≈ 0 :=
   x.mul_zero.equiv
 
 @[simp]
-theorem quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = ⟦0⟧ :=
-  @Quotient.sound _ _ (x * 0) _ x.mul_zero_equiv
+theorem quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = 0 :=
+  game_eq x.mul_zero_equiv
 
 /-- `0 * x` has exactly the same moves as `0`. -/
 protected lemma zero_mul (x : PGame) : 0 * x ≡ 0 := identical_zero _
@@ -426,8 +420,8 @@ theorem zero_mul_equiv (x : PGame) : 0 * x ≈ 0 :=
   x.zero_mul.equiv
 
 @[simp]
-theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
-  @Quotient.sound _ _ (0 * x) _ x.zero_mul_equiv
+theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = 0 :=
+  game_eq x.zero_mul_equiv
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
 lemma mul_neg (x y : PGame) : x * -y = -(x * y) :=
@@ -464,11 +458,11 @@ lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
 
 @[simp]
 theorem quot_neg_mul (x y : PGame) : (⟦-x * y⟧ : Game) = -⟦x * y⟧ :=
-  Quot.sound (x.neg_mul y).equiv
+  game_eq (x.neg_mul y).equiv
 
 @[simp]
 theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
-  Quot.sound (x.mul_neg y ▸ Setoid.refl _) -- Porting note: was `of_eq (x.mul_neg y)`
+  game_eq (x.mul_neg y ▸ Setoid.refl _) -- Porting note: was `of_eq (x.mul_neg y)`
 
 theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
@@ -605,7 +599,7 @@ protected lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_
 
 @[simp]
 theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
-  Quot.sound x.mul_one.equiv
+  game_eq x.mul_one.equiv
 
 /-- `x * 1` is equivalent to `x`. -/
 theorem mul_one_equiv (x : PGame) : x * 1 ≈ x :=
@@ -613,7 +607,7 @@ theorem mul_one_equiv (x : PGame) : x * 1 ≈ x :=
 
 @[simp]
 theorem quot_one_mul (x : PGame) : (⟦1 * x⟧ : Game) = ⟦x⟧ :=
-  Quot.sound x.one_mul.equiv
+  game_eq x.one_mul.equiv
 
 /-- `1 * x` is equivalent to `x`. -/
 theorem one_mul_equiv (x : PGame) : 1 * x ≈ x :=

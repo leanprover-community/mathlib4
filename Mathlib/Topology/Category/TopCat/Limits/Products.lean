@@ -58,7 +58,7 @@ equipped with the product topology.
 -/
 def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
-  -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax` 
+  -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax`
 
 @[reassoc (attr := simp)]
 theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
@@ -106,7 +106,7 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
 -/
 def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σi, α i) :=
   (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
-  -- Specifying the universes in `sigmaCofanIsColimit` wasn't necessary when we had `TopCatMax` 
+  -- Specifying the universes in `sigmaCofanIsColimit` wasn't necessary when we had `TopCatMax`
 
 @[reassoc (attr := simp)]
 theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :

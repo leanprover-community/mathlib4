@@ -303,7 +303,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
     f F.limsSup = F.liminf f := by
   apply le_antisymm
-  · rw [limsSup, f_decr.map_sInf_of_continuousAt' f_cont bdd_above cobdd]
+  · rw [limsSup, f_decr.map_csInf_of_continuousAt f_cont bdd_above cobdd]
     apply le_of_forall_lt
     intro c hc
     simp only [liminf, limsInf, eventually_map] at hc ⊢

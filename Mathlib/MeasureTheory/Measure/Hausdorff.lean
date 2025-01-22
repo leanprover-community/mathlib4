@@ -958,6 +958,30 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
           ENNReal.ofReal_natCast]
       · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
 
+instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [MeasurableSpace E] [BorelSpace E] :
+    IsAddHaarMeasure (G := E) μH[finrank ℝ E] where
+  lt_top_of_isCompact K hK := by
+    set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
+    suffices μH[finrank ℝ E] (e '' K) < ⊤ by
+      rw [← e.symm_image_image K]
+      apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
+      rw [ENNReal.rpow_natCast]
+      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top _) this
+    conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
+    rw [hausdorffMeasure_pi_real]
+    exact (hK.image e.continuous).measure_lt_top
+  open_pos U hU hU' := by
+    set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
+    suffices 0 < μH[finrank ℝ E] (e '' U) from
+      (ENNReal.mul_pos_iff.mp (lt_of_lt_of_le this <|
+        e.lipschitz.hausdorffMeasure_image_le (by simp) _)).2.ne'
+    conv_rhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
+    rw [hausdorffMeasure_pi_real]
+    apply (e.isOpenMap U hU).measure_pos (μ := volume)
+    simpa
+
 variable (ι X)
 
 theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]

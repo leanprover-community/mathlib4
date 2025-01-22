@@ -106,8 +106,12 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun {X Y} f => by aesop_cat))
     (by aesop_cat)
 
+#adaptation_note
+/--
+At nightly-2024-08-08 we needed to increase the maxHeartbeats here.
+-/
+set_option maxHeartbeats 400000 in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
-@[simps!]
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
   NatIso.ofComponents
@@ -143,6 +147,8 @@ def KaroubiUniversal₁.counitIso :
       rw [natTrans_eq φ P, P.decomp_p]
       simp only [Functor.map_comp, comp_f, assoc]
       rfl)
+
+attribute [simps!] KaroubiUniversal₁.counitIso
 
 /-- The equivalence of categories `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 @[simps]

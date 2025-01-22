@@ -164,7 +164,7 @@ variable [CommMonoid α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, eq_comm, mulEnergy, mul_comm, map_eq_image, Function.comp]
+  simp [-Finset.card_map, eq_comm, mulEnergy, mul_comm, map_eq_image, Function.comp_def]
 
 end CommMonoid
 

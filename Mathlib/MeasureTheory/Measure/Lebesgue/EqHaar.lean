@@ -492,7 +492,8 @@ theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere 
   rcases hr.lt_or_lt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
-      measure_diff ball_subset_closedBall measurableSet_ball measure_ball_lt_top.ne,
+      measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet
+        measure_ball_lt_top.ne,
       addHaar_ball_of_pos μ _ h, addHaar_closedBall μ _ h.le, tsub_self]
 
 theorem addHaar_sphere [Nontrivial E] (x : E) (r : ℝ) : μ (sphere x r) = 0 := by
@@ -696,7 +697,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
         ⟨0, ((measure_mono diff_subset).trans_lt h''t.lt_top).ne⟩
-      refine tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ ?_) N
+      refine tendsto_measure_iInter (fun n ↦ (ht.diff measurableSet_closedBall).nullMeasurableSet)
+        (fun m n hmn ↦ ?_) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,

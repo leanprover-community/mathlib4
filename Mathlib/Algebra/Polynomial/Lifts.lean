@@ -130,8 +130,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   obtain ⟨q, hq⟩ := hl
   replace hq := (ext_iff.1 hq) n
   have hcoeff : f (q.coeff n) = s := by
-    simp? [coeff_monomial] at hq says simp only [coeff_map, coeff_monomial, ↓reduceIte] at hq
-    exact hq
+    rwa [coeff_map, coeff_monomial_same] at hq
   use monomial n (q.coeff n)
   constructor
   · simp only [hcoeff, map_monomial]
@@ -139,8 +138,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
     intro habs
     simp only [habs, RingHom.map_zero] at hcoeff
     exact hzero hcoeff.symm
-  rw [← C_mul_X_pow_eq_monomial]
-  rw [← C_mul_X_pow_eq_monomial]
+  rw [← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial]
   simp only [hzero, hqzero, Ne, not_false_iff, degree_C_mul_X_pow]
 
 /-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/

@@ -250,7 +250,7 @@ variable {C}
 -/
 /- Porting note: removed
 `@[simps (config := { rhsMd := semireducible })]`
-and replaced with `@[simps]` in the two declarations below-/
+and replaced with `@[simps]` in the two declarations below -/
 @[simps!]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h

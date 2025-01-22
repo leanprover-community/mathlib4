@@ -41,7 +41,7 @@ instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : Decidab
 instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
   instInhabitedProd
 
-/-- Dictionary / lexicographic ordering on pairs.  -/
+/-- Dictionary / lexicographic ordering on pairs. -/
 instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
 
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)

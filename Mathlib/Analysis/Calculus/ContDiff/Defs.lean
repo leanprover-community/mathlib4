@@ -1598,3 +1598,5 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B
+
+set_option linter.style.longFile 1700

@@ -476,7 +476,7 @@ theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
       exact SimpleFunc.lintegral_mono le_rfl Measure.restrict_le_self
     _ ≤ (SimpleFunc.const α (C : ℝ≥0∞)).lintegral (μ.restrict s) + ε₁ := by
       gcongr
-      exact SimpleFunc.lintegral_mono (fun x ↦ ENNReal.coe_le_coe.2 (hC x)) le_rfl
+      exact fun x ↦ ENNReal.coe_le_coe.2 (hC x)
     _ = C * μ s + ε₁ := by
       simp only [← SimpleFunc.lintegral_eq_lintegral, coe_const, lintegral_const,
         Measure.restrict_apply, MeasurableSet.univ, univ_inter, Function.const]
@@ -918,6 +918,15 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
   lintegral_eq_zero_iff' hf.aemeasurable
 
+theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
+    ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  (lintegral_eq_zero_iff' hf).trans (ae_restrict_iff' hs)
+
+theorem setLIntegral_eq_zero_iff {s : Set α} (hs : MeasurableSet s) {f : α → ℝ≥0∞}
+    (hf : Measurable f) : ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  setLIntegral_eq_zero_iff' hs hf.aemeasurable
+
 theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
     (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
@@ -926,7 +935,7 @@ theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
-/-- Weaker version of the monotone convergence theorem-/
+/-- Weaker version of the monotone convergence theorem -/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
   classical
@@ -2050,3 +2059,5 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
 end TendstoIndicator -- section
 
 end MeasureTheory
+
+set_option linter.style.longFile 2200

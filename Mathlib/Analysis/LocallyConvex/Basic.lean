@@ -190,11 +190,11 @@ theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s
   rcases eq_or_ne a 0 with rfl | ha₀
   · simp_all
   · calc
-      b • x = (a⁻¹ • b) • a • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
-      _ ∈ s := by
+      (a⁻¹ • b) • a • x ∈ s := by
         refine hs.smul_mem ?_ ha
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
         exact div_le_one_of_le hba (norm_nonneg _)
+      (a⁻¹ • b) • a • x = b • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
 
 theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
   rw [← @norm_one 𝕜] at ha; simpa using hA.smul_mono ha

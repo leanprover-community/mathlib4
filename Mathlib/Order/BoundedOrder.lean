@@ -144,6 +144,9 @@ theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = �
 theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
 
+lemma top_not_mem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
+  ⟨fun h x hx ↦ Ne.lt_top (fun hx' : x = ⊤ ↦ h (hx' ▸ hx)), fun h h₀ ↦ (h ⊤ h₀).false⟩
+
 variable [Nontrivial α]
 
 theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h =>
@@ -312,6 +315,9 @@ theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = �
 
 theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
   hf.dual.apply_eq_top_iff
+
+lemma bot_not_mem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
+  top_not_mem_iff (α := αᵒᵈ)
 
 variable [Nontrivial α]
 

@@ -58,24 +58,24 @@ structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) 
   mapId (a : B) : 𝟙 (obj a) ⟶ map (𝟙 a)
   /-- The 2-morphism underlying the lax functoriality constraint. -/
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map f ≫ map g ⟶ map (f ≫ g)
-  /-- Naturality of the lax functoriality constraight, on the left. -/
+  /-- Naturality of the lax functoriality constraint, on the left. -/
   mapComp_naturality_left :
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       mapComp f g ≫ map₂ (η ▷ g) = map₂ η ▷ map g ≫ mapComp f' g:= by aesop_cat
-  /-- Naturality of the lax functoriality constraight, on the right. -/
+  /-- Naturality of the lax functoriality constraint, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
      mapComp f g ≫ map₂ (f ◁ η) = map f ◁ map₂ η ≫ mapComp f g' := by aesop_cat
-  /-- Lax associativity -/
+  /-- Lax associativity. -/
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       mapComp f g ▷ map h ≫ mapComp (f ≫ g) h ≫ map₂ (α_ f g h).hom =
       (α_ (map f) (map g) (map h)).hom ≫ map f ◁ mapComp g h ≫ mapComp f (g ≫ h) := by aesop_cat
-  /-- Lax left unity -/
+  /-- Lax left unity. -/
   map₂_leftUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).inv = (λ_ (map f)).inv ≫ mapId a ▷ map f ≫ mapComp (𝟙 a) f := by aesop_cat
-  /-- Lax right unity -/
+  /-- Lax right unity. -/
   map₂_rightUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).inv = (ρ_ (map f)).inv ≫ map f ◁ mapId b ≫ mapComp f (𝟙 b) := by aesop_cat
@@ -166,16 +166,15 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
 
 See `Pseudofunctor.mkOfLax`. -/
 structure PseudoCore (F : LaxFunctor B C) where
+  /-- The isomorphism giving rise to the lax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
+  /-- The isomorphism giving rise to the lax functoriality constraint -/
   mapCompIso {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : F.map (f ≫ g) ≅ F.map f ≫ F.map g
+  /-- `mapIdIso` gives rise to the lax unity constraint -/
   mapIdIso_inv {a : B} : (mapIdIso a).inv = F.mapId a := by aesop_cat
+  /-- `mapCompIso` gives rise to the lax functoriality constraint -/
   mapCompIso_inv {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : (mapCompIso f g).inv = F.mapComp f g := by
     aesop_cat
-
-attribute [nolint docBlame] CategoryTheory.LaxFunctor.PseudoCore.mapIdIso
-  CategoryTheory.LaxFunctor.PseudoCore.mapCompIso
-  CategoryTheory.LaxFunctor.PseudoCore.mapIdIso_inv
-  CategoryTheory.LaxFunctor.PseudoCore.mapCompIso_inv
 
 attribute [simp] PseudoCore.mapIdIso_inv PseudoCore.mapCompIso_inv
 

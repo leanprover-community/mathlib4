@@ -26,21 +26,21 @@ which occur in the target or local context or delayed assignment (if any) of
 `mvarId`, plus the metavariables which occur in these metavariables, etc.
 -/
 partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
-    MetaM (HashSet MVarId) :=
+    MetaM (Std.HashSet MVarId) :=
   return (← go mvarId |>.run {}).snd
   where
     /-- auxiliary function for `getUnassignedGoalMVarDependencies` -/
-    addMVars (e : Expr) : StateRefT (HashSet MVarId) MetaM Unit := do
+    addMVars (e : Expr) : StateRefT (Std.HashSet MVarId) MetaM Unit := do
       let mvars ← getMVars e
       let mut s ← get
-      set ({} : HashSet MVarId) -- Ensure that `s` is not shared.
+      set ({} : Std.HashSet MVarId) -- Ensure that `s` is not shared.
       for mvarId in mvars do
         unless ← mvarId.isDelayedAssigned do
           s := s.insert mvarId
       set s
       mvars.forM go
     /-- auxiliary function for `getUnassignedGoalMVarDependencies` -/
-    go (mvarId : MVarId) : StateRefT (HashSet MVarId) MetaM Unit :=
+    go (mvarId : MVarId) : StateRefT (Std.HashSet MVarId) MetaM Unit :=
       withIncRecDepth do
         let mdecl ← mvarId.getDecl
         addMVars mdecl.type
@@ -60,7 +60,7 @@ that are not closed, starting from the original goal. -/
 elab "recover " tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
   evalTactic tacs
-  let mut unassigned : HashSet MVarId := {}
+  let mut unassigned : Std.HashSet MVarId := {}
   for mvarId in originalGoals do
     unless ← mvarId.isAssigned <||> mvarId.isDelayedAssigned do
       unassigned := unassigned.insert mvarId

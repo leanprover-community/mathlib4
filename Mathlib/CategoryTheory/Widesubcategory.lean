@@ -83,7 +83,7 @@ Structure for wide subcategories. Objects ignore the morphism property.
 -/
 @[ext, nolint unusedArguments]
 structure WideSubcategory (_P : MorphismProperty C) [IsMultiplicative _P] where
-  /-- The category of which this is a wide subcategory-/
+  /-- The category of which this is a wide subcategory -/
   obj : C
 
 instance WideSubcategory.category : Category.{v₁} (WideSubcategory P) :=

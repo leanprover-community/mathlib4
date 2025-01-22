@@ -145,7 +145,7 @@ theorem exists_lfpApprox_eq_lfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| 
   · exact h_fab
 
 /-- If there are distinct ordinals with equal value then
-  every value succeding the smaller ordinal are fixed points -/
+  every value succeeding the smaller ordinal are fixed points -/
 lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
     (h_init : x ≤ f x) (h_ab : a < b) (h_ac : a ≤ c) (h_fab : lfpApprox f x a = lfpApprox f x b) :
     lfpApprox f x c ∈ fixedPoints f := by

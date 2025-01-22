@@ -173,7 +173,7 @@ open Relation
 
 /-- The relation specifying when a list of (pregame) arguments is considered simpler than another:
   `ArgsRel a₁ a₂` is true if `a₁`, considered as a multiset, can be obtained from `a₂` by
-  repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame.  -/
+  repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame. -/
 def ArgsRel := InvImage (TransGen <| CutExpand IsOption) Args.toMultiset
 
 /-- `ArgsRel` is well-founded. -/
@@ -463,7 +463,7 @@ theorem Equiv.mul_congr_left (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy :
     (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
   equiv_iff_game_eq.2 <| (P24 hx₁ hx₂ hy).1 he
 
-theorem Equiv.mul_congr_right (hx : x.Numeric)  (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
+theorem Equiv.mul_congr_right (hx : x.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
     (he : y₁ ≈ y₂) : x * y₁ ≈ x * y₂ :=
   .trans (mul_comm_equiv _ _) <| .trans (mul_congr_left hy₁ hy₂ hx he) (mul_comm_equiv _ _)
 

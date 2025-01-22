@@ -62,7 +62,7 @@ section GeneralAdjointFunctorTheorem
 variable {D : Type u} [Category.{v} D]
 variable (G : D ⥤ C)
 
-/-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/
+/-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition. -/
 theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition G := by
   intro A
   refine

@@ -34,6 +34,10 @@ lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := f
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| Int.sub_pos_of_lt h) _
     _ = a ^ n := by simp [← zpow_add, m.add_comm]
 
+@[to_additive zsmul_left_inj]
+lemma zpow_right_inj (ha : 1 < a) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
+  (zpow_right_strictMono ha).injective.eq_iff
+
 @[to_additive zsmul_mono_left]
 lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n h ↦
   calc
@@ -125,4 +129,3 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
     simp_all
 
 end LinearOrderedCommGroup
-

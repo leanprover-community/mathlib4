@@ -1,4 +1,7 @@
 import Mathlib.Tactic.Trace
+
+set_option linter.unusedTactic false
+
 /--
 info: 7
 -/

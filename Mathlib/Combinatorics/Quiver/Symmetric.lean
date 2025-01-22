@@ -45,7 +45,7 @@ class HasReverse where
 def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
   HasReverse.reverse'
 
-/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
+/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
 class HasInvolutiveReverse extends HasReverse V where
   /-- `reverse` is involutive -/
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f
@@ -132,16 +132,17 @@ theorem Path.reverse_toPath [HasReverse V] {a b : V} (f : a ⟶ b) :
 @[simp]
 theorem Path.reverse_comp [HasReverse V] {a b c : V} (p : Path a b) (q : Path b c) :
     (p.comp q).reverse = q.reverse.comp p.reverse := by
-  induction' q with _ _ _ _ h
-  · simp
-  · simp [h]
+  induction q with
+  | nil => simp
+  | cons _ _ h => simp [h]
 
 @[simp]
 theorem Path.reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (p : Path a b) :
     p.reverse.reverse = p := by
-  induction' p with _ _ _ _ h
-  · simp
-  · rw [Path.reverse, Path.reverse_comp, h, Path.reverse_toPath, Quiver.reverse_reverse]
+  induction p with
+  | nil => simp
+  | cons _ _ h =>
+    rw [Path.reverse, Path.reverse_comp, h, Path.reverse_toPath, Quiver.reverse_reverse]
     rfl
 
 end Paths

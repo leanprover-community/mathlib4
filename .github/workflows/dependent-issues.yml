@@ -18,7 +18,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: z0al/dependent-issues@v1
+      - uses: z0al/dependent-issues@75d554cd9494b6e1766bc9d08a81c26444ad5c5a
         env:
           # (Required) The token to use to make API calls to GitHub.
           GITHUB_TOKEN: ${{ secrets.DEPENDENT_ISSUES_TOKEN }}

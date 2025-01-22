@@ -132,7 +132,7 @@ section BundledSMul
 def smulMulHom [Monoid α] [Mul β] [MulAction α β] [IsScalarTower α β β] [SMulCommClass α β β] :
     α × β →ₙ* β where
   toFun a := a.1 • a.2
-  map_mul' _ _ := (smul_mul_smul _ _ _ _).symm
+  map_mul' _ _ := (smul_mul_smul_comm _ _ _ _).symm
 
 /-- Scalar multiplication as a monoid homomorphism. -/
 @[simps]

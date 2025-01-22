@@ -112,7 +112,7 @@ structure CompositionAsSet (n : ℕ) where
   boundaries : Finset (Fin n.succ)
   /-- Proof that `0` is a member of `boundaries`-/
   zero_mem : (0 : Fin n.succ) ∈ boundaries
-  /-- Last element of the composition-/
+  /-- Last element of the composition -/
   getLast_mem : Fin.last n ∈ boundaries
 
 instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
@@ -759,7 +759,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
-      add_left_inj, false_or, true_and]
+      add_left_inj, false_or, true_and, reduceCtorEq]
     erw [Set.mem_setOf_eq]
     simp only [Finset.mem_val]
     constructor

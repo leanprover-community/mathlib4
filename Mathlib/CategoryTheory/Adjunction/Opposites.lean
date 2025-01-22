@@ -71,12 +71,12 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
       (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
     homEquiv_naturality_left_symm := by
       -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
       intros
       simp [opEquiv]
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
       intros
       simp [opEquiv] }
 

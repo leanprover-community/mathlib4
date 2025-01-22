@@ -525,7 +525,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
   have third_ε_pos : 0 < ε / 3 := by linarith
   have third_ε_pos' : 0 < ENNReal.ofReal (ε / 3) := ofReal_pos.mpr third_ε_pos
   -- First use separability to choose a countable partition of `Ω` into measurable
-  -- subsets `Es n ⊆ Ω` of small diamater, `diam (Es n) < ε/3`.
+  -- subsets `Es n ⊆ Ω` of small diameter, `diam (Es n) < ε/3`.
   obtain ⟨Es, Es_mble, Es_bdd, Es_diam, Es_cover, Es_disjoint⟩ :=
     SeparableSpace.exists_measurable_partition_diam_le Ω third_ε_pos
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite
@@ -533,7 +533,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
   obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
     have exhaust := @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _
-                    Es Es_mble Es_disjoint
+                    Es (fun n ↦ (Es_mble n).nullMeasurableSet) Es_disjoint
     simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
     obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
     refine ⟨N, ?_⟩

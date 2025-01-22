@@ -81,7 +81,7 @@ To implement this in Lean, we define several auxiliary definitions.
   where
   `restrictNonposSeq s i 0 = someExistsOneDivLT s (i \ ∅)` and
   `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
-  This definition represents the sequence $(A_n)$ in the proof as described above.
+  This definition represents the sequence $(A_n)$ in the proof as described above.
 
 With these definitions, we are able consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.

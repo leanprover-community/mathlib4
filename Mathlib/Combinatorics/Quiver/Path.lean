@@ -104,15 +104,19 @@ theorem length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length =
 theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length = q₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ := by
   refine ⟨fun h => ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
-  induction' q₁ with d₁ e₁ q₁ f₁ ih <;> obtain _ | ⟨q₂, f₂⟩ := q₂
-  · exact ⟨h, rfl⟩
-  · cases hq
-  · cases hq
-  · simp only [comp_cons, cons.injEq] at h
-    obtain rfl := h.1
-    obtain ⟨rfl, rfl⟩ := ih (Nat.succ.inj hq) h.2.1.eq
-    rw [h.2.2.eq]
-    exact ⟨rfl, rfl⟩
+  induction q₁ with
+  | nil =>
+    rcases q₂ with _ | ⟨q₂, f₂⟩
+    · exact ⟨h, rfl⟩
+    · cases hq
+  | cons q₁ f₁ ih =>
+    rcases q₂ with _ | ⟨q₂, f₂⟩
+    · cases hq
+    · simp only [comp_cons, cons.injEq] at h
+      obtain rfl := h.1
+      obtain ⟨rfl, rfl⟩ := ih (Nat.succ.inj hq) h.2.1.eq
+      rw [h.2.2.eq]
+      exact ⟨rfl, rfl⟩
 
 theorem comp_inj' {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (h : p₁.length = p₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ :=

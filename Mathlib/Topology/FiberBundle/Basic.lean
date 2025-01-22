@@ -674,7 +674,7 @@ instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_inducing' b := inducing_iff_nhds.2 fun x ↦ by
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
-    simp only [(· ∘ ·), localTrivAt_apply_mk, Trivialization.coe_coe,
+    simp only [Function.comp_def, localTrivAt_apply_mk, Trivialization.coe_coe,
       ← (embedding_prod_mk b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr

@@ -34,6 +34,7 @@ example {a : Nat}
   (∀ b, a - 1 ≤ b) = ∀ b c : Nat, c < a → c < b + 1 := by
   simp_rw [h1, h2]
 
+set_option linter.unusedTactic false in
 -- `simp_rw` respects config options
 example : 1 = 2 := by
   let a := 2

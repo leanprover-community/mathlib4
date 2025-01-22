@@ -51,11 +51,11 @@ variable {α β : Type*}
 /-- Order equipped with a sensible successor function. -/
 @[ext]
 class SuccOrder (α : Type*) [Preorder α] where
-  /-- Successor function-/
+  /-- Successor function -/
   succ : α → α
   /-- Proof of basic ordering with respect to `succ`-/
   le_succ : ∀ a, a ≤ succ a
-  /-- Proof of interaction between `succ` and maximal element-/
+  /-- Proof of interaction between `succ` and maximal element -/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
   /-- Proof that `succ a` is the least element greater than `a`-/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
@@ -63,11 +63,11 @@ class SuccOrder (α : Type*) [Preorder α] where
 /-- Order equipped with a sensible predecessor function. -/
 @[ext]
 class PredOrder (α : Type*) [Preorder α] where
-  /-- Predecessor function-/
+  /-- Predecessor function -/
   pred : α → α
   /-- Proof of basic ordering with respect to `pred`-/
   pred_le : ∀ a, pred a ≤ a
-  /-- Proof of interaction between `pred` and minimal element-/
+  /-- Proof of interaction between `pred` and minimal element -/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
   /-- Proof that `pred b` is the greatest element less than `b`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
@@ -346,6 +346,12 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
 lemma succ_eq_of_covBy (h : a ⋖ b) : succ a = b := (succ_le_of_lt h.lt).antisymm h.wcovBy.le_succ
 
 alias _root_.CovBy.succ_eq := succ_eq_of_covBy
+
+theorem _root_.OrderIso.map_succ {β : Type*} [PartialOrder β] [SuccOrder β] (f : α ≃o β) (a : α) :
+    f (succ a) = succ (f a) := by
+  by_cases h : IsMax a
+  · rw [h.succ_eq, (f.isMax_apply.2 h).succ_eq]
+  · exact (f.map_covBy.2 <| covBy_succ_of_not_isMax h).succ_eq.symm
 
 section NoMaxOrder
 
@@ -715,6 +721,10 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
 lemma pred_eq_of_covBy (h : a ⋖ b) : pred b = a := h.wcovBy.pred_le.antisymm (le_pred_of_lt h.lt)
 
 alias _root_.CovBy.pred_eq := pred_eq_of_covBy
+
+theorem _root_.OrderIso.map_pred {β : Type*} [PartialOrder β] [PredOrder β] (f : α ≃o β) (a : α) :
+    f (pred a) = pred (f a) :=
+  f.dual.map_succ a
 
 section NoMinOrder
 
@@ -1346,11 +1356,11 @@ lemma StrictAnti.not_bddBelow_range [NoMaxOrder α] [PredOrder β] [IsPredArchim
 
 end bdd_range
 
-section IsWellOrder
+section IsWellFounded
 
-variable [LinearOrder α]
+variable [PartialOrder α]
 
-instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (· < ·)]
+instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT α]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
@@ -1359,19 +1369,19 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
-    rcases le_or_lt b (pred b) with hb | hb
-    · cases (min_of_le_pred hb).not_lt hab
+    rcases eq_or_lt_of_le (pred_le b) with hb | hb
+    · cases (min_of_le_pred hb.ge).not_lt hab
     dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
 
-instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
+instance (priority := 100) WellFoundedGT.toIsSuccArchimedean [h : WellFoundedGT α]
     [SuccOrder α] : IsSuccArchimedean α :=
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
-end IsWellOrder
+end IsWellFounded
 
 section OrderBot
 

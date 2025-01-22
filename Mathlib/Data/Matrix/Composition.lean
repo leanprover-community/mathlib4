@@ -24,7 +24,7 @@ Semiring, and Algebra over a CommSemiring K.
 
 namespace Matrix
 
-variable  (I J K L R : Type*)
+variable (I J K L R : Type*)
 
 /-- I by J matrix where each entry is a K by L matrix is equivalent to
     I × K by J × L matrix -/

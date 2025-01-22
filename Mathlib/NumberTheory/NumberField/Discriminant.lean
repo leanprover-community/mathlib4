@@ -95,7 +95,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
-          ← coe_discr, map_intCast, ← Complex.nnnorm_int]
+          ← coe_discr, map_intCast, ← Complex.nnnorm_intCast]
   ext : 2
   dsimp only [M]
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,

@@ -57,7 +57,7 @@ theorem piComparison_fac {α : Type} (X : α → TopCat) :
     Equiv.coe_fn_symm_mk, comp_assoc, sigmaMk_apply, ← opCoproductIsoProduct_inv_comp_ι]
   rfl
 
-/-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
+/-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
 noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
   preserves J _ :=
     { preservesLimit := fun {K} =>

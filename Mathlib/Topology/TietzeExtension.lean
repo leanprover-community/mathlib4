@@ -306,7 +306,7 @@ theorem exists_extension_forall_mem_Icc_of_closedEmbedding (f : X →ᵇ ℝ) {a
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a bounded continuous real-valued function on `X`. Then there
 exists a bounded continuous function `g : Y →ᵇ ℝ` such that `g ∘ e = f` and each value `g y` belongs
-to a closed interval `[f x₁, f x₂]` for some `x₁` and `x₂`.  -/
+to a closed interval `[f x₁, f x₂]` for some `x₁` and `x₂`. -/
 theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f : X →ᵇ ℝ)
     {e : X → Y} (he : ClosedEmbedding e) :
     ∃ g : Y →ᵇ ℝ, (∀ y, ∃ x₁ x₂, g y ∈ Icc (f x₁) (f x₂)) ∧ g ∘ e = f := by
@@ -340,7 +340,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     · exact ⟨g, fun y => ⟨x, hg_mem _⟩, hgf⟩
     /- Otherwise, `g ⁻¹' {a}` is disjoint with `range e ∪ g ⁻¹' (Ici c)`, hence there exists a
         function `dg : Y → ℝ` such that `dg ∘ e = 0`, `dg y = 0` whenever `c ≤ g y`, `dg y = c - a`
-        whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`.  -/
+        whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`. -/
     have hd : Disjoint (range e ∪ g ⁻¹' Ici c) (g ⁻¹' {a}) := by
       refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
       · rw [Set.disjoint_left]

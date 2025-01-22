@@ -23,8 +23,8 @@ universe v w w' u
 namespace CategoryTheory.Limits.Types
 
 /--
-The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
-that `uliftFunctor` preserves limits that are potentially too large to exist in the source
+The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
+that `uliftFunctor` preserves limits that are potentially too large to exist in the source
 category.
 -/
 def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :

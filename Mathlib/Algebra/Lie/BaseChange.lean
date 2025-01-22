@@ -169,10 +169,10 @@ def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
       intro x m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid] at hm ⊢
-      obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp hm
+      obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp hm
       refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
       · change toEnd A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
-        simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
+        simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
         suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),
             ⁅a ⊗ₜ[R] y, (n : A ⊗[R] M)⁆ ∈ (N : Submodule R M).baseChange A by
           exact Submodule.sum_mem _ fun n _ ↦ Submodule.smul_mem _ _ (this n)

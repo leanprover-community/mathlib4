@@ -110,3 +110,17 @@ instance toLinearOrderedCommGroup [LinearOrderedCommGroup G] (H : Subgroup G) :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 end Subgroup
+
+@[to_additive]
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [OrderedCommMonoid G] :
+    StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
+
+@[to_additive]
+lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S T : Subsemigroup G}
+    (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
+
+@[to_additive]
+lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
+    [LinearOrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+  intro
+  simp [← he.lt_iff_lt]

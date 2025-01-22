@@ -141,7 +141,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
   · apply Continuous.intervalIntegrable
     exact Complex.continuous_sin.comp (continuous_const.mul Complex.continuous_ofReal)
 
-/-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`.  -/
+/-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
     (((1 : ℂ) - (4 : ℂ) * z ^ 2 / (n : ℂ) ^ 2) *
       ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =

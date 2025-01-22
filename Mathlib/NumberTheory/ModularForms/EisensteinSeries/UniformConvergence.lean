@@ -56,7 +56,7 @@ lemma r1_pos : 0 < r1 z := by
   dsimp only [r1]
   positivity
 
-/-- For `c, d ∈ ℝ` with `1 ≤ d ^ 2`, we have `r1 z ≤ |c * z + d| ^ 2`.  -/
+/-- For `c, d ∈ ℝ` with `1 ≤ d ^ 2`, we have `r1 z ≤ |c * z + d| ^ 2`. -/
 lemma r1_aux_bound (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) :
     r1 z ≤ (c * z.re + d) ^ 2 + (c * z.im) ^ 2 := by
   have H1 : (c * z.re + d) ^ 2 + (c * z.im) ^ 2 =

@@ -7,6 +7,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.Data.List.Infix
 
 /-!
 # Connected components of a category
@@ -56,7 +57,7 @@ def ConnectedComponents.functorToDiscrete   (X : Type*)
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
-def ConnectedComponents.liftFunctor  (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
+def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as)
     (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
@@ -116,7 +117,7 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
-    apply List.Chain.induction (fun t => Zigzag t j₂) _ hl₁ hl₂ _ _ _ (List.mem_of_mem_tail hi)
+    apply hl₁.backwards_induction (fun t => Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
@@ -124,7 +125,7 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   refine ⟨l.pmap f hf, ?_, ?_⟩
   · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (Component.ι _) h
-  · erw [List.getLast_pmap _ f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
+  · erw [List.getLast_pmap f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
     exact FullSubcategory.ext hl₂
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the

@@ -57,7 +57,7 @@ instance [h : Fintype P] : Fintype (Dual P) :=
 -- Porting note (#11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
-  ⟨Function.swap (Membership.mem : P → L → Prop)⟩
+  ⟨Function.swap (Membership.mem : L → P → Prop)⟩
 
 /-- A configuration is nondegenerate if:
   1) there does not exist a line that passes through all of the points,
@@ -196,9 +196,8 @@ theorem HasLines.pointCount_le_lineCount [HasLines P L] {p : P} {l : L} (h : p �
   exact
     Fintype.card_le_of_injective (fun p' => ⟨mkLine (this p'), (mkLine_ax (this p')).1⟩)
       fun p₁ p₂ hp =>
-      Subtype.ext
-        ((eq_or_eq p₁.2 p₂.2 (mkLine_ax (this p₁)).2
-              ((congr_arg _ (Subtype.ext_iff.mp hp)).mpr (mkLine_ax (this p₂)).2)).resolve_right
+      Subtype.ext ((eq_or_eq p₁.2 p₂.2 (mkLine_ax (this p₁)).2
+            ((congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hp)).mpr (mkLine_ax (this p₂)).2)).resolve_right
           fun h' => (congr_arg (¬p ∈ ·) h').mp h (mkLine_ax (this p₁)).1)
 
 theorem HasPoints.lineCount_le_pointCount [HasPoints P L] {p : P} {l : L} (h : p ∉ l)
@@ -301,13 +300,12 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
       let f : { q : P // q ∈ l₂ } → { l : L // p ∈ l } := fun q =>
         ⟨mkLine (this q), (mkLine_ax (this q)).1⟩
       have hf : Function.Injective f := fun q₁ q₂ hq =>
-        Subtype.ext
-          ((eq_or_eq q₁.2 q₂.2 (mkLine_ax (this q₁)).2
-                ((congr_arg _ (Subtype.ext_iff.mp hq)).mpr (mkLine_ax (this q₂)).2)).resolve_right
+        Subtype.ext ((eq_or_eq q₁.2 q₂.2 (mkLine_ax (this q₁)).2
+            ((congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hq)).mpr (mkLine_ax (this q₂)).2)).resolve_right
             fun h => (congr_arg (¬p ∈ ·) h).mp hl₂ (mkLine_ax (this q₁)).1)
       have key' := ((Fintype.bijective_iff_injective_and_card f).mpr ⟨hf, key'⟩).2
       obtain ⟨q, hq⟩ := key' ⟨l₁, hl₁⟩
-      exact ⟨q, (congr_arg _ (Subtype.ext_iff.mp hq)).mp (mkLine_ax (this q)).2, q.2⟩
+      exact ⟨q, (congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hq)).mp (mkLine_ax (this q)).2, q.2⟩
   { ‹HasLines P L› with
     mkPoint := fun {l₁ l₂} hl => Classical.choose (this l₁ l₂ hl)
     mkPoint_ax := fun {l₁ l₂} hl => Classical.choose_spec (this l₁ l₂ hl) }
@@ -368,7 +366,7 @@ theorem lineCount_eq_lineCount [Finite P] [Finite L] (p q : P) : lineCount L p =
     or_not.elim (fun h₂ => ?_) fun h₂ => (HasLines.lineCount_eq_pointCount h h₂).trans hl₂
   refine or_not.elim (fun h₃ => ?_) fun h₃ => (HasLines.lineCount_eq_pointCount h h₃).trans hl₃
   rw [(eq_or_eq h₂ h₂₂ h₃ h₂₃).resolve_right fun h =>
-      h₃₃ ((congr_arg (Membership.mem p₃) h).mp h₃₂)]
+      h₃₃ ((congr_arg (p₃ ∈ ·) h).mp h₃₂)]
 
 variable (P) {L}
 
@@ -414,7 +412,7 @@ theorem one_lt_order [Finite P] [Finite L] : 1 < order P L := by
   rw [← add_lt_add_iff_right 1, ← pointCount_eq _ l₂, pointCount, Nat.card_eq_fintype_card,
     Fintype.two_lt_card_iff]
   simp_rw [Ne, Subtype.ext_iff]
-  have h := mkPoint_ax fun h => h₂₁ ((congr_arg _ h).mpr h₂₂)
+  have h := mkPoint_ax (P := P) (L := L) fun h => h₂₁ ((congr_arg (p₂ ∈ ·) h).mpr h₂₂)
   exact
     ⟨⟨mkPoint _, h.2⟩, ⟨p₂, h₂₂⟩, ⟨p₃, h₃₂⟩, ne_of_mem_of_not_mem h.1 h₂₁,
       ne_of_mem_of_not_mem h.1 h₃₁, ne_of_mem_of_not_mem h₂₃ h₃₃⟩

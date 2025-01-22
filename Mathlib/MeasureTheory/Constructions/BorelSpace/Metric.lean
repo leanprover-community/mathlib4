@@ -128,7 +128,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
   have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
     rw [closure_eq_iInter_cthickening]
     exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.measurableSet)
+      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.nullMeasurableSet)
         (fun i j _ ij => cthickening_mono ij _) hs
   have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
     apply Tendsto.congr' _ tendsto_const_nhds
@@ -151,7 +151,7 @@ theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) :
     Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
   rw [closure_eq_iInter_thickening]
-  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.measurableSet)
+  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.nullMeasurableSet)
       (fun i j _ ij => thickening_mono ij _) hs
 
 /-- If a closed set has a thickening with finite measure, then the measure of its

@@ -7,7 +7,7 @@ on:
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
+    if: github.event.issue.pull_request && (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
     runs-on: ubuntu-latest
     steps:
       - name: Check whether user is part of mathlib-reviewers team
@@ -20,6 +20,17 @@ jobs:
                                                   # This feature is only applicable in an issue (or PR) context
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Determine Zulip topic
+        id: determine_topic
+        run: |
+          ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
+        env:
+          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -28,14 +39,14 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
-          topic: 'maintainer merge'
+          topic: ${{ steps.determine_topic.outputs.topic }}
           content: |
             ${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}
 
             > ${{ github.event.issue.title }}
 
       - name: Add comment to PR
-        uses: GrantBirki/comment@v2.0.1
+        uses: GrantBirki/comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
