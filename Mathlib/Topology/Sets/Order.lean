@@ -15,7 +15,7 @@ In this file we define the type of clopen upper sets.
 
 open Set TopologicalSpace
 
-variable {α β : Type*} [TopologicalSpace α] [LE α] [TopologicalSpace β] [LE β]
+variable {α : Type*} [TopologicalSpace α] [LE α]
 
 /-! ### Compact open sets -/
 

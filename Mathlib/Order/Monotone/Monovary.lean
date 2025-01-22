@@ -31,7 +31,7 @@ variable {ι ι' α β γ : Type*}
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β} {g' : β → γ}
+variable [Preorder α] [Preorder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β}
   {s t : Set ι}
 
 /-- `f` monovaries with `g` if `g i < g j` implies `f i ≤ f j`. -/
@@ -282,7 +282,7 @@ end Preorder
 
 section LinearOrder
 
-variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β} {g' : β → γ}
+variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {g : ι → β} {g' : β → γ}
   {s : Set ι}
 
 theorem MonovaryOn.comp_monotoneOn_right (h : MonovaryOn f g s) (hg : MonotoneOn g' (g '' s)) :

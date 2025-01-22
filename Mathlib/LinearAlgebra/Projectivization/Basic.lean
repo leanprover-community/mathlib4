@@ -68,6 +68,20 @@ instance [Nontrivial V] : Nonempty (ℙ K V) :=
 
 variable {K}
 
+/-- A function on non-zero vectors which is independent of scale, descends to a function on the
+projectivization. -/
+protected def lift {α : Type*} (f : { v : V // v ≠ 0 } → α)
+    (hf : ∀ (a b : { v : V // v ≠ 0 }) (t : K), a = t • (b : V) → f a = f b)
+    (x : ℙ K V) : α :=
+  Quotient.lift f (by rintro ⟨-, hv⟩ ⟨w, hw⟩ ⟨⟨t, -⟩, rfl⟩; exact hf ⟨_, hv⟩ ⟨w, hw⟩ t rfl) x
+
+@[simp]
+protected lemma lift_mk {α : Type*} (f : { v : V // v ≠ 0 } → α)
+    (hf : ∀ (a b : { v : V // v ≠ 0 }) (t : K), a = t • (b : V) → f a = f b)
+    (v : V) (hv : v ≠ 0) :
+    Projectivization.lift f hf (mk K v hv) = f ⟨v, hv⟩ :=
+  rfl
+
 /-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
   v.out'
@@ -78,7 +92,7 @@ theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
 @[simp]
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
 
-open FiniteDimensional
+open Module
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=

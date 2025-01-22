@@ -30,7 +30,7 @@ def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     LaxMonoidalFunctor C (Type v) := .ofTensorHom
     (F := coyoneda.obj (op (𝟙_ C)))
     (ε := fun _p => 𝟙 _)
-    (μ := fun X Y p => (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ p.2))
+    (μ := fun _ _ p => (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ p.2))
     (μ_natural := by aesop_cat)
     (associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h

@@ -40,7 +40,7 @@ multiplies the differentials by `(-1)^n`. -/
 def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   obj K :=
     { X := fun i => K.X (i + n)
-      d := fun i j => n.negOnePow • K.d _ _
+      d := fun _ _ => n.negOnePow • K.d _ _
       d_comp_d' := by
         intros
         simp only [Linear.comp_units_smul, Linear.units_smul_comp, d_comp_d, smul_zero]
@@ -52,7 +52,7 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
         dsimp at hij' ⊢
         omega }
   map φ :=
-    { f := fun i => φ.f _
+    { f := fun _ => φ.f _
       comm' := by
         intros
         dsimp
@@ -244,7 +244,7 @@ instance commShiftMapCochainComplex :
     ext
     rw [CommShift.isoAdd_hom_app]
     dsimp
-    erw [id_comp, id_comp]
+    rw [id_comp, id_comp]
     simp only [CochainComplex.shiftFunctorAdd_hom_app_f,
       CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
       eqToHom_map, eqToHom_trans, eqToHom_refl]
@@ -273,7 +273,7 @@ variable {C}
 between `φ₁⟦n⟧'` and `φ₂⟦n⟧'`. -/
 def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ₁ φ₂) (n : ℤ) :
     Homotopy (φ₁⟦n⟧') (φ₂⟦n⟧') where
-  hom i j := n.negOnePow • h.hom _ _
+  hom _ _ := n.negOnePow • h.hom _ _
   zero i j hij := by
     dsimp
     rw [h.zero, smul_zero]

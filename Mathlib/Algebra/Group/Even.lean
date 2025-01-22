@@ -34,7 +34,7 @@ assert_not_exists DenselyOrdered
 
 open MulOpposite
 
-variable {F α β R : Type*}
+variable {F α β : Type*}
 
 section Mul
 variable [Mul α]

@@ -199,7 +199,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
   apply (quasiCompact_iff_forall_affine f).mpr
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
-  apply f.openEmbedding.toInducing.isCompact_preimage'
+  apply f.isOpenEmbedding.isInducing.isCompact_preimage'
   · apply (noetherianSpace_set_iff _).mp
     · convert noetherianSpace_of_isAffineOpen U hU
       apply IsLocallyNoetherian.component_noetherian ⟨U, hU⟩
@@ -213,7 +213,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
     QuasiSeparatedSpace X := by
   apply (quasiSeparatedSpace_iff_affine X).mpr
   intro U V
-  have hInd := U.2.fromSpec.openEmbedding.toInducing
+  have hInd := U.2.fromSpec.isOpenEmbedding.isInducing
   apply (hInd.isCompact_preimage_iff ?_).mp
   · rw [← Set.preimage_inter_range, IsAffineOpen.range_fromSpec, Set.inter_comm]
     apply hInd.isCompact_preimage'
@@ -274,7 +274,7 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   apply TopologicalSpace.noetherian_univ_iff.mp
   let 𝒰 := X.affineCover.finiteSubcover
   rw [← 𝒰.iUnion_range]
-  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).val.base) by
+  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).base) by
     apply NoetherianSpace.iUnion
   intro i
   have : IsAffine (𝒰.obj i) := by

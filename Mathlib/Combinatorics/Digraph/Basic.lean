@@ -96,7 +96,7 @@ Any bipartite digraph may be regarded as a subgraph of one of these.
 def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
-variable {ι : Sort*} {V W X : Type*} (G : Digraph V) (G' : Digraph W) {a b c u v w : V}
+variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
 theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := fun _ _ ↦ Digraph.ext
 
@@ -176,19 +176,19 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
     sdiff := (· \ ·)
     top := Digraph.completeDigraph V
     bot := Digraph.emptyDigraph V
-    le_top := fun x v w _ ↦ trivial
-    bot_le := fun x v w h ↦ h.elim
-    sdiff_eq := fun x y ↦ rfl
-    inf_compl_le_bot := fun G v w h ↦ absurd h.1 h.2
+    le_top := fun _ _ _ _ ↦ trivial
+    bot_le := fun _ _ _ h ↦ h.elim
+    sdiff_eq := fun _ _ ↦ rfl
+    inf_compl_le_bot := fun _ _ _ h ↦ absurd h.1 h.2
     top_le_sup_compl := fun G v w _ ↦ by tauto
     sSup := sSup
-    le_sSup := fun s G hG a b hab ↦ ⟨G, hG, hab⟩
+    le_sSup := fun _ G hG _ _ hab ↦ ⟨G, hG, hab⟩
     sSup_le := fun s G hG a b ↦ by
       rintro ⟨H, hH, hab⟩
       exact hG _ hH hab
     sInf := sInf
-    sInf_le := fun s G hG a b hab ↦ hab hG
-    le_sInf := fun s G hG a b hab ↦ fun H hH ↦ hG _ hH hab
+    sInf_le := fun _ _ hG _ _ hab ↦ hab hG
+    le_sInf := fun _ _ hG _ _ hab ↦ fun _ hH ↦ hG _ hH hab
     iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial

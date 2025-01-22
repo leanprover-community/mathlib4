@@ -26,7 +26,7 @@ variable [Preorder M]
 
 namespace Left
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] {a b : M}
+variable [MulLeftMono M] {a : M}
 
 @[to_additive Left.nsmul_nonneg]
 theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
@@ -58,7 +58,7 @@ end Left
 
 section Left
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
+variable [MulLeftMono M]
 
 @[to_additive nsmul_left_monotone]
 theorem pow_right_monotone {a : M} (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
@@ -80,7 +80,7 @@ end Left
 
 section LeftLt
 
-variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ}
+variable [MulLeftStrictMono M] {a : M} {n m : ℕ}
 
 @[to_additive nsmul_left_strictMono]
 theorem pow_right_strictMono' (ha : 1 < a) : StrictMono ((a ^ ·) : ℕ → M) :=
@@ -94,7 +94,7 @@ end LeftLt
 
 section Right
 
-variable [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {x : M}
+variable [MulRightMono M] {x : M}
 
 @[to_additive Right.nsmul_nonneg]
 theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
@@ -123,8 +123,7 @@ end Right
 
 section CovariantLTSwap
 
-variable [Preorder β] [CovariantClass M M (· * ·) (· < ·)]
-  [CovariantClass M M (swap (· * ·)) (· < ·)] {f : β → M} {n : ℕ}
+variable [Preorder β] [MulLeftStrictMono M] [MulRightStrictMono M] {f : β → M} {n : ℕ}
 
 @[to_additive StrictMono.const_nsmul]
 theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → StrictMono (f · ^ n)
@@ -145,8 +144,7 @@ end CovariantLTSwap
 
 section CovariantLESwap
 
-variable [Preorder β] [CovariantClass M M (· * ·) (· ≤ ·)]
-  [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
@@ -175,7 +173,7 @@ variable [LinearOrder M]
 
 section CovariantLE
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)]
+variable [MulLeftMono M]
 
 -- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
@@ -203,7 +201,7 @@ end CovariantLE
 
 section CovariantLT
 
-variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
+variable [MulLeftStrictMono M] {a : M} {m n : ℕ}
 
 @[to_additive nsmul_le_nsmul_iff_left]
 theorem pow_le_pow_iff_right' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
@@ -217,7 +215,7 @@ end CovariantLT
 
 section CovariantLESwap
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable [MulLeftMono M] [MulRightMono M]
 
 @[to_additive lt_of_nsmul_lt_nsmul_right]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
@@ -235,7 +233,7 @@ end CovariantLESwap
 
 section CovariantLTSwap
 
-variable [CovariantClass M M (· * ·) (· < ·)] [CovariantClass M M (swap (· * ·)) (· < ·)]
+variable [MulLeftStrictMono M] [MulRightStrictMono M]
 
 @[to_additive le_of_nsmul_le_nsmul_right]
 theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
@@ -252,18 +250,18 @@ theorem le_max_of_sq_le_mul {a b c : M} (h : a ^ 2 ≤ b * c) : a ≤ max b c :=
 end CovariantLTSwap
 
 @[to_additive Left.nsmul_neg_iff]
-theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
+theorem Left.pow_lt_one_iff' [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
-  haveI := covariantClass_le_of_lt M M (· * ·)
+  haveI := mulLeftMono_of_mulLeftStrictMono M
   pow_lt_one_iff hn.ne'
 
-theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
+theorem Left.pow_lt_one_iff [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 := Left.pow_lt_one_iff' hn
 
 @[to_additive]
-theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
+theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
-  haveI := covariantClass_le_of_lt M M (swap (· * ·))
+  haveI := mulRightMono_of_mulRightStrictMono M
   ⟨fun H => not_le.mp fun k => H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 end LinearOrder
@@ -272,7 +270,7 @@ end Monoid
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+variable [DivInvMonoid G] [Preorder G] [MulLeftMono G]
 
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
@@ -281,39 +279,3 @@ theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n
   apply one_le_pow_of_one_le' H
 
 end DivInvMonoid
-
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-23.
--/
-
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_left' := pow_le_pow_left'
-@[deprecated (since := "2023-12-23")] alias nsmul_le_nsmul_of_le_right := nsmul_le_nsmul_right
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow' := pow_lt_pow_right'
-@[deprecated (since := "2023-12-23")] alias nsmul_lt_nsmul := nsmul_lt_nsmul_left
-@[deprecated (since := "2023-12-23")] alias pow_strictMono_left := pow_right_strictMono'
-@[deprecated (since := "2023-12-23")] alias nsmul_strictMono_right := nsmul_left_strictMono
-@[deprecated (since := "2023-12-23")] alias StrictMono.pow_right' := StrictMono.pow_const
-@[deprecated (since := "2023-12-23")] alias StrictMono.nsmul_left := StrictMono.const_nsmul
-@[deprecated (since := "2023-12-23")] alias pow_strictMono_right' := pow_left_strictMono
-@[deprecated (since := "2023-12-23")] alias nsmul_strictMono_left := nsmul_right_strictMono
-@[deprecated (since := "2023-12-23")] alias Monotone.pow_right := Monotone.pow_const
-@[deprecated (since := "2023-12-23")] alias Monotone.nsmul_left := Monotone.const_nsmul
-@[deprecated (since := "2023-12-23")] alias lt_of_pow_lt_pow' := lt_of_pow_lt_pow_left'
-@[deprecated (since := "2023-12-23")] alias lt_of_nsmul_lt_nsmul := lt_of_nsmul_lt_nsmul_right
-@[deprecated (since := "2023-12-23")] alias pow_le_pow' := pow_le_pow_right'
-@[deprecated (since := "2023-12-23")] alias nsmul_le_nsmul := nsmul_le_nsmul_left
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_one' := pow_le_pow_right_of_le_one'
-
-@[deprecated (since := "2023-12-23")]
-alias nsmul_le_nsmul_of_nonpos := nsmul_le_nsmul_left_of_nonpos
-
-@[deprecated (since := "2023-12-23")] alias le_of_pow_le_pow' := le_of_pow_le_pow_left'
-@[deprecated (since := "2023-12-23")] alias le_of_nsmul_le_nsmul := le_of_nsmul_le_nsmul_right
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_iff' := pow_le_pow_iff_right'
-@[deprecated (since := "2023-12-23")] alias nsmul_le_nsmul_iff := nsmul_le_nsmul_iff_left
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_iff' := pow_lt_pow_iff_right'
-@[deprecated (since := "2023-12-23")] alias nsmul_lt_nsmul_iff := nsmul_lt_nsmul_iff_left
-@[deprecated (since := "2023-12-23")] alias pow_mono_right := pow_left_mono
-@[deprecated (since := "2023-12-23")] alias nsmul_mono_left := nsmul_right_mono

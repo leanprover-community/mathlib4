@@ -79,6 +79,13 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ f : F.obj A.A ⟶ B // _ }`.
+-/
+set_option linter.unusedVariables false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -123,7 +130,7 @@ def leftAdjointComparison
     -- `Category.assoc`.
     -- dsimp [comparisonLeftAdjointHomEquiv]
     -- rw [← adj.homEquiv_naturality_right, Category.assoc]
-    simp [Cofork.IsColimit.homIso]
+    simp [Cofork.IsColimit.homIso, Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
 -/
@@ -218,7 +225,7 @@ theorem comparisonAdjunction_counit_app
   change
     coequalizer.π _ _ ≫ coequalizer.desc ((adj.homEquiv _ B).symm (𝟙 _)) _ =
       coequalizer.π _ _ ≫ coequalizer.desc _ _
-  simp
+  simp [Adjunction.homEquiv_counit]
 
 end MonadicityInternal
 

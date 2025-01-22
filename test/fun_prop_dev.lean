@@ -107,10 +107,10 @@ structure LinHom (α β) where
 infixr:25 " -o " => LinHom
 
 instance : CoeFun (α ->> β) (fun _ => α → β) where
-  coe := fun f => f.toFun
+  coe f := f.toFun
 
 instance : FunLike (α -o β) α β where
-  coe := fun f => f.toFun
+  coe f := f.toFun
   coe_injective' := silentSorry
 
 #eval Lean.Elab.Command.liftTermElabM do

@@ -40,7 +40,7 @@ register_option says.verify : Bool :=
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
     group := "says"
-    descr := "Disable reverification, even if `the `CI` environment variable is set." }
+    descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic
 

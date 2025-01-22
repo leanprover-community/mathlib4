@@ -24,7 +24,7 @@ namespace Stonean
 instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ ExtremallyDisconnected Y) where
   hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance}
 
-variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : OpenEmbedding f)
+variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : IsOpenEmbedding f)
 include hi
 
 lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.range f)) where
@@ -33,13 +33,13 @@ lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.ra
       ⟨IsClosed.preimage i.continuous (isCompact_range f.continuous).isClosed,
         IsOpen.preimage i.continuous hi.isOpen_range⟩
     rw [← (closure U).preimage_image_eq Subtype.coe_injective,
-      ← h.1.closedEmbedding_subtype_val.closure_image_eq U]
+      ← h.1.isClosedEmbedding_subtypeVal.closure_image_eq U]
     exact isOpen_induced (ExtremallyDisconnected.open_closure _
-      (h.2.openEmbedding_subtype_val.isOpenMap U hU))
+      (h.2.isOpenEmbedding_subtypeVal.isOpenMap U hU))
 
 lemma extremallyDisconnected_pullback : ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
   have := extremallyDisconnected_preimage i hi
-  let e := (TopCat.pullbackHomeoPreimage i i.2 f hi.toEmbedding).symm
+  let e := (TopCat.pullbackHomeoPreimage i i.2 f hi.isEmbedding).symm
   let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := by
     exact TopCat.homeoOfIso
       ((TopCat.pullbackIsoProdSubtype f i).symm ≪≫ pullbackSymmetry _ _ ≪≫

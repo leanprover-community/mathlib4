@@ -118,7 +118,7 @@ end List
 
 namespace Cycle
 
-variable [DecidableEq α] (s s' : Cycle α)
+variable [DecidableEq α] (s : Cycle α)
 
 /-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as an `Equiv.Perm α`
 where each element in the list is permuted to the next one, defined as `formPerm`.
@@ -316,7 +316,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
   · refine ext_getElem (by simp) fun k hk hk' => ?_
     simp only [get_eq_getElem, formPerm_pow_apply_getElem _ hn, zero_add, getElem_map,
       getElem_range, Nat.mod_eq_of_lt hk']
-  · simpa [hs] using get_mem _ _ _
+  · simp [hs]
 
 theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) (x : α)
     (hx : x ∈ l) : toList (formPerm l) x ~r l := by
@@ -325,7 +325,7 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
   rw [formPerm_eq_of_isRotated hn hr]
   rw [get_eq_get_rotate l k k]
   simp only [Nat.mod_eq_of_lt k.2, tsub_add_cancel_of_le (le_of_lt k.2), Nat.mod_self]
-  erw [toList_formPerm_nontrivial]
+  rw [toList_formPerm_nontrivial]
   · simp
   · simpa using hl
   · simpa using hn

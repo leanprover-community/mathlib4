@@ -126,20 +126,20 @@ variable (S)
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K)
-    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (coe_nnqsmul _) (coe_qsmul _) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
     Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (coe_nnqsmul _) (coe_qsmul _) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 end SubfieldClass
 
@@ -176,7 +176,6 @@ instance : SubfieldClass (Subfield K) K where
   one_mem s := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
--- @[simp] -- Porting note (#10618): simp can prove this (with `coe_toSubring`, which comes later)
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -313,15 +312,15 @@ instance : Pow s ℤ :=
 instance toDivisionRing (s : Subfield K) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (by intros; rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
-    (by intros; rfl) fun _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl) (fun _ => rfl)
-    (fun _ => rfl) (by intros; rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)
+    (fun _ => rfl) (fun _ ↦ rfl) fun _ => rfl
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
@@ -373,7 +372,6 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
 /-! # Partial order -/
 
 
---@[simp] -- Porting note (#10618): simp can prove this
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
@@ -873,3 +871,69 @@ theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
   SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
 
 end Subfield
+
+/-! ## Actions by `Subfield`s
+
+These are just copies of the definitions about `Subsemiring` starting from
+`Subsemiring.MulAction`.
+-/
+section Actions
+
+namespace Subfield
+
+variable {X Y}
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [SMul K X] (F : Subfield K) : SMul F X :=
+  inferInstanceAs (SMul F.toSubsemiring X)
+
+theorem smul_def [SMul K X] {F : Subfield K} (g : F) (m : X) : g • m = (g : K) • m :=
+  rfl
+
+instance smulCommClass_left [SMul K Y] [SMul X Y] [SMulCommClass K X Y] (F : Subfield K) :
+    SMulCommClass F X Y :=
+  inferInstanceAs (SMulCommClass F.toSubsemiring X Y)
+
+instance smulCommClass_right [SMul X Y] [SMul K Y] [SMulCommClass X K Y] (F : Subfield K) :
+    SMulCommClass X F Y :=
+  inferInstanceAs (SMulCommClass X F.toSubsemiring Y)
+
+/-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
+instance [SMul X Y] [SMul K X] [SMul K Y] [IsScalarTower K X Y] (F : Subfield K) :
+    IsScalarTower F X Y :=
+  inferInstanceAs (IsScalarTower F.toSubsemiring X Y)
+
+instance [SMul K X] [FaithfulSMul K X] (F : Subfield K) : FaithfulSMul F X :=
+  inferInstanceAs (FaithfulSMul F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [MulAction K X] (F : Subfield K) : MulAction F X :=
+  inferInstanceAs (MulAction F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [AddMonoid X] [DistribMulAction K X] (F : Subfield K) : DistribMulAction F X :=
+  inferInstanceAs (DistribMulAction F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [Monoid X] [MulDistribMulAction K X] (F : Subfield K) : MulDistribMulAction F X :=
+  inferInstanceAs (MulDistribMulAction F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [Zero X] [SMulWithZero K X] (F : Subfield K) : SMulWithZero F X :=
+  inferInstanceAs (SMulWithZero F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [Zero X] [MulActionWithZero K X] (F : Subfield K) : MulActionWithZero F X :=
+  inferInstanceAs (MulActionWithZero F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [AddCommMonoid X] [Module K X] (F : Subfield K) : Module F X :=
+  inferInstanceAs (Module F.toSubsemiring X)
+
+/-- The action by a subfield is the action by the underlying field. -/
+instance [Semiring X] [MulSemiringAction K X] (F : Subfield K) : MulSemiringAction F X :=
+  inferInstanceAs (MulSemiringAction F.toSubsemiring X)
+
+end Subfield
+
+end Actions

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta
+import Mathlib.Topology.GDelta.UniformSpace
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Rat
 
@@ -266,7 +266,7 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ ↦ Iff.not)
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
     fun _ _ _ h ↦ by simp [h]
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
@@ -472,8 +472,11 @@ is ae-measurable. -/
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
-theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
+theorem IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.measurable := IsClosedEmbedding.measurable
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
@@ -613,32 +616,41 @@ instance Prod.borelSpace [SecondCountableTopologyEither α β] :
 source space is also a Borel space. -/
 lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [TopologicalSpace α]
     [MeasurableSpace β] [TopologicalSpace β] [hβ : BorelSpace β] {e : α → β}
-    (h'e : MeasurableEmbedding e) (h''e : Inducing e) :
+    (h'e : MeasurableEmbedding e) (h''e : IsInducing e) :
     BorelSpace α := by
   constructor
   have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
-  rw [← this, ← borel_comap, h''e.induced]
+  rw [← this, ← borel_comap, h''e.eq_induced]
 
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
-  MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
+  MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
-protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
+protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
-      (((↑) : range f → β) ∘ (Homeomorph.ofEmbedding f h₁).toMeasurableEquiv) from
+      (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
-protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
-    MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
+@[deprecated (since := "2024-10-26")]
+alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
-protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
+protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β}
+    (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
+  h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
+
+protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
+  h.isEmbedding.measurableEmbedding h.isOpen_range.measurableSet
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.measurableEmbedding := IsOpenEmbedding.measurableEmbedding
 
 instance Empty.borelSpace : BorelSpace Empty :=
   ⟨borel_eq_top_of_discrete.symm⟩

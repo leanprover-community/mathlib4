@@ -199,3 +199,7 @@ theorem three_add_one_eq_four [AddMonoidWithOne R] : 3 + 1 = (4 : R) := by
     ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide
+
+theorem two_add_two_eq_four [AddMonoidWithOne R] : 2 + 2 = (4 : R) := by
+  simp [← one_add_one_eq_two, ← Nat.cast_one, ← three_add_one_eq_four,
+    ← two_add_one_eq_three, add_assoc]

@@ -167,7 +167,8 @@ instance [u : UniformSpace E] : UniformSpace (C⋆ᵐᵒᵈ E) := u.comap <| equ
 instance [Bornology E] : Bornology (C⋆ᵐᵒᵈ E) := Bornology.induced <| equiv E
 
 /-- `WithCStarModule.equiv` as a uniform equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
-def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E := equiv E |>.toUniformEquivOfUniformInducing ⟨rfl⟩
+def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E :=
+  equiv E |>.toUniformEquivOfIsUniformInducing ⟨rfl⟩
 
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance

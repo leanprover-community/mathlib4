@@ -3,11 +3,7 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.LinearAlgebra.Finsupp
 
 /-! # weights of Finsupp functions
@@ -157,7 +153,7 @@ theorem weight_eq_zero_iff_eq_zero
     ext s
     simp only [Finsupp.coe_zero, Pi.zero_apply]
     by_contra hs
-    apply NonTorsionWeight.ne_zero w _
+    apply NonTorsionWeight.ne_zero w s
     rw [← nonpos_iff_eq_zero, ← h]
     exact le_weight_of_ne_zero' w hs
   · intro h

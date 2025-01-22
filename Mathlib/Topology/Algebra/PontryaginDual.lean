@@ -22,9 +22,9 @@ isomorphic to its double dual.
 
 open Pointwise Function
 
-variable (A B C D E G : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E] [Group G]
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalSpace G] [TopologicalGroup E] [TopologicalGroup G]
+variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
+  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [TopologicalSpace G] [TopologicalSpace H] [TopologicalGroup G] [TopologicalGroup H]
 
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
@@ -48,23 +48,23 @@ instance : TopologicalGroup (PontryaginDual A) :=
 noncomputable instance : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A Circle))
 
-instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
+instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
   let Vn : ℕ → Set Circle :=
     fun n ↦ Circle.exp '' { x | |x| < Real.pi / 2 ^ (n + 1)}
   have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) := by
     refine fun n x ↦ ⟨?_, fun hx ↦ ⟨Complex.arg x, hx, Circle.exp_arg x⟩⟩
     rintro ⟨t, ht : |t| < _, rfl⟩
-    have ht' := ht.trans_le (div_le_self Real.pi_nonneg (one_le_pow_of_one_le one_le_two (n + 1)))
+    have ht' := ht.trans_le (div_le_self Real.pi_nonneg (one_le_pow₀ one_le_two))
     rwa [Circle.arg_exp (neg_lt_of_abs_lt ht') (lt_of_abs_lt ht').le]
   refine ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn ?_ ?_
   · intro n x h1 h2
     rw [hVn] at h1 h2 ⊢
     rwa [Circle.coe_mul, Complex.arg_mul x.coe_ne_zero x.coe_ne_zero,
-      ← two_mul, abs_mul, abs_two, ← lt_div_iff' two_pos, div_div, ← pow_succ] at h2
+      ← two_mul, abs_mul, abs_two, ← lt_div_iff₀' two_pos, div_div, ← pow_succ] at h2
     apply Set.Ioo_subset_Ioc_self
-    rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff' two_pos]
+    rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff₀' two_pos]
     exact h1.trans_le
-      (div_le_div_of_nonneg_left Real.pi_nonneg two_pos (le_self_pow one_le_two n.succ_ne_zero))
+      (div_le_div_of_nonneg_left Real.pi_nonneg two_pos (le_self_pow₀ one_le_two n.succ_ne_zero))
   · rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
     refine ((nhds_basis_zero_abs_sub_lt ℝ).to_hasBasis
         (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)
@@ -75,17 +75,20 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
     refine (Nat.le_ceil (Real.pi / x)).trans ?_
     exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
 
-variable {A B C D E}
+variable {A B C G}
 
 namespace PontryaginDual
 
 open ContinuousMonoidHom
 
 instance : FunLike (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.funLike
+  ContinuousMonoidHom.instFunLike
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.ContinuousMonoidHomClass
+noncomputable instance instContinuousMapClass : ContinuousMapClass (PontryaginDual A) A Circle :=
+  ContinuousMonoidHom.instContinuousMapClass
+
+noncomputable instance instMonoidHomClass : MonoidHomClass (PontryaginDual A) A Circle :=
+  ContinuousMonoidHom.instMonoidHomClass
 
 /-- `PontryaginDual` is a contravariant functor. -/
 noncomputable def map (f : ContinuousMonoidHom A B) :
@@ -107,15 +110,15 @@ theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
   ext fun _x => ext fun _y => rfl
 
 @[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
+nonrec theorem map_mul (f g : ContinuousMonoidHom A G) : map (f * g) = map f * map g :=
   ext fun x => ext fun y => map_mul x (f y) (g y)
 
-variable (A B C D E)
+variable (A B C G)
 
 /-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
-noncomputable def mapHom [LocallyCompactSpace E] :
-    ContinuousMonoidHom (ContinuousMonoidHom A E)
-      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
+noncomputable def mapHom [LocallyCompactSpace G] :
+    ContinuousMonoidHom (ContinuousMonoidHom A G)
+      (ContinuousMonoidHom (PontryaginDual G) (PontryaginDual A)) where
   toFun := map
   map_one' := map_one
   map_mul' := map_mul

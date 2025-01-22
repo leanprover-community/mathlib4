@@ -126,7 +126,7 @@ theorem le_birthday : ∀ x : PGame, x ≤ x.birthday.toPGame
         Or.inl ⟨toLeftMovesToPGame ⟨_, birthday_moveLeft_lt i⟩, by simp [le_birthday (xL i)]⟩,
         isEmptyElim⟩
 
-variable (a b x : PGame.{u})
+variable (x : PGame.{u})
 
 theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
   simpa only [birthday_neg, ← neg_le_iff] using le_birthday (-x)

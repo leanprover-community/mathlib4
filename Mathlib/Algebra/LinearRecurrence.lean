@@ -138,7 +138,7 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
     simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
-  right_inv u := Function.funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
+  right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
 theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSolution v) :

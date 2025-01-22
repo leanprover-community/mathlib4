@@ -91,7 +91,7 @@ theorem projective_def' :
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
 theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
-    (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f.comp h = g := by
+    (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f ∘ₗ h = g := by
   /-
     Here's the first step of the proof.
     Recall that `X →₀ R` is Lean's way of talking about the free `R`-module
@@ -109,6 +109,10 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   ext p
   conv_rhs => rw [← hs p]
   simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsupp_sum]
+
+theorem _root_.LinearMap.exists_rightInverse_of_surjective [Projective R P]
+    (f : M →ₗ[R] P) (hf_surj : range f = ⊤) : ∃ g : P →ₗ[R] M, f ∘ₗ g = LinearMap.id :=
+  projective_lifting_property f (.id : P →ₗ[R] P) (LinearMap.range_eq_top.1 hf_surj)
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
@@ -170,6 +174,20 @@ theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ
     (hs : Function.Surjective s) :
     Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
   ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
+
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+theorem Projective.of_ringEquiv {R S} [Semiring R] [Semiring S] {M N}
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N]
+    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
+    [Projective R M] : Projective S N := by
+  obtain ⟨f, hf⟩ := ‹Projective R M›
+  let g : N →ₗ[S] N →₀ S :=
+  { toFun := fun x ↦ (equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
+    map_add' := fun x y ↦ by ext; simp
+    map_smul' := fun r v ↦ by ext i; simp [e₂.symm.map_smulₛₗ] }
+  refine ⟨⟨g, fun x ↦ ?_⟩⟩
+  replace hf := congr(e₂ $(hf (e₂.symm x)))
+  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsupp_sum, e₂.map_smulₛₗ] using hf
 
 end Semiring
 

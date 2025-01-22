@@ -40,7 +40,6 @@ theorem range_subset {m n : ℕ} : range m ⊆ range n ↔ m ≤ n :=
 theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
   List.mem_range
 
--- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem not_mem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
 

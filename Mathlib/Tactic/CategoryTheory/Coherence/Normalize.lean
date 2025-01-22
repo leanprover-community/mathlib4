@@ -3,6 +3,7 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
+import Lean.Meta.AppBuilder
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
@@ -256,7 +257,7 @@ structure Eval.Result where
   proof : Expr
   deriving Inhabited
 
-variable {m : Type → Type} [Monad m]
+variable {m : Type → Type}
 
 /-- Evaluate the expression `α ≫ β`. -/
 class MkEvalComp (m : Type → Type) where
@@ -344,7 +345,7 @@ class MkEval (m : Type → Type) extends
   mkEvalMonoidalComp (η θ : Mor₂) (α : Structural) (η' θ' αθ ηαθ : NormalExpr)
     (e_η e_θ e_αθ e_ηαθ : Expr) : m Expr
 
-variable {ρ : Type} [Context ρ]
+variable {ρ : Type}
 variable [MonadMor₂Iso (CoherenceM ρ)] [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
 
 open MkEvalComp MonadMor₂Iso MonadNormalExpr
@@ -501,12 +502,11 @@ end
 
 open MkEval
 
-variable {ρ : Type} [Context ρ]
+variable {ρ : Type}
     [MonadMor₁ (CoherenceM ρ)]
     [MonadMor₂Iso (CoherenceM ρ)]
     [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)]
     [MonadMor₂ (CoherenceM ρ)]
-    [MkMor₂ (CoherenceM ρ)]
 
 /-- Trace the proof of the normalization. -/
 def traceProof (nm : Name) (result : Expr) : CoherenceM ρ Unit := do

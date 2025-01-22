@@ -51,7 +51,7 @@ variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section LE
 
-variable [LE α] [LE β] {s t : Set α} {a : α}
+variable [LE α] {s t : Set α} {a : α}
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
 also a member. Also called up-set, upward-closed set. -/
@@ -984,7 +984,7 @@ end UpperSet
 
 namespace LowerSet
 
-variable {f : α ≃o β} {s t : LowerSet α} {a : α} {b : β}
+variable {f : α ≃o β} {s t : LowerSet α} {a : α}
 
 /-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/
 def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
@@ -1602,7 +1602,7 @@ variable [Preorder α] [Preorder β]
 
 section
 
-variable {s : Set α} {t : Set β} {x : α × β}
+variable {s : Set α} {t : Set β}
 
 theorem IsUpperSet.prod (hs : IsUpperSet s) (ht : IsUpperSet t) : IsUpperSet (s ×ˢ t) :=
   fun _ _ h ha => ⟨hs h.1 ha.1, ht h.2 ha.2⟩

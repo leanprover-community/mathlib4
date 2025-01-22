@@ -294,11 +294,31 @@ def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
 
+@[simp]
+theorem algEquivOfCompEqX_eq_iff (p q p' q' : R[X])
+    (hpq : p.comp q = X) (hqp : q.comp p = X) (hpq' : p'.comp q' = X) (hqp' : q'.comp p' = X) :
+    algEquivOfCompEqX p q hpq hqp = algEquivOfCompEqX p' q' hpq' hqp' ↔ p = p' :=
+  ⟨fun h ↦ by simpa using congr($h X), fun h ↦ by ext1; simp [h]⟩
+
+@[simp]
+theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) :
+    (algEquivOfCompEqX p q hpq hqp).symm = algEquivOfCompEqX q p hqp hpq := rfl
+
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
 def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
+
+@[simp]
+theorem algEquivAevalXAddC_eq_iff {R} [CommRing R] (t t' : R) :
+    algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
+  simp [algEquivAevalXAddC]
+
+@[simp]
+theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
+    (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
+  simp [algEquivAevalXAddC, sub_eq_add_neg]
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
@@ -527,14 +547,43 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   simp [coeff_monomial]
 
 theorem not_isUnit_X_sub_C [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
-  fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by erw [← eval_mul_X_sub_C, hgf, eval_one]
+  fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by rw [← eval_mul_X_sub_C, hgf, eval_one]
 
 end Ring
 
-theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
+section CommRing
+variable [CommRing R] {p : R[X]} {t : R}
+
+theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
   exact map_sum (LinearMap.applyₗ v) _ _
+
+lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
+  convert (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
+  simp [C_eq_algebraMap]
+
+lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
+  AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
+
+lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
+
+lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
+  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
+  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
+  simp [comp_assoc]
+
+lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
+  simpa using dvd_comp_X_sub_C_iff p q (-a)
+
+variable [IsDomain R]
+
+lemma units_coeff_zero_smul (c : R[X]ˣ) (p : R[X]) : (c : R[X]).coeff 0 • p = c * p := by
+  rw [← Polynomial.C_mul', ← Polynomial.eq_C_of_degree_eq_zero (degree_coe_units c)]
+
+end CommRing
 
 section StableSubmodule
 
@@ -560,5 +609,56 @@ lemma aeval_apply_smul_mem_of_le_comap
   aeval_apply_smul_mem_of_le_comap' hm p f hq
 
 end StableSubmodule
+
+section CommSemiring
+
+variable [CommSemiring R] {a p : R[X]}
+
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
+    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
+  intro Q hQ
+  suffices ∀ i, P.coeff i • Q = 0 by
+    rw [← leadingCoeff_eq_zero]
+    apply h
+    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+  apply Nat.strong_decreasing_induction
+  · use P.natDegree
+    intro i hi
+    rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
+  intro l IH
+  obtain _|hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
+    rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
+  suffices P.coeff l * Q.leadingCoeff = 0 by
+    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, hl, coeff_natDegree, smul_eq_mul]
+  let m := Q.natDegree
+  suffices (P * Q).coeff (l + m) = P.coeff l * Q.leadingCoeff by rw [← this, hQ, coeff_zero]
+  rw [coeff_mul]
+  apply Finset.sum_eq_single (l, m) _ (by simp)
+  simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
+  intro i j hij H
+  obtain hi|rfl|hi := lt_trichotomy i l
+  · have hj : m < j := by omega
+    rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
+  · omega
+  · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
+termination_by Q => Q.natDegree
+
+open nonZeroDivisors in
+/-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
+such that `a ≠ 0` and `a • P = 0`. -/
+theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
+  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
+  by_contra! h
+  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
+  contrapose! ha
+  exact h a ha
+
+open nonZeroDivisors in
+protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
+  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
+
+end CommSemiring
 
 end Polynomial

@@ -37,7 +37,7 @@ variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {�
   [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
-  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
+  [NormedSpace ℝ F'] [CompleteSpace F']
 
 section UniquenessOfConditionalExpectation
 

@@ -29,7 +29,7 @@ open Nat Function
 
 namespace List
 
-variable {α β : Type*} {R S T : α → α → Prop} {a : α} {l : List α}
+variable {α β : Type*} {R : α → α → Prop} {l : List α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
@@ -69,12 +69,6 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
 
 /-! ### Pairwise filtering -/
 
-
-variable [DecidableRel R]
-
-alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
-
--- Porting note: commented out
--- attribute [protected] List.Pairwise.pwFilter
+protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 
 end List

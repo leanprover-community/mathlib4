@@ -27,11 +27,7 @@ identical no matter the choice of field of fractions for `R`.
 -/
 
 
-variable {R K L : Type*} [CommRing R]
-variable [Field K] [Field L] [DecidableEq L]
-variable [Algebra R K] [IsFractionRing R K]
-variable [Algebra K L] [FiniteDimensional K L]
-variable [Algebra R L] [IsScalarTower R K L]
+variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 

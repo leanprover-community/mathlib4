@@ -122,7 +122,7 @@ theorem Polynomial.iterate_comp_sub_X_ne {P : Polynomial ℤ} (hP : 1 < P.natDeg
     (hk : 0 < k) : P.comp^[k] X - X ≠ 0 := by
   rw [sub_ne_zero]
   apply_fun natDegree
-  simpa using (one_lt_pow hP hk.ne').ne'
+  simpa using (one_lt_pow₀ hP hk.ne').ne'
 
 /-- We solve the problem for the specific case k = 2 first. -/
 theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :

@@ -237,7 +237,7 @@ theorem sym_one_eq : xs.sym 1 = xs.map (· ::ₛ .nil) := by
 
 theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
   induction xs with
-  | nil => simp only [List.sym, map_eq_nil, sym2_eq_nil_iff]
+  | nil => simp only [List.sym, map_eq_nil_iff, sym2_eq_nil_iff]
   | cons x xs ih =>
     rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
     rfl

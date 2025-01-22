@@ -215,7 +215,7 @@ theorem isFractional_of_le_one (I : Submodule R P) (h : I ≤ 1) : IsFractional 
   use 1, S.one_mem
   intro b hb
   rw [one_smul]
-  obtain ⟨b', b'_mem, rfl⟩ := h hb
+  obtain ⟨b', b'_mem, rfl⟩ := mem_one.mp (h hb)
   exact Set.mem_range_self b'
 
 theorem isFractional_of_le {I : Submodule R P} {J : FractionalIdeal S P} (hIJ : I ≤ J) :

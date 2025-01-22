@@ -39,13 +39,19 @@ theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
   intro m n hne
   rw [dist_eq]; norm_cast; rwa [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
 
-theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℤ → ℝ) :=
-  uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℤ → ℝ) :=
+  isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℤ → ℝ) :=
-  closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
 
-instance : MetricSpace ℤ := Int.uniformEmbedding_coe_real.comapMetricSpace _
+theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_coe_real := isClosedEmbedding_coe_real
+
+instance : MetricSpace ℤ := Int.isUniformEmbedding_coe_real.comapMetricSpace _
 
 theorem preimage_ball (x : ℤ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
 

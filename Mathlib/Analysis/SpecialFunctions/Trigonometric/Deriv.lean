@@ -45,8 +45,10 @@ theorem contDiff_sin {n} : ContDiff ℂ n sin :=
   (((contDiff_neg.mul contDiff_const).cexp.sub (contDiff_id.mul contDiff_const).cexp).mul
     contDiff_const).div_const _
 
+@[fun_prop]
 theorem differentiable_sin : Differentiable ℂ sin := fun x => (hasDerivAt_sin x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_sin {x : ℂ} : DifferentiableAt ℂ sin x :=
   differentiable_sin x
 
@@ -70,8 +72,10 @@ theorem hasDerivAt_cos (x : ℂ) : HasDerivAt cos (-sin x) x :=
 theorem contDiff_cos {n} : ContDiff ℂ n cos :=
   ((contDiff_id.mul contDiff_const).cexp.add (contDiff_neg.mul contDiff_const).cexp).div_const _
 
+@[fun_prop]
 theorem differentiable_cos : Differentiable ℂ cos := fun x => (hasDerivAt_cos x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_cos {x : ℂ} : DifferentiableAt ℂ cos x :=
   differentiable_cos x
 
@@ -98,8 +102,10 @@ theorem hasDerivAt_sinh (x : ℂ) : HasDerivAt sinh (cosh x) x :=
 theorem contDiff_sinh {n} : ContDiff ℂ n sinh :=
   (contDiff_exp.sub contDiff_neg.cexp).div_const _
 
+@[fun_prop]
 theorem differentiable_sinh : Differentiable ℂ sinh := fun x => (hasDerivAt_sinh x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_sinh {x : ℂ} : DifferentiableAt ℂ sinh x :=
   differentiable_sinh x
 
@@ -123,8 +129,10 @@ theorem hasDerivAt_cosh (x : ℂ) : HasDerivAt cosh (sinh x) x :=
 theorem contDiff_cosh {n} : ContDiff ℂ n cosh :=
   (contDiff_exp.add contDiff_neg.cexp).div_const _
 
+@[fun_prop]
 theorem differentiable_cosh : Differentiable ℂ cosh := fun x => (hasDerivAt_cosh x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_cosh {x : ℂ} : DifferentiableAt ℂ cosh x :=
   differentiable_cosh x
 
@@ -482,8 +490,10 @@ theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=
   Complex.contDiff_sin.real_of_complex
 
+@[fun_prop]
 theorem differentiable_sin : Differentiable ℝ sin := fun x => (hasDerivAt_sin x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_sin : DifferentiableAt ℝ sin x :=
   differentiable_sin x
 
@@ -500,8 +510,10 @@ theorem hasDerivAt_cos (x : ℝ) : HasDerivAt cos (-sin x) x :=
 theorem contDiff_cos {n} : ContDiff ℝ n cos :=
   Complex.contDiff_cos.real_of_complex
 
+@[fun_prop]
 theorem differentiable_cos : Differentiable ℝ cos := fun x => (hasDerivAt_cos x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_cos : DifferentiableAt ℝ cos x :=
   differentiable_cos x
 
@@ -521,8 +533,10 @@ theorem hasDerivAt_sinh (x : ℝ) : HasDerivAt sinh (cosh x) x :=
 theorem contDiff_sinh {n} : ContDiff ℝ n sinh :=
   Complex.contDiff_sinh.real_of_complex
 
+@[fun_prop]
 theorem differentiable_sinh : Differentiable ℝ sinh := fun x => (hasDerivAt_sinh x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_sinh : DifferentiableAt ℝ sinh x :=
   differentiable_sinh x
 
@@ -539,8 +553,10 @@ theorem hasDerivAt_cosh (x : ℝ) : HasDerivAt cosh (sinh x) x :=
 theorem contDiff_cosh {n} : ContDiff ℝ n cosh :=
   Complex.contDiff_cosh.real_of_complex
 
+@[fun_prop]
 theorem differentiable_cosh : Differentiable ℝ cosh := fun x => (hasDerivAt_cosh x).differentiableAt
 
+@[fun_prop]
 theorem differentiableAt_cosh : DifferentiableAt ℝ cosh x :=
   differentiable_cosh x
 

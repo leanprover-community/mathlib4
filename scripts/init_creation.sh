@@ -2,8 +2,8 @@
 
  : <<'BASH_MODULE_DOC'
 
-These are the commands to generate a "root" `Mathlib/Init.lean` file, imported by all the
-`Mathlib` files that do not import any `Mathlib` file.
+These are the commands to add an import of `Mathlib/Init.lean` to all `Mathlib` files
+that do not import any `Mathlib` file.
 
 BASH_MODULE_DOC
 
@@ -35,11 +35,3 @@ printf 'Adding `import Mathlib.Init` to all file that import no Mathlib file.\n'
 # The `sed` command appends the line `import Mathlib.Init` after the first
 # `-/[linebreaks]*` of each file printed by `mathlibNonImportingFiles`.
 sed -i -z 's=-/\n*=&import Mathlib.Init\n=' $(mathlibNonImportingFiles)
-
-printf 'Creating `Mathlib/Init.lean`.\n'
-
-# Creates the `Mathlib/Init.lean` files.
-echo '-- This is the root file in Mathlib: it is imported by virtually *all* Mathlib files' > Mathlib/Init.lean
-
-printf $'Don\'t forget to add `Mathlib.Init` to the `ignoreImport` field of `scripts/noshake.json`
-This ensures that `import Mathlib.Init` does not trigger a `shake` exception.\n'

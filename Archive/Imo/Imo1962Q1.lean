@@ -107,7 +107,7 @@ lemma case_more_digits {c n : ℕ} (hc : (digits 10 c).length ≥ 6) (hpp : Prob
   calc
     n ≥ 10 * c := le.intro hpp.left.symm
     _ ≥ 10 ^ (digits 10 c).length := base_pow_length_digits_le 10 c (by decide) hnz
-    _ ≥ 10 ^ 6 := pow_le_pow_right (by decide) hc
+    _ ≥ 10 ^ 6 := pow_right_mono₀ (by decide) hc
     _ ≥ 153846 := by norm_num
 
 /-!

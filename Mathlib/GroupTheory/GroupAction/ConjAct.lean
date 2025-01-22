@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Conjugation action of a group on itself
@@ -146,18 +148,11 @@ instance unitsScalar : SMul (ConjAct Mˣ) M where smul g h := ofConjAct g * h * 
 theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
   rfl
 
--- porting note (#11083): very slow without `simp only` and need to separate `units_smul_def`
--- so that things trigger appropriately
 instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
-  one_smul := by simp only [units_smul_def, ofConjAct_one, Units.val_one, one_mul, inv_one,
-    mul_one, forall_const]
-  mul_smul := by
-    simp only [units_smul_def]
-    simp only [map_mul, Units.val_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
-  smul_mul := by
-    simp only [units_smul_def]
-    simp only [mul_assoc, Units.inv_mul_cancel_left, forall_const, «forall»]
-  smul_one := by simp [units_smul_def, mul_one, Units.mul_inv, «forall», forall_const]
+  one_smul := by simp [units_smul_def]
+  mul_smul := by simp [units_smul_def, mul_assoc]
+  smul_mul := by simp [units_smul_def, mul_assoc]
+  smul_one := by simp [units_smul_def]
 
 
 instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
@@ -175,15 +170,10 @@ section Semiring
 
 variable [Semiring R]
 
--- porting note (#11083): very slow without `simp only` and need to separate `units_smul_def`
--- so that things trigger appropriately
 instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
-    smul_zero := by
-      simp only [units_smul_def, mul_zero, zero_mul, «forall», forall_const]
-    smul_add := by
-      simp only [units_smul_def]
-      simp only [mul_add, add_mul, forall_const, «forall»] }
+    smul_zero := by simp [units_smul_def]
+    smul_add := by simp [units_smul_def, mul_add, add_mul] }
 
 end Semiring
 
@@ -201,15 +191,9 @@ theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
 theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 
--- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
--- so that things trigger appropriately
 instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
-  one_smul := by
-    simp only [smul_def]
-    simp only [map_one, one_mul, inv_one, mul_one, forall_const]
-  mul_smul := by
-    simp only [smul_def]
-    simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
+  one_smul := by simp [smul_def]
+  mul_smul := by simp [smul_def, mul_assoc]
 
 instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
     SMulCommClass α (ConjAct G₀) G₀ where
@@ -226,16 +210,10 @@ section DivisionRing
 
 variable [DivisionRing K]
 
--- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
--- so that things trigger appropriately
 instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
   { ConjAct.mulAction₀ with
-    smul_zero := by
-      simp only [smul_def]
-      simp only [mul_zero, zero_mul, «forall», forall_const]
-    smul_add := by
-      simp only [smul_def]
-      simp only [mul_add, add_mul, forall_const, «forall»] }
+    smul_zero := by simp [smul_def]
+    smul_add := by simp [smul_def, mul_add, add_mul] }
 
 end DivisionRing
 
@@ -243,17 +221,11 @@ variable [Group G]
 
 -- todo: this file is not in good order; I will refactor this after the PR
 
--- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
--- so that things trigger appropriately
 instance : MulDistribMulAction (ConjAct G) G where
-  smul_mul := by
-    simp only [smul_def]
-    simp only [mul_assoc, inv_mul_cancel_left, forall_const, «forall»]
-  smul_one := by simp only [smul_def, mul_one, mul_inv_cancel, «forall», forall_const]
-  one_smul := by simp only [smul_def, ofConjAct_one, one_mul, inv_one, mul_one, forall_const]
-  mul_smul := by
-    simp only [smul_def]
-    simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
+  smul_mul := by simp [smul_def]
+  smul_one := by simp [smul_def]
+  one_smul := by simp [smul_def]
+  mul_smul := by simp [smul_def, mul_assoc]
 
 instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
     SMulCommClass α (ConjAct G) G where
@@ -276,7 +248,7 @@ theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
 theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
   rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
 
-theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
+theorem orbitRel_conjAct : ⇑(orbitRel (ConjAct G) G) = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 
 theorem orbit_eq_carrier_conjClasses (g : G) :
@@ -352,7 +324,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
           have : (u : ConjAct Mˣ) • x = x := u.2
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
         map_one' := rfl,
-        map_mul' := fun a b ↦ rfl }
+        map_mul' := fun _ _ ↦ rfl }
     invFun := fun u ↦
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _

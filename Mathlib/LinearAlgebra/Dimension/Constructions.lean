@@ -35,7 +35,7 @@ universe u v v' u₁' w w'
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
+open Basis Cardinal DirectSum Function Module Set Submodule
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
@@ -142,7 +142,7 @@ theorem rank_prod' : Module.rank R (M × M₁) = Module.rank R M + Module.rank R
 
 /-- The finrank of `M × M'` is `(finrank R M) + (finrank R M')`. -/
 @[simp]
-theorem FiniteDimensional.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
+theorem Module.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
     finrank R (M × M') = finrank R M + finrank R M' := by
   simp [finrank, rank_lt_aleph0 R M, rank_lt_aleph0 R M']
 
@@ -183,33 +183,48 @@ theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGro
   let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i => B i
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 
-/-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
+/-- If `m` and `n` are finite, the rank of `m × n` matrices over a module `M` is
+`(#m).lift * (#n).lift * rank R M`. -/
 @[simp]
+theorem rank_matrix_module (m : Type w) (n : Type w') [Finite m] [Finite n] :
+    Module.rank R (Matrix m n M) =
+      lift.{max v w'} #m * lift.{max v w} #n * lift.{max w w'} (Module.rank R M) := by
+  cases nonempty_fintype m
+  cases nonempty_fintype n
+  obtain ⟨I, b⟩ := Module.Free.exists_basis (R := R) (M := M)
+  rw [← (b.matrix m n).mk_eq_rank'']
+  simp only [mk_prod, lift_mul, lift_lift, ← mul_assoc, b.mk_eq_rank'']
+
+
+/-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices over a
+module `M` is `(#m * #n).lift * rank R M`. -/
+@[simp high]
+theorem rank_matrix_module' (m n : Type w) [Finite m] [Finite n] :
+    Module.rank R (Matrix m n M) =
+      lift.{max v} (#m * #n) * lift.{w} (Module.rank R M) := by
+  rw [rank_matrix_module, lift_mul, lift_umax.{w, v}]
+
+/-- If `m` and `n` are finite, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) =
       Cardinal.lift.{max v w u, v} #m * Cardinal.lift.{max v w u, w} #n := by
-  cases nonempty_fintype m
-  cases nonempty_fintype n
-  have h := (Matrix.stdBasis R m n).mk_eq_rank
-  rw [← lift_lift.{max v w u, max v w}, lift_inj] at h
-  simpa using h.symm
+  rw [rank_matrix_module, rank_self, lift_one, mul_one, ← lift_lift.{v, max u w}, lift_id,
+    ← lift_lift.{w, max u v}, lift_id]
 
-/-- If `m` and `n` are `Fintype` that lie in the same universe, the rank of `m × n` matrices is
+/-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices is
   `(#n * #m).lift`. -/
-@[simp high]
 theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = Cardinal.lift.{u} (#m * #n) := by
   rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 
-/-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
+/-- If `m` and `n` are finite and lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 
 open Fintype
 
-namespace FiniteDimensional
+namespace Module
 
 @[simp]
 theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ M) = card ι * finrank R M := by
@@ -229,12 +244,12 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
-/-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices is
-  `(Fintype.card m) * (Fintype.card n)`. -/
+/-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices over a module `M` is
+  `(Fintype.card m) * (Fintype.card n) * finrank R M`. -/
 theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
-    finrank R (Matrix m n R) = card m * card n := by simp [finrank]
+    finrank R (Matrix m n M) = card m * card n * finrank R M := by simp [finrank]
 
-end FiniteDimensional
+end Module
 
 end Finsupp
 
@@ -260,13 +275,13 @@ theorem rank_pi [Finite η] : Module.rank R (∀ i, φ i) =
 variable (R)
 
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
-theorem FiniteDimensional.finrank_pi {ι : Type v} [Fintype ι] :
+theorem Module.finrank_pi {ι : Type v} [Fintype ι] :
     finrank R (ι → R) = Fintype.card ι := by
   simp [finrank]
 
 --TODO: this should follow from `LinearEquiv.finrank_eq`, that is over a field.
 /-- The finrank of a finite product is the sum of the finranks. -/
-theorem FiniteDimensional.finrank_pi_fintype
+theorem Module.finrank_pi_fintype
     {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
@@ -294,12 +309,11 @@ variable (R)
 
 /-- The vector space of functions on a `Fintype ι` has finrank equal to the cardinality of `ι`. -/
 @[simp]
-theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
+theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
   finrank_eq_of_rank_eq rank_fun'
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note (#10618): simp already proves this
-theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
+theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 
 variable {R}
 
@@ -343,7 +357,7 @@ theorem rank_tensorProduct' :
 
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
-theorem FiniteDimensional.finrank_tensorProduct :
+theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
 
 end TensorProduct
@@ -352,7 +366,7 @@ section SubmoduleRank
 
 section
 
-open FiniteDimensional
+open Module
 
 namespace Submodule
 
@@ -372,7 +386,7 @@ variable [StrongRankCondition R]
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     finrank R s ≤ finrank R M :=
-  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
+  toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
@@ -386,12 +400,12 @@ theorem Submodule.finrank_map_le
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 
-theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
+theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
-  calc
-    finrank R s = finrank R (s.comap t.subtype) :=
-      (Submodule.comapSubtypeEquivOfLe hst).finrank_eq.symm
-    _ ≤ finrank R t := Submodule.finrank_le _
+  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
+
+@[deprecated (since := "2024-09-30")]
+alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
 
 end
 
@@ -413,7 +427,7 @@ theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
 
-open Submodule FiniteDimensional
+open Submodule Module
 
 variable (R)
 
@@ -468,6 +482,12 @@ theorem span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submod
 theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
     (card_lt : s.toFinset.card < finrank R M) : span R s < ⊤ :=
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
+
+lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
+    (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
+  classical
+  rw [← finrank_top, ← hv]
+  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
 end Span
 

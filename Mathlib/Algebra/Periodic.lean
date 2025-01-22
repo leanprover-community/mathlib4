@@ -6,8 +6,9 @@ Authors: Benjamin Davidson
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.GroupTheory.Coset.Card
 
 /-!

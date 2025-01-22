@@ -3,6 +3,8 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Lean.Elab.App
+import Lean.Elab.BuiltinNotation
 import Mathlib.Tactic.ToExpr
 
 /-! # Elaborator for functorial binary operators

@@ -112,6 +112,7 @@ lemma W_adj_unit_app (X : D) : W (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
   convert ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
     (adj.homEquiv X Y)).bijective using 1
+  dsimp [Adjunction.homEquiv]
   aesop
 
 lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :

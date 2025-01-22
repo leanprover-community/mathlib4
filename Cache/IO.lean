@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.13"
+  "0.1.14"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -338,7 +338,7 @@ def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "ltar"
-  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
+  return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with

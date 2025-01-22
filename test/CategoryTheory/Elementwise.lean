@@ -92,7 +92,7 @@ lemma bar''' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f �
     g (f x) = h x := by apply foo_apply w
 
 example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
-    g (f m) = h m := by erw [elementwise_of% w]; rfl -- Porting note: was `rw`, switched to `erw; rfl`
+    g (f m) = h m := by rw [elementwise_of% w]
 
 example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by

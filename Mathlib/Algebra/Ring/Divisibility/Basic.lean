@@ -58,7 +58,7 @@ end Semiring
 
 section NonUnitalCommSemiring
 
-variable [NonUnitalCommSemiring α] [NonUnitalCommSemiring β] {a b c : α}
+variable [NonUnitalCommSemiring α]
 
 theorem Dvd.dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
   dvd_add (hdx.mul_left a) (hdy.mul_left b)
@@ -67,7 +67,7 @@ end NonUnitalCommSemiring
 
 section Semigroup
 
-variable [Semigroup α] [HasDistribNeg α] {a b c : α}
+variable [Semigroup α] [HasDistribNeg α] {a b : α}
 
 /-- An element `a` of a semigroup with a distributive negation divides the negation of an element
 `b` iff `a` divides `b`. -/
@@ -129,7 +129,7 @@ end NonUnitalRing
 
 section Ring
 
-variable [Ring α] {a b c : α}
+variable [Ring α] {a b : α}
 
 /-- An element a divides the sum a + b if and only if a divides b. -/
 @[simp]
@@ -155,7 +155,7 @@ end Ring
 
 section NonUnitalCommRing
 
-variable [NonUnitalCommRing α] {a b c : α}
+variable [NonUnitalCommRing α]
 
 theorem dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y) :
     k ∣ a * x - b * y := by

@@ -251,7 +251,7 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
   · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
   · exact Ideal.Quotient.mk_surjective
 
-open FiniteDimensional
+open Module
 
 lemma finrank_cotangentSpace_eq_zero_iff [IsNoetherianRing R] :
     finrank (ResidueField R) (CotangentSpace R) = 0 ↔ IsField R := by

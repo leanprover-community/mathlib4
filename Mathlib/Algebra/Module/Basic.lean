@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Further basic results about modules.
@@ -21,6 +22,12 @@ open Function Set
 universe u v
 
 variable {α R M M₂ : Type*}
+
+@[simp]
+theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Module R M]
+    [Invertible (2 : R)] (x : M) :
+    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
+  Convex.combo_self invOf_two_add_invOf_two _
 
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast_smul := map_natCast_smul
@@ -94,30 +101,6 @@ theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [Divis
 
 @[deprecated (since := "2024-04-17")]
 alias inv_int_cast_smul_comm := inv_intCast_smul_comm
-
-
-
-section NoZeroSMulDivisors
-
-section Module
-
-instance [AddCommGroup M] [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
-  ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
-
-end Module
-
-section GroupWithZero
-
-variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
-
--- see note [lower instance priority]
-/-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
-instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
-  ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq <| Units.mk0 a ha).1 h⟩
-
-end GroupWithZero
-
-end NoZeroSMulDivisors
 
 namespace Function
 

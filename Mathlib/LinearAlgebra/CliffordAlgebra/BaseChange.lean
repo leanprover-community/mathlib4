@@ -95,7 +95,7 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
       exact hpure_tensor v w
     intros v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
-      QuadraticForm.polarBilin_baseChange, LinearMap.BilinMap.baseChange_tmul, one_mul,
+      QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
       TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticMap.polarBilin_apply_apply]
 
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :

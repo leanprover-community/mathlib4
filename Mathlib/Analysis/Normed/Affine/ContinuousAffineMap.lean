@@ -220,7 +220,7 @@ def toConstProdContinuousLinearMap : (V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V 
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  norm_map' f := rfl
+  norm_map' _ := rfl
 
 @[simp]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :

@@ -231,7 +231,7 @@ noncomputable def comap_equiv_self_of_inj_of_le {f : M →ₗ[R] N} {p : Submodu
     (hf : Injective f) (h : p ≤ LinearMap.range f) :
     p.comap f ≃ₗ[R] p :=
   LinearEquiv.ofBijective
-  ((f ∘ₗ (p.comap f).subtype).codRestrict p <| fun ⟨x, hx⟩ ↦ mem_comap.mp hx)
+  ((f ∘ₗ (p.comap f).subtype).codRestrict p <| fun ⟨_, hx⟩ ↦ mem_comap.mp hx)
   (⟨fun x y hxy ↦ by simpa using hf (Subtype.ext_iff.mp hxy),
     fun ⟨x, hx⟩ ↦ by obtain ⟨y, rfl⟩ := h hx; exact ⟨⟨y, hx⟩, by simp [Subtype.ext_iff]⟩⟩)
 

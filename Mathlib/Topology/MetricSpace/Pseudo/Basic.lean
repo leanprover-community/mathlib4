@@ -18,9 +18,9 @@ Further results about pseudo-metric spaces.
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
 
-universe u v w
+universe u v
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {ι : Type*}
 
 variable [PseudoMetricSpace α]
 
@@ -59,26 +59,35 @@ theorem dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ
 namespace Metric
 
 -- instantiate pseudometric space as a topology
-variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
-nonrec theorem uniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
-    UniformInducing f ↔ UniformContinuous f ∧
+nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
+    IsUniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  uniformInducing_iff'.trans <| Iff.rfl.and <|
+  isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
       simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
 
-nonrec theorem uniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
-    UniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_iff := isUniformInducing_iff
+
+nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
+    IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [uniformEmbedding_iff, and_comm, uniformInducing_iff]
+  rw [isUniformEmbedding_iff, and_comm, isUniformInducing_iff]
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_iff := isUniformEmbedding_iff
 
 /-- If a map between pseudometric spaces is a uniform embedding then the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/
-theorem controlled_of_uniformEmbedding [PseudoMetricSpace β] {f : α → β} (h : UniformEmbedding f) :
+theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
+    (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  ⟨uniformContinuous_iff.1 h.uniformContinuous, (uniformEmbedding_iff.1 h).2.2⟩
+  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+
+@[deprecated (since := "2024-10-01")]
+alias controlled_of_uniformEmbedding := controlled_of_isUniformEmbedding
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
@@ -153,6 +162,8 @@ protected theorem cauchy_iff {f : Filter α} :
     Cauchy f ↔ NeBot f ∧ ∀ ε > 0, ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, dist x y < ε :=
   uniformity_basis_dist.cauchy_iff
 
+variable {s : Set α}
+
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is an open ball
 centered at `x` and intersecting `s` only at `x`. -/
 theorem exists_ball_inter_eq_singleton_of_mem_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
@@ -194,27 +205,27 @@ theorem cauchySeq_iff_tendsto_dist_atTop_0 [Nonempty β] [SemilatticeSup β] {u 
 
 end Real
 
-namespace Metric
-
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
-
 -- Porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
 
 /-- The preimage of a separable set by an inducing map is separable. -/
-protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
-    (hf : Inducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
+protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+    (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
-  have : Inducing ((mapsTo_preimage f s).restrict _ _ _) :=
-    (hf.comp inducing_subtype_val).codRestrict _
+  have : IsInducing ((mapsTo_preimage f s).restrict _ _ _) :=
+    (hf.comp IsInducing.subtypeVal).codRestrict _
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem _root_.Embedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
-    (hf : Embedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
-  hf.toInducing.isSeparable_preimage hs
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.isSeparable_preimage := IsInducing.isSeparable_preimage
 
-end Metric
+protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+    (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
+  hf.isInducing.isSeparable_preimage hs
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
 
 /-- A compact set is separable. -/
 theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=

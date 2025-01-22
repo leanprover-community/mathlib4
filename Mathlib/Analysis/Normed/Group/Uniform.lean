@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Analysis.Normed.Group.Basic
@@ -191,13 +191,11 @@ theorem dist_self_mul_right (a b : E) : dist a (a * b) = ‖b‖ := by
 theorem dist_self_mul_left (a b : E) : dist (a * b) a = ‖b‖ := by
   rw [dist_comm, dist_self_mul_right]
 
-@[to_additive (attr := simp 1001)]
--- porting note (#10618): increase priority because `simp` can prove this
+@[to_additive (attr := simp 1001)] -- Increase priority because `simp` can prove this
 theorem dist_self_div_right (a b : E) : dist a (a / b) = ‖b‖ := by
   rw [div_eq_mul_inv, dist_self_mul_right, norm_inv']
 
-@[to_additive (attr := simp 1001)]
--- porting note (#10618): increase priority because `simp` can prove this
+@[to_additive (attr := simp 1001)] -- Increase priority because `simp` can prove this
 theorem dist_self_div_left (a b : E) : dist (a / b) a = ‖b‖ := by
   rw [dist_comm, dist_self_div_right]
 
@@ -327,8 +325,7 @@ theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff₀ (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
-  rw [mul_comm, NNReal.coe_sub hK.le, _root_.sub_mul]
-  -- Porting note: `ENNReal.sub_mul` should be `protected`?
+  rw [mul_comm, NNReal.coe_sub hK.le, sub_mul]
   calc
     ↑Kf⁻¹ * dist x y - Kg * dist x y ≤ dist (f x) (f y) - dist (g x) (g y) :=
       sub_le_sub (hf.mul_le_dist x y) (hg.dist_le_mul x y)
@@ -364,6 +361,29 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 @[to_additive]
 instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
   inferInstance
+
+/-! ### SeparationQuotient -/
+
+namespace SeparationQuotient
+
+@[to_additive instNorm]
+instance instMulNorm : Norm (SeparationQuotient E) where
+  norm := lift Norm.norm fun _ _ h => h.norm_eq_norm'
+
+set_option linter.docPrime false in
+@[to_additive (attr := simp) norm_mk]
+theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
+
+@[to_additive]
+instance : NormedCommGroup (SeparationQuotient E) where
+  __ : CommGroup (SeparationQuotient E) := instCommGroup
+  dist_eq := Quotient.ind₂ dist_eq_norm_div
+
+set_option linter.docPrime false in
+@[to_additive (attr := simp) nnnorm_mk]
+theorem nnnorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
+
+end SeparationQuotient
 
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)

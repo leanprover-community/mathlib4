@@ -162,13 +162,11 @@ instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :
-    CovariantClass α α (· * ·) (· ≤ ·) :=
+instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_swap_mul_le :
-    CovariantClass α α (swap (· * ·)) (· ≤ ·) :=
+instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
 
 end IdemSemiring
@@ -321,7 +319,7 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
     IdemSemiring β :=
   { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
-    add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
+    add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
     bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
@@ -347,25 +345,25 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [M
   { hf.idemSemiring f zero one add mul nsmul npow natCast sup bot,
     ‹KStar β› with
     one_le_kstar := fun a ↦ one.trans_le <| by
-      erw [kstar]
+      rw [kstar]
       exact one_le_kstar
     mul_kstar_le_kstar := fun a ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
+      rw [mul, kstar]
       exact mul_kstar_le_kstar
     kstar_mul_le_kstar := fun a ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
+      rw [mul, kstar]
       exact kstar_mul_le_kstar
     mul_kstar_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
-      erw [mul] at h
+      rw [mul, kstar]
+      rw [mul] at h
       exact mul_kstar_le_self h
     kstar_mul_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
-      erw [mul] at h
+      rw [mul, kstar]
+      rw [mul] at h
       exact kstar_mul_le_self h }
 
 end Function.Injective

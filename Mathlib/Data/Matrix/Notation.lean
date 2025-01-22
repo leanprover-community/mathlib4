@@ -180,7 +180,6 @@ theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
     dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
 
@@ -292,7 +291,6 @@ theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' �
   ext i
   simp [vecMul]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
     vecCons x v ᵥ* of (vecCons w B) = x • w + v ᵥ* of B := by simp
 
@@ -352,11 +350,9 @@ section SMul
 
 variable [NonUnitalNonAssocSemiring α]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
     x • vecCons v A = vecCons (x • v) (x • A) := by
   ext i

@@ -19,8 +19,7 @@ open Function
 
 universe u v w
 
-variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
-  {u : δ → δ → Prop}
+variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
 namespace RelHomClass
 
@@ -92,8 +91,6 @@ theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :
 
 section image
 
-variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
-
 theorem RelIso.image_eq_preimage_symm (e : r ≃r s) (t : Set α) : e '' t = e.symm ⁻¹' t :=
   e.toEquiv.image_eq_preimage t
 
@@ -101,3 +98,14 @@ theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t =
   rw [e.symm.image_eq_preimage_symm]; rfl
 
 end image
+
+theorem Acc.of_subrel {r : α → α → Prop} [IsTrans α r] {b : α} (a : { a // r a b })
+    (h : Acc (Subrel r { a | r a b }) a) : Acc r a.1 :=
+  h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.2⟩ hb⟩
+
+/-- A relation `r` is well-founded iff every downward-interval `{ a | r a b }` of it is
+well-founded. -/
+theorem wellFounded_iff_wellFounded_subrel {r : α → α → Prop} [IsTrans α r] :
+    WellFounded r ↔ ∀ b, WellFounded (Subrel r { a | r a b }) where
+  mp h _ := InvImage.wf Subtype.val h
+  mpr h := ⟨fun a ↦ ⟨_, fun b hr ↦ ((h a).apply _).of_subrel ⟨b, hr⟩⟩⟩

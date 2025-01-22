@@ -204,7 +204,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
         rw [det_eq_zero_of_column_eq_zero 0, eval_zero, mul_zero]
         intro j
         rw [submatrix_apply, Fin.succAbove_of_castSucc_lt, one_apply_ne]
-        · exact (bne_iff_ne (Fin.succ j) (Fin.castSucc 0)).mp rfl
+        · exact (bne_iff_ne (a := Fin.succ j) (b := Fin.castSucc 0)).mp rfl
         · rw [Fin.castSucc_zero]; exact lt_of_le_of_ne (Fin.zero_le _) hi.symm
     · exact fun H ↦ (H <| Finset.mem_univ _).elim
 

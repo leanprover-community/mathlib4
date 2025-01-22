@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
 import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 
 /-!
 # Extension of Valuation
@@ -53,7 +52,7 @@ variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
 
 /--
 The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
-on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
+on `R`. More precisely, the valuation on `R` is equivalent to the comap of the valuation on `A`.
 -/
 class IsValExtension : Prop where
   /-- The valuation on `R` is equivalent to the comap of the valuation on `A` -/
@@ -144,15 +143,19 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {S ΓS: Type*} [CommRing S]
+@[instance]
+theorem instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
-    [Algebra R S] [IsLocalRingHom (algebraMap R S)] {vS : Valuation S ΓS}
-    [IsValExtension vR vS] : IsLocalRingHom (algebraMap vR.integer vS.integer) where
+    [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
+    [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
   map_nonunit r hr := by
     apply (Valuation.integer.integers (v := vR)).isUnit_of_one
     · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))
     · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
       exact (val_map_eq_one_iff vR vS _).mp hr
+
+@[deprecated (since := "2024-10-10")]
+alias instIsLocalRingHomValuationInteger := instIsLocalHomValuationInteger
 
 end integer
 

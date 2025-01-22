@@ -141,6 +141,40 @@ theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻�
 theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_zero_atTop.comp h
 
+/-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
+  then the product `f * g` tends to zero. -/
+theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x in l, |f x| ≤ C)
+    (hg : Tendsto g l (𝓝 0)) : Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
+  rw [tendsto_zero_iff_abs_tendsto_zero]
+  have hC : Tendsto (fun x ↦ |C * g x|) l (𝓝 0) := by
+    convert (hg.const_mul C).abs
+    simp_rw [mul_zero, abs_zero]
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hC
+  · filter_upwards [hf] with x _ using abs_nonneg _
+  · filter_upwards [hf] with x hx
+    simp only [comp_apply, abs_mul]
+    exact mul_le_mul_of_nonneg_right (hx.trans (le_abs_self C)) (abs_nonneg _)
+
+/-- If `g` tends to zero and there exist constants `b B : 𝕜` such that eventually `b ≤ f x| ≤ B`,
+  then the product `f * g` tends to zero. -/
+theorem bdd_le_mul_tendsto_zero {f g : α → 𝕜} {b B : 𝕜} (hb : ∀ᶠ x in l, b ≤ f x)
+    (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
+  set C := max |b| |B|
+  have hbC : -C ≤ b := neg_le.mpr (le_max_of_le_left (neg_le_abs b))
+  have hBC : B ≤ C := le_max_of_le_right (le_abs_self B)
+  apply bdd_le_mul_tendsto_zero' C _ hg
+  filter_upwards [hb, hB]
+  exact fun x hbx hBx ↦ abs_le.mpr ⟨hbC.trans hbx, hBx.trans hBC⟩
+
+/-- If `g` tends to `atTop` and there exist constants `b B : 𝕜` such that eventually
+  `b ≤ f x| ≤ B`, then the quotient `f / g` tends to zero. -/
+theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
+    (hb : ∀ᶠ x in l, b ≤ f x) (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l atTop) :
+    Tendsto (fun x => f x / g x) l (𝓝 0) := by
+  simp only [div_eq_mul_inv]
+  exact bdd_le_mul_tendsto_zero hb hB hg.inv_tendsto_atTop
+
 /-- The function `x^(-n)` tends to `0` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
 theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
@@ -195,10 +229,10 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · obtain ⟨x', h₀, hxx', h₁⟩ : ∃ x', 0 < x' ∧ x ≤ x' ∧ x' < 1 :=
       ⟨max x (1 / 2), one_half_pos.trans_le (le_max_right _ _), le_max_left _ _,
         max_lt hx one_half_lt_one⟩
-    filter_upwards [Ioo_mem_nhds one_pos (one_lt_inv h₀ h₁)] with y hy
-    exact hxx'.trans_lt <| inv_inv x' ▸ inv_lt_inv_of_lt hy.1 hy.2
-  · filter_upwards [Ioi_mem_nhds (inv_lt_one hx)] with y hy
-    simpa only [inv_inv] using inv_lt_inv_of_lt (inv_pos.2 <| one_pos.trans hx) hy
+    filter_upwards [Ioo_mem_nhds one_pos ((one_lt_inv₀ h₀).2 h₁)] with y hy
+    exact hxx'.trans_lt <| lt_inv_of_lt_inv₀ hy.1 hy.2
+  · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
+    exact inv_lt_of_inv_lt₀ (by positivity) hy
 
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩

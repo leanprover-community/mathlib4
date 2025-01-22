@@ -237,6 +237,12 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
 @[deprecated (since := "2024-04-17")]
 alias natDegree_nat_cast := natDegree_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
+    natDegree (no_index (OfNat.ofNat n : R[X])) = 0 :=
+  natDegree_natCast _
+
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 @[deprecated (since := "2024-04-17")]
@@ -408,11 +414,11 @@ theorem natDegree_X_le : (X : R[X]).natDegree ≤ 1 :=
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
   mem_singleton.1 <| support_C_mul_X_pow' n c h
 
-theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : card (support (C c * X ^ n)) ≤ 1 := by
+theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : #(support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
   apply card_le_card (support_C_mul_X_pow' n c)
 
-theorem card_supp_le_succ_natDegree (p : R[X]) : p.support.card ≤ p.natDegree + 1 := by
+theorem card_supp_le_succ_natDegree (p : R[X]) : #p.support ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]
   exact Finset.card_le_card supp_subset_range_natDegree_succ
 
@@ -752,11 +758,9 @@ theorem leadingCoeff_C_mul_X (a : R) : leadingCoeff (C a * X) = a := by
 theorem leadingCoeff_C (a : R) : leadingCoeff (C a) = a :=
   leadingCoeff_monomial a 0
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X_pow (n : ℕ) : leadingCoeff ((X : R[X]) ^ n) = 1 := by
   simpa only [C_1, one_mul] using leadingCoeff_C_mul_X_pow (1 : R) n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X : leadingCoeff (X : R[X]) = 1 := by
   simpa only [pow_one] using @leadingCoeff_X_pow R _ 1
 
@@ -768,7 +772,6 @@ theorem monic_X_pow (n : ℕ) : Monic (X ^ n : R[X]) :=
 theorem monic_X : Monic (X : R[X]) :=
   leadingCoeff_X
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
   leadingCoeff_C 1
 
@@ -882,13 +885,13 @@ theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
   rw [natDegree_mul' h, coeff_mul_degree_add_degree]
   rfl
 
-theorem monomial_natDegree_leadingCoeff_eq_self (h : p.support.card ≤ 1) :
+theorem monomial_natDegree_leadingCoeff_eq_self (h : #p.support ≤ 1) :
     monomial p.natDegree p.leadingCoeff = p := by
   classical
   rcases card_support_le_one_iff_monomial.1 h with ⟨n, a, rfl⟩
   by_cases ha : a = 0 <;> simp [ha]
 
-theorem C_mul_X_pow_eq_self (h : p.support.card ≤ 1) : C p.leadingCoeff * X ^ p.natDegree = p := by
+theorem C_mul_X_pow_eq_self (h : #p.support ≤ 1) : C p.leadingCoeff * X ^ p.natDegree = p := by
   rw [C_mul_X_pow_eq_monomial, monomial_natDegree_leadingCoeff_eq_self h]
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
@@ -1364,7 +1367,187 @@ theorem leadingCoeff_pow_X_add_C (r : R) (i : ℕ) : leadingCoeff ((X + C r) ^ i
   nontriviality
   rw [leadingCoeff_pow'] <;> simp
 
+variable [NoZeroDivisors R] {p q : R[X]}
+
+@[simp]
+lemma degree_mul : degree (p * q) = degree p + degree q :=
+  letI := Classical.decEq R
+  if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, WithBot.bot_add]
+  else
+    if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, WithBot.add_bot]
+    else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
+
+/-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
+  This is useful to prove results about multiplication and degree. -/
+def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
+  toFun := degree
+  map_one' := degree_one
+  map_mul' _ _ := degree_mul
+
+@[simp]
+lemma degree_pow [Nontrivial R] (p : R[X]) (n : ℕ) : degree (p ^ n) = n • degree p :=
+  map_pow (@degreeMonoidHom R _ _ _) _ _
+
+@[simp]
+lemma leadingCoeff_mul (p q : R[X]) : leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
+  by_cases hp : p = 0
+  · simp only [hp, zero_mul, leadingCoeff_zero]
+  · by_cases hq : q = 0
+    · simp only [hq, mul_zero, leadingCoeff_zero]
+    · rw [leadingCoeff_mul']
+      exact mul_ne_zero (mt leadingCoeff_eq_zero.1 hp) (mt leadingCoeff_eq_zero.1 hq)
+
+/-- `Polynomial.leadingCoeff` bundled as a `MonoidHom` when `R` has `NoZeroDivisors`, and thus
+  `leadingCoeff` is multiplicative -/
+def leadingCoeffHom : R[X] →* R where
+  toFun := leadingCoeff
+  map_one' := by simp
+  map_mul' := leadingCoeff_mul
+
+@[simp]
+lemma leadingCoeffHom_apply (p : R[X]) : leadingCoeffHom p = leadingCoeff p :=
+  rfl
+
+@[simp]
+lemma leadingCoeff_pow (p : R[X]) (n : ℕ) : leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
+  (leadingCoeffHom : R[X] →* R).map_pow p n
+
+lemma leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
+    a.leadingCoeff ∣ p.leadingCoeff :=
+  map_dvd leadingCoeffHom hap
+
+instance : NoZeroDivisors R[X] where
+  eq_zero_or_eq_zero_of_mul_eq_zero h := by
+    rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
+    refine eq_zero_or_eq_zero_of_mul_eq_zero ?_
+    rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
+lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
+  rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
+    Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
+
+@[simp]
+lemma natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
+  classical
+  obtain rfl | hp := eq_or_ne p 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  exact natDegree_pow' <| by
+    rw [← leadingCoeff_pow, Ne, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
+
+lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
+  classical
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  · rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]
+    exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
+
+lemma natDegree_le_of_dvd (h1 : p ∣ q) (h2 : q ≠ 0) : p.natDegree ≤ q.natDegree := by
+  obtain ⟨q, rfl⟩ := h1
+  rw [mul_ne_zero_iff] at h2
+  rw [natDegree_mul h2.1 h2.2]; exact Nat.le_add_right _ _
+
+lemma degree_le_of_dvd (h1 : p ∣ q) (h2 : q ≠ 0) : degree p ≤ degree q := by
+  rcases h1 with ⟨q, rfl⟩; rw [mul_ne_zero_iff] at h2
+  exact degree_le_mul_left p h2.2
+
+lemma eq_zero_of_dvd_of_degree_lt (h₁ : p ∣ q) (h₂ : degree q < degree p) : q = 0 := by
+  by_contra hc
+  exact (lt_iff_not_ge _ _).mp h₂ (degree_le_of_dvd h₁ hc)
+
+lemma eq_zero_of_dvd_of_natDegree_lt (h₁ : p ∣ q) (h₂ : natDegree q < natDegree p) :
+    q = 0 := by
+  by_contra hc
+  exact (lt_iff_not_ge _ _).mp h₂ (natDegree_le_of_dvd h₁ hc)
+
+lemma not_dvd_of_degree_lt (h0 : q ≠ 0) (hl : q.degree < p.degree) : ¬p ∣ q := by
+  by_contra hcontra
+  exact h0 (eq_zero_of_dvd_of_degree_lt hcontra hl)
+
+lemma not_dvd_of_natDegree_lt (h0 : q ≠ 0) (hl : q.natDegree < p.natDegree) :
+    ¬p ∣ q := by
+  by_contra hcontra
+  exact h0 (eq_zero_of_dvd_of_natDegree_lt hcontra hl)
+
+/-- This lemma is useful for working with the `intDegree` of a rational function. -/
+lemma natDegree_sub_eq_of_prod_eq {p₁ p₂ q₁ q₂ : R[X]} (hp₁ : p₁ ≠ 0) (hq₁ : q₁ ≠ 0)
+    (hp₂ : p₂ ≠ 0) (hq₂ : q₂ ≠ 0) (h_eq : p₁ * q₂ = p₂ * q₁) :
+    (p₁.natDegree : ℤ) - q₁.natDegree = (p₂.natDegree : ℤ) - q₂.natDegree := by
+  rw [sub_eq_sub_iff_add_eq_add]
+  norm_cast
+  rw [← natDegree_mul hp₁ hq₂, ← natDegree_mul hp₂ hq₁, h_eq]
+
+lemma natDegree_eq_zero_of_isUnit (h : IsUnit p) : natDegree p = 0 := by
+  nontriviality R
+  obtain ⟨q, hq⟩ := h.exists_right_inv
+  have := natDegree_mul (left_ne_zero_of_mul_eq_one hq) (right_ne_zero_of_mul_eq_one hq)
+  rw [hq, natDegree_one, eq_comm, add_eq_zero] at this
+  exact this.1
+
+lemma degree_eq_zero_of_isUnit [Nontrivial R] (h : IsUnit p) : degree p = 0 :=
+  (natDegree_eq_zero_iff_degree_le_zero.mp <| natDegree_eq_zero_of_isUnit h).antisymm
+    (zero_le_degree_iff.mpr h.ne_zero)
+
+@[simp]
+lemma degree_coe_units [Nontrivial R] (u : R[X]ˣ) : degree (u : R[X]) = 0 :=
+  degree_eq_zero_of_isUnit ⟨u, rfl⟩
+
+/-- Characterization of a unit of a polynomial ring over an integral domain `R`.
+See `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent` when `R` is a commutative ring. -/
+lemma isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
+  ⟨fun hp =>
+    ⟨p.coeff 0,
+      let h := eq_C_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hp)
+      ⟨isUnit_C.1 (h ▸ hp), h.symm⟩⟩,
+    fun ⟨_, hr, hrp⟩ => hrp ▸ isUnit_C.2 hr⟩
+
+lemma not_isUnit_of_degree_pos (p : R[X]) (hpl : 0 < p.degree) : ¬ IsUnit p := by
+  cases subsingleton_or_nontrivial R
+  · simp [Subsingleton.elim p 0] at hpl
+  intro h
+  simp [degree_eq_zero_of_isUnit h] at hpl
+
+lemma not_isUnit_of_natDegree_pos (p : R[X]) (hpl : 0 < p.natDegree) : ¬ IsUnit p :=
+  not_isUnit_of_degree_pos _ (natDegree_pos_iff_degree_pos.mp hpl)
+
+@[simp] lemma natDegree_coe_units (u : R[X]ˣ) : natDegree (u : R[X]) = 0 := by
+  nontriviality R
+  exact natDegree_eq_of_degree_eq_some (degree_coe_units u)
+
+theorem coeff_coe_units_zero_ne_zero [Nontrivial R] (u : R[X]ˣ) : coeff (u : R[X]) 0 ≠ 0 := by
+  conv in 0 => rw [← natDegree_coe_units u]
+  rw [← leadingCoeff, Ne, leadingCoeff_eq_zero]
+  exact Units.ne_zero _
+
 end Semiring
+
+section CommSemiring
+variable [CommSemiring R] {a p : R[X]} (hp : p.Monic)
+include hp
+
+lemma Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a where
+  mp h := isUnit_iff_dvd_one.mpr <| hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree
+  mpr ha := (ha.map C).dvd
+
+lemma Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=
+  Nat.pos_iff_ne_zero.trans hp.natDegree_eq_zero.not
+
+lemma Monic.degree_pos : 0 < degree p ↔ p ≠ 1 :=
+  natDegree_pos_iff_degree_pos.symm.trans hp.natDegree_pos
+
+lemma Monic.degree_pos_of_not_isUnit (hu : ¬IsUnit p) : 0 < degree p :=
+  hp.degree_pos.mpr fun hp' ↦ (hp' ▸ hu) isUnit_one
+
+lemma Monic.natDegree_pos_of_not_isUnit (hu : ¬IsUnit p) : 0 < natDegree p :=
+  hp.natDegree_pos.mpr fun hp' ↦ (hp' ▸ hu) isUnit_one
+
+lemma degree_pos_of_not_isUnit_of_dvd_monic (ha : ¬IsUnit a) (hap : a ∣ p) : 0 < degree a := by
+  contrapose! ha with h
+  rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
+  simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
+
+lemma natDegree_pos_of_not_isUnit_of_dvd_monic (ha : ¬IsUnit a) (hap : a ∣ p) : 0 < natDegree a :=
+  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic hp ha hap
+
+end CommSemiring
 
 section Ring
 
@@ -1414,59 +1597,11 @@ theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n :=
 theorem leadingCoeff_X_sub_C [Ring S] (r : S) : (X - C r).leadingCoeff = 1 := by
   rw [sub_eq_add_neg, ← map_neg C r, leadingCoeff_X_add_C]
 
+variable [IsDomain R] {p q : R[X]}
+
+instance : IsDomain R[X] := NoZeroDivisors.to_isDomain _
+
 end Ring
-
-section NoZeroDivisors
-
-variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
-
-@[simp]
-theorem degree_mul : degree (p * q) = degree p + degree q :=
-  letI := Classical.decEq R
-  if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, WithBot.bot_add]
-  else
-    if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, WithBot.add_bot]
-    else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
-
-/-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
-  This is useful to prove results about multiplication and degree. -/
-def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
-  toFun := degree
-  map_one' := degree_one
-  map_mul' _ _ := degree_mul
-
-@[simp]
-theorem degree_pow [Nontrivial R] (p : R[X]) (n : ℕ) : degree (p ^ n) = n • degree p :=
-  map_pow (@degreeMonoidHom R _ _ _) _ _
-
-@[simp]
-theorem leadingCoeff_mul (p q : R[X]) : leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
-  by_cases hp : p = 0
-  · simp only [hp, zero_mul, leadingCoeff_zero]
-  · by_cases hq : q = 0
-    · simp only [hq, mul_zero, leadingCoeff_zero]
-    · rw [leadingCoeff_mul']
-      exact mul_ne_zero (mt leadingCoeff_eq_zero.1 hp) (mt leadingCoeff_eq_zero.1 hq)
-
-/-- `Polynomial.leadingCoeff` bundled as a `MonoidHom` when `R` has `NoZeroDivisors`, and thus
-  `leadingCoeff` is multiplicative -/
-def leadingCoeffHom : R[X] →* R where
-  toFun := leadingCoeff
-  map_one' := by simp
-  map_mul' := leadingCoeff_mul
-
-@[simp]
-theorem leadingCoeffHom_apply (p : R[X]) : leadingCoeffHom p = leadingCoeff p :=
-  rfl
-
-@[simp]
-theorem leadingCoeff_pow (p : R[X]) (n : ℕ) : leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
-  (leadingCoeffHom : R[X] →* R).map_pow p n
-
-theorem leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
-    a.leadingCoeff ∣ p.leadingCoeff :=
-  map_dvd leadingCoeffHom hap
-
-end NoZeroDivisors
-
 end Polynomial
+
+set_option linter.style.longFile 1700

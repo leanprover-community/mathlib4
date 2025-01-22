@@ -701,7 +701,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     rotate_left
     · ext ⟨j⟩
       dsimp
-      erw [colimit.ι_desc] -- Why?
+      rw [colimit.ι_desc]
       rfl
     simpa [Functor.const_obj_obj, Discrete.functor_obj, extendCofan_pt, extendCofan_ι_app,
       Fin.cases_succ, BinaryCofan.mk_pt, colimit.cocone_x, Cofan.mk_pt, Cofan.mk_ι_app,

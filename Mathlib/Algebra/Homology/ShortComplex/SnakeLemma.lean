@@ -381,7 +381,7 @@ variable (S₁ S₂ S₃ : SnakeInput C)
 /-- A morphism of snake inputs involve four morphisms of short complexes
 which make the obvious diagram commute. -/
 @[ext]
-structure Hom :=
+structure Hom where
   /-- a morphism between the zeroth lines -/
   f₀ : S₁.L₀ ⟶ S₂.L₀
   /-- a morphism between the first lines -/

@@ -3,7 +3,6 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Batteries.Data.RBMap.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.CompileInductive
@@ -45,13 +44,6 @@ variable {α : Type u}
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
-
-open Batteries (RBNode)
-
-/-- Makes a `Tree α` out of a red-black tree. -/
-def ofRBNode : RBNode α → Tree α
-  | RBNode.nil => nil
-  | RBNode.node _color l key r => node key (ofRBNode l) (ofRBNode r)
 
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
 -/
@@ -111,12 +103,10 @@ compile_inductive% Tree
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
-    -- Porting note: Old proof was `t.recOn base fun u => u.recOn ind` but
-    -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).
-    t.recOn base fun _u => ind
+  t.recOn base fun _u ↦ ind
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
-  | node a l r, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
+  | node _ _ _, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
 
 end Tree

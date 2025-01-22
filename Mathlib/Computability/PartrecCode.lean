@@ -109,7 +109,6 @@ protected def id : Code :=
 def curry (c : Code) (n : ℕ) : Code :=
   comp c (pair (Code.const n) Code.id)
 
--- Porting note: `bit0` and `bit1` are deprecated.
 /-- An encoding of a `Nat.Partrec.Code` as a ℕ. -/
 def encodeCode : Code → ℕ
   | zero => 0
@@ -170,7 +169,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
 instance instDenumerable : Denumerable Code :=
   mk'
     ⟨encodeCode, ofNatCode, fun c => by
-        induction c <;> try {rfl} <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
+        induction c <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
       encode_ofNatCode⟩
 
 theorem encodeCode_eq : encode = encodeCode :=
@@ -492,7 +491,7 @@ instance : Membership (ℕ →. ℕ) Code :=
 
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
-  | 0, m => rfl
+  | 0, _ => rfl
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]
@@ -900,7 +899,7 @@ private theorem hG : Primrec G := by
       Primrec.fst
 
 private theorem evaln_map (k c n) :
-    ((((List.range k)[n]?).map (evaln k c)).bind fun b => b) = evaln k c n := by
+    ((List.range k)[n]?.bind fun a ↦ evaln k c a) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.getElem?_range kn]
   · rw [List.getElem?_len_le]
@@ -937,7 +936,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
               (List.range n.unpair.1).map (evaln n.unpair.1 (ofNat Code n.unpair.2))) (k', c') n =
             evaln k' c' n := by
         intro k₁ c₁ n₁ hl
-        simp [lup, List.getElem?_range hl, evaln_map, Bind.bind]
+        simp [lup, List.getElem?_range hl, evaln_map, Bind.bind, Option.bind_map]
       cases' c with cf cg cf cg cf cg cf <;>
         simp [evaln, nk, Bind.bind, Functor.map, Seq.seq, pure]
       · cases' encode_lt_pair cf cg with lf lg
@@ -969,7 +968,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
   (Primrec.option_bind
     (Primrec.list_get?.comp (this.comp (_root_.Primrec.const ())
       (Primrec.encode_iff.2 Primrec.fst)) Primrec.snd) Primrec.snd.to₂).of_eq
-    fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map]
+    fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map, Option.bind_map]
 
 end
 

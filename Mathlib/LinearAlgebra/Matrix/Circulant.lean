@@ -32,7 +32,7 @@ circulant, matrix
 -/
 
 
-variable {α β m n R : Type*}
+variable {α β n R : Type*}
 
 namespace Matrix
 
@@ -60,7 +60,7 @@ theorem circulant_injective [AddGroup n] : Injective (circulant : (n → α) →
 
 theorem Fin.circulant_injective : ∀ n, Injective fun v : Fin n → α => circulant v
   | 0 => by simp [Injective]
-  | n + 1 => Matrix.circulant_injective
+  | _ + 1 => Matrix.circulant_injective
 
 @[simp]
 theorem circulant_inj [AddGroup n] {v w : n → α} : circulant v = circulant w ↔ v = w :=
@@ -78,12 +78,12 @@ theorem conjTranspose_circulant [Star α] [AddGroup n] (v : n → α) :
 
 theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i => v (-i)
   | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
-  | n + 1 => Matrix.transpose_circulant
+  | _ + 1 => Matrix.transpose_circulant
 
 theorem Fin.conjTranspose_circulant [Star α] :
     ∀ {n} (v : Fin n → α), (circulant v)ᴴ = circulant (star fun i => v (-i))
   | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
-  | n + 1 => Matrix.conjTranspose_circulant
+  | _ + 1 => Matrix.conjTranspose_circulant
 
 theorem map_circulant [Sub n] (v : n → α) (f : α → β) :
     (circulant v).map f = circulant fun i => f (v i) :=
@@ -117,7 +117,7 @@ theorem circulant_mul [Semiring α] [Fintype n] [AddGroup n] (v w : n → α) :
 theorem Fin.circulant_mul [Semiring α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant (circulant v *ᵥ w)
   | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
-  | n + 1 => Matrix.circulant_mul
+  | _ + 1 => Matrix.circulant_mul
 
 /-- Multiplication of circulant matrices commutes when the elements do. -/
 theorem circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] [Fintype n] [AddCommGroup n]
@@ -134,7 +134,7 @@ theorem circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] [Fintype n] [Ad
 theorem Fin.circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant w * circulant v
   | 0 => by simp [Injective]
-  | n + 1 => Matrix.circulant_mul_comm
+  | _ + 1 => Matrix.circulant_mul_comm
 
 /-- `k • circulant v` is another circulant matrix `circulant (k • v)`. -/
 theorem circulant_smul [Sub n] [SMul R α] (k : R) (v : n → α) :
@@ -169,7 +169,7 @@ theorem circulant_isSymm_iff [AddGroup n] {v : n → α} :
 
 theorem Fin.circulant_isSymm_iff : ∀ {n} {v : Fin n → α}, (circulant v).IsSymm ↔ ∀ i, v (-i) = v i
   | 0 => by simp [IsSymm.ext_iff, IsEmpty.forall_iff]
-  | n + 1 => Matrix.circulant_isSymm_iff
+  | _ + 1 => Matrix.circulant_isSymm_iff
 
 /-- If `circulant v` is symmetric, `∀ i j : I, v (- i) = v i`. -/
 theorem circulant_isSymm_apply [AddGroup n] {v : n → α} (h : (circulant v).IsSymm) (i : n) :

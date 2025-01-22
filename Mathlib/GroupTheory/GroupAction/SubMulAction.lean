@@ -5,7 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!

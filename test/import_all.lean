@@ -5,6 +5,7 @@ import Batteries
 import Aesop
 import ProofWidgets
 import Mathlib
+import Plausible
 
 /-!
 Verify that Mathlib and all its upstream dependencies can be simultaneously imported.

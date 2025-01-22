@@ -65,8 +65,7 @@ end SMul
 
 section SMulZero
 
-variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMulZeroClass 𝕜 E]
-  {c : 𝕜} {s t : Set E} {x : E} {r : ℝ≥0∞}
+variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMulZeroClass 𝕜 E] {x : E}
 
 @[simp] lemma egauge_zero_left_eq_top : egauge 𝕜 0 x = ∞ ↔ x ≠ 0 := by
   simp [egauge_eq_top]
@@ -77,8 +76,8 @@ end SMulZero
 
 section Module
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {α E : Type*} [AddCommGroup E] [Module 𝕜 E]
-    {c : 𝕜} {s t : Set E} {x y : E} {r : ℝ≥0∞}
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+    {c : 𝕜} {s : Set E} {x : E}
 
 /-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `((‖c‖₊⁻¹ : ℝ≥0) : ℝ≥0∞).
 
@@ -159,8 +158,7 @@ end Module
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedField 𝕜] {α E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {c : 𝕜} {s t : Set E} {x y : E}
+variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖₊ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   rw [le_egauge_iff]
@@ -183,8 +181,8 @@ end SeminormedAddCommGroup
 
 section SeminormedAddCommGroup
 
-variable {𝕜 : Type*} [NormedField 𝕜] {α E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {c : 𝕜} {s t : Set E} {x y : E} {r : ℝ≥0}
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {c : 𝕜} {x : E} {r : ℝ≥0}
 
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ x ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖₊ * ‖x‖₊ / r := by

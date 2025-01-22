@@ -105,7 +105,7 @@ theorem involute_eq_id :
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
-      ⟨0, fun m : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
+      ⟨0, fun _ : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
     (Algebra.ofId R _) (by ext)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
 
@@ -354,7 +354,7 @@ open scoped DualNumber
 
 open DualNumber TrivSqZeroExt
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,
@@ -392,7 +392,6 @@ theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r
 @[simp]
 theorem equiv_symm_eps :
     CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
-  -- Porting note: Original proof was `DualNumber.lift_apply_eps _`
-  DualNumber.lift_apply_eps (R := R) (B := CliffordAlgebra (0 : QuadraticForm R R)) _
+  DualNumber.lift_apply_eps _
 
 end CliffordAlgebraDualNumber

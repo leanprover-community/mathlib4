@@ -5,7 +5,6 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
 import Mathlib.Init
-import Lean
 
 /-!
 # The `simp_rw` tactic

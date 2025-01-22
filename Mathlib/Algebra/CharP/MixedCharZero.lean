@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
 import Mathlib.Algebra.CharP.LocalRing
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.Tactic.FieldSimp
 
 /-!

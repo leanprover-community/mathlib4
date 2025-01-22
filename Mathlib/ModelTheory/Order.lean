@@ -312,7 +312,7 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 variable (L) (M)
 
-theorem denselyOrdered_of_dlo [h: M ⊨ L.dlo] : DenselyOrdered M :=
+theorem denselyOrdered_of_dlo [M ⊨ L.dlo] : DenselyOrdered M :=
   realize_denselyOrdered_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
@@ -358,10 +358,14 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   intros
   rfl
 
-instance [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
-    DecidableRel (@LE.le M (L.leOfStructure M)) := by
-  letI := L.leOfStructure M
-  exact h
+/-- The order structure on an ordered language is decidable. -/
+-- This should not be a global instance,
+-- because it will match with any `LE` typeclass search
+@[local instance]
+def decidableLEOfStructure
+    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    letI := L.leOfStructure M
+    DecidableRel ((· : M) ≤ ·) := h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
@@ -529,7 +533,7 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
     ⟨by
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
-    fun M => inferInstance
+    fun _ => inferInstance
 
 end Fraisse
 

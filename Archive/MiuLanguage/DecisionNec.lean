@@ -5,9 +5,7 @@ Authors: Gihan Marasingha
 -/
 import Archive.MiuLanguage.Basic
 import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Count
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.Ring
 
 /-!
 # Decision procedure: necessary condition

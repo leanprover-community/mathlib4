@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Batteries.Lean.HashSet
 
 /-!
 # `#`-command linter

@@ -17,7 +17,7 @@ There is the "D"ependent version `DFunLike` and the non-dependent version `FunLi
 
 A typical type of morphisms should be declared as:
 ```
-structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
+structure MyHom (A B : Type*) [MyClass A] [MyClass B] where
   (toFun : A → B)
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
@@ -79,7 +79,7 @@ The second step is to add instances of your new `MyHomClass` for all types exten
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B] extends MyHom A B :=
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B] extends MyHom A B where
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
@@ -194,7 +194,7 @@ theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
   DFunLike.coe_injective' (funext h)
 
 theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
-  coe_fn_eq.symm.trans Function.funext_iff
+  coe_fn_eq.symm.trans funext_iff
 
 protected theorem congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
   congr_fun (congr_arg _ h₁) x

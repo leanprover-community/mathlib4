@@ -7,6 +7,23 @@ import Mathlib.Order.SetNotation
 
 set_option linter.dupNamespace false
 
+namespace termG
+-- this creates a hygienic declaration starting with `termG.termG.«_@».test.Lint...`
+-- and the linter ignores it
+set_option linter.dupNamespace true in
+local notation "G" => Unit
+
+/-- info: [termG, termG] -/
+#guard_msgs in
+open Lean in
+run_meta
+  let env ← getEnv
+  let consts := env.constants.toList.find? (·.1.getRoot == `termG)
+  let reps := (consts.map (·.1.components.take 2)).getD default
+  logInfo m!"{reps}"
+  guard (reps[0]! == reps[1]!)
+end termG
+
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
@@ -25,8 +42,12 @@ note: this linter can be disabled with `set_option linter.dupNamespace false`
 set_option linter.dupNamespace true in
 def Foo.foo := True
 
--- the `dupNamespace` linter does not notice that `to_additive` created `Foo.add.add`.
+/--
+warning: The namespace 'add' is duplicated in the declaration 'Foo.add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
+-/
 #guard_msgs in
+set_option linter.dupNamespace true in
 @[to_additive] theorem add.mul : True := .intro
 
 --  However, the declaration `Foo.add.add` is present in the environment.
@@ -52,10 +73,13 @@ namespace add
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
+---
+warning: The namespace 'add' is duplicated in the declaration 'add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
 set_option linter.dupNamespace true in
-export Nat (add)
+export Nat (add add_comm add)
 
 end add
 
@@ -288,76 +312,9 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 info: "                              \"                                                            " : String
 ---
 warning: This line exceeds the 100 character limit, please shorten it!
-You can use "string gaps" to format long strings: within a string quotation, using a '' at the end of a line allows you to continue the string on the following line, removing all intervening whitespace.
+You can use "string gaps" to format long strings: within a string quotation, using a '\' at the end of a line allows you to continue the string on the following line, removing all intervening whitespace.
 note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
 set_option linter.style.longLine true in
 #check "                              \"                                                            "
-
-/-
-# Testing the `longFile` linter
-
-Things to note:
-* `set_option linter.style.longFile 0` disables the linter, allowing us to set a value smaller than
-  `1500` without triggering the warning for setting a small value for the option;
-* `guard_msgs ... in #exit` and `set_option ... in #exit` allow processing of the file *beyond*
-  `#exit`, since they wrap `#exit` inside an anonymous section,
-  making Lean active again *after* that anonymous section.
-
--/
-
-section longFile
-
-/--
-warning: The default value of the `longFile` linter is 1500.
-The current value of 1500 does not exceed the allowed bound.
-Please, remove the `set_option linter.style.longFile 1500`.
--/
-#guard_msgs in
--- Do not allow setting a "small" `longFile` linter option
-set_option linter.style.longFile 1500
-
-/--
-warning: using 'exit' to interrupt Lean
----
-warning: The default value of the `longFile` linter is 1500.
-This file is 331 lines long which does not exceed the allowed bound.
-Please, remove the `set_option linter.style.longFile 1600`.
--/
-#guard_msgs in
--- Do not allow unnecessarily increasing the `longFile` linter option
-set_option linter.style.longFile 1600 in
-#exit
-
-/--
-warning: using 'exit' to interrupt Lean
----
-warning: This file is 346 lines long, but the limit is 10.
-
-You can extend the allowed length of the file using `set_option linter.style.longFile 1500`.
-You can completely disable this linter by setting the length limit to `0`.
--/
-#guard_msgs in
--- First, we silence the linter, so that we can set a default value smaller than 1500.
-set_option linter.style.longFile 0 in
--- Next, we test that the `longFile` linter warns when a file exceeds the allowed value.
-set_option linter.style.longFile 10 in
-#exit
-
-/--
-warning: using 'exit' to interrupt Lean
----
-warning: The default value of the `longFile` linter is 1500.
-This file is 361 lines long which does not exceed the allowed bound.
-Please, remove the `set_option linter.style.longFile 1700`.
--/
-#guard_msgs in
--- First, we silence the linter, so that we can set a default value smaller than 1500.
-set_option linter.style.longFile 0 in
--- If we set the allowed bound for the `longFile` linter that is too large,
--- the linter tells us to use a smaller bound.
-set_option linter.style.longFile 1700 in
-#exit
-
-end longFile

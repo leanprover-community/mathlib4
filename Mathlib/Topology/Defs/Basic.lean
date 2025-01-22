@@ -151,6 +151,28 @@ def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U
 if the image of any closed `U : Set X` is closed in `Y`. -/
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
 
+/-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
+Equivalently, it is a surjective continuous open map.
+We use the latter characterization as a definition.
+
+Many important quotient maps are open quotient maps, including
+
+- the quotient map from a topological space to its quotient by the action of a group;
+- the quotient map from a topological group to its quotient by a normal subgroup;
+- the quotient map from a topological spaace to its separation quotient.
+
+Contrary to general quotient maps,
+the category of open quotient maps is closed under `Prod.map`.
+-/
+@[mk_iff]
+structure IsOpenQuotientMap (f : X → Y) : Prop where
+  /-- An open quotient map is surjective. -/
+  surjective : Function.Surjective f
+  /-- An open quotient map is continuous. -/
+  continuous : Continuous f
+  /-- An open quotient map is an open map. -/
+  isOpenMap : IsOpenMap f
+
 end Defs
 
 /-! ### Notation for non-standard topologies -/

@@ -34,7 +34,7 @@ open Function Module
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- A perfect pairing of two (left) modules over a commutative ring. -/
-structure PerfectPairing :=
+structure PerfectPairing where
   toLin : M →ₗ[R] N →ₗ[R] R
   bijectiveLeft : Bijective toLin
   bijectiveRight : Bijective toLin.flip

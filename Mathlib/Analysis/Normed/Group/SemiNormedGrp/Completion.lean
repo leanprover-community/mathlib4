@@ -94,20 +94,15 @@ instance : Preadditive SemiNormedGrp.{u} where
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    rw [NormedAddGroupHom.add_apply]; erw [CategoryTheory.comp_apply, CategoryTheory.comp_apply,
+    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
     convert map_add g (f x) (f' x)
   comp_add _ _ _ _ _ _ := by
     ext
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
-    -- simp only [add_apply, comp_apply. map_add]
-    rw [NormedAddGroupHom.add_apply]
-    -- This used to be a single `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [CategoryTheory.comp_apply, CategoryTheory.comp_apply,
+    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
-    rfl
 
 instance : Functor.Additive completion where
   map_add := NormedAddGroupHom.completion_add _ _

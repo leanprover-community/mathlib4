@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Extended norm
@@ -109,9 +110,9 @@ theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
 
 instance partialOrder : PartialOrder (ENorm 𝕜 V) where
   le e₁ e₂ := ∀ x, e₁ x ≤ e₂ x
-  le_refl e x := le_rfl
-  le_trans e₁ e₂ e₃ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
-  le_antisymm e₁ e₂ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
+  le_refl _ _ := le_rfl
+  le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
+  le_antisymm _ _ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
 
 /-- The `ENorm` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENorm 𝕜 V) :=
@@ -146,14 +147,14 @@ noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
     lt := (· < ·)
     sup := fun e₁ e₂ =>
       { toFun := fun x => max (e₁ x) (e₂ x)
-        eq_zero' := fun x h => e₁.eq_zero_iff.1 (ENNReal.max_eq_zero_iff.1 h).1
-        map_add_le' := fun x y =>
+        eq_zero' := fun _ h => e₁.eq_zero_iff.1 (ENNReal.max_eq_zero_iff.1 h).1
+        map_add_le' := fun _ _ =>
           max_le (le_trans (e₁.map_add_le _ _) <| add_le_add (le_max_left _ _) (le_max_left _ _))
             (le_trans (e₂.map_add_le _ _) <| add_le_add (le_max_right _ _) (le_max_right _ _))
         map_smul_le' := fun c x => le_of_eq <| by simp only [map_smul, ENNReal.mul_max] }
-    le_sup_left := fun e₁ e₂ x => le_max_left _ _
-    le_sup_right := fun e₁ e₂ x => le_max_right _ _
-    sup_le := fun e₁ e₂ e₃ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
+    le_sup_left := fun _ _ _ => le_max_left _ _
+    le_sup_right := fun _ _ _ => le_max_right _ _
+    sup_le := fun _ _ _ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
 
 @[simp, norm_cast]
 theorem coe_max (e₁ e₂ : ENorm 𝕜 V) : ⇑(e₁ ⊔ e₂) = fun x => max (e₁ x) (e₂ x) :=

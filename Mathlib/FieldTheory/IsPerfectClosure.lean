@@ -60,7 +60,7 @@ perfect ring, perfect closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -196,7 +196,7 @@ theorem RingHom.pNilradical_le_ker_of_perfectRing [ExpChar L p] [PerfectRing L p
   rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
     map_zero, map_zero] at h
 
-variable [ExpChar L p] [ExpChar M p] in
+variable [ExpChar L p] in
 theorem IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
     RingHom.ker i = pNilradical K p :=
   IsPRadical.ker_le'.antisymm (i.pNilradical_le_ker_of_perfectRing p)

@@ -185,8 +185,10 @@ lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
 lemma lipschitzWith_negPart : LipschitzWith 1 (negPart : α → α) := by
   simpa [Function.comp] using lipschitzWith_posPart.comp LipschitzWith.id.neg
 
+@[fun_prop]
 lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_posPart.continuous
 
+@[fun_prop]
 lemma continuous_negPart : Continuous (negPart : α → α) := lipschitzWith_negPart.continuous
 
 lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by

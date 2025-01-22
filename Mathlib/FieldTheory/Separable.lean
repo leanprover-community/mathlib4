@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 
@@ -167,16 +168,13 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
 
-theorem multiplicity_le_one_of_separable [DecidableRel fun (x : R[X]) x_1 ↦ x ∣ x_1]
-    {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
-    multiplicity q p ≤ 1 := by
+theorem emultiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
+    emultiplicity q p ≤ 1 := by
   contrapose! hq
   apply isUnit_of_self_mul_dvd_separable hsep
   rw [← sq]
-  apply multiplicity.pow_dvd_of_le_multiplicity
-  have h : ⟨Part.Dom 1 ∧ Part.Dom 1, fun _ ↦ 2⟩ ≤ multiplicity q p := PartENat.add_one_le_of_lt hq
-  rw [and_self] at h
-  exact h
+  apply pow_dvd_of_le_emultiplicity
+  exact Order.add_one_le_of_lt hq
 
 /-- A separable polynomial is square-free.
 
@@ -184,8 +182,8 @@ See `PerfectField.separable_iff_squarefree` for the converse when the coefficien
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   classical
-  rw [multiplicity.squarefree_iff_multiplicity_le_one p]
-  exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
+  rw [multiplicity.squarefree_iff_emultiplicity_le_one p]
+  exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
 
@@ -256,14 +254,34 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 
+/-- If `n = 0` in `R` and `b` is a unit, then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C
+    {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable := by
+  set f := C a * X ^ n + C b * X + C c
+  have hderiv : derivative f = C b := by
+    simp_rw [f, map_add derivative, derivative_C]
+    simp [hn]
+  obtain ⟨e, hb⟩ := hb.exists_left_inv
+  refine ⟨-derivative f, f + C e, ?_⟩
+  rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
+    ← map_mul, hb, map_one]
+
+/-- If `R` is of characteristic `p`, `p ∣ n` and `b` is a unit,
+then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
+    (p n : ℕ) (a b c : R) [CharP R p] (hn : p ∣ n) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable :=
+  separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
+
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
   classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, dif_neg hp, ← PartENat.coe_le_coe, PartENat.natCast_get,
-    Nat.cast_one]
-  exact multiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
+  rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
+    Nat.cast_one, ← (multiplicity_X_sub_C_finite x hp).emultiplicity_eq_multiplicity]
+  apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
 end CommRing
 
@@ -307,7 +325,7 @@ theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]}
 
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i ∈ s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
-  ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
+  ⟨fun hfs _ hx _ hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
     exact
       separable_prod'
@@ -333,12 +351,11 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
       have := natDegree_eq_zero_of_derivative_eq_zero H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
-    haveI := isLocalRingHom_expand F hp
+    haveI := isLocalHom_expand F hp
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
-          of_irreducible_map (expand F p : F[X] →+* F[X])
-            (by rwa [← expand_contract p H hp.ne'] at hf),
+          Irreducible.of_map (by rwa [← expand_contract p H hp.ne'] at hf),
           expand_contract p H hp.ne'⟩
   else Or.inl <| (separable_iff_derivative_ne_zero hf).2 H
 
@@ -406,6 +423,11 @@ end CharP
 theorem separable_X_pow_sub_C {n : ℕ} (a : F) (hn : (n : F) ≠ 0) (ha : a ≠ 0) :
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C_unit (Units.mk0 a ha) (IsUnit.mk0 (n : F) hn)
+
+/-- If `F` is of characteristic `p` and `p ∤ n`, then `X ^ n - a` is separable for any `a ≠ 0`. -/
+theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) (ha : a ≠ 0) :
+    Separable (X ^ n - C a) :=
+  separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
@@ -584,7 +606,7 @@ end AlgEquiv
 
 section IsScalarTower
 
-variable [Field L] [CommRing E] [Algebra F L]
+variable [Field L] [Ring E] [Algebra F L]
     [Algebra F E] [Algebra L E] [IsScalarTower F L E]
 
 /-- If `E / L / F` is a scalar tower and `x : E` is separable over `F`, then it's also separable
@@ -652,7 +674,7 @@ theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : I
 variable (K E) in
 theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
     Algebra.IsSeparable F K :=
-  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
 end IsScalarTower
 
@@ -675,29 +697,45 @@ theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSep
 
 end
 
+namespace IntermediateField
+
+variable [Field K] [Algebra F K] (M : IntermediateField F K)
+
+instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
+  Algebra.isSeparable_tower_bot_of_isSeparable F M K
+
+instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
+  Algebra.isSeparable_tower_top_of_isSeparable F M K
+
+end IntermediateField
+
 end Field
 
 section AlgEquiv
 
-variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
-    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+open RingHom RingEquiv
+
+variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
+    [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
-include e₁ e₂ he
+include he
 
 lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
-  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
-  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
-    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  letI : Algebra A₂ B₁ :=
+    { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+        commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
+        smul_def' := fun _ _ ↦ rfl }
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
+      (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
-      commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  have := IsSeparable.tower_top A₂ h
-  IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
+      commutes' := fun x ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }
+  (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
-lemma Algebra.IsSeparable.of_equiv_equiv
-    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
+lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
 

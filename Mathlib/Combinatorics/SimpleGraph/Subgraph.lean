@@ -133,6 +133,9 @@ theorem coe_adj_sub (G' : Subgraph G) (u v : G'.verts) (h : G'.coe.Adj u v) : G.
 protected theorem Adj.coe {H : G.Subgraph} {u v : V} (h : H.Adj u v) :
     H.coe.Adj ⟨u, H.edge_vert h⟩ ⟨v, H.edge_vert h.symm⟩ := h
 
+instance (G : SimpleGraph V) (H : Subgraph G) [DecidableRel H.Adj] : DecidableRel H.coe.Adj :=
+  fun a b ↦ ‹DecidableRel H.Adj› _ _
+
 /-- A subgraph is called a *spanning subgraph* if it contains all the vertices of `G`. -/
 def IsSpanning (G' : Subgraph G) : Prop :=
   ∀ v : V, v ∈ G'.verts
@@ -155,6 +158,8 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
   G'.adj_sub h
+
+lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.3
 
 theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G₂.Adj := by
   simp [Subgraph.spanningCoe]
@@ -209,14 +214,26 @@ theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
   Sym2.ind (fun _ _ ↦ G'.adj_sub)
 
 @[simp]
-theorem mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := Iff.rfl
+protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := .rfl
 
-theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
+@[simp] lemma edgeSet_coe {G' : G.Subgraph} : G'.coe.edgeSet = Sym2.map (↑) ⁻¹' G'.edgeSet := by
+  ext e; induction' e using Sym2.ind with a b; simp
+
+lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet = G'.edgeSet := by
+  rw [edgeSet_coe, Set.image_preimage_eq_iff]
+  rintro e he
+  induction' e using Sym2.ind with a b
+  rw [Subgraph.mem_edgeSet] at he
+  exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
+
+theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
   induction e
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G'.edge_vert he
   · exact G'.edge_vert (G'.symm he)
+
+@[deprecated (since := "2024-10-01")] alias mem_verts_if_mem_edge := mem_verts_of_mem_edge
 
 /-- The `incidenceSet` is the set of edges incident to a given vertex. -/
 def incidenceSet (G' : Subgraph G) (v : V) : Set (Sym2 V) := {e ∈ G'.edgeSet | v ∈ e}
@@ -377,6 +394,18 @@ theorem verts_iSup {f : ι → G.Subgraph} : (⨆ i, f i).verts = ⋃ i, (f i).v
 @[simp]
 theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by simp [iInf]
 
+@[simp] lemma coe_bot : (⊥ : G.Subgraph).coe = ⊥ := rfl
+
+@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ ↦ id
+
+/-- The graph isomorphism between the top element of `G.subgraph` and `G`. -/
+def topIso : (⊤ : G.Subgraph).coe ≃g G where
+  toFun := (↑)
+  invFun a := ⟨a, Set.mem_univ _⟩
+  left_inv _ := Subtype.eta ..
+  right_inv _ := rfl
+  map_rel_iff' := .rfl
+
 theorem verts_spanningCoe_injective :
     (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
   intro G₁ G₂ h
@@ -405,20 +434,20 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     inf := (· ⊓ ·)
     top := ⊤
     bot := ⊥
-    le_top := fun G' => ⟨Set.subset_univ _, fun a b => G'.adj_sub⟩
-    bot_le := fun G' => ⟨Set.empty_subset _, fun a b => False.elim⟩
+    le_top := fun G' => ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
+    bot_le := fun _ => ⟨Set.empty_subset _, fun _ _ => False.elim⟩
     sSup := sSup
     -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
-    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun a b hab => ⟨G', hG', hab⟩⟩
+    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
     sSup_le := fun s G' hG' =>
-      ⟨Set.iUnion₂_subset fun H hH => (hG' _ hH).1, by
+      ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
         rintro a b ⟨H, hH, hab⟩
         exact (hG' _ hH).2 hab⟩
     sInf := sInf
-    sInf_le := fun s G' hG' => ⟨Set.iInter₂_subset G' hG', fun a b hab => hab.1 hG'⟩
-    le_sInf := fun s G' hG' =>
-      ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
-        ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+    sInf_le := fun _ G' hG' => ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
+    le_sInf := fun _ G' hG' =>
+      ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
+        ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
     iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
 
@@ -551,9 +580,12 @@ theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
 
+section map
+variable {G' : SimpleGraph W} {f : G →g G'}
+
 /-- Graph homomorphisms induce a covariant function on subgraphs. -/
 @[simps]
-protected def map {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) : G'.Subgraph where
+protected def map (f : G →g G') (H : G.Subgraph) : G'.Subgraph where
   verts := f '' H.verts
   Adj := Relation.Map H.Adj f f
   adj_sub := by
@@ -566,29 +598,26 @@ protected def map {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) : G'.Sub
     rintro _ _ ⟨u, v, h, rfl, rfl⟩
     exact ⟨v, u, H.symm h, rfl, rfl⟩
 
-theorem map_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph.map f) := by
-  intro H H' h
+@[simp] lemma map_id (H : G.Subgraph) : H.map Hom.id = H := by ext <;> simp
+
+lemma map_comp {U : Type*} {G'' : SimpleGraph U} (H : G.Subgraph) (f : G →g G') (g : G' →g G'') :
+    H.map (g.comp f) = (H.map f).map g := by ext <;> simp [Subgraph.map]
+
+@[gcongr] lemma map_mono {H₁ H₂ : G.Subgraph} (hH : H₁ ≤ H₂) : H₁.map f ≤ H₂.map f := by
   constructor
   · intro
     simp only [map_verts, Set.mem_image, forall_exists_index, and_imp]
     rintro v hv rfl
-    exact ⟨_, h.1 hv, rfl⟩
+    exact ⟨_, hH.1 hv, rfl⟩
   · rintro _ _ ⟨u, v, ha, rfl, rfl⟩
-    exact ⟨_, _, h.2 ha, rfl, rfl⟩
+    exact ⟨_, _, hH.2 ha, rfl, rfl⟩
 
-theorem map_sup {G : SimpleGraph V} {G' : SimpleGraph W} (f : G →g G') {H H' : G.Subgraph} :
-    (H ⊔ H').map f = H.map f ⊔ H'.map f := by
-  ext1
-  · simp only [Set.image_union, map_verts, verts_sup]
-  · ext
-    simp only [Relation.Map, map_adj, sup_adj]
-    constructor
-    · rintro ⟨a, b, h | h, rfl, rfl⟩
-      · exact Or.inl ⟨_, _, h, rfl, rfl⟩
-      · exact Or.inr ⟨_, _, h, rfl, rfl⟩
-    · rintro (⟨a, b, h, rfl, rfl⟩ | ⟨a, b, h, rfl, rfl⟩)
-      · exact ⟨_, _, Or.inl h, rfl, rfl⟩
-      · exact ⟨_, _, Or.inr h, rfl, rfl⟩
+lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
+
+theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
+  ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
+
+end map
 
 /-- Graph homomorphisms induce a contravariant function on subgraphs. -/
 @[simps]

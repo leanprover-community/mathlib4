@@ -159,10 +159,10 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
   rw [Fin.sum_univ_two', ← mcfab.left, ← two_nsmul] at contr
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
-    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
+    2 • ((ω.tt ![![a, b], ![b, a]]).map f).sum := by
     have half_sharp :
       ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
-      ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
+      ((ω.tt ![![a, b], ![b, a]]).map f).sum := by
       apply Multiset.sum_lt_sum
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)

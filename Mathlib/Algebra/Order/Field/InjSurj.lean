@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Ring.InjSurj
 
 open Function OrderDual
 
-variable {ι α β : Type*}
+variable {α β : Type*}
 
 namespace Function.Injective
 variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β]

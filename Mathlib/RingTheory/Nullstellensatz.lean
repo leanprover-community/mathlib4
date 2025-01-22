@@ -57,7 +57,7 @@ theorem zeroLocus_top : zeroLocus (⊤ : Ideal (MvPolynomial σ k)) = ⊥ :=
 /-- Ideal of polynomials with common zeroes at all elements of a set -/
 def vanishingIdeal (V : Set (σ → k)) : Ideal (MvPolynomial σ k) where
   carrier := {p | ∀ x ∈ V, eval x p = 0}
-  zero_mem' x _ := RingHom.map_zero _
+  zero_mem' _ _ := RingHom.map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, RingHom.map_add]
   smul_mem' p q hq x hx := by
     simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, RingHom.map_mul]
@@ -131,14 +131,14 @@ def pointToPoint (x : σ → k) : PrimeSpectrum (MvPolynomial σ k) :=
 theorem vanishingIdeal_pointToPoint (V : Set (σ → k)) :
     PrimeSpectrum.vanishingIdeal (pointToPoint '' V) = MvPolynomial.vanishingIdeal V :=
   le_antisymm
-    (fun p hp x hx =>
+    (fun _ hp x hx =>
       (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal {x}, by infer_instance⟩ <| by
           exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note: tactic mode code compiles but term mode does not
         x rfl)
-    fun p hp =>
-    (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun I hI =>
+    fun _ hp =>
+    (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun _ hI =>
       let ⟨x, hx⟩ := hI
-      hx.2 ▸ fun x' hx' => (Set.mem_singleton_iff.1 hx').symm ▸ hp x hx.1
+      hx.2 ▸ fun _ hx' => (Set.mem_singleton_iff.1 hx').symm ▸ hp x hx.1
 
 theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ k)) :
     pointToPoint '' MvPolynomial.zeroLocus I ≤ PrimeSpectrum.zeroLocus ↑I := fun J hJ =>
@@ -162,7 +162,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   have hϕ : Function.Bijective ϕ :=
     ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
       IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
-        (MvPolynomial.comp_C_integral_of_surjective_of_jacobson _ Quotient.mk_surjective)⟩
+        (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)⟩
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>

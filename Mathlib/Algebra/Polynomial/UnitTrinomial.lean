@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Polynomial.Mirror
 import Mathlib.Data.Int.Order.Units
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Unit Trinomials
@@ -128,7 +129,7 @@ theorem not_isUnit (hp : p.IsUnitTrinomial) : ¬IsUnit p := by
       ((trinomial_natDegree hkm hmn w.ne_zero).symm.trans
         (natDegree_eq_of_degree_eq_some (degree_eq_zero_of_isUnit h)))
 
-theorem card_support_eq_three (hp : p.IsUnitTrinomial) : p.support.card = 3 := by
+theorem card_support_eq_three (hp : p.IsUnitTrinomial) : #p.support = 3 := by
   obtain ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩ := hp
   exact card_support_trinomial hkm hmn u.ne_zero v.ne_zero w.ne_zero
 
@@ -155,7 +156,7 @@ theorem trailingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.trailingCoeff :
 end IsUnitTrinomial
 
 theorem isUnitTrinomial_iff :
-    p.IsUnitTrinomial ↔ p.support.card = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
+    p.IsUnitTrinomial ↔ #p.support = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
   refine ⟨fun hp => ⟨hp.card_support_eq_three, fun k => hp.coeff_isUnit⟩, fun hp => ?_⟩
   obtain ⟨k, m, n, hkm, hmn, x, y, z, hx, hy, hz, rfl⟩ := card_support_eq_three.mp hp.1
   rw [support_trinomial hkm hmn hx hy hz] at hp

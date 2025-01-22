@@ -3,6 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
+import Lean
 import Mathlib.Order.Defs
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
@@ -78,8 +79,8 @@ functions which have different theories when different typeclass assumptions app
 the following lemma is stored with the same `@[gcongr]` data as `mul_le_mul` above, and the two
 lemmas are simply tried in succession to determine which has the typeclasses relevant to the goal:
 ```
-theorem mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
+theorem mul_le_mul' [Mul α] [Preorder α] [MulLeftMono α]
+    [MulRightMono α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d
 ```
 

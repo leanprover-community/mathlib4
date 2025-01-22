@@ -43,8 +43,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
 Given a `List Nat`, return the minimum, maximum, and standard deviation.
 -/
 def variation (counts : List Nat) : List Nat :=
-  let min := counts.minimum?.getD 0
-  let max := counts.maximum?.getD 0
+  let min := counts.min?.getD 0
+  let max := counts.max?.getD 0
   let toFloat (n : Nat) := n.toUInt64.toFloat
   let toNat (f : Float) := f.toUInt64.toNat
   let counts' := counts.map toFloat
@@ -116,6 +116,31 @@ elab "count_heartbeats " "in" ppLine cmd:command : command => do
       Command.liftCoreM <| MetaM.run' do
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
+
+/--
+Guard the minimal number of heartbeats used in the enclosed command.
+
+This is most useful in the context of debugging and minimizing an example of a slow declaration.
+By guarding the number of heartbeats used in the slow declaration,
+an error message will be generated if a minimization step makes the slow behaviour go away.
+
+The default number of minimal heartbeats is the value of `maxHeartbeats` (typically 200000).
+Alternatively, you can specify a number of heartbeats to guard against,
+using the syntax `guard_min_heartbeats n in cmd`.
+-/
+elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
+  let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
+  let n := match n with
+           | some j => j.getNat
+           | none => max
+  let start ← IO.getNumHeartbeats
+  try
+    elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+  finally
+    let finish ← IO.getNumHeartbeats
+    let elapsed := (finish - start) / 1000
+    if elapsed < n then
+      logInfo m!"Used {elapsed} heartbeats, which is less than the minimum of {n}."
 
 /--
 Run a command, optionally restoring the original state, and report just the number of heartbeats.

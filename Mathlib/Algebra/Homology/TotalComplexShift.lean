@@ -129,7 +129,7 @@ noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     (((shiftFunctor₁ C x).obj K).total (up ℤ)).X n ≅ (K.total (up ℤ)).X n' where
   hom := totalDesc _ (fun p q hpq => K.ιTotal (up ℤ) (p + x) q n' (by dsimp at hpq ⊢; omega))
   inv := totalDesc _ (fun p q hpq =>
-    (K.XXIsoOfEq (Int.sub_add_cancel p x) rfl).inv ≫
+    (K.XXIsoOfEq _ _ _ (Int.sub_add_cancel p x) rfl).inv ≫
       ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) (p - x) q n
         (by dsimp at hpq ⊢; omega))
   hom_inv_id := by
@@ -235,7 +235,7 @@ noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
   hom := totalDesc _ (fun p q hpq => (p * y).negOnePow • K.ιTotal (up ℤ) p (q + y) n'
     (by dsimp at hpq ⊢; omega))
   inv := totalDesc _ (fun p q hpq => (p * y).negOnePow •
-    (K.XXIsoOfEq rfl (Int.sub_add_cancel q y)).inv ≫
+    (K.XXIsoOfEq _ _ _ rfl (Int.sub_add_cancel q y)).inv ≫
       ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) p (q - y) n (by dsimp at hpq ⊢; omega))
   hom_inv_id := by
     ext p q h

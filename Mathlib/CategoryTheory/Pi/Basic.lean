@@ -49,7 +49,6 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
     (f ≫ g : ∀ i, X i ⟶ Z i) i = f i ≫ g i :=
   rfl
 
--- Porting note: need to add an additional `ext` lemma.
 @[ext]
 lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
   funext (w ·)
@@ -111,7 +110,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun f => Iso.refl _) (by simp only [Iso.refl]; aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; aesop_cat)
 
 end
 
@@ -141,7 +140,7 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : I ⊕ J, Sum.elim C D s wher
         match s with
         | .inl i => X i
         | .inr j => Y j
-      map := fun {Y} {Y'} f s =>
+      map := fun {_} {_} f s =>
         match s with
         | .inl i => 𝟙 (X i)
         | .inr j => f j }
@@ -206,7 +205,7 @@ section EqToHom
 
 @[simp]
 theorem eqToHom_proj {x x' : ∀ i, C i} (h : x = x') (i : I) :
-    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
+    (eqToHom h : x ⟶ x') i = eqToHom (funext_iff.mp h i) := by
   subst h
   rfl
 
@@ -348,7 +347,7 @@ def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (
     | some i => Prod.snd _ _ ⋙ (Pi.eval _ i))
   unitIso := NatIso.pi' (fun i => match i with
     | none => Iso.refl _
-    | some i => Iso.refl _)
+    | some _ => Iso.refl _)
   counitIso := by exact Iso.refl _
 
 namespace Equivalence

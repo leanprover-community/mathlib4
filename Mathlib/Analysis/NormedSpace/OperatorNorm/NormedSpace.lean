@@ -16,12 +16,10 @@ underlying space has a norm (rather than just a seminorm).
 
 suppress_compilation
 
-open Bornology
-open Filter hiding map_smul
-open scoped NNReal Topology Uniformity
+open scoped NNReal Topology
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
+variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
 
 section Normed
@@ -34,8 +32,8 @@ open Metric ContinuousLinearMap
 section
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ] (c : 𝕜)
-  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f g : E →SL[σ₁₂] F) (x y z : E)
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
 
 namespace LinearMap
 
@@ -141,9 +139,12 @@ variable (f)
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
-theorem antilipschitz_of_embedding (f : E →L[𝕜] Fₗ) (hf : Embedding f) :
+theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
+
+@[deprecated (since := "2024-10-26")]
+alias antilipschitz_of_embedding := antilipschitz_of_isEmbedding
 
 end OpNorm
 
@@ -165,6 +166,15 @@ theorem norm_toContinuousLinearMap_comp [RingHomIsometric σ₁₂] (f : F →�
   opNorm_ext (f.toContinuousLinearMap.comp g) g fun x => by
     simp only [norm_map, coe_toContinuousLinearMap, coe_comp', Function.comp_apply]
 
+/-- Composing on the left with a linear isometry gives a linear isometry between spaces of
+continuous linear maps. -/
+def postcomp [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] (a : F →ₛₗᵢ[σ₂₃] G) :
+    (E →SL[σ₁₂] F) →ₛₗᵢ[σ₂₃] (E →SL[σ₁₃] G) where
+  toFun f := a.toContinuousLinearMap.comp f
+  map_add' f g := by simp
+  map_smul' c f := by simp
+  norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
+
 end LinearIsometry
 
 end
@@ -172,8 +182,8 @@ end
 namespace ContinuousLinearMap
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ] (c : 𝕜)
-  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
+  {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormedAddCommGroup F']
   [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
@@ -220,8 +230,7 @@ end ContinuousLinearMap
 
 namespace Submodule
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂}
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 theorem norm_subtypeL (K : Submodule 𝕜 E) [Nontrivial K] : ‖K.subtypeL‖ = 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap
@@ -230,7 +239,7 @@ end Submodule
 
 namespace ContinuousLinearEquiv
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂]
 

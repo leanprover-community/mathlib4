@@ -3,8 +3,9 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # The group of units of a complete normed ring
@@ -145,7 +146,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   have := tsum_geometric_le_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
-    refine inv_le_inv_of_le (by norm_num) ?_
+    refine inv_anti₀ (by norm_num) ?_
     have : (2 : ℝ)⁻¹ + (2 : ℝ)⁻¹ = 1 := by ring
     linarith
   linarith
@@ -200,15 +201,18 @@ open MulOpposite Filter NormedRing
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
-theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
-  toEmbedding := embedding_val_mk'
+theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
+  toIsEmbedding := isEmbedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
   isOpen_range := Units.isOpen
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_val := isOpenEmbedding_val
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open map. -/
 theorem isOpenMap_val : IsOpenMap (val : Rˣ → R) :=
-  openEmbedding_val.isOpenMap
+  isOpenEmbedding_val.isOpenMap
 
 end Units
 

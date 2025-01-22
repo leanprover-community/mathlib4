@@ -22,7 +22,40 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+
+open scoped Mon_Class Comon_Class
+
+/--
+A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
+-/
+class Hopf_Class (X : C) extends Bimon_Class X where
+  /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
+  antipode : X ⟶ X
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  antipode_left' : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
+  antipode_right' : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
+
+namespace Hopf_Class
+
+@[inherit_doc] scoped notation "𝒮" => Hopf_Class.antipode
+@[inherit_doc] scoped notation "𝒮["X"]" => Hopf_Class.antipode (X := X)
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] antipode_left' antipode_right'
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc (attr := simp)]
+theorem antipode_left (X : C) [Hopf_Class X] : Δ ≫ 𝒮 ▷ X ≫ μ = ε ≫ η := antipode_left'
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc (attr := simp)]
+theorem antipode_right (X : C) [Hopf_Class X] : Δ ≫ X ◁ 𝒮 ≫ μ = ε ≫ η := antipode_right'
+
+end Hopf_Class
+
+variable (C)
 
 /--
 A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.

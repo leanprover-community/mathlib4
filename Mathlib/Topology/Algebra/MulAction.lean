@@ -132,13 +132,13 @@ action is."]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
-      this.comp (MulOpposite.continuous_unop.prod_map continuous_id)
+      this.comp (MulOpposite.continuous_unop.prodMap continuous_id)
     simpa only [op_smul_eq_smul] using (continuous_smul : Continuous fun p : M × X => _)⟩
 
 @[to_additive]
 instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <|
-      continuous_smul.comp <| continuous_id.prod_map MulOpposite.continuous_unop⟩
+      continuous_smul.comp <| continuous_id.prodMap MulOpposite.continuous_unop⟩
 
 @[to_additive]
 protected theorem Specializes.smul {a b : M} {x y : X} (h₁ : a ⤳ b) (h₂ : x ⤳ y) :
@@ -177,17 +177,19 @@ Then the action of `N` on `X` is continuous as well.
 
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
 However, this version also works for `f = AddUnits.val`."]
-lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
-    (hg : Inducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
+lemma IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
+    (hg : IsInducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
 
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousSMul := IsInducing.continuousSMul
+
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
     ContinuousSMul M s :=
-  inducing_subtype_val.continuousSMul continuous_id rfl
+  IsInducing.subtypeVal.continuousSMul continuous_id rfl
 
 end SMul
 
@@ -197,7 +199,7 @@ variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
 instance Units.continuousSMul : ContinuousSMul Mˣ X :=
-  inducing_id.continuousSMul Units.continuous_val rfl
+  IsInducing.id.continuousSMul Units.continuous_val rfl
 
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
@@ -211,7 +213,7 @@ theorem MulAction.continuousSMul_compHom
 
 @[to_additive]
 instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
-  inducing_id.continuousSMul continuous_subtype_val rfl
+  IsInducing.id.continuousSMul continuous_subtype_val rfl
 
 end Monoid
 

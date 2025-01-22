@@ -341,7 +341,7 @@ This continuation `k` is passed
 
 The `propToFVar` map is updated with the new proposition fvars.
 -/
-partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : Option Expr)
+partial def withGeneralizedProofs {α : Type} [Nonempty α] (e : Expr) (ty? : Option Expr)
     (k : Array Expr → Array Expr → Expr → MGen α) :
     MGen α := do
   let propToFVar := (← get).propToFVar
@@ -351,7 +351,7 @@ partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : O
     post-abstracted{indentD e}\nnew generalizations: {generalizations}"
   let rec
     /-- Core loop for `withGeneralizedProofs`, adds generalizations one at a time. -/
-    go [Inhabited α] (i : Nat) (fvars pfs : Array Expr)
+    go [Nonempty α] (i : Nat) (fvars pfs : Array Expr)
         (proofToFVar propToFVar : ExprMap Expr) : MGen α := do
       if h : i < generalizations.size then
         let (ty, pf) := generalizations[i]

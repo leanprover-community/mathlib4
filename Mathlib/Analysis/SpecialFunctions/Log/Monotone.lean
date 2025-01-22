@@ -25,8 +25,6 @@ noncomputable section
 
 namespace Real
 
-variable {x y : ℝ}
-
 theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
   -- TODO: can be strengthened to exp (-1) ≤ x
   simp only [MonotoneOn, mem_setOf_eq]

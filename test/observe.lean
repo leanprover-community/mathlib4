@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Data.Nat.Factorial.Basic
 
 open Nat

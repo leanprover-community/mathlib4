@@ -140,35 +140,38 @@ theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] 
   exists_nat_nat_continuous_surjective_of_completeSpace α
 
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
-theorem _root_.ClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β] [PolishSpace β]
-    {f : α → β} (hf : ClosedEmbedding f) : PolishSpace α := by
+lemma _root_.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β] [PolishSpace β]
+    {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
   letI := upgradePolishSpace β
-  letI : MetricSpace α := hf.toEmbedding.comapMetricSpace f
-  haveI : SecondCountableTopology α := hf.toEmbedding.secondCountableTopology
+  letI : MetricSpace α := hf.isEmbedding.comapMetricSpace f
+  haveI : SecondCountableTopology α := hf.isEmbedding.secondCountableTopology
   have : CompleteSpace α := by
-    rw [completeSpace_iff_isComplete_range hf.toEmbedding.to_isometry.uniformInducing]
+    rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete
   infer_instance
+
+@[deprecated (since := "2024-10-20")]
+alias _root_.ClosedEmbedding.polishSpace := _root_.IsClosedEmbedding.polishSpace
 
 /-- Any countable discrete space is Polish. -/
 instance (priority := 50) polish_of_countable [TopologicalSpace α]
     [h : Countable α] [DiscreteTopology α] : PolishSpace α := by
   obtain ⟨f, hf⟩ := h.exists_injective_nat
-  have : ClosedEmbedding f := by
-    apply closedEmbedding_of_continuous_injective_closed continuous_of_discreteTopology hf
-    exact fun t _ => isClosed_discrete _
+  have : IsClosedEmbedding f :=
+    .of_continuous_injective_isClosedMap continuous_of_discreteTopology hf
+      fun t _ ↦ isClosed_discrete _
   exact this.polishSpace
 
 /-- Pulling back a Polish topology under an equiv gives again a Polish topology. -/
 theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
     @PolishSpace α (t.induced f) :=
   letI : TopologicalSpace α := t.induced f
-  (f.toHomeomorphOfInducing ⟨rfl⟩).closedEmbedding.polishSpace
+  (f.toHomeomorphOfIsInducing ⟨rfl⟩).isClosedEmbedding.polishSpace
 
 /-- A closed subset of a Polish space is also Polish. -/
 theorem _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsClosed s) : PolishSpace s :=
-  (IsClosed.closedEmbedding_subtype_val hs).polishSpace
+  hs.isClosedEmbedding_subtypeVal.polishSpace
 
 instance instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
     PolishSpace (univ : Set α) :=
@@ -211,8 +214,7 @@ theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : Topologica
     .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
 
 instance : PolishSpace ENNReal :=
-  ClosedEmbedding.polishSpace ⟨ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.embedding,
-    ENNReal.orderIsoUnitIntervalBirational.range_eq ▸ isClosed_univ⟩
+  ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.isClosedEmbedding.polishSpace
 
 end PolishSpace
 

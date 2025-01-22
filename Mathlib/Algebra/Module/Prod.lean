@@ -35,17 +35,4 @@ instance instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M
     add_smul := fun _ _ _ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩
     zero_smul := fun _ => mk.inj_iff.mpr ⟨zero_smul _ _, zero_smul _ _⟩ }
 
-instance noZeroSMulDivisors {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
-    NoZeroSMulDivisors R (M × N) :=
-  { eq_zero_or_eq_zero_of_smul_eq_zero := by -- Porting note: in mathlib3 there is no need for `by`/
-      -- `intro`/`exact`, i.e. the following works:
-      -- ⟨fun c ⟨x, y⟩ h =>
-      --   or_iff_not_imp_left.mpr fun hc =>
-      intro c ⟨x, y⟩ h
-      exact or_iff_not_imp_left.mpr fun hc =>
-        mk.inj_iff.mpr
-          ⟨(smul_eq_zero.mp (congr_arg fst h)).resolve_left hc,
-            (smul_eq_zero.mp (congr_arg snd h)).resolve_left hc⟩ }
-
 end Prod

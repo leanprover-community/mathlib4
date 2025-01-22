@@ -9,11 +9,11 @@ import Mathlib.Init
 # Monad instances for `List`
 -/
 
-universe u v w
+universe u
 
 namespace List
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 instance instMonad : Monad List.{u} where
   pure := @List.pure

@@ -21,13 +21,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
-  {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  -- declare a topological space `M'`.
+  {M' : Type*} [TopologicalSpace M']
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H} {x : M} {m n : ℕ∞}
+  {e : PartialHomeomorph M H} {x : M} {n : ℕ∞}
 
 /-! ### Atlas members are smooth -/
 
@@ -35,7 +32,7 @@ section Atlas
 
 theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
-  refine (contMDiffAt_iff _ _).mpr ⟨I.continuousAt, ?_⟩
+  refine contMDiffAt_iff.mpr ⟨I.continuousAt, ?_⟩
   simp only [mfld_simps]
   refine contDiffWithinAt_id.congr_of_eventuallyEq ?_ ?_
   · exact Filter.eventuallyEq_of_mem self_mem_nhdsWithin fun x₂ => I.right_inv
@@ -50,16 +47,16 @@ theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) 
 /-- An atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) : ContMDiffOn I I n e e.source :=
   ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp I I ∞).liftPropOn_of_mem_maximalAtlas
-      (contDiffWithinAtProp_id I) h)
+    ((contDiffWithinAt_localInvariantProp ∞).liftPropOn_of_mem_maximalAtlas
+      contDiffWithinAtProp_id h)
     le_top
 
 /-- The inverse of an atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_symm_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) :
     ContMDiffOn I I n e.symm e.target :=
   ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp I I ∞).liftPropOn_symm_of_mem_maximalAtlas
-      (contDiffWithinAtProp_id I) h)
+    ((contDiffWithinAt_localInvariantProp ∞).liftPropOn_symm_of_mem_maximalAtlas
+      contDiffWithinAtProp_id h)
     le_top
 
 theorem contMDiffAt_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
@@ -71,10 +68,10 @@ theorem contMDiffAt_symm_of_mem_maximalAtlas {x : H} (h : e ∈ maximalAtlas I M
   (contMDiffOn_symm_of_mem_maximalAtlas h).contMDiffAt <| e.open_target.mem_nhds hx
 
 theorem contMDiffOn_chart : ContMDiffOn I I n (chartAt H x) (chartAt H x).source :=
-  contMDiffOn_of_mem_maximalAtlas <| chart_mem_maximalAtlas I x
+  contMDiffOn_of_mem_maximalAtlas <| chart_mem_maximalAtlas x
 
 theorem contMDiffOn_chart_symm : ContMDiffOn I I n (chartAt H x).symm (chartAt H x).target :=
-  contMDiffOn_symm_of_mem_maximalAtlas <| chart_mem_maximalAtlas I x
+  contMDiffOn_symm_of_mem_maximalAtlas <| chart_mem_maximalAtlas x
 
 theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
     ContMDiffAt I 𝓘(𝕜, E) n (e.extend I) x :=
@@ -82,7 +79,7 @@ theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I M) (hx : x ∈ e.s
 
 theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
-  contMDiffAt_extend (chart_mem_maximalAtlas I x) h
+  contMDiffAt_extend (chart_mem_maximalAtlas x) h
 
 theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x :=
   contMDiffAt_extChartAt' <| mem_chart_source H x
@@ -99,14 +96,13 @@ theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I M) :
 
 theorem contMDiffOn_extChartAt_symm (x : M) :
     ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target := by
-  convert contMDiffOn_extend_symm (chart_mem_maximalAtlas I x)
+  convert contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
   rw [extChartAt_target, I.image_eq]
 
 /-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}
     (h : e' ∈ contDiffGroupoid ⊤ I) : ContMDiffOn I I n e' e'.source :=
-  (contDiffWithinAt_localInvariantProp I I n).liftPropOn_of_mem_groupoid
-    (contDiffWithinAtProp_id I) h
+  (contDiffWithinAt_localInvariantProp n).liftPropOn_of_mem_groupoid contDiffWithinAtProp_id h
 
 end Atlas
 

@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Adam Topaz
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.

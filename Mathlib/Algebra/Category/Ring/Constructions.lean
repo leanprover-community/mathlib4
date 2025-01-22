@@ -183,7 +183,7 @@ The categorical product of rings is the cartesian product of rings.
 def piFanIsLimit : IsLimit (piFan R) where
   lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
   fac s i := by rfl
-  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
+  uniq _ _ h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
 
 /--
 The categorical product and the usual product agrees
@@ -224,7 +224,7 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   · intro m hm
     exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
 
-instance : IsLocalRingHom (equalizerFork f g).ι := by
+instance : IsLocalHom (equalizerFork f g).ι := by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
   have : y ∈ RingHom.eqLocus f g := by
@@ -234,8 +234,9 @@ instance : IsLocalRingHom (equalizerFork f g).ι := by
   rw [isUnit_iff_exists_inv]
   exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
 
-instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
-    IsLocalRingHom (limit.π F WalkingParallelPair.zero) := by
+@[instance]
+theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
+    IsLocalHom (limit.π F WalkingParallelPair.zero) := by
   have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
   rw [← IsIso.comp_inv_eq] at this
   rw [← this]
@@ -244,15 +245,18 @@ instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u
         equalizerForkIsLimit (F.map WalkingParallelPairHom.left)
           (F.map WalkingParallelPairHom.right)⟩
       WalkingParallelPair.zero]
-  change IsLocalRingHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
+  change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
   infer_instance
+
+@[deprecated (since := "2024-10-10")]
+alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
 
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
 instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
-    IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
+    IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
   have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
     (limit.isoLimitCone_inv_π
         ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩

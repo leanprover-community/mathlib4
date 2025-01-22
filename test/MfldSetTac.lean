@@ -47,7 +47,7 @@ test_sorry
   (e.toPartialEquiv.symm : β → α) = (e.symm : β → α) :=
 test_sorry
 
-structure ModelWithCorners (𝕜 E H : Type u) extends PartialEquiv H E :=
+structure ModelWithCorners (𝕜 E H : Type u) extends PartialEquiv H E where
   (source_eq : source = Set.univ)
 
 attribute [mfld_simps] ModelWithCorners.source_eq

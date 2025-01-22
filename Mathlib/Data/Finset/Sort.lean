@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.RelIso.Set
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Card
 
 /-!
@@ -31,6 +31,10 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) : List α :=
   Multiset.sort r s.1
+
+@[simp]
+theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
+  rfl
 
 @[simp]
 theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
@@ -64,10 +68,26 @@ theorem sort_empty : sort r ∅ = [] :=
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 
+theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort r (cons a s h₂) = a :: sort r s := by
+  rw [sort, cons_val, Multiset.sort_cons r a _ h₁, sort_val]
+
+theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort r (insert a s) = a :: sort r s := by
+  rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
+
 open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
+
+theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
+    sort r l.toFinset = l ↔ l.Sorted r := by
+  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList r _).trans (List.toFinset_toList hl))
+    (sort_sorted r _)⟩
+  intro h
+  rw [← h]
+  exact sort_sorted r _
 
 end sort
 
@@ -199,7 +219,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique' {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k ↪o α}
     (hfs : ∀ x, f x ∈ s) : f = s.orderEmbOfFin h :=
-  RelEmbedding.ext <| Function.funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
+  RelEmbedding.ext <| funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
 
 /-- Two parametrizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
 and only if `i = j`. Since they can be defined on a priori not defeq types `Fin k` and `Fin l`

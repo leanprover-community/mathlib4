@@ -22,7 +22,7 @@ namespace Mathlib.Tactic
 open Lean Meta
 
 /-- The context (read-only state) of the `AtomM` monad. -/
-structure AtomM.Context :=
+structure AtomM.Context where
   /-- The reducibility setting for definitional equality of atoms -/
   red : TransparencyMode
   /-- A simplification to apply to atomic expressions when they are encountered,
@@ -31,7 +31,7 @@ structure AtomM.Context :=
   deriving Inhabited
 
 /-- The mutable state of the `AtomM` monad. -/
-structure AtomM.State :=
+structure AtomM.State where
   /-- The list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
   atoms : Array Expr := #[]
 

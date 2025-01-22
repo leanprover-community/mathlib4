@@ -10,7 +10,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # IMO 2021 Q1
 
-Let `n≥100` be an integer. Ivan writes the numbers `n, n+1,..., 2n` each on different cards.
+Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each on different cards.
 He then shuffles these `n+1` cards, and divides them into two piles. Prove that at least one
 of the piles contains two cards such that the sum of their numbers is a perfect square.
 
@@ -30,7 +30,7 @@ which can be solved to give
     b = 2 * l ^ 2 + 1
     c = 2 * l ^ 2 + 4 * l
 
-Therefore, it is enough to show that there exists a natural number l such that
+Therefore, it is enough to show that there exists a natural number `l` such that
 `n ≤ 2 * l ^ 2 - 4 * l` and `2 * l ^ 2 + 4 * l ≤ 2 * n` for `n ≥ 100`.
 
 Then, by the Pigeonhole principle, at least two numbers in the triplet must lie in the same pile,
@@ -41,13 +41,13 @@ open Finset
 
 namespace Imo2021Q1
 
--- We will later make use of the fact that there exists (l : ℕ) such that
--- n ≤ 2 * l ^ 2 - 4 * l and 2 * l ^ 2 + 4 * l ≤ 2 * n for n ≥ 100.
-theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
+-- We will later make use of the fact that there exists `l : ℕ` such that
+-- `n ≤ 2 * l ^ 2 - 4 * l` and `2 * l ^ 2 + 4 * l ≤ 2 * n` for `n ≥ 100`.
+lemma exists_numbers_in_interval {n : ℕ} (hn : 100 ≤ n) :
     ∃ l : ℕ, n + 4 * l ≤ 2 * l ^ 2 ∧ 2 * l ^ 2 + 4 * l ≤ 2 * n := by
   have hn' : 1 ≤ Nat.sqrt (n + 1) := by
     rw [Nat.le_sqrt]
-    linarith
+    apply Nat.le_add_left
   have h₁ := Nat.sqrt_le' (n + 1)
   have h₂ := Nat.succ_le_succ_sqrt' (n + 1)
   have h₃ : 10 ≤ (n + 1).sqrt := by
@@ -60,11 +60,11 @@ theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
       _ ≤ 2 * l ^ 2 := by nlinarith only [h₃]
   · linarith only [h₁]
 
-theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
+lemma exists_triplet_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
     ∃ a b c : ℕ, n ≤ a ∧ a < b ∧ b < c ∧ c ≤ 2 * n ∧
-      (∃ k : ℕ, a + b = k ^ 2) ∧ (∃ l : ℕ, c + a = l ^ 2) ∧ ∃ m : ℕ, b + c = m ^ 2 := by
-  obtain ⟨l, hl1, hl2⟩ := exists_numbers_in_interval n hn
-  have p : 1 < l := by contrapose! hl1; interval_cases l <;> linarith
+      IsSquare (a + b) ∧ IsSquare (c + a) ∧ IsSquare (b + c) := by
+  obtain ⟨l, hl1, hl2⟩ := exists_numbers_in_interval hn
+  have hl : 1 < l := by contrapose! hl1; interval_cases l <;> linarith
   have h₁ : 4 * l ≤ 2 * l ^ 2 := by linarith
   have h₂ : 1 ≤ 2 * l := by linarith
   refine ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, ?_, ?_, ?_,
@@ -74,15 +74,14 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
 -- Since it will be more convenient to work with sets later on, we will translate the above claim
 -- to state that there always exists a set B ⊆ [n, 2n] of cardinality at least 3, such that each
 -- pair of pairwise unequal elements of B sums to a perfect square.
-theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
+lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
     ∃ B : Finset ℕ,
-      2 * 1 + 1 ≤ B.card ∧
-      (∀ a ∈ B, ∀ b ∈ B, a ≠ b → ∃ k, a + b = k ^ 2) ∧
+      2 * 1 + 1 ≤ #B ∧
+      (∀ a ∈ B, ∀ b ∈ B, a ≠ b → IsSquare (a + b)) ∧
       ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n := by
-  obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares n hn
+  obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares hn
   refine ⟨{a, b, c}, ?_, ?_, ?_⟩
-  · suffices ({a, b, c} : Finset ℕ).card = 3 by rw [this]
-    suffices a ∉ {b, c} ∧ b ∉ {c} by
+  · suffices a ∉ {b, c} ∧ b ∉ {c} by
       rw [Finset.card_insert_of_not_mem this.1, Finset.card_insert_of_not_mem this.2,
         Finset.card_singleton]
     rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
@@ -105,22 +104,20 @@ open Imo2021Q1
 
 theorem imo2021_q1 :
     ∀ n : ℕ, 100 ≤ n → ∀ A ⊆ Finset.Icc n (2 * n),
-    (∃ a ∈ A, ∃ b ∈ A, a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2) ∨
-    ∃ a ∈ Finset.Icc n (2 * n) \ A, ∃ b ∈ Finset.Icc n (2 * n) \ A,
-      a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2 := by
+    (∃ a ∈ A, ∃ b ∈ A, a ≠ b ∧ IsSquare (a + b)) ∨
+    ∃ a ∈ Finset.Icc n (2 * n) \ A, ∃ b ∈ Finset.Icc n (2 * n) \ A, a ≠ b ∧ IsSquare (a + b) := by
   intro n hn A hA
   -- For each n ∈ ℕ such that 100 ≤ n, there exists a pairwise unequal triplet {a, b, c} ⊆ [n, 2n]
   -- such that all pairwise sums are perfect squares. In practice, it will be easier to use
   -- a finite set B ⊆ [n, 2n] such that all pairwise unequal pairs of B sum to a perfect square
   -- noting that B has cardinality greater or equal to 3, by the explicit construction of the
   -- triplet {a, b, c} before.
-  obtain ⟨B, hB, h₁, h₂⟩ := exists_finset_3_le_card_with_pairs_summing_to_squares n hn
+  obtain ⟨B, hB, h₁, h₂⟩ := exists_finset_3_le_card_with_pairs_summing_to_squares hn
   have hBsub : B ⊆ Finset.Icc n (2 * n) := by
     intro c hcB; simpa only [Finset.mem_Icc] using h₂ c hcB
-  have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card := by
-    rw [← inter_union_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
-      inter_eq_left.2 hBsub]
-    exact Nat.succ_le_iff.mp hB
+  have hB' : 2 * 1 < #(B ∩ (Icc n (2 * n) \ A) ∪ B ∩ A) := by
+    rwa [← inter_union_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
+      inter_eq_left.2 hBsub, ← Nat.succ_le_iff]
   -- Since B has cardinality greater or equal to 3, there must exist a subset C ⊆ B such that
   -- for any A ⊆ [n, 2n], either C ⊆ A or C ⊆ [n, 2n] \ A and C has cardinality greater
   -- or equal to 2.

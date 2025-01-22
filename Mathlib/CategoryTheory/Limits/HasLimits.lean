@@ -494,10 +494,10 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
   homEquiv := fun c g ↦
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
-        { app := fun j => f ≫ limit.π _ _ }
+        { app := fun _ => f ≫ limit.π _ _ }
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
-  unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
+  unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } } }
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
@@ -539,7 +539,7 @@ def isLimitConeOfAdj (F : J ⥤ C) :
     have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
     have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
     dsimp at eq eq' ⊢
-    rw [assoc, eq, reassoc_of% eq']
+    rw [adj.homEquiv_unit, assoc, eq, reassoc_of% eq']
   uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
 
 end Adjunction
@@ -1030,7 +1030,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
   unit := { app := fun g => { app := colimit.ι _ } }
-  counit := { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩ } }
+  counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨colimConstAdj⟩⟩

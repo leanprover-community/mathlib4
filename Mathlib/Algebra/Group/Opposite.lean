@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
@@ -161,7 +161,6 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
-    simp only [Int.ofNat_eq_coe]
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
@@ -424,7 +423,7 @@ def MonoidHom.fromOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M 
 def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.4, op_injective u.3⟩
   invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
-  map_mul' x y := unop_injective <| Units.ext <| rfl
+  map_mul' _ _ := unop_injective <| Units.ext <| rfl
   left_inv x := Units.ext <| by simp
   right_inv x := unop_injective <| Units.ext <| by rfl
 

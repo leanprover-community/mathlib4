@@ -30,8 +30,6 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
   Type*
@@ -87,8 +85,8 @@ This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
-  map_id X :=
-    PFun.ext fun a b =>
+  map_id _ :=
+    PFun.ext fun _ b =>
       PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
   map_comp f g := by
     -- Porting note: the proof was changed because the original mathlib3 proof no longer works
@@ -125,7 +123,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
-        left_inv := fun a => Option.get_some _ _
+        left_inv := fun _ => Option.get_some _ _
         right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
       fun f =>
         PFun.ext fun a b => by
@@ -166,7 +164,7 @@ adding a point. -/
 noncomputable def typeToPartialFunIsoPartialFunToPointed :
     typeToPartialFun ⋙ partialFunToPointed ≅ typeToPointed :=
   NatIso.ofComponents
-    (fun X =>
+    (fun _ =>
       { hom := ⟨id, rfl⟩
         inv := ⟨id, rfl⟩
         hom_inv_id := rfl

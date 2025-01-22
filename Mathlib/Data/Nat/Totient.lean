@@ -20,14 +20,16 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `totient_prime_pow`.
 -/
 
+assert_not_exists Algebra
+assert_not_exists LinearMap
+
 open Finset
 
 namespace Nat
 
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
 coprime with `n`. -/
-def totient (n : ℕ) : ℕ :=
-  ((range n).filter n.Coprime).card
+def totient (n : ℕ) : ℕ := #{a ∈ range n | n.Coprime a}
 
 @[inherit_doc]
 scoped notation "φ" => Nat.totient
@@ -39,12 +41,11 @@ theorem totient_zero : φ 0 = 0 :=
 @[simp]
 theorem totient_one : φ 1 = 1 := rfl
 
-theorem totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.Coprime).card :=
-  rfl
+theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a} := rfl
 
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
-  let e : { m | m < n ∧ n.Coprime m } ≃ Finset.filter n.Coprime (Finset.range n) :=
+  let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
@@ -67,12 +68,12 @@ theorem totient_eq_zero : ∀ {n : ℕ}, φ n = 0 ↔ n = 0
 @[simp] theorem totient_pos {n : ℕ} : 0 < φ n ↔ 0 < n := by simp [pos_iff_ne_zero]
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
-    ((Ico n (n + a)).filter (Coprime a)).card = totient a := by
+    #{x ∈ Ico n (n + a) | a.Coprime x} = totient a := by
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]
   exact periodic_coprime a
 
 theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
-    ((Ico k (k + n)).filter (Coprime a)).card ≤ totient a * (n / a + 1) := by
+    #{x ∈ Ico k (k + n) | a.Coprime x} ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
@@ -83,14 +84,15 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
-    (filter a.Coprime (Ico k (k + n % a + a * i + a))).card = (filter a.Coprime
-        (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
+    #{x ∈ Ico k (k + n % a + a * i + a) | a.Coprime x}
+      = #{x ∈ Ico k (k + n % a + a * i) ∪
+        Ico (k + n % a + a * i) (k + n % a + a * i + a) | a.Coprime x} := by
       congr
       rw [Ico_union_Ico_eq_Ico]
       · rw [add_assoc]
         exact le_self_add
       exact le_self_add
-    _ ≤ (filter a.Coprime (Ico k (k + n % a + a * i))).card + a.totient := by
+    _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
     _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
@@ -133,7 +135,7 @@ theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
 
 /-- For `d ∣ n`, the totient of `n/d` equals the number of values `k < n` such that `gcd n k = d` -/
 theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
-    φ (n / d) = (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
+    φ (n / d) = #{k ∈ range n | n.gcd k = d} := by
   rcases d.eq_zero_or_pos with (rfl | hd0); · simp [eq_zero_of_zero_dvd hnd]
   rcases hnd with ⟨x, rfl⟩
   rw [Nat.mul_div_cancel_left x hd0]
@@ -155,14 +157,14 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   rw [← sum_div_divisors n φ]
-  have : n = ∑ d ∈ n.divisors, (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
+  have : n = ∑ d ∈ n.divisors, #{k ∈ range n | n.gcd k = d} := by
     nth_rw 1 [← card_range n]
     refine card_eq_sum_card_fiberwise fun x _ => mem_divisors.2 ⟨?_, hn.ne'⟩
     apply gcd_dvd_left
   nth_rw 3 [this]
   exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
 
-theorem sum_totient' (n : ℕ) : (∑ m ∈ (range n.succ).filter (· ∣ n), φ m) = n := by
+theorem sum_totient' (n : ℕ) : ∑ m ∈ range n.succ with m ∣ n, φ m = n := by
   convert sum_totient _ using 1
   simp only [Nat.divisors, sum_filter, range_eq_Ico]
   rw [sum_eq_sum_Ico_succ_bot] <;> simp
@@ -170,10 +172,10 @@ theorem sum_totient' (n : ℕ) : (∑ m ∈ (range n.succ).filter (· ∣ n), φ
 /-- When `p` is prime, then the totient of `p ^ (n + 1)` is `p ^ n * (p - 1)` -/
 theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n + 1)) = p ^ n * (p - 1) :=
   calc
-    φ (p ^ (n + 1)) = ((range (p ^ (n + 1))).filter (Coprime (p ^ (n + 1)))).card :=
+    φ (p ^ (n + 1)) = #{a ∈ range (p ^ (n + 1)) | (p ^ (n + 1)).Coprime a} :=
       totient_eq_card_coprime _
-    _ = (range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)).card :=
-      (congr_arg card
+    _ = #(range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)) :=
+      congr_arg card
         (by
           rw [sdiff_eq_filter]
           apply filter_congr
@@ -185,7 +187,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
             exact hap (dvd_mul_left _ _)
           · rintro h ⟨b, rfl⟩
             rw [pow_succ'] at ha
-            exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩))
+            exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩)
     _ = _ := by
       have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero
       have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
