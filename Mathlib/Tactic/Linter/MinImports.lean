@@ -63,7 +63,7 @@ It also works incrementally, providing information that is better suited, for in
 files.
 
 Another important difference is that the `minImports` *linter* starts counting imports from
-where the option is set to `true` *downwards*, whereas the `#min_imports` command looks at the
+where the option is set to `true` *downwards*, whereas the `#min_imports` *command* looks at the
 imports needed from the command *upwards*.
 -/
 register_option linter.minImports : Bool := {
