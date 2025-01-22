@@ -60,10 +60,31 @@ deriving FromJson, ToJson
 def applyTryAtEachStepCli (args : Cli.Parsed) : IO UInt32 := do
   let resultsFileName := args.positionalArg! "resultsFile" |>.value
   -- let onlyDirectories := args.flag? "only" |>.map (·.value)
+  -- FIXME: parse from the CLI args!
+  let maximum : Option ℕ := none
 
   let path := System.mkFilePath (resultsFileName.split (System.FilePath.pathSeparators.contains ·))
-  let contents ← readJsonFile (Array SuggestedChange) path
+  let changes ← readJsonFile (Array SuggestedChange) path
+  let mut changesSoFar := 0
+  for change in changes do
+    if let some max := maximum then
+      if changesSoFar >= max then break
+    -- Sanity-check: the file at the given location should have the oldText.
+    let path := System.mkFilePath (change.filepath.split (System.FilePath.pathSeparators.contains ·))
+    let lines ← IO.FS.lines path
+    match lines.get? change.startLine with
+    | none => IO.println s!"warning: file {path} does not have a line {change.startLine}; ignoring\
+      The results file must match the version of this project that you ran tryAtEachStep on!"
+    | some line =>
+      if line.length < change.startCol then
+        IO.println s!"warning: file {path} at line {change.startLine} is shorter than {change.startCol} columns; ignoring
+        The results file must match the version of this project that you ran tryAtEachStep on!"
+      -- split line into before, current and next!
 
+      --let currentText := line.split[change.startCol:]
+        -- read the file and
+
+    changesSoFar := changesSoFar + 1
 
   return 0
 
