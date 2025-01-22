@@ -426,8 +426,6 @@ decreasing_by
 
 lemma IsCycles.reachable_deleteEdges [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
-  have : G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} := by
-    rfl
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
       Set.mem_singleton_iff, or_true, sup_of_le_left]
