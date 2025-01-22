@@ -71,7 +71,7 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
 
 /-- The functor `SimplexCategory ⥤ SSet` which sends `SimplexCategory.mk n` to
 the standard simplex `Δ[n]` is a cosimplicial object in the category of simplicial sets.
-(This standard is essentially given by the Yoneda embedding). -/
+(This functor is essentially given by the Yoneda embedding). -/
 def standardSimplex : CosimplicialObject SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
