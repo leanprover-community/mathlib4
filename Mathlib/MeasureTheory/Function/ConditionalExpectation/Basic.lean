@@ -75,10 +75,9 @@ variable {α F F' 𝕜 : Type*} [RCLike 𝕜]
   [NormedAddCommGroup F']
   [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
 
-open scoped Classical
-
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {f g : α → F'} {s : Set α}
 
+open scoped Classical in
 /-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
 is true:
 - `m` is not a sub-σ-algebra of `m0`,
@@ -102,6 +101,7 @@ theorem condexp_of_not_le (hm_not : ¬m ≤ m0) : μ[f|m] = 0 := by rw [condexp,
 theorem condexp_of_not_sigmaFinite (hm : m ≤ m0) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
     μ[f|m] = 0 := by rw [condexp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
 
+open scoped Classical in
 theorem condexp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     μ[f|m] =
       if Integrable f μ then
@@ -275,6 +275,7 @@ theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
 
 theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
+  classical
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condexp_zero]
   · rw [Finset.sum_insert his, Finset.sum_insert his]
