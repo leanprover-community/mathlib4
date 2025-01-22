@@ -130,7 +130,7 @@ Note: it's easier to use the two directions `limitComparisonIso` and
 `ofIsIsoLimitComparison` directly.
 -/
 theorem nonempty_isConicalLimit_iff (hc : IsLimit c) : Nonempty (IsConicalLimit V c) ↔
-    ∀ X, IsIso (IsConicalLimit.limitComparison V c X) := by
+    ∀ X, IsIso (limitComparison V c X) := by
   constructor
   · intro ⟨h⟩ X
     exact isIso_limitComparison X h
