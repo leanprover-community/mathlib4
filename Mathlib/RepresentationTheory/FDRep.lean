@@ -46,7 +46,7 @@ open CategoryTheory.Limits
 
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
 abbrev FDRep (k G : Type u) [Field k] [Monoid G] :=
-  Action (FGModuleCat.{u} k) (MonCat.of G)
+  Action (FGModuleCat k) G
 
 @[deprecated (since := "2024-07-05")]
 alias FdRep := FDRep
@@ -97,24 +97,24 @@ lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rf
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
-  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)
+  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) G).mapIso i)
 
 theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
   erw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
   rw [← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
-      Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
+      Iso.eq_inv_comp ((Action.forget (FGModuleCat k) G).mapIso i)]
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
-  ⟨FGModuleCat.of k V, ρ ≫ MonCat.ofHom (ModuleCat.endMulEquiv _).symm.toMonoidHom⟩
+  ⟨FGModuleCat.of k V, (ModuleCat.endMulEquiv _).symm.toMonoidHom.comp ρ⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
-  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
+  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction G
 
 theorem forget₂_ρ (V : FDRep k G) : ((forget₂ (FDRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl
@@ -158,7 +158,7 @@ variable {k G : Type u} [Field k] [Group G]
 
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FDRep k G) := by
-  change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
+  change RightRigidCategory (Action (FGModuleCat k) G); infer_instance
 
 example : RigidCategory (FDRep k G) := by infer_instance
 
