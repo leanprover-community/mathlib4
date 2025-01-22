@@ -68,7 +68,7 @@ namespace Ext
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts
 
 /-- Commutation of `Ext`-groups with the binary biproduct on
 the source. -/

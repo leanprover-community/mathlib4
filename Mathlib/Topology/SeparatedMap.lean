@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Hausdorff
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -34,11 +34,11 @@ separated morphisms and unramified morphisms, respectively.
 https://stacks.math.columbia.edu/tag/0CY0
 -/
 
-open scoped Topology
+open Topology
 
 variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
 
-protected lemma IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
+protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
   .mk' _ (injective_toPullbackDiag f) fun x ↦ by
     rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
     erw [Filter.comap_id, inf_idem]

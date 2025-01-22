@@ -255,7 +255,7 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     toFun := id
     map_smul' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
   rfl
 
@@ -448,11 +448,6 @@ instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
 theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :=
   rfl
 
--- Note (#6057) : tagging simpNF because linter complains
-@[simp, norm_cast, nolint simpNF]
-theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = ⇑f :=
-  rfl
-
 end AlgHom
 
 section RestrictScalars
@@ -479,7 +474,7 @@ lemma coe_restrictScalars' (f : A →ₙₐ[S] B) : (f.restrictScalars R : A →
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₙₐ[S] B) → A →ₙₐ[R] B) :=
-  fun _ _ h ↦ ext (congr_fun h : _)
+  fun _ _ h ↦ ext (congr_fun h :)
 
 end NonUnitalAlgHom
 

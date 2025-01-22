@@ -15,8 +15,8 @@ convergence in measure.
 
 ## Main results
 
-* `MeasureTheory.Egorov`: Egorov's theorem which shows that a sequence of almost everywhere
-  convergent functions converges uniformly except on an arbitrarily small set.
+* `MeasureTheory.tendstoUniformlyOn_of_ae_tendsto`: Egorov's theorem which shows that a sequence of
+  almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
 
 -/
 
@@ -81,7 +81,7 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     rw [this]
     exact tendsto_const_nhds
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
-  refine tendsto_measure_iInter
+  refine tendsto_measure_iInter_atTop
     (fun n ↦ (hsm.inter <| notConvergentSeq_measurableSet hf hg).nullMeasurableSet)
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
     ⟨h.some, ne_top_of_le_ne_top hs (measure_mono Set.inter_subset_left)⟩

@@ -9,8 +9,8 @@ import Mathlib.Probability.ConditionalProbability
 /-!
 # Kernel associated with a conditional expectation
 
-We define `condexpKernel μ m`, a kernel from `Ω` to `Ω` such that for all integrable functions `f`,
-`μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condexpKernel μ m ω)`.
+We define `condExpKernel μ m`, a kernel from `Ω` to `Ω` such that for all integrable functions `f`,
+`μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 This kernel is defined if `Ω` is a standard Borel space. In general, `μ⟦s | m⟧` maps a measurable
 set `s` to a function `Ω → ℝ≥0∞`, and for all `s` that map is unique up to a `μ`-null set. For all
@@ -21,11 +21,11 @@ on `Ω` allows us to do so.
 
 ## Main definitions
 
-* `condexpKernel μ m`: kernel such that `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condexpKernel μ m ω)`.
+* `condExpKernel μ m`: kernel such that `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 ## Main statements
 
-* `condexp_ae_eq_integral_condexpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condexpKernel μ m ω)`.
+* `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 -/
 
@@ -42,14 +42,14 @@ variable {Ω F : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω �
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [TopologicalSpace F]
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x : Ω × Ω => f x.2)
-      (@Measure.map Ω (Ω × Ω) (m.prod mΩ) mΩ (fun ω => (id ω, id ω)) μ) := by
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
   rw [← aestronglyMeasurable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F] (hm : m ≤ mΩ)
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
-      (@Measure.map Ω (Ω × Ω) (m.prod mΩ) mΩ (fun ω => (id ω, id ω)) μ) := by
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
   rw [← integrable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
@@ -61,68 +61,87 @@ variable {Ω F : Type*} {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
 
 open Classical in
 /-- Kernel associated with the conditional expectation with respect to a σ-algebra. It satisfies
-`μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condexpKernel μ m ω)`.
+`μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 It is defined as the conditional distribution of the identity given the identity, where the second
 identity is understood as a map from `Ω` with the σ-algebra `mΩ` to `Ω` with σ-algebra `m ⊓ mΩ`.
 We use `m ⊓ mΩ` instead of `m` to ensure that it is a sub-σ-algebra of `mΩ`. We then use
 `Kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
-noncomputable irreducible_def condexpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
+noncomputable irreducible_def condExpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
     (m : MeasurableSpace Ω) : @Kernel Ω Ω m mΩ :=
   if _h : Nonempty Ω then
     Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
       (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m))
   else 0
 
-lemma condexpKernel_eq (μ : Measure Ω) [IsFiniteMeasure μ] [h : Nonempty Ω]
+@[deprecated (since := "2025-01-21")] alias condexpKernel := condExpKernel
+
+lemma condExpKernel_eq (μ : Measure Ω) [IsFiniteMeasure μ] [h : Nonempty Ω]
     (m : MeasurableSpace Ω) :
-    condexpKernel (mΩ := mΩ) μ m = Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
+    condExpKernel (mΩ := mΩ) μ m = Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
       (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m)) := by
-  simp [condexpKernel, h]
+  simp [condExpKernel, h]
 
-lemma condexpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
-    condexpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
-  simp [condexpKernel_eq, Kernel.comap_apply]
+@[deprecated (since := "2025-01-21")] alias condexpKernel_eq := condExpKernel_eq
 
-instance : IsMarkovKernel (condexpKernel μ m) := by
+lemma condExpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
+    condExpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
+  simp [condExpKernel_eq, Kernel.comap_apply]
+
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_apply_eq_condDistrib := condExpKernel_apply_eq_condDistrib
+
+instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simp [condexpKernel, h]; infer_instance
+  · simp [condExpKernel, h]; infer_instance
 
 section Measurability
 
 variable [NormedAddCommGroup F] {f : Ω → F}
 
-theorem measurable_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    Measurable[m] fun ω => condexpKernel μ m ω s := by
+theorem measurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
+    Measurable[m] fun ω => condExpKernel μ m ω s := by
   nontriviality Ω
-  simp_rw [condexpKernel_apply_eq_condDistrib]
+  simp_rw [condExpKernel_apply_eq_condDistrib]
   refine Measurable.mono ?_ (inf_le_left : m ⊓ mΩ ≤ m) le_rfl
   convert measurable_condDistrib (μ := μ) hs
   rw [MeasurableSpace.comap_id]
 
-theorem stronglyMeasurable_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    StronglyMeasurable[m] fun ω => condexpKernel μ m ω s :=
-  Measurable.stronglyMeasurable (measurable_condexpKernel hs)
+@[deprecated (since := "2025-01-21")] alias measurable_condexpKernel := measurable_condExpKernel
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel [NormedSpace ℝ F]
+theorem stronglyMeasurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
+    StronglyMeasurable[m] fun ω => condExpKernel μ m ω s :=
+  Measurable.stronglyMeasurable (measurable_condExpKernel hs)
+
+@[deprecated (since := "2025-01-21")]
+alias stronglyMeasurable_condexpKernel := stronglyMeasurable_condExpKernel
+
+theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
+    AEStronglyMeasurable (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
-  simp_rw [condexpKernel_apply_eq_condDistrib]
+  simp_rw [condExpKernel_apply_eq_condDistrib]
   exact AEStronglyMeasurable.integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf.comp_snd_map_prod_id inf_le_right)
 
-theorem aestronglyMeasurable'_integral_condexpKernel [NormedSpace ℝ F]
+@[deprecated (since := "2025-01-21")]
+alias _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel :=
+  _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel
+
+theorem aestronglyMeasurable'_integral_condExpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable' m (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
+    AEStronglyMeasurable' m (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
-  rw [condexpKernel_eq]
+  rw [condExpKernel_eq]
   have h := aestronglyMeasurable'_integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
   rw [MeasurableSpace.comap_id] at h
   exact AEStronglyMeasurable'.mono h inf_le_left
+
+@[deprecated (since := "2025-01-21")]
+alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable'_integral_condExpKernel
 
 end Measurability
 
@@ -130,89 +149,123 @@ section Integrability
 
 variable [NormedAddCommGroup F] {f : Ω → F}
 
-theorem _root_.MeasureTheory.Integrable.condexpKernel_ae (hf_int : Integrable f μ) :
-    ∀ᵐ ω ∂μ, Integrable f (condexpKernel μ m ω) := by
+theorem _root_.MeasureTheory.Integrable.condExpKernel_ae (hf_int : Integrable f μ) :
+    ∀ᵐ ω ∂μ, Integrable f (condExpKernel μ m ω) := by
   nontriviality Ω
-  rw [condexpKernel_eq]
+  rw [condExpKernel_eq]
   convert Integrable.condDistrib_ae
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
 
-theorem _root_.MeasureTheory.Integrable.integral_norm_condexpKernel (hf_int : Integrable f μ) :
-    Integrable (fun ω => ∫ y, ‖f y‖ ∂condexpKernel μ m ω) μ := by
+@[deprecated (since := "2025-01-21")]
+alias _root_.MeasureTheory.Integrable.condexpKernel_ae :=
+  _root_.MeasureTheory.Integrable.condExpKernel_ae
+
+theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : Integrable f μ) :
+    Integrable (fun ω => ∫ y, ‖f y‖ ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
-  rw [condexpKernel_eq]
+  rw [condExpKernel_eq]
   convert Integrable.integral_norm_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
 
-theorem _root_.MeasureTheory.Integrable.norm_integral_condexpKernel [NormedSpace ℝ F]
+@[deprecated (since := "2025-01-21")]
+alias _root_.MeasureTheory.Integrable.integral_norm_condexpKernel :=
+  _root_.MeasureTheory.Integrable.integral_norm_condExpKernel
+
+theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
-    Integrable (fun ω => ‖∫ y, f y ∂condexpKernel μ m ω‖) μ := by
+    Integrable (fun ω => ‖∫ y, f y ∂condExpKernel μ m ω‖) μ := by
   nontriviality Ω
-  rw [condexpKernel_eq]
+  rw [condExpKernel_eq]
   convert Integrable.norm_integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
 
-theorem _root_.MeasureTheory.Integrable.integral_condexpKernel [NormedSpace ℝ F]
+@[deprecated (since := "2025-01-21")]
+alias _root_.MeasureTheory.Integrable.norm_integral_condexpKernel :=
+  _root_.MeasureTheory.Integrable.norm_integral_condExpKernel
+
+theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
-    Integrable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
+    Integrable (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
-  rw [condexpKernel_eq]
+  rw [condExpKernel_eq]
   convert Integrable.integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
 
-theorem integrable_toReal_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    Integrable (fun ω => (condexpKernel μ m ω s).toReal) μ := by
+@[deprecated (since := "2025-01-21")]
+alias _root_.MeasureTheory.Integrable.integral_condexpKernel :=
+  _root_.MeasureTheory.Integrable.integral_condExpKernel
+
+theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
+    Integrable (fun ω => (condExpKernel μ m ω s).toReal) μ := by
   nontriviality Ω
-  rw [condexpKernel_eq]
+  rw [condExpKernel_eq]
   exact integrable_toReal_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) hs
+
+@[deprecated (since := "2025-01-21")]
+alias integrable_toReal_condexpKernel := integrable_toReal_condExpKernel
 
 end Integrability
 
-lemma condexpKernel_ae_eq_condexp' {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
+lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
+    (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
   rcases isEmpty_or_nonempty Ω with h | h
   · have : μ = 0 := Measure.eq_zero_of_isEmpty μ
     simpa [this] using trivial
-  have h := condDistrib_ae_eq_condexp (μ := μ)
+  have h := condDistrib_ae_eq_condExp (μ := μ)
     (measurable_id'' (inf_le_right : m ⊓ mΩ ≤ mΩ)) measurable_id hs
   simp only [id_eq, MeasurableSpace.comap_id, preimage_id_eq] at h
-  simp_rw [condexpKernel_apply_eq_condDistrib]
+  simp_rw [condExpKernel_apply_eq_condDistrib]
   exact h
 
-lemma condexpKernel_ae_eq_condexp
-    (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ :=
-  (condexpKernel_ae_eq_condexp' hs).trans (by rw [inf_of_le_left hm])
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_ae_eq_condexp' := condExpKernel_ae_eq_condExp'
 
-lemma condexpKernel_ae_eq_trim_condexp
+lemma condExpKernel_ae_eq_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
-  rw [ae_eq_trim_iff hm _ stronglyMeasurable_condexp]
-  · exact condexpKernel_ae_eq_condexp hm hs
+    (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ :=
+  (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_le_left hm])
+
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_ae_eq_condexp := condExpKernel_ae_eq_condExp
+
+lemma condExpKernel_ae_eq_trim_condExp
+    (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
+    (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
+  rw [ae_eq_trim_iff hm _ stronglyMeasurable_condExp]
+  · exact condExpKernel_ae_eq_condExp hm hs
   · refine Measurable.stronglyMeasurable ?_
-    exact @Measurable.ennreal_toReal _ m _ (measurable_condexpKernel hs)
+    exact @Measurable.ennreal_toReal _ m _ (measurable_condExpKernel hs)
 
-theorem condexp_ae_eq_integral_condexpKernel' [NormedAddCommGroup F] {f : Ω → F}
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_ae_eq_trim_condexp := condExpKernel_ae_eq_trim_condExp
+
+theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
-    μ[f|m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condexpKernel μ m ω := by
+    μ[f|m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω := by
   rcases isEmpty_or_nonempty Ω with h | h
   · have : μ = 0 := Measure.eq_zero_of_isEmpty μ
     simpa [this] using trivial
   have hX : @Measurable Ω Ω mΩ (m ⊓ mΩ) id := measurable_id.mono le_rfl (inf_le_right : m ⊓ mΩ ≤ mΩ)
-  simp_rw [condexpKernel_apply_eq_condDistrib]
-  have h := condexp_ae_eq_integral_condDistrib_id hX hf_int
+  simp_rw [condExpKernel_apply_eq_condDistrib]
+  have h := condExp_ae_eq_integral_condDistrib_id hX hf_int
   simpa only [MeasurableSpace.comap_id, id_eq] using h
 
+@[deprecated (since := "2025-01-21")]
+alias condexp_ae_eq_integral_condexpKernel' := condExp_ae_eq_integral_condExpKernel'
+
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is almost everywhere equal to
-the integral `∫ y, f y ∂(condexpKernel μ m ω)`. -/
-theorem condexp_ae_eq_integral_condexpKernel [NormedAddCommGroup F] {f : Ω → F}
+the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
+theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
-    μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condexpKernel μ m ω :=
-  ((condexp_ae_eq_integral_condexpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
+    μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
+  ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
+
+@[deprecated (since := "2025-01-21")]
+alias condexp_ae_eq_integral_condexpKernel := condExp_ae_eq_integral_condExpKernel
 
 section Cond
 
@@ -224,15 +277,15 @@ variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpac
 
 omit [StandardBorelSpace Ω]
 
-lemma condexp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
+lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
     μ[f | generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
   by_cases hμs : μ s = 0
   · rw [Measure.restrict_eq_zero.2 hμs]
     rfl
-  refine ae_eq_trans (condexp_restrict_ae_eq_restrict
+  refine ae_eq_trans (condExp_restrict_ae_eq_restrict
     (generateFrom_singleton_le hs)
     (measurableSet_generateFrom rfl) hf).symm ?_
-  · refine (ae_eq_condexp_of_forall_setIntegral_eq
+  · refine (ae_eq_condExp_of_forall_setIntegral_eq
       (generateFrom_singleton_le hs) hf.restrict ?_ ?_
       stronglyMeasurable_const.aeStronglyMeasurable').symm
     · rintro t - -
@@ -252,21 +305,30 @@ lemma condexp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
           integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]
 
-lemma condexp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
+@[deprecated (since := "2025-01-21")]
+alias condexp_generateFrom_singleton := condExp_generateFrom_singleton
+
+lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ (μ[t|s]).toReal := by
   rw [← integral_indicator_one ht]
-  exact condexp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
+  exact condExp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
 
-lemma condexpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
+@[deprecated (since := "2025-01-21")]
+alias condexp_set_generateFrom_singleton := condExp_set_generateFrom_singleton
+
+lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
     (ht : MeasurableSet t) :
     ∀ᵐ ω ∂μ.restrict s,
-      condexpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
-  have : (fun ω ↦ (condexpKernel μ (generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
+      condExpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
+  have : (fun ω ↦ (condExpKernel μ (generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
       μ⟦t | generateFrom {s}⟧ :=
-    ae_restrict_le hs <| condexpKernel_ae_eq_condexp
+    ae_restrict_le <| condExpKernel_ae_eq_condExp
       (generateFrom_singleton_le hs) ht
-  filter_upwards [condexp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
+  filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
+
+@[deprecated (since := "2025-01-21")]
+alias condexpKernel_singleton_ae_eq_cond := condExpKernel_singleton_ae_eq_cond
 
 end Cond
 

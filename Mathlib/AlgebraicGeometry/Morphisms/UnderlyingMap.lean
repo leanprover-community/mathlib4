@@ -24,7 +24,7 @@ of the underlying map of topological spaces, including
 
 -/
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
@@ -83,7 +83,27 @@ instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
   exact ⟨y, congr(($hy).1)⟩
 
+@[simp]
+lemma range_eq_univ [Surjective f] : Set.range f.base = Set.univ := by
+  simpa [Set.range_eq_univ] using f.surjective
+
+lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) : Set.range f.base = Set.range g.base := by
+  rw [← hge]
+  simp [Set.range_comp]
+
+lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
+  rw [range_eq_range_of_surjective f g e hge]
 end Surjective
+
+section Injective
+
+instance injective_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition (topologically (Function.Injective ·)) where
+  comp_mem _ _ hf hg := hg.comp hf
+
+end Injective
 
 section IsOpenMap
 
@@ -179,7 +199,7 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
     (hf : IsClosed (Set.range f.base)) :
     Surjective f :=
-  ⟨by rw [← Set.range_iff_surjective, ← hf.closure_eq, f.denseRange.closure_range]⟩
+  ⟨by rw [← Set.range_eq_univ, ← hf.closure_eq, f.denseRange.closure_range]⟩
 
 lemma IsDominant.of_comp_of_isOpenImmersion
     (f : X ⟶ Y) (g : Y ⟶ Z) [H : IsDominant (f ≫ g)] [IsOpenImmersion g] :
@@ -187,7 +207,7 @@ lemma IsDominant.of_comp_of_isOpenImmersion
   rw [isDominant_iff, DenseRange] at H ⊢
   simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] at H
   convert H.preimage g.isOpenEmbedding.isOpenMap using 1
-  rw [Set.preimage_image_eq _ g.isOpenEmbedding.inj]
+  rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
 
 end IsDominant
 
@@ -214,7 +234,7 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
   · introv hU _ hsp
     simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
     intro x y hy
-    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
     have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
