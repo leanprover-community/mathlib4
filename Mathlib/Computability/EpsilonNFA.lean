@@ -181,7 +181,7 @@ theorem isPath_append {x y : List (Option α)} :
     induction x generalizing s <;> cases hx <;> tauto
 
 theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
-    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (List.replicate n none) where
+    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (.replicate n none) where
   mp h := by
     induction' h with t _ _ _ _ _ ih
     · use 0
