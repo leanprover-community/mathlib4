@@ -318,6 +318,7 @@ lemma finite_setOf_apply_eq_k_add_one : {i | a i = k a + 1}.Finite := by
   rw [hc.finite_setOf_apply_eq_iff_not_small (by omega), Small]
   omega
 
+/-- There are only finitely many `m` that appear more than `k` times. -/
 lemma finite_setOf_k_lt_card : {m | ∀ hf : {i | a i = m}.Finite, k a < #hf.toFinset}.Finite := by
   rw [← Set.finite_image_iff]
   · refine Set.Finite.of_diff (hc.finite_setOf_apply_eq_k_add_one.subset fun i hi ↦ ?_)
