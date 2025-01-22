@@ -288,11 +288,11 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
 @[deprecated (since := "2024-04-17")]
 alias set_integral_densityProcess_of_le := setIntegral_densityProcess_of_le
 
-lemma condexp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
+lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
     (ν a)[fun x ↦ densityProcess κ ν j a x s | countableFiltration γ i]
       =ᵐ[ν a] fun x ↦ densityProcess κ ν i a x s := by
-  refine (ae_eq_condexp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
+  refine (ae_eq_condExp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
   · exact integrable_densityProcess hκν j a hs
   · exact fun _ _ _ ↦ (integrable_densityProcess hκν _ _ hs).integrableOn
   · intro x hx _
@@ -301,10 +301,12 @@ lemma condexp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact StronglyMeasurable.aeStronglyMeasurable'
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
 
+@[deprecated (since := "2025-01-21")] alias condexp_densityProcess := condExp_densityProcess
+
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Martingale (fun n x ↦ densityProcess κ ν n a x s) (countableFiltration γ) (ν a) :=
-  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condexp_densityProcess hκν h a hs⟩
+  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condExp_densityProcess hκν h a hs⟩
 
 lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ)
     {s s' : Set β} (h : s ⊆ s') :

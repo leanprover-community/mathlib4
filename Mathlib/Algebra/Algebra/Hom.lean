@@ -23,7 +23,6 @@ This file defines bundled homomorphisms of `R`-algebras.
 universe u v w u₁ v₁
 
 /-- Defining the homomorphism in the category R-Alg. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -127,8 +126,6 @@ def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
--- Porting note: Lean 3: `@[simp, norm_cast] coe_mk`
---               Lean 4: `@[simp] coe_mk` & `@[norm_cast] coe_mks`
 @[simp]
 theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
