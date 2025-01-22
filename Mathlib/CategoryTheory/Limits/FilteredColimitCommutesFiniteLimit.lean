@@ -27,8 +27,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists map_ne_zero
-assert_not_exists Field
+assert_not_exists map_ne_zero Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
  -- finiteness currently relies on more algebra than it needs.
 
@@ -348,7 +347,7 @@ noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
 
 section
 

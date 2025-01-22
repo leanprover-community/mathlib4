@@ -82,8 +82,8 @@ lemma mul_sup' [MulLeftMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
 end Group
 
 section CanonicallyLinearOrderedAddCommMonoid
-variable [CanonicallyLinearOrderedAddCommMonoid M] [Sub M] [AddLeftReflectLE M] [OrderedSub M]
-  {s : Finset ι} {t : Finset κ}
+variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M]
+  [Sub M] [AddLeftReflectLE M] [OrderedSub M] {s : Finset ι} {t : Finset κ}
 
 /-- Also see `Finset.sup'_add` that works for ordered groups. -/
 lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :

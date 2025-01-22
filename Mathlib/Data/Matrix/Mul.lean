@@ -46,8 +46,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 
@@ -732,14 +731,12 @@ theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
     (i : m) (M : Matrix m n R) :
     Pi.single i 1 ᵥ* M = M i := by simp
 
--- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
   ext i
   rw [mulVec_diagonal]
   exact Pi.apply_single (fun i x => v i * x) (fun i => mul_zero _) j x i
 
--- @[simp] -- Porting note: not in simpNF
 theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : (Pi.single j x) ᵥ* (diagonal v) = Pi.single j (x * v j) := by
   ext i
@@ -889,6 +886,24 @@ theorem vecMul_mulVec [Fintype m] [Fintype n] (A : Matrix m n α) (B : Matrix m 
     (A *ᵥ x) ᵥ* B = x ᵥ* (Aᵀ * B) := by rw [← vecMul_vecMul, vecMul_transpose]
 
 end NonUnitalCommSemiring
+
+section Semiring
+
+variable [Semiring R]
+
+lemma mulVec_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
+    (ha : IsUnit A) : Function.Injective A.mulVec := by
+  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
+  intro x y hxy
+  simpa [hBr] using congrArg B.mulVec hxy
+
+lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
+    (ha : IsUnit A) : Function.Injective A.vecMul := by
+  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
+  intro x y hxy
+  simpa [hBl] using congrArg B.vecMul hxy
+
+end Semiring
 
 section CommSemiring
 

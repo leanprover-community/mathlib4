@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
@@ -44,6 +43,7 @@ on non-compact spaces.
 
 -/
 
+assert_not_exists Unitization
 
 noncomputable section
 

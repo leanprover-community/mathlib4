@@ -180,7 +180,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
 def id : P →ᵃⁱ[𝕜] P :=
   ⟨AffineMap.id 𝕜 P, fun _ => rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 

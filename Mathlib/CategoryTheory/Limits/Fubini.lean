@@ -435,8 +435,7 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
-  set_option tactic.skipAssignedInstances false in
-  simp [limitIsoLimitCurryCompLim, Trans.simple, HasLimit.isoOfNatIso, limitUncurryIsoLimitCompLim]
+  simp [limitIsoLimitCurryCompLim, Trans.simple]
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
@@ -469,9 +468,7 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι ((curry.obj G).obj j) k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫
       (colimitIsoColimitCurryCompColim G).inv  = colimit.ι _ (j, k) := by
-  set_option tactic.skipAssignedInstances false in
-  simp [colimitIsoColimitCurryCompColim, Trans.simple, HasColimit.isoOfNatIso,
-    colimitUncurryIsoColimitCompColim]
+  simp [colimitIsoColimitCurryCompColim, Trans.simple, colimitUncurryIsoColimitCompColim]
 
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_hom {j} {k} :

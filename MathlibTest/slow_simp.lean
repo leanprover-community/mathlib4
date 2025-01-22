@@ -12,7 +12,7 @@ but took over 260,000 heartbeats with `import Mathlib`.
 After deleting some bad simp lemmas that were being tried everywhere
 (discovered using `set_option diagnostics true`):
 * Mathlib.MeasureTheory.coeFn_comp_toFiniteMeasure_eq_coeFn
-* LightProfinite.concreteCategory_forget_obj
+* LightProfinite.hasForget_forget_obj
 * CategoryTheory.sum_comp_inl
 * CategoryTheory.sum_comp_inr
 it is back down to 19,000 heartbeats even with `import Mathlib`.
