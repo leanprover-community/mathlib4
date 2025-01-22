@@ -9,7 +9,6 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Topology.Algebra.InfiniteSum.MultipliableTendstoUniformly
-import Mathlib.Tactic
 
 /-!
 # Cotangent
