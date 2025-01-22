@@ -259,7 +259,7 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
   simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
-  rintro ⟨i, (hl | hr)⟩
+  rintro ⟨i, hl | hr⟩
   · have : i = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
       aesop
@@ -271,9 +271,9 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
 
 lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
     (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet v = {p.penultimate} := by
-  simpa using (IsPath.neighborSet_toSubgraph_startpoint (p.isPath_reverse_iff.mpr hp)
-      (by rw [@Walk.not_nil_iff_lt_length, Walk.length_reverse]; exact
-        Walk.not_nil_iff_lt_length.mp hnp))
+  simpa using IsPath.neighborSet_toSubgraph_startpoint hp.reverse
+      (by rw [Walk.not_nil_iff_lt_length, Walk.length_reverse]; exact
+        Walk.not_nil_iff_lt_length.mp hnp)
 
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
@@ -299,7 +299,7 @@ lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v
     omega
   simp_all
 
-lemma toSubgraph_adj_sndOfNotNil {u v v'} {p : G.Walk u v} (hp : p.IsPath)
+lemma snd_of_toSubgraph_adj {u v v'} {p : G.Walk u v} (hp : p.IsPath)
     (hadj : p.toSubgraph.Adj u v') : p.snd = v' := by
   have ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hadj
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi

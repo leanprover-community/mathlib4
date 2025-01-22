@@ -367,7 +367,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
     use w, w'
     aesop
 
-lemma IsCycles.snd_of_support_of_path_of_adj [Fintype V] [DecidableEq V] {v w w' : V}
+lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Fintype V] [DecidableEq V] {v w w' : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
     (hadj : G.Adj v w') : p.snd = w' := by
   apply hp.toSubgraph_adj_sndOfNotNil
@@ -424,8 +424,8 @@ decreasing_by
   have := Walk.IsPath.length_lt hp
   omega
 
-lemma IsCycles.reachable_deleteEdge [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
-    (hcyc : G.IsCycles) : (G \ SimpleGraph.fromEdgeSet {s(v, w)}).Reachable v w := by
+lemma IsCycles.reachable_deleteEdges [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
+    (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
       Set.mem_singleton_iff, or_true, sup_of_le_left]
