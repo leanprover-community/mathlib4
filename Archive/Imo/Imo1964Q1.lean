@@ -5,6 +5,7 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.Ring
 
 /-!
 # IMO 1964 Q1
@@ -25,7 +26,7 @@ theorem two_pow_mod_seven (n : ℕ) : 2 ^ n ≡ 2 ^ (n % 3) [MOD 7] :=
   calc 2 ^ n = 2 ^ (3 * (n / 3) + t) := by rw [Nat.div_add_mod]
     _ = (2 ^ 3) ^ (n / 3) * 2 ^ t := by rw [pow_add, pow_mul]
     _ ≡ 1 ^ (n / 3) * 2 ^ t [MOD 7] := by gcongr; decide
-    _ = 2 ^ t := by rw [one_pow, one_mul]
+    _ = 2 ^ t := by ring
 
 end Imo1964Q1
 

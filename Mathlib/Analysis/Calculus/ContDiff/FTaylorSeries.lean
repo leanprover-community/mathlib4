@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function
@@ -98,18 +100,20 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 
 noncomputable section
 
-open scoped Classical
-open ENat NNReal Topology Filter
-
-local notation "∞" => (⊤ : ℕ∞)
+open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-
 Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 -/
 
-open Set Fin Filter Function
+/-- Smoothness exponent for analytic functions. -/
+scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
+/-- Smoothness exponent for infinitely differentiable functions. -/
+scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+
+open scoped ContDiff Pointwise
 
 universe u uE uF
 
@@ -129,7 +133,7 @@ Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries
 structure HasFTaylorSeriesUpToOn
   (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).curry0 = f x
-  protected fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
+  protected fderivWithin : ∀ m : ℕ, m < n → ∀ x ∈ s,
     HasFDerivWithinAt (p · m) (p x m.succ).curryLeft s x
   cont : ∀ m : ℕ, m ≤ n → ContinuousOn (p · m) s
 
@@ -331,7 +335,8 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
         have :
           HasFDerivWithinAt (𝕜 := 𝕜) (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
-        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
+        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'
+            (f' := ((p x).shift m.succ).curryLeft)] at this
         convert this
         ext y v
         change
@@ -408,8 +413,13 @@ theorem iteratedFDerivWithin_zero_eq_comp :
   rfl
 
 @[simp]
+theorem dist_iteratedFDerivWithin_zero (f : E → F) (s : Set E) (x : E)
+    (g : E → F) (t : Set E) (y : E) :
+    dist (iteratedFDerivWithin 𝕜 0 f s x) (iteratedFDerivWithin 𝕜 0 g t y) = dist (f x) (g y) := by
+  simp only [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
+
+@[simp]
 theorem norm_iteratedFDerivWithin_zero : ‖iteratedFDerivWithin 𝕜 0 f s x‖ = ‖f x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.norm_map]
 
 theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
@@ -436,6 +446,23 @@ theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
       ‖iteratedFDerivWithin 𝕜 (n + 1) f s x‖ := by
   -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
+
+@[simp]
+theorem dist_iteratedFDerivWithin_one (f g : E → F) {y}
+    (hsx : UniqueDiffWithinAt 𝕜 s x) (hyt : UniqueDiffWithinAt 𝕜 t y) :
+    dist (iteratedFDerivWithin 𝕜 1 f s x) (iteratedFDerivWithin 𝕜 1 g t y)
+      = dist (fderivWithin 𝕜 f s x) (fderivWithin 𝕜 g t y) := by
+  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply,
+    LinearIsometryEquiv.dist_map, iteratedFDerivWithin_zero_eq_comp,
+    LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
+
+@[simp]
+theorem norm_iteratedFDerivWithin_one (f : E → F) (h : UniqueDiffWithinAt 𝕜 s x) :
+    ‖iteratedFDerivWithin 𝕜 1 f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
+  simp only [← norm_fderivWithin_iteratedFDerivWithin,
+    iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin _ h]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.norm_toContinuousLinearMap_comp
 
 theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (m : Fin (n + 1) → E) :
@@ -511,6 +538,13 @@ lemma iteratedFDerivWithin_two_apply (f : E → F) {z : E} (hs : UniqueDiffOn �
     iteratedFDerivWithin 𝕜 2 f s z m = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s z (m 0) (m 1) := by
   simp only [iteratedFDerivWithin_succ_apply_right hs hz]
   rfl
+
+/-- On a set of unique differentiability, the second derivative is obtained by taking the
+derivative of the derivative. -/
+lemma iteratedFDerivWithin_two_apply' (f : E → F) {z : E} (hs : UniqueDiffOn 𝕜 s) (hz : z ∈ s)
+    (v w : E) :
+    iteratedFDerivWithin 𝕜 2 f s z ![v, w] = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s z v w :=
+  iteratedFDerivWithin_two_apply f hs hz _
 
 theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
@@ -609,7 +643,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
   · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
-  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
+  · have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=
@@ -618,10 +652,48 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     rw [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_apply, this.fderivWithin (hs x hx)]
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
 
-@[deprecated (since := "2024-03-28")]
-alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
-  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedFDerivWithin_comp_add_left' (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (a + z)) s =
+      fun x ↦ iteratedFDerivWithin 𝕜 n f (a +ᵥ s) (a + x) := by
+  induction n with
+  | zero => simp [iteratedFDerivWithin]
+  | succ n IH =>
+    ext v
+    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
+    simp only [Nat.succ_eq_add_one, IH, comp_apply, continuousMultilinearCurryLeftEquiv_symm_apply]
+    congr 2
+    rw [fderivWithin_comp_add_left]
 
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedFDerivWithin_comp_add_left (n : ℕ) (a : E) (x : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (a + z)) s x =
+      iteratedFDerivWithin 𝕜 n f (a +ᵥ s) (a + x) := by
+  simp [iteratedFDerivWithin_comp_add_left']
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedFDerivWithin_comp_add_right' (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (z + a)) s =
+      fun x ↦ iteratedFDerivWithin 𝕜 n f (a +ᵥ s) (x + a) := by
+  simpa [add_comm a] using iteratedFDerivWithin_comp_add_left' n a
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedFDerivWithin_comp_add_right (n : ℕ) (a : E) (x : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (z + a)) s x =
+      iteratedFDerivWithin 𝕜 n f (a +ᵥ s) (x + a) := by
+  simp [iteratedFDerivWithin_comp_add_right']
+
+/-- The iterated derivative commutes with subtracting a constant. -/
+lemma iteratedFDerivWithin_comp_sub' (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (z - a)) s =
+      fun x ↦ iteratedFDerivWithin 𝕜 n f (-a +ᵥ s) (x - a) := by
+  simpa [sub_eq_add_neg] using iteratedFDerivWithin_comp_add_right' n (-a)
+
+/-- The iterated derivative commutes with subtracting a constant. -/
+lemma iteratedFDerivWithin_comp_sub (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (z - a)) s x =
+      iteratedFDerivWithin 𝕜 n f (-a +ᵥ s) (x - a) := by
+  simp [iteratedFDerivWithin_comp_sub']
 
 /-! ### Functions with a Taylor series on the whole space -/
 
@@ -807,7 +879,7 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
-    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (x : E) :
+    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :
     p x m = iteratedFDeriv 𝕜 m f x := by
   rw [← iteratedFDerivWithin_univ]
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
@@ -865,3 +937,33 @@ lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by
   simp only [iteratedFDeriv_succ_apply_right]
   rfl
+
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedFDeriv_comp_add_left' (n : ℕ) (a : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (a + z)) = fun x ↦ iteratedFDeriv 𝕜 n f (a + x) := by
+  simpa [← iteratedFDerivWithin_univ] using iteratedFDerivWithin_comp_add_left' n a (s := univ)
+
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedFDeriv_comp_add_left (n : ℕ) (a : E) (x : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (a + z)) x = iteratedFDeriv 𝕜 n f (a + x) := by
+  simp [iteratedFDeriv_comp_add_left']
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedFDeriv_comp_add_right' (n : ℕ) (a : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (z + a)) = fun x ↦ iteratedFDeriv 𝕜 n f (x + a) := by
+  simpa [add_comm a] using iteratedFDeriv_comp_add_left' n a
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedFDeriv_comp_add_right (n : ℕ) (a : E) (x : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (z + a)) x = iteratedFDeriv 𝕜 n f (x + a) := by
+  simp [iteratedFDeriv_comp_add_right']
+
+/-- The iterated derivative commutes with subtracting a constant. -/
+lemma iteratedFDeriv_comp_sub' (n : ℕ) (a : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (z - a)) = fun x ↦ iteratedFDeriv 𝕜 n f (x - a) := by
+  simpa [sub_eq_add_neg] using iteratedFDeriv_comp_add_right' n (-a)
+
+/-- The iterated derivative commutes with subtracting a constant. -/
+lemma iteratedFDeriv_comp_sub (n : ℕ) (a : E) (x : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (z - a)) x = iteratedFDeriv 𝕜 n f (x - a) := by
+  simp [iteratedFDeriv_comp_sub']
