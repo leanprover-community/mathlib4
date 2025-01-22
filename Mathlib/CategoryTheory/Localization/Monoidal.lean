@@ -277,4 +277,6 @@ lemma associator_naturality₃ {X₁ X₂ X₃ Y₃ : LocalizedMonoidal L W ε} 
 
 end Monoidal
 
+end Localization
+
 end CategoryTheory
