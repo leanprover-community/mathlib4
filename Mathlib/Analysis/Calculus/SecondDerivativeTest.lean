@@ -60,26 +60,14 @@ lemma neg_of_deriv_pos (hf : deriv f x₀ > 0)
     (show x₀ - 1 < x₀ by simp)).mp
       <| nhds_left'_le_nhds_ne x₀ <| (tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
       (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt) (Ioi 0) isOpen_Ioi hf
-  exact ⟨u, hu.1.2, fun b hb => by
-    have h₀ := ((@slope_pos_iff_gt ℝ _ f x₀ b) hb.2).mp
-    rw [hd] at h₀
-    have h₁ := hu.2 hb
-    simp only [mem_preimage, mem_Ioi] at h₁
-    exact h₀ h₁
-    ⟩
+  exact ⟨u, hu.1.2, fun _ hb => (hd ▸ (slope_pos_iff_gt (f := f) hb.2).mp) <| hu.2 hb⟩
 
 lemma pos_of_deriv_pos (hf : deriv f x₀ > 0)
     (hd : f x₀ = 0) : ∃ u > x₀, ∀ b ∈ Ioo x₀ u, f b > 0 := by
   obtain ⟨u,hu⟩ := (mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset (show x₀ < x₀ + 1 by simp)).mp
     <| nhds_right'_le_nhds_ne x₀ <|(tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
     (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt) (Ioi 0) isOpen_Ioi hf
-  exact ⟨u, hu.1.1, fun b hb => by
-    have h₀ := (((@slope_pos_iff ℝ _ f x₀ b)) hb.1).mp
-    rw [hd] at h₀
-    have h₁ := hu.2 hb
-    simp only [mem_preimage, mem_Ioi] at h₁
-    exact h₀ h₁
-  ⟩
+  exact ⟨u, hu.1.1, fun _ hb => (hd ▸ (slope_pos_iff (f := f) hb.1).mp) <| hu.2 hb⟩
 
 lemma neg_pos_of_deriv_pos
     (hf : deriv (f) x₀ > 0) (hd : f x₀ = 0) :
