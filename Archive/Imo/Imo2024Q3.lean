@@ -657,7 +657,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
 
 /-- Similar to Lemma 1 from the informal solution, but with a `Small` hypothesis instead of `Big`
 and considering a range one larger (the form needed for Lemma 2). -/
-lemma apply_add_one_eq_card_small_le_card_eq_of_small {i : ℕ} (hi : N' a N + 1 < i)
+lemma apply_eq_card_small_le_card_eq_of_small {i : ℕ} (hi : N' a N + 1 < i)
     (his : Small a (a i)) :
     a i = #{m ∈ Finset.range (k a + 1) | a (i - 1) ≤ #{j ∈ Finset.range i | a j = m}} := by
   have hib : Big a (a (i - 1)) := hc.apply_sub_one_big_of_apply_small_of_N'_lt his (by omega)
@@ -684,8 +684,8 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
     ∃ t, t ∈ Finset.Ico i j ∧ a (i - 2) = a t := by
   let I : Finset ℕ := {t ∈ Finset.range (k a + 1) | a (i - 1) ≤ #{u ∈ Finset.range i | a u = t}}
   let J : Finset ℕ := {t ∈ Finset.range (k a + 1) | a (j - 1) ≤ #{u ∈ Finset.range j | a u = t}}
-  have hIc : a i = #I := hc.apply_add_one_eq_card_small_le_card_eq_of_small (by omega) his
-  have hJc : a j = #J := hc.apply_add_one_eq_card_small_le_card_eq_of_small (by omega) (hijeq ▸ his)
+  have hIc : a i = #I := hc.apply_eq_card_small_le_card_eq_of_small (by omega) his
+  have hJc : a j = #J := hc.apply_eq_card_small_le_card_eq_of_small (by omega) (hijeq ▸ his)
   have hIJc : #I = #J := hIc ▸ hJc ▸ hijeq
   have := hc.N_lt_N'
   have hiju : Finset.range i ∪ Finset.Ico i j = Finset.range j := by
