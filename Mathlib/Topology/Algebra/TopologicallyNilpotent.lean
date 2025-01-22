@@ -12,23 +12,28 @@ open Filter
 
 open scoped Topology
 
-/-- An element is topologically nilpotent if its powers converge to `0`. -/
+/-- In a monoid with zero endowed with a topology,
+  an element is topologically nilpotent if its powers converge to `0`. -/
 def IsTopologicallyNilpotent
     {R : Type*} [MonoidWithZero R] [TopologicalSpace R] (a : R) : Prop :=
   Tendsto (fun n : ℕ => a ^ n) atTop (𝓝 0)
 
 namespace IsTopologicallyNilpotent
 
-variable {R S : Type*} [TopologicalSpace R] [TopologicalSpace S]
+variable {R S : Type*} [TopologicalSpace R] [MonoidWithZero R]
+  [MonoidWithZero S] [TopologicalSpace S]
 
-theorem map [MonoidWithZero R] [MonoidWithZero S]
-    {φ : R →*₀ S} (hφ : Continuous φ) {a : R} (ha : IsTopologicallyNilpotent a) :
+/-- The image of a topologically nilpotent element under a continuous morphism
+  is topologically nilpotent -/
+theorem map {F : Type*} [FunLike F R S] [MonoidWithZeroHomClass F R S]
+    {φ : F} (hφ : Continuous φ) {a : R} (ha : IsTopologicallyNilpotent a) :
     IsTopologicallyNilpotent (φ a) := by
   unfold IsTopologicallyNilpotent at ha ⊢
   simp_rw [← map_pow]
   exact (map_zero φ ▸  hφ.tendsto 0).comp ha
 
-theorem zero [MonoidWithZero R] :
+/-- `0` is topologically nilpotent -/
+theorem zero :
     IsTopologicallyNilpotent (0 : R) := tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
 
