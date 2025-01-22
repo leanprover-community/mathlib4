@@ -883,7 +883,7 @@ theorem vecMul_transpose [Fintype n] (A : Matrix m n α) (x : n → α) : x ᵥ*
   apply dotProduct_comm
 
 theorem mulVec_eq_sum [Fintype n] (v : n → α) (M : Matrix m n α) : M *ᵥ v = ∑ i, v i • Mᵀ i := by
-  rw [← transpose_transpose M, mulVec_transpose, vecMul_eq_sum, transpose_transpose]
+  rw [← vecMul_transpose, vecMul_eq_sum]
 
 theorem mulVec_vecMul [Fintype n] [Fintype o] (A : Matrix m n α) (B : Matrix o n α) (x : o → α) :
     A *ᵥ (x ᵥ* B) = (A * Bᵀ) *ᵥ x := by rw [← mulVec_mulVec, mulVec_transpose]
