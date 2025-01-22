@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
 import Mathlib.RingTheory.FilteredAlgebra.Basic
-import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Tactic.LinearCombination'
 /-!
