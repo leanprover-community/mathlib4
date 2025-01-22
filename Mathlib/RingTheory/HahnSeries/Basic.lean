@@ -478,7 +478,7 @@ variable [LocallyFiniteOrder Γ]
 
 theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
-  IsPWO.of_linearOrder
+  Set.IsPWO.of_linearOrder
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
