@@ -83,7 +83,7 @@ lemma zero_toPGame : toPGame 0 ≡ 0 :=
   identical_zero _
 
 theorem toPGame_zero : toPGame 0 ≈ 0 :=
-  zeroToPGameRelabelling.equiv
+  zero_toPGame.equiv
 
 noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves :=
   (Equiv.cast <| toPGame_leftMoves 1).unique
@@ -108,7 +108,7 @@ lemma one_toPGame : toPGame.{u} 1 ≡ (1 : PGame.{u}) := by
   · simp [memᵣ_def]
 
 theorem toPGame_one : toPGame 1 ≈ 1 :=
-  oneToPGameRelabelling.equiv
+  one_toPGame.equiv
 
 theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
   convert moveLeft_lf (toLeftMovesToPGame ⟨a, h⟩); rw [toPGame_moveLeft]
@@ -249,9 +249,9 @@ theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGam
 
 @[simp] -- used to be a norm_cast lemma
 theorem toGame_natCast : ∀ n : ℕ, toGame n = n
-  | 0 => Quot.sound (zeroToPGameRelabelling).equiv
+  | 0 => Quot.sound toPGame_zero
   | n + 1 => by
-    have : toGame 1 = 1 := Quot.sound oneToPGameRelabelling.equiv
+    have : toGame 1 = 1 := Quot.sound toPGame_one
     rw [Nat.cast_add, ← nadd_nat, toGame_nadd, toGame_natCast, Nat.cast_one, this]
     rfl
 

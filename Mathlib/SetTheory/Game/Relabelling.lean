@@ -134,9 +134,6 @@ def isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≡r 0 
 
 end Relabelling
 
-theorem Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 :=
-  (Relabelling.isEmpty x).equiv
-
 instance {x y : PGame} : Coe (x ≡r y) (x ≈ y) :=
   ⟨Relabelling.equiv⟩
 

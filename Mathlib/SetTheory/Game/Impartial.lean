@@ -74,7 +74,7 @@ theorem impartial_congr {G H : PGame} (e : G ≡ H) [G.Impartial] : H.Impartial 
     ⟨e.symm.trans ((neg_identical_self G).trans e.neg),
       fun i => (e.moveLeft_symm i).elim fun _ ↦ (impartial_congr ·),
       fun j => (e.moveRight_symm j).elim fun _ ↦ (impartial_congr ·)⟩
-termination_by G H => (G, H)
+termination_by (G, H)
 
 instance impartial_add (G H : PGame) [G.Impartial] [H.Impartial] : (G + H).Impartial := by
   rw [impartial_def]
@@ -95,7 +95,7 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
   refine ⟨?_, fun i => ?_, fun i => ?_⟩
   · rw [neg_neg]
     exact (neg_identical_self G).symm
-  · rw [moveLeft_neg']
+  · rw [moveLeft_neg]
     exact impartial_neg _
   · rw [moveRight_neg]
     exact impartial_neg _

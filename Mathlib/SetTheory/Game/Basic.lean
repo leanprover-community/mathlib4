@@ -589,18 +589,6 @@ protected lemma one_mul : ∀ (x : PGame), 1 * x ≡ x
 /-- `x * 1` has the same moves as `x`. -/
 protected lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
 
-/-- `1 * x` has the same moves as `x`. -/
-protected lemma one_mul : ∀ (x : PGame), 1 * x ≡ x
-  | ⟨xl, xr, xL, xR⟩ => by
-    refine Identical.of_equiv ((Equiv.sumEmpty _ _).trans (Equiv.punitProd _))
-      ((Equiv.sumEmpty _ _).trans (Equiv.punitProd _)) ?_ ?_ <;>
-    · rintro (⟨⟨⟩, _⟩ | ⟨⟨⟩, _⟩)
-      exact ((((PGame.zero_mul (mk _ _ _ _)).add (PGame.one_mul _)).trans (PGame.zero_add _)).sub
-        (PGame.zero_mul _)).trans (PGame.sub_zero _)
-
-/-- `x * 1` has the same moves as `x`. -/
-protected lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
-
 @[simp]
 theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
   game_eq x.mul_one.equiv

@@ -995,7 +995,6 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
    fun h => (h x₂).2 <| equiv_rfl⟩
 
-
 theorem Equiv.ext {x y : PGame}
     (hl : Relator.BiTotal (fun i j ↦ x.moveLeft i ≈ y.moveLeft j))
     (hr : Relator.BiTotal (fun i j ↦ x.moveRight i ≈ y.moveRight j)) : x ≈ y := by
@@ -1047,6 +1046,9 @@ theorem Equiv.of_exists {x y : PGame}
     exact Or.inr ⟨j, Equiv.ge hj⟩
 
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
+
+theorem Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 :=
+  Equiv.of_exists isEmptyElim isEmptyElim isEmptyElim isEmptyElim
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
@@ -1587,7 +1589,7 @@ lemma identical_zero_iff : ∀ (x : PGame),
       simp_rw [IsEmpty.forall_iff, and_true, IsEmpty.exists_iff] at h₁ h₂
       exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
     · rintro ⟨h₁, h₂⟩
-      exact identical_of_is_empty _ _
+      exact identical_of_isEmpty _ _
 
 /-- Any game without left or right moves is identival to 0. -/
 lemma identical_zero (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≡ 0 :=
@@ -1652,11 +1654,6 @@ protected lemma sub_zero (x : PGame) : x - 0 ≡ x :=
 
 /-- This lemma is named to match `neg_sub'`. -/
 protected lemma neg_sub' (x y : PGame) : -(x - y) = -x - -y := PGame.neg_add _ _
-
-/-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
-then `w - y` has the same moves as `x - z`. -/
-lemma Identical.sub {x₁ x₂ y₁ y₂ : PGame.{u}} (hx : x₁ ≡ x₂) (hy : y₁ ≡ y₂) : x₁ - y₁ ≡ x₂ - y₂ :=
-  hx.add hy.neg
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w - y` has the same moves as `x - z`. -/
@@ -2020,4 +2017,4 @@ end PGame
 
 end SetTheory
 
-set_option linter.style.longFile 2300
+set_option linter.style.longFile 2200
