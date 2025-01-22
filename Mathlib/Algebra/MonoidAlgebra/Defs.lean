@@ -382,7 +382,7 @@ def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (Monoi
 end DerivedInstances
 
 @[simp]
-theorem smul_single [Semiring k] [SMulZeroClass R k]  (a : G) (c : R) (b : k) :
+theorem smul_single [Semiring k] [SMulZeroClass R k] (a : G) (c : R) (b : k) :
     c • single a b = single a (c • b) :=
   Finsupp.smul_single _ _ _
 
