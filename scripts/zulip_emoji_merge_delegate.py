@@ -107,7 +107,9 @@ for message in messages:
             print('Removing closed-pr')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": "closed-pr"
+                "emoji_name": "closed-pr",
+                "emoji_code": "61282",
+                "reaction_type": "realm_emoji",
             })
             print(f"result: '{result}'")
 
