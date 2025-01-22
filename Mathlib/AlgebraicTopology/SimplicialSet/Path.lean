@@ -59,7 +59,8 @@ lemma ext' {f g : Path₁ X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g 
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path₁ X n) (j l : ℕ) (h : j + l ≤ n) : Path₁ X l where
+def interval (f : Path₁ X n) (j l : ℕ) (h : j + l ≤ n := by omega) :
+    Path₁ X l where
   vertex i := f.vertex ⟨j + i, by omega⟩
   arrow i := f.arrow ⟨j + i, by omega⟩
   arrow_src i := f.arrow_src ⟨j + i, by omega⟩
@@ -102,7 +103,7 @@ lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-abbrev interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m) : Path X l :=
+abbrev interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l :=
   Path₁.interval f j l h
 
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ} (f : Path X m) (σ : X ⟶ Y)
@@ -141,8 +142,8 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _[m]ₙ₊₁) : Path 
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
 
 /-- Further truncating `X` above `m` does not change the `m`-spine. -/
-lemma trunc_spine (j m : ℕ) (h : m ≤ j + 1 := by omega)
-    (hn : j ≤ n := by omega) :
+lemma trunc_spine (j m : ℕ)
+    (h : m ≤ j + 1 := by omega) (hn : j ≤ n := by omega) :
     ((trunc (n + 1) (j + 1)).obj X).spine m = X.spine m := rfl
 
 lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1) (Δ : X _[m]ₙ₊₁)
@@ -184,7 +185,7 @@ lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-abbrev interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n) : Path X l :=
+abbrev interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
   Path₁.interval f j l h
 
 variable {X Y : SSet.{u}} {n : ℕ} (f : Path X n) (σ : X ⟶ Y)

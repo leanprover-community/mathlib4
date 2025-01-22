@@ -70,7 +70,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       | succ _ => exact horn.primitiveTriangle i h₀ hₙ k (by omega)
     /- The interval spanning from `k` to `k + 2` is equivalently the spine
     of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
-    have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
+    have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 =
         X.spine 2 (σ₀.app _ triangle) := by
       ext m
       dsimp only [spine_arrow]
