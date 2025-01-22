@@ -183,66 +183,17 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
 
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsPrime]
  [h : FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
-  have h : I ≠ ⊤ := sorry
+  have h : I ≠ ⊤ := by
+    intro h
+    simp only [h, ← Ideal.height_eq_primeHeight, Ideal.height_top, WithBot.coe_top] at e
+    exact ringKrullDim_ne_top e.symm
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
-
-  sorry
-  -- cases' subsingleton_or_nontrivial R
-  -- exact (h.1 <| Subsingleton.elim _ _).elim
-  -- by_contra h'
-  -- obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h'
-
-  -- have IneBot : I ≠ ⊥ := I.isPrime_proper
-  -- have MneBot : M ≠ ⊥ := M.isMaximal_proper
-
-  -- have height_le : I.primeHeight ≤ M.primeHeight := by
-  --   apply Ideal.primeHeight_mono
-  --   exact hM'
-
-  -- have M_height_le : (M.primeHeight) ≤ ringKrullDim R :=
-  --   Ideal.primeHeight_le_ringKrullDim
-
-  -- have height_strict : I.primeHeight < M.primeHeight := by
-  --   apply lt_of_le_of_ne height_le
-  --   intro h_eq
-  --   apply h'
-  --   sorry -- need a lemma about equality of heights implying equality of ideals
-
-  -- have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
-  -- rw [e] at this
-  -- exact lt_irrefl _ this
-
-  --   casesI subsingleton_or_nontrivial R,
-  -- { exact ((h.1 : _) $ subsingleton.elim _ _).elim },
-  -- have := congr_arg (λ x : with_top ℕ, x + 1) e,
-  -- dsimp at this,
-  -- rw [ideal.prime_height_succ] at this,
-  -- refine ⟨⟨h.1, _⟩⟩,
-  -- intros J hJ,
-  -- by_contra e',
-  -- obtain ⟨M, hM, hM'⟩ := ideal.exists_le_maximal J e',
-  -- have H : (insert M (set_of ideal.is_prime ∩ set.Iic I)).chain_height =
-  --   krull_dimension R + 1 + 1,
-  -- { rw [← this, set.chain_height_insert_of_forall_lt],
-  --   intros I' hI',
-  --   calc I' ≤ I : hI'.2
-  --       ... < J : hJ
-  --       ... ≤ M : hM' },
-  -- have : krull_dimension R + 1 + 1 ≤ set.chain_height (set_of ideal.is_prime),
-  -- { rw ← H, apply set.chain_height_le_of_subset, rintros K (rfl|⟨h, _⟩), exacts [hM.is_prime, h]}
-  -- cases h : krull_dimension R with x,
-  -- { exact krull_dimension_ne_top R h },
-  -- { rw [← krull_dimension_succ, h] at this, linarith [with_top.coe_le_coe.mp this] }
-  -- have height_strict : I.primeHeight < M.primeHeight := by
-  --   apply lt_of_le_of_ne height_le
-  --   intro h_eq
-  --   apply h'
-  --   sorry -- need a lemma about equality of heights implying equality of ideals
-
-  -- have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
-  -- rw [e] at this
-  -- exact lt_irrefl _ this
-
+  rcases lt_or_eq_of_le hM' with (hM' | hM')
+  · have h1 := Ideal.primeHeight_strict_mono hM'
+    have h2 := e ▸ M.primeHeight_le_ringKrullDim
+    simp only [WithBot.coe_le_coe] at h2
+    absurd h1; rw [not_lt]; exact h2
+  · exact hM' ▸ hM
 
 /-- The prime height of the maximal ideal equals the Krull dimension -/
 theorem LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R]:
