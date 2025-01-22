@@ -134,6 +134,39 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
     rw [this]
     simp [Empty.instIsEmpty]
 
+open Topology
+
+-- already exists!
+-- lemma Continuous.subtype_map {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+--   {f : α → β} (hf : Continuous f)
+--   {p : α → Prop} {q : β → Prop} (hpq : ∀ ⦃x⦄, p x → q (f x)) :
+--   Continuous (fun (x : {x // p x}) ↦ (⟨f x, hpq x.2⟩ : {y // q y})) := by
+--   exact?--sorry
+
+-- two out of three lemmas for proving the embedding property below already exist
+#check Continuous.subtype_map
+#check Subtype.map_injective
+
+-- this is the third one, which seems to be missing
+lemma IsClosedMap.subtype_map {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {p : X → Prop} {f : X → Y} (h : IsClosedMap f) {q : Y → Prop} (hpq : ∀ (x : X), p x → q (f x)) :
+    IsClosedMap (Subtype.map f hpq) := by
+  intro u hU
+  have hp : IsClosed p := sorry
+  have hq : IsClosed q := sorry
+  -- Suppose U in the subtype of p is closed. Then its lift upstairs is closed (as p is closed).
+  have : IsClosed (Subtype.val '' u) := hp.isClosedMap_subtype_val _ hU
+  -- Thus, its upstairs image under f is closed.
+  have aux := h _ this
+  set s := f '' (Subtype.val '' u)
+  -- The image of s downstairs is the set we want.
+  have : ∀ (y : s), q y := sorry -- use hpq
+  let sdfdsf := fun (a : s) ↦ Subtype.mk a.1 (this a)
+  have aux := IsClosed (Set.range (((fun a ↦ Subtype.mk a.1 (this a)))))
+  simp at aux
+  sorry
+
+#exit
 /-- The `n`-dimensional Euclidean half-space (modelled on itself) has nice boundary
 (which is an `n-1`-dimensional manifold). -/
 noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : ℕ∞) :
@@ -142,11 +175,25 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   E₀ := EuclideanSpace ℝ (Fin n)
   H₀ := EuclideanSpace ℝ (Fin n)
   I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
-  f x := by
+  -- Fin.Vector should help!
+  f := by
+    sorry
+    --letI pref : EuclideanSpace ℝ (Fin n) → EuclideanSpace ℝ (Fin (n + 1)) :=
+    --    fun x i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega))
+    --apply Subtype.map pref (p := fun _ ↦ true)--(by simp)--fun x ↦ by
     -- Is there a more elegant way to write this?
     --let x' : EuclideanSpace ℝ (Fin (n+1)) := fun i ↦ if h: i = 0 then 0 else x (Fin.pred i, sorry)--⟨i - 1, by omega⟩
     exact ⟨fin i ↦ if h: i = 0 then 0 else x (Fin.pred i, sorry), by simp⟩
-  isEmbedding := sorry
+  isEmbedding := by
+    apply IsClosedEmbedding.isEmbedding
+    apply IsClosedEmbedding.of_continuous_injective_isClosedMap
+    · -- XXX: provide the pre-subtype version, and prove that continuity passes toa subtype
+      -- let pref : EuclideanSpace ℝ (Fin n) → EuclideanSpace ℝ (Fin (n + 1)) :=
+      --   fun x i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega))
+      -- refine Continuous.subtype_map (f := pref) ?_ ?_
+      sorry -- continuous
+    · sorry -- injective
+    · sorry -- IsClosedMap
   -- TODO: it suffices to show each component function is smooth
   -- the first one is constant, the others are basically the identity...
   isSmooth := by
@@ -167,7 +214,6 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
       -- TODO: take the last n components of x... then hx should do it!
       sorry
 
-#exit
 open Set Topology
 
 variable (M I) in
