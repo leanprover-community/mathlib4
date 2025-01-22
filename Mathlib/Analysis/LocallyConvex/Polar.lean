@@ -212,11 +212,15 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   apply AbsConvex.iInter₂
   intro i hi
   constructor
-  · sorry
-  · have e1 : Convex ℝ (Metric.closedBall (0 : 𝕜) 1) := by
-      apply convex_closedBall
+  · have e0 : Metric.closedBall (0 : 𝕜) 1 = Seminorm.closedBall (normSeminorm 𝕜 𝕜) (0 : 𝕜) 1 := by
+      aesop
+    have e1 : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) 1) := by
+      rw [e0]
+      exact Seminorm.balanced_closedBall_zero _ _
+    exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
+  · have e1 : Convex ℝ (Metric.closedBall (0 : 𝕜) 1) := convex_closedBall _ _
 
-    apply Convex.linear_preimage e1 -- (B i)
+    apply Convex.linear_preimage (E := F) e1 -- (B i)
     --(B i)
 
 
