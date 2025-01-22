@@ -44,10 +44,6 @@ variable {K : Type u} [Field K]
 
 instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
-instance (A : CSA K): Ring A := A.toAlgebraCat.isRing
-
-instance (A : CSA K): Algebra K A := A.toAlgebraCat.isAlgebra
-
 attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
 /-- Two finite dimensional central simple algebras `A` and `B` are Brauer Equivalent
