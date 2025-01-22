@@ -3,12 +3,9 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.MeasureTheory.OuterMeasure.Induced
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Additive Contents
@@ -40,6 +37,10 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 * `MeasureTheory.addContent_union_le`: `m (s ∪ t) ≤ m s + m t`
 * `MeasureTheory.addContent_le_diff`: `m s - m t ≤ m (s \ t)`
+* `IsSetRing.addContent_of_union`: a function on a ring of sets which is additive on pairs of
+disjoint sets defines an additive content
+* `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
+its value on a countable disjoint union is the sum of the values
 
 -/
 
