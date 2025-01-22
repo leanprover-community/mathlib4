@@ -867,7 +867,7 @@ variable [DecidableEq α] {l : List α}
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
-  rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
+  rw [Set.mem_setOf, ← List.indexOf_lt_length_iff] at ha hb
   rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
   refine ⟨l.indexOf b - l.indexOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
