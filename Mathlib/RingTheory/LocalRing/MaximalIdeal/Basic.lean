@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Spectrum.Maximal.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 
@@ -56,6 +57,13 @@ instance : Unique (MaximalSpectrum R) where
 theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
+
+instance : OrderTop (PrimeSpectrum R) where
+  top := ⟨maximalIdeal R, inferInstance⟩
+  le_top := by
+    rintro ⟨P, hP⟩
+    apply le_maximalIdeal
+    apply Ideal.IsPrime.ne_top'
 
 @[simp]
 theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
