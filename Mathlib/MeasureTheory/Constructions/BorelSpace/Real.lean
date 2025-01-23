@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -195,9 +196,6 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 
-@[deprecated (since := "2024-03-02")]
-alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
-
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=
   ENNReal.neTopHomeomorphNNReal.toMeasurableEquiv
@@ -283,16 +281,10 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
-
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
-
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
 
 /-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
 a.e.-measurable. -/
@@ -439,6 +431,20 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
+@[measurability]
+theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
+  EReal.measurable_of_measurable_real (by simpa using ENNReal.measurable_ofReal)
+
+@[measurability, fun_prop]
+theorem Measurable.ereal_toENNReal {f : α → EReal} (hf : Measurable f) :
+    Measurable fun x => (f x).toENNReal :=
+  measurable_ereal_toENNReal.comp hf
+
+@[measurability, fun_prop]
+theorem AEMeasurable.ereal_toENNReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x => (f x).toENNReal) μ :=
+  measurable_ereal_toENNReal.comp_aemeasurable hf
+
 namespace NNReal
 
 instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
@@ -453,16 +459,10 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
   rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_nnreal' := NNReal.measurable_of_tendsto'
-
 /-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
-
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
 
 end NNReal
 

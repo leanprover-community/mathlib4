@@ -38,8 +38,7 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
-assert_not_exists Finset.prod
-assert_not_exists Submonoid
+assert_not_exists Finset.prod Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -921,6 +920,11 @@ theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0}
     · subst i'
       simp
     · simp [h, hf]
+
+theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) :=
+  ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
+    simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
 

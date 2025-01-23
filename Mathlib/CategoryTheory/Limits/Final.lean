@@ -257,7 +257,7 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
-  apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j : _)
+  apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j :)
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w]
     rw [← s.w f] at h
@@ -607,7 +607,7 @@ theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
     s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
-  apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j : _)
+  apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j :)
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← s.w f]
     rw [← w] at h

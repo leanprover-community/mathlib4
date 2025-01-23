@@ -20,6 +20,8 @@ and that it is triangulated.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Localization

@@ -198,8 +198,8 @@ open Function
 theorem map_injective {f : α → γ} {g : β → δ} :
     Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
   ⟨fun h =>
-    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha : _), fun b₁ b₂ hb =>
-      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb : _)⟩,
+    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
+      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
     fun h => h.1.sum_map h.2⟩
 
 @[simp]

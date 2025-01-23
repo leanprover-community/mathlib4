@@ -38,7 +38,7 @@ theorem Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   · exact Or.inl h0
   by_cases h_top : κ a t = ∞
   · exact Or.inr (Or.inr h_top)
-  rw [← one_mul (κ a (t ∩ t)), Set.inter_self, ENNReal.mul_eq_mul_right h0 h_top] at ha
+  rw [← one_mul (κ a (t ∩ t)), Set.inter_self, ENNReal.mul_left_inj h0 h_top] at ha
   exact Or.inr (Or.inl ha.symm)
 
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}

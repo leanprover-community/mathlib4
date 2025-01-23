@@ -26,8 +26,7 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 

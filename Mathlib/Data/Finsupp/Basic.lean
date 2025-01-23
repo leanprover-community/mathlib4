@@ -905,17 +905,24 @@ theorem subtypeDomain_apply {a : Subtype p} {v : α →₀ M} : (subtypeDomain p
 theorem subtypeDomain_zero : subtypeDomain p (0 : α →₀ M) = 0 :=
   rfl
 
-theorem subtypeDomain_eq_zero_iff' {f : α →₀ M} : f.subtypeDomain p = 0 ↔ ∀ x, p x → f x = 0 := by
-  classical simp_rw [← support_eq_empty, support_subtypeDomain, subtype_eq_empty,
-      not_mem_support_iff]
+theorem subtypeDomain_eq_iff_forall {f g : α →₀ M} :
+    f.subtypeDomain p = g.subtypeDomain p ↔ ∀ x, p x → f x = g x := by
+  simp_rw [DFunLike.ext_iff, subtypeDomain_apply, Subtype.forall]
+
+theorem subtypeDomain_eq_iff {f g : α →₀ M}
+    (hf : ∀ x ∈ f.support, p x) (hg : ∀ x ∈ g.support, p x) :
+    f.subtypeDomain p = g.subtypeDomain p ↔ f = g :=
+  subtypeDomain_eq_iff_forall.trans
+    ⟨fun H ↦ Finsupp.ext fun _a ↦ (em _).elim (H _ <| hf _ ·) fun haf ↦ (em _).elim (H _ <| hg _ ·)
+        fun hag ↦ (not_mem_support_iff.mp haf).trans (not_mem_support_iff.mp hag).symm,
+      fun H _ _ ↦ congr($H _)⟩
+
+theorem subtypeDomain_eq_zero_iff' {f : α →₀ M} : f.subtypeDomain p = 0 ↔ ∀ x, p x → f x = 0 :=
+  subtypeDomain_eq_iff_forall (g := 0)
 
 theorem subtypeDomain_eq_zero_iff {f : α →₀ M} (hf : ∀ x ∈ f.support, p x) :
     f.subtypeDomain p = 0 ↔ f = 0 :=
-  subtypeDomain_eq_zero_iff'.trans
-    ⟨fun H =>
-      ext fun x => by
-        classical exact if hx : p x then H x hx else not_mem_support_iff.1 <| mt (hf x) hx,
-      fun H x _ => by simp [H]⟩
+  subtypeDomain_eq_iff (g := 0) hf (by simp)
 
 @[to_additive]
 theorem prod_subtypeDomain_index [CommMonoid N] {v : α →₀ M} {h : α → M → N}
@@ -989,22 +996,6 @@ theorem subtypeDomain_neg : (-v).subtypeDomain p = -v.subtypeDomain p :=
 @[simp]
 theorem subtypeDomain_sub : (v - v').subtypeDomain p = v.subtypeDomain p - v'.subtypeDomain p :=
   ext fun _ => rfl
-
-@[simp]
-theorem single_neg (a : α) (b : G) : single a (-b) = -single a b :=
-  (singleAddHom a : G →+ _).map_neg b
-
-@[simp]
-theorem single_sub (a : α) (b₁ b₂ : G) : single a (b₁ - b₂) = single a b₁ - single a b₂ :=
-  (singleAddHom a : G →+ _).map_sub b₁ b₂
-
-@[simp]
-theorem erase_neg (a : α) (f : α →₀ G) : erase a (-f) = -erase a f :=
-  (eraseAddHom a : (_ →₀ G) →+ _).map_neg f
-
-@[simp]
-theorem erase_sub (a : α) (f₁ f₂ : α →₀ G) : erase a (f₁ - f₂) = erase a f₁ - erase a f₂ :=
-  (eraseAddHom a : (_ →₀ G) →+ _).map_sub f₁ f₂
 
 @[simp]
 theorem filter_neg (p : α → Prop) [DecidablePred p] (f : α →₀ G) : filter p (-f) = -filter p f :=
@@ -1337,10 +1328,8 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
--- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
-    c • Finsupp.single a b = Finsupp.single a (c * b) :=
-  smul_single _ _ _
+    c • Finsupp.single a b = Finsupp.single a (c * b) := by simp
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
@@ -1504,7 +1493,8 @@ end
 /-- Given an `AddCommMonoid M` and `s : Set α`, `restrictSupportEquiv s M` is the `Equiv`
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
-def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
+-- TODO: add [DecidablePred (· ∈ s)] as an assumption
+@[simps] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (· ∈ s) f.1
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
