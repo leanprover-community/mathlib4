@@ -17,12 +17,20 @@ variable {M α : Type*} [Monoid M]
 
 variable {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S M]
 
-instance distribMulAction [AddMonoid α] [DistribMulAction M α] : DistribMulAction s α where
+instance [AddMonoid α] [DistribMulAction M α] : DistribMulAction s α where
   smul_zero r := smul_zero (r : M)
   smul_add r := smul_add (r : M)
 
-instance mulDistribMulAction [Monoid α] [MulDistribMulAction M α] : MulDistribMulAction s α where
+instance distribMulAction [AddMonoid α] [DistribMulAction M α] (S : Submonoid M) :
+    DistribMulAction s α :=
+  inferInstance
+
+instance [Monoid α] [MulDistribMulAction M α] : MulDistribMulAction s α where
   smul_mul r := smul_mul' (r : M)
   smul_one r := smul_one (r : M)
+
+instance mulDistribMulAction [Monoid α] [MulDistribMulAction M α] (S : Submonoid M) :
+    MulDistribMulAction S α :=
+  inferInstance
 
 end Submonoid
