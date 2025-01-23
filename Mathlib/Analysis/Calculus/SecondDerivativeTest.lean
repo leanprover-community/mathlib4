@@ -42,17 +42,6 @@ lemma slope_pos_iff {𝕜} [LinearOrderedField 𝕜] {f : 𝕜 → 𝕜} {x₀ b
 lemma slope_pos_iff_gt {𝕜} [LinearOrderedField 𝕜] {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : b < x₀) :
     0 < slope f x₀ b ↔ f b < f x₀ := by
   rw [slope_comm, slope_pos_iff hb]
-/-- If the derivative is nonzero in a (specific) punctured neighborhood then the
-function is differentiable in a punctured neighborhood. -/
-theorem eventually_differentiable_of_deriv_nonzero {ε : ℝ}
-    (hε : ε > 0)
-    (hε₀ : ∀ b ∈ Ioo (x₀ - ε) x₀, deriv f b ≠ 0)
-    (hε₁ : ∀ b ∈ Ioo x₀ (x₀ + ε), deriv f b ≠ 0) :
-    ∀ᶠ x in 𝓝[≠] x₀, DifferentiableAt ℝ f x :=
-    (eventually_mem_set.mpr <| insert_mem_nhds_iff.mp <| insert_Ioo₀ hε hε ▸
-    Ioo_mem_nhds (by linarith) (by linarith)).mono
-    fun _ hb => differentiableAt_of_deriv_ne_zero <| hb.elim (hε₀ _) (hε₁ _)
-
 
 lemma neg_of_deriv_pos (hf : deriv f x₀ > 0)
     (hd : f x₀ = 0) : ∃ u < x₀, ∀ b ∈ Ioo u x₀, f b < 0 := by
@@ -103,9 +92,11 @@ functions.
 theorem isLocalMin_of_deriv_deriv_pos
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
-  obtain ⟨ε,hε⟩    := neg_pos_of_deriv_pos hf hd
-  obtain ⟨p,hp⟩    := eventually_differentiable_of_deriv_nonzero hε.1
-    (fun b hb => ne_of_lt <| hε.2.1 b hb) (fun b hb => ne_of_gt <| hε.2.2 b hb)
+  obtain ⟨ε,hε⟩ := neg_pos_of_deriv_pos hf hd
+  have h : ∀ᶠ b in 𝓝[≠] x₀, deriv f b ≠ 0 := eventually_mem_set.mpr <| insert_mem_nhds_iff.mp <| insert_Ioo₀ hε hε ▸
+    Ioo_mem_nhds (by linarith) (by linarith)
+  obtain ⟨p,hp⟩ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, DifferentiableAt ℝ f x :=
+    h.mono <| fun _ ↦ differentiableAt_of_deriv_ne_zero
   obtain ⟨l,u,hlu⟩ := mem_nhds_iff_exists_Ioo_subset.mp hp.1
   let δ := min (x₀ - l) (u - x₀)
   have hζ : (1/2) * min δ ε > 0 := by aesop
