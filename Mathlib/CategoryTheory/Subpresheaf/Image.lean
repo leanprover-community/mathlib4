@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 
 import Mathlib.CategoryTheory.Subpresheaf.Basic
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # The image of a subpresheaf
