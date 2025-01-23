@@ -24,7 +24,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
 * Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
-* Provides a coercion `from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
+* Provides a coercion from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
@@ -79,7 +79,7 @@ equivalence: `LaurentSeries.LaurentSeriesRingEquiv` is the *topological, ring eq
 `K⸨X⸩ ≃+* RatFuncAdicCompl K`.
 * In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
 `RatFunc K` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
-that is itself clearly isomorphic (via `LaurentSeries.powerSeriesEquivSubring.symm`) to `K⟦X⟧`.
+that is itself clearly isomorphic (via `LaurentSeries.powerSeriesEquivSubring`) to `K⟦X⟧`.
 
 ## To Do
 * The `AdicCompletion` construction is currently done for ideals in rings and does not take into
