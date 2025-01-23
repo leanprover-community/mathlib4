@@ -343,17 +343,15 @@ lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
   haveI := mulRightMono_of_mulRightStrictMono α
   Left.min_le_max_of_mul_le_mul h
 
-@[to_additive] lemma Left.mul_left_cancel_of_mulLeftStrictMono [MulLeftStrictMono α]
-    (h : a * b = a * c) : b = c := by
-  contrapose! h
-  obtain lt|lt := h.lt_or_lt
-  exacts [(mul_lt_mul_left' lt _).ne, (mul_lt_mul_left' lt _).ne']
+/-- Not an instance, to avoid loops with `IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono`. -/
+@[to_additive]
+theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCancelMul α where
+  mul_left_cancel _ _ _ h := StrictMono.injective (fun _ _ h => mul_lt_mul_left' h _) h
 
-@[to_additive] lemma Right.mul_right_cancel_of_mulRightStrictMono [MulRightStrictMono α]
-    (h : b * a = c * a) : b = c := by
-  contrapose! h
-  obtain lt|lt := h.lt_or_lt
-  exacts [(mul_lt_mul_right' lt _).ne, (mul_lt_mul_right' lt _).ne']
+/-- Not an instance, to avoid loops with `IsRightCancelMul.mulRightStrictMono_of_mulRightMono`. -/
+@[to_additive]
+theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
+  mul_right_cancel _ _ _ h := StrictMono.injective (fun _ _ h => mul_lt_mul_right' h _) h
 
 end LinearOrder
 
