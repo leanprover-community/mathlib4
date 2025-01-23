@@ -12,8 +12,8 @@ def serialize_polynomials(power, coeffs) -> str:
     ]})
 
 def main(base_ring, atoms: int, make_hyps, make_target):
-    vars_str = ['var' + str(i) for i in range(atoms)] + ['aux']
     if atoms != 0:
+        vars_str = ['var' + str(i) for i in range(atoms)] + ['aux']
         P = PolynomialRing(base_ring, vars_str)
         *vars, aux = P.gens()
         hyps = make_hyps(vars)
