@@ -125,7 +125,7 @@ def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   for is@(i, undeprecated) in deprecations do
     if let some (nmStx, _) := modulesWithNames.find? (·.2 == i) then
       Linter.logLint linter.deprecateModule nmStx
-        m!"'{nmStx}' has been deprecated: please replaced this import by \
+        m!"'{nmStx}' has been deprecated: please replace this import by \
           {"\nimport ".intercalate <| "\n" :: (undeprecated.map (·.toString)).toList}\n"
 
 initialize addLinter deprecateModuleLinter
