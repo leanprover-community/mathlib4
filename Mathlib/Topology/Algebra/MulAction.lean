@@ -227,6 +227,10 @@ section Group
 
 variable [Group M] [MulAction M X] [ContinuousSMul M X]
 
+@[to_additive]
+instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
+  S.toSubmonoid.continuousSMul
+
 variable (M)
 
 /-- The stabilizer of a continuous group action on a discrete space is an open subgroup. -/
