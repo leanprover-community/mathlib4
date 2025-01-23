@@ -30,9 +30,6 @@ unique factors
 namespace Int
 
 
-@[deprecated (since := "2024-11-10")]
-alias ⟨gcd_eq_one_iff_coprime.mpr, gcd_eq_one_iff_coprime.mp⟩ := isCoprime_iff_gcd_eq_one
-
 @[deprecated "use `isCoprime_iff_gcd_eq_one.symm` instead" (since := "2025-01-23")]
 theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :=
   isCoprime_iff_gcd_eq_one.symm
