@@ -83,94 +83,72 @@ lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
 
 /-- We now start constructing the Vitali set.
 
-In the setoid vS, two reals in the interval [0,1] are equivalent
-iff their difference is rational. -/
-instance vS : Setoid { x : ℝ // x ∈ Icc 0 1 } where
-  r := fun x y ↦ (↑ x : ℝ) - (↑ y) ∈ range ((↑) : ℚ → ℝ)
+In the setoid `vitaliSetoid`, two reals in the interval [0, 1] are equivalent iff their difference
+is rational. -/
+instance vitaliSetoid : Setoid (Icc (0 : ℝ) 1) where
+  r := fun x y ↦ y.val - x ∈ range ((↑) : ℚ → ℝ)
   iseqv := {
     refl {x} := by simp
     symm {x y}:= fun ⟨t, h⟩ ↦ ⟨(-t), by simp [h]⟩
     trans {x y z} := fun ⟨t1, h1⟩ ⟨t2, h2⟩ ↦ ⟨(t1 + t2), by simp [h1, h2]⟩
   }
 
-/-- Make a quotient type vT from the setoid vS. -/
-def vT : Type := Quotient vS
+/-- The quotient type given by `vitaliSetoid`. -/
+def vitaliType : Type := Quotient vitaliSetoid
 
-lemma vS_vT_surj (t : vT) : ∃ x : { x : ℝ // x ∈ Icc 0 1 }, ⟦x⟧ = t := by
-  have ⟨x, eq⟩ := Quotient.mk_surjective t
-  use x, eq
+/-- The Vitali set is the range of `Quotient.out` on `vitaliType`, i.e. the range of some
+arbitrary choice function. -/
+def vitaliSet : Set ℝ := Set.range fun x : vitaliType ↦ x.out.val
 
-/-- Use Classical.choose to make a function vRep from vT to vS. -/
-def vRep : vT → { x : ℝ // x ∈ Icc 0 1 } :=
-  fun t ↦ Classical.choose (vS_vT_surj t)
-
-lemma vRep_spec (t : vT) : ⟦vRep t⟧ = t :=
-  Classical.choose_spec (vS_vT_surj t)
-
-/-- The Vitali set is the image of vRep. -/
-def vitaliSet : Set ℝ := { x : ℝ | ∃ t : vT, ↑(vRep t) = x }
-
-/-- We now shift the Vitali set using rational numbers in the interval [-1,1]. -/
-def vI : Set ℝ := Icc (-1) 1 ∩ range ((↑) : ℚ → ℝ)
-
-def vitaliSet' (i : ℝ) : Set ℝ := (fun x ↦ x + i) '' vitaliSet
-
-/-- vitaliUnion is the union of all those shifted copies of vitaliSet. -/
-def vitaliUnion : Set ℝ := ⋃ i ∈ vI, vitaliSet' i
+/-- `vitaliUnion` is the union of copies of `vitaliSet`, shifted by all rationals between
+`-1` and `1`. -/
+def vitaliUnion : Set ℝ := ⋃ i : Set.Icc (-1 : ℚ) 1, (fun x ↦ x + i) '' vitaliSet
 
 /-- We now prove some results about the Vitali set and its shifts.
 
-vitaliSet is a subset of [0,1]. -/
-lemma vitaliSet_upper_bound : vitaliSet ⊆ Icc 0 1 := by
-  rintro x ⟨t, ht⟩
-  rw [← ht]
-  exact (vRep t).property
+`vitaliSet` is a subset of [0, 1]. -/
+lemma vitaliSet_subset_Icc : vitaliSet ⊆ Icc 0 1 := by
+  rintro x ⟨t, rfl⟩
+  exact Subtype.coe_prop _
 
-/-- vitaliUnion is a subset of [-1,2]. -/
-lemma vitaliUnion_upper_bound : vitaliUnion ⊆ Icc (-1) 2 := by
-  refine iUnion₂_subset ?_
-  intro i
-  rw [vI, Set.mem_inter_iff]
-  rintro ⟨h0, _⟩
-  refine image_subset_iff.mpr ?_
-  simp only [preimage_add_const_Icc]
-  rw [mem_Icc] at h0
-  have h1 : -1 - i ≤ 0 := by linarith
-  have h2 : 1 ≤ 2 - i := by linarith
-  have : Icc 0 1 ⊆ Icc (-1 - i) (2 - i) := Icc_subset_Icc h1 h2
-  exact subset_trans vitaliSet_upper_bound this
+example {x y : ℝ} (hx : x ∈ Set.Icc 0 1) (hy : y ∈ Set.Icc (-1) 1) : x + y ∈ Set.Icc (-1) 2 := by
+  rw [mem_Icc] at *
+  constructor <;> linarith
 
-/-- [0,1] is a subset of vitaliUnion. -/
-lemma vitaliUnion_lower_bound : Icc 0 1 ⊆ vitaliUnion := by
-  intro x h_x1
-  have ⟨x', h_x2⟩ : ∃ x' : { x : ℝ // x ∈ Icc 0 1 }, ↑ x' = x := CanLift.prf x h_x1
-  let y : ℝ := ↑(vRep ⟦x'⟧)
-  have h_y1 : y ∈ Icc 0 1 := (vRep ⟦x'⟧).property
-  have h_y2 : y ∈ vitaliSet := by simp [y, vitaliSet]
-  have h_xy1 : x - y ∈ range ((↑) : ℚ → ℝ) := by
-    have eq : vS.r x' (vRep ⟦x'⟧) := Quotient.eq.mp (vRep_spec _).symm
-    simp only [Setoid.r] at eq
-    simpa [← h_x2]
-  have h_xy2 : x - y ∈ Icc (-1) 1 := by
-    simp only [mem_Icc] at h_x1 h_y1 ⊢
+private theorem cast_Icc {x : ℚ} : (x : ℝ) ∈ Icc (-1) 1 ↔ x ∈ Icc (-1) 1 := by
+  rw [mem_Icc, mem_Icc, ← Rat.cast_one, ← Rat.cast_neg, Rat.cast_le, Rat.cast_le]
+
+/-- `vitaliUnion` is a subset of [-1, 2]. -/
+lemma vitaliUnion_subset_Icc : vitaliUnion ⊆ Icc (-1) 2 := by
+  rintro x ⟨-, ⟨y, rfl⟩, ⟨x, hx, rfl⟩⟩
+  have := vitaliSet_subset_Icc hx
+  have := cast_Icc.2 y.2
+  simp_rw [mem_Icc] at *
+  constructor <;> linarith
+
+/-- [0, 1] is a subset of `vitaliUnion`. -/
+lemma Icc_subset_vitaliUnion : Icc 0 1 ⊆ vitaliUnion := by
+  intro x hx
+  let z : vitaliType := ⟦⟨x, hx⟩⟧
+  obtain ⟨y, hy : y = x - z.out⟩ := Quotient.mk_out (s := vitaliSetoid) ⟨x, hx⟩
+  rw [vitaliUnion, Set.mem_iUnion]
+  refine ⟨⟨y, cast_Icc.1 ?_⟩, ?_⟩
+  · have := z.out.prop
+    rw [hy, mem_Icc] at *
     constructor <;> linarith
-  simp only [vitaliUnion, image_add_right, mem_iUnion, mem_preimage, exists_prop]
-  use (x - y)
-  constructor
-  · rw [vI, mem_inter_iff]
-    constructor <;> assumption
-  · simpa [vitaliSet']
+  · rw [image_add_right, hy]
+    use z
+    simp
 
 /-- Therefore, the volume of vitaliUnion is between 1 and 3 (inclusive). -/
-lemma vitaliUnion_volume_range : 1 ≤ volume vitaliUnion ∧ volume vitaliUnion ≤ 3 := by
+lemma volume_vitaliUnion_mem : volume vitaliUnion ∈ Icc 1 3 := by
   have h1 : volume (Icc (0 : ℝ) 1) = 1 := by simp [volume_Icc]
   have h2 : volume (Icc (-1 : ℝ) 2) = 3 := by simp [volume_Icc]; norm_num
+  rw [← h1, ← h2]
   constructor
-  · rw [← h1]
-    apply measure_mono vitaliUnion_lower_bound
-  · rw [← h2]
-    exact measure_mono vitaliUnion_upper_bound
+  exacts [measure_mono Icc_subset_vitaliUnion, measure_mono vitaliUnion_subset_Icc]
 
+#exit
 /-- The shifted copies of vitaliSet in vitaliUnion are pairwise disjoint. -/
 lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
   intro x x_vI y y_vI x_ne_y
@@ -181,8 +159,8 @@ lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
   simp only [vitaliSet', vitaliSet, image_add_right, preimage_setOf_eq, mem_setOf_eq] at z_x z_y
   have ⟨t_x, rep_x⟩ := z_x
   have ⟨t_y, rep_y⟩ := z_y
-  have vRep_eq : vS.r (vRep t_x) (vRep t_y) := by
-    simp only [vS, mem_range]
+  have vRep_eq : vitaliSetoid.r (vRep t_x) (vRep t_y) := by
+    simp only [vitaliSetoid, mem_range]
     simp only [rep_x, rep_y, add_sub_add_left_eq_sub, sub_neg_eq_add]
     have : x ∈ range ((↑) : ℚ → ℝ) := by exact mem_of_mem_inter_right x_vI
     have ⟨q_x, q_x_eq⟩ := mem_range.mp (mem_of_mem_inter_right x_vI)
@@ -238,7 +216,7 @@ lemma vI_infinite : vI.Infinite := by
 /-- The following theorems are the main results.
 
 vitaliSet is not null-measurable. -/
-theorem not_nullMeasurableSet_vitaliSet : ¬ (NullMeasurableSet vitaliSet volume) := by
+theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume := by
   intro hm
   rcases eq_or_ne (volume vitaliSet) 0 with hz | hnz
   · have hv : volume vitaliUnion = 0 := by
