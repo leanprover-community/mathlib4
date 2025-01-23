@@ -7,6 +7,7 @@ import Mathlib
 
 open Filter Nat Real Finset
 open Asymptotics
+open MeasureTheory
 open scoped ArithmeticFunction
 
 axiom hpsi_cheby : (fun n => ∑ k ∈ Finset.range (n+1), Λ k) =O[atTop] (fun n ↦ (n:ℝ))
@@ -343,8 +344,19 @@ theorem sum_properPower_vonMangoldt_div_id_isBigO_one :
   positivity
 
 
+theorem tmp {f g : ℕ → ℝ} (hfg : f =O[atTop] g) (h : ∀ n, g n = 0 → f n = 0) : f =O[⊤] g := by
+  obtain ⟨C, hC_pos, hC⟩ := Asymptotics.bound_of_isBigO_nat_atTop hfg
+  refine isBigO_top.mpr ?_
+  use C
+  intro x
+  by_cases hf : f x = 0
+  · simp [hf, hC_pos]
+  apply hC
+  exact fun a ↦ hf (h x a)
+
 theorem mertens_first : (fun n : ℕ ↦ (∑ p ∈ primesBelow (n+1), Real.log p / p) - Real.log n)
-    =O[atTop] (fun _ ↦ (1 : ℝ)) := by
+    =O[⊤] (fun _ ↦ (1 : ℝ)) := by
+  apply tmp _ (fun _ h ↦ (one_ne_zero h).elim)
   simp_rw [sum_primesBelow_log_div_id_eq_vonMangoldt_sub]
   have h₀ := sum_properPower_vonMangoldt_div_id_isBigO_one
   have h₁ := sum_cheby_div_id
@@ -390,16 +402,17 @@ example : atTop.map Nat.cast = (atTop : Filter ℝ) := by
 
   -- sorry
 -- something something GaloisConnection?
-theorem Asymptotics.IsBigO.nat_floor {f g : ℕ → ℝ} (h : f =O[atTop] g) :
-  (fun x ↦ f (Nat.floor x)) =O[atTop] (fun x ↦ (g (Nat.floor x)) : ℝ → ℝ) := by
-  apply h.comp_tendsto tendsto_nat_floor_atTop
+theorem Asymptotics.IsBigO.nat_floor {f g : ℕ → ℝ} (h : f =O[⊤] g) :
+  (fun x ↦ f (Nat.floor x)) =O[⊤] (fun x ↦ (g (Nat.floor x)) : ℝ → ℝ) := by
+  apply h.comp_tendsto tendsto_top
 
 
+open Filter
 -- ouchie
 /- There should be some general theorem: given f : ℕ → ℝ and g h : ℝ → ℝ, got from f n - g n =O h n
  to f ⌊x⌋₊ - g x =O h x under certain "smoothnes"/monotonicity assumptions on g -/
-theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
-  have h₀ : (fun t ↦ Real.log t - Real.log (⌊t⌋₊)) =O[atTop] (fun t ↦ Real.log t - Real.log (t-1)) := by
+theorem E₁_isBigO_one : E₁ =O[𝓟 <| Set.Ici (3/2:ℝ)] (fun _ ↦ (1:ℝ)) := by
+  have h₀ : (fun t ↦ Real.log t - Real.log (⌊t⌋₊)) =O[𝓟 <| Set.Ici (3/2:ℝ)] (fun t ↦ Real.log t - Real.log (t-1)) := by
     have h1 (t : ℝ) (ht : 1 < t) : Real.log (t-1) ≤ Real.log (⌊t⌋₊) := by
       gcongr
       · linarith only [ht]
@@ -409,17 +422,17 @@ theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
       · exact_mod_cast Nat.floor_pos.mpr ht
       · apply Nat.floor_le (zero_le_one.trans ht)
     apply Eventually.isBigO
-    filter_upwards [eventually_gt_atTop 1] with t ht
-    simp only [norm_eq_abs]
-    rw [abs_of_nonneg (by linarith only [h2 t ht.le])]
+    simp only [norm_eq_abs, eventually_principal, Set.mem_Ici]
+    intro t ht
+    rw [abs_of_nonneg (by linarith only [h2 t (by linarith)])]
     gcongr
     · linarith
     · linarith only [Nat.le_floor_add_one t]
-  have h₁ : (fun t ↦ Real.log t - Real.log (t-1)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
-    apply IsBigO.trans _ (Asymptotics.isBigO_const_const (2:ℝ) one_ne_zero atTop)
+  have h₁ : (fun t ↦ Real.log t - Real.log (t-1)) =O[𝓟 <| Set.Ici (3/2:ℝ)] (fun _ ↦ (1:ℝ)) := by
+    apply IsBigO.trans _ (Asymptotics.isBigO_const_const (100:ℝ) one_ne_zero _)
     apply Filter.Eventually.isBigO
-    filter_upwards [eventually_ge_atTop 0, eventually_gt_atTop 1, eventually_ne_atTop 1, eventually_ge_atTop 100] with x hx0 hx1 hx_ne_1 _
-    simp only [norm_eq_abs, ]
+    simp only [norm_eq_abs, eventually_principal, Set.mem_Ici]
+    intro x hx
     rw [abs_of_nonneg ?nonneg]
     case nonneg =>
       rw [sub_nonneg]
@@ -427,12 +440,12 @@ theorem E₁_isBigO_one : E₁ =O[atTop] (fun _ ↦ (1:ℝ)) := by
     rw [← Real.log_div]
     · apply (Real.log_le_self _).trans
       · rw [div_le_iff₀] <;> linarith
-      apply div_nonneg hx0
+      apply div_nonneg (by linarith)
       linarith
     · linarith
-    · exact sub_ne_zero_of_ne hx_ne_1
+    · exact sub_ne_zero_of_ne (by linarith)
   simp_rw [E₁_eq]
-  apply (mertens_first.nat_floor.sub (h₀.trans h₁)).congr <;>
+  apply ((mertens_first.mono le_top).nat_floor.mono le_top |>.sub (h₀.trans h₁)).congr <;>
   · intro x
     ring
 
@@ -450,6 +463,66 @@ theorem helper1 (n : ℕ) :
     omega
   · simp only [implies_true]
 
+theorem extracted_1 (t : ℝ) :
+  MeasureTheory.Integrable (fun a ↦ a⁻¹ * (Real.log a)⁻¹)
+    (MeasureTheory.volume.restrict (Set.Icc (3 / 2) t)) := by
+  rw [← MeasureTheory.IntegrableOn]
+  have hsub : Set.Icc (3 / 2) t ⊆ {0}ᶜ := by
+    simp only [Set.subset_compl_singleton_iff, Set.mem_Icc, not_and, not_le, isEmpty_Prop,
+      ofNat_pos, div_pos_iff_of_pos_left, IsEmpty.forall_iff]
+  apply ((continuousOn_inv₀.mono hsub).mul ((continuousOn_log.mono hsub).inv₀ ?_))
+    |>.integrableOn_compact isCompact_Icc
+  intro x
+  simp only [Set.mem_Icc, ne_eq, not_or, and_imp]
+  intro hx _
+  apply (Real.log_pos (by linarith)).ne.symm
+
+theorem integrable_inv_mul_log_inv_sq (t : ℝ) (ht : 3 / 2 ≤ t) (hlogt : Real.log t ≠ 0) :
+  MeasureTheory.Integrable (fun a ↦ a⁻¹ * (Real.log a)⁻¹ ^ 2)
+    (MeasureTheory.volume.restrict (Set.Icc (3 / 2) t)) := by
+  sorry
+
+theorem IntegrableAtFilter.principal  {α : Type*} {ε : Type*} [MeasurableSpace α] [ENorm ε] [TopologicalSpace ε] (f : α → ε) (S : Set α) (mu : MeasureTheory.Measure α := by volume_tac) :
+  IntegrableAtFilter f (𝓟 S) mu ↔ IntegrableOn f S mu := by
+  sorry
+theorem tmp' : (𝓟 (Set.Ici (3 / 2))).IsMeasurablyGenerated := by
+  exact principal_isMeasurablyGenerated_iff.mpr trivial
+-- This was a pain point: I want uniform bounds to show integrability of E₁, since E₁ is definitely not continuous
+-- Perhaps one could argue, E₁ is a step function plus a
+theorem extracted_2 (t : ℝ) (ht : 3 / 2 ≤ t) (hlogt : Real.log t ≠ 0) :
+  MeasureTheory.Integrable (fun a ↦ a⁻¹ * (Real.log a)⁻¹ ^ 2 * E₁ a)
+    (MeasureTheory.volume.restrict (Set.Icc (3 / 2) t)) := by
+  have isBigO : (fun a ↦ a⁻¹ * (Real.log a)⁻¹ ^ 2 * E₁ a) =O[𝓟 (Set.Ici (3/2))] (fun a ↦ a⁻¹ * (Real.log a)⁻¹ ^ 2) := by
+    simp_rw [mul_assoc]
+    convert (isBigO_refl (fun a ↦ a⁻¹ * (Real.log a)⁻¹ ^ 2) _).mul E₁_isBigO_one using 1
+    · ext; ring
+    · ext; ring
+  have hmg : (𝓟 (Set.Ici (3 / 2 : ℝ))).IsMeasurablyGenerated := principal_isMeasurablyGenerated_iff.mpr
+    measurableSet_Ici
+  rw [← IntegrableOn]
+  have := isBigO.integrableAtFilter («μ» := volume) sorry sorry
+  sorry
+
+theorem helper2 (t : ℝ) (ht : 3/2 ≤ t) :
+    ∫ (t : ℝ) in Set.Ioc (3 / 2) t, (t⁻¹ * (Real.log t)⁻¹) =
+      Real.log (Real.log t) - Real.log (Real.log (3/2)) := by
+  have hsub : Set.uIcc (3 / 2) t ⊆ {0}ᶜ := by
+    simp only [Set.subset_compl_singleton_iff]
+    refine Set.not_mem_uIcc_of_lt (by norm_num) (by linarith)
+  have htzero : t ≠ 0 := by linarith
+  have hlogzero : Real.log t ≠ 0 := (Real.log_pos (by linarith)).ne.symm
+  have h {x : ℝ} (hx : 3/2 ≤ x) : HasDerivAt (Real.log ∘ Real.log) (x⁻¹ * (Real.log x)⁻¹) x := by
+    rw [mul_comm]
+    apply HasDerivAt.comp
+    · refine hasDerivAt_log (Real.log_pos (by linarith)).ne.symm
+    · refine hasDerivAt_log (by linarith)
+  rw [← intervalIntegral.integral_of_le ht]
+  apply intervalIntegral.integral_eq_sub_of_hasDerivAt
+  · intro x
+    simpa only [h, Set.uIcc_of_le ht, Set.mem_Icc, and_imp] using fun hx _ ↦ h hx
+  apply MeasureTheory.IntegrableOn.intervalIntegrable
+  rw [Set.uIcc_of_le ht, MeasureTheory.IntegrableOn]
+  exact extracted_1 t
 
 theorem mertens_second : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), 1 / (p : ℝ)) - Real.log (Real.log t))
     =O[atTop] (fun n ↦ 1 / Real.log n) := by
@@ -535,8 +608,19 @@ theorem mertens_second : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1),
       ring
     _ =
      (1 + (Real.log t)⁻¹ * E₁ t) +
-        ∫ (t : ℝ) in Set.Ioc (3 / 2) t, (t⁻¹ * (Real.log t)⁻¹ + t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) := by
-      simp_rw [neg_mul, MeasureTheory.integral_neg, sub_neg_eq_add]
+        (∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹ + t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) := by
+      simp_rw [← MeasureTheory.integral_Icc_eq_integral_Ioc, neg_mul, MeasureTheory.integral_neg, sub_neg_eq_add, mul_add]
       congr 1
-      sorry
+      apply MeasureTheory.integral_congr_ae
+      filter_upwards [MeasureTheory.ae_restrict_mem (by measurability)]
+      intro x
+      simp only [Set.mem_Icc, add_left_inj, and_imp]
+      intro hx _
+      have := (Real.log_pos (by linarith)).ne.symm
+      field_simp
+      ring
+    _ =
+     (1 + (Real.log t)⁻¹ * E₁ t) +
+        ((∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹) + ∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) := by
+      rw [MeasureTheory.integral_add (extracted_1 _) sorry]
   sorry
