@@ -76,8 +76,8 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       dsimp only [spine_arrow]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
       apply congr_arg _ ∘ Subtype.ext
-      dsimp only [stdSimplex, uliftFunctor, Functor.comp_obj,
-        whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj]
+      dsimp only [stdSimplex, uliftFunctor, Functor.comp_obj, yoneda_obj_obj,
+        whiskering_obj_obj_obj, uliftFunctor_obj]
       cases n with
       | zero => contradiction
       | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
@@ -99,7 +99,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     | zero => contradiction
     | succ _ =>
       fin_cases z <;>
-      · dsimp only [stdSimplex.objEquiv, yoneda_obj_map, Quiver.Hom.unop_op, 
+      · dsimp only [stdSimplex.objEquiv, yoneda_obj_map, Quiver.Hom.unop_op,
           Equiv.ulift_symm_down]
         rw [mkOfSucc_δ_eq heq]
         rfl
