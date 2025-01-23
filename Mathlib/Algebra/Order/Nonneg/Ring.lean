@@ -11,6 +11,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements
@@ -43,37 +44,41 @@ variable {α : Type*}
 
 namespace Nonneg
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid { x : α // 0 ≤ x } :=
+instance orderedAddCommMonoid [OrderedAddCommMonoid α] :
+    OrderedAddCommMonoid { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.orderedAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
-    LinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
+    LinearOrderedAddCommMonoid { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.linearOrderedAddCommMonoid _ Nonneg.coe_zero
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
-    OrderedCancelAddCommMonoid { x : α // 0 ≤ x } :=
+    OrderedCancelAddCommMonoid { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.orderedCancelAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 instance linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid α] :
-    LinearOrderedCancelAddCommMonoid { x : α // 0 ≤ x } :=
+    LinearOrderedCancelAddCommMonoid { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.linearOrderedCancelAddCommMonoid _ Nonneg.coe_zero
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 ≤ x } :=
+instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.orderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
+/-- error: unknown free variable '_fvar.19139' -/
+#guard_msgs in
 instance strictOrderedSemiring [StrictOrderedSemiring α] :
-    StrictOrderedSemiring { x : α // 0 ≤ x } :=
+    StrictOrderedSemiring { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.strictOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x : α // 0 ≤ x } :=
+instance orderedCommSemiring [OrderedCommSemiring α] :
+    OrderedCommSemiring { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.orderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -81,8 +86,10 @@ instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x 
 instance orderedCommMonoid [OrderedCommSemiring α] : OrderedCommMonoid { x : α // 0 ≤ x } where
   mul_le_mul_left a _ h c := mul_le_mul le_rfl h a.prop c.prop
 
+/-- error: unknown free variable '_fvar.29853' -/
+#guard_msgs in
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
-    StrictOrderedCommSemiring { x : α // 0 ≤ x } :=
+    StrictOrderedCommSemiring { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.strictOrderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
