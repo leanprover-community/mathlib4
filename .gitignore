@@ -1,11 +1,6 @@
 # macOS leaves these files everywhere:
 .DS_Store
 # Created by `lake exe cache get` if no home directory is available
-/.cache
-# Prior to v4.3.0-rc2 lake stored files in these locations.
-# We'll leave them in the `.gitignore` for a while for users switching between toolchains.
-/build/
-/lake-packages/
-/lakefile.olean
-# After v4.3.0-rc2 lake stores its files here:
-/.lake/
+.cache
+# `lake` stores its files here:
+.lake
