@@ -410,7 +410,7 @@ alias rootSystem_toLin_apply := rootSystem_toPerfectPairing_apply
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
 instance : (rootSystem H).IsCrystallographic where
-  exists_int α β :=
+  pairing_mem_range_algebraMap α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
