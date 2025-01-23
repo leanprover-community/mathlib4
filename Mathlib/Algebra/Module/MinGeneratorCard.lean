@@ -6,16 +6,19 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
 import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
-# Span Rank for Submodules
+# Minimum Cardinality of generating set of a submodule
 
-In this file, we define the span rank for a submodule, which is implemented as
-  `spanRankNat` and `spanRank`.
+In this file, we define the minimum cardinality of generating set for a submodule, which is
+implemented as `spanRankNat` and `spanRank`.
+The difference between these two definitions is only that when no finite generating set exists,
+`spanRankNat` takes value `0` but `spanRank` takes value `⊤`.
 
 ## Main Definitions
 
 * `spanRankNat`: The minimum cardinality of a generating set of a submodule as a natural
   number. If no finite generating set exists, the span rank is defined to be `0`.
-* `spanRank`: The span rank of a submodule, possibly infinite, with type `WithTop ℕ`.
+* `spanRank`: The minimum cardinality of a generating set of a submodule, possibly infinite, with
+  type `ℕ∞`. If no finite generating set exists, the span rank is defined to be `⊤`.
 * `FG.minGenerator`: For a finitely generated submodule, get a minimal generating function.
 
 ## Main Results
@@ -25,32 +28,31 @@ In this file, we define the span rank for a submodule, which is implemented as
 
 ## Tags
 submodule, generating set, span rank
-
 -/
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 namespace Submodule
 
-/-- The span rank of a submodule as a natural number. If the submodule can not be spanned by any
-  finite set, then the span rank is defined to be `0`. -/
+/-- The minimum cardinality of a generating set of a submodule as a natural number. If no finite
+  generating set exists, the span rank is defined to be `0`. -/
 noncomputable
 def spanRankNat (p : Submodule R M) : ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
-/-- The span rank of a submodule, possibly infinite -/
+/-- The minimum cardinality of a generating set of a submodule, possibly infinite, with type `ℕ∞`.
+  If no finite generating set exists, the span rank is defined to be `⊤`. -/
 noncomputable
 def spanRank (p : Submodule R M) : WithTop ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
-/-- A submodule's span rank is not top if and only if it is finitely generated -/
+/-- A submodule's spanRank is not top if and only if it is finitely generated -/
 @[simp]
 lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
     p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def]
 
-/-- A submodule is finitely generated if and only if
-its spanrank equals its minimum generator cardinality -/
+/-- A submodule is finitely generated if and only if its spanRank is equal to its spanRankNat -/
 lemma fg_iff_spanRank_eq_spanRankNat {p : Submodule R M} :
     p.FG ↔ p.spanRank = p.spanRankNat := by
   constructor
