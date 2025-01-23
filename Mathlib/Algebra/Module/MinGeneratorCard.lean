@@ -114,7 +114,7 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
       rintro _ ⟨x, rfl⟩
       simp
       apply Submodule.subset_span
-      rw [fg_iff_spanrank_eq_spanRankNat] at h
+      rw [fg_iff_spanRank_eq_spanRankNat] at h
       have he : (p.spanRankNat : WithTop Nat) ≤ n := by rwa [h] at e
       use Fin.castLE (ENat.coe_le_coe.mp he) x
       simp_all [↓reduceDIte]
