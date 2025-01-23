@@ -218,12 +218,7 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
       rw [e0]
       exact Seminorm.balanced_closedBall_zero _ _
     exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
-  · have e1 : Convex ℝ (Metric.closedBall (0 : 𝕜) 1) := convex_closedBall _ _
-
-    apply Convex.linear_preimage (E := F) e1 -- (B i)
-    --(B i)
-
-
+  · exact Convex.linear_preimage (convex_closedBall _ _) (B i)
 
 end polar_convex
 
