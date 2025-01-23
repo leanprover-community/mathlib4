@@ -72,7 +72,6 @@ theorem exists_pow_mem_of_mem_nhds {a : R} (ha : IsTopologicallyNilpotent a)
 
 end MonoidWithZero
 
-/- -- To be generalized or deleted
 section Ring
 
 variable {R : Type*} [TopologicalSpace R] [Ring R]
@@ -130,7 +129,6 @@ theorem add_of_commute [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
       (le_trans hm (Nat.le_add_right _ _)) h
 
 end Ring
--/
 
 -- TODO : treat general rings, for commuting elements
 

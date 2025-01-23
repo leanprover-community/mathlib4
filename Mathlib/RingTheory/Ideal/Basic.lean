@@ -35,9 +35,9 @@ open Pointwise
 
 section Semiring
 
-variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
-
 namespace Ideal
+
+variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
 
 section Pi
 
@@ -52,6 +52,31 @@ theorem mem_pi (x : Π i, α i) : x ∈ pi I ↔ ∀ i, x i ∈ I i :=
   Iff.rfl
 
 end Pi
+
+section Commute
+
+variable {α : Type*} [Semiring α] (I : Ideal α) {a b : α}
+
+theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1)
+    (hab : Commute a b) :
+    (a + b) ^ k ∈ I := by
+  simp_rw [hab.add_pow, ← Nat.cast_comm]
+  apply I.sum_mem
+  intro c _
+  apply mul_mem_left
+  by_cases h : m ≤ c
+  · rw [hab.pow_pow]
+    exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
+  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
+    omega
+
+theorem add_pow_add_pred_mem_of_pow_mem_of_commute  {m n : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
+    (a + b) ^ (m + n - 1) ∈ I :=
+  I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb (by rw [← Nat.sub_le_iff_le_add]) hab
+
+end Commute
 
 end Ideal
 
@@ -69,20 +94,13 @@ variable [CommSemiring α] (I : Ideal α)
 
 theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
-    (a + b) ^ k ∈ I := by
-  rw [add_pow]
-  apply I.sum_mem
-  intro c _
-  apply mul_mem_right
-  by_cases h : m ≤ c
-  · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
-  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    omega
+    (a + b) ^ k ∈ I :=
+  I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb hk (Commute.all _ _)
 
 theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
     (a + b) ^ (m + n - 1) ∈ I :=
-  I.add_pow_mem_of_pow_mem_of_le ha hb <| by rw [← Nat.sub_le_iff_le_add]
+  I.add_pow_add_pred_mem_of_pow_mem_of_commute ha hb (Commute.all _ _)
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
