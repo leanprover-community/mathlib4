@@ -380,29 +380,57 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
     sub_add_cancel_left, ← toLin_toPerfectPairing, map_neg, toLin_toPerfectPairing,
     root_coroot_eq_pairing]
 
+/-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
+between a root and coroot always belongs to `S`.
+
+Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`. -/
+class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
+  pairing_mem_range_algebraMap : ∀ i j, P.pairing i j ∈ range (algebraMap S R)
+
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
-class IsCrystallographic : Prop where
-  exists_int : ∀ i j, ∃ z : ℤ, z = P.pairing i j
+abbrev IsCrystallographic := P.IsValuedIn ℤ
 
-protected lemma exists_int [P.IsCrystallographic] (i j : ι) :
-    ∃ z : ℤ, z = P.pairing i j :=
-  IsCrystallographic.exists_int i j
+section IsValuedIn
 
-lemma isCrystallographic_iff :
-    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j :=
+instance : P.IsValuedIn R where
+  pairing_mem_range_algebraMap i j := by simp
+
+variable (S : Type*) [CommRing S] [Algebra S R]
+
+variable {S} in
+lemma isValuedIn_iff :
+    P.IsValuedIn S ↔ ∀ i j, ∃ s, algebraMap S R s = P.pairing i j :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
-  rw [isCrystallographic_iff, forall_comm]
-  exact P.exists_int
+instance : P.IsValuedIn R where
+  pairing_mem_range_algebraMap := by simp
 
-lemma IsCrystallographic.mem_range_algebraMap [P.IsCrystallographic]
-    (S : Type*) [CommRing S] [Algebra S R] (i j : ι) :
-    P.pairing i j ∈ (algebraMap S R).range := by
-  obtain ⟨k, hk⟩ := P.exists_int i j
-  simp only [RingHom.mem_range]
-  exact ⟨k, by simpa⟩
+instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
+  rw [isValuedIn_iff, forall_comm]
+  exact IsValuedIn.pairing_mem_range_algebraMap
+
+/-- A variant of `RootPairing.pairing` for root pairings which are valued in a smaller set of
+coefficients.
+
+Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
+`[NoZeroSMulDivisors S R]`. -/
+def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
+  (P.isValuedIn_iff.mp inferInstance i j).choose
+
+@[simp]
+lemma algebraMap_pairingIn [P.IsValuedIn S] (i j : ι) :
+    algebraMap S R (P.pairingIn S i j) = P.pairing i j :=
+  (P.isValuedIn_iff.mp inferInstance i j).choose_spec
+
+lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
+    [P.IsValuedIn T] :
+    P.IsValuedIn S where
+  pairing_mem_range_algebraMap i j := by
+    use algebraMap T S (P.pairingIn T i j)
+    simp [← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq T S R]
+
+end IsValuedIn
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
@@ -547,11 +575,17 @@ def coxeterWeight : R := pairing P i j * pairing P j i
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
 
-lemma exists_int_eq_coxeterWeight [P.IsCrystallographic] (i j : ι) :
-    ∃ z : ℤ, P.coxeterWeight i j = z := by
-  obtain ⟨a, ha⟩ := P.exists_int i j
-  obtain ⟨b, hb⟩ := P.exists_int j i
-  exact ⟨a * b, by simp [coxeterWeight, ha, hb]⟩
+/-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
+coefficients.
+
+Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
+`[NoZeroSMulDivisors S R]`. -/
+def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
+  P.pairingIn S i j * P.pairingIn S j i
+
+@[simp] lemma algebraMap_coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] :
+    algebraMap S R (P.coxeterWeightIn S i j) = P.coxeterWeight i j := by
+  simp [coxeterWeightIn, coxeterWeight]
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
