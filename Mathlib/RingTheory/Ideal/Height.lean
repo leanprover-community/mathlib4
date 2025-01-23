@@ -290,11 +290,14 @@ theorem IsLocalization.disjoint_comap_iff (S : Submonoid R) (A : Type*) [CommRin
   · intro h; subst h;
     rw [comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
     exact ⟨_, S.one_mem⟩
-  · rw [Disjoint, Set.bot_eq_empty]; intro h
-    sorry
-    -- ← ne_eq, Set.nonempty_iff_ne_empty]
-    -- obtain ⟨x, hx, hx', hx''⟩ := h
-    -- exact J.eq_top_of_isUnit_mem hx' (IsLocalization.map_units A ⟨x, hx⟩)
+  · rw [Disjoint, Set.bot_eq_empty]
+    intro h
+    simp only [Set.le_eq_subset, coe_comap, Set.subset_empty_iff, not_forall,
+      Classical.not_imp] at h
+    obtain ⟨x, hx, hx', hx''⟩ := h
+    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at hx''
+    obtain ⟨u, hu⟩ := hx''
+    exact J.eq_top_of_isUnit_mem (hx' hu) (IsLocalization.map_units A ⟨u, hx hu⟩)
 
 theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
     [Algebra R A] [IsLocalization S A] (J : Ideal R) :
