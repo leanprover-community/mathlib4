@@ -465,7 +465,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
 variable [OrderedSMul ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
-    μ[f|m] ≤ᵐ[μ] μ[g|m] := by 
+    μ[f|m] ≤ᵐ[μ] μ[g|m] := by
   by_cases hm : m ≤ m₀
   swap; · simp_rw [condExp_of_not_le hm]; rfl
   by_cases hμm : SigmaFinite (μ.trim hm)
