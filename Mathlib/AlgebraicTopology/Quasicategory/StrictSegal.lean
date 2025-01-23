@@ -40,20 +40,20 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
   · rw [spine_δ_arrow_lt sx _ hlt]
     apply congr_arg _ ∘ Subtype.ext
-    dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+    dsimp only [horn, stdSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, Functor.op_map,
       whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, horn.face_coe,
       horn.spineId_arrow_coe, Quiver.Hom.unop_op, fullSubcategoryInclusion.map,
-      standardSimplex.objEquiv, Equiv.ulift_symm_down]
+      stdSimplex.objEquiv, Equiv.ulift_symm_down]
     rw [mkOfSucc_δ_lt hlt]
     rfl
   · rw [spine_δ_arrow_gt sx _ hgt]
     apply congr_arg _ ∘ Subtype.ext
-    dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+    dsimp only [horn, stdSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, Functor.op_map,
       whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, horn.face_coe,
       horn.spineId_arrow_coe, Quiver.Hom.unop_op, fullSubcategoryInclusion.map,
-      standardSimplex.objEquiv, Equiv.ulift_symm_down]
+      stdSimplex.objEquiv, Equiv.ulift_symm_down]
     rw [mkOfSucc_δ_gt hgt]
     rfl
   · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
@@ -76,7 +76,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       dsimp only [spine_arrow]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
       apply congr_arg _ ∘ Subtype.ext
-      dsimp only [standardSimplex, uliftFunctor, Functor.comp_obj,
+      dsimp only [stdSimplex, uliftFunctor, Functor.comp_obj,
         whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj]
       cases n with
       | zero => contradiction
@@ -91,7 +91,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality,
       types_comp_apply]
     apply congr_arg
-    dsimp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+    dsimp only [horn, stdSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, horn.face_coe,
       uliftFunctor_map, whiskering_obj_obj_map]
     ext z
@@ -99,8 +99,8 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     | zero => contradiction
     | succ _ =>
       fin_cases z <;>
-      · dsimp only [standardSimplex.objEquiv, yoneda_obj_map,
-          Quiver.Hom.unop_op, Equiv.ulift_symm_down]
+      · dsimp only [stdSimplex.objEquiv, yoneda_obj_map, Quiver.Hom.unop_op, 
+          Equiv.ulift_symm_down]
         rw [mkOfSucc_δ_eq heq]
         rfl
 

@@ -232,35 +232,35 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n]
   truncation (n + 1) |>.obj X |>.spine_map_subinterval n _ j l h Δ
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def standardSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
+def stdSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
 
-/-- Any inner horn contains `standardSimplex.spineId`. -/
+/-- Any inner horn contains `stdSimplex.spineId`. -/
 @[simps]
 def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path Λ[n + 2, i] (n + 2) where
-  vertex j := ⟨standardSimplex.spineId _ |>.vertex j, horn.const n i j _ |>.2⟩
-  arrow j := ⟨standardSimplex.spineId _ |>.arrow j, by
+  vertex j := ⟨stdSimplex.spineId _ |>.vertex j, horn.const n i j _ |>.2⟩
+  arrow j := ⟨stdSimplex.spineId _ |>.arrow j, by
     let edge := primitiveEdge h₀ hₙ j
-    suffices (standardSimplex.spineId _).arrow j = edge.1 from this ▸ edge.2
+    suffices (stdSimplex.spineId _).arrow j = edge.1 from this ▸ edge.2
     dsimp only [truncation, SimplicialObject.truncation, whiskeringLeft_obj_obj,
-      standardSimplex.spineId, Truncated.spine_arrow, Functor.comp_map,
-      standardSimplex.map_apply]
+      stdSimplex.spineId, Truncated.spine_arrow, Functor.comp_map,
+      stdSimplex.map_apply]
     apply EmbeddingLike.apply_eq_iff_eq _ |>.mpr
     apply Hom.ext_one_left <;> rfl⟩
   arrow_src := by
     simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,
       Functor.comp_obj, Functor.comp_map, Subtype.mk.injEq]
-    exact standardSimplex.spineId (n + 2) |>.arrow_src
+    exact stdSimplex.spineId (n + 2) |>.arrow_src
   arrow_tgt := by
     simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,
       Functor.comp_obj, Functor.comp_map, Subtype.mk.injEq]
-    exact standardSimplex.spineId (n + 2) |>.arrow_tgt
+    exact stdSimplex.spineId (n + 2) |>.arrow_tgt
 
 @[simp]
 lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path.map (horn.spineId i h₀ hₙ) (hornInclusion (n + 2) i) =
-      standardSimplex.spineId (n + 2) := rfl
+      stdSimplex.spineId (n + 2) := rfl
 
 end SSet
