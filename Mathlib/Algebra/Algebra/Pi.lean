@@ -48,6 +48,15 @@ theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ 
     (a : R) (i : I) : algebraMap R (∀ i, f i) a i = algebraMap R (f i) a :=
   rfl
 
+variable {I} in
+instance (g : I → Type*) [∀ i, CommSemiring (f i)] [∀ i, Semiring (g i)]
+    [∀ i, Algebra (f i) (g i)] : Algebra (∀ i, f i) (∀ i, g i) where
+  toRingHom := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom f _)
+  commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
+  smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
+
+example [∀ i, CommSemiring (f i)] : Pi.instAlgebraForall f f = Algebra.id _ := rfl
+
 -- One could also build a `∀ i, R i`-algebra structure on `∀ i, A i`,
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.
 variable {I} (R)
