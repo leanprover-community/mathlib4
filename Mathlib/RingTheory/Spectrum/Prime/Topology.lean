@@ -553,9 +553,9 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
 
-variable {R : Type*} [CommRing R]
 open Localization Polynomial Set in
-lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk (c : R) :
+lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
+    {R : Type*} [CommRing R] (c : R) :
     letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
     (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
       = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
