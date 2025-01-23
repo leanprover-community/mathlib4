@@ -27,10 +27,6 @@ theorem subrelation_posetMove : @Subrelation (Set α) (· ≺ ·) (· ⊂ ·) :=
   use a, mem_of_mem_diff ha
   simp
 
-theorem subrelation_transGen_posetMove :
-    @Subrelation (Set α) (Relation.TransGen (· ≺ ·)) (· ⊂ ·) :=
-  subrelation_posetMove.transGen
-
 theorem not_empty_posetMove (s : Set α) : ¬ ∅ ≺ s := by
   simp [posetMove]
 
