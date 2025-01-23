@@ -121,6 +121,12 @@ instance : IsWellOrder α (· <ᵤ ·) := by
 @[refl] theorem liftLE.refl (x : α) : x ≤ᵤ x := by simp
 theorem liftLT_irrefl (x : α) : ¬ x <ᵤ x := by simp
 
+theorem liftLE_of_liftEQ (h : x =ᵤ y) : x ≤ᵤ y := h.le
+theorem liftLE_of_liftLT (h : x <ᵤ y) : x ≤ᵤ y := h.le
+
+alias liftEQ.liftLE := liftLE_of_liftEQ
+alias liftLT.liftLE := liftLE_of_liftLT
+
 theorem liftEQ.comm : x =ᵤ y ↔ y =ᵤ x := by
   rw [← liftEQ_iff (γ := α ⊕ₗ β) (RelEmbedding.sumLexInr _ _).collapse (InitialSeg.leAdd _ _),
     eq_comm, liftEQ_iff]
@@ -135,11 +141,6 @@ theorem not_liftLE : ¬ x ≤ᵤ y ↔ y <ᵤ x := by
 @[simp]
 theorem not_liftLT : ¬ x <ᵤ y ↔ y ≤ᵤ x := by
   rw [← not_liftLE, not_not]
-
-theorem liftLE_of_liftLT (h : x <ᵤ y) : x ≤ᵤ y :=
-  h.le
-
-alias liftLT.liftLE := liftLE_of_liftLT
 
 theorem liftLE_total (x : α) (y : β) : x ≤ᵤ y ∨ y ≤ᵤ x := by
   rw [← liftLE_iff (γ := α ⊕ₗ β) (InitialSeg.leAdd _ _) (RelEmbedding.sumLexInr _ _).collapse,
