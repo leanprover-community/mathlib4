@@ -178,8 +178,12 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
+<<<<<<< HEAD
 
 section polar_convex
+=======
+section RCLike
+>>>>>>> mans0954/polar_AbsConvex
 
 variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
@@ -201,6 +205,7 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
     exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
   · exact Convex.linear_preimage (convex_closedBall _ _) (B i)
 
+<<<<<<< HEAD
 end polar_convex
 
 section Bipolar
@@ -249,5 +254,8 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
 
 end Bipolar
+=======
+end RCLike
+>>>>>>> mans0954/polar_AbsConvex
 
 end LinearMap
