@@ -286,13 +286,6 @@ def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →�
       map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
       map_smul' := fun (_c : R) _f => ext₂ fun g _x => g.map_smul _ _ }
 
-/-- Composing a linear map `M → N` and a linear map `N → P` to form a linear map `M → P`. -/
-def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
-  flip
-    { toFun := lcompₛₗ P σ₂₃
-      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
-      map_smul' := fun _ _f => ext₂ fun g _x => g.map_smulₛₗ _ _  }
-
 variable {R M Nₗ Pₗ}
 
 section
