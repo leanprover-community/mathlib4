@@ -112,11 +112,11 @@ def toεNFA : (P : RegularExpression α) → εNFA α P.St
   | comp P Q => ⟨comp_step P.toεNFA Q.toεNFA, comp_start P.toεNFA, comp_accept Q.toεNFA⟩
   | star P => ⟨star_step P.toεNFA, star_start, star_accept⟩
 
-lemma zero_accepts : zero.toεNFA.accepts = (0 : Language α) := by
+private lemma zero_accepts : zero.toεNFA.accepts = (0 : Language α) := by
   simp only [accepts, toεNFA, zero_accept, exists_false, false_and, mem_empty_iff_false]
   rfl
 
-lemma epsilon_accepts : epsilon.toεNFA.accepts = (1 : Language α) := by
+private lemma epsilon_accepts : epsilon.toεNFA.accepts = (1 : Language α) := by
   ext x
   constructor <;> rw [mem_accepts_iff_exists_path]
   · rintro ⟨s₁, s₂, x', rfl, _, rfl, h⟩
@@ -127,7 +127,7 @@ lemma epsilon_accepts : epsilon.toεNFA.accepts = (1 : Language α) := by
     use .ini, .fin, [none]
     repeat constructor
 
-lemma char_accepts (a : α) : (char a).toεNFA.accepts = {[a]} := by
+private lemma char_accepts (a : α) : (char a).toεNFA.accepts = {[a]} := by
   ext x
   constructor <;> rw [mem_accepts_iff_exists_path]
   · rintro ⟨s₁, s₂, x', rfl, _, rfl, h⟩
@@ -138,7 +138,7 @@ lemma char_accepts (a : α) : (char a).toεNFA.accepts = {[a]} := by
     use .ini, .fin, [a]
     repeat constructor
 
-lemma plus_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
+private lemma plus_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
     P.toεNFA.IsPath s₁ s₂ x ↔ (P + Q).toεNFA.IsPath (.inr (.inl s₁)) (.inr (.inl s₂)) x := by
   induction' x with a x ih generalizing s₁
     <;> constructor
@@ -152,7 +152,7 @@ lemma plus_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
     · rcases h with _ | ⟨_, _, _, ⟨⟩, _, ⟨⟩⟩
     · apply IsPath.cons <;> (try rw [ih]) <;> assumption
 
-lemma plus_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
+private lemma plus_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
     Q.toεNFA.IsPath s₁ s₂ x ↔ (P + Q).toεNFA.IsPath (.inr (.inr s₁)) (.inr (.inr s₂)) x := by
   induction' x with a x ih generalizing s₁
     <;> constructor
@@ -166,15 +166,15 @@ lemma plus_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
     · rcases h with _ | ⟨_, _, _, ⟨⟩, _, ⟨⟩⟩
     · apply IsPath.cons <;> (try rw [ih]) <;> assumption
 
-lemma plus_no_cross_left (s : P.St) (t : Q.St) (x : List (Option α)) :
+private lemma plus_no_cross_left (s : P.St) (t : Q.St) (x : List (Option α)) :
     ¬(P + Q).toεNFA.IsPath (.inr (.inl s)) (.inr (.inr t)) x := by
   induction x generalizing s <;> rintro (_ | ⟨_, _, _, _, _, ⟨_, _, rfl⟩ | ⟨rfl, _⟩⟩) <;> tauto
 
-lemma plus_no_cross_right (s : Q.St) (t : P.St) (x : List (Option α)) :
+private lemma plus_no_cross_right (s : Q.St) (t : P.St) (x : List (Option α)) :
     ¬(P + Q).toεNFA.IsPath (.inr (.inr s)) (.inr (.inl t)) x := by
   induction x generalizing s <;> rintro (_ | ⟨_, _, _, _, _, ⟨_, _, rfl⟩ | ⟨rfl, _⟩⟩) <;> tauto
 
-lemma plus_accepts : (P + Q).toεNFA.accepts = P.toεNFA.accepts + Q.toεNFA.accepts := by
+private lemma plus_accepts : (P + Q).toεNFA.accepts = P.toεNFA.accepts + Q.toεNFA.accepts := by
   ext x
   constructor <;> rw [mem_accepts_iff_exists_path]
   · rintro ⟨s₁, s₂, x', rfl, rfl, rfl, h⟩
@@ -216,12 +216,12 @@ lemma plus_accepts : (P + Q).toεNFA.accepts = P.toεNFA.accepts + Q.toεNFA.acc
       trivial
     · rwa [← plus_embed_right]
 
-lemma comp_one_way (s : Q.St) (t : P.St) (x : List (Option α)) :
+private lemma comp_one_way (s : Q.St) (t : P.St) (x : List (Option α)) :
     ¬(comp P Q).toεNFA.IsPath (.inr s) (.inl t) x := by
   induction x generalizing s <;> rintro (_ | ⟨_, _, _, _, _, ⟨_, _, rfl⟩⟩)
   tauto
 
-lemma comp_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
+private lemma comp_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
     P.toεNFA.IsPath s₁ s₂ x ↔ (comp P Q).toεNFA.IsPath (.inl s₁) (.inl s₂) x := by
   induction' x with a x ih generalizing s₁
     <;> constructor
@@ -236,7 +236,7 @@ lemma comp_embed_left (s₁ s₂ : P.St) (x : List (Option α)) :
     · apply comp_one_way at h
       contradiction
 
-lemma comp_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
+private lemma comp_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
     Q.toεNFA.IsPath s₁ s₂ x ↔ (comp P Q).toεNFA.IsPath (.inr s₁) (.inr s₂) x := by
   induction' x with _ _ ih generalizing s₁
     <;> constructor
@@ -248,7 +248,7 @@ lemma comp_embed_right (s₁ s₂ : Q.St) (x : List (Option α)) :
   · rcases hs with ⟨_, _, rfl⟩
     apply IsPath.cons <;> (try rw [ih]) <;> assumption
 
-lemma comp_split (s₁₁ : P.St) (s₂₂ : Q.St) (x : List (Option α)) :
+private lemma comp_split (s₁₁ : P.St) (s₂₂ : Q.St) (x : List (Option α)) :
     (comp P Q).toεNFA.IsPath (.inl s₁₁) (.inr s₂₂) x →
       ∃ s₁₂ s₂₁ x₁ x₂,
         x = x₁ ++ none :: x₂ ∧
@@ -273,7 +273,7 @@ lemma comp_split (s₁₁ : P.St) (s₂₂ : Q.St) (x : List (Option α)) :
       · use s₁₁, s, [], b :: x
         split_ands <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨_, _, ⟨⟩⟩, rfl, _⟩ <;> tauto
 
-lemma comp_accepts : (comp P Q).toεNFA.accepts = P.toεNFA.accepts * Q.toεNFA.accepts := by
+private lemma comp_accepts : (comp P Q).toεNFA.accepts = P.toεNFA.accepts * Q.toεNFA.accepts := by
   ext x
   constructor
   · rw [mem_accepts_iff_exists_path]
@@ -308,19 +308,20 @@ lemma comp_accepts : (comp P Q).toεNFA.accepts = P.toεNFA.accepts * Q.toεNFA.
           constructor <;> tauto
         · rwa [← comp_embed_right]
 
-lemma step_accept_empty (s : P.St) : s ∈ P.toεNFA.accept → ∀ a, P.toεNFA.step s a = ∅ := by
+private lemma step_accept_empty (s : P.St) : s ∈ P.toεNFA.accept → ∀ a, P.toεNFA.step s a = ∅ := by
   induction P
     <;> rintro ⟨_, _, rfl⟩
     <;> simp only [toεNFA, comp_step, comp_def, image_eq_empty]
     <;> tauto
 
-lemma accept_final (s : P.St) : s ∈ P.toεNFA.accept → ∀ t x, x ≠ [] → ¬P.toεNFA.IsPath s t x := by
+private lemma accept_final (s : P.St) :
+    s ∈ P.toεNFA.accept → ∀ t x, x ≠ [] → ¬P.toεNFA.IsPath s t x := by
   simp_rw [ne_nil_iff_exists_cons]
   rintro _ _ _ ⟨_, _, rfl⟩ (_ | ⟨_, _, _, _, _, hs⟩)
   rw [step_accept_empty] at hs <;> assumption
 
 -- N.B. This holds for any `P`, but only the `star P` case is needed.
-lemma star_no_restart (s : P.St) (x : List (Option α)) :
+private lemma star_no_restart (s : P.St) (x : List (Option α)) :
     ¬(star P).toεNFA.IsPath (.inr s) (.inl .ini) x := by
   intro h
   cases' x using reverseRecOn with x a
@@ -330,7 +331,7 @@ lemma star_no_restart (s : P.St) (x : List (Option α)) :
     obtain ⟨s, _, hs⟩ := h
     rcases s with ⟨_ | _⟩ | _ <;> cases a <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨⟨⟨⟩⟩ | ⟨_, _, ⟨⟩⟩, _⟩
 
-lemma star_cons (s : (star P).St) :
+private lemma star_cons (s : (star P).St) :
     s = .inl .ini ∨ s ∈ .inr '' P.toεNFA.accept →
       ∀ x, (star P).toεNFA.IsPath s (.inl .fin) x →
       ∃ t x',
@@ -348,7 +349,7 @@ lemma star_cons (s : (star P).St) :
     <;> (try rw [step_accept_empty] at hs)
     <;> tauto
 
-lemma star_concat (s : (star P).St) :
+private lemma star_concat (s : (star P).St) :
     s ≠ .inl .fin →
       ∀ x, (star P).toεNFA.IsPath s (.inl .fin) x →
       ∃ x', x = x' ++ [none] := by
@@ -362,12 +363,12 @@ lemma star_concat (s : (star P).St) :
     · use x
     · rcases s with ⟨_ | _⟩ | _ <;> rcases hs with ⟨_, _, ⟨⟩⟩ | ⟨_, ⟨⟩, _⟩
 
-lemma star_end (s : (star P).St) :
+private lemma star_end (s : (star P).St) :
     s = .inl .ini ∨ s ∈ .inr '' P.toεNFA.accept → (star P).toεNFA.IsPath s (.inl .fin) [none] := by
   rw [isPath_singleton]
   rintro (⟨rfl, _⟩ | ⟨_, _, rfl⟩) <;> (try right; constructor) <;> tauto
 
-lemma star_split (s₁ : P.St) (x : List (Option α)) :
+private lemma star_split (s₁ : P.St) (x : List (Option α)) :
     (star P).toεNFA.IsPath (.inr s₁) (.inl .fin) x →
       ∃ s₂ x₁ x',
         x = x₁ ++ x' ∧
@@ -403,7 +404,7 @@ lemma star_split (s₁ : P.St) (x : List (Option α)) :
             use .inr t
             split_ands <;> (try apply star_end) <;> tauto
 
-lemma star_parts (s : (star P).St) (x : List (Option α)) :
+private lemma star_parts (s : (star P).St) (x : List (Option α)) :
     s = .inl .ini ∨ s ∈ .inr '' P.toεNFA.accept → (star P).toεNFA.IsPath s (.inl .fin) x →
       ∃ xs : List (List α), x.reduceOption = xs.flatten ∧ ∀ y ∈ xs, y ∈ P.toεNFA.accepts := by
   intro hs h
@@ -419,11 +420,11 @@ lemma star_parts (s : (star P).St) (x : List (Option α)) :
     constructor <;> (try intro _ hy; cases hy) <;> tauto
   termination_by x.length
 
-lemma star_embed (s₁ s₂ : P.St) (x : List (Option α)) :
+private lemma star_embed (s₁ s₂ : P.St) (x : List (Option α)) :
     P.toεNFA.IsPath s₁ s₂ x → (star P).toεNFA.IsPath (.inr s₁) (.inr s₂) x := by
   induction x generalizing s₁ <;> rintro (_ | _) <;> (try apply IsPath.cons; left) <;> tauto
 
-lemma star_accepts : (star P).toεNFA.accepts = P.toεNFA.accepts∗ := by
+private lemma star_accepts : (star P).toεNFA.accepts = P.toεNFA.accepts∗ := by
   ext x
   constructor <;> rw [mem_accepts_iff_exists_path]
   · rintro ⟨s₁, s₂, x, rfl, rfl, rfl, h⟩
