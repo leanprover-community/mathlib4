@@ -94,6 +94,9 @@ namespace DeprecateModule
 
 @[inherit_doc Mathlib.Linter.linter.deprecateModule]
 def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  let deprecations := deprecateModuleExt.getState (← getEnv)
+  if deprecations.isEmpty then
+    return
   unless Linter.getLinterValue linter.deprecateModule (← getOptions) do
     return
   if (← get).messages.hasErrors then
@@ -121,7 +124,6 @@ def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   let modulesWithNames := importIds.map fun i => (i, i.getId)
-  let deprecations := deprecateModuleExt.getState (← getEnv)
   for is@(i, undeprecated) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
       Linter.logLint linter.deprecateModule nmStx
