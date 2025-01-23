@@ -26,7 +26,16 @@ Conversely, if the canonical maps define isomorphisms for all `X` then `c` is a 
 
 This file develops some general API for conical limits in enriched ordinary categories.
 
-TODO: Dualize everything to define conical colimits.
+## References
+
+* [Kelly G.M., *Basic concepts of enriched category theory*][kelly2005]
+
+See section 3.8 for a similar treatment, although the content of this file is not directly
+adapted from there.
+
+## TODO
+
+Dualize everything to define conical colimits.
 -/
 
 universe v₁ u₁ w v' v u u'
@@ -55,7 +64,21 @@ structure IsConicalLimit where
 
 namespace IsConicalLimit
 
-variable {V} {c}
+variable {c}
+
+/-- If the enriched coyoneda functor preserves limits of `F` then
+any limit cone is conical. -/
+noncomputable
+def ofLimit (hc : IsLimit c) [hp : ∀ Y, PreservesLimit F (eCoyoneda V Y)] : IsConicalLimit V c where
+  isLimit := hc
+  isConicalLimit (Y : C) := (Classical.choice <| (hp Y).preserves hc)
+
+/-- If the enriched coyoneda preserves limits of `F` then limit cones are conical limit cones. -/
+example [hp : ∀ Y, PreservesLimit F (eCoyoneda V Y)] :
+    Nonempty (IsConicalLimit V c) ↔ Nonempty (IsLimit c) :=
+  ⟨(⟨Classical.choice · |>.isLimit⟩), (⟨ofLimit V <| Classical.choice ·⟩)⟩
+
+variable {V}
 
 /-- Transport evidence that a cone is a `V`-enriched limit cone across an isomorphism of cones. -/
 noncomputable def ofIso {r₁ r₂ : Cone F} (h : IsConicalLimit V r₁) (i : r₁ ≅ r₂) :
@@ -75,17 +98,16 @@ cone in `C` is a `V`-enriched limit if and only if the comparison map is an isom
 for every `X : C`.
 -/
 
--- Adjusting the size of `J` would also work, but this is more universe polymorphic.
-variable [HasLimitsOfShape J V]
+variable [HasLimit (F ⋙ eCoyoneda V X)]
 
 variable (V) (c) in
 
 /-- The canonical comparison map with the limit in `V`. -/
-noncomputable def limitComparison : (X ⟶[V] c.pt) ⟶ limit (F ⋙ eCoyoneda V X) :=
+noncomputable def limitComparison :
+    (X ⟶[V] c.pt) ⟶ limit (F ⋙ eCoyoneda V X) :=
   limit.lift _ <| (eCoyoneda V X).mapCone c
 
-lemma limitComparison_eq_conePointUniqueUpToIso (h : IsConicalLimit V c)
-    [HasLimit (F ⋙ eCoyoneda V X)] :
+lemma limitComparison_eq_conePointUniqueUpToIso (h : IsConicalLimit V c) :
     limitComparison V c X =
     ((h.isConicalLimit X).conePointUniqueUpToIso (limit.isLimit _)).hom := by
   apply limit.hom_ext
@@ -93,7 +115,7 @@ lemma limitComparison_eq_conePointUniqueUpToIso (h : IsConicalLimit V c)
 
 /-- `IsConicalLimit.limitComparison` is an isomorphism. -/
 lemma isIso_limitComparison (h : IsConicalLimit V c) : IsIso (limitComparison V c X) := by
-  rw [limitComparison_eq_conePointUniqueUpToIso (h := h)]
+  rw [limitComparison_eq_conePointUniqueUpToIso X (h := h)]
   infer_instance
 
 /-- For all `X : C`, the canonical comparison map with the limit in `V` as isomorphism -/
@@ -102,21 +124,22 @@ noncomputable def limitComparisonIso (h : IsConicalLimit V c) :
   have := isIso_limitComparison X h
   exact (asIso (limitComparison V c X))
 
+variable [∀ Y, HasLimit (F ⋙ eCoyoneda V Y)]
+
 variable (V) in
 
 /-- Reverse direction: if the comparison map is an isomorphism, then `c` is a conical limit. -/
-noncomputable def ofIsIsoLimitComparison
-    [∀ X, IsIso (IsConicalLimit.limitComparison V c X)]
+noncomputable def ofIsIsoLimitComparison [∀ Y, IsIso (IsConicalLimit.limitComparison V c Y)]
     (hc : IsLimit c) : IsConicalLimit V c where
   isLimit := hc
-  isConicalLimit X := by
-    suffices PreservesLimit F (eCoyoneda V X) from
+  isConicalLimit Y := by
+    suffices PreservesLimit F (eCoyoneda V Y) from
       Classical.choice (this.preserves hc)
     have : HasLimit F := ⟨c, hc⟩
     apply (config := { allowSynthFailures := true }) preservesLimit_of_isIso_post
-    have h : limit.post F (eCoyoneda V X) =
-      ((eCoyoneda V X).map ((limit.isLimit F).conePointUniqueUpToIso hc).hom) ≫
-        limitComparison V c X := by
+    have h : limit.post F (eCoyoneda V Y) =
+      ((eCoyoneda V Y).map ((limit.isLimit F).conePointUniqueUpToIso hc).hom) ≫
+        limitComparison V c Y := by
       apply limit.hom_ext
       intro j
       simp [limitComparison, ← eHomWhiskerLeft_comp]
@@ -126,10 +149,10 @@ noncomputable def ofIsIsoLimitComparison
 /--
 A limit cone in `C` is a `V`-enriched limit if and only if the comparison map is an isomorphism
 for every `X : C`.
-Note: it's easier to use the two directions `limitComparisonIso` and
+Note: it's easier to use the two directions `isIso_limitComparison` and
 `ofIsIsoLimitComparison` directly.
 -/
-theorem nonempty_isConicalLimit_iff (hc : IsLimit c) : Nonempty (IsConicalLimit V c) ↔
+example (hc : IsLimit c) : Nonempty (IsConicalLimit V c) ↔
     ∀ X, IsIso (limitComparison V c X) := by
   constructor
   · intro ⟨h⟩ X
