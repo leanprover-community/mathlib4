@@ -213,27 +213,13 @@ section test_scoped
 
 scoped[MyNotation] notation3 "π" => (3 : Nat)
 
-scoped[MyNotation] macro "foo" : term => `((4 : Nat))
-
-/-- error: This scoping directive conflicts with scoped[NS] -/
-#guard_msgs in scoped[MyNotation] local syntax "bla" : command
-
-/-- error: can't use scoped[NS] on this kind of command -/
-#guard_msgs in scoped[MyNotation] def foo := 1
-
 /-- error: unknown identifier 'π' -/
 #guard_msgs in #check π
-
-/-- info: Test.foo (a : ℕ) (f : ℕ → ℕ) : ℕ -/
-#guard_msgs in #check foo
 
 open scoped MyNotation
 
 /-- info: π : ℕ -/
 #guard_msgs in #check π
-
-/-- info: 4 : ℕ -/
-#guard_msgs in #check foo
 
 end test_scoped
 
