@@ -14,6 +14,8 @@ import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Algebra.Group.Int.TypeTags
 
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
 /-!
 # Laurent Series
 
@@ -1071,6 +1073,16 @@ theorem coe_X_compare :
   rw [PowerSeries.coe_X, ← RatFunc.coe_X, ← LaurentSeries_coe, ← compare_coe]
   rfl
 
+instance : Algebra K (RatFuncAdicCompl K) :=
+  RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
+
+theorem algebraMap_apply (a : K) : algebraMap K K⸨X⸩ a = HahnSeries.C a := by
+  simp [RingHom.algebraMap_toAlgebra]
+
+def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
+  AlgEquiv.ofRingEquiv (f := LaurentSeriesRingEquiv K)
+    (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
+
 open Filter WithZero
 
 open scoped WithZeroTopology Topology Multiplicative
@@ -1179,6 +1191,16 @@ theorem powerSeries_ext_subring :
 abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers (RatFunc K) :=
   ((powerSeriesEquivSubring K).trans (LaurentSeriesRingEquiv K).subringMap).trans
     <| RingEquiv.subringCongr (powerSeries_ext_subring K)
+
+example : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) := by
+  unfold adicCompletionIntegers
+  apply RingHom.toAlgebra
+  apply RingHom.codRestrict
+
+/-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
+`RatFunc K`. -/
+abbrev powerSeriesRingAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (RatFunc K) :=
+  sorry
 
 end PowerSeries
 
