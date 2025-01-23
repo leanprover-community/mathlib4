@@ -74,6 +74,8 @@ is the Yoneda embedding of `n`. -/
 def stdSimplex : SimplexCategory ⥤ SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
+@[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
+
 @[inherit_doc SSet.stdSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
 
