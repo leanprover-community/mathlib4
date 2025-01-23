@@ -251,3 +251,69 @@ theorem ENat.add_inj_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injectiv
   exact le_antisymm
     ((WithTop.add_le_add_iff_right hn).mp e.le)
     ((WithTop.add_le_add_iff_right hn).mp e.ge)
+
+theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
+    [IsLocalization S A] (J : Ideal A) (hJ : J.IsPrime) :
+    J.primeHeight = (J.comap (algebraMap R A)).primeHeight := by
+  -- the original proof is broken because of the change to Order.height
+  -- need something like OrderIso.height_eq ?
+  sorry
+
+theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
+    (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
+  fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
+
+theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+    (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
+  rcases eq_or_ne J ⊤ with (rfl | hJ)
+  · simp_rw [Ideal.comap_top, Ideal.minimalPrimes_top, Set.image_empty]
+  refine (Ideal.minimalPrimes_comap_subset _ _).antisymm ?_
+  rintro _ ⟨p, hp, rfl⟩
+  let i := IsLocalization.orderIsoOfPrime S A
+  haveI := hp.1.1
+  refine ⟨⟨Ideal.IsPrime.comap _ , Ideal.comap_mono hp.1.2⟩, fun q hq e => ?_⟩
+  obtain ⟨⟨q', h₁⟩, h₂⟩ :=
+    i.surjective ⟨q, hq.1, Set.disjoint_of_subset_right e (i ⟨_, hp.1.1⟩).2.2⟩
+  replace h₂ : q'.comap (algebraMap R A) = q := by injection h₂
+  subst h₂
+  replace e := Ideal.map_mono (f := algebraMap R A) e
+  replace hq := Ideal.map_mono (f := algebraMap R A) hq.2
+  simp_rw [IsLocalization.map_comap S A] at e hq
+  exact Ideal.comap_mono (hp.2 ⟨h₁, hq⟩ e)
+
+theorem IsLocalization.disjoint_comap_iff (S : Submonoid R) (A : Type*) [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+    Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
+  rw [← iff_not_comm]
+  constructor
+  · intro h; subst h;
+    rw [comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
+    exact ⟨_, S.one_mem⟩
+  · rw [Disjoint, Set.bot_eq_empty]; intro h
+    sorry
+    -- ← ne_eq, Set.nonempty_iff_ne_empty]
+    -- obtain ⟨x, hx, hx', hx''⟩ := h
+    -- exact J.eq_top_of_isUnit_mem hx' (IsLocalization.map_units A ⟨x, hx⟩)
+
+theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal R) :
+    (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A)⁻¹' J.minimalPrimes := by
+  sorry
+
+theorem IsLocalization.height_comap (S : Submonoid R) (A : Type*) [CommRing A] [Nontrivial A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+    J.height = (J.comap (algebraMap R A)).height := by
+  sorry
+
+theorem IsLocalization.AtPrime.comap_maximal_ideal {R : Type*} (S : Type*) [CommRing R] [CommRing S]
+    (I : Ideal R) [I.IsPrime] [Algebra R S] [IsLocalization.AtPrime S I] [IsLocalRing S] :
+    (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I := by
+  sorry
+
+theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
+    [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
+    ringKrullDim A = I.height := by
+  haveI := IsLocalization.AtPrime.Nontrivial A I
+  haveI := IsLocalization.AtPrime.isLocalRing A I
+  sorry
