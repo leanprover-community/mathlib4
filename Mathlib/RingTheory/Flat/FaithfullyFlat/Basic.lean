@@ -426,6 +426,22 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (by simpa using congr($h (m ⊗ₜ n))), fun h => by
     ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
 
+/-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
+then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
+@[simp]
+theorem one_tmul_eq_zero_iff {A : Type*} [CommRing A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
+    (1:A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
+  constructor; swap
+  · rintro rfl; rw [tmul_zero]
+  intro h
+  let f : R →ₗ[R] M := (LinearMap.lsmul R M).flip m
+  suffices f = 0 by simpa [f] using DFunLike.congr_fun this 1
+  rw [Module.FaithfullyFlat.zero_iff_lTensor_zero R A]
+  ext a
+  apply_fun (a • ·) at h
+  rw [smul_zero, smul_tmul', smul_eq_mul, mul_one] at h
+  simpa [f]
+
 end arbitrary_universe
 
 section fixed_universe
