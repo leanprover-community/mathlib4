@@ -152,9 +152,10 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
  it's embedding is a clique in `G`. -/
 theorem induce_isClique {S : Subgraph G} {F : Set α} {A : Set F} (c : (S.induce F).coe.IsClique A) :
     G.IsClique (Subtype.val '' A) := by
-  simp_all [Set.Pairwise]
-  intro _ _ ainA _ _ binA anb
-  exact S.adj_sub (c _ _ ainA _ _ binA anb)
+  simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
+  have := c ainA binA (Subtype.coe_ne_coe.mp anb)
+  exact S.adj_sub this.2.2
 
 end Clique
 
@@ -257,8 +258,9 @@ theorem is3Clique_iff_exists_cycle_length_three :
 theorem induce_isNClique {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
     (cc : (S.induce F).coe.IsNClique n ↑s) :
   G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
-simp_all [isNClique_iff]
-exact induce_isClique cc.left
+rw [isNClique_iff] at cc ⊢
+simp only [Subgraph.induce_verts, coe_map, card_map]
+exact ⟨induce_isClique cc.left, cc.right⟩
 
 end NClique
 
@@ -759,9 +761,8 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 theorem induce_isNIndepSet_iff {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
     ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
     G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
-  simp [isNIndepSet_iff]
-  intro
-  exact induce_isIndepSet_iff G
+  simp only [isNIndepSet_iff, coe_map, card_map, and_congr_left_iff]
+  exact fun _ ↦ induce_isIndepSet_iff G
 
 end NIndepSet
 
