@@ -39,7 +39,7 @@ instance : IsIrrefl (Set α) (· ≺ ·) where
 theorem wellFounded_posetMove [WellQuasiOrderedLE α] : @WellFounded (Set α) (· ≺ ·) := by
   rw [WellFounded.wellFounded_iff_no_descending_seq]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
-  have hf' := hf
+  have hf' := hf -- Is there a way to make `choose` not delete my hypothesis?
   choose g hg using hf
   obtain ⟨m, n, h, h'⟩ := wellQuasiOrdered_le g
   let f' := @RelEmbedding.natGT _ (· < ·) _ f fun n ↦ subrelation_posetMove (hf' n)
