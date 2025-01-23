@@ -293,19 +293,19 @@ theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
 
 @[to_additive]
 lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} {h : b ≤ c ∨ c ≤ b} :
-    c * a  = b * a ↔ c = b := by
+    c * a = b * a ↔ c = b := by
   refine ⟨fun h' => ?_, (· ▸ rfl)⟩
   contrapose h'
-  obtain h|h := h
+  obtain h | h := h
   · exact mul_lt_mul_right' (h.lt_of_ne' h') a |>.ne'
   · exact mul_lt_mul_right' (h.lt_of_ne h') a |>.ne
 
 @[to_additive]
 lemma mul_right_inj_of_comparable [MulLeftStrictMono α] {a b c : α} {h : b ≤ c ∨ c ≤ b} :
     a * c = a * b ↔ c = b := by
-  refine ⟨fun h' => ?_, fun h => h ▸ rfl⟩
+  refine ⟨fun h' => ?_, (· ▸ rfl)⟩
   contrapose h'
-  obtain h|h := h
+  obtain h | h := h
   · exact mul_lt_mul_left' (h.lt_of_ne' h') a |>.ne'
   · exact mul_lt_mul_left' (h.lt_of_ne h') a |>.ne
 
