@@ -254,7 +254,6 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T
       _ ≤ t + n₂ * T := by linarith [(div_le_iff₀ hT).1 hn₂]
       _ ≤ max (t - n₁ * T) (t + n₂ * T) := by apply le_max_right
   apply IntervalIntegrable.mono_set _ this
-
   -- Suffices to show integrability over shifted periods
   let a : ℕ → ℝ := fun n ↦ t + (n - n₁) * T
   rw [(by ring : t - n₁ * T = a 0), (by simp [a] : t + n₂ * T = a (n₁ + n₂))]
