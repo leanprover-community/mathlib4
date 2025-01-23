@@ -97,8 +97,10 @@ instance [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (α ⊕ β
     | inr _, inl _ => Or.inr (Or.inr <| Lex.sep _ _)
     | inr a, inr b => (trichotomous_of s a b).imp3 Lex.inr (congr_arg _) Lex.inr⟩
 
-instance [IsWellOrder α r] [IsWellOrder β s] :
-    IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf
+instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α ⊕ β) (Sum.Lex r s) where
+  wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf
+
+instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α ⊕ β) (Sum.Lex r s) where
 
 end Lex
 
@@ -376,6 +378,9 @@ instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ 
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
     decidableLE := instDecidableRelSumLex,
     decidableEq := instDecidableEqSum }
+
+instance wellFoundedLT [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ⊕ₗ β) :=
+  inferInstanceAs (IsWellFounded _ (Sum.Lex _ _))
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
 instance orderBot [LE α] [OrderBot α] [LE β] :
@@ -658,8 +663,6 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
       exact not_coe_le_bot _
     · simp only [elim_inl, lex_inr_inr, coe_le_coe]
   ⟩
-
-
 
 @[simp]
 theorem orderIsoPUnitSumLex_bot : @orderIsoPUnitSumLex α _ ⊥ = toLex (inl PUnit.unit) :=
