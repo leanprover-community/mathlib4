@@ -20,7 +20,7 @@ open Finset
 open scoped Polynomial
 
 namespace PrimeSpectrum
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 variable (R) in
 /-- The data of a constructible set `s` is finitely many tuples `(f, g₁, ..., gₙ)` such that
