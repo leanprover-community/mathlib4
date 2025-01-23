@@ -23,7 +23,8 @@ universe u v
 
 namespace Algebra.IsCentral
 
-variable (K : Type u) [CommSemiring K] (D : Type v) [Semiring D] [Algebra K D] [IsCentral K D]
+variable (K : Type u) [CommSemiring K] (D D': Type v) [Semiring D] [Algebra K D] [IsCentral K D]
+  [Semiring D'] [Algebra K D']
 
 @[simp]
 lemma center_eq_bot : Subalgebra.center K D = ⊥ := eq_bot_iff.2 IsCentral.out
@@ -52,5 +53,25 @@ lemma baseField_essentially_unique
   simp only [center_eq_bot, coe_bot, Set.mem_range] at H
   obtain ⟨x', H⟩ := H
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
+
+lemma ofAlgEquiv (e : D ≃ₐ[K] D'): IsCentral K D' where
+  out x hx := by
+    rename_i _ h _ _
+    obtain ⟨k, hk⟩ := h.1 (show e.symm x ∈ _ by
+      simp only [Subalgebra.mem_center_iff] at hx ⊢
+      exact fun x => by simpa using congr(e.symm $(hx (e x))))
+    exact ⟨k, by apply_fun e.symm; rw [← hk]; simp [ofId_apply]⟩
+
+open MulOpposite in
+instance : IsCentral K Dᵐᵒᵖ where
+  out z hz:= by
+    rename_i _ h _ _
+    have hz' : ∀ (x : D), x * z.unop = z.unop * x := fun x => by
+      rw [Subalgebra.mem_center_iff] at hz
+      specialize hz (op x)
+      rw [show z = op z.unop from rfl, ← MulOpposite.op_mul, ← MulOpposite.op_mul] at hz
+      exact op_injective hz |>.symm
+    obtain ⟨k, hk⟩ := h.1 <| Subalgebra.mem_center_iff.mpr hz'
+    exact ⟨k, MulOpposite.unop_inj.mp hk⟩
 
 end Algebra.IsCentral
