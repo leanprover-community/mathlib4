@@ -6,9 +6,9 @@ Authors: Damiano Testa
 import Mathlib.Init
 
 /-!
-#  The "importDeprecation" linter
+#  The "deprecateModule" linter
 
-The "importDeprecation" linter emits a warning when a file that has been renamed or split
+The "deprecateModule" linter emits a warning when a file that has been renamed or split
 is imported.
 -/
 
@@ -17,12 +17,12 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /--
-The "importDeprecation" linter emits a warning when a file that has been renamed or split
+The "deprecateModule" linter emits a warning when a file that has been renamed or split
 is imported.
 -/
-register_option linter.importDeprecation : Bool := {
+register_option linter.deprecateModule : Bool := {
   defValue := true
-  descr := "enable the importDeprecation linter"
+  descr := "enable the deprecateModule linter"
 }
 
 /--
@@ -46,12 +46,12 @@ def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotat
       if i.module == `Init then none else (i.module)))
 
 /--
-`deprecate_imports since yyyy-mm-dd` deprecates the imports of the current file.
+`deprecate_modules since yyyy-mm-dd` deprecates the imports of the current file.
 This means that any file that imports the current file will get a notification
 on the corresponding import line suggesting which file/files to import instead.
 -/
-elab (name := deprecate_imports)
-    "deprecate_imports " &"since" yyyy:num "-" mm:num "-" dd:num: command => do
+elab (name := deprecate_modules)
+    "deprecate_modules " &"since" yyyy:num "-" mm:num "-" dd:num: command => do
   if yyyy.getNat < 2025 then
     throwErrorAt yyyy "The year should be at least 2025!"
   if mm.getNat == 0 || 12 < mm.getNat || mm.raw.getSubstring?.get!.toString.trim.length != 2 then
@@ -60,20 +60,20 @@ elab (name := deprecate_imports)
     throwErrorAt dd "The day should be of the form 01, 02,..., 31!}"
   addModuleDeprecation
   -- disable the linter, so that it does not complain in the file with the deprecation
-  elabCommand (← `(set_option linter.importDeprecation false))
+  elabCommand (← `(set_option linter.deprecateModule false))
 
 /-- A utility function to show the pairings `(deprecatedModule, #[preferredModules])`. -/
-elab "show_deprecated_imports" : command => do
+elab "show_deprecated_modules" : command => do
   let directImports := deprecatedImportsExt.getState (← getEnv)
   logInfo <| "\n".intercalate <|
     directImports.fold (init := ["Deprecated modules\n"]) fun nms (i, deps) =>
       nms ++ [s!"'{i}' deprecates to\n{deps}\n"]
 
-namespace ImportDeprecation
+namespace DeprecateModule
 
-@[inherit_doc Mathlib.Linter.linter.importDeprecation]
-def importDeprecationLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.importDeprecation (← getOptions) do
+@[inherit_doc Mathlib.Linter.linter.deprecateModule]
+def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless Linter.getLinterValue linter.deprecateModule (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -85,7 +85,7 @@ def importDeprecationLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- The imports of `Mathlib.lean` and `Mathlib.Tactic` are not required to be non-deprecated,
   -- since these files are expected to import all modules satisfying certain path-restrictions.
   if #[`Mathlib, `Mathlib.Tactic].contains mainModule then return
-  if stx.isOfKind ``Linter.deprecate_imports then return
+  if stx.isOfKind ``Linter.deprecate_modules then return
   let fm ← getFileMap
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- The end of the first module doc-string, or the end of the file if there is none.
@@ -97,25 +97,25 @@ def importDeprecationLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
     -- If parsing failed, there is some command which is not a module docstring.
-    -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
+    -- In that case, we parse until the end of the modules and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
-  let importsWithNames := importIds.map fun i => (i, i.getId)
+  let modulesWithNames := importIds.map fun i => (i, i.getId)
   let deprecations := deprecatedImportsExt.getState (← getEnv)
   for is@(i, _) in deprecations do
-    match importsWithNames.find? (·.2 == i) with
+    match modulesWithNames.find? (·.2 == i) with
       | none => continue
       | some x =>
         let ((_, undeprecated), (nmStx, _)) := (is, x)
-        Linter.logLint linter.importDeprecation nmStx
+        Linter.logLint linter.deprecateModule nmStx
           m!"'{nmStx}' has been deprecated: please replaced this import by \
             {"\nimport ".intercalate <| "\n" :: (undeprecated.map (·.toString)).toList}\n"
 
-initialize addLinter importDeprecationLinter
+initialize addLinter deprecateModuleLinter
 
-end ImportDeprecation
+end DeprecateModule
 
 end Mathlib.Linter
