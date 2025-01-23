@@ -71,43 +71,45 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
 
 /-- The `n`-th standard simplex `Δ[n]` associated with a nonempty finite linear order `n`
 is the Yoneda embedding of `n`. -/
-def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
+def stdSimplex : SimplexCategory ⥤ SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
-@[inherit_doc SSet.standardSimplex]
-scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
+@[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
+
+@[inherit_doc SSet.stdSimplex]
+scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=
   ⟨Δ[0]⟩
 
-namespace standardSimplex
+namespace stdSimplex
 
 open Finset Opposite SimplexCategory
 
 @[simp]
 lemma map_id (n : SimplexCategory) :
-    (SSet.standardSimplex.map (SimplexCategory.Hom.mk OrderHom.id : n ⟶ n)) = 𝟙 _ :=
+    (SSet.stdSimplex.map (SimplexCategory.Hom.mk OrderHom.id : n ⟶ n)) = 𝟙 _ :=
   CategoryTheory.Functor.map_id _ _
 
 /-- Simplices of the standard simplex identify to morphisms in `SimplexCategory`. -/
 def objEquiv (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
-    (standardSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
+    (stdSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
   Equiv.ulift.{u, 0}
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
 abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (f : Fin (len m.unop + 1) →o Fin (n.len + 1)) :
-    (standardSimplex.{u}.obj n).obj m :=
+    (stdSimplex.{u}.obj n).obj m :=
   (objEquiv _ _).symm (Hom.mk f)
 
 lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : SimplexCategory}
-    (x : (standardSimplex.{u}.obj n).obj m₁) :
-    (standardSimplex.{u}.obj n).map f x = (objEquiv _ _).symm (f.unop ≫ (objEquiv _ _) x) := by
+    (x : (stdSimplex.{u}.obj n).obj m₁) :
+    (stdSimplex.{u}.obj n).map f x = (objEquiv _ _).symm (f.unop ≫ (objEquiv _ _) x) := by
   rfl
 
-/-- The canonical bijection `(standardSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
+/-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
 def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
-    (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
+    (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   yonedaCompUliftFunctorEquiv X n
 
 /-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
@@ -149,7 +151,7 @@ lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b)
     ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
   rfl
 
-end standardSimplex
+end stdSimplex
 
 section
 
@@ -161,7 +163,7 @@ def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin
 end
 
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex consists of
-all `m`-simplices of `standardSimplex n` that are not surjective
+all `m`-simplices of `stdSimplex n` that are not surjective
 (when viewed as monotone function `m → n`). -/
 def boundary (n : ℕ) : SSet.{u} where
   obj m := { α : Δ[n].obj m // ¬Function.Surjective (asOrderHom α) }
@@ -219,7 +221,7 @@ open SimplexCategory Finset Opposite
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
 @[simps]
 def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].obj m := by
-  refine ⟨standardSimplex.const _ k _, ?_⟩
+  refine ⟨stdSimplex.const _ k _, ?_⟩
   suffices ¬ Finset.univ ⊆ {i, k} by
     simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or, Fin.forall_fin_one,
       subset_iff, mem_univ, @eq_comm _ _ k]
@@ -233,7 +235,7 @@ def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].o
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
 def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : Λ[n, i] _[1] := by
-  refine ⟨standardSimplex.edge n a b hab, ?range⟩
+  refine ⟨stdSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
       simpa only [unop_op, len_mk, Nat.reduceAdd, asOrderHom, yoneda_obj_obj, Set.union_singleton,
@@ -277,7 +279,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n+3))
     (k : ℕ) (h : k < n+2) : Λ[n+3, i] _[2] := by
-  refine ⟨standardSimplex.triangle
+  refine ⟨stdSimplex.triangle
     (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
@@ -285,8 +287,8 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     OrderHom.const_coe_coe, Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def,
     Set.mem_univ, Set.mem_insert_iff, Set.mem_range, Function.const_apply, exists_const,
     forall_true_left, not_forall, not_or, unop_op, not_exists,
-    standardSimplex.triangle, OrderHom.coe_mk, @eq_comm _ _ i,
-    standardSimplex.objMk, standardSimplex.objEquiv, Equiv.ulift]
+    stdSimplex.triangle, OrderHom.coe_mk, @eq_comm _ _ i,
+    stdSimplex.objMk, stdSimplex.objEquiv, Equiv.ulift]
   dsimp
   by_cases hk0 : k = 0
   · subst hk0
@@ -302,9 +304,9 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
 /-- The `j`th subface of the `i`-th horn. -/
 @[simps]
 def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] :=
-  ⟨(standardSimplex.objEquiv _ _).symm (SimplexCategory.δ j), by
+  ⟨(stdSimplex.objEquiv _ _).symm (SimplexCategory.δ j), by
     simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or,
-      standardSimplex.objEquiv, asOrderHom, Equiv.ulift]⟩
+      stdSimplex.objEquiv, asOrderHom, Equiv.ulift]⟩
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
@@ -313,14 +315,14 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
     σ₁ = σ₂ := by
   apply NatTrans.ext; apply funext; apply Opposite.rec; apply SimplexCategory.rec
   intro m; ext f
-  obtain ⟨f', hf⟩ := (standardSimplex.objEquiv _ _).symm.surjective f.1
+  obtain ⟨f', hf⟩ := (stdSimplex.objEquiv _ _).symm.surjective f.1
   obtain ⟨j, hji, hfj⟩ : ∃ j, ¬j = i ∧ ∀ k, f'.toOrderHom k ≠ j := by
     obtain ⟨f, hf'⟩ := f
     subst hf
     simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or] using hf'
   have H : f = (Λ[n+1, i].map (factor_δ f' j).op) (face i j hji) := by
     apply Subtype.ext
-    apply (standardSimplex.objEquiv _ _).injective
+    apply (stdSimplex.objEquiv _ _).injective
     rw [← hf]
     exact (factor_δ_spec f' j hfj).symm
   have H₁ := congrFun (σ₁.naturality (factor_δ f' j).op) (face i j hji)
@@ -337,8 +339,8 @@ open Simplicial
 /-- The simplicial circle. -/
 noncomputable def S1 : SSet :=
   Limits.colimit <|
-    Limits.parallelPair (standardSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
-      (standardSimplex.map <| SimplexCategory.δ 1)
+    Limits.parallelPair (stdSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
+      (stdSimplex.map <| SimplexCategory.δ 1)
 
 end Examples
 
@@ -455,13 +457,13 @@ namespace Augmented
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]
-noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
+noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   obj Δ :=
-    { left := SSet.standardSimplex.obj Δ
+    { left := SSet.stdSimplex.obj Δ
       right := terminal _
       hom := { app := fun _ => terminal.from _ } }
   map θ :=
-    { left := SSet.standardSimplex.map θ
+    { left := SSet.stdSimplex.map θ
       right := terminal.from _ }
 
 end Augmented
@@ -518,6 +520,20 @@ lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.suc
 
 lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _[n]) :
     S.σ i.castSucc (S.σ j x) = S.σ j.succ (S.σ i x) := congr_fun (S.σ_comp_σ H) x
+
+variable {T : SSet} (f : S ⟶ T)
+
+open Opposite
+
+lemma δ_naturality_apply {n : ℕ} (i : Fin (n + 2)) (x : S _[n + 1]) :
+    f.app (op [n]) (S.δ i x) = T.δ i (f.app (op [n + 1]) x) := by
+  show (S.δ i ≫ f.app (op [n])) x = (f.app (op [n + 1]) ≫ T.δ i) x
+  exact congr_fun (SimplicialObject.δ_naturality f i) x
+
+lemma σ_naturality_apply {n : ℕ} (i : Fin (n + 1)) (x : S _[n]) :
+    f.app (op [n + 1]) (S.σ i x) = T.σ i (f.app (op [n]) x) := by
+  show (S.σ i ≫ f.app (op [n + 1])) x = (f.app (op [n]) ≫ T.σ i) x
+  exact congr_fun (SimplicialObject.σ_naturality f i) x
 
 end applications
 

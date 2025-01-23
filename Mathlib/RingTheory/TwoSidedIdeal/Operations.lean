@@ -88,8 +88,8 @@ variable [NonUnitalRingHomClass F R S]
 
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
-def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R :=
-{ ringCon := I.ringCon.comap f }
+def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R where
+  ringCon := I.ringCon.comap f
 
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by

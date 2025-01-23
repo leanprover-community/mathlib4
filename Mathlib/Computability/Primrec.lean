@@ -27,30 +27,10 @@ for this.)
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-open Mathlib (Vector)
+open List (Vector)
 open Denumerable Encodable Function
 
 namespace Nat
-
--- Porting note: elim is no longer required because lean 4 is better
--- at inferring motive types (I think this is the reason)
--- and worst case, we can always explicitly write (motive := fun _ => C)
--- without having to then add all the other underscores
-
--- /-- The non-dependent recursor on naturals. -/
--- def elim {C : Sort*} : C → (ℕ → C → C) → ℕ → C :=
---   @Nat.rec fun _ => C
--- example {C : Sort*} (base : C) (succ : ℕ → C → C) (a : ℕ) :
---   a.elim base succ = a.rec base succ := rfl
-
--- Porting note: cases is no longer required because lean 4 is better
--- at inferring motive types (I think this is the reason)
-
--- /-- Cases on whether the input is 0 or a successor. -/
--- def cases {C : Sort*} (a : C) (f : ℕ → C) : ℕ → C :=
---   Nat.elim a fun n _ => f n
--- example {C : Sort*} (a : C) (f : ℕ → C) (n : ℕ) :
---   n.cases a f = n.casesOn a f := rfl
 
 /-- Calls the given function on a pair of entries `n`, encoded via the pairing function. -/
 @[simp, reducible]
@@ -574,7 +554,7 @@ theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
   (nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
     dsimp [swap]
     cases' e : p.1 - p.2 with n
-    · simp [tsub_eq_zero_iff_le.1 e]
+    · simp [Nat.sub_eq_zero_iff_le.1 e]
     · simp [not_le.2 (Nat.lt_of_sub_eq_succ e)]
 
 theorem nat_min : Primrec₂ (@min ℕ _) :=
@@ -611,10 +591,6 @@ theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePr
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
 
--- Porting note: It is unclear whether we want to boolean versions
--- of these lemmas, just the prop versions, or both
--- The boolean versions are often actually easier to use
--- but did not exist in Lean 3
 protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
     (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
@@ -1101,15 +1077,12 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
 instance fin {n} : Primcodable (Fin n) :=
   @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
 
-instance vector {n} : Primcodable (Mathlib.Vector α n) :=
+instance vector {n} : Primcodable (List.Vector α n) :=
   subtype ((@Primrec.eq ℕ _ _).comp list_length (const _))
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 
--- Porting note: Equiv.arrayEquivFin is not ported yet
--- instance array {n} : Primcodable (Array' n α) :=
---   ofEquiv _ (Equiv.arrayEquivFin _ _)
 
 section ULower
 
@@ -1184,29 +1157,29 @@ theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=
 theorem fin_succ {n} : Primrec (@Fin.succ n) :=
   fin_val_iff.1 <| by simp [succ.comp fin_val]
 
-theorem vector_toList {n} : Primrec (@Mathlib.Vector.toList α n) :=
+theorem vector_toList {n} : Primrec (@List.Vector.toList α n) :=
   subtype_val
 
-theorem vector_toList_iff {n} {f : α → Mathlib.Vector β n} :
+theorem vector_toList_iff {n} {f : α → List.Vector β n} :
     (Primrec fun a => (f a).toList) ↔ Primrec f :=
   subtype_val_iff
 
-theorem vector_cons {n} : Primrec₂ (@Mathlib.Vector.cons α n) :=
+theorem vector_cons {n} : Primrec₂ (@List.Vector.cons α n) :=
   vector_toList_iff.1 <| by simpa using list_cons.comp fst (vector_toList_iff.2 snd)
 
-theorem vector_length {n} : Primrec (@Mathlib.Vector.length α n) :=
+theorem vector_length {n} : Primrec (@List.Vector.length α n) :=
   const _
 
-theorem vector_head {n} : Primrec (@Mathlib.Vector.head α n) :=
+theorem vector_head {n} : Primrec (@List.Vector.head α n) :=
   option_some_iff.1 <| (list_head?.comp vector_toList).of_eq fun ⟨_ :: _, _⟩ => rfl
 
-theorem vector_tail {n} : Primrec (@Mathlib.Vector.tail α n) :=
+theorem vector_tail {n} : Primrec (@List.Vector.tail α n) :=
   vector_toList_iff.1 <| (list_tail.comp vector_toList).of_eq fun ⟨l, h⟩ => by cases l <;> rfl
 
-theorem vector_get {n} : Primrec₂ (@Mathlib.Vector.get α n) :=
+theorem vector_get {n} : Primrec₂ (@List.Vector.get α n) :=
   option_some_iff.1 <|
     (list_get?.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
-      rw [Vector.get_eq_get, ← List.get?_eq_get]
+      rw [Vector.get_eq_get_toList, ← List.get?_eq_get]
       rfl
 
 theorem list_ofFn :
@@ -1216,13 +1189,13 @@ theorem list_ofFn :
     simpa [List.ofFn_succ] using list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 
 theorem vector_ofFn {n} {f : Fin n → α → σ} (hf : ∀ i, Primrec (f i)) :
-    Primrec fun a => Mathlib.Vector.ofFn fun i => f i a :=
+    Primrec fun a => List.Vector.ofFn fun i => f i a :=
   vector_toList_iff.1 <| by simp [list_ofFn hf]
 
-theorem vector_get' {n} : Primrec (@Mathlib.Vector.get α n) :=
+theorem vector_get' {n} : Primrec (@List.Vector.get α n) :=
   of_equiv_symm
 
-theorem vector_ofFn' {n} : Primrec (@Mathlib.Vector.ofFn α n) :=
+theorem vector_ofFn' {n} : Primrec (@List.Vector.ofFn α n) :=
   of_equiv
 
 theorem fin_app {n} : Primrec₂ (@id (Fin n → σ)) :=
@@ -1242,30 +1215,30 @@ end Primrec
 
 namespace Nat
 
-open Mathlib.Vector
+open List.Vector
 
 /-- An alternative inductive definition of `Primrec` which
   does not use the pairing function on ℕ, and so has to
   work with n-ary functions on ℕ instead of unary functions.
   We prove that this is equivalent to the regular notion
   in `to_prim` and `of_prim`. -/
-inductive Primrec' : ∀ {n}, (Mathlib.Vector ℕ n → ℕ) → Prop
+inductive Primrec' : ∀ {n}, (List.Vector ℕ n → ℕ) → Prop
   | zero : @Primrec' 0 fun _ => 0
   | succ : @Primrec' 1 fun v => succ v.head
   | get {n} (i : Fin n) : Primrec' fun v => v.get i
-  | comp {m n f} (g : Fin n → Mathlib.Vector ℕ m → ℕ) :
-      Primrec' f → (∀ i, Primrec' (g i)) → Primrec' fun a => f (Mathlib.Vector.ofFn fun i => g i a)
+  | comp {m n f} (g : Fin n → List.Vector ℕ m → ℕ) :
+      Primrec' f → (∀ i, Primrec' (g i)) → Primrec' fun a => f (List.Vector.ofFn fun i => g i a)
   | prec {n f g} :
       @Primrec' n f →
         @Primrec' (n + 2) g →
-          Primrec' fun v : Mathlib.Vector ℕ (n + 1) =>
+          Primrec' fun v : List.Vector ℕ (n + 1) =>
             v.head.rec (f v.tail) fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)
 
 end Nat
 
 namespace Nat.Primrec'
 
-open Mathlib.Vector Primrec
+open List.Vector Primrec
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   induction pf with
@@ -1281,7 +1254,7 @@ theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
           Primrec.vector_cons.comp (Primrec.snd.comp .snd) <|
             (@Primrec.vector_tail _ _ (n + 1)).comp .fst).to₂
 
-theorem of_eq {n} {f g : Mathlib.Vector ℕ n → ℕ} (hf : Primrec' f) (H : ∀ i, f i = g i) :
+theorem of_eq {n} {f g : List.Vector ℕ n → ℕ} (hf : Primrec' f) (H : ∀ i, f i = g i) :
     Primrec' g :=
   (funext H : f = g) ▸ hf
 
@@ -1297,7 +1270,7 @@ theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
     rw [← ofFn_get v.tail]; congr; funext i; simp
 
 /-- A function from vectors to vectors is primitive recursive when all of its projections are. -/
-def Vec {n m} (f : Mathlib.Vector ℕ n → Mathlib.Vector ℕ m) : Prop :=
+def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) : Prop :=
   ∀ i, Primrec' fun v => (f v).get i
 
 protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
@@ -1344,7 +1317,7 @@ theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primr
     (hg : @Primrec' n g) : @Primrec' n fun v => if a v < b v then f v else g v :=
   (prec' (sub.comp₂ _ hb ha) hg (tail <| tail hf)).of_eq fun v => by
     cases e : b v - a v
-    · simp [not_lt.2 (tsub_eq_zero_iff_le.mp e)]
+    · simp [not_lt.2 (Nat.sub_eq_zero_iff_le.mp e)]
     · simp [Nat.lt_of_sub_eq_succ e]
 
 theorem natPair : @Primrec' 2 fun v => v.head.pair v.tail.head :=
@@ -1392,7 +1365,7 @@ theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair
 theorem of_prim {n f} : Primrec f → @Primrec' n f :=
   suffices ∀ f, Nat.Primrec f → @Primrec' 1 fun v => f v.head from fun hf =>
     (pred.comp₁ _ <|
-          (this _ hf).comp₁ (fun m => Encodable.encode <| (@decode (Mathlib.Vector ℕ n) _ m).map f)
+          (this _ hf).comp₁ (fun m => Encodable.encode <| (@decode (List.Vector ℕ n) _ m).map f)
             Primrec'.encode).of_eq
       fun i => by simp [encodek]
   fun f hf => by

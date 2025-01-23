@@ -146,9 +146,7 @@ def counitFork (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] :
     Fork (F.map (G.map A.a)) (F.map (adj.unit.app (G.obj A.A))) :=
   Fork.ofι (F.map (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))))
-    (by
-      change _ = F.map _ ≫ _
-      rw [← F.map_comp, equalizer.condition, F.map_comp])
+    (by rw [← F.map_comp, equalizer.condition, F.map_comp])
 
 @[simp]
 theorem unitFork_ι (A : adj.toComonad.Coalgebra)

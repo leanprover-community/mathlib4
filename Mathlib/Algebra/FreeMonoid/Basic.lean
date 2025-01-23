@@ -3,9 +3,9 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free monoid over a given alphabet
@@ -121,7 +121,7 @@ variable {a : FreeMonoid α}
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
 @[to_additive "The length of an additive free monoid element: 1.length = 0 and (a + b).length =
   a.length + b.length"]
-def length (a : FreeMonoid α) : ℕ := List.length a
+def length (a : FreeMonoid α) : ℕ := a.toList.length
 
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl

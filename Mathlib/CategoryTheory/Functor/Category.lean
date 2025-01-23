@@ -142,6 +142,18 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 end Functor
 
+variable (C D E) in
+/-- The functor `(C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E` which flips the variables. -/
+@[simps]
+def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
+  obj F := F.flip
+  map {F₁ F₂} φ :=
+    { app := fun Y =>
+        { app := fun X => (φ.app X).app Y
+          naturality := fun X₁ X₂ f => by
+            dsimp
+            simp only [← NatTrans.comp_app, naturality] } }
+
 namespace Iso
 
 @[reassoc (attr := simp)]

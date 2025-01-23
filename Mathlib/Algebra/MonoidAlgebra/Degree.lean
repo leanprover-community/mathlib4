@@ -299,7 +299,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     split_ifs; exacts [bot_le, hzero.le]
   · intro i s his ih
     rw [Finset.prod_insert his, Finset.sum_insert his]
-    exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
+    exact (supDegree_mul_le hadd).trans (by gcongr)
 
 theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     [AddLeftStrictMono B] [AddRightStrictMono B]
