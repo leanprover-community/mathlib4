@@ -61,8 +61,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
-assert_not_exists OrderedSemiring
-assert_not_exists Fintype
+assert_not_exists OrderedSemiring Fintype
 
 open Function Set Order
 open scoped symmDiff
@@ -222,7 +221,7 @@ theorem mem_inf_iff_superset {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
-/- Complete lattice structure on `Filter α`. -/
+/-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf a b := min a b
   sup a b := max a b
@@ -435,7 +434,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
         exact ⟨c, inter_mem (ha hx) (hb hy)⟩ }
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
   -- Porting note: it was just `congr_arg filter.sets this.symm`
-  (congr_arg Filter.sets this.symm).trans <| by simp only
+  (congr_arg Filter.sets this.symm).trans <| by simp only [u]
 
 theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
@@ -646,6 +645,10 @@ theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop}
     (∀ᶠ x in f, p x ∨ q) ↔ (∀ᶠ x in f, p x) ∨ q := by
   simp only [@or_comm _ q, eventually_or_distrib_left]
 
+theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
+    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x := by
+  simp only [imp_iff_not_or, eventually_or_distrib_left]
+
 @[simp]
 theorem eventually_bot {p : α → Prop} : ∀ᶠ x in ⊥, p x :=
   ⟨⟩
@@ -799,6 +802,16 @@ theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop
   simp only [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
 
 @[simp]
+theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
+    (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
+  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
+
+@[simp]
+theorem frequently_and_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
+    (∃ᶠ x in f, p x ∧ q) ↔ (∃ᶠ x in f, p x) ∧ q := by
+  simp only [@and_comm _ q, frequently_and_distrib_left]
+
+@[simp]
 theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp
 
 @[simp]
@@ -833,6 +846,15 @@ theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h 
   haveI : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
   choose! f hf using fun x (hx : ∃ y, r x y) => hx
   exact ⟨f, h.mono hf⟩
+
+lemma skolem {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)]
+    {P : ∀ i : ι, α i → Prop} {F : Filter ι} :
+    (∀ᶠ i in F, ∃ b, P i b) ↔ ∃ b : (Π i, α i), ∀ᶠ i in F, P i (b i) := by
+  classical
+  refine ⟨fun H ↦ ?_, fun ⟨b, hb⟩ ↦ hb.mp (.of_forall fun x a ↦ ⟨_, a⟩)⟩
+  refine ⟨fun i ↦ if h : ∃ b, P i b then h.choose else Nonempty.some inferInstance, ?_⟩
+  filter_upwards [H] with i hi
+  exact dif_pos hi ▸ hi.choose_spec
 
 /-!
 ### Relation “eventually equal”

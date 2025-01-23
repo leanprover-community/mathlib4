@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Lemmas about (finite domain) functions into fields.

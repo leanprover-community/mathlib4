@@ -19,6 +19,10 @@ Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
 TODO: Show that these are the only examples: that a `StrictSegal` simplicial set is isomorphic to
 the nerve of its homotopy category.
+
+`StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
+in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
+
 -/
 
 universe v u
@@ -156,11 +160,9 @@ end StrictSegal
 
 end SSet
 
-namespace Nerve
+namespace CategoryTheory.Nerve
 
 open SSet
-
-variable {C : Type*} [Category C] {n : ℕ}
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
 property describes the essential image of the nerve functor.-/
@@ -184,4 +186,4 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
 
-end Nerve
+end CategoryTheory.Nerve

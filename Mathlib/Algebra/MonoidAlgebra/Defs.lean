@@ -48,8 +48,7 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
-assert_not_exists NonUnitalAlgHom
-assert_not_exists AlgEquiv
+assert_not_exists NonUnitalAlgHom AlgEquiv
 
 noncomputable section
 
@@ -99,9 +98,9 @@ section
 
 variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
--- Porting note: `reducible` cannot be `local`, so we replace some definitions and theorems with
---               new ones which have new types.
-
+-- TODO: This definition is very leaky, and we later have frequent problems conflating the two
+-- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
+-- In Mathlib 3 this was locally reducible.
 abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
 
 theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
@@ -345,6 +344,10 @@ variable {S : Type*}
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
   Finsupp.smulZeroClass
 
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
+  Finsupp.noZeroSMulDivisors
+
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
   Finsupp.distribSMul _ _
 
@@ -559,22 +562,22 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
   map_mul' _a _b := single_mul_single.symm
 
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
+    (H : ∀ a ∈ f.support, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
   classical exact
-      have A :
-        ∀ a₁ b₁,
-          ((single x r).sum fun a₂ b₂ => ite (a₁ * a₂ = z) (b₁ * b₂) 0) =
-            ite (a₁ * x = z) (b₁ * r) 0 :=
-        fun a₁ b₁ => sum_single_index <| by simp
-      calc
-        (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z =
-            sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
-        _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
-        _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
+    calc
+      (f * single x r) z
+      _ = sum f fun a b => ite (a * x = z) (b * r) 0 :=
+        (mul_apply _ _ _).trans <| Finsupp.sum_congr fun _ _ => sum_single_index (by simp)
+
+      _ = f.sum fun a b => ite (a = y) (b * r) 0 := Finsupp.sum_congr fun x hx => by
+        simp only [H _ hx]
+      _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
+      _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
+
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
-  f.mul_single_apply_aux fun a => by rw [mul_one]
+  f.mul_single_apply_aux fun a ha => by rw [mul_one]
 
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
@@ -589,20 +592,21 @@ theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
       exact h ⟨_, rfl⟩
 
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
+    (H : ∀ a ∈ f.support, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
   classical exact
       have : (f.sum fun a b => ite (x * a = y) (0 * b) 0) = 0 := by simp
       calc
-        (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y =
-            sum f fun a b => ite (x * a = y) (r * b) 0 :=
+        (single x r * f) y
+        _ = sum f fun a b => ite (x * a = y) (r * b) 0 :=
           (mul_apply _ _ _).trans <| sum_single_index this
-        _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
+        _ = f.sum fun a b => ite (a = z) (r * b) 0 := Finsupp.sum_congr fun x hx => by
+          simp only [H _ hx]
         _ = if z ∈ f.support then r * f z else 0 := f.support.sum_ite_eq' _ _
         _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (single (1 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux fun a => by rw [one_mul]
+  f.single_mul_apply_aux fun a ha => by rw [one_mul]
 
 theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x) g' = 0 := by
@@ -750,12 +754,12 @@ variable [Semiring k] [Group G]
 @[simp]
 theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r) y = f (y * x⁻¹) * r :=
-  f.mul_single_apply_aux fun _a => eq_mul_inv_iff_mul_eq.symm
+  f.mul_single_apply_aux fun _a _ => eq_mul_inv_iff_mul_eq.symm
 
 @[simp]
 theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
     (single x r * f) y = r * f (x⁻¹ * y) :=
-  f.single_mul_apply_aux fun _z => eq_inv_mul_iff_mul_eq.symm
+  f.single_mul_apply_aux fun _z _ => eq_inv_mul_iff_mul_eq.symm
 
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
@@ -804,9 +808,6 @@ protected noncomputable def opRingEquiv [Monoid G] :
       rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
       simp }
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
--- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
--- defeq abuse going on.
 theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 
@@ -989,7 +990,7 @@ theorem liftNC_mul {g_hom : Type*}
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
+  MonoidAlgebra.liftNC_mul f g _ _ @h_comm
 
 end Mul
 
@@ -1009,7 +1010,7 @@ theorem one_def : (1 : k[G]) = single 0 1 :=
 theorem liftNC_one {g_hom : Type*}
     [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
     (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
-  (MonoidAlgebra.liftNC_one f g : _)
+  MonoidAlgebra.liftNC_one f g
 
 end One
 
@@ -1062,6 +1063,10 @@ section Semiring
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
   Finsupp.smulZeroClass
+
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R k[G] :=
+  Finsupp.noZeroSMulDivisors
 
 variable [Semiring k] [AddMonoid G]
 
@@ -1334,24 +1339,24 @@ theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * 
   Finsupp.smul_single' c a b
 
 theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
-    (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
+    (H : ∀ a ∈ f.support, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
   @MonoidAlgebra.mul_single_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
 
 theorem mul_single_zero_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (f * single (0 : G) r) x = f x * r :=
-  f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
+  f.mul_single_apply_aux r _ _ _ fun a _ => by rw [add_zero]
 
 theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = d + g) : (x * single g r) g' = 0 :=
   @MonoidAlgebra.mul_single_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
 
 theorem single_mul_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
-    (H : ∀ a, x + a = y ↔ a = z) : (single x r * f) y = r * f z :=
+    (H : ∀ a ∈ f.support, x + a = y ↔ a = z) : (single x r * f) y = r * f z :=
   @MonoidAlgebra.single_mul_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
 
 theorem single_zero_mul_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (single (0 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
+  f.single_mul_apply_aux r _ _ _ fun a _ => by rw [zero_add]
 
 theorem single_mul_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = g + d) : (single g r * x) g' = 0 :=
