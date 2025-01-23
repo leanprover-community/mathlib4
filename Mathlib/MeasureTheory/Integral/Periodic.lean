@@ -334,14 +334,15 @@ section RealValued
 
 open Filter
 
-variable {g : ℝ → ℝ} {t₁ : ℝ}
-variable (hg : Periodic g T) (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
-include hg h_int
+variable {g : ℝ → ℝ}
+variable (hg : Periodic g T)
+include hg
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded below by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
 `Y`. -/
-theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
+theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
+    (hT : 0 < T) (t : ℝ) :
     (sInf ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x) ≤
       ∫ x in (0)..t, g x := by
   let h'_int := hg.intervalIntegrable₀ hT h_int
@@ -357,7 +358,8 @@ theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded above by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
 `Y`. -/
-theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
+theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
+    (hT : 0 < T) (t : ℝ) :
     (∫ x in (0)..t, g x) ≤
       sSup ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x := by
   let h'_int := hg.intervalIntegrable₀ hT h_int
@@ -374,6 +376,7 @@ theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop := by
+  have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atTop_mono (hg.sInf_add_zsmul_le_integral_of_pos h_int hT)
   apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
   apply Tendsto.atTop_zsmul_const h₀
@@ -383,6 +386,7 @@ theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 `t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+  have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atBot_mono (hg.integral_le_sSup_add_zsmul_of_pos h_int hT)
   apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
   apply Tendsto.atBot_zsmul_const h₀
@@ -390,15 +394,17 @@ theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `∞` as `t` tends to `∞`. -/
-theorem tendsto_atTop_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
+theorem tendsto_atTop_intervalIntegral_of_pos'
+    (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop :=
   hg.tendsto_atTop_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `-∞` as `t` tends to `-∞`. -/
-theorem tendsto_atBot_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot :=
-  hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
+theorem tendsto_atBot_intervalIntegral_of_pos'
+    (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
+    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+  exact hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued
 
