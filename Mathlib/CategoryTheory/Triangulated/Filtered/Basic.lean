@@ -28,7 +28,7 @@ open Category Pretriangulated ZeroObject
 /-
 We work in a preadditive category `C` equipped with an additive shift.
 -/
-variable {C : Type u} [Category.{v, u} C] [HasZeroObject C] [Preadditive C]
+variable {C : Type u} [Category.{v, u} C]
 
 attribute [local instance] endofunctorMonoidalCategory
 
@@ -42,33 +42,49 @@ instance Shift₁ : HasShift C ℤ where
     have := HasShift.shiftMonoidal (C := C) (A := ℤ × ℤ)
     infer_instance
 
-def Shift₂ : HasShift C ℤ where
+variable (C) in
+def FilteredShift := C
+
+instance : Category (FilteredShift C) := by
+  dsimp only [FilteredShift]
+  infer_instance
+
+noncomputable instance : HasShift (FilteredShift C) (ℤ × ℤ) := by
+  dsimp only [FilteredShift]
+  infer_instance
+
+noncomputable instance : HasShift (FilteredShift C) ℤ where
   shift := (Discrete.addMonoidalFunctor (AddMonoidHom.inr ℤ ℤ)).comp HasShift.shift
   shiftMonoidal := by
     have := HasShift.shiftMonoidal (C := C) (A := ℤ × ℤ)
     infer_instance
 
-instance AdditiveShift₁ [∀ (p : ℤ × ℤ), Functor.Additive (shiftFunctor C p)] :
-    ∀ (n : ℤ), Functor.Additive (shiftFunctor C n) := by
-  intro n
+instance [HasZeroObject C] : HasZeroObject (FilteredShift C) := by
+  dsimp only [FilteredShift]
+  infer_instance
+
+instance [Preadditive C] : Preadditive (FilteredShift C) := by
+  dsimp only [FilteredShift]
+  infer_instance
+
+variable (C) in
+def shiftFunctor₂ (n : ℤ) : C ⥤ C := shiftFunctor (FilteredShift C) n
+
+instance [Preadditive C] (n : ℤ) [(shiftFunctor C (Prod.mk (0 : ℤ) n)).Additive] :
+    (shiftFunctor (FilteredShift C) n).Additive := by
+  change (shiftFunctor C (Prod.mk 0 n)).Additive
+  infer_instance
+
+instance [Preadditive C] (n : ℤ) [(shiftFunctor C (Prod.mk (0 : ℤ) n)).Additive] :
+    (shiftFunctor₂ C n).Additive := by
+  change (shiftFunctor C (Prod.mk 0 n)).Additive
+  infer_instance
+
+instance AdditiveShift₁ [Preadditive C] (n : ℤ) [(shiftFunctor C (Prod.mk n (0 : ℤ))).Additive] :
+    (shiftFunctor C n).Additive := by
   change Functor.Additive (shiftFunctor C (n, (0 : ℤ)))
   exact inferInstance
 
-instance AdditiveShift₂ [∀ (p : ℤ × ℤ), Functor.Additive (shiftFunctor C p)] :
-    ∀ (n : ℤ), Functor.Additive (@shiftFunctor C _ _ _ Shift₂ n) := by
-  intro n
-  change Functor.Additive (shiftFunctor C ((0 : ℤ), n))
-  exact inferInstance
-
-/-
-lemma shiftFunctorComm_eq_shift₁FunctorComm (n m : ℤ) :
-    shiftFunctorComm C (n, (0 : ℤ)) (m, (0 : ℤ)) = shiftFunctorComm C n m := sorry
-
-lemma shiftFunctorComm_eq_shift₂FunctorComm (n m : ℤ) :
-    shiftFunctorComm C ((0 : ℤ), n) ((0 : ℤ), m) = @shiftFunctorComm C _ _ _ Shift₂ n m := sorry
--/
-
-omit [HasZeroObject C] [Preadditive C]
 lemma shift₁FunctorZero_eq_shiftFunctorZero :
     shiftFunctorZero C ℤ = shiftFunctorZero C (ℤ × ℤ) := by
   rw [shiftFunctorZero, shiftFunctorZero, Iso.symm_eq_iff]
@@ -78,10 +94,18 @@ lemma shift₁FunctorZero_eq_shiftFunctorZero :
   simp; rfl
 
 lemma shift₁FunctorAdd_eq_shiftFunctorAdd (a b : ℤ) :
-    shiftFunctorAdd C a b = shiftFunctorAdd C (a, (0 : ℤ)) (b, (0 : ℤ)) := by sorry
+    shiftFunctorAdd C a b = shiftFunctorAdd C (a, (0 : ℤ)) (b, (0 : ℤ)) := by
+  dsimp [shiftFunctorAdd]
+  rw [Iso.symm_eq_iff]
+  ext1
+  dsimp [Functor.Monoidal.μIso_hom]
+  erw [Functor.LaxMonoidal.comp_μ]
+  simp only [Discrete.addMonoidalFunctor_obj, AddMonoidHom.inl_apply,
+    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, eqToIso_refl, Discrete.functor_map_id, comp_id]
+  rfl
 
-instance Shift₂CommShift₁ (n : ℤ) : (@shiftFunctor C _ _ _ Shift₂ n).CommShift ℤ where
-iso := fun m ↦ (shiftFunctorAdd' C (m, (0 : ℤ)) ((0 : ℤ), n) (m, n) (by simp only [Prod.mk_add_mk,
+instance Shift₂CommShift₁ (n : ℤ) : (shiftFunctor₂ C n).CommShift ℤ where
+iso m := (shiftFunctorAdd' C (m, (0 : ℤ)) ((0 : ℤ), n) (m, n) (by simp only [Prod.mk_add_mk,
     add_zero, zero_add])).symm.trans (shiftFunctorAdd' C ((0 : ℤ), n) (m, (0 : ℤ)) (m, n)
     (by simp only [Prod.mk_add_mk, add_zero, zero_add]))
 zero := by
@@ -99,12 +123,13 @@ zero := by
 add := by
   intro a b
   simp only
+  rw [← shiftFunctorComm_eq, ← shiftFunctorComm_eq, ← shiftFunctorComm_eq]
   ext A
-  simp only [Functor.comp_obj, Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app,
-    Functor.CommShift.isoAdd_hom_app, Functor.map_comp, assoc]
+  simp only [Functor.CommShift.isoAdd_hom_app]
   rw [shift₁FunctorAdd_eq_shiftFunctorAdd]
-  sorry
 
+
+#exit
 /-
   rw [← shiftFunctorComm_eq, ← shiftFunctorComm_eq, ← shiftFunctorComm_eq]
   ext A

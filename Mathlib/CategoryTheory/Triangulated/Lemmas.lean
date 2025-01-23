@@ -369,6 +369,7 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd'_hom_app (m₁ m₂ m�
 
 end Shift
 
+/-
 section Shift
 
 variable {C : Type u} {A : Type*} [CategoryTheory.Category.{v, u} C] [AddMonoid A]
@@ -465,7 +466,9 @@ lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
   simp [shiftFunctorZero', eqToHom_map]
 
 end Shift
+-/
 
+/-
 section Shift
 
 variable {C : Type u} {A : Type*} [CategoryTheory.Category.{v, u} C] [AddGroup A]
@@ -618,68 +621,9 @@ lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : 
               rw [Equiv.apply_symm_apply]-/
 
 end Shift
-
-namespace Functor
-namespace CommShift
-
-universe u' v'
-
-variable {C : Type u} {D : Type u'} [Category.{v,u} C] [Category.{v',u'} D] (F : C ⥤ D) (A : Type*)
-  [AddMonoid A] [HasShift C A] [HasShift D A]
-
-/-
-theorem zero' (a : A) (ha : a = 0) : ∀ [self : F.CommShift A],
-    CommShift.iso a = CommShift.isoZero' F a ha := by
-  intro _
-  ext _
-  simp only [comp_obj, isoZero'_hom_app, shiftFunctorZero', Iso.trans_hom, eqToIso.hom,
-    NatTrans.comp_app, id_obj, eqToHom_app, map_comp, Iso.trans_inv, eqToIso.inv, Category.assoc]
 -/
 
--- Should be `Functor.CommShift.op` probably, and take an instance argument.
-def op (commF : CommShift F A) :
-    CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
-  iso a := (NatIso.op (commF.iso a)).symm
-  zero := by
-    simp only
-    rw [commF.zero]
-    ext _
-    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app, isoZero_inv_app,
-      op_comp, isoZero_hom_app, op_map]
-    erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
-    simp
-  add a b := by
-    simp only
-    rw [commF.add]
-    ext _
-    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app, isoAdd_inv_app,
-      op_comp, Category.assoc, isoAdd_hom_app, op_map]
-    erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
-    rfl
-
-noncomputable def removeOp (commFop : CommShift (C := OppositeShift C A)
-    (D := OppositeShift D A) F.op A) : CommShift F A where
-  iso a := NatIso.removeOp (commFop.iso a).symm
-  zero := by
-    simp only
-    rw [commFop.zero]
-    ext _
-    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, isoZero_hom_app]
-    erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
-    simp
-  add a b := by
-    simp only
-    rw [commFop.add]
-    ext _
-    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc, isoAdd_hom_app]
-    erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
-    rfl
-
-end CommShift
-end Functor
-
+/-
 namespace Adjunction
 
 open Opposite
@@ -730,6 +674,7 @@ lemma comp_op : (Adjunction.comp adj adj₁).op =
     Adjunction.comp adj₁.op adj.op := by aesop
 
 end Adjunction
+-/
 
 section
 
@@ -899,12 +844,16 @@ noncomputable instance : (Triangle.π₁ (C := C)).CommShift ℤ where
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
 
 omit [HasZeroObject C] [Pretriangulated C] in
-lemma Triangle_π₁_commShiftIso (a : ℤ) (T : Triangle C) :
+lemma Triangle_π₁_commShiftIso_app (a : ℤ) (T : Triangle C) :
     ((Triangle.π₁ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
 
 omit [HasZeroObject C] [Pretriangulated C] in
-lemma Triangle_π₁_commShiftIso_hom (a : ℤ) (T : Triangle C) :
+lemma Triangle_π₁_commShiftIso_hom_app (a : ℤ) (T : Triangle C) :
     ((Triangle.π₁ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
+
+omit [HasZeroObject C] [Pretriangulated C] in
+lemma Triangle_π₁_commShiftIso_inv_app (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₁ (C := C)).commShiftIso a).inv.app T = 𝟙 _ := rfl
 
 noncomputable instance : (Triangle.π₂ (C := C)).CommShift ℤ where
   iso n := by
