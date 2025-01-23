@@ -61,14 +61,14 @@ lemma fg_iff_spanRank_eq_spanRankNat {p : Submodule R M} :
       rwa [nonempty_subtype, ← fg_def]
     exact (WithTop.coe_iInf (OrderBot.bddBelow
       (Set.range fun i ↦ (spanRankNat.proof_1 p i).toFinset.card))).symm
-  intro e
-  rw [← spanRank_ne_top_iff_fg, e]
-  exact WithTop.coe_ne_top
+  · intro e
+    rw [← spanRank_ne_top_iff_fg, e]
+    exact WithTop.coe_ne_top
 
 /-- Constructs a generating function whose cardinality equals
   `spanRankNat` for a finitely generated submodule.-/
 theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
-  ∃ f : Fin p.spanRankNat → M, span R (Set.range f) = p := by
+    ∃ f : Fin p.spanRankNat → M, span R (Set.range f) = p := by
   haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
     rcases h with ⟨s, hs⟩
     use s
@@ -77,7 +77,7 @@ theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
     · exact hs
   obtain ⟨⟨s, h₁, h₂⟩, h₃ : h₁.toFinset.card = _⟩ :
     p.spanRankNat ∈ _ := Nat.sInf_mem (Set.range_nonempty _)
-  rw [<- h₃]
+  rw [← h₃]
   let f := ((@Fintype.ofFinite s h₁).equivFin).invFun
   letI t1 : Finite (@Set.Elem M s) := h₁
   letI t2 : Fintype (@Set.Elem M s) := h₁.fintype
@@ -94,7 +94,7 @@ theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
 /-- For a finitely generated submodule, its spanRank is less than or equal to n
     if and only if there exists a generating function from fin n -/
 lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
-  p.spanRank ≤ n ↔ ∃ f : Fin n → M, span R (Set.range f) = p := by
+    p.spanRank ≤ n ↔ ∃ f : Fin n → M, span R (Set.range f) = p := by
   classical
   constructor
   · intro e
@@ -136,12 +136,12 @@ noncomputable def FG.minGenerator {p : Submodule R M} (h : p.FG) : Fin p.spanRan
 
 /-- The span of the minimal generator equals the submodule -/
 lemma FG.span_range_minGenerator {p : Submodule R M} (h : p.FG) :
-  span R (Set.range (minGenerator h)) = p :=
+    span R (Set.range (minGenerator h)) = p :=
   Classical.choose_spec (exists_fun_spanRankNat_span_range_eq h)
 
 /-- The minimal generator elements are in the submodule -/
 lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i) :
-  minGenerator h i ∈ p := by
+    minGenerator h i ∈ p := by
   have := span_range_minGenerator h
   simp_rw [← this]
   exact subset_span (Set.mem_range_self i)
