@@ -1796,6 +1796,7 @@ import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.Filtered.Flat
 import Mathlib.CategoryTheory.Filtered.Grothendieck
 import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Filtered.Small
@@ -1971,6 +1972,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
@@ -3181,6 +3183,7 @@ import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 import Mathlib.Geometry.Euclidean.Triangle
+import Mathlib.Geometry.Group.Growth.LinearLowerBound
 import Mathlib.Geometry.Group.Growth.QuotientInter
 import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
 import Mathlib.Geometry.Manifold.Algebra.LieGroup

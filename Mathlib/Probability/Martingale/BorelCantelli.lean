@@ -321,7 +321,7 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
   have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot
     (martingalePart_bdd_difference ℱ hbdd)
   have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n|ℱ n]) ω := by
-    refine ae_all_iff.2 fun n => condexp_nonneg ?_
+    refine ae_all_iff.2 fun n => condExp_nonneg ?_
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω
   filter_upwards [h₁, h₂, h₃, hfmono] with ω hω₁ hω₂ hω₃ hω₄
   constructor <;> intro ht
