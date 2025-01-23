@@ -302,6 +302,9 @@ theorem mem_closure {x : K} {s : Set K} : x ∈ closure s ↔ ∀ S : Subfield K
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring :=
   Subring.closure_le.mpr subset_closure
 
