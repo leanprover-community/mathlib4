@@ -120,17 +120,23 @@ theorem liftEQ.comm : x =ᵤ y ↔ y =ᵤ x := by
 theorem liftLT_irrefl (x : α) : ¬ x <ᵤ x := by
   simp
 
--- All of these instances are trivial consequences of `liftEQ_iff_eq`, `liftLE_iff_le`,
--- and `liftLT_iff_lt`.
-instance : IsRefl α (· =ᵤ ·) where refl := liftEQ.refl
-instance : IsRefl α (· ≤ᵤ ·) where refl := liftLE.refl
-instance : IsSymm α (· =ᵤ ·) where symm _ _ := liftEQ.symm
-instance : IsIrrefl α (· <ᵤ ·) where irrefl := liftLT_irrefl
-instance : IsTrans α (· =ᵤ ·) where trans := by simp
-instance : IsTrans α (· ≤ᵤ ·) where trans _ _ _ := by simpa using le_trans
-instance : IsTrans α (· <ᵤ ·) where trans _ _ _ := by simpa using lt_trans
-instance : IsTotal α (· ≤ᵤ ·) where total := by simpa using le_total
-instance : IsTrichotomous α (· <ᵤ ·) where trichotomous := by simpa using lt_trichotomy
+instance : IsEquiv α (· =ᵤ ·) := by
+  have : IsEquiv α (· = ·) := inferInstance
+  convert this
+  ext
+  simp
+
+instance : IsLinearOrder α (· ≤ᵤ ·) := by
+  have : IsLinearOrder α (· ≤ ·) := inferInstance
+  convert this
+  ext
+  simp
+
+instance : IsWellOrder α (· <ᵤ ·) := by
+  have : IsWellOrder α (· < ·) := inferInstance
+  convert this
+  ext
+  simp
 
 @[simp]
 theorem not_liftLE : ¬ x ≤ᵤ y ↔ y <ᵤ x := by
