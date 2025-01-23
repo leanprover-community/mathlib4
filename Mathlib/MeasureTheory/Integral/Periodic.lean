@@ -392,8 +392,7 @@ theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop :=
-  hg.tendsto_atTop_intervalIntegral_of_pos h_int (intervalIntegral_pos_of_pos
-    (hg.intervalIntegrable₀ hT h_int 0 T) h₀ hT) hT
+  hg.tendsto_atTop_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `-∞` as `t` tends to `-∞`. -/
