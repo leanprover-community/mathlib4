@@ -256,16 +256,15 @@ variable {ι : Type*}
 
 /-- dot product of two vectors in ℝ^d as a bilinear map -/
 noncomputable
-def dotProduct (J : Finset ι) : (J → ℝ) →ₗ[ℝ] (J → ℝ) →ₗ[ℝ] ℝ := by
-  apply LinearMap.mk₂ ℝ (fun v w : J → ℝ => Matrix.dotProduct v w)
-      (fun m1 m2 n => Matrix.add_dotProduct m1 m2 n)
-      (fun c m n ↦ Matrix.smul_dotProduct c m n)
-      (fun m n₁ n₂ ↦ Matrix.dotProduct_add m n₁ n₂)
-      (fun c m n ↦ Matrix.dotProduct_smul c m n)
+def dotProduct_bilinear (J : Finset ι) : (J → ℝ) →ₗ[ℝ] (J → ℝ) →ₗ[ℝ] ℝ := by
+  apply LinearMap.mk₂ ℝ (fun v w : J → ℝ => dotProduct v w)
+      (fun m1 m2 n => add_dotProduct m1 m2 n)
+      (fun c m n ↦ smul_dotProduct c m n)
+      (fun m n₁ n₂ ↦ dotProduct_add m n₁ n₂)
+      (fun c m n ↦ dotProduct_smul c m n)
 
 theorem continuous_dotProduct (J : Finset ι) :
-    Continuous fun p : (J → ℝ) × (J → ℝ) ↦ dotProduct (J : Finset ι) p.1 p.2 := by
-  simp [dotProduct]
+    Continuous fun p : (J → ℝ) × (J → ℝ) ↦ dotProduct_bilinear (J : Finset ι) p.1 p.2 := by
   apply continuous_finset_sum _ (fun i _ => Continuous.mul
       (Continuous.comp (continuous_apply i) (Continuous.fst continuous_id))
       (Continuous.comp (continuous_apply i) (Continuous.snd continuous_id)))
@@ -281,15 +280,15 @@ theorem probFourierChar_apply (z : ℝ) : probFourierChar z = Circle.exp z := rf
 
 theorem continuous_probFourierChar : Continuous probFourierChar := Circle.exp.continuous
 
-theorem probChar_eq (J : Finset ι) (v w : J → ℝ) : (probFourierChar (dotProduct J v w))
+theorem probChar_eq (J : Finset ι) (v w : J → ℝ) : (probFourierChar (dotProduct_bilinear J v w))
     = (probChar continuous_probFourierChar (continuous_dotProduct J) w) v := by
   simp [probFourierChar, probChar]
 
 /-- docBlame -/
 theorem ext_of_charFun_eq (J : Finset ι)
     (P P' : MeasureTheory.FiniteMeasure ((i : J) → ℝ)) :
-    (∀ w : J → ℝ, ∫ v, ((probFourierChar (dotProduct J v w)) : ℂ) ∂P
-    = ∫ v, ((probFourierChar (dotProduct J v w)) : ℂ) ∂P') → P = P' := by
+    (∀ w : J → ℝ, ∫ v, ((probFourierChar (dotProduct_bilinear J v w)) : ℂ) ∂P
+    = ∫ v, ((probFourierChar (dotProduct_bilinear J v w)) : ℂ) ∂P') → P = P' := by
   have h1 : probFourierChar ≠ 1 := by
     rw [DFunLike.ne_iff]
     use Real.pi
@@ -298,13 +297,12 @@ theorem ext_of_charFun_eq (J : Finset ι)
     have heq := congrArg Subtype.val h
     rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
     norm_num at heq
-  have h2 : ∀ (v : J → ℝ), v ≠ 0 → dotProduct J v ≠ 0 := by
+  have h2 : ∀ (v : J → ℝ), v ≠ 0 → dotProduct_bilinear J v ≠ 0 := by
     intro v hv
     rw [DFunLike.ne_iff]
     use v
     rw [LinearMap.zero_apply]
-    simp only [dotProduct, LinearMap.mk₂_apply, ne_eq, Matrix.dotProduct_self_eq_zero]
-    exact hv
+    simpa only [dotProduct_bilinear, LinearMap.mk₂_apply, ne_eq, dotProduct_self_eq_zero]
   intro h
   apply FiniteMeasure.ext_of_charFun_eq FiniteDimensional.continuous_probFourierChar h1 h2
       (continuous_dotProduct J) P P'
