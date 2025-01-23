@@ -71,9 +71,6 @@ theorem polar_closed (s : Set E) : IsClosed (X :=  WeakBilin B.flip) (B.polar s)
   exact isClosed_biInter
     (fun _ _ => IsClosed.preimage (WeakBilin.eval_continuous B.flip _) Metric.isClosed_ball)
 
-theorem bipolar_closed (s : Set E) : IsClosed (X :=  WeakBilin B) (B.flip.polar (B.polar s)) :=
-  polar_closed _ _
-
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
@@ -85,11 +82,6 @@ theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
-
-theorem polar_balanced (s : Set E) : Balanced 𝕜 (B.polar s) := fun a ha y ⟨z,⟨hz₁,hz₂⟩⟩ x hx => by
-  rw [← hz₂, map_smul, smul_eq_mul, ← mul_one 1]
-  exact le_trans (norm_mul_le _ _)
-    (mul_le_mul ha (hz₁ x hx) (norm_nonneg ((B x) z)) (zero_le_one' ℝ))
 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
