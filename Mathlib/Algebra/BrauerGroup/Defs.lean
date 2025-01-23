@@ -33,7 +33,7 @@ universe u v
 /-- `CSA` is the set of all finite dimensional central simple algebras over field `K`, for its
   generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib.Algebra.Azumaya.Defs`. -/
 structure CSA (K : Type u) [Field K] extends AlgebraCat.{v} K where
-  /-- Amy member of `CSA` is central. -/
+  /-- Any member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]
   /-- Any member of `CSA` is simple. -/
   [isSimple : IsSimpleRing carrier]
