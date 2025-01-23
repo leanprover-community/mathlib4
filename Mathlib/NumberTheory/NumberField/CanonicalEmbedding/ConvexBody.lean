@@ -190,8 +190,6 @@ theorem convexBodyLT'_convex : Convex ℝ (convexBodyLT' K f w₀) := by
 
 open MeasureTheory MeasureTheory.Measure
 
-open scoped Classical
-
 variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLT'`. -/
@@ -204,6 +202,7 @@ theorem convexBodyLT'Factor_ne_zero : convexBodyLT'Factor K ≠ 0 :=
 theorem one_le_convexBodyLT'Factor : 1 ≤ convexBodyLT'Factor K :=
   one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
+open scoped Classical in
 theorem convexBodyLT'_volume :
     volume (convexBodyLT' K f w₀) = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
   have vol_box : ∀ B : ℝ≥0, volume {x : ℂ | |x.re| < 1 ∧ |x.im| < B^2} = 4*B^2 := by
@@ -257,7 +256,7 @@ section convexBodySum
 
 open ENNReal MeasureTheory Fintype
 
-open scoped Real Classical NNReal
+open scoped Real NNReal
 
 variable [NumberField K] (B : ℝ)
 variable {K}
@@ -269,6 +268,7 @@ noncomputable abbrev convexBodySumFun (x : mixedSpace K) : ℝ := ∑ w, mult w 
 theorem convexBodySumFun_apply (x : mixedSpace K) :
     convexBodySumFun x = ∑ w,  mult w * normAtPlace w x := rfl
 
+open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
     convexBodySumFun x = ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ := by
   simp_rw [convexBodySumFun_apply, ← Finset.sum_add_sum_compl {w | IsReal w}.toFinset,
@@ -309,6 +309,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
       (mem_nonZeroDivisors_iff_ne_zero.mpr <| Nat.cast_ne_zero.mpr mult_ne_zero)]
   simp_rw [Finset.mem_univ, true_implies]
 
+open scoped Classical in
 theorem norm_le_convexBodySumFun (x : mixedSpace K) : ‖x‖ ≤ convexBodySumFun x := by
   rw [norm_eq_sup'_normAtPlace]
   refine (Finset.sup'_le_iff _ _).mpr fun w _ ↦ ?_
@@ -332,6 +333,7 @@ theorem convexBodySumFun_continuous :
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
 abbrev convexBodySum : Set (mixedSpace K)  := { x | convexBodySumFun x ≤ B }
 
+open scoped Classical in
 theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
     volume (convexBodySum K B) = 0 := by
   obtain hB | hB := lt_or_eq_of_le hB
@@ -362,12 +364,14 @@ theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
   exact (abs_eq_self.mpr h).symm
 
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
+  classical
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
   · exact le_trans (norm_le_convexBodySumFun x) hx
   · exact le_trans (norm_le_convexBodySumFun y) hy
 
 theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
+  classical
   rw [Metric.isCompact_iff_isClosed_bounded]
   refine ⟨?_, convexBodySum_isBounded K B⟩
   convert IsClosed.preimage (convexBodySumFun_continuous K) (isClosed_Icc : IsClosed (Set.Icc 0 B))
@@ -384,6 +388,7 @@ theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
     (pow_ne_zero _ (div_ne_zero NNReal.pi_ne_zero two_ne_zero))
 
 open MeasureTheory MeasureTheory.Measure Real in
+open scoped Classical in
 theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
   obtain hB | hB := le_or_lt B 0
@@ -439,13 +444,13 @@ end convexBodySum
 
 section minkowski
 
-open scoped Classical
 open MeasureTheory MeasureTheory.Measure Module ZSpan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
 variable [NumberField K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
+open scoped Classical in
 /-- The bound that appears in **Minkowski Convex Body theorem**, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. See
 `NumberField.mixedEmbedding.volume_fundamentalDomain_idealLatticeBasis_eq` and
@@ -455,6 +460,7 @@ noncomputable def minkowskiBound : ℝ≥0∞ :=
   volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) *
     (2 : ℝ≥0∞) ^ (finrank ℝ (mixedSpace K))
 
+open scoped Classical in
 theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) =
       .ofReal (FractionalIdeal.absNorm I.1) *  volume (fundamentalDomain (latticeBasis K)) := by
@@ -470,17 +476,20 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
+  classical
   refine ENNReal.mul_lt_top ?_ ?_
   · exact (fundamentalDomain_isBounded _).measure_lt_top
   · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
+  classical
   refine zero_lt_iff.mpr (mul_ne_zero ?_ ?_)
   · exact ZSpan.measure_fundamentalDomain_ne_zero _
   · exact ENNReal.pow_ne_zero two_ne_zero _
 
 variable {f : InfinitePlace K → ℝ≥0} (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
+open scoped Classical in
 /-- Let `I` be a fractional ideal of `K`. Assume that `f : InfinitePlace K → ℝ≥0` is such that
 `minkowskiBound K I < volume (convexBodyLT K f)` where `convexBodyLT K f` is the set of
 points `x` such that `‖x w‖ < f w` for all infinite places `w` (see `convexBodyLT_volume` for
@@ -498,6 +507,7 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
 
+open scoped Classical in
 /-- A version of `exists_ne_zero_mem_ideal_lt` where the absolute value of the real part of `a` is
 smaller than `1` at some fixed complex place. This is useful to ensure that `a` is not real. -/
 theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
@@ -514,6 +524,7 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT'_mem K f w₀).mp h_mem⟩
 
+open scoped Classical in
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume (convexBodyLT K f)) :
     ∃ a : 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
@@ -521,6 +532,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
 
+open scoped Classical in
 /-- A version of `exists_ne_zero_mem_ideal_lt'` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
     (h : minkowskiBound K ↑1 < volume (convexBodyLT' K f w₀)) :
@@ -534,6 +546,7 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
     (hB : minkowskiBound K ↑1 < convexBodyLTFactor K * B) :
     ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
       ∀ w : InfinitePlace K, w a < max B 1 := by
+  classical
   have : minkowskiBound K ↑1 < volume (convexBodyLT K (fun w ↦ if w = w₀ then B else 1)) := by
     rw [convexBodyLT_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
@@ -550,6 +563,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
     ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
       ∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2) := by
+  classical
   have : minkowskiBound K ↑1 <
       volume (convexBodyLT' K (fun w ↦ if w = w₀ then NNReal.sqrt B else 1) ⟨w₀, hw₀⟩) := by
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
@@ -576,6 +590,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
       norm_num
 
+open scoped Classical in
 /-- Let `I` be a fractional ideal of `K`. Assume that `B : ℝ` is such that
 `minkowskiBound K I < volume (convexBodySum K B)` where `convexBodySum K B` is the set of points
 `x` such that `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B` (see `convexBodySum_volume` for
@@ -614,6 +629,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
     exact finrank_pos
 
+open scoped Classical in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K ↑1) ≤ volume (convexBodySum K B)) :
     ∃ a : 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a : K)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
