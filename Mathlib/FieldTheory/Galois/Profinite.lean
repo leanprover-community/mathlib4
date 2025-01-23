@@ -30,20 +30,20 @@ In a field extension `K/k`
   (ordered by reverse inclusion) to `FiniteGrp`, mapping each `FiniteGaloisIntermediateField` `L`
   to `Gal (L/k)`.
 
-* `InfiniteGalois.homtoLimit` : The homomorphism from `K ≃ₐ[k] K` to
+* `InfiniteGalois.homToLimit` : The homomorphism from `K ≃ₐ[k] K` to
   `limit (profinGaloisGroupFunctor k K)`, given by the projections from `Gal(K/k)` to
   any `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`.
 
-* `InfiniteGalois.toAlgEquiv` : The inverse of `InfiniteGalois.homtoLimit`, in which the elements of
+* `InfiniteGalois.toAlgEquiv` : The inverse of `InfiniteGalois.homToLimit`, in which the elements of
   `K ≃ₐ[k] K` is constructed pointwise using `proj_lift`.
 
-* `InfiniteGalois.mulEquivtoLimit` : The mulEquiv obtained from combining the above two.
+* `InfiniteGalois.mulEquivToLimit` : The mulEquiv obtained from combining the above two.
 
-* `InfiniteGalois.mulEquivToLimit_continuous` : The inverse of `InfiniteGalois.mulEquivtoLimit`
+* `InfiniteGalois.mulEquivToLimit_continuous` : The inverse of `InfiniteGalois.mulEquivToLimit`
   is continuous.
 
-* `InfiniteGalois.continuousMulEquivtoLimit` ：The `ContinuousMulEquiv` between `Gal(K/k)` and
-  `limit (profinGaloisGroupFunctor k K)` given by `InfiniteGalois.mulEquivtoLimit`
+* `InfiniteGalois.continuousMulEquivToLimit` ：The `ContinuousMulEquiv` between `Gal(K/k)` and
+  `limit (profinGaloisGroupFunctor k K)` given by `InfiniteGalois.mulEquivToLimit`
 
 * `InfiniteGalois.ProfiniteGalGrp` : Turn `Gal(K/k)` into a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
@@ -130,7 +130,7 @@ variable (k K) in
   canonical projection from `Gal(K/k)` to `Gal(L/k)` viewing the limit as a
   subgroup of the product space. -/
 @[simps]
-noncomputable def homtoLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGroupFunctor k K) where
+noncomputable def homToLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGroupFunctor k K) where
   toFun σ := {
     val := fun L => (AlgEquiv.restrictNormalHom L.unop) σ
     property := fun {L₁ L₂} π ↦ by
@@ -204,7 +204,8 @@ protected lemma AlgEquiv.aut_inv (ϕ : K ≃ₐ[k] K) : ϕ⁻¹ = ϕ.symm := rfl
 instance instSMulMemClass : SMulMemClass (IntermediateField k K) k K where
   smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
 
-/--Turn `toAlgEquivAux` into an algEquiv by using `proj_lift` repeatedly-/
+/--Turn `toAlgEquivAux` into an `AlgEquiv`.
+It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]
 noncomputable def toAlgEquiv [IsGalois k K]
     (g : limit (profinGaloisGroupFunctor k K)) : K ≃ₐ[k] K where
@@ -239,10 +240,10 @@ noncomputable def toAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
 variable (k K) in
-/--Turn `homtoLimit` into a mulEquiv-/
-noncomputable def mulEquivtoLimit [IsGalois k K] :
+/--Turn `homToLimit` into a mulEquiv-/
+noncomputable def mulEquivToLimit [IsGalois k K] :
     (K ≃ₐ[k] K) ≃* limit (profinGaloisGroupFunctor k K) where
-  toFun := homtoLimit k K
+  toFun := homToLimit k K
   map_mul' := map_mul _
   invFun := toAlgEquiv
   left_inv := fun f ↦ AlgEquiv.ext fun x =>
@@ -257,7 +258,7 @@ noncomputable def mulEquivtoLimit [IsGalois k K] :
     simp_rw [this]
     exact proj_lift_adjoin_simple _ _ _ _ x.2
 
-lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivtoLimit k K).symm := by
+lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
   simp only [map_one, krullTopology_mem_nhds_one]
   intro H ⟨L, _, hO2⟩
@@ -265,20 +266,20 @@ lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivtoLimit k 
   have lecl := IntermediateField.le_normalClosure L
   have : L'.1.fixingSubgroup ≤ L.fixingSubgroup := fun σ h => (mem_fixingSubgroup_iff
     (K ≃ₐ[k] K)).mpr (fun y hy => ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp h) y (lecl hy))
-  have le1 : (mulEquivtoLimit k K).symm ⁻¹' L.fixingSubgroup ⊆ (mulEquivtoLimit k K).symm ⁻¹' H :=
+  have le1 : (mulEquivToLimit k K).symm ⁻¹' L.fixingSubgroup ⊆ (mulEquivToLimit k K).symm ⁻¹' H :=
     fun ⦃a⦄ => fun b => hO2 b
-  have le : (mulEquivtoLimit k K).symm ⁻¹' L'.1.fixingSubgroup ⊆
-    (mulEquivtoLimit k K).symm ⁻¹' H := fun ⦃a⦄ b ↦ le1 (this b)
+  have le : (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup ⊆
+    (mulEquivToLimit k K).symm ⁻¹' H := fun ⦃a⦄ b ↦ le1 (this b)
   apply mem_nhds_iff.mpr
-  use (mulEquivtoLimit k K).symm ⁻¹' L'.1.fixingSubgroup
+  use (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup
   simp only [le, true_and]
   constructor
-  · have : (mulEquivtoLimit k K).symm ⁻¹' L'.1.fixingSubgroup =
-        mulEquivtoLimit k K '' (L'.1.fixingSubgroup : Set (K ≃ₐ[k] K)) := by
+  · have : (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup =
+        mulEquivToLimit k K '' (L'.1.fixingSubgroup : Set (K ≃ₐ[k] K)) := by
       ext σ
       constructor
       · intro h
-        use (mulEquivtoLimit k K).symm σ
+        use (mulEquivToLimit k K).symm σ
         simp only [h.out , MulEquiv.apply_symm_apply, and_self]
       · rintro ⟨_, h1, h2⟩
         simp only [← h2, Set.mem_preimage, MulEquiv.symm_apply_apply, h1]
@@ -289,11 +290,11 @@ lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivtoLimit k 
     have C : Continuous (fun (x : (L : (FiniteGaloisIntermediateField k K)ᵒᵖ) →
       (profinGaloisGroupFunctor k K).obj L) ↦ x (op L')) :=
       continuous_apply (op L')
-    have : mulEquivtoLimit k K '' L'.1.fixingSubgroup = Set.preimage Subtype.val fix1 := by
+    have : mulEquivToLimit k K '' L'.1.fixingSubgroup = Set.preimage Subtype.val fix1 := by
       ext x
       constructor
       · rintro ⟨α, hα1, hα2⟩
-        simp only [Set.mem_preimage,← hα2, fix1, Set.mem_setOf_eq, mulEquivtoLimit, homtoLimit,
+        simp only [Set.mem_preimage,← hα2, fix1, Set.mem_setOf_eq, mulEquivToLimit, homToLimit,
           MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk]
         apply AlgEquiv.ext
         intro x
@@ -302,15 +303,15 @@ lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivtoLimit k 
         exact hα1 x
       · intro h
         simp only [Set.mem_preimage] at h
-        use (mulEquivtoLimit _ _).symm x
+        use (mulEquivToLimit _ _).symm x
         simp only [SetLike.mem_coe, MulEquiv.apply_symm_apply, and_true]
         apply (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mpr
         intro y hy
         simp only [AlgEquiv.smul_def]
         have fix := h.out
-        set Aut := (mulEquivtoLimit _ _).symm x
-        have : mulEquivtoLimit _ _ Aut = x := by simp only [Aut, MulEquiv.apply_symm_apply]
-        simp only [← this, mulEquivtoLimit, homtoLimit, MonoidHom.coe_mk, OneHom.coe_mk,
+        set Aut := (mulEquivToLimit _ _).symm x
+        have : mulEquivToLimit _ _ Aut = x := by simp only [Aut, MulEquiv.apply_symm_apply]
+        simp only [← this, mulEquivToLimit, homToLimit, MonoidHom.coe_mk, OneHom.coe_mk,
           MulEquiv.coe_mk, Equiv.coe_fn_mk] at fix
         have fix_y : AlgEquiv.restrictNormalHom L' Aut ⟨y, hy⟩ = ⟨y, hy⟩ := by
           simp only [fix, AlgEquiv.one_apply]
@@ -323,8 +324,8 @@ instance [IsGalois k K] : T2Space (K ≃ₐ[k] K) := krullTopology_t2
 
 variable (k K)
 
-/--An auxiliary result for `continuousMulEquivtoLimit`,
-turning `mulEquivtoLimit`, viewed as a bijection, into a homeomorphism. -/
+/--An auxiliary result for `continuousMulEquivToLimit`,
+turning `mulEquivToLimit`, viewed as a bijection, into a homeomorphism. -/
 noncomputable def homeoToLimit [IsGalois k K] :
     (limit (profinGaloisGroupFunctor k K)) ≃ₜ (K ≃ₐ[k] K) :=
   Continuous.homeoOfEquivCompactToT2 mulEquivToLimit_continuous
@@ -335,17 +336,17 @@ instance [IsGalois k K] : CompactSpace (K ≃ₐ[k] K) :=
 instance [IsGalois k K] : TotallyDisconnectedSpace (K ≃ₐ[k] K) :=
   (homeoToLimit k K).totallyDisconnectedSpace
 
-/--Turn `mulEquivtoLimit` into a continuousMulEquiv. -/
-noncomputable def continuousMulEquivtoLimit [IsGalois k K] :
+/--Turn `mulEquivToLimit` into a continuousMulEquiv. -/
+noncomputable def continuousMulEquivToLimit [IsGalois k K] :
     ContinuousMulEquiv (K ≃ₐ[k] K) (limit (profinGaloisGroupFunctor k K)) where
-  toMulEquiv := mulEquivtoLimit k K
+  toMulEquiv := mulEquivToLimit k K
   continuous_toFun := (homeoToLimit k K).continuous_invFun
   continuous_invFun := (homeoToLimit k K).continuous_toFun
 
 /--`InfiniteGalois.ProfiniteGalGrp` : Turn `Gal(K/k)` into a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above. -/
 noncomputable def ProfiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
-  ProfiniteGrp.ofContinuousMulEquiv (continuousMulEquivtoLimit k K).symm
+  ProfiniteGrp.ofContinuousMulEquiv (continuousMulEquivToLimit k K).symm
 
 variable {k K} in
 theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
