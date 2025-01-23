@@ -88,7 +88,7 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
       refine fun h_sub => h_int ?_
       have h_add : X = (fun x => X x - integral μ X) + fun _ => integral μ X := by ext1 x; simp
       rw [h_add]
-      exact h_sub.add (integrable_const _)
+      fun_prop
     rw [integral_undef this]
 
 theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
