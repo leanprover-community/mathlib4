@@ -6,6 +6,8 @@ Authors: Moritz Doll, Kalle Kytölä
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Analysis.LocallyConvex.AbsConvex
+import Mathlib.Analysis.Convex.Normed
 
 /-!
 # Polar set
@@ -58,6 +60,9 @@ theorem polar_mem_iff (s : Set E) (y : F) : y ∈ B.polar s ↔ ∀ x ∈ s, ‖
 
 theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   hy
+
+theorem polar_preimage (s : Set E) :
+    B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
@@ -165,5 +170,29 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
   .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
 
 end NontriviallyNormedField
+
+section RCLike
+
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_preimage]
+  apply AbsConvex.iInter₂
+  intro i hi
+  constructor
+  · have e0 : Metric.closedBall (0 : 𝕜) 1 = Seminorm.closedBall (normSeminorm 𝕜 𝕜) (0 : 𝕜) 1 := by
+      aesop
+    have e1 : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) 1) := by
+      rw [e0]
+      exact Seminorm.balanced_closedBall_zero _ _
+    exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
+  · exact Convex.linear_preimage (convex_closedBall _ _) (B i)
+
+end RCLike
 
 end LinearMap
