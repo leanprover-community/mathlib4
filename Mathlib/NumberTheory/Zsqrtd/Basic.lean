@@ -348,7 +348,7 @@ theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
   rw [mul_comm] at Hre Him
   refine ⟨⟨re, im⟩, ?_, ?_⟩
   · rw [smul_val, ← Hre, ← Him]
-  · rw [← Int.gcd_eq_one_iff_coprime, H1]
+  · rw [Int.isCoprime_iff_gcd_eq_one, H1]
 
 end Gcd
 

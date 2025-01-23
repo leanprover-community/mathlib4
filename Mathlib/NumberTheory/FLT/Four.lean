@@ -80,7 +80,7 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
 
 /-- a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` must have `a` and `b` coprime. -/
 theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := by
-  apply Int.gcd_eq_one_iff_coprime.mp
+  apply Int.isCoprime_iff_gcd_eq_one.mpr
   by_contra hab
   obtain ⟨p, hp, hpa, hpb⟩ := Nat.Prime.not_coprime_iff_dvd.mp hab
   obtain ⟨a1, rfl⟩ := Int.natCast_dvd.mpr hpa
@@ -119,7 +119,7 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
     · exfalso
       have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
         Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
-      rw [Int.gcd_eq_one_iff_coprime.mpr (coprime_of_minimal hf)] at h1
+      rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
       revert h1
       decide
     · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
@@ -160,7 +160,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     delta PythagoreanTriple
     linear_combination h.1.2.2
   -- coprime requirement:
-  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 := Int.gcd_eq_one_iff_coprime.mpr (coprime_of_minimal h).pow
+  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 := Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal h).pow
   -- in order to reduce the possibilities we get from the classification of pythagorean triples
   -- it helps if we know the parity of a ^ 2 (and the sign of c):
   have ha22 : a ^ 2 % 2 = 1 := by
@@ -175,10 +175,10 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     linear_combination ht1
   -- a and n are coprime, because a ^ 2 = m ^ 2 - n ^ 2 and m and n are coprime.
   have h3 : Int.gcd a n = 1 := by
-    apply Int.gcd_eq_one_iff_coprime.mpr
+    apply Int.isCoprime_iff_gcd_eq_one.mp
     apply @IsCoprime.of_mul_left_left _ _ _ a
     rw [← sq, ht1, (by ring : m ^ 2 - n ^ 2 = m ^ 2 + -n * n)]
-    exact (Int.gcd_eq_one_iff_coprime.mp ht4).pow_left.add_mul_right_left (-n)
+    exact (Int.isCoprime_iff_gcd_eq_one.mpr ht4).pow_left.add_mul_right_left (-n)
   -- m is positive because b is non-zero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
   have hb20 : b ^ 2 ≠ 0 := mt pow_eq_zero h.1.2.1
   have h4 : 0 < m := by
@@ -193,8 +193,8 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- m and r * s are coprime because m = r ^ 2 + s ^ 2 and r and s are coprime.
   have hcp : Int.gcd m (r * s) = 1 := by
     rw [htt3]
-    exact
-      Int.gcd_eq_one_iff_coprime.mpr (Int.coprime_of_sq_sum' (Int.gcd_eq_one_iff_coprime.mp htt4))
+    exact Int.isCoprime_iff_gcd_eq_one.mp
+      (Int.coprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4))
   -- b is even because b ^ 2 = 2 * m * n.
   have hb2 : 2 ∣ b := by
     apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two
