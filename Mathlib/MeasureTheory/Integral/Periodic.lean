@@ -398,8 +398,7 @@ theorem tendsto_atTop_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 <
 tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot :=
-  hg.tendsto_atBot_intervalIntegral_of_pos h_int (intervalIntegral_pos_of_pos
-    (hg.intervalIntegrable₀ hT h_int 0 T) h₀ hT) hT
+  hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued
 
