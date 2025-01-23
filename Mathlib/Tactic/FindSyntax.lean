@@ -75,18 +75,16 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
       if !declName.isInternal && !ls.isEmpty then symbs := symbs.insert (declName, ls)
   -- From among the parsers in `symbs`, we extract the ones whose `symbols` contain the input `str`
   let mut msgs := #[]
-  let env ← getEnv
-  let allModules := env.allImportedModuleNames
   for (nm, ar) in symbs.toList do
     let rem : String := " _ ".intercalate (ar.map litToString).toList
     -- If either the name of the parser or the regenerated syntax stub contains the input string,
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
-      let some mod := env.getModuleIdxFor? nm | pure default
+      let some mod := ← findModuleOf? nm | pure default
       let some rgs ← findDeclarationRanges? nm | pure default
       let rg := rgs.range
       msgs := msgs.push <| .ofConstName nm ++ m!": \
-        defined in '{allModules[mod.toNat]!}'\n\
+        defined in '{mod}'\n\
         start: {rg.pos}, end: {rg.endPos}\n  \
         '{rem.trim}'\n"
   -- We sort the messages to produce a more stable output.
