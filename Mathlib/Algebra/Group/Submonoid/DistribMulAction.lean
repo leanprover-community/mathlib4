@@ -5,22 +5,28 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.GroupWithZero.Action.End
-
+import Mathlib.Data.SetLike.SMul
 /-!
 # Distributive actions by submonoids
 -/
 
 namespace Submonoid
+
 variable {M α : Type*} [Monoid M]
 
-/-- The action by a submonoid is the action by the underlying monoid. -/
-instance distribMulAction [AddMonoid α] [DistribMulAction M α] (S : Submonoid M) :
-    DistribMulAction S α :=
-  DistribMulAction.compHom _ S.subtype
+variable {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S M]
 
-/-- The action by a submonoid is the action by the underlying monoid. -/
-instance mulDistribMulAction [Monoid α] [MulDistribMulAction M α] (S : Submonoid M) :
-    MulDistribMulAction S α :=
-  MulDistribMulAction.compHom _ S.subtype
+@[to_additive]
+instance mulAction [MulAction M α] : MulAction s α where
+  one_smul := one_smul M
+  mul_smul r₁ r₂ := mul_smul (r₁ : M) r₂
+
+instance distribMulAction [AddMonoid α] [DistribMulAction M α] : DistribMulAction s α where
+  smul_zero r := smul_zero (r : M)
+  smul_add r := smul_add (r : M)
+
+instance mulDistribMulAction [Monoid α] [MulDistribMulAction M α] : MulDistribMulAction s α where
+  smul_mul r := smul_mul' (r : M)
+  smul_one r := smul_one (r : M)
 
 end Submonoid
