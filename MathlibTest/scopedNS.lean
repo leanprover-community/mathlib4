@@ -9,20 +9,38 @@ elab "#doc" x:ident : command => do
   if let some s ← findDocString? (← getEnv) (← liftCoreM do realizeGlobalConstNoOverload x) then
   logInfo m!"{s}"
 
-scoped[Test] postfix:1024 (name := tt) "ᵀ" => Nat.add 1
+scoped[Test] postfix:max (name := t₁) "ᵀ" => (Nat.add · 1)
+scoped[Test] prefix:max (name := t₂) "ᵀᵀ" => Nat.add 1
+scoped[Test] infix:max (name := t₃) "+|+" => Nat.add
+scoped[Test] infixr:max (name := t₄) "-|-" => Nat.sub
+scoped[Test] infixl:max (name := t₅) "*|*" => Nat.mul
 
 -- TODO: is there something to guard a parsing error?
 -- #check 2ᵀ
 
-/-- info: Test.tt : Lean.TrailingParserDescr -/
+/-- info: Test.t₁ : Lean.TrailingParserDescr -/
 #guard_msgs in
-#check _root_.Test.tt
+#check _root_.Test.t₁
 
 /-- info: 3 -/
 #guard_msgs in
 open Test in
 #eval 2ᵀ
 
+open Test in
+example (n : Nat) : nᵀ = ᵀᵀn := by
+  dsimp only
+  guard_target =ₛ Nat.add n 1 = Nat.add 1 n
+  rw [Nat.add_eq, Nat.add_eq, Nat.add_comm]
+
+/-- info: Test.t₂ : Lean.ParserDescr -/
+#guard_msgs in #check _root_.Test.t₂
+/-- info: Test.t₃ : Lean.TrailingParserDescr -/
+#guard_msgs in #check _root_.Test.t₃
+/-- info: Test.t₄ : Lean.TrailingParserDescr -/
+#guard_msgs in #check _root_.Test.t₄
+/-- info: Test.t₅ : Lean.TrailingParserDescr -/
+#guard_msgs in #check _root_.Test.t₅
 
 /-! ## Ensure bad syntax is not parsed -/
 

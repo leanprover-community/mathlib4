@@ -69,15 +69,6 @@ macro_rules
       | ``Parser.Command.mixfix => pure (0, 1, 2)
       | _ => Macro.throwErrorAt tk "scoped[NS] is not implemented for this command!"
 
-    -- parser `optional _` expects a `nullKind` node which
-    -- has no children (case `none`) or one child (case `some _`)
-    let docCommentNode : Syntax := match docComment with
-      | none => Lean.mkNullNode
-      | some doc => Lean.mkNullNode #[doc]
-    let attributesNode : Syntax := match attributes with
-      | none => Lean.mkNullNode
-      | some attr => Lean.mkNullNode #[attr]
-
     -- assert the parsed sub-command does not have any of these optional arguments filled
     -- (e.g. to avoid `scoped[Test] /-- bad -/ local macro ...` from parsing)
     match cmd.raw[docCommentPos] with
@@ -91,8 +82,15 @@ macro_rules
     let `(Parser.Term.attrKind|) := cmd.raw[attrKindPos]
       | Macro.throwErrorAt cmd.raw[attrKindPos] "This scoping directive conflicts with scoped[NS]"
 
+    -- parser `optional _` expects a `nullKind` node which
+    -- has no children (case `none`) or one child (case `some _`)
+    let docCommentNode : Syntax := match docComment with
+      | none => Lean.mkNullNode
+      | some doc => Lean.mkNullNode #[doc]
+    let attributesNode : Syntax := match attributes with
+      | none => Lean.mkNullNode
+      | some attr => Lean.mkNullNode #[attr]
     -- set the `attrKind` to `scoped`
-    -- TODO: why did Mario have `Unhygienic.run` here?
     let attrKindNode ← `(Parser.Term.attrKind| scoped)
 
     -- insert the optional arguments and `scoped` into the command.
