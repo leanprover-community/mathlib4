@@ -238,6 +238,7 @@ theorem free_kaehlerDifferential (P : SubmersivePresentation R S) :
     Module.Free S (Ω[S⁄R]) :=
   Module.Free.of_basis P.basisKaehler
 
+attribute [local instance] Fintype.ofFinite in
 /-- If `P` is a submersive presentation of `S` as an `R`-algebra and `S` is nontrivial,
 `Ω[S⁄R]` is free of rank the dimension of `P`, i.e. the number of generators minus the number
 of relations. -/
