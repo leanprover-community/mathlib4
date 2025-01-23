@@ -91,9 +91,6 @@ theorem polar_balanced (s : Set E) : Balanced 𝕜 (B.polar s) := fun a ha y ⟨
   exact le_trans (norm_mul_le _ _)
     (mul_le_mul ha (hz₁ x hx) (norm_nonneg ((B x) z)) (zero_le_one' ℝ))
 
-theorem bipolar_balanced (s : Set E) : Balanced 𝕜 (B.flip.polar (B.polar s)) :=
-  polar_balanced B.flip (B.polar s)
-
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
@@ -199,14 +196,6 @@ variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
 variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
-theorem polar_real_convex : Convex ℝ (B.polar s) := fun  x hx y hy a b ha hb hab e he => by
-  rw [← hab, map_add, map_smul_of_tower, map_smul_of_tower]
-  apply norm_add_le_of_le
-  · rw [norm_smul, (Real.norm_of_nonneg ha)]
-    exact mul_le_of_le_one_right ha (hx e he)
-  · rw [norm_smul, (Real.norm_of_nonneg hb)]
-    exact mul_le_of_le_one_right hb (hy e he)
-
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_preimage]
   apply AbsConvex.iInter₂
@@ -237,14 +226,6 @@ lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 variable  [IsScalarTower ℝ 𝕜 E]
 
-theorem bipolar_convex : Convex ℝ (B.flip.polar (B.polar s)) :=
-  polar_real_convex (B.polar s)
-
-theorem bipolar_absConvex : AbsConvex 𝕜 (B.flip.polar (B.polar s)) :=
-  polar_AbsConvex (B.polar s)
-
-
-
 open scoped ComplexOrder
 theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
@@ -273,7 +254,7 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
     sorry
 
-  · exact closedAbsConvexHull_min (subset_bipolar B s) (bipolar_absConvex s) (bipolar_closed B s)
+  · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
 
 end Bipolar
 
