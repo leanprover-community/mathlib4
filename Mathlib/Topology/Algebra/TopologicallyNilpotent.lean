@@ -30,7 +30,7 @@ then `a * b` is topologically nilpotent.
 * `IsTopologicallyNilpotent.add`: if `a b : R` are topologically nilpotent,
 then `a + b` is topologically nilpotent.
 
-These lemmas are actually deduced from their analogues for commuting elements of semirings.
+These lemmas are actually deduced from their analogues for commuting elements of rings.
 
 -/
 
@@ -66,11 +66,8 @@ theorem zero : IsTopologicallyNilpotent (0 : R) :=
 
 theorem exists_pow_mem_of_mem_nhds {a : R} (ha : IsTopologicallyNilpotent a)
     {v : Set R} (hv : v ∈ 𝓝 0) :
-    ∃ n, a ^ n ∈ v := by
-  specialize ha hv
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage] at ha
-  obtain ⟨n, hn⟩ := ha
-  exact ⟨n, hn n (le_refl n)⟩
+    ∃ n, a ^ n ∈ v :=
+  (ha.eventually_mem hv).exists
 
 end MonoidWithZero
 
@@ -91,8 +88,7 @@ theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
  theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
     (hb : IsTopologicallyNilpotent b) (hab : Commute a b) :
     IsTopologicallyNilpotent (a * b) := by
-  simp only [IsTopologicallyNilpotent]
-  simp_rw [hab.mul_pow]
+  simp_rw [IsTopologicallyNilpotent, hab.mul_pow]
   exact IsLinearTopology.tendsto_mul_zero_of_right _ _ hb
 
 /-- If `a` and `b` are topologically nilpotent and commute,
