@@ -68,7 +68,7 @@ This means that any file that imports `A` will get a notification on the `import
 to instead import the *direct imports* of `A`.
 -/
 elab (name := deprecate_modules)
-    "deprecate_module " &"since" yyyy:num "-" mm:num "-" dd:num: command => do
+    "deprecate_module " &"since " yyyy:num "-" mm:num "-" dd:num : command => do
   if yyyy.getNat < 2025 then
     throwErrorAt yyyy "The year should be at least 2025!"
   if mm.getNat == 0 || 12 < mm.getNat || mm.raw.getSubstring?.get!.toString.trim.length != 2 then
