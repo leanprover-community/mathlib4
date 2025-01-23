@@ -92,8 +92,7 @@ theorem baseChange_tmul (B₂ : BilinMap R M₂ N₂) (a : A) (m₂ : M₂)
   rfl
 
 lemma IsSymm.baseChange {B₂ : BilinMap R M₂ N₂} (hB₂ : ∀ x y, B₂ x y = B₂ y x) :
-    ∀ x y, (B₂.baseChange A) x y = (B₂.baseChange A) y x := by
-  exact IsSymm.tmul mul_comm hB₂
+    ∀ x y, (B₂.baseChange A) x y = (B₂.baseChange A) y x := IsSymm.tmul mul_comm hB₂
 
 end BilinMap
 
@@ -136,9 +135,8 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
 lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm := by
-  simp_rw [IsSymm, RingHom.id_apply, LinearMap.BilinForm.baseChange]
-  simp only [LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply, compr₂_apply,
-    EmbeddingLike.apply_eq_iff_eq]
+  simp only [IsSymm, BilinForm.baseChange, LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply,
+    compr₂_apply, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
   intro _ _
   rw [(LinearMap.BilinMap.IsSymm.baseChange hB₂)]
 
