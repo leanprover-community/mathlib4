@@ -144,12 +144,20 @@ section Preorder
 variable [Preorder α]
 
 @[to_additive]
-lemma mul_left_mono [CovariantClass α α (· * ·) (· ≤ ·)] {a : α} : Monotone (a * ·) :=
+lemma mul_left_mono [MulLeftMono α] {a : α} : Monotone (a * ·) :=
   fun _ _ h ↦ mul_le_mul_left' h _
 
 @[to_additive]
-lemma mul_right_mono [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α} : Monotone (· * a) :=
+lemma mul_right_mono [MulRightMono α] {a : α} : Monotone (· * a) :=
   fun _ _ h ↦ mul_le_mul_right' h _
+
+@[to_additive]
+lemma mul_left_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) :=
+  fun _ _ h ↦ mul_lt_mul_left' h _
+
+@[to_additive]
+lemma mul_right_strictMono [MulRightStrictMono α] {a : α} : StrictMono (· * a) :=
+  fun _ _ h ↦ mul_lt_mul_right' h _
 
 @[to_additive (attr := gcongr)]
 theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
@@ -346,12 +354,12 @@ lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
 /-- Not an instance, to avoid loops with `IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono`. -/
 @[to_additive]
 theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCancelMul α where
-  mul_left_cancel _ _ _ h := StrictMono.injective (fun _ _ h => mul_lt_mul_left' h _) h
+  mul_left_cancel _ _ _ h := mul_left_strictMono.injective h
 
 /-- Not an instance, to avoid loops with `IsRightCancelMul.mulRightStrictMono_of_mulRightMono`. -/
 @[to_additive]
 theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
-  mul_right_cancel _ _ _ h := StrictMono.injective (fun _ _ h => mul_lt_mul_right' h _) h
+  mul_right_cancel _ _ _ h := mul_right_strictMono.injective h
 
 end LinearOrder
 
