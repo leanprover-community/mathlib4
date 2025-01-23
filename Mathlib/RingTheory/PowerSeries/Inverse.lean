@@ -11,6 +11,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 
@@ -230,8 +231,7 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
-open scoped Classical
-
+open scoped Classical in
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
 def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
@@ -284,11 +284,11 @@ instance : IsLocalRing R⟦X⟧ :=
 
 end IsLocalRing
 
-section DiscreteValuationRing
+section IsDiscreteValuationRing
 
 variable {k : Type*} [Field k]
 
-open DiscreteValuationRing
+open IsDiscreteValuationRing
 
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
@@ -303,7 +303,7 @@ theorem hasUnitMulPowIrreducibleFactorization :
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
 
-instance : DiscreteValuationRing k⟦X⟧ :=
+instance : IsDiscreteValuationRing k⟦X⟧ :=
   ofHasUnitMulPowIrreducibleFactorization hasUnitMulPowIrreducibleFactorization
 
 instance isNoetherianRing : IsNoetherianRing k⟦X⟧ :=
@@ -351,8 +351,9 @@ theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
 theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
-open UniqueFactorizationMonoid Classical
+open UniqueFactorizationMonoid
 
+open scoped Classical in
 theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
@@ -376,7 +377,7 @@ def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing
 
 
 end PowerSeries

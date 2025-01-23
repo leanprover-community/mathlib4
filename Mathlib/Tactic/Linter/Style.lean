@@ -17,7 +17,7 @@ but do not affect correctness nor global coherence of mathlib.
 Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
-- the `set_option` linter checks for the presence of `set_option` commands activating
+- the `setOption` linter checks for the presence of `set_option` commands activating
 options disallowed in mathlib: these are meant to be temporary, and not for polished code
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
 of the file: enforcing this invariant makes minimising files or moving code between files easier
@@ -26,12 +26,10 @@ this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
 similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
 the `|>` symbol
-- the `lambdaSyntax` linter checks for uses of the `λ` symbol for ananomous functions,
+- the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
 instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
-(This linter is still under review in PR #15896.)
+- the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
-- the `longFile` linter checks for files which have more than 1500 lines:
-this linter is still under development in PR #15610.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -52,16 +50,24 @@ namespace Style.setOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
-def parse_set_option : Syntax → Option Name
+def parseSetOption : Syntax → Option Name
   -- This handles all four possibilities of `_val`: a string, number, `true` and `false`.
   | `(command|set_option $name:ident $_val) => some name.getId
   | `(set_option $name:ident $_val in $_x) => some name.getId
   | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
   | _ => none
 
+/-- Deprecated alias for `Mathlib.Linter.Style.setOption.parseSetOption`. -/
+@[deprecated parseSetOption (since := "2024-12-07")]
+def parse_set_option := @parseSetOption
+
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
-def is_set_option : Syntax → Bool :=
-  fun stx ↦ parse_set_option stx matches some _name
+def isSetOption : Syntax → Bool :=
+  fun stx ↦ parseSetOption stx matches some _name
+
+/-- Deprecated alias for `Mathlib.Linter.Style.setOption.isSetOption`. -/
+@[deprecated isSetOption (since := "2024-12-07")]
+def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
@@ -76,8 +82,8 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some head := stx.find? is_set_option then
-      if let some name := parse_set_option head then
+    if let some head := stx.find? isSetOption then
+      if let some name := parseSetOption head then
         let forbidden := [`debug, `pp, `profiler, `trace]
         if forbidden.contains name.getRoot then
           Linter.logLint linter.style.setOption head

@@ -26,7 +26,7 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 
 namespace RingHom
 
-open scoped Pointwise TensorProduct Classical
+open scoped Pointwise TensorProduct
 
 universe u
 
@@ -40,6 +40,7 @@ theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType :
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
 theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHom.FiniteType := by
+  classical
   introv R hf
   -- mirrors the proof of `localization_map_finite`
   letI := f.toAlgebra
@@ -75,6 +76,7 @@ theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
 
 variable {S'}
 
+open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `S`, `S' = M⁻¹S`.
 Suppose the image of some `x : S` falls in the adjoin of some finite `s ⊆ S'` over `R`,
 and `A` is an `R`-subalgebra of `S` containing both `M` and the numerators of `s`.
@@ -100,6 +102,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
   rw [Submonoid.smul_def, smul_eq_mul, Submonoid.coe_mul, SubmonoidClass.coe_pow, mul_assoc, ← ha₂,
     mul_comm]
 
+open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the adjoin of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
@@ -118,6 +121,7 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S] [Alge
   simpa only [Submonoid.smul_def, algebraMap_smul] using e
 
 theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.FiniteType := by
+  classical
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- mirrors the proof of `finite_ofLocalizationSpan`

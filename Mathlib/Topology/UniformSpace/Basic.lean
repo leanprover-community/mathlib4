@@ -137,7 +137,7 @@ theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
 theorem idRel_subset {s : Set (α × α)} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
   simp [subset_def]
 
-theorem eq_singleton_left_of_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem eq_singleton_left_of_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
   refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
@@ -147,13 +147,13 @@ theorem eq_singleton_left_of_prod_subset_idRel {X : Type _} {S T : Set X} (hS : 
   simp only [idRel, mem_setOf_eq] at hx hs
   rwa [← hs] at hx
 
-theorem eq_singleton_right_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem eq_singleton_right_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} := by
   rw [Set.prod_subset_iff] at h_diag
   replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
   exact eq_singleton_left_of_prod_subset_idRel hT hS (prod_subset_iff.mpr h_diag)
 
-theorem eq_singleton_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem eq_singleton_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := eq_singleton_left_of_prod_subset_idRel hS hT h_diag,
     eq_singleton_right_prod_subset_idRel hS hT h_diag
@@ -351,20 +351,6 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
   TopologicalSpace.ext_nhds fun a ↦ by
     rw [u.nhds_eq_comap_uniformity, u.toCore.nhds_toTopologicalSpace]
-
-/-- Build a `UniformSpace` from a `UniformSpace.Core` and a compatible topology.
-Use `UniformSpace.mk` instead to avoid proving
-the unnecessary assumption `UniformSpace.Core.refl`.
-
-The main constructor used to use a different compatibility assumption.
-This definition was created as a step towards porting to a new definition.
-Now the main definition is ported,
-so this constructor will be removed in a few months. -/
-@[deprecated UniformSpace.mk (since := "2024-03-20")]
-def UniformSpace.ofNhdsEqComap (u : UniformSpace.Core α) (_t : TopologicalSpace α)
-    (h : ∀ x, 𝓝 x = u.uniformity.comap (Prod.mk x)) : UniformSpace α where
-  __ := u
-  nhds_eq_comap_uniformity := h
 
 @[ext (iff := false)]
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by

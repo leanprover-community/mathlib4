@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.RepresentationTheory.Action.Monoidal
+import Mathlib.CategoryTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 
 /-!
@@ -48,7 +48,7 @@ section
 variable [Monoid G]
 
 instance : CoeSort (Rep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  HasForget.hasCoeToSort _
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -574,11 +574,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
   LinearEquiv.toModuleIso
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
-        set_option tactic.skipAssignedInstances false in
         dsimp [counitIsoAddEquiv]
-        /- Porting note: rest of broken proof was `simp`. -/
-        rw [AddEquiv.trans_apply]
-        rw [AddEquiv.trans_apply]
         erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
 

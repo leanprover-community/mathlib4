@@ -28,7 +28,6 @@ section
 
 variable (C) (D)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Bundled left-exact functors. -/
 def LeftExactFunctor :=
   FullSubcategory fun F : C ⥤ D => PreservesFiniteLimits F
@@ -49,7 +48,6 @@ instance : (LeftExactFunctor.forget C D).Full :=
 instance : (LeftExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
   FullSubcategory fun F : C ⥤ D => PreservesFiniteColimits F
@@ -70,7 +68,6 @@ instance : (RightExactFunctor.forget C D).Full :=
 instance : (RightExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Bundled exact functors. -/
 def ExactFunctor :=
   FullSubcategory fun F : C ⥤ D =>
