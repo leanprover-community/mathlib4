@@ -42,6 +42,13 @@ structure MulticospanShape where
   fst : R → L
   snd : R → L
 
+@[simps]
+def MulticospanShape.prod (ι : Type w) : MulticospanShape where
+  L := ι
+  R := ι × ι
+  fst := _root_.Prod.fst
+  snd := _root_.Prod.snd
+
 /-- The shape of a multicoequalizer diagram. It involves two types `L` and `R`,
 and two maps `L → R`. -/
 @[nolint checkUnivs]
@@ -50,6 +57,13 @@ structure MultispanShape where
     R : Type w'
     fst : L → R
     snd : L → R
+
+@[simps]
+def MultispanShape.prod (ι : Type w) : MultispanShape where
+  L := ι × ι
+  R := ι
+  fst := _root_.Prod.fst
+  snd := _root_.Prod.snd
 
 /-- The type underlying the multiequalizer diagram. -/
 inductive WalkingMulticospan (J : MulticospanShape.{w, w'}) : Type max w w'
