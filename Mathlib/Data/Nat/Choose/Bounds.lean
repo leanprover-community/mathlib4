@@ -61,5 +61,4 @@ theorem choose_succ_le_two_pow (n k : ℕ) : (n + 1).choose k ≤ 2 ^ n := by
       · rw [choose_succ_succ', two_pow_succ]
         exact Nat.add_le_add (choose_succ_le_two_pow n k) (choose_succ_le_two_pow n (k + 1))
 
-
 end Nat
