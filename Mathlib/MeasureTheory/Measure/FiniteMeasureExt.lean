@@ -3,25 +3,24 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.MulExpNegSq
+import Mathlib.Analysis.SpecialFunctions.MulExpNegSqIntegral
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Extensionality of finite measures
-The main Result is `ext_of_forall_mem_subalgebra_integral_eq`:
+The main Result is `ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable`:
 Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elements are bounded. If
 the integrals of all elements `A` with respect to two finite measures `P, P'`coincide, then the
 measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
 -/
 
-open MeasureTheory Filter
+open MeasureTheory Filter Real
 
-variable {E 𝕜: Type*} [RCLike 𝕜]
-    [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E]
-    [SecondCountableTopology E] {P P' : FiniteMeasure E}
+variable {E 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace E]
 
-theorem ext_of_forall_mem_subalgebra_integral_eq
-    {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
+    [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
+    {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
   --consider the real subalgebra of the purely real-valued elements of A
@@ -45,12 +44,12 @@ theorem ext_of_forall_mem_subalgebra_integral_eq
     exact heq ((RCLike.ofRealAm.compLeftContinuous ℝ RCLike.continuous_ofReal) g) hgA_toReal
   apply FiniteMeasure.ext_of_forall_integral_eq
   intro f
-  have lim1 : Tendsto (fun ε => abs (∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P
-      - ∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P'))
+  have lim1 : Tendsto (fun ε => abs (∫ (x : E), (mulExpNegMulSq f ε) x ∂P
+      - ∫ (x : E), (mulExpNegMulSq f ε) x ∂P'))
       (nhdsWithin 0 (Set.Ioi 0)) (nhds 0) := by
     have hle : ∀ᶠ ε in (nhdsWithin 0 (Set.Ioi 0)),
-        abs (∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P
-          - ∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P') ≤ 6 * ε.sqrt := by
+        abs (∫ (x : E), (mulExpNegMulSq f ε) x ∂P
+          - ∫ (x : E), (mulExpNegMulSq f ε) x ∂P') ≤ 6 * ε.sqrt := by
       apply eventually_nhdsWithin_of_forall
       exact fun ε hε => dist_integral_mulExpNegMulSq_le f hA_toReal hbound_toReal heq' hε
     have g0 : Tendsto (fun ε : ℝ => 6 * ε.sqrt) (nhdsWithin 0 (Set.Ioi 0)) (nhds 0) := by
@@ -59,9 +58,16 @@ theorem ext_of_forall_mem_subalgebra_integral_eq
       nth_rewrite 2 [← Real.sqrt_zero]
       apply Continuous.tendsto Real.continuous_sqrt
     apply squeeze_zero' (eventually_nhdsWithin_of_forall (fun x _ => abs_nonneg _)) hle g0
-  have lim2 : Tendsto (fun ε => abs (∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P
-      - ∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P')) (nhdsWithin 0 (Set.Ioi 0))
+  have lim2 : Tendsto (fun ε => abs (∫ (x : E), (mulExpNegMulSq f ε) x ∂P
+      - ∫ (x : E), (mulExpNegMulSq f ε) x ∂P')) (nhdsWithin 0 (Set.Ioi 0))
       (nhds (abs (∫ (x : E), f x ∂↑P - ∫ (x : E), f x ∂↑P'))) :=
     Tendsto.abs (Filter.Tendsto.sub (integral_mulExpNegMulSq_tendsto P f)
       (integral_mulExpNegMulSq_tendsto P' f))
   apply eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
+
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
+    [BorelSpace E] {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
+    (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
+    (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
+  letI := upgradePolishSpace E
+  exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq

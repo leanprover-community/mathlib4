@@ -220,6 +220,11 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 
+/-- This version is primed so that the `RingHomClass` versions aren't. -/
+theorem map_intCast' [AddGroupWithOne α] [AddGroupWithOne β] [FunLike F α β]
+    [AddMonoidHomClass F α β] (f : F) (h₁ : f 1 = 1) : ∀ n : ℤ, f n = n :=
+  eq_intCast' ((f : α →+ β).comp <| Int.castAddHom _) (by simpa)
+
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
   ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm
@@ -239,10 +244,10 @@ theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (DFunLike.congr_fun h_nat x : _)
+  · exact (DFunLike.congr_fun h_nat x :)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) : _)
+    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) :)
 
 end MonoidHom
 
@@ -256,7 +261,7 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidWithZeroHom = g.comp Int.ofNatHom.toMonoidWithZeroHom) :
     f = g :=
   toMonoidHom_injective <| MonoidHom.ext_int h_neg_one <|
-    MonoidHom.ext (DFunLike.congr_fun h_nat : _)
+    MonoidHom.ext (DFunLike.congr_fun h_nat :)
 
 end MonoidWithZeroHom
 

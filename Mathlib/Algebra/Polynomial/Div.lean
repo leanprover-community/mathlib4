@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -214,9 +215,20 @@ theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %�
   nontriviality R
   exact (degree_modByMonic_lt _ hq).le
 
+theorem degree_modByMonic_le_left : degree (p %ₘ q) ≤ degree p := by
+  nontriviality R
+  by_cases hq : q.Monic
+  · cases lt_or_ge (degree p) (degree q)
+    · rw [(modByMonic_eq_self_iff hq).mpr ‹_›]
+    · exact (degree_modByMonic_le p hq).trans ‹_›
+  · rw [modByMonic_eq_of_not_monic p hq]
+
 theorem natDegree_modByMonic_le (p : Polynomial R) {g : Polynomial R} (hg : g.Monic) :
     natDegree (p %ₘ g) ≤ g.natDegree :=
   natDegree_le_natDegree (degree_modByMonic_le p hg)
+
+theorem natDegree_modByMonic_le_left : natDegree (p %ₘ q) ≤ natDegree p :=
+  natDegree_le_natDegree degree_modByMonic_le_left
 
 theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
   simp [X_dvd_iff, coeff_C]
@@ -384,7 +396,6 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
-@[deprecated (since := "2024-03-23")] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd
 
 /-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
@@ -434,7 +445,7 @@ lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
   rw [← p.modByMonic_add_div this]
   have : degree (p %ₘ (X - C a)) < ↑(n + 1) := degree_X_sub_C a ▸ p.degree_modByMonic_lt this
     |>.trans_le <| WithBot.coe_le_coe.mpr le_add_self
-  simp [sub_mul, add_sub, coeff_eq_zero_of_degree_lt this]
+  simp [q, sub_mul, add_sub, coeff_eq_zero_of_degree_lt this]
 
 theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = ∑ i ∈ Icc (n + 1) p.natDegree, a ^ (i - (n + 1)) * p.coeff i := by

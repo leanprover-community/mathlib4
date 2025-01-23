@@ -8,7 +8,7 @@ import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # A collection of specific limit computations
@@ -21,11 +21,7 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 noncomputable section
 
-open scoped Classical
-open Set Function Filter Finset Metric
-
-open scoped Classical
-open Topology Nat uniformity NNReal ENNReal
+open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -113,7 +109,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
     (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
   div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
-    mem_of_superset (Ioi_mem_atTop 0) <| by aesop
+    mem_of_superset (Ioi_mem_atTop 0) <| by simp
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
@@ -382,44 +378,6 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
-/-- Given x > 0, there is a sequence of positive reals summing to x. -/
-theorem NNReal.exists_seq_pos_summable_eq (x : NNReal) (hx : 0 < x) :
-    ∃ f : ℕ → NNReal, (∀ n, 0 < f n) ∧ Summable f ∧ ∑' n, f n = x := by
-  have h : ∑' n : ℕ, x / 2 / 2 ^ n = x := by
-    rw [NNReal.eq_iff, NNReal.coe_tsum]
-    push_cast
-    exact tsum_geometric_two' x
-  refine ⟨fun n : ℕ ↦ x / 2 / 2 ^ n, fun n ↦ by positivity, ?_, h⟩
-  by_contra h1
-  rw [tsum_eq_zero_of_not_summable h1] at h
-  exact hx.ne h
-
-/-- Given some x > 0, there is a sequence of positive reals summing to x. -/
-theorem ENNReal.exists_seq_pos_eq (x : ℝ≥0∞) (hx : 0 < x) :
-    ∃ f : ℕ → ℝ≥0∞, (∀ n, 0 < f n) ∧ ∑' n, f n = x := by
-  by_cases hx_top : x = ∞
-  · use fun _ ↦ ∞
-    simp [forall_const, ENNReal.tsum_top, hx_top, and_self]
-  suffices ∃ f : ℕ → NNReal, (∀ n, 0 < f n) ∧ Summable f ∧ ∑' n, f n = x.toNNReal by
-    obtain ⟨f, hf_pos, hf_sum, hf_eq⟩ := this
-    refine ⟨fun n ↦ f n, ?_, ?_⟩
-    · exact fun n ↦ ENNReal.coe_pos.mpr (hf_pos n)
-    · rw [← ENNReal.coe_tsum hf_sum, hf_eq, ENNReal.coe_toNNReal hx_top]
-  exact NNReal.exists_seq_pos_summable_eq x.toNNReal (ENNReal.toNNReal_pos hx.ne' hx_top)
-
-/-- Given some x > 0, there is a sequence of positive reals summing to something less than x. -/
-theorem ENNReal.exists_seq_pos_lt (x : ℝ≥0∞) (hx : 0 < x) :
-    ∃ f : ℕ → ℝ≥0∞, (∀ n, 0 < f n) ∧ ∑' n, f n < x := by
-  by_cases hx_top : x = ∞
-  · obtain ⟨f, hf_pos, hf_eq⟩ : ∃ f : ℕ → ℝ≥0∞, (∀ n, 0 < f n) ∧ ∑' n, f n = 1 :=
-      ENNReal.exists_seq_pos_eq 1 zero_lt_one
-    refine ⟨f, hf_pos, ?_⟩
-    simp only [hf_eq, hx_top, ENNReal.one_lt_top]
-  · obtain ⟨f, hf⟩ := ENNReal.exists_seq_pos_eq (x / 2) (ENNReal.half_pos hx.ne')
-    refine ⟨f, hf.1, ?_⟩
-    rw [hf.2]
-    exact ENNReal.half_lt_self hx.ne' hx_top
-
 end Geometric
 
 /-!
@@ -590,6 +548,7 @@ def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
 
 theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ, (∀ i, 0 < ε' i) ∧ ∃ c, HasSum (fun i : s ↦ ε' i) c ∧ c ≤ ε := by
+  classical
   haveI := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
   refine ⟨fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else 1, fun i ↦ ?_, ⟨c, ?_, hcε⟩⟩
@@ -601,6 +560,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Cou
 theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
     (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i ∈ t, ε' i ≤ ε := by
+  classical
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
   refine ⟨ε', hpos, fun t ht ↦ ?_⟩
   rw [← sum_subtype_of_mem _ ht]

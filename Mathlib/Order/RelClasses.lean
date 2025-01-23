@@ -11,7 +11,7 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Order.Defs`. The main
+In this file we prove some properties of `Is*` classes defined in `Mathlib.Order.Defs`. The main
 difference between these classes and the usual order classes (`Preorder` etc) is that usual classes
 extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 
@@ -234,6 +234,11 @@ theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a 
   fun hab hba => WellFoundedRelation.asymmetric hba hab
 termination_by a
 
+theorem WellFoundedRelation.asymmetric₃ {α : Sort*} [WellFoundedRelation α] {a b c : α} :
+    WellFoundedRelation.rel a b → WellFoundedRelation.rel b c → ¬ WellFoundedRelation.rel c a :=
+  fun hab hbc hca => WellFoundedRelation.asymmetric₃ hca hab hbc
+termination_by a
+
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
     (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
   (Prod.lex ⟨_, ha⟩ ⟨_, hb⟩).wf
@@ -294,6 +299,10 @@ end IsWellFounded
 theorem WellFounded.asymmetric {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b) :
     r a b → ¬r b a :=
   @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
+
+theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b c) :
+    r a b → r b c → ¬r c a :=
+  @WellFoundedRelation.asymmetric₃ _ ⟨_, h⟩ _ _ _
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
@@ -437,7 +446,8 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   trans := isEmptyElim
   wf := wellFounded_of_isEmpty r
 
-instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
+instance Prod.Lex.instIsWellFounded [IsWellFounded α r] [IsWellFounded β s] :
+    IsWellFounded (α × β) (Prod.Lex r s) :=
   ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
