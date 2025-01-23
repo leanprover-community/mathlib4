@@ -117,7 +117,7 @@ lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by si
   "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 
--- provable by simp in Algebra.Ring.Parity
+-- provable by simp in `Algebra.Ring.Parity`
 @[to_additive Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
@@ -138,8 +138,8 @@ lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
 end Monoid
 
 @[to_additive]
-lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
-  fun ⟨r, _⟩ ⟨s, _⟩ => ⟨r * s, by simp [*, mul_mul_mul_comm]⟩
+lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
+  rintro ⟨r, rfl⟩ ⟨s, rfl⟩; exact ⟨r * s, mul_mul_mul_comm _ _ _ _⟩
 
 section DivisionMonoid
 variable [DivisionMonoid α] {a : α}
