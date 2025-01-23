@@ -109,9 +109,8 @@ noncomputable def limitComparison :
 
 lemma limitComparison_eq_conePointUniqueUpToIso (h : IsConicalLimit V c) :
     limitComparison V c X =
-    ((h.isConicalLimit X).conePointUniqueUpToIso (limit.isLimit _)).hom := by
-  apply limit.hom_ext
-  simp [limitComparison]
+    ((h.isConicalLimit X).conePointUniqueUpToIso (limit.isLimit _)).hom :=
+  limit.hom_ext (fun _ ↦ rfl)
 
 /-- `IsConicalLimit.limitComparison` is an isomorphism. -/
 lemma isIso_limitComparison (h : IsConicalLimit V c) : IsIso (limitComparison V c X) := by
