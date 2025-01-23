@@ -127,3 +127,5 @@ def elabFastInstance : TermElab
         logException e
         return provided
   | _, _ => Elab.throwUnsupportedSyntax
+
+end Mathlib.Elab.FastInstance
