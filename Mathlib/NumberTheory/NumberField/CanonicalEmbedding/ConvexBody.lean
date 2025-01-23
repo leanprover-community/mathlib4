@@ -74,8 +74,6 @@ theorem convexBodyLT_convex : Convex ℝ (convexBodyLT K f) :=
 
 open Fintype MeasureTheory MeasureTheory.Measure ENNReal
 
-open scoped Classical
-
 variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLT`. -/
@@ -88,6 +86,7 @@ theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
 theorem one_le_convexBodyLTFactor : 1 ≤ convexBodyLTFactor K :=
   one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
+open scoped Classical in
 /-- The volume of `(ConvexBodyLt K f)` where `convexBodyLT K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
 theorem convexBodyLT_volume :
@@ -122,6 +121,7 @@ but one and choose the value at the remaining place so that we can apply
 `exists_ne_zero_mem_ringOfIntegers_lt`. -/
 theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ → f w ≠ 0) :
     ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult w = B := by
+  classical
   let S := ∏ w ∈ Finset.univ.erase w₁, (f w) ^ mult w
   refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult w₁ : ℝ)⁻¹), ?_, ?_⟩
   · exact fun w hw => Function.update_of_ne hw _ f
@@ -139,10 +139,9 @@ section convexBodyLT'
 
 open  Metric ENNReal NNReal
 
-open scoped Classical
-
 variable (f : InfinitePlace K → ℝ≥0) (w₀ : {w : InfinitePlace K // IsComplex w})
 
+open scoped Classical in
 /-- A version of `convexBodyLT` with an additional condition at a fixed complex place. This is
 needed to ensure the element constructed is not real, see for example
 `exists_primitive_element_lt_of_isComplex`.
