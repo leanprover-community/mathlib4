@@ -68,7 +68,6 @@ lemma left_of_tensor (B C : Type v)
     change _ ⊗ₜ _ = _ at h
     simp only [RingHom.coe_coe, Subalgebra.coe_val] at h⊢
     exact h⟩
-
   have e : ((Algebra.TensorProduct.includeLeft (R := K) (B := C)).comp
     (Subalgebra.center K B).val).range ≃ₐ[K] (Subalgebra.center K B) :=
     (AlgEquiv.ofBijective f
@@ -85,8 +84,8 @@ lemma left_of_tensor (B C : Type v)
 
 lemma right_of_tensor (B C : Type v) [Ring B] [Ring C] [Nontrivial B] [Nontrivial C]
     [Algebra K C] [Algebra K B] [FiniteDimensional K C] [hbc : Algebra.IsCentral K (B ⊗[K] C)] :
-    IsCentral K C := by
+    IsCentral K C :=
   letI : IsCentral K (C ⊗[K] B) := IsCentral.ofAlgEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
-  exact left_of_tensor K C B
+  left_of_tensor K C B
 
 end Algebra.IsCentral

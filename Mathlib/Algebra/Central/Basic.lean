@@ -63,6 +63,9 @@ lemma ofAlgEquiv (e : D ≃ₐ[K] D'): IsCentral K D' where
     exact ⟨k, by apply_fun e.symm; rw [← hk]; simp [ofId_apply]⟩
 
 open MulOpposite in
+/-- This instance combined with the coming `IsSimpleRing` instance for a
+  central simple algebra will be an inverse for an element in `BrauerGroup`,
+  find out more about this in `Mathlib.Algebra.BrauerGroup.Basic`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz:= by
     rename_i _ h _ _
