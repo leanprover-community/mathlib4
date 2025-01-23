@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.GroupTheory.Perm.Basic
 
 /-!
@@ -18,17 +18,15 @@ The definition of multiplication in the automorphism groups agrees with function
 multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but not with
 `CategoryTheory.comp`.
 
-This file is kept separate from `Data/Equiv/MulAdd` so that `GroupTheory.Perm` is free to use
-equivalences (and other files that use them) before the group structure is defined.
+This file is kept separate from `Mathlib/Algebra/Group/Equiv/*` so that `Mathlib.GroupTheory.Perm`
+is free to use equivalences (and other files that use them) before the group structure is defined.
 
 ## Tags
 
 MulAut, AddAut
 -/
 
--- TODO after #13161
--- assert_not_exists MonoidWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 variable {A : Type*} {M : Type*} {G : Type*}
 
@@ -55,7 +53,7 @@ instance : Group (MulAut M) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
-  mul_left_inv := MulEquiv.self_trans_symm
+  inv_mul_cancel := MulEquiv.self_trans_symm
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -102,12 +100,10 @@ def toPerm : MulAut M →* Equiv.Perm M where
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
+instance applyMulAction {M} [Monoid M] : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-  smul_one := MulEquiv.map_one
-  smul_mul := MulEquiv.map_mul
 
 @[simp]
 protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a :=
@@ -125,8 +121,8 @@ def conj [Group G] : G →* MulAut G where
   toFun g :=
     { toFun := fun h => g * h * g⁻¹
       invFun := fun h => g⁻¹ * h * g
-      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, mul_left_inv, mul_one]
-      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_right_inv, mul_one]
+      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, inv_mul_cancel, mul_one]
+      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
   map_mul' g₁ g₂ := by
     ext h
@@ -146,6 +142,16 @@ theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :
 theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
+/-- Isomorphic groups have isomorphic automorphism groups. -/
+@[simps]
+def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
+    MulAut G ≃* MulAut H where
+  toFun f := ϕ.symm.trans (f.trans ϕ)
+  invFun f := ϕ.trans (f.trans ϕ.symm)
+  left_inv _ := by simp [DFunLike.ext_iff]
+  right_inv _ := by simp [DFunLike.ext_iff]
+  map_mul' := by simp [DFunLike.ext_iff]
+
 end MulAut
 
 namespace AddAut
@@ -162,7 +168,7 @@ instance group : Group (AddAut A) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
-  mul_left_inv := AddEquiv.self_trans_symm
+  inv_mul_cancel := AddEquiv.self_trans_symm
 
 instance : Inhabited (AddAut A) :=
   ⟨1⟩
@@ -209,10 +215,8 @@ def toPerm : AddAut A →* Equiv.Perm A where
 /-- The tautological action by `AddAut A` on `A`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
+instance applyMulAction {A} [AddMonoid A] : MulAction (AddAut A) A where
   smul := (· <| ·)
-  smul_zero := AddEquiv.map_zero
-  smul_add := AddEquiv.map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -233,8 +237,10 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
       { toFun := fun h => g + h + -g
         -- this definition is chosen to match `MulAut.conj`
         invFun := fun h => -g + h + g
-        left_inv := fun _ => by simp only [add_assoc, neg_add_cancel_left, add_left_neg, add_zero]
-        right_inv := fun _ => by simp only [add_assoc, add_neg_cancel_left, add_right_neg, add_zero]
+        left_inv := fun _ => by
+          simp only [add_assoc, neg_add_cancel_left, neg_add_cancel, add_zero]
+        right_inv := fun _ => by
+          simp only [add_assoc, add_neg_cancel_left, add_neg_cancel, add_zero]
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
@@ -255,9 +261,31 @@ theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
 
 -- Porting note: the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
 -- but this no longer pass the simp_nf linter, as the LHS simplifies by `toMul_neg` to
--- `(Additive.toMul (conj g))⁻¹`.
+-- `(conj g).toMul⁻¹`.
 @[simp]
-theorem conj_inv_apply [AddGroup G] (g h : G) : (Additive.toMul (conj g))⁻¹ h = -g + h + g :=
+theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
   rfl
 
+/-- Isomorphic additive groups have isomorphic automorphism groups. -/
+@[simps]
+def congr [AddGroup G] {H : Type*} [AddGroup H] (ϕ : G ≃+ H) :
+    AddAut G ≃* AddAut H where
+  toFun f := ϕ.symm.trans (f.trans ϕ)
+  invFun f := ϕ.trans (f.trans ϕ.symm)
+  left_inv _ := by simp [DFunLike.ext_iff]
+  right_inv _ := by simp [DFunLike.ext_iff]
+  map_mul' := by simp [DFunLike.ext_iff]
+
 end AddAut
+
+variable (G)
+
+/-- `Multiplicative G` and `G` have isomorphic automorphism groups. -/
+@[simps!]
+def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* AddAut G :=
+  { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
+
+/-- `Additive G` and `G` have isomorphic automorphism groups. -/
+@[simps!]
+def AddAutAdditive [Group G] : AddAut (Additive G) ≃* MulAut G :=
+  { MulEquiv.toAdditive.symm with map_mul' := fun _ _ ↦ rfl }

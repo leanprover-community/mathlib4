@@ -3,10 +3,9 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
@@ -46,7 +45,7 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] {x y : α}
 
 instance inv : Inv { x : α // 0 ≤ x } :=
-  ⟨fun x => ⟨x⁻¹, inv_nonneg (α := α) |>.2 x.2⟩⟩
+  ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_inv (a : { x : α // 0 ≤ x }) : ((a⁻¹ : { x : α // 0 ≤ x }) : α) = (a : α)⁻¹ :=
@@ -54,7 +53,7 @@ protected theorem coe_inv (a : { x : α // 0 ≤ x }) : ((a⁻¹ : { x : α // 0
 
 @[simp]
 theorem inv_mk (hx : 0 ≤ x) :
-    (⟨x, hx⟩ : { x : α // 0 ≤ x })⁻¹ = ⟨x⁻¹, inv_nonneg (α := α) |>.2 hx⟩ :=
+    (⟨x, hx⟩ : { x : α // 0 ≤ x })⁻¹ = ⟨x⁻¹, inv_nonneg.2 hx⟩ :=
   rfl
 
 instance div : Div { x : α // 0 ≤ x } :=
@@ -102,12 +101,8 @@ instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :
 
 end LinearOrderedSemifield
 
-instance canonicallyLinearOrderedSemifield [LinearOrderedField α] :
-    CanonicallyLinearOrderedSemifield { x : α // 0 ≤ x } :=
-  { Nonneg.linearOrderedSemifield, Nonneg.canonicallyOrderedCommSemiring with }
-
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  inferInstance
+  LinearOrderedSemifield.toLinearOrderedCommGroupWithZero
 
 end Nonneg

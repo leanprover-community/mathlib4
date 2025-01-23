@@ -88,9 +88,6 @@ variable
 variable (msU : ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, P (f i)), m (⋃ i, f i) (PU hm) ≤ ∑' i, m (f i) (hm i))
 variable (m_mono : ∀ ⦃s₁ s₂ : Set α⦄ (hs₁ : P s₁) (hs₂ : P s₂), s₁ ⊆ s₂ → m s₁ hs₁ ≤ m s₂ hs₂)
 
-theorem extend_empty : extend m ∅ = 0 :=
-  (extend_eq _ P0).trans m0
-
 theorem extend_iUnion_nat {f : ℕ → Set α} (hm : ∀ i, P (f i))
     (mU : m (⋃ i, f i) (PU hm) = ∑' i, m (f i) (hm i)) :
     extend m (⋃ i, f i) = ∑' i, extend m (f i) :=
@@ -99,8 +96,13 @@ theorem extend_iUnion_nat {f : ℕ → Set α} (hm : ∀ i, P (f i))
       congr with i
       rw [extend_eq]
 
+include P0 m0 in
+theorem extend_empty : extend m ∅ = 0 :=
+  (extend_eq _ P0).trans m0
+
 section Subadditive
 
+include PU msU in
 theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   by_cases h : ∀ i, P (s i)
@@ -115,6 +117,7 @@ end Subadditive
 
 section Mono
 
+include m_mono in
 theorem extend_mono' ⦃s₁ s₂ : Set α⦄ (h₁ : P s₁) (hs : s₁ ⊆ s₂) : extend m s₁ ≤ extend m s₂ := by
   refine le_iInf ?_
   intro h₂
@@ -125,6 +128,7 @@ end Mono
 
 section Unions
 
+include P0 m0 PU mU in
 theorem extend_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Disjoint on f))
     (hm : ∀ i, P (f i)) : extend m (⋃ i, f i) = ∑' i, extend m (f i) := by
   cases nonempty_encodable β
@@ -134,6 +138,7 @@ theorem extend_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Di
         (mU _ (Encodable.iUnion_decode₂_disjoint_on hd))
   · exact extend_empty P0 m0
 
+include P0 m0 PU mU in
 theorem extend_union {s₁ s₂ : Set α} (hd : Disjoint s₁ s₂) (h₁ : P s₁) (h₂ : P s₂) :
     extend m (s₁ ∪ s₂) = extend m s₁ + extend m s₂ := by
   rw [union_eq_iUnion,
@@ -166,6 +171,8 @@ theorem inducedOuterMeasure_union_of_false_of_nonempty_inter {s t : Set α}
     inducedOuterMeasure m P0 m0 (s ∪ t) =
       inducedOuterMeasure m P0 m0 s + inducedOuterMeasure m P0 m0 t :=
   ofFunction_union_of_top_of_nonempty_inter fun u hsu htu => @iInf_of_empty _ _ _ ⟨h u hsu htu⟩ _
+
+include PU msU m_mono
 
 theorem inducedOuterMeasure_eq_extend' {s : Set α} (hs : P s) :
     inducedOuterMeasure m P0 m0 s = extend m s :=
@@ -252,6 +259,7 @@ variable
   (mU :
     ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, MeasurableSet (f i)),
       Pairwise (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion hm) = ∑' i, m (f i) (hm i))
+include m0 mU
 
 theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ ⊆ s₂) :
     extend m s₁ ≤ extend m s₂ := by
@@ -289,7 +297,7 @@ variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
   `m.trim`, the unique maximal outer measure less than that function. -/
 def trim : OuterMeasure α :=
-  inducedOuterMeasure (fun s _ => m s) MeasurableSet.empty m.empty
+  inducedOuterMeasure (P := MeasurableSet) (fun s _ => m s) .empty m.empty
 
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
     m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s :=
@@ -304,14 +312,14 @@ theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
 
 theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, MeasurableSet s → m₁ s = m₂ s) :
     m₁.trim = m₂.trim := by
-  simp (config := { contextual := true }) only [trim, H]
+  simp +contextual only [trim, H]
 
 @[mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
   iInf₂_mono fun _f _hs => ENNReal.tsum_le_tsum fun _b => iInf_mono fun _hf => H _
 
 /-- `OuterMeasure.trim` is antitone in the σ-algebra. -/
-theorem trim_anti_measurableSpace (m : OuterMeasure α) {m0 m1 : MeasurableSpace α}
+theorem trim_anti_measurableSpace {α} (m : OuterMeasure α) {m0 m1 : MeasurableSpace α}
     (h : m0 ≤ m1) : @trim _ m1 m ≤ @trim _ m0 m := by
   simp only [le_trim_iff]
   intro s hs
@@ -401,7 +409,7 @@ and `m₃ s`. -/
 theorem trim_binop {m₁ m₂ m₃ : OuterMeasure α} {op : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
     (h : ∀ s, m₁ s = op (m₂ s) (m₃ s)) (s : Set α) : m₁.trim s = op (m₂.trim s) (m₃.trim s) := by
   rcases exists_measurable_superset_forall_eq_trim ![m₁, m₂, m₃] s with ⟨t, _hst, _ht, htm⟩
-  simp only [Fin.forall_fin_succ, Matrix.cons_val_zero, Matrix.cons_val_succ] at htm
+  simp only [Fin.forall_iff_succ, Matrix.cons_val_zero, Matrix.cons_val_succ] at htm
   rw [← htm.1, ← htm.2.1, ← htm.2.2.1, h]
 
 /-- If `m₁ s = op (m₂ s)` for all `s`, then the same is true for `m₁.trim` and `m₂.trim`. -/

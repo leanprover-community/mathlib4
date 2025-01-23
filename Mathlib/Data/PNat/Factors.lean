@@ -3,9 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Data.Multiset.Sort
 
 /-!
@@ -26,14 +27,17 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, OrderedCancelAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
 
-instance : OrderBot PrimeMultiset where
-  bot_le := by simp only [bot_le, forall_const]
+instance : CanonicallyOrderedAdd PrimeMultiset :=
+  inferInstanceAs (CanonicallyOrderedAdd (Multiset Nat.Primes))
 
-instance : OrderedSub PrimeMultiset where
-  tsub_le_iff_right _ _ _ := Multiset.sub_le_iff_le_add
+instance : OrderBot PrimeMultiset :=
+  inferInstanceAs (OrderBot (Multiset Nat.Primes))
+
+instance : OrderedSub PrimeMultiset :=
+  inferInstanceAs (OrderedSub (Multiset Nat.Primes))
 
 namespace PrimeMultiset
 
@@ -188,7 +192,7 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
 
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
   induction d with
-  | zero => simp only [Nat.zero_eq, zero_nsmul, pow_zero, prod_zero]
+  | zero => simp only [zero_nsmul, pow_zero, prod_zero]
   | succ n ih => rw [succ_nsmul, prod_add, ih, pow_succ]
 
 end PrimeMultiset
@@ -223,7 +227,6 @@ theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := b
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
-  rw [Multiset.prod_coe]
   let l' := l.map (Coe.coe : Nat.Primes → ℕ)
   have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
     rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩

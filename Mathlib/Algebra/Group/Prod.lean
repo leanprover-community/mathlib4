@@ -29,12 +29,11 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero DenselyOrdered
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
-assert_not_exists DenselyOrdered
 
-variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
 namespace Prod
 
@@ -88,6 +87,9 @@ theorem snd_one [One M] [One N] : (1 : M × N).2 = 1 :=
 @[to_additive]
 theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
   rfl
+
+@[to_additive (attr := simp)]
+theorem mk_one_one [One M] [One N] : ((1 : M), (1 : N)) = 1 := rfl
 
 @[to_additive (attr := simp)]
 theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
@@ -146,6 +148,8 @@ theorem mk_div_mk [Div G] [Div H] (x₁ x₂ : G) (y₁ y₂ : H) :
 theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap :=
   rfl
 
+@[to_additive] lemma div_def [Div M] [Div N] (a b : M × N) : a / b = (a.1 / b.1, a.2 / b.2) := rfl
+
 @[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
   { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
@@ -162,8 +166,8 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
   { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun z => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun z a => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
+    npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
 
@@ -177,8 +181,8 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
-  { mul_inv_rev := fun a b => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
-    inv_eq_of_mul := fun a b h =>
+  { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
+    inv_eq_of_mul := fun _ _ h =>
       Prod.ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
         (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
     inv_inv := by simp }
@@ -189,7 +193,7 @@ instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G �
 
 @[to_additive]
 instance instGroup [Group G] [Group H] : Group (G × H) :=
-  { mul_left_inv := fun _ => mk.inj_iff.mpr ⟨mul_left_inv _, mul_left_inv _⟩ }
+  { inv_mul_cancel := fun _ => mk.inj_iff.mpr ⟨inv_mul_cancel _, inv_mul_cancel _⟩ }
 
 @[to_additive]
 instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where
@@ -215,12 +219,14 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
   { mul_one := by simp,
-    one_mul := by simp }
+    one_mul := by simp
+    mul_left_cancel := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
-    one_mul := by simp }
+    one_mul := by simp
+    mul_right_cancel := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -232,7 +238,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+  { mul_left_cancel := by simp }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
@@ -582,7 +588,24 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
 
-variable {M' N' : Type*} [MulOneClass M'] [MulOneClass N']
+variable [MulOneClass P]
+
+/-- The equivalence between `(M × N) × P` and `M × (N × P)` is multiplicative. -/
+@[to_additive prodAssoc
+      "The equivalence between `(M × N) × P` and `M × (N × P)` is additive."]
+def prodAssoc : (M × N) × P ≃* M × (N × P) :=
+  { Equiv.prodAssoc M N P with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
+
+@[to_additive (attr := simp) coe_prodAssoc]
+theorem coe_prodAssoc : ⇑(prodAssoc : (M × N) × P ≃* M × (N × P)) = Equiv.prodAssoc M N P :=
+  rfl
+
+@[to_additive (attr := simp) coe_prodAssoc_symm]
+theorem coe_prodAssoc_symm :
+    ⇑(prodAssoc : (M × N) × P ≃* M × (N × P)).symm = (Equiv.prodAssoc M N P).symm :=
+  rfl
+
+variable {M' : Type*} {N' : Type*} [MulOneClass N'] [MulOneClass M']
 
 section
 
@@ -612,7 +635,7 @@ end
 @[to_additive prodCongr "Product of additive isomorphisms; the maps come from `Equiv.prodCongr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
-    map_mul' := fun _ _ => Prod.ext (f.map_mul _ _) (g.map_mul _ _) }
+    map_mul' := fun _ _ => Prod.ext (map_mul f _ _) (map_mul g _ _) }
 
 /-- Multiplying by the trivial monoid doesn't change the structure. -/
 @[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
@@ -647,6 +670,11 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     exact ⟨rfl, rfl⟩
   map_mul' := MonoidHom.map_mul _
 
+@[to_additive]
+lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
+  mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
+  mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
 end
 
 end MulEquiv
@@ -668,7 +696,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
+  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
 
 end Units
 

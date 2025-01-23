@@ -109,7 +109,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
-in terms of an a priori infinte sum over all pairs `(k, m)` with `k * m = n`
+in terms of an a priori infinite sum over all pairs `(k, m)` with `k * m = n`
 (the set we sum over is infinite when `n = 0`). This is the version needed for the
 proof that `L (f ⍟ g) = L f * L g`. -/
 lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
@@ -166,6 +166,12 @@ lemma LSeriesSummable.convolution {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSum
     (hg : LSeriesSummable g s) :
     LSeriesSummable (f ⍟ g) s :=
   (LSeriesHasSum.convolution hf.LSeriesHasSum hg.LSeriesHasSum).LSeriesSummable
+
+/-- The abscissa of absolute convergence of `f ⍟ g` is at most the maximum of those
+of `f` and `g`. -/
+lemma LSeries.abscissaOfAbsConv_convolution_le (f g : ℕ → ℂ) :
+    abscissaOfAbsConv (f ⍟ g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) :=
+  abscissaOfAbsConv_binop_le LSeriesSummable.convolution f g
 
 namespace ArithmeticFunction
 

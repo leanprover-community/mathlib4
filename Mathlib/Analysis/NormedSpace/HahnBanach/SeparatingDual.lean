@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Spaces with separating dual
@@ -26,7 +27,7 @@ equivalences acts transitively on the set of nonzero vectors.
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
 class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
-    [TopologicalSpace R] [Module R V] : Prop :=
+    [TopologicalSpace R] [Module R V] : Prop where
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 
@@ -101,7 +102,7 @@ theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensio
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : V →L[R] R, f x = 1 := by
   rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
-  exact ⟨(f x)⁻¹ • f, inv_mul_cancel hf⟩
+  exact ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 
 theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ f : V →L[R] R, f x = 1 ∧ f y ≠ 0 := by
@@ -110,7 +111,7 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨u, ux, uy⟩
   obtain ⟨v, vy⟩ : ∃ v : V →L[R] R, v y = 1 := exists_eq_one hy
   rcases ne_or_eq (v x) 0 with vx|vx
-  · exact ⟨(v x)⁻¹ • v, inv_mul_cancel vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
+  · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
 variable [TopologicalAddGroup V]
@@ -130,16 +131,16 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
       simp only [id_eq, eq_mpr_eq_cast, RingHom.id_apply, smul_eq_mul, AddHom.toFun_eq_coe,
-        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
         AddHom.coe_mk, map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
-      rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel Gy]
+      rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel₀ Gy]
       simp only [smul_sub, one_mul]
       abel
     right_inv := fun z ↦ by
-        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_add, map_smulₛₗ _, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
         smul_eq_mul, mul_sub, mul_one]
-      rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel Gy]
+      rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]
       simp only [smul_sub, one_mul, add_sub_cancel]
       abel
     continuous_toFun := continuous_id.add (G.continuous.smul continuous_const)

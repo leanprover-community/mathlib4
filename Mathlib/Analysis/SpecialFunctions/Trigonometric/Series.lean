@@ -40,7 +40,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
-    neg_mul, mul_neg, neg_div, add_right_neg, zero_div, add_zero,
+    neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
     mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 
 theorem Complex.hasSum_sin' (z : ℂ) :

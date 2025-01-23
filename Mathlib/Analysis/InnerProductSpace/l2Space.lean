@@ -85,7 +85,7 @@ open scoped NNReal ENNReal ComplexConjugate Topology
 noncomputable section
 
 variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -175,9 +175,11 @@ end lp
 
 namespace OrthogonalFamily
 
-variable {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
+variable [CompleteSpace E] {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
+include hV
 
-protected theorem summable_of_lp (f : lp G 2) : Summable fun i => V i (f i) := by
+protected theorem summable_of_lp (f : lp G 2) :
+    Summable fun i => V i (f i) := by
   rw [hV.summable_iff_norm_sq_summable]
   convert (lp.memℓp f).summable _
   · norm_cast
@@ -185,7 +187,7 @@ protected theorem summable_of_lp (f : lp G 2) : Summable fun i => V i (f i) := b
 
 /-- A mutually orthogonal family of subspaces of `E` induce a linear isometry from `lp 2` of the
 subspaces into `E`. -/
-protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
+protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
     simp only [tsum_add (hV.summable_of_lp f) (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
@@ -235,7 +237,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
   classical
   refine le_antisymm ?_ ?_
   · rintro x ⟨f, rfl⟩
-    refine mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall ?_)
+    refine mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (Eventually.of_forall ?_)
     intro s
     rw [SetLike.mem_coe]
     refine sum_mem ?_
@@ -247,14 +249,14 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
       rintro i x ⟨x, rfl⟩
       use lp.single 2 i x
       exact hV.linearIsometry_apply_single x
-    exact hV.linearIsometry.isometry.uniformInducing.isComplete_range.isClosed
+    exact hV.linearIsometry.isometry.isUniformInducing.isComplete_range.isClosed
 
 end OrthogonalFamily
 
 section IsHilbertSum
 
 variable (𝕜 G)
-variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
+variable [CompleteSpace E] (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
 /-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
@@ -338,7 +340,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
+  simp +contextual [DFinsupp.sum, lp.single_apply]
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
 relative to the family of linear isometries `fun i k => k • v i`. -/
@@ -439,7 +441,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
   classical
     rw [eq_top_iff]
     rintro x -
-    refine mem_closure_of_tendsto (b.hasSum_repr x) (eventually_of_forall ?_)
+    refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)
     intro s
     simp only [SetLike.mem_coe]
     refine sum_mem ?_
@@ -492,7 +494,11 @@ theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
       Set.mem_iUnion_of_mem {i} <| Finset.mem_coe.mpr <| Finset.mem_image_of_mem _ <|
       Finset.mem_singleton_self i))
 
+variable [CompleteSpace E]
+
+section
 variable {v : ι → E} (hv : Orthonormal 𝕜 v)
+include hv
 
 /-- An orthonormal family of vectors whose span is dense in the whole module is a Hilbert basis. -/
 protected def mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) : HilbertBasis ι 𝕜 E :=
@@ -528,6 +534,8 @@ protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : Orthonorm
   HilbertBasis.mk b.orthonormal <| by
     simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using
       @subset_closure E _ _
+
+end
 
 @[simp]
 theorem _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :

@@ -73,7 +73,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; linarith)
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; omega)
 
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
@@ -157,28 +157,12 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
       HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
 
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] natTrans
-
 end Γ₂N₁
 
--- Porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
+@[simps! hom_app inv_app]
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
   (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
-
-@[simp]
-lemma Γ₂N₂ToKaroubiIso_hom_app (X : SimplicialObject C) :
-    Γ₂N₂ToKaroubiIso.hom.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.hom.app X) := by
-  simp [Γ₂N₂ToKaroubiIso]
-
-@[simp]
-lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
-    Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
-  simp [Γ₂N₂ToKaroubiIso]
-
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] Γ₂N₂ToKaroubiIso
 
 namespace Γ₂N₂
 
@@ -193,9 +177,6 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
         (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
   dsimp only [natTrans]
   simp only [whiskeringLeft_obj_preimage_app, Functor.id_map, assoc]
-
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] natTrans
 
 end Γ₂N₂
 

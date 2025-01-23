@@ -3,7 +3,7 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SplitSimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
@@ -148,7 +148,7 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   have eq : Δ.len = Δ''.len + (k + k' + 2) := by omega
   rw [mapMono_eq_zero K (i' ≫ i) _ _]; rotate_left
   · by_contra h
-    simp only [self_eq_add_right, h, add_eq_zero_iff, and_false] at eq
+    simp only [self_eq_add_right, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
     omega

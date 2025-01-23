@@ -19,10 +19,10 @@ instance : Group (r ≃r r) where
   one := RelIso.refl r
   mul f₁ f₂ := f₂.trans f₁
   inv := RelIso.symm
-  mul_assoc f₁ f₂ f₃ := rfl
-  one_mul f := ext fun _ => rfl
-  mul_one f := ext fun _ => rfl
-  mul_left_inv f := ext f.symm_apply_apply
+  mul_assoc _ _ _ := rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
+  inv_mul_cancel f := ext f.symm_apply_apply
 
 @[simp]
 theorem coe_one : ((1 : r ≃r r) : α → α) = id :=

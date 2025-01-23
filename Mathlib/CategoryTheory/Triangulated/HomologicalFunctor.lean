@@ -122,7 +122,7 @@ lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) 
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
-    ⟨fun {X} => preservesLimitOfIsoDiagram F (diagramIsoPair X).symm⟩
+    ⟨fun {X} => preservesLimit_of_iso_diagram F (diagramIsoPair X).symm⟩
   intro X₁ X₂
   have : HasBinaryBiproduct (F.obj X₁) (F.obj X₂) := HasBinaryBiproducts.has_binary_biproduct _ _
   have : Mono (F.biprodComparison X₁ X₂) := by
@@ -137,8 +137,8 @@ noncomputable instance (priority := 100) [F.IsHomological] :
     simp only [assoc, biprodComparison_fst, zero_comp, ← F.map_comp, biprod.inl_fst,
       F.map_id, comp_id] at hf
     rw [hf, zero_comp]
-  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproductOfMonoBiprodComparison _
-  apply Limits.preservesBinaryProductOfPreservesBinaryBiproduct
+  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproduct_of_mono_biprodComparison _
+  apply Limits.preservesBinaryProduct_of_preservesBinaryBiproduct
 
 instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
@@ -182,6 +182,8 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shift
 variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
   (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+section
+include hT
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
@@ -206,22 +208,23 @@ lemma homologySequence_exact₂ :
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
+    (by dsimp; simp) (by dsimp; simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    ((F.shiftIso 1 n₀ n₁ (by linarith)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+    ((F.shiftIso 1 n₀ n₁ (by omega)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by omega)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_self 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁ (by omega)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -238,6 +241,7 @@ lemma homologySequence_epi_shift_map_mor₂_iff :
 lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
+end
 
 lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
@@ -265,6 +269,7 @@ open ComposableArrows
   mk₅ ((F.shift n₀).map T.mor₁) ((F.shift n₀).map T.mor₂)
     (F.homologySequenceδ T n₀ n₁ h) ((F.shift n₁).map T.mor₁) ((F.shift n₁).map T.mor₂)
 
+include hT in
 lemma homologySequenceComposableArrows₅_exact :
     (F.homologySequenceComposableArrows₅ T n₀ n₁ h).Exact :=
   exact_of_δ₀ (F.homologySequence_exact₂ T hT n₀).exact_toComposableArrows

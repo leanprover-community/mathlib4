@@ -12,6 +12,7 @@ import Mathlib.Logic.Equiv.Fintype
 # Permutations of `Fin n`
 -/
 
+assert_not_exists LinearMap
 
 open Equiv
 
@@ -91,9 +92,10 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
 
 @[simp]
 theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
-  induction' n with n ih
-  · simp
-  · rw [finRotate_succ_eq_decomposeFin]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [finRotate_succ_eq_decomposeFin]
     simp [ih, pow_succ]
 
 @[simp]
@@ -149,7 +151,7 @@ theorem cycleRange_of_gt {n : ℕ} {i j : Fin n.succ} (h : i < j) : cycleRange i
 theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   cases n
-  · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
+  · subsingleton
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
     ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext
@@ -275,5 +277,3 @@ theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Per
 end Fin
 
 end CycleRange
-
-assert_not_exists LinearMap

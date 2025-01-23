@@ -3,8 +3,9 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
+import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
@@ -102,9 +103,9 @@ theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
 
 end
 
-@[deprecated (since := "2024-06-07")] alias decide_True := decide_true_eq_true
+@[deprecated (since := "2024-06-07")] alias decide_True := decide_true
 
-@[deprecated (since := "2024-06-07")] alias decide_False := decide_false_eq_false
+@[deprecated (since := "2024-06-07")] alias decide_False := decide_false
 
 @[deprecated (since := "2024-06-07")] alias coe_decide := decide_eq_true_iff
 
@@ -118,21 +119,6 @@ alias of_decide_iff := decide_eq_true_iff
 @[deprecated (since := "2024-06-07")] alias eq_iff_eq_true_iff := eq_iff_iff
 
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
-
-theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
-  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
-
-@[simp]
-theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  forall_bool' false
-
-theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
-  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
-    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
-
-@[simp]
-theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  exists_bool' false
 
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 
@@ -180,7 +166,7 @@ attribute [simp] xor_assoc
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
-/-! ### De Morgan's laws for booleans-/
+/-! ### De Morgan's laws for booleans -/
 
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide
@@ -220,8 +206,8 @@ def ofNat (n : Nat) : Bool :=
 
 @[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by cases b <;> rfl
 @[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) =  b := by simp [bne]
-@[simp] lemma toNat_beq_one  (b : Bool) : (b.toNat == 1) =  b := by cases b <;> rfl
-@[simp] lemma toNat_bne_one  (b : Bool) : (b.toNat != 1) = !b := by simp [bne]
+@[simp] lemma toNat_beq_one (b : Bool) : (b.toNat == 1) =  b := by cases b <;> rfl
+@[simp] lemma toNat_bne_one (b : Bool) : (b.toNat != 1) = !b := by simp [bne]
 
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
@@ -233,7 +219,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
     | isTrue hm => subst hm; have h := Nat.le_antisymm h (Nat.zero_le n); contradiction
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
-  cases b₀ <;> cases b₁ <;> simp_all (config := { decide := true })
+  cases b₀ <;> cases b₁ <;> simp_all +decide
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
   cases b <;> rfl
@@ -242,7 +228,10 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
-    exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+    · rfl
+    · exact (H hxy).elim
+    · exact (H hxy.symm).elim
+    · rfl⟩
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by

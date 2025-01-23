@@ -27,7 +27,7 @@ variable {R : Type*}
 namespace Int
 section OrderedAddCommGroupWithOne
 
-variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
+variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
@@ -36,6 +36,8 @@ lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   lift n - m to ℕ using h with k hk
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
+
+@[gcongr] protected lemma GCongr.intCast_mono {m n : ℤ} (hmn : m ≤ n) : (m : R) ≤ n := cast_mono hmn
 
 variable [NeZero (1 : R)] {m n : ℤ}
 
@@ -52,6 +54,8 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
   strictMono_of_le_iff_le fun _ _ => cast_le.symm
 
 @[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.intCast_strictMono⟩ := Int.cast_lt
 
 @[simp] lemma cast_nonpos : (n : R) ≤ 0 ↔ n ≤ 0 := by rw [← cast_zero, cast_le]
 
@@ -86,10 +90,10 @@ lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 
 lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
     have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
-    rwa [add_left_neg] at this
+    rwa [neg_add_cancel] at this
   have hnx' : n < 0 → x + n ≤ 0 := fun hn => by
     have := _root_.add_le_add (le_of_abs_le hx) (cast_le_neg_one_of_neg hn)
-    rwa [add_right_neg] at this
+    rwa [add_neg_cancel] at this
   rw [← mul_add, mul_nonneg_iff]
   rcases lt_trichotomy n 0 with (h | rfl | h)
   · exact Or.inr ⟨mod_cast h.le, hnx' h⟩

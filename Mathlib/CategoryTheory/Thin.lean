@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison, Bhavik Mehta. All rights reserved.
+Copyright (c) 2019 Kim Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso

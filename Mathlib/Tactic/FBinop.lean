@@ -3,6 +3,8 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Lean.Elab.App
+import Lean.Elab.BuiltinNotation
 import Mathlib.Tactic.ToExpr
 
 /-! # Elaborator for functorial binary operators
@@ -98,12 +100,12 @@ private partial def extractS (e : Expr) : TermElabM (Option (SRec × Expr)) :=
     let mut args := e.getAppArgs
     let mut info := (← getFunInfoNArgs f args.size).paramInfo
     for _ in [0 : args.size - 1] do
-      if info.back.isInstImplicit then
+      if info.back!.isInstImplicit then
         args := args.pop
         info := info.pop
       else
         break
-    let x := args.back
+    let x := args.back!
     unless ← Meta.isType x do return none
     return some ({name := n, args := args.pop}, x)
   | _ => return none
@@ -183,12 +185,12 @@ private def toExprCore (t : Tree) : TermElabM Expr := do
   | .term _ trees e =>
     modifyInfoState (fun s => { s with trees := s.trees ++ trees }); return e
   | .binop ref f lhs rhs =>
-    withRef ref <| withInfoContext' ref (mkInfo := mkTermInfo .anonymous ref) do
+    withRef ref <| withTermInfoContext' .anonymous ref do
       let lhs ← toExprCore lhs
       let mut rhs ← toExprCore rhs
       mkBinOp f lhs rhs
   | .macroExpansion macroName stx stx' nested =>
-    withRef stx <| withInfoContext' stx (mkInfo := mkTermInfo macroName stx) do
+    withRef stx <| withTermInfoContext' macroName stx do
       withMacroExpansion stx stx' do
         toExprCore nested
 
@@ -206,7 +208,7 @@ where
       let type ← instantiateMVars (← inferType e)
       trace[Elab.fbinop] "visiting {e} : {type}"
       let some (_, x) ← extractS type
-        | -- We want our operators to be "homogenous" so do a defeq check as an elaboration hint
+        | -- We want our operators to be "homogeneous" so do a defeq check as an elaboration hint
           let x' ← mkFreshExprMVar none
           let some maxType ← applyS maxS x' | trace[Elab.fbinop] "mvar apply failed"; return t
           trace[Elab.fbinop] "defeq hint {maxType} =?= {type}"

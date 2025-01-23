@@ -3,7 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Batteries.Tactic.Alias
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Boolean quantifiers
@@ -17,26 +18,16 @@ variable {α : Type*} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}
 
 namespace List
 
--- Porting note: in Batteries
-
-theorem all_iff_forall {p : α → Bool} : all l p ↔ ∀ a ∈ l, p a := by
-  induction' l with a l ih
-  · exact iff_of_true rfl (forall_mem_nil _)
-  simp only [all_cons, Bool.and_eq_true_iff, ih, forall_mem_cons]
+@[deprecated (since := "2024-08-10")] alias all_iff_forall := all_eq_true
 
 theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
-  simp only [all_iff_forall, decide_eq_true_iff]
+  simp
 
--- Porting note: in Batteries
+@[deprecated (since := "2024-08-10")] alias any_iff_exists := any_eq_true
 
-theorem any_iff_exists {p : α → Bool} : any l p ↔ ∃ a ∈ l, p a := by
-  induction' l with a l ih
-  · exact iff_of_false Bool.false_ne_true (not_exists_mem_nil _)
-  simp only [any_cons, Bool.or_eq_true_iff, ih, exists_mem_cons_iff]
-
-theorem any_iff_exists_prop : (any l fun a => p a) ↔ ∃ a ∈ l, p a := by simp [any_iff_exists]
+theorem any_iff_exists_prop : (any l fun a => p a) ↔ ∃ a ∈ l, p a := by simp
 
 theorem any_of_mem {p : α → Bool} (h₁ : a ∈ l) (h₂ : p a) : any l p :=
-  any_iff_exists.2 ⟨_, h₁, h₂⟩
+  any_eq_true.2 ⟨_, h₁, h₂⟩
 
 end List

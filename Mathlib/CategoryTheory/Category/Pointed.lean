@@ -22,22 +22,17 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
   /-- the underlying type -/
-  X : Type u
+  protected X : Type u
   /-- the distinguished element -/
   point : X
 
 namespace Pointed
 
 instance : CoeSort Pointed Type* :=
-  ⟨X⟩
-
--- Porting note: protected attribute does not work
---attribute [protected] Pointed.X
+  ⟨Pointed.X⟩
 
 /-- Turns a point into a pointed type. -/
 def of {X : Type*} (point : X) : Pointed :=
@@ -87,7 +82,7 @@ instance largeCategory : LargeCategory Pointed where
 @[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
-instance concreteCategory : ConcreteCategory Pointed where
+instance hasForget : HasForget Pointed where
   forget :=
     { obj := Pointed.X
       map := @Hom.toFun }
@@ -124,7 +119,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             cases x
             · exact f.map_point.symm
             · rfl
-          right_inv := fun f => funext fun _ => rfl }
+          right_inv := fun _ => funext fun _ => rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext
         funext x

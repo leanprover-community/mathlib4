@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Abhimanyu Pallavi Sudhir
+Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -36,9 +36,8 @@ instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid β] :
     fun _ ↦ le_of_mul_le_mul_left'
 
 @[to_additive]
-instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
-    CanonicallyOrderedCommMonoid (Germ l β) where
-  __ := instExistsMulOfLE
-  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
+instance instCanonicallyOrderedMul [Mul β] [LE β] [CanonicallyOrderedMul β] :
+    CanonicallyOrderedMul (Germ l β) where
+  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_self_mul
 
 end Filter.Germ
