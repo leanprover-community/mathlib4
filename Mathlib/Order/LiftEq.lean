@@ -103,40 +103,24 @@ theorem liftLT_iff_lt {y : α} : x <ᵤ y ↔ x < y :=
 alias ⟨_, LE.le.liftLE⟩ := liftLE_iff_le
 alias ⟨_, LT.lt.liftLT⟩ := liftLT_iff_lt
 
-@[refl]
-theorem liftEQ.refl (x : α) : x =ᵤ x :=
-  liftEQ_iff_eq.2 rfl
+instance : IsEquiv α (· =ᵤ ·) := by
+  convert inferInstanceAs (IsEquiv α (· = ·)); ext; simp
 
-@[refl]
-theorem liftLE.refl (x : α) : x ≤ᵤ x :=
-  le_rfl.liftLE
+instance : IsLinearOrder α (· ≤ᵤ ·) := by
+  convert inferInstanceAs (IsLinearOrder α (· ≤ ·)); ext; simp
+
+instance : IsWellOrder α (· <ᵤ ·) := by
+  convert inferInstanceAs (IsWellOrder α (· < ·)); ext; simp
+
+@[refl] theorem liftEQ.refl (x : α) : x =ᵤ x := by simp
+@[refl] theorem liftLE.refl (x : α) : x ≤ᵤ x := by simp
+theorem liftLT_irrefl (x : α) : ¬ x <ᵤ x := by simp
 
 theorem liftEQ.comm : x =ᵤ y ↔ y =ᵤ x := by
   rw [← liftEQ_iff (γ := α ⊕ₗ β) (RelEmbedding.sumLexInr _ _).collapse (InitialSeg.leAdd _ _),
     eq_comm, liftEQ_iff]
 
 @[symm] alias ⟨liftEQ.symm, _⟩ := liftEQ.comm
-
-theorem liftLT_irrefl (x : α) : ¬ x <ᵤ x := by
-  simp
-
-instance : IsEquiv α (· =ᵤ ·) := by
-  have : IsEquiv α (· = ·) := inferInstance
-  convert this
-  ext
-  simp
-
-instance : IsLinearOrder α (· ≤ᵤ ·) := by
-  have : IsLinearOrder α (· ≤ ·) := inferInstance
-  convert this
-  ext
-  simp
-
-instance : IsWellOrder α (· <ᵤ ·) := by
-  have : IsWellOrder α (· < ·) := inferInstance
-  convert this
-  ext
-  simp
 
 @[simp]
 theorem not_liftLE : ¬ x ≤ᵤ y ↔ y <ᵤ x := by
@@ -200,3 +184,8 @@ alias liftLE.trans := liftLE_trans
 alias liftLT.trans_liftLE := liftLT_of_liftLT_of_liftLE
 alias liftLE.trans_liftLT := liftLT_of_liftLE_of_liftLT
 alias liftLT.trans := liftLT_trans
+
+instance : @Trans α β γ (· ≤ᵤ ·) (· ≤ᵤ ·) (· ≤ᵤ ·) where trans := liftLE_trans
+instance : @Trans α β γ (· <ᵤ ·) (· ≤ᵤ ·) (· <ᵤ ·) where trans := liftLT_of_liftLT_of_liftLE
+instance : @Trans α β γ (· ≤ᵤ ·) (· <ᵤ ·) (· <ᵤ ·) where trans := liftLT_of_liftLE_of_liftLT
+instance : @Trans α β γ (· <ᵤ ·) (· <ᵤ ·) (· <ᵤ ·) where trans := liftLT_trans
