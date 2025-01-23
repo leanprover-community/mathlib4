@@ -148,7 +148,7 @@ theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
 
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
-theorem trunc_one' (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
+theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
   MvPolynomial.ext _ _ fun m => by
     classical
     rw [coeff_trunc', coeff_one]
@@ -169,9 +169,9 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
     exfalso; apply H; subst m; exact orderBot.proof_1 n
 
 /-- Coefficients of the truncation of a product of two multivariate power series -/
-theorem coeff_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R)
-    {m : σ →₀ ℕ} (h : m ≤ n) :
-    ((trunc' R n f) * (trunc' R n g)).coeff m = coeff R m (f * g) := by
+theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ) 
+    (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h : m ≤ n) :
+    coeff R m (f * g) = ((trunc' R n f) * (trunc' R n g)).coeff m := by
   classical
   simp only [MvPowerSeries.coeff_mul, MvPolynomial.coeff_mul]
   apply Finset.sum_congr rfl
