@@ -397,6 +397,13 @@ instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
   rw [isCrystallographic_iff, forall_comm]
   exact P.exists_int
 
+lemma IsCrystallographic.mem_range_algebraMap [P.IsCrystallographic]
+    (S : Type*) [CommRing S] [Algebra S R] (i j : ι) :
+    P.pairing i j ∈ (algebraMap S R).range := by
+  obtain ⟨k, hk⟩ := P.exists_int i j
+  simp only [RingHom.mem_range]
+  exact ⟨k, by simpa⟩
+
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
 def IsReduced : Prop :=

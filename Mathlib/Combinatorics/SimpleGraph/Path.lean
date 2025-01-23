@@ -83,7 +83,7 @@ structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail {p : Walk G u v}(h : IsPath p) : IsTrail p := h.toIsTrail
+protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.toIsTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
 @[mk_iff isCircuit_def]
@@ -376,7 +376,6 @@ protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.takeUntil u h).IsPath :=
   IsPath.of_append_left (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
 
--- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
@@ -1203,7 +1202,6 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
     ← List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'
 
--- Porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
       ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by
