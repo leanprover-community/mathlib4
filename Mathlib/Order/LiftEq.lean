@@ -20,6 +20,11 @@ The intended usage for this file is to easily compare ordinals or cardinals in d
 * `liftEQ`: two elements have the same order type
 * `liftLE`: an element has an order type less or equal to another
 * `liftLT`: an element has an order type less than another
+
+## TODO
+
+Replace instances of `Cardinal.lift x = Cardinal.lift y` or `Ordinal.lift x = Ordinal.lift y` by
+`x =ᵤ y`, and likewise for the other order relations.
 -/
 
 universe u v w
