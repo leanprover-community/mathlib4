@@ -97,9 +97,8 @@ theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
 
 /-- If `a` and `b` are topologically nilpotent and commute,
   then `a + b` is topologically nilpotent. -/
-theorem add_of_commute [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
-    {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b)
-    (h : Commute a b) :
+theorem add_of_commute [IsLinearTopology R R] {a b : R}
+    (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) (h : Commute a b) :
     IsTopologicallyNilpotent (a + b) := by
   simp only [IsTopologicallyNilpotent, atTop_basis.tendsto_iff IsLinearTopology.hasBasis_ideal,
     true_and]
