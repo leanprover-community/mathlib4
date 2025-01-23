@@ -31,6 +31,8 @@ namespace Mathlib.Linter
 /--
 The `deprecateModule` linter emits a warning when a file that has been renamed or split
 is imported.
+The default value is `true`, since this linter is designed to warn projects downstream of `Mathlib`
+of refactors and deprecations in `Mathlib` itself.
 -/
 register_option linter.deprecateModule : Bool := {
   defValue := true
@@ -55,7 +57,8 @@ initialize deprecateModuleExt :
 `addModuleDeprecation` adds to the `deprecateModuleExt` extension the pair consisting of the
 current module name and the array of its direct imports.
 
-It ignores `Init`, since this is a special module that is expected to be imported by all files.
+It ignores the `Init` import, since this is a special module that is expected to be imported
+by all files.
 -/
 def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m] : m Unit := do
   modifyEnv (deprecateModuleExt.addEntry ·
@@ -63,18 +66,19 @@ def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotat
       if i.module == `Init then none else i.module))
 
 /--
-`deprecate_module since yyyy-mm-dd` deprecates the current module `A` in favour of its imports.
-This means that any file that imports `A` will get a notification on the `import A` line suggesting
-to instead import the *direct imports* of `A`.
+`deprecate_module since yyyy-mm-dd` deprecates the current module `A` in favour of
+its direct imports.
+This means that any file that directly imports `A` will get a notification on the `import A` line
+suggesting to instead import the *direct imports* of `A`.
 -/
 elab (name := deprecate_modules)
     "deprecate_module " &"since " yyyy:num "-" mm:num "-" dd:num : command => do
   if yyyy.getNat < 2025 then
     throwErrorAt yyyy "The year should be at least 2025!"
   if mm.getNat == 0 || 12 < mm.getNat || mm.raw.getSubstring?.get!.toString.trim.length != 2 then
-    throwErrorAt mm "The month should be of the form 01, 02,..., 12!"
+    throwErrorAt mm "The month should be of the form 01, 02, ..., 12!"
   if dd.getNat == 0 || 31 < dd.getNat || dd.raw.getSubstring?.get!.toString.trim.length != 2 then
-    throwErrorAt dd "The day should be of the form 01, 02,..., 31!"
+    throwErrorAt dd "The day should be of the form 01, 02, ..., 31!"
   addModuleDeprecation
   -- disable the linter, so that it does not complain in the file with the deprecation
   elabCommand (← `(set_option linter.deprecateModule false))
@@ -95,10 +99,6 @@ def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let mainModule ← getMainModule
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
-    return
-  if (← get).messages.hasErrors then
-    return
   -- The imports of `Mathlib.lean` and `Mathlib.Tactic` are not required to be non-deprecated,
   -- since these files are expected to import all modules satisfying certain path-restrictions.
   if #[`Mathlib, `Mathlib.Tactic].contains mainModule then return
@@ -122,14 +122,11 @@ def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let importIds := getImportIds upToStx
   let modulesWithNames := importIds.map fun i => (i, i.getId)
   let deprecations := deprecateModuleExt.getState (← getEnv)
-  for is@(i, _) in deprecations do
-    match modulesWithNames.find? (·.2 == i) with
-      | none => continue
-      | some x =>
-        let ((_, undeprecated), (nmStx, _)) := (is, x)
-        Linter.logLint linter.deprecateModule nmStx
-          m!"'{nmStx}' has been deprecated: please replaced this import by \
-            {"\nimport ".intercalate <| "\n" :: (undeprecated.map (·.toString)).toList}\n"
+  for is@(i, undeprecated) in deprecations do
+    if let some (nmStx, _) := modulesWithNames.find? (·.2 == i) then
+      Linter.logLint linter.deprecateModule nmStx
+        m!"'{nmStx}' has been deprecated: please replaced this import by \
+          {"\nimport ".intercalate <| "\n" :: (undeprecated.map (·.toString)).toList}\n"
 
 initialize addLinter deprecateModuleLinter
 
