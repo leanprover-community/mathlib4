@@ -244,20 +244,20 @@ instance setoid : Setoid (ofMulDistribMulActionWithSection N G) where
   r S S' := Nonempty (S.Equiv S')
   iseqv := {
     refl := fun S ↦ ⟨{
-      GroupExtension.Equiv.refl S.extension with
+      __ := GroupExtension.Equiv.refl S.extension
       section_comm := by
         ext g
         simp only [GroupExtension.Equiv.refl, Function.comp_apply, MonoidHom.id_apply]
     }⟩
     symm := fun ⟨equiv⟩ ↦ ⟨{
-      GroupExtension.Equiv.symm equiv.toEquiv with
+      __ := GroupExtension.Equiv.symm equiv.toEquiv
       section_comm := by
         simp only [GroupExtension.Equiv.symm, MonoidHom.coe_coe, MulEquiv.symm_comp_eq,
           GroupExtension.Equiv.toMulEquiv_eq_toMonoidHom]
         exact equiv.section_comm.symm
     }⟩
     trans := fun ⟨equiv⟩ ⟨equiv'⟩ ↦ ⟨{
-      GroupExtension.Equiv.trans equiv.toEquiv equiv'.toEquiv with
+      __ := GroupExtension.Equiv.trans equiv.toEquiv equiv'.toEquiv
       section_comm := by
         simp only [GroupExtension.Equiv.trans, MonoidHom.coe_comp, Function.comp_assoc,
           equiv.section_comm, equiv'.section_comm]
@@ -709,7 +709,7 @@ noncomputable def equivH2 :
       (Equiv.refl
         (ofMulDistribMulActionWithSection.ofTwoCocycle f).toofMulDistribMulAction.extension)
       (S := {
-        (ofMulDistribMulActionWithSection.ofTwoCocycle f).toofMulDistribMulAction with
+        __ := (ofMulDistribMulActionWithSection.ofTwoCocycle f).toofMulDistribMulAction
         σ := (ofMulDistribMulActionWithSection.ofTwoCocycle f).extension.surjInvRightHom
       })
       (S' := ofMulDistribMulActionWithSection.ofTwoCocycle f)

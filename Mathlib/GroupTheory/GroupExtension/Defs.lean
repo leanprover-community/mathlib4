@@ -15,9 +15,9 @@ such as splittings and equivalences.
 
 ## Main definitions
 
-- `(Add?)GroupExtension N E G`: structure for extensions of `G` by `N` as short exact sequences
+- `(Add)?GroupExtension N E G`: structure for extensions of `G` by `N` as short exact sequences
   `1 → N → E → G → 1` (`0 → N → E → G → 0` for additive groups)
-- `(Add?)GroupExtension.Equiv S S'`: structure for equivalences of two group extensions `S` and `S'`
+- `(Add)?GroupExtension.Equiv S S'`: structure for equivalences of two group extensions `S` and `S'`
   as specific homomorphisms `E → E'` such that each diagram below is commutative
 
 ```text
@@ -32,9 +32,9 @@ For additive groups:
       ↘︎ E' ↗︎️
 ```
 
-- `(Add?)GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
+- `(Add)?GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
   `S` of `G` by `N`
-- `(Add?)GroupExtension.Splitting S`: structure for section homomorphisms of a group extension `S`
+- `(Add)?GroupExtension.Splitting S`: structure for section homomorphisms of a group extension `S`
   of `G` by `N`
 - `SemidirectProduct.toGroupExtension φ`: the multiplicative group extension associated to the
   semidirect product coming from `φ : G →* MulAut N`, `1 → N → N ⋊[φ] G → G → 1`
