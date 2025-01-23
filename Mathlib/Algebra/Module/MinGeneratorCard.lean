@@ -51,7 +51,7 @@ lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
 
 /-- A submodule is finitely generated if and only if
 its spanrank equals its minimum generator cardinality -/
-lemma fg_iff_spanrank_eq_spanRankNat {p : Submodule R M} :
+lemma fg_iff_spanRank_eq_spanRankNat {p : Submodule R M} :
     p.FG ↔ p.spanRank = p.spanRankNat := by
   constructor
   · intro h
