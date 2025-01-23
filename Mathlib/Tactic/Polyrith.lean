@@ -81,12 +81,12 @@ inductive Poly
 This converts a poly object into a string representing it. The string
 maintains the semantic structure of the poly object.
 
-The output of this function must be valid Python syntax, and it assumes the variables `varN` from
-`scripts/polyrith.py.`
+The output of this function must be valid Python syntax, and it assumes the variables `vars`
+(see `sageCreateQuery`)
 -/
 def Poly.format : Poly → Lean.Format
   | .const z => toString z
-  | .var n => s!"var{n}"
+  | .var n => s!"vars[{n}]" -- this references variable `vars`, which need to be bounded (below)
   | .hyp e => s!"hyp{e}" -- this one can't be used by python
   | .add p q => s!"({p.format} + {q.format})"
   | .sub p q => s!"({p.format} - {q.format})"
@@ -279,10 +279,11 @@ section SageMathApi
 /-! # Interaction with SageMath -/
 
 /--
-These Python functions are used to format the output of Sage for parsing in Lean.
-They are stored here as a string since they are passed to Sage via the web API.
+These are Sage functions that test membership in the radical and format the output. See
+https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
+for a description of `MPolynomial_libsingular.lift`.
 -/
-def sageFormattingFunctions : String :=
+def sageHelperFunctions : String :=
   include_str ".."/".."/"scripts"/"polyrith_sage_helper.py"
 
 /--
@@ -294,51 +295,17 @@ def sageTypeStr (_ : Expr) : String := "QQ"
 
 /--
 Create a Sage script to send to SageMath API.
-The query invokes Sage's `MPolynomial_libsingular.lift`. See
-https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
-for a description of this method.
 -/
 def sageCreateQuery (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (target : Poly) :
     IO String := do
-  let vars := (List.range atoms).map (s!"var{·}") ++ ["aux"]
-  -- format `vars`, `hyps` into Python lists
-  let varsListPython := "[" ++ ",".intercalate vars ++ "]"
-  let varsStringListPython := "[" ++ ",".intercalate (vars.map String.quote) ++ "]"
+  -- since `hyps` and `target` reference the variable list `vars` (see `Poly.format`),
+  -- and `hyps` and `target` are wrapped as functions where `vars` is bounded using `lambda`
   let hypsListPython := "[" ++ ",".intercalate (hyps.map (toString ·.2) |>.toList) ++ "]"
+  let mkHypsListPython := s!"lambda vars: {hypsListPython}"
+  let mkTargetPython := s!"lambda vars: {target}"
   let command :=
-    if atoms != 0 then
-      s!"
-P = PolynomialRing({sageTypeStr α}, {varsStringListPython})
-{varsListPython} = P.gens()
-p = P({target})
-if p == 0:
-    # The 'radicalization trick' implemented below does not work if
-    # the target polynomial p is 0 since it requires substituting 1/p.
-    print(serialize_polynomials(1, {hyps.size}*[P(0)]))
-else:
-    # Implements the trick described in 2.2 of arxiv.org/pdf/1007.3615.pdf
-    # for testing membership in the radical.
-    gens = {hypsListPython} + [1 - p*aux]
-    I = P.ideal(gens)
-    coeffs = P(1).lift(I)
-    power = max(cf.degree(aux) for cf in coeffs)
-    coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
-    print(serialize_polynomials(power, coeffs))
-"
-    else
-      -- workaround for a Sage shortcoming with `atoms = 0`,
-      -- `TypeError: no conversion of this ring to a Singular ring defined`
-      -- In this case, there is no need to look for membership in the *radical*;
-      -- we just check for membership in the ideal, and return exponent 1
-      -- if coefficients are found.
-      s!"
-P = PolynomialRing({sageTypeStr α}, 'var', 1)
-p = P({target})
-I = P.ideal({hypsListPython})
-coeffs = p.lift(I)
-print(serialize_polynomials(1, coeffs))
-"
-  return sageFormattingFunctions ++ command
+    s!"main({sageTypeStr α}, {atoms}, {mkHypsListPython}, {mkTargetPython})"
+  return sageHelperFunctions ++ "\n" ++ command
 
 /-- Parse a `SageResult` from the raw SageMath API output. -/
 instance : FromJson SageResult where fromJson? j := do
