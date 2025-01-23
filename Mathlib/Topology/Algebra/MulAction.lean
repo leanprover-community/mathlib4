@@ -7,6 +7,7 @@ import Mathlib.Algebra.AddTorsor
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Data.SetLike.SMul
 
 /-!
 # Continuous monoid action
@@ -191,6 +192,11 @@ instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M
     ContinuousSMul M s :=
   IsInducing.subtypeVal.continuousSMul continuous_id rfl
 
+--@[to_additive]
+instance SubmonoidClass.instContinuousSMul (S : Type*) [SetLike S M] (s : S) :
+    ContinuousSMul s X :=
+  IsInducing.continuousSMul IsInducing.id continuous_subtype_val rfl
+
 end SMul
 
 section Monoid
@@ -220,10 +226,6 @@ end Monoid
 section Group
 
 variable [Group M] [MulAction M X] [ContinuousSMul M X]
-
-@[to_additive]
-instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
-  S.toSubmonoid.continuousSMul
 
 variable (M)
 
