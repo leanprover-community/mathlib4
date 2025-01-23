@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
+import Mathlib.Algebra.Order.Nonneg.Basic
+import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Order.CompleteLatticeIntervals
@@ -110,23 +110,17 @@ instance linearOrderedCommMonoidWithZero [LinearOrderedCommSemiring α] :
   { Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with
     mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
 
-instance canonicallyOrderedAddCommMonoid [OrderedRing α] :
-    CanonicallyOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
-    le_self_add := fun _ b => le_add_of_nonneg_right b.2
+instance canonicallyOrderedAdd [OrderedRing α] :
+    CanonicallyOrderedAdd { x : α // 0 ≤ x } :=
+  { le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
 
-instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
-    CanonicallyOrderedCommSemiring { x : α // 0 ≤ x } :=
-  { Nonneg.canonicallyOrderedAddCommMonoid, Nonneg.orderedCommSemiring with
-    eq_zero_or_eq_zero_of_mul_eq_zero := by
+instance noZeroDivisors [OrderedSemiring α] [NoZeroDivisors α] :
+    NoZeroDivisors { x : α // 0 ≤ x } :=
+  { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
-
-instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
-    CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
 
 instance orderedSub [LinearOrderedRing α] : OrderedSub { x : α // 0 ≤ x } :=
   ⟨by

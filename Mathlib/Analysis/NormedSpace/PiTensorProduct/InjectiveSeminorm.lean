@@ -411,8 +411,8 @@ private theorem mapL_add_smul_aux {ι : Type uι}
   symm
   rw [update_eq_iff]
   constructor
-  · simp only [update_same]
-  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_noteq]
+  · simp only [update_self]
+  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_of_ne]
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :

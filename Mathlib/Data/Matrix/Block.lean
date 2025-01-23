@@ -310,7 +310,7 @@ section Zero
 
 variable [Zero α] [Zero β]
 
-/-- `Matrix.blockDiagonal M` turns a homogenously-indexed collection of matrices
+/-- `Matrix.blockDiagonal M` turns a homogeneously-indexed collection of matrices
 `M : o → Matrix m n α'` into an `m × o`-by-`n × o` block matrix which has the entries of `M` along
 the diagonal and zero elsewhere.
 

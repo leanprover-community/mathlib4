@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Enriched.Ordinary
+import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Limits.Shapes.End
 
@@ -415,6 +415,7 @@ noncomputable def functorEnrichedCategory
 variable {F₁ F₂} in
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
 this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂)`. -/
+@[simps! apply_app]
 noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂] :
     (F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂) :=
   (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
@@ -431,11 +432,7 @@ lemma functorHomEquiv_app_π [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom
   simp
 
 lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
-    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by
-  ext j
-  dsimp [functorHomEquiv]
-  erw [IsLimit.homEquiv_apply]
-  aesop_cat
+    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by aesop_cat
 
 variable {F₁ F₂ F₃} in
 lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
@@ -445,10 +442,8 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
     (functorHomEquiv V) (f ≫ g) = (λ_ (𝟙_ (J ⥤ V))).inv ≫
       ((functorHomEquiv V) f ⊗ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
   ext j
-  dsimp [functorHomEquiv]
-  rw [homEquiv_comp]
-  erw [IsLimit.homEquiv_apply, IsLimit.homEquiv_apply, IsLimit.homEquiv_apply]
   dsimp
+  rw [homEquiv_comp]
   ext k
   rw [assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π, enrichedComp_π,
     ← tensor_comp_assoc, ← tensor_comp_assoc, assoc, assoc,

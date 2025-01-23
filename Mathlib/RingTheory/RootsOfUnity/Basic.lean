@@ -34,8 +34,6 @@ Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^
 satisfied for all units).
 -/
 
-open scoped Classical
-
 noncomputable section
 
 open Polynomial
@@ -197,13 +195,15 @@ theorem rootsOfUnityEquivNthRoots_symm_apply (x : { x // x ∈ nthRoots k (1 : R
 
 variable (k R)
 
-instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) :=
-  Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
+instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
+  classical
+  exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
   isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
-theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
+theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
+  classical
   calc
     Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
       Fintype.card_congr (rootsOfUnityEquivNthRoots R k)

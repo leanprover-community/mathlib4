@@ -106,6 +106,7 @@ structure OrderedFinpartition (n : ℕ) where
   disjoint : PairwiseDisjoint univ fun m ↦ range (emb m)
   /-- The parts cover everything -/
   cover x : ∃ m, x ∈ range (emb m)
+  deriving DecidableEq
 
 namespace OrderedFinpartition
 
@@ -357,7 +358,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
   parts_strictMono := by
     convert strictMono_succ.comp c.parts_strictMono with m
     rcases eq_or_ne m k with rfl | hm
-    · simp only [↓reduceDIte, update_same, add_tsub_cancel_right, comp_apply, cast_mk,
+    · simp only [↓reduceDIte, update_self, add_tsub_cancel_right, comp_apply, cast_mk,
         Nat.succ_eq_add_one]
       let a : Fin (c.partSize m + 1) := ⟨c.partSize m, lt_add_one (c.partSize m)⟩
       let b : Fin (c.partSize m) := ⟨c.partSize m - 1, Nat.sub_one_lt_of_lt (c.partSize_pos m)⟩
@@ -401,10 +402,10 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       rcases eq_or_ne (c.index i) k with rfl | hi
       · have A : update c.partSize (c.index i) (c.partSize (c.index i) + 1) (c.index i) =
           c.partSize (c.index i) + 1 := by simp
-        exact ⟨c.index i, cast A.symm (succ (c.invEmbedding i)), by simp⟩
+        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm , by simp⟩
       · have A : update c.partSize k (c.partSize k + 1) (c.index i) = c.partSize (c.index i) := by
           simp [hi]
-        exact ⟨c.index i, cast A.symm (c.invEmbedding i), by simp [hi]⟩
+        exact ⟨c.index i, (c.invEmbedding i).cast A.symm, by simp [hi]⟩
 
 lemma index_extendMiddle_zero (c : OrderedFinpartition n) (i : Fin c.length) :
     (c.extendMiddle i).index 0 = i := by
@@ -493,7 +494,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
   partSize_pos i := by
     rcases eq_or_ne i (c.index 0) with rfl | hi
     · simpa using c.one_lt_partSize_index_zero hc
-    · simp only [ne_eq, hi, not_false_eq_true, update_noteq]
+    · simp only [ne_eq, hi, not_false_eq_true, update_of_ne]
       exact c.partSize_pos i
   emb i j := by
     by_cases h : i = c.index 0
@@ -517,7 +518,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
     rw [← Nat.add_lt_add_iff_right (k := 1)]
     convert Fin.lt_iff_val_lt_val.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
-      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_same, succ_mk, cast_mk, coe_pred]
+      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
         · congr; omega
@@ -526,14 +527,14 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
           rw [← lt_iff_val_lt_val]
           apply c.emb_strictMono
           simp [lt_iff_val_lt_val]
-      · simp only [hi, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq, cast_mk, coe_pred]
+      · simp only [hi, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne, cast_mk, coe_pred]
         apply Nat.sub_add_cancel
         have : c.emb i ⟨c.partSize i - 1, Nat.sub_one_lt_of_lt (c.partSize_pos i)⟩
             ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hi
         simp only [c.emb_zero, ne_eq, ← val_eq_val, val_zero] at this
         omega
     · rcases eq_or_ne j (c.index 0) with rfl | hj
-      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_same, succ_mk, cast_mk, coe_pred]
+      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
         · congr; omega
@@ -542,7 +543,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
           rw [← lt_iff_val_lt_val]
           apply c.emb_strictMono
           simp [lt_iff_val_lt_val]
-      · simp only [hj, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq, cast_mk, coe_pred]
+      · simp only [hj, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne, cast_mk, coe_pred]
         apply Nat.sub_add_cancel
         have : c.emb j ⟨c.partSize j - 1, Nat.sub_one_lt_of_lt (c.partSize_pos j)⟩
             ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hj
@@ -667,19 +668,19 @@ def extendEquiv (n : ℕ) :
       simp only [extend, extendMiddle, eraseMiddle, Nat.succ_eq_add_one, ↓reduceDIte]
       ext
       · rfl
-      · simp only [update_same, update_idem, heq_eq_eq, update_eq_self_iff, B]
+      · simp only [update_self, update_idem, heq_eq_eq, update_eq_self_iff, B]
       · refine hfunext rfl ?_
         simp only [heq_eq_eq, forall_eq']
         intro i
         refine ((Fin.heq_fun_iff ?_).mpr ?_).symm
-        · simp only [update_same, B, update_idem, update_eq_self]
+        · simp only [update_self, B, update_idem, update_eq_self]
         · intro j
           rcases eq_or_ne i (c.index 0) with rfl | hi
           · simp only [↓reduceDIte, comp_apply]
             rcases eq_or_ne j 0 with rfl | hj
             · simpa using c.emb_zero
-            · let j' := Fin.pred (cast B.symm j) (by simpa using hj)
-              have : j = cast B (succ j') := by simp [j']
+            · let j' := Fin.pred (j.cast B.symm) (by simpa using hj)
+              have : j = (succ j').cast B := by simp [j']
               simp only [this, coe_cast, val_succ, cast_mk, cases_succ', comp_apply, succ_mk,
                 Nat.succ_eq_add_one, succ_pred]
               rfl
@@ -717,13 +718,13 @@ theorem applyOrderedFinpartition_update_right
   ext m
   by_cases h : m = c.index j
   · rw [h]
-    simp only [applyOrderedFinpartition, update_same]
+    simp only [applyOrderedFinpartition, update_self]
     congr
     rw [← Function.update_comp_eq_of_injective]
     · simp
     · exact (c.emb_strictMono (c.index j)).injective
   · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true,
-      update_noteq]
+      update_of_ne]
     congr
     apply Function.update_comp_eq_of_not_mem_range
     have A : Disjoint (range (c.emb m)) (range (c.emb (c.index j))) :=
@@ -913,14 +914,14 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   congr
   ext j
   rcases eq_or_ne j i with rfl | hij
-  · simp only [↓reduceDIte, update_same, ContinuousMultilinearMap.curryLeft_apply,
+  · simp only [↓reduceDIte, update_self, ContinuousMultilinearMap.curryLeft_apply,
       Nat.succ_eq_add_one]
     apply FormalMultilinearSeries.congr _ (by simp)
     intro a ha h'a
     match a with
     | 0 => simp
     | a + 1 => simp [cons]
-  · simp only [hij, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq]
+  · simp only [hij, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne]
     apply FormalMultilinearSeries.congr _ (by simp [hij])
     simp
 
