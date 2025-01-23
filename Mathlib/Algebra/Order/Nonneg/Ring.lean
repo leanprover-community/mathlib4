@@ -69,8 +69,6 @@ instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 �
     (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
-/-- error: unknown free variable '_fvar.19139' -/
-#guard_msgs in
 instance strictOrderedSemiring [StrictOrderedSemiring α] :
     StrictOrderedSemiring { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.strictOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
@@ -86,8 +84,6 @@ instance orderedCommSemiring [OrderedCommSemiring α] :
 instance orderedCommMonoid [OrderedCommSemiring α] : OrderedCommMonoid { x : α // 0 ≤ x } where
   mul_le_mul_left a _ h c := mul_le_mul le_rfl h a.prop c.prop
 
-/-- error: unknown free variable '_fvar.29853' -/
-#guard_msgs in
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
     StrictOrderedCommSemiring { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.strictOrderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one

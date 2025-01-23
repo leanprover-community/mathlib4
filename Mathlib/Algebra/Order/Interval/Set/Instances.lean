@@ -126,15 +126,11 @@ instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
     CommMonoidWithZero (Icc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-/-- error: (kernel) declaration has metavariables 'Set.Icc.cancelMonoidWithZero' -/
-#guard_msgs in
 instance cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
     CancelMonoidWithZero (Icc (0 : α) 1) := fast_instance%
   @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
-/-- error: (kernel) declaration has metavariables 'Set.Icc.cancelCommMonoidWithZero' -/
-#guard_msgs in
 instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero (Icc (0 : α) 1) := fast_instance%
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
