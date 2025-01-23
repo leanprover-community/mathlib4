@@ -169,7 +169,7 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
     exfalso; apply H; subst m; exact orderBot.proof_1 n
 
 /-- Coefficients of the truncation of a product of two multivariate power series -/
-theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ) 
+theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h : m ≤ n) :
     coeff R m (f * g) = ((trunc' R n f) * (trunc' R n g)).coeff m := by
   classical
