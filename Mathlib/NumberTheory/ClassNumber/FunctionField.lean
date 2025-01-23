@@ -33,6 +33,7 @@ namespace RingOfIntegers
 
 open FunctionField
 
+open scoped Classical in
 noncomputable instance : Fintype (ClassGroup (ringOfIntegers Fq F)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite (RatFunc Fq) F
     (Polynomial.cardPowDegreeIsAdmissible :
