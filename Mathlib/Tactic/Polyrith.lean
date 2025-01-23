@@ -82,7 +82,7 @@ This converts a poly object into a string representing it. The string
 maintains the semantic structure of the poly object.
 
 The output of this function must be valid Python syntax, and it assumes the variables `vars`
-(see `sageCreateQuery`)
+(see `sageCreateQuery`).
 -/
 def Poly.format : Poly → Lean.Format
   | .const z => toString z
@@ -299,7 +299,7 @@ Create a Sage script to send to SageMath API.
 def sageCreateQuery (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (target : Poly) :
     IO String := do
   -- since `hyps` and `target` reference the variable list `vars` (see `Poly.format`),
-  -- and `hyps` and `target` are wrapped as functions where `vars` is bounded using `lambda`
+  -- `hyps` and `target` are wrapped as functions where `vars` is bounded using `lambda`
   let hypsListPython := "[" ++ ",".intercalate (hyps.map (toString ·.2) |>.toList) ++ "]"
   let mkHypsListPython := s!"lambda vars: {hypsListPython}"
   let mkTargetPython := s!"lambda vars: {target}"
