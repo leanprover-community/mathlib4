@@ -197,15 +197,14 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsP
   · exact hM' ▸ hM
 
 /-- The prime height of the maximal ideal equals the Krull dimension -/
-theorem LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R]:
+theorem IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R]:
     (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R := by
   rw [ringKrullDim, Ideal.primeHeight, ← Order.height_top_eq_krullDim]; rfl
 
 /-- The height of the maximal ideal equals the Krull dimension -/
-theorem LocalRing.maximalIdeal_height_eq_ringKrullDim [IsLocalRing R]:
+theorem IsLocalRing.maximalIdeal_height_eq_ringKrullDim [IsLocalRing R]:
     (IsLocalRing.maximalIdeal R).height = ringKrullDim R := by
-  rw [Ideal.height_eq_primeHeight, LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim]
-
+  rw [Ideal.height_eq_primeHeight, IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim]
 
 /-- For a local ring with finite Krull dimension, a prime ideal has height equal to the Krull
 dimension if and only if it is the maximal ideal -/
@@ -216,7 +215,7 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
     exact IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_of_primeHeight_eq_ringKrullDim h)
   · intro h
     simp_rw [h]
-    exact LocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
+    exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
 
 -- lemma set.chain_height_univ {α : Type*} [preorder α] (s : set α) :
 --   (set.univ : set s).chain_height = s.chain_height :=
@@ -302,21 +301,43 @@ theorem IsLocalization.disjoint_comap_iff (S : Submonoid R) (A : Type*) [CommRin
 theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
     [Algebra R A] [IsLocalization S A] (J : Ideal R) :
     (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A)⁻¹' J.minimalPrimes := by
-  sorry
+  ext p
+  constructor
+  · intro hp
+    haveI := hp.1.1
+    refine ⟨⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hp.1.2⟩, ?_⟩
+    rintro I hI e
+    have hI' : Disjoint (S : Set R) I := Set.disjoint_of_subset_right e
+      ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp hp.1.1).2
+    refine (Ideal.comap_mono <|
+      hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
+    · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
+    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
+  · intro hp
+    refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
+    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A,
+        IsLocalization.disjoint_comap_iff S A]
+      refine ⟨hp.1.1, ?_⟩
+      rintro rfl
+      exact hp.1.1.ne_top rfl
+    · intro I hI e
+      rw [← IsLocalization.map_comap S A I, ← IsLocalization.map_comap S A p]
+      haveI := hI.1
+      exact Ideal.map_mono (hp.2 ⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
+        (Ideal.comap_mono e))
 
 theorem IsLocalization.height_comap (S : Submonoid R) (A : Type*) [CommRing A] [Nontrivial A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) :
     J.height = (J.comap (algebraMap R A)).height := by
-  sorry
-
-theorem IsLocalization.AtPrime.comap_maximal_ideal {R : Type*} (S : Type*) [CommRing R] [CommRing S]
-    (I : Ideal R) [I.IsPrime] [Algebra R S] [IsLocalization.AtPrime S I] [IsLocalRing S] :
-    (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I := by
-  sorry
+  rw [Ideal.height, Ideal.height]
+  simp_rw [IsLocalization.primeHeight_comap S A, IsLocalization.minimalPrimes_comap S A,
+    ← Ideal.height_eq_primeHeight, iInf_image]
 
 theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
     [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
     ringKrullDim A = I.height := by
-  haveI := IsLocalization.AtPrime.Nontrivial A I
   haveI := IsLocalization.AtPrime.isLocalRing A I
-  sorry
+  rw [← IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim,
+      IsLocalization.primeHeight_comap I.primeCompl A,
+      ← IsLocalization.AtPrime.comap_maximalIdeal A I,
+      Ideal.height_eq_primeHeight]
