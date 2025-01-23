@@ -221,7 +221,7 @@ theorem FiniteMeasure.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
     (P P' : MeasureTheory.FiniteMeasure V) :
     (∀ w, ∫ v, probChar he hL w v ∂P = ∫ v, probChar he hL w v ∂P') → P = P' := by
   intro h
-  apply ext_of_forall_mem_subalgebra_integral_eq
+  apply ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
       (StarSubalgebra.probChar_StarSubalgebra_separatesPoints he he' hL hL')
       (StarSubalgebra.probChar_starSubalgebra_bounded he hL)
   intro g hg
