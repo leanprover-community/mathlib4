@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.RingTheory.TwoSidedIdeal.Commute
+import Mathlib.RingTheory.Ideal.Basic
 
 /-! # Topologically nilpotent elements
 
@@ -55,15 +55,24 @@ theorem map {F : Type*} [FunLike F R S] [MonoidWithZeroHomClass F R S]
     IsTopologicallyNilpotent (φ a) := by
   unfold IsTopologicallyNilpotent at ha ⊢
   simp_rw [← map_pow]
-  exact (map_zero φ ▸  hφ.tendsto 0).comp ha
+  exact (map_zero φ ▸ hφ.tendsto 0).comp ha
 
 /-- `0` is topologically nilpotent -/
-theorem zero :
-    IsTopologicallyNilpotent (0 : R) := tendsto_atTop_of_eventually_const (i₀ := 1)
+theorem zero : IsTopologicallyNilpotent (0 : R) :=
+  tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
+
+theorem exists_pow_mem_of_mem_nhds {a : R} (ha : IsTopologicallyNilpotent a)
+    {v : Set R} (hv : v ∈ 𝓝 0) :
+    ∃ n, a ^ n ∈ v := by
+  specialize ha hv
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage] at ha
+  obtain ⟨n, hn⟩ := ha
+  exact ⟨n, hn n (le_refl n)⟩
 
 end MonoidWithZero
 
+/- -- To be generalized or deleted
 section Ring
 
 variable {R : Type*} [TopologicalSpace R] [Ring R]
@@ -121,6 +130,9 @@ theorem add_of_commute [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
       (le_trans hm (Nat.le_add_right _ _)) h
 
 end Ring
+-/
+
+-- TODO : treat general rings, for commuting elements
 
 section CommRing
 
@@ -128,18 +140,32 @@ variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsLinearTopology R R]
 
 /-- If `a` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
 theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
-    IsTopologicallyNilpotent (a * b) :=
-  ha.mul_right_of_commute (Commute.all a b)
+    IsTopologicallyNilpotent (a * b) := fun v ↦ by
+  rw [IsLinearTopology.hasBasis_ideal.mem_iff]
+  rintro ⟨I, I_mem_nhds, I_subset⟩
+  obtain ⟨n, ha⟩ := ha.exists_pow_mem_of_mem_nhds I_mem_nhds
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage]
+  use n
+  intro m hm
+  rw [mul_pow]
+  exact I_subset <| Ideal.mul_mem_right _ _ (I.pow_mem_of_pow_mem ha hm)
 
 /-- If `b` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
  theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a * b) :=
-  hb.mul_left_of_commute (Commute.all a b)
+  -- hb.mul_left_of_commute (Commute.all a b)
+  mul_comm a b ▸ hb.mul_right a
 
 /-- If `a` and `b` are topologically nilpotent, then `a + b` is topologically nilpotent. -/
 theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
-    IsTopologicallyNilpotent (a + b) :=
-  ha.add_of_commute hb (Commute.all a b)
+    IsTopologicallyNilpotent (a + b) := fun v ↦ by
+  rw [IsLinearTopology.hasBasis_ideal.mem_iff]
+  rintro ⟨I, I_mem_nhds, I_subset⟩
+  obtain ⟨na, ha⟩ := ha.exists_pow_mem_of_mem_nhds I_mem_nhds
+  obtain ⟨nb, hb⟩ := hb.exists_pow_mem_of_mem_nhds I_mem_nhds
+  simp only [mem_map, Filter.HasBasis.mem_iff Filter.atTop_basis, true_and]
+  exact ⟨na + nb, fun m hm ↦ I_subset <|
+    I.add_pow_mem_of_pow_mem_of_le ha hb (le_trans hm (Nat.le_add_right _ _))⟩
 
 end CommRing
 

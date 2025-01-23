@@ -35,9 +35,9 @@ open Pointwise
 
 section Semiring
 
-namespace Ideal
-
 variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
+
+namespace Ideal
 
 section Pi
 
