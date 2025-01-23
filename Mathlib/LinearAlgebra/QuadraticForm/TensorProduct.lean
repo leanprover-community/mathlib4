@@ -109,8 +109,8 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
       = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
   rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
     ← QuadraticMap.associated_tmul Q₁ Q₂]
-  ext x x_1 x_2 x_3 : 6
-  simp_all
+  ext _ _ _ _ : 6
+  simp
   rfl
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
