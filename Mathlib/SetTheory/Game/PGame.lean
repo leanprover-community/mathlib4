@@ -1591,7 +1591,7 @@ lemma identical_zero_iff : ∀ (x : PGame),
     · rintro ⟨h₁, h₂⟩
       exact identical_of_isEmpty _ _
 
-/-- Any game without left or right moves is identival to 0. -/
+/-- Any game without left or right moves is identical to 0. -/
 lemma identical_zero (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≡ 0 :=
   x.identical_zero_iff.mpr ⟨by infer_instance, by infer_instance⟩
 
