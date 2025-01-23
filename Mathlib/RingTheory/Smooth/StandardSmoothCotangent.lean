@@ -137,26 +137,7 @@ instance subsingleton_h1Cotangent : Subsingleton P.toExtension.H1Cotangent := by
 /-- The classes of `P.relation i` form a basis of `I ⧸ I ^ 2`. -/
 @[stacks 00T7 "(3)"]
 noncomputable def basisCotangent : Basis P.rels S P.toExtension.Cotangent :=
-  have h : P.cotangentComplexAux ∘
-      (fun i ↦ Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩) =
-      (fun i j ↦ (aeval P.val) ((pderiv (P.map j)) (P.relation i))) := by
-    ext i j
-    simp only [Function.comp_apply, P.cotangentComplexAux_apply]
-  have hli : LinearIndependent S
-      (fun i ↦ (Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩ : P.toExtension.Cotangent)) := by
-    apply LinearIndependent.of_comp P.cotangentComplexAux
-    rw [h]
-    apply P.linearIndependent_aeval_val_pderiv_relation
-  have hsp : ⊤ ≤ Submodule.span S (Set.range <| fun i : P.rels ↦
-        (Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩ : P.toExtension.Cotangent)) := by
-    rw [← _root_.eq_top_iff]
-    apply Submodule.map_injective_of_injective P.cotangentComplexAux_injective
-    rw [Submodule.map_top, LinearMap.range_eq_top_of_surjective _ P.cotangentComplexAux_surjective]
-    rw [Submodule.map_span, ← Set.range_comp]
-    convert P.basisDeriv.span_eq
-    ext i j
-    simp only [Function.comp_apply, basisDeriv_apply, P.cotangentComplexAux_apply]
-  Basis.mk hli hsp
+  ⟨cotangentEquiv P ≪≫ₗ (Finsupp.linearEquivFunOnFinite S S P.rels).symm⟩
 
 @[stacks 00T7 "(3)"]
 instance free_cotangent : Module.Free S P.toExtension.Cotangent :=
