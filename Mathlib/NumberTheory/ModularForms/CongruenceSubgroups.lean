@@ -67,7 +67,7 @@ theorem Gamma_one_top : Gamma 1 = ⊤ := by
 lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
   simp only [Gamma_one_top, Subgroup.mem_top]
 
-theorem Gamma_zero_bot : Gamma 0 = ⊥ := by rfl
+theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
