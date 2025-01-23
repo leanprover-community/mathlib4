@@ -381,6 +381,11 @@ def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (Monoi
 
 end DerivedInstances
 
+@[simp]
+theorem smul_single [Semiring k] [SMulZeroClass R k] (a : G) (c : R) (b : k) :
+    c • single a b = single a (c • b) :=
+  Finsupp.smul_single _ _ _
+
 /-!
 #### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
 
@@ -535,7 +540,6 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 end
 
 /-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
-@[simp]
 theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
   Finsupp.smul_single' c a b
 
@@ -626,12 +630,8 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
   ext
-  -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
-  unfold MonoidAlgebra
-  simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft, Finsupp.singleAddHom_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [liftNC_single, liftNC_single]; rw [AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  simp_rw [AddMonoidHom.comp_apply, singleAddHom_apply, smulAddHom_apply,
+    AddMonoidHom.coe_mulLeft, smul_single', liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
 
 end MiscTheorems
 
@@ -685,7 +685,8 @@ theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlge
 /-- `Finsupp.single 1` as a `RingHom` -/
 @[simps]
 def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
-  { Finsupp.singleAddHom 1 with
+  { singleAddHom 1 with
+    toFun := single 1
     map_one' := rfl
     map_mul' := fun x y => by simp }
 
@@ -1172,6 +1173,11 @@ because we've never discussed actions of additive groups. -/
 
 end DerivedInstances
 
+@[simp]
+theorem smul_single [Semiring k] [SMulZeroClass R k] (a : G) (c : R) (b : k) :
+    c • single a b = single a (c • b) :=
+  Finsupp.smul_single _ _ _
+
 /-!
 #### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
 
@@ -1334,7 +1340,6 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
   map_mul' _a _b := single_mul_single.symm
 
 /-- Copy of `Finsupp.smul_single'` that avoids the `AddMonoidAlgebra = Finsupp` defeq abuse. -/
-@[simp]
 theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
   Finsupp.smul_single' c a b
 
@@ -1472,7 +1477,8 @@ section Algebra
 /-- `Finsupp.single 0` as a `RingHom` -/
 @[simps]
 def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
-  { Finsupp.singleAddHom 0 with
+  { singleAddHom 0 with
+    toFun := single 0
     map_one' := rfl
     map_mul' := fun x y => by simp only [Finsupp.singleAddHom, single_mul_single, zero_add] }
 
