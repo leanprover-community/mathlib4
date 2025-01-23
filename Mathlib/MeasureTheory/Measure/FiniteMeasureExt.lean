@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Extensionality of finite measures
-The main Result is `ext_of_forall_mem_subalgebra_integral_eq`:
+The main Result is `ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable`:
 Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elements are bounded. If
 the integrals of all elements `A` with respect to two finite measures `P, P'`coincide, then the
 measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
@@ -18,7 +18,11 @@ open MeasureTheory Filter
 
 variable {E 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace E]
 
+<<<<<<< HEAD
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
+=======
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetricSpace
+>>>>>>> cc463d7f9c013d594c2cadeff0f54429c6fc8827
     [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
     {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
@@ -65,9 +69,17 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
       (integral_mulExpNegMulSq_tendsto P' f))
   apply eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
 
+<<<<<<< HEAD
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
+=======
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_polishSpace [TopologicalSpace E] [PolishSpace E]
+>>>>>>> cc463d7f9c013d594c2cadeff0f54429c6fc8827
     [BorelSpace E] {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
   letI := upgradePolishSpace E
+<<<<<<< HEAD
   exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq
+=======
+  exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetricSpace hA hbound heq
+>>>>>>> cc463d7f9c013d594c2cadeff0f54429c6fc8827
