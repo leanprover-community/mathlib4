@@ -72,7 +72,7 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
 /-- The functor `SimplexCategory ⥤ SSet` which sends `SimplexCategory.mk n` to
 the standard simplex `Δ[n]` is a cosimplicial object in the category of simplicial sets.
 (This functor is essentially given by the Yoneda embedding). -/
-def stdSimplex : SimplexCategory ⥤ SSet.{u} :=
+def stdSimplex : CosimplicialObject SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
 @[inherit_doc SSet.stdSimplex]
@@ -338,8 +338,7 @@ open Simplicial
 /-- The simplicial circle. -/
 noncomputable def S1 : SSet :=
   Limits.colimit <|
-    Limits.parallelPair (standardSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
-      (stdSimplex.δ 1)
+    Limits.parallelPair (stdSimplex.δ 0 : Δ[0] ⟶ Δ[1]) (stdSimplex.δ 1)
 
 end Examples
 
