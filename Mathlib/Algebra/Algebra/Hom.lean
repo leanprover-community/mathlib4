@@ -127,8 +127,6 @@ def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
--- Porting note: Lean 3: `@[simp, norm_cast] coe_mk`
---               Lean 4: `@[simp] coe_mk` & `@[norm_cast] coe_mks`
 @[simp]
 theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
@@ -244,7 +242,7 @@ variable (R A)
 protected def id : A →ₐ[R] A :=
   { RingHom.id A with commutes' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(AlgHom.id R A) = id :=
   rfl
 

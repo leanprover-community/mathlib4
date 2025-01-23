@@ -426,8 +426,7 @@ instance : MetricSpace GHSpace where
         In this coupling, the two spaces are at zero Hausdorff distance,
         i.e., they coincide. Therefore, the original spaces are isometric. -/
     rcases ghDist_eq_hausdorffDist x.Rep y.Rep with ⟨Φ, Ψ, Φisom, Ψisom, DΦΨ⟩
-    rw [← dist_ghDist] at DΦΨ
-    simp_rw [hxy] at DΦΨ -- Porting note: I have no idea why this needed `simp_rw` versus `rw`
+    rw [← dist_ghDist, hxy] at DΦΨ
     have : range Φ = range Ψ := by
       have hΦ : IsCompact (range Φ) := isCompact_range Φisom.continuous
       have hΨ : IsCompact (range Ψ) := isCompact_range Ψisom.continuous

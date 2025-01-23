@@ -446,11 +446,12 @@ instance homogeneousLocalizationCommRing : CommRing (HomogeneousLocalization ùí
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization ùíú x) (Localization x) where
   smul p q := p.val * q
-  toFun := val
-  map_one' := val_one
-  map_mul' := val_mul
-  map_zero' := val_zero
-  map_add' := val_add
+  algebraMap :=
+  { toFun := val
+    map_one' := val_one
+    map_mul' := val_mul
+    map_zero' := val_zero
+    map_add' := val_add }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 

@@ -18,7 +18,6 @@ We prove basic properties of `IsIntegralClosure`.
 
 -/
 
-open scoped Classical
 open Polynomial Submodule
 
 section inv

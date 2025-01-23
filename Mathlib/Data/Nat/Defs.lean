@@ -102,7 +102,6 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n := succ_injective.ne_iff
 
--- Porting note: no longer a simp lemma, as simp can prove this
 lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
 
 lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
@@ -978,7 +977,8 @@ lemma mod_two_ne_zero : n % 2 ≠ 0 ↔ n % 2 = 1 := mod_two_not_eq_zero
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
   (mod_mul_right_div_self a b c).symm
 
-protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
+/-- Variant of `Nat.lt_div_iff_mul_lt` that assumes `d ∣ n`. -/
+protected lemma lt_div_iff_mul_lt' (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
   · rw [← Nat.mul_lt_mul_left hd, ← Nat.eq_mul_of_div_eq_right hdn rfl]
@@ -1291,7 +1291,7 @@ lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Pro
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
 
 lemma div_lt_div_of_lt_of_dvd {a b d : ℕ} (hdb : d ∣ b) (h : a < b) : a / d < b / d := by
-  rw [Nat.lt_div_iff_mul_lt hdb]
+  rw [Nat.lt_div_iff_mul_lt' hdb]
   exact lt_of_le_of_lt (mul_div_le a d) h
 
 /-! ### Decidability of predicates -/

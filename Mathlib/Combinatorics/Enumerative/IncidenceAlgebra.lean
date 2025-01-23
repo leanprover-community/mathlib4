@@ -297,24 +297,25 @@ instance moduleRight [Preorder α] [Semiring 𝕜] [AddCommMonoid 𝕝] [Module 
 
 instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [CommSemiring 𝕜]
     [CommSemiring 𝕝] [Algebra 𝕜 𝕝] : Algebra 𝕜 (IncidenceAlgebra 𝕝 α) where
-  toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
-  map_one' := by
-    ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
-  map_mul' c d := by
-      ext a b
-      obtain rfl | h := eq_or_ne a b
-      · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
-          boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
-          if_pos rfl, eq_comm, and_self_iff, Icc_self]
-        simp
-      · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
-          mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
-          ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
-          MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
-        refine (sum_eq_zero fun x _ ↦ ?_).symm
-        exact if_neg fun hx ↦ h <| hx.2.trans hx.1
-  map_zero' := by dsimp; rw [map_zero, zero_smul]
-  map_add' c d := by dsimp; rw [map_add, add_smul]
+  algebraMap :=
+  { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
+    map_one' := by
+      ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
+    map_mul' c d := by
+        ext a b
+        obtain rfl | h := eq_or_ne a b
+        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
+            boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
+            if_pos rfl, eq_comm, and_self_iff, Icc_self]
+          simp
+        · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
+            mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
+            ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
+            MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
+          refine (sum_eq_zero fun x _ ↦ ?_).symm
+          exact if_neg fun hx ↦ h <| hx.2.trans hx.1
+    map_zero' := by dsimp; rw [map_zero, zero_smul]
+    map_add' c d := by dsimp; rw [map_add, add_smul] }
   commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
   smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
 

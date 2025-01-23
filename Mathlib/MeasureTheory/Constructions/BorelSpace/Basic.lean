@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.Topology.GDelta.UniformSpace
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Rat
 
 /-!
@@ -222,6 +222,7 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
   h.measurableSet.nullMeasurableSet
 
+open scoped Function in -- required for scoped `on` notation
 @[elab_as_elim]
 theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s → Prop}
     (isOpen : ∀ U (hU : IsOpen U), C U hU.measurableSet)

@@ -311,7 +311,8 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
--- Porting note: `simps` cause a time out, so `Unit` and `counit` will be added manually
+-- Porting note: `simps` generates lemmas not in `simp` normal form, so `unit` and `counit` have to
+-- be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
   unit := identityToΓSpec
   counit := (NatIso.op SpecΓIdentity).inv
@@ -543,6 +544,13 @@ def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
 variable (φ) in
 @[simp] lemma Spec.preimage_map : Spec.preimage (Spec.map φ) = φ :=
   Spec.map_injective (Spec.map_preimage (Spec.map φ))
+
+/-- Useful for replacing `f` by `Spec.map φ` everywhere in proofs. -/
+lemma Spec.map_surjective {R S : CommRingCat} :
+    Function.Surjective (Spec.map : (R ⟶ S) → _) := by
+  intro f
+  use Spec.preimage f
+  simp
 
 /-- Spec is fully faithful -/
 @[simps]

@@ -75,7 +75,7 @@ theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
 -- if more is needed, add them here
 /-- The spectrum, as a contravariant functor from commutative rings to topological spaces.
 -/
-@[simps! obj map]
+@[simps!]
 def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
   obj R := Spec.topObj (unop R)
   map {_ _} f := Spec.topMap f.unop

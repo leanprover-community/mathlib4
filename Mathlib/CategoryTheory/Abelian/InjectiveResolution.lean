@@ -240,7 +240,7 @@ lemma InjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
       I.iso.hom ≫ (HomotopyCategory.quotient _ _).map φ := by
   apply HomotopyCategory.eq_of_homotopy
   apply descHomotopy f
-  all_goals aesop_cat
+  all_goals aesop
 
 @[reassoc]
 lemma InjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)

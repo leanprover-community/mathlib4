@@ -606,6 +606,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 variable {R}
 
 /-- Closure of a subring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 

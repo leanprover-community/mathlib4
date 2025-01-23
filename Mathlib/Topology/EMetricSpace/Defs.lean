@@ -25,9 +25,8 @@ theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y`
 to `EMetricSpace` at the end.
 -/
 
-assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists IsUniformEmbedding
-assert_not_exists TendstoUniformlyOnFilter
+
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
 
 open Filter Set Topology
 

@@ -327,7 +327,7 @@ theorem someVector_ne_zero (x : Module.Ray R M) : x.someVector ≠ 0 :=
 /-- The ray of `someVector`. -/
 @[simp]
 theorem someVector_ray (x : Module.Ray R M) : rayOfNeZero R _ x.someVector_ne_zero = x :=
-  (congr_arg _ (Subtype.coe_eta _ _) : _).trans x.out_eq
+  (congr_arg _ (Subtype.coe_eta _ _) :).trans x.out_eq
 
 end Module.Ray
 
