@@ -48,7 +48,7 @@ lemma Circuit.nonempty (hC : M.Circuit C) : C.Nonempty :=
 lemma empty_not_circuit (M : Matroid α) : ¬M.Circuit ∅ :=
   fun h ↦ by simpa using h.nonempty
 
-lemma circuit_iff : M.Circuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, M.Dep I → I ⊆ C → I = C := by
+lemma circuit_iff : M.Circuit C ↔ M.Dep C ∧ ∀ ⦃D⦄, M.Dep D → D ⊆ C → D = C := by
   simp_rw [circuit_def, minimal_subset_iff, eq_comm (a := C)]
 
 lemma Circuit.ssubset_indep (hC : M.Circuit C) (hXC : X ⊂ C) : M.Indep X := by
@@ -104,7 +104,7 @@ lemma Indep.insert_circuit_of_forall_of_nontrivial (hI : M.Indep I) (hInt : I.No
   exact h f hf (mem_closure_of_mem' _ (by simp [heI, hne.symm]))
 
 lemma Circuit.diff_singleton_basis (hC : M.Circuit C) (he : e ∈ C) : M.Basis (C \ {e}) C := by
-  nth_rw 2 [← insert_eq_of_mem he];
+  nth_rw 2 [← insert_eq_of_mem he]
   rw [← insert_diff_singleton, (hC.diff_singleton_indep he).basis_insert_iff,
     insert_diff_singleton, insert_eq_of_mem he]
   exact Or.inl hC.dep
