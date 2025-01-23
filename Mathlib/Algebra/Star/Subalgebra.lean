@@ -864,7 +864,7 @@ theorem Subalgebra.of_span_submonoid_starmem {R : Type u} {A : Type v} [CommSemi
   let gStar : Fin n → s := fun i => ⟨star (g i), h (g i) (Subtype.coe_prop (g i))⟩
   use n, fStar, gStar
   rw [← hfgx]
-  simp only [star_sum, star_smul]
+  simp only [star_sum, star_smul, fStar, gStar]
 
 /-- The `star subalgebra` spanned by `s : Submonoid A` which is closed under `star` -/
 def StarSubalgebra.of_span_submonoid (R : Type u) {A : Type v} [CommSemiring R] [Semiring A]
