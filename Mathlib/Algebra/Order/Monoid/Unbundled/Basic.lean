@@ -292,7 +292,7 @@ theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
   rw [le_antisymm_iff, eq_true (mul_le_mul' hac hbd), true_and, mul_le_mul_iff_of_ge hac hbd]
 
 @[to_additive]
-lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} {h : b ≤ c ∨ c ≤ b} :
+lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} (h : b ≤ c ∨ c ≤ b) :
     c * a = b * a ↔ c = b := by
   refine ⟨fun h' => ?_, (· ▸ rfl)⟩
   contrapose h'
@@ -301,7 +301,7 @@ lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} {h : b ≤
   · exact mul_lt_mul_right' (h.lt_of_ne h') a |>.ne
 
 @[to_additive]
-lemma mul_right_inj_of_comparable [MulLeftStrictMono α] {a b c : α} {h : b ≤ c ∨ c ≤ b} :
+lemma mul_right_inj_of_comparable [MulLeftStrictMono α] {a b c : α} (h : b ≤ c ∨ c ≤ b) :
     a * c = a * b ↔ c = b := by
   refine ⟨fun h' => ?_, (· ▸ rfl)⟩
   contrapose h'
