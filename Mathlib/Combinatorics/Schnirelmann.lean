@@ -10,6 +10,8 @@ import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.Torsion
+import Mathlib.Combinatorics.Additive.CauchyDavenport
 
 /-!
 # Schnirelmann density
@@ -306,81 +308,118 @@ lemma add_max'_add {α : Type*} [LinearOrder α] [Add α] [AddLeftMono α] [AddR
     (A + B).max' (hA.add hB) = A.max' hA + B.max' hB := by
   refine le_antisymm ?_ ?_
   next =>
-    refine Finset.max'_le _ _ _ ?_
+    refine max'_le _ _ _ ?_
     simp only [mem_add, forall_exists_index, and_imp]
     rintro _ a ha b hb rfl
-    exact add_le_add (Finset.le_max' _ _ ha) (Finset.le_max' _ _ hb)
-  next => exact Finset.le_max' _ _ (Finset.add_mem_add (Finset.max'_mem _ _) (Finset.max'_mem _ _))
+    exact add_le_add (le_max' _ _ ha) (le_max' _ _ hb)
+  next => exact le_max' _ _ (add_mem_add (max'_mem _ _) (max'_mem _ _))
 
 lemma add_min'_add {α : Type*} [LinearOrder α] [Add α] [AddLeftMono α] [AddRightMono α]
     {A B : Finset α} (hA : A.Nonempty) (hB : B.Nonempty) :
     (A + B).min' (hA.add hB) = A.min' hA + B.min' hB :=
   add_max'_add (α := αᵒᵈ) hA hB
 
--- lemma max'_vadd_finset_not_subset {α : Type*} [LinearOrder α] [OrderBot α] [Add α]
---     {A B : Finset α} (hA : A.Nonempty)
---     (hB0 : ∃ b ∈ B, b ≠ ⊥) :
---     ¬ A.max' hA +ᵥ B ⊆ A := by
---   intro hi
---   obtain ⟨b, hb, hb0⟩ := hB0
---   have : A.max' hA + b ≤ A.max' hA := Finset.le_max' _ _ (hi (vadd_mem_vadd_finset hb))
---   simp? at this
+@[to_additive]
+lemma powers_nonempty {α : Type*} [Monoid α] {a : α} :
+    Set.Nonempty (Submonoid.powers a : Set α) := ⟨a, by simp⟩
 
-example {α : Type*} [DecidableEq α] [Add α] {A B C : Finset α} :
-    (∀ x ∈ A, x +ᵥ B ⊆ C) ↔ A + B ⊆ C := by
-  rw [@add_subset_iff_left]
-  -- aesop (add simp [subset_iff, mem_vadd_finset, mem_add])
-
-#exit
-
-lemma max'_vadd_finset_not_subset {A B : Finset ℕ} (hA : A.Nonempty) (hB0 : ∃ b ∈ B, b ≠ 0) :
-    ¬ A.max' hA +ᵥ B ⊆ A := by
-  intro hi
-  obtain ⟨b, hb, hb0⟩ := hB0
-  have : A.max' hA + b ≤ A.max' hA := Finset.le_max' _ _ (hi (vadd_mem_vadd_finset hb))
-  omega
-
-lemma add_sdiff_nonempty {α : Type*}
-    [AddCancelMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [DecidableEq α]
-    {A B : Finset α} (hA : A.Nonempty) (hB0 : (B \ {0}).Nonempty) :
-    ((A + B) \ A).Nonempty := by
-  obtain ⟨a, ha, ha'⟩ := Finset.exists_maximal A hA
-  simp only [Finset.Nonempty, mem_sdiff, mem_singleton] at hB0
-  obtain ⟨b, hb, hb0⟩ := hB0
-  rw [sdiff_nonempty]
-  intro h
-  exact ha' _ (h (add_mem_add ha hb)) (lt_add_of_pos_right a (pos_iff_ne_zero.2 hb0))
-
-lemma add_subset_left_iff {α : Type*}
-    [AddCancelMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [DecidableEq α]
-    {A B : Finset α} :
-    A + B ⊆ A ↔ A = ∅ ∨ B ⊆ {0} := by
+@[to_additive]
+lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
+    (h : Monoid.IsTorsionFree α) {A : Finset α} {b : α} :
+    b • A ⊆ A ↔ A = ∅ ∨ b = 1 := by
   constructor
-  · contrapose!
-    rintro ⟨hA, hB⟩
-    rw [← sdiff_nonempty] at hB ⊢
-    exact add_sdiff_nonempty (nonempty_iff_ne_empty.2 hA) hB
+  case mpr => rintro (rfl | rfl) <;> simp
+  case mp =>
+    intro hbA
+    have hfin : (Submonoid.powers b : Set α) * A ⊆ A := by
+      simp only [Set.subset_def, Set.mem_mul, SetLike.mem_coe, Submonoid.mem_powers_iff,
+        mem_coe, exists_exists_eq_and, forall_exists_index, and_imp]
+      rintro _ n a ha rfl
+      induction n with
+      | zero => simpa
+      | succ n hn =>
+          rw [pow_succ', mul_assoc]
+          exact hbA (smul_mem_smul_finset hn)
+    have : Set.Finite ((Submonoid.powers b : Set α) * (A : Set α)) :=
+      (finite_toSet A).subset hfin
+    rw [Set.finite_mul, finite_powers] at this
+    cases this with
+    | inl hl =>
+        right
+        by_contra! hb
+        exact h _ hb hl.1
+    | inr hr =>
+        simp only [coe_eq_empty] at hr
+        exact Or.inl (hr.resolve_left powers_nonempty.ne_empty)
+
+open MulOpposite in
+@[to_additive]
+lemma op_smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
+    (h : Monoid.IsTorsionFree α) {A : Finset α} {b : α} :
+    op b • A ⊆ A ↔ A = ∅ ∨ b = 1 := by
+  constructor
+  case mpr => rintro (rfl | rfl) <;> simp
+  case mp =>
+    intro hbA
+    have hfin : A * (Submonoid.powers b : Set α) ⊆ A := by
+      simp only [Set.subset_def, Set.mem_mul, SetLike.mem_coe, Submonoid.mem_powers_iff,
+        mem_coe, exists_exists_eq_and, forall_exists_index, and_imp]
+      rintro _ a ha n rfl
+      induction n with
+      | zero => simpa
+      | succ n hn =>
+          rw [pow_succ, ← mul_assoc]
+          exact hbA (smul_mem_smul_finset hn)
+    have : Set.Finite ((A : Set α) * (Submonoid.powers b : Set α)) :=
+      (finite_toSet A).subset hfin
+    rw [Set.finite_mul, finite_powers] at this
+    cases this with
+    | inl hl =>
+        right
+        by_contra! hb
+        exact h _ hb hl.2
+    | inr hr =>
+        simp only [coe_eq_empty] at hr
+        exact Or.inl (hr.resolve_right powers_nonempty.ne_empty)
+
+@[to_additive]
+lemma mul_subset_right_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
+    (h : Monoid.IsTorsionFree α) {A B : Finset α} :
+    B * A ⊆ A ↔ A = ∅ ∨ B ⊆ 1 := by
+  constructor
+  · intro hBA
+    rw [or_iff_not_imp_left]
+    intro hA b hb
+    simp only [mem_one]
+    have : b • A ⊆ A := (smul_finset_subset_mul hb).trans hBA
+    exact ((smul_finset_subset_self_iff h).1 this).resolve_left hA
   · rintro (rfl | h)
     · simp
-    · exact (add_subset_add_left h).trans (by simp [singleton_zero])
+    · exact (mul_subset_mul_right h).trans (by simp)
 
-example {A B : Finset ℕ} :
-    ((A + B) \ A).Nonempty ↔ ∃ a ∈ A, ((a +ᵥ B) \ A).Nonempty := by
+open MulOpposite in
+@[to_additive]
+lemma mul_subset_left_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
+    (h : Monoid.IsTorsionFree α) {A B : Finset α} :
+    A * B ⊆ A ↔ A = ∅ ∨ B ⊆ 1 := by
   constructor
-  · rintro ⟨x, hx⟩
-    simp only [mem_sdiff, mem_add] at hx
-    obtain ⟨⟨x, hx, y, hy, rfl⟩, hA⟩ := hx
-    refine ⟨x, hx, x + y, ?_⟩
-    simp only [mem_sdiff]
-    constructor
-    · apply vadd_mem_vadd_finset hy
-    · exact hA
-  · rintro ⟨a, ha, x, hx⟩
-    simp only [mem_sdiff, mem_vadd_finset] at hx
-    obtain ⟨⟨b, hb, rfl⟩, hA⟩ := hx
-    refine ⟨a +ᵥ b, ?_⟩
-    simp only [mem_sdiff, hA, not_false_iff, and_true]
-    exact add_mem_add ha hb
+  · intro hBA
+    rw [or_iff_not_imp_left]
+    intro hA b hb
+    simp only [mem_one]
+    have : op b • A ⊆ A := (op_smul_finset_subset_mul hb).trans hBA
+    exact ((op_smul_finset_subset_self_iff h).1 this).resolve_left hA
+  · rintro (rfl | h)
+    · simp
+    · exact (mul_subset_mul_left h).trans (by simp)
+
+lemma add_sdiff_nonempty {α : Type*}
+    [AddCancelMonoid α] [DecidableEq α]
+    (h : AddMonoid.IsTorsionFree α)
+    {A B : Finset α} (hA : A.Nonempty) (hB0 : (B \ {0}).Nonempty) :
+    ((A + B) \ A).Nonempty := by
+  rw [sdiff_nonempty, add_subset_left_iff h, not_or, ← sdiff_nonempty]
+  exact ⟨hA.ne_empty, hB0⟩
 
 @[to_additive]
 lemma Finset.card_smul_finset' {α : Type*} [DecidableEq α] [Monoid α] [IsLeftCancelMul α]
@@ -586,14 +625,16 @@ theorem dyson_mann' {σ : ℝ} {n : ℕ} {A B : Finset ℕ}
   generalize hb : B.card = b
   induction b using Nat.strongRecOn generalizing A B
   case ind b ih' =>
-  wlog hB : ∃ b ∈ B, b ≠ 0 generalizing
-  · have : B ⊆ {0} := by simpa [-subset_singleton_iff, subset_iff] using hB
-    obtain rfl : B = {0} := this.antisymm (by simp [hB0])
+  by_cases hB₀ : B ⊆ 0
+  · obtain rfl : B = {0} := subset_antisymm hB₀ (by simpa)
     rw [singleton_zero]
-    simpa [filter_eq'] using h m hm
-  have : (A.filter (¬ · +ᵥ B ⊆ A)).Nonempty := by
-    sorry
-    -- ⟨A.max' ⟨0, hA0⟩, mem_filter.2 ⟨max'_mem _ _, max'_vadd_finset_not_subset _ hB⟩⟩
+    simpa using h m hm
+  have : {x ∈ A | ¬ x +ᵥ B ⊆ A}.Nonempty := by
+    rw [filter_nonempty_iff]
+    by_contra!
+    rw [← add_subset_iff_left, add_subset_left_iff .of_noZeroSMulDivisors] at this
+    have hAne : A.Nonempty := ⟨0, hA0⟩
+    simp [hB₀, hAne.ne_empty] at this
   let a := min' _ this
   obtain ⟨ha, ha'⟩ : a ∈ A ∧ ¬ a +ᵥ B ⊆ A := by simpa using Finset.min'_mem _ this
   have ha'' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A := by
