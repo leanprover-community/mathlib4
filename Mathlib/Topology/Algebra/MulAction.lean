@@ -192,7 +192,7 @@ instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M
     ContinuousSMul M s :=
   IsInducing.subtypeVal.continuousSMul continuous_id rfl
 
---@[to_additive]
+@[to_additive]
 instance SubmonoidClass.instContinuousSMul (S : Type*) [SetLike S M] (s : S) :
     ContinuousSMul s X :=
   IsInducing.continuousSMul IsInducing.id continuous_subtype_val rfl
