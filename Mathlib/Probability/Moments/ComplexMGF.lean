@@ -100,38 +100,14 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
 
 section Analytic
 
-lemma complexMGF_add_sub_sum (ht : t ≠ 0)
-    (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
-    (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
-    (hε : |ε.re| ≤ |t|) (n : ℕ) :
+lemma complexMGF_add_sub_sum (hz : z.re ∈ interior (integrableExpSet X μ))
+    (hzε : (z + ε).re ∈ integrableExpSet X μ) (n : ℕ) :
     complexMGF X μ (z + ε) - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
       = μ[fun ω ↦ cexp (z * X ω)
         * (cexp (ε * X ω) - ∑ m in range n, ε ^ m / m.factorial * X ω ^ m)] := by
-  have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
-  swap; · rw [← sub_ne_zero]; simp [ht]
-  have h_Icc_subset : Set.Icc (z.re - |t|) (z.re + |t|) ⊆ integrableExpSet X μ := by
-    intro x hx
-    refine integrable_exp_mul_of_le_of_le (a := z.re - |t|) (b := z.re + |t|) ?_ ?_ hx.1 hx.2
-    · rcases le_total 0 t with ht | ht
-      · rwa [_root_.abs_of_nonneg ht]
-      · simpa [abs_of_nonpos ht]
-    · rcases le_total 0 t with ht | ht
-      · rwa [_root_.abs_of_nonneg ht]
-      · rwa [abs_of_nonpos ht]
-  have hε_int_pos : Integrable (fun ω ↦ rexp ((z.re + ε.re) * X ω)) μ := by
-    refine h_Icc_subset ?_
-    simp only [Set.mem_Icc, _root_.add_lt_add_iff_left]
-    constructor
-    · rw [sub_eq_add_neg]
-      gcongr
-      rw [neg_le]
-      exact (neg_le_abs _).trans hε
-    · gcongr
-      exact (le_abs_self _).trans hε
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
-    refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet ?_ i
-    exact ⟨Set.Ioo (z.re - |t|) (z.re + |t|),
-      ⟨isOpen_Ioo, Set.Ioo_subset_Icc_self.trans h_Icc_subset⟩, by simp [ht]⟩
+    refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz i
   simp_rw [complexMGF, add_mul, Complex.exp_add, mul_comm _ (cexp (ε * X _))]
   calc ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
       ∑ m ∈ range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
@@ -156,31 +132,59 @@ lemma complexMGF_add_sub_sum (ht : t ≠ 0)
         congr with m
         ring
     · simp_rw [← Complex.exp_add, ← add_mul, add_comm ε]
-      exact integrable_cexp_mul_of_re_mem_integrableExpSet hX hε_int_pos
+      exact integrable_cexp_mul_of_re_mem_integrableExpSet hX hzε
     · simp_rw [mul_assoc]
       fun_prop
 
-lemma abs_complexMGF_add_sub_sum_le
-    (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
-    (h_int_neg : Integrable (fun ω ↦ rexp ((z.re - t) * X ω)) μ)
-    (hε : abs ε < |t|) (n : ℕ):
-    abs (complexMGF X μ (z + ε)
-        - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ)
-      ≤ (abs ε) ^ n * μ[fun ω ↦ |X ω| ^ n * rexp (z.re * X ω + abs ε * |X ω|)] := by
-  have ht : t ≠ 0 := by
-    suffices |t| ≠ 0 by simpa
-    refine (lt_of_le_of_lt ?_ hε).ne'
-    exact AbsoluteValue.nonneg abs ε
-  rw [complexMGF_add_sub_sum ht h_int_pos h_int_neg ((abs_re_le_abs ε).trans hε.le),
-    ← integral_mul_left, ← Complex.norm_eq_abs]
+lemma eventually_complexMGF_add_sub_sum_eq (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    ∀ᶠ ε in 𝓝 0,
+    complexMGF X μ (z + ε) - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
+      = μ[fun ω ↦ cexp (z * X ω)
+        * (cexp (ε * X ω) - ∑ m in range n, ε ^ m / m.factorial * X ω ^ m)] := by
+  have h_mem : ∀ᶠ ε in 𝓝 0, (z + ε).re ∈ interior (integrableExpSet X μ) := by
+    have h1 : ∀ᶠ y in 𝓝 z, y.re ∈ interior (integrableExpSet X μ) := by
+      refine IsOpen.eventually_mem ?_ hz
+      exact isOpen_interior.preimage Complex.continuous_re
+    have h2 : Tendsto (fun ε ↦ z + ε) (𝓝 0) (𝓝 z) := by
+      convert (continuous_add_left z).tendsto _
+      simp
+    exact h2.eventually h1
+  filter_upwards [h_mem] with ε hε using complexMGF_add_sub_sum hz (interior_subset hε) n
+
+lemma eventually_integrable_pow_abs_mul_exp_add_of_mem_interior_integrableExpSet
+    (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    ∀ᶠ ε in 𝓝 0, Integrable (fun a ↦ |X a| ^ n * rexp (z.re * X a + abs ε * |X a|)) μ := by
+  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hz
+  obtain ⟨l, u, hlu, h_subset⟩ := hz
+  let t := ((z.re - l) ⊓ (u - z.re)) / 2
+  have h_pos : 0 < (z.re - l) ⊓ (u - z.re) := by simp [hlu.1, hlu.2]
+  have ht : 0 < t := half_pos h_pos
+  have : ∀ᶠ ε in 𝓝 0, abs ε < t := by
+    have h_tendsto : Tendsto abs (𝓝 0) (𝓝 0) := by convert continuous_abs.tendsto _; simp
+    exact h_tendsto.eventually (eventually_lt_nhds ht)
+  filter_upwards [this] with ε hε
+  refine integrable_pow_abs_mul_exp_add_of_integrable_exp_mul (t := t) ?_ ?_ ?_ (hε.trans_eq ?_) n
+  · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
+  · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
+  · exact AbsoluteValue.nonneg abs ε
+  · rw [_root_.abs_of_nonneg ht.le]
+
+lemma eventually_abs_complexMGF_add_sub_sum_le (hz : z.re ∈ interior (integrableExpSet X μ))
+    (n : ℕ) :
+    ∀ᶠ ε in 𝓝 0,
+      abs (complexMGF X μ (z + ε)
+          - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ)
+        ≤ (abs ε) ^ n * μ[fun ω ↦ |X ω| ^ n * rexp (z.re * X ω + abs ε * |X ω|)] := by
+  filter_upwards [eventually_complexMGF_add_sub_sum_eq hz n,
+    eventually_integrable_pow_abs_mul_exp_add_of_mem_interior_integrableExpSet hz n]
+    with ε hε hε_int
+  rw [hε, ← integral_mul_left, ← Complex.norm_eq_abs]
   refine (norm_integral_le_integral_norm _).trans ?_
   simp only [norm_mul, Complex.norm_eq_abs, Complex.abs_exp, mul_re, ofReal_re, ofReal_im, mul_zero,
-    sub_zero, _root_.sq_abs]
+    sub_zero]
   refine integral_mono_of_nonneg (ae_of_all _ fun ω ↦ ?_) ?_ (ae_of_all _ fun ω ↦ ?_)
   · positivity
-  · refine Integrable.const_mul ?_ _
-    exact integrable_pow_abs_mul_exp_add_of_integrable_exp_mul h_int_pos h_int_neg
-      (AbsoluteValue.nonneg abs ε) hε n
+  · exact Integrable.const_mul hε_int _
   · simp_rw [Real.exp_add, mul_comm (rexp (z.re * X ω)), ← mul_assoc]
     gcongr
     convert abs_exp_sub_sum_le_abs_mul_exp (ε * X ω) n using 4 with m hm
@@ -226,23 +230,12 @@ lemma tendsto_integral_pow_abs_mul_exp (hz : z.re ∈ interior (integrableExpSet
 lemma isBigO_abs_complexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     (fun ε ↦ complexMGF X μ (z + ε)
         - ∑ m in range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ)
-      =O[𝓝 0] fun ε ↦ (abs ε) ^ n := by
-  have hz' := hz
-  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hz'
-  obtain ⟨l, u, hlu, h_subset⟩ := hz'
-  let t := ((z.re - l) ⊓ (u - z.re)) / 2
-  have h_pos : 0 < (z.re - l) ⊓ (u - z.re) := by simp [hlu.1, hlu.2]
-  have ht : 0 < t := half_pos h_pos
+      =O[𝓝 0] fun ε ↦ (abs ε) ^ n :=
   calc
   _ =O[𝓝 0] fun ε : ℂ ↦ (abs ε) ^ n * μ[fun ω ↦ |X ω| ^ n * rexp (z.re * X ω + abs ε * |X ω|)] := by
     refine Eventually.isBigO ?_
-    rw [eventually_nhds_iff]
-    refine ⟨{x | abs x < t}, fun y hy ↦ ?_, ?_, by simp [ht]⟩
-    · simp only [Real.norm_eq_abs, Complex.abs_abs]
-      refine abs_complexMGF_add_sub_sum_le ?_ ?_ (hy.trans_le (le_abs_self _)) n
-      · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
-      · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
-    · exact isOpen_lt (by fun_prop) (by fun_prop)
+    simp only [Complex.norm_eq_abs]
+    exact eventually_abs_complexMGF_add_sub_sum_le hz n
   _ =O[𝓝 0] fun ε ↦ (abs ε) ^ n * 1 := by
     refine Asymptotics.IsBigO.mul (Asymptotics.isBigO_refl _ _) ?_
     refine Tendsto.isBigO_one _ (c := μ[fun ω ↦ |X ω| ^ n * rexp (z.re * X ω)]) ?_
@@ -338,7 +331,6 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
 lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     HasDerivAt (fun t ↦ μ[fun ω ↦ X ω ^ n * rexp (t * X ω)])
       μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] t := by
-  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
   have h_re_of_mem n t (ht' : t ∈ interior (integrableExpSet X μ)) :
       (∫ ω, X ω ^ n * cexp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
     rw [← RCLike.re_eq_complex_re, ← integral_re]
