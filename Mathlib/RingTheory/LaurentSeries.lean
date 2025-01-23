@@ -79,7 +79,7 @@ equivalence: `LaurentSeries.LaurentSeriesRingEquiv` is the *topological, ring eq
 `K⸨X⸩ ≃+* RatFuncAdicCompl K`.
 * In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
 `RatFunc K` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
-that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`) 
+that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
 to `K⟦X⟧`.
 
 ## To Do
