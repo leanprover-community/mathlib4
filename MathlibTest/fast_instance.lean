@@ -89,7 +89,7 @@ error: Provided instance
 is not defeq to inferred instance
   instMulNat
 
-Use `set_option trace.Elab.fast_instance true to analyze error.
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
 
 Trace of fields visited: []
 ---
@@ -116,9 +116,7 @@ abbrev dec1 : Decidable It := isTrue sorry
 #guard_msgs in
 def dec2 : Decidable It := isTrue sorry
 
-/--
-info: @Dec.mk It (@isTrue It ⋯) : Dec It
--/
+/-- info: @Dec.mk It (@isTrue It dec1.proof_1) : Dec It -/
 #guard_msgs in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec1 : Dec It }
@@ -130,7 +128,7 @@ Reduces to an application of testing.dec2.
 
 This instance is not a structure and not canonical. Use a separate 'instance' command to define it.
 
-Use `set_option trace.Elab.fast_instance true to analyze error.
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
 
 Trace of fields visited: [testing.Dec.dec]
 ---
