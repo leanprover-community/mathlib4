@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Ching-Tsun Chou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ching-Tsun Chou
+Authors: Ching-Tsun Chou, Violeta Hernández Palacios
 -/
 
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
@@ -34,16 +34,13 @@ lemma nullmeasurable_measurable_null {s : Set ℝ} (h : NullMeasurableSet s volu
   · exact measure_congr t_eq_s
   · exact ae_le_set.mp t_eq_s.symm.le
 
-lemma shift_volume (s : Set ℝ) (c : ℝ) : volume ((· + c) '' s) = volume s := by
-  simp only [image_add_right, measure_preimage_add_right]
-
 lemma shift_nullmeasurable {s : Set ℝ} (h : NullMeasurableSet s volume) (c : ℝ) :
     NullMeasurableSet ((· + c) '' s) volume := by
   rcases nullmeasurable_measurable_null h with ⟨t, ts, tm, vs, vt⟩
   rw [← union_diff_cancel ts, image_union]
   have := ((measurableEmbedding_addRight c).measurableSet_image).mpr tm
   apply (this.nullMeasurableSet (μ := volume)).union_null
-  rw [shift_volume (s \ t), vt]
+  rwa [image_add_right, measure_preimage_add_right]
 
 -- TODO: move to a better place, unless this already exists!
 lemma measure_union_null {α : Type*} [MeasureSpace α] {μ : Measure α}
@@ -207,15 +204,14 @@ lemma vI_countable : vI.Countable :=
 if the vitaliSet is null-measurable, then the volume of vitaliUnion is
 the sum of countably many copies of vitaliSet.  -/
 lemma volume_vitaliUnion (hm : NullMeasurableSet vitaliSet volume) :
-    volume vitaliUnion = ∑' (_ : ↑vI), volume vitaliSet := by
+    volume vitaliUnion = ∑' _ : ↑vI, volume vitaliSet := by
   have hm' : ∀ i ∈ vI, NullMeasurableSet (vitaliSet' i) volume := by
     intro i i_vI
     rw [vitaliSet']
     apply shift_nullmeasurable hm
   rw [vitaliUnion, biUnion_volume vI_countable vitali_pairwise_disjoint hm']
-  refine tsum_congr ?_
-  intro i
-  rw [vitaliSet', shift_volume]
+  refine tsum_congr fun i ↦ ?_
+  rw [vitaliSet', image_add_right, measure_preimage_add_right]
 
 /-- vI is an infinite set. -/
 lemma vI_infinite : vI.Infinite := by
