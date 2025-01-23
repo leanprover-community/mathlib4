@@ -27,35 +27,33 @@ variable (R) in
 `s = ⋃ (f, g₁, ..., gₙ), V(g₁, ..., gₙ) \ V(f)`.
 
 To obtain `s` from its data, use `PrimeSpectrum.ConstructibleSetData.toSet`. -/
-abbrev ConstructibleSetData := Finset (Σ n, R × (Fin n → R))
+abbrev ConstructibleSetData := Finset (R × Σ n, Fin n → R)
 
 namespace ConstructibleSetData
 
 /-- Given the data of the constructible set `s`, build the data of the constructible set
 `{I | {x | f x ∈ I} ∈ s}`. -/
 def map [DecidableEq S] (f : R →+* S) (s : ConstructibleSetData R) : ConstructibleSetData S :=
-  s.image <| Sigma.map id fun _n (r, g) ↦ (f r, f ∘ g)
+  s.image fun ⟨r, n, g⟩ ↦ ⟨f r, n, f ∘ g⟩
 
-@[simp] lemma map_id [DecidableEq R] (s : ConstructibleSetData R) : s.map (.id _) = s := by
-  unfold map Sigma.map; simp [RingHom.coe_id]
+@[simp]
+lemma map_id [DecidableEq R] (s : ConstructibleSetData R) : s.map (.id _) = s := by simp [map]
 
 lemma map_comp [DecidableEq S] [DecidableEq T] (f : S →+* T) (g : R →+* S)
     (s : ConstructibleSetData R) : s.map (f.comp g) = (s.map g).map f := by
-  unfold map Sigma.map; simp [image_image, Function.comp_def]
+  simp [map, image_image, Function.comp_def]
 
 /-- Given the data of a constructible set `s`, namely finitely many tuples `(f, g₁, ..., gₙ)` such
 that `s = ⋃ (f, g₁, ..., gₙ), V(g₁, ..., gₙ) \ V(f)`, return `s`. -/
 def toSet (S : ConstructibleSetData R) : Set (PrimeSpectrum R) :=
-  ⋃ x ∈ S, zeroLocus (Set.range x.2.2) \ zeroLocus {x.2.1}
+  ⋃ x ∈ S, zeroLocus (Set.range x.2.2) \ zeroLocus {x.1}
 
 @[simp]
 lemma toSet_map [DecidableEq S] (f : R →+* S) (s : ConstructibleSetData R) :
     (s.map f).toSet = comap f ⁻¹' s.toSet := by
   unfold toSet map
   rw [set_biUnion_finset_image]
-  simp only [id_eq, Set.preimage_iUnion, Set.preimage_diff, preimage_comap_zeroLocus,
-    Set.image_singleton, ← Set.range_comp]
-  rfl
+  simp [← Set.range_comp]
 
 /-- The degree bound on a constructible set for Chevalley's theorem for the inclusion `R ↪ R[X]`. -/
 def degBound (S : ConstructibleSetData R[X]) : ℕ := S.sup fun e ↦ ∑ i, (e.2.2 i).degree.succ
