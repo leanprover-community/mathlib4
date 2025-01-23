@@ -9,16 +9,50 @@ variable {R M M' N : Type*} [CommRing R] (S : Submonoid R) [AddCommGroup M]
   [AddCommGroup M'] [AddCommGroup N] [Module R M] [Module R M'] [Module R N]
   (g : M →ₗ[R] M') (f : M' →ₗ[R] N)
 
-lemma IsLocalizedModule.injective_of [IsLocalizedModule S g]
+lemma IsLocalizedModule.injective_of_map_eq {R M M' N : Type*} [CommSemiring R] (S : Submonoid R)
+  [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid N] [Module R M] [Module R M'] [Module R N]
+  (g : M →ₗ[R] M') (f : M' →ₗ[R] N)
+  [IsLocalizedModule S g]
+    (H : ∀ {x y}, f (g x) = f (g y) → g x = g y) :
+    Function.Injective f := by
+  intro a b hab
+  obtain ⟨⟨x, m⟩, (hxm : m • a = g x)⟩ := IsLocalizedModule.surj S g a
+  obtain ⟨⟨y, n⟩, (hym : n • b = g y)⟩ := IsLocalizedModule.surj S g b
+  have : ↑m • g y = ↑n • g x := by
+    apply_fun f at hxm hym
+    simp [hab] at hxm hym
+    apply_fun (n • ·) at hxm
+    apply_fun (m • ·) at hym
+    rw [← mul_smul] at hxm hym
+    rw [mul_comm, hym] at hxm
+    rw [Submonoid.smul_def, ← map_smul, Submonoid.smul_def, ← map_smul,
+      ← map_smul, ← map_smul] at hxm
+    apply H at hxm
+    rwa [map_smul, map_smul] at hxm
+  suffices h : n • m • a = m • n • b by
+    rwa [← IsLocalizedModule.smul_inj g (n * m), mul_smul, mul_comm, mul_smul]
+  rw [hxm, hym]
+  exact this.symm
+
+lemma IsLocalizedModule.injective_of_map_zero [IsLocalizedModule S g]
     (H : ∀ m, f (g m) = 0 → g m = 0) :
-    Function.Injective f :=
-  sorry
+    Function.Injective f := by
+  apply IsLocalizedModule.injective_of_map_eq S g
+  intro x y hxy
+  rw [← sub_eq_zero, ← map_sub]
+  apply H
+  simpa [sub_eq_zero]
 
 lemma Algebra.Extension.Cotangent.smul_eq_of {R S : Type*} [CommRing R] [CommRing S]
     [Algebra R S]
     {P : Extension R S} (x : P.ker) {g : S} (f : P.Ring) (hf : algebraMap P.Ring S f = g) :
-    g • mk x = mk ⟨f * x.val, Ideal.mul_mem_left _ _ x.property⟩ :=
-  sorry
+    g • mk x = mk ⟨f * x.val, Ideal.mul_mem_left _ _ x.property⟩ := by
+  have : ⟨f * x.val, Ideal.mul_mem_left _ _ x.property⟩ = f • x := rfl
+  ext
+  simp only [val_smul, val_mk, map_smul, val_smul', this]
+  rw [← sub_eq_zero, ← sub_smul]
+  apply smul_eq_zero_of_mem
+  simp [hf]
 
 end
 
@@ -192,7 +226,7 @@ lemma liftBaseChange_injective (g : S) [IsLocalization.Away g T]
       rw [this]
       rw [zero_mul]
   have hπ (x : (Q.comp P).Ring) (hx : x ∈ (Q.comp P).ker ^ 2) : π x = 0 := this hx
-  apply IsLocalizedModule.injective_of (Submonoid.powers g)
+  apply IsLocalizedModule.injective_of_map_zero (Submonoid.powers g)
     (TensorProduct.mk S T P.toExtension.Cotangent 1)
   intro x hx
   obtain ⟨x, rfl⟩ := Algebra.Extension.Cotangent.mk_surjective x
