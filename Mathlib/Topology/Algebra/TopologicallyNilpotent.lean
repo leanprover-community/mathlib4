@@ -140,15 +140,9 @@ variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsLinearTopology R R]
 
 /-- If `a` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
 theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
-    IsTopologicallyNilpotent (a * b) := fun v ↦ by
-  rw [IsLinearTopology.hasBasis_ideal.mem_iff]
-  rintro ⟨I, I_mem_nhds, I_subset⟩
-  obtain ⟨n, ha⟩ := ha.exists_pow_mem_of_mem_nhds I_mem_nhds
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-  use n
-  intro m hm
-  rw [mul_pow]
-  exact I_subset <| Ideal.mul_mem_right _ _ (I.pow_mem_of_pow_mem ha hm)
+    IsTopologicallyNilpotent (a * b) := fun v hv ↦ by
+  simp_rw [mul_pow]
+  exact IsLinearTopology.tendsto_mul_zero_of_left _ _ ha hv
 
 /-- If `b` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
  theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
