@@ -70,10 +70,12 @@ theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Mem�
 
 variable {f : α → E}
 
+@[fun_prop]
 theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
     Integrable (fun x => ⟪c, f x⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 
+@[fun_prop]
 theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
     Integrable (fun x => ⟪f x, c⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
@@ -166,7 +168,7 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
     ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
   · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.two_ne_top, eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
-    simp
+    simp [enorm_eq_nnnorm]
   · refine (lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top zero_lt_two ?_).ne
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.two_ne_top]
     exact Lp.eLpNorm_lt_top f
@@ -184,15 +186,14 @@ theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 
 private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f g + inner f' g := by
-  simp_rw [inner_def, ← integral_add (integrable_inner f g) (integrable_inner f' g), ←
-    inner_add_left]
+  simp_rw [inner_def, ← integral_add (integrable_inner (𝕜 := 𝕜) f g) (integrable_inner f' g),
+    ← inner_add_left]
   refine integral_congr_ae ((coeFn_add f f').mono fun x hx => ?_)
   -- Porting note: was
   -- congr
   -- rwa [Pi.add_apply] at hx
   simp only
-  rw [hx, Pi.add_apply]
-
+  congr
 
 private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * inner f g := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]

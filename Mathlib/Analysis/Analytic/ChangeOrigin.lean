@@ -140,9 +140,7 @@ def changeOriginIndexEquiv :
         (⟨k', l', ⟨s.map (finCongr hkl).toEmbedding, hs'⟩⟩ :
           Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
       apply this <;> simp only [hs, add_tsub_cancel_right]
-    rintro _ _ rfl rfl hkl hs'
-    simp only [Equiv.refl_toEmbedding, finCongr_refl, Finset.map_refl, eq_self_iff_true,
-      OrderIso.refl_toEquiv, and_self_iff, heq_iff_eq]
+    simp
   right_inv := by
     rintro ⟨n, s⟩
     simp [tsub_add_cancel_of_le (card_finset_fin_le s), finCongr_eq_equivCast]

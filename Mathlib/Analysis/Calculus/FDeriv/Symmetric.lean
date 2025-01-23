@@ -210,8 +210,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     apply (tendsto_order.1 this).2 δ
     simpa only [zero_mul] using δpos
   have E2 : ∀ᶠ h in 𝓝[>] (0 : ℝ), (h : ℝ) < 1 :=
-    mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.2
-      ⟨(1 : ℝ), by simp only [mem_Ioi, zero_lt_one], fun x hx => hx.2⟩
+    mem_nhdsWithin_of_mem_nhds <| Iio_mem_nhds zero_lt_one
   filter_upwards [E1, E2, self_mem_nhdsWithin] with h hδ h_lt_1 hpos
   -- we consider `h` small enough that all points under consideration belong to this ball,
   -- and also with `0 < h < 1`.
@@ -485,6 +484,20 @@ noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
 lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
+
+lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+  simp only [minSmoothness]
+  split_ifs <;> simp
+
+lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
+  intro m n hmn
+  simp only [minSmoothness]
+  split_ifs <;> simp [hmn]
+
+@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+    minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
+  simp only [minSmoothness]
+  split_ifs with h <;> simp [h]
 
 /-- If `minSmoothness 𝕜 m ≤ n` for some (finite) integer `m`, then one can
 find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`, just take `m`, and otherwise

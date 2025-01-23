@@ -17,17 +17,9 @@ variable {α β γ : Type*}
 
 namespace List
 
-@[simp]
-theorem length_flatMap (l : List α) (f : α → List β) :
-    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
-  rw [List.flatMap, length_flatten, map_map]
-
-lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
-  rw [List.flatMap, countP_flatten, map_map]
-
-lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
+set_option linter.deprecated false in
+@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
+lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 @[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
 

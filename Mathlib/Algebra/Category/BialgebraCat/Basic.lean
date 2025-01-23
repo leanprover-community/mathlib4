@@ -95,7 +95,7 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
+instance hasForget : HasForget.{v} (BialgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toBialgHom }

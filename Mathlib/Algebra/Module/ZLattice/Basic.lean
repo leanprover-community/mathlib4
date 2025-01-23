@@ -37,6 +37,11 @@ of `ℤ`-rank equal to the `K`-rank of `E`
 `L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is also a
 `IsZLattice`, see `instIsZLatticeComap`.
 
+## Note
+
+There is also `Submodule.IsLattice` which has slightly different applications. There no
+topology is needed and the discrete condition is replaced by finitely generated.
+
 ## Implementation Notes
 
 A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
@@ -711,7 +716,7 @@ end comap
 section NormedLinearOrderedField_comap
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type*} [NormedAddCommGroup E]  [NormedSpace K E] [FiniteDimensional K E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]  [FiniteDimensional K F]
   [ProperSpace F]

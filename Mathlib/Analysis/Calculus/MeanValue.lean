@@ -103,10 +103,10 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
   cases' hxB.lt_or_eq with hxB hxB
   · -- If `f x < B x`, then all we need is continuity of both sides
-    refine nonempty_of_mem (inter_mem ?_ (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))
+    refine nonempty_of_mem (inter_mem ?_ (Ioc_mem_nhdsGT hy))
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
       A x (Ico_subset_Icc_self xab) (IsOpen.mem_nhds (isOpen_lt continuous_fst continuous_snd) hxB)
-    have : ∀ᶠ x in 𝓝[>] x, f x < B x := nhdsWithin_le_of_mem (Icc_mem_nhdsWithin_Ioi xab) this
+    have : ∀ᶠ x in 𝓝[>] x, f x < B x := nhdsWithin_le_of_mem (Icc_mem_nhdsGT_of_mem xab) this
     exact this.mono fun y => le_of_lt
   · rcases exists_between (bound x xab hxB) with ⟨r, hfr, hrB⟩
     specialize hf' x xab r hfr
@@ -114,7 +114,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
       (hasDerivWithinAt_iff_tendsto_slope' <| lt_irrefl x).1 (hB' x xab).Ioi_of_Ici
         (Ioi_mem_nhds hrB)
     obtain ⟨z, hfz, hzB, hz⟩ : ∃ z, slope f x z < r ∧ r < slope B x z ∧ z ∈ Ioc x y :=
-      (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
+      hf'.and_eventually (HB.and (Ioc_mem_nhdsGT hy)) |>.exists
     refine ⟨z, ?_, hz⟩
     have := (hfz.trans hzB).le
     rwa [slope_def_field, slope_def_field, div_le_div_iff_of_pos_right (sub_pos.2 hz.1), hxB,
@@ -344,7 +344,7 @@ theorem norm_image_sub_le_of_norm_deriv_le_segment' {f' : ℝ → E} {C : ℝ}
   refine
     norm_image_sub_le_of_norm_deriv_right_le_segment (fun x hx => (hf x hx).continuousWithinAt)
       (fun x hx => ?_) bound
-  exact (hf x <| Ico_subset_Icc_self hx).mono_of_mem_nhdsWithin (Icc_mem_nhdsWithin_Ici hx)
+  exact (hf x <| Ico_subset_Icc_self hx).mono_of_mem_nhdsWithin (Icc_mem_nhdsGE_of_mem hx)
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
 bounded by `C` satisfies `‖f x - f a‖ ≤ C * (x - a)`, `derivWithin`
@@ -404,13 +404,12 @@ theorem eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
     ∀ y ∈ Icc a b, f y = g y := by
   have A : ∀ y ∈ Ico a b, HasDerivWithinAt f (derivWithin f (Icc a b) y) (Ici y) y := fun y hy =>
     (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem_nhdsWithin
-    (Icc_mem_nhdsWithin_Ici hy)
+    (Icc_mem_nhdsGE_of_mem hy)
   have B : ∀ y ∈ Ico a b, HasDerivWithinAt g (derivWithin g (Icc a b) y) (Ici y) y := fun y hy =>
     (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem_nhdsWithin
-    (Icc_mem_nhdsWithin_Ici hy)
-  exact
-    eq_of_has_deriv_right_eq A (fun y hy => (hderiv hy).symm ▸ B y hy) fdiff.continuousOn
-      gdiff.continuousOn hi
+    (Icc_mem_nhdsGE_of_mem hy)
+  exact eq_of_has_deriv_right_eq A (fun y hy => (hderiv hy).symm ▸ B y hy) fdiff.continuousOn
+    gdiff.continuousOn hi
 
 end
 
@@ -791,8 +790,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
     rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self not_mem_Ioi_self] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
-      rw [(nhdsWithin_Ioi_basis a).eventually_iff]
-      rw [(nhdsWithin_Ioi_basis a).tendsto_left_iff] at hf
+      rw [(nhdsGT_basis a).eventually_iff]
+      rw [(nhdsGT_basis a).tendsto_left_iff] at hf
       obtain ⟨b, hab, hb⟩ := hf (Ioi (max (derivWithin f (Ioi a) a + 1) 0)) (Ioi_mem_atTop _)
       refine ⟨b, hab, fun x hx z hz => ?_⟩
       simp only [MapsTo, mem_Ioo, mem_Ioi, and_imp] at hb
@@ -852,8 +851,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
   have hderiv : deriv f' =ᶠ[𝓝[>] (-a)] -(deriv f ∘ Neg.neg) := by
     rw [atBot_basis.tendsto_right_iff] at hf
     specialize hf (-1) trivial
-    rw [(nhdsWithin_Iio_basis a).eventually_iff] at hf
-    rw [EventuallyEq, (nhdsWithin_Ioi_basis (-a)).eventually_iff]
+    rw [(nhdsLT_basis a).eventually_iff] at hf
+    rw [EventuallyEq, (nhdsGT_basis (-a)).eventually_iff]
     obtain ⟨b, hb₁, hb₂⟩ := hf
     refine ⟨-b, by linarith, fun x hx => ?_⟩
     simp only [Pi.neg_apply, Function.comp_apply]
@@ -865,7 +864,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
     exact ne_of_lt (by linarith)
   have hmain : ¬ DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
     refine not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi f' <| Tendsto.congr' hderiv.symm ?_
-    refine Tendsto.comp (g := -deriv f) ?_ tendsto_neg_nhdsWithin_Ioi_neg
+    refine Tendsto.comp (g := -deriv f) ?_ tendsto_neg_nhdsGT_neg
     exact Tendsto.comp (g := Neg.neg) tendsto_neg_atBot_atTop hf
   intro h
   have : DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
@@ -1009,9 +1008,6 @@ lemma strictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictMonoOn_of_deriv_pos hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated (since := "2024-03-02")]
-alias StrictMonoOn_of_hasDerivWithinAt_pos := strictMonoOn_of_hasDerivWithinAt_pos
-
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
 lemma strictMono_of_hasDerivAt_pos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
@@ -1081,17 +1077,11 @@ lemma strictAntiOn_of_hasDerivWithinAt_neg {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictAntiOn_of_deriv_neg hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated (since := "2024-03-02")]
-alias StrictAntiOn_of_hasDerivWithinAt_pos := strictAntiOn_of_hasDerivWithinAt_neg
-
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
 lemma strictAnti_of_hasDerivAt_neg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : ∀ x, f' x < 0) : StrictAnti f :=
   strictAnti_of_deriv_neg fun x ↦ by rw [(hf _).deriv]; exact hf' _
-
-@[deprecated (since := "2024-03-02")]
-alias strictAnti_of_hasDerivAt_pos := strictAnti_of_hasDerivAt_neg
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `f'` is nonpositive, then

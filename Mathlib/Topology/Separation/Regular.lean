@@ -113,23 +113,14 @@ theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure 
 theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 
-@[deprecated (since := "2024-02-28")]
-alias RegularSpace.ofLift'_closure := RegularSpace.of_lift'_closure
-
 theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
     RegularSpace X :=
   .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
 
-@[deprecated (since := "2024-02-28")]
-alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
-
 theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
     (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
-
-@[deprecated (since := "2024-02-28")]
-alias RegularSpace.ofExistsMemNhdsIsClosedSubset := RegularSpace.of_exists_mem_nhds_isClosed_subset
 
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=

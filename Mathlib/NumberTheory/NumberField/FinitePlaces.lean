@@ -84,6 +84,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
   nontrivial' := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use (x : K)
+    dsimp [adicCompletion]
     rw [valuedAdicCompletion_eq_valuation' v (x : K)]
     constructor
     · simpa only [ne_eq, map_eq_zero, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
@@ -110,10 +111,11 @@ lemma toNNReal_Valued_eq_vadicAbv (x : K) :
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
-  simp only [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom, MonoidWithZeroHom.coe_mk,
-    ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom, RingHom.coe_mk, MonoidHom.coe_mk,
-    OneHom.coe_mk, Valued.valuedCompletion_apply, toNNReal_Valued_eq_vadicAbv]
+  simp only [adicCompletion, NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom,
+    RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Valued.valuedCompletion_apply,
+    toNNReal_Valued_eq_vadicAbv]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
@@ -178,7 +180,7 @@ theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
     ‖embedding (maximalIdeal w) x‖ = w x := by
   conv_rhs => rw [← mk_maximalIdeal w, apply]
 
-theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
+theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.1.pos_iff
 
 @[simp]
 theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ ↔ v₁ = v₂ := by
@@ -198,11 +200,19 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by
   rw [← mk_eq_iff, mk_maximalIdeal]
 
+/-- The equivalence between finite places and maximal ideals. -/
+noncomputable def equivHeightOneSpectrum :
+    FinitePlace K ≃ HeightOneSpectrum (𝓞 K) where
+  toFun := maximalIdeal
+  invFun := mk
+  left_inv := mk_maximalIdeal
+  right_inv := maximalIdeal_mk
+
 lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective :=
-  Function.HasLeftInverse.injective ⟨mk, mk_maximalIdeal⟩
+  equivHeightOneSpectrum.injective
 
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
-  maximalIdeal_injective.eq_iff
+  equivHeightOneSpectrum.injective.eq_iff
 
 theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
@@ -234,3 +244,30 @@ theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
 end FinitePlace
 
 end NumberField
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable {K : Type*} [Field K] [NumberField K]
+
+open NumberField FinitePlace
+
+lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
+    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
+  have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
+    show v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
+    exact (Equiv.apply_symm_apply _ v).symm
+  convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
+
+open Ideal in
+lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
+    ‖(embedding v) x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
+  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
+    WithZeroMulInt.toNNReal_neg_apply _
+      (v.valuation.ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
+  push_cast
+  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_norm v)).ne']
+  norm_cast
+  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_norm v).ne')]
+  simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
+
+end IsDedekindDomain.HeightOneSpectrum
