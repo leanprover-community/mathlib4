@@ -3010,6 +3010,7 @@ import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
+import Mathlib.Data.SetLike.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Sigma.Basic
