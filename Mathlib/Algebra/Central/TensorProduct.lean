@@ -78,7 +78,7 @@ lemma left_of_tensor (B C : Type v)
       exact Module.Flat.TensorProduct.flip_mk_injective _ one_ne_zero h12,
     f_surj⟩).symm
   have e2 := Subalgebra.equivOfEq _ _ eq |>.trans <| Algebra.botEquiv K _
-  have ee: Subalgebra.center K B ≃ₐ[K] K := e.symm.trans e2
+  have ee : Subalgebra.center K B ≃ₐ[K] K := e.symm.trans e2
   exact ⟨le_of_eq <| Subalgebra.eq_of_le_of_finrank_eq (OrderBot.bot_le _)
     (by rw [ee.toLinearEquiv.finrank_eq, Subalgebra.finrank_bot, Module.finrank_self])|>.symm⟩
 
