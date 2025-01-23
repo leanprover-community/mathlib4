@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Down-compressions
@@ -212,7 +212,7 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
--- Porting note: had to open this
+
 open FinsetFamily
 
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the

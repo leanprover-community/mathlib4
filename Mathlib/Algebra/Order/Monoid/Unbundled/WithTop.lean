@@ -73,6 +73,14 @@ theorem coe_lt_one [LT α] {a : α} : (a : WithTop α) < 1 ↔ a < 1 :=
 protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 : WithTop β) :=
   rfl
 
+@[to_additive]
+theorem map_eq_one_iff {α} {f : α → β} {v : WithTop α} [One β] :
+    WithTop.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+@[to_additive]
+theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
+    1 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := some_eq_map_iff
+
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
@@ -227,6 +235,17 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     a + c < b + d :=
   (WithTop.add_lt_add_right hc hab).trans_le <| add_le_add_left hcd _
 
+lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (ha : a ≠ ⊤) : AddLECancellable a := fun _b _c ↦ WithTop.le_of_add_le_add_left ha
+
+lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
+
+lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable a ↔ a ≠ ⊤ where
+  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
+  mpr := addLECancellable_of_ne_top
+
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
 @[simp]
 protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
@@ -305,19 +324,36 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
 @[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : α) : WithTop α) = OfNat.ofNat n := rfl
+    ((ofNat(n) : α) : WithTop α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
-    (m : WithTop α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+    (m : WithTop α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
 @[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
-    no_index (OfNat.ofNat n) = (m : WithTop α) ↔ OfNat.ofNat n = m :=
+    ofNat(n) = (m : WithTop α) ↔ ofNat(n) = m :=
   coe_eq_coe
-@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithTop α) ≠ ⊤ :=
+@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : WithTop α) ≠ ⊤ :=
   natCast_ne_top n
-@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ no_index (OfNat.ofNat n) :=
+@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ ofNat(n) :=
   top_ne_natCast n
+
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+    WithTop.map f (ofNat(n) : WithTop α) = f (ofNat(n)) := map_coe f n
+
+@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
+    WithTop.map f (n : WithTop α) = f n := map_coe f n
+
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+    a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+    ofNat(n) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithTop β} :
+    a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithTop β} :
+    n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 end AddMonoidWithOne
 
@@ -434,6 +470,14 @@ theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 
+@[to_additive]
+theorem map_eq_one_iff {α} {f : α → β} {v : WithBot α} [One β] :
+    WithBot.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+@[to_additive]
+theorem one_eq_map_iff {α} {f : α → β} {v : WithBot α} [One β] :
+    1 = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := some_eq_map_iff
+
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
@@ -488,19 +532,36 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 @[deprecated (since := "2024-04-05")] alias nat_ne_bot := natCast_ne_bot
 @[deprecated (since := "2024-04-05")] alias bot_ne_nat := bot_ne_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : α) : WithBot α) = OfNat.ofNat n := rfl
+    ((ofNat(n) : α) : WithBot α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
-    (m : WithBot α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+    (m : WithBot α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
 @[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
-    no_index (OfNat.ofNat n) = (m : WithBot α) ↔ OfNat.ofNat n = m :=
+    ofNat(n) = (m : WithBot α) ↔ ofNat(n) = m :=
   coe_eq_coe
-@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithBot α) ≠ ⊥ :=
+@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : WithBot α) ≠ ⊥ :=
   natCast_ne_bot n
-@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ no_index (OfNat.ofNat n) :=
+@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ ofNat(n) :=
   bot_ne_natCast n
+
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+    WithBot.map f (ofNat(n) : WithBot α) = f ofNat(n) := map_coe f n
+
+@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
+    WithBot.map f (n : WithBot α) = f n := map_coe f n
+
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+    a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+    ofNat(n) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithBot β} :
+    a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
+    n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 end AddMonoidWithOne
 

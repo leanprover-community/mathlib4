@@ -47,7 +47,7 @@ analytic.
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Classical Topology
+open scoped Topology
 open Set Filter Asymptotics NNReal ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
@@ -389,8 +389,6 @@ section
 
 /-! We study what happens when we change the origin of a finite formal multilinear series `p`. The
 main point is that the new series `p.changeOrigin x` is still finite, with the same bound. -/
-
-variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
 `p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/

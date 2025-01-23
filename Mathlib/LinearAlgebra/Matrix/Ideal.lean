@@ -4,21 +4,26 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Wojciech Nawrocki
 -/
 import Mathlib.Data.Matrix.Basis
+import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Ideals in a matrix ring
 
 This file defines left (resp. two-sided) ideals in a matrix semiring (resp. ring)
 over left (resp. two-sided) ideals in the base semiring (resp. ring).
+We also characterize Jacobson radicals of ideals in such rings.
 
 ## Main results
 
 * `TwoSidedIdeal.equivMatricesOver` and `TwoSidedIdeal.orderIsoMatricesOver`
   establish an order isomorphism between two-sided ideals in $R$ and those in $Mₙ(R)$.
+* `TwoSidedIdeal.jacobson_matricesOver` shows that $J(Mₙ(I)) = Mₙ(J(I))$
+  for any two-sided ideal $I ≤ R$.
 -/
 
-/-! ### Left ideals in a matrix ring -/
+/-! ### Left ideals in a matrix semiring -/
 
 namespace Ideal
 open Matrix
@@ -63,6 +68,46 @@ theorem matricesOver_bot : (⊥ : Ideal R).matricesOver n = ⊥ := by
 @[simp]
 theorem matricesOver_top : (⊤ : Ideal R).matricesOver n = ⊤ := by
   ext; simp
+
+end Ideal
+
+/-! ### Jacobson radicals of left ideals in a matrix ring -/
+
+namespace Ideal
+open Matrix
+
+variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
+
+/-- A standard basis matrix is in $J(Mₙ(I))$
+as long as its one possibly non-zero entry is in $J(I)$. -/
+theorem stdBasisMatrix_mem_jacobson_matricesOver (I : Ideal R) :
+    ∀ x ∈ I.jacobson, ∀ (i j : n), stdBasisMatrix i j x ∈ (I.matricesOver n).jacobson := by
+  -- Proof generalized from example 8 in
+  -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
+  simp_rw [Ideal.mem_jacobson_iff]
+  intro x xIJ p q M
+  have ⟨z, zMx⟩ := xIJ (M q p)
+  let N : Matrix n n R := 1 - ∑ i, stdBasisMatrix i q (if i = q then 1 - z else (M i p)*x*z)
+  use N
+  intro i j
+  obtain rfl | qj := eq_or_ne q j
+  · by_cases iq : i = q
+    · simp [iq, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+    · convert I.mul_mem_left (-M i p * x) zMx
+      simp [iq, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+      simp [sub_add, mul_add, mul_sub, mul_assoc]
+  · simp [N, qj, sum_apply, mul_apply]
+
+/-- For any left ideal $I ≤ R$, we have $Mₙ(J(I)) ≤ J(Mₙ(I))$. -/
+theorem matricesOver_jacobson_le (I : Ideal R) :
+    I.jacobson.matricesOver n ≤ (I.matricesOver n).jacobson := by
+  intro M MI
+  rw [matrix_eq_sum_stdBasisMatrix M]
+  apply sum_mem
+  intro i _
+  apply sum_mem
+  intro j _
+  apply stdBasisMatrix_mem_jacobson_matricesOver I _ (MI i j)
 
 end Ideal
 
@@ -122,7 +167,7 @@ theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
     asIdeal (I.matricesOver n) = (asIdeal I).matricesOver n := by
   ext; simp
 
-variable {n : Type*} [Fintype n] [DecidableEq n]
+variable {n : Type*} [Fintype n]
 
 /--
 Two-sided ideals in $R$ correspond bijectively to those in $Mₙ(R)$.
@@ -138,12 +183,15 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
     (by rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩; exact ⟨x + y, J.add_mem hx hy, rfl⟩)
     (by rintro _ ⟨x, hx, rfl⟩; exact ⟨-x, J.neg_mem hx, rfl⟩)
     (by
+      classical
       rintro x _ ⟨y, hy, rfl⟩
       exact ⟨diagonal (fun _ ↦ x) * y, J.mul_mem_left _ _ hy, by simp⟩)
     (by
+      classical
       rintro _ y ⟨x, hx, rfl⟩
       exact ⟨x * diagonal (fun _ ↦ y), J.mul_mem_right _ _ hx, by simp⟩)
   right_inv J := SetLike.ext fun x ↦ by
+    classical
     simp only [mem_mk', Set.mem_image, SetLike.mem_coe, mem_matricesOver]
     constructor
     · intro h
@@ -159,7 +207,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
       by_cases hab : a = k ∧ b = l
       · rcases hab with ⟨ha, hb⟩
         subst ha hb
-        simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
+        simp only [StdBasisMatrix.apply_same, StdBasisMatrix.mul_right_apply_same,
           StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
         rw [hy2 a b]
       · conv_lhs =>
@@ -199,5 +247,40 @@ def orderIsoMatricesOver (i j : n) : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix 
       simpa using le
     · intro IJ M MI i j
       exact IJ <| MI i j
+
+end TwoSidedIdeal
+
+/-! ### Jacobson radicals of two-sided ideals in a matrix ring -/
+
+namespace TwoSidedIdeal
+open Matrix
+
+variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
+
+private lemma jacobson_matricesOver_le (I : TwoSidedIdeal R) :
+    (I.matricesOver n).jacobson ≤ I.jacobson.matricesOver n := by
+  -- Proof generalized from example 8 in
+  -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
+  intro M Mmem p q
+  rw [sub_zero, mem_jacobson_iff]
+  replace Mmem := mul_mem_right _ _ (stdBasisMatrix q p 1) Mmem
+  rw [mem_jacobson_iff] at Mmem
+  intro y
+  specialize Mmem (y • stdBasisMatrix p p 1)
+  have ⟨N, NxMI⟩ := Mmem
+  use N p p
+  simpa [mul_apply, stdBasisMatrix, ite_and] using NxMI p p
+
+/-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/
+theorem jacobson_matricesOver (I : TwoSidedIdeal R) :
+    (I.matricesOver n).jacobson = I.jacobson.matricesOver n := by
+  apply le_antisymm
+  · apply jacobson_matricesOver_le
+  · show asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
+    simp [asIdeal_jacobson, asIdeal_matricesOver, Ideal.matricesOver_jacobson_le]
+
+theorem matricesOver_jacobson_bot :
+    (⊥ : TwoSidedIdeal R).jacobson.matricesOver n = (⊥ : TwoSidedIdeal (Matrix n n R)).jacobson :=
+  matricesOver_bot n (R := R) ▸ (jacobson_matricesOver _).symm
 
 end TwoSidedIdeal

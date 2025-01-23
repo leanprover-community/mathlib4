@@ -4,14 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Int.ModEq
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Logic.Equiv.Fintype
-
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
@@ -503,14 +495,30 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
 
 lemma cycleOf_ne_one_iff_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
     g.cycleOf x ≠ 1 ↔ g.cycleOf x ∈ g.cycleFactorsFinset := by
-  rw [Equiv.Perm.cycleOf_mem_cycleFactorsFinset_iff, Equiv.Perm.mem_support,
-        ne_eq, Equiv.Perm.cycleOf_eq_one_iff]
+  rw [cycleOf_mem_cycleFactorsFinset_iff, mem_support, ne_eq, cycleOf_eq_one_iff]
 
 theorem mem_cycleFactorsFinset_support_le {p f : Perm α} (h : p ∈ cycleFactorsFinset f) :
     p.support ≤ f.support := by
   rw [mem_cycleFactorsFinset_iff] at h
   intro x hx
   rwa [mem_support, ← h.right x hx, ← mem_support]
+
+lemma support_zpowers_of_mem_cycleFactorsFinset_le {g : Perm α}
+    {c : g.cycleFactorsFinset} (v : Subgroup.zpowers (c : Perm α)) :
+    (v : Perm α).support ≤ g.support := by
+  obtain ⟨m, hm⟩ := v.prop
+  simp only [← hm]
+  exact le_trans (support_zpow_le _ _) (mem_cycleFactorsFinset_support_le c.prop)
+
+theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
+    x ∈ g.support ↔ ∃ c ∈ g.cycleFactorsFinset, x ∈ c.support := by
+  constructor
+  · intro h
+    use g.cycleOf x, cycleOf_mem_cycleFactorsFinset_iff.mpr h
+    rw [mem_support_cycleOf_iff]
+    exact ⟨SameCycle.refl g x, h⟩
+  · rintro ⟨c, hc, hx⟩
+    exact mem_cycleFactorsFinset_support_le hc hx
 
 theorem cycleFactorsFinset_eq_empty_iff {f : Perm α} : cycleFactorsFinset f = ∅ ↔ f = 1 := by
   simpa [cycleFactorsFinset_eq_finset] using eq_comm
@@ -592,6 +600,12 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
     Equiv.Perm.not_mem_support.mp
       (Finset.disjoint_left.mp (Equiv.Perm.Disjoint.disjoint_support hfc) ha)
 
+theorem isCycleOn_support_of_mem_cycleFactorsFinset {g c : Equiv.Perm α}
+    (hc : c ∈ g.cycleFactorsFinset) :
+    IsCycleOn g c.support := by
+  obtain ⟨x, hx⟩ := IsCycle.nonempty_support (mem_cycleFactorsFinset_iff.mp hc).1
+  rw [cycle_is_cycleOf hx hc]
+  exact isCycleOn_support_cycleOf g x
 
 theorem eq_cycleOf_of_mem_cycleFactorsFinset_iff
     (g c : Perm α) (hc : c ∈ g.cycleFactorsFinset) (x : α) :

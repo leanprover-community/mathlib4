@@ -103,7 +103,7 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
+  rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
@@ -135,7 +135,7 @@ namespace WeakFEPair
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
 lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
-  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_zero_atTop
+  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
@@ -261,7 +261,7 @@ lemma hf_modif_int :
     LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
-    refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
+    refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
     refine (continuousAt_const.mul ?_).smul continuousAt_const
     exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)

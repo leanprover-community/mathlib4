@@ -12,9 +12,7 @@ import Mathlib.Data.Nat.Choose.Sum
 # Characteristic of semirings
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
-assert_not_exists orderOf
+assert_not_exists Algebra LinearMap orderOf
 
 open Finset
 
@@ -238,6 +236,15 @@ lemma sub_pow_eq_mul_pow_sub_pow_div_char :
   sub_pow_eq_mul_pow_sub_pow_div_expChar ..
 
 end CharP
+
+lemma Nat.Prime.dvd_add_pow_sub_pow_of_dvd (hpri : p.Prime) {r : R} (h₁ : r ∣ x ^ p)
+    (h₂ : r ∣ p * x) : r ∣ (x + y) ^ p - y ^ p := by
+  rw [add_pow_prime_eq hpri, add_right_comm, add_assoc, add_sub_assoc, add_sub_cancel_right]
+  apply dvd_add h₁ (h₂.trans <| mul_dvd_mul_left _ <| Finset.dvd_sum _)
+  simp only [Finset.mem_Ioo, and_imp, mul_assoc]
+  intro i hi0 _
+  exact dvd_mul_of_dvd_left (dvd_rfl.pow hi0.ne') _
+
 end CommRing
 
 
@@ -265,6 +272,10 @@ variable (R) [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
+
+lemma prime_ringChar : Nat.Prime (ringChar R) := by
+  apply CharP.char_prime_of_ne_zero R
+  exact CharP.ringChar_ne_zero_of_finite R
 
 end Ring
 end CharP

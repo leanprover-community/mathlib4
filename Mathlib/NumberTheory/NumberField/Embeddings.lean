@@ -6,10 +6,8 @@ Authors: Alex J. Best, Xavier Roblot
 import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.Topology.Instances.Complex
-import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Embeddings of number fields
@@ -260,6 +258,13 @@ open NumberField
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+
+lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) :
+  v x = v.1 x := rfl
+
+@[ext]
+lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+  Subtype.ext <| AbsoluteValue.ext h
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
@@ -551,22 +556,26 @@ section NumberField
 variable [NumberField K]
 
 /-- The number of infinite real places of the number field `K`. -/
-noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
+noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
+
+@[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
 
 /-- The number of infinite complex places of the number field `K`. -/
-noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+
+@[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
 
 theorem card_real_embeddings :
-    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = NrRealPlaces K := Fintype.card_congr mkReal
+    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = nrRealPlaces K := Fintype.card_congr mkReal
 
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
-    Fintype.card (InfinitePlace K) = NrRealPlaces K + NrComplexPlaces K := by
+    Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
   convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
     (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 theorem card_complex_embeddings :
-    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * NrComplexPlaces K := by
+    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w },
      #{φ : {φ //¬ ComplexEmbedding.IsReal φ} | mkComplex φ = w} = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
@@ -583,7 +592,7 @@ theorem card_complex_embeddings :
   · simp_rw [mult, not_isReal_iff_isComplex.mpr hw, ite_false]
 
 theorem card_add_two_mul_card_eq_rank :
-    NrRealPlaces K + 2 * NrComplexPlaces K = finrank ℚ K := by
+    nrRealPlaces K + 2 * nrComplexPlaces K = finrank ℚ K := by
   rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
@@ -591,10 +600,10 @@ theorem card_add_two_mul_card_eq_rank :
 variable {K}
 
 theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
-    NrComplexPlaces K = 0 := by linarith [card_add_two_mul_card_eq_rank K]
+    nrComplexPlaces K = 0 := by linarith [card_add_two_mul_card_eq_rank K]
 
 theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
-    NrRealPlaces K = 1 := by
+    nrRealPlaces K = 1 := by
   have := card_add_two_mul_card_eq_rank K
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
@@ -629,7 +638,7 @@ lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
   letI := w.embedding.toAlgebra
   ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
-    by simp [comap_mk, RingHom.algebraMap_toAlgebra]⟩
+    by simp [this, comap_mk, RingHom.algebraMap_toAlgebra]⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -1042,7 +1051,7 @@ namespace IsPrimitiveRoot
 variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
 
 theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
-    NumberField.InfinitePlace.NrRealPlaces K = 0 := by
+    NumberField.InfinitePlace.nrRealPlaces K = 0 := by
   refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
   rw [NumberField.InfinitePlace.isReal_iff] at hwreal
   let f := w.embedding
@@ -1052,15 +1061,63 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     rw [← Complex.abs_re_eq_abs] at him
-    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
     rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
-    exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+    exact hζ'.ne_one (by omega) <| Complex.ext (by simp [hone]) (by simp [him])
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
       orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
-    linarith
+    omega
 
 end IsPrimitiveRoot
+
+/-!
+
+## The infinite place of the rationals.
+
+-/
+
+namespace Rat
+
+open NumberField
+
+/-- The infinite place of `ℚ`, coming from the canonical map `ℚ → ℂ`. -/
+noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
+
+@[simp]
+lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
+  rw [NumberField.InfinitePlace.coe_apply]
+  obtain ⟨_, _, rfl⟩ := v
+  simp
+
+instance : Subsingleton (InfinitePlace ℚ) where
+  allEq a b := by ext; simp
+
+lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
+  ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
+
+end Rat
+
+/-
+
+## Totally real number fields
+
+-/
+
+namespace NumberField
+
+/-- A number field `K` is totally real if all of its infinite places
+are real. In other words, the image of every ring homomorphism `K → ℂ`
+is a subset of `ℝ`. -/
+class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+  isReal : ∀ v : InfinitePlace K, v.IsReal
+
+instance : IsTotallyReal ℚ where
+  isReal v := by
+    rw [Subsingleton.elim v Rat.infinitePlace]
+    exact Rat.isReal_infinitePlace
+
+end NumberField

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Directed
+import Mathlib.Order.BoundedOrder.Monotone
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -19,9 +20,9 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v w x
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
+variable {α : Type u} {γ : Type v}
 
 section
 
@@ -117,6 +118,12 @@ abbrev IsGreatest.orderTop (h : IsGreatest s a) :
     OrderTop s where
   top := ⟨a, h.1⟩
   le_top := Subtype.forall.2 h.2
+
+theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t a := by
+  rw [IsLUB, IsLUB, h]
+
+theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t a := by
+  rw [IsGLB, IsGLB, h]
 
 /-!
 ### Monotonicity

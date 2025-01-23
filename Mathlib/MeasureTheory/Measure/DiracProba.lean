@@ -3,7 +3,7 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.CompletelyRegular
+import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 * `diracProba`: The Dirac delta mass at a point as a probability measure.
 
 ## Main results
-* `embedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
+* `isEmbedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
   then the mapping that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
   `X ↪ ProbabilityMeasure X`.
 
@@ -180,9 +180,12 @@ noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X] :
 /-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
 that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
-theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
-    Embedding (fun (x : X) ↦ diracProba x) :=
-  embedding_subtype_val.comp diracProbaHomeomorph.embedding
+theorem isEmbedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
+    IsEmbedding (fun (x : X) ↦ diracProba x) :=
+  IsEmbedding.subtypeVal.comp diracProbaHomeomorph.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_diracProba := isEmbedding_diracProba
 
 end embed_to_probabilityMeasure
 
