@@ -160,18 +160,3 @@ def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} {F G : Type*} [Monoid R
   invFun _ := Invertible.map f _
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
-
-namespace Pi
-
-variable {ι : Type*} {f : ι → Type*}
-
-/-- Construct a unit in a product monoid from a unit in each component. -/
-def units [∀ i, Monoid (f i)] (x : ∀ i, (f i)ˣ) : (∀ i, f i)ˣ :=
-  ⟨fun i ↦ x i, fun i ↦ ↑(x i)⁻¹, by ext; simp, by ext; simp⟩
-
-theorem isUnit_iff [∀ i, Monoid (f i)] {x : ∀ i, f i} : IsUnit x ↔ ∀ i, IsUnit (x i) := by
-  refine ⟨?_, fun h ↦ ⟨units fun i ↦ (h i).unit, rfl⟩⟩
-  rintro ⟨x, rfl⟩
-  exact fun i ↦ ⟨⟨x.1 i, x.inv i, congr_fun x.val_inv i, congr_fun x.inv_val i⟩, rfl⟩
-
-end Pi
