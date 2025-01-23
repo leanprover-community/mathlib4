@@ -1,6 +1,5 @@
 # this file will be run by the remote sage server, so should not import local files.
 import json
-from typing import Callable
 
 def q_arr(coeff: QQ) -> list[int]:
     return [int(coeff.numerator()), int(coeff.denominator())]
