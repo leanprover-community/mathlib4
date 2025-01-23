@@ -209,12 +209,13 @@ namespace PMF
 
 variable {α : Type*}
 
-open scoped Classical NNReal ENNReal
+open scoped NNReal ENNReal
 
 section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
+  classical
   refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
@@ -225,6 +226,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
 
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
+open scoped Classical in
 @[simp]
 theorem uniformOfFinset_apply (a : α) :
     uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
@@ -249,6 +251,7 @@ section Measure
 
 variable (t : Set α)
 
+open scoped Classical in
 @[simp]
 theorem toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = (s.filter (· ∈ t)).card / s.card :=
@@ -266,6 +269,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     _ = (s.filter (· ∈ t)).card / s.card := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
+open scoped Classical in
 @[simp]
 theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (uniformOfFinset s hs).toMeasure t = (s.filter (· ∈ t)).card / s.card :=
@@ -298,11 +302,13 @@ section Measure
 
 variable (s : Set α)
 
+open scoped Classical in
 theorem toOuterMeasure_uniformOfFintype_apply :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
   rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply,Fintype.card_ofFinset]
   rfl
 
+open scoped Classical in
 theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
   simp [uniformOfFintype, hs]
@@ -313,6 +319,7 @@ end UniformOfFintype
 
 section OfMultiset
 
+open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
@@ -334,14 +341,17 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
 
 variable {s : Multiset α} (hs : s ≠ 0)
 
+open scoped Classical in
 @[simp]
 theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
   rfl
 
+open scoped Classical in
 @[simp]
 theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
   Set.ext (by simp [mem_support_iff, hs])
 
+open scoped Classical in
 theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
   simp
 
@@ -353,6 +363,7 @@ section Measure
 
 variable (t : Set α)
 
+open scoped Classical in
 @[simp]
 theorem toOuterMeasure_ofMultiset_apply :
     (ofMultiset s hs).toOuterMeasure t =
@@ -361,6 +372,7 @@ theorem toOuterMeasure_ofMultiset_apply :
   refine tsum_congr fun x => ?_
   by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
 
+open scoped Classical in
 @[simp]
 theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) :=
