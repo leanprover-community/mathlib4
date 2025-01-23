@@ -223,7 +223,7 @@ theorem Indep.cardRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cardRk I :=
   (M.cardRk_le_cardinalMk I).antisymm' (hI.basis_self.cardinalMk_le_cardRk)
 
 @[simp] theorem cardRk_map_eq {α β : Type u} {f : α → β} {X : Set α} (M : Matroid α)
-    [CardinalRank M] (hf : InjOn f M.E) (hX : X ⊆ M.E := by aesop_mat) :
+    (hf : InjOn f M.E) (hX : X ⊆ M.E := by aesop_mat) :
     (M.map f hf).cardRk (f '' X) = M.cardRk X := by
   simp_rw [le_antisymm_iff, cardRk_le_iff, basis'_iff_basis hX,
     basis'_iff_basis (show f '' X ⊆ (M.map f hf).E from image_mono hX)]
