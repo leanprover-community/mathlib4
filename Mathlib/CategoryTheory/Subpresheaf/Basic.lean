@@ -93,6 +93,43 @@ instance : CompleteLattice (Subpresheaf F) where
       map := by simp }
   le_top _ _ := le_top
 
+section
+
+lemma le_def (S T : Subpresheaf F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := Iff.rfl
+
+variable (F)
+
+@[simp] lemma top_obj (i : Cᵒᵖ) : (⊤ : Subpresheaf F).obj i = ⊤ := rfl
+@[simp] lemma bot_obj (i : Cᵒᵖ) : (⊥ : Subpresheaf F).obj i = ⊥ := rfl
+
+variable {F}
+
+lemma sSup_obj (S : Set (Subpresheaf F)) (U : Cᵒᵖ) :
+    (sSup S).obj U = sSup (Set.image (fun T ↦ T.obj U) S) := rfl
+
+@[simp]
+lemma iSup_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
+    (⨆ i, S i).obj U = iSup (fun i ↦ (S i).obj U) := by
+  simp [iSup, sSup_obj]
+
+@[simp]
+lemma max_obj (S T : Subpresheaf F) (i : Cᵒᵖ) :
+    (S ⊔ T).obj i = S.obj i ∪ T.obj i := rfl
+
+@[simp]
+lemma min_obj (S T : Subpresheaf F) (i : Cᵒᵖ) :
+    (S ⊓ T).obj i = S.obj i ∩ T.obj i := rfl
+
+lemma max_min (S₁ S₂ T : Subpresheaf F) :
+    (S₁ ⊔ S₂) ⊓ T = (S₁ ⊓ T) ⊔ (S₂ ⊓ T) := by
+  aesop
+
+lemma iSup_min {ι : Type*} (S : ι → Subpresheaf F) (T : Subpresheaf F) :
+    (⨆ i, S i) ⊓ T = ⨆ i, S i ⊓ T := by
+  aesop
+
+end
+
 instance : Nonempty (Subpresheaf F) :=
   inferInstance
 
