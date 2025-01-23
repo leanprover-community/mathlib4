@@ -3,8 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
