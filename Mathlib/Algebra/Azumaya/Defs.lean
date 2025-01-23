@@ -53,6 +53,6 @@ lemma AlgHom.mulLeftRight_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
   simp [TensorProduct.Algebra.moduleAux, ← mul_assoc]
 
 /-- An Azumaya algebra is a finitely generated, projective and faithful R-algebra where
-  `AlgHom.mulLeftRight` is an isomorphism. -/
+  `AlgHom.mulLeftRight R A : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A` is an isomorphism. -/
 class IsAzumaya extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A : Prop where
     bij : Function.Bijective <| AlgHom.mulLeftRight R A
