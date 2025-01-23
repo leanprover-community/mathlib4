@@ -102,8 +102,8 @@ theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
     positivity
   by_cases hfint : Integrable f μ
   swap
-  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      mul_zero]
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const,
+      Algebra.id.smul_eq_mul, mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
   · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
@@ -127,8 +127,8 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
     positivity
   by_cases hfint : Integrable f μ
   swap
-  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      mul_zero]
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const,
+      Algebra.id.smul_eq_mul, mul_zero]
     positivity
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator (hnm _ hs)]
