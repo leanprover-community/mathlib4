@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Smooth manifolds with nice boundary
@@ -233,6 +234,34 @@ lemma IsClosedEmbedding.sum_elim
   exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
 
 -- missing lemma: mfderiv of Prod.map (know it's smooth)
+-- mathlib has versions for Prod.mk, also with left and right constant
+
+section missing
+
+variable  {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
+
+variable {E E' F F' : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+variable {H H' H'' H''' : Type*} [TopologicalSpace H] [TopologicalSpace H']
+  [TopologicalSpace H''] [TopologicalSpace H''']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
+  {J : ModelWithCorners 𝕜 F H''} {J' : ModelWithCorners 𝕜 F' H'''}
+variable {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [TopologicalSpace M'] [ChartedSpace H' M']
+  [TopologicalSpace N] [ChartedSpace H'' N] [TopologicalSpace N'] [ChartedSpace H''' N']
+  {f : M → N} {g : M' → N'} {x : M} {x' : M'}
+
+-- #check MDifferentiable.prod_map
+
+lemma mfderiv_prod_map
+    (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
+    mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
+    = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := sorry
+
+-- and variations for within, etc
+
+end missing
 
 variable (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
@@ -246,8 +275,14 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
   -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
   isSmooth := ContMDiff.prod_map contMDiff_id bd.isSmooth
-  -- add a predicate "IsImmersion", prove some basic API and show Prod.map respects this!
-  isImmersion x := sorry -- TODO!
+  -- TODO: tweak this definition, by demanding this only for 1 ≤ k
+  isImmersion x := by
+    have : (1 : WithTop ℕ∞) ≤ k := sorry
+    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.isSmooth x.2).mdifferentiableAt this)]
+    apply Function.Injective.prodMap
+    · rw [mfderiv_id]
+      exact fun ⦃a₁ a₂⦄ a ↦ a
+    · exact bd.isImmersion _
   range_eq_boundary := by
     rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left, range_id]
     congr
@@ -264,7 +299,13 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   f := Prod.map bd.f id
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
   isSmooth := ContMDiff.prod_map bd.isSmooth contMDiff_id
-  isImmersion x := sorry -- TODO!
+  isImmersion x := by
+    have : (1 : WithTop ℕ∞) ≤ k := sorry
+    rw [mfderiv_prod_map ((bd.isSmooth x.1).mdifferentiableAt this) mdifferentiableAt_id]
+    apply Function.Injective.prodMap
+    · exact bd.isImmersion _
+    · rw [mfderiv_id]
+      exact fun ⦃a₁ a₂⦄ a ↦ a
   range_eq_boundary := by
     rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_right, range_id]
     congr
@@ -366,11 +407,19 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
     · let x := p.getLeft h
       rw [Sum.eq_left_getLeft_of_isLeft h]
       -- lemma: f: M → N, g: M' → N and x ∈ M, then
+      rw [MDifferentiableAt.mfderiv_prod]
+      · sorry -- injectivity
+      · -- argue: f coincides with the function which always does the same, then use prod
+        have : MDifferentiableAt I (I.prod (𝓡∂ 1)) ((·, ⊥): M → M × (Set.Icc (0 :ℝ) 1)) x :=
+          mdifferentiableAt_id.prod_mk mdifferentiableAt_const
+        -- actually, want a more general lemma: Sum.elim should be MDifferentiableAt each point
+        -- if the individual branches are
+        sorry --apply MDifferentiableAt.congr_of_eventuallyEq this
+        -- then argue these are EventuallyEq, so we're fine
       -- mfderiv I J f x "is" mfderiv I J (Sum.elim f g) (.inl x)
-      -- remaining detail: id has injective differential
       have : Injective (mfderiv I (I.prod (𝓡∂ 1)) ((·, ⊥) : M → M × (Set.Icc (0 : ℝ) 1)) x) := by
-        -- is essentially id, so should work...
-        sorry
+        rw [mfderiv_prod_left]
+        apply LinearMap.inl_injective
       sorry
     · let x := p.getRight (Sum.not_isLeft.mp h)
       rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
