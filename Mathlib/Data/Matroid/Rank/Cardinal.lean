@@ -32,7 +32,7 @@ both for itself and all its minors.
 
 It is not the case that all matroids are `CardinalRank`,
 since the equicardinality of bases in general matroids is independent of ZFC
-(see the docstring of `Data.Matroid.Basic`).
+(see the module docstring of `Mathlib.Data.Matroid.Basic`).
 Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
 only if they are weakened by replacing `Cardinal.mk`
 with the cruder `ℕ∞`-valued `Set.encard`; see, for example, `Matroid.Base.encard_diff_comm`.
