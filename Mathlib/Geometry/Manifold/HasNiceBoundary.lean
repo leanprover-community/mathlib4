@@ -147,14 +147,15 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isSmooth := sorry
   range_eq_boundary := sorry
 
+-- TODO: only interesting statement to prove below
+@[fun_prop]
+lemma Continuous.foo {X : Type*} [TopologicalSpace X] :
+    Continuous (fun p ↦ p.1.casesOn (Sum.inl p.2) (Sum.inr p.2) : Bool × X → X ⊕ X) := by
+  sorry
+
 def Homeomorph.boolProdEquivSum (X : Type*) [TopologicalSpace X] : Bool × X ≃ₜ X ⊕ X where
   toEquiv := Equiv.boolProdEquivSum X
-  continuous_toFun := by
-    letI f : Bool × X → X ⊕ X := fun p ↦ p.1.casesOn (Sum.inl p.2) (Sum.inr p.2)
-    show Continuous f
-    unfold f
-    -- only interesting statement to prove
-    sorry --
+  continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
 
 def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
@@ -178,7 +179,52 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
 --   isSmooth := sorry
 --   range_eq_boundary := sorry
 
-open Set Topology
+open Set Topology Function
+
+variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [TopologicalSpace W]
+
+-- missing lemma for Topology/Maps/Basic.lean
+lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
+    IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f :=
+  ⟨fun h => ⟨h.continuous, h.injective, h.isClosedMap⟩, fun h =>
+    .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2⟩
+
+-- missing in Topology/Constructions/Sum.lean
+
+-- is this true?
+-- theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg : IsClosedMap g) :
+--     IsClosedMap (Sum.map f g) := by
+--   exact isClosedMap_sum.2 ⟨isClosedMap_inl.comp hf,isClosedMap_inr.comp hg⟩
+
+@[simp]
+theorem isClosedMap_sum_elim {f : X → Z} {g : Y → Z} :
+    IsClosedMap (Sum.elim f g) ↔ IsClosedMap f ∧ IsClosedMap g := by
+  simp only [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
+
+theorem IsClosedMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
+    IsClosedMap (Sum.elim f g) :=
+  isClosedMap_sum_elim.2 ⟨hf, hg⟩
+
+lemma IsOpenEmbedding.sum_elim
+    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : X → Z} {g : Y → Z} (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g)
+    (h : Injective (Sum.elim f g)):
+    IsOpenEmbedding (Sum.elim f g) := by
+  rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
+  obtain ⟨hcont, hinj, hopenEmb⟩ := hf
+  obtain ⟨hcont', hinj', hopenEmb'⟩ := hg
+  exact ⟨by fun_prop, h, hopenEmb.sum_elim hopenEmb'⟩
+
+lemma IsClosedEmbedding.sum_elim
+    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : X → Z} {g : Y → Z} (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g)
+    (h : Injective (Sum.elim f g)) :
+    IsClosedEmbedding (Sum.elim f g) := by
+  rw [isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
+  obtain ⟨hcont, hinj, hClosedEmb⟩ := hf
+  obtain ⟨hcont', hinj', hClosedEmb'⟩ := hg
+  exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
 
 variable (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
@@ -222,7 +268,11 @@ lemma BoundaryManifoldData.prod_of_boundaryless_right_model
     (bd : BoundaryManifoldData M I k) [BoundarylessManifold J N] :
   (BoundaryManifoldData.prod_of_boundaryless_right N J bd).I₀ = bd.I₀.prod J := rfl
 
-/-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
+/-- If `M` is an `n`-dimensional `C^k`-manifold modelled on finite-dimensional Euclidean half-space,
+its boundary is an `n-1`-manifold.
+TODO: this is not strong enough; also need that M has boundary captured by the boundary
+(i.e., modelling a boundaryless manifold on the half-space should be excluded)
+
 Proving this requires knowing homology groups of spheres (or similar). -/
 -- TODO: also prove that the boundary has dimension one lower
 def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
@@ -253,40 +303,41 @@ lemma boundary_product {x y : ℝ} [Fact (x < y)] [BoundarylessManifold I M] :
   have : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by rw [boundary_iccChartedSpace]
   rw [I.boundary_of_boundaryless_left, boundary_iccChartedSpace]
 
+variable (k) in
+-- FIXME: delete this, in favour of the boundary data instance on Icc and the product
 noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
     [BoundarylessManifold I M] :
     BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k  where
-  -- FIXME: is this better, or M × Fin 2? In any case, want a diffeo between the latter...
   M₀ := M ⊕ M
   H₀ := H
   E₀ := E
   I₀ := I
-  -- TODO: most elegant way to write this?
-  f := Sum.elim (fun x ↦ (x, ⊥)) (fun x ↦ ⟨x, ⊤⟩)
-  -- This is the hard(est) part; need to think. Certainly a separate lemma.
-  isEmbedding := sorry
+  f := Sum.elim (·, ⊥) (·, ⊤)
+  isEmbedding := by
+    apply IsOpenEmbedding.isEmbedding
+    apply (IsOpenEmbedding.of_continuous_injective_isOpenMap)
+    · fun_prop
+    · intro x y hxy
+      -- cases: different inl or inr means different coords; otherwise use injectivity
+      sorry
+    · apply IsOpenMap.sum_elim
+      all_goals sorry -- should be easy!
   isSmooth := by
-    have : Nonempty (ModelProd H (EuclideanHalfSpace 1)) := by
-      rw [ModelProd]
-      infer_instance
-    exact ContMDiff.sum_elim (contMDiff_id.prod_mk  contMDiff_const)
+    -- future: improving the sum_elim result will make this sorry unnecessary
+    have : Nonempty (ModelProd H (EuclideanHalfSpace 1)) := by rw [ModelProd]; infer_instance
+    exact ContMDiff.sum_elim (contMDiff_id.prod_mk contMDiff_const)
       (contMDiff_id.prod_mk contMDiff_const)
   range_eq_boundary := by
-    rw [boundary_product, Set.Sum.elim_range]
+    simp only [boundary_product, Set.Sum.elim_range, Set.prod, mem_univ, true_and]
     ext x
+    rw [mem_setOf]
     constructor
-    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;>
-        rw [← hx', Set.prod, mem_setOf] <;> tauto
-    · -- Easy, if only slightly tedious. Can this be extracted as a lemma/what's the best statement?
+    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;> rw [← hx'] <;> tauto
+    · -- Can this be simplified?
       intro hx
-      rw [Set.prod, mem_setOf] at hx
-      have h := hx.2
-      simp only [mem_insert_iff, mem_singleton_iff] at h
-      obtain (h | h) := h
-      · left
-        use x.1, by rw [← h]
-      · right
-        use x.1, by rw [← h]
+      simp only [mem_insert_iff, mem_singleton_iff] at hx
+      obtain (h | h) := hx
+      exacts [Or.inl ⟨x.1, by rw [← h]⟩, Or.inr ⟨x.1, by rw [← h]⟩]
 
 #exit
 
