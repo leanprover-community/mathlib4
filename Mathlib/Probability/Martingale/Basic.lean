@@ -98,7 +98,7 @@ protected theorem integrable (hf : Martingale f ℱ μ) (i : ι) : Integrable (f
 
 theorem setIntegral_eq [SigmaFiniteFiltration μ ℱ] (hf : Martingale f ℱ μ) {i j : ι} (hij : i ≤ j)
     {s : Set Ω} (hs : MeasurableSet[ℱ i] s) : ∫ ω in s, f i ω ∂μ = ∫ ω in s, f j ω ∂μ := by
-  rw [← @setIntegral_condExp _ _ _ _ _ (ℱ i) m0 _ _ _ (ℱ.le i) _ (hf.integrable j) hs]
+  rw [← setIntegral_condExp (ℱ.le i) (hf.integrable j) hs]
   refine setIntegral_congr_ae (ℱ.le i s hs) ?_
   filter_upwards [hf.2 i j hij] with _ heq _ using heq.symm
 
@@ -107,17 +107,18 @@ alias set_integral_eq := setIntegral_eq
 
 theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
   refine ⟨hf.adapted.add hg.adapted, fun i j hij => ?_⟩
-  exact (condExp_add (hf.integrable j) (hg.integrable j)).trans ((hf.2 i j hij).add (hg.2 i j hij))
+  exact (condExp_add (hf.integrable j) (hg.integrable j) _).trans
+    ((hf.2 i j hij).add (hg.2 i j hij))
 
 theorem neg (hf : Martingale f ℱ μ) : Martingale (-f) ℱ μ :=
-  ⟨hf.adapted.neg, fun i j hij => (condExp_neg (f j)).trans (hf.2 i j hij).neg⟩
+  ⟨hf.adapted.neg, fun i j hij => (condExp_neg ..).trans (hf.2 i j hij).neg⟩
 
 theorem sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
 theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
   refine ⟨hf.adapted.smul c, fun i j hij => ?_⟩
-  refine (condExp_smul c (f j)).trans ((hf.2 i j hij).mono fun x hx => ?_)
+  refine (condExp_smul ..).trans ((hf.2 i j hij).mono fun x hx => ?_)
   simp only [Pi.smul_apply, hx]
 
 theorem supermartingale [Preorder E] (hf : Martingale f ℱ μ) : Supermartingale f ℱ μ :=
@@ -170,7 +171,7 @@ alias set_integral_le := setIntegral_le
 theorem add [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
-  refine (condExp_add (hf.integrable j) (hg.integrable j)).le.trans ?_
+  refine (condExp_add (hf.integrable j) (hg.integrable j) _).le.trans ?_
   filter_upwards [hf.2.1 i j hij, hg.2.1 i j hij]
   intros
   refine add_le_add ?_ ?_ <;> assumption
@@ -182,7 +183,7 @@ theorem add_martingale [Preorder E] [AddLeftMono E]
 theorem neg [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ) :
     Submartingale (-f) ℱ μ := by
   refine ⟨hf.1.neg, fun i j hij => ?_, fun i => (hf.2.2 i).neg⟩
-  refine EventuallyLE.trans ?_ (condExp_neg (f j)).symm.le
+  refine EventuallyLE.trans ?_ (condExp_neg ..).symm.le
   filter_upwards [hf.2.1 i j hij] with _ _
   simpa
 
@@ -209,7 +210,7 @@ theorem ae_le_condExp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i �
 theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
-  refine EventuallyLE.trans ?_ (condExp_add (hf.integrable j) (hg.integrable j)).symm.le
+  refine EventuallyLE.trans ?_ (condExp_add (hf.integrable j) (hg.integrable j) _).symm.le
   filter_upwards [hf.2.1 i j hij, hg.2.1 i j hij]
   intros
   refine add_le_add ?_ ?_ <;> assumption
@@ -220,7 +221,7 @@ theorem add_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
 
 theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
     Supermartingale (-f) ℱ μ := by
-  refine ⟨hf.1.neg, fun i j hij => (condExp_neg (f j)).le.trans ?_, fun i => (hf.2.2 i).neg⟩
+  refine ⟨hf.1.neg, fun i j hij => (condExp_neg ..).le.trans ?_, fun i => (hf.2.2 i).neg⟩
   filter_upwards [hf.2.1 i j hij] with _ _
   simpa
 
@@ -286,7 +287,7 @@ theorem submartingale_of_condExp_sub_nonneg [IsFiniteMeasure μ] {f : ι → Ω 
     Submartingale f ℱ μ := by
   refine ⟨hadp, fun i j hij => ?_, hint⟩
   rw [← condExp_of_stronglyMeasurable (ℱ.le _) (hadp _) (hint _), ← eventually_sub_nonneg]
-  exact EventuallyLE.trans (hf i j hij) (condExp_sub (hint _) (hint _)).le
+  exact EventuallyLE.trans (hf i j hij) (condExp_sub (hint _) (hint _) _).le
 
 @[deprecated (since := "2025-01-21")]
 alias submartingale_of_condexp_sub_nonneg := submartingale_of_condExp_sub_nonneg
@@ -295,7 +296,7 @@ theorem Submartingale.condExp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartin
     (hij : i ≤ j) : 0 ≤ᵐ[μ] μ[f j - f i|ℱ i] := by
   by_cases h : SigmaFinite (μ.trim (ℱ.le i))
   swap; · rw [condExp_of_not_sigmaFinite (ℱ.le i) h]
-  refine EventuallyLE.trans ?_ (condExp_sub (hf.integrable _) (hf.integrable _)).symm.le
+  refine EventuallyLE.trans ?_ (condExp_sub (hf.integrable _) (hf.integrable _) _).symm.le
   rw [eventually_sub_nonneg,
     condExp_of_stronglyMeasurable (ℱ.le _) (hf.adapted _) (hf.integrable _)]
   exact hf.2.1 i j hij
@@ -332,10 +333,8 @@ variable {F : Type*} [NormedLatticeAddCommGroup F] [NormedSpace ℝ F] [Complete
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
   refine ⟨hf.1.smul c, fun i j hij => ?_, fun i => (hf.2.2 i).smul c⟩
-  refine (condExp_smul c (f j)).le.trans ?_
-  filter_upwards [hf.2.1 i j hij] with _ hle
-  simp_rw [Pi.smul_apply]
-  exact smul_le_smul_of_nonneg_left hle hc
+  filter_upwards [condExp_smul c (f j) (ℱ i), hf.2.1 i j hij] with ω hω hle
+  simpa only [hω, Pi.smul_apply] using smul_le_smul_of_nonneg_left hle hc
 
 theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
@@ -418,7 +417,7 @@ theorem supermartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ} (hadp 
     Supermartingale f 𝒢 μ := by
   rw [← neg_neg f]
   refine (submartingale_nat hadp.neg (fun i => (hint i).neg) fun i =>
-    EventuallyLE.trans ?_ (condExp_neg _).symm.le).neg
+    EventuallyLE.trans ?_ (condExp_neg ..).symm.le).neg
   filter_upwards [hf i] with x hx using neg_le_neg hx
 
 theorem martingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ} (hadp : Adapted 𝒢 f)
@@ -431,7 +430,7 @@ theorem submartingale_of_condExp_sub_nonneg_nat [IsFiniteMeasure μ] {f : ℕ �
     (hf : ∀ i, 0 ≤ᵐ[μ] μ[f (i + 1) - f i|𝒢 i]) : Submartingale f 𝒢 μ := by
   refine submartingale_nat hadp hint fun i => ?_
   rw [← condExp_of_stronglyMeasurable (𝒢.le _) (hadp _) (hint _), ← eventually_sub_nonneg]
-  exact EventuallyLE.trans (hf i) (condExp_sub (hint _) (hint _)).le
+  exact EventuallyLE.trans (hf i) (condExp_sub (hint _) (hint _) _).le
 
 @[deprecated (since := "2025-01-21")]
 alias submartingale_of_condexp_sub_nonneg_nat := submartingale_of_condExp_sub_nonneg_nat
@@ -452,7 +451,7 @@ theorem martingale_of_condExp_sub_eq_zero_nat [IsFiniteMeasure μ] {f : ℕ → 
   refine martingale_iff.2 ⟨supermartingale_of_condExp_sub_nonneg_nat hadp hint fun i => ?_,
     submartingale_of_condExp_sub_nonneg_nat hadp hint fun i => (hf i).symm.le⟩
   rw [← neg_sub]
-  refine (EventuallyEq.trans ?_ (condExp_neg _).symm).le
+  refine (EventuallyEq.trans ?_ (condExp_neg ..).symm).le
   filter_upwards [hf i] with x hx
   simpa only [Pi.zero_apply, Pi.neg_apply, zero_eq_neg]
 
