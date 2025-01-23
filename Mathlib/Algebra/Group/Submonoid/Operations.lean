@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
@@ -994,10 +995,6 @@ section MulOneClass
 variable [MulOneClass M']
 
 @[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
-  SMul.comp _ S.subtype
-
-@[to_additive]
 instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
     (S : Submonoid M') : SMulCommClass S α β :=
   ⟨fun a _ _ => smul_comm (a : M') _ _⟩
@@ -1029,14 +1026,7 @@ end MulOneClass
 
 variable [Monoid M']
 
-/-- The action by a submonoid is the action by the underlying monoid. -/
-@[to_additive
-      "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
-  MulAction.compHom _ S.subtype
-
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
-
 
 end Submonoid
 
