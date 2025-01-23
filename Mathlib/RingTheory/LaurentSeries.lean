@@ -1192,14 +1192,36 @@ abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers (
   ((powerSeriesEquivSubring K).trans (LaurentSeriesRingEquiv K).subringMap).trans
     <| RingEquiv.subringCongr (powerSeries_ext_subring K)
 
-example : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) := by
+instance : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) := by
   unfold adicCompletionIntegers
   apply RingHom.toAlgebra
-  apply RingHom.codRestrict
+  apply ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict
+  intro a
+  simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+    C_apply]
+  simp only [Valuation.mem_valuationSubring_iff]
+  suffices (LaurentSeriesRingEquiv K) (single 0 a) =
+    (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (single 0 a) by
+    rw [this, valuation_compare, val_le_one_iff_eq_coe]
+    use PowerSeries.C K a
+    simp
+  unfold LaurentSeriesRingEquiv
+  generalize single (0 : ℤ) a = f
+  suffices f = ratfuncAdicComplRingEquiv K
+    ((LaurentSeriesPkg K).compare ratfuncAdicComplPkg f) by
+    rw [this, ← RingEquiv.trans_apply]
+    rfl
+  suffices f = ((ratfuncAdicComplPkg.compare (LaurentSeriesPkg K)) ∘
+    ((LaurentSeriesPkg K).compare ratfuncAdicComplPkg)) f by
+      exact this
+  rw [AbstractCompletion.inverse_compare]
+  simp only [C_apply, id_eq]
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `RatFunc K`. -/
-abbrev powerSeriesRingAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (RatFunc K) :=
+abbrev powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (RatFunc K) := by
+  apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
+  intro a
   sorry
 
 end PowerSeries
