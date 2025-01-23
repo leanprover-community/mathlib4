@@ -1,5 +1,4 @@
 import Mathlib.RingTheory.WittVector.PAdicTopology
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.RingTheory.WittVector.Teichmuller
 
 noncomputable section
@@ -16,6 +15,11 @@ open PAdicTopology
 
 def teichmullerSummation : 𝕎 k := ∑' n, (p ^ n : 𝕎 k) * teichmuller p (x n)
 
+theorem summable_teichmullerSummation : Summable (fun n ↦ (p ^ n : 𝕎 k) * teichmuller p (x n)) :=
+    summable_p_pow_mul _
+
+-- teichmullerExpansionAux ℕ → k
+def teichmullerExpansion : 𝕎 k ≃ (ℕ → k) := sorry
 
 end WittVector
 
