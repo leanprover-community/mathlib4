@@ -71,10 +71,7 @@ theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
     ∃ f : Fin p.spanRankNat → M, span R (Set.range f) = p := by
   haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
     rcases h with ⟨s, hs⟩
-    use s
-    constructor
-    · exact Finset.finite_toSet s
-    · exact hs
+    exact ⟨s, ⟨Finset.finite_toSet s, hs⟩⟩
   obtain ⟨⟨s, h₁, h₂⟩, h₃ : h₁.toFinset.card = _⟩ :
     p.spanRankNat ∈ _ := Nat.sInf_mem (Set.range_nonempty _)
   rw [← h₃]
@@ -88,8 +85,8 @@ theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
   let f' :=  Fintype.equivFinOfCardEq temp.symm
   use Subtype.val ∘ f'.symm
   rw [Set.range_comp, Set.range_eq_univ.mpr]
-  · simp_all
-  exact f'.symm.surjective
+  · simpa using h₂
+  · exact f'.symm.surjective
 
 /-- For a finitely generated submodule, its spanRank is less than or equal to n
     if and only if there exists a generating function from fin n -/
@@ -105,30 +102,35 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
     apply le_antisymm
     · rw [Submodule.span_le]
       rintro _ ⟨x, rfl⟩
-      dsimp
+      dsimp only
       split_ifs
       · apply Submodule.subset_span
         exact Set.mem_range_self _
       · exact (span R (Set.range f)).zero_mem
     · rw [Submodule.span_le]
       rintro _ ⟨x, rfl⟩
-      simp
+      simp only [SetLike.mem_coe]
       apply Submodule.subset_span
       rw [fg_iff_spanRank_eq_spanRankNat] at h
       have he : (p.spanRankNat : WithTop Nat) ≤ n := by rwa [h] at e
       use Fin.castLE (ENat.coe_le_coe.mp he) x
-      simp_all [↓reduceDIte]
+      simp_all only [Fin.coe_castLE, Fin.is_lt, dite_true]
       rfl
   · rintro ⟨f, hf⟩
     let s : { s : Set M // s.Finite ∧ span R s = p} :=
       ⟨Set.range f, Set.finite_range f, hf⟩
-    calc p.spanRank
-        ≤ s.2.1.toFinset.card := csInf_le (OrderBot.bddBelow _) (Set.mem_range_self _)
-        _ = (Finset.univ.image f).card := by congr 2; ext; simp; exact Set.mem_range
-        _ ≤ n := by
-          simp [WithTop.coe_le_coe]
-          convert Finset.card_image_le
-          rw [Finset.card_univ, Fintype.card_fin]
+    calc
+      p.spanRank
+      ≤ s.2.1.toFinset.card := csInf_le (OrderBot.bddBelow _) (Set.mem_range_self _)
+      _ = (Finset.univ.image f).card := by
+        congr 2; ext
+        simp only [Set.toFinite_toFinset, Set.mem_toFinset, Finset.mem_image, Finset.mem_univ,
+          true_and]
+        exact Set.mem_range
+      _ ≤ n := by
+        simp only [Nat.cast_le]
+        convert Finset.card_image_le
+        rw [Finset.card_univ, Fintype.card_fin]
 
 /-- An arbitrarily chosen generating family of minimal cardinality. -/
 noncomputable def FG.minGenerator {p : Submodule R M} (h : p.FG) : Fin p.spanRankNat → M :=
