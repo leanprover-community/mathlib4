@@ -148,7 +148,8 @@ lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanRankNat)
   simp_rw [← this]
   exact subset_span (Set.mem_range_self i)
 
-lemma spanRank_eq_zero_iff {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := by
+@[simp]
+lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := by
   constructor
   · intro e
     have H : Submodule.FG I := by
@@ -168,7 +169,8 @@ lemma spanRank_eq_zero_iff {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := b
       rw [Set.range_eq_empty_iff]
       exact Fin.isEmpty'⟩
 
-lemma spanRank_sup {p q : Submodule R M} : (p ⊔ q).spanRank ≤ p.spanRank + q.spanRank := by
+lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
+    (p ⊔ q).spanRank ≤ p.spanRank + q.spanRank := by
   by_cases hp : Submodule.FG p
   swap
   · rw [← Submodule.spanRank_ne_top_iff_fg, not_ne_iff] at hp
@@ -199,7 +201,8 @@ lemma spanRank_span_set_finite {s : Set R} (hs : s.Finite) :
   ext
   exact hs.mem_toFinset
 
+@[simp]
 lemma spanRank_bot : (⊥ : Ideal R).spanRank = 0 :=
-  Submodule.spanRank_eq_zero_iff.mpr rfl
+  Submodule.spanRank_eq_zero_iff_eq_bot.mpr rfl
 
 end Submodule
