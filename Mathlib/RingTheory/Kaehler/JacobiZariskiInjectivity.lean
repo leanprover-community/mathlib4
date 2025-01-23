@@ -1,5 +1,5 @@
---import Mathlib.RingTheory.Kaehler.JacobiZariski
-import Mathlib
+import Mathlib.RingTheory.Kaehler.JacobiZariski
+import Mathlib.RingTheory.Presentation
 
 open TensorProduct
 
@@ -18,38 +18,26 @@ lemma IsLocalizedModule.injective_of_map_eq {R M M' N : Type*} [CommSemiring R] 
   intro a b hab
   obtain ⟨⟨x, m⟩, (hxm : m • a = g x)⟩ := IsLocalizedModule.surj S g a
   obtain ⟨⟨y, n⟩, (hym : n • b = g y)⟩ := IsLocalizedModule.surj S g b
-  have : ↑m • g y = ↑n • g x := by
-    apply_fun f at hxm hym
-    simp [hab] at hxm hym
-    apply_fun (n • ·) at hxm
-    apply_fun (m • ·) at hym
-    rw [← mul_smul] at hxm hym
-    rw [mul_comm, hym] at hxm
-    rw [Submonoid.smul_def, ← map_smul, Submonoid.smul_def, ← map_smul,
-      ← map_smul, ← map_smul] at hxm
-    apply H at hxm
-    rwa [map_smul, map_smul] at hxm
-  suffices h : n • m • a = m • n • b by
-    rwa [← IsLocalizedModule.smul_inj g (n * m), mul_smul, mul_comm, mul_smul]
-  rw [hxm, hym]
-  exact this.symm
+  suffices h : f (g (n.val • x)) = f (g (m.val • y)) by
+    apply H at h
+    rw [map_smul, map_smul] at h
+    rwa [← IsLocalizedModule.smul_inj g (n * m), mul_smul, mul_comm, mul_smul, hxm, hym]
+  simp [← hxm, ← hym, hab, ← S.smul_def, ← mul_smul, mul_comm, ← mul_smul]
 
 lemma IsLocalizedModule.injective_of_map_zero [IsLocalizedModule S g]
     (H : ∀ m, f (g m) = 0 → g m = 0) :
     Function.Injective f := by
-  apply IsLocalizedModule.injective_of_map_eq S g
-  intro x y hxy
+  refine IsLocalizedModule.injective_of_map_eq S g _ (fun hxy ↦ ?_)
   rw [← sub_eq_zero, ← map_sub]
   apply H
   simpa [sub_eq_zero]
 
-lemma Algebra.Extension.Cotangent.smul_eq_of {R S : Type*} [CommRing R] [CommRing S]
+lemma Algebra.Extension.Cotangent.smul_mk_eq_mk_smul {R S : Type*} [CommRing R] [CommRing S]
     [Algebra R S]
     {P : Extension R S} (x : P.ker) {g : S} (f : P.Ring) (hf : algebraMap P.Ring S f = g) :
-    g • mk x = mk ⟨f * x.val, Ideal.mul_mem_left _ _ x.property⟩ := by
-  have : ⟨f * x.val, Ideal.mul_mem_left _ _ x.property⟩ = f • x := rfl
+    g • mk x = mk (f • x) := by
   ext
-  simp only [val_smul, val_mk, map_smul, val_smul', this]
+  simp only [val_smul, val_mk, map_smul, val_smul']
   rw [← sub_eq_zero, ← sub_smul]
   apply smul_eq_zero_of_mem
   simp [hf]
@@ -58,7 +46,7 @@ end
 
 namespace Algebra.Generators
 
-lemma ofComp_toAlgHom_surjective {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+lemma toAlgHom_ofComp_surjective {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T]
     [IsScalarTower R S T] (P : Generators R S) (Q : Generators S T) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
@@ -66,11 +54,10 @@ lemma ofComp_toAlgHom_surjective {R S T : Type*} [CommRing R] [CommRing S] [Comm
   induction p using MvPolynomial.induction_on with
   | h_C a =>
       use MvPolynomial.rename Sum.inr (P.σ a)
-      simp [Algebra.Generators.ofComp, Algebra.Generators.Hom.toAlgHom]
-      erw [MvPolynomial.aeval_rename]
-      erw [Sum.elim_comp_inr]
-      show MvPolynomial.aeval (fun i ↦ IsScalarTower.toAlgHom R _ _ _) _ = _
-      rw [← MvPolynomial.comp_aeval]
+      simp only [Hom.toAlgHom, ofComp, Generators.comp, MvPolynomial.aeval_rename,
+        Sum.elim_comp_inr]
+      simp_rw [Function.comp_def, ← MvPolynomial.algebraMap_eq, ← IsScalarTower.toAlgHom_apply R,
+        ← MvPolynomial.comp_aeval]
       simp
   | h_add p q hp hq =>
       obtain ⟨p, rfl⟩ := hp
@@ -87,30 +74,26 @@ lemma map_ofComp_toAlgHom_ker_eq_ker {R S T : Type*} [CommRing R] [CommRing S] [
     [IsScalarTower R S T] (P : Generators R S) (Q : Generators S T) :
     Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by
   have := Algebra.Generators.Cotangent.map_ofComp_ker Q P
-  rw [SetLike.ext'_iff] at this ⊢
-  dsimp at this
+  simp only [SetLike.ext'_iff, Submodule.map_coe, Submodule.coe_restrictScalars] at this ⊢
   rw [← this]
   ext x
-  simp [SetLike.mem_coe, Ideal.mem_map_iff_of_surjective _ (ofComp_toAlgHom_surjective P Q)]
+  simp [SetLike.mem_coe, Ideal.mem_map_iff_of_surjective _ (toAlgHom_ofComp_surjective P Q)]
 
 lemma ker_comp_eq_sup {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T]
     [IsScalarTower R S T] (P : Generators R S) (Q : Generators S T) :
     (Q.comp P).ker =
       Ideal.map (Q.toComp P).toAlgHom P.ker ⊔ Ideal.comap (Q.ofComp P).toAlgHom Q.ker := by
-  rw [← map_ofComp_toAlgHom_ker_eq_ker P Q]
-  rw [Ideal.comap_map_of_surjective _ (ofComp_toAlgHom_surjective P Q)]
-  rw [← sup_assoc]
-  erw [Algebra.Generators.map_toComp_ker, ← RingHom.ker_eq_comap_bot]
-  apply le_antisymm
-  · apply le_trans ?_ le_sup_left
-    apply le_sup_right
-  · simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
-    intro x hx
-    simp only [RingHom.mem_ker] at hx
-    rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker]
-    show algebraMap T T ((MvPolynomial.aeval (Q.comp P).val) x) = 0
-    rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+  rw [← map_ofComp_toAlgHom_ker_eq_ker P Q,
+    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective P Q)]
+  rw [← sup_assoc, Algebra.Generators.map_toComp_ker, ← RingHom.ker_eq_comap_bot]
+  apply le_antisymm (le_trans le_sup_right le_sup_left)
+  simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
+  intro x hx
+  simp only [RingHom.mem_ker] at hx
+  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker]
+  show algebraMap T T ((MvPolynomial.aeval (Q.comp P).val) x) = 0
+  rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
 
 universe u v uT
 
@@ -123,31 +106,88 @@ lemma comp_localizationAway_ker (g : S) [IsLocalization.Away g T] (P : Generator
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
         Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1} := by
   set Q := Generators.localizationAway (S := T) g
+  have : Q.ker = Ideal.span {MvPolynomial.C g * MvPolynomial.X () - 1} := by
+    convert (Algebra.Presentation.localizationAway T g).span_range_relation_eq_ker.symm
+    simp [Presentation.localizationAway]
   have : Q.ker = Ideal.map (Q.ofComp P).toAlgHom
       (Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1}) := by
-    rw [Ideal.map_span]
-    simp
-    erw [← (Algebra.Presentation.localizationAway T g).span_range_relation_eq_ker]
-    congr
-    simp [Algebra.Presentation.localizationAway_rels]
-    rw [Set.range_unique]
-    simp [Generators.Hom.toAlgHom]
-    erw [MvPolynomial.aeval_rename]
-    erw [Sum.elim_comp_inr]
-    rw [← MvPolynomial.algebraMap_eq]
-    erw [← IsScalarTower.coe_toAlgHom' R S (MvPolynomial Unit S)]
-    erw [← MvPolynomial.comp_aeval_apply]
-    rw [← Algebra.Generators.algebraMap_apply]
-    rw [h]
-    rfl
-  rw [ker_comp_eq_sup]
-  erw [Algebra.Generators.map_toComp_ker]
-  rw [this, Ideal.comap_map_of_surjective _ (ofComp_toAlgHom_surjective P Q)]
-  rw [← RingHom.ker_eq_comap_bot]
-  rw [← sup_assoc]
+    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, this]
+    simp only [Hom.toAlgHom, MvPolynomial.aeval_X, ofComp_val, Sum.elim_inl, sub_left_inj,
+      Generators.comp, Generators.ofComp, Generators.localizationAway, Q]
+    rw [MvPolynomial.aeval_rename, Sum.elim_comp_inr]
+    simp_rw [← MvPolynomial.algebraMap_eq, ← IsScalarTower.coe_toAlgHom' R S (MvPolynomial Unit S)]
+    rw [Function.comp_def, ← MvPolynomial.comp_aeval_apply, ← Algebra.Generators.algebraMap_apply,
+      h]
+  rw [ker_comp_eq_sup, Algebra.Generators.map_toComp_ker, this,
+    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective P Q), ← RingHom.ker_eq_comap_bot,
+    ← sup_assoc]
   simp [Q]
 
-set_option maxHeartbeats 280000 in
+section
+
+open MvPolynomial
+
+variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
+
+variable (T) in
+private noncomputable
+def aux : ((Generators.localizationAway g (S := T)).comp P).Ring →ₐ[R]
+      Localization.Away (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)) :=
+  aeval (R := R) (S₁ := Localization.Away _)
+    (Sum.elim
+      (fun _ ↦ IsLocalization.Away.invSelf <| (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
+      (fun i : P.vars ↦ algebraMap P.Ring _ (X i)))
+
+@[simp]
+lemma aux_toAlgHom_toComp (x : P.Ring) :
+    (aux T g P) (((Generators.localizationAway g (S := T)).toComp P).toAlgHom x) =
+      algebraMap P.Ring _ x := by
+  simp only [toComp_toAlgHom, Ideal.mem_comap, RingHom.mem_ker, aux, Generators.comp,
+    Generators.localizationAway, AlgHom.toRingHom_eq_coe, MvPolynomial.aeval_rename,
+    Sum.elim_comp_inr, ← IsScalarTower.toAlgHom_apply (R := R), ← MvPolynomial.comp_aeval_apply,
+    aeval_X_left_apply]
+
+@[simp]
+lemma aux_X_inl :
+    (aux T g P) (X (Sum.inl ())) =
+      IsLocalization.Away.invSelf ((Ideal.Quotient.mk (P.ker ^ 2)) (P.σ g)) := by
+  simp [aux]
+
+lemma aux_relation_eq_zero :
+    (aux T g P) ((rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
+  rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway g (S := T)) P]
+  erw [aux_toAlgHom_toComp (T := T) g P (P.σ g)]
+  rw [aux_X_inl, IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _)]
+  rw [Ideal.Quotient.algebraMap_eq, IsLocalization.Away.mul_invSelf
+    ((Ideal.Quotient.mk (P.ker ^ 2)) _)
+    (S := Localization.Away ((Ideal.Quotient.mk (P.ker ^ 2)) _))]
+  simp
+
+lemma sq_ker_comp_le_ker_aux :
+    ((Generators.localizationAway g (S := T)).comp P).ker ^ 2 ≤ RingHom.ker (aux T g P) := by
+  have hsple {x} (hx : x ∈ Ideal.span {(rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1}) :
+        (aux T g P) x = 0 := by
+    obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hx
+    rw [map_mul, aux_relation_eq_zero, zero_mul]
+  rw [comp_localizationAway_ker _ _ (P.σ g) (by simp), sq, Ideal.sup_mul, Ideal.mul_sup,
+    Ideal.mul_sup]
+  apply sup_le
+  · apply sup_le
+    · rw [← Ideal.map_mul, Ideal.map_le_iff_le_comap, ← sq]
+      intro x hx
+      simp only [Ideal.mem_comap, RingHom.mem_ker, aux_toAlgHom_toComp (T := T) g P x]
+      rw [IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _),
+        Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem.mpr hx, map_zero]
+    · rw [Ideal.mul_le]
+      intro x hx y hy
+      simp [hsple hy]
+  · apply sup_le <;>
+    · rw [Ideal.mul_le]
+      intro x hx y hy
+      simp [hsple hx]
+
+end
+
 -- `T ⊗[S] (I/I²) → J/J²` is injective.
 lemma liftBaseChange_injective (g : S) [IsLocalization.Away g T]
     (P : Generators R S) :
@@ -156,110 +196,35 @@ lemma liftBaseChange_injective (g : S) [IsLocalization.Away g T]
         ((Presentation.localizationAway g (S := T)).toComp P).toExtensionHom)) := by
   set Q := Generators.localizationAway g (S := T)
   letI : Algebra P.Ring (Q.comp P).Ring := (Q.toComp P).toAlgHom.toAlgebra
-  obtain ⟨f, hf⟩ := P.algebraMap_surjective g
-  let f' : P.Ring ⧸ P.ker ^ 2 := f
-  let π : (Q.comp P).Ring →ₐ[R] Localization.Away f' :=
-    MvPolynomial.aeval (R := R) (S₁ := Localization.Away f')
-      (Sum.elim
-        (fun j : PUnit ↦ IsLocalization.Away.invSelf f')
-        (fun i : P.vars ↦ algebraMap P.Ring _ (MvPolynomial.X i)))
-  have : IsScalarTower P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away f') := inferInstance
-  letI : DistribMulAction (P.Ring ⧸ P.ker ^ 2) (P.Ring ⧸ P.ker ^ 2) := inferInstance
-  have hsple : Ideal.span
-      {(MvPolynomial.rename Sum.inr) f * MvPolynomial.X (Sum.inl ()) - 1} ≤ RingHom.ker π := by
-    rw [Ideal.span_le, Set.singleton_subset_iff]
-    rw [SetLike.mem_coe, RingHom.mem_ker]
-    rw [map_sub, map_one, map_mul]
-    simp only [MvPolynomial.aeval_X, Sum.elim_inl, π, Q]
-    erw [MvPolynomial.aeval_rename]
-    rw [Sum.elim_comp_inr]
-    simp_rw [← IsScalarTower.toAlgHom_apply (R := R)]
-    rw [← MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_X_left_apply]
-    rw [IsScalarTower.coe_toAlgHom']
-    rw [IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away f')]
-    rw [Ideal.Quotient.algebraMap_eq]
-    rw [IsLocalization.Away.mul_invSelf ((Ideal.Quotient.mk (P.ker ^ 2)) f)
-      (S := Localization.Away ((Ideal.Quotient.mk (P.ker ^ 2)) f))]
-    simp
-  letI : MulZeroClass (Localization.Away f') := inferInstance
-  have : (Q.comp P).ker ^ 2 ≤ RingHom.ker π := by
-    rw [comp_localizationAway_ker _ _ _ hf]
-    rw [sq]
-    rw [Ideal.sup_mul]
-    rw [Ideal.mul_sup]
-    rw [Ideal.mul_sup]
-    apply sup_le
-    · apply sup_le
-      rw [← Ideal.map_mul]
-      rw [Ideal.map_le_iff_le_comap]
-      rw [← sq]
-      intro x hx
-      show π (MvPolynomial.rename Sum.inr x) = 0
-      dsimp only [π]
-      erw [MvPolynomial.aeval_rename]
-      rw [Sum.elim_comp_inr]
-      simp_rw [← IsScalarTower.toAlgHom_apply (R := R)]
-      rw [← MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_X_left_apply]
-      rw [IsScalarTower.toAlgHom_apply,
-        IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away f')]
-      rw [Ideal.Quotient.algebraMap_eq]
-      rw [Ideal.Quotient.eq_zero_iff_mem.mpr hx]
-      rw [map_zero]
-      rw [Ideal.mul_le]
-      intro x hx y hy
-      show π (x * y) = 0
-      rw [map_mul]
-      have : π y = 0 := hsple hy
-      rw [this, mul_zero]
-    · apply sup_le
-      rw [Ideal.mul_le]
-      intro x hx y hy
-      show π (x * y) = 0
-      rw [map_mul]
-      have : π x = 0 := hsple hx
-      rw [this, zero_mul]
-      rw [Ideal.mul_le]
-      intro x hx y hy
-      show π (x * y) = 0
-      rw [map_mul]
-      have : π x = 0 := hsple hx
-      rw [this]
-      rw [zero_mul]
-  have hπ (x : (Q.comp P).Ring) (hx : x ∈ (Q.comp P).ker ^ 2) : π x = 0 := this hx
+  let f : P.Ring ⧸ P.ker ^ 2 := P.σ g
+  let π : (Q.comp P).Ring →ₐ[R] Localization.Away f := aux T g P
+  have hπ (x : (Q.comp P).Ring) (hx : x ∈ (Q.comp P).ker ^ 2) : π x = 0 :=
+    sq_ker_comp_le_ker_aux _ _ hx
   apply IsLocalizedModule.injective_of_map_zero (Submonoid.powers g)
     (TensorProduct.mk S T P.toExtension.Cotangent 1)
   intro x hx
   obtain ⟨x, rfl⟩ := Algebra.Extension.Cotangent.mk_surjective x
-  --set γ := (Q.toComp P).toExtensionHom.toAlgHom
-  simp at hx
-  erw [Algebra.Extension.Cotangent.map_mk] at hx
+  simp only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
+    mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
+    LinearMap.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk] at hx
   have : (Q.toComp P).toExtensionHom.toAlgHom x ∈ (Q.comp P).ker ^ 2 := by
     rwa [Extension.Cotangent.mk_eq_zero_iff] at hx
   have hπx : π ((Q.toComp P).toExtensionHom.toAlgHom x) = 0 := hπ _ this
-  simp only [π, Generators.toComp, Generators.Hom.toExtensionHom, Extension.Hom.toAlgHom] at this
-  dsimp [Hom.toAlgHom] at this
-  have : algebraMap P.Ring (Localization.Away f') x.val = 0 := by
+  have : algebraMap P.Ring (Localization.Away f) x.val = 0 := by
     convert hπx
-    change _ = MvPolynomial.aeval _ (MvPolynomial.rename Sum.inr x.val)
-    rw [MvPolynomial.aeval_rename, Sum.elim_comp_inr]
-    simp_rw [← IsScalarTower.toAlgHom_apply (R := R)]
-    rw [← MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_X_left_apply]
-  rw [IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away f')] at this
-  rw [IsLocalization.map_eq_zero_iff (Submonoid.powers f') (Localization.Away f')] at this
+    symm
+    apply aux_toAlgHom_toComp
+  rw [IsScalarTower.algebraMap_apply _ (P.Ring ⧸ P.ker ^ 2) _,
+    IsLocalization.map_eq_zero_iff (Submonoid.powers f) (Localization.Away f)] at this
   obtain ⟨⟨m, ⟨n, rfl⟩⟩, hm⟩ := this
-  dsimp at hm
   rw [IsLocalizedModule.eq_zero_iff (Submonoid.powers g)]
   use ⟨g ^ n, n, rfl⟩
-  dsimp [f'] at hm
+  dsimp [f] at hm
   rw [← map_pow, ← map_mul] at hm
-  simp
   rw [Submonoid.smul_def]
-  simp
-  erw [Algebra.Extension.Cotangent.smul_eq_of x (g := g ^ n) (f ^ n)]
-  · rw [Extension.Cotangent.mk_eq_zero_iff]
-    rw [Ideal.Quotient.eq_zero_iff_mem] at hm
-    simpa using hm
-  · simp at hf
-    simp [hf]
+  rw [Algebra.Extension.Cotangent.smul_mk_eq_mk_smul x (g := g ^ n) ((P.σ g) ^ n) (by simp)]
+  rw [Extension.Cotangent.mk_eq_zero_iff]
+  rw [Ideal.Quotient.eq_zero_iff_mem] at hm
+  simpa using hm
 
 end Algebra.Generators
