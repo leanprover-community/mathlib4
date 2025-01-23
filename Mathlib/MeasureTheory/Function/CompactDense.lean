@@ -13,6 +13,8 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 
 -- TODO: Move into `Mathlib/MeasureTheory/Function/ContinuousMapDense.lean`
 
+-- TODO: Can we use `Memℒp.induction_dense` somewhere?
+
 open MeasureTheory Filter
 open scoped ENNReal CompactlySupported ContDiff Convolution Topology Pointwise
 
@@ -364,6 +366,39 @@ theorem Continuous.exists_contDiffBump_eLpNorm_conv_sub_self_lt_of_hasCompactSup
     · refine .of_forall ?_
       simp [ContDiffBump.nonneg_normed]
 
+theorem MeasureTheory.Memℒp.exists_contDiff_hasCompactSupport_eLpNorm_sub_le
+    [BorelSpace E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [HasContDiffBump E]
+    [NormedSpace ℝ F] [CompleteSpace F]
+    {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (hp_top : p ≠ ⊤) {μ : Measure E}
+    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant]
+    {f : E → F} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ g : E → F, ContDiff ℝ ∞ g ∧ HasCompactSupport g ∧ eLpNorm (f - g) p μ ≤ ε := by
+  cases ε with
+  | top => exact ⟨0, contDiff_zero_fun, .zero, le_top⟩
+  | coe ε =>
+    rw [ENNReal.coe_ne_zero, ← pos_iff_ne_zero] at hε
+    obtain ⟨g, hfg⟩ := DenseRange.exists_dist_lt
+      (CompactlySupportedContinuousMap.toLp_denseRange F hp_top μ) hf.toLp (half_pos hε)
+    obtain ⟨φ, hφ⟩ := Continuous.exists_contDiffBump_eLpNorm_conv_sub_self_lt_of_hasCompactSupport
+      g.continuous g.hasCompactSupport hp.out hp_top μ (↑(ε / 2)) (half_pos hε)
+    have hζ_smooth : ContDiff ℝ ∞ (φ.normed μ ⋆[ContinuousLinearMap.lsmul ℝ ℝ, μ] g) :=
+      φ.hasCompactSupport_normed.contDiff_convolution_left _ φ.contDiff_normed
+          (g.continuous.integrable_of_hasCompactSupport g.hasCompactSupport).locallyIntegrable
+    have hζ_supp : HasCompactSupport (φ.normed μ ⋆[ContinuousLinearMap.lsmul ℝ ℝ, μ] g) :=
+      .convolution _ φ.hasCompactSupport_normed g.hasCompactSupport
+    have hζ_mem : Memℒp (φ.normed μ ⋆[ContinuousLinearMap.lsmul ℝ ℝ, μ] g) p μ :=
+      hζ_smooth.continuous.memℒp_of_hasCompactSupport hζ_supp
+    refine ⟨_, hζ_smooth, hζ_supp, ?_⟩
+    -- Switch to `edist` to use `edist_triangle`.
+    suffices edist hf.toLp hζ_mem.toLp ≤ ε by simpa using this
+    rw [edist_le_coe, ← add_halves ε]
+    refine le_trans (nndist_triangle_right hf.toLp _ (g.memℒp p μ).toLp) ?_
+    refine add_le_add ?_ ?_
+    · exact hfg.le
+    · rw [ENNReal.ofReal_coe_nnreal] at hφ
+      simpa [← edist_le_coe] using hφ
+
+-- TODO: Update to use `Memℒp.exists_contDiff_hasCompactSupport_eLpNorm_sub_le`?
 -- TODO: Define using `ContMDiffMap`?
 theorem ContDiff.toLp_denseRange [BorelSpace E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [HasContDiffBump E] [NormedSpace ℝ F] [CompleteSpace F]
