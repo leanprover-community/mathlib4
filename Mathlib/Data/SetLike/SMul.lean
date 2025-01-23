@@ -7,7 +7,8 @@ import Mathlib.Algebra.Group.Operations
 import Mathlib.Data.SetLike.Basic
 
 /-!
-# Typeclass for scalar multiplication of set-like objects
+# Instance for scalar multiplication of set-like objects
+
 -/
 
 variable (R A : Type*) [SMul R A] (S : Type*) [SetLike S R] (s : S)
