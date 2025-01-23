@@ -380,7 +380,7 @@ theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
   QuaternionAlgebra.ext rfl (smul_zero _).symm (smul_zero _).symm (smul_zero _).symm
 
 instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] :=
-  (equivProd c₁ c₂ _).injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+  (equivProd c₁ c₂ c₃).injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 section AddCommGroupWithOne
