@@ -3,6 +3,7 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
+import Mathlib.Algebra.Module.SpanRank
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Spectrum.Prime.Basic
@@ -341,3 +342,68 @@ theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] 
       IsLocalization.primeHeight_comap I.primeCompl A,
       ← IsLocalization.AtPrime.comap_maximalIdeal A I,
       Ideal.height_eq_primeHeight]
+
+lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
+    (e' : J.primeHeight = I.height) [J.FiniteHeight] : J ∈ I.minimalPrimes := by
+  rw [← J.height_eq_primeHeight] at e'
+  exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
+
+lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
+  (hr : ↑r ≤ I.height) :
+  ∃ J ≤ I, J.spanRank ≤ r ∧ ↑r ≤ J.height := by
+  induction r with
+  | zero =>
+    refine ⟨⊥, bot_le, ?_, zero_le _⟩
+    rw [Submodule.spanRank_bot]
+    exact rfl.le
+  | succ r ih =>
+    obtain ⟨J, h₁, h₂, h₃⟩ := ih ((WithTop.coe_le_coe.mpr r.le_succ).trans hr)
+    let S := { K | K ∈ J.minimalPrimes ∧ Ideal.height K = r }
+    have hS : Set.Finite S := Set.Finite.subset J.minimalPrimes_finite_of_isNoetherianRing
+      (fun _ h => h.1)
+    have : ¬↑I ⊆ ⋃ K ∈ hS.toFinset, (K : Set R) := by
+      refine (Ideal.subset_union_prime ⊥ ⊥ ?_).not.mpr ?_
+      · rintro K hK - -
+        rw [Set.Finite.mem_toFinset] at hK
+        exact hK.1.1.1
+      · push_neg
+        intro K hK e
+        have := hr.trans (Ideal.height_mono e)
+        rw [Set.Finite.mem_toFinset] at hK
+        rw [hK.2, ← not_lt] at this
+        norm_cast at this
+        exact this r.lt_succ_self
+    simp_rw [Set.not_subset, Set.mem_iUnion, not_exists, Set.Finite.mem_toFinset] at this
+    obtain ⟨x, hx₁, hx₂⟩ := this
+    refine ⟨J ⊔ Ideal.span {x}, sup_le h₁ ?_, ?_, ?_⟩
+    · rwa [Ideal.span_le, Set.singleton_subset_iff]
+    · refine Submodule.spanRank_sup_le_sum_spanRank.trans ?_
+      push_cast
+      refine add_le_add h₂ ?_
+      refine (Submodule.spanRank_span_set_finite (Set.toFinite _)).trans ?_
+      simp
+    · refine le_iInf₂ ?_
+      intro p hp
+      haveI := hp.1.1
+      by_cases h : p.height = ⊤
+      · rw [← p.height_eq_primeHeight, h]
+        exact le_top
+      haveI : p.FiniteHeight := ⟨Or.inr h⟩
+      have := Ideal.height_mono (le_sup_left.trans hp.1.2)
+      suffices h : ↑r ≠ p.primeHeight by
+        push_cast
+        have := h₃.trans this
+        rw [Ideal.height_eq_primeHeight] at this
+        exact Order.add_one_le_of_lt (lt_of_le_of_ne this h)
+      intro e
+      apply hx₂ p
+      · have : J.height = p.primeHeight := by
+          apply le_antisymm
+          · rwa [← p.height_eq_primeHeight]
+          · rwa [← e]
+        refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.1.2) this.symm, ?_⟩
+        rwa [p.height_eq_primeHeight, eq_comm]
+      · apply hp.1.2
+        apply Ideal.mem_sup_right
+        apply Ideal.subset_span
+        exact Set.mem_singleton x
