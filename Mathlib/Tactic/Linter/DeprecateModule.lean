@@ -99,8 +99,8 @@ def deprecateModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- The imports of `Mathlib.lean` and `Mathlib.Tactic` are not required to be non-deprecated,
-  -- since these files are expected to import all modules satisfying certain path-restrictions.
+  -- `Mathlib.lean` and `Mathlib/Tactic.Lean` are allowed to import deprecated files,
+  -- since they (are expected to) import all modules in certain directories.
   if #[`Mathlib, `Mathlib.Tactic].contains mainModule then return
   if stx.isOfKind ``Linter.deprecate_modules then return
   let fm ← getFileMap
