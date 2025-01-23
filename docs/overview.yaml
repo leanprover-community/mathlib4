@@ -444,7 +444,7 @@ Combinatorics:
     # Antichains:
     Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
     LYM inequality: 'Finset.sum_card_slice_div_choose_le_one'
-    Sperner's theorem: IsAntichain.sperner'
+    Sperner's theorem: 'IsAntichain.sperner'
     # Intersecting families:
     Maximum size of an intersecting family: 'Set.Intersecting.is_max_iff_card_eq'
     Kleitman's theorem: 'Finset.card_biUnion_le_of_intersecting'
