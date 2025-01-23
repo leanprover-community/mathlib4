@@ -63,7 +63,7 @@ asserts that `A` being torsion-free may be enough.
 ###  Remarks
 To prove `NoZeroDivisors.biOrdered`,
 we use `CovariantClass` assumptions on `A`.  In combination with `LinearOrder A`, these
-assumptions actually imply that `A` is cancellative.  However, cancellativity alone in not enough.
+assumptions actually imply that `A` is cancellative.  However, cancellativity alone is not enough.
 Indeed, using `ZMod 2`, that is `ℤ / 2 ℤ`, as the grading type `A`, there are examples of
 `AddMonoidAlgebra`s containing non-zero zero divisors:
 ```lean
