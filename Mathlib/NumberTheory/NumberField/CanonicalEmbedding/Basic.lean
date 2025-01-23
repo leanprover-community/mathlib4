@@ -510,7 +510,7 @@ theorem volume_fundamentalDomain_stdBasis :
     sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one, one_mul]
   exact (MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)).nullMeasurableSet
 
-open scoped Classical
+open scoped Classical in
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
