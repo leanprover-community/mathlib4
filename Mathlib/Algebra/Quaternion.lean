@@ -92,7 +92,7 @@ def equivTuple {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 
 
 @[simp]
 theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃: R) (x : ℍ[R,c₁,c₂,c₃]) :
-    equivTuple c₁ c₂ _ x = ![x.re, x.imI, x.imJ, x.imK] :=
+    equivTuple c₁ c₂ c₃ x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 
 @[simp]
@@ -100,8 +100,8 @@ theorem mk.eta {R : Type*} {c₁ c₂ c₃} (a : ℍ[R,c₁,c₂,c₃]) : mk a.1
 
 variable {S T R : Type*} {c₁ c₂ c₃ : R} (r x y : R) (a b : ℍ[R,c₁,c₂,c₃])
 
-instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂, c₃] := (equivTuple c₁ c₂ _).subsingleton
-instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂, c₃] := (equivTuple c₁ c₂ _).surjective.nontrivial
+instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂, c₃] := (equivTuple c₁ c₂ c₃).subsingleton
+instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂, c₃] := (equivTuple c₁ c₂ c₃).surjective.nontrivial
 
 section Zero
 variable [Zero R]
@@ -442,6 +442,21 @@ alias coe_nat_cast := coe_natCast
 theorem intCast_re (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
   rfl
 
+@[simp]
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).re = ofNat(n) := rfl
+
+@[simp]
+theorem ofNat_imI (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+
+@[simp]
+theorem ofNat_imJ (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+
+@[simp]
+theorem ofNat_imK (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+
+@[simp]
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+
 @[deprecated (since := "2024-04-17")]
 alias int_cast_re := intCast_re
 
@@ -497,6 +512,11 @@ instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
 
 @[norm_cast, simp]
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> simp
+
+@[norm_cast, simp]
+lemma coe_ofNat {n : ℕ} [n.AtLeastTwo]:
+    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) := by
+  rfl
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
@@ -558,9 +578,9 @@ def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
 /-- `QuaternionAlgebra.equivTuple` as a linear equivalence. -/
 def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R :=
   LinearEquiv.symm -- proofs are not `rfl` in the forward direction
-    { (equivTuple c₁ c₂ _).symm with
-      toFun := (equivTuple c₁ c₂ _).symm
-      invFun := equivTuple c₁ c₂ _
+    { (equivTuple c₁ c₂ c₃).symm with
+      toFun := (equivTuple c₁ c₂ c₃).symm
+      invFun := equivTuple c₁ c₂ c₃
       map_add' := fun _ _ => rfl
       map_smul' := fun _ _ => rfl }
 
@@ -570,23 +590,23 @@ theorem coe_linearEquivTuple :
 
 @[simp]
 theorem coe_linearEquivTuple_symm :
-    ⇑(linearEquivTuple c₁ c₂ c₃).symm = (equivTuple c₁ c₂ _).symm := rfl
+    ⇑(linearEquivTuple c₁ c₂ c₃).symm = (equivTuple c₁ c₂ c₃).symm := rfl
 
 /-- `ℍ[R, c₁, c₂, c₃]` has a basis over `R` given by `1`, `i`, `j`, and `k`. -/
 noncomputable def basisOneIJK : Basis (Fin 4) R ℍ[R,c₁,c₂,c₃] :=
-  .ofEquivFun <| linearEquivTuple c₁ c₂ _
+  .ofEquivFun <| linearEquivTuple c₁ c₂ c₃
 
 @[simp]
 theorem coe_basisOneIJK_repr (q : ℍ[R,c₁,c₂,c₃]) :
     ((basisOneIJK c₁ c₂ c₃).repr q) = ![q.re, q.imI, q.imJ, q.imK] :=
   rfl
 
-instance : Module.Finite R ℍ[R,c₁,c₂,c₃] := .of_basis (basisOneIJK c₁ c₂ _)
+instance : Module.Finite R ℍ[R,c₁,c₂,c₃] := .of_basis (basisOneIJK c₁ c₂ c₃)
 
-instance : Module.Free R ℍ[R,c₁,c₂,c₃] := .of_basis (basisOneIJK c₁ c₂ _)
+instance : Module.Free R ℍ[R,c₁,c₂,c₃] := .of_basis (basisOneIJK c₁ c₂ c₃)
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂,c₃] = 4 := by
-  rw [rank_eq_card_basis (basisOneIJK c₁ c₂ _), Fintype.card_fin]
+  rw [rank_eq_card_basis (basisOneIJK c₁ c₂ c₃), Fintype.card_fin]
   norm_num
 
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c₂,c₃] = 4 := by
@@ -664,8 +684,7 @@ instance instStarRing : StarRing ℍ[R,c₁,c₂,c₃] where
 
 theorem self_add_star' : a + star a = ↑(2 * a.re + c₂ * a.imI) := by ext <;> simp [two_mul]; ring
 
-theorem self_add_star : a + star a = 2 * a.re + c₂ * a.imI := by
-  simp [self_add_star']; rfl
+theorem self_add_star : a + star a = 2 * a.re + c₂ * a.imI := by simp [self_add_star']
 
 theorem star_add_self' : star a + a = ↑(2 * a.re + c₂ * a.imI) := by rw [add_comm, self_add_star']
 
@@ -674,9 +693,12 @@ theorem star_add_self : star a + a = 2 * a.re + c₂ * a.imI := by rw [add_comm,
 theorem star_eq_two_re_sub : star a = ↑(2 * a.re + c₂ * a.imI) - a :=
   eq_sub_iff_add_eq.2 a.star_add_self'
 
+lemma comm (r : R) (x : ℍ[R, c₁, c₂, c₃]) : r * x = x * r := by
+  ext <;> simp [mul_comm]
+
 instance : IsStarNormal a :=
   ⟨by
-    rw [commute_iff_eq, a.star_eq_two_re_sub]
+    rw [commute_iff_eq, a.star_eq_two_re_sub];
     ext <;> simp <;> ring⟩
 
 @[simp, norm_cast]
@@ -1339,7 +1361,7 @@ private theorem pow_four [Infinite R] : #R ^ 4 = #R :=
 
 /-- The cardinality of a quaternion algebra, as a type. -/
 theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂,c₃]) = #R ^ 4 := by
-  rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂ _)]
+  rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂ c₃)]
   simp only [mk_prod, lift_id]
   ring
 
