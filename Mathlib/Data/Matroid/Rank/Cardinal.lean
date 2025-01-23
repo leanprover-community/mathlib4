@@ -237,7 +237,6 @@ theorem Indep.cardRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cardRk I :=
 variable [CardinalRank M]
 
 theorem Base.cardinalMk_eq_cardRank (hB : M.Base B) : #B = M.cardRank := by
-  have : Nonempty {B : Set α // M.Base B} := ⟨M.exists_base.choose, M.exists_base.choose_spec⟩
   have hrw : ∀ B' : {B : Set α // M.Base B}, #B' = #B := fun B' ↦ B'.2.cardinalMk_eq hB
   simp [cardRank, hrw]
 
