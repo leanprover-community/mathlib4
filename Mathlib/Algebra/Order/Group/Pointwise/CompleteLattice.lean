@@ -20,7 +20,7 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 open Function Set
 open scoped Pointwise
 
-variable {ι G M : Type*}
+variable {M : Type*}
 
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice M]
@@ -39,12 +39,12 @@ variable [Group M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive]
 lemma csSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : sSup s⁻¹ = (sInf s)⁻¹ := by
-  rw [← image_inv]
+  rw [← image_inv_eq_inv]
   exact ((OrderIso.inv _).map_csInf' hs₀ hs₁).symm
 
 @[to_additive]
 lemma csInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : sInf s⁻¹ = (sSup s)⁻¹ := by
-  rw [← image_inv]
+  rw [← image_inv_eq_inv]
   exact ((OrderIso.inv _).map_csSup' hs₀ hs₁).symm
 
 @[to_additive]
@@ -89,12 +89,12 @@ variable [Group M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive]
 lemma sSup_inv (s : Set M) : sSup s⁻¹ = (sInf s)⁻¹ := by
-  rw [← image_inv, sSup_image]
+  rw [← image_inv_eq_inv, sSup_image]
   exact ((OrderIso.inv M).map_sInf _).symm
 
 @[to_additive]
 lemma sInf_inv (s : Set M) : sInf s⁻¹ = (sSup s)⁻¹ := by
-  rw [← image_inv, sInf_image]
+  rw [← image_inv_eq_inv, sInf_image]
   exact ((OrderIso.inv M).map_sSup _).symm
 
 @[to_additive]

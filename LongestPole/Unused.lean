@@ -63,6 +63,8 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   -- The code below assumes that it is "deeper files first", as reported by `lake exe pole`.
 
   searchPathRef.set compile_time_search_path%
+  -- It may be reasonable to remove this again after https://github.com/leanprover/lean4/pull/6325
+  unsafe enableInitializersExecution
   let (unused, _) ← unsafe withImportModules #[{module := `Mathlib}] {} (trustLevel := 1024)
     fun env => Prod.fst <$> Core.CoreM.toIO
         (ctx := { fileName := "<CoreM>", fileMap := default }) (s := { env := env }) do
@@ -78,7 +80,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   IO.println s!"Writing table to {output}."
   IO.FS.writeFile output (formatTable headings rows.toArray)
 
-  let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
+  let data := unused.flatMap fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
   let rectangles := maximalRectangles data
     |>.map (fun r => (r, r.area))
     -- Prefer rectangles with larger areas.

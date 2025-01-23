@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.Group.Nat
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Iterates of monoid homomorphisms
@@ -26,8 +26,7 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -131,7 +130,7 @@ section Semigroup
 
 variable [Semigroup G] {a b c : G}
 
--- Porting note(#12129): additional beta reduction needed
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
 -- see also https://leanprover.zulipchat.com/#narrow/stream/
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]

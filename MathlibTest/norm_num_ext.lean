@@ -10,6 +10,7 @@ import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 
@@ -400,6 +401,11 @@ example : ⌊(2 : R)⌋ = 2 := by norm_num
 example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
 example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
 
+example : ⌈(-1 : R)⌉ = -1 := by norm_num
+example : ⌈(2 : R)⌉ = 2 := by norm_num
+example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
+example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+
 end floor
 
 section jacobi
@@ -449,3 +455,13 @@ example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
 end mod
+
+section num_den
+
+example : (6 / 15 : ℚ).num = 2 := by norm_num1
+example : (6 / 15 : ℚ).den = 5 := by norm_num1
+
+example : (-6 / 15 : ℚ).num = -2 := by norm_num1
+example : (-6 / 15 : ℚ).den = 5 := by norm_num1
+
+end num_den

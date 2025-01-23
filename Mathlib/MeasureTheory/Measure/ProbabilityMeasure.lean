@@ -256,7 +256,7 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
-  inj _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
+  injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
 
 @[deprecated (since := "2024-10-26")]
 alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding
