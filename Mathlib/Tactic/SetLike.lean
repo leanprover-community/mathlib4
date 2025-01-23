@@ -47,6 +47,7 @@ are given the `aesop` attribute according to the following principles:
   unless it can make no other progress. If common usage patterns cause Aesop to invoke such rules,
   additional lemmas should be added at a higher priority to cover that pattern.
   For example, `Subgroup.closure_mem_of_mem` covers a common use case of `SetLike.mem_of_subset`.
+
 Some examples of membership-related goals which Aesop this ruleset is designed to close
 can be found in the file MathlibTest/set_like.lean.
 -/
