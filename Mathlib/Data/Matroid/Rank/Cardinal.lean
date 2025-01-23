@@ -162,10 +162,77 @@ end Instances
 section Rank
 
 /-- The rank (size of a largest base) of a matroid `M` as a `Cardinal`. -/
-noncomputable def cardRank (M : Matroid α) := ⨆ (B : {B : Set α // M.Base B}), #B
+noncomputable def cardRank (M : Matroid α) := ⨆ (B : {B // M.Base B}), #B
 
 /-- The rank (size of a largest basis) of a set `X` in a matroid `M`, as a `Cardinal`. -/
 noncomputable def cardRk (M : Matroid α) (X : Set α) := (M ↾ X).cardRank
+
+theorem Base.cardinalMk_le_cardRank (hB : M.Base B) : #B ≤ M.cardRank :=
+  le_ciSup (f := fun (B : {B // M.Base B}) ↦ #(B.1)) (bddAbove_range _) ⟨B, hB⟩
+
+theorem Basis'.cardinalMk_le_cardRk (hIX : M.Basis' I X) : #I ≤ M.cardRk X :=
+  (base_restrict_iff'.2 hIX).cardinalMk_le_cardRank
+
+theorem Basis.cardinalMk_le_cardRk (hIX : M.Basis I X) : #I ≤ M.cardRk X :=
+  hIX.basis'.cardinalMk_le_cardRk
+
+theorem cardRank_le_iff {κ : Cardinal} : M.cardRank ≤ κ ↔ ∀ ⦃B⦄, M.Base B → #B ≤ κ :=
+  ⟨fun h _ hB ↦ (hB.cardinalMk_le_cardRank.trans h), fun h ↦ ciSup_le fun ⟨_, hB⟩ ↦ h hB⟩
+
+theorem cardRk_le_iff {κ : Cardinal} : M.cardRk X ≤ κ ↔ ∀ ⦃I⦄, M.Basis' I X → #I ≤ κ := by
+  simp_rw [cardRk, cardRank_le_iff, base_restrict_iff']
+
+theorem Indep.cardinalMk_le_cardRk_of_subset (hI : M.Indep I) (hIX : I ⊆ X) : #I ≤ M.cardRk X :=
+  let ⟨_, hJ, hIJ⟩ := hI.subset_basis'_of_subset hIX
+  (mk_le_mk_of_subset hIJ).trans hJ.cardinalMk_le_cardRk
+
+theorem cardRk_le_cardinalMk (M : Matroid α) (X : Set α) : M.cardRk X ≤ #X :=
+  ciSup_le fun ⟨_, hI⟩ ↦ mk_le_mk_of_subset hI.subset_ground
+
+@[simp] theorem cardRk_ground (M : Matroid α) : M.cardRk M.E = M.cardRank := by
+  rw [cardRk, restrict_ground_eq_self]
+
+@[simp] theorem cardRank_restrict (M : Matroid α) (X : Set α) : (M ↾ X).cardRank = M.cardRk X := rfl
+
+theorem cardRk_mono (M : Matroid α) : Monotone M.cardRk := by
+  simp only [Monotone, le_eq_subset, cardRk_le_iff]
+  intro X Y hXY I hIX
+  obtain ⟨J, hJ, hIJ⟩ := hIX.indep.subset_basis'_of_subset (hIX.subset.trans hXY)
+  exact (mk_le_mk_of_subset hIJ).trans hJ.cardinalMk_le_cardRk
+
+theorem cardRk_le_of_subset (M : Matroid α) (hXY : X ⊆ Y) : M.cardRk X ≤ M.cardRk Y :=
+  M.cardRk_mono hXY
+
+@[simp] theorem cardRk_inter_ground (M : Matroid α) (X : Set α) :
+    M.cardRk (X ∩ M.E) = M.cardRk X :=
+  (M.cardRk_le_of_subset inter_subset_left).antisymm <|
+    cardRk_le_iff.2 fun _ h ↦ h.basis_inter_ground.cardinalMk_le_cardRk
+
+theorem cardRk_restrict_subset (M : Matroid α) (hYX : Y ⊆ X) : (M ↾ X).cardRk Y = M.cardRk Y := by
+  have aux : ∀ ⦃I⦄, M.Basis' I Y ↔ (M ↾ X).Basis' I Y := by
+    simp_rw [basis'_restrict_iff, inter_eq_self_of_subset_left hYX, iff_self_and]
+    exact fun I h ↦ h.subset.trans hYX
+  simp_rw [le_antisymm_iff, cardRk_le_iff]
+  exact ⟨fun I hI ↦ (aux.2 hI).cardinalMk_le_cardRk, fun I hI ↦ (aux.1 hI).cardinalMk_le_cardRk⟩
+
+theorem cardRk_restrict (M : Matroid α) (X Y : Set α) : (M ↾ X).cardRk Y = M.cardRk (X ∩ Y) := by
+  rw [← cardRk_inter_ground, restrict_ground_eq, cardRk_restrict_subset _ inter_subset_right,
+    inter_comm]
+
+theorem Indep.cardRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cardRk I :=
+  (M.cardRk_le_cardinalMk I).antisymm' (hI.basis_self.cardinalMk_le_cardRk)
+
+@[simp] theorem cardRk_map_eq {α β : Type u} {f : α → β} {X : Set α} (M : Matroid α)
+    [CardinalRank M] (hf : InjOn f M.E) (hX : X ⊆ M.E := by aesop_mat) :
+    (M.map f hf).cardRk (f '' X) = M.cardRk X := by
+  simp_rw [le_antisymm_iff, cardRk_le_iff, basis'_iff_basis hX,
+    basis'_iff_basis (show f '' X ⊆ (M.map f hf).E from image_mono hX)]
+  refine ⟨fun I hI ↦ ?_, fun I hI ↦ le_of_eq_of_le ?_ (hI.map hf).cardinalMk_le_cardRk ⟩
+  · obtain ⟨I, X', hIX, rfl, hXX'⟩ := map_basis_iff'.1 hI
+    obtain rfl : X = X' := by rwa [hf.image_eq_image_iff hX hIX.subset_ground] at hXX'
+    rw [mk_image_eq_of_injOn _ _ (hf.mono hIX.indep.subset_ground)]
+    exact hIX.cardinalMk_le_cardRk
+  rw [mk_image_eq_of_injOn _ _ (hf.mono hI.indep.subset_ground)]
 
 variable [CardinalRank M]
 
@@ -179,30 +246,6 @@ theorem Basis'.cardinalMk_eq_cardRk (hIX : M.Basis' I X) : #I = M.cardRk X := by
 
 theorem Basis.cardinalMk_eq_cardRk (hIX : M.Basis I X) : #I = M.cardRk X :=
   hIX.basis'.cardinalMk_eq_cardRk
-
-@[simp] theorem cardRank_restrict (M : Matroid α) : (M ↾ X).cardRank = M.cardRk X := rfl
-
-@[simp] theorem cardRk_ground (M : Matroid α) : M.cardRk M.E = M.cardRank := by
-  rw [cardRk, restrict_ground_eq_self]
-
-theorem cardRk_mono (M : Matroid α) [CardinalRank M] : Monotone M.cardRk := by
-  intro X Y (hXY : X ⊆ Y)
-  obtain ⟨I, hI⟩ := M.exists_basis' X
-  obtain ⟨J, hJ⟩ := M.exists_basis' Y
-  rw [← hI.cardinalMk_eq_cardRk, ← hJ.cardinalMk_eq_cardRk]
-  exact hI.indep.cardinalMk_le_basis' hJ (hI.subset.trans hXY)
-
-theorem cardRk_le_of_subset (M : Matroid α) [CardinalRank M] (hXY : X ⊆ Y) :
-    M.cardRk X ≤ M.cardRk Y :=
-  M.cardRk_mono hXY
-
-theorem cardRk_le_cardinalMk (M : Matroid α) [CardinalRank M] (X : Set α) : M.cardRk X ≤ #X := by
-  obtain ⟨I, hI⟩ := M.exists_basis' X
-  rw [← hI.cardinalMk_eq_cardRk]
-  exact mk_le_mk_of_subset hI.subset
-
-theorem Indep.cardRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cardRk I :=
-  hI.basis_self.cardinalMk_eq_cardRk
 
 @[simp] theorem cardRk_closure (M : Matroid α) [CardinalRank M] (X : Set α) :
     M.cardRk (M.closure X) = M.cardRk X := by
@@ -227,17 +270,6 @@ theorem cardRk_closure_congr (hXY : M.closure X = M.closure Y) : M.cardRk X = M.
 theorem cardRk_union_closure_eq (M : Matroid α) [CardinalRank M] (X Y : Set α) :
     M.cardRk (M.closure X ∪ M.closure Y) = M.cardRk (X ∪ Y) := by
   simp
-
-@[simp] theorem cardRk_inter_ground (M : Matroid α) [CardinalRank M] (X : Set α) :
-    M.cardRk (X ∩ M.E) = M.cardRk X := by
-  rw [← cardRk_closure, closure_inter_ground, cardRk_closure]
-
-@[simp] theorem cardRk_map_eq {α β : Type u} {f : α → β} {X : Set α} (M : Matroid α)
-    [CardinalRank M] (hf : InjOn f M.E) (hX : X ⊆ M.E := by aesop_mat) :
-    (M.map f hf).cardRk (f '' X) = M.cardRk X := by
-  obtain ⟨I, hI⟩ := M.exists_basis X
-  rw [← hI.cardinalMk_eq_cardRk, ← (hI.map hf).cardinalMk_eq_cardRk,
-    mk_image_eq_of_injOn _ _ (hf.mono hI.indep.subset_ground)]
 
 /-- The `Cardinal` rank function is submodular. -/
 theorem cardRk_inter_add_cardRk_union_le (M : Matroid α) [CardinalRank M] (X Y : Set α) :
