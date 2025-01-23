@@ -244,10 +244,6 @@ attribute [local instance] Fintype.ofFinite in
 of relations. -/
 theorem rank_kaehlerDifferential [Nontrivial S]
     (P : SubmersivePresentation R S) : Module.rank S (Ω[S⁄R]) = P.dimension := by
-  haveI : Fintype ((Set.range P.map)ᶜ : Set _) := Fintype.ofFinite _
-  haveI : Fintype (Set.range P.map) := Fintype.ofFinite _
-  haveI : Fintype P.vars := Fintype.ofFinite _
-  haveI : Fintype P.rels := Fintype.ofFinite _
   simp only [rank_eq_card_basis P.basisKaehler, Nat.cast_inj, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
