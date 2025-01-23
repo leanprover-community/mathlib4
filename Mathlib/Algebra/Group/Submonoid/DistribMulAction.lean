@@ -22,7 +22,7 @@ instance [AddMonoid α] [DistribMulAction M α] : DistribMulAction s α where
   smul_add r := smul_add (r : M)
 
 instance distribMulAction [AddMonoid α] [DistribMulAction M α] (S : Submonoid M) :
-    DistribMulAction s α :=
+    DistribMulAction S α :=
   inferInstance
 
 instance [Monoid α] [MulDistribMulAction M α] : MulDistribMulAction s α where
