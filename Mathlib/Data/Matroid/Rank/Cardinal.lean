@@ -161,10 +161,10 @@ end Instances
 
 section Rank
 
-/-- The rank (size of an arbitrarily chosen base) of a matroid `M` as a `Cardinal`. -/
+/-- The rank (size of a largest base) of a matroid `M` as a `Cardinal`. -/
 noncomputable def cardRank (M : Matroid α) := ⨆ (B : {B : Set α // M.Base B}), #B
 
-/-- The rank (size of an arbitrary basis) of a set `X` in a matroid `M`, as a `Cardinal`. -/
+/-- The rank (size of a largest basis) of a set `X` in a matroid `M`, as a `Cardinal`. -/
 noncomputable def cardRk (M : Matroid α) (X : Set α) := (M ↾ X).cardRank
 
 variable [CardinalRank M]
