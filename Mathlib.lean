@@ -433,6 +433,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
+import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
@@ -2134,6 +2135,7 @@ import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
+import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
@@ -2247,6 +2249,8 @@ import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Subobject.Types
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Subpresheaf.Basic
+import Mathlib.CategoryTheory.Subpresheaf.Image
+import Mathlib.CategoryTheory.Subpresheaf.Sieves
 import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
@@ -3031,6 +3035,7 @@ import Mathlib.Data.Sym.Sym2.Order
 import Mathlib.Data.Tree.Basic
 import Mathlib.Data.Tree.Get
 import Mathlib.Data.Tree.RBMap
+import Mathlib.Data.Tree.Traversable
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
@@ -4104,6 +4109,7 @@ import Mathlib.Order.BoundedOrder.Monotone
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Bounds.Image
+import Mathlib.Order.Bounds.Lattice
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.BddDistLat
 import Mathlib.Order.Category.BddLat

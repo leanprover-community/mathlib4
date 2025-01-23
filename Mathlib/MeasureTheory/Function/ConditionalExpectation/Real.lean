@@ -67,8 +67,7 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       refine eLpNorm_mono_ae ?_
       filter_upwards [condExp_mono hf hf.abs
         (ae_of_all μ (fun x => le_abs_self (f x) : ∀ x, f x ≤ |f x|)),
-        EventuallyLE.trans (condExp_neg f).symm.le
-          (condExp_mono hf.neg hf.abs
+        (condExp_neg ..).symm.le.trans (condExp_mono hf.neg hf.abs
           (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
@@ -256,14 +255,14 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
       @SimpleFunc.coe_const _ _ m, @SimpleFunc.coe_zero _ _ m, Set.piecewise_eq_indicator]
     rw [this, this]
     refine (condExp_indicator (hg.smul c) hs).trans ?_
-    filter_upwards [condExp_smul (m := m) (m0 := m0) c g] with x hx
+    filter_upwards [condExp_smul c g m] with x hx
     classical simp_rw [Set.indicator_apply, hx]
   · have h_add := @SimpleFunc.coe_add _ _ m _ g₁ g₂
     calc
       μ[⇑(g₁ + g₂) * g|m] =ᵐ[μ] μ[(⇑g₁ + ⇑g₂) * g|m] := by
         refine condExp_congr_ae (EventuallyEq.mul ?_ EventuallyEq.rfl); rw [h_add]
       _ =ᵐ[μ] μ[⇑g₁ * g|m] + μ[⇑g₂ * g|m] := by
-        rw [add_mul]; exact condExp_add (hg.simpleFunc_mul' hm _) (hg.simpleFunc_mul' hm _)
+        rw [add_mul]; exact condExp_add (hg.simpleFunc_mul' hm _) (hg.simpleFunc_mul' hm _) _
       _ =ᵐ[μ] ⇑g₁ * μ[g|m] + ⇑g₂ * μ[g|m] := EventuallyEq.add h_eq₁ h_eq₂
       _ =ᵐ[μ] ⇑(g₁ + g₂) * μ[g|m] := by rw [h_add, add_mul]
 
