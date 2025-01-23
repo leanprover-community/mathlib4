@@ -29,8 +29,9 @@ Replace instances of `Cardinal.lift x = Cardinal.lift y` or `Ordinal.lift x = Or
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w} [LinearOrder α] [LinearOrder β] [LinearOrder γ]
-  [WellFoundedLT α] [WellFoundedLT β] [WellFoundedLT γ]
+variable {α : Type u} {β : Type v} {γ δ : Type*}
+  [LinearOrder α] [LinearOrder β] [LinearOrder γ] [LinearOrder δ]
+  [WellFoundedLT α] [WellFoundedLT β] [WellFoundedLT γ] [WellFoundedLT δ]
   {x : α} {y : β} {z : γ}
 
 /-- We write `x =ᵤ y` when the order types of `x` and `y` are equal.
@@ -62,7 +63,7 @@ def liftLT (x : α) (y : β) : Prop :=
 @[inherit_doc] infix:50 " <ᵤ " => liftLT
 
 omit [WellFoundedLT α] [WellFoundedLT β] in
-theorem InitialSeg.cmp_congr {δ : Type*} [LinearOrder δ] [WellFoundedLT δ]
+theorem InitialSeg.cmp_congr
     (f₁ : α ≤i γ) (g₁ : β ≤i γ) (f₂ : α ≤i δ) (g₂ : β ≤i δ) (x : α) (y : β) :
     cmp (f₁ x) (g₁ y) = cmp (f₂ x) (g₂ y) := by
   obtain h | h := @InitialSeg.total γ δ (· < ·) (· < ·) _ _
@@ -123,6 +124,7 @@ theorem liftLT_irrefl (x : α) : ¬ x <ᵤ x := by simp
 
 theorem liftLE_of_liftEQ (h : x =ᵤ y) : x ≤ᵤ y := h.le
 theorem liftLE_of_liftLT (h : x <ᵤ y) : x ≤ᵤ y := h.le
+theorem liftLE_iff_liftLT_or_liftEQ : x ≤ᵤ y ↔ x <ᵤ y ∨ x =ᵤ y := le_iff_lt_or_eq
 
 alias liftEQ.liftLE := liftLE_of_liftEQ
 alias liftLT.liftLE := liftLE_of_liftLT
@@ -142,14 +144,21 @@ theorem not_liftLE : ¬ x ≤ᵤ y ↔ y <ᵤ x := by
 theorem not_liftLT : ¬ x <ᵤ y ↔ y ≤ᵤ x := by
   rw [← not_liftLE, not_not]
 
+theorem liftLE_antisymm_iff : x =ᵤ y ↔ x ≤ᵤ y ∧ y ≤ᵤ x := by
+  rw [← liftLE_iff (γ := α ⊕ₗ β) (RelEmbedding.sumLexInr _ _).collapse (InitialSeg.leAdd _ _)]
+  exact le_antisymm_iff
+
+theorem liftLE_antisymm (h₁ : x ≤ᵤ y) (h₂ : y ≤ᵤ x) : x =ᵤ y :=
+  liftLE_antisymm_iff.2 ⟨h₁, h₂⟩
+
+alias liftLE.antisymm := liftLE_antisymm
+
 theorem liftLE_total (x : α) (y : β) : x ≤ᵤ y ∨ y ≤ᵤ x := by
-  rw [← liftLE_iff (γ := α ⊕ₗ β) (InitialSeg.leAdd _ _) (RelEmbedding.sumLexInr _ _).collapse,
-    ← liftLE_iff (γ := α ⊕ₗ β) (RelEmbedding.sumLexInr _ _).collapse (InitialSeg.leAdd _ _)]
+  rw [← liftLE_iff (γ := α ⊕ₗ β) (RelEmbedding.sumLexInr _ _).collapse (InitialSeg.leAdd _ _)]
   exact le_total ..
 
 theorem liftLT_trichotomy (x : α) (y : β) : x <ᵤ y ∨ x =ᵤ y ∨ y <ᵤ x := by
-  rw [← liftLT_iff (γ := α ⊕ₗ β) (InitialSeg.leAdd _ _) (RelEmbedding.sumLexInr _ _).collapse,
-    ← liftEQ_iff (γ := α ⊕ₗ β) (InitialSeg.leAdd _ _) (RelEmbedding.sumLexInr _ _).collapse,
+  rw [← liftEQ_iff (γ := α ⊕ₗ β) (InitialSeg.leAdd _ _) (RelEmbedding.sumLexInr _ _).collapse,
     ← liftLT_iff (γ := α ⊕ₗ β) (RelEmbedding.sumLexInr _ _).collapse (InitialSeg.leAdd _ _)]
   exact lt_trichotomy ..
 
@@ -186,12 +195,64 @@ theorem liftLT_of_liftLE_of_liftLT (h₁ : x ≤ᵤ y) (h₂ : y <ᵤ z) : x <�
 theorem liftLT_trans (h₁ : x <ᵤ y) (h₂ : y <ᵤ z) : x <ᵤ z :=
   liftLT_of_liftLE_of_liftLT h₁.liftLE h₂
 
+theorem liftEQ_trans (h₁ : x =ᵤ y) (h₂ : y =ᵤ z) : x =ᵤ z :=
+  (liftLE_trans h₁.liftLE h₂.liftLE).antisymm (liftLE_trans h₂.symm.liftLE h₁.symm.liftLE)
+
+theorem liftLE_of_liftLE_of_liftEQ (h₁ : x ≤ᵤ y) (h₂ : y =ᵤ z) : x ≤ᵤ z :=
+  liftLE_trans h₁ h₂.liftLE
+
+theorem liftLE_of_liftEQ_of_liftLE (h₁ : x =ᵤ y) (h₂ : y ≤ᵤ z) : x ≤ᵤ z :=
+  liftLE_trans h₁.liftLE h₂
+
+theorem liftLT_of_liftLT_of_liftEQ (h₁ : x <ᵤ y) (h₂ : y =ᵤ z) : x <ᵤ z :=
+  liftLT_of_liftLT_of_liftLE h₁ h₂.liftLE
+
+theorem liftLT_of_liftEQ_of_liftLT (h₁ : x =ᵤ y) (h₂ : y <ᵤ z) : x <ᵤ z :=
+  liftLT_of_liftLE_of_liftLT h₁.liftLE h₂
+
 alias liftLE.trans := liftLE_trans
 alias liftLT.trans_liftLE := liftLT_of_liftLT_of_liftLE
 alias liftLE.trans_liftLT := liftLT_of_liftLE_of_liftLT
 alias liftLT.trans := liftLT_trans
+alias liftEQ.trans := liftEQ_trans
+alias liftEQ.trans_liftLE := liftLE_of_liftEQ_of_liftLE
+alias liftLE.trans_liftEQ := liftLE_of_liftLE_of_liftEQ
+alias liftEQ.trans_liftLT := liftLT_of_liftEQ_of_liftLT
+alias liftLT.trans_liftEQ := liftLT_of_liftLT_of_liftEQ
 
 instance : @Trans α β γ (· ≤ᵤ ·) (· ≤ᵤ ·) (· ≤ᵤ ·) where trans := liftLE_trans
 instance : @Trans α β γ (· <ᵤ ·) (· ≤ᵤ ·) (· <ᵤ ·) where trans := liftLT_of_liftLT_of_liftLE
 instance : @Trans α β γ (· ≤ᵤ ·) (· <ᵤ ·) (· <ᵤ ·) where trans := liftLT_of_liftLE_of_liftLT
 instance : @Trans α β γ (· <ᵤ ·) (· <ᵤ ·) (· <ᵤ ·) where trans := liftLT_trans
+instance : @Trans α β γ (· =ᵤ ·) (· =ᵤ ·) (· =ᵤ ·) where trans := liftEQ_trans
+instance : @Trans α β γ (· ≤ᵤ ·) (· =ᵤ ·) (· ≤ᵤ ·) where trans := liftLE_of_liftLE_of_liftEQ
+instance : @Trans α β γ (· =ᵤ ·) (· ≤ᵤ ·) (· ≤ᵤ ·) where trans := liftLE_of_liftEQ_of_liftLE
+instance : @Trans α β γ (· <ᵤ ·) (· =ᵤ ·) (· <ᵤ ·) where trans := liftLT_of_liftLT_of_liftEQ
+instance : @Trans α β γ (· =ᵤ ·) (· <ᵤ ·) (· <ᵤ ·) where trans := liftLT_of_liftEQ_of_liftLT
+
+namespace InitialSeg
+
+theorem apply_liftEQ (f : α ≤i β) (x : α) : f x =ᵤ x :=
+  liftEQ.intro (.refl _) f rfl
+
+variable {f : α ≤i γ} {g : β ≤i δ}
+
+@[simp]
+theorem apply_liftLE_iff : f x ≤ᵤ y ↔ x ≤ᵤ y :=
+  ⟨(apply_liftEQ f x).symm.trans_liftLE, (apply_liftEQ f x).trans_liftLE⟩
+
+@[simp]
+theorem liftLE_apply_iff : y ≤ᵤ f x ↔ y ≤ᵤ x :=
+  ⟨fun h ↦ h.trans_liftEQ (apply_liftEQ f x), fun h ↦ h.trans_liftEQ (apply_liftEQ f x).symm⟩
+
+theorem apply_liftLE_apply_iff : f x ≤ᵤ g y ↔ x ≤ᵤ y := by simp
+
+@[simp] theorem apply_liftEQ_iff : f x =ᵤ y ↔ x =ᵤ y := by simp [liftLE_antisymm_iff]
+@[simp] theorem liftEQ_apply_iff {f : α ≤i γ} : y =ᵤ f x ↔ y =ᵤ x := by simp [liftLE_antisymm_iff]
+theorem apply_liftEQ_apply_iff : f x =ᵤ g y ↔ x =ᵤ y := by simp
+
+@[simp] theorem apply_liftLT_iff : f x <ᵤ y ↔ x <ᵤ y := by simp [← not_liftLE]
+@[simp] theorem liftLT_apply_iff {f : α ≤i γ} : y <ᵤ f x ↔ y <ᵤ x := by simp [← not_liftLE]
+theorem apply_liftLT_apply_iff : f x <ᵤ g y ↔ x <ᵤ y := by simp
+
+end InitialSeg
