@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-!
 # Smooth manifolds with nice boundary
@@ -48,7 +49,7 @@ variable {M : Type u} [TopologicalSpace M] [cm : ChartedSpace H M]
 
 /-- Let `M` be a `C^k` real manifold, modelled on the pair `(E, H)`.
 A smooth manifold has nice boundary if its boundary is a smooth manifold such that the inclusion
-`∂M ↪ M` is smooth.
+`∂M ↪ M` is a smooth embedding.
 
 The first version of this said "I.boundary M is a smooth manifold".
 This proved hard to work with, as I.boundary M is a subset, and computing the boundary means
@@ -56,10 +57,12 @@ we'd like to rewrite by an equivalence of sets. This runs into DTT, equality of 
 
 Second version: we prescribe a smooth manifold M₀, and ask for a smooth embedding of M₀ into M,
 whose image is the boundary of M. This will allow rewriting the boundary.
+A smooth embedding is characterised by having injective differential (being an immersion)
+and being a topological embedding.
 (Perhaps it's not good enough either, we'll see. Let's try!)
 
 Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` and an embedding
-`f : M₀ → M` which is smooth, such that `range f = I.boundary M`.
+`f : M₀ → M` which is a smooth immersion, such that `range f = I.boundary M`.
 -/
 structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M] where
@@ -87,6 +90,7 @@ structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H
   f: M₀ → M
   isEmbedding: Topology.IsEmbedding f
   isSmooth: ContMDiff I₀ I k f
+  isImmersion: ∀ x, Function.Injective (mfderiv I₀ I f x)
   /-- `f` maps `M₀` to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
@@ -127,6 +131,7 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
   f x := (IsEmpty.false x).elim
   isEmbedding := Topology.IsEmbedding.of_subsingleton _
   isSmooth x := (IsEmpty.false x).elim
+  isImmersion x := (IsEmpty.false x).elim
   range_eq_boundary := by
     have : I.boundary M = ∅ := by
       rw [ModelWithCorners.Boundaryless.iff_boundary_eq_empty]
@@ -145,6 +150,7 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   f x := ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
   isEmbedding := sorry
   isSmooth := sorry
+  isImmersion x := sorry
   range_eq_boundary := sorry
 
 -- TODO: only interesting statement to prove below
@@ -226,6 +232,8 @@ lemma IsClosedEmbedding.sum_elim
   obtain ⟨hcont', hinj', hClosedEmb'⟩ := hg
   exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
 
+-- missing lemma: mfderiv of Prod.map (know it's smooth)
+
 variable (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
 def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
@@ -238,6 +246,8 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
   -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
   isSmooth := ContMDiff.prod_map contMDiff_id bd.isSmooth
+  -- add a predicate "IsImmersion", prove some basic API and show Prod.map respects this!
+  isImmersion x := sorry -- TODO!
   range_eq_boundary := by
     rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left, range_id]
     congr
@@ -254,6 +264,7 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   f := Prod.map bd.f id
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
   isSmooth := ContMDiff.prod_map bd.isSmooth contMDiff_id
+  isImmersion x := sorry -- TODO!
   range_eq_boundary := by
     rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_right, range_id]
     congr
@@ -293,6 +304,7 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
 --   isSmooth := by
 --     --have : Nonempty H₀ := sorry
 --     sorry -- works, except for nonemptiness apply ContMDiff.sum_map bd.isSmooth bd'.isSmooth
+--   isImmersion := sorry
 --   range_eq_boundary := sorry -- easy, using boundary_disjointUnion
 
 -- TODO: move to InteriorBoundary
@@ -327,6 +339,21 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
     have : Nonempty (ModelProd H (EuclideanHalfSpace 1)) := by rw [ModelProd]; infer_instance
     exact ContMDiff.sum_elim (contMDiff_id.prod_mk contMDiff_const)
       (contMDiff_id.prod_mk contMDiff_const)
+  isImmersion p := by
+    by_cases h: p.isLeft
+    · let x := p.getLeft h
+      rw [Sum.eq_left_getLeft_of_isLeft h]
+      -- lemma: f: M → N, g: M' → N and x ∈ M, then
+      -- mfderiv I J f x "is" mfderiv I J (Sum.elim f g) (.inl x)
+      -- remaining detail: id has injective differential
+      have : Injective (mfderiv I (I.prod (𝓡∂ 1)) ((·, ⊥) : M → M × (Set.Icc (0 : ℝ) 1)) x) := by
+        -- is essentially id, so should work...
+        sorry
+      sorry
+    · let x := p.getRight (Sum.not_isLeft.mp h)
+      rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
+      -- same argument as in the other case
+      sorry
   range_eq_boundary := by
     simp only [boundary_product, Set.Sum.elim_range, Set.prod, mem_univ, true_and]
     ext x
