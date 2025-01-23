@@ -53,13 +53,12 @@ theorem iUnion_accumulate [Preorder α] : ⋃ x, Accumulate s x = ⋃ x, s x := 
   · exact iUnion_mono fun i => subset_accumulate
 
 @[simp]
-lemma accumulate_zero_nat (s : ℕ → Set β) : Set.Accumulate s 0 = s 0 := by
+lemma accumulate_zero_nat (s : ℕ → Set β) : Accumulate s 0 = s 0 := by
   simp [accumulate_def]
 
 open Function in
-theorem disjoint_accumulate [Preorder α]
-    (hs : Pairwise (Disjoint on s)) {i j : α} (hij : i < j) :
-    Disjoint (Set.Accumulate s i) (s j) := by
+theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j : α} (hij : i < j) :
+    Disjoint (Accumulate s i) (s j) := by
   apply disjoint_left.2 (fun x hx ↦ ?_)
   simp only [Accumulate, mem_iUnion, exists_prop] at hx
   rcases hx with ⟨k, hk, hx⟩
