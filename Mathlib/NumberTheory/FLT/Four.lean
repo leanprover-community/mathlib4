@@ -160,7 +160,8 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     delta PythagoreanTriple
     linear_combination h.1.2.2
   -- coprime requirement:
-  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 := Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal h).pow
+  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 :=
+    Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal h).pow
   -- in order to reduce the possibilities we get from the classification of pythagorean triples
   -- it helps if we know the parity of a ^ 2 (and the sign of c):
   have ha22 : a ^ 2 % 2 = 1 := by
