@@ -161,9 +161,10 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) :
     m (⋃ i ∈ S, s i) ≤ ∑ i ∈ S, m (s i) := by
   classical
-  induction' S using Finset.induction with i S hiS h hs
-  · simp
-  · rw [Finset.sum_insert hiS]
+  induction S using Finset.induction with
+  | empty => simp
+  | @insert i S hiS h =>
+    rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
     refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
@@ -187,7 +188,7 @@ lemma addContent_diff_of_ne_top (m : AddContent C) (hC : IsSetRing C)
   rw [h_union, ENNReal.add_sub_cancel_left (hm_ne_top _ ht)]
 
 lemma addContent_accumulate (m : AddContent C) (hC : IsSetRing C)
-    {s : ℕ → Set α} (hs_disj : Pairwise (Function.onFun Disjoint s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
+    {s : ℕ → Set α} (hs_disj : Pairwise (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
       m (Set.Accumulate s n) = ∑ i in Finset.range (n + 1), m (s i) := by
   induction n with
   | zero => simp

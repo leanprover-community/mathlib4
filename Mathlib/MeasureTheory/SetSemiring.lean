@@ -305,9 +305,10 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋃ i ∈ S, s i ∈ C := by
   classical
-  induction' S using Finset.induction with i S _ h hs
-  · simp [hC.empty_mem]
-  · simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
+  induction S using Finset.induction with
+  | empty => simp [hC.empty_mem]
+  | @insert i S _ h =>
+    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
     exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
 
@@ -345,26 +346,21 @@ lemma disjointed_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
 
 theorem iUnion_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
     (⋃ i ≤ n, s i) ∈ C := by
-  induction' n with n hn
-  · simp only [Nat.le_zero_eq, iUnion_iUnion_eq_left]
-    exact hs 0
-  rw [Set.biUnion_le_succ]
-  exact hC.union_mem hn (hs _)
+  induction n with
+  | zero => simp [hs 0]
+  | succ n hn => rw [biUnion_le_succ]; exact hC.union_mem hn (hs _)
 
 theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
     (⋂ i ≤ n, s i) ∈ C := by
-  induction' n with n hn
-  · simp only [Nat.le_zero_eq, iInter_iInter_eq_left]
-    exact hs 0
-  rw [Set.biInter_le_succ]
-  exact hC.inter_mem hn (hs _)
+  induction n with
+  | zero => simp [hs 0]
+  | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
 
 theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Set.Accumulate s n ∈ C := by
-  induction' n with n hn
-  · simp only [Accumulate, Nat.le_zero_eq, iUnion_iUnion_eq_left, hs 0]
-  · rw [Set.accumulate_succ]
-    exact hC.union_mem hn (hs _)
+    Accumulate s n ∈ C := by
+  induction n with
+  | zero => simp [hs 0]
+  | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)
 
 end IsSetRing
 
