@@ -835,9 +835,7 @@ lemma baseChange_negPolynomial :
   rw [← map_negPolynomial, map_baseChange]
 
 lemma baseChange_negY (x y : A) :
-    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by
-  erw [← map_negY, map_baseChange]
-  rfl
+    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by simp
 
 lemma baseChange_addPolynomial (x y L : A) :
     (W.baseChange B).toAffine.addPolynomial (f x) (f y) (f L) =
@@ -847,21 +845,15 @@ lemma baseChange_addPolynomial (x y L : A) :
 
 lemma baseChange_addX (x₁ x₂ L : A) :
     (W.baseChange B).toAffine.addX (f x₁) (f x₂) (f L) =
-      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
-  erw [← map_addX, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by simp
 
 lemma baseChange_negAddY (x₁ x₂ y₁ L : A) :
     (W.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
-  erw [← map_negAddY, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by simp
 
 lemma baseChange_addY (x₁ x₂ y₁ L : A) :
     (W.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
-  erw [← map_addY, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by simp
 
 variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
   {K : Type v} [Field K] [Algebra R K] [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)

@@ -75,14 +75,14 @@ lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
 
-lemma hasCardinalLT_option_iff (X : Type u) (κ' : Cardinal.{w})
-    (hκ' : Cardinal.aleph0 ≤ κ') :
-    HasCardinalLT (Option X) κ' ↔ HasCardinalLT X κ' := by
+lemma hasCardinalLT_option_iff (X : Type u) (κ : Cardinal.{w})
+    (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Option X) κ ↔ HasCardinalLT X κ := by
   constructor
   · intro h
     exact h.of_injective _ (Option.some_injective _)
   · intro h
     dsimp [HasCardinalLT] at h ⊢
     simp only [Cardinal.mk_option, Cardinal.lift_add, Cardinal.lift_one]
-    exact Cardinal.add_lt_of_lt (by simpa using hκ') h
-      (lt_of_lt_of_le Cardinal.one_lt_aleph0 (by simpa using hκ'))
+    exact Cardinal.add_lt_of_lt (by simpa using hκ) h
+      (lt_of_lt_of_le Cardinal.one_lt_aleph0 (by simpa using hκ))

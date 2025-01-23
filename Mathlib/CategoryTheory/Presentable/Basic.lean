@@ -39,8 +39,12 @@ namespace Functor
 
 variable (F G : C ⥤ D) (e : F ≅ G) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
-/-- A functor is `κ`-accessible (with `κ` a regular cardinal)
-if it preserves colimits of shape `J` where `J` is any `κ`-filtered category. -/
+/-- A functor `F : C ⥤ C` is `κ`-accessible (with `κ` a regular cardinal)
+if it preserves colimits of shape `J` where `J` is any `κ`-filtered category.
+In the mathematical literature, some assumptions are often made on the
+categories `C` or `D` (e.g. the existence of `κ`-filtered colimits,
+see `HasCardinalFilteredColimits` below), but here we do not
+make such assumptions. -/
 class IsCardinalAccessible : Prop where
   preservesColimitOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J F
@@ -108,8 +112,10 @@ section
 
 variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
+/-- A category has `κ`-filtered colimits if it has colimits of shape `J`
+for any `κ`-filtered category `J`. -/
 class HasCardinalFilteredColimits : Prop where
-  hasColimitsOfShape (J : Type w) [Category.{w} J] [IsCardinalFiltered J κ] :
+  hasColimitsOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
 attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape

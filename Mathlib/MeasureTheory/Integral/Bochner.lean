@@ -1367,6 +1367,9 @@ theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ �
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     exact integral_nonneg_of_ae le_ae
 
+lemma abs_integral_le_integral_abs {f : α → ℝ} : |∫ a, f a ∂μ| ≤ ∫ a, |f a| ∂μ :=
+  norm_integral_le_integral_norm f
+
 theorem norm_integral_le_of_norm_le {f : α → G} {g : α → ℝ} (hg : Integrable g μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) : ‖∫ x, f x ∂μ‖ ≤ ∫ x, g x ∂μ :=
   calc
@@ -1385,16 +1388,14 @@ theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
 
 @[simp]
 theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c := by
-  cases' (@le_top _ _ _ (μ univ)).lt_or_eq with hμ hμ
-  · haveI : IsFiniteMeasure μ := ⟨hμ⟩
-    simp only [integral, hE, L1.integral]
+  by_cases hμ : IsFiniteMeasure μ
+  · simp only [integral, hE, L1.integral]
     exact setToFun_const (dominatedFinMeasAdditive_weightedSMul _) _
-  · by_cases hc : c = 0
-    · simp [hc, integral_zero]
-    · have : ¬Integrable (fun _ : α => c) μ := by
-        simp only [integrable_const_iff, not_or]
-        exact ⟨hc, hμ.not_lt⟩
-      simp [integral_undef, *]
+  by_cases hc : c = 0
+  · simp [hc, integral_zero]
+  · simp [integral_undef, (integrable_const_iff_isFiniteMeasure hc).not.2 hμ, *]
+    simp only [isFiniteMeasure_iff, not_lt, top_le_iff] at hμ
+    simp [hμ]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=

@@ -76,6 +76,8 @@ In lemma names, the words `spanning` and `flat` are used as suffixes,
 for instance we have `ground_spanning` rather than `spanning_ground`.
 -/
 
+assert_not_exists Field
+
 open Set
 namespace Matroid
 
@@ -154,7 +156,7 @@ lemma closure_subset_ground (M : Matroid α) (X : Set α) : M.closure X ⊆ M.E 
   simp_rw [closure_def, inter_assoc, inter_self]
 
 lemma inter_ground_subset_closure (M : Matroid α) (X : Set α) : X ∩ M.E ⊆ M.closure X := by
-  simp_rw [closure_def, subset_sInter_iff]; aesop
+  simp_rw [closure_def, subset_sInter_iff]; simp
 
 lemma mem_closure_iff_forall_mem_flat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     e ∈ M.closure X ↔ ∀ F, M.Flat F → X ⊆ F → e ∈ F := by

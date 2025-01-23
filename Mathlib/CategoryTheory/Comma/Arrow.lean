@@ -94,15 +94,16 @@ instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
     category. -/
 @[simps]
-def homMk {f g : Arrow T} {u : f.left ⟶ g.left} {v : f.right ⟶ g.right}
-    (w : u ≫ g.hom = f.hom ≫ v) : f ⟶ g where
+def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
+    (w : u ≫ g.hom = f.hom ≫ v := by aesop_cat) : f ⟶ g where
   left := u
   right := v
   w := w
 
 /-- We can also build a morphism in the arrow category out of any commutative square in `T`. -/
 @[simps]
-def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} {u : X ⟶ P} {v : Y ⟶ Q} (w : u ≫ g = f ≫ v) :
+def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y ⟶ Q)
+    (w : u ≫ g = f ≫ v := by aesop_cat) :
     Arrow.mk f ⟶ Arrow.mk g where
   left := u
   right := v
@@ -275,6 +276,16 @@ def rightFunc : Arrow C ⥤ C :=
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
+
+lemma ext {f g : Arrow C}
+    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
+    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
+  obtain ⟨X, Y, f⟩ := f
+  obtain ⟨X', Y', g⟩ := g
+  obtain rfl : X = X' := h₁
+  obtain rfl : Y = Y' := h₂
+  obtain rfl : f = g := by simpa using h₃
+  rfl
 
 end Arrow
 

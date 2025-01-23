@@ -96,7 +96,7 @@ theorem AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M 
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ _ : ι, M) :
     f.toAddMonoidAlgebra.toDirectSum = f :=
-  (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) : _)
+  (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) :)
 
 end
 
