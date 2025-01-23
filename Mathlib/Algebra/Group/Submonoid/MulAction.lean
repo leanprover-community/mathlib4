@@ -14,7 +14,7 @@ import Mathlib.Algebra.Group.Action.Defs
 variable {M α : Type*} [Monoid M] {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S M]
 
 @[to_additive]
-instance Submonoid.smul {M' : Type} [MulOneClass M'] [SMul M' α]
+instance Submonoid.smul {M' : Type*} [MulOneClass M'] [SMul M' α]
     (S : Submonoid M') : SMul (↥S) α := inferInstance
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
