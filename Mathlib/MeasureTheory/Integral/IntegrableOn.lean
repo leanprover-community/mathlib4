@@ -240,6 +240,7 @@ theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : Measur
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 
+@[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
