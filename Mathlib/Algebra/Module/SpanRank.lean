@@ -40,8 +40,8 @@ noncomputable
 def spanRankNat (p : Submodule R M) : ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
-/-- The minimum cardinality of a generating set of a submodule, possibly infinite, with type `ℕ∞`.
-  If no finite generating set exists, the span rank is defined to be `⊤`. -/
+/-- The minimum cardinality of a generating set of a submodule, possibly infinite, with type
+  `WithTop ℕ`. If no finite generating set exists, the span rank is defined to be `⊤`. -/
 noncomputable
 def spanRank (p : Submodule R M) : WithTop ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
@@ -147,5 +147,59 @@ lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanRankNat)
   have := span_range_minGenerator h
   simp_rw [← this]
   exact subset_span (Set.mem_range_self i)
+
+lemma spanRank_eq_zero_iff {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := by
+  constructor
+  · intro e
+    have H : Submodule.FG I := by
+      rw [← Submodule.spanRank_ne_top_iff_fg, e]
+      trivial
+    rw [fg_iff_spanRank_eq_spanRankNat.mp H, ← WithTop.coe_zero, WithTop.coe_zero,
+        Nat.cast_eq_zero] at e
+    have := H.exists_fun_spanRankNat_span_range_eq
+    rw [e] at this
+    obtain ⟨f, hf⟩ := this
+    rwa [show Set.range f = ∅ by simp, Submodule.span_empty, eq_comm] at hf
+  · rintro rfl
+    rw [← bot_eq_zero, eq_bot_iff, bot_eq_zero, ← WithTop.coe_zero]
+    apply Submodule.FG.spanRank_le_iff_exists_span_range_eq.mpr
+    refine ⟨fun _ ↦ 0, by
+      convert Submodule.span_empty
+      rw [Set.range_eq_empty_iff]
+      exact Fin.isEmpty'⟩
+
+lemma spanRank_sup {p q : Submodule R M} : (p ⊔ q).spanRank ≤ p.spanRank + q.spanRank := by
+  by_cases hp : Submodule.FG p
+  swap
+  · rw [← Submodule.spanRank_ne_top_iff_fg, not_ne_iff] at hp
+    rw [hp, top_add]
+    exact le_top
+  by_cases hq : Submodule.FG q
+  swap
+  · rw [← Submodule.spanRank_ne_top_iff_fg, not_ne_iff] at hq
+    rw [hq, add_top]
+    exact le_top
+  obtain ⟨f, hf⟩ := hp.exists_fun_spanRankNat_span_range_eq
+  obtain ⟨g, hg⟩ := hq.exists_fun_spanRankNat_span_range_eq
+  rw [Submodule.fg_iff_spanRank_eq_spanRankNat] at hp hq
+  rw [hp, hq]
+  norm_cast
+  rw [FG.spanRank_le_iff_exists_span_range_eq]
+  refine ⟨(Sum.elim f g) ∘ finSumFinEquiv.symm, ?_⟩
+  rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
+    Set.Sum.elim_range, Submodule.span_union, hf, hg]
+
+lemma spanRank_span_set_finite {s : Set R} (hs : s.Finite) :
+  (Submodule.span R s).spanRank ≤ hs.toFinset.card := by
+  rw [Submodule.FG.spanRank_le_iff_exists_span_range_eq]
+  refine ⟨Subtype.val ∘ hs.toFinset.equivFin.symm, ?_⟩
+  rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
+    Subtype.range_val]
+  congr
+  ext
+  exact hs.mem_toFinset
+
+lemma spanRank_bot : (⊥ : Ideal R).spanRank = 0 :=
+  Submodule.spanRank_eq_zero_iff.mpr rfl
 
 end Submodule
