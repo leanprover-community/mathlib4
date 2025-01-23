@@ -384,7 +384,6 @@ theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
     ⟨hL₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hL₂, hR₁.trans (fun _ _ _ h₁ h₂ ↦ h₁.trans h₂) hR₂⟩
 
-
 /-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
 def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveLeft b
 
