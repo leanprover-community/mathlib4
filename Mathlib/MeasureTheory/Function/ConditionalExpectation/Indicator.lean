@@ -88,9 +88,8 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
   calc
     s.indicator (μ[s.indicator f + sᶜ.indicator f|m]) =ᵐ[μ]
         s.indicator (μ[s.indicator f|m] + μ[sᶜ.indicator f|m]) := by
-      have : μ[s.indicator f + sᶜ.indicator f|m] =ᵐ[μ] μ[s.indicator f|m] + μ[sᶜ.indicator f|m] :=
-        condExp_add (hf_int.indicator (hm _ hs)) (hf_int.indicator (hm _ hs.compl))
-      filter_upwards [this] with x hx
+      filter_upwards [condExp_add (hf_int.indicator (hm _ hs)) (hf_int.indicator (hm _ hs.compl)) m]
+        with x hx
       classical rw [Set.indicator_apply, Set.indicator_apply, hx]
     _ = s.indicator (μ[s.indicator f|m]) + s.indicator (μ[sᶜ.indicator f|m]) :=
       (s.indicator_add' _ _)
