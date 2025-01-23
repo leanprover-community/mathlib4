@@ -44,14 +44,12 @@ lemma shift_nullmeasurable {s : Set ℝ} (h : NullMeasurableSet s volume) (c : �
 
 -- TODO: move to a better place, unless this already exists!
 lemma measure_union_null {α : Type*} [MeasureSpace α] {μ : Measure α}
-    {s t : Set α} (hs : MeasurableSet s) (ht : μ t = 0) :
-    μ (s ∪ t) = μ s := by
+    {s t : Set α} (hs : MeasurableSet s) (ht : μ t = 0) : μ (s ∪ t) = μ s := by
   have hz : μ (t \ s) = 0 := by
-    apply le_antisymm ?_ (zero_le (μ (t \ s)))
+    apply (zero_le _).antisymm'
     rw [← ht]
     exact measure_mono diff_subset
-  rw [union_diff_self.symm, measure_union' disjoint_sdiff_right hs, hz]
-  abel
+  rw [union_diff_self.symm, measure_union' disjoint_sdiff_right hs, hz, add_zero]
 
 lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
     (hc : I.Countable) (hd : I.PairwiseDisjoint s) (hm : ∀ i ∈ I, NullMeasurableSet (s i) volume) :
@@ -89,8 +87,8 @@ instance vitaliSetoid : Setoid (Icc (0 : ℝ) 1) where
   r := fun x y ↦ y.val - x ∈ range ((↑) : ℚ → ℝ)
   iseqv := {
     refl {x} := by simp
-    symm {x y}:= fun ⟨t, h⟩ ↦ ⟨(-t), by simp [h]⟩
-    trans {x y z} := fun ⟨t1, h1⟩ ⟨t2, h2⟩ ↦ ⟨(t1 + t2), by simp [h1, h2]⟩
+    symm {x y}:= fun ⟨t, h⟩ ↦ ⟨-t, by simp [h]⟩
+    trans {x y z} := fun ⟨t1, h1⟩ ⟨t2, h2⟩ ↦ ⟨t1 + t2, by simp [h1, h2]⟩
   }
 
 /-- The quotient type given by `vitaliSetoid`. -/
@@ -100,9 +98,15 @@ def vitaliType : Type := Quotient vitaliSetoid
 arbitrary choice function. -/
 def vitaliSet : Set ℝ := Set.range fun x : vitaliType ↦ x.out.val
 
+/-- The Vitali set, shifted by `i`. -/
+def vitaliShift (i : ℝ) : Set ℝ := (fun x ↦ x + i) '' vitaliSet
+
+theorem volume_vitaliShift (i : ℝ) : volume (vitaliShift i) = volume vitaliSet := by
+  simp [vitaliShift]
+
 /-- `vitaliUnion` is the union of copies of `vitaliSet`, shifted by all rationals between
 `-1` and `1`. -/
-def vitaliUnion : Set ℝ := ⋃ i : Set.Icc (-1 : ℚ) 1, (fun x ↦ x + i) '' vitaliSet
+def vitaliUnion : Set ℝ := ⋃ i : Icc (-1 : ℚ) 1, vitaliShift i
 
 /-- We now prove some results about the Vitali set and its shifts.
 
@@ -111,7 +115,7 @@ lemma vitaliSet_subset_Icc : vitaliSet ⊆ Icc 0 1 := by
   rintro x ⟨t, rfl⟩
   exact Subtype.coe_prop _
 
-example {x y : ℝ} (hx : x ∈ Set.Icc 0 1) (hy : y ∈ Set.Icc (-1) 1) : x + y ∈ Set.Icc (-1) 2 := by
+example {x y : ℝ} (hx : x ∈ Icc 0 1) (hy : y ∈ Icc (-1) 1) : x + y ∈ Icc (-1) 2 := by
   rw [mem_Icc] at *
   constructor <;> linarith
 
@@ -136,7 +140,7 @@ lemma Icc_subset_vitaliUnion : Icc 0 1 ⊆ vitaliUnion := by
   · have := z.out.prop
     rw [hy, mem_Icc] at *
     constructor <;> linarith
-  · rw [image_add_right, hy]
+  · rw [vitaliShift, hy, image_add_right]
     use z
     simp
 
@@ -148,9 +152,8 @@ lemma volume_vitaliUnion_mem : volume vitaliUnion ∈ Icc 1 3 := by
   constructor
   exacts [measure_mono Icc_subset_vitaliUnion, measure_mono vitaliUnion_subset_Icc]
 
-#exit
 /-- The shifted copies of vitaliSet in vitaliUnion are pairwise disjoint. -/
-lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
+lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliShift := by
   intro x x_vI y y_vI x_ne_y
   refine Set.disjoint_iff.mpr ?_
   intro z
@@ -174,23 +177,24 @@ lemma vitali_pairwise_disjoint : vI.PairwiseDisjoint vitaliSet' := by
          _ = y := by { simp [rep_y] }
   contradiction
 
-/-- vI is a countable set. -/
-lemma vI_countable : vI.Countable :=
-  (countable_range _).mono inter_subset_right
-
 /-- This is the main result that will lead to a contradiction:
 if the vitaliSet is null-measurable, then the volume of vitaliUnion is
 the sum of countably many copies of vitaliSet.  -/
 lemma volume_vitaliUnion (hm : NullMeasurableSet vitaliSet volume) :
-    volume vitaliUnion = ∑' _ : ↑vI, volume vitaliSet := by
-  have hm' : ∀ i ∈ vI, NullMeasurableSet (vitaliSet' i) volume := by
-    intro i i_vI
-    rw [vitaliSet']
+    volume vitaliUnion = ∑' _ : Icc (-1 : ℚ) 1, volume vitaliSet := by
+  have hm' (i : Icc (-1 : ℚ) 1) : NullMeasurableSet (vitaliShift i) volume := by
     apply shift_nullmeasurable hm
-  rw [vitaliUnion, biUnion_volume vI_countable vitali_pairwise_disjoint hm']
+  rw [vitaliUnion, measure_iUnion₀]
+  · simp_rw [volume_vitaliShift]
+  · sorry
+  · intro i
+    rw [vitaliShift, (measurableEmbedding_addRight _).measurableSet_image]
+    simp
+    apply measurable_shift
   refine tsum_congr fun i ↦ ?_
   rw [vitaliSet', image_add_right, measure_preimage_add_right]
 
+#exit
 /-- vI is an infinite set. -/
 lemma vI_infinite : vI.Infinite := by
   let f : ℕ → ℝ := fun n ↦ 1 / (n + 1)
