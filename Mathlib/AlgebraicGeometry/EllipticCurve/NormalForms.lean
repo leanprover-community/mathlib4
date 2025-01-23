@@ -92,8 +92,7 @@ elliptic curve, weierstrass equation, normal form
 
 -/
 
-variable {R : Type*} [CommRing R] (W : WeierstrassCurve R)
-variable {F : Type*} [Field F] (E : EllipticCurve F)
+variable {R : Type*} [CommRing R] {F : Type*} [Field F] (W : WeierstrassCurve R)
 
 namespace WeierstrassCurve
 
@@ -240,19 +239,18 @@ theorem Δ_of_isShortNF_of_char_three : W.Δ = -W.a₄ ^ 3 := by
   rw [Δ_of_isShortNF]
   linear_combination (-21 * W.a₄ ^ 3 - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
 
-variable [E.IsShortNF]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsShortNF]
 
-theorem _root_.EllipticCurve.j_of_isShortNF :
-    E.j = 6912 * E.a₄ ^ 3 / (4 * E.a₄ ^ 3 + 27 * E.a₆ ^ 2) := by
-  have h := E.Δ'.ne_zero
-  rw [E.coe_Δ', Δ_of_isShortNF] at h
-  rw [EllipticCurve.j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, E.coe_Δ',
+theorem j_of_isShortNF : W.j = 6912 * W.a₄ ^ 3 / (4 * W.a₄ ^ 3 + 27 * W.a₆ ^ 2) := by
+  have h := W.Δ'.ne_zero
+  rw [coe_Δ', Δ_of_isShortNF] at h
+  rw [j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, coe_Δ',
     c₄_of_isShortNF, Δ_of_isShortNF, div_eq_div_iff h (right_ne_zero_of_mul h)]
   ring1
 
 @[simp]
-theorem _root_.EllipticCurve.j_of_isShortNF_of_char_three [CharP F 3] : E.j = 0 := by
-  rw [EllipticCurve.j, c₄_of_isShortNF_of_char_three]; simp
+theorem j_of_isShortNF_of_char_three [CharP F 3] : W.j = 0 := by
+  rw [j, c₄_of_isShortNF_of_char_three]; simp
 
 end Quantity
 
@@ -345,21 +343,21 @@ theorem Δ_of_isCharThreeJNeZeroNF_of_char_three : W.Δ = -W.a₂ ^ 3 * W.a₆ :
   rw [Δ_of_isCharThreeJNeZeroNF]
   linear_combination (-21 * W.a₂ ^ 3 * W.a₆ - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
 
-variable [E.IsCharThreeJNeZeroNF] [CharP F 3]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsCharThreeJNeZeroNF] [CharP F 3]
 
 @[simp]
-theorem _root_.EllipticCurve.j_of_isCharThreeJNeZeroNF_of_char_three : E.j = -E.a₂ ^ 3 / E.a₆ := by
-  have h := E.Δ'.ne_zero
-  rw [E.coe_Δ', Δ_of_isCharThreeJNeZeroNF_of_char_three] at h
-  rw [EllipticCurve.j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, E.coe_Δ',
+theorem j_of_isCharThreeJNeZeroNF_of_char_three : W.j = -W.a₂ ^ 3 / W.a₆ := by
+  have h := W.Δ'.ne_zero
+  rw [coe_Δ', Δ_of_isCharThreeJNeZeroNF_of_char_three] at h
+  rw [j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, coe_Δ',
     c₄_of_isCharThreeJNeZeroNF_of_char_three, Δ_of_isCharThreeJNeZeroNF_of_char_three,
     div_eq_div_iff h (right_ne_zero_of_mul h)]
   ring1
 
-theorem _root_.EllipticCurve.j_ne_zero_of_isCharThreeJNeZeroNF_of_char_three : E.j ≠ 0 := by
-  rw [E.j_of_isCharThreeJNeZeroNF_of_char_three, div_ne_zero_iff]
-  have h := E.Δ'.ne_zero
-  rwa [E.coe_Δ', Δ_of_isCharThreeJNeZeroNF_of_char_three, mul_ne_zero_iff] at h
+theorem j_ne_zero_of_isCharThreeJNeZeroNF_of_char_three : W.j ≠ 0 := by
+  rw [j_of_isCharThreeJNeZeroNF_of_char_three, div_ne_zero_iff]
+  have h := W.Δ'.ne_zero
+  rwa [coe_Δ', Δ_of_isCharThreeJNeZeroNF_of_char_three, mul_ne_zero_iff] at h
 
 end Quantity
 
@@ -427,7 +425,8 @@ theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
   constructor
   · simp
   · simp
-  · field_simp [W.toShortNFOfCharThree_a₂ ▸ hb₂]
+  · have ha₂ : W'.a₂ ≠ 0 := W.toShortNFOfCharThree_a₂ ▸ hb₂
+    field_simp [ha₂]
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero F 3
 
 theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) :
@@ -530,17 +529,17 @@ theorem Δ_of_isCharTwoJNeZeroNF_of_char_two : W.Δ = W.a₆ := by
     b₆_of_isCharTwoJNeZeroNF_of_char_two, b₈_of_isCharTwoJNeZeroNF_of_char_two]
   linear_combination -W.a₆ * CharP.cast_eq_zero R 2
 
-variable [E.IsCharTwoJNeZeroNF] [CharP F 2]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsCharTwoJNeZeroNF] [CharP F 2]
 
 @[simp]
-theorem _root_.EllipticCurve.j_of_isCharTwoJNeZeroNF_of_char_two : E.j = 1 / E.a₆ := by
-  rw [EllipticCurve.j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, E.coe_Δ',
+theorem j_of_isCharTwoJNeZeroNF_of_char_two : W.j = 1 / W.a₆ := by
+  rw [j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, coe_Δ',
     c₄_of_isCharTwoJNeZeroNF_of_char_two, Δ_of_isCharTwoJNeZeroNF_of_char_two, one_pow]
 
-theorem _root_.EllipticCurve.j_ne_zero_of_isCharTwoJNeZeroNF_of_char_two : E.j ≠ 0 := by
-  rw [E.j_of_isCharTwoJNeZeroNF_of_char_two, div_ne_zero_iff]
-  have h := E.Δ'.ne_zero
-  rw [E.coe_Δ', Δ_of_isCharTwoJNeZeroNF_of_char_two] at h
+theorem j_ne_zero_of_isCharTwoJNeZeroNF_of_char_two : W.j ≠ 0 := by
+  rw [j_of_isCharTwoJNeZeroNF_of_char_two, div_ne_zero_iff]
+  have h := W.Δ'.ne_zero
+  rw [coe_Δ', Δ_of_isCharTwoJNeZeroNF_of_char_two] at h
   exact ⟨one_ne_zero, h⟩
 
 end Quantity
@@ -616,19 +615,18 @@ theorem Δ_of_isCharTwoJEqZeroNF_of_char_two : W.Δ = W.a₃ ^ 4 := by
   rw [Δ_of_isCharTwoJEqZeroNF, b₆_of_char_two]
   linear_combination (-32 * W.a₄ ^ 3 - 14 * W.a₃ ^ 4) * CharP.cast_eq_zero R 2
 
-variable [E.IsCharTwoJEqZeroNF]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsCharTwoJEqZeroNF]
 
-theorem _root_.EllipticCurve.j_of_isCharTwoJEqZeroNF :
-    E.j = 110592 * E.a₄ ^ 3 / (64 * E.a₄ ^ 3 + 27 * E.b₆ ^ 2) := by
-  have h := E.Δ'.ne_zero
-  rw [E.coe_Δ', Δ_of_isCharTwoJEqZeroNF] at h
-  rw [EllipticCurve.j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, E.coe_Δ',
+theorem j_of_isCharTwoJEqZeroNF : W.j = 110592 * W.a₄ ^ 3 / (64 * W.a₄ ^ 3 + 27 * W.b₆ ^ 2) := by
+  have h := W.Δ'.ne_zero
+  rw [coe_Δ', Δ_of_isCharTwoJEqZeroNF] at h
+  rw [j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, coe_Δ',
     c₄_of_isCharTwoJEqZeroNF, Δ_of_isCharTwoJEqZeroNF, div_eq_div_iff h (neg_ne_zero.1 h)]
   ring1
 
 @[simp]
-theorem _root_.EllipticCurve.j_of_isCharTwoJEqZeroNF_of_char_two [CharP F 2] : E.j = 0 := by
-  rw [EllipticCurve.j, c₄_of_isCharTwoJEqZeroNF_of_char_two]; simp
+theorem j_of_isCharTwoJEqZeroNF_of_char_two [CharP F 2] : W.j = 0 := by
+  rw [j, c₄_of_isCharTwoJEqZeroNF_of_char_two]; simp
 
 end Quantity
 

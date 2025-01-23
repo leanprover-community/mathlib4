@@ -49,6 +49,7 @@ noncomputable section
 open Affine
 
 open Set
+open scoped Pointwise
 
 section
 
@@ -257,7 +258,8 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
   refine le_antisymm ?_ ?_
   · rintro v ⟨p1, hp1, p2, hp2, rfl⟩
-    exact ⟨p1 -ᵥ p2 +ᵥ p, vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
+    exact ⟨(p1 -ᵥ p2) +ᵥ p,
+      vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
   · rintro v ⟨p2, hp2, rfl⟩
     exact ⟨p2, hp2, p, hp, rfl⟩
 
@@ -510,6 +512,12 @@ theorem direction_affineSpan (s : Set P) : (affineSpan k s).direction = vectorSp
 theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s :=
   mem_spanPoints k p s hp
 
+@[simp]
+lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
+  ext
+  simp [mem_add, spanPoints]
+  aesop
+
 end affineSpan
 
 namespace AffineSubspace
@@ -522,13 +530,13 @@ instance : CompleteLattice (AffineSubspace k P) :=
     PartialOrder.lift ((↑) : AffineSubspace k P → Set P)
       coe_injective with
     sup := fun s1 s2 => affineSpan k (s1 ∪ s2)
-    le_sup_left := fun s1 s2 =>
+    le_sup_left := fun _ _ =>
       Set.Subset.trans Set.subset_union_left (subset_spanPoints k _)
-    le_sup_right := fun s1 s2 =>
+    le_sup_right := fun _ _ =>
       Set.Subset.trans Set.subset_union_right (subset_spanPoints k _)
-    sup_le := fun s1 s2 s3 hs1 hs2 => spanPoints_subset_coe_of_subset_coe (Set.union_subset hs1 hs2)
+    sup_le := fun _ _ _ hs1 hs2 => spanPoints_subset_coe_of_subset_coe (Set.union_subset hs1 hs2)
     inf := fun s1 s2 =>
-      mk (s1 ∩ s2) fun c p1 p2 p3 hp1 hp2 hp3 =>
+      mk (s1 ∩ s2) fun c _ _ _ hp1 hp2 hp3 =>
         ⟨s1.smul_vsub_vadd_mem c hp1.1 hp2.1 hp3.1, s2.smul_vsub_vadd_mem c hp1.2 hp2.2 hp3.2⟩
     inf_le_left := fun _ _ => Set.inter_subset_left
     inf_le_right := fun _ _ => Set.inter_subset_right
@@ -679,7 +687,7 @@ theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
   cases' S.nonempty with p
   ext v
   refine ⟨imp_intro Submodule.mem_top, fun _hv => ?_⟩
-  have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
+  have hpv : ((v +ᵥ p) -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
     vsub_mem_direction (mem_top k V _) (mem_top k V _)
   rwa [vadd_vsub] at hpv
 
@@ -1242,7 +1250,7 @@ theorem affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[
 variable (k)
 
 /-- `affineSpan` is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
   spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 
@@ -1272,7 +1280,7 @@ span. -/
 lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
-  show x ∈ Submodule.span k s
+  simp only [SetLike.mem_coe, Submodule.mem_toAffineSubspace]
   induction hx using affineSpan_induction' with
   | mem x hx => exact Submodule.subset_span hx
   | smul_vsub_vadd c u _ v _ w _ hu hv hw =>
@@ -1283,6 +1291,17 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
 lemma affineSpan_subset_span {s : Set V} :
     (affineSpan k s : Set V) ⊆  Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
+
+-- TODO: We want this to be simp, but `affineSpan` gets simped away to `spanPoints`!
+-- Let's delete `spanPoints`
+lemma affineSpan_insert_zero (s : Set V) :
+    (affineSpan k (insert 0 s) : Set V) = Submodule.span k s := by
+  rw [← Submodule.span_insert_zero]
+  refine affineSpan_subset_span.antisymm ?_
+  rw [← vectorSpan_add_self, vectorSpan_def]
+  refine Subset.trans ?_ <| subset_add_left _ <| mem_insert ..
+  gcongr
+  exact subset_sub_left <| mem_insert ..
 
 end AffineSpace'
 

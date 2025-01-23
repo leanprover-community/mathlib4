@@ -50,9 +50,9 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
   unitIso :=
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
-  counitIso := NatIso.ofComponents fun s => eqToIso Subtype.range_val
+  counitIso := NatIso.ofComponents fun _ => eqToIso Subtype.range_val
 
-instance : WellPowered (Type u) :=
+instance : WellPowered.{u} (Type u) :=
   wellPowered_of_essentiallySmall_monoOver fun α =>
     EssentiallySmall.mk' (Types.monoOverEquivalenceSet α)
 

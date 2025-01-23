@@ -36,7 +36,7 @@ theorem eval_ite_ite' {a b c d e : IfExpr} {f : ℕ → Bool} :
 `e` to the literal booleans given by `l` -/
 def normalize' (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
-        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) (fun b => b)))
+        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
   | lit b => ⟨lit b, by simp⟩
@@ -62,7 +62,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · simp only [eval, apply_ite, ite_eq_iff']
           cases hfv : f v
-          · simp (config := {contextual := true}) only [cond_false, h, he₁]
+          · simp +contextual only [cond_false, h, he₁]
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w

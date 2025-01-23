@@ -149,7 +149,7 @@ def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ 
   X i :=
     { X := fun j => (K.X j).X i
       d := fun j j' => (K.d j j').f i
-      shape := fun j j' w => K.shape_f _ _ w i }
+      shape := fun _ _ w => K.shape_f _ _ w i }
   d i i' := { f := fun j => (K.X j).d i i' }
   shape i i' w := by
     ext j
@@ -176,16 +176,16 @@ def flipFunctor :
 def flipEquivalenceUnitIso :
     𝟭 (HomologicalComplex₂ C c₁ c₂) ≅ flipFunctor C c₁ c₂ ⋙ flipFunctor C c₂ c₁ :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₁ =>
-    HomologicalComplex.Hom.isoOfComponents (fun i₂ => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
+    HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+    (by simp)) (by aesop_cat)) (by aesop_cat)
 
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
     flipFunctor C c₂ c₁ ⋙ flipFunctor C c₁ c₂ ≅ 𝟭 (HomologicalComplex₂ C c₂ c₁) :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₂ =>
-    HomologicalComplex.Hom.isoOfComponents (fun i₁ => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
+    HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+    (by simp)) (by aesop_cat)) (by aesop_cat)
 
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]

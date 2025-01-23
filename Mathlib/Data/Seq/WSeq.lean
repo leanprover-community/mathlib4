@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Logic.Relation
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Seq.Seq
-import Batteries.Data.DList
+import Batteries.Data.DList.Basic
 
 /-!
 # Partially defined possibly infinite lists
@@ -454,7 +454,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       apply Or.inl⟩⟩
 
 -- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
-infixl:50 " ~ʷ " => Equiv
+@[inherit_doc] infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSeq α} :
     s ~ʷ t → Computation.LiftRel (BisimO (· ~ʷ ·)) (destruct s) (destruct t) :=
@@ -627,7 +627,6 @@ theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   induction n with
   | zero => simp [drop]
   | succ n n_ih =>
-    -- porting note (#10745): was `simp [*, drop]`.
     simp [drop, ← n_ih]
 
 @[simp]
@@ -708,7 +707,7 @@ theorem drop.aux_none : ∀ n, @drop.aux α n none = Computation.pure none
       rw [ret_bind, drop.aux_none n]
 
 theorem destruct_dropn : ∀ (s : WSeq α) (n), destruct (drop s n) = destruct s >>= drop.aux n
-  | s, 0 => (bind_pure' _).symm
+  | _, 0 => (bind_pure' _).symm
   | s, n + 1 => by
     rw [← dropn_tail, destruct_dropn _ n, destruct_tail, LawfulMonad.bind_assoc]
     rfl
@@ -875,7 +874,6 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
       apply ret_mem
     · cases' h with n h
       exists n + 1
-      -- porting note (#10745): was `simp [get?]`.
       simpa [get?]
   · intro s' h
     cases' h with n h

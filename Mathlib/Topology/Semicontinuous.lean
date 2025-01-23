@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Semicontinuous maps
@@ -192,7 +192,7 @@ theorem IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
   intro x z hz
   by_cases h : x ∈ s <;> simp [h] at hz
   · filter_upwards [hs.mem_nhds h]
-    simp (config := { contextual := true }) [hz]
+    simp +contextual [hz]
   · refine Filter.Eventually.of_forall fun x' => ?_
     by_cases h' : x' ∈ s <;> simp [h', hz.trans_le hy, hz]
 
@@ -215,7 +215,7 @@ theorem IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) 
   · refine Filter.Eventually.of_forall fun x' => ?_
     by_cases h' : x' ∈ s <;> simp [h', hz, hz.trans_le hy]
   · filter_upwards [hs.isOpen_compl.mem_nhds h]
-    simp (config := { contextual := true }) [hz]
+    simp +contextual [hz]
 
 theorem IsClosed.lowerSemicontinuousOn_indicator (hs : IsClosed s) (hy : y ≤ 0) :
     LowerSemicontinuousOn (indicator s fun _x => y) t :=
@@ -326,13 +326,7 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
     exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
 
-@[deprecated (since := "2024-03-02")]
-alias lowerSemicontinuous_iff_IsClosed_epigraph := lowerSemicontinuous_iff_isClosed_epigraph
-
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
-
-@[deprecated (since := "2024-03-02")]
-alias LowerSemicontinuous.IsClosed_epigraph := LowerSemicontinuous.isClosed_epigraph
 
 end
 

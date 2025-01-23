@@ -19,12 +19,9 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Algebra/Group/Defs.lean`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
-
-universe u
 
 variable {α β G M : Type*}
 
@@ -117,7 +114,7 @@ instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (�
 
 section MulOneClass
 
-variable {M : Type u} [MulOneClass M]
+variable [MulOneClass M]
 
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
@@ -226,7 +223,7 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable {M : Type u} [LeftCancelMonoid M] {a b : M}
+variable [LeftCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
@@ -247,7 +244,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable {M : Type u} [RightCancelMonoid M] {a b : M}
+variable [RightCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
@@ -380,7 +377,10 @@ theorem eq_one_div_of_mul_eq_one_right (h : a * b = 1) : b = 1 / a := by
 theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
   inv_injective <| inv_eq_of_mul_eq_one_right <| by rwa [← div_eq_mul_inv]
 
+@[to_additive]
 lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+
+@[to_additive]
 lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
 
 @[to_additive]
@@ -426,7 +426,7 @@ lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
 
 @[to_additive (attr := simp) neg_zsmul]
 lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
-  | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp
@@ -796,14 +796,6 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 @[to_additive (attr := simp) natAbs_nsmul_eq_zero]
 lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
-set_option linter.existingAttributeWarning false in
-@[to_additive, deprecated pow_natAbs_eq_one (since := "2024-02-14")]
-lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
-    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
-
-attribute [deprecated natAbs_nsmul_eq_zero (since := "2024-02-14")]
-exists_nsmul_eq_zero_of_zsmul_eq_zero
-
 @[to_additive sub_nsmul]
 lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
   eq_mul_inv_of_mul_eq <| by rw [← pow_add, Nat.sub_add_cancel h]
@@ -1040,15 +1032,5 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
 
 end multiplicative
 
-@[deprecated (since := "2024-03-20")] alias div_mul_cancel' := div_mul_cancel
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel'' := mul_div_cancel_right
 -- The name `add_sub_cancel` was reused
 -- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right
-@[deprecated (since := "2024-03-20")] alias div_mul_cancel''' := div_mul_cancel_right
-@[deprecated (since := "2024-03-20")] alias sub_add_cancel'' := sub_add_cancel_right
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel''' := mul_div_cancel_left
-@[deprecated (since := "2024-03-20")] alias add_sub_cancel' := add_sub_cancel_left
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel'_right := mul_div_cancel
-@[deprecated (since := "2024-03-20")] alias add_sub_cancel'_right := add_sub_cancel
-@[deprecated (since := "2024-03-20")] alias div_mul_cancel'' := div_mul_cancel_left
-@[deprecated (since := "2024-03-20")] alias sub_add_cancel' := sub_add_cancel_left

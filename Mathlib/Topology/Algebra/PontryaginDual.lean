@@ -73,7 +73,7 @@ instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
     refine lt_of_lt_of_le ht ?_
     rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
     refine (Nat.le_ceil (Real.pi / x)).trans ?_
-    exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
+    exact_mod_cast (Nat.le_succ _).trans Nat.lt_two_pow_self.le
 
 variable {A B C G}
 
@@ -82,10 +82,13 @@ namespace PontryaginDual
 open ContinuousMonoidHom
 
 instance : FunLike (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.funLike
+  ContinuousMonoidHom.instFunLike
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.ContinuousMonoidHomClass
+noncomputable instance instContinuousMapClass : ContinuousMapClass (PontryaginDual A) A Circle :=
+  ContinuousMonoidHom.instContinuousMapClass
+
+noncomputable instance instMonoidHomClass : MonoidHomClass (PontryaginDual A) A Circle :=
+  ContinuousMonoidHom.instMonoidHomClass
 
 /-- `PontryaginDual` is a contravariant functor. -/
 noncomputable def map (f : ContinuousMonoidHom A B) :

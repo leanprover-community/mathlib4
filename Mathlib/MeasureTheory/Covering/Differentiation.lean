@@ -78,7 +78,8 @@ open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology
 
-variable {α : Type*} [MetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α} (v : VitaliFamily μ)
+variable {α : Type*} [PseudoMetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α}
+  (v : VitaliFamily μ)
   {E : Type*} [NormedAddCommGroup E]
 
 namespace VitaliFamily
@@ -177,7 +178,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         rw [ENNReal.mul_inv_cancel (ENNReal.coe_pos.2 εpos).ne' ENNReal.coe_ne_top, one_mul]
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ (s ∩ o) := by
         gcongr
-        refine v.measure_le_of_frequently_le ρ ((Measure.AbsolutelyContinuous.refl μ).smul ε) _ ?_
+        refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx
         simp only [mem_inter_iff, not_lt, not_eventually, mem_setOf_eq] at hx
@@ -223,9 +224,7 @@ theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0} (hcd : c < d) (s 
     _ < d * μ s' := by
       apply (ENNReal.mul_lt_mul_right h _).2 (ENNReal.coe_lt_coe.2 hcd)
       exact (lt_of_le_of_lt (measure_mono inter_subset_right) μo).ne
-    _ ≤ ρ s' :=
-      v.measure_le_of_frequently_le ρ ((Measure.AbsolutelyContinuous.refl μ).smul d) s' fun x hx =>
-        hd x hx.1
+    _ ≤ ρ s' := v.measure_le_of_frequently_le ρ smul_absolutelyContinuous s' fun x hx ↦ hd x hx.1
 
 /-- If `ρ` is absolutely continuous with respect to `μ`, then for almost every `x`,
 the ratio `ρ a / μ a` converges as `a` shrinks to `x` along a Vitali family for `μ`. -/
@@ -382,7 +381,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
         rw [inter_comm, measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) J]
       _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
         rw [← coe_nnreal_smul_apply]
-        refine v.measure_le_of_frequently_le _ (AbsolutelyContinuous.rfl.smul _) _ ?_
+        refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
         intro x hx
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
           tendsto_nhds_limUnder hx.2.1.1
@@ -463,7 +462,7 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
     _ ≤ ρ (s ∩ t) + (q • μ) tᶜ := by gcongr; apply inter_subset_right
     _ = ρ (s ∩ t) := by simp [A]
     _ ≤ ρ s := by gcongr; apply inter_subset_left
-  refine v.measure_le_of_frequently_le _ (AbsolutelyContinuous.rfl.smul _) _ ?_
+  refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
   intro x hx
   have I : ∀ᶠ a in v.filterAt x, (q : ℝ≥0∞) < ρ a / μ a := (tendsto_order.1 hx.2).1 _ (h hx.1)
   apply I.frequently.mono fun a ha => ?_
@@ -537,7 +536,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
     apply le_trans _ (zero_le _)
     have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
-    simp only [ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
+    simp only [f, ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
     apply (ae_restrict_iff' M).2
     exact Eventually.of_forall fun x hx => hx.2
   have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
@@ -552,7 +551,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     intro n
     let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν, M, withDensity_apply, coe_nnreal_smul_apply]
+    simp only [ν, I, M, withDensity_apply, coe_nnreal_smul_apply]
     calc
       (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
         lintegral_mono_ae ((ae_restrict_iff' M).2 (Eventually.of_forall fun x hx => hx.2.2.le))
@@ -615,7 +614,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     intro n
     let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν, M, withDensity_apply, coe_nnreal_smul_apply]
+    simp only [ν, I, M, withDensity_apply, coe_nnreal_smul_apply]
     calc
       ρ (s ∩ f ⁻¹' I) ≤ (t : ℝ≥0∞) ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
         rw [← ENNReal.coe_zpow t_ne_zero']
@@ -737,7 +736,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   have B : ∀ᵐ x ∂μ.restrict s, t.indicator 1 x = (1 : ℝ≥0∞) := by
     refine ae_restrict_of_ae_restrict_of_subset (subset_toMeasurable μ s) ?_
     filter_upwards [ae_restrict_mem (measurableSet_toMeasurable μ s)] with _ hx
-    simp only [hx, Pi.one_apply, indicator_of_mem]
+    simp only [t, hx, Pi.one_apply, indicator_of_mem]
   filter_upwards [A, B] with x hx h'x
   rw [h'x] at hx
   apply hx.congr' _

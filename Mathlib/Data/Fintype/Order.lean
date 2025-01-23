@@ -3,9 +3,12 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Atoms
-import Mathlib.Data.Set.Finite
+import Mathlib.Order.Minimal
 
 /-!
 # Order structures on finite types
@@ -77,8 +80,7 @@ section BoundedOrder
 
 variable (α)
 
-open scoped Classical
-
+open scoped Classical in
 -- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
@@ -87,9 +89,9 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   sSup := fun s => s.toFinset.sup id
   sInf := fun s => s.toFinset.inf id
   le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-  sSup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
+  sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-  le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb
+  le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
 
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
@@ -246,9 +248,3 @@ theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddB
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
-
-@[deprecated (since := "2024-01-16")] alias Directed.fintype_le := Directed.finite_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_le := Finite.exists_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_ge := Finite.exists_ge
-@[deprecated (since := "2024-01-16")] alias Fintype.bddAbove_range := Finite.bddAbove_range
-@[deprecated (since := "2024-01-16")] alias Fintype.bddBelow_range := Finite.bddBelow_range

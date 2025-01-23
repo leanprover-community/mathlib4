@@ -20,7 +20,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 
 /-! ## Product, Sigma and Pi types -/
@@ -86,7 +86,7 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
   use u.image Sigma.fst, trivial
   intro bs hbs
   simp only [Set.mem_preimage, Finset.le_iff_subset] at hu
-  have : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t.filter fun p ↦ p.1 ∈ bs, f p) atTop
+  have : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
       (𝓝 <| ∏ b ∈ bs, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
@@ -161,17 +161,17 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
   obtain ⟨t0, st0, ht0⟩ : ∃ t0, ∏ i ∈ t0, g i ∈ v ∧ s.image Sigma.fst ⊆ t0 := by
     have A : ∀ᶠ t0 in (atTop : Filter (Finset β)), ∏ i ∈ t0, g i ∈ v := hg (v_open.mem_nhds hv)
     exact (A.and (Ici_mem_atTop _)).exists
-  have L : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t.filter fun p ↦ p.1 ∈ t0, f p) atTop
+  have L : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
       (𝓝 <| ∏ b ∈ t0, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
     exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
-  have : ∃ t, ∏ p ∈ t.filter (fun p ↦ p.1 ∈ t0), f p ∈ v ∧ s ⊆ t :=
+  have : ∃ t, ∏ p ∈ t with p.1 ∈ t0, f p ∈ v ∧ s ⊆ t :=
     ((Tendsto.eventually_mem L (v_open.mem_nhds st0)).and (Ici_mem_atTop _)).exists
   obtain ⟨t, tv, st⟩ := this
-  refine ⟨t.filter (fun p ↦ p.1 ∈ t0), fun x hx ↦ ?_, vu tv⟩
+  refine ⟨{p ∈ t | p.1 ∈ t0}, fun x hx ↦ ?_, vu tv⟩
   simpa only [mem_filter, st hx, true_and] using ht0 (mem_image_of_mem Sigma.fst hx)
 
 variable [CompleteSpace α]
@@ -191,6 +191,11 @@ theorem Multipliable.sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha
 theorem Multipliable.prod_factor {f : β × γ → α} (h : Multipliable f) (b : β) :
     Multipliable fun c ↦ f (b, c) :=
   h.comp_injective fun _ _ h ↦ (Prod.ext_iff.1 h).2
+
+@[to_additive Summable.prod]
+lemma Multipliable.prod {f : β × γ → α} (h : Multipliable f) :
+    Multipliable fun b ↦ ∏' c, f (b, c) :=
+  ((Equiv.sigmaEquivProd β γ).multipliable_iff.mpr h).sigma
 
 @[to_additive]
 lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasProd f a) (g : β → γ) :
@@ -251,14 +256,14 @@ open MulOpposite
 variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
-  (hf.map (@opAddEquiv α _) continuous_op : _)
+  (hf.map (@opAddEquiv α _) continuous_op :)
 
 theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
   hf.hasSum.op.summable
 
 theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
     HasSum (fun a ↦ unop (f a)) (unop a) :=
-  (hf.map (@opAddEquiv α _).symm continuous_unop : _)
+  (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
 theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
   hf.hasSum.unop.summable

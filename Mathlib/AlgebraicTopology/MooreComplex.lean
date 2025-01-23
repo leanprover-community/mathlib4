@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
@@ -59,15 +59,12 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 
-theorem objX_zero : objX X 0 = ⊤ :=
+@[simp] theorem objX_zero : objX X 0 = ⊤ :=
   rfl
 
-theorem objX_add_one (n) :
+@[simp] theorem objX_add_one (n) :
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
-
-attribute [eqns objX_zero objX_add_one] objX
-attribute [simp] objX
 
 /-- The differentials in the normalized Moore complex.
 -/
