@@ -33,6 +33,7 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
   (F : Jᵒᵖ ⥤ J ⥤ C)
 
 variable (J) in
+/-- The shape of multiequalizer diagrams involved in the definition of ends. -/
 @[simps]
 def multicospanShapeEnd : MulticospanShape where
   L := J

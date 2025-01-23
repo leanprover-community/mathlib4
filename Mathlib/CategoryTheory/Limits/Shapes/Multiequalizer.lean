@@ -37,11 +37,18 @@ universe w w' v u
 and two maps `R → L`. -/
 @[nolint checkUnivs]
 structure MulticospanShape where
+  /-- the left type -/
   L : Type w
+  /-- the right type -/
   R : Type w'
+  /-- the first map `R → L` -/
   fst : R → L
+  /-- the second map `R → L` -/
   snd : R → L
 
+/-- Given a type `ι`, this is the shape of multiequalizer diagrams corresponding
+to situations where we want to equalize two families of maps `U i ⟶ V ⟨i, j⟩`
+and `U j ⟶ V ⟨i, j⟩` with `i : ι` and `j : ι`. -/
 @[simps]
 def MulticospanShape.prod (ι : Type w) : MulticospanShape where
   L := ι
@@ -53,11 +60,18 @@ def MulticospanShape.prod (ι : Type w) : MulticospanShape where
 and two maps `L → R`. -/
 @[nolint checkUnivs]
 structure MultispanShape where
-    L : Type w
-    R : Type w'
-    fst : L → R
-    snd : L → R
+  /-- the left type -/
+  L : Type w
+  /-- the right type -/
+  R : Type w'
+  /-- the first map `L → R` -/
+  fst : L → R
+  /-- the second map `L → R` -/
+  snd : L → R
 
+/-- Given a type `ι`, this is the shape of multicoequalizer diagrams corresponding
+to situations where we want to coequalize two families of maps `V ⟨i, j⟩ ⟶ U i`
+and `V ⟨i, j⟩ ⟶ U j` with `i : ι` and `j : ι`. -/
 @[simps]
 def MultispanShape.prod (ι : Type w) : MultispanShape where
   L := ι × ι
