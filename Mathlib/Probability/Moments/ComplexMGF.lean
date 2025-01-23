@@ -109,31 +109,29 @@ lemma complexMGF_add_sub_sum (ht : t ≠ 0)
         * (cexp (ε * X ω) - ∑ m in range n, ε ^ m / m.factorial * X ω ^ m)] := by
   have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
   swap; · rw [← sub_ne_zero]; simp [ht]
-  have hε_int_pos : Integrable (fun ω ↦ rexp ((z.re + ε.re) * X ω)) μ := by
-    refine integrable_exp_mul_of_le_of_le (a := z.re - |t|) (b := z.re + |t|) ?_ ?_ ?_ ?_
+  have h_Icc_subset : Set.Icc (z.re - |t|) (z.re + |t|) ⊆ integrableExpSet X μ := by
+    intro x hx
+    refine integrable_exp_mul_of_le_of_le (a := z.re - |t|) (b := z.re + |t|) ?_ ?_ hx.1 hx.2
     · rcases le_total 0 t with ht | ht
       · rwa [_root_.abs_of_nonneg ht]
       · simpa [abs_of_nonpos ht]
     · rcases le_total 0 t with ht | ht
       · rwa [_root_.abs_of_nonneg ht]
       · rwa [abs_of_nonpos ht]
+  have hε_int_pos : Integrable (fun ω ↦ rexp ((z.re + ε.re) * X ω)) μ := by
+    refine h_Icc_subset ?_
+    simp only [Set.mem_Icc, _root_.add_lt_add_iff_left]
+    constructor
     · rw [sub_eq_add_neg]
       gcongr
       rw [neg_le]
       exact (neg_le_abs _).trans hε
     · gcongr
       exact (le_abs_self _).trans hε
-  have h_int_zε : Integrable (fun ω ↦ cexp ((z + ε) * X ω)) μ := by
-    rw [← integrable_norm_iff (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
-    simpa only [Complex.norm_eq_abs, Complex.abs_exp, mul_re, add_re, ofReal_re, add_im, ofReal_im,
-      mul_zero, sub_zero]
   have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
-    rw [← integrable_norm_iff]
-    swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-    simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
-      ofReal_im, mul_zero, sub_zero]
-    convert integrable_pow_abs_mul_exp_of_integrable_exp_mul ht h_int_pos h_int_neg i
-    simp
+    refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet ?_ i
+    exact ⟨Set.Ioo (z.re - |t|) (z.re + |t|),
+      ⟨isOpen_Ioo, Set.Ioo_subset_Icc_self.trans h_Icc_subset⟩, by simp [ht]⟩
   simp_rw [complexMGF, add_mul, Complex.exp_add, mul_comm _ (cexp (ε * X _))]
   calc ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
       ∑ m ∈ range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ
@@ -147,8 +145,7 @@ lemma complexMGF_add_sub_sum (ht : t ≠ 0)
     congr
     rw [integral_finset_sum _ fun i hi ↦ ?_]
     simp_rw [mul_assoc]
-    refine Integrable.const_mul ?_ _
-    exact h_int_mul _
+    fun_prop
   _ = ∫ ω, cexp (z * X ω) * (cexp (ε * X ω) - ∑ m ∈ range n, ε ^ m / m.factorial * X ω ^ m) ∂μ := by
     rw [← integral_sub]
     · congr with ω
@@ -159,11 +156,9 @@ lemma complexMGF_add_sub_sum (ht : t ≠ 0)
         congr with m
         ring
     · simp_rw [← Complex.exp_add, ← add_mul, add_comm ε]
-      exact h_int_zε
-    · refine integrable_finset_sum _ fun m hm ↦ ?_
-      simp_rw [mul_assoc]
-      refine Integrable.const_mul ?_ _
-      exact h_int_mul _
+      exact integrable_cexp_mul_of_re_mem_integrableExpSet hX hε_int_pos
+    · simp_rw [mul_assoc]
+      fun_prop
 
 lemma abs_complexMGF_add_sub_sum_le
     (h_int_pos : Integrable (fun ω ↦ rexp ((z.re + t) * X ω)) μ)
@@ -309,12 +304,7 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
     (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ AEMeasurable.aestronglyMeasurable (by fun_prop)
-  · rw [← integrable_norm_iff]
-    swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-    simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
-      ofReal_im, mul_zero, sub_zero]
-    convert integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet hz n
-    simp
+  · exact integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz n
   · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only [norm_mul, norm_pow, norm_real, Real.norm_eq_abs, Complex.norm_eq_abs]
@@ -334,8 +324,7 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
     · exact h_subset (sub_half_inf_sub_mem_Ioo hlu)
     · positivity
-    · refine lt_of_lt_of_le ?_ (le_abs_self _)
-      simp [ht]
+    · exact lt_of_lt_of_le (by simp [ht]) (le_abs_self _)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only
     simp_rw [pow_succ, mul_assoc]
@@ -354,11 +343,8 @@ lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSe
       (∫ ω, X ω ^ n * cexp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
     rw [← RCLike.re_eq_complex_re, ← integral_re]
     · norm_cast
-    · rw [← integrable_norm_iff]
-      swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-      simp only [norm_mul, Complex.norm_eq_abs, abs_ofReal, Complex.abs_exp, mul_re, ofReal_re,
-        ofReal_im, mul_zero, sub_zero, Complex.abs_pow]
-      exact integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet ht' n
+    · refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet ?_ n
+      simpa using ht'
   have h_re n : ∀ᶠ t' : ℝ in 𝓝 t, (∫ ω, X ω ^ n * cexp (t' * X ω) ∂μ).re
       = ∫ ω, X ω ^ n * rexp (t' * X ω) ∂μ := by
     filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'

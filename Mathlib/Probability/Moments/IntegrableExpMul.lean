@@ -539,6 +539,65 @@ lemma memℒp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableEx
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
 
+section Complex
+
+open Complex
+
+variable {z : ℂ}
+
+lemma integrable_cexp_mul_of_re_mem_integrableExpSet (hX : AEMeasurable X μ)
+    (hz : z.re ∈ integrableExpSet X μ) :
+    Integrable (fun ω ↦ cexp (z * X ω)) μ := by
+  rw [← integrable_norm_iff]
+  · simpa [Complex.norm_eq_abs, Complex.abs_exp] using hz
+  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+
+lemma integrable_cexp_mul_of_re_mem_interior_integrableExpSet
+    (hz : z.re ∈ interior (integrableExpSet X μ)) :
+    Integrable (fun ω ↦ cexp (z * X ω)) μ := by
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
+  rw [← integrable_norm_iff]
+  · simpa [Complex.norm_eq_abs, Complex.abs_exp] using (interior_subset hz)
+  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+
+lemma integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
+    (hz : z.re ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
+    Integrable (fun ω ↦ (|X ω| ^ p : ℝ) * cexp (z * X ω)) μ := by
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
+  rw [← integrable_norm_iff]
+  swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.abs_exp]
+    using integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp
+
+lemma integrable_pow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
+    (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    Integrable (fun ω ↦ |X ω| ^ n * cexp (z * X ω)) μ := by
+  convert integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet hz (Nat.cast_nonneg n)
+  simp
+
+lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
+    (hz : z.re ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
+    Integrable (fun ω ↦ (X ω ^ p : ℝ) * cexp (z * X ω)) μ := by
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
+  rw [← integrable_norm_iff]
+  swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  simp only [norm_mul, norm_real, Real.norm_eq_abs, Complex.norm_eq_abs, Complex.abs_exp, mul_re,
+    ofReal_re, ofReal_im, mul_zero, sub_zero, Complex.abs_ofReal]
+  refine (integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp).mono ?_ ?_
+  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  refine ae_of_all _ fun ω ↦ ?_
+  simp only [norm_mul, Real.norm_eq_abs, abs_abs, Real.abs_exp]
+  gcongr
+  exact abs_rpow_le_abs_rpow _ _
+
+lemma integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet
+    (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    Integrable (fun ω ↦ X ω ^ n * cexp (z * X ω)) μ := by
+  convert integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet hz (Nat.cast_nonneg n)
+  simp
+
+end Complex
+
 end IntegrableExpSet
 
 end FiniteMoments
