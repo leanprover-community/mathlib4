@@ -51,7 +51,7 @@ theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ 
 variable {I} in
 instance (g : I → Type*) [∀ i, CommSemiring (f i)] [∀ i, Semiring (g i)]
     [∀ i, Algebra (f i) (g i)] : Algebra (∀ i, f i) (∀ i, g i) where
-  toRingHom := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom f _)
+  algebraMap := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom f _)
   commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
   smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
 
