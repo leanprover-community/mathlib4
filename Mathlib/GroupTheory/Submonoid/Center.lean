@@ -139,6 +139,12 @@ variable {M} {N : Type*}
   (intros; apply e.symm.injective;
     simp only [map_mul, e.symm_apply_apply, (isMulCentral_iff _).mp hx])
 
+@[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
+    [Mul M] [Mul N] [MulEquivClass F M N] (e : F) {x : M} :
+    e x ∈ Set.center N ↔ x ∈ Set.center M :=
+  ⟨(by simpa using MulEquivClass.apply_mem_center (MulEquivClass.toMulEquiv e).symm ·),
+    MulEquivClass.apply_mem_center e⟩
+
 /-- The center of isomorphic magmas are isomorphic. -/
 @[to_additive (attr := simps) "The center of isomorphic additive magmas are isomorphic."]
 def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* center N where
