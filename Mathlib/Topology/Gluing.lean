@@ -100,8 +100,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
   rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
-  dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
-    parallelPair_obj_one]
+  dsimp
   constructor
   · intro h j; exact h ⟨j⟩
   · intro h j; cases j; apply h
@@ -152,8 +151,8 @@ theorem eqvGen_of_π_eq
     Relation.EqvGen
       -- Porting note: was (Types.CoequalizerRel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
       (Types.CoequalizerRel
-        (X := sigmaObj (β := D.toGlueData.diagram.L) (C := TopCat) (D.toGlueData.diagram).left)
-        (Y := sigmaObj (β := D.toGlueData.diagram.R) (C := TopCat) (D.toGlueData.diagram).right)
+        (X := sigmaObj (C := TopCat) (D.toGlueData.diagram).left)
+        (Y := sigmaObj (C := TopCat) (D.toGlueData.diagram).right)
         𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
       x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
@@ -252,8 +251,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
     generalize 𝖣.ι i '' U = U' -- next 4 lines were `simp` before https://github.com/leanprover-community/mathlib4/pull/13170
-    simp only [GlueData.diagram_l, GlueData.diagram_r, Set.mem_preimage, coe_comp,
-      Function.comp_apply]
+    simp only [Set.mem_preimage, coe_comp, Function.comp_apply]
     rw [D.glue_condition_apply]
   rw [← this, Set.image_preimage_eq_inter_range]
   symm
