@@ -1852,29 +1852,6 @@ theorem integral_trim_ae (hm : m ≤ m0) {f : β → G} (hf : AEStronglyMeasurab
   rw [integral_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk), integral_congr_ae hf.ae_eq_mk]
   exact integral_trim hm hf.stronglyMeasurable_mk
 
-theorem ae_eq_trim_of_stronglyMeasurable [TopologicalSpace γ] [MetrizableSpace γ] (hm : m ≤ m0)
-    {f g : β → γ} (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g)
-    (hfg : f =ᵐ[μ] g) : f =ᵐ[μ.trim hm] g := by
-  rwa [EventuallyEq, ae_iff, trim_measurableSet_eq hm]
-  exact (hf.measurableSet_eq_fun hg).compl
-
-theorem ae_eq_trim_iff [TopologicalSpace γ] [MetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ}
-    (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) :
-    f =ᵐ[μ.trim hm] g ↔ f =ᵐ[μ] g :=
-  ⟨ae_eq_of_ae_eq_trim, ae_eq_trim_of_stronglyMeasurable hm hf hg⟩
-
-theorem ae_le_trim_of_stronglyMeasurable [LinearOrder γ] [TopologicalSpace γ]
-    [OrderClosedTopology γ] [PseudoMetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ}
-    (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) :
-    f ≤ᵐ[μ.trim hm] g := by
-  rwa [EventuallyLE, ae_iff, trim_measurableSet_eq hm]
-  exact (hf.measurableSet_le hg).compl
-
-theorem ae_le_trim_iff [LinearOrder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
-    [PseudoMetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ} (hf : StronglyMeasurable[m] f)
-    (hg : StronglyMeasurable[m] g) : f ≤ᵐ[μ.trim hm] g ↔ f ≤ᵐ[μ] g :=
-  ⟨ae_le_of_ae_le_trim, ae_le_trim_of_stronglyMeasurable hm hf hg⟩
-
 end IntegralTrim
 
 section SnormBound

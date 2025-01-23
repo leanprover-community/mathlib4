@@ -388,8 +388,8 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     filter_upwards [(martingale_condExp g ℱ μ).ae_eq_condExp_limitProcess hunif n] with x hx _
     rw [hx]
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
-    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aeStronglyMeasurable'
-    stronglyMeasurable_limitProcess.aeStronglyMeasurable'
+    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aestronglyMeasurable
+    stronglyMeasurable_limitProcess.aestronglyMeasurable
   have hpi : IsPiSystem {s | ∃ n, MeasurableSet[ℱ n] s} := by
     rw [Set.setOf_exists]
     exact isPiSystem_iUnion_of_monotone _ (fun n ↦ (ℱ n).isPiSystem_measurableSet) fun _ _ ↦ ℱ.mono
