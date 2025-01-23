@@ -54,8 +54,6 @@ gives a category whose
   `base : X.base ⟶ Y.base` and
   `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): no such linter yet
--- @[nolint has_nonempty_instance]
 structure Grothendieck where
   /-- The underlying object in `C` -/
   base : C

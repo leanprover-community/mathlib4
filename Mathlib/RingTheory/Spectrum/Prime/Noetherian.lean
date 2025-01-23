@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Artinian.Module
 import Mathlib.Topology.NoetherianSpace
 
 /-!
@@ -16,6 +17,8 @@ universe u v
 namespace PrimeSpectrum
 
 open TopologicalSpace
+
+section IsNoetherianRing
 
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 
@@ -33,5 +36,21 @@ lemma finite_setOf_isMin :
   refine Set.Finite.of_finite_image (f := asIdeal) ?_ this.injOn
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
+
+end IsNoetherianRing
+
+section IsArtinianRing
+
+variable (R : Type u) [CommRing R] [IsArtinianRing R]
+
+instance : Finite (PrimeSpectrum R) :=
+  have : Finite {I : Ideal R // I.IsPrime} := IsArtinianRing.primeSpectrum_finite R
+  Finite.of_injective _ (equivSubtype R).injective
+
+instance : DiscreteTopology (PrimeSpectrum R) :=
+  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mpr
+    ⟨inferInstance, fun _ _ ↦ inferInstance⟩
+
+end IsArtinianRing
 
 end PrimeSpectrum
