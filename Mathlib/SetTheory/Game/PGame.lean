@@ -1807,7 +1807,7 @@ def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
 termination_by x y => (x, y)
 
 theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
-  (negAddRelabelling x y).le
+  (x.neg_add y).le
 
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
@@ -1818,10 +1818,10 @@ def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
 termination_by x y => (x, y)
 
 theorem add_comm_le {x y : PGame} : x + y ≤ y + x :=
-  (addCommRelabelling x y).le
+  (x.add_comm y).le
 
 theorem add_comm_equiv {x y : PGame} : x + y ≈ y + x :=
-  (addCommRelabelling x y).equiv
+  (x.add_comm y).equiv
 
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
@@ -1838,7 +1838,7 @@ def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
 termination_by x y z => (x, y, z)
 
 theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
-  (addAssocRelabelling x y z).equiv
+  (x.add_assoc y z).equiv
 
 theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
   | ⟨xl, xr, xL, xR⟩ =>
@@ -1906,13 +1906,13 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
     exact mt this h
   fun w =>
   calc
-    z ≤ z + 0 := (addZeroRelabelling _).symm.le
+    z ≤ z + 0 := (PGame.add_zero _).symm.le
     _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
-    _ ≤ z + x + -x := (addAssocRelabelling _ _ _).symm.le
+    _ ≤ z + x + -x := (PGame.add_assoc _ _ _).symm.le
     _ ≤ y + x + -x := add_le_add_right w _
-    _ ≤ y + (x + -x) := (addAssocRelabelling _ _ _).le
+    _ ≤ y + (x + -x) := (PGame.add_assoc _ _ _).le
     _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
-    _ ≤ y := (addZeroRelabelling _).le
+    _ ≤ y := (PGame.add_zero _).le
 
 theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   rw [lf_congr add_comm_equiv add_comm_equiv]
@@ -1952,31 +1952,31 @@ theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
-      x ≤ 0 + x := (zeroAddRelabelling x).symm.le
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ ≤ y - x + x := add_le_add_right h _
-      _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (addZeroRelabelling y).le
+      _ ≤ y := (PGame.add_zero y).le
       ⟩
 
 theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
     calc
-      x ≤ 0 + x := (zeroAddRelabelling x).symm.le
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ ⧏ y - x + x := add_lf_add_right h _
-      _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (addZeroRelabelling y).le
+      _ ≤ y := (PGame.add_zero y).le
       ⟩
 
 theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
   ⟨fun h => lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
     calc
-      x ≤ 0 + x := (zeroAddRelabelling x).symm.le
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ < y - x + x := add_lt_add_right h _
-      _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (addZeroRelabelling y).le
+      _ ≤ y := (PGame.add_zero y).le
       ⟩
 
 /-! ### Inserting an option -/
