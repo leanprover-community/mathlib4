@@ -14,5 +14,5 @@ import Mathlib.Data.SetLike.Basic
 variable (R A : Type*) [SMul R A] (S : Type*) [SetLike S R] (s : S)
 
 @[to_additive]
-instance : SMul s A where
+instance Submonoid.smul : SMul s A where
   smul r a := (r : R) • a
