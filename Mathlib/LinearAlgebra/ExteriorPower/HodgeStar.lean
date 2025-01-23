@@ -7,6 +7,7 @@ Authors: Daniel Morrison
 import Mathlib.LinearAlgebra.ExteriorPower.InducedForm
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+import Mathlib.LinearAlgebra.ExteriorPower.WedgeProduct
 
 /-!
 Documentation
@@ -66,9 +67,12 @@ noncomputable def volumeEquiv (h : ⟪vol, vol⟫ = 1) : ⋀[F]^(finrank F V) V 
 
 #check TensorProduct.rid
 variable (hVol : ⟪vol, vol⟫ = 1)
---def Wedge {k : ℕ} (α : ⋀[F]^k V) := (fun (β : ExteriorAlgebra F V) ↦ α * β)
-def HodgePairing {k : ℕ} (α : ⋀[F]^k V) : ⋀[F]^(finrank F V - k) V →ₗ[F] (⋀[F]^(finrank F V) V) :=
-  sorry
+
+noncomputable def HodgePairing {k : ℕ} (α : ⋀[F]^k V) :
+  ⋀[F]^(finrank F V - k) V →ₗ[F] (⋀[F]^(finrank F V) V) where
+  toFun := (WedgeProduct α).codRestrict (⋀[F]^(finrank F V) V) sorry
+  map_add' := sorry
+  map_smul' := sorry
 --(volumeEquiv B vol hVol).comp
 
 variable (hN : B.Nondegenerate)
