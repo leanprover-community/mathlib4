@@ -172,7 +172,7 @@ for index, entry in thousand.items():
         thousand_decls = thousand_decls + [(f"{index} {title}", d) for d in entry["decls"]]
 
 overview_decls = tiered_extract(overview)
-assert all(len(n) >= 3 for n, _ in overview_decls)
+assert all(len(n) == 3 for n, _ in overview_decls)
 overview_decls = flatten_names(overview_decls)
 
 undergrad_decls = tiered_extract(undergrad)
