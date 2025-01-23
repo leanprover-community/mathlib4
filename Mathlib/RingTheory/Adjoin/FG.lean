@@ -129,11 +129,10 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
 
 section
 
-open scoped Classical
-
-theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
+theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG := by
   let ⟨s, hs⟩ := hs
-  ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
+  classical
+  exact ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
 
 end
 
