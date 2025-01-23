@@ -305,4 +305,50 @@ theorem _root_.MeasureTheory.Lp.LpSchwartzMap.coeFn_fourierTransform [CompleteSp
     ⇑(Lp.LpSchwartzMap.fourierTransform q f) =ᵐ[volume] 𝓕 f := by
   simpa [Lp.LpSchwartzMap.fourierTransform] using Memℒp.coeFn_toLp _
 
+theorem _root_.MeasureTheory.Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two :
+    UniformContinuous (Lp.LpSchwartzMap.fourierTransform 2 :
+      Lp.LpSchwartzMap ℂ 2 (volume : Measure V) → Lp.LpSchwartzMap ℂ 2 (volume : Measure V)) := by
+  rw [EMetric.uniformContinuous_iff]
+  intro ε hε
+  simp only [Subtype.edist_eq, Lp.edist_def]
+  use ε, hε
+  intro f g h
+  calc
+  _ = eLpNorm (𝓕 f - 𝓕 g) 2 volume := by
+    refine eLpNorm_congr_ae ?_
+    filter_upwards [Lp.LpSchwartzMap.coeFn_fourierTransform 2 f,
+      Lp.LpSchwartzMap.coeFn_fourierTransform 2 g] with x h₁ h₂
+    simp [h₁, h₂]
+  _ = eLpNorm (𝓕 (⇑f - ⇑g)) 2 volume := by
+    refine congrArg (eLpNorm · 2 volume) ?_
+    refine Lp.LpSchwartzMap.induction_on₂ f g (fun f g ↦ 𝓕 f - 𝓕 g = 𝓕 (f - g)) ?_
+    intro f₀ g₀ hf hg
+    ext x
+    simp only [Pi.sub_apply]
+    rw [Real.fourierIntegral_congr_ae hf, Real.fourierIntegral_congr_ae hg]
+    have : SchwartzMap.fourierTransformCLE ℂ f₀ x - SchwartzMap.fourierTransformCLE ℂ g₀ x =
+        SchwartzMap.fourierTransformCLE ℂ (f₀ - g₀) x := by simp
+    simp only [fourierTransformCLE_apply] at this
+    refine Eq.trans this ?_
+    refine congrFun ?_ x
+    refine Real.fourierIntegral_congr_ae ?_
+    filter_upwards [hf, hg] with x h₁ h₂
+    simp [h₁, h₂]
+  _ = eLpNorm (𝓕 (f - g)) 2 volume := by
+    refine congrArg (eLpNorm · 2 volume) ?_
+    refine Real.fourierIntegral_congr_ae ?_
+    filter_upwards [AEEqFun.coeFn_sub (f : V →ₘ[volume] ℂ) g] with x h
+    simp [h]
+  _ = eLpNorm (f - g) 2 volume := by
+    refine Lp.LpSchwartzMap.induction_on (f - g)
+      (fun r ↦ eLpNorm (𝓕 r) 2 volume = eLpNorm r 2 volume) ?_
+    intro r hr
+    rw [Real.fourierIntegral_congr_ae hr, eLpNorm_congr_ae hr]
+    exact r.eLpNorm_fourier_two_eq_eLpNorm_two
+  _ = eLpNorm (⇑f - ⇑g) 2 volume := by
+    refine eLpNorm_congr_ae ?_
+    filter_upwards [AEEqFun.coeFn_sub (f : V →ₘ[volume] ℂ) g] with x h
+    simp [h]
+  _ < ε := h
+
 end SchwartzMap
