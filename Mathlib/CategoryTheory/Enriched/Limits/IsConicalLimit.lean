@@ -137,14 +137,14 @@ noncomputable def ofIsIsoLimitComparison [∀ Y, IsIso (IsConicalLimit.limitComp
       Classical.choice (this.preserves hc)
     have : HasLimit F := ⟨c, hc⟩
     apply (config := { allowSynthFailures := true }) preservesLimit_of_isIso_post
-    have h : limit.post F (eCoyoneda V Y) =
-      ((eCoyoneda V Y).map ((limit.isLimit F).conePointUniqueUpToIso hc).hom) ≫
-        limitComparison V c Y := by
-      apply limit.hom_ext
-      intro j
-      simp [limitComparison, ← eHomWhiskerLeft_comp]
-    rw [h]
-    infer_instance
+    suffices h : limit.post F (eCoyoneda V Y) =
+        ((eCoyoneda V Y).map ((limit.isLimit F).conePointUniqueUpToIso hc).hom) ≫
+        limitComparison V c Y from by
+      rw [h]
+      infer_instance
+    apply limit.hom_ext
+    intro j
+    simp [limitComparison, ← eHomWhiskerLeft_comp]
 
 /--
 A limit cone in `C` is a `V`-enriched limit if and only if the comparison map is an isomorphism
