@@ -397,8 +397,6 @@ lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure
 
 /-- If two random variables have the same moment generating function then they have
 the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
--- todo: the equality also holds on `(integrableExpSet X μ)ᶜ` since both are zero there. What about
--- the two (at most) vertical lines corresponding to the extemities of the interval?
 lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     Set.EqOn (complexMGF X μ) (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet X μ)} := by
   by_cases h_empty : interior (integrableExpSet X μ) = ∅
