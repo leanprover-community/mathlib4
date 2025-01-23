@@ -15,7 +15,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 
 # Main Declarations
 
-* `Matroid.Circuit C` means that `C` is minimally dependent in `M`.
+* `Matroid.Circuit M C` means that `C` is minimally dependent in `M`.
 -/
 
 variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x y : α}
