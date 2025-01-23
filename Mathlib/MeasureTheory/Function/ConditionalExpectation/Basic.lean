@@ -56,6 +56,12 @@ For a measure `μ` defined on a measurable space structure `m₀`, another measu
 `m` with `hm : m ≤ m₀` (a sub-σ-algebra) and a function `f`, we define the notation
 * `μ[f|m] = condExp m μ f`.
 
+## TODO
+
+See https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Conditional.20expectation.20of.20product
+for how to prove that we can pull `m`-measurable continuous linear maps out of the `m`-conditional
+expectation. This would generalise `MeasureTheory.condExp_mul_of_stronglyMeasurable_left`.
+
 ## Tags
 
 conditional expectation, conditional expected value
@@ -123,6 +129,7 @@ theorem condExp_of_stronglyMeasurable (hm : m ≤ m₀) [hμm : SigmaFinite (μ.
 @[deprecated (since := "2025-01-21")]
 alias condexp_of_stronglyMeasurable := condExp_of_stronglyMeasurable
 
+@[simp]
 theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] : μ[fun _ : α ↦ c|m] = fun _ ↦ c :=
   condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_const c)
 
@@ -151,14 +158,15 @@ theorem condExp_ae_eq_condExpL1CLM (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] 
 
 @[deprecated (since := "2025-01-21")] alias condexp_ae_eq_condexpL1CLM := condExp_ae_eq_condExpL1CLM
 
-theorem condExp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
+theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   rw [condExp_of_sigmaFinite, if_neg hf]
 
-@[deprecated (since := "2025-01-21")] alias condexp_undef := condExp_undef
+@[deprecated (since := "2025-01-21")] alias condexp_undef := condExp_of_not_integrable
+@[deprecated (since := "2025-01-21")] alias condExp_undef := condExp_of_not_integrable
 
 @[simp]
 theorem condExp_zero : μ[(0 : α → E)|m] = 0 := by
@@ -230,7 +238,7 @@ theorem integral_condExp (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
   · suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
       simp_rw [setIntegral_univ] at this; exact this
     exact setIntegral_condExp hm hf .univ
-  simp only [condExp_undef hf, Pi.zero_apply, integral_zero, integral_undef hf]
+  simp only [condExp_of_not_integrable hf, Pi.zero_apply, integral_zero, integral_undef hf]
 
 @[deprecated (since := "2025-01-21")] alias integral_condexp := integral_condExp
 
@@ -360,7 +368,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   by_cases hμm₁ : SigmaFinite (μ.trim (hm₁₂.trans hm₂))
   swap; · simp_rw [condExp_of_not_sigmaFinite (hm₁₂.trans hm₂) hμm₁]; rfl
   by_cases hf : Integrable f μ
-  swap; · simp_rw [condExp_undef hf, condExp_zero]; rfl
+  swap; · simp_rw [condExp_of_not_integrable hf, condExp_zero]; rfl
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm₁₂.trans hm₂)
     (fun s _ _ => integrable_condExp.integrableOn) (fun s _ _ => integrable_condExp.integrableOn) ?_
     stronglyMeasurable_condExp.aeStronglyMeasurable'
@@ -371,7 +379,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
 
 @[deprecated (since := "2025-01-21")] alias condexp_condexp_of_le := condExp_condExp_of_le
 
-section MemL2
+section RCLike
 variable [InnerProductSpace 𝕜 E]
 
 lemma Memℒp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : Memℒp f 2 μ)
@@ -387,8 +395,12 @@ lemma Memℒp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : Memℒp f 2 μ) [I
     condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f | m] :=
   hf.condExpL2_ae_eq_condExp' hm (memℒp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
 
+end RCLike
+
+section Real
+variable [InnerProductSpace ℝ E]
+
 -- TODO: Generalize via the conditional Jensen inequality
-include 𝕜 in
 lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
   by_cases hm : m ≤ m₀; swap
   · simp [condExp_of_not_le hm]
@@ -396,24 +408,32 @@ lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
   · rw [condExp_of_not_sigmaFinite hm hfμ]
     simp
   by_cases hfi : Integrable f μ; swap
-  · rw [condExp_undef hfi]
+  · rw [condExp_of_not_integrable hfi]
     simp
   obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
   · simp [hf]
   replace hf : Memℒp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
-  rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := 𝕜) hm hfi)]
+  rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := ℝ) hm hfi)]
   refine le_trans (eLpNorm_condExpL2_le hm _) ?_
   rw [eLpNorm_congr_ae hf.coeFn_toLp]
 
-include 𝕜 in
 protected lemma Memℒp.condExp (hf : Memℒp f 2 μ) : Memℒp (μ[f | m]) 2 μ := by
   by_cases hm : m ≤ m₀
   · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
-      eLpNorm_condExp_le (𝕜 := 𝕜).trans_lt hf.eLpNorm_lt_top⟩
+      eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
   · simp [condExp_of_not_le hm]
 
-end MemL2
+end Real
 end NormedAddCommGroup
+
+section NormedRing
+variable {R : Type*} [NormedRing R] [NormedSpace ℝ R] [CompleteSpace R]
+
+lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
+    μ[OfNat.ofNat n * f|m] =ᵐ[μ] OfNat.ofNat n * μ[f|m] := by
+  simpa [Nat.cast_smul_eq_nsmul] using condExp_smul (μ := μ) (m := m) (n : ℝ) f
+
+end NormedRing
 
 section NormedLatticeAddCommGroup
 variable [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
@@ -477,13 +497,13 @@ lemma condExp_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ᵐ[μ] μ[f|m] := by
   by_cases hfint : Integrable f μ
   · rw [(condExp_zero.symm : (0 : α → E) = μ[0|m])]
     exact condExp_mono (integrable_zero _ _ _) hfint hf
-  · rw [condExp_undef hfint]
+  · rw [condExp_of_not_integrable hfint]
 
 lemma condExp_nonpos (hf : f ≤ᵐ[μ] 0) : μ[f|m] ≤ᵐ[μ] 0 := by
   by_cases hfint : Integrable f μ
   · rw [(condExp_zero.symm : (0 : α → E) = μ[0|m])]
     exact condExp_mono hfint (integrable_zero _ _ _) hf
-  · rw [condExp_undef hfint]
+  · rw [condExp_of_not_integrable hfint]
 
 @[deprecated (since := "2025-01-21")] alias condexp_mono := condExp_mono
 @[deprecated (since := "2025-01-21")] alias condexp_nonneg := condExp_nonneg

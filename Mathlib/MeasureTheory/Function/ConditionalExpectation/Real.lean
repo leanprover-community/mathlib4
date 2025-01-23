@@ -57,7 +57,7 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
 -- for the conditional expectation (not in mathlib yet) .
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ ≤ eLpNorm f 1 μ := by
   by_cases hf : Integrable f μ
-  swap; · rw [condExp_undef hf, eLpNorm_zero]; exact zero_le _
+  swap; · rw [condExp_of_not_integrable hf, eLpNorm_zero]; exact zero_le _
   by_cases hm : m ≤ m0
   swap; · rw [condExp_of_not_le hm, eLpNorm_zero]; exact zero_le _
   by_cases hsig : SigmaFinite (μ.trim hm)
@@ -102,7 +102,7 @@ theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
     positivity
   by_cases hfint : Integrable f μ
   swap
-  · simp only [condExp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
       mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
@@ -127,7 +127,7 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
     positivity
   by_cases hfint : Integrable f μ
   swap
-  · simp only [condExp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
       mul_zero]
     positivity
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
@@ -161,7 +161,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     exact Eventually.of_forall fun _ => R.coe_nonneg
   by_cases hfint : Integrable f μ
   swap
-  · simp_rw [condExp_undef hfint]
+  · simp_rw [condExp_of_not_integrable hfint]
     filter_upwards [hbdd] with x hx
     rw [Pi.zero_apply, abs_zero]
     exact (abs_nonneg _).trans hx
