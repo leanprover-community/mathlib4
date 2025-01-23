@@ -248,11 +248,11 @@ theorem liftLE_apply_iff : y ≤ᵤ f x ↔ y ≤ᵤ x :=
 theorem apply_liftLE_apply_iff : f x ≤ᵤ g y ↔ x ≤ᵤ y := by simp
 
 @[simp] theorem apply_liftEQ_iff : f x =ᵤ y ↔ x =ᵤ y := by simp [liftLE_antisymm_iff]
-@[simp] theorem liftEQ_apply_iff {f : α ≤i γ} : y =ᵤ f x ↔ y =ᵤ x := by simp [liftLE_antisymm_iff]
+@[simp] theorem liftEQ_apply_iff : y =ᵤ f x ↔ y =ᵤ x := by simp [liftLE_antisymm_iff]
 theorem apply_liftEQ_apply_iff : f x =ᵤ g y ↔ x =ᵤ y := by simp
 
 @[simp] theorem apply_liftLT_iff : f x <ᵤ y ↔ x <ᵤ y := by simp [← not_liftLE]
-@[simp] theorem liftLT_apply_iff {f : α ≤i γ} : y <ᵤ f x ↔ y <ᵤ x := by simp [← not_liftLE]
+@[simp] theorem liftLT_apply_iff : y <ᵤ f x ↔ y <ᵤ x := by simp [← not_liftLE]
 theorem apply_liftLT_apply_iff : f x <ᵤ g y ↔ x <ᵤ y := by simp
 
 end InitialSeg
