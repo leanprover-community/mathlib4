@@ -6,7 +6,7 @@ Authors: Devon Tuma
 import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.MvPolynomial
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz
@@ -96,17 +96,14 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) 
 
 instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
     (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal := by
-  have : MvPolynomial σ k ⧸ vanishingIdeal {x} ≃+* k :=
-    RingEquiv.ofBijective
-      (Ideal.Quotient.lift _ (eval x) fun p h => (mem_vanishingIdeal_singleton_iff x p).mp h)
-      (by
-        refine
-          ⟨(injective_iff_map_eq_zero _).mpr fun p hp => ?_, fun z =>
-            ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
-        obtain ⟨q, rfl⟩ := Ideal.Quotient.mk_surjective p
-        rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
-          ← Quotient.eq_zero_iff_mem] at hp)
-  rw [← bot_quotient_isMaximal_iff, RingEquiv.bot_maximal_iff this]
+  have : Function.Bijective
+      (Ideal.Quotient.lift _ (eval x) fun p h ↦ (mem_vanishingIdeal_singleton_iff x p).mp h) := by
+    refine ⟨(injective_iff_map_eq_zero _).mpr fun p hp ↦ ?_, fun z ↦
+      ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
+    obtain ⟨q, rfl⟩ := Ideal.Quotient.mk_surjective p
+    rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
+      ← Quotient.eq_zero_iff_mem] at hp
+  rw [← bot_quotient_isMaximal_iff, isMaximal_iff_of_bijective _ this]
   exact bot_isMaximal
 
 theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :

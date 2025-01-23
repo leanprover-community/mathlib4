@@ -55,6 +55,13 @@ theorem exp_log (hx : 0 < x) : exp (log x) = x := by
   rw [exp_log_eq_abs hx.ne']
   exact abs_of_pos hx
 
+theorem exp_one_mul_le_exp {x : ℝ} : Real.exp 1 * x ≤ x.exp := by
+  by_cases hx0 : x ≤ 0
+  · apply le_trans
+        (mul_nonpos_of_nonneg_of_nonpos (Real.exp_pos 1).le hx0) (Real.exp_nonneg x)
+  · have h := Real.add_one_le_exp (Real.log x)
+    rwa [← Real.exp_le_exp, Real.exp_add, Real.exp_log (lt_of_not_le hx0), mul_comm] at h
+
 theorem exp_log_of_neg (hx : x < 0) : exp (log x) = -x := by
   rw [exp_log_eq_abs (ne_of_lt hx)]
   exact abs_of_neg hx
@@ -139,13 +146,15 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
-theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
+theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
+  rcases hx.eq_or_lt with (rfl | hx)
+  · simp [le_refl, zero_le_one]
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
 @[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
-  (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
+  (log_pos_iff (lt_trans zero_lt_one hx).le).2 hx
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
   rw [← neg_neg x, log_neg_eq_log]
@@ -172,16 +181,17 @@ theorem log_nonneg_iff (hx : 0 < x) : 0 ≤ log x ↔ 1 ≤ x := by rw [← not_
 theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
   (log_nonneg_iff (zero_lt_one.trans_le hx)).2 hx
 
-theorem log_nonpos_iff (hx : 0 < x) : log x ≤ 0 ↔ x ≤ 1 := by rw [← not_lt, log_pos_iff hx, not_lt]
-
-theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
+theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [le_refl, zero_le_one]
-  exact log_nonpos_iff hx
+  rw [← not_lt, log_pos_iff hx.le, not_lt]
+
+@[deprecated (since := "2025-01-16")]
+alias log_nonpos_iff' := log_nonpos_iff
 
 @[bound]
 theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
-  (log_nonpos_iff' hx).2 h'x
+  (log_nonpos_iff hx).2 h'x
 
 theorem log_natCast_nonneg (n : ℕ) : 0 ≤ log n := by
   if hn : n = 0 then

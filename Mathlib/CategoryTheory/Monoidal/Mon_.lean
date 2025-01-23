@@ -249,11 +249,11 @@ variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 #adaptation_note
 /--
 After https://github.com/leanprover/lean4/pull/6053
-we needed to increase the `maxHeartbeats` limit.
+we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
+`map_id` and `map_comp`.
 
 This may indicate a configuration problem in Aesop.
 -/
-set_option maxHeartbeats 400000 in
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
@@ -284,6 +284,12 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
       mul_hom := by
         rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
           f.mul_hom] }
+  map_id _ := by -- the `aesop_cat` autoparam solves this but it's slow
+    simp only [Mon_.id_hom', map_id]
+    rfl
+  map_comp _ _ := by -- the `aesop_cat` autoparam solves this but it's slow
+    simp only [Mon_.comp_hom', map_comp]
+    rfl
 
 variable (C D)
 
@@ -337,7 +343,6 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
-set_option maxHeartbeats 400000 in
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def unitIso :
@@ -519,10 +524,10 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
       tensorObj _ _ ⟶ tensorObj _ _ :=
     { hom := f.hom ⊗ g.hom
       one_hom := by
-        dsimp
+        dsimp [tensorObj]
         slice_lhs 2 3 => rw [← tensor_comp, Hom.one_hom f, Hom.one_hom g]
       mul_hom := by
-        dsimp
+        dsimp [tensorObj]
         slice_rhs 1 2 => rw [tensorμ_natural]
         slice_lhs 2 3 => rw [← tensor_comp, Hom.mul_hom f, Hom.mul_hom g, tensor_comp]
         simp only [Category.assoc] }
