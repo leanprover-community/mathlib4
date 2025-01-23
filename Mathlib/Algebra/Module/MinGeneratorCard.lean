@@ -140,7 +140,7 @@ lemma FG.span_range_minGenerator {p : Submodule R M} (h : p.FG) :
   Classical.choose_spec (exists_fun_spanRankNat_span_range_eq h)
 
 /-- The minimal generator elements are in the submodule -/
-lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i) :
+lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanRankNat) :
     minGenerator h i ∈ p := by
   have := span_range_minGenerator h
   simp_rw [← this]
