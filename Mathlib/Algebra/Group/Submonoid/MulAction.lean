@@ -20,6 +20,10 @@ instance Submonoid.smul {M' : Type*} [MulOneClass M'] [SMul M' α]
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M α] : MulAction s α where
+instance [MulAction M α] : MulAction s α where
   one_smul := one_smul M
   mul_smul r₁ r₂ := mul_smul (r₁ : M) r₂
+
+@[to_additive]
+instance Submonoid.mulAction [MulAction M α] (S : Submonoid M) : MulAction S α :=
+  inferInstance
