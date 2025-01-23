@@ -568,7 +568,6 @@ import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.Algebra.Module.LocalizedModule.Int
 import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.Algebra.Module.MinGeneratorCard
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Module.Opposite
@@ -589,6 +588,7 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Module.SnakeLemma
+import Mathlib.Algebra.Module.SpanRank
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Defs
