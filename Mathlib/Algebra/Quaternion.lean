@@ -309,7 +309,7 @@ variable [Ring R]
 * `i * j = k`, `j * i = c₂ * j - k`;
 * `k * k = - c₁ * c₃`;
 * `i * k = c₁ * j + c₂ * k`, `k * i = -c₁ * j`;
-* `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₂ * i`. -/
+* `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
 instance : Mul ℍ[R,c₁,c₂,c₃] :=
   ⟨fun a b =>
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 + c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4,
