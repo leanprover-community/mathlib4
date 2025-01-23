@@ -103,6 +103,22 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
     WalkingParallelFamily.Hom.id X = 𝟙 X :=
   rfl
 
+variable (J) in
+/-- `Arrow (WalkingParallelFamily J)` identifies to the type obtained
+by adding two elements to `T`. -/
+def WalkingParallelFamily.arrowEquiv :
+    Arrow (WalkingParallelFamily J) ≃ Option (Option J) where
+  toFun f := match f.left, f.right, f.hom with
+    | zero, _, .id _ => none
+    | one, _, .id _ => some none
+    | zero, one, .line t => some (some t)
+  invFun x := match x with
+    | none => Arrow.mk (𝟙 zero)
+    | some none => Arrow.mk (𝟙 one)
+    | some (some t) => Arrow.mk (.line t)
+  left_inv := by rintro ⟨(_ | _), _, (_ | _)⟩ <;> rfl
+  right_inv := by rintro (_ | (_ | _)) <;> rfl
+
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C} (f : J → (X ⟶ Y))
 

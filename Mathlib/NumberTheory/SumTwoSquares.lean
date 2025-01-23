@@ -200,7 +200,7 @@ the right hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)
-  · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ even_zero, fun _ => ⟨0, 0, rfl⟩⟩
+  · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ Even.zero, fun _ => ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
   rw [Nat.eq_sq_add_sq_iff_eq_sq_mul]
   refine ⟨fun H q hq h => ?_, fun H => ?_⟩
