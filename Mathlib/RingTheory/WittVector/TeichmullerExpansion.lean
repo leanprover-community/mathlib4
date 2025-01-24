@@ -18,8 +18,15 @@ def teichmullerSummation : 𝕎 k := ∑' n, (p ^ n : 𝕎 k) * teichmuller p (x
 theorem summable_teichmullerSummation : Summable (fun n ↦ (p ^ n : 𝕎 k) * teichmuller p (x n)) :=
     summable_p_pow_mul _
 
+theorem foo : Function.Injective (teichmullerSummation : _ → 𝕎 k) := sorry
+
+theorem bar : Function.Surjective (teichmullerSummation : _ → 𝕎 k) := sorry
+
 -- teichmullerExpansionAux ℕ → k
 def teichmullerExpansion : 𝕎 k ≃ (ℕ → k) := sorry
+
+variable (w : 𝕎 k) (n : ℕ)
+#check teichmullerExpansion w n
 
 end WittVector
 
