@@ -67,7 +67,7 @@ open MulOpposite in
   central simple algebra will be an inverse for an element in `BrauerGroup`,
   find out more about this in `Mathlib.Algebra.BrauerGroup.Basic`. -/
 instance : IsCentral K Dᵐᵒᵖ where
-  out z hz:= by
+  out z hz := by
     rename_i _ h _ _
     have hz' : ∀ (x : D), x * z.unop = z.unop * x := fun x => by
       rw [Subalgebra.mem_center_iff] at hz
