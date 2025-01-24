@@ -95,7 +95,7 @@ variable [CommSemiring α] (I : Ideal α)
 theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
     (a + b) ^ k ∈ I :=
-  I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb hk (Commute.all _ _)
+  I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb hk (Commute.all ..)
 
 theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :

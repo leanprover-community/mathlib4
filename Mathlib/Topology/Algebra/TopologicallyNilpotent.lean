@@ -123,7 +123,7 @@ theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
 /-- If `a` and `b` are topologically nilpotent, then `a + b` is topologically nilpotent. -/
 theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a + b) :=
-  ha.add_of_commute hb (Commute.all _ _)
+  ha.add_of_commute hb (Commute.all ..)
 
 end CommRing
 
