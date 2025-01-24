@@ -44,7 +44,7 @@ instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective' f g h := by  obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-@[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
+@[simp] lemma toFun_eq_coe (n : Nucleus X) : ⇑n.toInfHom = n := rfl
 
 instance : NucleusClass (Nucleus X) X where
   idempotent _ _ := idempotent' ..
@@ -102,6 +102,6 @@ instance : OrderBot (Nucleus X) where
   bot_le _ _ := increasing
 
 instance : OrderTop (Nucleus X) where
-  le_top _ _ := (by simp)
+  le_top _ _ := by simp
 
 end Nucleus
