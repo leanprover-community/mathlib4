@@ -21,7 +21,6 @@ minimal prime ideals of I.
 
 -/
 
-
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
 open Ideal
@@ -122,11 +121,11 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
 
-theorem ENat.iSup₂_add {ι : Type*} {p : ι → Prop} (hs : ∃ i, p i)
-    (f : ∀ (i : ι), p i → ℕ∞) (x : ℕ∞) :
-    (⨆ (i : ι) (h : p i), f i h) + x = ⨆ (i : ι) (h : p i), f i h + x := by
-  haveI : Nonempty { i // p i } := ⟨⟨_, hs.choose_spec⟩⟩
-  rw [iSup_subtype', iSup_subtype', ENat.iSup_add]
+-- theorem ENat.iSup₂_add {ι : Type*} {p : ι → Prop} (hs : ∃ i, p i)
+--     (f : ∀ (i : ι), p i → ℕ∞) (x : ℕ∞) :
+--     (⨆ (i : ι) (h : p i), f i h) + x = ⨆ (i : ι) (h : p i), f i h + x := by
+--   haveI : Nonempty { i // p i } := ⟨⟨_, hs.choose_spec⟩⟩
+--   rw [iSup_subtype', iSup_subtype', ENat.iSup_add]
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
@@ -215,49 +214,6 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
     simp_rw [h]
     exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
 
--- lemma set.chain_height_univ {α : Type*} [preorder α] (s : set α) :
---   (set.univ : set s).chain_height = s.chain_height :=
--- begin
---   conv_rhs { rw [← @subtype.range_coe _ s, ← set.image_univ] },
---   rw set.chain_height_image,
---   intros x y, refl,
--- end
-
--- lemma order_iso.chain_height_eq {α β : Type*} [preorder α] [preorder β]
---   (e : α ≃o β) : (set.univ : set α).chain_height = (set.univ : set β).chain_height :=
--- begin
---   rw [← set.range_iff_surjective.mpr e.surjective, ← set.image_univ, set.chain_height_image],
---   exact λ _ _, e.lt_iff_lt.symm
--- end
-
-
--- theorem OrderIso.chain_height_eq {α β : Type*} [Preorder α] [Preorder β]
---   (e : α ≃o β) : (Set.univ : Set α).chainHeight = (Set.univ : Set β).chainHeight := by
---   rw [← Set.range_iff_surjective.mpr e.surjective, ← Set.image_univ, Set.chainHeight_image]
---   exact fun _ _ => (e.lt_iff_lt).symm
-
-theorem ENat.add_inj_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (fun a => a + n) := by
-  intro a b e
-  exact le_antisymm
-    ((WithTop.add_le_add_iff_right hn).mp e.le)
-    ((WithTop.add_le_add_iff_right hn).mp e.ge)
-
-lemma Order.height_eq_krullDim_Iic {α : Type*} [Preorder α] (x : α) :
-    (height x : ℕ∞) = krullDim (Set.Iic x) := by
-  rw [← Order.height_top_eq_krullDim, height, height, WithBot.coe_inj]
-  apply le_antisymm
-  · apply iSup_le; intro p; apply iSup_le; intro hp
-    let q := LTSeries.mk p.length (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩
-     : Set.Iic x)) (fun _ _ h ↦ p.strictMono h)
-    rw [show p.length = q.length by rfl]
-    simp only [le_top, iSup_pos, ge_iff_le]
-    apply le_iSup (fun p ↦ (p.length : ℕ∞)) q
-  · apply iSup_le; intro p; apply iSup_le; intro _
-    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
-    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
-    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
-    exact (p.toFun (Fin.last p.length)).2
-
 theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) (hJ : J.IsPrime) :
     J.primeHeight = (J.comap (algebraMap R A)).primeHeight := by
@@ -280,7 +236,6 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing
       apply_fun (fun I ↦ I.1) at this
       exact this
     map_rel_iff' := fun {I₁ I₂} => @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
-
 
 theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
