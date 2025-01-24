@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
-import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.One.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Tactic.TypeStar
@@ -138,7 +138,7 @@ def ofNatSucc : ℕ → PosNum
 def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 
-instance {n : ℕ} : OfNat PosNum (n + 1) where
+instance (priority := low) {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering
@@ -159,10 +159,10 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel PosNum (· < ·)
+instance decidableLT : DecidableRel (α := PosNum) (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel PosNum (· ≤ ·)
+instance decidableLE : DecidableRel (α := PosNum) (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 
 end PosNum
@@ -270,10 +270,10 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel Num (· < ·)
+instance decidableLT : DecidableRel (α := Num) (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel Num (· ≤ ·)
+instance decidableLE : DecidableRel (α := Num) (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -479,10 +479,10 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel ZNum (· < ·)
+instance decidableLT : DecidableRel (α := ZNum) (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel ZNum (· ≤ ·)
+instance decidableLE : DecidableRel (α := ZNum) (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 
 end ZNum

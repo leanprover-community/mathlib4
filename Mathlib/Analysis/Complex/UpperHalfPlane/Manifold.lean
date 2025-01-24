@@ -15,26 +15,29 @@ In this file we define the complex manifold structure on the upper half-plane.
 
 open Filter
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 namespace UpperHalfPlane
 
 noncomputable instance : ChartedSpace ℂ ℍ :=
   UpperHalfPlane.isOpenEmbedding_coe.singletonChartedSpace
 
-instance : SmoothManifoldWithCorners 𝓘(ℂ) ℍ :=
-  UpperHalfPlane.isOpenEmbedding_coe.singleton_smoothManifoldWithCorners
+instance : IsManifold 𝓘(ℂ) ω ℍ :=
+  UpperHalfPlane.isOpenEmbedding_coe.isManifold_singleton
 
-/-- The inclusion map `ℍ → ℂ` is a smooth map of manifolds. -/
-theorem smooth_coe : Smooth 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) := fun _ => contMDiffAt_extChartAt
+/-- The inclusion map `ℍ → ℂ` is an analytic map of manifolds. -/
+theorem contMDiff_coe {n : WithTop ℕ∞} : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
+  fun _ => contMDiffAt_extChartAt
+
+@[deprecated (since := "2024-11-20")] alias smooth_coe := contMDiff_coe
 
 /-- The inclusion map `ℍ → ℂ` is a differentiable map of manifolds. -/
 theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=
-  smooth_coe.mdifferentiable
+  contMDiff_coe.mdifferentiable le_top
 
-lemma smoothAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
-    SmoothAt 𝓘(ℂ) 𝓘(ℂ) ofComplex z := by
-  rw [SmoothAt, contMDiffAt_iff]
+lemma contMDiffAt_ofComplex {n : WithTop ℕ∞} {z : ℂ} (hz : 0 < z.im) :
+    ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) n ofComplex z := by
+  rw [contMDiffAt_iff]
   constructor
   · -- continuity at z
     rw [ContinuousAt, nhds_induced, tendsto_comap_iff]
@@ -48,9 +51,11 @@ lemma smoothAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
       Set.range_id, id_eq, contDiffWithinAt_univ]
     exact contDiffAt_id.congr_of_eventuallyEq (eventuallyEq_coe_comp_ofComplex hz)
 
+@[deprecated (since := "2024-11-20")] alias smoothAt_ofComplex := contMDiffAt_ofComplex
+
 lemma mdifferentiableAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) ofComplex z :=
-  (smoothAt_ofComplex hz).mdifferentiableAt
+  (contMDiffAt_ofComplex hz).mdifferentiableAt le_top
 
 lemma mdifferentiableAt_iff {f : ℍ → ℂ} {τ : ℍ} :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) f τ ↔ DifferentiableAt ℂ (f ∘ ofComplex) ↑τ := by

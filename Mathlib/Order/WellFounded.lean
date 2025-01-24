@@ -37,6 +37,7 @@ instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr
 
+open scoped Function in -- required for scoped `on` notation
 theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
@@ -88,21 +89,26 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
 
-section
+section deprecated
 
 open Classical in
+set_option linter.deprecated false in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
+@[deprecated "If you have a linear order, consider defining a `SuccOrder` instance through
+`ConditionallyCompleteLinearOrder.toSuccOrder`." (since := "2024-10-25")]
 protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
+set_option linter.deprecated false in
+@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
 
-end
-
+set_option linter.deprecated false in
+@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
 protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
@@ -119,6 +125,8 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     left
     exact hy
   rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
+
+end deprecated
 
 end WellFounded
 

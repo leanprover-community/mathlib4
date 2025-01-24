@@ -3,6 +3,7 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
+import Mathlib.Data.Nat.Factors
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
@@ -13,6 +14,7 @@ import Mathlib.Tactic.LinearCombination
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -137,14 +139,18 @@ theorem exists_pos_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
 
 end Fermat42
 
-theorem Int.coprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 2 + s ^ 2) r := by
+theorem Int.isCoprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 2 + s ^ 2) r := by
   rw [sq, sq]
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 
-theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
+@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum := Int.isCoprime_of_sq_sum
+
+theorem Int.isCoprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
     IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
-  apply IsCoprime.mul_right (Int.coprime_of_sq_sum (isCoprime_comm.mp h))
-  rw [add_comm]; apply Int.coprime_of_sq_sum h
+  apply IsCoprime.mul_right (Int.isCoprime_of_sq_sum (isCoprime_comm.mp h))
+  rw [add_comm]; apply Int.isCoprime_of_sq_sum h
+
+@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum' := Int.isCoprime_of_sq_sum'
 
 namespace Fermat42
 
@@ -192,7 +198,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hcp : Int.gcd m (r * s) = 1 := by
     rw [htt3]
     exact
-      Int.gcd_eq_one_iff_coprime.mpr (Int.coprime_of_sq_sum' (Int.gcd_eq_one_iff_coprime.mp htt4))
+      Int.gcd_eq_one_iff_coprime.mpr (Int.isCoprime_of_sq_sum' (Int.gcd_eq_one_iff_coprime.mp htt4))
   -- b is even because b ^ 2 = 2 * m * n.
   have hb2 : 2 ∣ b := by
     apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two

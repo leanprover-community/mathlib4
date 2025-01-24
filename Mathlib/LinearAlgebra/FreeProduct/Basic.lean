@@ -64,11 +64,13 @@ end DirectSum
 namespace RingQuot
 universe uS uA uB
 
+open scoped Function -- required for scoped `on` notation
+
 /--If two `R`-algebras are `R`-equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also `R`-equivalent.
 
 (Special case of the third isomorphism theorem.)-/
-def algEquiv_quot_algEquiv
+def algEquivQuotAlgEquiv
     {R : Type u} [CommSemiring R] {A B : Type v} [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) (rel : A → A → Prop) :
     RingQuot rel ≃ₐ[R] RingQuot (rel on f.symm) :=
@@ -83,16 +85,20 @@ def algEquiv_quot_algEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
+@[deprecated (since := "2024-12-07")] alias algEquiv_quot_algEquiv := algEquivQuotAlgEquiv
+
 /--If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 
 (Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
 case of the third isomorphism theorem.)-/
-def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop)  :
+def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop) :
     RingQuot rel ≃+* RingQuot (rel on f.symm) :=
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
-  algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
+  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
+
+@[deprecated (since := "2024-12-07")] alias equiv_quot_equiv := equivQuotEquiv
 
 end RingQuot
 
@@ -131,6 +137,8 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
         (ι R <| lof R I A i (a₁ * a₂))
 
+open scoped Function -- required for scoped `on` notation
+
 /--The generating equivalence relation for elements of the power algebra
 that are identified in the free product. -/
 @[reducible, simp] def rel' := rel R A on ofDirectSum
@@ -143,11 +151,14 @@ theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 @[reducible] def _root_.LinearAlgebra.FreeProduct := RingQuot <| FreeProduct.rel R A
 
 /--The free product of the collection of `R`-algebras `A i`, as a quotient of `PowerAlgebra R A`-/
-@[reducible] def _root_.LinearAlgebra.FreeProduct_ofPowers := RingQuot <| FreeProduct.rel' R A
+@[reducible] def _root_.LinearAlgebra.FreeProductOfPowers := RingQuot <| FreeProduct.rel' R A
+
+@[deprecated (since := "2024-12-07")]
+alias _root_.LinearAlgebra.FreeProduct_ofPowers := LinearAlgebra.FreeProductOfPowers
 
 /--The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers`-/
-noncomputable def equivPowerAlgebra : FreeProduct_ofPowers R A ≃ₐ[R] FreeProduct R A :=
-  RingQuot.algEquiv_quot_algEquiv
+noncomputable def equivPowerAlgebra : FreeProductOfPowers R A ≃ₐ[R] FreeProduct R A :=
+  RingQuot.algEquivQuotAlgEquiv
     (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
 
@@ -182,7 +193,7 @@ theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel.prod
-  aesop
+  simp
 
 /--The `i`th canonical injection, from `A i` to the free product, as
 a linear map.-/
