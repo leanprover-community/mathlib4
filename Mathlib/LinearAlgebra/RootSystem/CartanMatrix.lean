@@ -32,7 +32,7 @@ variable (S : Type*) [CommRing S] [Algebra S R]
 See also `RootPairing.Base.cartanMatrix`. -/
 def cartanMatrixIn :
     Matrix b.support b.support S :=
-  fun i j ↦ P.pairingIn S i j
+  .of fun i j ↦ P.pairingIn S i j
 
 /-- The Cartan matrix of a crystallographic root pairing, with respect to a base `b`. -/
 abbrev cartanMatrix [P.IsCrystallographic] :
