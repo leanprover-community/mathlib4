@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Moments
 import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # Linearly tilted measures
@@ -283,65 +284,10 @@ lemma lintegral_eq_lintegral_measure_ge [SFinite μ] {f : Ω → ℝ≥0∞}
     rw [lintegral_indicator_one]
     exact hf_meas measurableSet_Ici
 
--- TODO: this should be deduced from the corresponding lemma about lintegral... but there is no
--- `MeasureSpace` instance on `ℝ≥0∞`.
 lemma integral_eq_integral_measure_ge [SFinite μ] {f : Ω → ℝ}
-    (hf_meas : Measurable f) (hf : 0 ≤ f) (hf_int : Integrable f μ) :
-    ∫ ω, f ω ∂μ = ∫ u in Ici 0, (μ {x | u ≤ f x}).toReal := by
-  calc ∫ ω, f ω ∂μ
-  _ = ∫ ω, (∫ u, (Icc 0 (f ω)).indicator 1 u) ∂μ := by
-    congr with ω
-    rw [integral_indicator_one]
-    swap; · exact measurableSet_Icc
-    simp only [volume_Icc, sub_zero]
-    rw [ENNReal.toReal_ofReal (hf ω)]
-  _ = ∫ ω, (∫ u in Ici 0, if u ≤ f ω then 1 else 0) ∂μ := by
-    congr with ω
-    have h_eq u : (if u ≤ f ω then (1 : ℝ) else 0) = {u | u ≤ f ω}.indicator 1 u := by
-      split_ifs with h <;> simp [h]
-    simp_rw [h_eq]
-    rw [setIntegral_indicator]
-    swap; · exact measurableSet_Iic
-    rw [integral_indicator measurableSet_Icc]
-    congr
-  _ = ∫ u in Ici 0, ∫ ω, if u ≤ f ω then 1 else 0 ∂μ := by
-    have h_inter_eq x : Ici (0 : ℝ) ∩ {z | z ≤ f x} = Set.Icc 0 (f x) := by ext; simp
-    have h_if_eq y x : |if y ≤ f x then (1 : ℝ) else 0| = {z | z ≤ f x}.indicator 1 y := by
-      split_ifs with h <;> simp [h]
-    have h_if_eq' y x : ‖if y ≤ f x then (1 : ℝ) else 0‖₊ = {z | z ≤ f x}.indicator 1 y := by
-      split_ifs with h <;> simp [h]
-    have h_eq x : ∫ y in Set.Ici 0, |if y ≤ f x then 1 else 0| = f x := by
-      simp_rw [h_if_eq]
-      rw [setIntegral_indicator]
-      · simp only [Pi.one_apply, integral_const, MeasurableSet.univ, Measure.restrict_apply,
-          Set.univ_inter, smul_eq_mul, mul_one]
-        simp only [h_inter_eq, volume_Icc, sub_zero, ENNReal.toReal_ofReal_eq_iff, ge_iff_le]
-        exact hf x
-      · exact measurableSet_Iic
-    rw [integral_integral_swap]
-    refine (integrable_prod_iff ?_).mpr ?_
-    · refine Measurable.aestronglyMeasurable ?_
-      refine Measurable.ite ?_ measurable_const measurable_const
-      exact measurableSet_le measurable_snd (hf_meas.comp measurable_fst)
-    · simp only [Function.uncurry_apply_pair, norm_eq_abs]
-      refine ⟨ae_of_all _ fun ω ↦ ?_, ?_⟩
-      · constructor
-        · refine Measurable.aestronglyMeasurable ?_
-          exact Measurable.ite measurableSet_Iic measurable_const measurable_const
-        · unfold HasFiniteIntegral
-          simp only [h_if_eq', ENNReal.coe_indicator, Pi.one_apply, ENNReal.coe_one]
-          rw [setLIntegral_indicator]
-          · simp [inter_comm, h_inter_eq, inter_univ]
-          · exact measurableSet_Iic
-      · simp_rw [h_eq]
-        exact hf_int
-  _ = ∫ u in Ici 0, (μ {x | u ≤ f x}).toReal := by
-    congr with u
-    have h_eq ω : (if u ≤ f ω then (1 : ℝ) else 0) = {ω | u ≤ f ω}.indicator 1 ω := by
-      split_ifs with h <;> simp [h]
-    simp_rw [h_eq]
-    rw [integral_indicator_one]
-    exact hf_meas measurableSet_Ici
+    (hf : 0 ≤ᵐ[μ] f) (hf_int : Integrable f μ) :
+    ∫ ω, f ω ∂μ = ∫ u in Ici 0, (μ {x | u ≤ f x}).toReal :=
+  (hf_int.integral_eq_integral_meas_le hf).trans integral_Ici_eq_integral_Ioi.symm
 
 lemma measure_ge_eq_integral_todo [IsFiniteMeasure μ] (ε : ℝ) (t : ℝ) (hX : Measurable X)
     (h_int : Integrable (fun ω ↦ exp (t * X ω)) μ) :
@@ -350,9 +296,8 @@ lemma measure_ge_eq_integral_todo [IsFiniteMeasure μ] (ε : ℝ) (t : ℝ) (hX 
       * ∫ u in Ici 0, ((μ.linTilted X t) {ω | X ω - ε ∈ Icc 0 (log u⁻¹ / t)}).toReal := by
   rw [measure_ge_eq_integral_exp_linTilted ε t hX h_int]
   congr
-  rw [integral_eq_integral_measure_ge _ (fun ω ↦ ?_)]
+  rw [integral_eq_integral_measure_ge (ae_of_all _ fun ω ↦ ?_)]
   rotate_left
-  · sorry
   · sorry
   · simp only [Pi.zero_apply, neg_mul]
     refine mul_nonneg ?_ (exp_nonneg _)

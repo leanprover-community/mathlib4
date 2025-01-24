@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Probability.Variance
@@ -432,9 +434,9 @@ theorem cgf_zero_fun : cgf 0 μ t = log (μ Set.univ).toReal := by simp only [cg
 @[simp]
 theorem mgf_zero_measure : mgf X (0 : Measure Ω) t = 0 := by simp only [mgf, integral_zero_measure]
 
+set_option linter.docPrime false in
 @[simp]
-theorem cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
-  simp only [cgf, log_zero, mgf_zero_measure]
+lemma cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
@@ -889,9 +891,19 @@ variable [IsFiniteMeasure μ]
 
 lemma deriv_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     deriv (cgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by
-  calc deriv (fun t ↦ log (mgf X μ t)) v
+  by_cases hμ : μ = 0
+  · simp only [hμ, cgf_zero_measure, integral_zero_measure, mgf_zero_measure, div_zero]
+    exact deriv_const v 0
+  have hv : Integrable (fun ω ↦ exp (v * X ω)) μ :=
+    interior_subset (s := {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) h
+  calc deriv (log ∘ (mgf X μ)) v
   _ = deriv (mgf X μ) v / mgf X μ v := by
-    sorry
+    rw [deriv_comp, deriv.log]
+    · simp [div_eq_inv_mul]
+    · exact differentiableAt_id'
+    · exact (mgf_pos' hμ hv).ne'
+    · exact differentiableAt_log (mgf_pos' hμ hv).ne'
+    · exact AnalyticAt.differentiableAt (analyticAt_mgf_of_mem_interior h)
   _ = μ[fun ω ↦ X ω * rexp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
 
 lemma deriv_cgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
