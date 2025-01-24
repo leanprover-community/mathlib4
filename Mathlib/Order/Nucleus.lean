@@ -14,7 +14,7 @@ A Nucleus is a function between Frames which corresponds to a sublocale.
 https://ncatlab.org/nlab/show/nucleus
 -/
 
-open Order
+open Order InfHom
 
 variable {X : Type*} [CompleteLattice X]
 
@@ -41,8 +41,8 @@ namespace Nucleus
 variable {n : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
-  coe := toFun
-  coe_injective' f g h := by cases f; congr!
+  coe x := x.toFun
+  coe_injective' f g h := by cases f; congr!;exact InfHom.ext_iff.mpr (congrFun h)
 
 @[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 
@@ -65,28 +65,28 @@ lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
   InfHomClass.map_inf n x y
 
 @[ext] lemma ext {m n : Nucleus X} (h : ∀ a, m a = n a) : m = n :=
-  DFunLike.ext n m h
+  DFunLike.ext m n h
 
-/-- A Nucleus preserves ⊤ -/
-@[simp] lemma map_top (n : Nucleus X) : n ⊤ = ⊤ :=
-   n.toClosureOperator.closure_top
+/-- A `Nucleus` preserves ⊤. -/
+instance : TopHomClass (Nucleus X) X X where
+  map_top _ := eq_top_iff.mpr increasing
 
 instance : LE (Nucleus X) where
   le x y := ⇑x≤ y
 
 lemma le_iff {n m : Nucleus X} : m ≤ n ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
 
-instance : Preorder (Nucleus X) := .lift (⇑) _ _
+instance : Preorder (Nucleus X) := .lift (⇑)
 
-/-- The smallest Nucleus is the identity Nucleus. -/
+/-- The smallest `Nucleus` is the identity `Nucleus`. -/
 instance instBot : Bot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
   bot.increasing' := by simp
   bot.map_inf' := by simp
 
-/-- The biggest Nucleus sends everything to ⊤. -/
-instance top : Top (Nucleus X) where
+/-- The biggest `Nucleus` sends everything to ⊤. -/
+instance instTop : Top (Nucleus X) where
   top.toFun := ⊤
   top.idempotent' := by simp
   top.increasing' := by simp
@@ -99,16 +99,9 @@ instance top : Top (Nucleus X) where
 @[simp] lemma top_apply (x : X) : (⊤ : Nucleus X) x = ⊤ := rfl
 
 instance : OrderBot (Nucleus X) where
-  bot_le n := increasing n
-
-/-- The biggest Nucleus sends everything to ⊤. -/
-instance top : Top (Nucleus X) where
-  top.toFun := ⊤
-  top.idempotent' := by simp
-  top.increasing' := by simp
-  top.map_inf' := by simp
+  bot_le _ _ := increasing
 
 instance : OrderTop (Nucleus X) where
-  le_top := (by simp [Nucleus.top, Nucleus.le_iff])
+  le_top _ _ := (by simp)
 
 end Nucleus
