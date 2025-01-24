@@ -71,22 +71,6 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
 
-section to_move
-
-open Finset
-
-lemma chain_intersect_antichain {α : Type*} [PartialOrder α] {s t : Set α}
-    (hs : IsChain (· ≤ ·) s) (ht : IsAntichain (· ≤ ·) t) :
-    (s ∩ t).Subsingleton := by
-  simp only [Set.Subsingleton, Set.mem_inter_iff, and_imp]
-  intro x hxs hxt y hys hyt
-  by_contra! hne
-  cases hs.total hxs hys
-  case inl h => exact ht hxt hyt hne h
-  case inr h => exact ht hyt hxt hne.symm h
-
-end to_move
-
 attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 
@@ -545,8 +529,8 @@ theorem exists_partition_iff_nonempty_spinalMap
     choose F hFS hFmem hFuniq using hS
     choose hA G hGA hGC using hSA
     let f (x : α) : α := G (F x) (hFS x)
-    have hfCid (x : α) (hx : x ∈ C) : f x = x :=
-      chain_intersect_antichain hC (hA (F x) (hFS _)) ⟨hGC _ _, hGA _ _⟩ ⟨hx, hFmem _⟩
+    have hfCid (x : α) (hx : x ∈ C) : f x = x := inter_subsingleton_of_isChain_of_isAntichain
+        hC (hA (F x) (hFS _)) ⟨hGC _ _, hGA _ _⟩ ⟨hx, hFmem _⟩
     have hf (x : α) : IsAntichain (· ≤ ·) (f ⁻¹' {x}) := (hA (F x) (hFS _)).subset <| by
       rintro y rfl
       exact hFuniq (f y) (F y) (hFS y) (hGA _ _) ▸ hFmem _
