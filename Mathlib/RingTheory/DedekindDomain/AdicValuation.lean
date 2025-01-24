@@ -397,32 +397,31 @@ theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation x :=
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-abbrev adicCompletion :=
+def adicCompletion :=
   @UniformSpace.Completion K v.adicValued.toUniformSpace
 
-instance : Field (v.adicCompletion K) :=
-  @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _
-    v.adicValued.toUniformAddGroup
+instance : Field (v.adicCompletion K) := inferInstanceAs <|
+  Field (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 instance : Inhabited (v.adicCompletion K) :=
   ⟨0⟩
 
-instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ v.adicValued
+instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ := inferInstanceAs <|
+  Valued (@UniformSpace.Completion K v.adicValued.toUniformSpace) ℤₘ₀
 
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
     Valued.v x = @Valued.extension K _ _ _ (adicValued v) x :=
   rfl
 
-instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
-  @UniformSpace.Completion.completeSpace K v.adicValued.toUniformSpace
+instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) := inferInstanceAs <|
+  CompleteSpace (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 -- Porting note: replaced by `Coe`
 -- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
 --   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 
 instance adicCompletion.instCoe : Coe K (v.adicCompletion K) :=
-  (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
+  inferInstanceAs <| Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
@@ -452,9 +451,8 @@ instance adicValued.uniformContinuousConstSMul :
     @UniformContinuousConstSMul K K v.adicValued.toUniformSpace _ :=
   @Ring.uniformContinuousConstSMul K _ v.adicValued.toUniformSpace _ _
 
-instance adicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
-  @UniformSpace.Completion.algebra K _ v.adicValued.toUniformSpace _ _ R _ _
-    (adicValued.has_uniform_continuous_const_smul' R K v)
+instance adicCompletion.algebra' : Algebra R (v.adicCompletion K) := inferInstanceAs <|
+  Algebra R (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 theorem coe_smul_adicCompletion (r : R) (x : K) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
@@ -471,9 +469,15 @@ theorem algebraMap_adicCompletion :
     ⇑(algebraMap K <| v.adicCompletion K) = ((↑) : K → adicCompletion K v) :=
   rfl
 
-instance : IsScalarTower R K (v.adicCompletion K) :=
-  @UniformSpace.Completion.instIsScalarTower R K K v.adicValued.toUniformSpace _ _ _
-    (adicValued.has_uniform_continuous_const_smul' R K v) _ _
+instance : IsScalarTower R K (v.adicCompletion K) := inferInstanceAs <|
+  IsScalarTower R K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
+
+theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
+  rw [mem_adicCompletionIntegers]
+  letI : Valued K ℤₘ₀ := adicValued v
+  dsimp only [adicCompletion]
+  rw [Valued.valuedCompletion_apply]
+  exact v.valuation_le_one _
 
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
@@ -482,15 +486,11 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      --Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
-      letI : Valued K ℤₘ₀ := adicValued v
-      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
-      exact v.valuation_le_one _⟩
+      rw [h]
+      exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
-      ⟨(algebraMap R K r : adicCompletion K v), by
-        simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
-          v.valuation_le_one _⟩
+      ⟨(algebraMap R K r : adicCompletion K v), coe_algebraMap_mem _ _ v r⟩
     map_one' := by simp only [map_one]; rfl
     map_mul' x y := by
       ext

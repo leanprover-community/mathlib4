@@ -16,6 +16,8 @@ import Mathlib.CategoryTheory.Limits.Indization.Products
 We define the `v`-category of Ind-objects of a category `C`, called `Ind C`, as well as the functors
 `Ind.yoneda : C ⥤ Ind C` and `Ind.inclusion C : Ind C ⥤ Cᵒᵖ ⥤ Type v`.
 
+For a small filtered category `I`, we also define `Ind.lim I : (I ⥤ C) ⥤ Ind C`.
+
 This file will mainly collect results about ind-objects (stated in terms of `IsIndObject`) and
 reinterpret them in terms of `Ind C`.
 
@@ -156,6 +158,39 @@ instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
 
 noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
   preservesFiniteColimits_of_coflat _
+
+/-- This is the functor `(I ⥤ C) ⥤ Ind C` that sends a functor `F` to `colim (Y ∘ F)`, where `Y`
+is the Yoneda embedding. It is known as "ind-lim" and denoted `“colim”` in [Kashiwara2006]. -/
+protected noncomputable def Ind.lim (I : Type v) [SmallCategory I] [IsFiltered I] :
+    (I ⥤ C) ⥤ Ind C :=
+  (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim
+
+/-- Computing ind-lims in `Ind C` is the same as computing them in `Cᵒᵖ ⥤ Type v`. -/
+noncomputable def Ind.limCompInclusion {I : Type v} [SmallCategory I] [IsFiltered I] :
+    Ind.lim I ⋙ Ind.inclusion C ≅ (whiskeringRight _ _ _).obj yoneda ⋙ colim := calc
+  Ind.lim I ⋙ Ind.inclusion C
+    ≅ (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim ⋙ Ind.inclusion C := Functor.associator _ _ _
+  _ ≅ (whiskeringRight _ _ _).obj Ind.yoneda ⋙
+      (whiskeringRight _ _ _).obj (Ind.inclusion C) ⋙ colim :=
+    isoWhiskerLeft _ (preservesColimitNatIso _)
+  _ ≅ ((whiskeringRight _ _ _).obj Ind.yoneda ⋙
+      (whiskeringRight _ _ _).obj (Ind.inclusion C)) ⋙ colim := (Functor.associator _ _ _).symm
+  _ ≅ (whiskeringRight _ _ _).obj (Ind.yoneda ⋙ Ind.inclusion C) ⋙ colim :=
+    isoWhiskerRight (whiskeringRightObjCompIso _ _) colim
+  _ ≅ (whiskeringRight _ _ _).obj yoneda ⋙ colim :=
+    isoWhiskerRight ((whiskeringRight _ _ _).mapIso (Ind.yonedaCompInclusion)) colim
+
+instance {α : Type v} [SmallCategory α] [FinCategory α] [HasLimitsOfShape α C] {I : Type v}
+    [SmallCategory I] [IsFiltered I] :
+    PreservesLimitsOfShape α (Ind.lim I : (I ⥤ C) ⥤ _) :=
+  haveI : PreservesLimitsOfShape α (Ind.lim I ⋙ Ind.inclusion C) :=
+    preservesLimitsOfShape_of_natIso Ind.limCompInclusion.symm
+  preservesLimitsOfShape_of_reflects_of_preserves _ (Ind.inclusion C)
+
+instance {α : Type v} [SmallCategory α] [FinCategory α] [HasColimitsOfShape α C] {I : Type v}
+    [SmallCategory I] [IsFiltered I] :
+    PreservesColimitsOfShape α (Ind.lim I : (I ⥤ C) ⥤ _) :=
+  inferInstanceAs (PreservesColimitsOfShape α (_ ⋙ colim))
 
 instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
     HasColimitsOfShape (Discrete α) (Ind C) := by
