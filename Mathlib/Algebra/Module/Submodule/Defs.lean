@@ -249,7 +249,8 @@ variable (p)
 instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
-instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
+instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+    Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
