@@ -1449,11 +1449,11 @@ lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α →
     ← mul_prod_erase (filter (f · = f n) I) (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
-injective. Rather, we assume that the image of `f`  on `I` only overlaps where `g (f i) = 1`.
+injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
 The conclusion is the same as in `prod_image`.-/
 @[to_additive (attr := simp)
 "A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
-injective. Rather, we assume that the image of `f`  on `I` only overlaps where `g (f i) = 0`.
+injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 0`.
 The conclusion is the same as in `sum_image`."]
 lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {I : Finset ι}
     (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
