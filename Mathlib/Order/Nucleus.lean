@@ -3,14 +3,21 @@ Copyright (c) 2024 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
+import Mathlib.Order.Closure
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
-import Mathlib.Order.Closure
 
 /-!
 # Nucleus
-Locales are the dual concept to Frames.
-A Nucleus is a function between Frames which corresponds to a sublocale.
+
+Locales are the dual concept to frames. Locale theory is a branch of point-free topology, where
+intuitively locales are like topological spaces which may or may not have enough points.
+Sublocales of a locale generalize the concept of subspaces in topology to the point-free setting.
+
+A nucleus is an endomorphism of a frame which corresponds to a sublocale.
+
+## References
+https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
 
@@ -22,11 +29,13 @@ variable {X : Type*} [CompleteLattice X]
 In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
 structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   /-- A `Nucleus` is idempotent.
+
   Do not use this directly. Instead use `NucleusClass.idempotent`. -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
   /-- A `Nucleus` is increasing.
-  Do not use this directly. Instead use `NucleusClass.increasing`. -/
-  increasing' (x : X) : x ≤ toFun x
+
+  Do not use this directly. Instead use `NucleusClass.le_apply`. -/
+  le_apply' (x : X) : x ≤ toFun x
 
 /-- `NucleusClass F X` states that F is a type of nuclei. -/
 class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
@@ -34,31 +43,32 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
   /-- A nucleus is increasing. -/
-  increasing (x : X) (f : F) : x ≤ f x
+  le_apply (x : X) (f : F) : x ≤ f x
 
 namespace Nucleus
 
-variable {n : Nucleus X} {x y : X}
+variable {n m : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective' f g h := by  obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-@[simp] lemma toFun_eq_coe (n : Nucleus X) : ⇑n.toInfHom = n := rfl
+lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
+@[simp] lemma coe_toInfHom (n : Nucleus X) : ⇑n.toInfHom = n := rfl
 
 instance : NucleusClass (Nucleus X) X where
   idempotent _ _ := idempotent' ..
-  increasing _ _ := increasing' ..
+  le_apply _ _ := le_apply' ..
   map_inf _ _ _ := map_inf' ..
 
 /-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
-   ClosureOperator.mk' n (OrderHomClass.mono n) n.increasing' n.idempotent'
+   ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
 
 lemma idempotent : n (n x) = n x :=
   n.toClosureOperator.idempotent x
 
-lemma increasing : x ≤ n x :=
+lemma le_apply : x ≤ n x :=
   n.toClosureOperator.le_closure x
 
 lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
@@ -69,27 +79,25 @@ lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
 
 /-- A `Nucleus` preserves ⊤. -/
 instance : TopHomClass (Nucleus X) X X where
-  map_top _ := eq_top_iff.mpr increasing
-
-instance : LE (Nucleus X) where
-  le x y := ⇑x≤ y
-
-lemma le_iff {n m : Nucleus X} : m ≤ n ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
+  map_top _ := eq_top_iff.mpr le_apply
 
 instance : Preorder (Nucleus X) := .lift (⇑)
+
+@[simp, norm_cast] lemma coe_le_coe : ⇑m ≤ n ↔ m ≤ n := .rfl
+@[simp, norm_cast] lemma coe_lt_coe : ⇑m < n ↔ m < n := .rfl
 
 /-- The smallest `Nucleus` is the identity `Nucleus`. -/
 instance instBot : Bot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
-  bot.increasing' := by simp
+  bot.le_apply' := by simp
   bot.map_inf' := by simp
 
 /-- The biggest `Nucleus` sends everything to ⊤. -/
 instance instTop : Top (Nucleus X) where
   top.toFun := ⊤
   top.idempotent' := by simp
-  top.increasing' := by simp
+  top.le_apply' := by simp
   top.map_inf' := by simp
 
 @[simp, norm_cast] lemma coe_bot : ⇑(⊥ : Nucleus X) = id := rfl
@@ -99,7 +107,7 @@ instance instTop : Top (Nucleus X) where
 @[simp] lemma top_apply (x : X) : (⊤ : Nucleus X) x = ⊤ := rfl
 
 instance : OrderBot (Nucleus X) where
-  bot_le _ _ := increasing
+  bot_le _ _ := le_apply
 
 instance : OrderTop (Nucleus X) where
   le_top _ _ := by simp
