@@ -56,10 +56,11 @@ instance [WellQuasiOrderedLE α] : IsWellFounded (Set α) (· ≺ ·) :=
   ⟨wellFounded_posetMove⟩
 
 namespace SetTheory.PGame
-open SetTheory
+
+variable [WellQuasiOrderedLE α]
 
 /-- A position in the poset game. A valid move in the poset game is to change set `t` to set `s`,
-whenever `s = t \ Ici a` for some `a ∈ s`.
+whenever `s = t \ Ici a` for some `a ∈ t`.
 
 See also `posetMove`. -/
 def posetPos [WellQuasiOrderedLE α] (t : Set α) : PGame :=
@@ -68,7 +69,71 @@ termination_by wellFounded_posetMove.wrap t
 decreasing_by all_goals exact x.2
 
 /-- The poset game, played on `α`. -/
+@[reducible]
 def poset (α : Type*) [Preorder α] [WellQuasiOrderedLE α] : PGame :=
   posetPos (@univ α)
+
+/-- Use `toLeftMovesPoset` to cast between these two types. -/
+theorem leftMoves_posetPos (t : Set α) : (posetPos t).LeftMoves = {s // s ≺ t} := by
+  rw [posetPos]; rfl
+
+/-- Use `toRightMovesPoset` to cast between these two types. -/
+theorem rightMoves_posetPos (t : Set α) : (posetPos t).RightMoves = {s // s ≺ t} := by
+  rw [posetPos]; rfl
+
+theorem moveLeft_poset_heq {t : Set α} :
+    HEq (posetPos t).moveLeft fun i : {s // s ≺ t} ↦ posetPos i.1 := by
+  rw [posetPos]; rfl
+
+theorem moveRight_poset_heq {t : Set α} :
+    HEq (posetPos t).moveRight fun i : {s // s ≺ t} ↦ posetPos i.1 := by
+  rw [posetPos]; rfl
+
+/-- Turns a set into a left move for a poset game and viceversa. -/
+def toLeftMovesPoset {t : Set α} : {s // s ≺ t} ≃ (posetPos t).LeftMoves :=
+  Equiv.cast (leftMoves_posetPos t).symm
+
+/-- Turns a set into a left move for a poset game and viceversa. -/
+def toRightMovesPoset {t : Set α} : {s // s ≺ t} ≃ (posetPos t).RightMoves :=
+  Equiv.cast (rightMoves_posetPos t).symm
+
+@[simp]
+theorem toLeftMovesPoset_symm_prop {t : Set α} (i : (posetPos t).LeftMoves) :
+    toLeftMovesPoset.symm i ≺ t :=
+  (toLeftMovesPoset.symm i).prop
+
+@[simp]
+theorem toRightMovesPoset_symm_prop {t : Set α} (i : (posetPos t).RightMoves) :
+    toRightMovesPoset.symm i ≺ t :=
+  (toRightMovesPoset.symm i).prop
+
+@[simp]
+theorem moveLeft_poset {t : Set α} (i) :
+    (posetPos t).moveLeft i = posetPos (toLeftMovesPoset.symm i).1 := by
+  apply congr_heq moveLeft_poset_heq (cast_heq _ _).symm
+
+@[simp]
+theorem moveRight_poset {t : Set α} (i) :
+    (posetPos t).moveRight i = posetPos (toRightMovesPoset.symm i).1 := by
+  apply congr_heq moveRight_poset_heq (cast_heq _ _).symm
+
+@[simp]
+theorem neg_posetPos (s : Set α) : -posetPos s = posetPos s := by
+  rw [posetPos, neg_def]
+  congr <;> ext x <;> rw [neg_posetPos]
+termination_by wellFounded_posetMove.wrap s
+decreasing_by all_goals exact x.2
+
+instance impartial_posetPos (s : Set α) : Impartial (posetPos s) := by
+  rw [impartial_def, neg_posetPos]
+  refine ⟨equiv_rfl, fun i ↦ ?_, fun i ↦ ?_⟩
+  · rw [moveLeft_poset]
+    exact impartial_posetPos _
+  · rw [moveRight_poset]
+    exact impartial_posetPos _
+termination_by wellFounded_posetMove.wrap s
+decreasing_by
+· exact toLeftMovesPoset_symm_prop _
+· exact toRightMovesPoset_symm_prop _
 
 end SetTheory.PGame
