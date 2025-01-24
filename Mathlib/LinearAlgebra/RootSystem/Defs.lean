@@ -381,7 +381,7 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
     root_coroot_eq_pairing]
 
 @[mk_iff]
-class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
+class IsValuedIn (S : Type*) [CommSemiRing S] [Algebra S R] : Prop where
   exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
 
 protected alias exists_value := IsValuedIn.exists_value
