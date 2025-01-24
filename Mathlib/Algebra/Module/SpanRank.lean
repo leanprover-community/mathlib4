@@ -3,6 +3,7 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
 -/
+import Mathlib.Data.ENat.Lattice
 import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
@@ -19,7 +20,8 @@ The difference between these two definitions is only that when no finite generat
   number. If no finite generating set exists, the span rank is defined to be `0`.
 * `spanRank`: The minimum cardinality of a generating set of a submodule, possibly infinite, with
   type `ℕ∞`. If no finite generating set exists, the span rank is defined to be `⊤`.
-* `FG.minGenerator`: For a finitely generated submodule, get a minimal generating function.
+* `FG.spanBasis`: For a finitely generated submodule, get a set of minimal generating elements
+  indexed by `Fin (p.spanRankNat)`
 
 ## Main Results
 
@@ -41,9 +43,9 @@ def spanRankNat (p : Submodule R M) : ℕ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
 /-- The minimum cardinality of a generating set of a submodule, possibly infinite, with type
-  `WithTop ℕ`. If no finite generating set exists, the span rank is defined to be `⊤`. -/
+  `ℕ∞`. If no finite generating set exists, the span rank is defined to be `⊤`. -/
 noncomputable
-def spanRank (p : Submodule R M) : WithTop ℕ :=
+def spanRank (p : Submodule R M) : ℕ∞ :=
   ⨅ s : { s : Set M // s.Finite ∧ span R s = p}, s.2.1.toFinset.card
 
 /-- A submodule's spanRank is not top if and only if it is finitely generated -/
@@ -65,8 +67,8 @@ lemma fg_iff_spanRank_eq_spanRankNat {p : Submodule R M} :
     rw [← spanRank_ne_top_iff_fg, e]
     exact WithTop.coe_ne_top
 
-/-- Constructs a generating function whose cardinality equals
-  `spanRankNat` for a finitely generated submodule.-/
+/-- Constructs indexed generating elements whose cardinality equals `spanRankNat` for a finitely
+  generated submodule.-/
 theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
     ∃ f : Fin p.spanRankNat → M, span R (Set.range f) = p := by
   haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
@@ -89,7 +91,7 @@ theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
   · exact f'.symm.surjective
 
 /-- For a finitely generated submodule, its spanRank is less than or equal to n
-    if and only if there exists a generating function from fin n -/
+  if and only if there are elements indexed by (Fin n) that generates the submodule. -/
 lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
     p.spanRank ≤ n ↔ ∃ f : Fin n → M, span R (Set.range f) = p := by
   classical
@@ -132,19 +134,19 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
         convert Finset.card_image_le
         rw [Finset.card_univ, Fintype.card_fin]
 
-/-- An arbitrarily chosen generating family of minimal cardinality. -/
-noncomputable def FG.minGenerator {p : Submodule R M} (h : p.FG) : Fin p.spanRankNat → M :=
+/-- Generating elements for the submodule of minimal cardinality. -/
+noncomputable def FG.spanBasis {p : Submodule R M} (h : p.FG) : Fin p.spanRankNat → M :=
   Classical.choose (exists_fun_spanRankNat_span_range_eq h)
 
-/-- The span of the minimal generator equals the submodule -/
-lemma FG.span_range_minGenerator {p : Submodule R M} (h : p.FG) :
-    span R (Set.range (minGenerator h)) = p :=
+/-- The span of the spanBasis equals the submodule -/
+lemma FG.span_range_spanBasis {p : Submodule R M} (h : p.FG) :
+    span R (Set.range (spanBasis h)) = p :=
   Classical.choose_spec (exists_fun_spanRankNat_span_range_eq h)
 
-/-- The minimal generator elements are in the submodule -/
-lemma FG.minGenerator_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanRankNat) :
-    minGenerator h i ∈ p := by
-  have := span_range_minGenerator h
+/-- The elements of the spanBasis are in the submodule -/
+lemma FG.spanBasis_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanRankNat) :
+    spanBasis h i ∈ p := by
+  have := span_range_spanBasis h
   simp_rw [← this]
   exact subset_span (Set.mem_range_self i)
 
