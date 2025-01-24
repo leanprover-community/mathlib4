@@ -77,7 +77,7 @@ instance [P.IsAnisotropic] : P.flip.IsAnisotropic where
 /-- An auxiliary lemma en route to `RootPairing.instIsAnisotropicOfIsCrystallographic`. -/
 private lemma rootForm_root_ne_zero_aux [CharZero R] [P.IsCrystallographic] (i : ι) :
     P.RootForm (P.root i) (P.root i) ≠ 0 := by
-  choose z hz using IsValuedIn.pairing_mem_range_algebraMap (P := P) (S := ℤ) i
+  choose z hz using P.exists_value (S := ℤ) i
   simp_rw [algebraMap_int_eq, Int.coe_castRingHom] at hz
   simp only [rootForm_apply_apply, PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, ← hz]
   suffices 0 < ∑ i, z i * z i by norm_cast; exact this.ne'

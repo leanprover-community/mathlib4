@@ -269,9 +269,9 @@ lemma coxeterWeight_mem_set_of_isCrystallographic (i j : ι) [P.IsCrystallograph
     P.coxeterWeight i j ∈ ({0, 1, 2, 3, 4} : Set R) := by
   obtain ⟨n, hcn⟩ : ∃ n : ℕ, P.coxeterWeight i j = n := by
     have : 0 ≤ P.coxeterWeightIn ℤ i j := by
-            simpa [← P.algebraMap_coxeterWeightIn _ _ ℤ] using P.coxeterWeight_non_neg P.RootForm i j
+      simpa [← P.algebraMap_coxeterWeightIn ℤ] using P.coxeterWeight_non_neg P.RootForm i j
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
-    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn i j ℤ, hn]⟩
+    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
   have : P.coxeterWeight i j ≤ 4 := P.coxeterWeight_le_four i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢

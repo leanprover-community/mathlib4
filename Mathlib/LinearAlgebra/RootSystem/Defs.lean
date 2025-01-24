@@ -381,7 +381,7 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
     root_coroot_eq_pairing]
 
 @[mk_iff]
-class IsValuedIn (S : Type*) [CommSemiRing S] [Algebra S R] : Prop where
+class IsValuedIn (S : Type*) [CommSemiring S] [Algebra S R] : Prop where
   exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
 
 protected alias exists_value := IsValuedIn.exists_value
@@ -582,7 +582,8 @@ Note that it is uniquely-defined only when the map `S → R` is injective, i.e.,
 def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
   P.pairingIn S i j * P.pairingIn S j i
 
-@[simp] lemma algebraMap_coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] :
+@[simp] lemma algebraMap_coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S]
+    (i j : ι) :
     algebraMap S R (P.coxeterWeightIn S i j) = P.coxeterWeight i j := by
   simp [coxeterWeightIn, coxeterWeight]
 

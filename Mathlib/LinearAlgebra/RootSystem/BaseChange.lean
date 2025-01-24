@@ -115,7 +115,7 @@ end SubfieldValued
 /-- Restriction of scalars for a crystallographic root pairing. -/
 abbrev restrictScalars [P.IsCrystallographic] :
     RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
-  P.restrictScalars' K (IsValuedIn.trans P K ℤ).pairing_mem_range_algebraMap
+  P.restrictScalars' K (IsValuedIn.trans P K ℤ).exists_value
 
 /-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
 abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=
