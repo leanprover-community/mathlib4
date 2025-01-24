@@ -19,7 +19,7 @@ Any downstream users who can not easily adapt may remove the deprecations as nee
 
 namespace List
 
-variable {α β : Type*}
+variable {α : Type*}
 
 @[deprecated getElem?_enumFrom (since := "2024-08-15")]
 theorem get?_enumFrom (n) (l : List α) (m) :

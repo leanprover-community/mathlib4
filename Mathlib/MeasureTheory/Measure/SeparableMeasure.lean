@@ -32,7 +32,7 @@ of separability in the metric space made by constant indicators equipped with th
 
 ## Main definitions
 
-* `MeasureTheory.Measure.μ.MeasureDense 𝒜`: `𝒜` is a measure-dense family if it only contains
+* `MeasureTheory.Measure.MeasureDense μ 𝒜`: `𝒜` is a measure-dense family if it only contains
   measurable sets and if the following condition is satisfied: if `s` is measurable with finite
   measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε `.
 * `MeasureTheory.IsSeparable`: A measure is separable if there exists a countable and
@@ -63,7 +63,7 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 separable measure, measure-dense, Lp space, second-countable
 -/
 
-open MeasurableSpace Set ENNReal TopologicalSpace BigOperators symmDiff Filter Real
+open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
 
@@ -83,12 +83,11 @@ sets with finite measures.
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
 equipped with the `Lᵖ` norm. -/
-structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop :=
+structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop where
   /-- Each set has to be measurable. -/
   measurable : ∀ s ∈ 𝒜, MeasurableSet s
   /-- Any measurable set can be approximated by sets in the family. -/
-  approx : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∀ (ε : ℝ),
-    0 < ε → ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε
+  approx : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∀ ε : ℝ, 0 < ε → ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε
 
 theorem Measure.MeasureDense.nonempty (h𝒜 : μ.MeasureDense 𝒜) : 𝒜.Nonempty := by
   rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, -⟩
@@ -103,8 +102,8 @@ theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
 
 /-- The set of measurable sets is measure-dense. -/
 theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
-  measurable := fun _ h ↦ h
-  approx := fun s hs _ ε ε_pos ↦ ⟨s, hs, by simpa⟩
+  measurable _ h := h
+  approx s hs _ ε ε_pos := ⟨s, hs, by simpa⟩
 
 /-- If a family of sets `𝒜` is measure-dense in `X`, then any measurable set with finite measure
 can be approximated by sets in `𝒜` with finite measure. -/
@@ -155,9 +154,8 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
 with finite measure. -/
 theorem Measure.MeasureDense.fin_meas (h𝒜 : μ.MeasureDense 𝒜) :
     μ.MeasureDense {s | s ∈ 𝒜 ∧ μ s ≠ ∞} where
-  measurable := fun s h ↦ h𝒜.measurable s h.1
-  approx := by
-    intro s ms hμs ε ε_pos
+  measurable s h := h𝒜.measurable s h.1
+  approx s ms hμs ε ε_pos := by
     rcases Measure.MeasureDense.fin_meas_approx h𝒜 ms hμs ε ε_pos with ⟨t, t_mem, hμt, hμst⟩
     exact ⟨t, ⟨t_mem, hμt⟩, hμst⟩
 
@@ -165,28 +163,27 @@ theorem Measure.MeasureDense.fin_meas (h𝒜 : μ.MeasureDense 𝒜) :
 this algebra of sets is measure-dense. -/
 theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasure μ]
     (h𝒜 : IsSetAlgebra 𝒜) (hgen : m = MeasurableSpace.generateFrom 𝒜) : μ.MeasureDense 𝒜 where
-  measurable := fun s hs ↦ hgen ▸ measurableSet_generateFrom hs
-  approx := by
+  measurable s hs := hgen ▸ measurableSet_generateFrom hs
+  approx s ms := by
     -- We want to show that any measurable set can be approximated by sets in `𝒜`. To do so, it is
     -- enough to show that such sets constitute a `σ`-algebra containing `𝒜`. This is contained in
     -- the theorem `generateFrom_induction`.
-    intro s ms
     have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
-      apply generateFrom_induction
-        (p := fun s ↦ MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε)
-        (C := 𝒜) (hs := hgen ▸ ms)
-      · -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
-        exact fun t t_mem ↦ ⟨hgen ▸ measurableSet_generateFrom t_mem,
-          fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
-      · -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
-        exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
-      · -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
-        -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
-        refine fun t ⟨mt, ht⟩ ↦ ⟨mt.compl, fun ε ε_pos ↦ ?_⟩
-        rcases ht ε ε_pos with ⟨u, u_mem, hμtcu⟩
+      induction s, hgen ▸ ms using generateFrom_induction with
+      -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
+      | hC t t_mem _ =>
+        exact ⟨hgen ▸ measurableSet_generateFrom t_mem, fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
+      -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
+      | empty => exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
+      -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
+      -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
+      | compl t _ ht =>
+        refine ⟨ht.1.compl, fun ε ε_pos ↦ ?_⟩
+        obtain ⟨u, u_mem, hμtcu⟩ := ht.2 ε ε_pos
         exact ⟨uᶜ, h𝒜.compl_mem u_mem, by rwa [compl_symmDiff_compl]⟩
-      · -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
-        refine fun f hf ↦ ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
+      -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
+      | iUnion f _ hf =>
+        refine ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
         have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
@@ -220,14 +217,14 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                 apply _root_.add_lt_add
                 · rw [measure_diff (h_fin := measure_ne_top _ _),
                     toReal_sub_of_le (ha := measure_ne_top _ _)]
-                  apply lt_of_le_of_lt (sub_le_dist ..)
-                  simp only [Finset.mem_range, Nat.lt_add_one_iff]
-                  exact (dist_comm (α := ℝ) .. ▸ hN N (le_refl N))
-                  exact (measure_mono <| iUnion_subset <|
-                    fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i))
-                  exact iUnion_subset <| fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i)
-                  exact MeasurableSet.biUnion (countable_coe_iff.1 inferInstance)
-                    (fun n _ ↦ (hf n).1.nullMeasurableSet)
+                  · apply lt_of_le_of_lt (sub_le_dist ..)
+                    simp only [Finset.mem_range, Nat.lt_add_one_iff]
+                    exact (dist_comm (α := ℝ) .. ▸ hN N (le_refl N))
+                  · exact measure_mono <| iUnion_subset <|
+                      fun i ↦ iUnion_subset fun _ ↦ subset_iUnion f i
+                  · exact iUnion_subset <| fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i)
+                  · exact MeasurableSet.biUnion (countable_coe_iff.1 inferInstance)
+                      (fun n _ ↦ (hf n).1.nullMeasurableSet)
                 · calc
                     (μ ((⋃ n ∈ (Finset.range (N + 1)), f n) ∆
                     (⋃ n ∈ (Finset.range (N + 1)), g ↑n))).toReal
@@ -257,18 +254,17 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     (S : μ.FiniteSpanningSetsIn 𝒜) (hgen : m = MeasurableSpace.generateFrom 𝒜) :
     μ.MeasureDense 𝒜 where
   measurable s hs := hgen ▸ measurableSet_generateFrom hs
-  approx := by
+  approx s ms hμs ε ε_pos := by
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
     let T := Accumulate S.set
-    have T_mem : ∀ n, T n ∈ 𝒜 := fun n ↦ by
+    have T_mem (n) : T n ∈ 𝒜 := by
       simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
-    have T_finite : ∀ n, μ (T n) < ∞ := fun n ↦ by
+    have T_finite (n) : μ (T n) < ∞ := by
       simpa using measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
         (fun k _ ↦ S.finite k)
     have T_spanning : ⋃ n, T n = univ := S.spanning ▸ iUnion_accumulate
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
     -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
-    intro s ms hμs ε ε_pos
     have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
         (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
     have := tendsto_measure_iUnion_atTop (μ := μ) mono
@@ -323,7 +319,7 @@ section IsSeparable
 
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm. -/
-class IsSeparable (μ : Measure X) : Prop :=
+class IsSeparable (μ : Measure X) : Prop where
   exists_countable_measureDense : ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜
 
 /-- By definition, a separable measure admits a countable and measure-dense family of sets. -/
@@ -378,7 +374,6 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
           ne_top_of_le_ne_top hμs <| μ.restrict_le_self _
         rcases h𝒜.approx s ms this ε ε_pos with ⟨t, t_mem, ht⟩
         refine ⟨t ∩ μ.sigmaFiniteSet, ⟨t, t_mem, rfl⟩, ?_⟩
-        rw [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet]
         have : μ (s ∆ (t ∩ μ.sigmaFiniteSet) \ μ.sigmaFiniteSet) = 0 := by
           rw [diff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
           calc
@@ -388,10 +383,11 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
             _ ≤ μ (μ.sigmaFiniteSetᶜ ∩ s) + μ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet)) :=
                 measure_union_le _ _
             _ = 0 := by
-                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm, ← inter_assoc,
-                  inter_compl_self, empty_inter, measure_empty, zero_add]
-        rwa [this, add_zero, inter_symmDiff_distrib_right, inter_assoc, inter_self,
-          ← inter_symmDiff_distrib_right, ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
+                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm,
+                  ← inter_assoc, inter_compl_self, empty_inter, measure_empty, zero_add]
+        rwa [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet, this, add_zero,
+          inter_symmDiff_distrib_right, inter_assoc, inter_self, ← inter_symmDiff_distrib_right,
+          ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
       · refine False.elim <| hμs ?_
         rw [eq_top_iff, ← hs]
         exact μ.restrict_le_self _
@@ -423,15 +419,14 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   -- constant indicators with support in `𝒜₀`, and is denoted `D`. To make manipulations easier,
   -- we define the function `key` which given an integer `n` and two families of `n` elements
   -- in `u` and `𝒜₀` associates the corresponding sum.
-  let key : (n : ℕ) → (Fin n → u) → (Fin n → 𝒜₀) → (Lp E p μ) :=
-    fun n d s ↦ ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i)))
-      (s i).2.2 (d i : E)
+  let key (n : ℕ) (d : Fin n → u) (s : Fin n → 𝒜₀) : (Lp E p μ) :=
+    ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i))) (s i).2.2 (d i : E)
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
     -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
-    -- domain is automatically infered.
-    let f : (Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) → Lp E p μ := fun nds ↦ key nds.1 nds.2.1 nds.2.2
+    -- domain is automatically inferred.
+    let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype
     have := countable_u.to_subtype
     have : D ⊆ range f := by

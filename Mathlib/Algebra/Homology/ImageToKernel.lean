@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Subobject.Limits
 
@@ -47,7 +47,7 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
     Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 -- Porting note: removed elementwise attribute which does not seem to be helpful here
 -- a more suitable lemma is added below
@@ -57,7 +57,7 @@ theorem imageToKernel_arrow (w : f ≫ g = 0) :
   simp [imageToKernel]
 
 @[simp]
-lemma imageToKernel_arrow_apply [ConcreteCategory V] (w : f ≫ g = 0)
+lemma imageToKernel_arrow_apply [HasForget V] (w : f ≫ g = 0)
     (x : (forget V).obj (Subobject.underlying.obj (imageSubobject f))) :
     (kernelSubobject g).arrow (imageToKernel f g w x) =
       (imageSubobject f).arrow x := by

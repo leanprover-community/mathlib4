@@ -385,9 +385,9 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₃⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₃
       refine ⟨Z, w₁.s ≫ u, u, ?_, ?_, ?_⟩
-      · dsimp
+      · dsimp [p₁]
         simp only [assoc]
-      · dsimp
+      · dsimp [p₁]
         simp only [assoc, fac₃]
       · dsimp
         simp only [assoc]
@@ -401,9 +401,9 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₄
       refine ⟨Z, q.f ≫ u, q.s ≫ u, ?_, ?_, ?_⟩
-      · simp only [assoc, reassoc_of% fac₃]
+      · simp only [p₁, p₂, assoc, reassoc_of% fac₃]
       · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
-      · simp only [assoc, ← reassoc_of% fac₃]
+      · simp only [p₁, p₂, assoc, ← reassoc_of% fac₃]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs
           (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ q.hs hu)))
     · have eq : a₂.s ≫ z₂.f ≫ w₂.s = a₂.s ≫ t₂ ≫ w₂.f := by
@@ -411,11 +411,11 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₂.hs eq
       simp only [assoc] at fac₄
       refine ⟨Z, u, w₂.s ≫ u, ?_, ?_, ?_⟩
-      · dsimp
+      · dsimp [p₁, p₂]
         simp only [assoc]
-      · dsimp
+      · dsimp [p₁, p₂]
         simp only [assoc, fac₄]
-      · dsimp
+      · dsimp [p₁, p₂]
         simp only [assoc]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs (W.comp_mem _ _ w₂.hs hu))
 
@@ -433,7 +433,7 @@ namespace Localization
 
 noncomputable instance : Category (Localization W) where
   Hom X Y := Localization.Hom W X Y
-  id X := Localization.Hom.mk (ofHom W (𝟙 _))
+  id _ := Localization.Hom.mk (ofHom W (𝟙 _))
   comp f g := f.comp g
   comp_id := by
     rintro (X Y : C) f
@@ -500,7 +500,7 @@ lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFra
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
     homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
   change Hom.comp _ _ = _
-  erw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
+  rw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
 
 lemma homMk_eq_of_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y)
     (h : LeftFractionRel z₁ z₂) :
@@ -581,7 +581,7 @@ when `W` has a left calculus of fractions. -/
 noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     Localization W ⥤ E where
   obj X := F.obj X
-  map {X Y : C} f := f.map F hF
+  map {_ _ : C} f := f.map F hF
   map_id := by
     intro (X : C)
     dsimp
@@ -605,7 +605,7 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
 lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
-  Functor.ext (fun X => rfl) (fun X Y f => by
+  Functor.ext (fun _ => rfl) (fun X Y f => by
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 

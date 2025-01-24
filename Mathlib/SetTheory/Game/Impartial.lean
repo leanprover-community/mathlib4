@@ -90,11 +90,9 @@ theorem neg {G : PGame} (h : G.Impartial) : (-G).Impartial := by
   apply impartial_mk
   · rw [neg_neg]
     exact Equiv.symm h.neg_equiv_self
-  · intro i
-    rw [moveLeft_neg']
+  · rw [moveLeft_neg]
     exact neg (h.moveRight _)
-  · intro i
-    rw [moveRight_neg']
+  · rw [moveRight_neg]
     exact neg (h.moveLeft _)
 termination_by G
 

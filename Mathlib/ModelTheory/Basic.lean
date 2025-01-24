@@ -81,14 +81,10 @@ protected def sum (L' : Language.{u', v'}) : Language :=
   ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
 
 /-- The type of constants in a given language. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
@@ -229,7 +225,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -247,14 +243,14 @@ theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
-class HomClass (L : outParam Language) (F M N : Type*)
+class HomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
-class StrongHomClass (L : outParam Language) (F M N : Type*)
+class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
@@ -295,9 +291,6 @@ instance homClass : HomClass L (M →[L] N) M N where
 
 instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N :=
   HomClass.strongHomClassOfIsAlgebraic
-
-instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
@@ -379,7 +372,7 @@ instance funLike : FunLike (M ↪[L] N) M N where
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
   injective' f := f.toEmbedding.injective
@@ -416,7 +409,7 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -474,7 +467,7 @@ def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   -- Porting note: should be done by autoparam?
   map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
   -- Porting note: should be done by autoparam?
-  map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel]
+  map_rel' := by intros; rw [Function.comp_assoc, map_rel, map_rel]
 
 @[simp]
 theorem comp_apply (g : N ↪[L] P) (f : M ↪[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -537,7 +530,7 @@ instance : EquivLike (M ≃[L] N) M N where
     cases g
     simp only [mk.injEq]
     ext x
-    exact Function.funext_iff.1 h₁ x
+    exact funext_iff.1 h₁ x
 
 instance : StrongHomClass L (M ≃[L] N) M N where
   map_fun := map_fun'
@@ -551,14 +544,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
+      rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
       refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
-
-instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
+      rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 
 @[simp]
 theorem symm_symm (f : M ≃[L] N) :
@@ -648,7 +638,7 @@ def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
     -- Porting note: should be done by autoparam?
     map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
     -- Porting note: should be done by autoparam?
-    map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel] }
+    map_rel' := by intros; rw [Function.comp_assoc, map_rel, map_rel] }
 
 @[simp]
 theorem comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -830,8 +820,8 @@ def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStruct
   letI : L.Structure N := inducedStructure e
   exact
   { e with
-    map_fun' := @fun n f x => by simp [← Function.comp.assoc e.symm e x]
-    map_rel' := @fun n r x => by simp [← Function.comp.assoc e.symm e x] }
+    map_fun' := @fun n f x => by simp [← Function.comp_assoc e.symm e x]
+    map_rel' := @fun n r x => by simp [← Function.comp_assoc e.symm e x] }
 
 @[simp]
 theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :

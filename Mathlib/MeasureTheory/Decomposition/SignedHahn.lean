@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Order.SymmDiff
 
 /-!
@@ -211,6 +211,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
+open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
@@ -312,7 +313,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     · have : 1 / s E < bdd k := by
         linarith only [le_of_max_le_left (hk k le_rfl)]
       rw [one_div] at this ⊢
-      rwa [inv_lt (lt_trans (inv_pos.2 hE₃) this) hE₃]
+      exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
   have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
     apply Set.diff_subset_diff_right

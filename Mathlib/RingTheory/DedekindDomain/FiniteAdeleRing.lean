@@ -106,11 +106,11 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
   toFun := (↑)
   map_zero' := rfl
   map_add' x y := by
-    -- Porting note: was `ext v`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext v`
     refine funext fun v => ?_
     simp only [coe_apply, Pi.add_apply, Subring.coe_add]
     -- Porting note: added
-    erw [Pi.add_apply, Pi.add_apply, Subring.coe_add]
+    rw [Pi.add_apply, Pi.add_apply, Subring.coe_add]
 
 /-- The inclusion of `R_hat` in `K_hat` as a ring homomorphism. -/
 @[simps]
@@ -119,11 +119,11 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
     toFun := (↑)
     map_one' := rfl
     map_mul' := fun x y => by
-      -- Porting note: was `ext p`
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext p`
       refine funext fun p => ?_
       simp only [Pi.mul_apply, Subring.coe_mul]
       -- Porting note: added
-      erw [Pi.mul_apply, Pi.mul_apply, Subring.coe_mul] }
+      rw [Pi.mul_apply, Pi.mul_apply, Subring.coe_mul] }
 
 end FiniteIntegralAdeles
 
@@ -175,7 +175,7 @@ end FiniteIntegralAdeles
 /-! ### The finite adèle ring of a Dedekind domain
 We define the finite adèle ring of `R` as the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion` with respect to `adicCompletionIntegers`. We prove that it is a commutative
-ring. TODO: show that it is a topological ring with the restricted product topology. -/
+ring. -/
 
 
 namespace ProdAdicCompletions
@@ -270,7 +270,7 @@ open scoped Multiplicative
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
-    Valued.valuedCompletion_apply, not_le]
+    adicCompletion, Valued.valuedCompletion_apply, not_le]
   change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
   -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
   -- then v(k)>1 for only finitely many v.
@@ -337,7 +337,25 @@ instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
-  coe := fun x ↦ x.1
+  coe x := x.1
+
+@[simp, norm_cast]
+theorem coe_one : (1 : FiniteAdeleRing R K) = (1 : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_zero: (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_add (x y : FiniteAdeleRing R K) : (x + y : FiniteAdeleRing R K) =
+  (x : K_hat R K) + (y : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_mul (x y : FiniteAdeleRing R K) : (x * y : FiniteAdeleRing R K) =
+  (x : K_hat R K) * (y : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_algebraMap (x : K) : (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
+      (algebraMap K (ProdAdicCompletions R K)) x := rfl
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
@@ -349,13 +367,14 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
     simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
     exact mt (mul_le_one' (rhat v).2) hv
     ⟩
-  toFun r := ⟨r, by simp_all⟩
-  map_one' := by ext; rfl
-  map_mul' _ _ := by ext; rfl
-  map_zero' := by ext; rfl
-  map_add' _ _ := by ext; rfl
+  algebraMap :=
+  { toFun r := ⟨r, by simp_all⟩
+    map_one' := by ext; rfl
+    map_mul' _ _ := by ext; rfl
+    map_zero' := by ext; rfl
+    map_add' _ _ := by ext; rfl }
   commutes' _ _ := mul_comm _ _
-  smul_def' r x := rfl
+  smul_def' _ _ := rfl
 
 instance : CoeFun (FiniteAdeleRing R K)
     (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
@@ -429,7 +448,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
--- the point of the above: this now works
+-- the point of `submodulesRingBasis` above: this now works
 example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology

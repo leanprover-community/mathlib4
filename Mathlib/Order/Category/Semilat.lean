@@ -67,7 +67,7 @@ instance : LargeCategory.{u} SemilatSupCat where
 instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (SupBotHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory SemilatSupCat where
+instance : HasForget SemilatSupCat where
   forget :=
     { obj := SemilatSupCat.X
       map := DFunLike.coe }
@@ -113,11 +113,11 @@ instance : LargeCategory.{u} SemilatInfCat where
   comp_id := InfTopHom.id_comp
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (InfTopHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory SemilatInfCat where
+instance : HasForget SemilatInfCat where
   forget :=
     { obj := SemilatInfCat.X
       map := DFunLike.coe }
@@ -152,7 +152,7 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : SemilatSupCat ⥤ SemilatInfCat where
   obj X := SemilatInfCat.of Xᵒᵈ
-  map {X Y} := SupBotHom.dual
+  map {_ _} := SupBotHom.dual
 
 end SemilatSupCat
 
@@ -170,7 +170,7 @@ def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : SemilatInfCat ⥤ SemilatSupCat where
   obj X := SemilatSupCat.of Xᵒᵈ
-  map {X Y} := InfTopHom.dual
+  map {_ _} := InfTopHom.dual
 
 end SemilatInfCat
 

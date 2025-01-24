@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Operations
 
 /-!
 # Partial values of a type
@@ -330,9 +330,9 @@ noncomputable def equivOption : Part α ≃ Option α :=
 instance : PartialOrder (Part
         α) where
   le x y := ∀ i, i ∈ x → i ∈ y
-  le_refl x y := id
-  le_trans x y z f g i := g _ ∘ f _
-  le_antisymm x y f g := Part.ext fun z => ⟨f _, g _⟩
+  le_refl _ _ := id
+  le_trans _ _ _ f g _ := g _ ∘ f _
+  le_antisymm _ _ f g := Part.ext fun _ => ⟨f _, g _⟩
 
 instance : OrderBot (Part α) where
   bot := none
@@ -397,7 +397,7 @@ theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := 
   simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
-  · aesop
+  · simp
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
   dsimp [assert, none]; congr
@@ -436,7 +436,7 @@ theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
 theorem bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.bind f = f a := by
   rw [eq_some_iff.2 h, bind_some]
 
-theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
+theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (fun y => some (f y)) = map f x :=
   ext <| by simp [eq_comm]
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]

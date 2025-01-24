@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.Dslope
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Analytic.Uniqueness
 
@@ -20,13 +20,10 @@ useful in this setup.
 * `AnalyticAt.eventually_eq_zero_or_eventually_ne_zero` is the main statement that if a function is
   analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
   vanish in a punctured neighborhood of `z₀`.
-* `AnalyticOn.eqOn_of_preconnected_of_frequently_eq` is the identity theorem for analytic
+* `AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq` is the identity theorem for analytic
   functions: if a function `f` is analytic on a connected set `U` and is zero on a set with an
   accumulation point in `U` then `f` is identically `0` on `U`.
 -/
-
-
-open scoped Classical
 
 open Filter Function Nat FormalMultilinearSeries EMetric Set
 
@@ -192,6 +189,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
       hp.eq_pow_order_mul_iterate_dslope⟩
 
+open scoped Classical in
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
@@ -219,9 +217,32 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
+/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
+  like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
+  `z₀`. -/
+lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
+      ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
+  simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
+
+/- An analytic function has order zero at a point iff it does not vanish there. -/
+lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order = 0 ↔ f z₀ ≠ 0 := by
+  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
+  constructor
+  · intro ⟨g, _, _, hg⟩
+    simpa [hg.self_of_nhds]
+  · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
+
+/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
+lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order.toNat ≠ 0 → f z₀ = 0 := by
+  simp [hf.order_eq_zero_iff]
+  tauto
+
 end AnalyticAt
 
-namespace AnalyticOn
+namespace AnalyticOnNhd
 
 variable {U : Set 𝕜}
 
@@ -229,13 +250,22 @@ variable {U : Set 𝕜}
 analytic on a connected set `U` and vanishes in arbitrary neighborhoods of a point `z₀ ∈ U`, then
 it is identically zero in `U`.
 For higher-dimensional versions requiring that the function vanishes in a neighborhood of `z₀`,
-see `AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero`. -/
-theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOn 𝕜 f U)
+see `AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero`. -/
+theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOnNhd 𝕜 f U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfw : ∃ᶠ z in 𝓝[≠] z₀, f z = 0) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀
     ((hf z₀ h₀).frequently_zero_iff_eventually_zero.1 hfw)
 
-theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U)
+theorem eqOn_zero_or_eventually_ne_zero_of_preconnected (hf : AnalyticOnNhd 𝕜 f U)
+    (hU : IsPreconnected U) : EqOn f 0 U ∨ ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
+  simp only [or_iff_not_imp_right, ne_eq, eventually_iff, mem_codiscreteWithin,
+    disjoint_principal_right, not_forall]
+  rintro ⟨x, hx, hx2⟩
+  refine hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hx fun nh ↦ hx2 ?_
+  filter_upwards [nh] with a ha
+  simp_all
+
+theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     (h₀ : z₀ ∈ U) (hfz₀ : z₀ ∈ closure ({z | f z = 0} \ {z₀})) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀
     (mem_closure_ne_iff_frequently_within.mp hfz₀)
@@ -244,15 +274,21 @@ theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU 
 analytic on a connected set `U` and coincide at points which accumulate to a point `z₀ ∈ U`, then
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`. -/
-theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
+see `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`. -/
+theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
   simpa [sub_eq_zero] using fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀ hfg' hz
 
-theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
+theorem eqOn_or_eventually_ne_of_preconnected (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hU : IsPreconnected U) : EqOn f g U ∨ ∀ᶠ x in codiscreteWithin U, f x ≠ g x :=
+  (eqOn_zero_or_eventually_ne_zero_of_preconnected (hf.sub hg) hU).imp
+    (fun h _ hx ↦ eq_of_sub_eq_zero (h hx))
+    (by simp only [Pi.sub_apply, ne_eq, sub_eq_zero, imp_self])
+
+theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : z₀ ∈ closure ({z | f z = g z} \ {z₀})) :
     EqOn f g U :=
   hf.eqOn_of_preconnected_of_frequently_eq hg hU h₀ (mem_closure_ne_iff_frequently_within.mp hfg)
@@ -261,10 +297,13 @@ theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hg : Ana
 field `𝕜` are analytic everywhere and coincide at points which accumulate to a point `z₀`, then
 they coincide globally.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `AnalyticOn.eq_of_eventuallyEq`. -/
-theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOn 𝕜 f univ) (hg : AnalyticOn 𝕜 g univ)
-    (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : f = g :=
+see `AnalyticOnNhd.eq_of_eventuallyEq`. -/
+theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f univ)
+    (hg : AnalyticOnNhd 𝕜 g univ) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : f = g :=
   funext fun x =>
     eqOn_of_preconnected_of_frequently_eq hf hg isPreconnected_univ (mem_univ z₀) hfg (mem_univ x)
 
-end AnalyticOn
+@[deprecated (since := "2024-09-26")]
+alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
+
+end AnalyticOnNhd

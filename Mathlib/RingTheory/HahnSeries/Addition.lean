@@ -24,11 +24,9 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 
 open Finset Function
 
-open scoped Classical
-
 noncomputable section
 
-variable {Γ R : Type*}
+variable {Γ Γ' R S U V : Type*}
 
 namespace HahnSeries
 
@@ -66,6 +64,16 @@ theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :
 theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 
+@[simp]
+theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [add_nsmul, ih]
+
+@[simp]
+protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
+  ext; simp
 /--
 `addOppositeEquiv` is an additive monoid isomorphism between
 Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
@@ -75,10 +83,9 @@ and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
-  left_inv x := by ext; simp
+  left_inv x := by simp
   right_inv x := by
     apply AddOpposite.unop_injective
-    ext
     simp
   map_add' x y := by
     apply AddOpposite.unop_injective
@@ -99,10 +106,11 @@ lemma addOppositeEquiv_symm_support (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
-  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
+  classical
+  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff, Function.funext_iff]
+  simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
 
 @[simp]
@@ -113,10 +121,11 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
+  classical
+  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff, Function.funext_iff]
+  simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
   split <;> rfl
 
@@ -210,7 +219,7 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
     embDomain f (x + y) = embDomain f x + embDomain f y := by
@@ -261,6 +270,21 @@ theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   simp
 
 @[simp]
+protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
+    ((-x).map f : HahnSeries Γ S) = -(x.map f) := by
+  ext; simp
+
+theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
+  classical simp only [orderTop, support_neg, neg_eq_zero]
+
+@[simp]
+theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
+  classical
+  by_cases hf : f = 0
+  · simp only [hf, neg_zero]
+  simp only [order, support_neg, neg_eq_zero]
+
+@[simp]
 theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
@@ -268,14 +292,10 @@ theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff :
 theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
   simp
 
-theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
-  simp only [orderTop, support_neg, neg_eq_zero]
-
 @[simp]
-theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
-  by_cases hf : f = 0
-  · simp only [hf, neg_zero]
-  simp only [order, support_neg, neg_eq_zero]
+protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
+  ext; simp
 
 theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
     min x.orderTop y.orderTop ≤ (x - y).orderTop := by
@@ -377,7 +397,7 @@ end DistribMulAction
 
 section Module
 
-variable [PartialOrder Γ] [Semiring R] {V : Type*} [AddCommMonoid V] [Module R V]
+variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance : Module R (HahnSeries Γ V) :=
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
@@ -401,9 +421,14 @@ def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
 def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 
+@[simp]
+protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
+    {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
+  ext; simp
+
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
     embDomain f (r • x) = r • embDomain f x := by

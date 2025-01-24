@@ -50,7 +50,7 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : Kernel α Ω) [IsSFiniteKern
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
     (Kernel.measurable_coe κ hs) (Kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
   conv_rhs => rw [Measure.setLIntegral_condKernel_eq_measure_prod ht hs, hκ]
-  simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator _ ht]
+  simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator ht]
   congr with x
   by_cases hx : x ∈ t
   all_goals simp [hx]
@@ -134,7 +134,7 @@ lemma Kernel.apply_eq_measure_condKernel_of_compProd_eq
   have : ρ a = (ρ a).fst ⊗ₘ Kernel.comap κ (fun b ↦ (a, b)) measurable_prod_mk_left := by
     ext s hs
     conv_lhs => rw [← hκ]
-    rw [Measure.compProd_apply hs, Kernel.compProd_apply _ _ _ hs]
+    rw [Measure.compProd_apply hs, Kernel.compProd_apply hs]
     rfl
   have h := eq_condKernel_of_measure_eq_compProd _ this
   rw [Kernel.fst_apply]

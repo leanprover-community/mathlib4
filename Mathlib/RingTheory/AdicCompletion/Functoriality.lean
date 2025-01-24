@@ -128,7 +128,7 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
 def map (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
   toFun := adicCompletionAux I f
-  map_add' := by aesop
+  map_add' := by simp
   map_smul' r x := by
     ext n
     simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
@@ -145,7 +145,7 @@ theorem map_ext {N} {f g : AdicCompletion I M → N}
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x h
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
@@ -154,7 +154,7 @@ theorem map_ext' {f g : AdicCompletion I M →ₗ[AdicCompletion I R] T}
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x h
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
@@ -287,8 +287,8 @@ theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
 variable [DecidableEq ι]
 
 theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
-  ext j x
-  apply DirectSum.ext (AdicCompletion I R) (fun i ↦ ?_)
+  ext j x : 2
+  apply DirectSum.ext_component (AdicCompletion I R) (fun i ↦ ?_)
   ext n
   simp only [LinearMap.coe_comp, Function.comp_apply, sum_lof, map_mk, component_sumInv,
     mk_apply_coe, AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply, LinearMap.id_comp]
@@ -302,7 +302,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
     Submodule.mkQ_apply]
   rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
-  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe,
+  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
     AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
   simp only [← Submodule.mkQ_apply, ← map_sum]
   erw [DirectSum.sum_univ_of]

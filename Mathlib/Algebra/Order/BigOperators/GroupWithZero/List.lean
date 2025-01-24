@@ -3,8 +3,8 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -51,12 +51,12 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
       · intro i hi
         apply h
         simp [hi]
-    apply prod_nonneg
-    · simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    · apply prod_nonneg
+      simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro a ha
       apply h0
       simp [ha]
-    apply (h0 _ _).trans (h _ _) <;> simp
+    · apply (h0 _ _).trans (h _ _) <;> simp
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
@@ -89,11 +89,11 @@ theorem prod_map_lt_prod_map {ι : Type*} {s : List ι} (hs : s ≠ [])
         apply le_of_lt
         apply h
         simp [hi]
-    apply prod_pos
-    · simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    · apply prod_pos
+      simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro a ha
       apply h0
       simp [ha]
-    apply le_of_lt ((h0 _ _).trans (h _ _)) <;> simp
+    · apply le_of_lt ((h0 _ _).trans (h _ _)) <;> simp
 
 end List

@@ -214,7 +214,7 @@ group extends in a unique way to a homomorphism from `G`.
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property. -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
-  simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
+  simpa only [funext_iff] using lift.symm.bijective.existsUnique f
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it is free. Here, the universal property is expressed as in `IsFreeGroup.lift` and its
