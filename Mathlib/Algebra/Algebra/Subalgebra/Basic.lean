@@ -782,13 +782,35 @@ lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Pr
     (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
   let T : Subalgebra R A :=
   { carrier := {x | motive x}
-    mul_mem' := fun {a b} ↦ mul a b
+    mul_mem' {a b} := mul a b
     one_mem' := one
-    add_mem' := fun {a b} ↦ add a b
+    add_mem' {a b} := add a b
     zero_mem' := zero
     algebraMap_mem' := algebraMap }
   suffices iSup S ≤ T from this mem
   rwa [iSup_le_iff]
+
+/-- A dependent version of `Subalgebra.iSup_induction`. -/
+@[elab_as_elim]
+theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+    {x : A} (mem : x ∈ ⨆ i, S i)
+    (basic : ∀ (i) (x) (hx : x ∈ S i), motive x (mem_iSup_of_mem i hx))
+    (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    motive x mem := by
+  let T : Subalgebra R A :=
+  { carrier := {x | ∃ (h : x ∈ ⨆ i, S i), motive x h}
+    mul_mem' := by aesop
+    one_mem' := by aesop
+    add_mem' := by aesop
+    zero_mem' := by aesop
+    algebraMap_mem' := by aesop }
+  suffices iSup S ≤ T from (this mem).choose_spec
+  rw [iSup_le_iff]
+  intro i a ha
+  exact ⟨mem_iSup_of_mem i ha, basic i a ha⟩
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
