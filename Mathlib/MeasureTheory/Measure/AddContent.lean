@@ -123,27 +123,27 @@ end OrderedAddCommMonoid
 
 section IsSetSemiring
 
-lemma addContent_eq_add_diffFinset₀_of_subset (hC : IsSetSemiring C)
+lemma addContent_eq_add_disjointSubsetsOfSetdiffUnion_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
-    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.diffFinset₀ hs hI, m i := by
+    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.disjointSubsetsOfSetdiffUnion hs hI, m i := by
   classical
-  conv_lhs => rw [← hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
+  conv_lhs => rw [← hC.sUnion_union_disjointSubsetsOfSetdiffUnion_of_subset hs hI hI_ss]
   rw [addContent_sUnion]
   · rw [sum_union]
-    exact hC.disjoint_diffFinset₀ hs hI
+    exact hC.disjoint_disjointSubsetsOfSetdiffUnion hs hI
   · rw [coe_union]
-    exact Set.union_subset hI (hC.diffFinset₀_subset hs hI)
+    exact Set.union_subset hI (hC.disjointSubsetsOfSetdiffUnion_subset hs hI)
   · rw [coe_union]
-    exact hC.pairwiseDisjoint_union_diffFinset₀ hs hI h_dis
-  · rwa [hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
+    exact hC.pairwiseDisjoint_union_disjointSubsetsOfSetdiffUnion hs hI h_dis
+  · rwa [hC.sUnion_union_disjointSubsetsOfSetdiffUnion_of_subset hs hI hI_ss]
 
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
     ∑ u ∈ I, m u ≤ m t := by
   classical
-  rw [addContent_eq_add_diffFinset₀_of_subset hC ht h_ss hJt h_dis]
+  rw [addContent_eq_add_disjointSubsetsOfSetdiffUnion_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
 
 lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
@@ -156,40 +156,47 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   · simp [hst]
 
 /-- For an additive content `m` on a semiring and `s t : Set α` with `s ⊆ t`, we can write
-`m t = m s + ∑ i in hC.diffFinset ht hs, m i`.-/
-theorem eq_add_diffFinset_of_subset (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
+`m t = m s + ∑ i in hC.disjointSubsetsOfSetdiff ht hs, m i`.-/
+theorem eq_add_disjointSubsetsOfSetdiff_of_subset (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
     (m_add : ∀ (I : Finset (Set α)) (_ : ↑I ⊆ C) (_ : PairwiseDisjoint (I : Set (Set α)) id)
         (_h_mem : ⋃₀ ↑I ∈ C), m (⋃₀ I) = ∑ u in I, m u)
     (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) [DecidableEq (Set α)] :
-    m t = m s + ∑ i in hC.diffFinset ht hs, m i := by
+    m t = m s + ∑ i in hC.disjointSubsetsOfSetdiff ht hs, m i := by
   classical
-  conv_lhs => rw [← hC.sUnion_insert_diffFinset ht hs hst]
+  conv_lhs => rw [← hC.sUnion_insert_disjointSubsetsOfSetdiff ht hs hst]
   rw [← coe_insert, m_add]
   · rw [sum_insert]
-    exact hC.not_mem_diffFinset ht hs
+    exact hC.nmem_disjointSubsetsOfSetdiff ht hs
   · rw [coe_insert]
-    exact Set.insert_subset hs (hC.diffFinset_subset ht hs)
+    exact Set.insert_subset hs (hC.subset_disjointSubsetsOfSetdiff ht hs)
   · rw [coe_insert]
-    exact hC.pairwiseDisjoint_insert_diffFinset ht hs
+    exact hC.pairwiseDisjoint_insert_disjointSubsetsOfSetdiff ht hs
   · rw [coe_insert]
-    rwa [hC.sUnion_insert_diffFinset ht hs hst]
+    rwa [hC.sUnion_insert_disjointSubsetsOfSetdiff ht hs hst]
 
 variable (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
   (m_add : ∀ (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (_h_mem : ⋃₀ ↑I ∈ C), m (⋃₀ I) = ∑ u in I, m u)
 
+example (s : Set (Set α)) (t : Set α) : (∀ a ∈ s, a ⊆ t) ↔ ⋃₀ s ⊆ t := by
+  exact Iff.symm sUnion_subset_iff
+
 lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
   classical
-  rw [hC.allDiffFinset₀_sUnion h_ss, addContent_sUnion (hC.allDiffFinset₀_subset_semiring h_ss)
-    (hC.allDiffFinset₀_pairwiseDisjoint h_ss)]
+  rw [hC.allDiffFinset₀'_sUnion h_ss, addContent_sUnion
+    (IsSetSemiring.allDiffFinset₀'_subset_semiring hC h_ss)
+    (IsSetSemiring.allDiffFinset₀'_pairwiseDisjoint hC h_ss)]
   · rw [sum_disjiUnion]
     apply sum_le_sum
     intro x hx
-    exact sum_addContent_le_of_subset hC (hC.allDiffFinset₀_subsets_semiring h_ss hx)
-      (hC.allDiffFinset₀_pairwiseDisjoints h_ss hx) (h_ss hx) (hC.allDiffFinset₀_subsets h_ss hx)
-  · exact hC.allDiffFinset₀_sUnion h_ss ▸ h_mem
+    refine sum_addContent_le_of_subset hC (hC.subsets_disjointSubsetsOfUnion h_ss hx)
+      (hC.disjointSubsetsOfUnion_pairwiseDisjoints h_ss hx) (h_ss hx)
+      (fun s a ↦ hC.subsets_disjointSubsetsOfUnion_self h_ss hx s a)
+  simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
+  rw [← hC.sUnion_disjointSubsetsOfUnion h_ss]
+  exact h_mem
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :

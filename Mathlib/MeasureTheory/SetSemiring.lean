@@ -435,6 +435,25 @@ lemma sUnion_disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ J.toSet = ⋃₀ ⋃ x ∈ J, (hC.disjointSubsetsOfUnion hJ x).toSet
     := (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.2.2.2.2
 
+-- delete later
+lemma allDiffFinset₀'_subset_semiring (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    (disjiUnion J (hC.disjointSubsetsOfUnion hJ)
+    (hC.pairwiseDisjoint_disjointSubsetsOfUnion hJ)).toSet ⊆ C := by
+  simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe, iUnion_subset_iff]
+  exact fun _ ↦ subsets_disjointSubsetsOfUnion hC hJ
+
+lemma allDiffFinset₀'_pairwiseDisjoint (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    PairwiseDisjoint (disjiUnion J (hC.disjointSubsetsOfUnion hJ)
+      (hC.pairwiseDisjoint_disjointSubsetsOfUnion hJ)).toSet id := by
+  simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
+  exact pairwiseDisjoint_disjointSubsetsOfUnion_self hC hJ
+
+lemma allDiffFinset₀'_sUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    (⋃₀ J.toSet) = ⋃₀ (disjiUnion J (hC.disjointSubsetsOfUnion hJ)
+      (hC.pairwiseDisjoint_disjointSubsetsOfUnion hJ)).toSet := by
+  simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
+  exact (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.2.2.2.2
+
 end disjointSubsetsOfUnion
 
 end IsSetSemiring
