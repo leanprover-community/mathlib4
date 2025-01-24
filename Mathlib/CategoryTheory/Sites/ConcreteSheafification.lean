@@ -63,7 +63,7 @@ theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I :
   Subtype.ext <| funext <| h
 
 theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
-    P.map I.r.g₁.op (x ((S.index P).fstTo I)) = P.map I.r.g₂.op (x ((S.index P).sndTo I)) :=
+    P.map I.r.g₁.op (x (S.shape.fst I)) = P.map I.r.g₂.op (x (S.shape.snd I)) :=
   x.2 _
 
 /-- Refine a term of `Meq P T` with respect to a refinement `S ⟶ T` of covers. -/
