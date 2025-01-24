@@ -302,8 +302,7 @@ section MonoidalPreadditive
 
 /-- A preadditive monoidal category with binary biproducts is distributive. -/
 instance IsMonoidalDistrib.of_MonoidalPreadditive_with_binary_biproducts [Preadditive C]
-    [MonoidalPreadditive C]
-    [HasBinaryBiproducts C] :
+    [MonoidalPreadditive C] :
     IsMonoidalDistrib C where
       preservesBinaryCoproducts_tensorLeft X := by
         have : PreservesBinaryBiproducts (tensorLeft X) := by
