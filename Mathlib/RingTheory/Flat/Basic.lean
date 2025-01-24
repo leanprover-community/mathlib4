@@ -157,15 +157,6 @@ lemma iff_lTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddCommMonoi
     (N : Submodule R P), Function.Injective (N.subtype.lTensor M) := by
   simp_rw [iff_rTensor_injectiveₛ, LinearMap.lTensor_inj_iff_rTensor_inj]
 
-lemma TensorProduct.flip_mk_injective {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N]
-    [Module R M] [Module R N] [NoZeroSMulDivisors R N] [Module.Flat R M] (a : N) (ha : a ≠ 0) :
-    Function.Injective ((TensorProduct.mk R M N).flip a) := by
-  intro x y e
-  apply (TensorProduct.rid R M).symm.injective
-  apply Module.Flat.lTensor_preserves_injective_linearMap (M := M) (LinearMap.toSpanSingleton R N a)
-    (smul_left_injective R ha)
-  simpa using e
-
 instance instSubalgebraToSubmodule {S : Type v} [Semiring S] [Algebra R S]
     (A : Subalgebra R S) [Flat R A] : Flat R A.toSubmodule := ‹Flat R A›
 

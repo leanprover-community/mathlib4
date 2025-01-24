@@ -75,7 +75,8 @@ lemma left_of_tensor (B C : Type v)
       simp only [AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
         Subtype.mk.injEq, f] at h12
       ext ; simp only [f]
-      exact Module.Flat.TensorProduct.flip_mk_injective _ one_ne_zero h12,
+      exact Algebra.TensorProduct.includeLeft_injective (R := K) (S := K)
+        (NoZeroSMulDivisors.algebraMap_injective K C) h12,
     f_surj⟩).symm
   have e2 := Subalgebra.equivOfEq _ _ eq |>.trans <| Algebra.botEquiv K _
   have ee : Subalgebra.center K B ≃ₐ[K] K := e.symm.trans e2
