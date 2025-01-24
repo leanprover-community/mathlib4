@@ -130,7 +130,7 @@ theorem not_equiv_zero_iff : ¬ G ≈ 0 ↔ G ‖ 0 :=
   ⟨(equiv_or_fuzzy_zero G).resolve_left, Fuzzy.not_equiv⟩
 
 @[simp]
-theorem not_fuzzy_zero_iff : ¬G ‖ 0 ↔ G ≈ 0 :=
+theorem not_fuzzy_zero_iff : ¬ G ‖ 0 ↔ G ≈ 0 :=
   ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
 
 theorem add_self : G + G ≈ 0 :=
