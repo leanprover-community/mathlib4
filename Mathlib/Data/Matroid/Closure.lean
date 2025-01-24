@@ -554,8 +554,7 @@ lemma basis_iff_indep_closure : M.Basis I X ↔ M.Indep I ∧ X ⊆ M.closure I 
 
 lemma Indep.inter_basis_closure_iff_subset_closure_inter {X : Set α} (hI : M.Indep I) :
     M.Basis (X ∩ I) X ↔ X ⊆ M.closure (X ∩ I) :=
-  ⟨Basis.subset_closure,
-    fun h ↦ (hI.inter_left X).basis_of_subset_of_subset_closure inter_subset_left h⟩
+  ⟨Basis.subset_closure, (hI.inter_left X).basis_of_subset_of_subset_closure inter_subset_left⟩
 
 lemma Basis.closure_inter_basis_closure (h : M.Basis (X ∩ I) X) (hI : M.Indep I) :
     M.Basis (M.closure X ∩ I) (M.closure X) := by
@@ -569,10 +568,8 @@ lemma Basis.eq_of_closure_subset (hI : M.Basis I X) (hJI : J ⊆ I) (hJ : X ⊆ 
   exact hI.subset.trans hJ
 
 lemma Basis.insert_basis_insert_of_not_mem_closure (hIX : M.Basis I X) (heI : e ∉ M.closure I)
-    (heE : e ∈ M.E := by aesop_mat) : M.Basis (insert e I) (insert e X) := by
-  refine hIX.insert_basis_insert ?_
-  rw [hIX.indep.insert_indep_iff]
-  exact .inl ⟨heE, heI⟩
+    (heE : e ∈ M.E := by aesop_mat) : M.Basis (insert e I) (insert e X) :=
+  hIX.insert_basis_insert <| hIX.indep.insert_indep_iff.2 <| .inl ⟨heE, heI⟩
 
 @[simp] lemma empty_basis_iff : M.Basis ∅ X ↔ X ⊆ M.closure ∅ := by
   rw [basis_iff_indep_closure, and_iff_right M.empty_indep, and_iff_left (empty_subset _)]
@@ -935,33 +932,28 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
 
 @[simp] lemma map_closure_eq {β : Type*} (M : Matroid α) (f : α → β) (hf) (X : Set β) :
     (M.map f hf).closure X = f '' M.closure (f ⁻¹' X) := by
-  suffices h' : ∀ X ⊆ f '' M.E, (M.map f hf).closure X = f '' (M.closure (f ⁻¹' X)) by
-    convert h' (X ∩ f '' M.E) inter_subset_right using 1
-    · rw [← closure_inter_ground]; rfl
-    rw [preimage_inter, eq_comm, ← closure_inter_ground, inter_assoc,
-      hf.preimage_image_inter Subset.rfl, closure_inter_ground]
-  clear X
-  intro X hX
-  obtain ⟨I, hI⟩ := (M.map f hf).exists_basis X
+  suffices aux : ∀ ⦃I⦄, M.Indep I → (M.map f hf).closure (f '' I) = f '' (M.closure I) by
+    obtain ⟨I, hI⟩ := M.exists_basis (f ⁻¹' X ∩ M.E)
+    rw [← closure_inter_ground, map_ground, ← M.closure_inter_ground, ← hI.closure_eq_closure,
+      ← aux hI.indep, ← image_preimage_inter, ← (hI.map hf).closure_eq_closure]
 
-  obtain ⟨I, X, hI', rfl, rfl⟩ := (map_basis_iff').1 hI
+  refine fun I hI ↦ Set.ext fun e ↦ ?_
 
-  rw [eq_comm, ← closure_inter_ground, hf.preimage_image_inter hI'.subset_ground,
-    ← hI.closure_eq_closure, ← hI'.closure_eq_closure]
-  ext e
-  simp only [mem_image, hI.indep.mem_closure_iff', map_ground, map_indep_iff, forall_exists_index,
-    and_imp, hI'.indep.mem_closure_iff']
+  simp only [(hI.map f hf).mem_closure_iff', map_ground, mem_image, map_indep_iff,
+    forall_exists_index, and_imp, hI.mem_closure_iff']
 
-  refine ⟨?_, ?_⟩
-  · rintro ⟨e, ⟨heE, hind⟩, rfl⟩
-    refine ⟨⟨e, heE, rfl⟩, fun J hJ hins ↦ ⟨e, hind ?_, rfl⟩⟩
-    rw [← image_insert_eq,
-      hf.image_eq_image_iff (insert_subset heE hI'.indep.subset_ground) hJ.subset_ground] at hins
-    rwa [hins]
-  rintro ⟨⟨x, hx, rfl⟩, h⟩
-  refine ⟨x, ⟨hx, fun hind ↦ ?_⟩, rfl⟩
-  obtain ⟨x', hx', h_eq⟩ := h _ hind (by rw [image_insert_eq])
-  rwa [← hf (hI'.indep.subset_ground hx') hx h_eq]
+  constructor
+  · rintro ⟨⟨x, hxE, rfl⟩, h2⟩
+    refine ⟨x, ⟨hxE, fun hI' ↦ ?_⟩, rfl⟩
+    obtain ⟨y, hyI, hfy⟩ := h2 _ hI' image_insert_eq.symm
+    rw [hf.eq_iff (hI.subset_ground hyI) hxE] at hfy
+    rwa [← hfy]
+
+  rintro ⟨x, ⟨hxE, hxi⟩, rfl⟩
+  refine ⟨⟨x, hxE, rfl⟩, fun J hJ hJI ↦ ⟨x, hxi ?_, rfl⟩⟩
+  replace hJ := hJ.map f hf
+  have hrw := image_insert_eq ▸ hJI
+  rwa [← hrw, map_image_indep_iff (insert_subset hxE hI.subset_ground)] at hJ
 
 lemma restrict_spanning_iff (hSR : S ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).Spanning S ↔ R ⊆ M.closure S := by
