@@ -95,10 +95,7 @@ lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
     induction w using TensorProduct.induction_on with
     | zero => simp
     | tmul b c =>
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, coe_val,
-        Function.comp_apply, includeLeft_apply, Algebra.TensorProduct.map_tmul, AlgHom.coe_id,
-        id_eq, tmul_mul_tmul, Subtype.coe_prop, Subalgebra.mem_centralizer_iff _ |>.1 b.2 x,
-        one_mul, mul_one]
+      simp [Subalgebra.mem_centralizer_iff _ |>.1 b.2 x]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]
 
 /--
