@@ -3,7 +3,6 @@ Copyright (c) 2025 Walter Moreira, Joe Stubbs. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Walter Moreira, Joe Stubbs
 -/
-import Init.Data.List.Nat.Pairwise
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Field.Lemmas
 
