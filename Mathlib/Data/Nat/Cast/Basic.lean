@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
 
