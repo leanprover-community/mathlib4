@@ -3,12 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -317,7 +317,7 @@ This lemma is the `cons` version of `scanl_get`.
 @[simp]
 theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
   simp only [scanl, toList_cons, List.scanl]; dsimp
-  simp only [cons]; rfl
+  simp only [cons]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -351,8 +351,7 @@ theorem scanl_head : (scanl f b v).head = b := by
   · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
-    simp only [← get_zero, get_eq_get_toList, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
-      List.get]
+    simp [← get_zero, get_eq_get_toList]
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application

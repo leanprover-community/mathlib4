@@ -350,6 +350,7 @@ theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U
 
 end Submodule
 
+open scoped Function in -- required for scoped `on` notation
 theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
     (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
   forall₃_congr fun _i _j _hij =>

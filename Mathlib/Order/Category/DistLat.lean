@@ -49,8 +49,8 @@ instance : BundledHom.ParentProjection @DistribLattice.toLattice :=
 
 deriving instance LargeCategory for DistLat
 
-instance : ConcreteCategory DistLat :=
-  BundledHom.concreteCategory _
+instance : HasForget DistLat :=
+  BundledHom.hasForget _
 
 instance hasForgetToLat : HasForget₂ DistLat Lat :=
   BundledHom.forget₂ _ _
