@@ -87,7 +87,7 @@ variable [NonUnitalRingHomClass F α β]
 `NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
 @[coe]
 def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
-  { (f : α →ₙ* β), (f : α →+ β) with }
+  { (f : α →ₙ* β), (.ofClass f : α →+ β) with }
 
 /-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
 `NonUnitalRingHomClass.toNonUnitalRingHom`. -/
@@ -115,6 +115,8 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
+
+instance : Coe (α →ₙ+* β) (α →+ β) := ⟨toAddMonoidHom⟩
 
 initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
@@ -329,16 +331,6 @@ variable [FunLike F α β]
 -- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
-/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
-`RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
-@[coe]
-def RingHomClass.toRingHom (f : F) : α →+* β :=
-  { (f : α →* β), (f : α →+ β) with }
-
-/-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
-instance : CoeTC F (α →+* β) :=
-  ⟨RingHomClass.toRingHom⟩
-
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }
 
@@ -372,16 +364,22 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
 
 initialize_simps_projections RingHom (toFun → apply)
 
+/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
+`RingHom`. -/
+@[simps!]
+def ofClass [FunLike F α β] [RingHomClass F α β] (f : F) : α →+* β where
+  __ : α →* β := .ofClass f
+  __ : α →+ β := .ofClass f
+
+@[simp] lemma coe_ofClass [FunLike F α β] [RingHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
+
+@[deprecated (since := "2024-12-27")] alias coe_coe := coe_ofClass
+
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 
 @[simp]
 theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
-  rfl
-
-@[simp]
-theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
-    ((f : α →+* β) : α → β) = f :=
   rfl
 
 attribute [coe] RingHom.toMonoidHom
