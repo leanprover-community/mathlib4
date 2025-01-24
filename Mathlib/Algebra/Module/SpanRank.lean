@@ -20,7 +20,7 @@ The difference between these two definitions is only that when no finite generat
   number. If no finite generating set exists, the span rank is defined to be `0`.
 * `spanRank`: The minimum cardinality of a generating set of a submodule, possibly infinite, with
   type `ℕ∞`. If no finite generating set exists, the span rank is defined to be `⊤`.
-* `FG.spanBasis`: For a finitely generated submodule, get a set of minimal generating elements
+* `FG.spanBasis`: For a finitely generated submodule, get a set of minimum generating elements
   indexed by `Fin (p.spanRankNat)`
 
 ## Main Results
@@ -134,7 +134,7 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
         convert Finset.card_image_le
         rw [Finset.card_univ, Fintype.card_fin]
 
-/-- Generating elements for the submodule of minimal cardinality. -/
+/-- Generating elements for the submodule of minimum cardinality. -/
 noncomputable def FG.spanBasis {p : Submodule R M} (h : p.FG) : Fin p.spanRankNat → M :=
   Classical.choose (exists_fun_spanRankNat_span_range_eq h)
 
