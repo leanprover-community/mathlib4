@@ -35,7 +35,7 @@ Note that this is a slightly more general definition than the one that's usually
 as we don't require `G ≡ -G`. Despite this, the Sprague-Grundy theorem still holds: see
 `SetTheory.PGame.equiv_nim_grundyValue`.
 
-In such a game, both players have the same payoffs at any given moment. -/
+In such a game, both players have the same payoffs at any subposition. -/
 class Impartial (G : PGame) : Prop where
   out : ImpartialAux G
 
