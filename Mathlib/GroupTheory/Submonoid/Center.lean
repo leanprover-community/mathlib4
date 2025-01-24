@@ -159,16 +159,20 @@ def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* cent
 def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : center M ≃* center N :=
   Subsemigroup.centerCongr e
 
+@[to_additive] theorem MulOpposite.op_mem_center_iff [Mul M] {x : M} :
+    op x ∈ Set.center Mᵐᵒᵖ ↔ x ∈ Set.center M := by
+  simp_rw [Set.mem_center_iff, isMulCentral_iff, MulOpposite.forall, ← op_mul, op_inj]; aesop
+
+@[to_additive] theorem MulOpposite.unop_mem_center_iff [Mul M] {x : Mᵐᵒᵖ} :
+    unop x ∈ Set.center M ↔ x ∈ Set.center Mᵐᵒᵖ :=
+  op_mem_center_iff.symm
+
 /-- The center of a magma is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps)
 "The center of an additive magma is isomorphic to the center of its opposite."]
 def Subsemigroup.centerToMulOpposite [Mul M] : center M ≃* center Mᵐᵒᵖ where
-  toFun r := by refine ⟨.op r.1, ?_, ?_, ?_, ?_⟩ <;>
-    (intros; apply MulOpposite.unop_injective;
-      simp only [MulOpposite.unop_mul, MulOpposite.unop_op, (isMulCentral_iff _).mp r.2])
-  invFun r := by refine ⟨r.1.unop, ?_, ?_, ?_, ?_⟩ <;>
-    (intros; apply MulOpposite.op_injective;
-      simp only [MulOpposite.op_mul, MulOpposite.op_unop, (isMulCentral_iff _).mp r.2])
+  toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.2⟩
+  invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' r _ := Subtype.ext (congr_arg MulOpposite.op <| r.2.1 _)
