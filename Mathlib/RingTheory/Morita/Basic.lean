@@ -49,7 +49,7 @@ open scoped ModuleCat.Algebra
 
 /--
 Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent if the categories of
-`A`-modules and `B`-modules are equivalent as `R`-linear category.
+`A`-modules and `B`-modules are equivalent as `R`-linear categories.
 -/
 @[ext]
 structure MoritaEquivalence
