@@ -7,6 +7,7 @@ import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros
@@ -305,5 +306,47 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 @[deprecated (since := "2024-09-26")]
 alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
+
+section Mul
+/-!
+### Vanishing of products of analytic functions
+-/
+
+variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+  {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
+
+/-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
+on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
+lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
+    {f : 𝕜 → A} {g : 𝕜 → B} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hfg : ∀ z ∈ U, f z • g z = 0) (hU : IsPreconnected U) :
+    (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) := by
+  -- We want to apply `IsPreconnected.preperfect_of_nontrivial` which requires `U` to have at least
+  -- two elements. So we need to dispose of the cases `#U = 0` and `#U = 1` first.
+  by_cases hU' : U = ∅
+  · simp [hU']
+  obtain ⟨z, hz⟩ : ∃ z, z ∈ U := nonempty_iff_ne_empty.mpr hU'
+  by_cases hU'' : U = {z}
+  · simpa [hU''] using hfg z hz
+  apply (nontrivial_iff_ne_singleton hz).mpr at hU''
+  -- Now connectedness implies that `z` is an accumulation point of `U`, so at least one of
+  -- `f` and `g` must vanish frequently in a neighbourhood of `z`.
+  have : ∃ᶠ w in 𝓝[≠] z, w ∈ U :=
+    frequently_mem_iff_neBot.mpr <| hU.preperfect_of_nontrivial hU'' z hz
+  have : ∃ᶠ w in 𝓝[≠] z, f w = 0 ∨ g w = 0 :=
+    this.mp <| by filter_upwards with w hw using smul_eq_zero.mp (hfg w hw)
+  cases frequently_or_distrib.mp this with
+  | inl h => exact Or.inl <| hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hz h
+  | inr h => exact Or.inr <| hg.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hz h
+
+/-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f * g = 0`
+on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
+lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
+    {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
+    (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) :=
+  eq_zero_or_eq_zero_of_smul_eq_zero hf hg hfg hU
+
+end Mul
 
 end AnalyticOnNhd
