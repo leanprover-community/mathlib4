@@ -104,7 +104,7 @@ instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrdered
 
 theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPreorder α r]
     (h : WellQuasiOrdered r) : WellFounded fun a b ↦ r a b ∧ ¬ r b a := by
-  letI : Preorder α :=
+  let _ : Preorder α :=
     { le := r
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
