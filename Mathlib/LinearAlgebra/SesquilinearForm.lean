@@ -79,7 +79,7 @@ theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n
 theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) {v : n → M₁} :
     B.IsOrthoᵢ v ↔ B.flip.IsOrthoᵢ v := by
   simp_rw [isOrthoᵢ_def]
-  constructor <;> intro h i j hij <;> exact h j i hij.symm
+  constructor <;> exact fun h i j hij ↦ h j i hij.symm
 
 end CommRing
 
