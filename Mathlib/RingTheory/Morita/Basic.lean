@@ -103,7 +103,7 @@ def trans {A B C : Type u₁}
 
 variable {R} in
 /--
-Equivalence `R`-algebras are Morita equivalent.
+Isomorphic `R`-algebras are Morita equivalent.
 -/
 noncomputable def ofAlgEquiv {A : Type u₁} {B : Type u₂}
       [Ring A] [Algebra R A] [Ring B] [Algebra R B] (f : A ≃ₐ[R] B) :
