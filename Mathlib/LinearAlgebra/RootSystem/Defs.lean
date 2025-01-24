@@ -380,12 +380,11 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
     sub_add_cancel_left, ← toLin_toPerfectPairing, map_neg, toLin_toPerfectPairing,
     root_coroot_eq_pairing]
 
-/-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
-between a root and coroot always belongs to `S`.
-
-Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`. -/
+@[mk_iff]
 class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
-  pairing_mem_range_algebraMap : ∀ i j, P.pairing i j ∈ range (algebraMap S R)
+  exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
+
+protected alias exists_value := IsValuedIn.exists_value
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
@@ -394,21 +393,21 @@ abbrev IsCrystallographic := P.IsValuedIn ℤ
 section IsValuedIn
 
 instance : P.IsValuedIn R where
-  pairing_mem_range_algebraMap i j := by simp
+  exists_value i j := by simp
 
 variable (S : Type*) [CommRing S] [Algebra S R]
 
 variable {S} in
-lemma isValuedIn_iff :
-    P.IsValuedIn S ↔ ∀ i j, ∃ s, algebraMap S R s = P.pairing i j :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+lemma isValuedIn_iff_mem_range :
+    P.IsValuedIn S ↔ ∀ i j, P.pairing i j ∈ range (algebraMap S R) := by
+  simp only [isValuedIn_iff, mem_range]
 
 instance : P.IsValuedIn R where
-  pairing_mem_range_algebraMap := by simp
+  exists_value := by simp
 
 instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
   rw [isValuedIn_iff, forall_comm]
-  exact IsValuedIn.pairing_mem_range_algebraMap
+  exact P.exists_value
 
 /-- A variant of `RootPairing.pairing` for root pairings which are valued in a smaller set of
 coefficients.
@@ -416,17 +415,17 @@ coefficients.
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
 `[NoZeroSMulDivisors S R]`. -/
 def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
-  (P.isValuedIn_iff.mp inferInstance i j).choose
+  (P.exists_value i j).choose
 
 @[simp]
 lemma algebraMap_pairingIn [P.IsValuedIn S] (i j : ι) :
     algebraMap S R (P.pairingIn S i j) = P.pairing i j :=
-  (P.isValuedIn_iff.mp inferInstance i j).choose_spec
+  (P.exists_value i j).choose_spec
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
     P.IsValuedIn S where
-  pairing_mem_range_algebraMap i j := by
+  exists_value i j := by
     use algebraMap T S (P.pairingIn T i j)
     simp [← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq T S R]
 
