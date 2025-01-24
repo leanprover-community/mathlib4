@@ -100,10 +100,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
   rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
-  dsimp
-  constructor
-  · intro h j; exact h ⟨j⟩
-  · intro h j; cases j; apply h
+  tauto
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : _) (y : D.U i), 𝖣.ι i y = x :=
   𝖣.ι_jointly_surjective (forget TopCat) x
