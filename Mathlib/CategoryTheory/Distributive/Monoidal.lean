@@ -301,7 +301,7 @@ end Endofunctors
 section MonoidalPreadditive
 
 /-- A preadditive monoidal category with binary biproducts is distributive. -/
-instance IsMonoidalDistrib.of_MonoidalPreadditive_with_binary_biproducts [Preadditive C]
+instance IsMonoidalDistrib.of_MonoidalPreadditive_with_binary_coproducts [Preadditive C]
     [MonoidalPreadditive C] :
     IsMonoidalDistrib C where
       preservesBinaryCoproducts_tensorLeft X := by
