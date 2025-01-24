@@ -1,0 +1,68 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.Order.CompleteLattice
+import Mathlib.CategoryTheory.CommSq
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+
+/-!
+# Multicoequalizer diagrams in complete lattices
+
+-/
+
+universe u
+
+open CategoryTheory
+
+namespace Lattice
+
+variable {T : Type u} (x₁ x₂ x₃ x₄ : T) [Lattice T]
+
+/-- A bicartesian square in a lattice consists of elements `x₁`, `x₂`, `x₃` and `x₄`
+such that `x₂ ⊔ x₃ = x₄` and `x₂ ⊓ x₃ = x₁`. -/
+structure BicartSq where
+  max_eq : x₂ ⊔ x₃ = x₄
+  min_eq : x₂ ⊓ x₃ = x₁
+
+namespace BicartSq
+
+variable {x₁ x₂ x₃ x₄} (sq : BicartSq x₁ x₂ x₃ x₄)
+
+include sq
+lemma le₁₂ : x₁ ≤ x₂ := by rw [← sq.min_eq]; exact inf_le_left
+lemma le₁₃ : x₁ ≤ x₃ := by rw [← sq.min_eq]; exact inf_le_right
+lemma le₂₄ : x₂ ≤ x₄ := by rw [← sq.max_eq]; exact le_sup_left
+lemma le₃₄ : x₃ ≤ x₄ := by rw [← sq.max_eq]; exact le_sup_right
+
+/-- The commutative square associated to a bicartesian square in a lattice. -/
+lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
+    (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
+
+end BicartSq
+
+end Lattice
+
+namespace CompleteLattice
+
+variable {T : Type u} [CompleteLattice T] {ι : Type*} (x : T) (u : ι → T) (v : ι → ι → T)
+
+/-- A multicoequalizer diagram in a complete lattice `T` consists of families of elements
+`u : ι → T`, `v : ι → ι → T`, and an element `x : T` such that `x` is the supremum of `u`,
+and for any `i` and `j`, `v i j` is the minimum of `u i` and `u j`. -/
+structure MulticoequalizerDiagram : Prop where
+  iSup_eq : ⨆ (i : ι), u i = x
+  min_eq (i j : ι) : u i ⊓ u j = v i j
+
+end CompleteLattice
+
+lemma Lattice.BicartSq.multicoequalizerDiagram {T : Type u} [CompleteLattice T]
+    {x₁ x₂ x₃ x₄} (sq : BicartSq x₁ x₂ x₃ x₄) :
+    CompleteLattice.MulticoequalizerDiagram (T := T) x₄
+      (fun i ↦ bif i then x₃ else x₂)
+      (fun i j ↦ bif i then bif j then x₃ else x₁
+        else bif j then x₁ else x₂) where
+  iSup_eq := by rw [← sq.max_eq, sup_comm, sup_eq_iSup]
+  min_eq i j := by fin_cases i <;> fin_cases j <;> simp [← sq.min_eq, inf_comm x₂ x₃]
