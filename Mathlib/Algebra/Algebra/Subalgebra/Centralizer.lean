@@ -78,7 +78,7 @@ lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
     refine Subalgebra.sum_mem _ fun j hj => ⟨⟨b j, ?_⟩ ⊗ₜ[R] ℬ j, by simp⟩
     rw [Subalgebra.mem_centralizer_iff]
     intro x hx
-    suffices x • b = b.mapRange (fun a ↦ a * x) (by simp) from Finsupp.ext_iff.1 this j
+    suffices x • b = b.mapRange (· * x) (by simp) from Finsupp.ext_iff.1 this j
     specialize hw (x ⊗ₜ[R] 1) ⟨⟨x, hx⟩, rfl⟩
     simp only [Finsupp.sum, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
       Finset.sum_mul, mul_one] at hw
