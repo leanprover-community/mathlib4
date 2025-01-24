@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 import Mathlib.Algebra.Module.SpanRank
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Ideal.MinimalPrime
-import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 /-!
 # The Height of an Ideal
 
@@ -233,13 +230,6 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
 --   exact λ _ _, e.lt_iff_lt.symm
 -- end
 
--- theorem set.chain_height_univ {α : Type*} [Preorder α] (s : Set α) :
---   (Set.univ : Set s).chainHeight = s.chainHeight := by
---   conv_rhs =>
---     rw [← Subtype.range_val s, ← Set.image_univ]
---   rw [Set.chainHeight_image]
---   intro x y
---   rfl
 
 -- theorem OrderIso.chain_height_eq {α β : Type*} [Preorder α] [Preorder β]
 --   (e : α ≃o β) : (Set.univ : Set α).chainHeight = (Set.univ : Set β).chainHeight := by
@@ -252,12 +242,45 @@ theorem ENat.add_inj_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injectiv
     ((WithTop.add_le_add_iff_right hn).mp e.le)
     ((WithTop.add_le_add_iff_right hn).mp e.ge)
 
+lemma Order.height_eq_krullDim_Iic {α : Type*} [Preorder α] (x : α) :
+    (height x : ℕ∞) = krullDim (Set.Iic x) := by
+  rw [← Order.height_top_eq_krullDim, height, height, WithBot.coe_inj]
+  apply le_antisymm
+  · apply iSup_le; intro p; apply iSup_le; intro hp
+    let q := LTSeries.mk p.length (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩
+     : Set.Iic x)) (fun _ _ h ↦ p.strictMono h)
+    rw [show p.length = q.length by rfl]
+    simp only [le_top, iSup_pos, ge_iff_le]
+    apply le_iSup (fun p ↦ (p.length : ℕ∞)) q
+  · apply iSup_le; intro p; apply iSup_le; intro _
+    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
+    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
+    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
+    exact (p.toFun (Fin.last p.length)).2
+
 theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) (hJ : J.IsPrime) :
     J.primeHeight = (J.comap (algebraMap R A)).primeHeight := by
-  -- the original proof is broken because of the change to Order.height
-  -- need something like OrderIso.height_eq ?
-  sorry
+  rw [Ideal.primeHeight, Ideal.primeHeight, ← WithBot.coe_inj, Order.height_eq_krullDim_Iic,
+    Order.height_eq_krullDim_Iic]
+  let e := IsLocalization.orderIsoOfPrime S A
+  have H : ∀ p : Ideal R, p ≤ J.comap (algebraMap R A) → Disjoint (S : Set R) p := by
+    intro p hp
+    exact Set.disjoint_of_subset_right hp (e ⟨_, hJ⟩).2.2
+  refine Order.krullDim_eq_of_orderIso ?_
+  exact
+  { toFun := fun I => ⟨⟨I.1.1.comap (algebraMap R A), (e ⟨_, I.1.2⟩).2.1⟩, Ideal.comap_mono I.2⟩
+    invFun := fun I => ⟨⟨_, (e.symm ⟨_, I.1.2, H _ I.2⟩).2⟩, Ideal.map_le_iff_le_comap.mpr I.2⟩
+    left_inv := fun I => Subtype.ext <| PrimeSpectrum.ext_iff.mpr <| by
+      have := (e.left_inv ⟨_, I.1.2⟩)
+      apply_fun (fun I ↦ I.1) at this
+      exact this
+    right_inv := fun I => Subtype.ext <| PrimeSpectrum.ext_iff.mpr <| by
+      have := (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
+      apply_fun (fun I ↦ I.1) at this
+      exact this
+    map_rel_iff' := fun {I₁ I₂} => @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
+
 
 theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=

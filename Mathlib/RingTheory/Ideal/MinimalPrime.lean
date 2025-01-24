@@ -326,8 +326,4 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
   · intro h; rw [h]
     exact Ideal.minimalPrimes_top
 
-theorem Ideal.minimalPrimes_finite_of_isNoetherianRing [IsNoetherianRing R] (I : Ideal R) :
-    I.minimalPrimes.Finite := by
-  sorry
-
 end
