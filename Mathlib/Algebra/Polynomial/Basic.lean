@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Sort
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Theory of univariate polynomials

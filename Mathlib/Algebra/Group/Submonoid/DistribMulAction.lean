@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Data.SetLike.SMul
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Distributive actions by submonoids
