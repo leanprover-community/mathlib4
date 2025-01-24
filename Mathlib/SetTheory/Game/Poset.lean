@@ -108,12 +108,12 @@ theorem toRightMovesPoset_symm_prop {t : Set α} (i : (posetPos t).RightMoves) :
   (toRightMovesPoset.symm i).prop
 
 @[simp]
-theorem moveLeft_poset {t : Set α} (i) :
+theorem moveLeft_posetPos {t : Set α} (i) :
     (posetPos t).moveLeft i = posetPos (toLeftMovesPoset.symm i).1 := by
   apply congr_heq moveLeft_poset_heq (cast_heq _ _).symm
 
 @[simp]
-theorem moveRight_poset {t : Set α} (i) :
+theorem moveRight_posetPos {t : Set α} (i) :
     (posetPos t).moveRight i = posetPos (toRightMovesPoset.symm i).1 := by
   apply congr_heq moveRight_poset_heq (cast_heq _ _).symm
 
@@ -127,9 +127,9 @@ decreasing_by all_goals exact x.2
 instance impartial_posetPos (s : Set α) : Impartial (posetPos s) := by
   rw [impartial_def, neg_posetPos]
   refine ⟨equiv_rfl, fun i ↦ ?_, fun i ↦ ?_⟩
-  · rw [moveLeft_poset]
+  · rw [moveLeft_posetPos]
     exact impartial_posetPos _
-  · rw [moveRight_poset]
+  · rw [moveRight_posetPos]
     exact impartial_posetPos _
 termination_by wellFounded_posetMove.wrap s
 decreasing_by
