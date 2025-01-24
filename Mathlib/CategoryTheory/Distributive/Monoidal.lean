@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.End
+import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 
@@ -39,19 +40,15 @@ A distributive monoidal category is a monoidal category that is both left and ri
   never right distributive). The left distributivity is tentamount to the fact that the coproduct
   in the functor categories is computed pointwise.
 
+- We show that any preadditive monoidal category with biporducts is distributive. This includes the
+examples of abelian groups, R-modules, and vector bundles.
+
 ## TODO
 
 Show that a distributive monoidal category whose unit is weakly terminal is finitary distributive.
 
-Provide more examples of the distributive monoidal structure on the following categories:
-
-- The category of abelian groups with the monoidal structure given by the tensor product of
-  abelian groups.
-- The category of R-modules with the monoidal structure given by the tensor product of modules.
-- The category of vector bundles over a topological space where the monoidal structure is given by
-  the tensor product of vector bundles.
-- The category of pointed types with the monoidal structure given by the smash product of
-  pointed types and the coproduct given by the wedge sum.
+Show that the category of pointed types with the monoidal structure given by the smash product of
+pointed types and the coproduct given by the wedge sum is distributive.
 
 ## References
 
@@ -295,10 +292,28 @@ section Endofunctors
 attribute [local instance] endofunctorMonoidalCategory
 
 /-- The monoidal structure on the category of endofunctors is left distributive. -/
-instance isMonoidalLeftDistrib_of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) where
+instance isMonoidalLeftDistrib.of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) where
   preservesBinaryCoproducts_tensorLeft F :=
     inferInstanceAs (PreservesColimitsOfShape _ ((whiskeringLeft C C C).obj F))
 
 end Endofunctors
+
+section MonoidalPreadditive
+
+/-- A preadditive monoidal category with binary biproducts is distributive. -/
+instance IsMonoidalDistrib.of_MonoidalPreadditive_with_binary_biproducts [Preadditive C]
+    [MonoidalPreadditive C]
+    [HasBinaryBiproducts C] :
+    IsMonoidalDistrib C where
+      preservesBinaryCoproducts_tensorLeft X := by
+        have : PreservesBinaryBiproducts (tensorLeft X) := by
+          apply preservesBinaryBiproducts_of_preservesBiproducts
+        apply preservesBinaryCoproducts_of_preservesBinaryBiproducts
+      preservesBinaryCoproducts_tensorRight X := by
+        have : PreservesBinaryBiproducts (tensorRight X) := by
+          apply preservesBinaryBiproducts_of_preservesBiproducts
+        apply preservesBinaryCoproducts_of_preservesBinaryBiproducts
+
+end MonoidalPreadditive
 
 end CategoryTheory
