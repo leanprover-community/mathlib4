@@ -1,3 +1,52 @@
+-- REMOVE
+/-- Adding row `j` of matrix `M` times scalar `-x` to row `i` and then adding row `j` times `x` to
+row `i` will return the original matrix `M`. -/
+@[simp]
+theorem addMulRow_addMulRow_neg_cancel_right [Ring R] [AddCommGroup α] [Module R α]
+    (M : Matrix m n α) (i : m) (j : m) (h1 : j ≠ i) (x : R) :
+    addMulRow (addMulRow M i j (-x)) i j x = M := by
+  unfold addMulRow
+  ext k l
+  by_cases h : k = i
+  · rw [h]
+    repeat rw [updateRow_self]
+    rw [updateRow_ne]
+    simp
+    exact h1
+  · rw [updateRow_ne h]
+    rw [updateRow_ne h]
+
+/-! ### extra -/
+
+/-- The value at row `i` and column `l` of matrix `M` will be 1 after multiplying row `i` by the
+multiplicative inverse of the value located at row `i` and column `l`, which must be non-zero. -/
+@[simp]
+theorem mulRow_inv_cancel [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
+    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (l : Fin z) (h : M i l ≠ 0) :
+    (mulRow M i (1/(M i l))) i l = 1 := by
+  unfold mulRow
+  simp only [one_div, updateRow_self, Pi.smul_apply, smul_eq_mul]
+  rw [inv_mul_cancel₀]
+  exact h
+
+
+/-! ### extra -/
+
+/-- The value at row `i` and column `l` of matrix `M` will be 0 after adding row `j` times the
+negative of the value at row `i` and column `l` divided by the value at row `j` and column `l`
+to row `i`. -/
+@[simp]
+theorem addMulRow_inv_cancel [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
+    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin y) (l : Fin z) (h : M j l ≠ 0) :
+    (addMulRow M i j (-(M i l)*(1/(M j l)))) i l = 0 := by
+  unfold addMulRow
+  simp only [one_div, neg_mul, neg_smul, updateRow_self, Pi.add_apply, Pi.neg_apply, Pi.smul_apply,
+    smul_eq_mul]
+  rw [mul_assoc, inv_mul_cancel₀]
+  simp
+  exact h
+
+
 -- /-- Multiplying row `i` of matrix `M` by a non-zero scalar `x` and then by `x`'s multiplicative
 -- inverse will return the original matrix `M`. -/
 -- @[simp]
