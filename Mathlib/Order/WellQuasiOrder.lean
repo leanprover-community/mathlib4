@@ -143,7 +143,7 @@ end Preorder
 section LinearOrder
 variable [LinearOrder α]
 
-/-- In a linear order, WQOs and well-orders are equivalent. -/
+/-- A linear WQO is the same thing as a well-order. -/
 theorem wellQuasiOrderedLE_iff_wellFoundedLT : WellQuasiOrderedLE α ↔ WellFoundedLT α := by
   rw [wellQuasiOrderedLE_iff, and_iff_left_iff_imp]
   exact fun _ s hs ↦ hs.subsingleton.finite
