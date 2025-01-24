@@ -92,14 +92,31 @@ elab "#show_deprecated_modules" : command => do
 
 namespace DeprecatedModule
 
+/--
+`IsLaterCommand` is an `IO.Ref` that starts out being `false`.
+As soon as a (non-import) command in a file is processed, the `deprecated.module` linter`
+sets it to `true`.
+If it is `false`, then the `deprecated.module` linter will check for deprecated modules.
+
+This is used to ensure that the linter performs the deprecation checks only once per file.
+There are possible concurrency issues, but they should not be particularly worrying:
+* the linter check should be relatively quick;
+* the only way in which the linter could change what it reports is if the imports are changed
+  and a change in imports triggers a rebuild of the whole file anyway, resetting the `IO.Ref`.
+-/
+initialize IsLaterCommand : IO.Ref Bool ← IO.mkRef false
+
 @[inherit_doc Mathlib.Linter.linter.deprecated.module]
 def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  let deprecations := deprecatedModuleExt.getState (← getEnv)
-  if deprecations.isEmpty then
-    return
   unless Linter.getLinterValue linter.deprecated.module (← getOptions) do
     return
   if (← get).messages.hasErrors then
+    return
+  if ← IsLaterCommand.get then
+    return
+  IsLaterCommand.set true
+  let deprecations := deprecatedModuleExt.getState (← getEnv)
+  if deprecations.isEmpty then
     return
   let mainModule ← getMainModule
   -- `Mathlib.lean` and `Mathlib/Tactic.Lean` are allowed to import deprecated files,
