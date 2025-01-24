@@ -59,7 +59,7 @@ open Finsupp TensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_S(A)` is the
+For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
 centralizer of `S` in `A`.
 -/
 lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
@@ -100,7 +100,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_S(A)` is the
+For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
 centralizer of `S` in `A`.
 -/
 lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
@@ -131,7 +131,7 @@ Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R
 For any subalgebra `S` of `A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
 centralizer of `S` in `A`.
 -/
-lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
+lemma centralizer_coe_map_includeLeft_eq_center_tensorProduct
     (S : Subalgebra R A) [Module.Free R B] :
     Subalgebra.centralizer R
       (S.map (Algebra.TensorProduct.includeLeft (R := R) (B := B))) =
@@ -141,10 +141,10 @@ lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
-For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is the
+For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_S(B)` where `C_S(B)` is the
 centralizer of `S` in `A`.
 -/
-lemma centralizer_coe_range_includeRight_comp_val_eq_center_tensorProduct
+lemma centralizer_coe_map_includeRight_eq_center_tensorProduct
     (S : Subalgebra R B) [Module.Free R A] :
     Subalgebra.centralizer R
       (S.map (Algebra.TensorProduct.includeRight (R := R) (A := A))) =
@@ -161,7 +161,7 @@ lemma centralizer_coe_range_includeLeft_eq_center_tensorProduct [Module.Free R B
       (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range =
     (Algebra.TensorProduct.map (Subalgebra.center R A).val (AlgHom.id R B)).range := by
   rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := A),
-    ← centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct R A B ⊤]
+    ← centralizer_coe_map_includeLeft_eq_center_tensorProduct R A B ⊤]
   ext
   simp [includeLeft, includeLeftRingHom, Set.range_comp]
 
@@ -174,7 +174,7 @@ lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range =
     (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val).range := by
   rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := B),
-    ← centralizer_coe_range_includeRight_comp_val_eq_center_tensorProduct R A B ⊤]
+    ← centralizer_coe_map_includeRight_eq_center_tensorProduct R A B ⊤]
   ext
   simp [includeRight, includeLeftRingHom, Set.range_comp]
 
