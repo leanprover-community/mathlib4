@@ -69,15 +69,16 @@ theorem mul_degree {k l : ℕ} (α : ⋀[R]^k M) (β : ⋀[R]^l M) [Module.Finit
     simp only [SetLike.val_smul, Algebra.smul_mul_assoc, Submodule.smul_mem _ a h1]
   · simp only [h, span_top_of_span_top', Submodule.mem_top]
 
-def WedgeProduct {k l : ℕ} : (⋀[R]^k M) →ₗ[R] (⋀[R]^l M) →ₗ[R] ExteriorAlgebra R M where
+def WedgeProduct {k l : ℕ} [Module.Finite R M] :
+  (⋀[R]^k M) →ₗ[R] (⋀[R]^l M) →ₗ[R] (⋀[R]^(k+l) M) where
   toFun α := {
-    toFun := fun β ↦ α * β
+    toFun := fun β ↦ ⟨α * β, mul_degree α β⟩
     map_add' := by
       intro x y
-      simp only [Submodule.coe_add, mul_add]
+      simp only [Submodule.coe_add, mul_add, AddMemClass.mk_add_mk]
     map_smul' := by
       intro a x
-      simp only [Submodule.coe_smul, RingHom.id_apply, mul_smul_comm]
+      simp only [SetLike.val_smul, Algebra.mul_smul_comm, RingHom.id_apply, SetLike.mk_smul_mk]
   }
   map_add' := by
     intro x y
@@ -89,10 +90,5 @@ def WedgeProduct {k l : ℕ} : (⋀[R]^k M) →ₗ[R] (⋀[R]^l M) →ₗ[R] Ext
     ext y
     dsimp
     rw [Algebra.smul_mul_assoc]
-
-theorem wedge_degree {k l : ℕ} (α : ⋀[R]^k M) (β : ⋀[R]^l M) [Module.Finite R M] :
-  WedgeProduct α β ∈ ⋀[R]^(k+l) M := by
-  unfold WedgeProduct
-  exact mul_degree α β
 
 end exteriorPower

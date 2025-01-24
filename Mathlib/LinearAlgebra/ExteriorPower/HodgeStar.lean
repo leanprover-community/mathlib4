@@ -67,13 +67,18 @@ noncomputable def volumeEquiv (h : ⟪vol, vol⟫ = 1) : ⋀[F]^(finrank F V) V 
 
 #check TensorProduct.rid
 variable (hVol : ⟪vol, vol⟫ = 1)
+#check Nat.add_sub_of_le
 
-noncomputable def HodgePairing {k : ℕ} (α : ⋀[F]^k V) :
+omit [FiniteDimensional F V] in
+theorem HodgePairingAux {k : ℕ} (hk : k ≤ finrank F V) :
+  ⋀[F]^(k + (finrank F V - k)) V = ⋀[F]^(finrank F V) V := by
+  rw [Nat.add_sub_of_le hk]
+
+noncomputable def HodgePairing {k : ℕ} (hk : k ≤ finrank F V) (α : ⋀[F]^k V) :
   ⋀[F]^(finrank F V - k) V →ₗ[F] (⋀[F]^(finrank F V) V) where
-  toFun := (WedgeProduct α).codRestrict (⋀[F]^(finrank F V) V) sorry
+  toFun β := (HodgePairingAux hk) ▸ WedgeProduct α β
   map_add' := sorry
   map_smul' := sorry
---(volumeEquiv B vol hVol).comp
 
 variable (hN : B.Nondegenerate)
 variable (k : ℕ) in
