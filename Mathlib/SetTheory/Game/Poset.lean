@@ -38,6 +38,17 @@ theorem posetMove_irrefl (s : Set α) : ¬ s ≺ s :=
 instance : IsIrrefl (Set α) (· ≺ ·) where
   irrefl := posetMove_irrefl
 
+theorem top_compl_posetMove_univ {α : Type*} [PartialOrder α] [OrderTop α] : {⊤}ᶜ ≺ @univ α := by
+  use ⊤
+  simp [Ici, compl_eq_univ_diff]
+
+theorem posetMove_univ_of_posetMove_top_compl {α : Type*} [PartialOrder α] [OrderTop α] {s : Set α}
+    (h : s ≺ {⊤}ᶜ) : s ≺ univ := by
+  obtain ⟨a, _, rfl⟩ := h
+  use a, mem_univ _
+  rw [compl_eq_univ_diff, diff_diff, union_eq_right.2]
+  simp
+
 theorem wellFounded_posetMove [WellQuasiOrderedLE α] : @WellFounded (Set α) (· ≺ ·) := by
   rw [WellFounded.wellFounded_iff_no_descending_seq]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
@@ -117,6 +128,14 @@ theorem moveRight_posetPos {t : Set α} (i) :
     (posetPos t).moveRight i = posetPos (toRightMovesPoset.symm i).1 := by
   apply congr_heq moveRight_poset_heq (cast_heq _ _).symm
 
+theorem moveLeft_toLeftMovesPoset {t : Set α} (s) :
+    (posetPos t).moveLeft (toLeftMovesPoset s) = posetPos s.1 := by
+  simp
+
+theorem moveRight_toRightMovesPoset {t : Set α} (s) :
+    (posetPos t).moveRight (toRightMovesPoset s) = posetPos s.1 := by
+  simp
+
 @[simp]
 theorem neg_posetPos (s : Set α) : -posetPos s = posetPos s := by
   rw [posetPos, neg_def]
@@ -135,5 +154,23 @@ termination_by wellFounded_posetMove.wrap s
 decreasing_by
 · exact toLeftMovesPoset_symm_prop _
 · exact toRightMovesPoset_symm_prop _
+
+-- TODO: this should generalize to a `Preorder`.
+-- A game should be equal to its antisymmetrization.
+/-- Any poset game on a poset with a top element is won by the first player.
+
+If it weren't, there'd be some position `s` that the second player could move to after the first
+player moved to `{⊤}ᶜ`, such that `s` is won by the second player. But then the first player could
+move to `s` on their first turn to win, a contradiction. -/
+theorem poset_fuzzy_zero {α : Type*} [PartialOrder α] [WellQuasiOrderedLE α] [OrderTop α] :
+    poset α ‖ 0 := by
+  apply (Impartial.equiv_or_fuzzy_zero _).resolve_left fun h ↦ ?_
+  rw [← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero] at h
+  have h' := h (toLeftMovesPoset ⟨_, top_compl_posetMove_univ⟩)
+  rw [moveLeft_toLeftMovesPoset, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero] at h'
+  obtain ⟨i, hi⟩ := h'
+  apply Equiv.not_fuzzy hi
+  simpa using h (toLeftMovesPoset ⟨_, posetMove_univ_of_posetMove_top_compl
+    (toLeftMovesPoset_symm_prop i)⟩)
 
 end SetTheory.PGame
