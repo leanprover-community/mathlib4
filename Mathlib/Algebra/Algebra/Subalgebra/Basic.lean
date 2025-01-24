@@ -798,17 +798,10 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
     (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
     motive x mem := by
-  let T : Subalgebra R A :=
-  { carrier := {x | ∃ (h : x ∈ ⨆ i, S i), motive x h}
-    mul_mem' := by aesop
-    one_mem' := by aesop
-    add_mem' := by aesop
-    zero_mem' := by aesop
-    algebraMap_mem' := by aesop }
-  suffices iSup S ≤ T from (this mem).choose_spec
-  rw [iSup_le_iff]
-  intro i a ha
-  exact ⟨mem_iSup_of_mem i ha, basic i a ha⟩
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
+  exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
+    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) ⟨_, zero⟩ ⟨_, one⟩ (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
+    (fun _ _ h h' ↦ ⟨_, mul _ _ _ _ h.2 h'.2⟩) fun _ ↦ ⟨_, algebraMap _⟩
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
