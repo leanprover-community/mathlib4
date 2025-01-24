@@ -380,8 +380,12 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
     sub_add_cancel_left, ← toLin_toPerfectPairing, map_neg, toLin_toPerfectPairing,
     root_coroot_eq_pairing]
 
+/-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
+between a root and coroot always belongs to `S`.
+
+Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`. -/
 @[mk_iff]
-class IsValuedIn (S : Type*) [CommSemiring S] [Algebra S R] : Prop where
+class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
   exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
 
 protected alias exists_value := IsValuedIn.exists_value
