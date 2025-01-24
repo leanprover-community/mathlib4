@@ -19,6 +19,11 @@ infinite antichains.
 
 * `WellQuasiOrdered`: a predicate for WQO unbundled relations
 * `WellQuasiOrderedLE`: a typeclass for a bundled WQO `≤` relation
+
+## TODO
+
+* Define `Set.PartiallyWellOrderedOn` and `Set.IsPWO` in terms of these predicates, and rename them
+  to match.
 -/
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
