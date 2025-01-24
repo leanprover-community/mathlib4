@@ -1268,8 +1268,7 @@ instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
-  { Quaternion.instNontrivial,
-    (by infer_instance : MonoidWithZero ℍ[R]) with
+  { Quaternion.instNontrivial with
     inv := Inv.inv
     inv_zero := by rw [instInv_inv, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
@@ -1323,10 +1322,14 @@ instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instRing
   nnqsmul := (· • ·)
   qsmul := (· • ·)
-  nnratCast_def q := by rw [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast, coe_natCast]
-  ratCast_def q := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
-  nnqsmul_def q x := by rw [← coe_nnratCast, coe_mul_eq_smul]; ext <;> exact NNRat.smul_def _ _
-  qsmul_def q x := by rw [← coe_ratCast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def _ _
+  nnratCast_def _ := by simp only [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast]
+  ratCast_def _ := by simp only [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
+  nnqsmul_def _ _ := by
+    simp only [← coe_nnratCast, coe_mul_eq_smul]
+    ext <;> exact NNRat.smul_def ..
+  qsmul_def _ _ := by
+    simp only [← coe_ratCast, coe_mul_eq_smul]
+    ext <;> exact Rat.smul_def ..
 
 theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
   map_inv₀ normSq _
