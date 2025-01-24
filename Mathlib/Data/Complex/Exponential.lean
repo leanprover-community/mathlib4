@@ -1547,20 +1547,24 @@ theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
 
-@[simp]
 theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
   rw [← ofReal_exp]
   exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
 
-@[simp]
 theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
   rw [exp_mul_I, abs_cos_add_sin_mul_I]
 
+@[simp]
 theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
   rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_ofReal, abs_cos_add_sin_mul_I, mul_one]
 
-theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by
-  rw [abs_exp, abs_exp, Real.exp_eq_exp]
+theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by simp
+
+theorem abs_exp_mul_I (x : ℂ) : abs (exp (x * I)) = exp (-x.im) := by simp
+
+theorem one_sub_rexp_re_le_abs_one_sub_cexp (x : ℂ) : 1 - Real.exp x.re ≤ abs (1 - exp x) := calc
+  abs (1 - exp x) ≥ abs 1 - abs (exp x) := IsAbsoluteValue.sub_abv_le_abv_sub abs _ _
+  _ = 1 - Real.exp x.re := by simp
 
 end Complex
 
