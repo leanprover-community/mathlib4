@@ -81,19 +81,19 @@ lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
 instance : TopHomClass (Nucleus X) X X where
   map_top _ := eq_top_iff.mpr le_apply
 
-instance : Preorder (Nucleus X) := .lift (⇑)
+instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
 
 @[simp, norm_cast] lemma coe_le_coe : ⇑m ≤ n ↔ m ≤ n := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑m < n ↔ m < n := .rfl
 
-/-- The smallest `Nucleus` is the identity `Nucleus`. -/
+/-- The smallest `Nucleus` is the identity. -/
 instance instBot : Bot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
   bot.le_apply' := by simp
   bot.map_inf' := by simp
 
-/-- The biggest `Nucleus` sends everything to ⊤. -/
+/-- The biggest `Nucleus` sends everything to `⊤`. -/
 instance instTop : Top (Nucleus X) where
   top.toFun := ⊤
   top.idempotent' := by simp
@@ -106,10 +106,8 @@ instance instTop : Top (Nucleus X) where
 @[simp] lemma bot_apply (x : X) : (⊥ : Nucleus X) x = x := rfl
 @[simp] lemma top_apply (x : X) : (⊤ : Nucleus X) x = ⊤ := rfl
 
-instance : OrderBot (Nucleus X) where
+instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
-
-instance : OrderTop (Nucleus X) where
   le_top _ _ := by simp
 
 end Nucleus
