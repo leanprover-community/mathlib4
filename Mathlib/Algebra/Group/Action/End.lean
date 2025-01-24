@@ -3,9 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Endomorphisms, homomorphisms and group actions
@@ -33,6 +34,33 @@ assert_not_exists MonoidWithZero
 open Function (Injective Surjective)
 
 variable {G M N O α : Type*}
+
+section CompatibleScalar
+
+/-- If the multiplicative action of `M` on `N` is compatible with multiplication on `N`, then
+`fun x ↦ x • 1` is a monoid homomorphism from `M` to `N`. -/
+@[to_additive (attr := simps)
+"If the additive action of `M` on `N` is compatible with addition on `N`, then
+`fun x ↦ x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
+def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsScalarTower M N N] :
+    M →* N where
+  toFun x := x • (1 : N)
+  map_one' := one_smul _ _
+  map_mul' x y := by rw [smul_one_mul, smul_smul]
+
+/-- A monoid homomorphism between two monoids M and N can be equivalently specified by a
+multiplicative action of M on N that is compatible with the multiplication on N. -/
+@[to_additive
+"A monoid homomorphism between two additive monoids M and N can be equivalently
+specified by an additive action of M on N that is compatible with the addition on N."]
+def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
+    (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
+  toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
+  left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext <| funext₂ <| smul_one_smul N
+
+end CompatibleScalar
 
 variable (α) in
 /-- The monoid of endomorphisms.
@@ -103,6 +131,20 @@ def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Functio
 
 See note [reducible non-instances]. -/
 abbrev MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α := .compHom α f
+
+/-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
+`β`. -/
+@[simps!]
+def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
+    α →+ Additive (Equiv.Perm β) :=
+  MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
+
+/-- Given an action of a group `G` on a type `α`, each `g : G` defines a permutation of `α`. -/
+@[simps]
+def MulAction.toPermHom [Group G] [MulAction G α] : G →* Equiv.Perm α where
+  toFun := MulAction.toPerm
+  map_one' := Equiv.ext <| one_smul α
+  map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : α) u₂
 
 section MulDistribMulAction
 variable [Monoid M] [Monoid N] [Monoid O] [MulDistribMulAction M N] [MulDistribMulAction N O]
