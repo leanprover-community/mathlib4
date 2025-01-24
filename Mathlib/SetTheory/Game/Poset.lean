@@ -15,7 +15,7 @@ variable {α : Type*} [Preorder α]
 open Set
 
 /-- A valid move in the poset game is to change set `t` to set `s`, whenever `s = t \ Ici a` for
-some `a ∈ s`.
+some `a ∈ t`.
 
 In a WQO, this relation is well-founded. -/
 def posetMove (s t : Set α) : Prop :=
