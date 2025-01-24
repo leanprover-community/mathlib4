@@ -177,12 +177,18 @@ theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 
 /-- The bijection between the semidirect product and the product. -/
-@[simps!]
-def equivProd : N ⋊[φ] G ≃ N × G :=
-  { toFun := fun ⟨n, g⟩ ↦ ⟨n, g⟩
-    invFun := fun ⟨n, g⟩ ↦ ⟨n, g⟩
-    left_inv := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl }
+@[simps]
+def equivProd : N ⋊[φ] G ≃ N × G where
+  toFun x := ⟨x.1, x.2⟩
+  invFun x := ⟨x.1, x.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The group isomorphism between a semidirect product with respect to the trivial map
+  and the product. -/
+@[simps (config := {rhsMd := .default})]
+def mulEquivProd : N ⋊[1] G ≃* N × G :=
+  { equivProd with map_mul' _ _ := rfl }
 
 section lift
 
@@ -302,5 +308,9 @@ def congr' :
   congr fn fg (fun _ ↦ by ext; simp)
 
 end Congr
+
+@[simp]
+lemma card : Nat.card (N ⋊[φ] G) = Nat.card N * Nat.card G :=
+  Nat.card_prod _ _ ▸ Nat.card_congr equivProd
 
 end SemidirectProduct
