@@ -377,7 +377,7 @@ protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) 
   Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 
 theorem integrableAtFilter_atBot_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≥ x2]
-    [Nonempty α] {f : α → E} :
+    [Nonempty α] :
     IntegrableAtFilter f atBot μ ↔ ∃ a, IntegrableOn f (Iic a) μ := by
   refine ⟨fun ⟨s, hs, hi⟩ ↦ ?_, fun ⟨a, ha⟩ ↦ ⟨Iic a, Iic_mem_atBot a, ha⟩⟩
   obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
