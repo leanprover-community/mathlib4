@@ -101,7 +101,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
 For any subset `S ⊆ B`, the centralizer of `1 ⊗ S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is the
-centralizer of `S` in `A`.
+centralizer of `S` in `B`.
 -/
 lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
     (S : Set B) [Module.Free R A] :
