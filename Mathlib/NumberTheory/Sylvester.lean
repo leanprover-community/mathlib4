@@ -147,8 +147,7 @@ private theorem sylvesterBelow_le_sylvesterAbove (n m : ℕ) :
   · exact sylvesterBelow_monotone <| Nat.le_max_left n m
   · trans sylvesterAbove (n ⊔ m)
     · rw [sylvesterBelow, sylvesterAbove]
-      gcongr
-      all_goals linarith [rsylvester_gt_one (n ⊔ m)]
+      gcongr <;> linarith [rsylvester_gt_one (n ⊔ m)]
     · exact StrictAnti.antitone sylvesterAbove_strictAnti <| Nat.le_max_right n m
 
 /--
@@ -163,8 +162,7 @@ noncomputable def sylvesterConstant : ℝ := ⨆ i, sylvesterBelow i
 
 private theorem sylvesterBelow_bddAbove : BddAbove (Set.range sylvesterBelow) := by
   use sylvesterAbove 0
-  intro _ h
-  obtain ⟨z, _⟩ := h
+  rintro _ ⟨z, _⟩
   linarith [sylvesterBelow_le_sylvesterAbove z 0]
 
 theorem sylvesterConstant_pos : 0 < sylvesterConstant := by
