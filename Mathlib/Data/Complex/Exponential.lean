@@ -667,10 +667,7 @@ theorem exp_ofReal_mul_I_im (x : ℝ) : (exp (x * I)).im = Real.sin x := by
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
-  rw [← exp_mul_I, ← exp_mul_I]
-  induction' n with n ih
-  · rw [pow_zero, Nat.cast_zero, zero_mul, zero_mul, exp_zero]
-  · rw [pow_succ, ih, Nat.cast_succ, add_mul, add_mul, one_mul, exp_add]
+  rw [← exp_mul_I, ← exp_mul_I, ← exp_nat_mul, mul_assoc]
 
 end Complex
 
