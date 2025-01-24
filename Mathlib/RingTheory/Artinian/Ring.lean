@@ -91,9 +91,6 @@ theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsFi
   let e : R ≃+* _ := (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _)
   MulEquiv.isField _ (Ideal.Quotient.field _).toIsField e.toMulEquiv
 
-noncomputable instance [IsReduced R] [IsLocalRing R] : Field R :=
-    (isField_of_isReduced_of_isLocalRing R).toField
-
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
