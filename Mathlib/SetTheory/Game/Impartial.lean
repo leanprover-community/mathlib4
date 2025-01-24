@@ -27,6 +27,10 @@ namespace PGame
 /-- An impartial game is one that's equivalent to its negative, such that each left and right move
 is also impartial.
 
+Note that this is a slightly more general definition than the one that's usually in the literature,
+as we don't require `G ≡ -G`. Despite this, the Sprague-Grundy theorem still holds: see
+`SetTheory.PGame.equiv_nim_grundyValue`.
+
 In such a game, both players have the same payoffs at any given moment. -/
 def Impartial (G : PGame) : Prop :=
   G ≈ -G ∧ (∀ i, Impartial (G.moveLeft i)) ∧ ∀ j, Impartial (G.moveRight j)
@@ -90,9 +94,11 @@ theorem neg {G : PGame} (h : G.Impartial) : (-G).Impartial := by
   apply impartial_mk
   · rw [neg_neg]
     exact Equiv.symm h.neg_equiv_self
-  · rw [moveLeft_neg]
+  · intro i
+    rw [moveLeft_neg]
     exact neg (h.moveRight _)
-  · rw [moveRight_neg]
+  · intro i
+    rw [moveRight_neg]
     exact neg (h.moveLeft _)
 termination_by G
 

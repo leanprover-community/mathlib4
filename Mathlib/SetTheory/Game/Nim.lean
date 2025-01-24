@@ -282,20 +282,20 @@ theorem equiv_nim_grundyValue {G : PGame} (h : G.Impartial) :
       ← (h.add ((impartial_nim _).moveLeft i)).exists_left_move_equiv_iff_fuzzy_zero]
     obtain ⟨j, hj⟩ := exists_grundyValue_moveLeft_of_lt <| toLeftMovesNim_symm_lt i
     use toLeftMovesAdd (Sum.inl j)
-    rw [add_moveLeft_inl, moveLeft_nim']
+    rw [add_moveLeft_inl, moveLeft_nim]
     exact Equiv.trans
       (add_congr_left (equiv_nim_grundyValue (h.moveLeft j)))
       (hj ▸ (impartial_nim _).add_self)
 termination_by G
 
-theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Nimber} :
-    grundyValue G = o ↔ G ≈ nim (toOrdinal o) :=
-  ⟨by rintro rfl; exact equiv_nim_grundyValue G,
-   by intro h; rw [← nim_equiv_iff_eq]; exact Equiv.trans (Equiv.symm (equiv_nim_grundyValue G)) h⟩
+theorem grundyValue_eq_iff_equiv_nim {G : PGame} (hG : G.Impartial) {o : Nimber} :
+    grundyValue G = o ↔ G ≈ nim (toOrdinal o) where
+  mp := by rintro rfl; exact equiv_nim_grundyValue hG
+  mpr h := by rw [← nim_equiv_iff_eq]; exact Equiv.trans (Equiv.symm (equiv_nim_grundyValue hG)) h
 
 @[simp]
 theorem nim_grundyValue (o : Ordinal.{u}) : grundyValue (nim o) = ∗o :=
-  grundyValue_eq_iff_equiv_nim.2 PGame.equiv_rfl
+  (grundyValue_eq_iff_equiv_nim (impartial_nim o)).2 PGame.equiv_rfl
 
 theorem grundyValue_eq_iff_equiv {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) :
     grundyValue G = grundyValue H ↔ G ≈ H :=
@@ -349,7 +349,7 @@ theorem exists_grundyValue_moveRight_of_lt {G : PGame} (hG : G.Impartial) {o : N
   rw [← grundyValue_neg hG] at h
   obtain ⟨i, hi⟩ := exists_grundyValue_moveLeft_of_lt h
   use toLeftMovesNeg.symm i
-  rwa [← grundyValue_neg (hG.moveRight _), ← moveLeft_neg']
+  rwa [← grundyValue_neg (hG.moveRight _), ← moveLeft_neg]
 
 theorem grundyValue_le_of_forall_moveRight {G : PGame} (hG : G.Impartial) {o : Nimber}
     (h : ∀ i, grundyValue (G.moveRight i) ≠ o) : G.grundyValue ≤ o := by
@@ -375,14 +375,14 @@ termination_by (x, y)
 
 theorem nim_add_nim_equiv (x y : Ordinal) :
     nim x + nim y ≈ nim (toOrdinal (∗x + ∗y)) := by
-  rw [← grundyValue_eq_iff_equiv_nim, grundyValue_nim_add_nim]
+  rw [← grundyValue_eq_iff_equiv_nim (impartial_nim_add x y), grundyValue_nim_add_nim]
 
 @[simp]
-theorem grundyValue_add (G H : PGame) (hg : G.Impartial) (hH : H.Impartial) :
+theorem grundyValue_add (G H : PGame) (hG : G.Impartial) (hH : H.Impartial) :
     grundyValue (G + H) = grundyValue G + grundyValue H := by
   rw [← (grundyValue G).toOrdinal_toNimber, ← (grundyValue H).toOrdinal_toNimber,
-    ← grundyValue_nim_add_nim, grundyValue_eq_iff_equiv]
-  exact add_congr (equiv_nim_grundyValue G) (equiv_nim_grundyValue H)
+    ← grundyValue_nim_add_nim, grundyValue_eq_iff_equiv (hG.add hH) (impartial_nim_add ..)]
+  exact add_congr (equiv_nim_grundyValue hG) (equiv_nim_grundyValue hH)
 
 end PGame
 
