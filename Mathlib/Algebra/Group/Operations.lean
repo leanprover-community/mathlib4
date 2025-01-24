@@ -27,8 +27,7 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 -/
 
-assert_not_exists One
-assert_not_exists Function.Injective
+assert_not_exists One Function.Injective
 
 universe u v w
 

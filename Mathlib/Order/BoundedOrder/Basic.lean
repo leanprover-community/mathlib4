@@ -517,10 +517,10 @@ instance instTop [Top α] [Top β] : Top (α × β) :=
 instance instBot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
-theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
-theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
-theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
-theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
+@[simp] lemma fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
+@[simp] lemma snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
+@[simp] lemma fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
+@[simp] lemma snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
 
 instance instOrderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))

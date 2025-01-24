@@ -21,9 +21,7 @@ Prove the triangle inequality for the angle.
 -/
 
 
-assert_not_exists HasFDerivAt
-
-assert_not_exists ConformalAt
+assert_not_exists HasFDerivAt ConformalAt
 
 noncomputable section
 

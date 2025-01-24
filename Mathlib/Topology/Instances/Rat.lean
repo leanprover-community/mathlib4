@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # Topology on the rational numbers
