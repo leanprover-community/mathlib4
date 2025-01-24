@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -14,8 +16,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Cardinal Numbers
@@ -43,7 +43,8 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main instances
 
-* Cardinals form a `CanonicallyOrderedCommSemiring` with the aforementioned sum and product.
+* Cardinals form a `CanonicallyOrderedAdd` `OrderedCommSemiring` with the aforementioned sum and
+  product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
@@ -603,7 +604,6 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
   inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 
--- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
@@ -632,30 +632,28 @@ instance addLeftMono : AddLeftMono Cardinal :=
 instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.partialOrder with
-    bot := 0
-    bot_le := Cardinal.zero_le
-    add_le_add_left := fun _ _ => add_le_add_left
-    exists_add_of_le := fun {a b} =>
-      inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
-          classical
-          exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
-            Equiv.Set.sumCompl (range f)
-        ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-    le_self_add := fun a _ => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
-      inductionOn₂ a b fun α β => by
-        simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
+  exists_add_of_le {a b} :=
+    inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
+      have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
+        classical
+        exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
+          Equiv.Set.sumCompl (range f)
+      ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
+  le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
 
-instance : CanonicallyLinearOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
+instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
--- Computable instance to prevent a non-computable one being found via the one above
-instance : CanonicallyOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
+  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
+
+instance orderBot : OrderBot Cardinal.{u} := inferInstance
+
+instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
+    inductionOn₂ a b fun α β => by
+      simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
@@ -665,12 +663,12 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.orderedCommSemiring with }
 
 -- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.orderedCommSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0

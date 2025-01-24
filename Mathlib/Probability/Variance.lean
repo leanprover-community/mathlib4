@@ -56,6 +56,27 @@ to `evariance`. -/
 def variance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
 
+/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
+scoped notation "eVar[" X " ; " μ "]" => ProbabilityTheory.evariance X μ
+
+/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
+measure.
+
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
+scoped notation "eVar[" X "]" => eVar[X ; MeasureTheory.MeasureSpace.volume]
+
+/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+
+It is set to `0` if `X` has infinite variance. -/
+scoped notation "Var[" X " ; " μ "]" => ProbabilityTheory.variance X μ
+
+/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
+
+It is set to `0` if `X` has infinite variance. -/
+scoped notation "Var[" X "]" => Var[X ; MeasureTheory.MeasureSpace.volume]
+
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
 
 theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
@@ -151,8 +172,6 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   rw [mul_comm]
   simp_rw [← smul_eq_mul, ← integral_smul_const, smul_eq_mul, mul_comm]
 
-scoped notation "eVar[" X "]" => ProbabilityTheory.evariance X MeasureTheory.MeasureSpace.volume
-
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.zero_toReal]
@@ -174,8 +193,6 @@ theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X :
   convert variance_smul (algebraMap A ℝ c) X μ using 1
   · congr; simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
-
-scoped notation "Var[" X "]" => ProbabilityTheory.variance X MeasureTheory.MeasureSpace.volume
 
 theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : Memℒp X 2 μ) :
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by
@@ -363,7 +380,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
       _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
         integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
       _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, a * b ∂μ :=
-        integral_sub (hX_int₂.add hX_int₁) (integrable_const (a * b))
+        integral_sub (by fun_prop) (integrable_const (a * b))
       _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - a * b := by simp
       _ = - μ[X ^ 2] + (a + b) * μ[X] - a * b := by
         simp [← integral_neg, ← integral_mul_left, integral_add hX_int₂ hX_int₁]

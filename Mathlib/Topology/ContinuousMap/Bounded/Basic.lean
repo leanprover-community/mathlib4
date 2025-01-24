@@ -262,7 +262,7 @@ alias embedding_coeFn := isEmbedding_coeFn
 variable (α)
 
 /-- Constant as a continuous bounded function. -/
-@[simps! (config := .asFn)] -- Porting note: Changed `simps` to `simps!`
+@[simps! (config := .asFn)]
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp⟩
 
