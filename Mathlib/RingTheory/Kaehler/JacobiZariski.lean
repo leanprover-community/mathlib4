@@ -164,9 +164,9 @@ def CotangentSpace.compEquiv (Q : Generators.{w} S T) (P : Generators.{w'} R S) 
 
 section instanceProblem
 
--- Note: these instances are needed to prevent instance search timeouts.
-attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
+-- -- Note: these instances are needed to prevent instance search timeouts.
+-- attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
+--   SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
