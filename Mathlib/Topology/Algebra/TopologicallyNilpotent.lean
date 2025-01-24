@@ -113,12 +113,12 @@ variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsLinearTopology R R]
 /-- If `a` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
 theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
     IsTopologicallyNilpotent (a * b) :=
-  ha.mul_right_of_commute (Commute.all _ _)
+  ha.mul_right_of_commute (Commute.all ..)
 
 /-- If `b` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
  theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a * b) :=
-  hb.mul_left_of_commute (Commute.all a b)
+  hb.mul_left_of_commute (Commute.all ..)
 
 /-- If `a` and `b` are topologically nilpotent, then `a + b` is topologically nilpotent. -/
 theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
