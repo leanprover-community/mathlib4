@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # The standard simplex
