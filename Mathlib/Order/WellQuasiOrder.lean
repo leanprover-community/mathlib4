@@ -12,7 +12,7 @@ import Mathlib.Order.OrderIsoNat
 # Well quasi-orders
 
 A well quasi-order (WQO) is a relation such that any infinite sequence contains an infinite
-monotonic subsequence. For a preorder, this is equivalent to having a well-founded order with no
+subsequence of related elements. For a preorder, this is equivalent to having a well-founded order with no
 infinite antichains.
 
 ## Main definitions
