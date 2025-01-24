@@ -59,7 +59,7 @@ open Finsupp TensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
+For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_A(S)` is the
 centralizer of `S` in `A`.
 -/
 lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
