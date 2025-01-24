@@ -22,6 +22,8 @@ maximal ideals of `R`. -/
 @[ext]
 structure MaximalSpectrum (R : Type*) [CommSemiring R] where
   asIdeal : Ideal R
-  IsMaximal : asIdeal.IsMaximal
+  isMaximal : asIdeal.IsMaximal
 
-attribute [instance] MaximalSpectrum.IsMaximal
+@[deprecated (since := "2025-01-16")] alias MaximalSpectrum.IsMaximal := MaximalSpectrum.isMaximal
+
+attribute [instance] MaximalSpectrum.isMaximal

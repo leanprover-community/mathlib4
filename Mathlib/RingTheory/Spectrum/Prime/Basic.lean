@@ -5,7 +5,6 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -13,7 +12,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 /-!
 # Prime spectrum of a commutative (semi)ring
 
-For the Zariski topology, see `AlgebraicGeometry.PrimeSpectrum.Basic`.
+For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
@@ -37,13 +36,13 @@ which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 -/
 
--- A dividing line between this file and `AlgebraicGeometry.PrimeSpectrum.Basic` is
+-- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
 noncomputable section
 
-open scoped Classical Pointwise
+open scoped Pointwise
 
 universe u v
 
@@ -73,6 +72,11 @@ def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
   invFun I := ⟨I, I.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
+
+theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -198,6 +202,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
   Ideal.ext fun f => by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
+
+theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
+  apply range_asIdeal R ▸ nilradical_eq_sInf R
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
@@ -375,7 +382,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
+See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=
@@ -549,29 +556,6 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
 
-variable (S)
-
-theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Function.Injective (algebraMap R S).specComap := by
-  intro p q h
-  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
-  dsimp only [specComap] at h
-  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
-  ext1
-  exact h
-
-theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
-  ext x
-  constructor
-  · simp_rw [disjoint_iff_inf_le]
-    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
-    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
-  · intro h
-    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
-    ext1
-    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
-
 section Pi
 
 variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
@@ -584,6 +568,7 @@ and is a homeomorphism when ι is finite. -/
   | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
+  classical
   obtain rfl | ne := eq_or_ne i j
   · congr; ext x
     simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
@@ -599,6 +584,7 @@ range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime 
 see https://math.stackexchange.com/a/1563190. -/
 theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
     ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
+  classical
   let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
   { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
     smul_mem' := by
