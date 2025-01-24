@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Tactic.Linarith
 
 /-!
 # Cardinal arithmetic
@@ -219,7 +220,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     rw [← not_lt]
     apply fun h2b => ne_of_gt _ h
     conv_rhs => left; rw [← mul_one n]
-    rw [Nat.mul_lt_mul_left]
+    rw [mul_lt_mul_left]
     · exact id
     apply Nat.lt_of_succ_le h2a
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
