@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Util.TermReduce
 
 /-!
 # Definitions of group actions
@@ -161,7 +162,8 @@ variable (A)
 /-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
-  { SMulZeroClass.compFun A f with
+  reduceProj% zeta%
+  { delta% SMulZeroClass.compFun A f with
     smul_add := fun x => smul_add (f x) }
 
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
@@ -211,6 +213,12 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
   { hf.distribSMul f smul, hf.mulAction f smul with }
 
 variable (A)
+
+/-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
+See note [reducible non-instances]. -/
+abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
+  reduceProj% zeta%
+  { delta% DistribSMul.compFun A f, delta% MulAction.compHom A f with }
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
 @[simps!]

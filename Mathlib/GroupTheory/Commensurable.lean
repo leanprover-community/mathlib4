@@ -57,13 +57,11 @@ theorem equivalence : Equivalence (@Commensurable G _) :=
 
 /-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹`-/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
-    K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
-  Quotient.congr (K.equivSMul g).toEquiv fun a b => by
-    dsimp
-    rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq, QuotientGroup.eq,
-      Subgroup.mem_subgroupOf, Subgroup.mem_subgroupOf, ← map_inv, ← map_mul,
-      Subgroup.equivSMul_apply_coe]
-    exact Subgroup.smul_mem_pointwise_smul_iff.symm
+    K ⧸ H.subgroupOf K ≃ (g • K : Subgroup G) ⧸ (g • H).subgroupOf (g • K) :=
+  QuotientGroup.congr' _ _ (K.equivSMul g) <| by
+    rw [Subgroup.map_equiv_eq_comap_symm]
+    ext x
+    simp [Subgroup.mem_subgroupOf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
 
 theorem commensurable_conj {H K : Subgroup G} (g : ConjAct G) :
     Commensurable H K ↔ Commensurable (g • H) (g • K) :=

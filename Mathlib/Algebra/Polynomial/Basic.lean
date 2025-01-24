@@ -267,14 +267,8 @@ instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
 instance semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
-      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow fun _ => rfl with
-    toAdd := Polynomial.add'
-    toMul := Polynomial.mul'
-    toZero := Polynomial.zero
-    toOne := Polynomial.one
-    nsmul := (· • ·)
-    npow := fun n x => (x ^ n) }
+  delta% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
+    toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
