@@ -28,12 +28,12 @@ structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   Do not use this directly. Instead use `NucleusClass.increasing`. -/
   increasing' (x : X) : x ≤ toFun x
 
-/-- `NucleusClass F X` states that F is a type of Nuclei. -/
+/-- `NucleusClass F X` states that F is a type of nuclei. -/
 class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
     Prop where
-  /-- A Nucleus is idempotent.-/
+  /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
-  /-- A Nucleus is increasing.-/
+  /-- A nucleus is increasing. -/
   increasing (x : X) (f : F) : x ≤ f x
 
 namespace Nucleus
@@ -41,15 +41,15 @@ namespace Nucleus
 variable {n : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
-  coe x := x.toFun
-  coe_injective' f g h := by cases f; cases g; simp_all
+  coe := toFun
+  coe_injective' f g h := by cases f; congr!
 
-lemma coe_eq_toFun (n : Nucleus X) : n x = n.toFun x := by rfl
+@[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 
 instance : NucleusClass (Nucleus X) X where
-  idempotent _ _ := by apply idempotent'
-  increasing _ _ := by apply increasing'
-  map_inf n _ _ := by apply n.map_inf'
+  idempotent _ _ := idempotent' ..
+  increasing _ _ := increasing' ..
+  map_inf _ _ _ := map_inf' ..
 
 /-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
@@ -64,8 +64,7 @@ lemma increasing : x ≤ n x :=
 lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
   InfHomClass.map_inf n x y
 
-/-- We can proove that two Nuclei are equal by showing that their functions are the same. -/
-@[ext] lemma ext {n m : Nucleus X} (h: ∀ a, n.toFun a = m.toFun a) : n = m :=
+@[ext] lemma ext {m n : Nucleus X} (h : ∀ a, m a = n a) : m = n :=
   DFunLike.ext n m h
 
 /-- A Nucleus preserves ⊤ -/
@@ -73,24 +72,34 @@ lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
    n.toClosureOperator.closure_top
 
 instance : LE (Nucleus X) where
-  le x y := ∀ v : X, x.toFun v ≤ y.toFun v
+  le x y := ⇑x≤ y
 
 lemma le_iff {n m : Nucleus X} : m ≤ n ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
 
-instance : Preorder (Nucleus X) where
-  le_refl := (by simp only [Nucleus.le_iff, le_refl, implies_true])
-  le_trans := (by simp only [Nucleus.le_iff]; exact fun a b c a_1 a_2 v ↦
-    Preorder.le_trans (a.toFun v) (b.toFun v) (c.toFun v) (a_1 v) (a_2 v))
+instance : Preorder (Nucleus X) := .lift (⇑) _ _
 
 /-- The smallest Nucleus is the identity Nucleus. -/
-instance bot : Bot (Nucleus X) where
+instance instBot : Bot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
   bot.increasing' := by simp
   bot.map_inf' := by simp
 
+/-- The biggest Nucleus sends everything to ⊤. -/
+instance top : Top (Nucleus X) where
+  top.toFun := ⊤
+  top.idempotent' := by simp
+  top.increasing' := by simp
+  top.map_inf' := by simp
+
+@[simp, norm_cast] lemma coe_bot : ⇑(⊥ : Nucleus X) = id := rfl
+@[simp, norm_cast] lemma coe_top : ⇑(⊤ : Nucleus X) = ⊤ := rfl
+
+@[simp] lemma bot_apply (x : X) : (⊥ : Nucleus X) x = x := rfl
+@[simp] lemma top_apply (x : X) : (⊤ : Nucleus X) x = ⊤ := rfl
+
 instance : OrderBot (Nucleus X) where
-  bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing' v)
+  bot_le n := increasing n
 
 /-- The biggest Nucleus sends everything to ⊤. -/
 instance top : Top (Nucleus X) where
