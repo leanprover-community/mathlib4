@@ -88,8 +88,8 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
 variable (R) in
 /-- Commutative artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
-  let e : R ≃+* _ := (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _)
-  MulEquiv.isField _ (Ideal.Quotient.field _).toIsField e.toMulEquiv
+  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+    _ (Ideal.Quotient.field _).toIsField
 
 section Localization
 
