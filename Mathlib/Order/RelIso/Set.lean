@@ -78,9 +78,6 @@ theorem coe_inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s �
     (Subrel.inclusionEmbedding r h : s → t) = Set.inclusion h :=
   rfl
 
-instance (r : α → α → Prop) [IsWellOrder α r] (p : α → Prop) : IsWellOrder _ (Subrel r p) :=
-  RelEmbedding.isWellOrder (Subrel.relEmbedding r p)
-
 instance (r : α → α → Prop) [IsRefl α r] (p : α → Prop) : IsRefl _ (Subrel r p) :=
   ⟨fun x => @IsRefl.refl α r _ x⟩
 
@@ -96,7 +93,12 @@ instance (r : α → α → Prop) [IsTrans α r] (p : α → Prop) : IsTrans _ (
 instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _ (Subrel r p) :=
   ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
 
+instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
+  (Subrel.relEmbedding r p).isWellFounded
+
 instance (r : α → α → Prop) [IsPreorder α r] (p : α → Prop) : IsPreorder _ (Subrel r p) where
+instance (r : α → α → Prop) [IsStrictOrder α r] (p : α → Prop) : IsStrictOrder _ (Subrel r p) where
+instance (r : α → α → Prop) [IsWellOrder α r] (p : α → Prop) : IsWellOrder _ (Subrel r p) where
 
 end Subrel
 
