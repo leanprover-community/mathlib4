@@ -42,7 +42,7 @@ variable {n : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
-  coe_injective' f g h := by cases f; congr!;exact InfHom.ext_iff.mpr (congrFun h)
+  coe_injective' f g h := by  obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
 @[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 
