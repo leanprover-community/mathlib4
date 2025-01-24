@@ -227,6 +227,15 @@ lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
 lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
   ext; simp [Hom.id, aeval_X_left]
 
+/-- A map between extensions induce a map between kernels. -/
+@[simps]
+def Hom.mapKer (f : P.Hom P')
+    [alg : Algebra P.Ring P'.Ring] (halg : algebraMap P.Ring P'.Ring = f.toRingHom) :
+    P.ker →ₗ[P.Ring] P'.ker where
+  toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.2]⟩
+  map_add' _ _ := Subtype.ext (map_add _ _ _)
+  map_smul' := by simp [Algebra.smul_def, ← halg]
+
 end
 
 end Hom

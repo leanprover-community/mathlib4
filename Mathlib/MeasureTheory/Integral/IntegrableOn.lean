@@ -95,7 +95,7 @@ theorem integrableOn_zero : IntegrableOn (fun _ => (0 : E)) s μ :=
 
 @[simp]
 theorem integrableOn_const {C : E} : IntegrableOn (fun _ => C) s μ ↔ C = 0 ∨ μ s < ∞ :=
-  integrable_const_iff.trans <| by rw [Measure.restrict_apply_univ]
+  integrable_const_iff.trans <| by rw [isFiniteMeasure_restrict, lt_top_iff_ne_top]
 
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
@@ -166,8 +166,8 @@ theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
-  rw [IntegrableOn, integrable_congr this, integrable_const_iff]
-  simp
+  rw [IntegrableOn, integrable_congr this, integrable_const_iff, isFiniteMeasure_restrict,
+    lt_top_iff_ne_top]
 
 @[simp]
 theorem integrableOn_finite_biUnion {s : Set β} (hs : s.Finite) {t : β → Set α} :
@@ -240,6 +240,7 @@ theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : Measur
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 
+@[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
@@ -252,9 +253,8 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
-    integrable_const_iff, lt_top_iff_ne_top]
-  right
-  simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply] using hμs
+    integrable_const_iff, isFiniteMeasure_restrict]
+  exact .inr hμs
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction

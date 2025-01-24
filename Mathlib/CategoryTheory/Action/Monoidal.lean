@@ -183,13 +183,9 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 
@@ -255,7 +251,6 @@ variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCate
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
-set_option maxHeartbeats 400000 in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
