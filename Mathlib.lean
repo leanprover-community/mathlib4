@@ -4552,6 +4552,7 @@ import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.JacobiZariski
+import Mathlib.RingTheory.Kaehler.Localization
 import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
