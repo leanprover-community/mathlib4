@@ -214,3 +214,24 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A whe
 end Etale
 
 end Algebra
+
+namespace RingHom
+
+variable {R S : Type u} [CommRing R] [CommRing S]
+
+/--
+A ring homomorphism `R →+* A` is formally etale if it is formally unramified and formally smooth.
+See `Algebra.FormallyEtale`.
+-/
+@[algebraize Algebra.FormallyEtale]
+def FormallyEtale (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.FormallyEtale R S
+
+lemma formallyEtale_algebraMap [Algebra R S] :
+    (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
+  delta FormallyEtale
+  congr!
+  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+
+end RingHom

@@ -29,8 +29,6 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open scoped Classical
-
 universe u v
 
 variable {ι : Type u} {ι' R K : Type*} {A : Type v} {A' : Type*} {x : ι → A}
