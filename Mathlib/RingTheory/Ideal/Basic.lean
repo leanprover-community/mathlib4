@@ -100,7 +100,7 @@ theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
 theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
     (a + b) ^ (m + n - 1) ∈ I :=
-  I.add_pow_add_pred_mem_of_pow_mem_of_commute ha hb (Commute.all _ _)
+  I.add_pow_add_pred_mem_of_pow_mem_of_commute ha hb (Commute.all ..)
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
