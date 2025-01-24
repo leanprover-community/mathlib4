@@ -83,7 +83,7 @@ def symm {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebr
   linear := e.eqv.inverseLinear R
 
 -- TODO: We have restricted all the rings to the same universe here because of the complication
--- `max u₁ u₂`, `max u₂ u₃` vs `max u₁ u₃`. But if we once we proved the definition of Morita
+-- `max u₁ u₂`, `max u₂ u₃` vs `max u₁ u₃`. But once we proved the definition of Morita
 -- equivalence is equivalent to the existence of a full idempotent element, we can remove this
 -- restriction in the universe.
 -- Or alternatively, @alreadydone has sketched an argument on how the universe restriction can be
