@@ -11,6 +11,13 @@ import Mathlib.Analysis.LocallyConvex.Polar
 /-!
 # Prime map
 
+See my notes, 10th Feb 2001
+
+Edwards and Ruttimann "On the facial structure of the unit balls in a GL-space and its dual"
+
+Mathlib has a concept of exposed in Analysis/Convex/Exposed - is this related?
+
+
 -/
 
 variable {𝕜 E F : Type*}
