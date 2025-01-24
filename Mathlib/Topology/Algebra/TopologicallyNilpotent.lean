@@ -41,7 +41,7 @@ open scoped Topology
 /-- An element is topologically nilpotent if its powers converge to `0`. -/
 def IsTopologicallyNilpotent
     {R : Type*} [MonoidWithZero R] [TopologicalSpace R] (a : R) : Prop :=
-  Tendsto (fun n : ℕ => a ^ n) atTop (𝓝 0)
+  Tendsto (a ^ ·) atTop (𝓝 0)
 
 namespace IsTopologicallyNilpotent
 
