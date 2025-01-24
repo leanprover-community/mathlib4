@@ -39,8 +39,8 @@ are given the `aesop` attribute according to the following principles:
   For performance reasons, these rules are placed in the `SetLike!` ruleset instead of the
   `SetLike` ruleset. An example is `SetLike.mem_of_subset`.
 - All other `unsafe` rules are given a probability between 5% and 90% based on how likely they are
-  to progress the proof state towards a solution. Apply-style rules should be given
-  a higher probability the more specific their conlusions and the more generic their hypotheses.
+  to progress the proof state towards a solution. Apply-style rules should be given a higher
+  probability the more specific their conclusions are and the more generic their hypotheses are.
   For instance, `Subgroup.mem_closure_of_mem` is given a lower probability than `mul_mem` because
   its conclusion is more generic.
 - To optimise performance and avoid timeouts, Aesop should not be invoking low-priority rules
