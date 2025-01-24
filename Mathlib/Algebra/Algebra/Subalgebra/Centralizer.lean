@@ -20,9 +20,9 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
 - `Subalgebra.centralizer_sup`: if `S` and `T` are subalgebras of `A`, then the centralizer of
   `S ⊔ T` is the intersection of the centralizer of `S` and the centralizer of `T`.
 - `Subalgebra.centralizer_range_includeLeft_eq_center_tensorProduct`: if `B` is free as a module,
-  then the centralizer of `A` in `A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
+  then the centralizer of `A ⊗ 1` in `A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
 - `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
-  then the centralizer of `B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
+  then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
 
 namespace Subalgebra
@@ -59,7 +59,7 @@ open Finsupp TensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_A(S)` is the
+For any subset `S ⊆ A`, the centralizer of `S ⊗ 1 ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_A(S)` is the
 centralizer of `S` in `A`.
 -/
 lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
@@ -100,7 +100,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
+For any subset `S ⊆ B`, the centralizer of `1 ⊗ S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is the
 centralizer of `S` in `A`.
 -/
 lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
@@ -128,8 +128,8 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subalgebra `S` of `A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_A(S)` is the
-centralizer of `S` in `A`.
+For any subalgebra `S` of `A`, the centralizer of `S ⊗ 1 ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_A(S)` is
+the centralizer of `S` in `A`.
 -/
 lemma centralizer_coe_map_includeLeft_eq_center_tensorProduct
     (S : Subalgebra R A) [Module.Free R B] :
@@ -141,8 +141,8 @@ lemma centralizer_coe_map_includeLeft_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
-For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is the
-centralizer of `S` in `B`.
+For any subalgebra `S` of `B`, the centralizer of `1 ⊗ S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is
+the centralizer of `S` in `B`.
 -/
 lemma centralizer_coe_map_includeRight_eq_center_tensorProduct
     (S : Subalgebra R B) [Module.Free R A] :
@@ -154,7 +154,7 @@ lemma centralizer_coe_map_includeRight_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-Then the centralizer of `A ⊆ A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
+Then the centralizer of `A ⊗ 1 ⊆ A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
 -/
 lemma centralizer_coe_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
     Subalgebra.centralizer R
@@ -167,7 +167,7 @@ lemma centralizer_coe_range_includeLeft_eq_center_tensorProduct [Module.Free R B
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
-Then the centralizer of `B ⊆ A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
+Then the centralizer of `1 ⊗ B ⊆ A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
 lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
     Subalgebra.centralizer R
