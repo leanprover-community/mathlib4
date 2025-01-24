@@ -64,7 +64,7 @@ theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤)
   obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.linearCombination R R b) := by
     rw [(Fintype.range_linearCombination R b).trans hb]
     exact Submodule.mem_top
-  exact (LinearMap.congr_fun e m : _)
+  exact (LinearMap.congr_fun e m :)
 
 section
 
@@ -210,7 +210,7 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
     cases subsingleton_or_nontrivial R
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
     obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
-      Module.Finite.out (R := R) (M := M)
+      Module.Finite.fg_top (R := R) (M := M)
     -- Porting note: `H` was `rfl`
     obtain ⟨A, H, h⟩ :=
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)

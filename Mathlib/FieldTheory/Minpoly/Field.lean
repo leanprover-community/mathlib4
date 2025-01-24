@@ -5,7 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -183,7 +184,7 @@ section AlgHomFintype
 /-- A technical finiteness result. -/
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
-  @Pi.fintype _ _ _ (Finite.fintype hX) _
+  @Pi.instFintype _ _ _ (Finite.fintype hX) _
 
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
