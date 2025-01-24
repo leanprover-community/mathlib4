@@ -909,6 +909,13 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [snd_univ]
     exact measure_univ
 
+instance snd.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.snd := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, snd_zero]
+    infer_instance
+  · infer_instance
+
 @[simp]
 lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
   ext1 s hs

@@ -71,6 +71,10 @@ instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (κ ∘ₘ �
 instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance
 
+instance [IsZeroOrProbabilityMeasure μ] [IsMarkovKernel κ] :
+    IsZeroOrProbabilityMeasure (κ ∘ₘ μ) := by
+  rw [← snd_compProd]; infer_instance
+
 lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
     (κ ∘ₘ μ).map f = (κ.map f) ∘ₘ μ := by
   ext s hs
