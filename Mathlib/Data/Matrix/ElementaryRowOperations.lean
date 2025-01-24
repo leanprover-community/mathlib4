@@ -5,7 +5,6 @@ Authors: Mark Santa Clara Munro, Christopher Lynch
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.RowCol
-import Mathlib.Data.Real.Basic
 
 /-!
 # Elementary Row Operations
