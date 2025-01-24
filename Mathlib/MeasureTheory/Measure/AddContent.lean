@@ -185,18 +185,27 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
   classical
-  rw [hC.allDiffFinset₀'_sUnion h_ss, addContent_sUnion
-    (IsSetSemiring.allDiffFinset₀'_subset_semiring hC h_ss)
-    (IsSetSemiring.allDiffFinset₀'_pairwiseDisjoint hC h_ss)]
-  · rw [sum_disjiUnion]
-    apply sum_le_sum
+  have h1 : (disjiUnion J (hC.disjointSubsetsOfUnion h_ss)
+      (hC.pairwiseDisjoint_disjointSubsetsOfUnion h_ss)).toSet ⊆ C := by
+    simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe, iUnion_subset_iff]
+    exact fun _ ↦ hC.subsets_disjointSubsetsOfUnion h_ss
+  have h2 : PairwiseDisjoint (disjiUnion J (hC.disjointSubsetsOfUnion h_ss)
+      (hC.pairwiseDisjoint_disjointSubsetsOfUnion h_ss)).toSet id := by
+    simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
+    exact hC.pairwiseDisjoint_disjointSubsetsOfUnion_self h_ss
+  have h3 : (⋃₀ J.toSet) = ⋃₀ (disjiUnion J (hC.disjointSubsetsOfUnion h_ss)
+      (hC.pairwiseDisjoint_disjointSubsetsOfUnion h_ss)).toSet := by
+    simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
+    exact (Exists.choose_spec (hC.disjointSubsetsOfUnion_props h_ss)).2.2.2.2.2
+  rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
+  · apply sum_le_sum
     intro x hx
     refine sum_addContent_le_of_subset hC (hC.subsets_disjointSubsetsOfUnion h_ss hx)
       (hC.disjointSubsetsOfUnion_pairwiseDisjoints h_ss hx) (h_ss hx)
       (fun s a ↦ hC.subsets_disjointSubsetsOfUnion_self h_ss hx s a)
-  simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
-  rw [← hC.sUnion_disjointSubsetsOfUnion h_ss]
-  exact h_mem
+  · simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
+    rw [← hC.sUnion_disjointSubsetsOfUnion h_ss]
+    exact h_mem
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
