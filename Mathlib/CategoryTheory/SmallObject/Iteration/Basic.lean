@@ -50,6 +50,15 @@ objects `X` and `Y` may have non isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
 
+## Note
+
+The iteration was first introduced in mathlib by Joël Riou, using
+a different approach as the one described above. After refactoring
+his code, he found that the approach described above had already
+been used in the pioneering formalization work in Lean 3 by
+Reid Barton in 2018 towards the model category structure on
+topological spaces.
+
 -/
 
 universe w v v' u u'
