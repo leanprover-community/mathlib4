@@ -59,13 +59,13 @@ open Finsupp TensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-For any subalgebra `S` of `A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
+For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_S(A)` is the
 centralizer of `S` in `A`.
 -/
-lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
-    (S : Subalgebra R A) [Module.Free R B] :
+lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
+    (S : Set A) [Module.Free R B] :
     Subalgebra.centralizer R
-      (Algebra.TensorProduct.includeLeft.comp S.val : S →ₐ[R] A ⊗[R] B).range =
+      (Algebra.TensorProduct.includeLeft (S := R) '' S) =
     (Algebra.TensorProduct.map (Subalgebra.centralizer R (S : Set A)).val
       (AlgHom.id R B)).range := by
   classical
@@ -79,7 +79,7 @@ lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
     rw [Subalgebra.mem_centralizer_iff]
     intro x hx
     suffices x • b = b.mapRange (· * x) (by simp) from Finsupp.ext_iff.1 this j
-    specialize hw (x ⊗ₜ[R] 1) ⟨⟨x, hx⟩, rfl⟩
+    specialize hw (x ⊗ₜ[R] 1) ⟨x, hx, rfl⟩
     simp only [Finsupp.sum, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
       Finset.sum_mul, mul_one] at hw
     refine TensorProduct.sum_tmul_basis_right_injective ℬ ?_
@@ -91,31 +91,30 @@ lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
 
   · rintro ⟨w, rfl⟩
     rw [Subalgebra.mem_centralizer_iff]
-    rintro _ ⟨x, rfl⟩
+    rintro _ ⟨x, hx, rfl⟩
     induction w using TensorProduct.induction_on with
     | zero => simp
     | tmul b c =>
-      simp [Subalgebra.mem_centralizer_iff _ |>.1 b.2 x]
+      simp [Subalgebra.mem_centralizer_iff _ |>.1 b.2 x hx]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]
 
 /--
-Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
-For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_S(B)` where `C_S(B)` is the
+Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
+For any subset `S ⊆ A`, the centralizer of `S ⊆ A ⊗ B` is `C_A(S) ⊗ B` where `C_S(A)` is the
 centralizer of `S` in `A`.
 -/
-lemma centralizer_coe_range_includeRight_comp_val_eq_center_tensorProduct
-    (S : Subalgebra R B) [Module.Free R A] :
+lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
+    (S : Set B) [Module.Free R A] :
     Subalgebra.centralizer R
-      (Algebra.TensorProduct.includeRight.comp S.val : S →ₐ[R] A ⊗[R] B).range =
+      (Algebra.TensorProduct.includeRight '' S) =
     (Algebra.TensorProduct.map (AlgHom.id R A)
       (Subalgebra.centralizer R (S : Set B)).val).range := by
-  have eq1 := centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct R B A S
+  have eq1 := centralizer_coe_image_includeLeft_eq_center_tensorProduct R B A S
   apply_fun Subalgebra.comap (Algebra.TensorProduct.comm R A B).toAlgHom at eq1
   convert eq1
   · ext x
-    simpa only [AlgHom.coe_range, mem_centralizer_iff, Set.mem_range, forall_exists_index,
-      forall_apply_eq_imp_iff, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe] using
-      ⟨fun h b ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b ↦
+    simpa [mem_centralizer_iff] using
+      ⟨fun h b hb ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b hb ↦
         (Algebra.TensorProduct.comm R A B).injective <| by aesop⟩
   · ext x
     simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
@@ -126,6 +125,32 @@ lemma centralizer_coe_range_includeRight_comp_val_eq_center_tensorProduct
     · rintro ⟨y, hy⟩
       refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
       rw [← hy, comm_comp_map_apply, ← comm_symm, AlgEquiv.symm_apply_apply]
+
+/--
+Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
+For any subalgebra `S` of `A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
+centralizer of `S` in `A`.
+-/
+lemma centralizer_coe_range_includeLeft_comp_val_eq_center_tensorProduct
+    (S : Subalgebra R A) [Module.Free R B] :
+    Subalgebra.centralizer R
+      (S.map (Algebra.TensorProduct.includeLeft (R := R) (B := B))) =
+    (Algebra.TensorProduct.map (Subalgebra.centralizer R (S : Set A)).val
+      (AlgHom.id R B)).range :=
+  centralizer_coe_image_includeLeft_eq_center_tensorProduct R A B S
+
+/--
+Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
+For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is the
+centralizer of `S` in `A`.
+-/
+lemma centralizer_coe_range_includeRight_comp_val_eq_center_tensorProduct
+    (S : Subalgebra R B) [Module.Free R A] :
+    Subalgebra.centralizer R
+      (S.map (Algebra.TensorProduct.includeRight (R := R) (A := A))) =
+    (Algebra.TensorProduct.map (AlgHom.id R A)
+      (Subalgebra.centralizer R (S : Set B)).val).range :=
+  centralizer_coe_image_includeRight_eq_center_tensorProduct R A B S
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
