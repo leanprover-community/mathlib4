@@ -37,7 +37,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 lemma le_centralizer_iff (S T : Subalgebra R A) : S ≤ centralizer R T ↔ T ≤ centralizer R S :=
   ⟨fun h t ht _ hs ↦ (h hs t ht).symm, fun h s hs _ ht ↦ (h ht s hs).symm⟩
 
-lemma centralizer_sup (S T : Subalgebra R A) :
+lemma centralizer_coe_sup (S T : Subalgebra R A) :
     centralizer R ((S ⊔ T : Subalgebra R A) : Set A) = centralizer R S ⊓ centralizer R T :=
   eq_of_forall_le_iff fun K ↦ by
     simp_rw [le_centralizer_iff, sup_le_iff, le_inf_iff, K.le_centralizer_iff]
