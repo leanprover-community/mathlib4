@@ -6,9 +6,9 @@ Authors: Damiano Testa
 import Mathlib.Init
 
 /-!
-#  The "deprecatedModule" linter
+#  The "deprecated.module" linter
 
-The "deprecatedModule" linter emits a warning when a file that has been renamed or split
+The "deprecated.module" linter emits a warning when a file that has been renamed or split
 is imported.
 
 The usage is as follows. Write
@@ -20,7 +20,7 @@ import Z
 deprecated_module since yyyy-mm-dd
 ```
 in module `A` with the expectation that `A` contains nothing else.
-This triggers the `deprecatedModule` linter to notify every file with `import A`
+This triggers the `deprecated.module` linter to notify every file with `import A`
 to instead import the *direct imports* of `A`, that is `B,...,Z`.
 -/
 
@@ -29,14 +29,14 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /--
-The `deprecatedModule` linter emits a warning when a file that has been renamed or split
+The `deprecated.module` linter emits a warning when a file that has been renamed or split
 is imported.
 The default value is `true`, since this linter is designed to warn projects downstream of `Mathlib`
 of refactors and deprecations in `Mathlib` itself.
 -/
-register_option linter.deprecatedModule : Bool := {
+register_option linter.deprecated.module : Bool := {
   defValue := true
-  descr := "enable the deprecatedModule linter"
+  descr := "enable the `deprecated.module` linter"
 }
 
 /--
@@ -49,7 +49,7 @@ to the environment.
 initialize deprecatedModuleExt :
     SimplePersistentEnvExtension (Name × Array Name) (Std.HashSet (Name × Array Name)) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
+    addImportedFn := (·.foldl Std.HashSet.insertMany {})
     addEntryFn := .insert
   }
 
@@ -81,7 +81,7 @@ elab (name := deprecated_modules)
     throwErrorAt dd "The day should be of the form 01, 02, ..., 31!"
   addModuleDeprecation
   -- disable the linter, so that it does not complain in the file with the deprecation
-  elabCommand (← `(set_option linter.deprecatedModule false))
+  elabCommand (← `(set_option linter.deprecated.module false))
 
 /-- A utility function to show the pairings `(deprecatedModule, #[preferredModules])`. -/
 elab "#show_deprecated_modules" : command => do
@@ -92,12 +92,12 @@ elab "#show_deprecated_modules" : command => do
 
 namespace DeprecatedModule
 
-@[inherit_doc Mathlib.Linter.linter.deprecatedModule]
-def deprecatedModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
+@[inherit_doc Mathlib.Linter.linter.deprecated.module]
+def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let deprecations := deprecatedModuleExt.getState (← getEnv)
   if deprecations.isEmpty then
     return
-  unless Linter.getLinterValue linter.deprecatedModule (← getOptions) do
+  unless Linter.getLinterValue linter.deprecated.module (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -126,11 +126,11 @@ def deprecatedModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let modulesWithNames := importIds.map fun i => (i, i.getId)
   for is@(i, undeprecated) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
-      Linter.logLint linter.deprecatedModule nmStx
+      Linter.logLint linter.deprecated.module nmStx
         m!"'{nmStx}' has been deprecated: please replace this import by \
           {"\nimport ".intercalate <| "\n" :: (undeprecated.map (·.toString)).toList}\n"
 
-initialize addLinter deprecatedModuleLinter
+initialize addLinter deprecated.moduleLinter
 
 end DeprecatedModule
 
