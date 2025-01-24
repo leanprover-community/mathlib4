@@ -26,18 +26,25 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 
 Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we have the properties
 
+eq_add_disjointSubsetsOfSetdiff_of_subset
 * `MeasureTheory.sum_addContent_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
   and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.
 * `MeasureTheory.addContent_mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
+* `MeasureTheory.addContent_sUnion_le_sum`: an `addContent C` on a `SetSemiring C` is
+  sub-additive.
+* `MeasureTheory.addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le`: if an
+  `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive.
 * `MeasureTheory.addContent_union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`,
   then `m (s ∪ t) = m s + m t`.
   If `C` is a set ring (`IsSetRing`), then `addContent_union` gives the same conclusion without the
   hypothesis `s ∪ t ∈ C` (since it is a consequence of `IsSetRing C`).
 
-If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
+If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 
-* `MeasureTheory.addContent_union_le`: `m (s ∪ t) ≤ m s + m t`
-* `MeasureTheory.addContent_le_diff`: `m s - m t ≤ m (s \ t)`
+* `MeasureTheory.addContent_union_le`: for `s, t ∈ C`, `m (s ∪ t) ≤ m s + m t`
+* `MeasureTheory.addContent_le_diff`: for `s, t ∈ C`, `m s - m t ≤ m (s \ t)`
+* `MeasureTheory.addContent_iUnion_le_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
+  σ-additive on a set ring, then it is σ-subadditive.
 
 -/
 
@@ -138,6 +145,8 @@ lemma addContent_eq_add_disjointSubsetsOfSetdiffUnion_of_subset (hC : IsSetSemir
     exact hC.pairwiseDisjoint_union_disjointSubsetsOfSetdiffUnion hs hI h_dis
   · rwa [hC.sUnion_union_disjointSubsetsOfSetdiffUnion_of_subset hs hI hI_ss]
 
+/-- For an `m : addContent C` on a `SetSemiring C`, if `I` is a `Finset` of pairwise disjoint
+  sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.-/
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
@@ -146,6 +155,7 @@ lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
   rw [addContent_eq_add_disjointSubsetsOfSetdiffUnion_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
 
+/-- An `addContent C` on a `SetSemiring C` is monotone. -/
 lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     (hst : s ⊆ t) :
     m s ≤ m t := by
@@ -155,7 +165,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   · simp only [coe_singleton, pairwiseDisjoint_singleton]
   · simp [hst]
 
-/-- For an additive content `m` on a semiring and `s t : Set α` with `s ⊆ t`, we can write
+/-- For an `m : addContent C` on a `SetSemiring C` and `s t : Set α` with `s ⊆ t`, we can write
 `m t = m s + ∑ i in hC.disjointSubsetsOfSetdiff ht hs, m i`.-/
 theorem eq_add_disjointSubsetsOfSetdiff_of_subset (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
     (m_add : ∀ (I : Finset (Set α)) (_ : ↑I ⊆ C) (_ : PairwiseDisjoint (I : Set (Set α)) id)
@@ -181,6 +191,7 @@ variable (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
 example (s : Set (Set α)) (t : Set α) : (∀ a ∈ s, a ⊆ t) ↔ ⋃₀ s ⊆ t := by
   exact Iff.symm sUnion_subset_iff
 
+/-- An `addContent C` on a `SetSemiring C` is sub-additive.-/
 lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
