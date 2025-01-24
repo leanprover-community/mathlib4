@@ -10,18 +10,18 @@ import Mathlib.NumberTheory.AbelSummation
 import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
-  # Partial sums of coefficients of L-series
+# Partial sums of coefficients of L-series
 
-  We prove several results involving partial sums of coefficients (or norm of coefficients) of
-  L-series.
+We prove several results involving partial sums of coefficients (or norm of coefficients) of
+L-series.
 
-  ## Main results
+## Main results
 
-  * `LSeriesSummable_of_sum_norm_bigO`: for `f : ℕ → ℂ`, if the partial sums
-  `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the L-series `Lseries f`
+* `LSeriesSummable_of_sum_norm_bigO`: for `f : ℕ → ℂ`, if the partial sums
+  `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the L-series `LSeries f`
   converges at `s : ℂ` for all `s` such that `r < s.re`.
 
-  * `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `∑ k ∈ Icc 1 n, f k` are
+* `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `∑ k ∈ Icc 1 n, f k` are
   `O(n ^ r)` for some real `0 ≤ r` and the L-series `LSeries f` converges at `s : ℂ` with
   `r < s.re`, then `LSeries f s = s * ∫ t in Set.Ioi 1, (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1))`.
 
@@ -61,10 +61,8 @@ private theorem sum₀_f₀_eq {𝕜 : Type*} [RCLike 𝕜] {f : ℕ → 𝕜} (
 
 private theorem term_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) (n : ℕ) :
     LSeries.term f s n = (n : ℂ) ^ (- s) * f n := by
-  cases n with
-  | zero => rw [LSeries.term_zero, hf, mul_zero]
-  | succ n =>
-      rw [LSeries.term_of_ne_zero (Nat.add_one_ne_zero _), div_eq_mul_inv, cpow_neg, mul_comm]
+  rw [LSeries.term]
+  split_ifs with h <;> simp [h, hf, cpow_neg, div_eq_inv_mul]
 
 -- Results about `cpow` and its derivative
 
@@ -171,7 +169,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     intro t ht
     have ht' : t ≠ 0 := (zero_lt_one.trans_le ht).ne'
     exact (differentiableAt_id.ofReal_cpow_const ht' h₁).norm ℝ <|
-      (cpow_ne_zero_iff h₁).mpr <| ofReal_ne_zero.mpr ht'
+      (cpow_ne_zero_iff_of_exponent_ne_zero h₁).mpr <| ofReal_ne_zero.mpr ht'
   have h₄ : (deriv fun t : ℝ ↦ ‖(t : ℂ) ^ (- s)‖) =ᶠ[atTop] fun t ↦ - s.re * t ^ (- (s.re +1)) := by
     filter_upwards [eventually_gt_atTop 1] with t ht using (eqOn_deriv_norm_cpow ht).symm
   change Summable (fun n ↦ LSeries.term f s n)
@@ -184,7 +182,8 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
   · refine mul_atTop_of_le (- (s.re + 1)) r _ ?_ ?_ le_rfl
     · exact (EventuallyEq.isBigO h₄).of_const_mul_right
     · exact floor_atTop hr hO
-  · exact integrableAtFilter_rpow_atTop (by rwa [neg_add_lt_iff_lt_add, add_neg_cancel_right])
+  · exact integrableAtFilter_rpow_atTop_iff.mpr
+      (by rwa [neg_add_lt_iff_lt_add, add_neg_cancel_right])
 
 /-- If the partial sums `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the
 L-series `Lseries f` converges at `s : ℂ` for all `s` such that `r < s.re`. -/
@@ -226,7 +225,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).mpr hS.hasSum.tendsto_sum_nat) ?_
   simp_rw [Nat.range_succ_eq_Icc_zero, term_def₀ hf]
   convert tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0)
-    ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop h₁)
+    ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
     rw [← eqOn_deriv_cpow h₂ ht, sum₀_f₀_eq hf]
