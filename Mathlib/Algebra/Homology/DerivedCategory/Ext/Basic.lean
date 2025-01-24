@@ -40,6 +40,8 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w'' w' w v u
 
 namespace CategoryTheory
@@ -74,6 +76,10 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
   infer_instance
+
+lemma HasExt.standard : HasExt.{max u v} C := by
+  letI := HasDerivedCategory.standard
+  exact hasExt_of_hasDerivedCategory _
 
 variable {C}
 

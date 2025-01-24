@@ -22,6 +22,8 @@ can also be useful as a recursive description of this set when `V` is finite.
 TODO: should this be extended further?
 -/
 
+assert_not_exists Field
+
 open Finset Function
 
 universe u v w

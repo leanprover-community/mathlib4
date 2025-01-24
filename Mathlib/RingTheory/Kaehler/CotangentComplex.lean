@@ -350,6 +350,23 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+/-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
+induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
+@[simps! apply]
+noncomputable
+def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ : P₂.Hom P₁) :
+    P₁.H1Cotangent ≃ₗ[S] P₂.H1Cotangent where
+  __ := map f₁
+  invFun := map f₂
+  left_inv x :=
+    show (map f₂ ∘ₗ map f₁) x = LinearMap.id x by
+    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₂.comp f₁),
+      Extension.H1Cotangent.map_comp]; rfl
+  right_inv x :=
+    show (map f₁ ∘ₗ map f₂) x = LinearMap.id x by
+    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
+      Extension.H1Cotangent.map_comp]; rfl
+
 end Extension
 
 namespace Generators
@@ -423,19 +440,9 @@ open Extension.H1Cotangent in
 @[simps! apply]
 noncomputable
 def Generators.H1Cotangent.equiv (P : Generators R S) (P' : Generators R S) :
-    P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent where
-  __ := map (Generators.defaultHom P P').toExtensionHom
-  invFun := map (Generators.defaultHom P' P).toExtensionHom
-  left_inv x :=
-    show ((map (defaultHom P' P).toExtensionHom) ∘ₗ
-      (map (defaultHom P P').toExtensionHom)) x = LinearMap.id x by
-    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ ((defaultHom P' P).toExtensionHom.comp
-      (defaultHom P P').toExtensionHom), Extension.H1Cotangent.map_comp]; rfl
-  right_inv x :=
-    show ((map (defaultHom P P').toExtensionHom) ∘ₗ
-      (map (defaultHom P' P).toExtensionHom)) x = LinearMap.id x by
-    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ ((defaultHom P P').toExtensionHom.comp
-      (defaultHom P' P).toExtensionHom), Extension.H1Cotangent.map_comp]; rfl
+    P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent :=
+  Extension.H1Cotangent.equiv
+    (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
 
 variable {S' : Type*} [CommRing S'] [Algebra R S']
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

@@ -309,7 +309,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → E} :
 def id : E →ₗᵢ[R] E :=
   ⟨LinearMap.id, fun _ => rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ((id : E →ₗᵢ[R] E) : E → E) = _root_.id :=
   rfl
 

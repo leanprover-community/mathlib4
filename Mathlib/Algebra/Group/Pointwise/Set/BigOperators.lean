@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
@@ -69,6 +69,11 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
     · rintro ⟨g, hg, rfl⟩
       exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩
+
+@[to_additive]
+lemma mem_pow_iff_prod {n : ℕ} {s : Set α} {a : α} :
+    a ∈ s ^ n ↔ ∃ f : Fin n → α, (∀ i, f i ∈ s) ∧ ∏ i, f i = a := by
+  simpa using mem_finset_prod (t := .univ) (f := fun _ : Fin n ↦ s) _
 
 /-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
 @[to_additive " A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. "]

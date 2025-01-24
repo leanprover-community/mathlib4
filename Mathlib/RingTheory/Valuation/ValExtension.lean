@@ -112,7 +112,7 @@ theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
     Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
-  __ := (algebraMap R A).restrict vR.integer vA.integer
+  algebraMap := (algebraMap R A).restrict vR.integer vA.integer
     (by simp [Valuation.mem_integer_iff, val_map_le_one_iff vR vA])
   commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)

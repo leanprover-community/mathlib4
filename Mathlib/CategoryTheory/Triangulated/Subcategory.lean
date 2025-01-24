@@ -36,6 +36,8 @@ of an additive category is not closed under isomorphisms.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject

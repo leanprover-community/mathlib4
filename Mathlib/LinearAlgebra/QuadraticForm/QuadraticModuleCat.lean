@@ -80,7 +80,7 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
     Hom.toIsometry (𝟙 M) = Isometry.id _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
+instance hasForget : HasForget.{v} (QuadraticModuleCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := fun f => f.toIsometry }
