@@ -107,28 +107,15 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if #[`Mathlib, `Mathlib.Tactic].contains mainModule then return
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
-  let md := (getMainModuleDoc (← getEnv)).toArray
-  -- The end of the first module doc-string, or the end of the file if there is none.
-  let firstDocModPos := match md[0]? with
-                          | none     => fm.positions.back!
-                          | some doc => fm.ofPosition doc.declarationRange.endPos
-  unless stx.getTailPos?.getD default ≤ firstDocModPos do
-    return
-  -- We try to parse the file up to `firstDocModPos`.
-  let upToStx ← parseUpToHere firstDocModPos <|> (do
-    -- If parsing failed, there is some command which is not a module docstring.
-    -- In that case, we parse until the end of the modules and add an extra `section` afterwards,
-    -- so we trigger a "no module doc-string" warning.
-    let fil ← getFileName
-    let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
-    parseUpToHere (stx.getTailPos?.getD default) "\nsection")
-  let importIds := getImportIds upToStx
+  let fil ← getFileName
+  let (importStx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
+  let importIds := getImportIds importStx
   let modulesWithNames := importIds.map fun i => (i, i.getId)
   for is@(i, undeprecated) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
       Linter.logLint linter.deprecated.module nmStx
-        m!"'{nmStx}' has been deprecated: please replace this import by \
-          {"\nimport ".intercalate <| "\n" :: (undeprecated.map (·.toString)).toList}\n"
+        m!"'{nmStx}' has been deprecated: please replace this import by\n\n\
+          {String.join <| (undeprecated.foldl (·.push s!"import {·}\n") #[]).toList}"
 
 initialize addLinter deprecated.moduleLinter
 
