@@ -186,7 +186,7 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
   induction' o using Ordinal.induction with o IH
   rw [nim]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 
-instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
+instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
