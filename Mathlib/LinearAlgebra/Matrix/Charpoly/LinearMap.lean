@@ -64,7 +64,7 @@ theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤)
   obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.linearCombination R R b) := by
     rw [(Fintype.range_linearCombination R b).trans hb]
     exact Submodule.mem_top
-  exact (LinearMap.congr_fun e m : _)
+  exact (LinearMap.congr_fun e m :)
 
 section
 

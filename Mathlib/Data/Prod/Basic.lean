@@ -251,10 +251,10 @@ theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
     ⟨fun a₁ a₂ ha => by
       inhabit β
       injection
-        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha : _),
+        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha :),
       fun b₁ b₂ hb => by
       inhabit α
-      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
+      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb :)⟩,
     fun h => h.1.prodMap h.2⟩
 
 @[simp]

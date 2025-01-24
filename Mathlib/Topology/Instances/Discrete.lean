@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Topology.Order.Basic
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology
@@ -58,3 +59,9 @@ alias discreteTopology_iff_orderTopology_of_pred_succ' :=
 instance OrderTopology.of_discreteTopology [LinearOrder α] [PredOrder α] [SuccOrder α]
     [DiscreteTopology α] : OrderTopology α :=
   discreteTopology_iff_orderTopology_of_pred_succ.mp ‹_›
+
+instance OrderTopology.of_linearLocallyFinite
+    [LinearOrder α] [LocallyFiniteOrder α] [DiscreteTopology α] : OrderTopology α :=
+  haveI := LinearLocallyFiniteOrder.succOrder α
+  haveI := LinearLocallyFiniteOrder.predOrder α
+  inferInstance

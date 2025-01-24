@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.Order.LeftRightLim
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Stieltjes measures on the real line

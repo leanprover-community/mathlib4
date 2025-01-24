@@ -8,7 +8,7 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # The completion of a metric space
@@ -45,7 +45,7 @@ protected theorem uniformContinuous_dist :
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg : _)
+  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]

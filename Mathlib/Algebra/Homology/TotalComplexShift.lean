@@ -33,6 +33,8 @@ these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category ComplexShape Limits
 
 namespace HomologicalComplex₂

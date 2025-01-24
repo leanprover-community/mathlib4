@@ -12,6 +12,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Laurent Series
@@ -23,7 +24,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
 * Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
-* Provides a coercion `from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
+* Provides a coercion from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
@@ -78,7 +79,8 @@ equivalence: `LaurentSeries.LaurentSeriesRingEquiv` is the *topological, ring eq
 `K⸨X⸩ ≃+* RatFuncAdicCompl K`.
 * In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
 `RatFunc K` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
-that is itself clearly isomorphic (via `LaurentSeries.powerSeriesEquivSubring.symm`) to `K⟦X⟧`.
+that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
+to `K⟦X⟧`.
 
 ## To Do
 * The `AdicCompletion` construction is currently done for ideals in rings and does not take into
@@ -88,7 +90,7 @@ structure on the `X`-adic completion of `K⸨X⸩`. Once this will be available,
 -/
 universe u
 
-open scoped Classical PowerSeries
+open scoped PowerSeries
 open HahnSeries Polynomial
 
 noncomputable section
@@ -540,6 +542,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
+  classical
   rw [count_associates_factors_eq  (span_ne_zero).1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
     count_associates_factors_eq]

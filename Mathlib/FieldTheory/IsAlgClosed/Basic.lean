@@ -3,7 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.Integral
 
@@ -382,7 +383,7 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
   letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) : _)
+            (NoZeroSMulDivisors.algebraMap_injective R S) :)
   letI : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }

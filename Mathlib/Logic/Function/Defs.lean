@@ -44,7 +44,7 @@ from `β` to `α`. -/
 abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 
 @[inherit_doc onFun]
-infixl:2 " on " => onFun
+scoped infixl:2 " on " => onFun
 
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
