@@ -201,7 +201,7 @@ theorem impartial_nim_add (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂).Impartia
   (impartial_nim o₁).add (impartial_nim o₂)
 
 @[simp]
-theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
+theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : nim o₁ + nim o₂ ≈ 0 ↔ o₁ = o₂ := by
   constructor
   · refine not_imp_not.1 fun hne : _ ≠ _ => (impartial_nim_add o₁ o₂).not_equiv_zero_iff.2 ?_
     wlog h : o₁ < o₂
