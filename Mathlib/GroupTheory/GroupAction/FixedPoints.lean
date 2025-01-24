@@ -5,7 +5,7 @@ Authors: Emilie Burgun
 -/
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
@@ -83,7 +83,7 @@ theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g ^ j) := by
   intro a a_in_fixedBy
   rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Nat.cast_one]
+    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Int.natCast_one]
   exact one_dvd j
 
 variable (M α) in

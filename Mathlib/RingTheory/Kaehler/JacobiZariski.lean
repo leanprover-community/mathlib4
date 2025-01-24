@@ -54,7 +54,7 @@ def kerCompPreimage (x : Q.ker) :
     refine rename ?_ (P.σ r) * monomial ?_ 1
     exacts [Sum.inr, n.mapDomain Sum.inl]
   · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
-    conv_rhs => rw [← show aeval Q.val x.1 = 0 from x.2, ← x.1.support_sum_monomial_coeff]
+    conv_rhs => rw [← aeval_val_eq_zero x.2, ← x.1.support_sum_monomial_coeff]
     simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
       Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
       Sum.elim_inl, one_mul]
@@ -120,7 +120,7 @@ lemma Cotangent.exact :
       refine MvPolynomial.algHom_ext fun i ↦ ?_
       show (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
       simp
-    · simp [-self_vars, show aeval P.val x = 0 from hx]
+    · simp [-self_vars, aeval_val_eq_zero hx]
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
@@ -135,7 +135,7 @@ lemma Cotangent.exact :
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
-      ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two]
+      ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
       (f := Submodule.subtype _) Subtype.val_injective, Submodule.map_subtype_span_singleton,
@@ -149,7 +149,7 @@ lemma Cotangent.exact :
       toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
-      rw [show aeval P.val w = 0 from hw, map_zero]
+      rw [aeval_val_eq_zero hw, map_zero]
     · rw [map_mk]
       rfl
 
@@ -280,7 +280,7 @@ lemma δAux_C (r) :
 lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
-      (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x : _)) := by
+      (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH

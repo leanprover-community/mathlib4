@@ -200,7 +200,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 

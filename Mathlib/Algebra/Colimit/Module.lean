@@ -247,16 +247,22 @@ theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.
 
 end equiv
 
-variable {G f}
+variable {G f} [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)]
+
+theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
+    ∃ j hij, f i j hij x = f i j hij y := by
+  have := Nonempty.intro i
+  apply_fun linearEquiv _ _ at h
+  simp_rw [linearEquiv_of] at h
+  have ⟨j, h⟩ := Quotient.exact h
+  exact ⟨j, h.1, h.2.2⟩
 
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
-theorem of.zero_exact [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)]
-    {i x} (H : of R ι G f i x = 0) :
+theorem of.zero_exact {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) := by
-  haveI : Nonempty ι := ⟨i⟩
-  apply_fun linearEquiv _ _ at H
-  rwa [map_zero, linearEquiv_of, DirectLimit.exists_eq_zero] at H
+  convert exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
+  rw [map_zero]
 
 end DirectLimit
 

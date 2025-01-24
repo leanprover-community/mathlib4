@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Semicontinuous maps
@@ -326,13 +326,7 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
     exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
 
-@[deprecated (since := "2024-03-02")]
-alias lowerSemicontinuous_iff_IsClosed_epigraph := lowerSemicontinuous_iff_isClosed_epigraph
-
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
-
-@[deprecated (since := "2024-03-02")]
-alias LowerSemicontinuous.IsClosed_epigraph := LowerSemicontinuous.isClosed_epigraph
 
 end
 

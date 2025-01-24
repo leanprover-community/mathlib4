@@ -21,11 +21,8 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists OrderedCommGroup
-assert_not_exists Commute.zero_right
-assert_not_exists Commute.add_right
-assert_not_exists abs_eq_max_neg
-assert_not_exists NeZero.natCast_ne
+assert_not_exists OrderedCommGroup Commute.zero_right Commute.add_right abs_eq_max_neg
+  NeZero.natCast_ne
 -- TODO: `MulOpposite.op_natCast` was not intended to be imported
 -- assert_not_exists MulOpposite.op_natCast
 
@@ -158,12 +155,12 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 
 /-- This lemma is not marked `@[simp]` lemma because its `#discr_tree_key` (for the LHS) would just
-be `DFunLike.coe _ _`, due to the `no_index` that https://github.com/leanprover/lean4/issues/2867
+be `DFunLike.coe _ _`, due to the `ofNat` that https://github.com/leanprover/lean4/issues/2867
 forces us to include, and therefore it would negatively impact performance.
 
 If that issue is resolved, this can be marked `@[simp]`. -/
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
-    (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
+    (f ofNat(n) : S) = OfNat.ofNat n :=
   map_natCast f n
 
 theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
@@ -288,6 +285,8 @@ theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
+
+lemma ofNat_def (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ OfNat.ofNat n := rfl
 
 end Pi
 

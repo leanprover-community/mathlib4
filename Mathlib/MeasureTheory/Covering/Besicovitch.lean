@@ -791,14 +791,17 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     rw [← Nat.succ_eq_add_one, u_succ]
     exact (hF (u n) (Pu n)).1
 
-/-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
-one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
-Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
-points of `s`.
-This version requires that the underlying measure is sigma-finite, and that the space has the
+/-- The measurable **Besicovitch covering theorem**.
+
+Assume that, for any `x` in a set `s`, one is given a set of admissible closed balls centered at
+`x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
+admissible closed balls centered at some points of `s`.
+
+This version requires the underlying measure to be sigma-finite, and the space to have the
 Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
 It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
 proof technique.
+
 For a version giving the conclusion in a nicer form, see `exists_disjoint_closedBall_covering_ae`.
 -/
 theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ] (f : α → Set ℝ)
@@ -813,12 +816,14 @@ theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ
     ⟨t, t_count, ts, tr, tν, tdisj⟩
   exact ⟨t, t_count, ts, tr, hμν tν, tdisj⟩
 
-/-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
-one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
-Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
-points of `s`. We can even require that the radius at `x` is bounded by a given function `R x`.
-(Take `R = 1` if you don't need this additional feature).
-This version requires that the underlying measure is sigma-finite, and that the space has the
+/-- The measurable **Besicovitch covering theorem**.
+
+Assume that, for any `x` in a set `s`, one is given a set of admissible closed balls centered at
+`x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
+admissible closed balls centered at some points of `s`. We can even require that the radius at `x`
+is bounded by a given function `R x`. (Take `R = 1` if you don't need this additional feature).
+
+This version requires the underlying measure to be sigma-finite, and the space to have the
 Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
 -/
 theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SFinite μ] (f : α → Set ℝ)

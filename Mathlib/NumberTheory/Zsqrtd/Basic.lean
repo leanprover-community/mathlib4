@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Ring.Associated
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
@@ -31,7 +31,7 @@ structure Zsqrtd (d : ℤ) where
   im : ℤ
   deriving DecidableEq
 
-prefix:100 "ℤ√" => Zsqrtd
+@[inherit_doc] prefix:100 "ℤ√" => Zsqrtd
 
 namespace Zsqrtd
 
@@ -230,7 +230,7 @@ theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
@@ -238,7 +238,7 @@ theorem natCast_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 
 @[simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).im = 0 :=
   rfl
 
 theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
@@ -326,7 +326,7 @@ theorem gcd_eq_zero_iff (a : ℤ√d) : Int.gcd a.re a.im = 0 ↔ a = 0 := by
 theorem gcd_pos_iff (a : ℤ√d) : 0 < Int.gcd a.re a.im ↔ a ≠ 0 :=
   pos_iff_ne_zero.trans <| not_congr a.gcd_eq_zero_iff
 
-theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) (hdvd : b ∣ a) :
+theorem isCoprime_of_dvd_isCoprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) (hdvd : b ∣ a) :
     IsCoprime b.re b.im := by
   apply isCoprime_of_dvd
   · rintro ⟨hre, him⟩
@@ -341,6 +341,8 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
       rw [intCast_dvd]
       exact ⟨hzdvdu, hzdvdv⟩
     exact hcoprime.isUnit_of_dvd' ha hb
+
+@[deprecated (since := "2025-01-23")] alias coprime_of_dvd_coprime := isCoprime_of_dvd_isCoprime
 
 theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
     ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
@@ -927,9 +929,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
         simp only [mul_re, Int.cast_add, Int.cast_mul, mul_im, this, r.prop]
         ring }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
-  left_inv r := by
-    ext
-    simp
+  left_inv r := by simp
   right_inv f := by
     ext
     simp

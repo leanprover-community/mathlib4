@@ -403,7 +403,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
     smul_def' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
-    toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
+    algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
@@ -1189,16 +1189,16 @@ variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
 
 end LinearMap
 
-lemma Algebra.baseChange_lmul {R B : Type*} [CommRing R] [CommRing B] [Algebra R B]
-    {A : Type*} [CommRing A] [Algebra R A] (f : B) :
+lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algebra R B]
+    {A : Type*} [CommSemiring A] [Algebra R A] (f : B) :
     (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
   ext i
   simp
 
 namespace LinearMap
 
-variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (R A M N : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open Module
 open scoped TensorProduct
