@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
 
@@ -91,21 +92,7 @@ end Nat
 
 section AddMonoidHomClass
 
-variable {A B F : Type*} [AddMonoidWithOne B] [FunLike F ℕ A]
-
-theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
-  DFunLike.ext f g <| by
-    intro n
-    induction n with
-    | zero => simp_rw [map_zero f, map_zero g]
-    | succ n ihn =>
-      simp [h, ihn]
-
-@[ext]
-theorem AddMonoidHom.ext_nat [AddMonoid A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
-  ext_nat' f g
-
-variable [AddMonoidWithOne A]
+variable {A B F : Type*} [AddMonoidWithOne B] [FunLike F ℕ A] [AddMonoidWithOne A]
 
 -- these versions are primed so that the `RingHomClass` versions aren't
 theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
