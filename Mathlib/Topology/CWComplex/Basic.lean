@@ -55,8 +55,8 @@ namespace Topology
 
 /-- A CW-complex of a topological space `X` relative to another subspace `D` is the data of its
 *`n`-cells* `cell n i` for each `n : ℕ`  along with *attaching maps* that satisfy a number of
-properties the most important being closure-finiteness (`mapsto`) and weak topology (`clsoed'`).
-Note that this definition requires `C` and `D` to be closed subspaces.
+properties with the most important being closure-finiteness (`mapsto`) and weak topology
+(`closed'`). Note that this definition requires `C` and `D` to be closed subspaces.
 If `C` is not closed choose `X` to be `C`. -/
 class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outParam (Set X)) where
   /-- The indexing type of the cells of dimension `n`. -/
