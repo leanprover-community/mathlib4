@@ -218,11 +218,14 @@ instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (μ ⊗ₘ �
 instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]; infer_instance
 
-instance [IsZeroOrProbabilityMeasure μ] [IsMarkovKernel κ] :
+instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]
   rcases eq_zero_or_isProbabilityMeasure μ with h | h
   · simp only [h, Kernel.const_zero, Kernel.compProd_zero_left, Kernel.zero_apply]
+    infer_instance
+  rcases eq_zero_or_isMarkovKernel κ with hκ | hκ
+  · simp only [hκ, Kernel.prodMkLeft_zero, Kernel.compProd_zero_right, Kernel.zero_apply]
     infer_instance
   · infer_instance
 
