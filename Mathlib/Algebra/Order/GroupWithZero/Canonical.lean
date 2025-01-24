@@ -83,7 +83,7 @@ theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
 theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 
 /-- See also `bot_eq_zero` and `bot_eq_zero'` for canonically ordered monoids. -/
-lemma bot_eq_zero'' : (0 : α) = ⊥ := eq_of_forall_ge_iff fun _ ↦ by simp
+lemma bot_eq_zero'' : (⊥ : α) = 0 := eq_of_forall_ge_iff fun _ ↦ by simp
 
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where
