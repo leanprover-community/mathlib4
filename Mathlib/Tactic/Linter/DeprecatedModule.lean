@@ -6,9 +6,9 @@ Authors: Damiano Testa
 import Mathlib.Init
 
 /-!
-#  The "deprecated.module" linter
+#  The `deprecated.module` linter
 
-The "deprecated.module" linter emits a warning when a file that has been renamed or split
+The `deprecated.module` linter emits a warning when a file that has been renamed or split
 is imported.
 
 The usage is as follows. Write
