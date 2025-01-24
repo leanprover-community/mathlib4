@@ -10,6 +10,7 @@ import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.GroupTheory.Torsion
 import Mathlib.Combinatorics.Additive.CauchyDavenport
 
@@ -426,15 +427,17 @@ lemma Finset.card_smul_finset' {α : Type*} [DecidableEq α] [Monoid α] [IsLeft
     (a : α) (s : Finset α) : (a • s).card = s.card :=
   card_image_of_injective _ <| fun _ _ h => mul_left_cancel h
 
+@[to_additive]
+lemma Finset.smul_finset_inter' {α : Type*} [DecidableEq α] [Monoid α] [IsLeftCancelMul α]
+    (a : α) (s t : Finset α) : a • (s ∩ t) = a • s ∩ a • t :=
+  image_inter _ _ (mul_right_injective a)
+
 theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
     (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card) (a : ℕ)
     (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
-    (hB' : B' = filter (fun x ↦ a + x ∈ A) B)
-    (hB'' : B'' = B \ B')
-    (m : ℕ)
-    (hm : m ∈ Ioc 0 n)
-    (h' : Ioc 0 m ∩ B ∩ Ioc (m - a) m = ∅) :
-    σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
+    (hB' : B' = {x ∈ B | a + x ∈ A}) (hB'' : B'' = B \ B')
+    (m : ℕ) (hm : m ∈ Ioc 0 n) (h' : Ioc 0 m ∩ B ∩ Ioc (m - a) m = ∅) :
+    σ * m ≤ #(Ioc 0 m ∩ A') + #(Ioc 0 m ∩ B') := by
   have : a +ᵥ (Ioc 0 m ∩ B'') ⊆ Ioc 0 m ∩ (a +ᵥ B'') := by
     simp only [hB'', subset_iff, mem_vadd_finset, mem_inter, mem_Ioc, mem_sdiff, vadd_eq_add,
       forall_exists_index, and_imp]
@@ -443,35 +446,30 @@ theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
     simp only [eq_empty_iff_forall_not_mem, mem_inter, not_and, and_imp, mem_Ioc] at h'
     by_contra! h''
     exact h' b hb0 hbm hb (by omega) hbm
-  calc σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card := h _ hm
-    _ = (Ioc 0 m ∩ A).card + ((Ioc 0 m ∩ B').card + (Ioc 0 m ∩ B'').card) := ?g1
-    _ = (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B'').card + (Ioc 0 m ∩ B').card := by ring
-    _ = (Ioc 0 m ∩ A).card + (a +ᵥ (Ioc 0 m ∩ B'')).card + (Ioc 0 m ∩ B').card := by
-          rw [card_vadd_finset']
-    _ ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ (a +ᵥ B'')).card + (Ioc 0 m ∩ B').card := by gcongr
+  calc σ * m ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B) := h _ hm
+    _ = #(Ioc 0 m ∩ A) + (#(Ioc 0 m ∩ B') + #(Ioc 0 m ∩ B'')) := ?g1
+    _ = #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B'') + #(Ioc 0 m ∩ B') := by ring
+    _ = #(Ioc 0 m ∩ A) + #(a +ᵥ (Ioc 0 m ∩ B'')) + #(Ioc 0 m ∩ B') := by rw [card_vadd_finset']
+    _ ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ (a +ᵥ B'')) + #(Ioc 0 m ∩ B') := by gcongr
     _ = _ := ?g2
   case g1 =>
-    rw [add_right_inj, ←Nat.cast_add, Nat.cast_inj, hB'', hB', ←card_union_of_disjoint,
-      ←inter_union_distrib_left, union_sdiff_of_subset (filter_subset _ _)]
+    rw [add_right_inj, ← Nat.cast_add, Nat.cast_inj, hB'', ← card_union_of_disjoint,
+      ← inter_union_distrib_left, hB', union_sdiff_of_subset (filter_subset _ _)]
     exact disjoint_sdiff.mono inter_subset_right inter_subset_right
   case g2 =>
-    rw [add_left_inj, ←Nat.cast_add, Nat.cast_inj, ←card_union_of_disjoint,
-      ←inter_union_distrib_left, hA', inter_left_comm, eq_comm]
+    rw [add_left_inj, ← Nat.cast_add, Nat.cast_inj, ← card_union_of_disjoint,
+      ← inter_union_distrib_left, hA', inter_left_comm, eq_comm]
     · congr 1
-      simp only [inter_eq_right, Finset.subset_iff, mem_Ioc, mem_Icc, mem_inter, and_imp] at hm ⊢
-      rintro i hi₁ hi₂ -
-      omega
-    · have : Disjoint A (a +ᵥ B'') := by
-        simp only [hB'', hB', ← filter_not, disjoint_left, mem_vadd_finset, mem_filter, vadd_eq_add,
-          not_exists, not_and, and_imp]
-        rintro _ ha' b _ hab rfl
-        exact hab ha'
-      exact this.mono inter_subset_right inter_subset_right
+      aesop (add safe tactic Lean.Elab.Tactic.Omega.omegaDefault) (add simp subset_iff)
+    · aesop (add simp [disjoint_left, mem_vadd_finset])
 
-lemma vadd_Icc {a b c : ℕ} : a +ᵥ Icc b c = Icc (a + b) (a + c) := by
-  ext i
-  simp only [mem_Icc, mem_vadd_finset, vadd_eq_add]
-  exact ⟨by omega, fun _ => ⟨i - a, by omega⟩⟩
+@[to_additive]
+lemma Finset.smul_Icc {α : Type*}
+    [LinearOrderedCommMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α]
+    [LocallyFiniteOrder α]
+    {a b c : α} : a • Icc b c = Icc (a * b) (a * c) := by
+  rw [← Finset.coe_inj, coe_smul_finset, coe_Icc, coe_Icc]
+  exact Set.smul_Icc _ _ _
 
 lemma Nat.Ioc_sub_one_left {a b : ℕ} : Ioc a (b - 1) = Ioo a b := by
   ext i
@@ -492,30 +490,29 @@ lemma disjoint_Ioo_Icc {α : Type*} [LinearOrder α] [LocallyFiniteOrder α] {a 
 theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     (ih : ∀ n' < n, ∀ {A B : Finset ℕ},
       A ⊆ Icc 0 n' → B ⊆ Icc 0 n' → 0 ∈ A → 0 ∈ B →
-      (∀ m ∈ Ioc 0 n', σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card) →
-      ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * m ≤ (Ioc 0 m ∩ (A + B)).card)
+      (∀ m ∈ Ioc 0 n', σ * m ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B)) →
+      ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * m ≤ #(Ioc 0 m ∩ (A + B)))
     {A A' B B' B'' : Finset ℕ}
     (hAn : A ⊆ Icc 0 n) (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
-    (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
-     (a : ℕ)
+    (h : ∀ m ∈ Ioc 0 n, σ * m ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B))
+    (a : ℕ)
     (ha''' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A)
     (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
     (m : ℕ)
-    (ih' : ∀ m' < m, m' ∈ Ioc 0 n → σ * m' ≤ (Ioc 0 m' ∩ A').card + (Ioc 0 m' ∩ B').card)
+    (ih' : ∀ m' < m, m' ∈ Ioc 0 n → σ * m' ≤ #(Ioc 0 m' ∩ A') + #(Ioc 0 m' ∩ B'))
     (hm : m ∈ Ioc 0 n)
     (h' : (Ioc 0 m ∩ B ∩ Ioc (m - a) m).Nonempty) :
-    σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
+    σ * m ≤ #(Ioc 0 m ∩ A') + #(Ioc 0 m ∩ B') := by
+  simp only [mem_Ioc] at hm
   let b := Finset.min' _ h'
   have hb₁ : 0 < b ∧ b ≤ m ∧ b ∈ B ∧ m - a < b := by
     have : b ∈ _ := Finset.min'_mem _ h'
-    simp at this
-    tauto
+    simp only [inter_assoc, mem_inter, mem_Ioc] at this
+    simp [this]
   have hb₂ : m - b < a := by omega
-  have h₁ : m - b < n := by
-    simp only [mem_Ioc] at hm
-    omega
+  have h₁ : m - b < n := by omega
   have h₂ : σ * (m - b) ≤ (Ioc 0 (m - b) ∩ (Icc 0 (m - b) ∩ A + Icc 0 (m - b) ∩ B)).card := by
-    rw [←Nat.cast_sub hb₁.2.1]
+    rw [← Nat.cast_sub hb₁.2.1]
     rcases le_or_lt m b with h1 | h1
     · simp [h1]
     refine ih _ (by omega) inter_subset_left inter_subset_left (by simp [hA0])
@@ -529,83 +526,68 @@ theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     omega
   replace h₂ : σ * (m - b) ≤ (Ioc 0 (m - b) ∩ (A + B)).card := by
     refine h₂.trans ?_
-    gcongr Nat.cast (Finset.card ?_)
+    gcongr Nat.cast (#?_)
     simp only [Finset.subset_inter_iff, inter_subset_left, true_and]
     exact inter_subset_right.trans (add_subset_add inter_subset_right inter_subset_right)
-  have h₃ : ((Icc 0 (m - b) ∩ (A + B)).card : ℝ) ≤ (Icc 0 (m - b) ∩ A).card := by
-    gcongr Nat.cast (Finset.card ?_)
+  have h₃ : (#(Icc 0 (m - b) ∩ (A + B)) : ℝ) ≤ #(Icc 0 (m - b) ∩ A) := by
+    gcongr Nat.cast (#?_)
     simp only [Finset.subset_inter_iff, inter_subset_left, true_and]
     intro i
     simp only [mem_inter, mem_Icc, zero_le, true_and, and_imp, mem_add, forall_exists_index]
     rintro hi a' ha' b' hb' rfl
     exact ha''' a' ha' (by omega) (by simp [mem_vadd_finset, hb'])
   have h_eq : b +ᵥ (Icc 0 (m - b) ∩ A) = Icc b m ∩ (b +ᵥ A) := by
-    ext i
-    simp only [mem_vadd_finset, mem_inter, mem_Icc, zero_le, true_and, vadd_eq_add]
-    constructor
-    case mp =>
-      rintro ⟨i, ⟨hi, hi'⟩, rfl⟩
-      exact ⟨by omega, i, hi', rfl⟩
-    case mpr =>
-      rintro ⟨_, j, hj, rfl⟩
-      exact ⟨j, ⟨by omega, hj⟩, rfl⟩
-  have h₄ : ((Icc 0 (m - b) ∩ A).card : ℝ) = (Icc b m ∩ (b +ᵥ A)).card := by
-    rw [←h_eq, ←card_vadd_finset' b]
-  have h₅ : ((Ioc 0 (m - b) ∩ (A + B)).card : ℝ) + 1 = (Icc 0 (m - b) ∩ (A + B)).card := by
-    rw [←Ioc_insert_left (by omega), insert_inter_of_mem, card_insert_of_not_mem (by simp),
+    rw [vadd_finset_inter', vadd_Icc, add_zero, add_tsub_cancel_of_le hb₁.2.1]
+  have h₄ : (#(Icc 0 (m - b) ∩ A) : ℝ) = #(Icc b m ∩ (b +ᵥ A)) := by
+    rw [← h_eq, ← card_vadd_finset' b]
+  have h₅ : (#(Ioc 0 (m - b) ∩ (A + B)) : ℝ) + 1 = #(Icc 0 (m - b) ∩ (A + B)) := by
+    rw [← Ioc_insert_left (by omega), insert_inter_of_mem, card_insert_of_not_mem (by simp),
       Nat.cast_add_one]
     exact mem_add.2 ⟨0, hA0, 0, hB0, by simp⟩
-  have h₇ : ((Icc b m ∩ (b +ᵥ A)).card : ℝ) ≤ (Icc b m ∩ A).card := by
-    rw [←h_eq]
-    gcongr Nat.cast (Finset.card ?_)
+  have h₇ : (#(Icc b m ∩ (b +ᵥ A)) : ℝ) ≤ #(Icc b m ∩ A) := by
+    gcongr Nat.cast (#?_)
     intro i
+    rw [← h_eq]
     simp only [mem_vadd_finset, mem_inter, mem_Icc, zero_le, true_and, vadd_eq_add,
       forall_exists_index, and_imp]
     rintro i hi hi' rfl
     refine ⟨by omega, ha''' _ hi' (by omega) ?_⟩
     rw [mem_vadd_finset]
     exact ⟨b, hb₁.2.2.1, add_comm _ _⟩
-  have h₈ : σ * (m - b) + 1 ≤ (Icc b m ∩ A').card + (Icc b m ∩ B').card := by
-    have : ((Icc b m ∩ A).card : ℝ) ≤ (Icc b m ∩ A').card := by
-      gcongr Nat.cast ((Icc b m ∩ ?_).card)
+  have h₈ : σ * (m - b) + 1 ≤ #(Icc b m ∩ A') + #(Icc b m ∩ B') := by
+    have : (#(Icc b m ∩ A) : ℝ) ≤ #(Icc b m ∩ A') := by
+      gcongr Nat.cast #(Icc b m ∩ ?_)
       simp [hA', subset_inter_iff, subset_union_left, hAn]
     linarith
-  have h₉ : σ * (b - 1) ≤ (Ioc 0 (b - 1) ∩ A').card + (Ioc 0 (b - 1) ∩ B').card := by
+  have h₉ : σ * (b - 1) ≤ #(Ioc 0 (b - 1) ∩ A') + #(Ioc 0 (b - 1) ∩ B') := by
     rcases le_or_lt b 1 with hb1 | hb1
-    case inl =>
-      simp only [hb1, tsub_eq_zero_of_le, le_refl, Ioc_eq_empty_of_le, empty_inter, card_empty,
-        Nat.cast_zero, add_zero]
-      exact mul_nonpos_of_nonneg_of_nonpos hσ₀.le (by simpa)
+    case inl => calc
+        _ ≤ (0 : ℝ) := mul_nonpos_of_nonneg_of_nonpos hσ₀.le (by simpa)
+        _ ≤ _ := by simp [hb1]
     case inr =>
-      have : b - 1 ∈ Ioc 0 n := by
-        simp only [mem_Ioc] at hm ⊢
-        omega
+      have : b - 1 ∈ Ioc 0 n := by simp only [mem_Ioc]; omega
       refine (ih' (b - 1) (by omega) this).trans_eq' ?_
       rw [Nat.cast_sub (by omega), Nat.cast_one]
-  have : ∀ C, ((Ioc 0 m ∩ C).card : ℝ) = (Ioc 0 (b - 1) ∩ C).card + (Icc b m ∩ C).card := by
+  have : ∀ C, (#(Ioc 0 m ∩ C) : ℝ) = #(Ioc 0 (b - 1) ∩ C) + #(Icc b m ∩ C) := by
     intro C
     rw [←Nat.cast_add, Nat.Ioc_sub_one_left, ←card_union_of_disjoint, ←union_inter_distrib_right]
     · congr 3
       rw [Ioo_union_Icc_eq_Ioc (by omega) (by omega)]
-    · exact Disjoint.mono inter_subset_left inter_subset_left disjoint_Ioo_Icc
+    · exact disjoint_Ioo_Icc.mono inter_subset_left inter_subset_left
   rw [this, this]
   linarith
 
 theorem extracted_1 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     (ih : ∀ n' < n, ∀ {A B : Finset ℕ},
       A ⊆ Icc 0 n' → B ⊆ Icc 0 n' → 0 ∈ A → 0 ∈ B →
-      (∀ m ∈ Ioc 0 n', σ * ↑m ≤ ↑(Ioc 0 m ∩ A).card + ↑(Ioc 0 m ∩ B).card) →
-      ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * ↑m ≤ ↑(Ioc 0 m ∩ (A + B)).card)
+      (∀ m ∈ Ioc 0 n', σ * m ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B)) →
+      ∀ {m : ℕ}, m ∈ Ioc 0 n' → σ * m ≤ #(Ioc 0 m ∩ (A + B)))
      {A A' B B' B'' : Finset ℕ}
-    (hAn : A ⊆ Icc 0 n)  (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
-    (h : ∀ m ∈ Ioc 0 n, σ * m ≤ (Ioc 0 m ∩ A).card + (Ioc 0 m ∩ B).card)
-    (a : ℕ)
-    (ha''' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A)
-    (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
-    (hB' : B' = B.filter (a + · ∈ A))
-    (hB'' : B'' = B \ B')
-    (m : ℕ) (hm : m ∈ Ioc 0 n) :
-    σ * m ≤ (Ioc 0 m ∩ A').card + (Ioc 0 m ∩ B').card := by
+    (hAn : A ⊆ Icc 0 n) (hA0 : 0 ∈ A) (hB0 : 0 ∈ B)
+    (h : ∀ m ∈ Ioc 0 n, σ * m ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B))
+    (a : ℕ) (ha''' : ∀ a' ∈ A, a' < a → a' +ᵥ B ⊆ A) (hA' : A' = Icc 0 n ∩ (A ∪ (a +ᵥ B'')))
+    (hB' : B' = B.filter (a + · ∈ A)) (hB'' : B'' = B \ B') (m : ℕ) (hm : m ∈ Ioc 0 n) :
+    σ * m ≤ #(Ioc 0 m ∩ A') + #(Ioc 0 m ∩ B') := by
   induction m using Nat.strongRecOn
   case ind m ih' =>
   rcases eq_empty_or_nonempty (Ioc 0 m ∩ B ∩ Ioc (m - a) m)
