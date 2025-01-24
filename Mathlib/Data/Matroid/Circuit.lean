@@ -55,13 +55,21 @@ lemma Circuit.ssubset_indep (hC : M.Circuit C) (hXC : X ⊂ C) : M.Indep X := by
   rw [← not_dep_iff (hXC.subset.trans hC.subset_ground)]
   exact fun h ↦ hXC.ne ((circuit_iff.1 hC).2 h hXC.subset)
 
+lemma Circuit.minimal_not_indep (hC : M.Circuit C) : Minimal (¬ M.Indep ·) C := by
+  simp_rw [minimal_iff_forall_ssubset, and_iff_right hC.not_indep, not_not]
+  exact fun ⦃t⦄ a ↦ ssubset_indep hC a
+
+lemma circuit_iff_minimal_not_indep (hCE : C ⊆ M.E) : M.Circuit C ↔ Minimal (¬ M.Indep ·) C :=
+  ⟨Circuit.minimal_not_indep, fun h ↦ ⟨(not_indep_iff hCE).1 h.prop,
+    fun _ hJ hJC ↦ (h.eq_of_superset hJ.not_indep hJC).le⟩⟩
+
 lemma Circuit.diff_singleton_indep (hC : M.Circuit C) (he : e ∈ C) : M.Indep (C \ {e}) :=
   hC.ssubset_indep (diff_singleton_sSubset.2 he)
 
 lemma circuit_iff_forall_ssubset : M.Circuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, I ⊂ C → M.Indep I := by
-  simp_rw [circuit_iff, dep_iff, and_congr_right_iff, ssubset_iff_subset_ne, and_imp]
-  exact fun _ hC ↦ ⟨fun h I hIC hne ↦ by_contra fun hi ↦ hne (h hi (hIC.trans hC) hIC),
-    fun h I hi _ hIC ↦ by_contra fun hne ↦ hi (h hIC hne)⟩
+  rw [Circuit, minimal_iff_forall_ssubset, and_congr_right_iff]
+  exact fun h ↦ ⟨fun h' I hIC ↦ ((not_dep_iff (hIC.subset.trans h.subset_ground)).1 (h' hIC)),
+    fun h I hIC ↦ (h hIC).not_dep⟩
 
 lemma circuit_antichain : IsAntichain (· ⊆ ·) (setOf M.Circuit) :=
   fun _ hC _ hC' hne hss ↦ hne <| (Circuit.minimal hC').eq_of_subset hC.dep hss
@@ -81,10 +89,11 @@ lemma Circuit.eq_of_subset_circuit (hC : M.Circuit C) (hC' : M.Circuit C') (h : 
 
 lemma circuit_iff_dep_forall_diff_singleton_indep :
     M.Circuit C ↔ M.Dep C ∧ ∀ e ∈ C, M.Indep (C \ {e}) := by
-  rw [circuit_iff_forall_ssubset, and_congr_right_iff]
-  refine fun _ ↦ ⟨fun h e heC ↦ h (Iff.mpr diff_singleton_sSubset heC), fun h I hIC ↦ ?_⟩
-  obtain ⟨e, he⟩ := exists_of_ssubset hIC
-  exact (h e he.1).subset (subset_diff_singleton hIC.subset he.2)
+  wlog hCE : C ⊆ M.E
+  · exact iff_of_false (hCE ∘ Circuit.subset_ground) (fun h ↦ hCE h.1.subset_ground)
+  simp [circuit_iff_minimal_not_indep hCE, ← not_indep_iff hCE,
+    minimal_iff_forall_diff_singleton (P := (¬ M.Indep ·))
+    (fun _ _ hY hYX hX ↦ hY <| hX.subset hYX)]
 
 /-! ### Independence and bases -/
 
@@ -137,21 +146,8 @@ lemma Circuit.closure_diff_singleton_eq (hC : M.Circuit C) (e : α) :
 
 lemma Circuit.subset_closure_diff_singleton (hC : M.Circuit C) (e : α) :
     C ⊆ M.closure (C \ {e}) := by
-  by_cases he : e ∈ C
-  · rw [(hC.diff_singleton_basis he).closure_eq_closure]; exact M.subset_closure _
-  rw [diff_singleton_eq_self he]; exact M.subset_closure _
-
-lemma Circuit.subset_closure_diff_subsingleton (hC : M.Circuit C) {Z : Set α}
-    (hZ : Z.Subsingleton) : C ⊆ M.closure (C \ Z) := by
-  obtain (rfl | ⟨x, rfl⟩) := hZ.eq_empty_or_singleton
-  · simpa using M.subset_closure _
-  exact hC.subset_closure_diff_singleton _
-
-lemma Circuit.closure_diff_subsingleton_eq (hC : M.Circuit C) {Z : Set α} (hZ : Z.Subsingleton) :
-    M.closure (C \ Z) = M.closure C := by
-  obtain (rfl | ⟨x, rfl⟩) := hZ.eq_empty_or_singleton
-  · simp
   rw [hC.closure_diff_singleton_eq]
+  exact M.subset_closure _ hC.subset_ground
 
 lemma Circuit.mem_closure_diff_singleton_of_mem (hC : M.Circuit C) (heC : e ∈ C) :
     e ∈ M.closure (C \ {e}) :=
