@@ -141,8 +141,8 @@ lemma centralizer_coe_map_includeLeft_eq_center_tensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
-For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_S(B)` where `C_S(B)` is the
-centralizer of `S` in `A`.
+For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_B(S)` where `C_B(S)` is the
+centralizer of `S` in `B`.
 -/
 lemma centralizer_coe_map_includeRight_eq_center_tensorProduct
     (S : Subalgebra R B) [Module.Free R A] :
