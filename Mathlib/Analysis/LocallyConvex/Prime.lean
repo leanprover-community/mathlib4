@@ -22,6 +22,25 @@ Mathlib has a concept of exposed in Analysis/Convex/Exposed - is this related?
 
 variable {𝕜 E F : Type*}
 
+section PreorderSemiring
+
+variable [Preorder 𝕜] [CommSemiring 𝕜]
+
+variable [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+variable (C : Set E)
+
+variable (t : Set F)
+
+def prime : Set E := {x₀ | x₀ ∈ C ∧ ∀ x₁ ∈ C, ∀ y ∈ t, B x₁ y ≤ B x₀ y}
+
+
+end PreorderSemiring
+
+
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
@@ -29,7 +48,8 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 namespace LinearMap
 
-variable (C : Set E)
+
+
 
 /-- The upper prime $s^′$ of `s : Set E` is given by the set of all `y` in `polar C` such that
 `B x y = 1` for all `x ∈ s`. -/
