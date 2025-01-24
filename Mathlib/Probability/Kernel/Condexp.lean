@@ -141,6 +141,9 @@ theorem aestronglyMeasurable_integral_condExpKernel [NormedSpace ℝ F]
   rw [MeasurableSpace.comap_id] at h
   exact h.mono inf_le_left
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_integral_condExpKernel := aestronglyMeasurable_integral_condExpKernel
+
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable_integral_condExpKernel
 

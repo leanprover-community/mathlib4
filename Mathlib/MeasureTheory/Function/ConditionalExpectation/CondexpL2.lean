@@ -75,15 +75,15 @@ noncomputable def condExpL2 (hm : m ≤ m0) : (α →₂[μ] E) →L[𝕜] lpMea
 
 variable {E 𝕜}
 
-theorem aeStronglyMeasurable_condExpL2 (hm : m ≤ m0) (f : α →₂[μ] E) :
+theorem aestronglyMeasurable_condExpL2 (hm : m ≤ m0) (f : α →₂[μ] E) :
     AEStronglyMeasurable[m] (condExpL2 E 𝕜 hm f : α → E) μ :=
   lpMeas.aeStronglyMeasurable _
 
-@[deprecated (since := "2025-01-21")]
-alias aeStronglyMeasurable_condexpL2 := aeStronglyMeasurable_condExpL2
+@[deprecated (since := "2025-01-24")]
+alias aeStronglyMeasurable'_condExpL2 := aestronglyMeasurable_condExpL2
 
-@[deprecated (since := "2025-01-21")]
-alias aeStronglyMeasurable'_condExpL2 := aeStronglyMeasurable_condExpL2
+@[deprecated (since := "2025-01-24")]
+alias aeStronglyMeasurable'_condexpL2 := aestronglyMeasurable_condExpL2
 
 theorem integrableOn_condExpL2_of_measure_ne_top (hm : m ≤ m0) (hμs : μ s ≠ ∞) (f : α →₂[μ] E) :
     IntegrableOn (ε := E) (condExpL2 E 𝕜 hm f) s μ :=
@@ -436,16 +436,19 @@ noncomputable def condExpIndSMul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : 
 
 @[deprecated (since := "2025-01-21")] alias condexpIndSMul := condExpIndSMul
 
-theorem aeStronglyMeasurable_condExpIndSMul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
+theorem aestronglyMeasurable_condExpIndSMul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : AEStronglyMeasurable[m] (condExpIndSMul hm hs hμs x) μ := by
   have h : AEStronglyMeasurable[m] (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) μ :=
-    aeStronglyMeasurable_condExpL2 _ _
+    aestronglyMeasurable_condExpL2 _ _
   rw [condExpIndSMul]
   exact ((toSpanSingleton ℝ x).continuous.comp_aestronglyMeasurable h).congr
     (coeFn_compLpL _ _).symm
 
+@[deprecated (since := "2025-01-24")]
+alias aeStronglyMeasurable'_condExpIndSMul := aestronglyMeasurable_condExpIndSMul
+
 @[deprecated (since := "2025-01-21")]
-alias aestronglyMeasurable_condexpIndSMul := aeStronglyMeasurable_condExpIndSMul
+alias aestronglyMeasurable'_condexpIndSMul := aestronglyMeasurable_condExpIndSMul
 
 theorem condExpIndSMul_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : G) :
     condExpIndSMul hm hs hμs (x + y) = condExpIndSMul hm hs hμs x + condExpIndSMul hm hs hμs y := by
@@ -571,7 +574,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
     [SigmaFinite (μ.trim hm)] : (0 : α → ℝ) ≤ᵐ[μ]
     condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) := by
   have h : AEStronglyMeasurable[m] (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) μ :=
-    aeStronglyMeasurable_condExpL2 _ _
+    aestronglyMeasurable_condExpL2 _ _
   refine EventuallyLE.trans_eq ?_ h.ae_eq_mk.symm
   refine @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ ?_
   refine ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite ?_ ?_

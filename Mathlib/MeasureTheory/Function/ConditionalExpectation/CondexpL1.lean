@@ -302,11 +302,14 @@ variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     AEStronglyMeasurable[m] (condExpInd G hm μ s x) μ :=
-  (aeStronglyMeasurable_condExpIndSMul hm hs hμs x).congr
+  (aestronglyMeasurable_condExpIndSMul hm hs hμs x).congr
     (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condExpInd := aestronglyMeasurable_condExpInd
+
 @[deprecated (since := "2025-01-21")]
-alias aestronglyMeasurable_condexpInd := aestronglyMeasurable_condExpInd
+alias aestronglyMeasurable'_condexpInd := aestronglyMeasurable_condExpInd
 
 @[simp]
 theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
@@ -533,8 +536,14 @@ theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     refine IsClosed.preimage (condExpL1CLM F' hm μ).continuous ?_
     exact isClosed_aeStronglyMeasurable' hm
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condExpL1CLM := aestronglyMeasurable_condExpL1CLM
+
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable_condexpL1CLM := aestronglyMeasurable_condExpL1CLM
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condexpL1CLM := aestronglyMeasurable_condexpL1CLM
 
 theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condExpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
@@ -605,8 +614,14 @@ theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
   · rw [condExpL1_undef hf]
     exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condExpL1 := aestronglyMeasurable_condExpL1
+
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable_condexpL1 := aestronglyMeasurable_condExpL1
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condexpL1 := aestronglyMeasurable_condexpL1
 
 theorem condExpL1_congr_ae (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (h : f =ᵐ[μ] g) :
     condExpL1 hm μ f = condExpL1 hm μ g :=

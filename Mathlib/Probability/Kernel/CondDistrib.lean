@@ -105,6 +105,9 @@ theorem aestronglyMeasurable_integral_condDistrib (hX : AEMeasurable X μ) (hY :
     AEStronglyMeasurable[mβ.comap X] (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_ae_measurable' hX
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_integral_condDistrib := aestronglyMeasurable_integral_condDistrib
+
 end Measurability
 
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of

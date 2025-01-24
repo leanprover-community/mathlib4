@@ -122,7 +122,7 @@ theorem aeStronglyMeasurable'_of_aeStronglyMeasurable'_trim {α β} {m m0 m0' : 
     (hf : AEStronglyMeasurable[m] f (μ.trim hm0)) : AEStronglyMeasurable[m] f μ := .of_trim hm0 hf
 
 @[deprecated StronglyMeasurable.aestronglyMeasurable (since := "2025-01-23")]
-theorem StronglyMeasurable.aestronglyMeasurable' {α β} {m _ : MeasurableSpace α}
+theorem StronglyMeasurable.aeStronglyMeasurable' {α β} {m _ : MeasurableSpace α}
     [TopologicalSpace β] {μ : Measure α} {f : α → β} (hf : StronglyMeasurable[m] f) :
     AEStronglyMeasurable[m] f μ := hf.aestronglyMeasurable
 
@@ -146,7 +146,7 @@ another σ-algebra `m₂` (hypothesis `hs`), the set `s` is `m` measurable and a
 everywhere supported on `s` is `m`-ae-strongly-measurable, then `f` is also
 `m₂`-ae-strongly-measurable. -/
 @[deprecated AEStronglyMeasurable.of_measurableSpace_le_on (since := "2025-01-23")]
-theorem AEStronglyMeasurable'.aestronglyMeasurable_of_measurableSpace_le_on {α E}
+theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α E}
     {m m₂ m0 : MeasurableSpace α} {μ : Measure α} [TopologicalSpace E] [Zero E] (hm : m ≤ m0)
     {s : Set α} {f : α → E} (hs_m : MeasurableSet[m] s)
     (hs : ∀ t, MeasurableSet[m] (s ∩ t) → MeasurableSet[m₂] (s ∩ t))
@@ -194,13 +194,22 @@ theorem mem_lpMeasSubgroup_iff_aeStronglyMeasurable {m m0 : MeasurableSpace α} 
     {f : Lp F p μ} : f ∈ lpMeasSubgroup F m p μ ↔ AEStronglyMeasurable[m] f μ := by
   rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_setOf_eq]
 
+@[deprecated (since := "2025-01-24")]
+alias mem_lpMeasSubgroup_iff_aeStronglyMeasurable' := mem_lpMeasSubgroup_iff_aeStronglyMeasurable
+
 theorem mem_lpMeas_iff_aeStronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeas F 𝕜 m p μ ↔ AEStronglyMeasurable[m] f μ := by
   rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_setOf_eq]
 
+@[deprecated (since := "2025-01-24")]
+alias mem_lpMeas_iff_aeStronglyMeasurable' := mem_lpMeas_iff_aeStronglyMeasurable
+
 theorem lpMeas.aeStronglyMeasurable {m _ : MeasurableSpace α} {μ : Measure α}
     (f : lpMeas F 𝕜 m p μ) : AEStronglyMeasurable[m] (f : α → F) μ :=
   mem_lpMeas_iff_aeStronglyMeasurable.mp f.mem
+
+@[deprecated (since := "2025-01-24")]
+alias lpMeas.aeStronglyMeasurable' := lpMeas.aeStronglyMeasurable
 
 theorem mem_lpMeas_self {m0 : MeasurableSpace α} (μ : Measure α) (f : Lp F p μ) :
     f ∈ lpMeas F 𝕜 m0 p μ :=
