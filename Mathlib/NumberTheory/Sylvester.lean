@@ -124,33 +124,22 @@ private theorem sylvesterBelow_monotone : Monotone sylvesterBelow := by
   let ha := rsylvester_gt_one m
   let hb := rsylvester_gt_one (m + 1)
   dsimp only [sylvesterBelow]
-  refine le_of_pow_le_pow_left₀ ((by simp) : 2 ^ (m + 1 + 1) ≠ 0) ?_ ?_
-  · exact Real.rpow_nonneg (by linarith) _
-  · repeat rw [← Real.rpow_mul_natCast (by linarith) _]
-    push_cast
-    rw [inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀, Nat.add_sub_cancel_left,
-      pow_one, Real.rpow_one, Real.rpow_two, sylvester] <;> try linarith
-    have h : 1 < sylvester m := sylvester_ge_two _
-    push_cast [h]
-    rw [sub_sq]
-    ring_nf
-    linarith
+  refine (Real.rpow_le_rpow_iff ?_ ?_ ((by positivity) : 0 < (2 : ℝ) ^ (m + 2))).mp ?_
+  any_goals exact Real.rpow_nonneg (by linarith) _
+  rw [← Real.rpow_mul, ← Real.rpow_mul, inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀,
+    ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvester, cast_add, cast_mul,
+    cast_pred (by linarith [sylvester_ge_two m]), Real.rpow_two] <;> linarith
 
 private theorem sylvesterAbove_strictAnti : StrictAnti sylvesterAbove := by
   refine strictAnti_nat_of_succ_lt <| fun m ↦ ?_
   let ha := rsylvester_gt_one m
   let hb := rsylvester_gt_one (m + 1)
   simp only [sylvesterAbove]
-  refine lt_of_pow_lt_pow_left₀ (2 ^ (m + 1 + 1)) (by positivity) ?_
-  repeat rw [← Real.rpow_mul_natCast (by linarith) _]
-  push_cast
-  rw [inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀, Nat.add_sub_cancel_left,
-    pow_one, Real.rpow_one, Real.rpow_two, sylvester] <;> try linarith
-  have h : 1 < sylvester m := sylvester_ge_two _
-  push_cast [h]
-  rw [add_sq]
-  ring_nf
-  linarith
+  refine (Real.rpow_lt_rpow_iff ?_ ?_ ((by positivity) : 0 < (2 : ℝ) ^ (m + 2))).mp ?_
+  any_goals exact Real.rpow_nonneg (by linarith) _
+  rw [← Real.rpow_mul, ← Real.rpow_mul, inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀,
+    ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvester, cast_add, cast_mul,
+    cast_pred (by linarith [sylvester_ge_two m]), Real.rpow_two] <;> linarith
 
 private theorem sylvesterBelow_le_sylvesterAbove (n m : ℕ) :
     sylvesterBelow n ≤ sylvesterAbove m := by
