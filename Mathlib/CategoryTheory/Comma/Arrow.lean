@@ -306,16 +306,6 @@ def rightFunc : Arrow C ⥤ C :=
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
 
-lemma ext {f g : Arrow C}
-    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
-    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
-  obtain ⟨X, Y, f⟩ := f
-  obtain ⟨X', Y', g⟩ := g
-  obtain rfl : X = X' := h₁
-  obtain rfl : Y = Y' := h₂
-  obtain rfl : f = g := by simpa using h₃
-  rfl
-
 end Arrow
 
 namespace Functor
@@ -402,5 +392,5 @@ lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     have := h f
     simp only [Functor.mapArrow_obj, mk_eq_mk_iff] at this
     tauto)
-:
+
 end CategoryTheory
