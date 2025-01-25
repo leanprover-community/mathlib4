@@ -18,6 +18,8 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]

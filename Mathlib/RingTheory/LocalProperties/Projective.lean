@@ -5,9 +5,9 @@ Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 
@@ -25,14 +25,49 @@ import Mathlib.RingTheory.Localization.BaseChange
 
 -/
 
-variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-variable [AddCommGroup N'] [Module R N'] (S : Submonoid R)
+universe uM
+
+variable {R N N' : Type*} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable [Module R N] [AddCommGroup N'] [Module R N'] (S : Submonoid R)
+
+theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
+    [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
+    (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M] :
+    Module.Free Rₛ Mₛ :=
+    Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+
+universe uR' uM' in
+/--
+Also see `IsLocalizedModule.lift_rank_eq` for a version for non-free modules,
+but requires `S` to not contain any zero-divisors.
+-/
+theorem Module.lift_rank_of_isLocalizedModule_of_free
+    (Rₛ : Type uR') {Mₛ : Type uM'} [AddCommGroup Mₛ] [Module R Mₛ]
+    [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
+    (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
+    [Nontrivial Rₛ] :
+    Cardinal.lift.{uM} (Module.rank Rₛ Mₛ) = Cardinal.lift.{uM'} (Module.rank R M) := by
+  apply Cardinal.lift_injective.{max uM' uR'}
+  have := (algebraMap R Rₛ).domain_nontrivial
+  have := (IsLocalizedModule.isBaseChange S Rₛ f).equiv.lift_rank_eq.symm
+  simp only [rank_tensorProduct, rank_self,
+    Cardinal.lift_one, one_mul, Cardinal.lift_lift] at this ⊢
+  convert this
+  exact Cardinal.lift_umax
+
+theorem Module.finrank_of_isLocalizedModule_of_free
+    (Rₛ : Type*) {Mₛ : Type*} [AddCommGroup Mₛ] [Module R Mₛ]
+    [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
+    (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
+    [Nontrivial Rₛ] :
+    Module.finrank Rₛ Mₛ = Module.finrank R M := by
+  simpa using congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
 
 theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Projective R M] :
-      Module.Projective Rₛ Mₛ :=
-    Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+    Module.Projective Rₛ Mₛ :=
+  Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
 theorem LinearMap.split_surjective_of_localization_maximal
     (f : M →ₗ[R] N) [Module.FinitePresentation R N]
@@ -41,18 +76,8 @@ theorem LinearMap.split_surjective_of_localization_maximal
       (LocalizedModule.map I.primeCompl f).comp g = LinearMap.id) :
     ∃ (g : N →ₗ[R] M), f.comp g = LinearMap.id := by
   show LinearMap.id ∈ LinearMap.range (LinearMap.llcomp R N M N f)
-  have inst₁ (I : Ideal R) [I.IsMaximal] :
-    IsLocalizedModule I.primeCompl (LocalizedModule.map (M := N) (N := N) I.primeCompl) :=
-      inferInstance
-  have inst₂ (I : Ideal R) [I.IsMaximal] :
-    IsLocalizedModule I.primeCompl (LocalizedModule.map (M := N) (N := M) I.primeCompl) :=
-      inferInstance
-  apply
-    @Submodule.mem_of_localization_maximal R (N →ₗ[R] N) _ _ _
-      (fun P _ ↦ Localization.AtPrime P) _ _ _ _ _ _ _ _
-      (fun P _ ↦ LocalizedModule.map P.primeCompl)
-      (fun P _ ↦ inst₁ P)
-  intro I hI
+  refine Submodule.mem_of_localization_maximal _ (fun P _ ↦ LocalizedModule.map P.primeCompl) _ _
+    fun I hI ↦ ?_
   rw [LocalizedModule.map_id]
   have : LinearMap.id ∈ LinearMap.range (LinearMap.llcomp _
     (LocalizedModule I.primeCompl N) _ _ (LocalizedModule.map I.primeCompl f)) := H I hI
@@ -70,7 +95,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       conv_lhs => rw [← LinearMap.map_smul_of_tower]
       rw [← Submonoid.smul_def, IsLocalizedModule.mk'_cancel', IsLocalizedModule.mk'_cancel']
       apply LinearMap.restrictScalars_injective R
-      apply IsLocalizedModule.ringHom_ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
+      apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
       · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
       ext
       simp only [LocalizedModule.map_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
@@ -86,7 +111,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       simp only [Module.algebraMap_end_apply, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel',
         ← LinearMap.map_smul_of_tower]
       apply LinearMap.restrictScalars_injective R
-      apply IsLocalizedModule.ringHom_ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
+      apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
       · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
       ext
       simp only [coe_comp, coe_restrictScalars, Function.comp_apply,
@@ -96,7 +121,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.out
+  have : (⊤ : Submodule R M).FG := this.fg_top
   have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R

@@ -32,7 +32,7 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   let g := fun _ : α => (1 : ℝ≥0∞)
   have h_rw : (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p ∂μ) = ∫⁻ a, ((‖f a‖₊ : ℝ≥0∞) * g a) ^ p ∂μ :=
     lintegral_congr fun a => by simp [g]
-  repeat' rw [eLpNorm']
+  repeat' rw [eLpNorm'_eq_lintegral_nnnorm]
   rw [h_rw]
   let r := p * q / (q - p)
   have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
@@ -84,7 +84,7 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hp_lt_top : p < ∞ := hpq.trans_lt (lt_top_iff_ne_top.mpr hq_top)
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_lt_top.ne
   rw [eLpNorm_eq_eLpNorm' hp0_lt.ne.symm hp_lt_top.ne, eLpNorm_eq_eLpNorm' hq0_lt.ne.symm hq_top]
-  have hpq_real : p.toReal ≤ q.toReal := by rwa [ENNReal.toReal_le_toReal hp_lt_top.ne hq_top]
+  have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   exact eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp_pos hpq_real hf
 
 @[deprecated (since := "2024-07-27")]
@@ -132,7 +132,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
 alias snorm'_lt_top_of_snorm'_lt_top_of_exponent_le :=
   eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le
 
-theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
+theorem Memℒp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
     (hpq : p ≤ q) : Memℒp f p μ := by
   cases' hfq with hfq_m hfq_lt_top
   by_cases hp0 : p = 0
@@ -155,10 +155,29 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
     rw [hp_eq_zero, ENNReal.zero_toReal] at hp_pos
     exact (lt_irrefl _) hp_pos
-  have hpq_real : p.toReal ≤ q.toReal := by rwa [ENNReal.toReal_le_toReal hp_top hq_top]
+  have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   rw [eLpNorm_eq_eLpNorm' hq0 hq_top] at hfq_lt_top
   exact eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le hfq_m hfq_lt_top hp_pos.le hpq_real
+
+@[deprecated (since := "2025-01-07")] alias Memℒp.memℒp_of_exponent_le := Memℒp.mono_exponent
+
+/-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
+`ℒ^q` for any `q ≤ p`. -/
+lemma Memℒp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α → E} (hfq : Memℒp f q μ)
+    {s : Set α} (hf : ∀ x, x ∉ s → f x = 0) (hs : μ s ≠ ∞) (hpq : p ≤ q) : Memℒp f p μ := by
+  have : (toMeasurable μ s).indicator f = f := by
+    apply Set.indicator_eq_self.2
+    apply Function.support_subset_iff'.2 fun x hx ↦ hf x ?_
+    contrapose! hx
+    exact subset_toMeasurable μ s hx
+  rw [← this, memℒp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
+  have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
+  exact hfq.mono_exponent hpq
+
+@[deprecated (since := "2025-01-07")]
+alias Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top :=
+  Memℒp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
 
@@ -175,7 +194,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top]
     refine le_trans (essSup_mono_ae <| h.mono fun a ha => ?_) (ENNReal.essSup_mul_le _ _)
-    simp_rw [Pi.mul_apply, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
+    simp_rw [Pi.mul_apply, enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
     exact ha
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero, mul_zero, le_zero_iff]
@@ -306,7 +325,7 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
     (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ :=
   (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·)
-    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) :)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm
@@ -314,7 +333,7 @@ alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNo
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·)
-    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) :)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top
@@ -357,4 +376,61 @@ theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → �
 
 end BoundedSMul
 
+section Mul
+
+variable {α : Type*} [MeasurableSpace α] {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
+  {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
+
+theorem Memℒp.mul (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+    Memℒp (φ * f) p μ :=
+  Memℒp.smul hf hφ hpqr
+
+/-- Variant of `Memℒp.mul` where the function is written as `fun x ↦ φ x * f x`
+instead of `φ * f`. -/
+theorem Memℒp.mul' (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+    Memℒp (fun x ↦ φ x * f x) p μ :=
+  Memℒp.smul hf hφ hpqr
+
+theorem Memℒp.mul_of_top_right (hf : Memℒp f p μ) (hφ : Memℒp φ ∞ μ) : Memℒp (φ * f) p μ :=
+  Memℒp.smul_of_top_right hf hφ
+
+/-- Variant of `Memℒp.mul_of_top_right` where the function is written as `fun x ↦ φ x * f x`
+instead of `φ * f`. -/
+theorem Memℒp.mul_of_top_right' (hf : Memℒp f p μ) (hφ : Memℒp φ ∞ μ) :
+    Memℒp (fun x ↦ φ x * f x) p μ :=
+  Memℒp.smul_of_top_right hf hφ
+
+theorem Memℒp.mul_of_top_left (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ) : Memℒp (φ * f) p μ :=
+  Memℒp.smul_of_top_left hf hφ
+
+/-- Variant of `Memℒp.mul_of_top_left` where the function is written as `fun x ↦ φ x * f x`
+instead of `φ * f`. -/
+theorem Memℒp.mul_of_top_left' (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ) :
+    Memℒp (fun x ↦ φ x * f x) p μ :=
+  Memℒp.smul_of_top_left hf hφ
+
+end Mul
+
+section Prod
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
+  {p : ι → ℝ≥0∞} {s : Finset ι}
+
+open Finset in
+/-- See `Memℒp.prod'` for the applied version. -/
+protected lemma Memℒp.prod (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
+    Memℒp (∏ i ∈ s, f i) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
+  induction s using cons_induction with
+  | empty =>
+    by_cases hμ : μ = 0 <;>
+      simp [Memℒp, eLpNormEssSup_const, hμ, aestronglyMeasurable_const, Pi.one_def]
+  | cons i s hi ih =>
+    rw [prod_cons]
+    exact (ih <| forall_of_forall_cons hf).mul (hf i <| mem_cons_self ..) (by simp)
+
+/-- See `Memℒp.prod` for the unapplied version. -/
+protected lemma Memℒp.prod' (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
+    Memℒp (fun ω ↦ ∏ i ∈ s, f i ω) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
+  simpa [Finset.prod_fn] using Memℒp.prod hf
+
+end Prod
 end MeasureTheory

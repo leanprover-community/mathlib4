@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic
@@ -129,6 +129,10 @@ namespace Subsemiring
 -- Porting note: named instance because generated name was huge
 instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
+
+instance continuousSMul (s : Subsemiring α) (X) [TopologicalSpace X] [MulAction α X]
+    [ContinuousSMul α X] : ContinuousSMul s X :=
+  Submonoid.continuousSMul
 
 end Subsemiring
 
@@ -307,6 +311,10 @@ variable [Ring α] [TopologicalRing α]
 
 instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
+
+instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]
+    [ContinuousSMul α X] : ContinuousSMul s X :=
+  Subsemiring.continuousSMul s.toSubsemiring X
 
 /-- The (topological-space) closure of a subring of a topological ring is
 itself a subring. -/

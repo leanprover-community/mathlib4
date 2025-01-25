@@ -66,11 +66,7 @@ open Nat
 
 open Rat
 
-open multiplicity
-
 namespace padicValNat
-
-open multiplicity
 
 variable {p : ℕ}
 
@@ -91,7 +87,7 @@ theorem maxPowDiv_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
   apply Nat.not_lt.mpr <| le_of_dvd hp hn h
   simp
 
-theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : Finite p n) :
+theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : FiniteMultiplicity p n) :
     p.maxPowDiv n = multiplicity p n := by
   exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDiv_eq_emultiplicity hp hn
 
@@ -101,7 +97,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
   by_cases h : 1 < p ∧ 0 < n
   · rw [padicValNat_def' h.1.ne' h.2, maxPowDiv_eq_multiplicity h.1 h.2]
-    exact Nat.multiplicity_finite_iff.2 ⟨h.1.ne', h.2⟩
+    exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
   · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
     apply h.elim
     · intro h
@@ -120,8 +116,6 @@ def padicValInt (p : ℕ) (z : ℤ) : ℕ :=
   padicValNat p z.natAbs
 
 namespace padicValInt
-
-open multiplicity
 
 variable {p : ℕ}
 
@@ -162,8 +156,6 @@ lemma padicValRat_def (p : ℕ) (q : ℚ) :
   rfl
 
 namespace padicValRat
-
-open multiplicity
 
 variable {p : ℕ}
 
@@ -232,13 +224,11 @@ end padicValNat
 
 namespace padicValRat
 
-open multiplicity
-
 variable {p : ℕ} [hp : Fact p.Prime]
 
 /-- The multiplicity of `p : ℕ` in `a : ℤ` is finite exactly when `a ≠ 0`. -/
-theorem finite_int_prime_iff {a : ℤ} : Finite (p : ℤ) a ↔ a ≠ 0 := by
-  simp [Int.multiplicity_finite_iff, hp.1.ne_one]
+theorem finite_int_prime_iff {a : ℤ} : FiniteMultiplicity (p : ℤ) a ↔ a ≠ 0 := by
+  simp [Int.finiteMultiplicity_iff, hp.1.ne_one]
 
 /-- A rewrite lemma for `padicValRat p q` when `q` is expressed in terms of `Rat.mk`. -/
 protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz : q ≠ 0)
@@ -296,8 +286,8 @@ theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁
     (hd₁ : d₁ ≠ 0) (hd₂ : d₂ ≠ 0) :
     padicValRat p (n₁ /. d₁) ≤ padicValRat p (n₂ /. d₂) ↔
       ∀ n : ℕ, (p : ℤ) ^ n ∣ n₁ * d₂ → (p : ℤ) ^ n ∣ n₂ * d₁ := by
-  have hf1 : Finite (p : ℤ) (n₁ * d₂) := finite_int_prime_iff.2 (mul_ne_zero hn₁ hd₂)
-  have hf2 : Finite (p : ℤ) (n₂ * d₁) := finite_int_prime_iff.2 (mul_ne_zero hn₂ hd₁)
+  have hf1 : FiniteMultiplicity (p : ℤ) (n₁ * d₂) := finite_int_prime_iff.2 (mul_ne_zero hn₁ hd₂)
+  have hf2 : FiniteMultiplicity (p : ℤ) (n₂ * d₁) := finite_int_prime_iff.2 (mul_ne_zero hn₂ hd₁)
   conv =>
     lhs
     rw [padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₁ hd₁) rfl,
@@ -356,13 +346,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
   rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
   rw [add_comm] at h3
-  refine le_antisymm (le_min ?_ ?_) h1
-  · contrapose! h2
-    rw [min_eq_right h2.le] at h3
-    exact lt_min h2 (lt_of_le_of_ne h3 hval)
-  · contrapose! h3
-    rw [min_eq_right h3.le] at h2
-    exact lt_min h3 (lt_of_le_of_ne h2 hval.symm)
+  omega
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :

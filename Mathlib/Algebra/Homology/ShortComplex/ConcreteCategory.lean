@@ -25,7 +25,7 @@ open Limits
 
 section
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C] [HasForget₂ C Ab]
+variable {C : Type u} [Category.{v} C] [HasForget.{w} C] [HasForget₂ C Ab]
 
 @[simp]
 lemma ShortComplex.zero_apply
@@ -81,7 +81,7 @@ lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
     S.Exact ↔ (S.map (forget₂ C Ab)).Exact :=
   (S.exact_map_iff_of_faithful (forget₂ C Ab)).symm
 
-lemma exact_iff_of_concreteCategory [S.HasHomology] :
+lemma exact_iff_of_hasForget [S.HasHomology] :
     S.Exact ↔ ∀ (x₂ : (forget₂ C Ab).obj S.X₂) (_ : ((forget₂ C Ab).map S.g) x₂ = 0),
       ∃ (x₁ : (forget₂ C Ab).obj S.X₁), ((forget₂ C Ab).map S.f) x₁ = x₂ := by
   rw [S.exact_iff_exact_map_forget₂, ab_exact_iff]
@@ -123,10 +123,10 @@ end
 
 section abelian
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] [HasForget₂ C Ab]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 namespace ShortComplex
 
@@ -139,10 +139,10 @@ variable (D : SnakeInput C)
 lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (h₂ : D.L₁.g x₂ = D.v₀₁.τ₃ x₃) (h₁ : D.L₂.f x₁ = D.v₁₂.τ₂ x₂) :
     D.δ x₃ = D.v₂₃.τ₁ x₁ := by
-  have := (forget₂ C Ab).preservesFiniteLimitsOfPreservesHomology
+  have := (forget₂ C Ab).preservesFiniteLimits_of_preservesHomology
   have : PreservesFiniteLimits (forget C) := by
     have : forget₂ C Ab ⋙ forget Ab = forget C := HasForget₂.forget_comp
-    simpa only [← this] using compPreservesFiniteLimits _ _
+    simpa only [← this] using comp_preservesFiniteLimits _ _
   have eq := congr_fun ((forget C).congr_map D.snd_δ)
     (Limits.Concrete.pullbackMk D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂)
   have eq₁ := Concrete.pullbackMk_fst D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
