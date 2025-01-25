@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
@@ -146,6 +147,20 @@ theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 end
 
+section Res
+
+variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
+
+@[simp]
+lemma coe_res_obj : ((Action.res _ f).obj A : Type u) = A := rfl
+
+@[simp]
+lemma coe_res_obj_ρ (g : G) :
+    @DFunLike.coe (no_index G →* (A →ₗ[k] A)) _ _ _
+      (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
+
+end Res
+
 section Linearization
 
 variable (k G)
@@ -233,7 +248,7 @@ noncomputable abbrev leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-noncomputable def diagonal (n : ℕ) : Rep k G :=
+noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
@@ -443,13 +458,12 @@ variable {k G n}
 theorem diagonalSuccIsoFree_hom_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (diagonalSuccIsoFree k G n).hom.hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
-  simp [diagonalSuccIsoFree, types_tensorObj, lmapDomain]
+  simp [diagonalSuccIsoFree, types_tensorObj]
 
 theorem diagonalSuccIsoFree_inv_hom_hom_single_single (g : G) (f : Fin n → G) (a : k) :
     (diagonalSuccIsoFree k G n).inv.hom.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
-  simp [diagonalSuccIsoFree, coe_linearization_obj, types_tensorObj,
-    diagonalSuccIsoTensorTrivial_inv_hom g f]
+  simp [diagonalSuccIsoFree, types_tensorObj, diagonalSuccIsoTensorTrivial_inv_hom g f]
 
 theorem diagonalSuccIsoFree_inv_hom_hom_single (g : G →₀ k) (f : Fin n → G) :
     (diagonalSuccIsoFree k G n).inv.hom.hom (single f g) =
@@ -461,7 +475,7 @@ theorem diagonalSuccIsoFree_inv_hom_hom_single (g : G →₀ k) (f : Fin n → G
 section MonoidalClosed
 open MonoidalCategory Action
 
-variable [Group G] (A B C : Rep k G)
+variable (A B C : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `(A, ρ₁)`, this is the 'internal Hom' functor sending
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
@@ -477,7 +491,8 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_id := fun _ => by ext; rfl
   map_comp := fun _ _ => by ext; rfl
 
-@[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+@[simp]
+theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
@@ -579,7 +594,7 @@ theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) 
   ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl
 
 end MonoidalClosed
-
+end Group
 end Rep
 
 namespace Representation
@@ -718,4 +733,25 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
 
+instance : EnoughProjectives (Rep k G) :=
+  equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.moduleCat_enoughProjectives.{u}
+
 end Rep
+
+namespace Representation
+open Rep
+
+variable (k G : Type u) [CommRing k] [Group G] (n : ℕ)
+
+/-- `Gⁿ` defines a `k[G]`-basis of `k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ)` to
+`single (1, g₁, g₁g₂, ..., g₁...gₙ).` -/
+def ofMulActionAsModuleBasis :
+    Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule where
+  repr := (equivalenceModuleMonoidAlgebra.functor.mapIso
+    (diagonalSuccIsoFree k G n)).toLinearEquiv ≪≫ₗ (finsuppLEquivFreeAsModule k G (Fin n → G)).symm
+
+theorem ofMulAction_asModule_free :
+    Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
+  Module.Free.of_basis (ofMulActionAsModuleBasis k G n)
+
+end Representation
