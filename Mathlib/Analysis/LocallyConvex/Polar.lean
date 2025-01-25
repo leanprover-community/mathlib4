@@ -178,12 +178,7 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
-<<<<<<< HEAD
-
-section polar_convex
-=======
 section RCLike
->>>>>>> mans0954/polar_AbsConvex
 
 variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
@@ -205,57 +200,6 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
     exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
   · exact Convex.linear_preimage (convex_closedBall _ _) (B i)
 
-<<<<<<< HEAD
-end polar_convex
-
-section Bipolar
-
-variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
-variable [Module 𝕜 E] [Module 𝕜 F] [Module ℝ E]
-
-lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
-  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
-  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
-  exact convex_absConvexHull (subset_absConvexHull hw)
-    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
-    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
-
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
-variable  [IsScalarTower ℝ 𝕜 E]
-
-open scoped ComplexOrder
-theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
-    B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
-  apply le_antisymm
-  · simp only [Set.le_eq_subset]
-    rw [← Set.compl_subset_compl]
-    intro x hx
-    rw [Set.mem_compl_iff] at hx
-    obtain ⟨f,⟨u,⟨hf₁,hf₂⟩⟩⟩ :=
-      RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B)
-        absConvex_convexClosedHull.2 isClosed_closedAbsConvexHull hx
-    have e3 : RCLike.re (f 0) < u :=
-      (hf₁ 0) (absConvexHull_subset_closedAbsConvexHull (absConvexHull_zero_mem s))
-    rw [map_zero, map_zero] at e3
-    let g := (1/u : ℝ) • f
-    have fg : g = (1/u : ℝ) • f := rfl
-    have hg₁ : ∀ a ∈ (closedAbsConvexHull (E := WeakBilin B) 𝕜) s, RCLike.re (g a) < 1 := by
-      intro a ha
-      rw [fg]
-      simp only [ ContinuousLinearMap.coe_smul', Pi.smul_apply]
-      rw [RCLike.smul_re]
-      have t1 : RCLike.re (f a) < u := hf₁ a ha
-      simp [t1]
-      rw [← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
-      exact mul_lt_mul_of_pos_left ((hf₁ a) ha) (inv_pos_of_pos e3)
-    --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
-    sorry
-
-  · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
-
-end Bipolar
-=======
 end RCLike
->>>>>>> mans0954/polar_AbsConvex
 
 end LinearMap
