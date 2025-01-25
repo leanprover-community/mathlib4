@@ -888,12 +888,12 @@ lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := b
     (M ↾ R).closure X = (M.closure (X ∩ R) ∩ R) ∪ (R \ M.E) := by
   obtain ⟨I, hI⟩ := (M ↾ R).exists_basis' X
   obtain ⟨hI', hIR⟩ := basis'_restrict_iff.1 hI
-  suffices ∀ x ∈ R, x ∉ M.E → M.Indep (insert x I) → x ∈ I by
-    simpa (config := {contextual := true}) [← hI.closure_eq_closure, ← hI'.closure_eq_closure,
-      Set.ext_iff, and_comm (a := _ ∈ R), ← or_and_right (c := _ ∈ R), hI'.indep.mem_closure_iff',
-      hI.indep.mem_closure_iff', insert_subset_iff, hIR, ← imp_iff_or_not, imp_and,
-      or_iff_not_imp_left (a := _ ∈ M.E)]
-  exact fun _ _ hxE hi ↦ False.elim <| hxE <| hi.subset_ground <| mem_insert ..
+  ext e
+  rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, hI.indep.mem_closure_iff', mem_union,
+    mem_inter_iff, hI'.indep.mem_closure_iff', restrict_ground_eq, restrict_indep_iff, mem_diff]
+  by_cases he : M.Indep (insert e I)
+  · simp [he, and_comm, insert_subset_iff, hIR, (he.subset_ground (mem_insert ..)), imp_or]
+  tauto
 
 lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).closure X = M.closure X ∩ R := by
