@@ -31,6 +31,27 @@ are finite-dimensional (and it has closed range?). -/
 def IsFredholm : Prop :=
   FiniteDimensional 𝕜 (LinearMap.ker T) ∧ FiniteDimensional 𝕜 (Y ⧸ LinearMap.range T)
 
+variable (T) in
+/-- The **Fredholm index** of a bounded linear operator is `dim ker T - dim coker T`. -/
+noncomputable def index : ℤ :=
+(finrank 𝕜 (LinearMap.ker T) : ℤ) - (finrank 𝕜 (Y ⧸ LinearMap.range T) : ℤ)
+
+
 -- TODO: in the future
 /-- If X and Y are complete, closedness of `range T` is automatic for Fredholm operators. -/
-theorem IsFredholm.closedRange_of_completeSpace [CompleteSpace X] [CompleteSpace Y] (hT : IsFredholm T) : IsClosed (LinearMap.range T: Set Y) := sorry
+theorem IsFredholm.closedRange_of_completeSpace [CompleteSpace X] [CompleteSpace Y]
+    (hT : IsFredholm T) : IsClosed (LinearMap.range T: Set Y) := sorry
+
+namespace IsFredholm
+
+lemma id : IsFredholm (ContinuousLinearEquiv.id X) := by
+  constructor
+  · sorry
+  · sorry
+
+lemma _root_.ContinuousLinearEquiv.isFredholm (T : X ≃L[𝕜] Y) : IsFredholm T := by
+  constructor
+  · sorry
+  · sorry
+
+end IsFredholm
