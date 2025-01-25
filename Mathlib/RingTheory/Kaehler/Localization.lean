@@ -71,7 +71,7 @@ lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     aeval_X_left_apply]
 
 @[simp]
-lemma compLocalizationAwayAlgHom_X_inl : (compLocalizationAwayAlgHom T g P) (X (Sum.inl ())) =
+lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Sum.inl ())) =
       IsLocalization.Away.invSelf ((Ideal.Quotient.mk (P.ker ^ 2)) (P.σ g)) := by
   simp [compLocalizationAwayAlgHom]
 
