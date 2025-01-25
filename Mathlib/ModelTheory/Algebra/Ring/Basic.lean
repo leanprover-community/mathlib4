@@ -59,16 +59,19 @@ inductive ringFunc : ℕ → Type
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
+  deriving IsAlgebraic
 
 namespace Ring
 
 open ringFunc Language
 
-instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
-  dsimp [Language.ring]; infer_instance
+/-- This instance does not get inferred without `instDecidableEqFunctions` in
+`ModelTheory/Basic`. -/
+example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
 
-instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
-  dsimp [Language.ring]; infer_instance
+/-- This instance does not get inferred without `instDecidableEqRelations` in
+`ModelTheory/Basic`. -/
+example (n : ℕ) : DecidableEq (Language.ring.Relations n) := inferInstance
 
 /-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
 of `RingFunc 2` -/
@@ -137,7 +140,7 @@ theorem card_ring : card Language.ring = 5 := by
   have : Fintype.card Language.ring.Symbols = 5 := rfl
   simp [Language.card, this]
 
-open Language ring Structure
+open Language Structure
 
 /-- A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this
 structure is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
@@ -223,7 +226,6 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
       | _, .neg => fun x => -x 0
       | _, .zero => fun _ => 0
       | _, .one => fun _ => 1
-    RelMap := Empty.elim,
     funMap_add := fun _ => rfl,
     funMap_mul := fun _ => rfl,
     funMap_neg := fun _ => rfl,
@@ -235,7 +237,7 @@ def languageEquivEquivRingEquiv {R S : Type*}
     [NonAssocRing R] [NonAssocRing S]
     [CompatibleRing R] [CompatibleRing S] :
     (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
-  { toFun := fun f =>
+  { toFun f :=
     { f with
       map_add' := by
         intro x y
@@ -243,13 +245,13 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_mul' := by
         intro x y
         simpa using f.map_fun mulFunc ![x, y] }
-    invFun := fun f =>
+    invFun f :=
     { f with
       map_fun' := fun {n} f => by
         cases f <;> simp
       map_rel' := fun {n} f => by cases f },
-    left_inv := fun f => by ext; rfl
-    right_inv := fun f => by ext; rfl }
+    left_inv f := rfl
+    right_inv f := rfl }
 
 variable (R : Type*) [Language.ring.Structure R]
 

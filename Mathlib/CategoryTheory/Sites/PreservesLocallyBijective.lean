@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 namespace Presheaf
 
-variable [ConcreteCategory A]
+variable [HasForget A]
 
 lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where

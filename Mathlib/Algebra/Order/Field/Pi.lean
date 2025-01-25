@@ -3,8 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Lemmas about (finite domain) functions into fields.

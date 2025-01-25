@@ -74,10 +74,8 @@ theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g 
 /-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
 instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M) where
 
-/-- Groupoid structure on `SingleObj M`.
-
-See <https://stacks.math.columbia.edu/tag/0019>.
--/
+/-- Groupoid structure on `SingleObj M`. -/
+@[stacks 0019]
 instance groupoid : Groupoid (SingleObj G) where
   inv x := x⁻¹
   inv_comp := mul_inv_cancel
@@ -104,12 +102,8 @@ theorem toEnd_def (x : M) : toEnd M x = x :=
 variable (N : Type v) [Monoid N]
 
 /-- There is a 1-1 correspondence between monoid homomorphisms `M → N` and functors between the
-    corresponding single-object categories. It means that `SingleObj` is a fully faithful
-    functor.
-
-See <https://stacks.math.columbia.edu/tag/001F> --
-although we do not characterize when the functor is full or faithful.
--/
+corresponding single-object categories. It means that `SingleObj` is a fully faithful functor. -/
+@[stacks 001F "We do not characterize when the functor is full or faithful."]
 def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
   toFun f :=
     { obj := id
@@ -205,11 +199,11 @@ def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
   unitIso := eqToIso (by
     rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
     congr 1
-    aesop_cat)
+    simp)
   counitIso := eqToIso (by
     rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
     congr 1
-    aesop_cat)
+    simp)
 
 end MulEquiv
 
@@ -242,7 +236,7 @@ def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
   map {x y} f := SingleObj.mapHom x y f
 
-instance toCat_full : toCat.Full  where
+instance toCat_full : toCat.Full where
   map_surjective := (SingleObj.mapHom _ _).surjective
 
 instance toCat_faithful : toCat.Faithful where

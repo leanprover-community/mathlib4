@@ -32,7 +32,7 @@ lemma squeeze_zero' {α} {f g : α → ℝ} {t₀ : Filter α} (hf : ∀ᶠ t in
 and `tendsto_of_tendsto_of_tendsto_of_le_of_le'` for the general case. -/
 lemma squeeze_zero {α} {f g : α → ℝ} {t₀ : Filter α} (hf : ∀ t, 0 ≤ f t) (hft : ∀ t, f t ≤ g t)
     (g0 : Tendsto g t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 0) :=
-  squeeze_zero' (eventually_of_forall hf) (eventually_of_forall hft) g0
+  squeeze_zero' (Eventually.of_forall hf) (Eventually.of_forall hft) g0
 
 /-- If `u` is a neighborhood of `x`, then for small enough `r`, the closed ball
 `Metric.closedBall x r` is contained in `u`. -/
@@ -88,5 +88,23 @@ lemma exists_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
   have : ∀ᶠ r in 𝓝[>] 0, IsCompact (closedBall x r) :=
     eventually_nhdsWithin_of_eventually_nhds (eventually_isCompact_closedBall x)
   simpa only [and_comm] using (this.and self_mem_nhdsWithin).exists
+
+theorem biInter_gt_closedBall (x : α) (r : ℝ) : ⋂ r' > r, closedBall x r' = closedBall x r := by
+  ext
+  simp [forall_gt_ge_iff]
+
+theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall x r := by
+  ext
+  simp [forall_lt_iff_le']
+
+theorem biUnion_lt_ball (x : α) (r : ℝ) : ⋃ r' < r, ball x r' = ball x r := by
+  ext
+  rw [← not_iff_not]
+  simp [forall_lt_le_iff]
+
+theorem biUnion_lt_closedBall (x : α) (r : ℝ) : ⋃ r' < r, closedBall x r' = ball x r := by
+  ext
+  rw [← not_iff_not]
+  simp [forall_lt_iff_le]
 
 end Metric

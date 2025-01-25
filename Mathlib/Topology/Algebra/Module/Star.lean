@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.Module
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.Star
 
 /-!
@@ -65,14 +65,11 @@ theorem continuous_decomposeProdAdjoint_symm [TopologicalAddGroup A] :
   (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
 
 /-- The self-adjoint part of an element of a star module, as a continuous linear map. -/
-@[simps!]
+@[simps! -isSimp]
 def selfAdjointPartL [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
     A →L[R] selfAdjoint A where
   toLinearMap := selfAdjointPart R
   cont := continuous_selfAdjointPart _ _
-
--- Porting note: `simp only [selfAdjointPartL_toFun_coe]` proves this projection
-attribute [nolint simpNF] selfAdjointPartL_apply_coe
 
 /-- The skew-adjoint part of an element of a star module, as a continuous linear map. -/
 @[simps!]

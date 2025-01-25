@@ -45,7 +45,7 @@ infixr:25 " →ₐc " => BialgHom _
 notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 
 /-- `BialgHomClass F R A B` asserts `F` is a type of bundled bialgebra homomorphisms
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
@@ -224,7 +224,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BialgHom.id R A) = id :=
   rfl
 
@@ -275,10 +275,10 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := BialgHom.id R A
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=

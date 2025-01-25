@@ -26,8 +26,7 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
@@ -52,7 +51,7 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, iff_self_iff, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
 
 @[simp] lemma disjiUnion_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
     disjiUnion (cons a s ha) f H =
@@ -69,7 +68,7 @@ lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α),
 lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
     (s.disjiUnion f h1).disjiUnion g h2 =
       s.attach.disjiUnion
-        (fun a ↦ ((f a).disjiUnion g) fun b hb c hc ↦
+        (fun a ↦ ((f a).disjiUnion g) fun _ hb _ hc ↦
             h2 (mem_disjiUnion.mpr ⟨_, a.prop, hb⟩) (mem_disjiUnion.mpr ⟨_, a.prop, hc⟩))
         fun a _ b _ hab ↦
         disjoint_left.mpr fun x hxa hxb ↦ by
@@ -82,14 +81,20 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
 
+lemma sUnion_disjiUnion {f : α → Finset (Set β)} (I : Finset α)
+    (hf : (I : Set α).PairwiseDisjoint f) :
+    ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
+  ext
+  simp only [coe_disjiUnion, Set.mem_sUnion, Set.mem_iUnion, mem_coe, exists_prop]
+  tauto
+
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
--- `simpNF` claims that the statement can't simplify itself, but it can (as of 2024-02-14)
-@[simp, nolint simpNF] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+@[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
   ext fun b => by simpa using and_comm
@@ -119,7 +124,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, iff_self_iff, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
 
 @[simp]
 lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t :=
@@ -132,7 +137,7 @@ lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : 
     -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
     simp_rw [mem_biUnion]
     apply exists_congr
-    simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]
+    simp +contextual only [hs, and_congr_right_iff, ht, implies_true]
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :

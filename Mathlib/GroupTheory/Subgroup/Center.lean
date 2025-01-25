@@ -12,11 +12,7 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 -/
 
-assert_not_exists Multiset
-assert_not_exists Ring
-
-open Function
-open Int
+assert_not_exists Multiset Ring
 
 variable {G : Type*} [Group G]
 

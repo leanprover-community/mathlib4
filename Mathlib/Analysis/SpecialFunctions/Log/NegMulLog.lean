@@ -23,6 +23,7 @@ open scoped Topology
 
 namespace Real
 
+@[fun_prop]
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
   intro x
@@ -38,6 +39,10 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
     simp
+
+@[fun_prop]
+lemma Continuous.mul_log {α : Type*} [TopologicalSpace α] {f : α → ℝ} (hf : Continuous f) :
+    Continuous fun a ↦ f a * log (f a) := continuous_mul_log.comp hf
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
@@ -58,18 +63,17 @@ private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
   have : (deriv (fun x ↦ x * log x)) =ᶠ[𝓝[>] 0] (fun x ↦ log x + 1) := by
     apply eventuallyEq_nhdsWithin_of_eqOn
     intro x hx
-    rw [deriv_mul_log]
-    simp only [Set.mem_Ioi, ne_eq]
-    exact ne_of_gt hx
+    rw [Set.mem_Ioi] at hx
+    exact deriv_mul_log hx.ne'
   simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
 
 /-- At `x=0`, `(fun x ↦ x * log x)` is not differentiable
 (but note that it is continuous, see `continuous_mul_log`). -/
 lemma not_DifferentiableAt_log_mul_zero :
     ¬ DifferentiableAt ℝ (fun x ↦ x * log x) 0 := fun h ↦
-  (not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (fun (x:ℝ) ↦ x * log x) (a:=0))
+  (not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (fun x : ℝ ↦ x * log x) (a := 0))
     tendsto_deriv_mul_log_nhdsWithin_zero
-    (h.differentiableWithinAt (s:=(Set.Ioi 0)))
+    (h.differentiableWithinAt (s := Set.Ioi 0))
 
 /-- Not differentiable, hence `deriv` has junk value zero. -/
 lemma deriv_mul_log_zero : deriv (fun x ↦ x * log x) 0 = 0 :=
@@ -81,14 +85,14 @@ lemma not_continuousAt_deriv_mul_log_zero :
 
 lemma deriv2_mul_log (x : ℝ) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
-  by_cases hx : x ≠ 0
+  by_cases hx : x = 0
+  · rw [hx, inv_zero]
+    exact deriv_zero_of_not_differentiableAt
+      (fun h ↦ not_continuousAt_deriv_mul_log_zero h.continuousAt)
   · suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
       rw [deriv_add_const, deriv_log x]
     filter_upwards [eventually_ne_nhds hx] with y hy using deriv_mul_log hy
-  · rw [show x = 0 by simp_all only [ne_eq, Decidable.not_not], inv_zero]
-    exact deriv_zero_of_not_differentiableAt
-      (fun h ↦ not_continuousAt_deriv_mul_log_zero h.continuousAt)
 
 lemma strictConvexOn_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
   refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_mul_log.continuousOn) ?_
@@ -131,7 +135,7 @@ lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negM
   rw [log_mul hx hy]
   ring
 
-lemma continuous_negMulLog : Continuous negMulLog := by
+@[fun_prop] lemma continuous_negMulLog : Continuous negMulLog := by
   simpa only [negMulLog_eq_neg] using continuous_mul_log.neg
 
 lemma differentiableOn_negMulLog : DifferentiableOn ℝ negMulLog {0}ᶜ := by
@@ -147,9 +151,11 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
     have : x ∈ ({0} : Set ℝ)ᶜ := by
       simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, not_false_eq_true]
     have := differentiableOn_negMulLog x this
-    apply DifferentiableWithinAt.differentiableAt (s := {0}ᶜ)
-    <;> simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, not_false_eq_true,
-        compl_singleton_mem_nhds_iff]
+    apply DifferentiableWithinAt.differentiableAt (s := {0}ᶜ) <;>
+    simp_all only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, not_false_eq_true,
+      compl_singleton_mem_nhds_iff]
+
+@[fun_prop] alias ⟨_, differentiableAt_negMulLog⟩ := differentiableAt_negMulLog_iff
 
 lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1 := by
   rw [negMulLog_eq_neg, deriv.neg, deriv_mul_log hx]

@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Multiset.Powerset
+import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # The powerset of a finset
@@ -39,13 +40,9 @@ theorem coe_powerset (s : Finset α) :
   ext
   simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
-  mem_powerset.2 (empty_subset _)
+theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s := by simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
-  mem_powerset.2 Subset.rfl
+theorem mem_powerset_self (s : Finset α) : s ∈ powerset s := by simp
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
@@ -97,6 +94,16 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_not_mem _ _ h)]
     simp [Finset.erase_eq_of_not_mem h, this]
 
+lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
+    (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
+  simp_rw [Set.pairwiseDisjoint_iff, mem_coe, mem_powerset]
+  rintro i hi j hj
+  simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    exists_eq_or_imp, exists_eq_left, or_imp, imp_self, true_and]
+  refine ⟨?_, ?_, insert_erase_invOn.2.injOn (not_mem_mono hi ha) (not_mem_mono hj ha)⟩ <;>
+    rintro rfl <;>
+    cases Finset.not_mem_mono ‹_› ha (Finset.mem_insert_self _ _)
+
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∃ (t : _) (h : t ⊆ s), p t h) :=
@@ -112,12 +119,12 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Pro
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     [∀ t, Decidable (p t)] : Decidable (∃ t ⊆ s, p t) :=
-  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) $ by simp
+  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) <| by simp
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
 instance decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     [∀ t, Decidable (p t)] : Decidable (∀ t ⊆ s, p t) :=
-  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) $ by simp
+  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) <| by simp
 
 end Powerset
 
@@ -195,7 +202,7 @@ theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
       exact ⟨empty_subset s, rfl⟩⟩
 
 lemma powersetCard_empty_subsingleton (n : ℕ) :
-    (powersetCard n (∅ : Finset α) : Set $ Finset α).Subsingleton := by
+    (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
   simp [Set.Subsingleton, subset_empty]
 
 @[simp]
@@ -209,9 +216,9 @@ theorem powersetCard_one (s : Finset α) :
 
 @[simp]
 lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
-  refine ⟨?_, fun h ↦ card_eq_zero.1 $ by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
+  refine ⟨?_, fun h ↦ card_eq_zero.1 <| by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
   contrapose!
-  exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_subset_card_eq h).imp $ by simp
+  exact fun h ↦ nonempty_iff_ne_empty.1 <| (exists_subset_card_eq h).imp <| by simp
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
@@ -234,9 +241,12 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   have : x ∉ t := fun H => h (ht H)
   simp [card_insert_of_not_mem this, Nat.succ_inj']
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
   aesop (add simp [Finset.Nonempty, exists_subset_card_eq, card_le_card])
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, powersetCard_nonempty_of_le⟩ := powersetCard_nonempty
 
 @[simp]
 theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by

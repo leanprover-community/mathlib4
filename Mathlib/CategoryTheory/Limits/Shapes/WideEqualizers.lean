@@ -68,6 +68,8 @@ instance : DecidableEq (WalkingParallelFamily J)
 instance : Inhabited (WalkingParallelFamily J) :=
   ⟨zero⟩
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type family of morphisms for the diagram indexing a wide (co)equalizer. -/
 inductive WalkingParallelFamily.Hom (J : Type w) :
   WalkingParallelFamily J → WalkingParallelFamily J → Type w
@@ -100,6 +102,22 @@ instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J
 theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
     WalkingParallelFamily.Hom.id X = 𝟙 X :=
   rfl
+
+variable (J) in
+/-- `Arrow (WalkingParallelFamily J)` identifies to the type obtained
+by adding two elements to `T`. -/
+def WalkingParallelFamily.arrowEquiv :
+    Arrow (WalkingParallelFamily J) ≃ Option (Option J) where
+  toFun f := match f.left, f.right, f.hom with
+    | zero, _, .id _ => none
+    | one, _, .id _ => some none
+    | zero, one, .line t => some (some t)
+  invFun x := match x with
+    | none => Arrow.mk (𝟙 zero)
+    | some none => Arrow.mk (𝟙 one)
+    | some (some t) => Arrow.mk (.line t)
+  left_inv := by rintro ⟨(_ | _), _, (_ | _)⟩ <;> rfl
+  right_inv := by rintro (_ | (_ | _)) <;> rfl
 
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C} (f : J → (X ⟶ Y))
@@ -138,7 +156,7 @@ def diagramIsoParallelFamily (F : WalkingParallelFamily J ⥤ C) :
     rintro _ _ (_|_) <;> aesop_cat
 
 /-- `WalkingParallelPair` as a category is equivalent to a special case of
-`WalkingParallelFamily`.  -/
+`WalkingParallelFamily`. -/
 @[simps!]
 def walkingParallelFamilyEquivWalkingParallelPair :
     WalkingParallelFamily.{w} (ULift Bool) ≌ WalkingParallelPair where
@@ -329,8 +347,8 @@ def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C)
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // ∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂ } where
   toFun k := ⟨k ≫ t.ι, by simp⟩
   invFun h := (Trident.IsLimit.lift' ht _ h.prop).1
-  left_inv k := Trident.IsLimit.hom_ext ht (Trident.IsLimit.lift' _ _ _).prop
-  right_inv h := Subtype.ext (Trident.IsLimit.lift' ht _ _).prop
+  left_inv _ := Trident.IsLimit.hom_ext ht (Trident.IsLimit.lift' _ _ _).prop
+  right_inv _ := Subtype.ext (Trident.IsLimit.lift' ht _ _).prop
 
 /-- The bijection of `Trident.IsLimit.homIso` is natural in `Z`. -/
 theorem Trident.IsLimit.homIso_natural [Nonempty J] {t : Trident f} (ht : IsLimit t) {Z Z' : C}
@@ -349,8 +367,8 @@ def Cotrident.IsColimit.homIso [Nonempty J] {t : Cotrident f} (ht : IsColimit t)
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // ∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp⟩
   invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).1
-  left_inv k := Cotrident.IsColimit.hom_ext ht (Cotrident.IsColimit.desc' _ _ _).prop
-  right_inv h := Subtype.ext (Cotrident.IsColimit.desc' ht _ _).prop
+  left_inv _ := Cotrident.IsColimit.hom_ext ht (Cotrident.IsColimit.desc' _ _ _).prop
+  right_inv _ := Subtype.ext (Cotrident.IsColimit.desc' ht _ _).prop
 
 /-- The bijection of `Cotrident.IsColimit.homIso` is natural in `Z`. -/
 theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' : C} (q : Z ⟶ Z')
@@ -680,5 +698,3 @@ instance (priority := 10) hasCoequalizers_of_hasWideCoequalizers [HasWideCoequal
   hasColimitsOfShape_of_equivalence.{w} walkingParallelFamilyEquivWalkingParallelPair
 
 end CategoryTheory.Limits
-
-attribute [nolint simpNF] CategoryTheory.Limits.WalkingParallelFamily.Hom.id.sizeOf_spec

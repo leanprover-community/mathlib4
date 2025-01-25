@@ -155,7 +155,6 @@ instance instProdEDist : EDist (WithLp p (α × β)) where
       (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
-variable (x y : WithLp p (α × β)) (x' : α × β)
 
 @[simp]
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
@@ -325,7 +324,7 @@ def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
             (if · = 0 then edist f.fst g.fst else edist f.snd g.snd)
             (if · = 0 then edist g.fst h.fst else edist g.snd h.snd) hp
           simp only [Finset.mem_singleton, not_false_eq_true, Finset.sum_insert,
-            Finset.sum_singleton] at this
+            Finset.sum_singleton, reduceCtorEq] at this
           exact this
 
 attribute [local instance] WithLp.prodPseudoEMetricAux
@@ -420,12 +419,12 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
         gcongr <;> simp [edist]
       _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
-          ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
+          ENNReal.rpow_one, ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
-  have A : UniformInducing (WithLp.equiv p (α × β)) :=
-    (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
+  have A : IsUniformInducing (WithLp.equiv p (α × β)) :=
+    (prod_antilipschitzWith_equiv_aux p α β).isUniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
     ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
@@ -617,7 +616,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   norm_cast
 
 @[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
-  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', _root_.sup_eq_max, equiv_fst, equiv_snd]
+  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def, equiv_fst, equiv_snd]
 
 @[simp] theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   (prod_nnnorm_equiv _).symm
@@ -627,6 +626,36 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
 
 @[simp] theorem prod_norm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
   (prod_norm_equiv _).symm
+
+section L1
+
+theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
+    ‖x‖ = ‖x.fst‖ + ‖x.snd‖ := by
+  simp [prod_norm_eq_add]
+
+theorem prod_nnnorm_eq_of_L1 (x : WithLp 1 (α × β)) :
+    ‖x‖₊ = ‖x.fst‖₊ + ‖x.snd‖₊ :=
+  NNReal.eq <| by
+    push_cast
+    exact prod_norm_eq_of_L1 x
+
+theorem prod_dist_eq_of_L1 (x y : WithLp 1 (α × β)) :
+    dist x y = dist x.fst y.fst + dist x.snd y.snd := by
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L1, sub_fst, sub_snd]
+
+theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
+    nndist x y = nndist x.fst y.fst + nndist x.snd y.snd :=
+  NNReal.eq <| by
+    push_cast
+    exact prod_dist_eq_of_L1 _ _
+
+theorem prod_edist_eq_of_L1 (x y : WithLp 1 (α × β)) :
+    edist x y = edist x.fst y.fst + edist x.snd y.snd := by
+  simp [prod_edist_eq_add]
+
+end L1
+
+section L2
 
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖ = √(‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
@@ -646,8 +675,7 @@ theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     dist x y = √(dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2) := by
-  simp_rw [dist_eq_norm, prod_norm_eq_of_L2]
-  rfl
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L2, sub_fst, sub_snd]
 
 theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
@@ -658,6 +686,8 @@ theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
 theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     edist x y = (edist x.fst y.fst ^ 2 + edist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
   simp [prod_edist_eq_add]
+
+end L2
 
 end norm_of
 

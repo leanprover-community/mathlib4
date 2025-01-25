@@ -83,8 +83,6 @@ instance : FunLike (LocallyBoundedMap α β) α β where
 instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
   comap_cobounded_le f := f.comap_cobounded_le'
 
--- Porting note: syntactic tautology because of the way coercions work
-
 @[ext]
 theorem ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
@@ -125,7 +123,7 @@ protected def id : LocallyBoundedMap α α :=
 instance : Inhabited (LocallyBoundedMap α α) :=
   ⟨LocallyBoundedMap.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(LocallyBoundedMap.id α) = id :=
   rfl
 

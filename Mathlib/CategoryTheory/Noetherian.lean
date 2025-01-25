@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.EssentiallySmall
@@ -30,10 +30,8 @@ open CategoryTheory.Limits
 variable {C : Type*} [Category C]
 
 /-- A noetherian object is an object
-which does not have infinite increasing sequences of subobjects.
-
-See https://stacks.math.columbia.edu/tag/0FCG
--/
+which does not have infinite increasing sequences of subobjects. -/
+@[stacks 0FCG]
 class NoetherianObject (X : C) : Prop where
   subobject_gt_wellFounded' : WellFounded ((· > ·) : Subobject X → Subobject X → Prop)
 
@@ -42,10 +40,8 @@ lemma NoetherianObject.subobject_gt_wellFounded (X : C) [NoetherianObject X] :
   NoetherianObject.subobject_gt_wellFounded'
 
 /-- An artinian object is an object
-which does not have infinite decreasing sequences of subobjects.
-
-See https://stacks.math.columbia.edu/tag/0FCF
--/
+which does not have infinite decreasing sequences of subobjects. -/
+@[stacks 0FCF]
 class ArtinianObject (X : C) : Prop where
   subobject_lt_wellFounded' : WellFounded ((· < ·) : Subobject X → Subobject X → Prop)
 

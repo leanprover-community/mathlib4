@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Continuous affine equivalences
@@ -73,9 +73,6 @@ instance instEquivLike : EquivLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toAffineEquiv_injective (DFunLike.coe_injective h)
 
-instance : CoeFun (P₁ ≃ᵃL[k] P₂) fun _ ↦ P₁ → P₂ :=
-  DFunLike.hasCoeToFun
-
 attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 
 /-- Coerce continuous affine equivalences to affine equivalences. -/
@@ -108,7 +105,7 @@ def Simps.apply (e : P₁ ≃ᵃL[k] P₂) : P₁ → P₂ :=
 def Simps.coe (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
   e
 
-initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply, toAffineEquiv → coe)
+initialize_simps_projections ContinuousLinearMap (toFun → apply, toAffineEquiv → coe)
 
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
@@ -174,14 +171,12 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ =
   e.toEquiv.apply_eq_iff_eq
 
 @[simp]
-theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := by
-  ext x
-  rfl
+theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
 
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
 
-theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
+theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂) {x y} : e.symm x = y ↔ x = e y :=
   e.toAffineEquiv.symm_apply_eq
 
 theorem eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=

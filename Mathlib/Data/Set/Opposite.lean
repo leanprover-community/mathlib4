@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 
 /-!
 # The opposite of a set

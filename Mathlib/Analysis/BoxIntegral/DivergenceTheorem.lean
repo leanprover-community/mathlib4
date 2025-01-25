@@ -77,7 +77,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     `f y - a - f' (y - x)` over each of these faces is less than or equal to `ε * c * vol I`. We
     integrate a function of the norm `≤ ε * diam I.Icc` over a box of volume
     `∏ j ≠ i, (I.upper j - I.lower j)`. Since `diam I.Icc ≤ c * (I.upper i - I.lower i)`, we get the
-    required estimate.  -/
+    required estimate. -/
   have Hl : I.lower i ∈ Icc (I.lower i) (I.upper i) := Set.left_mem_Icc.2 (I.lower_le_upper i)
   have Hu : I.upper i ∈ Icc (I.lower i) (I.upper i) := Set.right_mem_Icc.2 (I.lower_le_upper i)
   have Hi : ∀ x ∈ Icc (I.lower i) (I.upper i),
@@ -176,11 +176,10 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     have : ∀ᶠ δ in 𝓝[>] (0 : ℝ), δ ∈ Ioc (0 : ℝ) (1 / 2) ∧
         (∀ᵉ (y₁ ∈ closedBall x δ ∩ (Box.Icc I)) (y₂ ∈ closedBall x δ ∩ (Box.Icc I)),
               ‖f y₁ - f y₂‖ ≤ ε / 2) ∧ (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖ ≤ ε / 2 := by
-      refine .and ?_ (.and ?_ ?_)
-      · exact Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, one_half_pos⟩
+      refine .and (Ioc_mem_nhdsGT one_half_pos) (.and ?_ ?_)
       · rcases ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_closedBall).1
             (Hs x hx.2) _ (half_pos <| half_pos ε0) with ⟨δ₁, δ₁0, hδ₁⟩
-        filter_upwards [Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, δ₁0⟩] with δ hδ y₁ hy₁ y₂ hy₂
+        filter_upwards [Ioc_mem_nhdsGT δ₁0] with δ hδ y₁ hy₁ y₂ hy₂
         have : closedBall x δ ∩ (Box.Icc I) ⊆ closedBall x δ₁ ∩ (Box.Icc I) := by gcongr; exact hδ.2
         rw [← dist_eq_norm]
         calc

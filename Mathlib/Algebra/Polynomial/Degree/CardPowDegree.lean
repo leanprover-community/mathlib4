@@ -3,8 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.EuclideanAbsoluteValue
-import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
 
@@ -50,7 +49,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       · rfl
       exact pow_nonneg (Int.ofNat_zero_le _) _
     eq_zero' := fun p =>
-      ite_eq_left_iff.trans <|
+      ite_eq_left_iff.trans
         ⟨fun h => by
           contrapose! h
           exact ⟨h, (pow_pos _).ne'⟩, absurd⟩
@@ -61,7 +60,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       · simp only [hpq, hp, hq, eq_self_iff_true, if_true, if_false]
         exact add_nonneg (pow_pos _).le (pow_pos _).le
       simp only [hpq, hp, hq, if_false]
-      refine le_trans (pow_le_pow_right (by omega) (Polynomial.natDegree_add_le _ _)) ?_
+      refine le_trans (pow_right_mono₀ (by omega) (Polynomial.natDegree_add_le _ _)) ?_
       refine
         le_trans (le_max_iff.mpr ?_)
           (max_le_add_of_nonneg (pow_nonneg (by omega) _) (pow_nonneg (by omega) _))
@@ -100,7 +99,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
       · simp only [hp, hq, degree_zero, Ne, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
-      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff_right]
+      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff_right₀]
         exact mod_cast @Fintype.one_lt_card Fq _ _ }
 
 end Polynomial

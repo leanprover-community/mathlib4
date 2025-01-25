@@ -81,8 +81,8 @@ weak convergence of measures, finite measure
 
 noncomputable section
 
-open MeasureTheory Set Filter BoundedContinuousFunction
-open scoped Topology ENNReal NNReal BoundedContinuousFunction
+open BoundedContinuousFunction Filter MeasureTheory Set Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -130,7 +130,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → M
 
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective $ Measure.ext fun s _ ↦ by
+  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
@@ -209,7 +209,6 @@ instance instSMul : SMul R (FiniteMeasure Ω) where
 @[simp, norm_cast]
 theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 := rfl
 
--- Porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
 theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) := rfl
 
@@ -230,7 +229,7 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
-  toMeasure_injective.addCommMonoid (↑) toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
+  toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 
 /-- Coercion is an `AddMonoidHom`. -/
 @[simps]
@@ -411,10 +410,7 @@ theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : FiniteMeasure Ω ↦ μ.testAgainstNN f := by
   show Continuous ((fun φ : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) ↦ φ f) ∘ toWeakDualBCNN)
   refine Continuous.comp ?_ (toWeakDualBCNN_continuous (Ω := Ω))
-  exact WeakBilin.eval_continuous (𝕜 := ℝ≥0) (E := (Ω →ᵇ ℝ≥0) →L[ℝ≥0] ℝ≥0) _ _
-  /- porting note: without explicitly providing `𝕜` and `E` TC synthesis times
-  out trying to find `Module ℝ≥0 ((Ω →ᵇ ℝ≥0) →L[ℝ≥0] ℝ≥0)`, but it can find it with enough time:
-  `set_option synthInstance.maxHeartbeats 47000` was sufficient. -/
+  exact WeakBilin.eval_continuous _ _
 
 /-- The total mass of a finite measure depends continuously on the measure. -/
 theorem continuous_mass : Continuous fun μ : FiniteMeasure Ω ↦ μ.mass := by
@@ -428,7 +424,7 @@ theorem _root_.Filter.Tendsto.mass {γ : Type*} {F : Filter γ} {μs : γ → Fi
 theorem tendsto_iff_weakDual_tendsto {γ : Type*} {F : Filter γ} {μs : γ → FiniteMeasure Ω}
     {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔ Tendsto (fun i ↦ (μs i).toWeakDualBCNN) F (𝓝 μ.toWeakDualBCNN) :=
-  Inducing.tendsto_nhds_iff ⟨rfl⟩
+  IsInducing.tendsto_nhds_iff ⟨rfl⟩
 
 theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
@@ -501,16 +497,18 @@ lemma injective_toWeakDualBCNN :
 
 variable (Ω)
 
-lemma embedding_toWeakDualBCNN :
-    Embedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
-  induced := rfl
-  inj := injective_toWeakDualBCNN
+lemma isEmbedding_toWeakDualBCNN :
+    IsEmbedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
+  eq_induced := rfl
+  injective := injective_toWeakDualBCNN
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toWeakDualBCNN := isEmbedding_toWeakDualBCNN
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (FiniteMeasure Ω) :=
-  Embedding.t2Space (embedding_toWeakDualBCNN Ω)
+instance t2Space : T2Space (FiniteMeasure Ω) := (isEmbedding_toWeakDualBCNN Ω).t2Space
 
 end Hausdorff -- section
 
@@ -540,8 +538,8 @@ theorem tendsto_lintegral_nn_of_le_const (μ : FiniteMeasure Ω) {fs : ℕ → �
     (fs_lim : ∀ ω, Tendsto (fun n ↦ fs n ω) atTop (𝓝 (f ω))) :
     Tendsto (fun n ↦ ∫⁻ ω, fs n ω ∂(μ : Measure Ω)) atTop (𝓝 (∫⁻ ω, f ω ∂(μ : Measure Ω))) :=
   tendsto_lintegral_nn_filter_of_le_const μ
-    (eventually_of_forall fun n ↦ eventually_of_forall (fs_le_const n))
-    (eventually_of_forall fs_lim)
+    (.of_forall fun n ↦ .of_forall (fs_le_const n))
+    (.of_forall fs_lim)
 
 /-- A bounded convergence theorem for a finite measure:
 If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
@@ -562,7 +560,7 @@ theorem tendsto_testAgainstNN_filter_of_le_const {ι : Type*} {L : Filter ι}
     (fs_lim : ∀ᵐ ω : Ω ∂(μ : Measure Ω), Tendsto (fun i ↦ fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i ↦ μ.testAgainstNN (fs i)) L (𝓝 (μ.testAgainstNN f)) := by
   apply (ENNReal.tendsto_toNNReal (f.lintegral_lt_top_of_nnreal (μ : Measure Ω)).ne).comp
-  exact tendsto_lintegral_nn_filter_of_le_const μ fs_le_const fs_lim
+  exact tendsto_lintegral_nn_filter_of_le_const (Ω := Ω) μ fs_le_const fs_lim
 
 /-- A bounded convergence theorem for a finite measure:
 If a sequence of bounded continuous non-negative functions are uniformly bounded by a constant and
@@ -580,8 +578,8 @@ theorem tendsto_testAgainstNN_of_le_const {μ : FiniteMeasure Ω} {fs : ℕ → 
     (fs_lim : ∀ ω, Tendsto (fun n ↦ fs n ω) atTop (𝓝 (f ω))) :
     Tendsto (fun n ↦ μ.testAgainstNN (fs n)) atTop (𝓝 (μ.testAgainstNN f)) :=
   tendsto_testAgainstNN_filter_of_le_const
-    (eventually_of_forall fun n ↦ eventually_of_forall (fs_le_const n))
-    (eventually_of_forall fs_lim)
+    (.of_forall fun n ↦ .of_forall (fs_le_const n))
+    (.of_forall fs_lim)
 
 end FiniteMeasureBoundedConvergence
 
@@ -611,8 +609,8 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ ↦ by
     simp only [f₀_eq, Pi.zero_apply, Function.comp_apply, NNReal.zero_le_coe]
-  have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := eventually_of_forall f₀_nn
-  have f₀_ae_nns : ∀ i, 0 ≤ᵐ[(μs i : Measure Ω)] ⇑f₀ := fun i ↦ eventually_of_forall f₀_nn
+  have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := .of_forall f₀_nn
+  have f₀_ae_nns : ∀ i, 0 ≤ᵐ[(μs i : Measure Ω)] ⇑f₀ := fun i ↦ .of_forall f₀_nn
   have aux :=
     integral_eq_lintegral_of_nonneg_ae f₀_ae_nn f₀.continuous.measurable.aestronglyMeasurable
   have auxs := fun i ↦
@@ -642,6 +640,14 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
     fun _ ↦ rfl
   simp_rw [aux, BoundedContinuousFunction.toReal_lintegral_coe_eq_integral] at tends_pos tends_neg
   exact Tendsto.sub tends_pos tends_neg
+
+lemma continuous_integral_boundedContinuousFunction
+    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
+    Continuous fun μ : FiniteMeasure α ↦ ∫ x, f x ∂μ := by
+  rw [continuous_iff_continuousAt]
+  intro μ
+  exact continuousAt_of_tendsto_nhds
+    (FiniteMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
 
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 

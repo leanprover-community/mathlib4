@@ -10,13 +10,61 @@ import Mathlib.Topology.Category.TopCat.Basic
 # Categories of Compact Hausdorff Spaces
 
 We construct the category of compact Hausdorff spaces satisfying an additional property `P`.
+
+## Implementation
+
+We define a structure `CompHausLike` which takes as an argument a predicate `P` on topological
+spaces. It consists of the data of a topological space, satisfying the additional properties of
+being compact and Hausdorff, and satisfying `P`. We give a category structure to `CompHausLike P`
+induced by the forgetful functor to topological spaces.
+
+It used to be the case (before https://github.com/leanprover-community/mathlib4/pull/12930 was merged) that several different categories of compact
+Hausdorff spaces, possibly satisfying some extra property, were defined from scratch in this way.
+For example, one would define a structure `CompHaus` as follows:
+
+```lean
+structure CompHaus where
+  toTop : TopCat
+  [is_compact : CompactSpace toTop]
+  [is_hausdorff : T2Space toTop]
+```
+
+and give it the category structure induced from topological spaces. Then the category of profinite
+spaces was defined as follows:
+
+```lean
+structure Profinite where
+  toCompHaus : CompHaus
+  [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
+```
+
+The categories `Stonean` consisting of extremally disconnected compact Hausdorff spaces and
+`LightProfinite` consisting of totally disconnected, second countable compact Hausdorff spaces were
+defined in a similar way. This resulted in code duplication, and reducing this duplication was part
+of the motivation for introducing `CompHausLike`.
+
+Using `CompHausLike`, we can now define
+`CompHaus := CompHausLike (fun _ ↦ True)`
+`Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)`.
+`Stonean := CompHausLike (fun X ↦ ExtremallyDisconnected X)`.
+`LightProfinite := CompHausLike  (fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)`.
+
+These four categories are important building blocks of condensed objects (see the files
+`Condensed.Basic` and `Condensed.Light.Basic`). These categories share many properties and often,
+one wants to argue about several of them simultaneously. This is the other part of the motivation
+for introducing `CompHausLike`. On paper, one would say "let `C` be on of the categories `CompHaus`
+or `Profinite`, then the following holds: ...". This was not possible in Lean using the old
+definitions. Using the new definitions, this becomes a matter of identifying what common property
+of `CompHaus` and `Profinite` is used in the proof in question, and then proving the theorem for
+`CompHausLike P` satisfying that property, and it will automatically apply to both `CompHaus` and
+`Profinite`.
 -/
 
 universe u
 
 open CategoryTheory
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 variable (P : TopCat.{u} → Prop)
 
@@ -41,15 +89,15 @@ instance : CoeSort (CompHausLike P) (Type u) :=
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
 
-instance concreteCategory : ConcreteCategory (CompHausLike P) :=
-  InducedCategory.concreteCategory _
+instance hasForget : HasForget (CompHausLike P) :=
+  InducedCategory.hasForget _
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
   InducedCategory.hasForget₂ _
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
-/-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
+/-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
 class HasProp : Prop where
   hasProp : P (TopCat.of X)
 
@@ -77,21 +125,21 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (TopologicalSpace X.toTop)
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (CompactSpace X.toTop)
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 
-/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
+/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
@@ -104,7 +152,7 @@ section
 
 variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
 
-/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
+/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
 def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _
@@ -180,7 +228,7 @@ theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Funct
 
 instance forget_reflectsIsomorphisms :
     (forget (CompHausLike.{u} P)).ReflectsIsomorphisms :=
-  ⟨by intro A B f hf; exact isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+  ⟨by intro A B f hf; rw [isIso_iff_bijective] at hf; exact isIso_of_bijective _ hf⟩
 
 /-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
 noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
@@ -206,5 +254,14 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   invFun := isoOfHomeo
   left_inv _ := rfl
   right_inv _ := rfl
+
+/-- A constant map as a morphism in `CompHausLike` -/
+def const {P : TopCat.{u} → Prop}
+    (T : CompHausLike.{u} P) {S : CompHausLike.{u} P} (s : S) : T ⟶ S :=
+  ContinuousMap.const _ s
+
+lemma const_comp {P : TopCat.{u} → Prop} {S T U : CompHausLike.{u} P}
+    (s : S) (g : S ⟶ U) : T.const s ≫ g = T.const (g s) :=
+  rfl
 
 end CompHausLike

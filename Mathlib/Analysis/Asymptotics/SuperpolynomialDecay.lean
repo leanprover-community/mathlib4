@@ -3,8 +3,8 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
@@ -159,7 +159,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
   rw [superpolynomialDecay_iff_abs_tendsto_zero] at hf ⊢
   refine fun z =>
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds (hf z)
-      (eventually_of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => ?_)
+      (Eventually.of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => ?_)
   calc
     |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
     _ ≤ |k x ^ z| * |f x| := by gcongr _ * ?_; exact hx
@@ -167,7 +167,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
 
 theorem SuperpolynomialDecay.trans_abs_le (hf : SuperpolynomialDecay l k f)
     (hfg : ∀ x, |g x| ≤ |f x|) : SuperpolynomialDecay l k g :=
-  hf.trans_eventually_abs_le (eventually_of_forall hfg)
+  hf.trans_eventually_abs_le (Eventually.of_forall hfg)
 
 end LinearOrderedCommRing
 
@@ -206,7 +206,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
     zero_mul m ▸
       Tendsto.mul_const m ((tendsto_zero_iff_abs_tendsto_zero _).1 hk.inv_tendsto_atTop)
   refine
-    tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (eventually_of_forall fun x => abs_nonneg _)
+    tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (Eventually.of_forall fun x => abs_nonneg _)
       ((eventually_map.1 hm).mp ?_)
   refine (hk.eventually_ne_atTop 0).mono fun x hk0 hx => ?_
   refine Eq.trans_le ?_ (mul_le_mul_of_nonneg_left hx <| abs_nonneg (k x)⁻¹)
@@ -302,12 +302,9 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     exact h (-z)
   · suffices (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹ from
       IsBigO.trans_tendsto this hk.inv_tendsto_atTop
-    refine
-      ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans
-        (IsBigO.of_bound 1 <| hk0.mono fun a ha0 => ?_)
-    simp only [one_mul, neg_add z 1, zpow_add₀ ha0, ← mul_assoc, zpow_neg,
-      mul_inv_cancel₀ (zpow_ne_zero z ha0), zpow_one]
-    rfl
+    refine ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans ?_
+    refine .of_bound' <| hk0.mono fun a ha0 => ?_
+    simp [← zpow_add₀ ha0]
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z := by
@@ -318,8 +315,8 @@ theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
       (by simpa using hk.inv_tendsto_atTop)
   have : f =o[l] fun x : α => k x * k x ^ (z - 1) := by
     simpa using this.mul_isBigO ((superpolynomialDecay_iff_isBigO f hk).1 h <| z - 1)
-  refine this.trans_isBigO (IsBigO.of_bound 1 (hk0.mono fun x hkx => le_of_eq ?_))
-  rw [one_mul, zpow_sub_one₀ hkx, mul_comm (k x), mul_assoc, inv_mul_cancel₀ hkx, mul_one]
+  refine this.trans_isBigO <| IsBigO.of_bound' <| hk0.mono fun x hkx => le_of_eq ?_
+  simp [← zpow_one_add₀ hkx]
 
 end NormedLinearOrderedField
 

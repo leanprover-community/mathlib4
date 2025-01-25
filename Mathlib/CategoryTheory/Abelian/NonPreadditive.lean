@@ -65,8 +65,8 @@ variable (C : Type u) [Category.{v} C]
 
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
     products and coproducts, and every monomorphism and every epimorphism is normal. -/
-class NonPreadditiveAbelian extends HasZeroMorphisms C, NormalMonoCategory C,
-    NormalEpiCategory C where
+class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
+    IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
@@ -109,7 +109,6 @@ instance : Epi (Abelian.factorThruImage f) :=
   _ fun R (g : I ⟶ R) (hpg : p ≫ g = 0) => by
   -- Since C is abelian, u := ker g ≫ i is the kernel of some morphism h.
   let u := kernel.ι g ≫ i
-  haveI : Mono u := mono_comp _ _
   haveI hu := normalMonoOfMono u
   let h := hu.g
   -- By hypothesis, p factors through the kernel of g via some t.
@@ -146,7 +145,6 @@ instance : Mono (Abelian.factorThruCoimage f) :=
   NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) => by
     -- Since C is abelian, u := p ≫ coker g is the cokernel of some morphism h.
     let u := p ≫ cokernel.π g
-    haveI : Epi u := epi_comp _ _
     haveI hu := normalEpiOfEpi u
     let h := hu.g
     -- By hypothesis, i factors through the cokernel of g via some t.
@@ -234,12 +232,12 @@ instance epi_r {A : C} : Epi (r A) := by
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
     refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
-      apply prod.hom_ext <;> simp
+      apply Limits.prod.hom_ext <;> simp
     · intro s m h
       haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert h
-      apply prod.hom_ext <;> simp
+      apply Limits.prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
   apply NormalMonoCategory.epi_of_zero_cancel
@@ -267,7 +265,6 @@ abbrev σ {A : C} : A ⨯ A ⟶ A :=
 
 end
 
--- Porting note (#10618): simp can prove these
 @[reassoc]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 

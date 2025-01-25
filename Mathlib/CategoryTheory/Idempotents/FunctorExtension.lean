@@ -103,11 +103,10 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun X =>
         { hom := { f := (F.obj X).p }
           inv := { f := (F.obj X).p } })
-      (fun {X Y} f => by aesop_cat))
+      (fun {X Y} f => by simp))
     (by aesop_cat)
 
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
-@[simps!]
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
   NatIso.ofComponents
@@ -144,6 +143,8 @@ def KaroubiUniversal₁.counitIso :
       simp only [Functor.map_comp, comp_f, assoc]
       rfl)
 
+attribute [simps!] KaroubiUniversal₁.counitIso
+
 /-- The equivalence of categories `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 @[simps]
 def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
@@ -179,7 +180,7 @@ def functorExtension₂CompWhiskeringLeftToKaroubiIso :
       (fun X =>
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } })
-      (by aesop_cat))
+      (by simp))
     (by aesop_cat)
 
 section IsIdempotentComplete

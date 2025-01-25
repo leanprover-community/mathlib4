@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
-
+import Mathlib.Data.Fintype.Units
 
 /-!
 # Integers mod `n`
@@ -31,11 +33,16 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 -/
 
-assert_not_exists Submodule
+assert_not_exists Submodule TwoSidedIdeal
 
-open Function
+open Function ZMod
 
 namespace ZMod
+
+/-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
+def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
+  | 0, h => (h.ne _ rfl).elim
+  | _ + 1, _ => .refl _
 
 instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
@@ -128,7 +135,6 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   rw [ringChar.eq_iff]
   exact ZMod.charP n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 
@@ -434,7 +440,7 @@ theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
       intro hn
       rw [hn] at h
       exact (Fintype.card_eq_zero_iff.mp h).elim' 0⟩
-  rw [Fintype.bijective_iff_injective_and_card, ZMod.card, h, eq_self_iff_true, and_true_iff]
+  rw [Fintype.bijective_iff_injective_and_card, ZMod.card, h, eq_self_iff_true, and_true]
   apply ZMod.castHom_injective
 
 /-- The unique ring isomorphism between `ZMod n` and a ring `R`
@@ -445,7 +451,7 @@ noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* 
 /-- The unique ring isomorphism between `ZMod p` and a ring `R` of cardinality a prime `p`.
 
 If you need any property of this isomorphism, first of all use `ringEquivOfPrime_eq_ringEquiv`
-below (after `have : CharP R p := ...`) and deduce it by the results about `ZMod.ringEquiv`.  -/
+below (after `have : CharP R p := ...`) and deduce it by the results about `ZMod.ringEquiv`. -/
 noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fintype.card R = p) :
     ZMod p ≃+* R :=
   have : Nontrivial R := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.one_lt)
@@ -518,7 +524,7 @@ variable {m n : ℕ}
 
 @[simp]
 theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
-  | 0, a => Int.natAbs_eq_zero
+  | 0, _ => Int.natAbs_eq_zero
   | n + 1, a => by
     rw [Fin.ext_iff]
     exact Iff.rfl
@@ -699,6 +705,9 @@ theorem val_injective (n : ℕ) [NeZero n] : Function.Injective (val : ZMod n �
 theorem val_one_eq_one_mod (n : ℕ) : (1 : ZMod n).val = 1 % n := by
   rw [← Nat.cast_one, val_natCast]
 
+theorem val_two_eq_two_mod (n : ℕ) : (2 : ZMod n).val = 2 % n := by
+  rw [← Nat.cast_two, val_natCast]
+
 theorem val_one (n : ℕ) [Fact (1 < n)] : (1 : ZMod n).val = 1 := by
   rw [val_one_eq_one_mod]
   exact Nat.mod_eq_of_lt Fact.out
@@ -751,6 +760,12 @@ theorem val_mul_of_lt {n : ℕ} {a b : ZMod n} (h : a.val * b.val < n) :
   rw [val_mul]
   apply Nat.mod_eq_of_lt h
 
+theorem val_mul_iff_lt {n : ℕ} [NeZero n] (a b : ZMod n) :
+    (a * b).val = a.val * b.val ↔ a.val * b.val < n := by
+  constructor <;> intro h
+  · rw [← h]; apply ZMod.val_lt
+  · apply ZMod.val_mul_of_lt h
+
 instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
   ⟨⟨0, 1, fun h =>
       zero_ne_one <|
@@ -773,7 +788,6 @@ def inv : ∀ n : ℕ, ZMod n → ZMod n
 instance (n : ℕ) : Inv (ZMod n) :=
   ⟨inv n⟩
 
-@[nolint unusedHavesSuffices]
 theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>
@@ -818,6 +832,17 @@ theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [M
   · simp [Nat.ModEq, Int.natCast_inj, Nat.mod_zero]
   · rw [Fin.ext_iff, Nat.ModEq, ← val_natCast, ← val_natCast]
     exact Iff.rfl
+
+theorem eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
+  (CharP.cast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
+
+theorem eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n := by
+  rw [← @Nat.cast_one (ZMod 2), ZMod.eq_iff_modEq_nat, Nat.odd_iff, Nat.ModEq]
+
+theorem ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
+  constructor <;>
+    · contrapose
+      simp [eq_zero_iff_even]
 
 theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
@@ -888,6 +913,14 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 -- then we could use the general lemma `inv_eq_of_mul_eq_one`
 protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
+
+lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod n) :
+    a⁻¹ * b = 1 ↔ a = b := by
+  -- ideally, this would be `ha.inv_mul_eq_one`, but `ZMod n` is not a `DivisionMonoid`...
+  -- (see the "TODO" above)
+  refine ⟨fun H ↦ ?_, fun H ↦ H ▸ a.inv_mul_of_unit ha⟩
+  apply_fun (a * ·) at H
+  rwa [← mul_assoc, a.mul_inv_of_unit ha, one_mul, mul_one, eq_comm] at H
 
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
@@ -987,10 +1020,18 @@ theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
+theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
+  simp [pos_iff_ne_zero]
+
+theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
+  | 0, hn, _
+  | 1, hn, _ => by simp at hn
+  | n + 2, _, _ => by simp only [val, ZMod, Fin.ext_iff, Fin.val_one]
+
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · erw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
+  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
     exact
       ⟨fun h => h.elim (by simp) Or.inl, fun h =>
         Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
@@ -999,7 +1040,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
   constructor
   · rintro ⟨m, he⟩
     cases' m with m
-    · erw [mul_zero, mul_eq_zero] at he
+    · rw [mul_zero, mul_eq_zero] at he
       rcases he with (⟨⟨⟩⟩ | he)
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
@@ -1008,7 +1049,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     refine (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
-    erw [Nat.succ_le_succ_iff, Nat.succ_le_succ_iff]; simp
+    simp
   · rintro (rfl | h)
     · rw [val_zero, mul_zero]
       apply dvd_zero
@@ -1016,6 +1057,17 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
 
 theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rw [val_natCast, Nat.mod_eq_of_lt h]
+
+theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
+    (a.cast : ZMod n).val < m := by
+  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  by_cases h : m < n
+  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+    rw [← natCast_val, val_cast_of_lt]
+    · apply a.val_lt
+    apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
+  · rw [not_lt] at h
+    apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
 
 theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n :=
   calc
@@ -1062,6 +1114,28 @@ theorem cast_cast_zmod_of_le {m n : ℕ} [hm : NeZero m] (h : m ≤ n) (a : ZMod
   have : NeZero n := ⟨((Nat.zero_lt_of_ne_zero hm.out).trans_le h).ne'⟩
   rw [cast_eq_val, val_cast_eq_val_of_lt (a.val_lt.trans_le h), natCast_zmod_val]
 
+theorem val_pow {m n : ℕ} {a : ZMod n} [ilt : Fact (1 < n)] (h : a.val ^ m < n) :
+    (a ^ m).val = a.val ^ m := by
+  induction m with
+  | zero => simp [ZMod.val_one]
+  | succ m ih =>
+    have : a.val ^ m < n := by
+      obtain rfl | ha := eq_or_ne a 0
+      · by_cases hm : m = 0
+        · cases hm; simp [ilt.out]
+        · simp only [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
+      · exact lt_of_le_of_lt
+         (Nat.pow_le_pow_of_le_right (by rwa [gt_iff_lt, ZMod.val_pos]) (Nat.le_succ m)) h
+    rw [pow_succ, ZMod.val_mul, ih this, ← pow_succ, Nat.mod_eq_of_lt h]
+
+theorem val_pow_le {m n : ℕ} [Fact (1 < n)] {a : ZMod n} : (a ^ m).val ≤ a.val ^ m := by
+  induction m with
+  | zero => simp [ZMod.val_one]
+  | succ m ih =>
+    rw [pow_succ, pow_succ]
+    apply le_trans (ZMod.val_mul_le _ _)
+    apply Nat.mul_le_mul_right _ ih
+
 /-- `valMinAbs x` returns the integer in the same equivalence class as `x` that is closest to `0`,
   The result will be in the interval `(-n/2, n/2]`. -/
 def valMinAbs : ∀ {n : ℕ}, ZMod n → ℤ
@@ -1080,7 +1154,7 @@ theorem valMinAbs_def_pos {n : ℕ} [NeZero n] (x : ZMod n) :
 
 @[simp, norm_cast]
 theorem coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
-  | 0, x => Int.cast_id
+  | 0, _ => Int.cast_id
   | k@(n + 1), x => by
     rw [valMinAbs_def_pos]
     split_ifs
@@ -1159,7 +1233,7 @@ theorem valMinAbs_eq_zero {n : ℕ} (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 := 
 theorem natCast_natAbs_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
     (a.valMinAbs.natAbs : ZMod n) = if a.val ≤ (n : ℕ) / 2 then a else -a := by
   have : (a.val : ℤ) - n ≤ 0 := by
-    erw [sub_nonpos, Int.ofNat_le]
+    rw [sub_nonpos, Int.ofNat_le]
     exact a.val_le
   rw [valMinAbs_def_pos]
   split_ifs
@@ -1202,20 +1276,8 @@ variable {n a : ℕ}
 theorem valMinAbs_natAbs_eq_min {n : ℕ} [hpos : NeZero n] (a : ZMod n) :
     a.valMinAbs.natAbs = min a.val (n - a.val) := by
   rw [valMinAbs_def_pos]
-  split_ifs with h
-  · rw [Int.natAbs_ofNat]
-    symm
-    apply
-      min_eq_left (le_trans h (le_trans (Nat.half_le_of_sub_le_half _) (Nat.sub_le_sub_left h n)))
-    rw [Nat.sub_sub_self (Nat.div_le_self _ _)]
-  · rw [← Int.natAbs_neg, neg_sub, ← Nat.cast_sub a.val_le]
-    symm
-    apply
-      min_eq_right
-        (le_trans (le_trans (Nat.sub_le_sub_left (lt_of_not_ge h) n) (Nat.le_half_of_half_lt_sub _))
-          (le_of_not_ge h))
-    rw [Nat.sub_sub_self (Nat.div_lt_self (lt_of_le_of_ne' (Nat.zero_le _) hpos.1) one_lt_two)]
-    apply Nat.lt_succ_self
+  have := a.val_lt
+  omega
 
 theorem valMinAbs_natCast_of_le_half (ha : a ≤ n / 2) : (a : ZMod n).valMinAbs = a := by
   cases n
@@ -1272,9 +1334,9 @@ instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun a x => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
@@ -1373,9 +1435,26 @@ end lift
 
 end ZMod
 
+/-!
+### Groups of bounded torsion
+
+For `G` a group and `n` a natural number, `G` having torsion dividing `n`
+(`∀ x : G, n • x = 0`) can be derived from `Module R G` where `R` has characteristic dividing `n`.
+
+It is however painful to have the API for such groups `G` stated in this generality, as `R` does not
+appear anywhere in the lemmas' return type. Instead of writing the API in terms of a general `R`, we
+therefore specialise to the canonical ring of order `n`, namely `ZMod n`.
+
+This spelling `Module (ZMod n) G` has the extra advantage of providing the canonical action by
+`ZMod n`. It is however Type-valued, so we might want to acquire a Prop-valued version in the
+future.
+-/
+
 section Module
-variable {S G : Type*} [AddCommGroup G] {n : ℕ} [Module (ZMod n) G] [SetLike S G]
-  [AddSubgroupClass S G] {K : S} {x : G}
+variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
+
+section general
+variable [Module (ZMod n) G] {x : G}
 
 lemma zmod_smul_mem (hx : x ∈ K) : ∀ a : ZMod n, a • x ∈ K := by
   simpa [ZMod.forall, Int.cast_smul_eq_zsmul] using zsmul_mem hx
@@ -1394,6 +1473,44 @@ instance instZModModule : Module (ZMod n) K :=
   Subtype.coe_injective.module _ (AddSubmonoidClass.subtype K) coe_zmod_smul
 
 end AddSubgroupClass
+
+variable (n)
+
+lemma ZModModule.char_nsmul_eq_zero (x : G) : n • x = 0 := by
+  simp [← Nat.cast_smul_eq_nsmul (ZMod n)]
+
+variable (G) in
+lemma ZModModule.char_ne_one [Nontrivial G] : n ≠ 1 := by
+  rintro rfl
+  obtain ⟨x, hx⟩ := exists_ne (0 : G)
+  exact hx <| by simpa using char_nsmul_eq_zero 1 x
+
+variable (G) in
+lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
+  have := NeZero.ne n
+  have := char_ne_one n G
+  omega
+
+lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
+  Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+
+end general
+
+section two
+variable [Module (ZMod 2) G]
+
+lemma ZModModule.add_self (x : G) : x + x = 0 := by
+  simpa [two_nsmul] using char_nsmul_eq_zero 2 x
+
+lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [add_self, eq_comm, ← sub_eq_zero]
+
+lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [neg_eq_self, sub_eq_add_neg]
+
+lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := by
+  simpa [sub_eq_add] using sub_add_sub_cancel x y z
+
+end two
 end Module
 
 section AddGroup
@@ -1428,6 +1545,8 @@ lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
 
 end Group
 
+open ZMod
+
 /-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
 residue class of `k` mod `m`. -/
 lemma Nat.range_mul_add (m k : ℕ) :
@@ -1441,3 +1560,17 @@ lemma Nat.range_mul_add (m k : ℕ) :
     simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.natCast_zmod_eq_zero_iff_dvd] at H₁
     obtain ⟨b, rfl⟩ := H₁
     exact ⟨b, ha⟩
+
+/-- Equivalence between `ℕ` and `ZMod N × ℕ`, sending `n` to `(n mod N, n / N)`. -/
+def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
+  toFun n := (↑n, n / N)
+  invFun p := p.1.val + N * p.2
+  left_inv n := by simpa only [val_natCast] using mod_add_div n N
+  right_inv p := by
+    ext1
+    · simp only [add_comm p.1.val, cast_add, cast_mul, natCast_self, zero_mul, natCast_val,
+        cast_id', id_eq, zero_add]
+    · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
+        (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
+
+set_option linter.style.longFile 1700
