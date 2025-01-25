@@ -5,6 +5,7 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 import Mathlib.Algebra.Module.SpanRank
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 /-!
 # The Height of an Ideal
 
@@ -230,74 +231,6 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing
       apply_fun (fun I ↦ I.1) at this
       exact this
     map_rel_iff' := fun {I₁ I₂} => @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
-
-theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
-    (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
-  fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
-
-theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRing A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
-    (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
-  rcases eq_or_ne J ⊤ with (rfl | hJ)
-  · simp_rw [Ideal.comap_top, Ideal.minimalPrimes_top, Set.image_empty]
-  refine (Ideal.minimalPrimes_comap_subset _ _).antisymm ?_
-  rintro _ ⟨p, hp, rfl⟩
-  let i := IsLocalization.orderIsoOfPrime S A
-  haveI := hp.1.1
-  refine ⟨⟨Ideal.IsPrime.comap _ , Ideal.comap_mono hp.1.2⟩, fun q hq e => ?_⟩
-  obtain ⟨⟨q', h₁⟩, h₂⟩ :=
-    i.surjective ⟨q, hq.1, Set.disjoint_of_subset_right e (i ⟨_, hp.1.1⟩).2.2⟩
-  replace h₂ : q'.comap (algebraMap R A) = q := by injection h₂
-  subst h₂
-  replace e := Ideal.map_mono (f := algebraMap R A) e
-  replace hq := Ideal.map_mono (f := algebraMap R A) hq.2
-  simp_rw [IsLocalization.map_comap S A] at e hq
-  exact Ideal.comap_mono (hp.2 ⟨h₁, hq⟩ e)
-
-theorem IsLocalization.disjoint_comap_iff (S : Submonoid R) (A : Type*) [CommRing A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
-    Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
-  rw [← iff_not_comm]
-  constructor
-  · intro h; subst h;
-    rw [comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
-    exact ⟨_, S.one_mem⟩
-  · rw [Disjoint, Set.bot_eq_empty]
-    intro h
-    simp only [Set.le_eq_subset, coe_comap, Set.subset_empty_iff, not_forall,
-      Classical.not_imp] at h
-    obtain ⟨x, hx, hx', hx''⟩ := h
-    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at hx''
-    obtain ⟨u, hu⟩ := hx''
-    exact J.eq_top_of_isUnit_mem (hx' hu) (IsLocalization.map_units A ⟨u, hx hu⟩)
-
-theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal R) :
-    (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A)⁻¹' J.minimalPrimes := by
-  ext p
-  constructor
-  · intro hp
-    haveI := hp.1.1
-    refine ⟨⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hp.1.2⟩, ?_⟩
-    rintro I hI e
-    have hI' : Disjoint (S : Set R) I := Set.disjoint_of_subset_right e
-      ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp hp.1.1).2
-    refine (Ideal.comap_mono <|
-      hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
-    · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
-    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
-  · intro hp
-    refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
-    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A,
-        IsLocalization.disjoint_comap_iff S A]
-      refine ⟨hp.1.1, ?_⟩
-      rintro rfl
-      exact hp.1.1.ne_top rfl
-    · intro I hI e
-      rw [← IsLocalization.map_comap S A I, ← IsLocalization.map_comap S A p]
-      haveI := hI.1
-      exact Ideal.map_mono (hp.2 ⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
-        (Ideal.comap_mono e))
 
 theorem IsLocalization.height_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) : J.height = (J.comap (algebraMap R A)).height := by
