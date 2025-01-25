@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.InitialSeg
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Comma
@@ -42,6 +43,7 @@ lemma hasColimitsOfShape_of_isSuccLimit (j : J)
     HasColimitsOfShape (Set.Iio j) C :=
   HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
 
+variable {J} in
 lemma hasColimitsOfShape_of_isSuccLimit'
     {α : Type*} [PartialOrder α] (h : α <i J) (hα : Order.IsSuccLimit h.top) :
     HasColimitsOfShape α C := by
@@ -61,9 +63,29 @@ instance : HasIterationOfShape J (K ⥤ C) where
 variable {J} [SuccOrder J] [WellFoundedLT J]
 
 lemma hasColimitsOfShape_of_initialSeg
-    {α : Type*} [LinearOrder α] (h : α ≤i J) [Nonempty α] :
+    {α : Type*} [LinearOrder α] (f : α ≤i J) [Nonempty α] :
     HasColimitsOfShape α C := by
-  sorry
+  by_cases hf : Function.Surjective f
+  · exact hasColimitsOfShape_of_equivalence
+      (OrderIso.ofRelIsoLT (RelIso.ofSurjective f.toRelEmbedding hf)).equivalence.symm
+  · let s := f.toPrincipalSeg hf
+    obtain ⟨i, hi₀⟩ : ∃ i, i = s.top := ⟨_, rfl⟩
+    induction i using SuccOrder.limitRecOn with
+    | hm i hi =>
+        subst hi₀
+        exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
+    | hs i hi _ =>
+        obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
+          simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)
+        have : OrderTop α :=
+          { top := a
+            le_top b := by
+              rw [← s.le_iff_le]
+              exact Order.le_of_lt_succ (by simpa only [hi₀] using s.lt_top b) }
+        infer_instance
+    | hl i hi =>
+        subst hi₀
+        exact hasColimitsOfShape_of_isSuccLimit' C s hi
 
 lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α] (h : α ≤i J)
     [Nonempty α] :

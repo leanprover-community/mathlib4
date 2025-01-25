@@ -17,8 +17,8 @@ open CategoryTheory Category Limits
 
 /-- `Set.Iic j` is an initial segment. -/
 @[simps]
-def Set.initialSegIic {J : Type*} [Preorder J] (j : J) :
-    Set.Iic j ≤i J where
+def Set.initialSegIic {α : Type*} [Preorder α] (j : α) :
+    Set.Iic j ≤i α where
   toFun := fun ⟨j, hj⟩ ↦ j
   inj' _ _ _ := by aesop
   map_rel_iff' := by aesop
@@ -26,70 +26,72 @@ def Set.initialSegIic {J : Type*} [Preorder J] (j : J) :
 
 /-- `Set.Iio j` is a principal segment. -/
 @[simps]
-def Set.principalSegIio {J : Type*} [Preorder J] (j : J) :
-    Set.Iio j <i J where
+def Set.principalSegIio {α : Type*} [Preorder α] (j : α) :
+    Set.Iio j <i α where
   top := j
   toFun := fun ⟨j, hj⟩ ↦ j
   inj' _ _ _ := by aesop
   map_rel_iff' := by aesop
   mem_range_iff_rel' := by aesop
 
+variable {α α' β : Type*} [PartialOrder α] [PartialOrder α'] [PartialOrder β]
+
+/-- If `f : α <i β` is a principal segment, this is the induced order
+isomorphism `α ≃o Set.Iio f.top`. -/
 @[simps! apply_coe]
-noncomputable def PrincipalSeg.orderIsoIio {α β : Type*} [PartialOrder α] [PartialOrder β]
-    (h : α <i β) :
-    α ≃o Set.Iio h.top where
-  toEquiv := Equiv.ofBijective (f := fun a ↦ ⟨h a, h.lt_top a⟩) (by
+noncomputable def PrincipalSeg.orderIsoIio (f : α <i β) :
+    α ≃o Set.Iio f.top where
+  toEquiv := Equiv.ofBijective (f := fun a ↦ ⟨f a, f.lt_top a⟩) (by
     constructor
     · intro x y hxy
-      exact h.injective (by simpa using hxy)
+      exact f.injective (by simpa using hxy)
     · rintro ⟨z, hz⟩
-      obtain ⟨x, hx⟩ := h.mem_range_of_rel_top hz
+      obtain ⟨x, hx⟩ := f.mem_range_of_rel_top hz
       exact ⟨x, by simpa using hx⟩)
   map_rel_iff' := by simp
 
-variable {α α' β : Type*} [PartialOrder α] [PartialOrder α'] [PartialOrder β]
-  {C : Type*} [Category C]
+variable {C : Type*} [Category C]
 
-/-- When `h : α <i β` and a functor `F : β ⥤ C`, this is the cocone
-for `h.monotone.functor ⋙ F : α ⥤ C` whose point if `F.obj h.top`. -/
+/-- When `f : α <i β` and a functor `F : β ⥤ C`, this is the cocone
+for `f.monotone.functor ⋙ F : α ⥤ C` whose point if `F.obj f.top`. -/
 @[simps]
-def PrincipalSeg.cocone (h : α <i β) (F : β ⥤ C) :
-    Cocone (h.monotone.functor ⋙ F) where
-  pt := F.obj h.top
+def PrincipalSeg.cocone (f : α <i β) (F : β ⥤ C) :
+    Cocone (f.monotone.functor ⋙ F) where
+  pt := F.obj f.top
   ι :=
-    { app i := F.map (homOfLE (h.lt_top i).le)
+    { app i := F.map (homOfLE (f.lt_top i).le)
       naturality i j f := by
         dsimp
         rw [← F.map_comp, comp_id]
         rfl }
 
-/-- If `h : α <i β` is a principal segment and `F : β ⥤ C`, then `h.cocone F`
-is colimit if `(Set.principalSegIio h.top).cocone F` is. -/
-noncomputable def PrincipalSeg.coconeIsColimitOfIsColimit (h : α <i β) (F : β ⥤ C)
-    (htop : IsColimit ((Set.principalSegIio h.top).cocone F)) :
-    IsColimit (h.cocone F) :=
-  htop.whiskerEquivalence h.orderIsoIio.equivalence
+/-- If `f : α <i β` is a principal segment and `F : β ⥤ C`, then `f.cocone F`
+is colimit if `(Set.principalSegIio f.top).cocone F` is. -/
+noncomputable def PrincipalSeg.coconeIsColimitOfIsColimit (f : α <i β) (F : β ⥤ C)
+    (h : IsColimit ((Set.principalSegIio f.top).cocone F)) :
+    IsColimit (f.cocone F) :=
+  h.whiskerEquivalence f.orderIsoIio.equivalence
 
 @[simp]
-lemma InitialSeg.covBy_iff (h : α ≤i β) (a b : α) : h a ⋖ h b ↔ a ⋖ b := by
+lemma InitialSeg.covBy_iff (f : α ≤i β) (a b : α) : f a ⋖ f b ↔ a ⋖ b := by
   constructor
-  · exact fun hab ↦ ⟨by simpa using hab.1, fun c ↦ by simpa using @hab.2 (h c)⟩
+  · exact fun hab ↦ ⟨by simpa using hab.1, fun c ↦ by simpa using @hab.2 (f c)⟩
   · intro hab
     refine ⟨by simpa using hab.1, fun c hac hbc ↦ ?_⟩
-    obtain ⟨c, rfl⟩ := h.mem_range_of_rel hbc
+    obtain ⟨c, rfl⟩ := f.mem_range_of_rel hbc
     exact @hab.2 c (by simpa using hac) (by simpa using hbc)
 
 @[simp]
-lemma InitialSeg.isSuccPrelimit_iff (h : α ≤i β) (a : α) :
-    Order.IsSuccPrelimit (h a) ↔ Order.IsSuccPrelimit a := by
+lemma InitialSeg.isSuccPrelimit_iff (f : α ≤i β) (a : α) :
+    Order.IsSuccPrelimit (f a) ↔ Order.IsSuccPrelimit a := by
   constructor
-  · exact fun ha b hb ↦ ha (h b) (by simpa using hb)
+  · exact fun ha b hb ↦ ha (f b) (by simpa using hb)
   · intro ha b hb
-    obtain ⟨b, rfl⟩ := h.mem_range_of_rel hb.1
+    obtain ⟨b, rfl⟩ := f.mem_range_of_rel hb.1
     simp only [covBy_iff] at hb
     exact ha b hb
 
 @[simp]
-lemma InitialSeg.isSuccLimit_iff (h : α ≤i β) (a : α) :
-    Order.IsSuccLimit (h a) ↔ Order.IsSuccLimit a := by
+lemma InitialSeg.isSuccLimit_iff (f : α ≤i β) (a : α) :
+    Order.IsSuccLimit (f a) ↔ Order.IsSuccLimit a := by
   simp [Order.IsSuccLimit]
