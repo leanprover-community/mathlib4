@@ -241,7 +241,7 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
 
 end ImageFactorisation
 
-/-- `has_image f` means that there exists an image factorisation of `f`. -/
+/-- `HasImage f` means that there exists an image factorisation of `f`. -/
 class HasImage (f : X ⟶ Y) : Prop where mk' ::
   exists_image : Nonempty (ImageFactorisation f)
 
