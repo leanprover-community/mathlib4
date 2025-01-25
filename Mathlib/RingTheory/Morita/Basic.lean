@@ -55,7 +55,7 @@ Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent i
 structure MoritaEquivalence
     (A : Type u₁) [Ring A] [Algebra R A]
     (B : Type u₂) [Ring B] [Algebra R B] where
-  /--the underlying equivalence of category-/
+  /--the underlying equivalence of categories-/
   eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
   additive : eqv.functor.Additive := by infer_instance
   linear : eqv.functor.Linear R := by infer_instance
