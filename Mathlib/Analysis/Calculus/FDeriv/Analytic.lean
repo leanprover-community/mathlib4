@@ -118,6 +118,7 @@ theorem AnalyticWithinAt.differentiableWithinAt (h : AnalyticWithinAt 𝕜 f s x
   obtain ⟨p, hp⟩ := h
   exact hp.differentiableWithinAt
 
+@[fun_prop]
 theorem AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt 𝕜 f x
   | ⟨_, hp⟩ => hp.differentiableAt
 
@@ -234,6 +235,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace
   exact this.symm
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
+@[fun_prop]
 protected theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (fderiv 𝕜 f) x := by
   rcases h with ⟨p, r, hp⟩
@@ -393,6 +395,7 @@ theorem AnalyticOnNhd.iteratedFDeriv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs 
 
 /-- If a partial homeomorphism `f` is analytic at a point `a`, with invertible derivative, then
 its inverse is analytic at `f a`. -/
+@[fun_prop]
 theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) (h : AnalyticAt 𝕜 f a) (h' : fderiv 𝕜 f a = i) :
     AnalyticAt 𝕜 f.symm (f a) := by
@@ -402,6 +405,7 @@ theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
 
 /-- If a partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible derivative,
 then its inverse is analytic at `a`. -/
+@[fun_prop]
 theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.target) (h : AnalyticAt 𝕜 f (f.symm a))
     (h' : fderiv 𝕜 f (f.symm a) = i) :
