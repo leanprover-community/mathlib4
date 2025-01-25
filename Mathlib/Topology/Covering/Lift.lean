@@ -239,11 +239,18 @@ theorem hlift_left (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : (hf.hlift hΓ₀ 
 theorem hlift_comp (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : f ∘ hf.hlift hΓ₀ = γ :=
   funext fun ⟨t, y⟩ => congr_fun (hf.lift_comp (slice γ y) (hΓ₀ y)) t
 
+theorem hlift_congr {Γ : I × Y → E} (g_lifts : f ∘ Γ = γ) (cont_0 : Continuous (Γ ⟨0, ·⟩))
+    (cont_A : ∀ a, Continuous (Γ ⟨·, a⟩)) :
+    Γ = hf.hlift (Γ₀ := ⟨(Γ ⟨0, ·⟩), cont_0⟩) (congr_fun g_lifts ⟨0, ·⟩) := by
+  ext ⟨t, y⟩
+  have h1 : f ∘ (Γ ⟨·, y⟩) = slice γ y := funext (congr_fun g_lifts ⟨·, y⟩)
+  have h2 := hf.lift_unique (slice γ y) (congr_fun g_lifts ⟨0, y⟩) (Γ := ⟨_, cont_A y⟩) ⟨rfl, h1⟩
+  exact ContinuousMap.congr_fun h2 t
+
 theorem hlift_unique (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) {Γ : C(I × Y, E)} (h1 : (Γ ⟨0, ·⟩) = Γ₀)
     (h2 : f ∘ Γ = γ) : Γ = hf.hlift hΓ₀ := by
-  ext ⟨t, y⟩
-  have : f ∘ slice Γ y = slice γ y := funext (congr_fun h2 ⟨·, y⟩)
-  exact ContinuousMap.congr_fun (hf.lift_unique _ (hΓ₀ y) ⟨congr_fun h1 y, this⟩) t
+  convert coe_injective <| hf.hlift_congr h2 (Γ.curry 0 |>.continuous) (slice Γ · |>.continuous)
+  simp [congr_fun h1]
 
 theorem exists_unique_hlift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) :
     ∃! Γ : C(I × Y, E), (Γ ⟨0, ·⟩) = Γ₀ ∧ f ∘ Γ = γ :=
@@ -266,6 +273,7 @@ theorem exists_unique_hlift' [LocallyCompactSpace Y] {γ : C(I, C(Y, X))}
 
 theorem continuous_lift (γ : C(I × Y, X)) {Γ : I × Y → E} (g_lifts : f ∘ Γ = γ)
     (cont_0 : Continuous (Γ ⟨0, ·⟩)) (cont_A : ∀ a, Continuous (Γ ⟨·, a⟩)) : Continuous Γ := by
-  sorry
+  rw [hf.hlift_congr g_lifts cont_0 cont_A]
+  exact ContinuousMap.continuous _
 
 end IsCoveringMap
