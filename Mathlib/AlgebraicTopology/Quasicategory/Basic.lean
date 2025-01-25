@@ -51,7 +51,7 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
   | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
 
 /-- Every Kan complex is a quasicategory. -/
-@[[kerodon 003C]]
+@[kerodon 003C]
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
