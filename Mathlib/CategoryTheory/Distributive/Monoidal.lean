@@ -146,10 +146,7 @@ lemma whiskerLeft_coprod_inr_leftDistrib_inv [IsMonoidalLeftDistrib C] {X Y Z : 
 
 section IsMonoidalRightDistrib
 
-instance IsMonoidalRightDistrib.preserves_binary_coproducts_tensorRight
-    [IsMonoidalRightDistrib C] {X : C} :
-    PreservesColimitsOfShape (Discrete WalkingPair) (tensorRight X) :=
-  IsMonoidalRightDistrib.preservesBinaryCoproducts_tensorRight X
+attribute [instance] IsMonoidalRightDistrib.preservesBinaryCoproducts_tensorRight
 
 instance IsMonoidalRightDistrib.preservesColimit_pair_tensorRight
     [IsMonoidalRightDistrib C] {X Y Z : C} :
