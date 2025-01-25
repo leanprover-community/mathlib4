@@ -167,6 +167,8 @@ instance IsMonoidalRightDistrib.preservesColimit_pair_tensorRight
 def rightDistrib [IsMonoidalRightDistrib C] (X Y Z : C) : (Y ⊗ X) ⨿ (Z ⊗ X) ≅ (Y ⨿ Z) ⊗ X :=
   PreservesColimitPair.iso (tensorRight X) Y Z
 
+end IsMonoidalRightDistrib
+
 namespace Distributive
 
 /-- Notation for the forward direction morphism of the canonical right distributivity isomorphism -/
