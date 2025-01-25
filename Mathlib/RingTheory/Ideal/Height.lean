@@ -121,12 +121,6 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
 
--- theorem ENat.iSup₂_add {ι : Type*} {p : ι → Prop} (hs : ∃ i, p i)
---     (f : ∀ (i : ι), p i → ℕ∞) (x : ℕ∞) :
---     (⨆ (i : ι) (h : p i), f i h) + x = ⨆ (i : ι) (h : p i), f i h + x := by
---   haveI : Nonempty { i // p i } := ⟨⟨_, hs.choose_spec⟩⟩
---   rw [iSup_subtype', iSup_subtype', ENat.iSup_add]
-
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
 
