@@ -93,6 +93,8 @@ theorem log_zero : log 0 = 0 := by simp [log]
 @[simp]
 theorem log_one : log 1 = 0 := by simp [log]
 
+@[simp] lemma log_div_self (x : ℂ) : log (x / x) = 0 := by simp [log]
+
 theorem log_neg_one : log (-1) = π * I := by simp [log]
 
 theorem log_I : log I = π / 2 * I := by simp [log]

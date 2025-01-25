@@ -176,8 +176,10 @@ theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
   rw [← ofReal_div, arg_real_mul]
   exact div_pos (abs.pos hy) (abs.pos hx)
 
-@[simp]
-theorem arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
+@[simp] lemma arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
+
+@[simp] lemma arg_div_self (x : ℂ) : arg (x / x) = 0 := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
 @[simp]
 theorem arg_neg_one : arg (-1) = π := by simp [arg, le_refl, not_le.2 (zero_lt_one' ℝ)]
