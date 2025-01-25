@@ -11,7 +11,7 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Bound.Attribute
 
 /-!
-# Lemmas about Exponential, trigonometric and hyperbolic trigonometric functions
+# Lemmas about exponential, trigonometric and hyperbolic trigonometric functions
 
 This file contains lemmas about the real and complex exponential, sine, cosine, tangent, hyperbolic
 sine, hyperbolic cosine, and hyperbolic tangent functions. The definitions of these functions can
