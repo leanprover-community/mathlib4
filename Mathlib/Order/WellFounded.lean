@@ -78,6 +78,26 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
+/-- A relation is well-founded iff it doesn't have any infinite decreasing sequence.
+
+See `RelEmbedding.wellFounded_iff_no_descending_seq` for a version on strict orders. -/
+theorem wellFounded_iff_no_descending_seq :
+    WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } := by
+  rw [WellFounded.wellFounded_iff_has_min]
+  refine ⟨fun hr ↦ ⟨fun ⟨f, hf⟩ ↦ ?_⟩, ?_⟩
+  · obtain ⟨_, ⟨n, rfl⟩, hn⟩ := hr _ (Set.range_nonempty f)
+    exact hn _ (Set.mem_range_self (n + 1)) (hf n)
+  · contrapose!
+    rw [not_isEmpty_iff]
+    rintro ⟨s, hs, hs'⟩
+    let f : ℕ → s := Nat.rec (Classical.indefiniteDescription _ hs) fun n IH ↦
+      ⟨(hs' _ IH.2).choose, (hs' _ IH.2).choose_spec.1⟩
+    exact ⟨⟨Subtype.val ∘ f, fun n ↦ (hs' _ (f n).2).choose_spec.2⟩⟩
+
+theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
+  by_contra! hf
+  exact (wellFounded_iff_no_descending_seq.1 h.wf).elim ⟨f, hf⟩
+
 open Set
 
 /-- The supremum of a bounded, well-founded order -/

@@ -102,7 +102,7 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
   classical
   by_cases hFp : ringChar F = p
   · rw [show (p : F) = 0 by rw [← hFp]; exact ringChar.Nat.cast_ringChar]
-    simp only [isSquare_zero, Ne, true_iff, map_mul]
+    simp only [IsSquare.zero, Ne, true_iff, map_mul]
     obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
     have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
     conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]

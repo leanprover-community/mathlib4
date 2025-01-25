@@ -346,7 +346,8 @@ theorem prodMap_det [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Mo
   rw [← det_toMatrix (b.prod b'), ← det_toMatrix b, ← det_toMatrix b', toMatrix_prodMap,
     det_fromBlocks_zero₂₁, det_toMatrix]
 
-theorem pi_det [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) :
+omit [DecidableEq ι] in
+theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) :
     (LinearMap.pi (fun i ↦ (f i).comp (LinearMap.proj i))).det = ∏ i, (f i).det := by
   classical
   let b := Module.Free.chooseBasis R M

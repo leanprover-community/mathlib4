@@ -79,6 +79,9 @@ theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
+theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
+  rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
+
 end Preorder
 
 section PartialOrder

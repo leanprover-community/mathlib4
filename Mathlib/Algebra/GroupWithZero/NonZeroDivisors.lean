@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.GroupWithZero.Opposite
 
 /-!
@@ -247,6 +247,16 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroH
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M']
     [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M⁰ ≤ M'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
+
+/-- If an element maps to a non-zero-divisor via injective homomorphism,
+then it is non-zero-divisor. -/
+theorem mem_nonZeroDivisor_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
+    (hf : Function.Injective f) {a : M} (ha : f a ∈ M'⁰) : a ∈ M⁰ :=
+  fun x hx ↦ hf <| map_zero f ▸ ha (f x) (map_mul f x a ▸ map_zero f ▸ congrArg f hx)
+
+theorem comap_nonZeroDivisor_le_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
+    (hf : Function.Injective f) : M'⁰.comap f ≤ M⁰ :=
+  fun _ ha ↦ mem_nonZeroDivisor_of_injective hf (Submonoid.mem_comap.mp ha)
 
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :

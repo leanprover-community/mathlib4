@@ -251,7 +251,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
       simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       norm_num at *
-      exact (log_nonpos_iff hs₁).mpr hs₂.le
+      exact (log_nonpos_iff hs₁.le).mpr hs₂.le
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono

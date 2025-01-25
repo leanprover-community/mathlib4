@@ -181,7 +181,7 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 @[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- Porting note: removed `@[simp]` because `simpNF` linter complained
+@[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
