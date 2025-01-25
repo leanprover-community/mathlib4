@@ -286,7 +286,6 @@ instance : Limits.HasImages (Sheaf J (Type max v u)) :=
 @[deprecated (since := "2025-01-25")] alias imageSheafι := Sheaf.imageι
 @[deprecated (since := "2025-01-25")] alias toImageSheaf_ι := Sheaf.toImage_ι
 
-
 end Image
 
 end CategoryTheory
