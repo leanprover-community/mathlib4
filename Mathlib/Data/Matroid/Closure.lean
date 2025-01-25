@@ -853,37 +853,6 @@ section Constructions
 
 variable {R S : Set α}
 
-@[simp] lemma emptyOn_closure_eq (X : Set α) : (emptyOn α).closure X = ∅ := by
-  rw [← subset_empty_iff, ← emptyOn_ground]; apply closure_subset_ground
-
-@[simp] lemma loopyOn_closure_eq (E X : Set α) : (loopyOn E).closure X = E :=
-  (closure_subset_ground _ _).antisymm
-    (subset_trans (by rw [(loopyOn_base_iff.2 rfl).closure_eq])
-      (closure_subset_closure _ (empty_subset _)))
-
-@[simp] lemma loopyOn_spanning_iff {E : Set α} : (loopyOn E).Spanning X ↔ X ⊆ E := by
-  rw [spanning_iff, loopyOn_closure_eq, loopyOn_ground, and_iff_right rfl]
-
-lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := by
-  refine ⟨fun h ↦ ext_closure ?_, fun h ↦ by rw [h, loopyOn_closure_eq, loopyOn_ground]⟩
-  refine fun X ↦ subset_antisymm (by simp [closure_subset_ground]) ?_
-  rw [loopyOn_closure_eq, ← h]
-  exact M.closure_mono (empty_subset _)
-
-@[simp] lemma uniqueBaseOn_closure_eq (I E X : Set α) :
-    (uniqueBaseOn I E).closure X = (X ∩ I ∩ E) ∪ (E \ I) := by
-  have hb : (uniqueBaseOn (I ∩ E) E).Basis (X ∩ E ∩ (I ∩ E)) (X ∩ E) :=
-    (uniqueBaseOn_basis_iff inter_subset_right).2 rfl
-  ext e
-  rw [← uniqueBaseOn_inter_ground_eq I E, ← closure_inter_ground _ X, uniqueBaseOn_ground,
-    ← hb.closure_eq_closure, hb.indep.mem_closure_iff, dep_iff, uniqueBaseOn_indep_iff',
-    insert_subset_iff, uniqueBaseOn_ground, inter_assoc, inter_self,
-    and_iff_left inter_subset_right, ← inter_inter_distrib_right, inter_assoc,
-    inter_union_distrib_right, inter_comm I, inter_union_diff, insert_subset_iff, inter_comm X,
-    inter_assoc, and_iff_left inter_subset_left, mem_inter_iff]
-  simp only [not_and, mem_inter_iff, mem_union, mem_diff]
-  tauto
-
 @[simp] lemma restrict_closure_eq' (M : Matroid α) (X R : Set α) :
     (M ↾ R).closure X = (M.closure (X ∩ R) ∩ R) ∪ (R \ M.E) := by
   obtain ⟨I, hI⟩ := (M ↾ R).exists_basis' X
@@ -898,6 +867,31 @@ lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := b
 lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).closure X = M.closure X ∩ R := by
   rw [restrict_closure_eq', diff_eq_empty.mpr hR, union_empty, inter_eq_self_of_subset_left hXR]
+
+@[simp] lemma emptyOn_closure_eq (X : Set α) : (emptyOn α).closure X = ∅ := by
+  rw [← subset_empty_iff, ← emptyOn_ground]; apply closure_subset_ground
+
+@[simp] lemma loopyOn_closure_eq (E X : Set α) : (loopyOn E).closure X = E := by
+  simp [loopyOn, restrict_closure_eq']
+
+@[simp] lemma loopyOn_spanning_iff {E : Set α} : (loopyOn E).Spanning X ↔ X ⊆ E := by
+  rw [spanning_iff, loopyOn_closure_eq, loopyOn_ground, and_iff_right rfl]
+
+@[simp] lemma freeOn_closure_eq (E X : Set α) : (freeOn E).closure X = X ∩ E := by
+  rw [← closure_inter_ground, freeOn_ground]
+  simp (config := {contextual := true}) [Set.ext_iff, insert_subset_iff, freeOn_indep_iff,
+    and_comm, Indep.mem_closure_iff' (M := freeOn E) (I := X ∩ E) (by simp)]
+
+@[simp] lemma uniqueBaseOn_closure_eq (I E X : Set α) :
+    (uniqueBaseOn I E).closure X = (X ∩ I ∩ E) ∪ (E \ I) := by
+  rw [uniqueBaseOn, restrict_closure_eq', freeOn_closure_eq, inter_right_comm,
+    inter_assoc (c := E), inter_self, inter_right_comm, freeOn_ground]
+
+lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := by
+  refine ⟨fun h ↦ ext_closure ?_, fun h ↦ by rw [h, loopyOn_closure_eq, loopyOn_ground]⟩
+  refine fun X ↦ subset_antisymm (by simp [closure_subset_ground]) ?_
+  rw [loopyOn_closure_eq, ← h]
+  exact M.closure_mono (empty_subset _)
 
 @[simp] lemma comap_closure_eq {β : Type*} (M : Matroid β) (f : α → β) (X : Set α) :
     (M.comap f).closure X = f ⁻¹' M.closure (f '' X) := by
