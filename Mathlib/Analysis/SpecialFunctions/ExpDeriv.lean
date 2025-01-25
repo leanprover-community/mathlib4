@@ -49,12 +49,12 @@ theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
 
 /-- `exp ∘ f` is analytic -/
 @[fun_prop]
-theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
+theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (exp ∘ f) x :=
   analyticAt_cexp.comp fa
 
 /-- `exp ∘ f` is analytic -/
 @[fun_prop]
-theorem AnalyticAt.cexp' (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (exp ∘ f) x :=
+theorem AnalyticAt.cexp' (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
   fa.cexp
 
 theorem AnalyticWithinAt.cexp (fa : AnalyticWithinAt ℂ f s x) :
