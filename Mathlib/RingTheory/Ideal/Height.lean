@@ -305,9 +305,8 @@ theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing
       exact Ideal.map_mono (hp.2 ⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
         (Ideal.comap_mono e))
 
-theorem IsLocalization.height_comap (S : Submonoid R) (A : Type*) [CommRing A] [Nontrivial A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
-    J.height = (J.comap (algebraMap R A)).height := by
+theorem IsLocalization.height_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
+    [IsLocalization S A] (J : Ideal A) : J.height = (J.comap (algebraMap R A)).height := by
   rw [Ideal.height, Ideal.height]
   simp_rw [IsLocalization.primeHeight_comap S A, IsLocalization.minimalPrimes_comap S A,
     ← Ideal.height_eq_primeHeight, iInf_image]
