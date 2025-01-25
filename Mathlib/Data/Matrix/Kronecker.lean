@@ -36,8 +36,8 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 These require `open Kronecker`:
 
 * `A ⊗ₖ B` for `kroneckerMap (*) A B`. Lemmas about this notation use the token `kronecker`.
-* `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.  Lemmas about this notation use the token
-  `kroneckerTMul`.
+* `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.
+  Lemmas about this notation use the token `kroneckerTMul`.
 
 -/
 
@@ -421,8 +421,8 @@ def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p)
 @[inherit_doc kroneckerTMul]
 scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (· ⊗ₜ ·)
 
-@[inherit_doc kroneckerTMul]
-scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 => Matrix.kroneckerMap (TensorProduct.tmul R) x y
+@[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
+  Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
 open Kronecker
 
