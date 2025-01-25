@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
@@ -7,6 +7,22 @@ import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.RCLike.Basic
+
+/-!
+# Left and right derivatives of real functions
+
+TODO: do we keep those definitions?
+
+## Main definitions
+
+* `rightDeriv f x`: right derivative of `f` at `x` if it exists, 0 otherwise.
+  Defined as `derivWithin f (Ioi x) x`.
+
+## Main statements
+
+* `fooBar_unique`
+
+-/
 
 
 open Set Filter Topology
@@ -60,7 +76,7 @@ lemma rightDeriv_eq_neg_leftDeriv_neg_apply (f : ℝ → ℝ) (x : ℝ) :
     simp [Function.comp_assoc]
   · simp_rw [leftDeriv]
     rw [derivWithin_comp _ ((neg_neg x).symm ▸ hf_diff)
-        (differentiable_neg _).differentiableWithinAt h_map (uniqueDiffWithinAt_Iio (-x)),
+        (differentiable_neg _).differentiableWithinAt h_map,
       neg_neg, ← rightDeriv_def, derivWithin_neg _ _ (uniqueDiffWithinAt_Iio _)]
     simp only [mul_neg, mul_one, neg_neg]
 
@@ -101,42 +117,31 @@ lemma rightDeriv_congr_atTop {g : ℝ → ℝ} (h : f =ᶠ[atTop] g) :
     filter_upwards [h_ge] using ha
   filter_upwards [h'] with a ha using ha.rightDeriv_eq_nhds
 
-lemma rightDeriv_of_hasDerivAt {f' : ℝ} (h : HasDerivAt f f' x) :
-    rightDeriv f x = f' := by
-  rw [rightDeriv_def, h.hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)]
+lemma HasDerivWithinAt.rightDeriv {f' : ℝ} (h : HasDerivWithinAt f f' (Ioi x) x) :
+    rightDeriv f x = f' := h.derivWithin (uniqueDiffWithinAt_Ioi x)
 
-lemma leftDeriv_of_hasDerivAt {f' : ℝ} (h : HasDerivAt f f' x) :
-    leftDeriv f x = f' := by
-  rw [leftDeriv_def, h.hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)]
+lemma HasDerivWithinAt.leftDeriv {f' : ℝ} (h : HasDerivWithinAt f f' (Iio x) x) :
+    leftDeriv f x = f' := h.derivWithin (uniqueDiffWithinAt_Iio x)
 
-@[simp]
-lemma rightDeriv_zero : rightDeriv 0 = 0 := by
-  ext x
-  simp only [rightDeriv, Pi.zero_apply]
-  exact derivWithin_const x _ 0 (uniqueDiffWithinAt_Ioi x)
+lemma HasDerivAt.rightDeriv {f' : ℝ} (h : HasDerivAt f f' x) :
+    rightDeriv f x = f' := h.hasDerivWithinAt.rightDeriv
+
+lemma HasDerivAt.leftDeriv {f' : ℝ} (h : HasDerivAt f f' x) :
+    leftDeriv f x = f' := h.hasDerivWithinAt.leftDeriv
 
 @[simp]
-lemma rightDeriv_const (c : ℝ) : rightDeriv (fun _ ↦ c) = 0 := by
-  ext x
-  rw [rightDeriv_def, Pi.zero_apply, derivWithin_const x _ c (uniqueDiffWithinAt_Ioi x)]
+lemma rightDeriv_zero : rightDeriv 0 = 0 := by ext; simp [rightDeriv_def]
 
 @[simp]
-lemma leftDeriv_const (c : ℝ) : leftDeriv (fun _ ↦ c) = 0 := by
-  simp_rw [leftDeriv_eq_neg_rightDeriv_neg, rightDeriv_const, Pi.zero_apply, neg_zero]
-  rfl
+lemma rightDeriv_const (c : ℝ) : rightDeriv (fun _ ↦ c) = 0 := by ext; simp [rightDeriv_def]
+
+@[simp]
+lemma leftDeriv_const (c : ℝ) : leftDeriv (fun _ ↦ c) = 0 := by ext; simp [leftDeriv_def]
 
 @[simp]
 lemma rightDeriv_const_mul (a : ℝ) :
     rightDeriv (fun x ↦ a * f x) = fun x ↦ a * rightDeriv f x := by
-  ext x
-  by_cases ha : a = 0
-  · simp [ha]
-  by_cases hfx : DifferentiableWithinAt ℝ f (Ioi x) x
-  · simp_rw [rightDeriv_def, derivWithin_const_mul (uniqueDiffWithinAt_Ioi x) _ hfx]
-  · rw [rightDeriv_of_not_differentiableWithinAt hfx, mul_zero,
-      rightDeriv_of_not_differentiableWithinAt]
-    have : f = fun x ↦ a⁻¹ * (a * f x) := by ext; simp [ha]
-    exact fun h_diff ↦ hfx <| this ▸ h_diff.const_mul _
+  ext; exact derivWithin_const_mul_field a
 
 @[simp]
 lemma leftDeriv_const_mul (a : ℝ) :
@@ -168,23 +173,21 @@ lemma leftDeriv_id : leftDeriv id = fun _ ↦ 1 := by
 lemma leftDeriv_id' : leftDeriv (fun x ↦ x) = fun _ ↦ 1 := leftDeriv_id
 
 @[simp]
-lemma rightDeriv_neg_id {y : ℝ} : rightDeriv (fun x ↦ - x) y = - 1 :=
-  rightDeriv_of_hasDerivAt (hasDerivAt_neg _)
+lemma rightDeriv_neg_id {y : ℝ} : rightDeriv (fun x ↦ - x) y = - 1 := (hasDerivAt_neg _).rightDeriv
 
 @[simp]
-lemma leftDeriv_neg_id {y : ℝ} : leftDeriv (fun x ↦ - x) y = - 1 :=
-  leftDeriv_of_hasDerivAt (hasDerivAt_neg _)
+lemma leftDeriv_neg_id {y : ℝ} : leftDeriv (fun x ↦ - x) y = - 1 := (hasDerivAt_neg _).leftDeriv
 
 lemma rightDeriv_add_apply {f g : ℝ → ℝ} {x : ℝ} (hf : DifferentiableWithinAt ℝ f (Ioi x) x)
     (hg : DifferentiableWithinAt ℝ g (Ioi x) x) :
     rightDeriv (f + g) x = rightDeriv f x + rightDeriv g x := by
-  simp_rw [rightDeriv_def, ← derivWithin_add (uniqueDiffWithinAt_Ioi x) hf hg]
+  simp_rw [rightDeriv_def, ← derivWithin_add hf hg]
   rfl
 
 lemma rightDeriv_add_apply' {f g : ℝ → ℝ} {x : ℝ} (hf : DifferentiableWithinAt ℝ f (Ioi x) x)
     (hg : DifferentiableWithinAt ℝ g (Ioi x) x) :
-    rightDeriv (fun x ↦ f x + g x) x = rightDeriv f x + rightDeriv g x :=
-  rightDeriv_add_apply hf hg
+    rightDeriv (fun x ↦ f x + g x) x = rightDeriv f x + rightDeriv g x := by
+  simp_rw [rightDeriv_def, ← derivWithin_add hf hg]
 
 lemma rightDeriv_add {f g : ℝ → ℝ} (hf : ∀ x, DifferentiableWithinAt ℝ f (Ioi x) x)
     (hg : ∀ x, DifferentiableWithinAt ℝ g (Ioi x) x) :
@@ -199,13 +202,13 @@ lemma rightDeriv_add' {f g : ℝ → ℝ} (hf : ∀ x, DifferentiableWithinAt �
 lemma leftDeriv_add_apply {f g : ℝ → ℝ} {x : ℝ} (hf : DifferentiableWithinAt ℝ f (Iio x) x)
     (hg : DifferentiableWithinAt ℝ g (Iio x) x) :
     leftDeriv (f + g) x = leftDeriv f x + leftDeriv g x := by
-  simp_rw [leftDeriv_def, ← derivWithin_add (uniqueDiffWithinAt_Iio x) hf hg]
+  simp_rw [leftDeriv_def, ← derivWithin_add hf hg]
   rfl
 
 lemma leftDeriv_add_apply' {f g : ℝ → ℝ} {x : ℝ} (hf : DifferentiableWithinAt ℝ f (Iio x) x)
     (hg : DifferentiableWithinAt ℝ g (Iio x) x) :
-    leftDeriv (fun x ↦ f x + g x) x = leftDeriv f x + leftDeriv g x :=
-  leftDeriv_add_apply hf hg
+    leftDeriv (fun x ↦ f x + g x) x = leftDeriv f x + leftDeriv g x := by
+  simp_rw [leftDeriv_def, ← derivWithin_add hf hg]
 
 lemma leftDeriv_add {f g : ℝ → ℝ} (hf : ∀ x, DifferentiableWithinAt ℝ f (Iio x) x)
     (hg : ∀ x, DifferentiableWithinAt ℝ g (Iio x) x) :

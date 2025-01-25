@@ -44,7 +44,7 @@ lemma kl_of_not_ac (h : ¬ μ ≪ ν) : kl μ ν = ∞ := if_neg (not_and_of_not
 lemma kl_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : kl μ ν = ∞ :=
   if_neg (not_and_of_not_right _ h)
 
-lemma kl_toReal [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
+lemma toReal_kl [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
     (h_int : Integrable (llr μ ν) μ) :
     (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ + (ν .univ).toReal - (μ .univ).toReal := by
   rw [kl_of_ac_of_integrable h h_int, ENNReal.toReal_ofReal]
@@ -52,11 +52,11 @@ lemma kl_toReal [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
 
 /-- If `μ ≪ ν` and `μ univ = ν univ`, then `toReal` of the Kullback-Leibler divergence is equal to
 an integral, without any integrability condition. -/
-lemma kl_toReal_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
+lemma toReal_kl_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
     (h_eq : μ univ = ν univ) :
     (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ := by
   by_cases h_int : Integrable (llr μ ν) μ
-  · simp [kl_toReal h h_int, h_eq]
+  · simp [toReal_kl h h_int, h_eq]
   · rw [kl_of_not_integrable h_int, integral_undef h_int]
     simp [h_eq]
 

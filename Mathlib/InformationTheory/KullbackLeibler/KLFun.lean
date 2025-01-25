@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Analysis.Convex.Integral
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.InformationTheory.KullbackLeibler.ConvexDeriv
+import Mathlib.Analysis.Convex.Deriv
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!
@@ -102,14 +102,15 @@ lemma integral_rnDeriv_mul_log [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪
   rfl
 
 @[simp]
-lemma rightDeriv_mul_log (hx : x ≠ 0) : rightDeriv (fun x ↦ x * log x) x = log x + 1 :=
-  rightDeriv_of_hasDerivAt (Real.hasDerivAt_mul_log hx)
+lemma rightDeriv_mul_log (hx : x ≠ 0) : derivWithin (fun x ↦ x * log x) (Ioi x) x = log x + 1 :=
+  (Real.hasDerivAt_mul_log hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
 
 @[simp]
-lemma leftDeriv_mul_log (hx : x ≠ 0) : leftDeriv (fun x ↦ x * log x) x = log x + 1 :=
-  leftDeriv_of_hasDerivAt (Real.hasDerivAt_mul_log hx)
+lemma leftDeriv_mul_log (hx : x ≠ 0) : derivWithin (fun x ↦ x * log x) (Iio x) x = log x + 1 :=
+  (Real.hasDerivAt_mul_log hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)
 
-lemma tendsto_rightDeriv_mul_log_atTop : Tendsto (rightDeriv fun x ↦ x * log x) atTop atTop := by
+lemma tendsto_rightDeriv_mul_log_atTop :
+    Tendsto (fun x ↦ derivWithin (fun x ↦ x * log x) (Ioi x) x) atTop atTop := by
   have h_tendsto : Tendsto (fun x ↦ log x + 1) atTop atTop :=
     tendsto_log_atTop.atTop_add tendsto_const_nhds
   refine (tendsto_congr' ?_).mpr h_tendsto
@@ -134,23 +135,28 @@ lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
   ring
 
 @[simp]
-lemma rightDeriv_klFun (hx : x ≠ 0) : rightDeriv klFun x = log x :=
-  rightDeriv_of_hasDerivAt (hasDerivAt_klFun hx)
+lemma deriv_klFun (hx : x ≠ 0) : deriv klFun x = log x := (hasDerivAt_klFun hx).deriv
 
-lemma rightDeriv_klFun_one : rightDeriv klFun 1 = 0 := by simp
+@[simp]
+lemma rightDeriv_klFun (hx : x ≠ 0) : derivWithin klFun (Ioi x) x = log x :=
+  (hasDerivAt_klFun hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
 
-lemma rightDeriv_klFun_eventually_eq : rightDeriv klFun =ᶠ[atTop] log := by
+lemma rightDeriv_klFun_one : derivWithin klFun (Ioi 1) 1 = 0 := by simp
+
+lemma rightDeriv_klFun_eventually_eq : (fun x ↦ derivWithin klFun (Ioi x) x) =ᶠ[atTop] log := by
   filter_upwards [eventually_ne_atTop 0] with x hx
   rw [rightDeriv_klFun hx]
 
-lemma tendsto_rightDeriv_klFun_atTop : Tendsto (rightDeriv klFun) atTop atTop := by
+lemma tendsto_rightDeriv_klFun_atTop :
+    Tendsto (fun x ↦ derivWithin klFun (Ioi x) x) atTop atTop := by
   rw [tendsto_congr' rightDeriv_klFun_eventually_eq]
   exact tendsto_log_atTop
 
 lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
   rcases hx.eq_or_lt with rfl | hx
   · simp
-  · refine ConvexOn.nonneg_of_todo (f := klFun) ?_ (by simp) (by simp) hx
+  · rw [← klFun_one]
+    refine ConvexOn.ge_of_rightDeriv_eq_zero (S := Ioi 0) ?_ (by simp) (by simp)  hx
     exact convexOn_klFun.subset (Ioi_subset_Ici le_rfl) (convex_Ioi _)
 
 lemma klFun_eq_zero_iff (hx : 0 ≤ x) : klFun x = 0 ↔ x = 1 := by
