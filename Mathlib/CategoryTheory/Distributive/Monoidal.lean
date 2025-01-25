@@ -88,10 +88,7 @@ variable {C} [Category.{v} C] [MonoidalCategory C] [HasBinaryCoproducts C]
 
 section IsMonoidalLeftDistrib
 
-instance IsMonoidalLeftDistrib.preserves_binary_coproducts_tensorLeft
-    [IsMonoidalLeftDistrib C] {X : C} :
-    PreservesColimitsOfShape (Discrete WalkingPair) (tensorLeft X) :=
-  IsMonoidalLeftDistrib.preservesBinaryCoproducts_tensorLeft X
+attribute [instance] IsMonoidalLeftDistrib.preservesBinaryCoproducts_tensorLeft
 
 /-- The canonical left distributivity isomorphism -/
 def leftDistrib [IsMonoidalLeftDistrib C] (X Y Z : C) :
