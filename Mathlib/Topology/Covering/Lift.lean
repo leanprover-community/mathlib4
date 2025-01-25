@@ -195,14 +195,22 @@ noncomputable def lift (γ : C(I, X)) (he : f e = γ 0) : C(I, E) :=
   (hf.exists_unique_lift he).choose
 
 @[simp]
-theorem lift_spec (γ : C(I, X)) (he : f e = γ 0) : hf.lift γ he 0 = e ∧ f ∘ hf.lift γ he = γ :=
-  (hf.exists_unique_lift he).choose_spec.1
+theorem lift_left (γ : C(I, X)) (he : f e = γ 0) : hf.lift γ he 0 = e :=
+  (hf.exists_unique_lift he).choose_spec.1.1
+
+@[simp]
+theorem lift_comp (γ : C(I, X)) (he : f e = γ 0) : f ∘ hf.lift γ he = γ :=
+  (hf.exists_unique_lift he).choose_spec.1.2
+
+theorem lift_unique (γ : C(I, X)) (he : f e = γ 0) {Γ : C(I, E)} (hΓ : Γ 0 = e ∧ f ∘ Γ = γ) :
+    Γ = hf.lift γ he :=
+  (hf.exists_unique_lift he).unique hΓ ⟨hf.lift_left γ he, hf.lift_comp γ he⟩
 
 variable {Y : Type*} [TopologicalSpace Y] {γ : C(I × Y, X)} {Γ₀ : C(Y, E)}
 
 private def slice (γ : C(I × Y, X)) : C(Y, C(I, X)) := γ.comp prodSwap |>.curry
 
-private noncomputable def joint_lift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : C(Y, C(I, E)) := by
+noncomputable def joint_lift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : C(Y, C(I, E)) := by
   use fun y => hf.lift (slice γ y) (hΓ₀ y)
   rw [continuous_iff_continuousAt]
   intro y₀
@@ -218,27 +226,28 @@ private noncomputable def joint_lift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) :
   apply coe_injective
   apply hf.eq_of_comp_eq (a := 0) (ContinuousMap.continuous _) (ContinuousMap.continuous _)
   · simp [G₂, h3]
-  · simp only [Set.restrict_apply, mem_setOf_eq, hf.lift_spec, comp_apply, coe_mk, G₂]
+  · simp only [Set.restrict_apply, mem_setOf_eq, hf.lift_left, hf.lift_comp, comp_apply, coe_mk, G₂]
     ext t
     simp [h3]
 
+noncomputable def hlift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : C(I × Y, E) :=
+  (hf.joint_lift hΓ₀).uncurry |>.comp prodSwap
+
+theorem hlift_left (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : (hf.hlift hΓ₀ ⟨0, ·⟩) = Γ₀ :=
+  funext fun _ => hf.lift_left _ _
+
+theorem hlift_comp (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) : f ∘ hf.hlift hΓ₀ = γ :=
+  funext fun ⟨t, y⟩ => congr_fun (hf.lift_comp (slice γ y) (hΓ₀ y)) t
+
+theorem hlift_unique (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) {Γ : C(I × Y, E)} (h1 : (Γ ⟨0, ·⟩) = Γ₀)
+    (h2 : f ∘ Γ = γ) : Γ = hf.hlift hΓ₀ := by
+  ext ⟨t, y⟩
+  have : f ∘ slice Γ y = slice γ y := funext (congr_fun h2 ⟨·, y⟩)
+  exact ContinuousMap.congr_fun (hf.lift_unique _ (hΓ₀ y) ⟨congr_fun h1 y, this⟩) t
+
 theorem exists_unique_hlift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) :
-    ∃! Γ : C(I × Y, E), (Γ ⟨0, ·⟩) = Γ₀ ∧ f ∘ Γ = γ := by
-  refine ⟨hf.joint_lift hΓ₀ |>.uncurry |>.comp prodSwap, ⟨?_, ?_⟩, ?_⟩
-  · exact funext (fun y => hf.lift_spec (slice γ y) (hΓ₀ y) |>.1)
-  · ext ⟨t, y⟩
-    have := congr_fun (hf.lift_spec (slice γ y) (hΓ₀ y)).2 t
-    simp only [slice, Function.comp_apply, curry_apply, comp_apply, prodSwap_apply] at this
-    simp [joint_lift, slice, this]
-  · rintro Γ hΓ ; ext1 ⟨t, y⟩
-    have h1 : f (Γ₀ y) = slice γ y 0 := hΓ₀ y
-    suffices (Γ.comp prodSwap |>.curry y) = (hf.lift _ h1) from ContinuousMap.congr_fun this t
-    apply coe_injective
-    apply hf.eq_of_comp_eq (a := 0) (ContinuousMap.continuous _) (ContinuousMap.continuous _)
-    · simpa using congr_fun hΓ.1 y
-    · simp only [hf.lift_spec (slice γ y) h1]
-      ext t
-      simpa using congr_fun hΓ.2 (t, y)
+    ∃! Γ : C(I × Y, E), (Γ ⟨0, ·⟩) = Γ₀ ∧ f ∘ Γ = γ :=
+  ⟨hf.hlift hΓ₀, ⟨hf.hlift_left hΓ₀, hf.hlift_comp hΓ₀⟩, fun _ h => hf.hlift_unique hΓ₀ h.1 h.2⟩
 
 /-- Specialized version of `exists_unique_hlift` stated in terms of a continuous map from the unit
 interval to `C(Y, X)` in the case when `Y` is locally compact. -/
@@ -254,5 +263,9 @@ theorem exists_unique_hlift' [LocallyCompactSpace Y] {γ : C(I, C(Y, X))}
     have h5 : Γ'.uncurry = Γ := by simpa [h3, h4] using h2 Γ'.uncurry
     ext t y
     exact ContinuousMap.congr_fun h5 (t, y)
+
+theorem continuous_lift (γ : C(I × Y, X)) {Γ : I × Y → E} (g_lifts : f ∘ Γ = γ)
+    (cont_0 : Continuous (Γ ⟨0, ·⟩)) (cont_A : ∀ a, Continuous (Γ ⟨·, a⟩)) : Continuous Γ := by
+  sorry
 
 end IsCoveringMap
