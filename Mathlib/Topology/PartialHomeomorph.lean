@@ -1326,7 +1326,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 end subtypeRestr
 
 variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
-    {f : X → X'} [Nonempty Z]
+  [Nonempty Z] {f : X → X'}
 
 /-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding `ι : X → X'`.
 On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary (and uninteresting).
@@ -1351,7 +1351,7 @@ noncomputable def lift_openEmbedding (e : PartialHomeomorph X Z) (hf : IsOpenEmb
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by
-    by_cases hX : Nonempty X; swap
+    by_cases Nonempty X; swap
     · intro x hx; simp_all
     set F := (extend f e (fun _ ↦ (Classical.arbitrary Z))) with F_eq
     have heq : EqOn F (e ∘ (hf.toPartialHomeomorph).symm) (f '' e.source) := by
@@ -1361,10 +1361,10 @@ noncomputable def lift_openEmbedding (e : PartialHomeomorph X Z) (hf : IsOpenEmb
       apply e.continuousOn_toFun.comp; swap
       · intro x' ⟨x, hx, hx'x⟩
         rw [← hx'x, hf.toPartialHomeomorph_left_inv]; exact hx
-      have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) := by
-        apply (hf.toPartialHomeomorph).continuousOn_invFun
+      have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) :=
+        (hf.toPartialHomeomorph).continuousOn_invFun
       apply this.mono; gcongr; exact fun ⦃a⦄ a ↦ trivial
-    apply ContinuousOn.congr this heq
+    exact ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
 @[simp]
@@ -1374,7 +1374,7 @@ lemma lift_openEmbedding_toFun [Nonempty X]
 
 lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) {x : X} :
     (lift_openEmbedding e hf) (f x) = e x := by
-  have : Nonempty X := Nonempty.intro x
+  have := Nonempty.intro x
   simp_rw [e.lift_openEmbedding_toFun]
   apply hf.injective.extend_apply
 
