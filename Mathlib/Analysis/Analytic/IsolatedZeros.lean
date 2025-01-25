@@ -256,7 +256,6 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
   · simp [hf.order_mul_of_order_eq_top hg h₂f, h₂f]
   by_cases h₂g : hg.order = ⊤
   · simp [mul_comm f g, hg.order_mul_of_order_eq_top hf h₂g, h₂g]
-
   -- Non-trivial case: both functions do not vanish around z₀
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_neq_top_iff.1 h₂f
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_neq_top_iff.1 h₂g
