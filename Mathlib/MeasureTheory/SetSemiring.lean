@@ -396,8 +396,10 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       ← hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion h1.1 h1.2, hK5]
       simp only [↓reduceIte, diff_union_self]
 
-/-- For some `J ⊆ C`, where `C` is a `SetSemiring`, write `⋃₀ J` as the disjoint union
-over `disjointOfUnion`.-/
+/-- For some `J ⊆ C`, where `C` is a `SetSemiring`, this is `K : Set α → Set (Set α)`
+such that `K j` are disjoint and `⋃₀ K j ⊆ j`, for `j ∈ J`. Using these we write `⋃₀ J` as a
+disjoint union `⋃₀ J = ⋃₀ ⋃ x ∈ J, (K x)`.
+See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`.-/
 noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :=
   (hC.disjointOfUnion_props hJ).choose
 
