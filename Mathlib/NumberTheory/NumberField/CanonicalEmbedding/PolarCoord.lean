@@ -55,7 +55,7 @@ private theorem abs_of_mem_polarCoord₀_target {x : realMixedSpace K}
 
 open ContinuousLinearMap in
 def FDerivPolarCoord₀Symm : realMixedSpace K → realMixedSpace K →L[ℝ] realMixedSpace K :=
-  fun x ↦ (fst ℝ _ _).prod <| (FDerivPiPolarCoordSymm x.2).comp (snd ℝ _ _)
+  fun x ↦ (fst ℝ _ _).prod <| (fderivPiPolarCoordSymm x.2).comp (snd ℝ _ _)
 
 theorem hasFDerivAt_polarCoord₀_symm (x : realMixedSpace K) :
     HasFDerivAt (polarCoord₀ K).symm (FDerivPolarCoord₀Symm K x) x := by
@@ -66,9 +66,9 @@ open Classical in
 theorem det_fderiv_polarCoord₀_symm (x : realMixedSpace K) :
     (FDerivPolarCoord₀Symm K x).det = ∏ w : {w // IsComplex w}, (x.2 w).1 := by
   have : (FDerivPolarCoord₀Symm K x).toLinearMap =
-      LinearMap.prodMap (LinearMap.id) (FDerivPiPolarCoordSymm x.2).toLinearMap := rfl
+      LinearMap.prodMap (LinearMap.id) (fderivPiPolarCoordSymm x.2).toLinearMap := rfl
   rw [ContinuousLinearMap.det, this, LinearMap.prodMap_det, LinearMap.det_id, one_mul,
-    ← ContinuousLinearMap.det, det_fderiv_pi_polarCoord_symm]
+    ← ContinuousLinearMap.det, det_fderivPiPolarCoordSymm]
 
 open Classical in
 theorem polarCoord₀_symm_target_ae_eq_univ :
