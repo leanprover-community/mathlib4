@@ -19,7 +19,28 @@ universe u v
 
 open CategoryTheory Limits
 
+theorem CategoryTheory.types_end {X : Type*} : End X = Function.End X := rfl
+
+@[simp]
+theorem MulAction.toEndHom_apply {G A : Type*} [Monoid G] [MulAction G A] (g : G) (a : A) :
+    MulAction.toEndHom g a = g • a := rfl
+
 namespace Action
+
+section
+variable {G : Type u} [Group G] {A : Action (Type u) G}
+
+@[simp]
+theorem ρ_inv_self_apply (g : G) (x : A.V) :
+    A.ρ g⁻¹ (A.ρ g x) = x :=
+  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul, Function.End.one_def]
+
+@[simp]
+theorem ρ_self_inv_apply (g : G) (x : A.V) :
+    A.ρ g (A.ρ g⁻¹ x) = x :=
+  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul, Function.End.one_def]
+
+end
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 @[simps]
@@ -55,13 +76,11 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
         rfl }
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
-@[simps!]
-def leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
+abbrev leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
   Action.ofMulAction G G
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
-@[simps!]
-def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
+abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
   Action.ofMulAction G (Fin n → G)
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/

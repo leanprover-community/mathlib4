@@ -88,7 +88,7 @@ lemma ρ_hom {X : Rep k G} (g : G) : (Action.ρ X g).hom = X.ρ g := rfl
 
 @[simp]
 lemma ofHom_ρ {X : Rep k G} (g : G) : ModuleCat.ofHom (X.ρ g) = Action.ρ X g := rfl
-
+/-
 @[simp]
 theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
@@ -98,7 +98,7 @@ theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
 theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
   show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
-
+-/
 theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
   LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (f.comm g)) x
@@ -418,6 +418,45 @@ end
 end Finsupp
 
 end
+
+section Group
+
+open Finsupp Action
+open Representation (IsTrivial)
+
+variable [Group G]
+variable (k G n)
+
+/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
+defined pointwise by the left regular representation on `k[G]`. The map sends
+`single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
+def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
+  (linearization k G).mapIso (diagonalSuccIsoTensorTrivial G n ≪≫ β_ _ _) ≪≫
+    Action.mkIso (finsuppProdLEquiv k).toModuleIso
+    fun _ => ModuleCat.hom_ext <| lhom_ext fun _ _ => by
+      simp only [ModuleCat.hom_comp, ρ_hom, linearization_obj_ρ, Action.tensor_ρ, Action.trivial_ρ,
+        Action.trivial_V, MonoidHom.one_apply]
+      simp [types_end, types_tensorObj]
+
+variable {k G n}
+
+theorem diagonalSuccIsoFree_hom_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
+    (diagonalSuccIsoFree k G n).hom.hom.hom (single f a) =
+      single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
+  simp [diagonalSuccIsoFree, types_tensorObj, lmapDomain]
+
+theorem diagonalSuccIsoFree_inv_hom_hom_single_single (g : G) (f : Fin n → G) (a : k) :
+    (diagonalSuccIsoFree k G n).inv.hom.hom (single f (single g a)) =
+      single (g • Fin.partialProd f) a := by
+  simp [diagonalSuccIsoFree, coe_linearization_obj, types_tensorObj,
+    diagonalSuccIsoTensorTrivial_inv_hom g f]
+
+theorem diagonalSuccIsoFree_inv_hom_hom_single (g : G →₀ k) (f : Fin n → G) :
+    (diagonalSuccIsoFree k G n).inv.hom.hom (single f g) =
+      lift _ k G (fun a => single (a • Fin.partialProd f) 1) g :=
+  g.induction (by simp) fun _ _ _ _ _ _ => by
+    simp only [single_add, map_add, diagonalSuccIsoFree_inv_hom_hom_single_single]
+    simp_all
 
 section MonoidalClosed
 open MonoidalCategory Action
