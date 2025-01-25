@@ -218,6 +218,56 @@ lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 variable  [IsScalarTower ℝ 𝕜 E]
 
+-- See `LinearMap.dualPairing_nondegenerate` in Mathlib/LinearAlgebra/Dual
+-- `WeakBilin B` is `E` with the σ(E,F)-topology`
+-- `((WeakBilin B) →L[𝕜] 𝕜)` is the topological dual of `E` with the σ(E,F)-topology, from
+--   Topology/Algebra/Module/WeadDual
+-- `WeakBilin.isEmbedding` - topological
+
+#check LinearMap.Equiv
+
+#check B
+
+variable (B)
+
+def toWeakBilin : E ≃ₗ[𝕜] WeakBilin B := LinearEquiv.refl 𝕜 E
+
+#check LinearMap.compl₂
+
+#check B.toWeakBilin.symm.toLinearMap
+
+variable (x : E) (y : F)
+
+#check (⟨B.flip y, WeakBilin.eval_continuous _ _⟩ : WeakBilin B →L[𝕜] 𝕜)
+
+-- Linear embed F into the (algebraic) dual of E (with the weak topology)
+#check B.flip.compl₂ B.toWeakBilin.symm.toLinearMap
+
+--def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜
+
+def dualEmbedding : F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
+  toFun := fun x => ⟨B.flip.compl₂ B.toWeakBilin.symm.toLinearMap x, WeakBilin.eval_continuous _ _⟩
+  map_add' := fun x y => by
+    simp only [map_add]
+    rfl
+  map_smul' := fun r x => by
+    simp only [map_smul, RingHom.id_apply]
+    rfl
+
+-- See Bourbaki TVS II.43 or Rudin Theorem 3.10
+lemma dualEmbedding_isSurjective : Function.Surjective B.dualEmbedding := by
+  rw [Function.Surjective]
+  intro f₁
+  sorry
+
+
+def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
+  toLinearMap := B.dualEmbedding
+
+
+def strictEquiv2 : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 where
+  toLinearMap := B
+
 open scoped ComplexOrder
 theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] (h : B.Nondegenerate):
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
