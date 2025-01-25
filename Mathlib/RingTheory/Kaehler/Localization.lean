@@ -63,7 +63,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway g (S := T)).comp 
 
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
-    (compLocalizationAwayAlgHom T g P) (((localizationAway g (S := T)).toComp P).toAlgHom x) =
+    compLocalizationAwayAlgHom T g P (((localizationAway g (S := T)).toComp P).toAlgHom x) =
       algebraMap P.Ring _ x := by
   simp only [toComp_toAlgHom, Ideal.mem_comap, RingHom.mem_ker, compLocalizationAwayAlgHom, comp,
     localizationAway, AlgHom.toRingHom_eq_coe, aeval_rename,
