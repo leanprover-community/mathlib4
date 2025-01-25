@@ -32,7 +32,8 @@ instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
 
 /-- Type synonym, introduced to put a different `SMul` action on `C^n⟮I, M; 𝕜⟯`
-which is defined as `f • r = f(x) * r`. Notation `C^n⟮I, M; 𝕜⟯⟨x⟩` in the Derivation namespace. -/
+which is defined as `f • r = f(x) * r`.
+Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 @[nolint unusedArguments]
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯

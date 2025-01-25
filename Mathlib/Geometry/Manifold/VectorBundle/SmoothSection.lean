@@ -32,7 +32,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
-Notation `Cₛ^n⟮I; F, V⟯` in the Manifold namespace. -/
+Denoted as `Cₛ^n⟮I; F, V⟯` within the `Manifold` namespace. -/
 structure ContMDiffSection where
   /-- the underlying function of this section -/
   protected toFun : ∀ x, V x

@@ -76,7 +76,7 @@ section defs
 
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure), bundled as a linear
-equivalence. Notation `𝓕` in the `ZMod` namespace.
+equivalence. Denoted as `𝓕` within the `ZMod` namespace.
 -/
 noncomputable def dft : (ZMod N → E) ≃ₗ[ℂ] (ZMod N → E) where
   toFun := auxDFT

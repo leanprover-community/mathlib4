@@ -79,7 +79,7 @@ end Cube
 variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`.
-Notation `Ω`, within the `Topology.Homotopy` namespace. -/
+Denoted as `Ω`, within the `Topology.Homotopy` namespace. -/
 abbrev LoopSpace :=
   Path x x
 
@@ -367,7 +367,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
 
-/-- Homotopy group of finite index, notation `π_n` in the Topology namespace. -/
+/-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
 abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 
