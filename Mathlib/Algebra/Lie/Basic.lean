@@ -277,8 +277,8 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 
 end BasicProperties
 
-/-- A morphism of Lie algebras is a linear map respecting the bracket operations.
-Notation `L₁ →ₗ⁅R⁆ L₂` -/
+/-- A morphism of Lie algebras (denoted as `L₁ →ₗ⁅R⁆ L₂`)
+is a linear map respecting the bracket operations. -/
 structure LieHom (R L L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
@@ -471,7 +471,7 @@ theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
 
 end ModulePullBack
 
-/-- An equivalence of Lie algebras (notation `L₁ ≃ₗ⁅R⁆ L₂`) is a morphism
+/-- An equivalence of Lie algebras (denoted as `L₁ ≃ₗ⁅R⁆ L₂`) is a morphism
 which is also a linear equivalence.
 We could instead define an equivalence to be a morphism which is also a (plain) equivalence.
 However, it is more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
@@ -644,7 +644,7 @@ variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [Module R M] [Module R N] [Module R P]
 variable [LieRingModule L M] [LieRingModule L N] [LieRingModule L P]
 
-/-- A morphism of Lie algebra modules (notation `M →ₗ⁅R,L⁆ N`) is a linear map
+/-- A morphism of Lie algebra modules (denoted as `M →ₗ⁅R,L⁆ N`) is a linear map
 which commutes with the action of the Lie algebra. -/
 structure LieModuleHom extends M →ₗ[R] N where
   /-- A module of Lie algebra modules is compatible with the action of the Lie algebra on the
@@ -859,7 +859,7 @@ instance : Module R (M →ₗ⁅R,L⁆ N) :=
 
 end LieModuleHom
 
-/-- An equivalence of Lie algebra modules (notation `M ≃ₗ⁅R,L⁆ N`) is a linear equivalence
+/-- An equivalence of Lie algebra modules (denoted as `M ≃ₗ⁅R,L⁆ N`) is a linear equivalence
 which is also a morphism of Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
   /-- The inverse function of an equivalence of Lie modules -/

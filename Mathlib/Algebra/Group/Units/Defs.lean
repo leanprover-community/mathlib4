@@ -296,7 +296,7 @@ section Monoid
 
 variable [Monoid α] {a : α}
 
-/-- Partial division, notation `a /ₚ u`. It is defined when the
+/-- Partial division, denoted `a /ₚ u`. It is defined when the
   second argument is invertible, and unlike the division operator
   in `DivisionRing` it is not totalized at zero. -/
 def divp (a : α) (u : Units α) : α :=

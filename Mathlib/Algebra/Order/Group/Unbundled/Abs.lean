@@ -28,7 +28,7 @@ variable [Lattice α]
 section Group
 variable [Group α] {a b : α}
 
-/-- `mabs a`, notation `|a|ₘ`, is the absolute value of `a`. -/
+/-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
 @[to_additive "`abs a`, notation `|a|`, is the absolute value of `a`"]
 def mabs (a : α) : α := a ⊔ a⁻¹
 

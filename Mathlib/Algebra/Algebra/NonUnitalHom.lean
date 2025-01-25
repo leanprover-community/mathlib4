@@ -47,7 +47,7 @@ universe u u₁ v w w₁ w₂ w₃
 variable {R : Type u} {S : Type u₁}
 
 /-- A morphism respecting addition, multiplication, and scalar multiplication
-(notation `A →ₛₙₐ[φ] B`, or `A →ₙₐ[R] B` when `φ` is the identity on `R`).
+(denoted as `A →ₛₙₐ[φ] B`, or `A →ₙₐ[R] B` when `φ` is the identity on `R`).
 When these arise from algebra structures, this is the same
 as a not-necessarily-unital morphism of algebras. -/
 structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B : Type w)

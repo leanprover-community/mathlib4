@@ -22,7 +22,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- An equivalence of algebras (notation `A ≃ₐ[R] B`)
+/-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where

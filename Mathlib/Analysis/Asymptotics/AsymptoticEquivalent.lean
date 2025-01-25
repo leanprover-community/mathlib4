@@ -67,7 +67,7 @@ section NormedAddCommGroup
 variable {α β : Type*} [NormedAddCommGroup β]
 
 /-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
-  (notation `u ~[l] v` in the `Asymptotics` namespace)
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
   when `u x - v x = o(v x)` as `x` converges along `l`. -/
 def IsEquivalent (l : Filter α) (u v : α → β) :=
   (u - v) =o[l] v

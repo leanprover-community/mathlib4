@@ -34,7 +34,7 @@ variable {α m n R : Type*}
 
 namespace Matrix
 
-/-- `Matrix.hadamard` (notation `⊙` within the Matrix namespace) defines the Hadamard product,
+/-- `Matrix.hadamard` (denoted as `⊙` within the Matrix namespace) defines the Hadamard product,
     which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
