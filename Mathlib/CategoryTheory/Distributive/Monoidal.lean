@@ -95,6 +95,8 @@ def leftDistrib [IsMonoidalLeftDistrib C] (X Y Z : C) :
     (X ⊗ Y) ⨿ (X ⊗ Z) ≅ X ⊗ (Y ⨿ Z) :=
   PreservesColimitPair.iso (tensorLeft X) Y Z
 
+end IsMonoidalLeftDistrib
+
 namespace Distributive
 
 /-- Notation for the forward direction morphism of the canonical left distributivity isomorphism -/
@@ -109,20 +111,18 @@ lemma IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
   preservesBinaryCoproducts_tensorLeft X :=
     preservesBinaryCoproducts_of_isIso_coprodComparison (tensorLeft X)
 
-variable [IsMonoidalLeftDistrib C]
-
 /-- The forward direction of the left distributivity isomorphism is the cogap morphism
 `coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)`. -/
-lemma leftDistrib_hom {X Y Z : C} :
+lemma leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
   (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
 
 @[reassoc (attr := simp)]
-lemma coprod_inl_leftDistrib_hom {X Y Z : C} :
+lemma coprod_inl_leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
     coprod.inl ≫ (∂L X Y Z).hom = X ◁ coprod.inl := by
   rw [leftDistrib_hom, coprod.inl_desc]
 
 @[reassoc (attr := simp)]
-lemma coprod_inr_leftDistrib_hom {X Y Z : C} :
+lemma coprod_inr_leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
     coprod.inr ≫ (∂L X Y Z).hom = X ◁ coprod.inr := by
   rw [leftDistrib_hom, coprod.inr_desc]
 
@@ -130,7 +130,7 @@ lemma coprod_inr_leftDistrib_hom {X Y Z : C} :
 `(∂L X Y Z).inv :  X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
 is equal to the left coprojection `coprod.inl : X ⊗ Y ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`. -/
 @[reassoc (attr := simp)]
-lemma whiskerLeft_coprod_inl_leftDistrib_inv {X Y Z : C} :
+lemma whiskerLeft_coprod_inl_leftDistrib_inv [IsMonoidalLeftDistrib C] {X Y Z : C} :
     (X ◁ coprod.inl) ≫ (∂L X Y Z).inv = coprod.inl := by
   apply (cancel_iso_hom_right _ _ (∂L X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inl_leftDistrib_hom]
@@ -139,12 +139,10 @@ lemma whiskerLeft_coprod_inl_leftDistrib_inv {X Y Z : C} :
 `(∂L X Y Z).inv :  X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
 is equal to the right coprojection `coprod.inr : X ⊗ Z ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`. -/
 @[reassoc (attr := simp)]
-lemma whiskerLeft_coprod_inr_leftDistrib_inv {X Y Z : C} :
+lemma whiskerLeft_coprod_inr_leftDistrib_inv [IsMonoidalLeftDistrib C] {X Y Z : C} :
     (X ◁ coprod.inr) ≫ (∂L X Y Z).inv = coprod.inr := by
   apply (cancel_iso_hom_right _ _ (∂L X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_leftDistrib_hom]
-
-end IsMonoidalLeftDistrib
 
 section IsMonoidalRightDistrib
 
