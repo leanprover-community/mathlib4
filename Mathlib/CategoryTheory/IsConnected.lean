@@ -119,6 +119,13 @@ theorem IsPreconnected.of_any_functor_const_on_obj
     IsPreconnected J where
   iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
 
+instance IsPreconnected.prod [IsPreconnected J] [IsPreconnected K] : IsPreconnected (J × K) := by
+  refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ => ?_)
+  exact (any_functor_const_on_obj (Prod.sectL J k ⋙ F) j j').trans
+    (any_functor_const_on_obj (Prod.sectR j' K ⋙ F) k k')
+
+instance IsConnected.prod [IsConnected J] [IsConnected K] : IsConnected (J × K) where
+
 /-- If any functor to a discrete category is constant on objects, J is connected.
 The converse of `any_functor_const_on_obj`.
 -/
@@ -213,7 +220,7 @@ theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort*)
     {j₀ : J} (x : Z j₀) (j : J) : Nonempty (Z j) :=
   (induct_on_objects { j | Nonempty (Z j) } ⟨x⟩
       (fun f => ⟨by rintro ⟨y⟩; exact ⟨h₁ f y⟩, by rintro ⟨y⟩; exact ⟨h₂ f y⟩⟩)
-      j : _)
+      j :)
 
 /-- If `J` and `K` are equivalent, then if `J` is preconnected then `K` is as well. -/
 theorem isPreconnected_of_equivalent {K : Type u₂} [Category.{v₂} K] [IsPreconnected J]

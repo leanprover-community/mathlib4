@@ -238,7 +238,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
       rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', e₃, rfl⟩
       cases h'.symm.trans e₁'
       cases h'.symm.trans e₂'
-  · exact (congr_fun (congr_fun e₃ i) c : _)
+  · exact (congr_fun (congr_fun e₃ i) c :)
   · exact IH _ _ (h'' _)
 
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)

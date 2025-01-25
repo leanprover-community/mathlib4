@@ -239,11 +239,11 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hb : s ⊆ Iio b) (hs : s.Nonempty → �
 @[deprecated (since := "2024-12-22")]
 alias comap_coe_nhdsWithin_Iio_of_Ioo_subset := comap_coe_nhdsLT_of_Ioo_subset
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsGT_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) :
-    comap ((↑) : s → α) (𝓝[>] a) = atBot :=
-  comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by
-    simpa only [OrderDual.exists, dual_Ioo] using hs h
+    comap ((↑) : s → α) (𝓝[>] a) = atBot := by
+  apply comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
+  simp only [OrderDual.exists, dual_Ioo]
+  exact hs
 
 @[deprecated (since := "2024-12-22")]
 alias comap_coe_nhdsWithin_Ioi_of_Ioo_subset := comap_coe_nhdsGT_of_Ioo_subset
@@ -259,9 +259,9 @@ theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a <
 
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
     map ((↑) : s → α) atBot = 𝓝[>] a := by
-  -- the elaborator gets stuck without `(... : _)`
+  -- the elaborator gets stuck without `(... :)`
   refine (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
-    fun b' hb' => ?_ : _)
+    fun b' hb' => ?_ :)
   simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at

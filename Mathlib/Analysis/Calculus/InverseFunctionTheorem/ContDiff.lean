@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!
-# Inverse function theorem, smooth case
+# Inverse function theorem, `C^r` case
 
 In this file we specialize the inverse function theorem to `C^r`-smooth functions.
 -/

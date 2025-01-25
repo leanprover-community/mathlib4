@@ -229,7 +229,7 @@ lemma IsBlock.subgroup {H : Subgroup G} (hB : IsBlock G B) : IsBlock H B := fun 
 /-- A block of a group action is invariant iff it is fixed. -/
 @[to_additive "A block of a group action is invariant iff it is fixed."]
 lemma isInvariantBlock_iff_isFixedBlock : IsInvariantBlock G B ↔ IsFixedBlock G B :=
-  ⟨fun hB g ↦ (hB g).antisymm <| subset_set_smul_iff.2 <| hB _, IsFixedBlock.isInvariantBlock⟩
+  ⟨fun hB g ↦ (hB g).antisymm <| subset_smul_set_iff.2 <| hB _, IsFixedBlock.isInvariantBlock⟩
 
 /-- An invariant block of a group action is a fixed block. -/
 @[to_additive "An invariant block of a group action is a fixed block."]
@@ -311,7 +311,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
+theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
     {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
     {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
     AddAction.IsBlock (H.map (AddAut.conj g).toAddMonoidHom) (g +ᵥ B) := by
@@ -330,7 +330,7 @@ theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
   erw [AddAut.conj_apply]
   simp
 
-@[to_additive existing AddAction.IsBlock.of_addsubgroup_of_conjugate]
+@[to_additive existing]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -353,7 +353,7 @@ theorem _root_.AddAction.IsBlock.translate
     AddAction.IsBlock G (g +ᵥ B) := by
   rw [← AddAction.isBlock_top] at hB ⊢
   rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addsubgroup_of_conjugate
+  · apply AddAction.IsBlock.of_addSubgroup_of_conjugate
     rwa [AddSubgroup.comap_top]
   · exact (AddAut.conj g).surjective
 

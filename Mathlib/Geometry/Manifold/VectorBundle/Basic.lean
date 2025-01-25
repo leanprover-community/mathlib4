@@ -7,24 +7,24 @@ import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 import Mathlib.Topology.VectorBundle.Constructions
 
-/-! # Smooth vector bundles
+/-! # `C^n` vector bundles
 
-This file defines smooth vector bundles over a smooth manifold.
+This file defines `C^n` vector bundles over a manifold.
 
 Let `E` be a topological vector bundle, with model fiber `F` and base space `B`.  We consider `E` as
 carrying a charted space structure given by its trivializations -- these are charts to `B × F`.
 Then, by "composition", if `B` is itself a charted space over `H` (e.g. a smooth manifold), then `E`
 is also a charted space over `H × F`.
 
-Now, we define `SmoothVectorBundle` as the `Prop` of having smooth transition functions.
-Recall the structure groupoid `smoothFiberwiseLinear` on `B × F` consisting of smooth, fiberwise
-linear partial homeomorphisms.  We show that our definition of "smooth vector bundle" implies
+Now, we define `ContMDiffVectorBundle` as the `Prop` of having `C^n` transition functions.
+Recall the structure groupoid `contMDiffFiberwiseLinear` on `B × F` consisting of `C^n`, fiberwise
+linear partial homeomorphisms.  We show that our definition of "`C^n` vector bundle" implies
 `HasGroupoid` for this groupoid, and show (by a "composition" of `HasGroupoid` instances) that
-this means that a smooth vector bundle is a smooth manifold.
+this means that a `C^n` vector bundle is a `C^n` manifold.
 
-Since `SmoothVectorBundle` is a mixin, it should be easy to make variants and for many such
-variants to coexist -- vector bundles can be smooth vector bundles over several different base
-fields, they can also be C^k vector bundles, etc.
+Since `ContMDiffVectorBundle` is a mixin, it should be easy to make variants and for many such
+variants to coexist -- vector bundles can be `C^n` vector bundles over several different base
+fields, etc.
 
 ## Main definitions and constructions
 
@@ -34,27 +34,27 @@ fields, they can also be C^k vector bundles, etc.
 * `FiberBundle.chartedSpace'`: Let `B` be a charted space modelled on `HB`.  Then a fiber bundle
   `E` over a base `B` with model fiber `F` is naturally a charted space modelled on `HB.prod F`.
 
-* `SmoothVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is smooth, in the
-  sense of having smooth transition functions.
+* `ContMDiffVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is `C^n`, in the
+  sense of having `C^n` transition functions, where the smoothness index `n`
+  belongs to `WithTop ℕ∞`.
 
-* `SmoothFiberwiseLinear.hasGroupoid`: For a smooth vector bundle `E` over `B` with fiber
+* `ContMDiffFiberwiseLinear.hasGroupoid`: For a `C^n` vector bundle `E` over `B` with fiber
   modelled on `F`, the change-of-co-ordinates between two trivializations `e`, `e'` for `E`,
-  considered as charts to `B × F`, is smooth and fiberwise linear, in the sense of belonging to the
-  structure groupoid `smoothFiberwiseLinear`.
+  considered as charts to `B × F`, is `C^n` and fiberwise linear, in the sense of belonging to the
+  structure groupoid `contMDiffFiberwiseLinear`.
 
-* `Bundle.TotalSpace.smoothManifoldWithCorners`: A smooth vector bundle is naturally a smooth
-  manifold.
+* `Bundle.TotalSpace.isManifold`: A `C^n` vector bundle is naturally a `C^n` manifold.
 
-* `VectorBundleCore.smoothVectorBundle`: If a (topological) `VectorBundleCore` is smooth,
-  in the sense of having smooth transition functions (cf. `VectorBundleCore.IsSmooth`),
-  then the vector bundle constructed from it is a smooth vector bundle.
+* `VectorBundleCore.instContMDiffVectorBundle`: If a (topological) `VectorBundleCore` is `C^n`,
+  in the sense of having `C^n` transition functions (cf. `VectorBundleCore.IsContMDiff`),
+  then the vector bundle constructed from it is a `C^n` vector bundle.
 
-* `VectorPrebundle.smoothVectorBundle`: If a `VectorPrebundle` is smooth,
-  in the sense of having smooth transition functions (cf. `VectorPrebundle.IsSmooth`),
-  then the vector bundle constructed from it is a smooth vector bundle.
+* `VectorPrebundle.contMDiffVectorBundle`: If a `VectorPrebundle` is `C^n`,
+  in the sense of having `C^n` transition functions (cf. `VectorPrebundle.IsContMDiff`),
+  then the vector bundle constructed from it is a `C^n` vector bundle.
 
-* `Bundle.Prod.smoothVectorBundle`: The direct sum of two smooth vector bundles is a smooth vector
-  bundle.
+* `Bundle.Prod.contMDiffVectorBundle`: The direct sum of two `C^n` vector bundles is a `C^n`
+  vector bundle.
 -/
 
 assert_not_exists mfderiv
@@ -65,9 +65,9 @@ open Function (id_def)
 
 open Filter
 
-open scoped Manifold Bundle Topology
+open scoped Manifold Bundle Topology ContDiff
 
-variable {𝕜 B B' F M : Type*} {E : B → Type*}
+variable {n : WithTop ℕ∞} {𝕜 B B' F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -125,7 +125,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
   {IB : ModelWithCorners 𝕜 EB HB} (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
   [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  {n : ℕ∞}
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
@@ -157,15 +156,15 @@ theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F 
       (trivializationAt F E x.proj).toPartialHomeomorph.symm y = y :=
   writtenInExtChartAt_chartAt_symm_comp _ hy
 
-/-! ### Smoothness of maps in/out fiber bundles
+/-! ### Regularity of maps in/out fiber bundles
 
-Note: For these results we don't need that the bundle is a smooth vector bundle, or even a vector
+Note: For these results we don't need that the bundle is a `C^n` vector bundle, or even a vector
 bundle at all, just that it is a fiber bundle over a charted base space.
 -/
 
 namespace Bundle
 
-/-- Characterization of C^n functions into a smooth vector bundle. -/
+/-- Characterization of `C^n` functions into a vector bundle. -/
 theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
@@ -186,20 +185,20 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
     exact hx
   · simp only [mfld_simps]
 
-/-- Characterization of C^n functions into a smooth vector bundle. -/
+/-- Characterization of `C^n` functions into a vector bundle. -/
 theorem contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F) n (fun x => (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace f
 
-/-- Characterization of C^n sections within a set at a point of a smooth vector bundle. -/
+/-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
 theorem contMDiffWithinAt_section (s : ∀ x, E x) (a : Set B) (x₀ : B) :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
   simp_rw [contMDiffWithinAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
 
-/-- Characterization of C^n sections of a smooth vector bundle. -/
+/-- Characterization of `C^n` sections of a vector bundle. -/
 theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
@@ -234,7 +233,7 @@ theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
-theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) ⊤ (zeroSection F E) := fun x ↦ by
+theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := fun x ↦ by
   unfold zeroSection
   rw [Bundle.contMDiffAt_section]
   apply (contMDiffAt_const (c := 0)).congr_of_eventuallyEq
@@ -248,14 +247,14 @@ end Bundle
 
 end
 
-/-! ### Smooth vector bundles -/
+/-! ### `C^n` vector bundles -/
 
 
 variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
   [ChartedSpace HB B] {EM : Type*} [NormedAddCommGroup EM]
   [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
-  [TopologicalSpace M] [ChartedSpace HM M] {n : ℕ∞}
+  [TopologicalSpace M] [ChartedSpace HM M]
   [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section WithTopology
@@ -263,20 +262,43 @@ section WithTopology
 variable [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] (F E)
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
-variable (IB) in
-/-- When `B` is a smooth manifold with corners with respect to a model `IB` and `E` is a
-topological vector bundle over `B` with fibers isomorphic to `F`, then `SmoothVectorBundle F E IB`
-registers that the bundle is smooth, in the sense of having smooth transition functions.
-This is a mixin, not carrying any new data. -/
-class SmoothVectorBundle : Prop where
+variable (n IB) in
+/-- When `B` is a manifold with respect to a model `IB` and `E` is a
+topological vector bundle over `B` with fibers isomorphic to `F`,
+then `ContMDiffVectorBundle n F E IB` registers that the bundle is `C^n`, in the sense of having
+`C^n` transition functions. This is a mixin, not carrying any new data. -/
+class ContMDiffVectorBundle : Prop where
   protected contMDiffOn_coordChangeL :
     ∀ (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
-      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
+      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
         (e.baseSet ∩ e'.baseSet)
 
-variable [SmoothVectorBundle F E IB]
+@[deprecated (since := "2025-01-09")] alias SmoothVectorBundle := ContMDiffVectorBundle
 
-section SmoothCoordChange
+variable {F E} in
+protected theorem ContMDiffVectorBundle.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+    [h : ContMDiffVectorBundle n F E IB] : ContMDiffVectorBundle m F E IB :=
+  ⟨fun e e' _ _ ↦ (h.contMDiffOn_coordChangeL e e').of_le hmn⟩
+
+instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ∞ F E IB] [h : ENat.LEInfty a] :
+    ContMDiffVectorBundle a F E IB :=
+  ContMDiffVectorBundle.of_le h.out
+
+instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ω F E IB] : ContMDiffVectorBundle a F E IB :=
+  ContMDiffVectorBundle.of_le le_top
+
+instance [ContMDiffVectorBundle 2 F E IB] : ContMDiffVectorBundle 1 F E IB :=
+  ContMDiffVectorBundle.of_le one_le_two
+
+instance : ContMDiffVectorBundle 0 F E IB := by
+  constructor
+  intro e e' he he'
+  rw [contMDiffOn_zero_iff]
+  exact VectorBundle.continuousOn_coordChange' e e'
+
+variable [ContMDiffVectorBundle n F E IB]
+
+section ContMDiffCoordChange
 
 variable {F E}
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
@@ -284,14 +306,13 @@ variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivi
 theorem contMDiffOn_coordChangeL :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
-  (SmoothVectorBundle.contMDiffOn_coordChangeL e e').of_le le_top
+  ContMDiffVectorBundle.contMDiffOn_coordChangeL e e'
 
 theorem contMDiffOn_symm_coordChangeL :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) := by
-  apply ContMDiffOn.of_le _ le_top
   rw [inter_comm]
-  refine (SmoothVectorBundle.contMDiffOn_coordChangeL e' e).congr fun b hb ↦ ?_
+  refine (ContMDiffVectorBundle.contMDiffOn_coordChangeL e' e).congr fun b hb ↦ ?_
   rw [e.symm_coordChangeL e' hb]
 
 @[deprecated (since := "2024-11-21")] alias smoothOn_coordChangeL := contMDiffOn_coordChangeL
@@ -419,19 +440,19 @@ theorem Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x :=
   ⟨(hp.change_section_trivialization · he he'), (hp.change_section_trivialization · he' he)⟩
 
-end SmoothCoordChange
+end ContMDiffCoordChange
 
-variable [SmoothManifoldWithCorners IB B] in
-/-- For a smooth vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
-between two trivializations `e`, `e'` for `E`, considered as charts to `B × F`, is smooth and
+variable [IsManifold IB n B] in
+/-- For a `C^n` vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
+between two trivializations `e`, `e'` for `E`, considered as charts to `B × F`, is `C^n` and
 fiberwise linear. -/
-instance SmoothFiberwiseLinear.hasGroupoid :
-    HasGroupoid (TotalSpace F E) (smoothFiberwiseLinear B F IB) where
+instance ContMDiffFiberwiseLinear.hasGroupoid :
+    HasGroupoid (TotalSpace F E) (contMDiffFiberwiseLinear B F IB n) where
   compatible := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
     haveI : MemTrivializationAtlas e := ⟨he⟩
     haveI : MemTrivializationAtlas e' := ⟨he'⟩
-    rw [mem_smoothFiberwiseLinear_iff]
+    rw [mem_contMDiffFiberwiseLinear_iff]
     refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, contMDiffOn_coordChangeL e e',
       contMDiffOn_symm_coordChangeL e e', ?_⟩
     refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
@@ -440,13 +461,13 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm
 
-variable [SmoothManifoldWithCorners IB B] in
-/-- A smooth vector bundle `E` is naturally a smooth manifold. -/
-instance Bundle.TotalSpace.smoothManifoldWithCorners [SmoothManifoldWithCorners IB B] :
-    SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
-  refine { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) ?_ with }
+variable [IsManifold IB n B] in
+/-- A `C^n` vector bundle `E` is naturally a `C^n` manifold. -/
+instance Bundle.TotalSpace.isManifold  :
+    IsManifold (IB.prod 𝓘(𝕜, F)) n (TotalSpace F E) := by
+  refine { StructureGroupoid.HasGroupoid.comp (contMDiffFiberwiseLinear B F IB n) ?_ with }
   intro e he
-  rw [mem_smoothFiberwiseLinear_iff] at he
+  rw [mem_contMDiffFiberwiseLinear_iff] at he
   obtain ⟨φ, U, hU, hφ, h2φ, heφ⟩ := he
   rw [isLocalStructomorphOn_contDiffGroupoid_iff]
   refine ⟨ContMDiffOn.congr ?_ (EqOnSource.eqOn heφ),
@@ -504,13 +525,13 @@ alias Trivialization.smoothOn_iff := Trivialization.contMDiffOn_iff
 alias Trivialization.smooth_iff := Trivialization.contMDiff_iff
 
 theorem Trivialization.contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
-    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) ⊤ e e.source := by
-  have : ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) ⊤ id e.source := contMDiffOn_id
+    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e e.source := by
+  have : ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n id e.source := contMDiffOn_id
   rw [e.contMDiffOn_iff (mapsTo_id _)] at this
   exact (this.1.prod_mk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
 theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
-    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) ⊤ e.toPartialHomeomorph.symm e.target := by
+    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toPartialHomeomorph.symm e.target := by
   rw [e.contMDiffOn_iff e.toPartialHomeomorph.symm_mapsTo]
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
@@ -523,30 +544,32 @@ alias Trivialization.smoothOn_symm := Trivialization.contMDiffOn_symm
 
 end
 
-/-! ### Core construction for smooth vector bundles -/
+/-! ### Core construction for `C^n` vector bundles -/
 
 namespace VectorBundleCore
 
 variable {F}
 variable {ι : Type*} (Z : VectorBundleCore 𝕜 B F ι)
 
-/-- Mixin for a `VectorBundleCore` stating smoothness (of transition functions). -/
-class IsSmooth (IB : ModelWithCorners 𝕜 EB HB) : Prop where
+/-- Mixin for a `VectorBundleCore` stating that transition functions are `C^n`. -/
+class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : WithTop ℕ∞) : Prop where
   contMDiffOn_coordChange :
-    ∀ i j, ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
+    ∀ i j, ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
 
-theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsSmooth IB] (i j : ι) :
-    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
+@[deprecated (since := "2025-01-09")] alias IsSmooth := IsContMDiff
+
+theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsContMDiff IB n] (i j : ι) :
+    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
   h.1 i j
 
 @[deprecated (since := "2024-11-21")]
 alias smoothOn_coordChange := contMDiffOn_coordChange
 
-variable [Z.IsSmooth IB]
+variable [Z.IsContMDiff IB n]
 
-/-- If a `VectorBundleCore` has the `IsSmooth` mixin, then the vector bundle constructed from it
-is a smooth vector bundle. -/
-instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
+/-- If a `VectorBundleCore` has the `IsContMDiff` mixin, then the vector bundle constructed from it
+is a `C^n` vector bundle. -/
+instance instContMDiffVectorBundle : ContMDiffVectorBundle n F Z.Fiber IB where
   contMDiffOn_coordChangeL := by
     rintro - - ⟨i, rfl⟩ ⟨i', rfl⟩
     refine (Z.contMDiffOn_coordChange IB i i').congr fun b hb ↦ ?_
@@ -555,10 +578,11 @@ instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
 
 end VectorBundleCore
 
-/-! ### The trivial smooth vector bundle -/
+/-! ### The trivial `C^n` vector bundle -/
 
-/-- A trivial vector bundle over a smooth manifold is a smooth vector bundle. -/
-instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivial B F) IB where
+/-- A trivial vector bundle over a manifold is a `C^n` vector bundle. -/
+instance Bundle.Trivial.contMDiffVectorBundle :
+    ContMDiffVectorBundle n F (Bundle.Trivial B F) IB where
   contMDiffOn_coordChangeL := by
     intro e e' he he'
     obtain rfl := Bundle.Trivial.eq_trivialization B F e
@@ -566,7 +590,7 @@ instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivia
     simp_rw [Bundle.Trivial.trivialization.coordChangeL]
     exact contMDiff_const.contMDiffOn
 
-/-! ### Direct sums of smooth vector bundles -/
+/-! ### Direct sums of `C^n` vector bundles -/
 
 
 section Prod
@@ -578,13 +602,13 @@ variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ 
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
 
 variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]
-  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] [SmoothVectorBundle F₁ E₁ IB]
-  [SmoothVectorBundle F₂ E₂ IB]
+  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂]
+  [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 
-variable [SmoothManifoldWithCorners IB B]
+variable [IsManifold IB n B]
 
-/-- The direct sum of two smooth vector bundles over the same base is a smooth vector bundle. -/
-instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB where
+/-- The direct sum of two `C^n` vector bundles over the same base is a `C^n` vector bundle. -/
+instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F₂) (E₁ ×ᵇ E₂) IB where
   contMDiffOn_coordChangeL := by
     rintro _ _ ⟨e₁, e₂, i₁, i₂, rfl⟩ ⟨e₁', e₂', i₁', i₂', rfl⟩
     refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
@@ -600,65 +624,79 @@ end Prod
 
 end WithTopology
 
-/-! ### Prebundle construction for smooth vector bundles -/
+/-! ### Prebundle construction for `C^n` vector bundles -/
 
 namespace VectorPrebundle
 
 variable [∀ x, TopologicalSpace (E x)]
 
 variable (IB) in
-/-- Mixin for a `VectorPrebundle` stating smoothness of coordinate changes. -/
-class IsSmooth (a : VectorPrebundle 𝕜 F E) : Prop where
-  exists_smoothCoordChange :
+/-- Mixin for a `VectorPrebundle` stating that coordinate changes are `C^n`. -/
+class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : WithTop ℕ∞) : Prop where
+  exists_contMDiffCoordChange :
     ∀ᵉ (e ∈ a.pretrivializationAtlas) (e' ∈ a.pretrivializationAtlas),
       ∃ f : B → F →L[𝕜] F,
-        ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ f (e.baseSet ∩ e'.baseSet) ∧
+        ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n f (e.baseSet ∩ e'.baseSet) ∧
           ∀ (b : B) (_ : b ∈ e.baseSet ∩ e'.baseSet) (v : F),
             f b v = (e' ⟨b, e.symm b v⟩).2
 
-variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsSmooth IB] {e e' : Pretrivialization F (π F E)}
+@[deprecated (since := "2025-01-09")] alias IsSmooth := IsContMDiff
 
-variable (IB) in
-/-- A randomly chosen coordinate change on a `SmoothVectorPrebundle`, given by
-  the field `exists_coordChange`. Note that `a.smoothCoordChange` need not be the same as
+variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsContMDiff IB n] {e e' : Pretrivialization F (π F E)}
+
+variable (IB n) in
+/-- A randomly chosen coordinate change on a `VectorPrebundle` satisfying `IsContMDiff`, given by
+  the field `exists_coordChange`. Note that `a.contMDiffCoordChange` need not be the same as
   `a.coordChange`. -/
-noncomputable def smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
+noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
-  Classical.choose (ha.exists_smoothCoordChange e he e' he') b
+  Classical.choose (ha.exists_contMDiffCoordChange e he e' he') b
 
-theorem contMDiffOn_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
+@[deprecated (since := "2025-01-09")] alias smoothCoordChange := contMDiffCoordChange
+
+theorem contMDiffOn_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) :
-    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (a.smoothCoordChange IB he he') (e.baseSet ∩ e'.baseSet) :=
-  (Classical.choose_spec (ha.exists_smoothCoordChange e he e' he')).1
+    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (a.contMDiffCoordChange n IB he he')
+      (e.baseSet ∩ e'.baseSet) :=
+  (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).1
+
+@[deprecated (since := "2025-01-09")]
+alias contMDiffOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
 
 @[deprecated (since := "2024-11-21")]
-alias smoothOn_smoothCoordChange := contMDiffOn_smoothCoordChange
+alias smoothOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
 
-theorem smoothCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
+theorem contMDiffCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
-    a.smoothCoordChange IB he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
-  (Classical.choose_spec (ha.exists_smoothCoordChange e he e' he')).2 b hb v
+    a.contMDiffCoordChange n IB he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
+  (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).2 b hb v
 
-theorem mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
+@[deprecated (since := "2025-01-09")] alias smoothCoordChange_apply := contMDiffCoordChange_apply
+
+theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
-    (b, a.smoothCoordChange IB he he' b v) = e' ⟨b, e.symm b v⟩ := by
+    (b, a.contMDiffCoordChange n IB he he' b v) = e' ⟨b, e.symm b v⟩ := by
   ext
   · rw [e.mk_symm hb.1 v, e'.coe_fst', e.proj_symm_apply' hb.1]
     rw [e.proj_symm_apply' hb.1]; exact hb.2
-  · exact a.smoothCoordChange_apply he he' hb v
+  · exact a.contMDiffCoordChange_apply he he' hb v
+
+@[deprecated (since := "2025-01-09")] alias mk_smoothCoordChange := mk_contMDiffCoordChange
 
 variable (IB) in
-/-- Make a `SmoothVectorBundle` from a `SmoothVectorPrebundle`. -/
-theorem smoothVectorBundle : @SmoothVectorBundle
+/-- Make a `ContMDiffVectorBundle` from a `ContMDiffVectorPrebundle`. -/
+theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
     _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { contMDiffOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-      refine (a.contMDiffOn_smoothCoordChange he he').congr ?_
+      refine (a.contMDiffOn_contMDiffCoordChange he he').congr ?_
       intro b hb
       ext v
-      rw [a.smoothCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
+      rw [a.contMDiffCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
         Trivialization.coordChangeL_apply]
       exacts [rfl, hb] }
+
+@[deprecated (since := "2025-01-09")] alias smoothVectorBundle := contMDiffVectorBundle
 
 end VectorPrebundle

@@ -17,6 +17,8 @@ in the derived category of `C`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 open CategoryTheory Category Pretriangulated

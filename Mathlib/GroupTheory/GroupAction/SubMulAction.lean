@@ -154,13 +154,6 @@ end OfTower
 
 end SetLike
 
-/-- A SubMulAction is a set which is closed under scalar multiplication. -/
-structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
-  /-- The underlying set of a `SubMulAction`. -/
-  carrier : Set M
-  /-- The carrier set is closed under scalar multiplication. -/
-  smul_mem' : ∀ (c : R) {x : M}, x ∈ carrier → c • x ∈ carrier
-
 /-- A SubAddAction is a set which is closed under scalar multiplication. -/
 structure SubAddAction (R : Type u) (M : Type v) [VAdd R M] : Type v where
   /-- The underlying set of a `SubAddAction`. -/
@@ -168,7 +161,13 @@ structure SubAddAction (R : Type u) (M : Type v) [VAdd R M] : Type v where
   /-- The carrier set is closed under scalar multiplication. -/
   vadd_mem' : ∀ (c : R) {x : M}, x ∈ carrier → c +ᵥ x ∈ carrier
 
-attribute [to_additive] SubMulAction
+/-- A SubMulAction is a set which is closed under scalar multiplication. -/
+@[to_additive]
+structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
+  /-- The underlying set of a `SubMulAction`. -/
+  carrier : Set M
+  /-- The carrier set is closed under scalar multiplication. -/
+  smul_mem' : ∀ (c : R) {x : M}, x ∈ carrier → c • x ∈ carrier
 
 namespace SubMulAction
 

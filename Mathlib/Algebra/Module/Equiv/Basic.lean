@@ -49,7 +49,7 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h ↦
-  ext (LinearEquiv.congr_fun h : _)
+  ext (LinearEquiv.congr_fun h :)
 
 @[simp]
 theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :

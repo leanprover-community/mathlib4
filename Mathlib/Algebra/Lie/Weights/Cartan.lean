@@ -31,7 +31,7 @@ suppress_compilation
 open Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
+  (H : LieSubalgebra R L) [LieRing.IsNilpotent H]
   {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieAlgebra
@@ -44,7 +44,7 @@ space of `L` regarded as a module of `H` via the adjoint action. -/
 abbrev rootSpace (χ : H → R) : LieSubmodule R H L :=
   genWeightSpace L χ
 
-theorem zero_rootSpace_eq_top_of_nilpotent [IsNilpotent R L] :
+theorem zero_rootSpace_eq_top_of_nilpotent [LieRing.IsNilpotent L] :
     rootSpace (⊤ : LieSubalgebra R L) 0 = ⊤ :=
   zero_genWeightSpace_eq_top_of_nilpotent L
 
@@ -170,7 +170,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   simp only [LieSubalgebra.mem_toLieSubmodule] at hx
   simp only [mem_genWeightSpace, Pi.zero_apply, sub_zero, zero_smul]
   intro y
-  obtain ⟨k, hk⟩ := (inferInstance : IsNilpotent R H)
+  obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R H H
   use k
   let f : Module.End R H := toEnd R H H y
   let g : Module.End R L := toEnd R H L y
