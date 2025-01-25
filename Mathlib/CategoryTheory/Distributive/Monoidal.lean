@@ -121,11 +121,13 @@ variable [IsMonoidalLeftDistrib C]
 lemma leftDistrib_hom {X Y Z : C} :
   (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
 
-lemma coprod_inl_leftDistrib {X Y Z : C} :
+@[reassoc (attr := simp)]
+lemma coprod_inl_leftDistrib_hom {X Y Z : C} :
     coprod.inl ≫ (∂L X Y Z).hom = (X ◁ coprod.inl) := by
   rw [leftDistrib_hom, coprod.inl_desc]
 
-lemma coprod_inr_leftDistrib {X Y Z : C} :
+@[reassoc (attr := simp)]
+lemma coprod_inr_leftDistrib_hom {X Y Z : C} :
   coprod.inr ≫ (∂L X Y Z).hom = (X ◁ coprod.inr) :=
 by
   rw [leftDistrib_hom, coprod.inr_desc]
@@ -137,7 +139,7 @@ is equal to the left coprojection `coprod.inl : X ⊗ Y ⟶ (X ⊗ Y) ⨿ (X ⊗
 lemma whiskerLeft_coprod_inl_leftDistrib_inv {X Y Z : C} :
     (X ◁ coprod.inl) ≫ (∂L X Y Z).inv = coprod.inl := by
   apply (cancel_iso_hom_right _ _ (∂L X Y Z)).mp
-  rw [assoc, Iso.inv_hom_id, comp_id, coprod_inl_leftDistrib]
+  rw [assoc, Iso.inv_hom_id, comp_id, coprod_inl_leftDistrib_hom]
 
 /-- The composite of `(X ◁ coprod.inr) : X ⊗ Z ⟶ X ⊗ (Y ⨿ Z)` and
 `(∂L X Y Z).inv :  X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
@@ -146,7 +148,7 @@ is equal to the right coprojection `coprod.inr : X ⊗ Z ⟶ (X ⊗ Y) ⨿ (X �
 lemma whiskerLeft_coprod_inr_leftDistrib_inv {X Y Z : C} :
     (X ◁ coprod.inr) ≫ (∂L X Y Z).inv = coprod.inr := by
   apply (cancel_iso_hom_right _ _ (∂L X Y Z)).mp
-  rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_leftDistrib]
+  rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_leftDistrib_hom]
 
 end IsMonoidalLeftDistrib
 
@@ -200,10 +202,12 @@ variable [IsMonoidalRightDistrib C]
 lemma rightDistrib_hom {X Y Z : C} :
   (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
 
+@[reassoc (attr := simp)]
 lemma coprod_inl_rightDistrib_hom {X Y Z : C} :
     coprod.inl ≫ (∂R X Y Z).hom = (coprod.inl ▷ X) := by
   rw [rightDistrib_hom, coprod.inl_desc]
 
+@[reassoc (attr := simp)]
 lemma coprod_inr_rightDistrib_hom {X Y Z : C} :
     coprod.inr ≫ (∂R X Y Z).hom = (coprod.inr ▷ X) := by
   rw [rightDistrib_hom, coprod.inr_desc]
