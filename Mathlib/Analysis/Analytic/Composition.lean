@@ -880,7 +880,6 @@ theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : 
   exact hg.comp hf
 
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
-@[fun_prop]
 theorem AnalyticAt.comp_of_eq' {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
     (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (fun z ↦ g (f z)) x := by
   apply hg.comp_of_eq hf hy
