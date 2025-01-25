@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+import Mathlib.RingTheory.Kaehler.Localization
 import Mathlib.RingTheory.Etale.Kaehler
 
 /-!
@@ -402,14 +403,16 @@ lemma aeval_mk_X_eq_mk {σ : Type*} (I : Ideal (MvPolynomial σ R)) :
   rw [aeval_unique (Ideal.Quotient.mkₐ _ I)]
   rfl
 
-def Generators.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial σ R) :
+def Generators.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial σ R)
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R := Quotient.out)
+    (hs : ∀ x, Quotient.mk'' (s x) = x := by simp) :
     Generators.{t₁} R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) where
   vars := σ
   val i := Ideal.Quotient.mk _ (X i)
-  σ' := Quotient.out
+  σ' := s
   aeval_val_σ' x := by
     rw [aeval_mk_X_eq_mk]
-    apply Quotient.out_eq
+    apply hs
   algebra := inferInstance
   algebraMap_eq := by
     ext x
@@ -417,17 +420,30 @@ def Generators.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial 
       rfl
     · simp
 
-lemma Generators.naive_val {σ ι : Type*} (v : ι → MvPolynomial σ R) (i : σ) :
-    (Generators.naive v).val i = Ideal.Quotient.mk _ (X i) :=
+lemma Generators.naive_val {σ ι : Type*} (v : ι → MvPolynomial σ R)
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R := Quotient.out)
+    (hs : ∀ x, Quotient.mk'' (s x) = x := by simp) (i : σ) :
+    (Generators.naive v s hs).val i = Ideal.Quotient.mk _ (X i) :=
   rfl
 
-lemma Generators.naive_ker {σ ι : Type*} (v : ι → MvPolynomial σ R) :
-    (Generators.naive v).ker = Ideal.span (Set.range v) :=
+lemma Generators.naive_ker {σ ι : Type*} (v : ι → MvPolynomial σ R)
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R := Quotient.out)
+    (hs : ∀ x, Quotient.mk'' (s x) = x := by simp) :
+    (Generators.naive v s hs).ker = Ideal.span (Set.range v) :=
   (Ideal.span (Set.range v)).mk_ker
 
-def Presentation.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial σ R) :
+lemma Generators.naive_σ {σ ι : Type*} (v : ι → MvPolynomial σ R)
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+    (hs : ∀ x, Quotient.mk'' (s x) = x)
+    (x : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) :
+    (Generators.naive v s hs).σ x = s x :=
+  rfl
+
+def Presentation.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial σ R)
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R := Quotient.out)
+    (hs : ∀ x, Quotient.mk'' (s x) = x := by simp) :
     Presentation.{t₂, t₁} R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) where
-  __ := Generators.naive v
+  __ := Generators.naive v s hs
   rels := ι
   relation := v
   span_range_relation_eq_ker := (Generators.naive_ker v).symm
@@ -499,27 +515,14 @@ lemma _root_.Algebra.Extension.Cotangent.mk_eq_mk_iff_sub_mem {R S : Type*}
       x.val - y.val ∈ P.ker ^ 2 := by
   simp [Extension.Cotangent.ext_iff, Ideal.toCotangent_eq]
 
-def _root_.Algebra.Generators.compCotangentEquivProd {R S T : Type*} [CommRing R] [CommRing S]
-    [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    (M : Submonoid S) [IsLocalization M T] (P : Generators R S) (Q : Generators S T) :
-    (Q.comp P).toExtension.Cotangent ≃ₗ[T]
-      Q.toExtension.Cotangent × T ⊗[S] P.toExtension.Cotangent :=
-  sorry
+@[simp]
+lemma _root_.LinearEquiv.prodComm_symm_apply (R M N : Type*) [Semiring R] [AddCommMonoid M]
+    [AddCommMonoid N] [Module R M] [Module R N] (x : N × M) :
+    (LinearEquiv.prodComm R M N).symm x = x.swap :=
+  rfl
 
-def _root_.Algebra.Generators.cotangentEquiv {R S T : Type u} [CommRing R] [CommRing S]
-    [CommRing T] [Algebra R T] [Algebra S T] [Algebra R S] [IsScalarTower R S T]
-    (M : Submonoid S) [IsLocalization M T]
-    (Q : Extension R T) (P : Extension R S) :
-    T ⊗[S] P.Cotangent ≃ₗ[T] Q.Cotangent := by
-  letI : Algebra P.Ring Q.Ring := sorry
-  apply Algebra.Extension.tensorCotangent (P := P) (Q := Q)
-  · sorry
-  · sorry
-  · sorry
-
---lemma Algebra.Extension.span_eq_top_of
-
-lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
+set_option maxHeartbeats 0 in
+lemma exists_presentation_of_free [Nontrivial S] [Algebra.FinitePresentation R S]
     (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
     (u : σ → P.vars) (hu : Function.Injective u) :
     ∃ (P' : Presentation.{t₂, t₁} R S)
@@ -528,6 +531,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
       (b : Basis P'.rels S P'.toExtension.Cotangent),
       P'.val ∘ e₁ ∘ Sum.inr = P.val ∧
       ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
+  classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   choose s hs using P.algebraMap_surjective
   have hf' : Extension.Cotangent.mk (P := P.toExtension) ∘ f ∘ b = b := by
@@ -572,6 +576,14 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
   let T := MvPolynomial P.vars R ⧸ J
   have hJ_eq_ker : J = RingHom.ker (algebraMap (MvPolynomial P.vars R) T) := by simp [T]
   let Q₁ : Presentation.{t₂, t₁} R T := Presentation.naive (Subtype.val ∘ v)
+    (fun x ↦ if x = -1 then -1 else if x = 0 then 0 else Quotient.out x)
+    (by
+      intro x
+      simp only
+      split_ifs
+      · next h => subst h; rfl
+      · next h => subst h; rfl
+      · simp)
   obtain ⟨g, hgmem, hg⟩ := Submodule.exists_sub_one_mem_and_smul_le_of_fg_of_le_sup hJ_fg hJle hJ
   let gbar : T := Ideal.Quotient.mk _ g
   let hom : T →ₐ[R] S := Ideal.Quotient.liftₐ J (aeval P.val) <| by
@@ -584,6 +596,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     · simp [hx, hy]
     · simp [h]
   letI : Algebra T S := hom.toAlgebra
+  have : Nontrivial T := RingHom.domain_nontrivial (algebraMap T S)
   haveI : IsScalarTower R T S := IsScalarTower.of_algHom hom
   have (x : MvPolynomial P.vars R) (y : T) :
       x • y = algebraMap (MvPolynomial P.vars R) T x * y :=
@@ -604,7 +617,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     rw [Ideal.Quotient.liftₐ_apply]
     simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
       Function.comp_apply, Ideal.Quotient.lift_mk, RingHom.coe_coe, ← mul_assoc]
-    sorry
+    congr 1
   have : IsLocalization.Away gbar S :=
     IsLocalization.Away.of_sub_one_mem_ker
       (by
@@ -632,7 +645,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
         simp only [aeval_X]
         rw [RingHom.algebraMap_toAlgebra]
         simp only [AlgHom.toRingHom_eq_coe, Presentation.naive, RingHom.coe_coe, Q₁, hom]
-        rw [Generators.naive_val]
+        erw [Generators.naive_val]
         simp only [J]
         rw [Ideal.Quotient.liftₐ_apply]
         simp }
@@ -691,12 +704,23 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
   let bQ₂ : Basis Unit S Q₂.toExtension.Cotangent := Q₂.basisCotangent
   let P' : Presentation R S := Q₂.toPresentation.comp Q₁
   let b' := Basis.prod bQ₂ bQ₁
-  let equiv2 :
-      (Q₂.toExtension.Cotangent × S ⊗[T] Q₁.toExtension.Cotangent) ≃ₗ[S] P'.toExtension.Cotangent :=
-    (Algebra.Generators.compCotangentEquivProd (.powers gbar) _ _).symm
-  --let b' : Basis (Unit ⊕ σ) S P'.toExtension.Cotangent := (Basis.prod bQ₂ bQ₁).map equiv2
+  have heq : ((Generators.localizationAway gbar).ofComp Q₁.toGenerators).toAlgHom
+        (P'.relation (Sum.inl ())) = C gbar * X () - 1 := by
+    simp only [P', Q₂]
+    erw [Generators.relation_comp_localizationAway_inl]
+    · apply Generators.toAlgHom_ofComp_localizationAway
+    · simp only [Q₁, Presentation.naive]
+      erw [Generators.naive_σ]
+      simp
+    · simp [Q₁, Presentation.naive]
+      erw [Generators.naive_σ]
+      simp
+  let equiv2 : P'.toExtension.Cotangent ≃ₗ[S]
+      (Q₂.toExtension.Cotangent × S ⊗[T] Q₁.toExtension.Cotangent) :=
+    (Q₁.cotangentCompLocalizationAwayEquiv (T := S) gbar
+      (P'.relation (Sum.inl ())) heq) ≪≫ₗ LinearEquiv.prodComm _ _ _
   use P', Equiv.refl _, Equiv.refl _
-  refine ⟨(Basis.prod bQ₂ bQ₁).map equiv2, ?_, ?_⟩
+  refine ⟨(Basis.prod bQ₂ bQ₁).map equiv2.symm, ?_, ?_⟩
   · ext i
     simp only [Function.comp_apply, P']
     erw [Generators.comp_val]
@@ -709,14 +733,33 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     rw [Ideal.Quotient.liftₐ_apply]
     simp
   · rintro (r|r)
-    · simp
-      sorry
-    · sorry
+    · have : (bQ₂.prod bQ₁) (Sum.inl r) = (bQ₂ r, 0) := by simp
+      simp only [Basis.map_apply]
+      erw [this]
+      simp only [equiv2, LinearEquiv.trans_symm, LinearEquiv.trans_apply]
+      erw [LinearEquiv.prodComm_symm_apply]
+      simp [bQ₂, SubmersivePresentation.basisCotangent, Q₂, P']
+      erw [Generators.cotangentCompLocalizationAwayEquiv_symm_inr]
+      rfl
+    · have : (bQ₂.prod bQ₁) (Sum.inr r) = (0, bQ₁ r) := by simp
+      simp only [Basis.map_apply]
+      erw [this]
+      simp only [equiv2, LinearEquiv.trans_symm, LinearEquiv.trans_apply]
+      erw [LinearEquiv.prodComm_symm_apply]
+      simp
+      erw [Generators.cotangentCompLocalizationAwayEquiv_symm_inl]
+      simp [bQ₁, equiv1, hom2, P']
+      erw [Extension.Cotangent.map_mk]
+
+instance isStandardSmooth_of_subsingleton [Subsingleton S] :
+    IsStandardSmooth R S :=
+  sorry
 
 theorem isStandardSmooth_of [Algebra.FinitePresentation R S]
     [Subsingleton (H1Cotangent R S)]
     {I : Type v} (b : Basis I S (Ω[S⁄R])) (hb : Set.range b ⊆ Set.range (D R S)) :
     IsStandardSmooth.{v, v} R S := by
+  nontriviality S
   obtain ⟨P, hfin, κ, v, b, hv, hb⟩ := exists_generators_of_basis_kaehlerDifferential b hb
   let σ : Type v := ((Set.range v)ᶜ : Set P.vars)
   let u : σ → P.vars := Subtype.val

@@ -322,20 +322,20 @@ variable (Q : Presentation S T) (P : Presentation R S)
 
 /-- The evaluation map `MvPolynomial (Q.vars ⊕ P.vars) →ₐ[R] T` factors via this map. For more
 details, see the module docstring at the beginning of the section. -/
-private noncomputable def aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S :=
+noncomputable def aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S :=
   aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 
 /-- A choice of pre-image of `Q.relation r` under `aux`. -/
-private noncomputable def comp_relation_aux (r : Q.rels) : MvPolynomial (Q.vars ⊕ P.vars) R :=
+noncomputable def comp_relation_aux (r : Q.rels) : MvPolynomial (Q.vars ⊕ P.vars) R :=
   Finsupp.sum (Q.relation r)
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
 
 @[simp]
-private lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
+lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
   aeval_X (Sum.elim X (C ∘ P.val)) i
 
 /-- The pre-images constructed in `comp_relation_aux` are indeed pre-images under `aux`. -/
-private lemma comp_relation_aux_map (r : Q.rels) :
+lemma comp_relation_aux_map (r : Q.rels) :
     (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
   simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
   simp only [_root_.map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
@@ -346,7 +346,7 @@ private lemma comp_relation_aux_map (r : Q.rels) :
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 
-private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
+lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
   induction' p using MvPolynomial.induction_on with a p q hp hq p i h
   · use rename Sum.inr <| P.σ a
     simp only [aux, aeval_rename, Sum.elim_comp_inr]
@@ -363,7 +363,7 @@ private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
   · obtain ⟨a, rfl⟩ := h
     exact ⟨(a * X (Sum.inl i)), by simp⟩
 
-private lemma aux_image_relation :
+lemma aux_image_relation :
     Q.aux P '' (Set.range (Algebra.Presentation.comp_relation_aux Q P)) = Set.range Q.relation := by
   ext x
   constructor
@@ -373,12 +373,12 @@ private lemma aux_image_relation :
     use Q.comp_relation_aux P y
     simp only [Set.mem_range, exists_apply_eq_apply, true_and, comp_relation_aux_map]
 
-private lemma aux_eq_comp : Q.aux P =
+lemma aux_eq_comp : Q.aux P =
     (MvPolynomial.mapAlgHom (aeval P.val)).comp (sumAlgEquiv R Q.vars P.vars).toAlgHom := by
   ext i : 1
   cases i <;> simp
 
-private lemma aux_ker :
+lemma aux_ker :
     RingHom.ker (Q.aux P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
   rw [aux_eq_comp, ← AlgHom.comap_ker, MvPolynomial.ker_mapAlgHom]
   show Ideal.comap _ (Ideal.map (IsScalarTower.toAlgHom R (MvPolynomial P.vars R) _) _) = _
@@ -387,7 +387,7 @@ private lemma aux_ker :
 
 variable [Algebra R T] [IsScalarTower R S T]
 
-private lemma aeval_comp_val_eq :
+lemma aeval_comp_val_eq :
     (aeval (Q.comp P.toGenerators).val) =
       (aevalTower (IsScalarTower.toAlgHom R S T) Q.val).comp (Q.aux P) := by
   ext i
@@ -395,7 +395,7 @@ private lemma aeval_comp_val_eq :
   erw [Q.aux_X P i]
   cases i <;> simp
 
-private lemma span_range_relation_eq_ker_comp : Ideal.span
+lemma span_range_relation_eq_ker_comp : Ideal.span
     (Set.range (Sum.elim (Algebra.Presentation.comp_relation_aux Q P)
       fun rp ↦ (rename Sum.inr) (P.relation rp))) = (Q.comp P.toGenerators).ker := by
   rw [Generators.ker_eq_ker_aeval_val, Q.aeval_comp_val_eq, ← AlgHom.comap_ker]
