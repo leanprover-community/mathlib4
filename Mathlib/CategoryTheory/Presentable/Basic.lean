@@ -72,7 +72,7 @@ lemma isCardinalAccessible_of_le
 include e in
 variable {F G} in
 lemma isCardinalAccessible_of_iso [F.IsCardinalAccessible κ] : G.IsCardinalAccessible κ where
-  preservesColimitOfShape J _ hκ  := by
+  preservesColimitOfShape J _ hκ := by
     have := F.preservesColimitsOfShape_of_isCardinalAccessible κ J
     exact preservesColimitsOfShape_of_natIso e
 
