@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+import Mathlib.RingTheory.Etale.Kaehler
 
 /-!
 # Standard smooth algebras
@@ -409,19 +410,27 @@ def Generators.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial 
   aeval_val_σ' x := by
     rw [aeval_mk_X_eq_mk]
     apply Quotient.out_eq
+  algebra := inferInstance
+  algebraMap_eq := by
+    ext x
+    · simp only [RingHom.coe_comp, Function.comp_apply, RingHom.coe_coe, algHom_C]
+      rfl
+    · simp
 
 lemma Generators.naive_val {σ ι : Type*} (v : ι → MvPolynomial σ R) (i : σ) :
     (Generators.naive v).val i = Ideal.Quotient.mk _ (X i) :=
   rfl
+
+lemma Generators.naive_ker {σ ι : Type*} (v : ι → MvPolynomial σ R) :
+    (Generators.naive v).ker = Ideal.span (Set.range v) :=
+  (Ideal.span (Set.range v)).mk_ker
 
 def Presentation.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomial σ R) :
     Presentation.{t₂, t₁} R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) where
   __ := Generators.naive v
   rels := ι
   relation := v
-  span_range_relation_eq_ker := by
-    show Ideal.span _ = RingHom.ker (aeval <| fun i ↦ Ideal.Quotient.mk _ (X i)).toRingHom
-    simp only [AlgHom.toRingHom_eq_coe, aeval_mk_X_eq_mk, Ideal.Quotient.mkₐ_ker]
+  span_range_relation_eq_ker := (Generators.naive_ker v).symm
 
 open _root_.TensorProduct
 
@@ -497,11 +506,18 @@ def _root_.Algebra.Generators.compCotangentEquivProd {R S T : Type*} [CommRing R
       Q.toExtension.Cotangent × T ⊗[S] P.toExtension.Cotangent :=
   sorry
 
-def _root_.Algebra.Generators.cotangentEquiv {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] (M : Submonoid R) [IsLocalization M S]
-    (P : Generators R S) :
-    P.toExtension.Cotangent :=
-  sorry
+def _root_.Algebra.Generators.cotangentEquiv {R S T : Type u} [CommRing R] [CommRing S]
+    [CommRing T] [Algebra R T] [Algebra S T] [Algebra R S] [IsScalarTower R S T]
+    (M : Submonoid S) [IsLocalization M T]
+    (Q : Extension R T) (P : Extension R S) :
+    T ⊗[S] P.Cotangent ≃ₗ[T] Q.Cotangent := by
+  letI : Algebra P.Ring Q.Ring := sorry
+  apply Algebra.Extension.tensorCotangent (P := P) (Q := Q)
+  · sorry
+  · sorry
+  · sorry
+
+--lemma Algebra.Extension.span_eq_top_of
 
 lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
@@ -601,7 +617,75 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
       (by simp [T, Ideal.Quotient.mk_surjective])
       g hgmem (n := 1)
       (by simpa [← hJ_eq_ker])
-  let equiv1 : S ⊗[T] Q₁.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := sorry
+  have vmem (i : σ) : (v i).val ∈ Q₁.toExtension.ker := by
+    dsimp only [Q₁]
+    show _ ∈ (Generators.naive (Subtype.val ∘ v)).ker
+    rw [Generators.naive_ker]
+    apply Ideal.subset_span
+    use i
+    simp
+  let hom2 : P.toExtension.Cotangent →ₗ[S] S ⊗[T] Q₁.toExtension.Cotangent :=
+    b.constr S (fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk ⟨(v i).val, vmem i⟩)
+  let fhom : Q₁.Hom P :=
+    { val i := X i
+      aeval_val i := by
+        simp only [aeval_X]
+        rw [RingHom.algebraMap_toAlgebra]
+        simp only [AlgHom.toRingHom_eq_coe, Presentation.naive, RingHom.coe_coe, Q₁, hom]
+        rw [Generators.naive_val]
+        simp only [J]
+        rw [Ideal.Quotient.liftₐ_apply]
+        simp }
+  let hom1 : S ⊗[T] Q₁.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
+    LinearMap.liftBaseChange _ (Extension.Cotangent.map fhom.toExtensionHom)
+  have : Submodule.span Q₁.toExtension.Ring
+      (Set.range <| fun i : σ ↦ (⟨(v i).val, vmem i⟩ : Q₁.ker)) = ⊤ :=
+    sorry
+  apply_fun Submodule.map Extension.Cotangent.mk at this
+  rw [Submodule.map_span] at this
+  simp at this
+  rw [Submodule.map_span] at this
+  rw [← Set.range_comp] at this
+  rw [LinearMap.range_eq_top_of_surjective _ Extension.Cotangent.mk_surjective] at this
+  have hspan : Submodule.span (M := Q₁.toExtension.Cotangent) T
+      (Set.range <| fun i : σ ↦ Extension.Cotangent.mk ⟨(v i).val, vmem i⟩) = ⊤ := by
+    sorry
+  let equiv1 : S ⊗[T] Q₁.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := by
+    refine LinearEquiv.ofLinear hom1 hom2 ?_ ?_
+    · dsimp [hom1, hom2, fhom]
+      apply b.ext
+      intro i
+      simp only [LinearMap.coe_comp, Function.comp_apply, Basis.constr_basis,
+        LinearMap.liftBaseChange_tmul, one_smul, LinearMap.id_coe, id_eq]
+      erw [Extension.Cotangent.map_mk]
+      simp only [Generators.toExtension_Ring, Generators.toExtension_commRing,
+        Generators.toExtension_algebra₂, Extension.Hom.toAlgHom, Generators.Hom.toExtensionHom,
+        Generators.Hom.toAlgHom, AlgHom.toRingHom_eq_coe, AlgHom.coe_mk, RingHom.coe_coe]
+      simp_rw [MvPolynomial.aeval_X_left]
+      apply hv
+    · ext x
+      have : x ∈ Submodule.span T
+          (Set.range <| fun i : σ ↦ Extension.Cotangent.mk ⟨(v i).val, vmem i⟩) := by
+        rw [hspan]
+        trivial
+      simp only [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
+        LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.id_coe,
+        id_eq]
+      induction this using Submodule.span_induction with
+      | mem x hx =>
+          dsimp [hom1, hom2, fhom]
+          obtain ⟨i, rfl⟩ := hx
+          simp
+          erw [Extension.Cotangent.map_mk]
+          simp only [Generators.toExtension_Ring, Generators.toExtension_commRing,
+            Generators.toExtension_algebra₂, Extension.Hom.toAlgHom, Generators.Hom.toExtensionHom,
+            Generators.Hom.toAlgHom, AlgHom.toRingHom_eq_coe, AlgHom.coe_mk, RingHom.coe_coe]
+          simp_rw [MvPolynomial.aeval_X_left]
+          erw [hv]
+          simp
+      | zero => simp
+      | add x y _ _ hx hy => simp [hx, hy, tmul_add]
+      | smul a x _ hx => simp [hx]
   let bQ₁ : Basis σ S (S ⊗[T] Q₁.toExtension.Cotangent) := b.map equiv1.symm
   let Q₂ : SubmersivePresentation.{0} T S := SubmersivePresentation.localizationAway S gbar
   let bQ₂ : Basis Unit S Q₂.toExtension.Cotangent := Q₂.basisCotangent
