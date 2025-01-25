@@ -23,18 +23,18 @@ variable {X : Type*} {L : CompleteSublattice (Set X)}
 
 attribute [local instance] setLikeCompleteSublattice
 
-variable {S T : L} {s : Set L} {I : Sort*} {f : I → L} {x : X}
+variable {S T : L} {𝒮 : Set L} {I : Sort*} {f : I → L} {x : X}
 
 @[ext] theorem ext (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T := SetLike.coe_injective <| Set.ext h
 
 @[local simp] theorem mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 
-@[simp] theorem mem_sInf : x ∈ sInf s ↔ ∀ T ∈ s, x ∈ T := by simp [← mem_subtype]
+@[simp] theorem mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← mem_subtype]
 @[simp] theorem mem_inf : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_top : x ∈ (⊤ : L) := by simp [← mem_subtype]
 
-@[simp] theorem mem_sSup : x ∈ sSup s ↔ ∃ T ∈ s, x ∈ T := by simp [← mem_subtype]
+@[simp] theorem mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
 @[simp] theorem mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_bot : ¬ x ∈ (⊥ : L) := by simp [← mem_subtype]
