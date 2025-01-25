@@ -140,8 +140,8 @@ def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
   toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by aesop
-  right_inv h := by aesop
+  left_inv h := by simp
+  right_inv h := by simp
 
 variable (h : E.IsPointwiseLeftKanExtension)
 include h
@@ -277,8 +277,8 @@ def isPointwiseRightKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseRightKanExtension ≃ E'.IsPointwiseRightKanExtension where
   toFun h := fun Y => (isPointwiseRightKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseRightKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by aesop
-  right_inv h := by aesop
+  left_inv h := by simp
+  right_inv h := by simp
 
 variable (h : E.IsPointwiseRightKanExtension)
 include h

@@ -219,6 +219,7 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     congr
     exact h.val_inv_mul⟩
 
+open scoped Function in -- required for scoped `on` notation
 theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
     Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
   isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
@@ -230,7 +231,7 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), if_neg hpq, rootMultiplicity_eq_multiplicity p,
     if_neg hp, rootMultiplicity_eq_multiplicity q, if_neg hq,
-    multiplicity_mul (prime_X_sub_C x) (multiplicity_X_sub_C_finite _ hpq)]
+    multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
 
 open Multiset in
 set_option linter.unusedVariables false in
@@ -267,7 +268,6 @@ theorem exists_multiset_roots [DecidableEq R] :
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
             exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
-          change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
           conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
           rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),

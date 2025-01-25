@@ -77,7 +77,7 @@ theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => 
 @[continuity, fun_prop]
 theorem Continuous.inf [Min L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
-  continuous_inf.comp (hf.prod_mk hg : _)
+  continuous_inf.comp (hf.prod_mk hg :)
 
 @[continuity]
 theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
@@ -86,7 +86,7 @@ theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => 
 @[continuity, fun_prop]
 theorem Continuous.sup [Max L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
-  continuous_sup.comp (hf.prod_mk hg : _)
+  continuous_sup.comp (hf.prod_mk hg :)
 
 namespace Filter.Tendsto
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Center
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.Pointwise
@@ -72,6 +73,14 @@ instance algebra (s : StarSubalgebra R A) : Algebra R s :=
 
 instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
+
+/-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
+def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra R A where
+  __ := S
+  smul_mem' r _x hx := S.smul_mem hx r
+
+lemma one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
+    1 ∈ S.toNonUnitalStarSubalgebra := S.one_mem'
 
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -319,9 +328,8 @@ instance involutiveStar : InvolutiveStar (Subalgebra R A) where
 theorem mem_star_iff (S : Subalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ S :=
   Iff.rfl
 
--- Porting note: removed `@[simp]` tag because `simp` can prove this
 theorem star_mem_star_iff (S : Subalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
-  simp only [mem_star_iff, star_star]
+  simp
 
 @[simp]
 theorem coe_star (S : Subalgebra R A) : ((star S : Subalgebra R A) : Set A) = star (S : Set A) :=
@@ -435,6 +443,12 @@ open Submodule in
 lemma adjoin_eq_span (s : Set A) :
     Subalgebra.toSubmodule (adjoin R s).toSubalgebra = span R (Submonoid.closure (s ∪ star s)) := by
   rw [adjoin_toSubalgebra, Algebra.adjoin_eq_span]
+
+open Submodule in
+lemma adjoin_nonUnitalStarSubalgebra_eq_span (s : NonUnitalStarSubalgebra R A) :
+    (adjoin R (s : Set A)).toSubalgebra.toSubmodule = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union,
+    ← NonUnitalStarAlgebra.adjoin_eq_span, NonUnitalStarAlgebra.adjoin_eq]
 
 theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
@@ -562,9 +576,9 @@ instance adjoinCommRingOfIsStarNormal (R : Type u) {A : Type v} [CommRing R] [St
     CommRing (adjoin R ({x} : Set A)) :=
   { (adjoin R ({x} : Set A)).toSubalgebra.toRing with mul_comm := mul_comm }
 
-/-! ### Complete lattice structure -/
-
 end StarAlgebra
+
+/-! ### Complete lattice structure -/
 
 namespace StarSubalgebra
 
@@ -758,7 +772,7 @@ theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
 
 theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
@@ -803,3 +817,34 @@ theorem StarAlgEquiv.restrictScalars_injective :
     show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
 
 end RestrictScalars
+
+variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]
+  [StarModule R A]
+
+/-- Turn a non-unital star subalgebra containing `1` into a `StarSubalgebra`. -/
+def NonUnitalStarSubalgebra.toStarSubalgebra (S : NonUnitalStarSubalgebra R A) (h1 : 1 ∈ S) :
+    StarSubalgebra R A where
+  __ := S
+  one_mem' := h1
+  algebraMap_mem' r :=
+    (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1
+
+lemma StarSubalgebra.toNonUnitalStarSubalgebra_toStarSubalgebra (S : StarSubalgebra R A) :
+    S.toNonUnitalStarSubalgebra.toStarSubalgebra S.one_mem' = S := by cases S; rfl
+
+lemma NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
+    (S : NonUnitalStarSubalgebra R A) (h1 : (1 : A) ∈ S) :
+    (S.toStarSubalgebra h1).toNonUnitalStarSubalgebra = S := by
+  cases S; rfl
+
+variable (R)
+
+lemma NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin (s : Set A) :
+    adjoin R s ≤ (StarAlgebra.adjoin R s).toNonUnitalStarSubalgebra :=
+  adjoin_le <| StarAlgebra.subset_adjoin R s
+
+lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
+    adjoin R (NonUnitalStarAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
+    (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)

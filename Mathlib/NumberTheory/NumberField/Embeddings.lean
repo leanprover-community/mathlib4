@@ -638,7 +638,7 @@ lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
   letI := w.embedding.toAlgebra
   ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
-    by simp [comap_mk, RingHom.algebraMap_toAlgebra]⟩
+    by simp [this, comap_mk, RingHom.algebraMap_toAlgebra]⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -881,7 +881,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype (K ≃ₐ[k] K)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert even_zero
+  · convert Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -894,7 +894,7 @@ lemma even_finrank_of_not_isUnramified [IsGalois k K]
     (hw : ¬ IsUnramified k w) : Even (finrank k K) := by
   by_cases FiniteDimensional k K
   · exact IsGalois.card_aut_eq_finrank k K ▸ even_card_aut_of_not_isUnramified hw
-  · exact finrank_of_not_finite ‹_› ▸ even_zero
+  · exact finrank_of_not_finite ‹_› ▸ Even.zero
 
 lemma isUnramified_smul_iff :
     IsUnramified k (σ • w) ↔ IsUnramified k w := by
@@ -1061,16 +1061,16 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     rw [← Complex.abs_re_eq_abs] at him
-    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
     rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
-    exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+    exact hζ'.ne_one (by omega) <| Complex.ext (by simp [hone]) (by simp [him])
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
       orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
-    linarith
+    omega
 
 end IsPrimitiveRoot
 
@@ -1096,4 +1096,28 @@ lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
 instance : Subsingleton (InfinitePlace ℚ) where
   allEq a b := by ext; simp
 
+lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
+  ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
+
 end Rat
+
+/-
+
+## Totally real number fields
+
+-/
+
+namespace NumberField
+
+/-- A number field `K` is totally real if all of its infinite places
+are real. In other words, the image of every ring homomorphism `K → ℂ`
+is a subset of `ℝ`. -/
+class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+  isReal : ∀ v : InfinitePlace K, v.IsReal
+
+instance : IsTotallyReal ℚ where
+  isReal v := by
+    rw [Subsingleton.elim v Rat.infinitePlace]
+    exact Rat.isReal_infinitePlace
+
+end NumberField

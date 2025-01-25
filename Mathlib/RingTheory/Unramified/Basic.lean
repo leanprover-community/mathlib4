@@ -39,18 +39,15 @@ namespace Algebra
 
 section
 
-variable (R : Type v) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
+variable (R : Type v) (A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 
 /--
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
 
 This is equivalent to "for every `R`-algebra, every square-zero ideal
 `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`".
-See `Algebra.FormallyUnramified.iff_comp_injective`.
-
-See <https://stacks.math.columbia.edu/tag/00UM>. -/
-@[mk_iff]
+See `Algebra.FormallyUnramified.iff_comp_injective`. -/
+@[mk_iff, stacks 00UM]
 class FormallyUnramified : Prop where
   subsingleton_kaehlerDifferential : Subsingleton (Ω[A⁄R])
 
@@ -248,9 +245,6 @@ variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algeb
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
-
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 /-- This holds in general for epimorphisms. -/
 theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by
