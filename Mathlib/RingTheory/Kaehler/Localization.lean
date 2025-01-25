@@ -31,7 +31,7 @@ variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
 lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :
     ((Generators.localizationAway g).comp P).ker =
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
-        Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1} := by
+        Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
   set Q := Generators.localizationAway (S := T) g
   have : Q.ker = Ideal.span {MvPolynomial.C g * MvPolynomial.X () - 1} := by
     convert (Algebra.Presentation.localizationAway T g).span_range_relation_eq_ker.symm
@@ -64,7 +64,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway g (S := T)).comp 
 
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
-    (compLocalizationAwayAlgHom T g P) (((localizationAway g (S := T)).toComp P).toAlgHom x) =
+    compLocalizationAwayAlgHom T g P (((localizationAway g (S := T)).toComp P).toAlgHom x) =
       algebraMap P.Ring _ x := by
   simp only [toComp_toAlgHom, Ideal.mem_comap, RingHom.mem_ker, compLocalizationAwayAlgHom, comp,
     localizationAway, AlgHom.toRingHom_eq_coe, aeval_rename,
@@ -72,12 +72,12 @@ lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     aeval_X_left_apply]
 
 @[simp]
-lemma compLocalizationAwayAlgHom_X_inl : (compLocalizationAwayAlgHom T g P) (X (Sum.inl ())) =
+lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Sum.inl ())) =
       IsLocalization.Away.invSelf ((Ideal.Quotient.mk (P.ker ^ 2)) (P.σ g)) := by
   simp [compLocalizationAwayAlgHom]
 
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
-    (compLocalizationAwayAlgHom T g P) ((rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
+    compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
   rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway g (S := T)) P]
   show (compLocalizationAwayAlgHom T g P) (((localizationAway g).toComp P).toAlgHom _) * _ - _ = _
   rw [compLocalizationAwayAlgHom_toAlgHom_toComp, compLocalizationAwayAlgHom_X_inl,
