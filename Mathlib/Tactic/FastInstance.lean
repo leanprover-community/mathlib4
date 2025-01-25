@@ -138,7 +138,7 @@ def elabTryFastInstance : TermElab
     withRef tk do
       try
         makeFastInstance provided
-      catch e =>
+      catch _ =>
         return provided
   | _, _ => Elab.throwUnsupportedSyntax
 
@@ -156,7 +156,8 @@ def elabBetterInstance : Lean.Elab.Command.CommandElab
   | .node i1 ``betterInstanceDecl #[modifiers, .node i2 ``«betterInstance» args] => do
     let args ← args.modifyM 5 fun
       | .node i3 ``declValSimple dargs =>
-        return .node i3 ``declValSimple <| ← dargs.modifyM 1 fun arg => `(try_fast_instance% $(⟨arg⟩))
+        return .node i3 ``declValSimple <|
+          ← dargs.modifyM 1 fun arg => `(try_fast_instance% $(⟨arg⟩))
       | x => return x
 
     elabCommand <|
