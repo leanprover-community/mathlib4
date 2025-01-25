@@ -41,6 +41,7 @@ namespace Types
 
 variable {J : Type u₁} [Category.{v₁} J]
 
+-- to be moved
 namespace uliftFunctor
 
 variable {F : J ⥤ Type w'} (c : Cocone F)
