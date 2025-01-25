@@ -24,7 +24,7 @@ so that `m` factors through the `m'` in any other such factorisation.
     morphism `e`.
 * `HasImages C` means that every morphism in `C` has an image.
 * Let `f : X ⟶ Y` and `g : P ⟶ Q` be morphisms in `C`, which we will represent as objects of the
-  arrow category `arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
+  arrow category `Arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
   images, then `HasImageMap sq` represents the fact that there is a morphism
   `i : image f ⟶ image g` making the diagram
 
