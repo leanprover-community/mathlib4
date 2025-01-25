@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
@@ -82,6 +84,12 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   refine hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 ?_)
   refine this (mul_mem_mul (mem_span_singleton_self x) ?_)
   rwa [← hn (n + 1) (Nat.le_succ _)]
+
+variable (R) in
+/-- Commutative artinian reduced local ring is a field. -/
+theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
+  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+    _ (Ideal.Quotient.field _).toIsField
 
 section Localization
 
