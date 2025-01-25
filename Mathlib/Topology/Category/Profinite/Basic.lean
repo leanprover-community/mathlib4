@@ -96,9 +96,8 @@ section Profinite
 -- unhelpfully defines a function `CompHaus.{max u₁ u₂} → Profinite.{max u₁ u₂}`.
 /--
 (Implementation) The object part of the connected_components functor from compact Hausdorff spaces
-to Profinite spaces, given by quotienting a space by its connected components.
-See: https://stacks.math.columbia.edu/tag/0900
--/
+to Profinite spaces, given by quotienting a space by its connected components. -/
+@[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   toTop := TopCat.of (ConnectedComponents X)
   is_compact := Quotient.compactSpace

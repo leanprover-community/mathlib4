@@ -30,10 +30,8 @@ variable {T : Type u₁} [Category.{v₁} T]
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The over category has as objects arrows in `T` with codomain `X` and as morphisms commutative
-triangles.
-
-See <https://stacks.math.columbia.edu/tag/001G>.
--/
+triangles. -/
+@[stacks 001G]
 def Over (X : T) :=
   CostructuredArrow (𝟭 T) X
 
@@ -118,10 +116,8 @@ section
 
 variable (X)
 
-/-- The forgetful functor mapping an arrow to its domain.
-
-See <https://stacks.math.columbia.edu/tag/001G>.
--/
+/-- The forgetful functor mapping an arrow to its domain. -/
+@[stacks 001G]
 def forget : Over X ⥤ T :=
   Comma.fst _ _
 
@@ -141,10 +137,8 @@ def forgetCocone (X : T) : Limits.Cocone (forget X) :=
   { pt := X
     ι := { app := Comma.hom } }
 
-/-- A morphism `f : X ⟶ Y` induces a functor `Over X ⥤ Over Y` in the obvious way.
-
-See <https://stacks.math.columbia.edu/tag/001G>.
--/
+/-- A morphism `f : X ⟶ Y` induces a functor `Over X ⥤ Over Y` in the obvious way. -/
+@[stacks 001G]
 def map {Y : T} (f : X ⟶ Y) : Over X ⥤ Over Y :=
   Comma.mapRight _ <| Discrete.natTrans fun _ => f
 

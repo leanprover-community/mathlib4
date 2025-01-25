@@ -205,7 +205,6 @@ protected abbrev semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α
   let zero := e.zero
   apply e.injective.semigroupWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) :=
   (equivShrink α).symm.semigroupWithZero
 

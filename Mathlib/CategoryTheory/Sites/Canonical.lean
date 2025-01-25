@@ -188,10 +188,8 @@ theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopol
   exact hJ P hP (S.pullback f) (J.pullback_stable f hS)
 
 /-- The `canonicalTopology` on a category is the finest (largest) topology for which every
-representable presheaf is a sheaf.
-
-See <https://stacks.math.columbia.edu/tag/00ZA>
--/
+representable presheaf is a sheaf. -/
+@[stacks 00ZA]
 def canonicalTopology (C : Type u) [Category.{v} C] : GrothendieckTopology C :=
   finestTopology (Set.range yoneda.obj)
 

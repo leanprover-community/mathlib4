@@ -130,6 +130,10 @@ namespace Subsemiring
 instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
+instance continuousSMul (s : Subsemiring α) (X) [TopologicalSpace X] [MulAction α X]
+    [ContinuousSMul α X] : ContinuousSMul s X :=
+  Submonoid.continuousSMul
+
 end Subsemiring
 
 /-- The (topological-space) closure of a subsemiring of a topological semiring is
@@ -307,6 +311,10 @@ variable [Ring α] [TopologicalRing α]
 
 instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
+
+instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]
+    [ContinuousSMul α X] : ContinuousSMul s X :=
+  Subsemiring.continuousSMul s.toSubsemiring X
 
 /-- The (topological-space) closure of a subring of a topological ring is
 itself a subring. -/

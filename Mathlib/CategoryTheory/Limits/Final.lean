@@ -82,10 +82,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /--
 A functor `F : C ⥤ D` is final if for every `d : D`, the comma category of morphisms `d ⟶ F.obj c`
-is connected.
-
-See <https://stacks.math.columbia.edu/tag/04E6>
--/
+is connected. -/
+@[stacks 04E6]
 class Final (F : C ⥤ D) : Prop where
   out (d : D) : IsConnected (StructuredArrow d F)
 

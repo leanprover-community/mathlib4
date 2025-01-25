@@ -41,11 +41,8 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally smooth if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`.
-
-See <https://stacks.math.columbia.edu/tag/00TI>.
--/
-@[mk_iff]
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
+@[mk_iff, stacks 00TI]
 class FormallySmooth : Prop where
   comp_surjective :
     ∀ ⦃B : Type u⦄ [CommRing B],

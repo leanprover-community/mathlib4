@@ -50,7 +50,7 @@ assert_not_exists Star
 open Function
 
 -- to ensure these instances are computable
-/-- Nonnegative real numbers. -/
+/-- Nonnegative real numbers, denoted as `ℝ≥0` withinin the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
@@ -58,7 +58,7 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
-scoped notation "ℝ≥0" => NNReal
+@[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors

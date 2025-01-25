@@ -41,7 +41,7 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
   swap; · rw [condExp_undef hfint, integral_undef hfint]; rfl
   refine (ae_eq_condExp_of_forall_setIntegral_eq hle₂ hfint
     (fun s _ hs => integrableOn_const.2 (Or.inr hs)) (fun s hms hs => ?_)
-      stronglyMeasurable_const.aeStronglyMeasurable').symm
+      stronglyMeasurable_const.aestronglyMeasurable).symm
   rw [setIntegral_const]
   rw [← memℒp_one_iff_integrable] at hfint
   refine Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ ?_ ?_ ?_ ?_ hfint ?_

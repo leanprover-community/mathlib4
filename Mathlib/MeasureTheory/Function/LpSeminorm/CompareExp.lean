@@ -411,4 +411,26 @@ theorem Memℒp.mul_of_top_left' (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ)
 
 end Mul
 
+section Prod
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
+  {p : ι → ℝ≥0∞} {s : Finset ι}
+
+open Finset in
+/-- See `Memℒp.prod'` for the applied version. -/
+protected lemma Memℒp.prod (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
+    Memℒp (∏ i ∈ s, f i) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
+  induction s using cons_induction with
+  | empty =>
+    by_cases hμ : μ = 0 <;>
+      simp [Memℒp, eLpNormEssSup_const, hμ, aestronglyMeasurable_const, Pi.one_def]
+  | cons i s hi ih =>
+    rw [prod_cons]
+    exact (ih <| forall_of_forall_cons hf).mul (hf i <| mem_cons_self ..) (by simp)
+
+/-- See `Memℒp.prod` for the unapplied version. -/
+protected lemma Memℒp.prod' (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
+    Memℒp (fun ω ↦ ∏ i ∈ s, f i ω) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
+  simpa [Finset.prod_fn] using Memℒp.prod hf
+
+end Prod
 end MeasureTheory

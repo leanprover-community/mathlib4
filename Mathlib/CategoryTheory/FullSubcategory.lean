@@ -99,11 +99,8 @@ variable (Z : C → Prop)
 /--
 A subtype-like structure for full subcategories. Morphisms just ignore the property. We don't use
 actual subtypes since the simp-normal form `↑X` of `X.val` does not work well for full
-subcategories.
-
-See <https://stacks.math.columbia.edu/tag/001D>. We do not define 'strictly full' subcategories.
--/
-@[ext]
+subcategories. -/
+@[ext, stacks 001D "We do not define 'strictly full' subcategories."]
 structure FullSubcategory where
   /-- The category of which this is a full subcategory -/
   obj : C

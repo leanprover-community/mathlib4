@@ -298,7 +298,7 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · intro x hx _
     rw [setIntegral_densityProcess hκν i a hs hx,
       setIntegral_densityProcess_of_le hκν hij a hs hx]
-  · exact StronglyMeasurable.aeStronglyMeasurable'
+  · exact StronglyMeasurable.aestronglyMeasurable
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
 
 @[deprecated (since := "2025-01-21")] alias condexp_densityProcess := condExp_densityProcess

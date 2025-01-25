@@ -67,7 +67,7 @@ theorem eLpNorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] 
 @[deprecated (since := "2024-07-27")]
 alias snorm_trim := eLpNorm_trim
 
-theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable f (μ.trim hm)) :
+theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
   rw [eLpNorm_congr_ae hf.ae_eq_mk, eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
   exact eLpNorm_trim hm hf.stronglyMeasurable_mk

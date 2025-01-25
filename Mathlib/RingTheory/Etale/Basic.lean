@@ -38,10 +38,8 @@ variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally étale if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`.
-
-See <https://stacks.math.columbia.edu/tag/00UQ> -/
-@[mk_iff]
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
+@[mk_iff, stacks 00UQ]
 class FormallyEtale : Prop where
   comp_bijective :
     ∀ ⦃B : Type u⦄ [CommRing B],
