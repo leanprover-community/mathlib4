@@ -106,8 +106,8 @@ lemma complexMGF_add_sub_sum (hz : z.re ∈ interior (integrableExpSet X μ))
       = μ[fun ω ↦ cexp (z * X ω)
         * (cexp (ε * X ω) - ∑ m in range n, ε ^ m / m.factorial * X ω ^ m)] := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
-  have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ := by
-    refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz i
+  have h_int_mul i : Integrable (fun ω ↦ X ω ^ i * cexp (z * X ω)) μ :=
+    integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz i
   simp_rw [complexMGF, add_mul, Complex.exp_add, mul_comm _ (cexp (ε * X _))]
   calc ∫ ω, cexp (ε * X ω) * cexp (z * X ω) ∂μ -
       ∑ m ∈ range n, ε ^ m / m.factorial * ∫ ω, X ω ^ m * cexp (z * X ω) ∂μ

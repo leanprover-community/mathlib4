@@ -554,11 +554,9 @@ lemma integrable_cexp_mul_of_re_mem_integrableExpSet (hX : AEMeasurable X μ)
 
 lemma integrable_cexp_mul_of_re_mem_interior_integrableExpSet
     (hz : z.re ∈ interior (integrableExpSet X μ)) :
-    Integrable (fun ω ↦ cexp (z * X ω)) μ := by
-  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
-  rw [← integrable_norm_iff]
-  · simpa [Complex.norm_eq_abs, Complex.abs_exp] using (interior_subset hz)
-  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+    Integrable (fun ω ↦ cexp (z * X ω)) μ :=
+  integrable_cexp_mul_of_re_mem_integrableExpSet
+    (aemeasurable_of_mem_interior_integrableExpSet hz) (interior_subset hz)
 
 lemma integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
     (hz : z.re ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
