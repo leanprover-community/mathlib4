@@ -24,8 +24,8 @@ namespace Descriptive
   `Set (List A)`, which coerces to the type of trees on `A`. -/
 def Tree (A : Type*) : CompleteSublattice (Set (List A)) :=
   CompleteSublattice.mk' {T | ∀ ⦃x : List A⦄ ⦃a : A⦄, x ++ [a] ∈ T → x ∈ T}
-  (by rintro S hS x a ⟨t, ht, hx⟩; use t, ht, hS ht hx)
-  (by rintro S hS x a h T hT; exact hS hT <| h T hT)
+    (by rintro S hS x a ⟨t, ht, hx⟩; use t, ht, hS ht hx)
+    (by rintro S hS x a h T hT; exact hS hT <| h T hT)
 
 instance (A : Type*) : SetLike (Tree A) (List A) := CompleteSublattice.setLikeCompleteSublattice
 
