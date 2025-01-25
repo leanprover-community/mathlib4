@@ -3,9 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Group.ULift
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Algebra.Ring.Action.Group
 
@@ -55,8 +55,8 @@ attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory MonCat :=
-  BundledHom.concreteCategory _
+instance hasForget : HasForget MonCat :=
+  BundledHom.hasForget _
 
 @[to_additive]
 instance : CoeSort MonCat Type* where
@@ -170,7 +170,7 @@ attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCatego
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommMonCat := by
+instance hasForget : HasForget CommMonCat := by
   dsimp only [CommMonCat]
   infer_instance
 
@@ -346,7 +346,7 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
 
 -- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
--- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
+-- we could have used `CategoryTheory.HasForget.ReflectsIso` alternatively
 @[to_additive]
 instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨f, rfl⟩

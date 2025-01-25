@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
@@ -89,6 +91,13 @@ lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
 theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   rw [nilradical, ← jacobson_eq_radical]
   exact isNilpotent_jacobson_bot
+
+variable (R) in
+/-- Commutative artinian reduced local ring is a field. -/
+theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
+  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+    _ (Ideal.Quotient.field _).toIsField
+
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]

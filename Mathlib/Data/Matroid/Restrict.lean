@@ -62,6 +62,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 reserved for the more mathematically important 'minor' order.
 -/
 
+assert_not_exists Field
+
 open Set
 
 namespace Matroid
@@ -192,6 +194,9 @@ theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
   rw [basis_restrict_iff', and_congr_left_iff]
   intro hXR
   rw [← basis'_iff_basis_inter_ground, basis'_iff_basis]
+
+lemma basis'_iff_basis_restrict_univ : M.Basis' I X ↔ (M ↾ univ).Basis I X := by
+  rw [basis_restrict_iff', basis'_iff_basis_inter_ground, and_iff_left (subset_univ _)]
 
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
@@ -352,6 +357,9 @@ theorem Indep.of_restriction (hI : N.Indep I) (hNM : N ≤r M) : M.Indep I := by
 theorem Indep.indep_restriction (hI : M.Indep I) (hNM : N ≤r M) (hIN : I ⊆ N.E) : N.Indep I := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hI]
 
+theorem Restriction.indep_iff (hMN : N ≤r M) : N.Indep I ↔ M.Indep I ∧ I ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_restriction hMN, h.subset_ground⟩, fun h ↦ h.1.indep_restriction hMN h.2⟩
+
 theorem Basis.basis_restriction (hI : M.Basis I X) (hNM : N ≤r M) (hX : X ⊆ N.E) : N.Basis I X := by
   obtain ⟨R, hR, rfl⟩ := hNM; rwa [basis_restrict_iff, and_iff_left (show X ⊆ R from hX)]
 
@@ -361,6 +369,13 @@ theorem Basis.of_restriction (hI : N.Basis I X) (hNM : N ≤r M) : M.Basis I X :
 theorem Base.basis_of_restriction (hI : N.Base I) (hNM : N ≤r M) : M.Basis I N.E := by
   obtain ⟨R, hR, rfl⟩ := hNM; rwa [base_restrict_iff] at hI
 
+theorem Restriction.base_iff (hMN : N ≤r M) {B : Set α} : N.Base B ↔ M.Basis B N.E :=
+  ⟨fun h ↦ Base.basis_of_restriction h hMN,
+    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_base⟩
+
+theorem Restriction.basis_iff (hMN : N ≤r M) : N.Basis I X ↔ M.Basis I X ∧ X ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_restriction hMN, h.subset_ground⟩, fun h ↦ h.1.basis_restriction hMN h.2⟩
+
 theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
   obtain ⟨R, hR, rfl⟩ := hNM
   rw [restrict_dep_iff] at hX
@@ -369,6 +384,9 @@ theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
 theorem Dep.dep_restriction (hX : M.Dep X) (hNM : N ≤r M) (hXE : X ⊆ N.E := by aesop_mat) :
     N.Dep X := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hX.not_indep]
+
+theorem Restriction.dep_iff (hMN : N ≤r M) : N.Dep X ↔ M.Dep X ∧ X ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_restriction hMN, h.subset_ground⟩, fun h ↦ h.1.dep_restriction hMN h.2⟩
 
 end Restriction
 
@@ -437,6 +455,12 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
   obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_basis_of_subset I.subset_union_right
   rw [← hJ'.encard_eq_encard hb] at hIJ
   exact hIJ.not_le (encard_mono hJJ')
+
+lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
+    (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by
+  obtain ⟨x, hx, hxI⟩ := hI.augment hJ (by simpa [encard_eq_coe_toFinset_card] )
+  simp only [mem_diff, Finset.mem_coe] at hx
+  exact ⟨x, hx.1, hx.2, hxI⟩
 
 end Basis
 

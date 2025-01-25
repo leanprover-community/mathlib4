@@ -36,8 +36,8 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 These require `open Kronecker`:
 
 * `A ⊗ₖ B` for `kroneckerMap (*) A B`. Lemmas about this notation use the token `kronecker`.
-* `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.  Lemmas about this notation use the token
-  `kroneckerTMul`.
+* `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.
+  Lemmas about this notation use the token `kroneckerTMul`.
 
 -/
 
@@ -239,6 +239,7 @@ open Matrix
 def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m × p) α :=
   kroneckerMap (· * ·)
 
+@[inherit_doc Matrix.kroneckerMap]
 scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
 open Kronecker
@@ -314,13 +315,13 @@ theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : M
 
 theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
     A ⊗ₖ (ofNat(b) : Matrix n n α) =
-      blockDiagonal fun _ => A <• (OfNat.ofNat b : α) :=
+      blockDiagonal fun _ => A <• (ofNat(b) : α) :=
   kronecker_diagonal _ _
 
 theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :
     (ofNat(a) : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (.prodComm _ _) (.prodComm _ _)
-        (blockDiagonal fun _ => (OfNat.ofNat a : α) • B) :=
+        (blockDiagonal fun _ => (ofNat(a) : α) • B) :=
   diagonal_kronecker _ _
 
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :
@@ -417,10 +418,11 @@ Prefer the notation `⊗ₖₜ` rather than this definition. -/
 def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMap (· ⊗ₜ ·)
 
+@[inherit_doc kroneckerTMul]
 scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (· ⊗ₜ ·)
 
-scoped[Kronecker]
-  notation:100 x " ⊗ₖₜ[" R "] " y:100 => Matrix.kroneckerMap (TensorProduct.tmul R) x y
+@[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
+  Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
 open Kronecker
 
