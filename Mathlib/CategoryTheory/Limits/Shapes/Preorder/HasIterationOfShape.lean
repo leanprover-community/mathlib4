@@ -87,8 +87,8 @@ lemma hasColimitsOfShape_of_initialSeg
         subst hi₀
         exact hasColimitsOfShape_of_isSuccLimit' C s hi
 
-lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α] (h : α ≤i J)
-    [Nonempty α] :
+lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
+    (h : α ≤i J) [Nonempty α] :
     HasIterationOfShape α C where
   hasColimitsOfShape := hasColimitsOfShape_of_initialSeg C h
   hasColimitsOfShape_of_isSuccLimit j hj := by
