@@ -106,4 +106,12 @@ theorem coimageImageComparison_eq_coimageImageComparison' :
 theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
   simp [coimageImageComparison]
 
+/-- The coimage-image comparison morphism is functorial. -/
+@[simps!]
+def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
+  obj f := Arrow.mk (coimageImageComparison f.hom)
+  map {f g} η := Arrow.homMk
+    (cokernel.map _ _ (kernel.map _ _ η.left η.right (by simp)) η.left (by simp))
+    (kernel.map _ _ η.right (cokernel.map _ _ η.left η.right (by simp)) (by simp)) (by aesop_cat)
+
 end CategoryTheory.Abelian
