@@ -215,7 +215,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
     simp_rw [g', dif_pos hω]
     exact hω.choose_spec
-  have hg'm : @AEStronglyMeasurable _ _ _ (⨆ n, ℱ n) g' (μ.trim hle) :=
+  have hg'm : AEStronglyMeasurable[⨆ n, ℱ n] g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
       (fun n => ((hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩ : ℱ n ≤ ⨆ n, ℱ n)
         le_rfl).aemeasurable) hg').aestronglyMeasurable
@@ -335,7 +335,7 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le _)
       fun m => eLpNorm_one_condExp_le_eLpNorm _
   have hev : ∀ m ≥ n, eLpNorm (μ[f m - g|ℱ n]) 1 μ = eLpNorm (f n - μ[g|ℱ n]) 1 μ := by
-    refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg).trans ?_)
+    refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg _).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
@@ -388,8 +388,8 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     filter_upwards [(martingale_condExp g ℱ μ).ae_eq_condExp_limitProcess hunif n] with x hx _
     rw [hx]
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
-    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aeStronglyMeasurable'
-    stronglyMeasurable_limitProcess.aeStronglyMeasurable'
+    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aestronglyMeasurable
+    stronglyMeasurable_limitProcess.aestronglyMeasurable
   have hpi : IsPiSystem {s | ∃ n, MeasurableSet[ℱ n] s} := by
     rw [Set.setOf_exists]
     exact isPiSystem_iUnion_of_monotone _ (fun n ↦ (ℱ n).isPiSystem_measurableSet) fun _ _ ↦ ℱ.mono
