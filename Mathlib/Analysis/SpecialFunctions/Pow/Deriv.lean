@@ -623,6 +623,13 @@ theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 �
     deriv (fun x => f x ^ p) x = deriv f x * p * f x ^ (p - 1) :=
   (hf.hasDerivAt.rpow_const hx).deriv
 
+theorem Complex.deriv_norm_ofReal_cpow_eq (c : ℂ) {t : ℝ} (ht : 0 < t) :
+    (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ c‖) t = c.re * t ^ (c.re - 1) := by
+  rw [EventuallyEq.deriv_eq (f := fun x ↦ x ^ c.re)]
+  · rw [Real.deriv_rpow_const (Or.inl ht.ne')]
+  · filter_upwards [eventually_gt_nhds ht] with x hx
+    rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx]
+
 lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
     deriv (fun (x : ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
   calc deriv (fun (x : ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1) := by
