@@ -1593,11 +1593,13 @@ theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
     ∑ a in l.toFinset, l.count a = l.length := by
   simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
+/-- The sum of the `zipWith` operation on two lists equals the sum of applying the operation
+    to corresponding elements of the two lists, indexed over the minimum of their lengths. -/
 lemma zipwith_finset_sum [Inhabited α] [Inhabited β] [AddCommMonoid γ]
   {op : α → β → γ}
   (l : List α) (m : List β) :
   (List.zipWith op l m).sum =
-  Finset.sum (Finset.range (Nat.min l.length m.length)) (fun x ↦ op (l[x]!) (m[x]!)) := by
+  ∑ x ∈ (Finset.range (Nat.min l.length m.length)), op (l[x]!) (m[x]!) := by
   induction m generalizing l with
   | nil =>
       simp
