@@ -105,7 +105,7 @@ section Construction
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 @[simps val, simps (config := .lemmasOnly) vars]
 noncomputable
-def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
+abbrev ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
     Generators R S where
   vars := vars
   val := val
@@ -113,26 +113,26 @@ def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R :=
   aeval_val_σ' x := (h x).choose_spec
 
 /-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
-noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
+noncomputable abbrev ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
     Generators.{w} R S :=
   ofSurjective PEmpty.elim <| fun s ↦ by
     use C (h s).choose
     simp [(h s).choose_spec]
 
 /-- The canonical generators for `R` as an `R`-algebra. -/
-noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
+noncomputable abbrev id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
   rw [id.map_eq_id]
   exact RingHomSurjective.is_surjective
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
-def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
+abbrev ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
     Generators R S :=
   ofSurjective (f ∘ X) (by rwa [show aeval (f ∘ X) = f by ext; simp])
 
 /-- Construct `Generators` from a family of generators of `S`. -/
 noncomputable
-def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
+abbrev ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
@@ -141,7 +141,7 @@ variable (R S) in
 /-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
 @[simps]
 noncomputable
-def self : Generators R S where
+abbrev self : Generators R S where
   vars := S
   val := _root_.id
   σ' := X
@@ -150,7 +150,7 @@ def self : Generators R S where
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
-def toExtension : Extension R S where
+abbrev toExtension : Extension R S where
   Ring := P.Ring
   σ := P.σ
   algebraMap_σ := by simp
@@ -163,7 +163,7 @@ variable (r : R) [IsLocalization.Away r S]
 to the inverse of `r`. -/
 @[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
-def localizationAway : Generators R S where
+abbrev localizationAway : Generators R S where
   vars := Unit
   val _ := IsLocalization.Away.invSelf r
   σ' s :=
@@ -186,7 +186,7 @@ variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
-def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
+abbrev comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   vars := Q.vars ⊕ P.vars
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
@@ -203,7 +203,7 @@ variable (S) in
 gives a family of generators `S[X] → T`. -/
 @[simps val, simps (config := .lemmasOnly) vars]
 noncomputable
-def extendScalars (P : Generators R T) : Generators S T where
+abbrev extendScalars (P : Generators R T) : Generators S T where
   vars := P.vars
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
@@ -213,7 +213,8 @@ def extendScalars (P : Generators R T) : Generators S T where
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 @[simps! val, simps! (config := .lemmasOnly) vars]
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
+abbrev baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) :
+    Generators T (T ⊗[R] S) := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
   induction x using TensorProduct.induction_on with
@@ -419,7 +420,7 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   algebraMap_toRingHom x := by simp
 
 @[simp]
-lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
+lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext : 1; simp
 
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
@@ -427,7 +428,10 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     [IsScalarTower R S S''] [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     [IsScalarTower S S' S''] [IsScalarTower R R' R''] [IsScalarTower R R' S']
     (f : P'.Hom P'') (g : P.Hom P') :
-    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by ext; simp
+    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by
+      ext : 1
+      refine RingHom.ext (fun x ↦ ?_)
+      simp
 
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
@@ -446,7 +450,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
   · rw [Ideal.map_le_iff_le_comap]
     rintro x (hx : algebraMap P.Ring S x = 0)
     have : (Q.ofComp P).toAlgHom.comp (Q.toComp P).toAlgHom = IsScalarTower.toAlgHom R _ _ := by
-      ext1; simp
+      ext1; simp [ofComp, Hom.toAlgHom]
     simp only [comp_vars, AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
       RingHom.mem_ker, ← AlgHom.comp_apply, this, IsScalarTower.toAlgHom_apply]
     rw [IsScalarTower.algebraMap_apply P.Ring S, hx, map_zero]

@@ -129,7 +129,7 @@ lemma finitePresentation_of_isFinite [P.IsFinite] :
 section Construction
 
 /-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
-noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+noncomputable abbrev ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
     Presentation.{t, w} R S where
   __ := Generators.ofSurjectiveAlgebraMap h.surjective
   rels := PEmpty
@@ -149,12 +149,11 @@ instance ofBijectiveAlgebraMap_isFinite (h : Function.Bijective (algebraMap R S)
 
 lemma ofBijectiveAlgebraMap_dimension (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).dimension = 0 := by
-  simp_rw [dimension, ofBijectiveAlgebraMap, Generators.ofSurjectiveAlgebraMap,
-    Generators.ofSurjective, Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty]
+  simp [dimension]
 
 variable (R) in
 /-- The canonical `R`-presentation of `R` with no generators and no relations. -/
-noncomputable def id : Presentation.{t, w} R R := ofBijectiveAlgebraMap Function.bijective_id
+noncomputable abbrev id : Presentation.{t, w} R R := ofBijectiveAlgebraMap Function.bijective_id
 
 instance : (id R).IsFinite := ofBijectiveAlgebraMap_isFinite (R := R) Function.bijective_id
 
@@ -189,7 +188,7 @@ variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we can construct a natural
 presentation of `S` as `R`-algebra with a single generator `X` and the relation `r * X - 1 = 0`. -/
 @[simps relation, simps (config := .lemmasOnly) rels]
-noncomputable def localizationAway : Presentation R S where
+noncomputable abbrev localizationAway : Presentation R S where
   toGenerators := Generators.localizationAway r
   rels := Unit
   relation _ := C r * X () - 1
@@ -224,8 +223,7 @@ private lemma span_range_relation_eq_ker_baseChange :
     apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
     rw [map_zero] at Z
     simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy, algebraMap_apply,
-      TensorProduct.includeRight_apply]
-    erw [aeval_map_algebraMap]
+      TensorProduct.includeRight_apply, aeval_map_algebraMap]
     show _ = TensorProduct.includeRight _
     erw [map_aeval, TensorProduct.includeRight.comp_algebraMap]
     rfl
@@ -245,15 +243,10 @@ private lemma span_range_relation_eq_ker_baseChange :
         rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
         simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one, algebraMap_eq]
-        erw [aeval_C]
-        simp
       | h_add p q hp hq => simp only [map_add, hp, hq]
       | h_X p i hp =>
         simp only [map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul, map_one,
           IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
-        congr
-        erw [aeval_X]
-        rw [Generators.baseChange_val]
     rw [H] at H'
     replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
     erw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, Ideal.comap_symm,
@@ -267,7 +260,7 @@ private lemma span_range_relation_eq_ker_baseChange :
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
 @[simps relation, simps (config := .lemmasOnly) rels]
 noncomputable
-def baseChange : Presentation T (T ⊗[R] S) where
+abbrev baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
   rels := P.rels
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
@@ -392,7 +385,7 @@ private lemma aeval_comp_val_eq :
       (aevalTower (IsScalarTower.toAlgHom R S T) Q.val).comp (Q.aux P) := by
   ext i
   simp only [AlgHom.coe_comp, Function.comp_apply]
-  erw [Q.aux_X P i]
+  rw [Q.aux_X P i]
   cases i <;> simp
 
 private lemma span_range_relation_eq_ker_comp : Ideal.span
@@ -411,7 +404,7 @@ private lemma span_range_relation_eq_ker_comp : Ideal.span
 /-- Given presentations of `T` over `S` and of `S` over `R`,
 we may construct a presentation of `T` over `R`. -/
 @[simps rels, simps (config := .lemmasOnly) relation]
-noncomputable def comp : Presentation R T where
+noncomputable abbrev comp : Presentation R T where
   toGenerators := Q.toGenerators.comp P.toGenerators
   rels := Q.rels ⊕ P.rels
   relation := Sum.elim (Q.comp_relation_aux P)
