@@ -851,7 +851,7 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
 section sum
 
 variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
-    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H] [Nonempty M] [Nonempty M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Inhabited M] [Inhabited M']
 
 /-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
