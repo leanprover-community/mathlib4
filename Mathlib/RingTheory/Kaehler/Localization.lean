@@ -8,14 +8,15 @@ import Mathlib.RingTheory.Presentation
 /-!
 # Cotangent and localization away
 
-In this file we use the Jacobi-Zariski sequence to show some results
-where `R → S → T` is such that `T` is the localization of `S` away from one
+Let `R → S → T` be algebras such that `T` is the localization of `S` away from one
 element, where `S` is generated over `R` by `P` with kernel `I` and `Q` is the
-canonical `S`-presentation of `T`.
+canonical `S`-presentation of `T`. Denote by `J` the kernel of the composition
+`R[X,Y] → T`.
 
 ## Main results
 
-- `Algebra.Generators.liftBaseChange_injective`: The map `T ⊗[S] (I⧸I²)` is injective.
+- `Algebra.Generators.liftBaseChange_injective`:
+  `T ⊗[S] (I/I²) → J/J²` is injective if `T` is the localization of `S` away from an element.
 
 -/
 
@@ -108,7 +109,12 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
       intro x hx y hy
       simp [hsple hx]
 
-/-- `T ⊗[S] (I/I²) → J/J²` is injective if `T` is the localization of `S` away from an element. -/
+/--
+Let `R → S → T` be algebras such that `T` is the localization of `S` away from one
+element, where `S` is generated over `R` by `P` with kernel `I` and `Q` is the
+canonical `S`-presentation of `T`. Denote by `J` the kernel of the composition
+`R[X,Y] → T`. Then `T ⊗[S] (I/I²) → J/J²` is injective.
+-/
 @[stacks 08JZ "part of (1)"]
 lemma liftBaseChange_injective_of_isLocalizationAway :
     Function.Injective (LinearMap.liftBaseChange T
