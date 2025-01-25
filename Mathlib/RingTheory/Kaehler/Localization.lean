@@ -76,7 +76,7 @@ lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Su
   simp [compLocalizationAwayAlgHom]
 
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
-    (compLocalizationAwayAlgHom T g P) ((rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
+    compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
   rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway g (S := T)) P]
   show (compLocalizationAwayAlgHom T g P) (((localizationAway g).toComp P).toAlgHom _) * _ - _ = _
   rw [compLocalizationAwayAlgHom_toAlgHom_toComp, compLocalizationAwayAlgHom_X_inl,
