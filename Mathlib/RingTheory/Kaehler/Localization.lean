@@ -30,7 +30,7 @@ variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
 lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :
     ((Generators.localizationAway g).comp P).ker =
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
-        Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1} := by
+        Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
   set Q := Generators.localizationAway (S := T) g
   have : Q.ker = Ideal.span {MvPolynomial.C g * MvPolynomial.X () - 1} := by
     convert (Algebra.Presentation.localizationAway T g).span_range_relation_eq_ker.symm
