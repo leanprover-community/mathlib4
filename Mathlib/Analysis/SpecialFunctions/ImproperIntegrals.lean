@@ -135,7 +135,7 @@ theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     simp [Complex.abs_cpow_eq_rpow_re_of_pos this]
   rwa [integrableOn_Ioi_rpow_iff ht] at B
 
-theorem integrableOn_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re < 0) :
+theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re < 0) :
     IntegrableOn (deriv fun x : ℝ ↦ (x : ℂ) ^ s) (Set.Ioi t) := by
   have h : IntegrableOn (fun x : ℝ ↦ s * x ^ (s - 1)) (Set.Ioi t) := by
     refine (integrableOn_Ioi_cpow_of_lt ?_ ht).const_mul _

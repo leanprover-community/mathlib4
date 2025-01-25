@@ -118,7 +118,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     · ring_nf
     · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
   · refine integrableOn_Ici_iff_integrableOn_Ioi.mpr <|
-      integrableOn_deriv_ofReal_cpow zero_lt_one ?_
+      integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one ?_
     rw [neg_re, neg_lt_zero]
     exact hr.trans_lt hs
   · have hlim : Tendsto (fun n : ℕ ↦ (n : ℝ) ^ (- (s.re - r))) atTop (𝓝 0) :=
