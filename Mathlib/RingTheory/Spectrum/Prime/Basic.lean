@@ -42,7 +42,7 @@ assert_not_exists TopologicalSpace
 
 noncomputable section
 
-open scoped Classical Pointwise
+open scoped Pointwise
 
 universe u v
 
@@ -72,6 +72,11 @@ def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
   invFun I := ⟨I, I.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
+
+theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -197,6 +202,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
   Ideal.ext fun f => by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
+
+theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
+  apply range_asIdeal R ▸ nilradical_eq_sInf R
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
@@ -560,6 +568,7 @@ and is a homeomorphism when ι is finite. -/
   | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
+  classical
   obtain rfl | ne := eq_or_ne i j
   · congr; ext x
     simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
@@ -575,6 +584,7 @@ range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime 
 see https://math.stackexchange.com/a/1563190. -/
 theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
     ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
+  classical
   let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
   { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
     smul_mem' := by
