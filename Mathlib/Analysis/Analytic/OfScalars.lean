@@ -82,6 +82,11 @@ theorem ofScalars_apply_zero (n : ℕ) :
   rw [ofScalars]
   cases n <;> simp
 
+@[simp]
+lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
+
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
   simp_rw [Pi.add_apply, Pi.add_def _ _]
@@ -310,10 +315,5 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
       simp
 
 end Normed
-
-@[simp]
-lemma coeff_ofScalars_real {p : ℕ → ℝ} {n : ℕ} :
-    (FormalMultilinearSeries.ofScalars ℝ p).coeff n = p n := by
-  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
 end FormalMultilinearSeries
