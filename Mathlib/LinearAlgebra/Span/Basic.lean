@@ -191,7 +191,7 @@ theorem span_span_of_tower :
     span S (span R s : Set M) = span S s :=
   le_antisymm (span_le.2 <| span_subset_span R S s) (span_mono subset_span)
 
-theorem span_eq_top_of_restrictScalars (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
+theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
   le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
 
 variable {R S} in
