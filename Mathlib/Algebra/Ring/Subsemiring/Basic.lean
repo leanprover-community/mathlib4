@@ -886,16 +886,20 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
     MulActionWithZero S α :=
   MulActionWithZero.compHom _ S.subtype.toMonoidWithZeroHom
 
+instance [AddCommMonoid α] [Module R' α] {S : Type*} [SetLike S R'] [SubsemiringClass S R']
+    (s : S) : Module s α where
+  toDistribMulAction := inferInstance
+  add_smul r₁ r₂ := add_smul (r₁ : R') r₂
+  zero_smul := zero_smul R'
+
 -- Porting note: instance named explicitly for use in `RingTheory/Subring/Basic`
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
-  -- Porting note: copying over the `smul` field causes a timeout
-  -- { Module.compHom _ S.subtype with smul := (· • ·) }
-  Module.compHom _ S.subtype
+  inferInstance
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α :=
-  S.toSubmonoid.mulSemiringAction
+  inferInstance
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
