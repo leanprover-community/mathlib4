@@ -886,21 +886,14 @@ lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := b
 
 @[simp] lemma restrict_closure_eq' (M : Matroid α) (X R : Set α) :
     (M ↾ R).closure X = (M.closure (X ∩ R) ∩ R) ∪ (R \ M.E) := by
-  rw [← closure_inter_ground, restrict_ground_eq]
-  ext e
-  obtain ⟨I, hI⟩ := (M ↾ R).exists_basis (X ∩ R)
-  have hI' := (basis_restrict_iff'.mp hI).1
-  rw [← hI.closure_eq_closure, ← M.closure_inter_ground (X ∩ R), ← hI'.closure_eq_closure,
-    mem_union, mem_inter_iff, hI'.indep.mem_closure_iff, hI.indep.mem_closure_iff, restrict_dep_iff,
-    insert_subset_iff, dep_iff, insert_subset_iff, and_iff_left hI'.indep.subset_ground, mem_diff,
-    and_iff_left (show I ⊆ R from hI.indep.subset_ground)]
-  have hIR : I ⊆ R := hI.indep.subset_ground
-  by_cases he : e ∈ M.E
-  · aesop
-  simp only [iff_false_intro he, and_false, false_or, and_true, ← mem_inter_iff, ← mem_union,
-    inter_eq_self_of_subset_left hIR, union_comm I, and_iff_right
-      (show ¬M.Indep (insert e I) from fun hi ↦ he (hi.subset_ground (mem_insert _ _))),
-    not_false_iff]
+  obtain ⟨I, hI⟩ := (M ↾ R).exists_basis' X
+  obtain ⟨hI', hIR⟩ := basis'_restrict_iff.1 hI
+  suffices ∀ x ∈ R, x ∉ M.E → M.Indep (insert x I) → x ∈ I by
+    simpa (config := {contextual := true}) [← hI.closure_eq_closure, ← hI'.closure_eq_closure,
+      Set.ext_iff, and_comm (a := _ ∈ R), ← or_and_right (c := _ ∈ R), hI'.indep.mem_closure_iff',
+      hI.indep.mem_closure_iff', insert_subset_iff, hIR, ← imp_iff_or_not, imp_and,
+      or_iff_not_imp_left (a := _ ∈ M.E)]
+  exact fun _ _ hxE hi ↦ False.elim <| hxE <| hi.subset_ground <| mem_insert ..
 
 lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).closure X = M.closure X ∩ R := by
