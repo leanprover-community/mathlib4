@@ -908,27 +908,17 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
 
 @[simp] lemma comap_closure_eq {β : Type*} (M : Matroid β) (f : α → β) (X : Set α) :
     (M.comap f).closure X = f ⁻¹' M.closure (f '' X) := by
+  -- Use a choice of basis and extensionality to change the goal to a statement about independence.
   obtain ⟨I, hI⟩ := (M.comap f).exists_basis' X
   obtain ⟨hI', hIinj, -⟩ := comap_basis'_iff.1 hI
-  rw [← hI.closure_eq_closure]
-  ext x
-  obtain (hxE | hxE) := em' (f x ∈ M.E)
-  · apply iff_of_false <;> exact (fun h ↦ hxE (by simpa using mem_ground_of_mem_closure h))
-
+  simp_rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, Set.ext_iff,
+    hI.indep.mem_closure_iff', comap_ground_eq, mem_preimage, hI'.indep.mem_closure_iff',
+    comap_indep_iff, and_imp, mem_image, and_congr_right_iff, ← image_insert_eq]
+  -- the lemma now easily follows by considering elements/non-elements of `I` separately.
+  intro x hxE
   by_cases hxI : x ∈ I
-  · exact iff_of_true (mem_closure_of_mem _ hxI hI.indep.subset_ground)
-      (mem_closure_of_mem' _ (mem_image_of_mem f (hI.subset hxI))
-        (hI'.indep.subset_ground (mem_image_of_mem f hxI)))
-  have hss : insert x I ⊆ (M.comap f).E := insert_subset hxE hI.indep.subset_ground
-  rw [hI.indep.mem_closure_iff_of_not_mem hxI, ← not_indep_iff hss, comap_indep_iff,
-    injOn_insert hxI, not_and, not_and, not_not, iff_true_intro hIinj, true_imp_iff]
-
-  by_cases hxI' : f x ∈ f '' I
-  · simp [hxI', hxE, mem_closure_of_mem' _ (hI'.subset hxI') hxE]
-
-  rw [iff_false_intro hxI', imp_false, mem_preimage, image_insert_eq,
-    hI'.indep.insert_indep_iff_of_not_mem hxI', mem_diff, and_iff_right hxE, not_not,
-    hI'.closure_eq_closure]
+  · simp [hxI, show ∃ y ∈ I, f y = f x from ⟨x, hxI, rfl⟩]
+  simp [hxI, injOn_insert hxI, hIinj]
 
 @[simp] lemma map_closure_eq {β : Type*} (M : Matroid α) (f : α → β) (hf) (X : Set β) :
     (M.map f hf).closure X = f '' M.closure (f ⁻¹' X) := by
