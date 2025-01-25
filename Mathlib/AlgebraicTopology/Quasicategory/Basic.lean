@@ -32,7 +32,7 @@ open CategoryTheory Simplicial
 for every `n : ℕ` and `0 < i < n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`.
 -/
-@[[kerodon 003A]]
+@[kerodon 003A]
 class Quasicategory (S : SSet) : Prop where
   hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
     (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
