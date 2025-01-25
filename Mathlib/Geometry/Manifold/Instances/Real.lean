@@ -451,64 +451,16 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
       constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
       exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
 
-@[simp]
-lemma IccManifold_chartAt {x y : ℝ} [Fact (x < y)] {z : Set.Icc x y} :
-    chartAt _ z = if z.val < y then IccLeftChart x y else IccRightChart x y := rfl
-
-lemma IccManifold.chartAt_of_le_top {x y : ℝ} [Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
-    chartAt _ z = IccLeftChart x y := by
-  simp [h, IccManifold_chartAt, reduceIte]
-
-lemma IccManifold.chartAt_of_ge_top {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
-    chartAt _ z= IccRightChart x y := by
-  simp only [reduceIte, IccManifold_chartAt, not_lt.mpr h]
-
-lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    IccManifold.chartAt_of_le_top (by simp [hxy.out])]
-  exact IccLeftChart_boundary
-
-lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    IccManifold.chartAt_of_ge_top (by simp [hxy.out])]
-  exact IccRightChart_boundary
-
-lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
-    (𝓡∂ 1).IsInteriorPoint p := by
-  simpa [ModelWithCorners.IsInteriorPoint, extChartAt, IccManifold.chartAt_of_le_top hp.2,
-    interior_range_modelWithCornersEuclideanHalfSpace] using IccLeftChart_extend_interior_pos hp
-
-lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
-  ext p
-  rcases Set.eq_endpoints_or_mem_Ioo_of_mem_Icc p.2 with (hp | hp | hp)
-  · have : p = X := SetCoe.ext hp
-    rw [this]
-    apply iff_of_true Icc_isBoundaryPoint_left (mem_insert X {Y})
-  · have : p = Y := SetCoe.ext hp
-    rw [this]
-    apply iff_of_true Icc_isBoundaryPoint_right (mem_insert_of_mem X rfl)
-  · apply iff_of_false
-    · rw [← ModelWithCorners.compl_interior, not_mem_compl_iff]
-      exact Icc_isInteriorPoint_interior hp
-    · rw [mem_insert_iff, mem_singleton_iff]
-      push_neg
-      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
-      · apply left_mem_Ioo.mp hp
-      · apply right_mem_Ioo.mp hp
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-/-- A product `M × [x,y]` for `M` boundaryless has boundary `M × {x,y}`. -/
+/-- A product `M × [x,y]` for `M` boundaryless has boundary `M × {x, y}`. -/
 lemma boundary_product [I.Boundaryless] :
-    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {X, Y} := by
-  have : (𝓡∂ 1).boundary (Icc x y) = {X, Y} := by rw [boundary_IccManifold]
-  rw [I.boundary_of_boundaryless_left]
-  rw [this]
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {⊥, ⊤} := by
+  rw [boundary_Icc, I.boundary_of_boundaryless_left]
 
-/-- The manifold structure on `[x, y]` is smooth.
--/
+/-- The manifold structure on `[x, y]` is smooth. -/
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
