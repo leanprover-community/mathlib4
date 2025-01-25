@@ -3,7 +3,6 @@ Copyright (c) 2025 Walter Moreira, Joe Stubbs. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Walter Moreira, Joe Stubbs
 -/
-import Init.Data.List.Nat.Pairwise
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -52,7 +51,7 @@ theorem sylvester_two : sylvester 2 = 7 := rfl
 @[simp]
 theorem sylvester_three : sylvester 3 = 43 := rfl
 
-theorem sylvester_ge_two (n : ℕ) : 2 ≤ sylvester n := by
+theorem two_le_sylvester (n : ℕ) : 2 ≤ sylvester n := by
   induction' n with n ih
   · simp
   · simp only [sylvester, reduceLeDiff]
@@ -68,7 +67,7 @@ assuming the product over the empty set to be 1.
 theorem sylvester_prod_finset_add_one {n : ℕ} :
     sylvester n = ∏ i ∈ Finset.range n, sylvester i + 1 := by
   rw [Finset.prod_range_induction _ (fun n => sylvester n - 1)]
-  · exact (Nat.sub_one_add_one (by linarith [sylvester_ge_two n])).symm
+  · exact (Nat.sub_one_add_one (by linarith [two_le_sylvester n])).symm
   · norm_num
   · simp [sylvester, mul_comm]
 
@@ -78,7 +77,7 @@ theorem sylvester_strictMono : StrictMono sylvester := by
   simp only [sylvester]
   calc
     sylvester n * (sylvester n - 1) + 1 > sylvester n * (sylvester n - 1) := by linarith
-    _ ≥ sylvester n := Nat.le_mul_of_pos_right _ <| le_sub_one_of_lt <| sylvester_ge_two n
+    _ ≥ sylvester n := Nat.le_mul_of_pos_right _ <| le_sub_one_of_lt <| two_le_sylvester n
 
 /-!
 ### Coprimality
@@ -88,7 +87,7 @@ theorem sylvester_mod_eq_one {m n : ℕ} (h : m < n) :
     sylvester n % sylvester m = 1 := by
   rw [sylvester_prod_finset_add_one, ← mod_add_mod,
     dvd_iff_mod_eq_zero.mp (Finset.dvd_prod_of_mem _ <| Finset.mem_range.mpr h)]
-  exact Nat.mod_eq_of_lt <| sylvester_ge_two _
+  exact Nat.mod_eq_of_lt <| two_le_sylvester _
 
 private theorem sylvester_coprime_of_lt {m n : ℕ} (h : m < n) :
     Coprime (sylvester m) (sylvester n) := by
