@@ -35,6 +35,7 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.AlgebraicCard
+import Mathlib.Algebra.Azumaya.Defs
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.BigOperators.Expect
@@ -1111,12 +1112,15 @@ import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
+import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
+import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -1975,6 +1979,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
@@ -3617,6 +3623,7 @@ import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.BaseChange
 import Mathlib.LinearAlgebra.RootSystem.Basic
+import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
@@ -5185,6 +5192,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
@@ -5240,6 +5248,7 @@ import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.Support
+import Mathlib.Topology.Algebra.TopologicallyNilpotent
 import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
@@ -5335,6 +5344,7 @@ import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Topology.Constructible
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
