@@ -51,7 +51,8 @@ quaternion
 -/
 
 
-/-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$.
+/-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$,
+denoted as `ℍ[R,a,b]`.
 Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`. -/
 @[ext]
 structure QuaternionAlgebra (R : Type*) (a b c : R) where
@@ -760,8 +761,8 @@ theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] _) = op ∘ st
 
 end QuaternionAlgebra
 
-/-- Space of quaternions over a type. Implemented as a structure with four fields:
-`re`, `im_i`, `im_j`, and `im_k`. -/
+/-- Space of quaternions over a type, denoted as `ℍ[R]`.
+Implemented as a structure with four fields: `re`, `im_i`, `im_j`, and `im_k`. -/
 def Quaternion (R : Type*) [Zero R] [One R] [Neg R] :=
   QuaternionAlgebra R (-1) (0) (-1)
 
