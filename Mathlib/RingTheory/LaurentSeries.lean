@@ -5,7 +5,6 @@ Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
