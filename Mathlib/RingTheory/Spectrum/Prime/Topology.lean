@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
@@ -41,7 +42,7 @@ variable (R : Type u) (S : Type v)
 
 namespace PrimeSpectrum
 
-section CommSemiRing
+section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
@@ -258,6 +259,10 @@ def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
     rintro _ ⟨s, rfl⟩
     exact ⟨_, preimage_specComap_zeroLocus_aux f s⟩
 
+lemma coe_comap (f : R →+* S) : comap f = f.specComap := rfl
+
+lemma comap_apply (f : R →+* S) (x) : comap f x = f.specComap x := rfl
+
 variable (f : R →+* S)
 
 @[simp]
@@ -354,9 +359,8 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 @[deprecated (since := "2024-10-28")]
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
-
 end Comap
-end CommSemiRing
+end CommSemiring
 
 section SpecOfSurjective
 
@@ -432,7 +436,7 @@ def primeSpectrumProdHomeo :
 
 end SpecProd
 
-section CommSemiRing
+section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
@@ -570,6 +574,20 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     rw [← this]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
+
+open Localization Polynomial Set in
+lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
+    {R : Type*} [CommRing R] (c : R) :
+    letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+    (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
+      = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
+  letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+  have := Polynomial.isLocalization (.powers c) (Away c)
+  rw [Submonoid.map_powers] at this
+  have surj : Function.Surjective (mapRingHom (Ideal.Quotient.mk (.span {c}))) :=
+    Polynomial.map_surjective _ Ideal.Quotient.mk_surjective
+  rw [range_comap_of_surjective _ _ surj, localization_away_comap_range _ (C c)]
+  simp [Polynomial.ker_mapRingHom, Ideal.map_span]
 
 end BasicOpen
 
@@ -950,7 +968,7 @@ def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) 
 
 end LocalizationAtMinimal
 
-end CommSemiRing
+end CommSemiring
 
 end PrimeSpectrum
 

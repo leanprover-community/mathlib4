@@ -90,7 +90,7 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
   if hm : m ≤ m₀ then
     if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
       if StronglyMeasurable[m] f then f
-      else have := h.1; aestronglyMeasurable'_condExpL1.mk (condExpL1 hm μ f)
+      else have := h.1; aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ f)
     else 0
   else 0
 
@@ -112,7 +112,7 @@ theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm
     μ[f|m] =
       if Integrable f μ then
         if StronglyMeasurable[m] f then f
-        else aestronglyMeasurable'_condExpL1.mk (condExpL1 hm μ f)
+        else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ f)
       else 0 := by
   rw [condExp, dif_pos hm]
   simp only [hμm, Ne, true_and]
@@ -142,10 +142,9 @@ theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim h
   · rw [if_pos hfi]
     by_cases hfm : StronglyMeasurable[m] f
     · rw [if_pos hfm]
-      exact (condExpL1_of_aestronglyMeasurable' (StronglyMeasurable.aeStronglyMeasurable' hfm)
-        hfi).symm
+      exact (condExpL1_of_aestronglyMeasurable' hfm.aestronglyMeasurable hfi).symm
     · rw [if_neg hfm]
-      exact (AEStronglyMeasurable'.ae_eq_mk aestronglyMeasurable'_condExpL1).symm
+      exact aestronglyMeasurable_condExpL1.ae_eq_mk.symm
   rw [if_neg hfi, condExpL1_undef hfi]
   exact (coeFn_zero _ _ _).symm
 
@@ -186,7 +185,7 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f|m]) := by
   rw [condExp_of_sigmaFinite hm]
   split_ifs with hfi hfm
   · exact hfm
-  · exact AEStronglyMeasurable'.stronglyMeasurable_mk _
+  · exact aestronglyMeasurable_condExpL1.stronglyMeasurable_mk
   · exact stronglyMeasurable_zero
 
 @[deprecated (since := "2025-01-21")] alias stronglyMeasurable_condexp := stronglyMeasurable_condExp
@@ -203,7 +202,7 @@ theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
 @[deprecated (since := "2025-01-21")] alias condexp_congr_ae := condExp_congr_ae
 
 theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
-    (hf : AEStronglyMeasurable' m f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
+    (hf : AEStronglyMeasurable[m] f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
   refine ((condExp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
   rw [condExp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
@@ -257,10 +256,10 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
     {f g : α → E} (hf : Integrable f μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, g x ∂μ = ∫ x in s, f x ∂μ)
-    (hgm : AEStronglyMeasurable' m g μ) : g =ᵐ[μ] μ[f|m] := by
+    (hgm : AEStronglyMeasurable[m] g μ) : g =ᵐ[μ] μ[f|m] := by
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm hg_int_finite
     (fun s _ _ => integrable_condExp.integrableOn) (fun s hs hμs => ?_) hgm
-    (StronglyMeasurable.aeStronglyMeasurable' stronglyMeasurable_condExp)
+    (StronglyMeasurable.aestronglyMeasurable stronglyMeasurable_condExp)
   rw [hg_eq s hs hμs, setIntegral_condExp hm hf hs]
 
 @[deprecated (since := "2025-01-21")]
@@ -371,8 +370,8 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   swap; · simp_rw [condExp_of_not_integrable hf, condExp_zero]; rfl
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm₁₂.trans hm₂)
     (fun s _ _ => integrable_condExp.integrableOn) (fun s _ _ => integrable_condExp.integrableOn) ?_
-    stronglyMeasurable_condExp.aeStronglyMeasurable'
-    stronglyMeasurable_condExp.aeStronglyMeasurable'
+    stronglyMeasurable_condExp.aestronglyMeasurable
+    stronglyMeasurable_condExp.aestronglyMeasurable
   intro s hs _
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
@@ -386,7 +385,7 @@ lemma Memℒp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ)
     [SigmaFinite (μ.trim hm)] : condExpL2 E 𝕜 hm hf2.toLp =ᵐ[μ] μ[f | m] := by
   refine ae_eq_condExp_of_forall_setIntegral_eq hm hf1
     (fun s hs htop ↦ integrableOn_condExpL2_of_measure_ne_top hm htop.ne _) (fun s hs htop ↦ ?_)
-    (aeStronglyMeasurable'_condExpL2 hm _)
+    (aestronglyMeasurable_condExpL2 hm _)
   rw [integral_condExpL2_eq hm (hf2.toLp _) hs htop.ne]
   refine setIntegral_congr_ae (hm _ hs) ?_
   filter_upwards [hf2.coeFn_toLp] with ω hω _ using hω
