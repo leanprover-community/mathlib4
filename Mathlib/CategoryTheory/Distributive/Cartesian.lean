@@ -60,7 +60,7 @@ attribute [local instance] monoidalOfHasFiniteProducts
 
 /-- A category `C` with finite products is cartesian distributive if is monoidal distributive
 with respect to the cartesian monoidal structure. -/
-abbrev CartesianDistribuitve :=
+abbrev CartesianDistributive :=
   IsMonoidalLeftDistrib C
 
 attribute [local instance] symmetricOfHasFiniteProducts
