@@ -191,6 +191,9 @@ theorem span_span_of_tower :
     span S (span R s : Set M) = span S s :=
   le_antisymm (span_le.2 <| span_subset_span R S s) (span_mono subset_span)
 
+theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
+  le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
+
 variable {R S} in
 lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
     (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
@@ -584,10 +587,16 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
+theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
+  fun _ _ eq ↦ by simpa using congr($eq 1)
+
 @[simp]
 theorem toSpanSingleton_zero : toSpanSingleton R M 0 = 0 := by
   ext
   simp
+
+theorem toSpanSingleton_eq_zero_iff {x : M} : toSpanSingleton R M x = 0 ↔ x = 0 := by
+  rw [← toSpanSingleton_zero, (toSpanSingleton_injective R M).eq_iff]
 
 variable {R M}
 
