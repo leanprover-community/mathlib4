@@ -123,7 +123,7 @@ lemma leftDistrib_hom {X Y Z : C} :
 
 @[reassoc (attr := simp)]
 lemma coprod_inl_leftDistrib_hom {X Y Z : C} :
-    coprod.inl ≫ (∂L X Y Z).hom = (X ◁ coprod.inl) := by
+    coprod.inl ≫ (∂L X Y Z).hom = X ◁ coprod.inl := by
   rw [leftDistrib_hom, coprod.inl_desc]
 
 @[reassoc (attr := simp)]
