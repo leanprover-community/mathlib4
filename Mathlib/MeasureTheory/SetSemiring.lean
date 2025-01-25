@@ -23,22 +23,22 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 ## Main definitions
 
 * `MeasureTheory.IsSetSemiring C`: property of being a semi-ring of sets.
-* `MeasureTheory.IsSetSemiring.disjointSubsetsOfSetdiff hs ht`: for `s, t` in a semi-ring `C`
+* `MeasureTheory.IsSetSemiring.disjointOfDiff hs ht`: for `s, t` in a semi-ring `C`
   (with `hC : IsSetSemiring C`) with `hs : s ∈ C`, `ht : t ∈ C`, this is a `Finset` of
-  pairwise disjoint sets such that `s \ t = ⋃₀ hC.disjointSubsetsOfSetdiff hs ht`.
-* `MeasureTheory.IsSetSemiring.disjointSubsetsOfSetdiffUnion hs hI`: for `hs : s ∈ C` and a finset
+  pairwise disjoint sets such that `s \ t = ⋃₀ hC.disjointOfDiff hs ht`.
+* `MeasureTheory.IsSetSemiring.disjointOfDiffUnion hs hI`: for `hs : s ∈ C` and a finset
   `I` of sets in `C` (with `hI : ↑I ⊆ C`), this is a `Finset` of pairwise disjoint sets such that
-  `s \ ⋃₀ I = ⋃₀ hC.disjointSubsetsOfSetdiffUnion hs hI`.
-* `MeasureTheory.IsSetSemiring.disjointSubsetsOfUnion hJ`: for `hJ ⊆ C`, this is a
-  `Finset` of pairwise disjoint sets such that `⋃₀ J = ⋃₀ hC.disjointSubsetsOfUnion hJ`.
+  `s \ ⋃₀ I = ⋃₀ hC.disjointOfDiffUnion hs hI`.
+* `MeasureTheory.IsSetSemiring.disjointOfUnion hJ`: for `hJ ⊆ C`, this is a
+  `Finset` of pairwise disjoint sets such that `⋃₀ J = ⋃₀ hC.disjointOfUnion hJ`.
 
 * `MeasureTheory.IsSetRing`: property of being a ring of sets.
 
 ## Main statements
 
 * `MeasureTheory.IsSetSemiring.exists_disjoint_finset_diff_eq`: the existence of the `Finset` given
-  by the definition `IsSetSemiring.disjointSubsetsOfSetdiffUnion` (see above).
-* `MeasureTheory.IsSetSemiring.disjointSubsetsOfUnion_props`: In a `hC : IsSetSemiring C`,
+  by the definition `IsSetSemiring.disjointOfDiffUnion` (see above).
+* `MeasureTheory.IsSetSemiring.disjointOfUnion_props`: In a `hC : IsSetSemiring C`,
   for a `J : Finset (Set α)` with `J ⊆ C`, there is
   for every `x in J` some `K x ⊆ C` finite, such that
   * `⋃ x ∈ J, K x` are pairwise disjoint and do not contain ∅,
@@ -65,86 +65,86 @@ namespace IsSetSemiring
 
 lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
 
-section disjointSubsetsOfSetdiff
+section disjointOfDiff
 
 open scoped Classical in
 /-- In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
 finitely many sets in `C`. The finite set of sets in the union is not unique, but this definition
 gives an arbitrary `Finset (Set α)` that satisfies the equality.
 
-We remove the empty set to ensure that `t ∉ hC.disjointSubsetsOfSetdiff hs ht` even if `t = ∅`. -/
-noncomputable def disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+We remove the empty set to ensure that `t ∉ hC.disjointOfDiff hs ht` even if `t = ∅`. -/
+noncomputable def disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     Finset (Set α) :=
   (hC.diff_eq_sUnion' s hs t ht).choose \ {∅}
 
-lemma empty_nmem_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
-    ∅ ∉ hC.disjointSubsetsOfSetdiff hs ht := by
+lemma empty_nmem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    ∅ ∉ hC.disjointOfDiff hs ht := by
   classical
-  simp only [disjointSubsetsOfSetdiff, mem_sdiff, Finset.mem_singleton, eq_self_iff_true,
+  simp only [disjointOfDiff, mem_sdiff, Finset.mem_singleton, eq_self_iff_true,
     not_true, and_false, not_false_iff]
 
-lemma subset_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
-    ↑(hC.disjointSubsetsOfSetdiff hs ht) ⊆ C := by
+lemma subset_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    ↑(hC.disjointOfDiff hs ht) ⊆ C := by
   classical
-  simp only [disjointSubsetsOfSetdiff, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [disjointOfDiff, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   exact (hC.diff_eq_sUnion' s hs t ht).choose_spec.1.trans (Set.subset_insert _ _)
 
-lemma pairwiseDisjoint_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
-    PairwiseDisjoint (hC.disjointSubsetsOfSetdiff hs ht : Set (Set α)) id := by
+lemma pairwiseDisjoint_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    PairwiseDisjoint (hC.disjointOfDiff hs ht : Set (Set α)) id := by
   classical
-  simp only [disjointSubsetsOfSetdiff, coe_sdiff, coe_singleton]
+  simp only [disjointOfDiff, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset (hC.diff_eq_sUnion' s hs t ht).choose_spec.2.1
       diff_subset
 
-lemma sUnion_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
-    ⋃₀ hC.disjointSubsetsOfSetdiff hs ht = s \ t := by
+lemma sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    ⋃₀ hC.disjointOfDiff hs ht = s \ t := by
   classical
   rw [(hC.diff_eq_sUnion' s hs t ht).choose_spec.2.2]
-  simp only [disjointSubsetsOfSetdiff, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [disjointOfDiff, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
-lemma nmem_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
-    t ∉ hC.disjointSubsetsOfSetdiff hs ht := by
+lemma nmem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    t ∉ hC.disjointOfDiff hs ht := by
   intro hs_mem
   suffices t ⊆ s \ t by
     have h := @disjoint_sdiff_self_right _ t s _
     specialize h le_rfl this
     simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff] at h
-    refine hC.empty_nmem_disjointSubsetsOfSetdiff hs ht ?_
+    refine hC.empty_nmem_disjointOfDiff hs ht ?_
     rwa [← h]
-  rw [← hC.sUnion_disjointSubsetsOfSetdiff hs ht]
+  rw [← hC.sUnion_disjointOfDiff hs ht]
   exact subset_sUnion_of_mem hs_mem
 
-lemma sUnion_insert_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma sUnion_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) (hst : t ⊆ s) :
-    ⋃₀ insert t (hC.disjointSubsetsOfSetdiff hs ht) = s := by
-  conv_rhs => rw [← union_diff_cancel hst, ← hC.sUnion_disjointSubsetsOfSetdiff hs ht]
+    ⋃₀ insert t (hC.disjointOfDiff hs ht) = s := by
+  conv_rhs => rw [← union_diff_cancel hst, ← hC.sUnion_disjointOfDiff hs ht]
   simp only [mem_coe, sUnion_insert]
 
-lemma disjoint_sUnion_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
-    Disjoint t (⋃₀ hC.disjointSubsetsOfSetdiff hs ht) := by
-  rw [hC.sUnion_disjointSubsetsOfSetdiff]
+lemma disjoint_sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    Disjoint t (⋃₀ hC.disjointOfDiff hs ht) := by
+  rw [hC.sUnion_disjointOfDiff]
   exact disjoint_sdiff_right
 
-lemma pairwiseDisjoint_insert_disjointSubsetsOfSetdiff (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma pairwiseDisjoint_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) :
-    PairwiseDisjoint (insert t (hC.disjointSubsetsOfSetdiff hs ht) : Set (Set α)) id := by
-  have h := hC.pairwiseDisjoint_disjointSubsetsOfSetdiff hs ht
-  refine PairwiseDisjoint.insert_of_not_mem h (hC.nmem_disjointSubsetsOfSetdiff hs ht) fun u hu ↦ ?_
+    PairwiseDisjoint (insert t (hC.disjointOfDiff hs ht) : Set (Set α)) id := by
+  have h := hC.pairwiseDisjoint_disjointOfDiff hs ht
+  refine PairwiseDisjoint.insert_of_not_mem h (hC.nmem_disjointOfDiff hs ht) fun u hu ↦ ?_
   simp_rw [id]
-  refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_disjointSubsetsOfSetdiff hs ht)
+  refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_disjointOfDiff hs ht)
   simp only [Set.le_eq_subset]
   exact subset_sUnion_of_mem hu
 
-end disjointSubsetsOfSetdiff
+end disjointOfDiff
 
-section disjointSubsetsOfSetdiffUnion
+section disjointOfDiffUnion
 
 variable {I : Finset (Set α)}
 
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
 finite set of sets in `C` whose union is `s \ ⋃₀ I`.
-See `IsSetSemiring.disjointSubsetsOfSetdiffUnion` for a definition that gives such a set. -/
+See `IsSetSemiring.disjointOfDiffUnion` for a definition that gives such a set. -/
 lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ∃ J : Finset (Set α), ↑J ⊆ C ∧ PairwiseDisjoint (J : Set (Set α)) id ∧
       s \ ⋃₀ I = ⋃₀ J := by
@@ -160,14 +160,14 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   rw [coe_insert] at hI
   have ht : t ∈ C := hI (Set.mem_insert _ _)
   obtain ⟨J, h_ss, h_dis, h_eq⟩ := h ((Set.subset_insert _ _).trans hI)
-  let Ju : ∀ u ∈ C, Finset (Set α) := fun u hu ↦ hC.disjointSubsetsOfSetdiff hu ht
+  let Ju : ∀ u ∈ C, Finset (Set α) := fun u hu ↦ hC.disjointOfDiff hu ht
   have hJu_subset : ∀ (u) (hu : u ∈ C), ↑(Ju u hu) ⊆ C := by
     intro u hu x hx
-    exact hC.subset_disjointSubsetsOfSetdiff hu ht hx
+    exact hC.subset_disjointOfDiff hu ht hx
   have hJu_disj : ∀ (u) (hu : u ∈ C), (Ju u hu : Set (Set α)).PairwiseDisjoint id := fun u hu ↦
-    hC.pairwiseDisjoint_disjointSubsetsOfSetdiff hu ht
+    hC.pairwiseDisjoint_disjointOfDiff hu ht
   have hJu_sUnion : ∀ (u) (hu : u ∈ C), ⋃₀ (Ju u hu : Set (Set α)) = u \ t :=
-    fun u hu ↦ hC.sUnion_disjointSubsetsOfSetdiff hu ht
+    fun u hu ↦ hC.sUnion_disjointOfDiff hu ht
   have hJu_disj' : ∀ (u) (hu : u ∈ C) (v) (hv : v ∈ C) (_h_dis : Disjoint u v),
       Disjoint (⋃₀ (Ju u hu : Set (Set α))) (⋃₀ ↑(Ju v hv)) := by
     intro u hu v hv huv_disj
@@ -211,107 +211,107 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
 
 open scoped Classical in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`,
-`disjointSubsetsOfSetdiffUnion` is a finite set of sets in `C` such that
-`s \ ⋃₀ I = ⋃₀ (hC.disjointSubsetsOfSetdiffUnion hs I hI)`.
-`disjointSubsetsOfSetdiff` is a special case of `disjointSubsetsOfSetdiffUnion` where `I` is a
+`disjointOfDiffUnion` is a finite set of sets in `C` such that
+`s \ ⋃₀ I = ⋃₀ (hC.disjointOfDiffUnion hs I hI)`.
+`disjointOfDiff` is a special case of `disjointOfDiffUnion` where `I` is a
 singleton. -/
-noncomputable def disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+noncomputable def disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
   (hI : ↑I ⊆ C) : Finset (Set α) :=
   (hC.exists_disjoint_finset_diff_eq hs hI).choose \ {∅}
 
-lemma empty_not_mem_disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma empty_not_mem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) :
-    ∅ ∉ hC.disjointSubsetsOfSetdiffUnion hs hI := by
+    ∅ ∉ hC.disjointOfDiffUnion hs hI := by
   classical
-  simp only [disjointSubsetsOfSetdiffUnion, mem_sdiff, Finset.mem_singleton, eq_self_iff_true,
+  simp only [disjointOfDiffUnion, mem_sdiff, Finset.mem_singleton, eq_self_iff_true,
     not_true, and_false, not_false_iff]
 
-lemma disjointSubsetsOfSetdiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
-    ↑(hC.disjointSubsetsOfSetdiffUnion hs hI) ⊆ C := by
+lemma disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
+    ↑(hC.disjointOfDiffUnion hs hI) ⊆ C := by
   classical
-  simp only [disjointSubsetsOfSetdiffUnion, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [disjointOfDiffUnion, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   exact (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.1.trans (Set.subset_insert _ _)
 
-lemma pairwiseDisjoint_disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) : PairwiseDisjoint (hC.disjointSubsetsOfSetdiffUnion hs hI : Set (Set α)) id := by
+lemma pairwiseDisjoint_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+    (hI : ↑I ⊆ C) : PairwiseDisjoint (hC.disjointOfDiffUnion hs hI : Set (Set α)) id := by
   classical
-  simp only [disjointSubsetsOfSetdiffUnion, coe_sdiff, coe_singleton]
+  simp only [disjointOfDiffUnion, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset
     (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.2.1 diff_subset
 
-lemma diff_sUnion_eq_sUnion_disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) : s \ ⋃₀ I = ⋃₀ hC.disjointSubsetsOfSetdiffUnion hs hI := by
+lemma diff_sUnion_eq_sUnion_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+    (hI : ↑I ⊆ C) : s \ ⋃₀ I = ⋃₀ hC.disjointOfDiffUnion hs hI := by
   classical
   rw [(hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.2.2]
-  simp only [disjointSubsetsOfSetdiffUnion, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [disjointOfDiffUnion, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
-lemma sUnion_disjointSubsetsOfSetdiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) : ⋃₀ (hC.disjointSubsetsOfSetdiffUnion hs hI : Set (Set α)) ⊆ s := by
-  rw [← hC.diff_sUnion_eq_sUnion_disjointSubsetsOfSetdiffUnion]
+lemma sUnion_disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C)
+    (hI : ↑I ⊆ C) : ⋃₀ (hC.disjointOfDiffUnion hs hI : Set (Set α)) ⊆ s := by
+  rw [← hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion]
   exact diff_subset
 
-lemma sUnion_disjointSubsetsOfSetdiffUnion_subsets (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
-    (t : Set α) (ht : t ∈ (hC.disjointSubsetsOfSetdiffUnion hs hI : Set (Set α))) :
+lemma sUnion_disjointOfDiffUnion_subsets (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
+    (t : Set α) (ht : t ∈ (hC.disjointOfDiffUnion hs hI : Set (Set α))) :
     t ⊆ s \ ⋃₀ I := by
   revert t ht
-  rw [← sUnion_subset_iff, hC.diff_sUnion_eq_sUnion_disjointSubsetsOfSetdiffUnion hs hI]
+  rw [← sUnion_subset_iff, hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion hs hI]
 
-lemma sUnion_disjointSubsetsOfSetdiffUnion_subsets' (hC : IsSetSemiring C) {I : Finset (Set α)}
+lemma sUnion_disjointOfDiffUnion_subsets' (hC : IsSetSemiring C) {I : Finset (Set α)}
     (hs : s ∈ C) (hI : ↑I ⊆ C) :
-    ∀ t ∈ (hC.disjointSubsetsOfSetdiffUnion hs hI : Set (Set α)), t ⊆ s := by
+    ∀ t ∈ (hC.disjointOfDiffUnion hs hI : Set (Set α)), t ⊆ s := by
   rw [← sUnion_subset_iff]
-  exact hC.sUnion_disjointSubsetsOfSetdiffUnion_subset hs hI
+  exact hC.sUnion_disjointOfDiffUnion_subset hs hI
 
-lemma disjoint_sUnion_disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma disjoint_sUnion_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) :
-    Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.disjointSubsetsOfSetdiffUnion hs hI) := by
-  rw [← hC.diff_sUnion_eq_sUnion_disjointSubsetsOfSetdiffUnion]; exact Set.disjoint_sdiff_right
+    Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.disjointOfDiffUnion hs hI) := by
+  rw [← hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion]; exact Set.disjoint_sdiff_right
 
-lemma disjoint_disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
-    Disjoint I (hC.disjointSubsetsOfSetdiffUnion hs hI) := by
+lemma disjoint_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
+    Disjoint I (hC.disjointOfDiffUnion hs hI) := by
   by_contra h
   rw [Finset.not_disjoint_iff] at h
-  obtain ⟨u, huI, hu_disjointSubsetsOfSetdiffUnion⟩ := h
+  obtain ⟨u, huI, hu_disjointOfDiffUnion⟩ := h
   have h_disj : u ≤ ⊥ :=
-    hC.disjoint_sUnion_disjointSubsetsOfSetdiffUnion hs hI (subset_sUnion_of_mem huI)
-    (subset_sUnion_of_mem hu_disjointSubsetsOfSetdiffUnion)
+    hC.disjoint_sUnion_disjointOfDiffUnion hs hI (subset_sUnion_of_mem huI)
+    (subset_sUnion_of_mem hu_disjointOfDiffUnion)
   simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff] at h_disj
-  refine hC.empty_not_mem_disjointSubsetsOfSetdiffUnion hs hI ?_
-  rwa [h_disj] at hu_disjointSubsetsOfSetdiffUnion
+  refine hC.empty_not_mem_disjointOfDiffUnion hs hI ?_
+  rwa [h_disj] at hu_disjointOfDiffUnion
 
-lemma pairwiseDisjoint_union_disjointSubsetsOfSetdiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma pairwiseDisjoint_union_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
-    PairwiseDisjoint (I ∪ hC.disjointSubsetsOfSetdiffUnion hs hI : Set (Set α)) id := by
+    PairwiseDisjoint (I ∪ hC.disjointOfDiffUnion hs hI : Set (Set α)) id := by
   rw [pairwiseDisjoint_union]
-  refine ⟨h_dis, hC.pairwiseDisjoint_disjointSubsetsOfSetdiffUnion hs hI, fun u hu v hv _ ↦ ?_⟩
+  refine ⟨h_dis, hC.pairwiseDisjoint_disjointOfDiffUnion hs hI, fun u hu v hv _ ↦ ?_⟩
   simp_rw [id]
   exact disjoint_of_subset (subset_sUnion_of_mem hu) (subset_sUnion_of_mem hv)
-    (hC.disjoint_sUnion_disjointSubsetsOfSetdiffUnion hs hI)
+    (hC.disjoint_sUnion_disjointOfDiffUnion hs hI)
 
-lemma sUnion_union_sUnion_disjointSubsetsOfSetdiffUnion_of_subset (hC : IsSetSemiring C)
+lemma sUnion_union_sUnion_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
-    ⋃₀ I ∪ ⋃₀ hC.disjointSubsetsOfSetdiffUnion hs hI = s := by
+    ⋃₀ I ∪ ⋃₀ hC.disjointOfDiffUnion hs hI = s := by
   conv_rhs => rw [← union_diff_cancel (Set.sUnion_subset hI_ss : ⋃₀ ↑I ⊆ s),
-    hC.diff_sUnion_eq_sUnion_disjointSubsetsOfSetdiffUnion hs hI]
+    hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion hs hI]
 
-lemma sUnion_union_disjointSubsetsOfSetdiffUnion_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma sUnion_union_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
-    ⋃₀ ↑(I ∪ hC.disjointSubsetsOfSetdiffUnion hs hI) = s := by
-  conv_rhs => rw [← sUnion_union_sUnion_disjointSubsetsOfSetdiffUnion_of_subset hC hs hI hI_ss]
+    ⋃₀ ↑(I ∪ hC.disjointOfDiffUnion hs hI) = s := by
+  conv_rhs => rw [← sUnion_union_sUnion_disjointOfDiffUnion_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
   rw [sUnion_union]
 
-end disjointSubsetsOfSetdiffUnion
+end disjointOfDiffUnion
 
-section disjointSubsetsOfUnion
+section disjointOfUnion
 
 
 variable [DecidableEq (Set α)] {j : Set α} {J : Finset (Set α)}
 
 open Set MeasureTheory Order
 
-theorem disjointSubsetsOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
+theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
       J.toSet.PairwiseDisjoint K
       ∧ (∀ i ∈ J, (K i).toSet ⊆ C)
@@ -325,8 +325,8 @@ theorem disjointSubsetsOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     rw [cons_eq_insert, coe_insert, Set.insert_subset_iff] at h1
     obtain ⟨K, hK0, ⟨hK1, hK2, hK3, hK4, hK5⟩⟩ := hind h1.2
     let K1 : Set α → Finset (Set α) := fun (t : Set α) ↦
-      if t = s then (hC.disjointSubsetsOfSetdiffUnion h1.1 h1.2) else K t
-    have hK1s : K1 s = hC.disjointSubsetsOfSetdiffUnion h1.1 h1.2 := by simp [K1]
+      if t = s then (hC.disjointOfDiffUnion h1.1 h1.2) else K t
+    have hK1s : K1 s = hC.disjointOfDiffUnion h1.1 h1.2 := by simp [K1]
     have hK1_of_ne t (ht : t ≠ s) : K1 t = K t := by simp [K1, ht]
     use K1
     simp only [cons_eq_insert, disjiUnion_eq_biUnion, Finset.biUnion_insert, coe_union, coe_biUnion,
@@ -339,18 +339,18 @@ theorem disjointSubsetsOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       intros x hx
       exact mod_cast hK1_of_ne _ (ne_of_mem_of_not_mem hx hJ)
     simp only [hK1s]
-    refine ⟨?_, ⟨hC.disjointSubsetsOfSetdiffUnion_subset h1.1 h1.2, ?_⟩, ?_,
-      ⟨hC.sUnion_disjointSubsetsOfSetdiffUnion_subsets' h1.1 h1.2, ?_⟩, ?_, ?_⟩
+    refine ⟨?_, ⟨hC.disjointOfDiffUnion_subset h1.1 h1.2, ?_⟩, ?_,
+      ⟨hC.sUnion_disjointOfDiffUnion_subsets' h1.1 h1.2, ?_⟩, ?_, ?_⟩
     · apply Set.Pairwise.insert
       · intro j hj i hi hij
         rw [Function.onFun, ht1' j hj, ht1' i hi]
         exact hK0 hj hi hij
       · intro i hi _
-        have h7 : Disjoint (hC.disjointSubsetsOfSetdiffUnion h1.1 h1.2).toSet (K i).toSet := by
+        have h7 : Disjoint (hC.disjointOfDiffUnion h1.1 h1.2).toSet (K i).toSet := by
           refine disjoint_of_sSup_disjoint_of_le_of_le
-            (hC.sUnion_disjointSubsetsOfSetdiffUnion_subsets h1.1 h1.2) ?_
+            (hC.sUnion_disjointOfDiffUnion_subsets h1.1 h1.2) ?_
             (@disjoint_sdiff_left _ (⋃₀ J) s) (Or.inl
-              (hC.empty_not_mem_disjointSubsetsOfSetdiffUnion h1.1 h1.2))
+              (hC.empty_not_mem_disjointOfDiffUnion h1.1 h1.2))
           simp only [mem_coe, Set.le_eq_subset]
           apply sUnion_subset_iff.mp
           exact (hK3 i hi).trans (subset_sUnion_of_mem hi)
@@ -366,13 +366,13 @@ theorem disjointSubsetsOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     · simp only [iUnion_iUnion_eq_or_left]
       refine pairwiseDisjoint_union.mpr ⟨?_, ?_, ?_⟩
       · rw [hK1s]
-        exact hC.pairwiseDisjoint_disjointSubsetsOfSetdiffUnion h1.1 h1.2
+        exact hC.pairwiseDisjoint_disjointOfDiffUnion h1.1 h1.2
       · simpa [ht2]
       · simp only [mem_coe, mem_iUnion, exists_prop, ne_eq, id_eq, forall_exists_index, and_imp]
         intros i hi j x hx h3 h4
         -- We show i ⊆ s \ ⋃₀ J
         have ki : i ⊆ s \ ⋃₀ J := by
-          apply hC.sUnion_disjointSubsetsOfSetdiffUnion_subsets h1.1 h1.2
+          apply hC.sUnion_disjointOfDiffUnion_subsets h1.1 h1.2
           rw [hK1s] at hi
           exact hi
         -- We show j ⊆ ⋃₀ K x ⊆ x ∈ J
@@ -387,54 +387,54 @@ theorem disjointSubsetsOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       change ∀ t' ∈ (K a).toSet, t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
-    · refine ⟨hC.empty_not_mem_disjointSubsetsOfSetdiffUnion h1.1 h1.2, ?_⟩
+    · refine ⟨hC.empty_not_mem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
       intros a ha
       rw [ht1' a ha]
       exact hK4 a ha
     · simp only [iUnion_iUnion_eq_or_left, ht2, sUnion_union, ht2, K1]
       simp_rw [apply_ite, hK5,
-      ← hC.diff_sUnion_eq_sUnion_disjointSubsetsOfSetdiffUnion h1.1 h1.2, hK5]
+      ← hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion h1.1 h1.2, hK5]
       simp only [↓reduceIte, diff_union_self]
 
 /-- For some `J ⊆ C`, where `C` is a `SetSemiring`, write `⋃₀ J` as the disjoint union
-over `disjointSubsetsOfUnion`.-/
-noncomputable def disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :=
-  (hC.disjointSubsetsOfUnion_props hJ).choose
+over `disjointOfUnion`.-/
+noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :=
+  (hC.disjointOfUnion_props hJ).choose
 
-lemma pairwiseDisjoint_disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
-    J.toSet.PairwiseDisjoint (hC.disjointSubsetsOfUnion hJ) :=
-  (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).1
+lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    J.toSet.PairwiseDisjoint (hC.disjointOfUnion hJ) :=
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).1
 
-lemma subsets_disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    (disjointSubsetsOfUnion hC hJ j).toSet ⊆ C :=
-  (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.1 _ hj
+lemma subsets_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    (disjointOfUnion hC hJ j).toSet ⊆ C :=
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.1 _ hj
 
-lemma  pairwiseDisjoint_disjointSubsetsOfUnion_self (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
-    (⋃ x ∈ J, (hC.disjointSubsetsOfUnion hJ x).toSet).PairwiseDisjoint id :=
-  (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.2.1
+lemma  pairwiseDisjoint_disjointOfUnion_self (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    (⋃ x ∈ J, (hC.disjointOfUnion hJ x).toSet).PairwiseDisjoint id :=
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.1
 
-lemma disjointSubsetsOfUnion_pairwiseDisjoints (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    PairwiseDisjoint (hC.disjointSubsetsOfUnion hJ j).toSet id := by
-  apply PairwiseDisjoint.subset (hC.pairwiseDisjoint_disjointSubsetsOfUnion_self hJ)
+lemma disjointOfUnion_pairwiseDisjoints (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    PairwiseDisjoint (hC.disjointOfUnion hJ j).toSet id := by
+  apply PairwiseDisjoint.subset (hC.pairwiseDisjoint_disjointOfUnion_self hJ)
   exact subset_iUnion₂_of_subset j hj fun ⦃a⦄ a ↦ a
 
-lemma subset_disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    ⋃₀ hC.disjointSubsetsOfUnion hJ j ⊆ j :=
-  (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.2.2.1 j hj
+lemma subset_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    ⋃₀ hC.disjointOfUnion hJ j ⊆ j :=
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.1 j hj
 
-lemma subsets_disjointSubsetsOfUnion_self (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    ∀ x ∈ (hC.disjointSubsetsOfUnion hJ) j, x ⊆ j :=
-  sUnion_subset_iff.mp (hC.subset_disjointSubsetsOfUnion hJ hj)
+lemma subsets_disjointOfUnion_self (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    ∀ x ∈ (hC.disjointOfUnion hJ) j, x ⊆ j :=
+  sUnion_subset_iff.mp (hC.subset_disjointOfUnion hJ hj)
 
-lemma empty_nmem_disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    ∅ ∉ hC.disjointSubsetsOfUnion hJ j :=
-  (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.2.2.2.1 j hj
+lemma empty_nmem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    ∅ ∉ hC.disjointOfUnion hJ j :=
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
 
-lemma sUnion_disjointSubsetsOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
-    ⋃₀ J.toSet = ⋃₀ ⋃ x ∈ J, (hC.disjointSubsetsOfUnion hJ x).toSet
-    := (Exists.choose_spec (hC.disjointSubsetsOfUnion_props hJ)).2.2.2.2.2
+lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    ⋃₀ J.toSet = ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x).toSet
+    := (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2
 
-end disjointSubsetsOfUnion
+end disjointOfUnion
 
 end IsSetSemiring
 
