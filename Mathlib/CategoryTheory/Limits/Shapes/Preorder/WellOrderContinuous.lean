@@ -72,8 +72,11 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (h : J' ≤i J)
     [F.IsWellOrderContinuous] :
     (h.monotone.functor ⋙ F).IsWellOrderContinuous where
   nonempty_isColimit m' hm' := ⟨F.isColimitOfIsWellOrderContinuous'
-    ((Set.principalSegIio m').transInitial h) (by
-      dsimp
-      sorry)⟩
+    ((Set.principalSegIio m').transInitial h) (by simpa)⟩
+
+instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
+    [F.IsWellOrderContinuous] :
+    (e.equivalence.functor ⋙ F).IsWellOrderContinuous :=
+  inferInstanceAs (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
 
 end CategoryTheory.Functor
