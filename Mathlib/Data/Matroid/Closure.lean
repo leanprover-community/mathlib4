@@ -932,23 +932,22 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
 
 @[simp] lemma map_closure_eq {β : Type*} (M : Matroid α) (f : α → β) (hf) (X : Set β) :
     (M.map f hf).closure X = f '' M.closure (f ⁻¹' X) := by
+  -- It is enough to prove that `map` and `closure` commute for `M`-independent sets.
   suffices aux : ∀ ⦃I⦄, M.Indep I → (M.map f hf).closure (f '' I) = f '' (M.closure I) by
     obtain ⟨I, hI⟩ := M.exists_basis (f ⁻¹' X ∩ M.E)
     rw [← closure_inter_ground, map_ground, ← M.closure_inter_ground, ← hI.closure_eq_closure,
       ← aux hI.indep, ← image_preimage_inter, ← (hI.map hf).closure_eq_closure]
-
+  -- Let `I` be independent, and transform the goal using closure/independence lemmas
   refine fun I hI ↦ Set.ext fun e ↦ ?_
-
   simp only [(hI.map f hf).mem_closure_iff', map_ground, mem_image, map_indep_iff,
     forall_exists_index, and_imp, hI.mem_closure_iff']
-
+  -- The goal now easy follows from the invariance of independence under maps.
   constructor
   · rintro ⟨⟨x, hxE, rfl⟩, h2⟩
     refine ⟨x, ⟨hxE, fun hI' ↦ ?_⟩, rfl⟩
     obtain ⟨y, hyI, hfy⟩ := h2 _ hI' image_insert_eq.symm
     rw [hf.eq_iff (hI.subset_ground hyI) hxE] at hfy
     rwa [← hfy]
-
   rintro ⟨x, ⟨hxE, hxi⟩, rfl⟩
   refine ⟨⟨x, hxE, rfl⟩, fun J hJ hJI ↦ ⟨x, hxi ?_, rfl⟩⟩
   replace hJ := hJ.map f hf
