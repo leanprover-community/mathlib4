@@ -24,27 +24,10 @@ open MeasureTheory Filter Finset Real
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
--- todo: generalize the type of `f`?
--- todo: move
-lemma _root_.AnalyticAt.hasFPowerSeriesAt {f : ℝ → ℝ} {x : ℝ} (h : AnalyticAt ℝ f x) :
-    HasFPowerSeriesAt f
-      (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ iteratedDeriv n f x / n.factorial)) x := by
-  obtain ⟨p, hp⟩ := h
-  convert hp
-  obtain ⟨r, hpr⟩ := hp
-  ext n u
-  have h_fact_smul := hpr.factorial_smul 1
-  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, prod_const, card_univ,
-    Fintype.card_fin, smul_eq_mul, nsmul_eq_mul, one_pow, one_mul] at h_fact_smul
-  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff,
-    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, mul_eq_mul_left_iff]
-  left
-  rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
-  norm_cast
-  exact Nat.factorial_ne_zero _
-
--- todo: move
-lemma _root_.AnalyticAt.re_ofReal {f : ℂ → ℂ} {x : ℝ} (hf : AnalyticAt ℂ f x) :
+-- todo: move. It needs those imports:
+-- import Mathlib.Analysis.Analytic.Constructions
+-- import Mathlib.Analysis.Complex.Basic
+lemma AnalyticAt.re_ofReal {f : ℂ → ℂ} {x : ℝ} (hf : AnalyticAt ℂ f x) :
     AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
   (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
 
