@@ -48,7 +48,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
       (cpow_ne_zero_iff_of_exponent_ne_zero h₁).mpr <| ofReal_ne_zero.mpr ht'
   have h₄ : (deriv fun t : ℝ ↦ ‖(t : ℂ) ^ (- s)‖) =ᶠ[atTop] fun t ↦ - s.re * t ^ (- (s.re +1)) := by
     filter_upwards [eventually_gt_atTop 0] with t ht
-    rw [deriv_norm_ofReal_cpow_eq _ ht, neg_re, neg_add']
+    rw [deriv_norm_ofReal_cpow _ ht, neg_re, neg_add']
   change Summable (fun n ↦ LSeries.term f s n)
   simp_rw [LSeries.term_def₀ hf, mul_comm (f _)]
   refine summable_mul_of_bigO_atTop' (f := fun t ↦ (t : ℂ) ^ (-s))

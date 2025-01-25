@@ -146,7 +146,7 @@ theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs 
 theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0):
     IntegrableOn (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Set.Ioi t) := by
   rw [integrableOn_congr_fun (fun x hx ↦ by
-      rw [Complex.deriv_norm_ofReal_cpow_eq _ (ht.trans hx)]) measurableSet_Ioi]
+    rw [deriv_norm_ofReal_cpow _ (ht.trans hx)]) measurableSet_Ioi]
   obtain hs | hs := eq_or_lt_of_le hs
   · simp_rw [hs, zero_mul]
     exact integrableOn_zero
