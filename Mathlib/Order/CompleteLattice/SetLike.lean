@@ -35,17 +35,14 @@ namespace CompleteSublattice
 
 variable {X : Type*} {L : CompleteSublattice (Set X)}
 
-variable {S T : L} {𝒮 : Set L} {I : Sort*} {f : I → L} {x : X}
+variable {𝒮 : Set L} {I : Sort*} {f : I → L} {x : X}
 
-@[simp] theorem mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
-@[simp] theorem mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← mem_subtype]
+@[simp] theorem mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← Sublattice.mem_subtype]
+@[simp] theorem mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← Sublattice.mem_subtype]
 @[simp] theorem mem_top : x ∈ (⊤ : L) := by simp [← mem_subtype]
 
-@[simp] theorem mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
-@[simp] theorem mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
-@[simp] theorem mem_bot : ¬ x ∈ (⊥ : L) := by simp [← mem_subtype]
-
-@[simp] lemma mem_coe : x ∈ T.val ↔ x ∈ T := Iff.rfl
-@[simp] lemma mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := Iff.rfl
+@[simp] theorem mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← Sublattice.mem_subtype]
+@[simp] theorem mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← Sublattice.mem_subtype]
+@[simp] theorem mem_bot : ¬ x ∈ (⊥ : L) := by simp [← Sublattice.mem_subtype]
 
 end CompleteSublattice
