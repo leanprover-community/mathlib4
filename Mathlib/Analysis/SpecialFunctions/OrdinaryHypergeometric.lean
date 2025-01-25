@@ -67,8 +67,8 @@ noncomputable def ordinaryHypergeometricSeries (a b c : 𝕂) : FormalMultilinea
 
 variable {𝔸} (a b c : 𝕂)
 
-/-- `ordinaryHypergeometric (a b c : 𝕂) : 𝔸 → 𝔸` is the ordinary hypergeometric map, defined as the
-sum of the `FormalMultilinearSeries` `ordinaryHypergeometricSeries 𝔸 a b c`.
+/-- `ordinaryHypergeometric (a b c : 𝕂) : 𝔸 → 𝔸`, denoted `₂F₁`, is the ordinary hypergeometric map,
+defined as the sum of the `FormalMultilinearSeries` `ordinaryHypergeometricSeries 𝔸 a b c`.
 
 Note that this takes the junk value `0` outside the radius of convergence.
 -/
