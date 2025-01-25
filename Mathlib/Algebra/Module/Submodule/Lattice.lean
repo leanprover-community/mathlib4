@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.PUnit
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
