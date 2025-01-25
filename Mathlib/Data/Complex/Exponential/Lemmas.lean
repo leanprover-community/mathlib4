@@ -4,11 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 
-import Mathlib.Data.Complex.Exponential.Lemmas.Defs
+import Mathlib.Data.Complex.Exponential.Defs
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Bound.Attribute
+
+/-!
+# Lemmas about Exponential, trigonometric and hyperbolic trigonometric functions
+
+This file contains lemmas about the real and complex exponential, sine, cosine, tangent, hyperbolic
+sine, hyperbolic cosine, and hyperbolic tangent functions. The definitions of these functions can
+be found in `Data.Complex.Exponential.Defs`. These results were moved to a separate file to keep
+`Data.Complex.Exponential.Defs` as short as possible.
+
+-/
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
