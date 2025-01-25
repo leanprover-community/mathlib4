@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Group.Nat.Hom
 
 /-!
 # The forget functor is corepresentable
@@ -20,16 +20,6 @@ universe u
 open CategoryTheory Opposite
 
 namespace MonoidHom
-
-/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[simps]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
 
 /-- The equivalence `(Multiplicative ℕ →* α) ≃ α` for any monoid `α`. -/
 @[simps]
@@ -48,16 +38,6 @@ def fromULiftMultiplicativeNatEquiv (α : Type u) [Monoid α] :
 end MonoidHom
 
 namespace AddMonoidHom
-
-/-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`. -/
-@[simps]
-def precompEquiv {α β : Type*} [AddMonoid α] [AddMonoid β] (e : α ≃+ β) (γ : Type*) [AddMonoid γ] :
-    (β →+ γ) ≃ (α →+ γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
 
 /-- The equivalence `(ℤ →+ α) ≃ α` for any additive group `α`. -/
 @[simps]

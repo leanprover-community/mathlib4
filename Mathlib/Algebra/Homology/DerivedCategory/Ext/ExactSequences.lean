@@ -17,6 +17,8 @@ Similarly, if `Y : C`, there is a contravariant long exact sequence :
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w' w v u
 
 namespace CategoryTheory
