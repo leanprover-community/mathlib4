@@ -105,7 +105,7 @@ lemma isCardinalPresentable_of_le [IsCardinalPresentable X κ]
 include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
-  Functor.isCardinalAccessible_of_iso (coyoneda.mapIso e.symm.op) κ
+  Functor.isCardinalAccessible_of_natIso (coyoneda.mapIso e.symm.op) κ
 
 section
 
