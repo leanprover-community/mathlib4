@@ -476,6 +476,7 @@ def H1Cotangent.map : H1Cotangent R S' →ₗ[S'] H1Cotangent S T :=
 noncomputable
 def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
     H1Cotangent R S ≃ₗ[R] H1Cotangent R S' :=
+  -- we are constructing data, so we do not use `algebraize`
   letI := e.toRingHom.toAlgebra
   letI := e.symm.toRingHom.toAlgebra
   have : IsScalarTower R S S' := .of_algebraMap_eq' e.toAlgHom.comp_algebraMap.symm
