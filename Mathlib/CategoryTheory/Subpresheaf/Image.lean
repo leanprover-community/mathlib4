@@ -140,6 +140,13 @@ def preimage (G : Subpresheaf F) (p : F' ⟶ F) : Subpresheaf F' where
     simp only [Set.preimage_preimage, FunctorToTypes.naturality _ _ p f]
     rfl)
 
+@[simp]
+lemma preimage_id (G : Subpresheaf F) :
+    G.preimage (𝟙 F) = G := by aesop
+
+lemma preimage_comp (G : Subpresheaf F) (f : F'' ⟶ F') (g : F' ⟶ F) :
+    G.preimage (f ≫ g) = (G.preimage g).preimage f := by aesop
+
 lemma image_le_iff (G : Subpresheaf F) (f : F ⟶ F') (G' : Subpresheaf F') :
     G.image f ≤ G' ↔ G ≤ G'.preimage f := by
   simp [Subpresheaf.le_def]
