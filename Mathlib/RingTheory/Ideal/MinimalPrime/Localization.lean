@@ -43,7 +43,7 @@ theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRi
 
 theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
     [Algebra R A] [IsLocalization S A] (J : Ideal R) :
-    (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A)⁻¹' J.minimalPrimes := by
+    (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) ⁻¹' J.minimalPrimes := by
   ext p
   constructor
   · intro hp
