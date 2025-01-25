@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Moments.ComplexMGF
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
 # The moment generating function is analytic
@@ -23,13 +24,6 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 open MeasureTheory Filter Finset Real
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
-
--- todo: move. It needs those imports:
--- import Mathlib.Analysis.Analytic.Constructions
--- import Mathlib.Analysis.Complex.Basic
-lemma AnalyticAt.re_ofReal {f : ℂ → ℂ} {x : ℝ} (hf : AnalyticAt ℂ f x) :
-    AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
-  (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
 
 namespace ProbabilityTheory
 
