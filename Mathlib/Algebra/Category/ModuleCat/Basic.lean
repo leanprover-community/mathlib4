@@ -428,7 +428,7 @@ universe u₀
 
 namespace Algebra
 
-variable {S₀ : Type u₀} [CommRing S₀] {S : Type u} [Ring S] [Algebra S₀ S]
+variable {S₀ : Type u₀} [CommSemiring S₀] {S : Type u} [Ring S] [Algebra S₀ S]
 
 variable {M N : ModuleCat.{v} S}
 
