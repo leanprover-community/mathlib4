@@ -1328,6 +1328,11 @@ end subtypeRestr
 variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
     [hX : Inhabited X] {f : X → X'}
 
+-- better: defs lift_openEmbedding_empty (does the empty homeo already exist?)
+-- and lift_openEmbedding_inhabited (the current def);
+-- then have the real definition switch on these!
+-- need to decide which simp lemmas to keep...
+
 /-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding `ι : X → X'`.
 On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary (and uninteresting).
 -/
