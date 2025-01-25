@@ -191,20 +191,18 @@ instance IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
         apply preservesColimit_of_iso_diagram (tensorRight X) (diagramIsoPair K).symm
     }
 
-variable [IsMonoidalRightDistrib C]
-
 /-- The forward direction of the right distributivity isomorphism is equal to the cogap morphism
 `coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X`. -/
-lemma rightDistrib_hom {X Y Z : C} :
+lemma rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
   (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
 
 @[reassoc (attr := simp)]
-lemma coprod_inl_rightDistrib_hom {X Y Z : C} :
+lemma coprod_inl_rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
     coprod.inl ≫ (∂R X Y Z).hom = coprod.inl ▷ X := by
   rw [rightDistrib_hom, coprod.inl_desc]
 
 @[reassoc (attr := simp)]
-lemma coprod_inr_rightDistrib_hom {X Y Z : C} :
+lemma coprod_inr_rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
     coprod.inr ≫ (∂R X Y Z).hom = coprod.inr ▷ X := by
   rw [rightDistrib_hom, coprod.inr_desc]
 
@@ -212,7 +210,7 @@ lemma coprod_inr_rightDistrib_hom {X Y Z : C} :
 `(∂R X Y Z).inv :  (Y ⨿ Z) ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)` is equal to the left coprojection
 `coprod.inl : Y ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)`. -/
 @[reassoc (attr := simp)]
-lemma whiskerRight_coprod_inl_rightDistrib_inv {X Y Z : C} :
+lemma whiskerRight_coprod_inl_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z : C} :
     (coprod.inl ▷ X) ≫ (∂R X Y Z).inv = coprod.inl := by
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inl_rightDistrib_hom]
@@ -221,14 +219,10 @@ lemma whiskerRight_coprod_inl_rightDistrib_inv {X Y Z : C} :
 `(∂R X Y Z).inv :  (Y ⨿ Z) ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)` is equal to the right coprojection
 `coprod.inr : Z ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)`. -/
 @[reassoc (attr := simp)]
-lemma whiskerRight_coprod_inr_rightDistrib_inv {X Y Z : C} :
+lemma whiskerRight_coprod_inr_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z : C} :
     (coprod.inr ▷ X) ≫ (∂R X Y Z).inv = coprod.inr := by
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
-
-end IsMonoidalRightDistrib
-
-open Distributive
 
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
