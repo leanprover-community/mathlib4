@@ -38,7 +38,7 @@ namespace Functor
 
 variable (F G : C ⥤ D) (e : F ≅ G) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
-/-- A functor `F : C ⥤ C` is `κ`-accessible (with `κ` a regular cardinal)
+/-- A functor `F : C ⥤ D` is `κ`-accessible (with `κ` a regular cardinal)
 if it preserves colimits of shape `J` where `J` is any `κ`-filtered category.
 In the mathematical literature, some assumptions are often made on the
 categories `C` or `D` (e.g. the existence of `κ`-filtered colimits,
