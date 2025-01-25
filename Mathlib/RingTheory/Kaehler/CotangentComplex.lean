@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.RingTheory.Generators
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.Presentation
 
 /-!
 
@@ -442,19 +441,12 @@ end Generators
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in
 instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄R]) := by
-  obtain ⟨n, f, hf, hf'⟩ := FinitePresentation.out (R := R) (A := S)
-  let P : Algebra.Generators R S := .ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
-  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ (Fin n)
-  refine Module.finitePresentation_of_surjective P.toExtension.toKaehler
-    P.toExtension.toKaehler_surjective ?_
+  let P := Algebra.Presentation.ofFinitePresentation R S
+  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ _
+  refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
   refine Submodule.FG.map P.toExtension.cotangentComplex ?_
-  have : P.ker.FG := by
-    convert hf'
-    apply MvPolynomial.ringHom_ext
-    · simp [← MvPolynomial.algebraMap_eq, -MvPolynomial.algebraMap_apply]
-    · simp [P, Generators.ofSurjective, Generators.algebraMap_eq]
-  exact (Extension.Cotangent.finite this).1
+  exact (Extension.Cotangent.finite P.ideal_fg_of_isFinite).1
 
 variable {P : Generators R S}
 
@@ -513,17 +505,12 @@ abbrev Generators.equivH1Cotangent (P : Generators.{w} R S) :
 attribute [local instance] Module.finitePresentation_of_projective in
 instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
     Module.Finite S (H1Cotangent R S) := by
-  obtain ⟨n, f, hf, hf'⟩ := FinitePresentation.out (R := R) (A := S)
-  let P : Algebra.Generators R S := .ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
-  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ (Fin n)
+  let P := Algebra.Presentation.ofFinitePresentation R S
+  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R P.vars
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
-  have : Module.Finite S P.toExtension.Cotangent := Extension.Cotangent.finite <| by
-    convert hf'
-    apply MvPolynomial.ringHom_ext
-    · simp [← MvPolynomial.algebraMap_eq, -MvPolynomial.algebraMap_apply]
-    · simp [P, Generators.ofSurjective, Generators.algebraMap_eq]
+  have := Extension.Cotangent.finite P.ideal_fg_of_isFinite
   have : Module.FinitePresentation S (LinearMap.range P.toExtension.cotangentComplex) := by
     rw [← LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler]
     exact Module.finitePresentation_of_projective_of_exact
