@@ -5,6 +5,7 @@ Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
+import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
@@ -14,7 +15,6 @@ import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Algebra.Group.Int.TypeTags
 
-import Mathlib.RingTheory.AdicCompletion.Algebra
 
 /-!
 # Laurent Series
@@ -62,8 +62,8 @@ such that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`.
 `LaurentSeries.exists_powerSeries_of_memIntegers` show that an element in the completion of
 `RatFunc K` is in the unit ball if and only if it comes from a power series through the isomorphism
 `LaurentSeriesRingEquiv`.
-* `LaurentSeries.powerSeriesRingEquiv` is the ring isomorphism between `K⟦X⟧` and the unit ball
-inside the `X`-adic completion of `RatFunc K`.
+* `LaurentSeries.powerSeriesAlgEquiv` is the `K`-algebra isomorphism between `K⟦X⟧`
+and the unit ball inside the `X`-adic completion of `RatFunc K`.
 
 ## Implementation details
 
@@ -77,18 +77,13 @@ that it is complete and contains `RatFunc K` as a dense subspace. The isomorphis
 equivalence, expressing the mathematical idea that the completion "is unique". It is
 `LaurentSeries.comparePkg`.
 * For applications to `K⟦X⟧` it is actually more handy to use the *inverse* of the above
-equivalence: `LaurentSeries.LaurentSeriesRingEquiv` is the *topological, ring equivalence*
-`K⸨X⸩ ≃+* RatFuncAdicCompl K`.
+equivalence: `LaurentSeries.LaurentSeriesAlgEquiv` is the *topological, algebra equivalence*
+`K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K`.
 * In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
 `RatFunc K` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
 that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
 to `K⟦X⟧`.
 
-## To Do
-* The `AdicCompletion` construction is currently done for ideals in rings and does not take into
-account the relation with algebra structures on the ring, hence it does not yield a `K`-algebra
-structure on the `X`-adic completion of `K⸨X⸩`. Once this will be available, we should update
-`LaurentSeries.LaurentSeriesRingEquiv` to an algebra equivalence.
 -/
 universe u
 
@@ -1079,6 +1074,7 @@ theorem algebraMap_apply (a : K) : algebraMap K K⸨X⸩ a = HahnSeries.C a := b
 instance : Algebra K (RatFuncAdicCompl K) :=
   RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
 
+/-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `RatFunc X` -/
 def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
   AlgEquiv.ofRingEquiv (f := LaurentSeriesRingEquiv K)
     (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
@@ -1232,7 +1228,7 @@ instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `RatFunc K`. -/
-abbrev powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (RatFunc K) := by
+def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (RatFunc K) := by
   apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
   intro a
   simp only [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra]
