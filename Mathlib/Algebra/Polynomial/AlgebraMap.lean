@@ -378,18 +378,24 @@ theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2
 theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
     p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
 
-theorem aeval_pi {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
-    (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+section Pi
+
+variable {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable (x : Π i, A i) (p : R[X])
+
+/-- Counterpart of `Polynomial.aeval_prod` for generalized products. -/
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
   (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
     (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
 
-theorem aeval_pi_apply₂ {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
-    (x : Π i, A i) (p : R[X]) (j : I) : p.aeval x j = p.aeval (x j) :=
+theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
   aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
 
-theorem aeval_pi_apply {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
-    (x : Π i, A i) (p : R[X]) : p.aeval x = fun j ↦ p.aeval (x j) :=
+/-- Counterpart of `Polynomial.aeval_prod_apply` for generalized products. -/
+theorem aeval_pi_apply : p.aeval x = fun j ↦ p.aeval (x j) :=
   funext fun j ↦ aeval_pi_apply₂ x p j
+
+end Pi
 
 @[simp]
 theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
