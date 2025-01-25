@@ -24,7 +24,7 @@ noncomputable section
 open Matrix Matrix.SpecialLinearGroup
 open scoped MatrixGroups
 
-/-- The open upper half plane -/
+/-- The open upper half plane, denoted as `ℍ` within the `UpperHalfPlane` namespace -/
 def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
 
