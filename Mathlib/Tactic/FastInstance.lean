@@ -134,7 +134,8 @@ syntax (name := tryFastInstance) "try_fast_instance%" term : term
 @[term_elab tryFastInstance, inherit_doc fastInstance]
 def elabTryFastInstance : TermElab
   | `(term| try_fast_instance%%$tk $arg), expectedType => do
-    let provided ← withSynthesize <| elabTerm arg expectedType
+    let provided ← Term.elabTermEnsuringType arg expectedType
+    Term.synthesizeSyntheticMVarsNoPostponing
     withRef tk do
       try
         makeFastInstance provided
