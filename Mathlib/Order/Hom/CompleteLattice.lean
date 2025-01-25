@@ -36,7 +36,7 @@ be satisfied by itself and all stricter types.
 
 Frame homs are Heyting homs.
 -/
-
+assert_not_exists Monoid
 
 open Function OrderDual Set
 

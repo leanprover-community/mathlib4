@@ -9,6 +9,8 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Artinian rings and modules
@@ -189,8 +191,8 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
     · apply w
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
-  refine ⟨n, fun m p => ?_⟩
-  exact (h m).eq_bot_of_ge (sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p)
+  refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
+  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
 
@@ -354,8 +356,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib.RingTheory.Artinian.Ring`
-assert_not_exists IsLocalization
-assert_not_exists LocalRing
+assert_not_exists IsLocalization LocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
@@ -453,7 +454,7 @@ section CommSemiring
 variable (R : Type*) [CommSemiring R] [IsArtinianRing R]
 
 @[stacks 00J7]
-lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
+lemma setOf_isMaximal_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   set Spec := {I : Ideal R | I.IsMaximal}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := IsArtinian.set_has_minimal
     (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
@@ -463,8 +464,9 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
     inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
   rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
 
-lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
-  (maximal_ideals_finite R).to_subtype
+instance : Finite (MaximalSpectrum R) :=
+  haveI : Finite {I : Ideal R // I.IsMaximal} := (setOf_isMaximal_finite R).to_subtype
+  .of_equiv _ (MaximalSpectrum.equivSubtype _).symm
 
 end CommSemiring
 
@@ -489,30 +491,56 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
+/-- The prime spectrum is in bijection with the maximal spectrum. -/
+@[simps]
+def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
+  toFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mp I.isPrime⟩
+  invFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mpr I.isMaximal⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+lemma primeSpectrumEquivMaximalSpectrum_comp_asIdeal :
+    MaximalSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum =
+      PrimeSpectrum.asIdeal (R := R) := rfl
+
+lemma primeSpectrumEquivMaximalSpectrum_symm_comp_asIdeal :
+    PrimeSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum.symm =
+      MaximalSpectrum.asIdeal (R := R) := rfl
+
+lemma primeSpectrum_asIdeal_range_eq :
+    range PrimeSpectrum.asIdeal = (range <| MaximalSpectrum.asIdeal (R := R)) := by
+  simp only [PrimeSpectrum.range_asIdeal, MaximalSpectrum.range_asIdeal,
+    isPrime_iff_isMaximal]
+
 variable (R)
 
-lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  simpa only [isPrime_iff_isMaximal] using maximal_ideals_finite R
+lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
+  simpa only [isPrime_iff_isMaximal] using setOf_isMaximal_finite R
 
-attribute [local instance] subtype_isMaximal_finite
+instance : Finite (PrimeSpectrum R) :=
+  haveI : Finite {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).to_subtype
+  .of_equiv _ (PrimeSpectrum.equivSubtype _).symm
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
 @[local instance] noncomputable def fieldOfSubtypeIsMaximal
-    (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.1) :=
-  have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
+    (I : MaximalSpectrum R) : Field (R ⧸ I.asIdeal) :=
+  Ideal.Quotient.field I.asIdeal
 
 /-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
 noncomputable def quotNilradicalEquivPi :
-    R ⧸ nilradical R ≃+* ∀ I : {I : Ideal R | I.IsMaximal}, R ⧸ I.1 :=
-  .trans (Ideal.quotEquivOfEq <| ext fun x ↦ by simp_rw [mem_nilradical,
-    nilpotent_iff_mem_prime, Submodule.mem_iInf, Subtype.forall, isPrime_iff_isMaximal, mem_setOf])
-  (Ideal.quotientInfRingEquivPiQuotient _ fun I J h ↦
-    Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| by rwa [Ne, Subtype.coe_inj])
+    R ⧸ nilradical R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
+  let f := MaximalSpectrum.asIdeal (R := R)
+  .trans
+    (Ideal.quotEquivOfEq <| ext fun x ↦ by
+      rw [PrimeSpectrum.nilradical_eq_iInf, iInf, primeSpectrum_asIdeal_range_eq]; rfl)
+    (Ideal.quotientInfRingEquivPiQuotient f <| fun I J h ↦
+      Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <|
+      fun hIJ ↦ h <| MaximalSpectrum.ext hIJ)
 
 /-- A reduced commutative artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
-noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : {I : Ideal R | I.IsMaximal}, R ⧸ I.1 :=
+noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   .trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 

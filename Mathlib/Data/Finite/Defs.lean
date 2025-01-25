@@ -58,9 +58,7 @@ instances since they do not compute anything.
 finite, fintype, finite sets
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists OrderedRing
+assert_not_exists Finset MonoidWithZero OrderedRing
 
 universe u v
 

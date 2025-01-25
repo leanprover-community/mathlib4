@@ -211,7 +211,7 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
     congr 2
     apply this <;> simp
   rintro U V rfl rfl
-  have := ConcreteCategory.mono_of_injective (C := CommRingCat) _ HU
+  have := ConcreteCategory.mono_of_injective _ HU
   rw [← cancel_mono (X.presheaf.germ U x hxU)]
   simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.stalkMap_germ, H]
   simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ]
