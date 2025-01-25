@@ -127,6 +127,7 @@ lemma finitePresentation_of_isFinite [P.IsFinite] :
   FinitePresentation.equiv (P.quotientEquiv.restrictScalars R)
 
 variable (R S) in
+/-- An arbitrary choice of a finite presentation of a finitely presented algebra. -/
 noncomputable
 def ofFinitePresentation [FinitePresentation R S] : Presentation.{0, 0} R S :=
   letI H := FinitePresentation.out (R := R) (A := S)
