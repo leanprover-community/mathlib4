@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains

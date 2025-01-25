@@ -31,6 +31,7 @@ open scoped Interval
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+/-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a w.r.t. the Lebesgue measure. -/
 notation3 "⨍ "(...)" in "a".."b",
   "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
 

@@ -20,11 +20,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists Set.indicator
+assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
