@@ -868,8 +868,8 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
     (M ↾ R).closure X = M.closure X ∩ R := by
   rw [restrict_closure_eq', diff_eq_empty.mpr hR, union_empty, inter_eq_self_of_subset_left hXR]
 
-@[simp] lemma emptyOn_closure_eq (X : Set α) : (emptyOn α).closure X = ∅ := by
-  rw [← subset_empty_iff, ← emptyOn_ground]; apply closure_subset_ground
+@[simp] lemma emptyOn_closure_eq (X : Set α) : (emptyOn α).closure X = ∅ :=
+  (closure_subset_ground ..).antisymm <| empty_subset _
 
 @[simp] lemma loopyOn_closure_eq (E X : Set α) : (loopyOn E).closure X = E := by
   simp [loopyOn, restrict_closure_eq']
@@ -878,9 +878,8 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
   rw [spanning_iff, loopyOn_closure_eq, loopyOn_ground, and_iff_right rfl]
 
 @[simp] lemma freeOn_closure_eq (E X : Set α) : (freeOn E).closure X = X ∩ E := by
-  rw [← closure_inter_ground, freeOn_ground]
-  simp (config := {contextual := true}) [Set.ext_iff, insert_subset_iff, freeOn_indep_iff,
-    and_comm, Indep.mem_closure_iff' (M := freeOn E) (I := X ∩ E) (by simp)]
+  simp (config := {contextual := true}) [← closure_inter_ground _ X, Set.ext_iff, and_comm,
+    insert_subset_iff, freeOn_indep_iff, (freeOn_indep inter_subset_right).mem_closure_iff']
 
 @[simp] lemma uniqueBaseOn_closure_eq (I E X : Set α) :
     (uniqueBaseOn I E).closure X = (X ∩ I ∩ E) ∪ (E \ I) := by
