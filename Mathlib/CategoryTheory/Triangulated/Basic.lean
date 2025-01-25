@@ -95,8 +95,7 @@ In other words, we have a commutative diagram:
      f'     g'     h'
 ```
 -/
-@[stacks 0144]
-@[ext]
+@[ext, stacks 0144]
 structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the first morphism in a triangle morphism -/
   hom₁ : T₁.obj₁ ⟶ T₂.obj₁
