@@ -1326,7 +1326,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 end subtypeRestr
 
 variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
-    [Nonempty X] {f : X → X'}
+    [hX : Inhabited X] {f : X → X'}
 
 /-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding `ι : X → X'`.
 On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary (and uninteresting).
@@ -1334,9 +1334,7 @@ On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary 
 noncomputable def lift_openEmbedding
     (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     PartialHomeomorph X' Z where
-  toFun := by
-    inhabit X; --letI foo e
-    exact extend f e (fun _ ↦ e inhabited_h.default)--(Classical.arbitrary (α := X' → Z))
+  toFun := extend f e (fun _ ↦ e hX.default)
   invFun := f ∘ e.invFun
   source := f '' e.source
   target := e.target
@@ -1354,8 +1352,7 @@ noncomputable def lift_openEmbedding
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by
-    inhabit X
-    set F := (extend f (↑e) (fun _ ↦ e inhabited_h.default)) with F_eq
+    set F := (extend f e (fun _ ↦ e hX.default)) with F_eq
     have heq : EqOn F (e ∘ (hf.toPartialHomeomorph).symm) (f '' e.source) := by
       intro x ⟨x₀, hx₀, hxx₀⟩
       rw [← hxx₀, F_eq, hf.injective.extend_apply e, comp_apply, hf.toPartialHomeomorph_left_inv]
@@ -1366,13 +1363,12 @@ noncomputable def lift_openEmbedding
       have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) := by
         apply (hf.toPartialHomeomorph).continuousOn_invFun
       apply this.mono; gcongr; exact fun ⦃a⦄ a ↦ trivial
-    dsimp
-    apply ContinuousOn.congr --this heq
+    apply ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
 @[simp]
 lemma lift_openEmbedding_toFun (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
-    (e.lift_openEmbedding hf) = extend f e (Classical.arbitrary (α := (X' → Z))) := rfl
+    (e.lift_openEmbedding hf) = extend f e (fun _ ↦ e hX.default) := rfl
 
 lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) {x : X} :
     (lift_openEmbedding e hf) (f x) = e x := by
