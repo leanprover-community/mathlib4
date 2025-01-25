@@ -7,6 +7,7 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Analysis.LocallyConvex.Polar
+import Mathlib.Analysis.Convex.Exposed
 
 /-!
 # Prime map
@@ -43,12 +44,25 @@ def prime : Set E := {x₀ | x₀ ∈ C ∧ ∀ x₁ ∈ C, ∀ y ∈ t, B x₁ 
 
 /-- A set `B` is semi-exposed with respect to `A` iff it maximizes some functional over `A`
 (and contains all points maximizing it). Written `IsSemiExposed 𝕜 s C`. -/
-def IsSemiExposed (s C : Set E) : Prop :=
+def IsSemiExposed (s : Set E) : Prop :=
   ∃ t : Set F, s = B.prime C t
+
+
 
 end LinearMap
 
 end PreorderSemiring
+
+section
+
+variable [Preorder 𝕜] [CommSemiring 𝕜]
+
+variable [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+lemma IsExposed.isSemiExposed (s : Set E) (h : IsExposed (E := WeakBilin (dualPairing 𝕜 E)) C s) : IsSemiExposed C s := sorry
+
+end
 
 
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
