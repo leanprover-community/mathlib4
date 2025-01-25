@@ -50,15 +50,17 @@ namespace Representation
 
 section trivial
 
-variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
 def trivial : Representation k G V :=
   1
 
--- Porting note: why is `V` implicit
-theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
+variable {G V}
+
+@[simp]
+theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
 variable {k}
