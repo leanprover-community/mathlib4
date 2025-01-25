@@ -120,36 +120,10 @@ lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
     [CommRing A] [CommRing B] [Algebra R S] [Algebra S B] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B] :
     IsPushout (ofHom (algebraMap R S)) (ofHom (algebraMap R A))
-      (ofHom (algebraMap S B)) (ofHom (algebraMap A B)) := by
-  refine ⟨⟨?_⟩, ⟨Limits.PushoutCocone.IsColimit.mk _ ?_ ?_ ?_ ?_⟩⟩
-  · ext1; exact (IsScalarTower.algebraMap_eq R S B).symm.trans (IsScalarTower.algebraMap_eq R A B)
-  · intro s
-    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
-    refine ofHom <| (Algebra.pushoutDesc (R := R) (S := S) (R' := A) B
-      ⟨s.inl.1, ?_⟩ ⟨s.inr.1, ?_⟩ ?_).toRingHom
-    · simp [RingHom.algebraMap_toAlgebra]
-    · simpa [RingHom.algebraMap_toAlgebra] using fun x ↦ congr(($s.condition.symm).hom x)
-    · exact fun _ _ ↦ Commute.all _ _
-  · intro s
-    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
-    ext x
-    dsimp
-    refine Algebra.pushoutDesc_left ..
-  · intro s
-    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
-    ext x
-    dsimp
-    exact Algebra.pushoutDesc_right (H := ?_) ..
-  · intro s m e₁ e₂
-    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
-    let m' : B →ₐ[R] s.pt := ⟨m.1, fun r ↦
-      by simpa [ofHom, ← IsScalarTower.algebraMap_apply] using congr($e₁ (algebraMap R S r))⟩
-    ext1
-    show m'.toRingHom = _
-    congr 1
-    apply Algebra.IsPushout.algHom_ext (S := S) (R' := A)
-    · ext x; simpa using congr($e₂ x)
-    · ext x; simpa using congr($e₁ x)
+      (ofHom (algebraMap S B)) (ofHom (algebraMap A B)) :=
+  (isPushout_tensorProduct R S A).of_iso (Iso.refl _) (Iso.refl _) (Iso.refl _)
+  (Algebra.IsPushout.equiv R S A B).toCommRingCatIso (by simp) (by simp)
+  (by ext; simp [Algebra.IsPushout.equiv_tmul]) (by ext; simp [Algebra.IsPushout.equiv_tmul])
 
 end Pushout
 
