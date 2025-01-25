@@ -129,4 +129,27 @@ def elabFastInstance : TermElab
         return provided
   | _, _ => Elab.throwUnsupportedSyntax
 
+open Lean Elab Parser Command
+
+def «betterInstance»       := leading_parser
+  Term.attrKind >> "instance" >> optNamedPrio >>
+  optional (ppSpace >> declId) >> ppIndent declSig >> declVal
+
+@[command_parser] def betterInstanceDecl := leading_parser
+  declModifiers false >> «betterInstance»
+
+@[command_elab betterInstanceDecl]
+def elabBetterInstance : Lean.Elab.Command.CommandElab
+  | .node i1 ``betterInstanceDecl #[modifiers,
+      .node i2 ``«betterInstance» args] => do
+    let mut args := args
+    if let .node i3 ``declValSimple dargs := args[5]! then
+      args := args.set! 5 (.node i3 ``declValSimple <| ← dargs.modifyM 1 fun arg =>
+        `(fast_instance% $(⟨arg⟩)))
+
+    elabCommand <|
+      .node i1 ``declaration #[modifiers,
+        .node i2 ``«instance» args]
+  | _ => throwUnsupportedSyntax
+
 end Mathlib.Elab.FastInstance
