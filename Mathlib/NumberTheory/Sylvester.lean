@@ -112,33 +112,33 @@ private noncomputable def sylvesterBelow (n : ℕ) : ℝ :=
 private noncomputable def sylvesterAbove (n : ℕ) : ℝ :=
   (sylvester n + 2⁻¹) ^ (((2 : ℝ) ^ (n + 1))⁻¹)
 
-private theorem rsylvester_gt_one (n : ℕ) : (1 : ℝ) < sylvester n :=
-  Nat.one_lt_cast.mpr <| sylvester_ge_two n
+private theorem cast_one_le_sylvester (n : ℕ) : (1 : ℝ) < sylvester n :=
+  Nat.one_lt_cast.mpr <| two_le_sylvester n
 
 private theorem sylvesterBelow_pos (n : ℕ) : 0 < sylvesterBelow n :=
-  Real.rpow_pos_of_pos (by linarith [rsylvester_gt_one n]) _
+  Real.rpow_pos_of_pos (by linarith [cast_one_le_sylvester n]) _
 
 private theorem sylvesterBelow_monotone : Monotone sylvesterBelow := by
   refine monotone_nat_of_le_succ <| fun m ↦ ?_
-  let ha := rsylvester_gt_one m
-  let hb := rsylvester_gt_one (m + 1)
+  let ha := cast_one_le_sylvester m
+  let hb := cast_one_le_sylvester (m + 1)
   dsimp only [sylvesterBelow]
   refine (Real.rpow_le_rpow_iff ?_ ?_ ((by positivity) : 0 < (2 : ℝ) ^ (m + 2))).mp ?_
   any_goals exact Real.rpow_nonneg (by linarith) _
   rw [← Real.rpow_mul, ← Real.rpow_mul, inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀,
     ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvester, cast_add, cast_mul,
-    cast_pred (by linarith [sylvester_ge_two m]), Real.rpow_two] <;> linarith
+    cast_pred (by linarith [two_le_sylvester m]), Real.rpow_two] <;> linarith
 
 private theorem sylvesterAbove_strictAnti : StrictAnti sylvesterAbove := by
   refine strictAnti_nat_of_succ_lt <| fun m ↦ ?_
-  let ha := rsylvester_gt_one m
-  let hb := rsylvester_gt_one (m + 1)
+  let ha := cast_one_le_sylvester m
+  let hb := cast_one_le_sylvester (m + 1)
   simp only [sylvesterAbove]
   refine (Real.rpow_lt_rpow_iff ?_ ?_ ((by positivity) : 0 < (2 : ℝ) ^ (m + 2))).mp ?_
   any_goals exact Real.rpow_nonneg (by linarith) _
   rw [← Real.rpow_mul, ← Real.rpow_mul, inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀,
     ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvester, cast_add, cast_mul,
-    cast_pred (by linarith [sylvester_ge_two m]), Real.rpow_two] <;> linarith
+    cast_pred (by linarith [two_le_sylvester m]), Real.rpow_two] <;> linarith
 
 private theorem sylvesterBelow_le_sylvesterAbove (n m : ℕ) :
     sylvesterBelow n ≤ sylvesterAbove m := by
@@ -146,7 +146,7 @@ private theorem sylvesterBelow_le_sylvesterAbove (n m : ℕ) :
   · exact sylvesterBelow_monotone <| Nat.le_max_left n m
   · trans sylvesterAbove (n ⊔ m)
     · rw [sylvesterBelow, sylvesterAbove]
-      gcongr <;> linarith [rsylvester_gt_one (n ⊔ m)]
+      gcongr <;> linarith [cast_one_le_sylvester (n ⊔ m)]
     · exact StrictAnti.antitone sylvesterAbove_strictAnti <| Nat.le_max_right n m
 
 /--
@@ -172,7 +172,7 @@ private theorem sylvester_le_const_pow {n : ℕ} :
     sylvester n ≤ sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 := by
   suffices h : sylvesterBelow n ≤ sylvesterConstant by
     rw [← tsub_le_iff_right, one_div]
-    exact_mod_cast (Real.rpow_inv_le_iff_of_pos (by linarith [rsylvester_gt_one n])
+    exact_mod_cast (Real.rpow_inv_le_iff_of_pos (by linarith [cast_one_le_sylvester n])
       (by linarith [sylvesterConstant_pos]) (by positivity)).mp h
   exact le_ciSup sylvesterBelow_bddAbove _
 
