@@ -8,20 +8,26 @@ import Mathlib.Order.CompleteSublattice
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`
 
-This file defines a `SetLike` instance for elements of `CompleteSublattice (Set X)`, but does not
-register it for typeclass inference to avoid conflicts.
+This file provides lemmas for the `SetLike` instance for elements of `CompleteSublattice (Set X)`
 -/
+
+attribute [local instance] SetLike.instSubtypeSet
+
+namespace Sublattice
+
+variable {X : Type*} {L : Sublattice (Set X)}
+
+variable {S T : L} {x : X}
+
+@[simp] theorem mem_inf : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by simp [← mem_subtype]
+@[simp] theorem mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
+
+@[simp] lemma mem_coe : x ∈ T.val ↔ x ∈ T := Iff.rfl
+@[simp] lemma mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := Iff.rfl
 
 namespace CompleteSublattice
 
 variable {X : Type*} {L : CompleteSublattice (Set X)}
-
-/-- membership is inherited from `Set X` -/
-@[simps] def setLikeCompleteSublattice : SetLike L X where
-  coe T := T
-  coe_injective' := Subtype.val_injective
-
-attribute [local instance] setLikeCompleteSublattice
 
 variable {S T : L} {𝒮 : Set L} {I : Sort*} {f : I → L} {x : X}
 
@@ -31,12 +37,10 @@ variable {S T : L} {𝒮 : Set L} {I : Sort*} {f : I → L} {x : X}
 
 @[simp] theorem mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← mem_subtype]
-@[simp] theorem mem_inf : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_top : x ∈ (⊤ : L) := by simp [← mem_subtype]
 
 @[simp] theorem mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
-@[simp] theorem mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
 @[simp] theorem mem_bot : ¬ x ∈ (⊥ : L) := by simp [← mem_subtype]
 
 @[simp] lemma mem_coe : x ∈ T.val ↔ x ∈ T := Iff.rfl
