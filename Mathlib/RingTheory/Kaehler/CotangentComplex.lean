@@ -445,8 +445,7 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄
   have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ _
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
-  refine Submodule.FG.map P.toExtension.cotangentComplex ?_
-  exact (Extension.Cotangent.finite P.ideal_fg_of_isFinite).1
+  exact (Extension.Cotangent.finite P.ideal_fg_of_isFinite).1.map P.toExtension.cotangentComplex
 
 variable {P : Generators R S}
 
