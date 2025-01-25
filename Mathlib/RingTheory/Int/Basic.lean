@@ -30,30 +30,20 @@ unique factors
 namespace Int
 
 
-theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b := by
-  constructor
-  · intro hg
-    obtain ⟨ua, -, ha⟩ := exists_unit_of_abs a
-    obtain ⟨ub, -, hb⟩ := exists_unit_of_abs b
-    use Nat.gcdA (Int.natAbs a) (Int.natAbs b) * ua, Nat.gcdB (Int.natAbs a) (Int.natAbs b) * ub
-    rw [mul_assoc, ← ha, mul_assoc, ← hb, mul_comm, mul_comm _ (Int.natAbs b : ℤ), ←
-      Nat.gcd_eq_gcd_ab, ← gcd_eq_natAbs, hg, Int.ofNat_one]
-  · rintro ⟨r, s, h⟩
-    by_contra hg
-    obtain ⟨p, ⟨hp, ha, hb⟩⟩ := Nat.Prime.not_coprime_iff_dvd.mp hg
-    apply Nat.Prime.not_dvd_one hp
-    rw [← natCast_dvd_natCast, Int.ofNat_one, ← h]
-    exact dvd_add ((natCast_dvd.mpr ha).mul_left _) ((natCast_dvd.mpr hb).mul_left _)
+@[deprecated "use `isCoprime_iff_gcd_eq_one.symm` instead" (since := "2025-01-23")]
+theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :=
+  isCoprime_iff_gcd_eq_one.symm
+
 
 theorem isCoprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.natAbs b.natAbs := by
-  rw [← gcd_eq_one_iff_coprime, Nat.coprime_iff_gcd_eq_one, gcd_eq_natAbs]
+  rw [isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, gcd_eq_natAbs]
 
 @[deprecated (since := "2025-01-23")] alias coprime_iff_nat_coprime := isCoprime_iff_nat_coprime
 
 /-- If `gcd a (m * n) ≠ 1`, then `gcd a m ≠ 1` or `gcd a n ≠ 1`. -/
 theorem gcd_ne_one_iff_gcd_mul_right_ne_one {a : ℤ} {m n : ℕ} :
     a.gcd (m * n) ≠ 1 ↔ a.gcd m ≠ 1 ∨ a.gcd n ≠ 1 := by
-  simp only [gcd_eq_one_iff_coprime, ← not_and_or, not_iff_not, IsCoprime.mul_right_iff]
+  simp only [← isCoprime_iff_gcd_eq_one, ← not_and_or, not_iff_not, IsCoprime.mul_right_iff]
 
 theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 := by
@@ -69,7 +59,7 @@ theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 
 
 theorem sq_of_isCoprime {a b c : ℤ} (h : IsCoprime a b) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 :=
-  sq_of_gcd_eq_one (gcd_eq_one_iff_coprime.mpr h) heq
+  sq_of_gcd_eq_one (isCoprime_iff_gcd_eq_one.mp h) heq
 
 @[deprecated (since := "2025-01-23")] alias sq_of_coprime := sq_of_isCoprime
 
