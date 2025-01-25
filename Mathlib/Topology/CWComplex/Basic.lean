@@ -39,6 +39,8 @@ together.
   If that is not the case, you need to consider that union as a subspace of itself.
 * The definition `RelCWComplex` does not require `X` to be a Hausdorff space.
   A lot of the lemmas will however require this property.
+* This definition is a class to ease working with different constructions and their properties.
+  Overall this means the being a CW complex is treated more like a property than data.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the
   one about `skeletonLT`.
@@ -53,7 +55,7 @@ open Metric Set
 
 namespace Topology
 
-/-- A CW-complex of a topological space `X` relative to another subspace `D` is the data of its
+/-- A CW complex of a topological space `X` relative to another subspace `D` is the data of its
 *`n`-cells* `cell n i` for each `n : ℕ`  along with *attaching maps* that satisfy a number of
 properties with the most important being closure-finiteness (`mapsto`) and weak topology
 (`closed'`). Note that this definition requires `C` and `D` to be closed subspaces.
