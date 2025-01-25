@@ -128,8 +128,7 @@ lemma coprod_inl_leftDistrib_hom {X Y Z : C} :
 
 @[reassoc (attr := simp)]
 lemma coprod_inr_leftDistrib_hom {X Y Z : C} :
-  coprod.inr ≫ (∂L X Y Z).hom = (X ◁ coprod.inr) :=
-by
+    coprod.inr ≫ (∂L X Y Z).hom = X ◁ coprod.inr := by
   rw [leftDistrib_hom, coprod.inr_desc]
 
 /-- The composite of `(X ◁ coprod.inl) : X ⊗ Y ⟶ X ⊗ (Y ⨿ Z)` and
