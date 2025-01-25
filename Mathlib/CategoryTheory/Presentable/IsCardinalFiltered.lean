@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Presentable.ParallelMaps
 import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
@@ -16,7 +16,7 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 If `κ` is a regular cardinal, we introduce the notion of `κ`-filtered
 category `J`: it means that any functor `A ⥤ J` from a small category such
 that `Arrow A` is of cardinality `< κ` admits a cocone.
-This notion generalizes the notion of filtered category.
+This generalizes the notion of filtered category.
 Indeed, we obtain the equivalence `IsCardinalFiltered J ℵ₀ ↔ IsFiltered J`.
 The API is mostly parallel to that of filtered categories.
 
@@ -41,6 +41,12 @@ class IsCardinalFiltered (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   nonempty_cocone {A : Type w} [SmallCategory A] (F : A ⥤ J)
     (hA : HasCardinalLT (Arrow A) κ) : Nonempty (Cocone F)
+
+lemma hasCardinalLT_arrow_walkingParallelFamily {T : Type u}
+    {κ : Cardinal.{w}} (hT : HasCardinalLT T κ) (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Arrow (WalkingParallelFamily T)) κ := by
+  simpa only [hasCardinalLT_iff_of_equiv (WalkingParallelFamily.arrowEquiv T),
+    hasCardinalLT_option_iff _ _ hκ] using hT
 
 namespace IsCardinalFiltered
 
@@ -95,26 +101,27 @@ variable {K : Type v'} {j j' : J} (f : K → (j ⟶ j')) (hK : HasCardinalLT K �
 with `HasCardinalLT K κ`, this is an object of `J` where these morphisms
 shall be equalized. -/
 noncomputable def coeq : J :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).pt
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).pt
 
 /-- Given a family of maps `f : K → (j ⟶ j')` in a `κ`-filtered category `J`,
 with `HasCardinalLT K κ`, and `k : K`, this is a choice of morphism `j' ⟶ coeq f hK`. -/
 noncomputable def coeqHom : j' ⟶ coeq f hK :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).ι.app .one
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).ι.app .one
 
 /-- Given a family of maps `f : K → (j ⟶ j')` in a `κ`-filtered category `J`,
 with `HasCardinalLT K κ`, this is a morphism `j ⟶ coeq f hK` which is equal
 to all compositions `f k ≫ coeqHom f hK` for `k : K`. -/
 noncomputable def toCoeq : j ⟶ coeq f hK :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).ι.app .zero
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).ι.app .zero
 
 @[reassoc]
 lemma coeq_condition (k : K) : f k ≫ coeqHom f hK = toCoeq f hK :=
-  (cocone (ParallelMaps.mkFunctor f)
-    (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).w (ParallelMaps.Hom.map k)
+  (cocone (parallelFamily f)
+    (hasCardinalLT_arrow_walkingParallelFamily hK hκ.out.aleph0_le)).w
+    (.line k)
 
 end coeq
 
@@ -122,7 +129,7 @@ end IsCardinalFiltered
 
 open IsCardinalFiltered in
 lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
-    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]:
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     IsFiltered J := by
   rw [IsFiltered.iff_cocone_nonempty.{w}]
   intro A _ _ F
@@ -132,8 +139,7 @@ lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
-instance : Fact Cardinal.aleph0.IsRegular where
-  out := Cardinal.isRegular_aleph0
+attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by

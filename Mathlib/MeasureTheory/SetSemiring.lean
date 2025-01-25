@@ -321,16 +321,25 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     refine hC.inter_mem hs.1 ?_
     exact h (fun n hnS ↦ hs.2 n hnS)
 
-lemma partialSups_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    partialSups s n ∈ C := by
-  rw [partialSups_eq_biUnion_range]
-  exact hC.biUnion_mem _ (fun n _ ↦ hs n)
+lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
+    (hs : ∀ i ∈ t, s i ∈ C) :
+    t.sup s ∈ C := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => exact hC.empty_mem
+  | @insert m t hm ih =>
+    simpa only [sup_insert] using
+      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
 
-lemma disjointed_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    disjointed s n ∈ C := by
-  cases n with
-  | zero => exact hs 0
-  | succ n => exact hC.diff_mem (hs n.succ) (hC.partialSups_mem hs n)
+lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
+    partialSups s n ∈ C := by
+  simpa only [partialSups_apply, sup'_eq_sup] using hC.finsetSup_mem (fun i hi ↦ hs i)
+
+lemma disjointed_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ j, s j ∈ C) (i : ι) :
+    disjointed s i ∈ C :=
+  disjointedRec (fun _ j ht ↦ hC.diff_mem ht <| hs j) (hs i)
 
 end IsSetRing
 

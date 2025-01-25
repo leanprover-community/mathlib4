@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Types
@@ -107,8 +106,12 @@ section
 
 variable (F G : C ⥤ D) (e : F ≅ G) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
-/-- A functor is `κ`-accessible (with `κ` a regular cardinal)
-if it preserves colimits of shape `J` where `J` is any `κ`-filtered category. -/
+/-- A functor `F : C ⥤ D` is `κ`-accessible (with `κ` a regular cardinal)
+if it preserves colimits of shape `J` where `J` is any `κ`-filtered category.
+In the mathematical literature, some assumptions are often made on the
+categories `C` or `D` (e.g. the existence of `κ`-filtered colimits,
+see `HasCardinalFilteredColimits` below), but here we do not
+make such assumptions. -/
 class IsCardinalAccessible : Prop where
   preservesColimitOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J F
@@ -136,8 +139,8 @@ lemma isCardinalAccessible_of_le
 
 include e in
 variable {F G} in
-lemma isCardinalAccessible_of_iso [F.IsCardinalAccessible κ] : G.IsCardinalAccessible κ where
-  preservesColimitOfShape J _ hκ  := by
+lemma isCardinalAccessible_of_natIso [F.IsCardinalAccessible κ] : G.IsCardinalAccessible κ where
+  preservesColimitOfShape J _ hκ := by
     have := F.preservesColimitsOfShape_of_isCardinalAccessible κ J
     exact preservesColimitsOfShape_of_natIso e
 
@@ -172,7 +175,7 @@ lemma isCardinalPresentable_of_le [IsCardinalPresentable X κ]
 include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
-  Functor.isCardinalAccessible_of_iso (coyoneda.mapIso e.symm.op) κ
+  Functor.isCardinalAccessible_of_natIso (coyoneda.mapIso e.symm.op) κ
 
 section
 
@@ -222,8 +225,10 @@ section
 
 variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
+/-- A category has `κ`-filtered colimits if it has colimits of shape `J`
+for any `κ`-filtered category `J`. -/
 class HasCardinalFilteredColimits : Prop where
-  hasColimitsOfShape (J : Type w) [Category.{w} J] [IsCardinalFiltered J κ] :
+  hasColimitsOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
 attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
