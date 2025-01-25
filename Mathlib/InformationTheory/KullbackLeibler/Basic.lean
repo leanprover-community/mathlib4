@@ -30,11 +30,11 @@ open Classical in
 /-- Kullback-Leibler divergence between two measures. -/
 noncomputable def kl (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
-    then ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν .univ).toReal - (μ .univ).toReal)
+    then ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal)
     else ∞
 
 lemma kl_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
-    kl μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν .univ).toReal - (μ .univ).toReal) :=
+    kl μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal) :=
   if_pos ⟨h1, h2⟩
 
 @[simp]
@@ -46,7 +46,7 @@ lemma kl_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : kl μ ν = ∞ :
 
 lemma toReal_kl [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
     (h_int : Integrable (llr μ ν) μ) :
-    (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ + (ν .univ).toReal - (μ .univ).toReal := by
+    (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ + (ν univ).toReal - (μ univ).toReal := by
   rw [kl_of_ac_of_integrable h h_int, ENNReal.toReal_ofReal]
   exact integral_llr_add_sub_measure_univ_nonneg h h_int
 
@@ -69,7 +69,7 @@ lemma kl_self (μ : Measure α) [SigmaFinite μ] : kl μ μ = 0 := by
     exact ⟨Measure.AbsolutelyContinuous.rfl, integrable_zero _ _ μ⟩
 
 @[simp]
-lemma kl_zero_left [IsFiniteMeasure ν] : kl 0 ν = ν .univ := by
+lemma kl_zero_left [IsFiniteMeasure ν] : kl 0 ν = ν univ := by
   convert kl_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
   simp [integral_zero_measure, EReal.coe_zero]
 
@@ -125,13 +125,13 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   rw [integral_eq_zero_iff_of_nonneg] at h'
   rotate_left
   · exact fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
-  · rwa [integrable_klFun_iff hμν]
+  · rwa [integrable_klFun_rnDeriv_iff hμν]
   refine (Measure.rnDeriv_eq_one_iff_eq hμν).mp ?_
   filter_upwards [h'] with x hx
   rwa [Pi.zero_apply, klFun_eq_zero_iff ENNReal.toReal_nonneg, ENNReal.toReal_eq_one_iff] at hx
 
--- /-- **Gibbs' inequality**: the Kullback-Leibler divergence between two probability distributions is
--- nonnegative.
+-- /-- **Gibbs' inequality**: the Kullback-Leibler divergence between two probability distributions
+-- is nonnegative.
 -- Our definition of `kl` is nonnegative since it has type `ℝ≥0∞`. -/
 -- lemma kl_nonneg (μ ν : Measure α) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
 --     0 ≤ kl μ ν := kl_nonneg' μ ν (by simp)

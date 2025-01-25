@@ -9,11 +9,14 @@ import Mathlib.Analysis.Convex.Deriv
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!
-# Kullback-Leibler divergence
+# The real function `fun x ↦ x * log x + 1 - x`
+
+We define `klFun x = x * log x + 1 - x`. That function is notable because the Kullback-Leibler
+divergence is an f-divergence for `klFun`
 
 ## Main definitions
 
-* `FooBar`
+* `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
 
 ## Main statements
 
@@ -28,6 +31,8 @@ open scoped ENNReal NNReal Topology BigOperators
 namespace ProbabilityTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {x : ℝ}
+
+section IntegralRNDeriv
 
 lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν] {f : ℝ → ℝ}
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
@@ -88,18 +93,13 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν] {f
       ENNReal.toReal_inv, μ']
   · simp [ENNReal.toReal_pos_iff, hν]
 
+end IntegralRNDeriv
+
 section MulLog
 
-lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν
-      ↔ Integrable (llr μ ν) μ :=
-  integrable_rnDeriv_smul_iff hμν
-
-lemma integral_rnDeriv_mul_log [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    ∫ a, (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal ∂ν = ∫ a, llr μ ν a ∂μ := by
-  simp_rw [← smul_eq_mul]
-  rw [integral_rnDeriv_smul hμν]
-  rfl
+/-!
+### Properties of `x : ℝ ↦ x * log x`
+-/
 
 @[simp]
 lemma rightDeriv_mul_log (hx : x ≠ 0) : derivWithin (fun x ↦ x * log x) (Ioi x) x = log x + 1 :=
@@ -117,26 +117,45 @@ lemma tendsto_rightDeriv_mul_log_atTop :
   rw [EventuallyEq, eventually_atTop]
   exact ⟨1, fun _ hx ↦ rightDeriv_mul_log (zero_lt_one.trans_le hx).ne'⟩
 
-/-- The Kullback-Leibler divergence is an f-divergence for this function. -/
+lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν
+      ↔ Integrable (llr μ ν) μ :=
+  integrable_rnDeriv_smul_iff hμν
+
+lemma integral_rnDeriv_mul_log [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    ∫ a, (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal ∂ν = ∫ a, llr μ ν a ∂μ := by
+  simp_rw [← smul_eq_mul]
+  rw [integral_rnDeriv_smul hμν]
+  rfl
+
+end MulLog
+
+/-- The function `x : ℝ ↦ x * log x + 1 - x`.
+The Kullback-Leibler divergence is an f-divergence for this function. -/
 noncomputable abbrev klFun (x : ℝ) : ℝ := x * log x + 1 - x
 
 lemma klFun_one : klFun 1 = 0 := by simp
 
+/-- `klFun` is strictly convex on [0,∞). -/
 lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun := by
   unfold klFun
   simp_rw [add_sub_assoc]
   refine strictConvexOn_mul_log.add_convexOn ?_
   exact (convexOn_const _ (convex_Ici _)).sub (concaveOn_id (convex_Ici _))
 
+/-- `klFun` is convex on [0,∞). -/
 lemma convexOn_klFun : ConvexOn ℝ (Ici 0) klFun := strictConvexOn_klFun.convexOn
 
+/-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
   convert ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
   ring
 
+/-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 @[simp]
 lemma deriv_klFun (hx : x ≠ 0) : deriv klFun x = log x := (hasDerivAt_klFun hx).deriv
 
+/-- The right derivative of `klFun` at `x ≠ 0` is `log x`. -/
 @[simp]
 lemma rightDeriv_klFun (hx : x ≠ 0) : derivWithin klFun (Ioi x) x = log x :=
   (hasDerivAt_klFun hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
@@ -172,9 +191,12 @@ lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
   · exact fun _ s ↦ s
   · exact tendsto_log_atTop.atTop_add tendsto_const_nhds
 
+@[continuity, fun_prop]
 lemma continuous_klFun : Continuous klFun := by fun_prop
 
-lemma integrable_klFun_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+/-- For two measures `μ ≪ ν`, the function `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable
+with respect to `ν` iff `llr μ ν` is integrable with respect to `μ`. -/
+lemma integrable_klFun_rnDeriv_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
     Integrable (fun x ↦ klFun (μ.rnDeriv ν x).toReal) ν ↔ Integrable (llr μ ν) μ := by
   suffices Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal
       + (1 - (μ.rnDeriv ν x).toReal)) ν ↔ Integrable (llr μ ν) μ by
@@ -183,8 +205,6 @@ lemma integrable_klFun_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ
   rw [integrable_add_iff_integrable_left']
   · rw [integrable_rnDeriv_mul_log_iff hμν]
   · exact (integrable_const _).sub Measure.integrable_toReal_rnDeriv
-
-end MulLog
 
 lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
@@ -199,6 +219,8 @@ lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   · refine Integrable.add ?_ (integrable_const _)
     rwa [integrable_rnDeriv_mul_log_iff hμν]
   · exact Measure.integrable_toReal_rnDeriv
+
+section IntegralInequalities
 
 lemma integral_llr_add_sub_measure_univ_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
@@ -249,5 +271,7 @@ lemma kl_ge_mul_log' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     simp [ENNReal.toReal_eq_zero_iff, hν]
   · exact Continuous.continuousOn (by fun_prop)
   · rwa [integrable_rnDeriv_mul_log_iff hμν]
+
+end IntegralInequalities
 
 end ProbabilityTheory
