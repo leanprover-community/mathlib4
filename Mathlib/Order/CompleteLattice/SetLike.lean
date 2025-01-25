@@ -19,7 +19,7 @@ variable {X : Type*} {L : Sublattice (Set X)}
 
 variable {S T : L} {x : X}
 
-@[ext] theorem ext (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T := SetLike.coe_injective <| Set.ext h
+@[ext] theorem ext_mem (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T := SetLike.coe_injective <| Set.ext h
 
 theorem mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 
@@ -28,6 +28,8 @@ theorem mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 
 @[simp] lemma setLike_mem_coe : x ∈ T.val ↔ x ∈ T := Iff.rfl
 @[simp] lemma setLike_mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := Iff.rfl
+
+end Sublattice
 
 namespace CompleteSublattice
 
