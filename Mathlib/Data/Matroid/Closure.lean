@@ -931,7 +931,7 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
   refine fun I hI ↦ Set.ext fun e ↦ ?_
   simp only [(hI.map f hf).mem_closure_iff', map_ground, mem_image, map_indep_iff,
     forall_exists_index, and_imp, hI.mem_closure_iff']
-  -- The goal now easy follows from the invariance of independence under maps.
+  -- The goal now easily follows from the invariance of independence under maps.
   constructor
   · rintro ⟨⟨x, hxE, rfl⟩, h2⟩
     refine ⟨x, ⟨hxE, fun hI' ↦ ?_⟩, rfl⟩
