@@ -67,7 +67,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
       (by rwa [neg_add_lt_iff_lt_add, add_neg_cancel_right])
 
 /-- If the partial sums `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the
-L-series `Lseries f` converges at `s : ℂ` for all `s` such that `r < s.re`. -/
+L-series `LSeries f` converges at `s : ℂ` for all `s` such that `r < s.re`. -/
 theorem LSeriesSummable_of_sum_norm_bigO
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, ‖f k‖) =O[atTop] fun n ↦ (n : ℝ) ^ r)
     (hr : 0 ≤ r) (hs : r < s.re) :
@@ -80,7 +80,7 @@ theorem LSeriesSummable_of_sum_norm_bigO
   rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
 
 /-- If `f` takes nonnegative real values and the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)`
-for some real `0 ≤ r`, then the L-series `Lseries f` converges at `s : ℂ` for all `s`
+for some real `0 ≤ r`, then the L-series `LSeries f` converges at `s : ℂ` for all `s`
 such that `r < s.re`. -/
 theorem LSeriesSummable_of_sum_norm_bigO_and_nonneg
     {f : ℕ → ℝ} (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r)
