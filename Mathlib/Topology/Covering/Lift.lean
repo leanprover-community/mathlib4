@@ -223,27 +223,45 @@ private noncomputable def joint_lift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) :
     simp [h3]
 
 theorem exists_unique_hlift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) :
-    ∃! Γ : C(I × Y, E), ∀ y, Γ (0, y) = Γ₀ y ∧ f ∘ (Γ ⟨·, y⟩) = (γ ⟨·, y⟩) := by
-  refine ⟨hf.joint_lift hΓ₀ |>.uncurry |>.comp prodSwap, ?_, ?_⟩
-  · exact fun y => hf.lift_spec (slice γ y) (hΓ₀ y)
+    ∃! Γ : C(I × Y, E), (Γ ⟨0, ·⟩) = Γ₀ ∧ f ∘ Γ = γ := by
+  refine ⟨hf.joint_lift hΓ₀ |>.uncurry |>.comp prodSwap, ⟨?_, ?_⟩, ?_⟩
+  · exact funext (fun y => hf.lift_spec (slice γ y) (hΓ₀ y) |>.1)
+  · ext ⟨t, y⟩
+    have := congr_fun (hf.lift_spec (slice γ y) (hΓ₀ y)).2 t
+    simp only [Function.comp_apply] at this
+    simp [joint_lift, this]
+    rfl
   · rintro Γ hΓ ; ext1 ⟨t, y⟩
     have h1 : f (Γ₀ y) = slice γ y 0 := hΓ₀ y
     suffices (Γ.comp prodSwap |>.curry y) = (hf.lift _ h1) from ContinuousMap.congr_fun this t
     apply coe_injective
     apply hf.eq_of_comp_eq (a := 0) (ContinuousMap.continuous _) (ContinuousMap.continuous _)
-    · simp [lift_spec _ hf h1, hΓ]
-    · simp only [lift_spec]
-      ext t
-      have : f (Γ (t, y)) = γ (t, y) := congr_fun (hΓ y |>.2) t
-      simp [this, slice]
+    · simpa using congr_fun hΓ.1 y
+    · ext t
+      simp
+      have := hf.lift_spec (slice γ y) h1 |>.2
+      have := congr_fun this t
+      simp at this
+      simp [this]
+      have := congr_fun hΓ.2 (t, y)
+      simp at this
+      exact this
 
 /-- Specialized version of `exists_unique_hlift` stated in terms of a continuous map from the unit
 interval to `C(Y, X)` in the case when `Y` is locally compact. -/
 theorem exists_unique_hlift' [LocallyCompactSpace Y] {γ : C(I, C(Y, X))}
     (hΓ₀ : ∀ y, f (Γ₀ y) = γ 0 y) :
-    ∃! Γ : C(I, C(Y, E)), ∀ y, Γ 0 y = Γ₀ y ∧ f ∘ (Γ · y) = (γ · y) := by
+    ∃! Γ : C(I, C(Y, E)), Γ 0 = Γ₀ ∧ ∀ y, f ∘ (Γ · y) = (γ · y) := by
   obtain ⟨Γ, h1, h2⟩ := exists_unique_hlift hf hΓ₀ (γ := γ.uncurry)
-  refine ⟨Γ.curry, h1, fun Γ' h3 => ?_⟩
-  simp [← h2 Γ'.uncurry h3] ; rfl
+  refine ⟨Γ.curry, ⟨?_, ?_⟩, ?_⟩
+  · exact coe_injective h1.1
+  · intro y
+    ext t
+    exact congr_fun h1.2 (t, y)
+  · intro Γ' h3
+    have h4 : f ∘ ⇑Γ'.uncurry = ⇑γ.uncurry := funext fun ⟨t, y⟩ => congr_fun (h3.2 y) t
+    have : Γ'.uncurry = Γ := by simpa [h3, h4] using h2 Γ'.uncurry
+    ext t y
+    exact ContinuousMap.congr_fun this (t, y)
 
 end IsCoveringMap
