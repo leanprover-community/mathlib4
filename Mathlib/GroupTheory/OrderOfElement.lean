@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
+import Mathlib.NumberTheory.Divisors
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.Positivity
 
@@ -689,11 +690,11 @@ variable [Monoid G] {x : G} {n : ℕ}
 
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
-    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
+    (∑ m ∈ divisors n,
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
       (Finset.univ.filter fun x : G => x ^ n = 1).card :=
   calc
-    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
+    (∑ m ∈ divisors n,
           (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
       (Finset.card_biUnion
           (by
@@ -705,12 +706,11 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
         (Finset.ext
           (by
             intro x
-            suffices orderOf x ≤ n ∧ orderOf x ∣ n ↔ x ^ n = 1 by simpa [Nat.lt_succ_iff]
+            suffices orderOf x ∣ n ↔ x ^ n = 1 by simpa [hn]
             exact
-              ⟨fun h => by
-                let ⟨m, hm⟩ := h.2
-                rw [hm, pow_mul, pow_orderOf_eq_one, one_pow], fun h =>
-                ⟨orderOf_le_of_pow_eq_one hn.bot_lt h, orderOf_dvd_of_pow_eq_one h⟩⟩))
+              ⟨fun ⟨m, hm⟩ => by
+                rw [hm, pow_mul, pow_orderOf_eq_one, one_pow],
+                orderOf_dvd_of_pow_eq_one⟩))
 
 @[to_additive]
 theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
