@@ -199,7 +199,7 @@ theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProduct
 /-!
 ### Orthogonality of submodules
 
-In this section we define `Submodule.IsOrtho U V`, with notation `U ⟂ V`.
+In this section we define `Submodule.IsOrtho U V`, denoted as `U ⟂ V`.
 
 The API roughly matches that of `Disjoint`.
 -/
@@ -207,7 +207,7 @@ The API roughly matches that of `Disjoint`.
 
 namespace Submodule
 
-/-- The proposition that two submodules are orthogonal. Has notation `U ⟂ V`. -/
+/-- The proposition that two submodules are orthogonal, denoted as `U ⟂ V`. -/
 def IsOrtho (U V : Submodule 𝕜 E) : Prop :=
   U ≤ Vᗮ
 

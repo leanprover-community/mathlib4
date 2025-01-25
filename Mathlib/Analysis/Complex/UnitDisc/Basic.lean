@@ -22,7 +22,7 @@ local notation "conj'" => starRingEnd ℂ
 
 namespace Complex
 
-/-- Complex unit disc, notation `𝔻` in the Complex namespace. -/
+/-- The complex unit disc, denoted as `𝔻` withinin the Complex namespace -/
 def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 

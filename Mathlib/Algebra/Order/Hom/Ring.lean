@@ -64,7 +64,7 @@ to
 otherwise the [refl] attribute on `OrderRingIso.refl` complains.
 TODO: change back when `refl` attribute is fixed, github issue https://github.com/leanprover-community/mathlib4/issues/2505 -/
 
-/-- `OrderRingIso α β`, with notation `α ≃+*o β`,
+/-- `OrderRingIso α β`, denoted as `α ≃+*o β`,
 is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
