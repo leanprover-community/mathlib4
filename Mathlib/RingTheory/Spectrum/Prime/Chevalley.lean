@@ -13,6 +13,11 @@ import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 This file proves Chevalley's theorem, namely that if `f : R → S` is a finitely presented ring hom
 between commutative rings, then the image of a constructible set in `Spec S` is a constructible set
 in `Spec R`.
+
+## See also
+
+`Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity` for a version of Chevalley's theorem that
+tracks the degrees and number of polynomials used to construct the constructible sets.
 -/
 
 open Polynomial PrimeSpectrum TensorProduct Topology
