@@ -72,13 +72,13 @@ protected abbrev tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂
 
 attribute [local ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
-lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinMap A M₁ N₁} {B₂ : BilinMap R M₂ N₂}
-    (hB₁ : ∀ x y, B₁ x y = B₁ y x) (hB₂ : ∀ x y, B₂ x y = B₂ y x) :
-    ∀ x y, (B₁.tmul B₂) x y = (B₁.tmul B₂) y x := by
-  rw [LinearMap.isSymm_iff_eq_flip]
-  ext _ _ _ _
-  simp_all only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
-    tensorDistrib_tmul, flip_apply]
+lemma tmul_isSymm {B₁ : BilinMap A M₁ N₁} {B₂ : BilinMap R M₂ N₂}
+    (hB₁ : ∀ x y, B₁ x y = B₁ y x) (hB₂ : ∀ x y, B₂ x y = B₂ y x)
+    (x y : M₁ ⊗[R] M₂) :
+    B₁.tmul B₂ x y = B₁.tmul B₂ y x := by
+  revert x y
+  rw [isSymm_iff_eq_flip]
+  aesop
 
 variable (A) in
 /-- The base change of a bilinear map (also known as "extension of scalars"). -/
@@ -91,8 +91,9 @@ theorem baseChange_tmul (B₂ : BilinMap R M₂ N₂) (a : A) (m₂ : M₂)
     B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂')  :=
   rfl
 
-lemma IsSymm.baseChange {B₂ : BilinMap R M₂ N₂} (hB₂ : ∀ x y, B₂ x y = B₂ y x) :
-    ∀ x y, (B₂.baseChange A) x y = (B₂.baseChange A) y x := IsSymm.tmul mul_comm hB₂
+lemma baseChange_isSymm {B₂ : BilinMap R M₂ N₂} (hB₂ : ∀ x y, B₂ x y = B₂ y x) (x y : A ⊗[R] M₂) :
+    B₂.baseChange A x y = B₂.baseChange A y x :=
+  tmul_isSymm mul_comm hB₂ x y
 
 end BilinMap
 
@@ -121,10 +122,18 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
 protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap  R M₂ R) : BilinMap A (M₁ ⊗[R] M₂) A :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+attribute [local ext] TensorProduct.ext in
+/-- A tensor product of symmetric bilinear forms is symmetric. -/
+lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
+    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
+  rw [LinearMap.isSymm_iff_eq_flip]
+  ext x₁ x₂ y₁ y₂
+  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+
 variable (A) in
 /-- The base change of a bilinear form. -/
 protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
-  (AlgebraTensorModule.rid R A A).congrRight₂.toLinearMap  (BilinMap.baseChange A B)
+  BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
 
 @[simp]
 theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
@@ -134,11 +143,8 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
 
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
-lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm := by
-  simp only [IsSymm, BilinForm.baseChange, LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply,
-    compr₂_apply, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-  intro _ _
-  rw [(LinearMap.BilinMap.IsSymm.baseChange hB₂)]
+lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
+  IsSymm.tmul mul_comm hB₂
 
 end BilinForm
 

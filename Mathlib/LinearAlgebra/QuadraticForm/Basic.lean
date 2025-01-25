@@ -896,12 +896,13 @@ theorem associated_apply (x y : M) :
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', LinearMap.one_apply,
     polar]
 
-theorem associated_isSymm (Q : QuadraticMap R M N) :
-    ∀ x y, (associatedHom S Q) x y = (associatedHom S Q) y x := fun x y ↦ by
-  simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
+theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :
+    associatedHom S Q x y = associatedHom S Q y x := by
+  simp only [associated_apply, sub_eq_add_neg, add_assoc, add_comm, add_left_comm]
 
 theorem _root_.QuadraticForm.associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
-    (associatedHom S Q).IsSymm := _root_.QuadraticMap.associated_isSymm S Q
+    (associatedHom S Q).IsSymm :=
+  QuadraticMap.associated_isSymm S Q
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -922,7 +923,7 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     LinearMap.smul_def, _root_.map_sub]
   abel_nf
 
-theorem associated_left_inverse {B₁ : BilinMap R M N} (h : ∀ x y, (B₁ x y) = B₁ y x) :
+theorem associated_left_inverse {B₁ : BilinMap R M N} (h : ∀ x y, B₁ x y = B₁ y x) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
     rw [associated_toQuadraticMap, ← h x y, ← two_smul R, invOf_smul_eq_iff, two_smul, two_smul]

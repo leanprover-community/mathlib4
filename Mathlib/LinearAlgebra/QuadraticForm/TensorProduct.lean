@@ -66,14 +66,14 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
     (Q₂ : QuadraticMap R M₂ N₂) : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
-theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticMap A M₁ N₁)
-    (Q₂ : QuadraticMap R M₂ N₂) : associated (R := A) (Q₁.tmul Q₂)
-      = BilinMap.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
+theorem associated_tmul [Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) :
+    (Q₁.tmul Q₂).associated = Q₁.associated.tmul Q₂.associated := by
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   rw [QuadraticMap.tmul, BilinMap.tmul]
   have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A (LinearMap.IsSymm.tmul (QuadraticMap.associated_isSymm A Q₁)
-    (QuadraticMap.associated_isSymm R Q₂))
+  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
+    (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
 
 end QuadraticMap
 
@@ -105,13 +105,10 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R := A) (Q₁.tmul Q₂)
-      = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
+    (Q₁.tmul Q₂).associated = BilinForm.tmul Q₁.associated Q₂.associated := by
   rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
     ← QuadraticMap.associated_tmul Q₁ Q₂]
-  ext _ _ _ _ : 6
-  simp
-  rfl
+  aesop
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
@@ -142,8 +139,6 @@ theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
     ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
-  simp_all only [LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply]
-  rfl
 
 end QuadraticForm
 
