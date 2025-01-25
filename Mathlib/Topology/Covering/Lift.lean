@@ -228,24 +228,17 @@ theorem exists_unique_hlift (hΓ₀ : ∀ y, f (Γ₀ y) = γ (0, y)) :
   · exact funext (fun y => hf.lift_spec (slice γ y) (hΓ₀ y) |>.1)
   · ext ⟨t, y⟩
     have := congr_fun (hf.lift_spec (slice γ y) (hΓ₀ y)).2 t
-    simp only [Function.comp_apply] at this
-    simp [joint_lift, this]
-    rfl
+    simp only [slice, Function.comp_apply, curry_apply, comp_apply, prodSwap_apply] at this
+    simp [joint_lift, slice, this]
   · rintro Γ hΓ ; ext1 ⟨t, y⟩
     have h1 : f (Γ₀ y) = slice γ y 0 := hΓ₀ y
     suffices (Γ.comp prodSwap |>.curry y) = (hf.lift _ h1) from ContinuousMap.congr_fun this t
     apply coe_injective
     apply hf.eq_of_comp_eq (a := 0) (ContinuousMap.continuous _) (ContinuousMap.continuous _)
     · simpa using congr_fun hΓ.1 y
-    · ext t
-      simp
-      have := hf.lift_spec (slice γ y) h1 |>.2
-      have := congr_fun this t
-      simp at this
-      simp [this]
-      have := congr_fun hΓ.2 (t, y)
-      simp at this
-      exact this
+    · simp only [hf.lift_spec (slice γ y) h1]
+      ext t
+      simpa using congr_fun hΓ.2 (t, y)
 
 /-- Specialized version of `exists_unique_hlift` stated in terms of a continuous map from the unit
 interval to `C(Y, X)` in the case when `Y` is locally compact. -/
@@ -255,13 +248,11 @@ theorem exists_unique_hlift' [LocallyCompactSpace Y] {γ : C(I, C(Y, X))}
   obtain ⟨Γ, h1, h2⟩ := exists_unique_hlift hf hΓ₀ (γ := γ.uncurry)
   refine ⟨Γ.curry, ⟨?_, ?_⟩, ?_⟩
   · exact coe_injective h1.1
-  · intro y
-    ext t
-    exact congr_fun h1.2 (t, y)
+  · exact fun y => funext (congr_fun h1.2 ⟨·, y⟩)
   · intro Γ' h3
     have h4 : f ∘ ⇑Γ'.uncurry = ⇑γ.uncurry := funext fun ⟨t, y⟩ => congr_fun (h3.2 y) t
-    have : Γ'.uncurry = Γ := by simpa [h3, h4] using h2 Γ'.uncurry
+    have h5 : Γ'.uncurry = Γ := by simpa [h3, h4] using h2 Γ'.uncurry
     ext t y
-    exact ContinuousMap.congr_fun this (t, y)
+    exact ContinuousMap.congr_fun h5 (t, y)
 
 end IsCoveringMap
