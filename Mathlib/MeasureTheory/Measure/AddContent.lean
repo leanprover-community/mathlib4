@@ -130,20 +130,20 @@ end OrderedAddCommMonoid
 
 section IsSetSemiring
 
-lemma addContent_eq_add_disjointSubsetsOfSetdiffUnion_of_subset (hC : IsSetSemiring C)
+lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
-    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.disjointSubsetsOfSetdiffUnion hs hI, m i := by
+    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.disjointOfDiffUnion hs hI, m i := by
   classical
-  conv_lhs => rw [← hC.sUnion_union_disjointSubsetsOfSetdiffUnion_of_subset hs hI hI_ss]
+  conv_lhs => rw [← hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
   rw [addContent_sUnion]
   · rw [sum_union]
-    exact hC.disjoint_disjointSubsetsOfSetdiffUnion hs hI
+    exact hC.disjoint_disjointOfDiffUnion hs hI
   · rw [coe_union]
-    exact Set.union_subset hI (hC.disjointSubsetsOfSetdiffUnion_subset hs hI)
+    exact Set.union_subset hI (hC.disjointOfDiffUnion_subset hs hI)
   · rw [coe_union]
-    exact hC.pairwiseDisjoint_union_disjointSubsetsOfSetdiffUnion hs hI h_dis
-  · rwa [hC.sUnion_union_disjointSubsetsOfSetdiffUnion_of_subset hs hI hI_ss]
+    exact hC.pairwiseDisjoint_union_disjointOfDiffUnion hs hI h_dis
+  · rwa [hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
 
 /-- For an `m : addContent C` on a `SetSemiring C`, if `I` is a `Finset` of pairwise disjoint
   sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.-/
@@ -152,7 +152,7 @@ lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
     ∑ u ∈ I, m u ≤ m t := by
   classical
-  rw [addContent_eq_add_disjointSubsetsOfSetdiffUnion_of_subset hC ht h_ss hJt h_dis]
+  rw [addContent_eq_add_disjointOfDiffUnion_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
 
 /-- An `addContent C` on a `SetSemiring C` is monotone. -/
