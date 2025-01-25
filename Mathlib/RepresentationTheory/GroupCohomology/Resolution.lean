@@ -366,7 +366,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
-#check classifyingSpaceUniversalCover_map
+
 namespace classifyingSpaceUniversalCover
 
 open CategoryTheory CategoryTheory.Limits
