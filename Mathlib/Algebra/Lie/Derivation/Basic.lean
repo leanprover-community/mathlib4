@@ -6,6 +6,7 @@ Authors: Frédéric Marbach
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations

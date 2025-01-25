@@ -123,19 +123,15 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
 
-/-- Any category with products and equalizers has all limits.
-
-See <https://stacks.math.columbia.edu/tag/002N>.
--/
+/-- Any category with products and equalizers has all limits. -/
+@[stacks 002N]
 theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
     HasLimitsOfSize.{w, w} C :=
   { has_limits_of_shape :=
     fun _ _ => { has_limit := fun F => hasLimit_of_equalizer_and_product F } }
 
-/-- Any category with finite products and equalizers has all finite limits.
-
-See <https://stacks.math.columbia.edu/tag/002O>.
--/
+/-- Any category with finite products and equalizers has all finite limits. -/
+@[stacks 002O]
 theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts C]
     [HasEqualizers C] : HasFiniteLimits C where
   out _ := { has_limit := fun F => hasLimit_of_equalizer_and_product F }
@@ -166,19 +162,19 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     let I := equalizer s t
     let i : I ⟶ P := equalizer.ι s t
     apply preservesLimit_of_preserves_limit_cone
-        (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
-          (limit.isLimit _))
+        (buildIsLimit s t (by simp [P, s]) (by simp [P, t]) (limit.isLimit _)
+          (limit.isLimit _) (limit.isLimit _))
     apply IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
     · exact Fan.mk (G.obj Q) fun f => G.map (Pi.π _ f)
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [s, Fan.mk]
+      dsimp [P, Q, s, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       congr
     · intro f
-      dsimp [t, Fan.mk]
+      dsimp [P, Q, t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       apply congrArg G.map
       dsimp
@@ -191,7 +187,7 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · apply isLimitForkMapOfIsLimit
       apply equalizerIsEqualizer
     · refine Cones.ext (Iso.refl _) ?_
-      intro j; dsimp; simp
+      intro j; dsimp [P, Q, I, i]; simp
 -- See note [dsimp, simp].
 
 end
@@ -343,19 +339,15 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
 
-/-- Any category with coproducts and coequalizers has all colimits.
-
-See <https://stacks.math.columbia.edu/tag/002P>.
--/
+/-- Any category with coproducts and coequalizers has all colimits. -/
+@[stacks 002P]
 theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
     HasColimitsOfSize.{w, w} C where
   has_colimits_of_shape := fun _ _ =>
       { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 
-/-- Any category with finite coproducts and coequalizers has all finite colimits.
-
-See <https://stacks.math.columbia.edu/tag/002Q>.
--/
+/-- Any category with finite coproducts and coequalizers has all finite colimits. -/
+@[stacks 002Q]
 theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCoproducts C]
     [HasCoequalizers C] : HasFiniteColimits C where
   out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
@@ -382,8 +374,8 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     let I := coequalizer s t
     let i : P ⟶ I := coequalizer.π s t
     apply preservesColimit_of_preserves_colimit_cocone
-        (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
-          (colimit.isColimit _))
+        (buildIsColimit s t (by simp [P, s]) (by simp [P, t]) (colimit.isColimit _)
+          (colimit.isColimit _) (colimit.isColimit _))
     apply IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
       apply Sigma.ι _ j
@@ -392,11 +384,11 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [s, Cofan.mk]
+      dsimp [P, Q, s, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       congr
     · intro f
-      dsimp [t, Cofan.mk]
+      dsimp [P, Q, t, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       dsimp
     · refine Cofork.ofπ (G.map i) ?_
@@ -409,7 +401,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
       apply coequalizerIsCoequalizer
     refine Cocones.ext (Iso.refl _) ?_
     intro j
-    dsimp
+    dsimp [P, Q, I, i]
     simp
 -- See note [dsimp, simp].
 

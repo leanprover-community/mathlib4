@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -41,7 +42,8 @@ open AddSubmonoidClass
 `NonUnitalSubsemiringClass`. -/
 /-- A non-unital subsemiring of a `NonUnitalNonAssocSemiring` inherits a
 `NonUnitalNonAssocSemiring` structure -/
-instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
+instance (priority := 75) toNonUnitalNonAssocSemiring :
+    NonUnitalNonAssocSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -59,12 +61,12 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s :=
+    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s :=
+    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -119,11 +121,11 @@ theorem copy_eq (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) : S.cop
 
 theorem toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `NonUnitalSubsemiring R` from a set `s`, a subsemigroup `sg`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sg ↔ x ∈ sa`. -/

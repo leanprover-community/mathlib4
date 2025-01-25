@@ -26,8 +26,7 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
@@ -82,14 +81,20 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
 
+lemma sUnion_disjiUnion {f : α → Finset (Set β)} (I : Finset α)
+    (hf : (I : Set α).PairwiseDisjoint f) :
+    ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
+  ext
+  simp only [coe_disjiUnion, Set.mem_sUnion, Set.mem_iUnion, mem_coe, exists_prop]
+  tauto
+
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
--- `simpNF` claims that the statement can't simplify itself, but it can (as of 2024-02-14)
-@[simp, nolint simpNF] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+@[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
   ext fun b => by simpa using and_comm

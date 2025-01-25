@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
+import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Trigonometric functions
@@ -44,7 +45,6 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open scoped Classical
 open Topology Filter Set
 
 namespace Complex
@@ -116,7 +116,9 @@ theorem exists_cos_eq_zero : 0 ∈ cos '' Icc (1 : ℝ) 2 :=
     ⟨le_of_lt cos_two_neg, le_of_lt cos_one_pos⟩
 
 /-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2], from
-which one can derive all its properties. For explicit bounds on π, see `Data.Real.Pi.Bounds`. -/
+which one can derive all its properties. For explicit bounds on π, see `Data.Real.Pi.Bounds`.
+
+Denoted `π`, once the `Real` namespace is opened. -/
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 
@@ -802,7 +804,7 @@ theorem quadratic_root_cos_pi_div_five :
     push_neg
     intro n hn
     replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
-    rcases Int.mul_eq_one_iff_eq_one_or_neg_one.mp hn with ⟨_, h⟩ | ⟨_, h⟩ <;> norm_num at h
+    omega
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]
@@ -953,12 +955,12 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Iio
-        (right_mem_Ioc.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_zero.atTop_mul zero_lt_one tendsto_sin_pi_div_two
-    using 1
+  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul zero_lt_one
+    tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
@@ -969,11 +971,11 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Ioi
-        (left_mem_Ico.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_zero.atTop_mul_neg (by norm_num)
+  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by norm_num)
       tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 

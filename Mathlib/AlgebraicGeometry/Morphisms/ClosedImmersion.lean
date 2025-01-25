@@ -39,9 +39,8 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
-class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
+class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
   base_closed : IsClosedEmbedding f.base
-  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
     [IsClosedImmersion f] : IsClosedEmbedding f.base :=
@@ -55,15 +54,14 @@ alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
 alias closedEmbedding := isClosedEmbedding
 
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
-    stalkwise (fun f ↦ Function.Surjective f) := by
+    @SurjectiveOnStalks := by
   ext X Y f
-  rw [isClosedImmersion_iff]
+  rw [isClosedImmersion_iff, and_comm]
   rfl
 
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
     IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
-  rw [isClosedImmersion_iff, isPreimmersion_iff, ← surjectiveOnStalks_iff, and_comm, and_assoc,
-    isClosedEmbedding_iff]
+  rw [isClosedImmersion_iff, isPreimmersion_iff, and_assoc, isClosedEmbedding_iff]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
     (hf : IsClosed (Set.range f.base)) : IsClosedImmersion f :=
@@ -79,10 +77,7 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
-  comp_mem {X Y Z} f g hf hg := by
-    refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ ?_⟩
-    rw [Scheme.stalkMap_comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
+  comp_mem _ _ hf hg := ⟨hg.base_closed.comp hf.base_closed⟩
 
 /-- Composition of closed immersions is a closed immersion. -/
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
@@ -106,7 +101,7 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     apply (MorphismProperty.arrow_mk_iso_iff
       (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f))
       (Scheme.arrowStalkMapSpecIso f x)).mpr
-    exact RingHom.surjective_localRingHom_of_surjective f h x.asIdeal
+    exact RingHom.surjective_localRingHom_of_surjective f.hom h x.asIdeal
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
@@ -207,7 +202,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     simp [Set.preimage_image_eq _ hfinj₁]
   have h0 (i : 𝒰.J) : (𝒰.map i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ _ (homOfLE <| hwle i).op, ← Scheme.Hom.map_appLE _ le_rfl w.op]
-    simp only [CommRingCat.coe_comp_of, RingHom.coe_comp, Function.comp_apply]
+    simp only [CommRingCat.comp_apply]
     erw [hg]
     simp only [map_zero]
   have h1 (i : 𝒰.J) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
@@ -304,7 +299,7 @@ instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersi
     exact this _ U.2
   obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
   rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
-  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤) hf
+  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤).hom hf
 
 /-- A surjective closed immersion is an isomorphism when the target is reduced. -/
 lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
@@ -321,7 +316,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   apply IsClosedImmersion.isIso_of_injective_of_isAffine
   obtain ⟨hX, hf⟩ := HasAffineProperty.iff_of_isAffine.mp ‹IsClosedImmersion f›
   let φ := f.appTop
-  suffices RingHom.ker φ ≤ nilradical _ by
+  suffices RingHom.ker φ.hom ≤ nilradical _ by
     rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
       ← RingHom.injective_iff_ker_eq_bot] at this
   refine (PrimeSpectrum.zeroLocus_eq_top_iff _).mp ?_
