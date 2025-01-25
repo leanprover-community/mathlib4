@@ -12,8 +12,6 @@ In this file, we proved several properties concerning how the minimal primes abo
 under localization.
 
 ## Main Results
-- `Ideal.minimalPrimes_comap_subset`: For a ring homomorphism R →+* A and an ideal J of A, the
-  minimal primes over the preimage of J is a subset of the preimages of the minimal primes over J.
 - `IsLocalization.minimalPrimes_comap`: If A is a localization of R with respect to the submonoid S,
   J is an ideal of A, then the minimal primes over the preimage of J (under R →+* A) are exactly
   the preimages of the minimal primes over J.
@@ -23,10 +21,6 @@ under localization.
 -/
 
 variable {R : Type*} [CommRing R]
-
-theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
-    (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
-  fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
 
 theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRing A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) :
