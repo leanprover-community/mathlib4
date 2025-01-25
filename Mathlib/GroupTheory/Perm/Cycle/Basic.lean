@@ -5,7 +5,6 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Perm
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
 
@@ -193,27 +192,12 @@ theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
       rw [pow_orderOf_eq_one, pow_zero]
     · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 
-instance (f : Perm α) [DecidableRel (SameCycle f⁻¹)] :
-    DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (f⁻¹.SameCycle x y) (sameCycle_inv)
-
 instance (f : Perm α) [DecidableRel (SameCycle f)] :
     DecidableRel (SameCycle f⁻¹) := fun x y =>
   decidable_of_iff (f.SameCycle x y) (sameCycle_inv).symm
 
 instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
   decidable_of_iff (x = y) sameCycle_one.symm
-
-instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
-    ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
-      List.mem_range.2 (Int.ofNat_lt.1 <| by
-        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
-        refine (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le ?_
-        simp [orderOf_le_card_univ]),
-      by
-        rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
-          Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
 
 end SameCycle
 
@@ -866,7 +850,7 @@ variable [DecidableEq α] {l : List α}
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
-  rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
+  rw [Set.mem_setOf, ← List.indexOf_lt_length_iff] at ha hb
   rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
   refine ⟨l.indexOf b - l.indexOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,

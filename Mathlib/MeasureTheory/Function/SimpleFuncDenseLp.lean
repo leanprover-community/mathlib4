@@ -175,7 +175,7 @@ alias tendsto_approxOn_range_Lp_snorm := tendsto_approxOn_range_Lp_eLpNorm
 theorem memℒp_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     [SeparableSpace (range f ∪ {0} : Set E)] (hf : Memℒp f p μ) (n : ℕ) :
     Memℒp (approxOn f fmeas (range f ∪ {0}) 0 (by simp) n) p μ :=
-  memℒp_approxOn fmeas hf (y₀ := 0) (by simp) zero_memℒp n
+  memℒp_approxOn fmeas hf (y₀ := 0) (by simp) Memℒp.zero n
 
 theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞)
     {μ : Measure β} (fmeas : Measurable f) [SeparableSpace (range f ∪ {0} : Set E)]
@@ -281,7 +281,7 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
     eLpNorm' f p μ = (∑ y ∈ f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
   have h_map : (fun a => (‖f a‖₊ : ℝ≥0∞) ^ p) = f.map fun a : F => (‖a‖₊ : ℝ≥0∞) ^ p := by
     simp; rfl
-  rw [eLpNorm', h_map, lintegral_eq_lintegral, map_lintegral]
+  rw [eLpNorm'_eq_lintegral_nnnorm, h_map, lintegral_eq_lintegral, map_lintegral]
 
 @[deprecated (since := "2024-07-27")]
 protected alias snorm'_eq := SimpleFunc.eLpNorm'_eq
@@ -359,19 +359,13 @@ theorem memℒp_of_isFiniteMeasure (f : α →ₛ E) (p : ℝ≥0∞) (μ : Meas
   let ⟨C, hfC⟩ := f.exists_forall_norm_le
   Memℒp.of_bound f.aestronglyMeasurable C <| Eventually.of_forall hfC
 
+@[fun_prop]
 theorem integrable_of_isFiniteMeasure [IsFiniteMeasure μ] (f : α →ₛ E) : Integrable f μ :=
   memℒp_one_iff_integrable.mp (f.memℒp_of_isFiniteMeasure 1 μ)
 
 theorem measure_preimage_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable f μ) {x : E}
     (hx : x ≠ 0) : μ (f ⁻¹' {x}) < ∞ :=
   integrable_iff.mp hf x hx
-
-theorem measure_support_lt_top [Zero β] (f : α →ₛ β) (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
-    μ (support f) < ∞ := by
-  rw [support_eq]
-  refine (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top.mpr fun y hy => ?_)
-  rw [Finset.mem_filter] at hy
-  exact hf y hy.2
 
 theorem measure_support_lt_top_of_memℒp (f : α →ₛ E) (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : μ (support f) < ∞ :=
@@ -476,7 +470,7 @@ attribute [local instance] simpleFunc.module
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected theorem boundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
-  BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) : _)
+  BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
 
 attribute [local instance] simpleFunc.boundedSMul
 
@@ -503,7 +497,7 @@ theorem toLp_eq_mk (f : α →ₛ E) (hf : Memℒp f p μ) :
     (toLp f hf : α →ₘ[μ] E) = AEEqFun.mk f f.aestronglyMeasurable :=
   rfl
 
-theorem toLp_zero : toLp (0 : α →ₛ E) zero_memℒp = (0 : Lp.simpleFunc E p μ) :=
+theorem toLp_zero : toLp (0 : α →ₛ E) Memℒp.zero = (0 : Lp.simpleFunc E p μ) :=
   rfl
 
 theorem toLp_add (f g : α →ₛ E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
@@ -744,12 +738,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
 
 instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
-  have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
-  have h_add_2 : ((f + g₂ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₂ := Lp.coeFn_add _ _
-  filter_upwards [h_add_1, h_add_2, hg₁₂] with _ h1 h2 h3
-  rw [h1, h2, Pi.add_apply, Pi.add_apply]
-  exact add_le_add le_rfl h3
+  exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 
@@ -957,6 +946,7 @@ theorem L1.SimpleFunc.toLp_one_eq_toL1 (f : α →ₛ E) (hf : Integrable f μ) 
     (Lp.simpleFunc.toLp f (memℒp_one_iff_integrable.2 hf) : α →₁[μ] E) = hf.toL1 f :=
   rfl
 
+@[fun_prop]
 protected theorem L1.SimpleFunc.integrable (f : α →₁ₛ[μ] E) :
     Integrable (Lp.simpleFunc.toSimpleFunc f) μ := by
   rw [← memℒp_one_iff_integrable]; exact Lp.simpleFunc.memℒp f

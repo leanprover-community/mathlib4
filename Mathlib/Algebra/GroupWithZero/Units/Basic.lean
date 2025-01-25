@@ -18,10 +18,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists DenselyOrdered
-assert_not_exists Equiv
-assert_not_exists Multiplicative
-assert_not_exists Subtype.restrict
+assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative
 
 
 variable {α M₀ G₀ : Type*}
@@ -199,7 +196,6 @@ figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
-  -- Porting note: had to add the `rfl`
 
 @[simp]
 theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
@@ -315,10 +311,6 @@ lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq
 lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
   hb.isUnit.div_mul_cancel_right _
 
-set_option linter.deprecated false in
-@[deprecated div_mul_cancel_right₀ (since := "2024-03-20")]
-lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
-
 lemma mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
   hc.isUnit.mul_div_mul_right _ _
 
@@ -415,10 +407,6 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
-@[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
-lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := by
-  simp [div_mul_cancel_left₀ ha]
-
 lemma mul_div_cancel_left_of_imp (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
 
@@ -485,5 +473,3 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
   { groupWithZeroOfIsUnitOrEqZero h, hM with }
 
 end NoncomputableDefs
-
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel' := mul_div_cancel₀

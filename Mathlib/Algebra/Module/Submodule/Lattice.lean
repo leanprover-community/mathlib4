@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.PUnitInstances.Module
@@ -313,7 +314,7 @@ variable (R)
 @[simp]
 theorem subsingleton_iff : Subsingleton (Submodule R M) ↔ Subsingleton M :=
   have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) := by
-    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_eq,
+    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_inj,
       bot_toAddSubmonoid, top_toAddSubmonoid]
   h.trans AddSubmonoid.subsingleton_iff
 
