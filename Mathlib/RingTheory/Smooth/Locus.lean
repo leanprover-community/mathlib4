@@ -10,10 +10,11 @@ import Mathlib.RingTheory.Support
 /-!
 # Smooth locus of an algebra
 
-Most results are only valid for algebras of finite presentations.
+Most results in this file are proved for algebras of finite presentations.
+Some of them are true for arbitrary algebras but the proof is substantially harder.
 
 ## Main results
-- `Algebra.smoothLocus` : The set of primes that is smooth over the base.
+- `Algebra.smoothLocus` : The set of primes that are smooth over the base.
 - `Algebra.basicOpen_subset_smoothLocus_iff` :
   `D(f)` is contained in the smooth locus if and only if `A_f` is smooth over `R`.
 - `Algebra.smoothLocus_eq_univ_iff` :
@@ -28,7 +29,16 @@ variable (R A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 namespace Algebra
 
 variable {A} in
-/-- An `R`-algebra `A` is smooth at a prime `p` of `A` if `Aₚ` is formally smooth over `R`. -/
+/--
+An `R`-algebra `A` is smooth at a prime `p` of `A` if `Aₚ` is formally smooth over `R`.
+
+This does not imply `Aₚ` is smooth over `R` under the mathlib definition
+even if `A` is finitely presented,
+but it can be shown that this is equivalent to the stacks project definition that `A` is smooth
+at `p` if and only if there exists `f ∉ p` such that `A_f` is smooth over `R`.
+See `Algebra.basicOpen_subset_smoothLocus_iff_smooth` and `Algebra.isOpen_smoothLocus`.
+-/
+@[stacks 00TB]
 abbrev IsSmoothAt (p : Ideal A) [p.IsPrime] : Prop :=
   Algebra.FormallySmooth R (Localization.AtPrime p)
 
@@ -77,6 +87,13 @@ lemma basicOpen_subset_smoothLocus_iff [FinitePresentation R A] {f : A} :
       (.powers f) (Localization.Away f)) this.bijective
     exact ⟨fun _ ↦ .of_equiv this, fun _ ↦ .of_equiv this.symm⟩
 
+lemma basicOpen_subset_smoothLocus_iff_smooth [FinitePresentation R A] {f : A} :
+    ↑(PrimeSpectrum.basicOpen f) ⊆ smoothLocus R A ↔
+      Algebra.Smooth R (Localization.Away f) := by
+  have : FinitePresentation A (Localization.Away f) := IsLocalization.Away.finitePresentation f
+  rw [basicOpen_subset_smoothLocus_iff]
+  exact ⟨fun H ↦ ⟨H, .trans _ A _⟩, fun H ↦ H.1⟩
+
 lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     smoothLocus R A = Set.univ ↔ Algebra.FormallySmooth R A := by
   have := IsLocalization.atUnits A (.powers 1) (S := Localization.Away (1 : A)) (by simp)
@@ -84,67 +101,42 @@ lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     ← basicOpen_subset_smoothLocus_iff]
   simp
 
+lemma smoothLocus_comap_of_isLocalization {Af : Type u} [CommRing Af] [Algebra A Af] [Algebra R Af]
+    [IsScalarTower R A Af] (f : A) [IsLocalization.Away f Af] :
+    PrimeSpectrum.comap (algebraMap A Af) ⁻¹' smoothLocus R A = smoothLocus R Af := by
+  ext p
+  let q := PrimeSpectrum.comap (algebraMap A Af) p
+  have : IsLocalization.AtPrime (Localization.AtPrime p.asIdeal) q.asIdeal :=
+    IsLocalization.isLocalization_isLocalization_atPrime_isLocalization (.powers f) _ p.asIdeal
+  refine Algebra.FormallySmooth.iff_of_equiv ?_
+  exact (IsLocalization.algEquiv q.asIdeal.primeCompl _ _).restrictScalars R
+
+-- Note that this does not follow directly from `smoothLocus_eq_compl_support_inter` because
+-- `H¹(L_{S/R})` is not necessarily finitely generated.
+open PrimeSpectrum in
 lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := by
-  rw [smoothLocus_eq_compl_support_inter, isOpen_iff_forall_mem_open]
+  rw [isOpen_iff_forall_mem_open]
   intro x hx
   obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
-    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hx.2 Module.isOpen_freeLocus
+    isBasis_basic_opens.exists_subset_of_mem_open
+    (smoothLocus_eq_compl_support_inter.le hx).2 Module.isOpen_freeLocus
   rw [Module.basicOpen_subset_freeLocus_iff] at hf
   let Af := Localization.Away f
-  obtain ⟨x, rfl⟩ := (PrimeSpectrum.localization_away_comap_range Af f).ge hxf
   have : Algebra.FinitePresentation A (Localization.Away f) :=
     IsLocalization.Away.finitePresentation f
   have : Algebra.FinitePresentation R (Localization.Away f) :=
     .trans _ A _
-  have := IsLocalizedModule.iso (.powers f)
-    (KaehlerDifferential.map R R A (Localization.Away f))
-  have := LinearEquiv.ofBijective (this.extendScalarsOfIsLocalization
-    (.powers f) (Localization.Away f)) this.bijective
-  have := Module.Projective.of_equiv this
-  obtain ⟨_, ⟨_, ⟨g, rfl⟩, rfl⟩, hxg, hg⟩ :=
-    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
-      (u := (Module.support (Localization.Away f) (H1Cotangent R (Localization.Away f)))ᶜ)
-      (a := x) (by
-        rw [Set.mem_compl_iff, Module.not_mem_support_iff]
-        have := IsLocalizedModule.iso x.asIdeal.primeCompl
-          (H1Cotangent.map R R Af (Localization.AtPrime x.asIdeal))
-        refine this.subsingleton_congr.mpr ?_
-        let e := (IsLocalization.localizationLocalizationAtPrimeIsoLocalization
-          (.powers f) x.asIdeal).restrictScalars R
-        refine (H1Cotangent.mapEquiv R _ _ e).subsingleton_congr.mp ?_
-        have := IsLocalizedModule.iso (PrimeSpectrum.comap (algebraMap A Af) x).asIdeal.primeCompl
-          (H1Cotangent.map R R A (Localization.AtPrime
-            (PrimeSpectrum.comap (algebraMap A Af) x).asIdeal))
-        refine this.subsingleton_congr.mp ?_
-        exact Module.not_mem_support_iff.mp hx.1) (by
-        rw [Module.support_eq_zeroLocus, isOpen_compl_iff]
-        exact PrimeSpectrum.isClosed_zeroLocus _)
-  rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.compl_subset_compl,
-    ← LocalizedModule.subsingleton_iff_support_subset] at hg
-  let Ag := Localization.Away g
-  have := IsLocalizedModule.iso (.powers g) (H1Cotangent.map R R Af Ag)
-  replace hg := this.subsingleton_congr.mp hg
-  obtain ⟨g', ⟨_, n, rfl⟩, e⟩ := IsLocalization.mk'_surjective (.powers f) g
-  have : IsLocalization.Away (f * g') Ag :=
-    have : IsLocalization.Away (algebraMap A Af g') Ag :=
-      .of_associated (r := g) ⟨(IsLocalization.Away.algebraMap_pow_isUnit f n).unit, by
-        simp only [← e, IsUnit.unit_spec, ← map_pow, IsLocalization.mk'_spec_mk]⟩
-    .mul' Af _ _ _
-  refine ⟨PrimeSpectrum.basicOpen (f * g'), Set.subset_inter ?_ ?_,
-    (PrimeSpectrum.basicOpen _).2, ?_⟩
-  · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.compl_subset_compl,
-      ← LocalizedModule.subsingleton_iff_support_subset]
-    have := IsLocalizedModule.iso (.powers (f * g'))
-      (H1Cotangent.map R R A Ag)
-    exact this.subsingleton_congr.mpr hg
-  · rw [PrimeSpectrum.basicOpen_mul]
-    refine Set.inter_subset_left.trans ?_
-    rwa [Module.basicOpen_subset_freeLocus_iff]
-  · simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.mem_compl_iff,
-      PrimeSpectrum.mem_zeroLocus, PrimeSpectrum.comap_asIdeal, Ideal.coe_comap,
-      Set.singleton_subset_iff, Set.mem_preimage, SetLike.mem_coe, ← e, map_mul] at hxf hxg ⊢
-    convert x.asIdeal.primeCompl.mul_mem (pow_mem hxf (n + 1)) hxg using 1
-    rw [pow_succ', mul_assoc, ← map_pow, IsLocalization.mk'_spec' Af (y := ⟨_, _⟩)]
-    rfl
+  have : IsOpen (smoothLocus R Af) := by
+    have := IsLocalizedModule.iso (.powers f)
+      (KaehlerDifferential.map R R A (Localization.Away f))
+    have := LinearEquiv.ofBijective (this.extendScalarsOfIsLocalization
+      (.powers f) (Localization.Away f)) this.bijective
+    have := Module.Projective.of_equiv this
+    rw [smoothLocus_eq_compl_support_inter, Module.support_eq_zeroLocus]
+    exact (isClosed_zeroLocus _).isOpen_compl.inter Module.isOpen_freeLocus
+  rw [← smoothLocus_comap_of_isLocalization f] at this
+  replace this := (PrimeSpectrum.localization_away_isOpenEmbedding Af f).isOpenMap _ this
+  rw [Set.image_preimage_eq_inter_range, localization_away_comap_range Af f] at this
+  exact ⟨_, Set.inter_subset_left, this, hx, hxf⟩
 
 end Algebra
