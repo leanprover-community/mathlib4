@@ -33,12 +33,9 @@ lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMa
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
         Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
   set Q := Generators.localizationAway (S := T) g
-  have : Q.ker = Ideal.span {MvPolynomial.C g * MvPolynomial.X () - 1} := by
-    convert (Algebra.Presentation.localizationAway T g).span_range_relation_eq_ker.symm
-    simp [Presentation.localizationAway]
   have : Q.ker = Ideal.map (Q.ofComp P).toAlgHom
       (Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1}) := by
-    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, this]
+    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway]
     simp only [Hom.toAlgHom, MvPolynomial.aeval_X, ofComp_val, Sum.elim_inl, sub_left_inj,
       Generators.comp, Generators.ofComp, Generators.localizationAway, Q]
     rw [MvPolynomial.aeval_rename, Sum.elim_comp_inr]
