@@ -35,8 +35,18 @@ variable (C : Set E)
 
 variable (t : Set F)
 
+namespace LinearMap
+
 def prime : Set E := {x₀ | x₀ ∈ C ∧ ∀ x₁ ∈ C, ∀ y ∈ t, B x₁ y ≤ B x₀ y}
 
+-- TODO - do we need non-empty in the def?
+
+/-- A set `B` is semi-exposed with respect to `A` iff it maximizes some functional over `A`
+(and contains all points maximizing it). Written `IsSemiExposed 𝕜 s C`. -/
+def IsSemiExposed (s C : Set E) : Prop :=
+  ∃ t : Set F, s = B.prime C t
+
+end LinearMap
 
 end PreorderSemiring
 
