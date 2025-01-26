@@ -41,10 +41,12 @@ variable {S T : L} {𝒮 : Set L} {I : Sort*} {f : I → L} {x : X}
 
 lemma mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 
+@[simp] lemma mem_inf : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← mem_subtype]
 @[simp] lemma mem_top : x ∈ (⊤ : L) := by simp [← mem_subtype]
 
+@[simp] lemma mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
 @[simp] lemma not_mem_bot : ¬ x ∈ (⊥ : L) := by simp [← mem_subtype]
