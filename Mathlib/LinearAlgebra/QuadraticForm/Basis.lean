@@ -145,17 +145,18 @@ theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) (x y : M
         ((bm.repr x) p.1) • ((bm.repr y) p.2) • (B + B.flip) (bm p.1) (bm p.2) := by
   simp_rw [toBilin, polar_toQuadraticMap, BilinMap.toQuadraticMap_apply]
   let s := (bm.repr x).support ∪ (bm.repr y).support
-  have h1 : (bm.repr x).support ⊆ s := Finset.subset_union_left
-  have h2 : (bm.repr y).support ⊆ s := Finset.subset_union_right
   conv_lhs => rw [← bm.linearCombination_repr x, Finsupp.linearCombination_apply,
-    Finsupp.sum_of_support_subset _ h1 _ (fun i _ ↦ zero_smul R (bm i))]
+    Finsupp.sum_of_support_subset (s := s) (bm.repr x) Finset.subset_union_left _
+      (fun i _ ↦ zero_smul R (bm i))]
   conv_lhs =>  rw [← bm.linearCombination_repr y, Finsupp.linearCombination_apply,
-    Finsupp.sum_of_support_subset _ h2 _ (fun i _ ↦ zero_smul R (bm i))]
+    Finsupp.sum_of_support_subset (s := s) (bm.repr y) Finset.subset_union_right _
+      (fun i _ ↦ zero_smul R (bm i))]
   simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, _root_.map_smul,
     ← Finset.sum_product', ← Finset.diag_union_offDiag s,
     Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag]
   simp only [Basis.constr_basis, ↓reduceIte, smul_ite, smul_add, smul_zero, add_right_inj]
   rw [Finset.sum_ite_of_false (by aesop) _ _, ← Finset.sum_filter]
   simp_rw [LinearMap.add_apply, LinearMap.flip_apply, smul_add]
+  simp only [Finset.subset_union_left, Finset.subset_union_right, s]
 
 end QuadraticMap
