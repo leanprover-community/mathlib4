@@ -1,15 +1,18 @@
 import Mathlib.Tactic.FindSyntax
 import Mathlib.Util.WhatsNew
 
-infix:65 " @~@ " => Nat.add
+infix:65 " #find_syntax_add " => Nat.add
 
 /--
-info: Found 1 use among over 500 syntax declarations
+info: Found 2 uses among over 500 syntax declarations
+In `Mathlib.Tactic.FindSyntax`:
+  Mathlib.FindSyntax.«command#find_syntax_Approx»: '#find_syntax  _  approx'
+
 In `MathlibTest.FindSyntax`:
-  «term_@~@_»: '@~@'
+  «term_#find_syntax_add_»: '#find_syntax_add'
 -/
 #guard_msgs in
-#find_syntax "@~@" approx  -- an `infix` in the current file
+#find_syntax "#find_syntax" approx  -- an `infix` in two files, one being the current one
 
 /--
 info: Found 1 use among over 500 syntax declarations
