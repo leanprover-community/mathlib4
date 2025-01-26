@@ -181,5 +181,6 @@ theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) (x y : M
   simp only [Basis.constr_basis, ↓reduceIte, smul_ite, smul_add, smul_zero, add_right_inj]
   rw [Finset.sum_ite_of_false (by aesop) _ _, ← Finset.sum_filter]
   simp_rw [LinearMap.add_apply, LinearMap.flip_apply, smul_add]
+  simp only [Finset.subset_union_left, Finset.subset_union_right, s]
 
 end QuadraticMap
