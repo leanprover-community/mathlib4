@@ -453,7 +453,7 @@ end Real
 namespace Tactic.NormNum
 /- ## `norm_num` extension for `Real.sqrt` and `NNReal.sqrt` -/
 
-open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
+open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum
 
 lemma isNat_real_sqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (Real.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
@@ -492,7 +492,7 @@ lemma isRat_real_sqrt {x : ℝ} {n sn : ℤ} {d sd : ℕ} (hn : sn * sn = n)
 /-- `norm_num` extension that evaluates the function `Real.sqrt`. -/
 @[norm_num Real.sqrt _]
 def evalRealSqrt : NormNumExt where eval {_ _} e := do
-  let .app _ (x : Q(ℝ)) ← Meta.whnfR e | failure
+  let .app _ (x : Q(ℝ)) ← whnfR e | failure
   let res ← derive (α := q(ℝ)) x
   match res with
   | .isBool _ _ => failure
@@ -517,7 +517,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
       let d : ℕ := ed.natLit!
       if n' ≤ 0 then
         -- Square root of a negative number, defined to be zero
-        let hnum : Q($en ≤ 0) ← Lean.Meta.mkDecideProof q($en ≤ 0)
+        let hnum : Q($en ≤ 0) ← mkDecideProof q($en ≤ 0)
         assumeInstancesCommute
         have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_real_sqrt_neg_of_isRat $hnum $pf)
         let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
@@ -528,10 +528,10 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
       if sn * sn = n ∧ sd * sd = d then
         have esn : Q(ℤ) := mkRawIntLit sn
         have esd : Q(ℕ) := mkRawNatLit sd
-        let hn : Q($esn * $esn = $en) ← Lean.Meta.mkDecideProof q($esn * $esn = $en)
-        let hn₂ : Q(0 ≤ $esn) ← Lean.Meta.mkDecideProof q(0 ≤ $esn)
-        let hd : Q($esd * $esd = $ed) ← Lean.Meta.mkDecideProof q($esd * $esd = $ed)
-        let hd₂ : Q($esd ≠ 0) ← Lean.Meta.mkDecideProof q($esd ≠ 0)
+        let hn : Q($esn * $esn = $en) ← mkDecideProof q($esn * $esn = $en)
+        let hn₂ : Q(0 ≤ $esn) ← mkDecideProof q(0 ≤ $esn)
+        let hd : Q($esd * $esd = $ed) ← mkDecideProof q($esd * $esd = $ed)
+        let hd₂ : Q($esd ≠ 0) ← mkDecideProof q($esd ≠ 0)
         assumeInstancesCommute
         have pf_final : Q(IsRat (Real.sqrt $x) $esn $esd) :=
           q(isRat_real_sqrt $hn $hn₂ $hd $hd₂ $pf)
@@ -541,7 +541,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
 @[norm_num NNReal.sqrt _]
 def evalNNRealSqrt : NormNumExt where eval {u α} e := do
-  let e' : Q(«$α») ← Meta.whnfR e
+  let e' : Q(«$α») ← whnfR e
   match u, α, e' with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $x) =>
     let res ← derive (α := q(ℝ≥0)) x
