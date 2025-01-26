@@ -5655,15 +5655,3 @@ import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
-import Mathlib.scratch.Profile
-import Mathlib.scratch.scratch1
-import Mathlib.scratch.scratch2
-import Mathlib.scratch.scratch3
-import Mathlib.scratch.scratch37
-import Mathlib.scratch.scratch4
-import Mathlib.scratch.scratch5
-import Mathlib.scratch.scratch6
-import Mathlib.scratch.scratch7
-import Mathlib.scratch.scratch8
-import Mathlib.scratch.scratch9
-import Mathlib.scratch.spectral
