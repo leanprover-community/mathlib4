@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
 
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.Order.CompletePartialOrder
+import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # CW complexes
@@ -17,18 +16,18 @@ A CW complex is a topological space that is made by gluing closed disks of diffe
 together.
 
 ## Main definitions
-* `RelCWComplex C D` : the class of CW structures on a subspace `C` relative to a base set
+* `RelCWComplex C D`: the class of CW structures on a subspace `C` relative to a base set
   `D` of a topological space `X`.
-* `CWComplex C` : an abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
+* `CWComplex C`: an abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
   subspace `C` of the topological space `X`.
-* `openCell n i` : an open cell of dimension `n`.
-* `closedCell n i` : a closed cell of dimension `n`.
-* `cellFrontier n i` : the boundary of a cell of dimension `n`.
-* `skeleton C n` : the `n`-skeleton of the (relative) CW complex `C`.
+* `openCell n`: indexed family of all open cells of dimension `n`.
+* `closedCell n`: indexed family of all closed cells of dimension `n`.
+* `cellFrontier n`: indexed family of the boundaries of cells of dimension `n`.
+* `skeleton C n`: the `n`-skeleton of the (relative) CW complex `C`.
 
 ## Main statements
-* `iUnion_openCell_eq_skeleton` : the skeletons can also be seen as a union of open cells.
-* `cellFrontier_subset_finite_openCell` : the edge of a cell is contained in a finite union of
+* `iUnion_openCell_eq_skeleton`: the skeletons can also be seen as a union of open cells.
+* `cellFrontier_subset_finite_openCell`: the edge of a cell is contained in a finite union of
   open cells of a lower dimension.
 
 ## Implementation notes
@@ -56,7 +55,7 @@ open Metric Set
 namespace Topology
 
 /-- A CW complex of a topological space `X` relative to another subspace `D` is the data of its
-*`n`-cells* `cell n i` for each `n : ℕ`  along with *attaching maps* that satisfy a number of
+*`n`-cells* `cell n i` for each `n : ℕ` along with *attaching maps* that satisfy a number of
 properties with the most important being closure-finiteness (`mapsto`) and weak topology
 (`closed'`). Note that this definition requires `C` and `D` to be closed subspaces.
 If `C` is not closed choose `X` to be `C`. -/
@@ -64,11 +63,11 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   /-- The indexing type of the cells of dimension `n`. -/
   cell (n : ℕ) : Type u
   /-- The characteristic map of the `n`-cell given by the index `i`.
-    This map is a bijection when restricting to `ball 0 1`, where we consider `(Fin n → ℝ)`
-    endowed with the maximum metric. -/
+  This map is a bijection when restricting to `ball 0 1`, where we consider `(Fin n → ℝ)`
+  endowed with the maximum metric. -/
   map (n : ℕ) (i : cell n) : PartialEquiv (Fin n → ℝ) X
   /-- The source of every charactersitic map of dimension `n` is
-    `(ball 0 1 : Set (Fin n → ℝ))`. -/
+  `(ball 0 1 : Set (Fin n → ℝ))`. -/
   source_eq (n : ℕ) (i : cell n) : (map n i).source = ball 0 1
   /-- The characteristic maps are continuous when restricting to `closedBall 0 1`. -/
   continuousOn (n : ℕ) (i : cell n) : ContinuousOn (map n i) (closedBall 0 1)
@@ -81,11 +80,11 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   /-- All open cells are disjoint with the base. Use `RelCWComplex.disjointBase` instead. -/
   disjointBase' (n : ℕ) (i : cell n) : Disjoint (map n i '' ball 0 1) D
   /-- The boundary of a cell is contained in a finite union of closed cells of a lower dimension.
-    Use `RelCWComplex.cellFrontier_subset_finite_closedCell` instead. -/
+  Use `RelCWComplex.cellFrontier_subset_finite_closedCell` instead. -/
   mapsto (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
     MapsTo (map n i) (sphere 0 1) (D ∪ ⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
   /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
-    every closed cell and `D` is closed. Use `RelCWComplex.closed` instead. -/
+  every closed cell and `D` is closed. Use `RelCWComplex.closed` instead. -/
   closed' (A : Set X) (asubc : A ⊆ C) :
     ((∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) ∧ IsClosed (A ∩ D)) → IsClosed A
   /-- The base `D` is closed. -/
@@ -99,7 +98,7 @@ abbrev CWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComplex C 
 
 /-- A constructor for `CWComplex`. -/
 def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (cell : ℕ → Type u) (map : (n : ℕ)  → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
+    (cell : ℕ → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)
     (continuousOn : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i) (closedBall 0 1))
     (continuousOn_symm : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i).symm (map n i).target)
@@ -338,7 +337,7 @@ lemma RelCWComplex.cellFrontier_subset_skeleton [RelCWComplex C D] (n : ℕ) (j 
 
 lemma RelCWComplex.iUnion_cellFrontier_subset_skeletonLT [RelCWComplex C D] (l : ℕ) :
     ⋃ (j : cell C l), cellFrontier l j ⊆ skeletonLT C l :=
-  iUnion_subset  (fun _ ↦ cellFrontier_subset_skeletonLT _ _)
+  iUnion_subset (fun _ ↦ cellFrontier_subset_skeletonLT _ _)
 
 lemma RelCWComplex.iUnion_cellFrontier_subset_skeleton [RelCWComplex C D] (l : ℕ) :
     ⋃ (j : cell C l), cellFrontier l j ⊆ skeleton C l :=
