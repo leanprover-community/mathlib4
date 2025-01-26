@@ -21,6 +21,7 @@ variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `log` is analytic away from nonpositive reals -/
+@[fun_prop]
 theorem analyticAt_clog (m : z ∈ slitPlane) : AnalyticAt ℂ log z := by
   rw [analyticAt_iff_eventually_differentiableAt]
   filter_upwards [isOpen_slitPlane.eventually_mem m]
@@ -28,6 +29,7 @@ theorem analyticAt_clog (m : z ∈ slitPlane) : AnalyticAt ℂ log z := by
   exact differentiableAt_id.clog m
 
 /-- `log` is analytic away from nonpositive reals -/
+@[fun_prop]
 theorem AnalyticAt.clog (fa : AnalyticAt ℂ f x) (m : f x ∈ slitPlane) :
     AnalyticAt ℂ (fun z ↦ log (f z)) x :=
   (analyticAt_clog m).comp fa
@@ -56,6 +58,7 @@ theorem AnalyticWithinAt.cpow (fa : AnalyticWithinAt ℂ f s x) (ga : AnalyticWi
   exact ((fa.clog m).mul ga).cexp
 
 /-- `f z ^ g z` is analytic if `f z` is not a nonpositive real -/
+@[fun_prop]
 theorem AnalyticAt.cpow (fa : AnalyticAt ℂ f x) (ga : AnalyticAt ℂ g x)
     (m : f x ∈ slitPlane) : AnalyticAt ℂ (fun z ↦ f z ^ g z) x := by
   rw [← analyticWithinAt_univ] at fa ga ⊢
