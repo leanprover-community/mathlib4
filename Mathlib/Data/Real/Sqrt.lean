@@ -455,25 +455,11 @@ namespace Tactic.NormNum
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-lemma real_sqrt_helper_nat {x y : ℝ} (hy : 0 ≤ y) (h : y * y = x) : Real.sqrt x = y := by
-  rw [← h]
-  exact Real.sqrt_mul_self hy
-
 lemma isNat_real_sqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
-    IsNat (Real.sqrt x) ny := by
-  refine ⟨real_sqrt_helper_nat (Nat.cast_nonneg' ny) ?_⟩
-  rw [h.out]
-  exact_mod_cast hy
-
-lemma nnreal_sqrt_helper_nat {x y : ℝ≥0} (h : y * y = x) : NNReal.sqrt x = y := by
-  rw [← h]
-  exact NNReal.sqrt_mul_self _
+    IsNat (Real.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
 lemma isNat_nnreal_sqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
-    IsNat (NNReal.sqrt x) ny := by
-  refine ⟨nnreal_sqrt_helper_nat ?_⟩
-  rw [h.out]
-  exact_mod_cast hy
+    IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
 lemma isNat_real_sqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
     IsNat (Real.sqrt x) 0 := by
@@ -522,22 +508,20 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
       else failure
   | .isNegNat _ ex pf =>
       -- Recall that `Real.sqrt` returns 0 for negative inputs
-      have ezero : Q(ℕ) := mkRawNatLit 0
       assumeInstancesCommute
       have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_real_sqrt_neg $pf)
       let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
-      return .isNat sℝ ezero pf_final
+      return .isNat sℝ (mkRawNatLit 0) pf_final
   | .isRat sℝ eq en ed pf =>
       let n' : ℤ := en.intLit!
       let d : ℕ := ed.natLit!
       if n' ≤ 0 then
         -- Square root of a negative number, defined to be zero
         let hnum : Q($en ≤ 0) ← Lean.Meta.mkDecideProof q($en ≤ 0)
-        have ezero : Q(ℕ) := mkRawNatLit 0
         assumeInstancesCommute
         have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_real_sqrt_neg_of_isRat $hnum $pf)
         let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
-        return .isNat sℝ ezero pf_final
+        return .isNat sℝ (mkRawNatLit 0) pf_final
       let n : ℕ := n'.toNat
       let sn : ℤ := Nat.sqrt n
       let sd := Nat.sqrt d
@@ -557,7 +541,8 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
 @[norm_num NNReal.sqrt _]
 def evalNNRealSqrt : NormNumExt where eval {u α} e := do
-  match u, α, e with
+  let e' : Q(«$α») ← Meta.whnfR e
+  match u, α, e' with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $x) =>
     let res ← derive (α := q(ℝ≥0)) x
     match res with
