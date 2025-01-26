@@ -77,6 +77,16 @@ lemma objEquiv_toOrderHom_apply {n i : ℕ}
         objEquiv x)).toOrderHom j = x j :=
   rfl
 
+lemma objEquiv_symm_comp {n n' : SimplexCategory} {m : SimplexCategoryᵒᵖ}
+    (f : m.unop ⟶ n) (g : n ⟶ n') :
+    objEquiv.{u}.symm (f ≫ g) =
+      (stdSimplex.map g).app _ (objEquiv.{u}.symm f) := rfl
+
+@[simp]
+lemma objEquiv_symm_apply {n m : ℕ}
+    (f : SimplexCategory.mk m ⟶ SimplexCategory.mk n) (i : Fin (m + 1)) :
+    (objEquiv.{u}.symm f : Δ[n] _[m]) i = f.toOrderHom i := rfl
+
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
 abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (f : Fin (len m.unop + 1) →o Fin (n.len + 1)) :
@@ -93,7 +103,6 @@ the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
   α.down.toOrderHom
 
-
 lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : SimplexCategory}
     (x : (stdSimplex.{u}.obj n).obj m₁) :
     (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
@@ -103,6 +112,10 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   yonedaCompUliftFunctorEquiv X n
+
+lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
+    yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
+  yonedaEquiv.symm.injective rfl
 
 /-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
 def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv (𝟙 Δ[n])
@@ -173,6 +186,10 @@ lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
 
 end stdSimplex
 
+lemma yonedaEquiv_comp {X Y : SSet.{u}} {n : SimplexCategory}
+    (f : stdSimplex.obj n ⟶ X) (g : X ⟶ Y) :
+    yonedaEquiv (f ≫ g) = g.app _ (yonedaEquiv f) := rfl
+
 namespace Subcomplex
 
 variable {X : SSet.{u}}
@@ -201,6 +218,12 @@ lemma ofSimplex_le_iff {n : ℕ} (x : X _[n]) (A : X.Subcomplex) :
   · rintro h m _ ⟨y, rfl⟩
     obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective y
     exact A.map f.op h
+
+lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
+    (f : stdSimplex.obj n ⟶ A) :
+    (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subpresheaf.toPresheaf A) ≃ A.obj (op n)))
+      yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
+  rfl
 
 end Subcomplex
 
