@@ -71,8 +71,6 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   refine le_trans ?_ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
   refine card_le_card fun t ht => ?_
-  -- Porting note: commented out the following line
-  -- infer_instance
   rw [mem_bipartiteAbove] at ht
   have : ∅ ∉ 𝒜 := by
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]

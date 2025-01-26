@@ -74,7 +74,7 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
-    (hf_meas : AEStronglyMeasurable' m f μ) : f =ᵐ[μ] 0 := by
+    (hf_meas : AEStronglyMeasurable[m] f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   -- Porting note: `simp only` does not call `rfl` to try to close the goal. See https://github.com/leanprover-community/mathlib4/issues/5025
   have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [f_meas, Subtype.coe_mk]; rfl
@@ -99,7 +99,7 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
-    (hf_meas : AEStronglyMeasurable' m f μ) (hg_meas : AEStronglyMeasurable' m g μ) :
+    (hf_meas : AEStronglyMeasurable[m] f μ) (hg_meas : AEStronglyMeasurable[m] g μ) :
     f =ᵐ[μ] g := by
   suffices h_sub : ⇑(f - g) =ᵐ[μ] 0 by
     rw [← sub_ae_eq_zero]; exact (Lp.coeFn_sub f g).symm.trans h_sub
@@ -112,11 +112,8 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     intro s hs hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae (Lp.coeFn_sub f g))]
     exact (hf_int_finite s hs hμs).sub (hg_int_finite s hs hμs)
-  have hfg_meas : AEStronglyMeasurable' m (⇑(f - g)) μ :=
-    AEStronglyMeasurable'.congr (hf_meas.sub hg_meas) (Lp.coeFn_sub f g).symm
-  exact
-    Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
-      hfg_meas
+  exact Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
+    <| (hf_meas.sub hg_meas).congr (Lp.coeFn_sub f g).symm
 
 @[deprecated (since := "2024-04-17")]
 alias Lp.ae_eq_of_forall_set_integral_eq' := Lp.ae_eq_of_forall_setIntegral_eq'
@@ -127,7 +124,7 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     {f g : α → F'} (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
-    (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g := by
+    (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) : f =ᵐ[μ] g := by
   rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
   have hf_mk_int_finite (s) :
       MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hfm.mk f) s (μ.trim hm) := by

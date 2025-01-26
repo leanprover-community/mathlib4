@@ -70,10 +70,12 @@ theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Mem�
 
 variable {f : α → E}
 
+@[fun_prop]
 theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
     Integrable (fun x => ⟪c, f x⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 
+@[fun_prop]
 theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
     Integrable (fun x => ⟪f x, c⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c

@@ -56,7 +56,7 @@ lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
+instance groupWithZeroHasForget : HasForget GrpWithZero where
   forget :=
   { obj := fun G => G
     map := fun f => f.toFun }
