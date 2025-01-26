@@ -26,9 +26,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- Meromorphy of `f` at `x` (more precisely, on a punctured neighbourhood of `x`; the value at
 `x` itself is irrelevant). -/
+@[fun_prop]
 def MeromorphicAt (f : 𝕜 → E) (x : 𝕜) :=
   ∃ (n : ℕ), AnalyticAt 𝕜 (fun z ↦ (z - x) ^ n • f z) x
 
+@[fun_prop]
 lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
@@ -37,9 +39,11 @@ namespace MeromorphicAt
 
 lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
 
+@[fun_prop]
 lemma const (e : E) (x : 𝕜) : MeromorphicAt (fun _ ↦ e) x :=
   analyticAt_const.meromorphicAt
 
+@[fun_prop]
 lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f + g) x := by
   rcases hf with ⟨m, hf⟩
@@ -53,34 +57,62 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
   exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
    (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
+@[fun_prop]
+lemma add' {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z + g z) x :=
+  hf.add hg
+
+@[fun_prop]
 lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul hg using 2 with z
+  convert hf.smul' hg using 2 with z
   rw [Pi.smul_apply', smul_eq_mul]
   module
 
+@[fun_prop]
+lemma smul' {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z • g z) x :=
+  hf.smul hg
+
+@[fun_prop]
 lemma mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x :=
   hf.smul hg
 
+@[fun_prop]
+lemma mul' {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z * g z) x :=
+  hf.smul hg
+
+@[fun_prop]
 lemma neg {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
   convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
+
+@[fun_prop]
+lemma neg' {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ -f z) x :=
+  hf.neg
 
 @[simp]
 lemma neg_iff {f : 𝕜 → E} {x : 𝕜} :
     MeromorphicAt (-f) x ↔ MeromorphicAt f x :=
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, MeromorphicAt.neg⟩
 
+@[fun_prop]
 lemma sub {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
   convert hf.add hg.neg using 1
   ext1 z
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.neg_apply, sub_eq_add_neg]
+
+@[fun_prop]
+lemma sub' {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z - g z) x :=
+  hf.sub hg
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
 neighbourhood of `x` (not on `f x`) -/
@@ -89,13 +121,14 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
   have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
-  refine (this.smul hf).congr ?_
+  refine (this.smul' hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
   · simp
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
 
+@[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
   by_cases h_eq : (fun z ↦ (z - x) ^ m • f z) =ᶠ[𝓝 x] 0
@@ -110,7 +143,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
-    refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr ?_⟩
+    refine ⟨n + 1, (this.smul' <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
@@ -123,24 +156,46 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
       rw [pow_succ', mul_assoc, hfg]
       ring
 
+@[fun_prop]
+lemma inv' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ (f z)⁻¹) x :=
+  hf.inv
+
 @[simp]
 lemma inv_iff {f : 𝕜 → 𝕜} {x : 𝕜} :
     MeromorphicAt f⁻¹ x ↔ MeromorphicAt f x :=
   ⟨fun h ↦ by simpa only [inv_inv] using h.inv, MeromorphicAt.inv⟩
 
+@[fun_prop]
 lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f / g) x :=
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
 
+@[fun_prop]
+lemma div' {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z / g z) x :=
+  hf.div hg
+
+@[fun_prop]
 lemma pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
   | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
   | succ m hm => simpa only [pow_succ] using hm.mul hf
 
+@[fun_prop]
+lemma pow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
+    MeromorphicAt (fun z ↦ (f z) ^ n) x :=
+  hf.pow n
+
+@[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   induction n with
   | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
+
+@[fun_prop]
+lemma zpow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
+    MeromorphicAt (fun z ↦ (f z) ^ n) x :=
+  hf.zpow n
 
 theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y := by
