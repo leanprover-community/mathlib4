@@ -39,12 +39,14 @@ noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
   counitIso := NatIso.ofComponents
     (fun X ↦ MonoOver.isoMk ((asIso (toRange X.arrow)).symm))
 
+variable {F} in
 @[simp]
 lemma range_subobject_mk_ι (A : Subpresheaf F) :
     range (Subobject.mk A.ι).arrow = A :=
   (((equivalenceMonoOver F).trans
     (ThinSkeleton.equivalence _).symm).unitIso.app A).to_eq.symm
 
+variable {F} in
 @[simp]
 lemma subobject_mk_range_arrow (X : Subobject F) :
     Subobject.mk (range X.arrow).ι = X :=
