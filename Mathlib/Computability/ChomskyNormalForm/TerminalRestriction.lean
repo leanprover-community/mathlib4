@@ -187,8 +187,7 @@ lemma restrictTerminalRule_left {n : g.NT} {r : ContextFreeRule T g.NT}
     · rename_i hrt
       simp only [projectString, projectSymbol, List.map_cons, List.map_nil]
       exact ⟨hrn, hrt⟩
-    · rw [projectString_rightEmbedString_id]
-      exact ⟨hrn, rfl⟩
+    · exact ⟨hrn, projectString_rightEmbedString_id ▸ rfl⟩
   · simp only [newTerminalRules, List.mem_filterMap] at hrr
     obtain ⟨r'', _, hrr⟩ := hrr
     cases r'' <;> simp only [Option.some.injEq, reduceCtorEq] at hrr
@@ -197,9 +196,8 @@ lemma restrictTerminalRule_left {n : g.NT} {r : ContextFreeRule T g.NT}
 
 lemma terminal_mem_newTerminalRules {t : T} {r : ContextFreeRule T g.NT}
     (htr : Symbol.terminal t ∈ r.output) :
-    ⟨Sum.inr t, [Symbol.terminal t]⟩ ∈ newTerminalRules r := by
-  rw [newTerminalRules, List.mem_filterMap]
-  use Symbol.terminal t
+    ⟨Sum.inr t, [Symbol.terminal t]⟩ ∈ newTerminalRules r :=
+  List.mem_filterMap.2 ⟨Symbol.terminal t, ⟨htr, rfl⟩⟩
 
 variable [DecidableEq T] [DecidableEq g.NT]
 
@@ -223,10 +221,8 @@ lemma restrictTerminals_produces_derives_projectString {u v : List (Symbol T (g.
     rw [hu, hv, hr']
     unfold projectString at hrₒ ⊢
     repeat rw [List.map_append]
-    apply Produces.single
-    apply Produces.append_right
-    apply Produces.append_left
-    exact ⟨r, hrg, hrₒ ▸ hrᵢ ▸ ContextFreeRule.Rewrites.input_output⟩
+    exact ((Produces.append_left
+      ⟨r, hrg, hrₒ ▸ hrᵢ ▸ ContextFreeRule.Rewrites.input_output⟩ _).append_right _).single
   | inr =>
     rw [hu, hv, hr', restrictTerminalRules_right_terminal_output hrg' hr']
     simp only [projectString, List.map_append]
@@ -267,8 +263,7 @@ lemma restrictTerminals_derives_rightEmbedString_embedString {u : List (Symbol T
             simp only [List.mem_dedup, List.mem_flatten, List.mem_map, Finset.mem_toList,
               exists_exists_and_eq_and]
             exact ⟨r, hrg, by right; exact hrr⟩
-        · unfold rightEmbedSymbol embedSymbol
-          exact ContextFreeRule.Rewrites.input_output
+        · exact .input_output
 
 lemma derives_restrictTerminals_derives_embedString {u v : List (Symbol T g.NT)}
     (huv : g.Derives u v) :
@@ -281,13 +276,10 @@ lemma derives_restrictTerminals_derives_embedString {u v : List (Symbol T g.NT)}
     obtain ⟨_, _, heq₁, heq₂⟩ := hr.exists_parts
     rw [heq₁, heq₂]
     repeat rw [embedString_append]
-    apply Derives.append_right
-    apply Derives.append_left
+    refine Derives.append_right (Derives.append_left ?_ _) _
     by_cases hrt : ∃ t, r.output = [Symbol.terminal t]
     · obtain ⟨t, hrt⟩ := hrt
-      apply Produces.single
-      use ⟨Sum.inl r.input, [Symbol.terminal t]⟩
-      constructor
+      refine Produces.single ⟨⟨Sum.inl r.input, [Symbol.terminal t]⟩, ⟨?_, ?_⟩⟩
       · unfold restrictTerminals restrictTerminalRules restrictTerminalRule
         simp only [List.mem_toFinset, List.mem_flatten, List.mem_map, Finset.mem_toList,
           exists_exists_and_eq_and]
@@ -295,10 +287,9 @@ lemma derives_restrictTerminals_derives_embedString {u v : List (Symbol T g.NT)}
         simp [hrt]
       · rw [hrt]
         simp only [List.map_cons, List.map_nil]
-        exact ContextFreeRule.Rewrites.input_output
+        exact .input_output
     · apply Produces.trans_derives
-      · use ⟨Sum.inl r.input, rightEmbedString r.output⟩
-        constructor
+      · refine ⟨⟨Sum.inl r.input, rightEmbedString r.output⟩, ⟨?_, ?_⟩⟩
         · simp only [restrictTerminals, restrictTerminalRules, restrictTerminalRule,
             List.mem_toFinset, List.mem_flatten, List.mem_map, Finset.mem_toList,
             exists_exists_and_eq_and]
@@ -306,12 +297,11 @@ lemma derives_restrictTerminals_derives_embedString {u v : List (Symbol T g.NT)}
           split <;> rename_i heq
           · rename_i t'
             exfalso
-            apply hrt
-            use t'
+            exact hrt ⟨t', heq⟩
           · simp
         · unfold embedString embedSymbol
           simp only [List.map_cons, List.map_nil]
-          exact ContextFreeRule.Rewrites.input_output
+          exact .input_output
       · apply restrictTerminals_derives_rightEmbedString_embedString
         intros
         use r
