@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib
+import Mathlib.Analysis.Normed.Operator.Compact
+import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+--import Mathlib
 
 /-!
 # Fredholm operators
@@ -25,33 +28,43 @@ variable {𝕜: Type*} [NormedField 𝕜]
 
 open FiniteDimensional
 
-variable (T) in
+variable (𝕜) in
 /-- A bounded linear operator `T: X → Y` is Fredholm iff its kernel and cokernel
 are finite-dimensional (and it has closed range?). -/
-def IsFredholm : Prop :=
+def IsFredholm (T : X →L[𝕜] Y) : Prop :=
   FiniteDimensional 𝕜 (LinearMap.ker T) ∧ FiniteDimensional 𝕜 (Y ⧸ LinearMap.range T)
 
-variable (T) in
+variable (𝕜 X Y) in
 /-- The **Fredholm index** of a bounded linear operator is `dim ker T - dim coker T`. -/
-noncomputable def index : ℤ :=
-(finrank 𝕜 (LinearMap.ker T) : ℤ) - (finrank 𝕜 (Y ⧸ LinearMap.range T) : ℤ)
+noncomputable def index (T : X →L[𝕜] Y) : ℤ :=
+(Module.finrank 𝕜 (LinearMap.ker T) : ℤ) - (Module.finrank 𝕜 (Y ⧸ LinearMap.range T) : ℤ)
 
 
 -- TODO: in the future
 /-- If X and Y are complete, closedness of `range T` is automatic for Fredholm operators. -/
 theorem IsFredholm.closedRange_of_completeSpace [CompleteSpace X] [CompleteSpace Y]
-    (hT : IsFredholm T) : IsClosed (LinearMap.range T: Set Y) := sorry
+    (hT : IsFredholm 𝕜 T) : IsClosed (LinearMap.range T: Set Y) := sorry
 
 namespace IsFredholm
 
-lemma id : IsFredholm (ContinuousLinearEquiv.id X) := by
+/-- A continuous linear equivalence is Fredholm, with Fredholm index 0. -/
+lemma _root_.ContinuousLinearEquiv.isFredholm (T : X ≃L[𝕜] Y) :
+    IsFredholm 𝕜 (X := X) (Y := Y) T := by
+  -- TODO: why are these erw's needed?
   constructor
-  · sorry
-  · sorry
+  · erw [LinearEquiv.ker T.toLinearEquiv]
+    exact Module.Finite.bot 𝕜 X
+  · erw [LinearEquiv.range T.toLinearEquiv]
+    exact Module.Finite.of_finite
 
-lemma _root_.ContinuousLinearEquiv.isFredholm (T : X ≃L[𝕜] Y) : IsFredholm T := by
-  constructor
-  · sorry
-  · sorry
+lemma _root_.ContinuousLinearEquiv.index_eq (T : X ≃L[𝕜] Y) : index 𝕜 X Y T = 0 := by
+  simp only [index]
+  -- TODO: remove these!
+  erw [LinearEquiv.ker T.toLinearEquiv, LinearEquiv.range T.toLinearEquiv]
+  rw [finrank_bot, Module.finrank_zero_of_subsingleton, Int.sub_eq_zero]
+
+/-- The identity map is Fredholm, with Fredholm index 0. -/
+lemma id : IsFredholm 𝕜 (X := X) (Y := X) (ContinuousLinearEquiv.refl 𝕜 X) :=
+  _root_.ContinuousLinearEquiv.isFredholm _
 
 end IsFredholm
