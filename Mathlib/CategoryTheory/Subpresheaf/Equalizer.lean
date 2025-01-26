@@ -10,7 +10,8 @@ import Mathlib.CategoryTheory.Subpresheaf.Basic
 
 If `F₁` and `F₂` are presheaves of types, `A : Subpresheaf F₁`, and
 `f` and `g` are two morphisms `A.toPresheaf ⟶ F₂`, we introduce
-`Subcomplex.equalizer f g`, which is the subpresheaf of `F₁` contained in `A`.
+`Subcomplex.equalizer f g`, which is the subpresheaf of `F₁` contained in `A`
+where `f` and `g` coincide.
 
 -/
 
