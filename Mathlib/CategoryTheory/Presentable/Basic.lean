@@ -3,14 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
-import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Presentable objects
 
@@ -34,70 +30,6 @@ universe w w' v₁ v₂ v₃ u₁ u₂ u₃
 namespace CategoryTheory
 
 open Limits Opposite
-
-namespace Limits
-
-namespace Types
-
-variable {J : Type u₁} [Category.{v₁} J]
-
--- to be moved
-namespace uliftFunctor
-
-variable {F : J ⥤ Type w'} (c : Cocone F)
-
-variable (F) in
-def quotEquiv : Quot F ≃ Quot (F ⋙ uliftFunctor.{w}) where
-  toFun := Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) (by
-    rintro ⟨j₁, x₁⟩ ⟨j₂, x₂⟩ ⟨f, h⟩
-    dsimp at f h
-    exact Quot.sound ⟨f, by simp [h]⟩)
-  invFun := Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.down x)) (by
-    rintro ⟨j₁, ⟨x₁⟩⟩ ⟨j₂, ⟨x₂⟩⟩ ⟨f, h⟩
-    dsimp at f h ⊢
-    refine Quot.sound ⟨f, by simpa using h⟩)
-  left_inv := by rintro ⟨_, _⟩; rfl
-  right_inv := by rintro ⟨_, _⟩; rfl
-
-lemma quotEquiv_comm :
-    Quot.desc (uliftFunctor.{w}.mapCocone c) ∘ quotEquiv F =
-    ULift.up ∘ Quot.desc c := by
-  ext ⟨j, x⟩
-  simp [quotEquiv]
-  rfl
-
-lemma isColimit_cocone_iff :
-    Nonempty (IsColimit c) ↔ Nonempty (IsColimit (uliftFunctor.{w}.mapCocone c)) := by
-  simp only [isColimit_iff_bijective_desc]
-  rw [← Function.Bijective.of_comp_iff _ ((quotEquiv F).bijective), quotEquiv_comm.{w} c,
-    ← Function.Bijective.of_comp_iff' Equiv.ulift.symm.bijective]
-  rfl
-
-noncomputable def isColimitEquiv :
-    IsColimit c ≃ IsColimit (uliftFunctor.{w}.mapCocone c) where
-  toFun hc := ((isColimit_cocone_iff c).1 ⟨hc⟩).some
-  invFun hc := ((isColimit_cocone_iff c).2 ⟨hc⟩).some
-  left_inv _ := Subsingleton.elim _ _
-  right_inv _ := Subsingleton.elim _ _
-
-instance : PreservesColimit F (uliftFunctor.{w, w'}) where
-  preserves {c} hc := ⟨isColimitEquiv c hc⟩
-
-instance : ReflectsColimit F (uliftFunctor.{w, w'}) where
-  reflects {c} hc := ⟨(isColimitEquiv c).symm hc⟩
-
-instance : PreservesColimitsOfShape J (uliftFunctor.{w, w'}) where
-
-instance : ReflectsColimitsOfShape J (uliftFunctor.{w, w'}) where
-
-end uliftFunctor
-
-instance : PreservesColimitsOfSize.{v₁, u₁} (uliftFunctor.{w, w'}) where
-instance : ReflectsColimitsOfSize.{v₁, u₁} (uliftFunctor.{w, w'}) where
-
-end Types
-
-end Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
