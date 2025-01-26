@@ -1374,7 +1374,6 @@ lemma lift_openEmbedding_toFun
 
 lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) {x : X} :
     (lift_openEmbedding e hf) (f x) = e x := by
-  have := Nonempty.intro x
   simp_rw [e.lift_openEmbedding_toFun]
   apply hf.injective.extend_apply
 
