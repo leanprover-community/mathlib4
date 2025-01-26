@@ -54,7 +54,7 @@ lemma baseField_essentially_unique
   obtain ⟨x', H⟩ := H
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
-lemma ofAlgEquiv (e : D ≃ₐ[K] D'): IsCentral K D' where
+lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
   out x hx := by
     rename_i _ h _ _
     obtain ⟨k, hk⟩ := h.1 (show e.symm x ∈ _ by
