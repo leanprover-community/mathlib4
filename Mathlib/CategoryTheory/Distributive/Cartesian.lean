@@ -5,7 +5,6 @@ Authors: Sina Hazratpour
 -/
 
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 import Mathlib.CategoryTheory.Distributive.Monoidal
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 
@@ -62,8 +61,6 @@ attribute [local instance] monoidalOfChosenFiniteProducts
 with respect to the cartesian monoidal structure. -/
 abbrev CartesianDistributive :=
   IsMonoidalLeftDistrib C
-
-attribute [local instance] symmetricOfHasFiniteProducts
 
 /-- Every cartesian distributive category is both left and right distributive. -/
 instance [CartesianDistributive C] : IsMonoidalDistrib C :=
