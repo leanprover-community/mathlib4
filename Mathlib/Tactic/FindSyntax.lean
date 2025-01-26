@@ -80,7 +80,7 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
     -- If either the name of the parser or the regenerated syntax stub contains the input string,
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
-      let some mod := ← findModuleOf? nm | pure default
+      let mod := (← findModuleOf? nm).getD (← getMainModule)
       match_results := match_results.insert mod <| (match_results.findD mod #[]).push (nm, rem.trim)
   -- We sort the messages to produce a more stable output.
   -- let msgsToString ← msgs.mapM (·.toString)
