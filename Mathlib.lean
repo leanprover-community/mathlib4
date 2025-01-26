@@ -354,6 +354,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Group.Submonoid.Pointwise
@@ -4403,6 +4404,7 @@ import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.GroupCohomology.scratch
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
@@ -5654,3 +5656,15 @@ import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.scratch.Profile
+import Mathlib.scratch.scratch1
+import Mathlib.scratch.scratch2
+import Mathlib.scratch.scratch3
+import Mathlib.scratch.scratch37
+import Mathlib.scratch.scratch4
+import Mathlib.scratch.scratch5
+import Mathlib.scratch.scratch6
+import Mathlib.scratch.scratch7
+import Mathlib.scratch.scratch8
+import Mathlib.scratch.scratch9
+import Mathlib.scratch.spectral
