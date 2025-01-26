@@ -102,13 +102,11 @@ lemma map_swap {S : Type*} [Semiring S] (f : R →+* S) (i j : n) :
 
 variable [Fintype n]
 
-@[simp]
 lemma swap_mulVec_single_left (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single i r = Pi.single j r := by
   simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap]
   rw [Equiv.swap_apply_left]
 
-@[simp]
 lemma swap_mulVec_single_right (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single j r = Pi.single i r := by
   rw [swap_comm, swap_mulVec_single_left]
@@ -118,13 +116,11 @@ lemma swap_mulVec_single_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : 
   simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap,
     Equiv.swap_apply_of_ne_of_ne hik hjk]
 
-@[simp]
 lemma single_vecMul_swap_left (i j : n) (r : R) :
     Pi.single i r ᵥ* swap R i j = Pi.single j r := by
   simp only [swap, Equiv.single_vecMul_toPEquiv_toMatrix, Equiv.symm_swap]
   rw [Equiv.swap_apply_left]
 
-@[simp]
 lemma single_vecMul_swap_right (i j : n) (r : R) :
     Pi.single j r ᵥ* swap R i j = Pi.single i r := by
   rw [swap_comm, single_vecMul_swap_left]
