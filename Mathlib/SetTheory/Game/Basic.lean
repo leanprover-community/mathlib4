@@ -499,7 +499,7 @@ def mulNegRelabelling (x y : PGame) : x * -y ≡r -(x * y) :=
   (mulCommRelabelling x _).trans <| (negMulRelabelling _ x).trans (mulCommRelabelling y x).negCongr
 
 theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
-  game_eq (x.mul_neg y ▸ Setoid.refl _) -- Porting note: was `of_eq (x.mul_neg y)`
+  game_eq (x.mul_neg y ▸ Setoid.refl _)
 
 theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
