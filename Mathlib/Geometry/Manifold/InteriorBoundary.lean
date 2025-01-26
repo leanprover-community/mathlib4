@@ -259,12 +259,11 @@ end prod
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  [hM : IsManifold I n M] [hM' : IsManifold I n M']
-  [Nonempty M] [Nonempty M'] [Nonempty H]
+  [hM : IsManifold I n M] [hM' : IsManifold I n M'] [Nonempty H]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
-  [IsManifold J n N] [IsManifold J n N'] [Nonempty N] [Nonempty N'] [Nonempty H']
+  [IsManifold J n N] [IsManifold J n N'] [Nonempty H']
 
 open Topology
 
