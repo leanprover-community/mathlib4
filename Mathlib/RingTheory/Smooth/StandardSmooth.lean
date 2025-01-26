@@ -400,7 +400,6 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply]
     erw [MvPolynomial.pderiv_map]
-    rfl
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
   rw [P.algebraMap_apply]

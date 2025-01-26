@@ -113,18 +113,21 @@ lemma Cotangent.exact :
       EmbeddingLike.map_eq_zero_iff]
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-    simp only [map_mk, Hom.toAlgHom_comp_apply, val_mk, LinearMap.zero_apply, val_zero]
+    rw [map_mk]
+    simp only [LinearMap.zero_apply, val_zero]
+    rw [val_mk]
     convert Q.ker.toCotangent.map_zero
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
-    · congr
-      refine MvPolynomial.algHom_ext fun i ↦ ?_
-      show (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
-      simp
-    · simp [-self_vars, aeval_val_eq_zero hx]
+    · have : ((Q.ofComp P).comp (Q.toComp P)).toAlgHom =
+          ((IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S)) := by
+        refine MvPolynomial.algHom_ext fun i ↦ ?_
+        simp
+      rw [← this, ← Generators.Hom.toExtensionHom_comp _ _ _ (Q.ofComp P) (Q.toComp P)]
+      rw [Hom.toExtensionHom_toAlgHom_apply]
+    · simp [aeval_val_eq_zero hx]
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-    replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
-      simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using congr(($hx).val)
+    replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by rwa [map_mk, mk_eq_zero_iff] at hx
     rw [← Submodule.restrictScalars_mem R, pow_two, Submodule.restrictScalars_mul,
       ← map_ofComp_ker (P := P), ← Submodule.map_mul, ← Submodule.restrictScalars_mul] at hx
     obtain ⟨y, hy, e⟩ := hx
@@ -134,8 +137,9 @@ lemma Cotangent.exact :
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
-      Extension.Cotangent.mk z := by
-      ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
+        Extension.Cotangent.mk z := by
+      ext
+      rwa [val_mk, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
       (f := Submodule.subtype _) Subtype.val_injective, Submodule.map_subtype_span_singleton,
@@ -148,8 +152,7 @@ lemma Cotangent.exact :
       Subtype.exists, exists_and_right, exists_eq_right,
       toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
-    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
-      rw [aeval_val_eq_zero hw, map_zero]
+    · simp [ker_eq_ker_aeval_val, RingHom.mem_ker, aeval_val_eq_zero hw]
     · rw [map_mk]
       rfl
 
@@ -297,6 +300,7 @@ lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     rw [add_left_comm]
     rfl
 
+set_option maxHeartbeats 300000 in
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
@@ -314,10 +318,11 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
       ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, LinearEquiv.map_add,
       LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, LinearMap.map_add]
     obtain (n | n) := n
-    · simp only [comp_vars, Sum.elim_inl, δAux_X, smul_zero, aeval_X,
-        CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply, zero_add,
-        Basis.repr_self, Finsupp.linearCombination_single, Basis.prod_apply, LinearMap.coe_inl,
-        LinearMap.coe_inr, Function.comp_apply, one_smul, map_zero]
+    · simp only [Sum.elim_inl, δAux_X, smul_zero, aeval_X, zero_add, self_eq_add_left,
+        CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_self, Basis.repr_symm_apply,
+        Finsupp.linearCombination_single,
+        Basis.prod_apply, LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply,
+        one_smul, map_zero, smul_zero]
     · simp only [comp_vars, Sum.elim_inr, Function.comp_apply, algHom_C, δAux_C,
         CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply,
         algebraMap_smul, Basis.repr_self, Finsupp.linearCombination_single, Basis.prod_apply,
@@ -401,7 +406,9 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
-    simp only [y, Extension.Cotangent.map_mk]
+    simp only [y]
+    -- this is needed after #21050
+    rw [Extension.Cotangent.map_mk]
     congr
     exact ofComp_kerCompPreimage Q P x
   let z := (CotangentSpace.compEquiv Q P ((Q.comp P).toExtension.cotangentComplex y)).2
@@ -444,8 +451,11 @@ lemma δ_map
   show δ _ _ ⟨_, _⟩ = δ _ _ _
   replace hx : (1 : T) ⊗ₜ[Q'.Ring] (D S Q'.Ring) y = 0 := by
     simpa only [LinearMap.mem_ker, Extension.cotangentComplex_mk, ker, RingHom.mem_ker] using hx
-  simp only [LinearMap.domRestrict_apply, Extension.Cotangent.map_mk, δ_eq_δAux]
-  refine (δAux_toAlgHom f _).trans ?_
+  simp only [LinearMap.domRestrict_apply]
+  -- this is needed after #21050
+  simp_rw [Extension.Cotangent.map_mk f.toExtensionHom]
+  rw [δ_eq_δAux, δ_eq_δAux]
+  refine (δAux_toAlgHom (R := R) f _).trans ?_
   rw [hx, map_zero, map_zero, add_zero]
 
 lemma δ_comp_equiv
