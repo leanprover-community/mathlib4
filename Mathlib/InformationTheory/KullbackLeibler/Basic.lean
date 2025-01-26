@@ -217,13 +217,11 @@ zero if and only if the two measures are equal. -/
 lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     kl μ ν = 0 ↔ μ = ν := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ kl_self _⟩
-  by_cases hμν : μ ≪ ν
-  swap; · rw [kl_of_not_ac hμν] at h; exact (ENNReal.top_ne_zero h).elim
-  by_cases h_int : Integrable (llr μ ν) μ
-  swap; · rw [kl_of_not_integrable h_int] at h; exact (ENNReal.top_ne_zero h).elim
-  simp only [kl_eq_lintegral_klFun, hμν, ↓reduceIte] at h
+  have h_ne : kl μ ν ≠ ⊤ := by simp [h]
+  rw [kl_ne_top_iff] at h_ne
+  simp only [kl_eq_lintegral_klFun, h_ne.1, ↓reduceIte] at h
   rw [lintegral_eq_zero_iff (by fun_prop)] at h
-  refine (Measure.rnDeriv_eq_one_iff_eq hμν).mp ?_
+  refine (Measure.rnDeriv_eq_one_iff_eq h_ne.1).mp ?_
   filter_upwards [h] with x hx
   simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero] at hx
   have hx' : klFun (μ.rnDeriv ν x).toReal = 0 := le_antisymm hx (klFun_nonneg ENNReal.toReal_nonneg)

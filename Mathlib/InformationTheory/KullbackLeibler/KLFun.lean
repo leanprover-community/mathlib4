@@ -10,13 +10,13 @@ import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 # The real function `fun x ↦ x * log x + 1 - x`
 
 We define `klFun x = x * log x + 1 - x`. That function is notable because the Kullback-Leibler
-divergence is an f-divergence for `klFun`
+divergence is an f-divergence for `klFun`.
 
 ## Main definitions
 
 * `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
 
-This is a nonnegative, strictly convex function on [0,∞), with minimum value 0 at 1.
+This is a continuous nonnegative, strictly convex function on [0,∞), with minimum value 0 at 1.
 
 ## Main statements
 
@@ -29,9 +29,7 @@ This is a nonnegative, strictly convex function on [0,∞), with minimum value 0
 
 -/
 
-open Real MeasureTheory Filter MeasurableSpace Set
-
-open scoped ENNReal NNReal Topology BigOperators
+open Real MeasureTheory Filter Set
 
 namespace ProbabilityTheory
 
@@ -41,17 +39,22 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {x : ℝ}
 The Kullback-Leibler divergence is an f-divergence for this function. -/
 noncomputable abbrev klFun (x : ℝ) : ℝ := x * log x + 1 - x
 
+lemma klFun_zero : klFun 0 = 1 := by simp
+
 lemma klFun_one : klFun 1 = 0 := by simp
 
 /-- `klFun` is strictly convex on [0,∞). -/
-lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun := by
-  unfold klFun
-  simp_rw [add_sub_assoc]
-  refine strictConvexOn_mul_log.add_convexOn ?_
-  exact (convexOn_const _ (convex_Ici _)).sub (concaveOn_id (convex_Ici _))
+lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun :=
+  (strictConvexOn_mul_log.add_convexOn (convexOn_const _ (convex_Ici _))).sub_concaveOn
+    (concaveOn_id (convex_Ici _))
 
 /-- `klFun` is convex on [0,∞). -/
 lemma convexOn_klFun : ConvexOn ℝ (Ici 0) klFun := strictConvexOn_klFun.convexOn
+
+/-- `klFun` is convex on (0,∞).
+This is an often useful consequence of `convexOn_klFun`, which states convexity on [0, ∞). -/
+lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
+  convexOn_klFun.subset (Ioi_subset_Ici le_rfl) (convex_Ioi _)
 
 /-- `klFun` is continuous. -/
 @[continuity, fun_prop]
@@ -106,8 +109,7 @@ lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
   rcases hx.eq_or_lt with rfl | hx
   · simp
   · rw [← klFun_one]
-    refine ConvexOn.ge_of_rightDeriv_eq_zero (S := Ioi 0) ?_ (by simp) (by simp)  hx
-    exact convexOn_klFun.subset (Ioi_subset_Ici le_rfl) (convex_Ioi _)
+    exact convexOn_Ioi_klFun.ge_of_rightDeriv_eq_zero (by simp) (by simp)  hx
 
 lemma klFun_eq_zero_iff (hx : 0 ≤ x) : klFun x = 0 ↔ x = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
@@ -118,9 +120,8 @@ lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
   have : klFun = (fun x ↦ x * (log x - 1) + 1) := by ext; ring
   rw [this]
   refine Tendsto.atTop_add ?_ tendsto_const_nhds
-  refine Tendsto.atTop_mul_atTop ?_ ?_
-  · exact fun _ s ↦ s
-  · exact tendsto_log_atTop.atTop_add tendsto_const_nhds
+  refine tendsto_id.atTop_mul_atTop ?_
+  exact tendsto_log_atTop.atTop_add tendsto_const_nhds
 
 /-- For two finite measures `μ ≪ ν`, the function `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable
 with respect to `ν` iff `llr μ ν` is integrable with respect to `μ`. -/
@@ -132,7 +133,7 @@ lemma integrable_klFun_rnDeriv_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h�
     rw [klFun, add_sub_assoc]
   rw [integrable_add_iff_integrable_left']
   · rw [integrable_rnDeriv_mul_log_iff hμν]
-  · exact (integrable_const _).sub Measure.integrable_toReal_rnDeriv
+  · fun_prop
 
 lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
@@ -143,9 +144,9 @@ lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   · congr 2
     exact integral_rnDeriv_smul hμν
   · rwa [integrable_rnDeriv_mul_log_iff hμν]
-  · exact integrable_const _
+  · fun_prop
   · refine Integrable.add ?_ (integrable_const _)
     rwa [integrable_rnDeriv_mul_log_iff hμν]
-  · exact Measure.integrable_toReal_rnDeriv
+  · fun_prop
 
 end ProbabilityTheory

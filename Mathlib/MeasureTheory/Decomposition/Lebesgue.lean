@@ -371,6 +371,7 @@ theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
   rw [← setLIntegral_univ]
   exact lintegral_rnDeriv_lt_top_of_measure_ne_top _ (measure_lt_top _ _).ne
 
+@[fun_prop]
 lemma integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
     Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
   integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
