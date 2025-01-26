@@ -431,14 +431,6 @@ section aleph
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : ℵ_ o₁ + ℵ_ o₂ = ℵ_ (max o₁ o₂) := by
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), aleph_max]
 
-theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Ordinal.Principal (· + ·) c.ord :=
-  fun a b ha hb => by
-  rw [lt_ord, Ordinal.card_add] at *
-  exact add_lt_of_lt hc ha hb
-
-theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (ℵ_ o).ord :=
-  principal_add_ord <| aleph0_le_aleph o
-
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=
   ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_arg (· + γ) h⟩
 
@@ -956,5 +948,39 @@ theorem IsInitial.principal_opow {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o)
 theorem principal_opow_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· ^ ·) c.ord := by
   apply (isInitial_ord c).principal_opow
   rwa [omega0_le_ord]
+
+/-! ### Initial ordinals are principal -/
+
+theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· + ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_add] at *
+  exact add_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_add {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· + ·) o := by
+  rw [← h.ord_card]
+  apply principal_add_ord
+  rwa [aleph0_le_card]
+
+theorem principal_add_omega (o : Ordinal) : Principal (· + ·) (ω_ o) :=
+  (isInitial_omega o).principal_add (omega0_le_omega o)
+
+theorem principal_mul_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· * ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_mul] at *
+  exact mul_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· * ·) o := by
+  rw [← h.ord_card]
+  apply principal_mul_ord
+  rwa [aleph0_le_card]
+
+theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) :=
+  (isInitial_omega o).principal_mul (omega0_le_omega o)
+
+@[deprecated principal_add_omega (since := "2024-11-08")]
+theorem _root_.Cardinal.principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
+  principal_add_ord <| aleph0_le_aleph o
 
 end Ordinal
