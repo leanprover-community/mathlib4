@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.Tactic.Linarith
 
 /-!
 # Cardinal arithmetic
@@ -220,7 +219,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     rw [← not_lt]
     apply fun h2b => ne_of_gt _ h
     conv_rhs => left; rw [← mul_one n]
-    rw [mul_lt_mul_left]
+    rw [Nat.mul_lt_mul_left]
     · exact id
     apply Nat.lt_of_succ_le h2a
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
@@ -519,6 +518,9 @@ theorem power_nat_le_max {c : Cardinal.{u}} {n : ℕ} : c ^ (n : Cardinal.{u}) �
   rcases le_or_lt ℵ₀ c with hc | hc
   · exact le_max_of_le_left (power_nat_le hc)
   · exact le_max_of_le_right (power_lt_aleph0 hc (nat_lt_aleph0 _)).le
+
+lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀) : a ^ b ≤ ℵ₀ := by
+  lift b to ℕ using hb; simpa [ha] using power_nat_le_max (c := a)
 
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm

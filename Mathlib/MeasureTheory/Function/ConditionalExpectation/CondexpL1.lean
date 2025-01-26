@@ -300,13 +300,16 @@ alias condexpInd_ae_eq_condexpIndSMul := condExpInd_ae_eq_condExpIndSMul
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
-theorem aestronglyMeasurable'_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
-    AEStronglyMeasurable' m (condExpInd G hm μ s x) μ :=
-  AEStronglyMeasurable'.congr (aeStronglyMeasurable'_condExpIndSMul hm hs hμs x)
+theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
+    AEStronglyMeasurable[m] (condExpInd G hm μ s x) μ :=
+  (aestronglyMeasurable_condExpIndSMul hm hs hμs x).congr
     (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condExpInd := aestronglyMeasurable_condExpInd
+
 @[deprecated (since := "2025-01-21")]
-alias aestronglyMeasurable'_condexpInd := aestronglyMeasurable'_condExpInd
+alias aestronglyMeasurable'_condexpInd := aestronglyMeasurable_condExpInd
 
 @[simp]
 theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
@@ -517,25 +520,30 @@ alias set_integral_condExpL1CLM := setIntegral_condExpL1CLM
 
 @[deprecated (since := "2025-01-21")] alias set_integral_condexpL1CLM := set_integral_condExpL1CLM
 
-theorem aestronglyMeasurable'_condExpL1CLM (f : α →₁[μ] F') :
-    AEStronglyMeasurable' m (condExpL1CLM F' hm μ f) μ := by
+theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
+    AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ := by
   refine @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
-    (fun f : α →₁[μ] F' => AEStronglyMeasurable' m (condExpL1CLM F' hm μ f) μ) ?_ ?_ ?_ f
+    (fun f : α →₁[μ] F' => AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ) ?_ ?_ ?_ f
   · intro c s hs hμs
     rw [condExpL1CLM_indicatorConst hs hμs.ne c]
-    exact aestronglyMeasurable'_condExpInd hs hμs.ne c
+    exact aestronglyMeasurable_condExpInd hs hμs.ne c
   · intro f g hf hg _ hfm hgm
     rw [(condExpL1CLM F' hm μ).map_add]
-    refine AEStronglyMeasurable'.congr ?_ (coeFn_add _ _).symm
-    exact AEStronglyMeasurable'.add hfm hgm
-  · have : {f : Lp F' 1 μ | AEStronglyMeasurable' m (condExpL1CLM F' hm μ f) μ} =
-        condExpL1CLM F' hm μ ⁻¹' {f | AEStronglyMeasurable' m f μ} := rfl
+    exact (hfm.add hgm).congr (coeFn_add ..).symm
+  · have : {f : Lp F' 1 μ | AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ} =
+        condExpL1CLM F' hm μ ⁻¹' {f | AEStronglyMeasurable[m] f μ} := rfl
     rw [this]
     refine IsClosed.preimage (condExpL1CLM F' hm μ).continuous ?_
     exact isClosed_aeStronglyMeasurable' hm
 
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condExpL1CLM := aestronglyMeasurable_condExpL1CLM
+
 @[deprecated (since := "2025-01-21")]
-alias aestronglyMeasurable'_condexpL1CLM := aestronglyMeasurable'_condExpL1CLM
+alias aestronglyMeasurable_condexpL1CLM := aestronglyMeasurable_condExpL1CLM
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condexpL1CLM := aestronglyMeasurable_condexpL1CLM
 
 theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condExpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
@@ -562,7 +570,7 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
 
 @[deprecated (since := "2025-01-21")] alias condexpL1CLM_lpMeas := condExpL1CLM_lpMeas
 
-theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AEStronglyMeasurable' m f μ) :
+theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AEStronglyMeasurable[m] f μ) :
     condExpL1CLM F' hm μ f = f :=
   condExpL1CLM_lpMeas (⟨f, hfm⟩ : lpMeas F' ℝ m 1 μ)
 
@@ -598,17 +606,22 @@ theorem condExpL1_measure_zero (hm : m ≤ m0) : condExpL1 hm (0 : Measure α) f
 
 @[deprecated (since := "2025-01-21")] alias condexpL1_measure_zero := condExpL1_measure_zero
 
-theorem aestronglyMeasurable'_condExpL1 {f : α → F'} :
-    AEStronglyMeasurable' m (condExpL1 hm μ f) μ := by
+theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
+    AEStronglyMeasurable[m] (condExpL1 hm μ f) μ := by
   by_cases hf : Integrable f μ
   · rw [condExpL1_eq hf]
-    exact aestronglyMeasurable'_condExpL1CLM _
+    exact aestronglyMeasurable_condExpL1CLM _
   · rw [condExpL1_undef hf]
-    refine AEStronglyMeasurable'.congr ?_ (coeFn_zero _ _ _).symm
-    exact StronglyMeasurable.aeStronglyMeasurable' (@stronglyMeasurable_zero _ _ m _ _)
+    exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condExpL1 := aestronglyMeasurable_condExpL1
 
 @[deprecated (since := "2025-01-21")]
-alias aestronglyMeasurable'_condexpL1 := aestronglyMeasurable'_condExpL1
+alias aestronglyMeasurable_condexpL1 := aestronglyMeasurable_condExpL1
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_condexpL1 := aestronglyMeasurable_condexpL1
 
 theorem condExpL1_congr_ae (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (h : f =ᵐ[μ] g) :
     condExpL1 hm μ f = condExpL1 hm μ g :=
@@ -660,12 +673,12 @@ theorem condExpL1_sub (hf : Integrable f μ) (hg : Integrable g μ) :
 
 @[deprecated (since := "2025-01-21")] alias condexpL1_sub := condExpL1_sub
 
-theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable' m f μ)
+theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
     (hfi : Integrable f μ) : condExpL1 hm μ f =ᵐ[μ] f := by
   rw [condExpL1_eq hfi]
   refine EventuallyEq.trans ?_ (Integrable.coeFn_toL1 hfi)
   rw [condExpL1CLM_of_aestronglyMeasurable']
-  exact AEStronglyMeasurable'.congr hfm (Integrable.coeFn_toL1 hfi).symm
+  exact hfm.congr hfi.coeFn_toL1.symm
 
 @[deprecated (since := "2025-01-21")]
 alias condexpL1_of_aestronglyMeasurable' := condExpL1_of_aestronglyMeasurable'

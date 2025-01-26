@@ -143,7 +143,7 @@ See also `Tilde.isLocallyFraction`.
 def tildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
   subsheafToTypes (Tilde.isLocallyFraction M)
 
-instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup (M.tildeInType.1.obj U) :=
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
