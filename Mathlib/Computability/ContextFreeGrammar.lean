@@ -138,8 +138,7 @@ lemma mem_language_iff (g : ContextFreeGrammar.{uN} T) (w : List T) :
 variable {g : ContextFreeGrammar.{uN} T}
 
 lemma Produces.input_output {r : ContextFreeRule T g.NT} (hrg : r ∈ g.rules) :
-    g.Produces [.nonterminal r.input] r.output :=
-  ⟨r, hrg, ContextFreeRule.Rewrites.input_output⟩
+    g.Produces [.nonterminal r.input] r.output := ⟨r, hrg, .input_output⟩
 
 lemma Produces.rule {n : g.NT} {u : List (Symbol T g.NT)}
     (hnu : g.Produces [Symbol.nonterminal n] u) :
@@ -361,33 +360,26 @@ lemma mem_language_iff_derivesIn (g : ContextFreeGrammar.{uN} T) (w : List T) :
 
 variable {g : ContextFreeGrammar.{uN} T}
 
-lemma DerivesIn.zero_steps (w : List (Symbol T g.NT)) : g.DerivesIn w w 0 := by
-  left
+lemma DerivesIn.zero_steps (w : List (Symbol T g.NT)) : g.DerivesIn w w 0 := refl w
 
 lemma Produces.single_step {v w : List (Symbol T g.NT)} (hvw : g.Produces v w) :
-    g.DerivesIn v w 1 := by
-  right
-  · left
-  · exact hvw
+    g.DerivesIn v w 1 := DerivesIn.tail _ _ _ _ (DerivesIn.zero_steps v) hvw
 
 variable {n : ℕ}
 
-lemma DerivesIn.trans_produces {u v w : List (Symbol T g.NT)}
-    (huv : g.DerivesIn u v n) (hvw : g.Produces v w) :
-    g.DerivesIn u w n.succ :=
+lemma DerivesIn.trans_produces {u v w : List (Symbol T g.NT)} (huv : g.DerivesIn u v n)
+    (hvw : g.Produces v w) : g.DerivesIn u w n.succ :=
   DerivesIn.tail u v w n huv hvw
 
 @[trans]
-lemma DerivesIn.trans {u v w : List (Symbol T g.NT)} {m : ℕ}
-    (huv : g.DerivesIn u v n) (hvw : g.DerivesIn v w m) :
-    g.DerivesIn u w (n + m) := by
+lemma DerivesIn.trans {u v w : List (Symbol T g.NT)} {m : ℕ} (huv : g.DerivesIn u v n)
+    (hvw : g.DerivesIn v w m) : g.DerivesIn u w (n + m) := by
   induction hvw with
   | refl => exact huv
   | tail _ _ _ _ last ih => exact trans_produces ih last
 
-lemma Produces.trans_derivesIn {u v w : List (Symbol T g.NT)}
-    (huv : g.Produces u v) (hvw : g.DerivesIn v w n) :
-    g.DerivesIn u w n.succ :=
+lemma Produces.trans_derivesIn {u v w : List (Symbol T g.NT)} (huv : g.Produces u v)
+    (hvw : g.DerivesIn v w n) : g.DerivesIn u w n.succ :=
   n.succ_eq_one_add ▸ huv.single_step.trans hvw
 
 lemma DerivesIn.tail_of_succ {u w : List (Symbol T g.NT)} (huw : g.DerivesIn u w n.succ) :
@@ -411,16 +403,15 @@ lemma DerivesIn.head_of_succ {u w : List (Symbol T g.NT)} (huw : g.DerivesIn u w
       exact ⟨x, hux, hxv.trans_produces hvw⟩
 
 /-- Add extra prefix to context-free deriving (number of steps unchanged). -/
-lemma DerivesIn.append_left {v w : List (Symbol T g.NT)}
-    (hvw : g.DerivesIn v w n) (p : List (Symbol T g.NT)) :
-    g.DerivesIn (p ++ v) (p ++ w) n := by
+lemma DerivesIn.append_left {v w : List (Symbol T g.NT)} (hvw : g.DerivesIn v w n)
+    (p : List (Symbol T g.NT)) : g.DerivesIn (p ++ v) (p ++ w) n := by
   induction hvw with
   | refl => left
   | tail _ _ _ _ last ih => exact ih.trans_produces <| last.append_left p
 
 /-- Add extra postfix to context-free deriving (number of steps unchanged). -/
-lemma DerivesIn.append_right {v w : List (Symbol T g.NT)}
-    (hvw : g.DerivesIn v w n) (p : List (Symbol T g.NT)) :
+lemma DerivesIn.append_right {v w : List (Symbol T g.NT)} (hvw : g.DerivesIn v w n)
+    (p : List (Symbol T g.NT)) :
     g.DerivesIn (v ++ p) (w ++ p) n := by
   induction hvw with
   | refl => left
@@ -444,55 +435,32 @@ lemma DerivesIn.append_split {p q w : List (Symbol T g.NT)} {n : ℕ}
       rw [List.append_eq_append_iff] at hpqxvy
       cases hpqxvy with
       | inl hxq =>
-        obtain ⟨a, _, hq⟩ := hxq
-        right
-        use a
+        obtain ⟨a, hx, hq⟩ := hxq
+        exact (Or.intro_right _ ⟨a, ⟨hx, hq⟩⟩)
       | inr hpy =>
         obtain ⟨a, rfl, hq⟩ := hpy
         cases a with
         | nil =>
-          right
-          use []
-          rw [hq, List.append_nil, List.append_nil]
-          exact ⟨rfl, rfl⟩
+          exact (Or.intro_right _ ⟨[], ⟨x.append_nil.symm ▸ x.append_nil.symm ▸ rfl, hq.symm⟩⟩)
         | cons d l =>
-          left
-          use l
           rw [List.cons_append, List.cons.injEq] at hq
-          rw [hq.1]
-          exact ⟨hq.2, rfl⟩
+          exact (Or.intro_left _ ⟨l, ⟨hq.2, hq.1 ▸ rfl⟩⟩)
     rcases append_eq_append_cons heq with ⟨a, hq', hp⟩ | ⟨a, hp', hq⟩
     · rw [hv, hq', ← List.append_assoc] at hd
       obtain ⟨x, y, m₁, m₂, hw, hd₁, hd₂, hn⟩ := hd.append_split
-      use x, y, (m₁ + 1), m₂
-      constructor
-      · exact hw
-      · constructor
-        · apply Produces.trans_derivesIn
-          · use r
-            constructor
-            · exact hrg
-            · rw [hp, ← List.singleton_append, ← List.append_assoc]
-              apply r.rewrites_of_exists_parts
-          · exact hd₁
-        · exact ⟨hd₂, by omega⟩
+      refine ⟨x, y, m₁ + 1, m₂, hw, Produces.trans_derivesIn ⟨r, hrg, ?_⟩ hd₁, hd₂, by omega⟩
+      rw [hp, ← List.singleton_append, ← List.append_assoc]
+      exact r.rewrites_of_exists_parts _ _
     · rw [hv, hp', List.append_assoc, List.append_assoc] at hd
       obtain ⟨x, y, m₁, m₂, hw, hd₁, hd₂, hn⟩ := hd.append_split
-      use x, y, m₁, m₂ + 1, hw, hd₁
-      constructor
-      · apply Produces.trans_derivesIn
-        · use r
-          constructor
-          · exact hrg
-          · rw [hq, ← List.singleton_append, ← List.append_assoc]
-            apply r.rewrites_of_exists_parts
-        · rwa [List.append_assoc]
-      · omega
+      refine ⟨x, y, m₁, m₂ + 1, hw, hd₁, Produces.trans_derivesIn ⟨r, hrg, ?_⟩ hd₂, by omega⟩
+      rw [hq, ← List.singleton_append, ← List.append_assoc, ← List.append_assoc]
+      exact r.rewrites_of_exists_parts _ _
 
 lemma DerivesIn.three_split {p q r w : List (Symbol T g.NT)} {n : ℕ}
     (hg : g.DerivesIn (p ++ q ++ r) w n) :
-  ∃ x y z m₁ m₂ m₃, w = x ++ y ++ z ∧ g.DerivesIn p x m₁ ∧ g.DerivesIn q y m₂
-    ∧ g.DerivesIn r z m₃ ∧ n = m₁ + m₂ + m₃ := by
+    ∃ x y z m₁ m₂ m₃, w = x ++ y ++ z ∧ g.DerivesIn p x m₁ ∧ g.DerivesIn q y m₂
+      ∧ g.DerivesIn r z m₃ ∧ n = m₁ + m₂ + m₃ := by
   obtain ⟨x', z, m₁', m₃, hw₂, hd₁', hd₃, hn₂⟩ := hg.append_split
   obtain ⟨x, y, m₁, m₂, hw₁, hd₁, hd₂, hn₁⟩ := hd₁'.append_split
   exact ⟨x, y, z, m₁, m₂, m₃, hw₁ ▸ hw₂, hd₁, hd₂, hd₃, hn₁ ▸ hn₂⟩
