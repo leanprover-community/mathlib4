@@ -262,7 +262,6 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
