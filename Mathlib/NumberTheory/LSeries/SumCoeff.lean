@@ -93,9 +93,8 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   have h₁ : (-s - 1).re + r < -1 := by
     rwa [sub_re, one_re, neg_re, neg_sub_left, neg_add_lt_iff_lt_add, add_neg_cancel_comm]
   have h₂ : s ≠ 0 := ne_zero_of_re_pos (hr.trans_lt hs)
-  have h₃ : ∀ t ∈ Set.Ici (1 : ℝ), DifferentiableAt ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) t :=
-    fun t ht ↦ differentiableAt_id.ofReal_cpow_const (zero_lt_one.trans_le ht).ne'
-      (neg_ne_zero.mpr h₂)
+  have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) t :=
+    differentiableAt_id.ofReal_cpow_const (zero_lt_one.trans_le ht).ne' (neg_ne_zero.mpr h₂)
   have h₄ : ∀ n, ∑ k ∈ Icc 0 n, f k = ∑ k ∈ Icc 1 n, f k := fun n ↦ by
     rw [← Nat.Icc_insert_succ_left n.zero_le, sum_insert (by aesop), hf, zero_add, zero_add]
   simp_rw [← h₄] at hO
@@ -128,24 +127,20 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
     (hS : LSeriesSummable f s)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
-  have h₁ : (fun n ↦ if n = 0 then 0 else f n) =ᶠ[atTop] f := by
-    filter_upwards [eventually_ne_atTop 0] with n hn using by simp_rw [if_neg hn]
-  have h₂ := (LSeriesSummable_congr' s h₁).mpr hS
-  have h₃ : ∀ {n}, n ≠ 0 → (fun n ↦ if n = 0 then 0 else f n) n = f n :=
-    fun hn ↦ by simp_rw [if_neg hn]
-  have h₄ : ∀ n, ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k := fun n ↦
+  rw [← LSeriesSummable_congr' s (f := fun n ↦ if n = 0 then 0 else f n)
+    (by filter_upwards [eventually_ne_atTop 0] with n h using if_neg h)] at hS
+  have (n) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
     Finset.sum_congr rfl fun k hk ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
-  rw [← LSeries_congr _ h₃, LSeries_eq_mul_integral_aux (by rw [if_pos rfl]) hr hs h₂ ?_]
-  · simp_rw [h₄]
-  · simpa [h₄] using hO
+  rw [← LSeries_congr _ (fun _ ↦ if_neg _), LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
+  simp_all
 
 /-- A version of `LSeries_eq_mul_integral` where we use the stronger condition that the partial sums
 `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` to deduce the integral representation. -/
 theorem LSeries_eq_mul_integral' (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : ℂ} (hs : r < s.re)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, ‖f k‖) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
-    LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
-  refine LSeries_eq_mul_integral _ hr hs (LSeriesSummable_of_sum_norm_bigO hO hr hs) ?_
-  exact IsBigO.trans (isBigO_of_le _ fun _ ↦ (norm_sum_le _ _).trans <| Real.le_norm_self _) hO
+    LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) :=
+  LSeries_eq_mul_integral _ hr hs (LSeriesSummable_of_sum_norm_bigO hO hr hs) <|
+    (isBigO_of_le _ fun _ ↦ (norm_sum_le _ _).trans <| Real.le_norm_self _).trans hO
 
 /-- If `f` takes nonnegative real values and the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)`
 for some real `0 ≤ r`, then for `s : ℂ` with `r < s.re`, we have
