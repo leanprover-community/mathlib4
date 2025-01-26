@@ -69,10 +69,14 @@ theorem mul_degree {k l : ℕ} (α : ⋀[R]^k M) (β : ⋀[R]^l M) [Module.Finit
     simp only [SetLike.val_smul, Algebra.smul_mul_assoc, Submodule.smul_mem _ a h1]
   · simp only [h, span_top_of_span_top', Submodule.mem_top]
 
-def WedgeProduct {k l : ℕ} [Module.Finite R M] :
-  (⋀[R]^k M) →ₗ[R] (⋀[R]^l M) →ₗ[R] (⋀[R]^(k+l) M) where
+theorem mul_degree' {k l m : ℕ} (h : k + l = m) (α : ⋀[R]^k M) (β : ⋀[R]^l M)
+  [Module.Finite R M] : (α : ExteriorAlgebra R M) * β ∈ ⋀[R]^m M := by
+  simp only [← h ,mul_degree α β]
+
+def WedgeProduct {k l m : ℕ} [Module.Finite R M] (h : k + l = m) :
+  (⋀[R]^k M) →ₗ[R] (⋀[R]^l M) →ₗ[R] (⋀[R]^m M) where
   toFun α := {
-    toFun := fun β ↦ ⟨α * β, mul_degree α β⟩
+    toFun := fun β ↦ ⟨α * β, mul_degree' h α β⟩
     map_add' := by
       intro x y
       simp only [Submodule.coe_add, mul_add, AddMemClass.mk_add_mk]
