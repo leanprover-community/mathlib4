@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Order.InitialSeg
-import Mathlib.Order.SuccPred.InitialSeg
-import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.Cones
 
 /-!
 # Cocones associated to principal segments

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.Interval.Set.InitialSeg
+import Mathlib.Order.SuccPred.InitialSeg
+import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Continuity of functors from well ordered types
