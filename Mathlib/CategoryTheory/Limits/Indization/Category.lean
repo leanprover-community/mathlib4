@@ -3,7 +3,6 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Generator.Basic
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
@@ -216,9 +215,5 @@ instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
     ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift)⟩
   hasCoproducts_of_finite_and_filtered
-
-theorem Ind.isSeparating_range_yoneda : IsSeparating (Set.range (Ind.yoneda : C ⥤ _).obj) := by
-  refine fun X Y f g h => (cancel_epi (Ind.colimitPresentationCompYoneda X).hom).1 ?_
-  exact colimit.hom_ext (fun i => by simp [← Category.assoc, h])
 
 end CategoryTheory
