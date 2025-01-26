@@ -29,4 +29,16 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
 
 instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 
+variable {A : Type*} {T : tree A}
+
+theorem mem_of_append {x y : List A} (h : x ++ y ∈ T) : x ∈ T := by
+  induction' y with y ys ih generalizing x
+  · simpa using h
+  · exact T.prop (ih (by simpa))
+theorem mem_of_prefix {x y : List A} (h' : x <+: y) (h : y ∈ T) : x ∈ T := by
+  obtain ⟨_, rfl⟩ := h'; exact mem_of_append h
+@[simp] lemma tree_eq_bot : T = ⊥ ↔ [] ∉ T where
+  mp := by rintro rfl; simp
+  mpr h := by ext x; simpa using fun h' ↦ h <| mem_of_prefix x.nil_prefix h'
+
 end Descriptive
