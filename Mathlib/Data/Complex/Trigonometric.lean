@@ -54,9 +54,6 @@ def cosh (z : ℂ) : ℂ :=
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
-/-- scoped notation for the complex exponential function -/
-scoped notation "cexp" => Complex.exp
-
 end
 
 end Complex
@@ -101,9 +98,6 @@ the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
-
-/-- scoped notation for the real exponential function -/
-scoped notation "rexp" => Real.exp
 
 end
 
