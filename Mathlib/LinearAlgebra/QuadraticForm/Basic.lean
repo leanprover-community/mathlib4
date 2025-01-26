@@ -379,7 +379,7 @@ theorem map_finsupp_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (f : ι �
 /--
 Lift the polar (LC)
 --/
-def polar_lift_lc {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+def polar_lift_lc {ι} (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
   Sym2 ι → N := Sym2.lift ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j =>
   by simp only [polar_comm]; rw [smul_comm]⟩
 
