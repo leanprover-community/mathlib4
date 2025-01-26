@@ -83,8 +83,7 @@ lemma restrictTerminals_not_empty_output (hne : ∀ r ∈ g.rules, r.output ≠ 
     List.mem_cons, List.mem_filterMap, ne_eq, forall_exists_index, and_imp]
   intro r' r hrg hr'
   cases hr' with
-  | inl =>
-    aesop
+  | inl => aesop
   | inr hr' =>
     obtain ⟨s, ⟨_, hsr⟩⟩ := hr'
     cases s <;> simp [reduceCtorEq, Option.some.injEq] at hsr
@@ -100,12 +99,8 @@ lemma restrictTerminals_terminal_or_nonterminals :
   intro r' r _
   split <;> intro h
   · cases h with
-    | inl hr =>
-      rw [hr]
-      simp
-    | inr hr =>
-      left
-      exact newTerminalRules_terminal_output r' hr
+    | inl hr => simp [hr]
+    | inr hr => exact Or.inl (newTerminalRules_terminal_output r' hr)
   · cases h with
     | inl hr =>
       right
@@ -113,9 +108,7 @@ lemma restrictTerminals_terminal_or_nonterminals :
       simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s hs
       cases s <;> tauto
-    | inr hr =>
-      left
-      exact newTerminalRules_terminal_output r' hr
+    | inr hr => exact Or.inl (newTerminalRules_terminal_output r' hr)
 
 lemma eliminateUnitRules_not_empty_output (hne : ∀ r ∈ g.rules, r.output ≠ []) :
     ∀ r' ∈ g.eliminateUnitRules.rules, r'.output ≠ [] := by
@@ -160,18 +153,16 @@ theorem toCNF_correct : g.language \ {[]} = g.toCNF.language := by
   intro r hrg
   match hrₒ : r.output with
   | [] =>
-    exfalso
-    exact restrictTerminals_not_empty_output
-      (eliminateUnitRules_not_empty_output eliminateEmpty_not_empty_output) _ hrg hrₒ
+    exact False.elim (restrictTerminals_not_empty_output
+      (eliminateUnitRules_not_empty_output eliminateEmpty_not_empty_output) _ hrg hrₒ)
   | [Symbol.terminal _] =>
     cases r; simp only at hrₒ; rw [hrₒ]
     constructor
   | [Symbol.nonterminal _] =>
     exfalso
-    apply restrictTerminals_nonUnit_output at hrg
+    apply restrictTerminals_nonUnit_output eliminateUnitRules_output_nonUnit at hrg
     · rw [hrₒ] at hrg
       contradiction
-    · exact eliminateUnitRules_output_nonUnit
   | _ :: _ :: _ =>
     cases r
     apply restrictTerminals_terminal_or_nonterminals at hrg
