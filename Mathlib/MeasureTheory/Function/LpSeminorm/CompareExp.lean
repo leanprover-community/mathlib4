@@ -132,7 +132,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
 alias snorm'_lt_top_of_snorm'_lt_top_of_exponent_le :=
   eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le
 
-theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
+theorem Memℒp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
     (hpq : p ≤ q) : Memℒp f p μ := by
   cases' hfq with hfq_m hfq_lt_top
   by_cases hp0 : p = 0
@@ -159,6 +159,25 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   rw [eLpNorm_eq_eLpNorm' hq0 hq_top] at hfq_lt_top
   exact eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le hfq_m hfq_lt_top hp_pos.le hpq_real
+
+@[deprecated (since := "2025-01-07")] alias Memℒp.memℒp_of_exponent_le := Memℒp.mono_exponent
+
+/-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
+`ℒ^q` for any `q ≤ p`. -/
+lemma Memℒp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α → E} (hfq : Memℒp f q μ)
+    {s : Set α} (hf : ∀ x, x ∉ s → f x = 0) (hs : μ s ≠ ∞) (hpq : p ≤ q) : Memℒp f p μ := by
+  have : (toMeasurable μ s).indicator f = f := by
+    apply Set.indicator_eq_self.2
+    apply Function.support_subset_iff'.2 fun x hx ↦ hf x ?_
+    contrapose! hx
+    exact subset_toMeasurable μ s hx
+  rw [← this, memℒp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
+  have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
+  exact hfq.mono_exponent hpq
+
+@[deprecated (since := "2025-01-07")]
+alias Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top :=
+  Memℒp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
 
@@ -392,4 +411,26 @@ theorem Memℒp.mul_of_top_left' (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ)
 
 end Mul
 
+section Prod
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
+  {p : ι → ℝ≥0∞} {s : Finset ι}
+
+open Finset in
+/-- See `Memℒp.prod'` for the applied version. -/
+protected lemma Memℒp.prod (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
+    Memℒp (∏ i ∈ s, f i) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
+  induction s using cons_induction with
+  | empty =>
+    by_cases hμ : μ = 0 <;>
+      simp [Memℒp, eLpNormEssSup_const, hμ, aestronglyMeasurable_const, Pi.one_def]
+  | cons i s hi ih =>
+    rw [prod_cons]
+    exact (ih <| forall_of_forall_cons hf).mul (hf i <| mem_cons_self ..) (by simp)
+
+/-- See `Memℒp.prod` for the unapplied version. -/
+protected lemma Memℒp.prod' (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
+    Memℒp (fun ω ↦ ∏ i ∈ s, f i ω) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
+  simpa [Finset.prod_fn] using Memℒp.prod hf
+
+end Prod
 end MeasureTheory

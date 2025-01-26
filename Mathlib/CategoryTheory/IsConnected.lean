@@ -67,10 +67,8 @@ NB. Some authors include the empty category as connected, we do not.
 We instead are interested in categories with exactly one 'connected
 component'.
 
-This allows us to show that the functor X ⨯ - preserves connected limits.
-
-See <https://stacks.math.columbia.edu/tag/002S>
--/
+This allows us to show that the functor X ⨯ - preserves connected limits. -/
+@[stacks 002S]
 class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J : Prop where
   [is_nonempty : Nonempty J]
 
@@ -118,6 +116,13 @@ theorem IsPreconnected.of_any_functor_const_on_obj
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') :
     IsPreconnected J where
   iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
+
+instance IsPreconnected.prod [IsPreconnected J] [IsPreconnected K] : IsPreconnected (J × K) := by
+  refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ => ?_)
+  exact (any_functor_const_on_obj (Prod.sectL J k ⋙ F) j j').trans
+    (any_functor_const_on_obj (Prod.sectR j' K ⋙ F) k k')
+
+instance IsConnected.prod [IsConnected J] [IsConnected K] : IsConnected (J × K) where
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
 The converse of `any_functor_const_on_obj`.
