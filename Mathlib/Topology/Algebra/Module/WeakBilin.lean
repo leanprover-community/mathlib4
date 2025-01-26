@@ -6,7 +6,7 @@ Authors: Kalle Kytölä, Moritz Doll
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
