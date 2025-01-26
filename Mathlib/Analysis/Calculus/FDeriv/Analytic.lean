@@ -395,7 +395,6 @@ theorem AnalyticOnNhd.iteratedFDeriv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs 
 
 /-- If a partial homeomorphism `f` is analytic at a point `a`, with invertible derivative, then
 its inverse is analytic at `f a`. -/
-@[fun_prop]
 theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) (h : AnalyticAt 𝕜 f a) (h' : fderiv 𝕜 f a = i) :
     AnalyticAt 𝕜 f.symm (f a) := by
@@ -405,7 +404,6 @@ theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
 
 /-- If a partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible derivative,
 then its inverse is analytic at `a`. -/
-@[fun_prop]
 theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.target) (h : AnalyticAt 𝕜 f (f.symm a))
     (h' : fderiv 𝕜 f (f.symm a) = i) :
