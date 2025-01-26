@@ -692,25 +692,10 @@ variable [Monoid G] {x : G} {n : ℕ}
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
     (∑ m ∈ divisors n,
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
-      (Finset.univ.filter fun x : G => x ^ n = 1).card :=
-  calc
-    (∑ m ∈ divisors n,
-          (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
-      (Finset.card_biUnion
-          (by
-            intros
-            apply Finset.disjoint_filter.2
-            rintro _ _ rfl; assumption)).symm
-    _ = _ :=
-      congr_arg Finset.card
-        (Finset.ext
-          (by
-            intro x
-            suffices orderOf x ∣ n ↔ x ^ n = 1 by simpa [hn]
-            exact
-              ⟨fun ⟨m, hm⟩ => by
-                rw [hm, pow_mul, pow_orderOf_eq_one, one_pow],
-                orderOf_dvd_of_pow_eq_one⟩))
+      (Finset.univ.filter fun x : G => x ^ n = 1).card := by
+  refine (Finset.card_biUnion ?_).symm.trans ?_
+  · simp +contextual [disjoint_iff, Finset.ext_iff]
+  · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]
 theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
