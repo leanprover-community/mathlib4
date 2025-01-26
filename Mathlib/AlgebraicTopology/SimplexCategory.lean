@@ -147,6 +147,9 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   Hom.ext' _ _
 
+lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)
+    (x : Fin (a.len + 1)) : f.toOrderHom x = g.toOrderHom x := by rw [h]
+
 /-- The constant morphism from [0]. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
   Hom.mk <| ⟨fun _ => i, by tauto⟩

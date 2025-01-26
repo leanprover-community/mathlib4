@@ -3,7 +3,6 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
@@ -12,11 +11,10 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 Given a simplicial set `X` and `n : ℕ`, we define the sets `X.degenerate n`
 and `X.nonDegenerate n` of degenerate or non-degenerate simplices of dimension `n`.
 
-## TODO (@joelriou)
-
-* `SSet.exists_nonDegenerate` shows that any `n`-simplex can be written
-as `X.map f.op y` for some epimorphism `f : [n] ⟶ [m]` and some
-non-degenerate simplex `y`. Show that `f` and `y` are unique.
+Any simplex `x : X _[n]` can be written in a unique way as `X.map f.op y`
+for an epimorphism `f : [n] ⟶ [m]` and a non-degenerate `m`-simplex `y`
+(see lemmas `exists_nonDegenerate`, `unique_nonDegenerate₁`, `unique_nonDegenerate₂`
+and `unique_nonDegenerate₃`).
 
 -/
 
@@ -120,5 +118,126 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
     le_antisymm (SimplexCategory.len_le_of_epi (f := f) inferInstance) this
   obtain rfl := SimplexCategory.eq_id_of_epi f
   exact this inferInstance
+
+namespace unique_nonDegenerate
+
+/-!
+Auxiliary definitions and lemmas for the lemmas
+`unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
+`unique_nonDegenerate₃` which assert the uniqueness of the
+decomposition obtained in the lemma `exists_nonDegenerate`.
+-/
+
+section
+
+variable {X} {x : X _[n]}
+  {m₁ m₂ : ℕ} {f₁ : ([n] : SimplexCategory) ⟶ [m₁]} (hf₁ : SplitEpi f₁)
+  (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
+  (f₂ : ([n] : SimplexCategory) ⟶ [m₂])
+  (y₂ : X _[m₂]) (hy₂ : x = X.map f₂.op y₂)
+
+/-- The composition of a section of `f₁` and `f₂`. It is proven below that it
+is the identity, see `g_eq_id`. -/
+def g := hf₁.section_ ≫ f₂
+
+variable {f₂ y₁ y₂}
+
+include hf₁ hy₁ hy₂
+
+lemma map_g_op_y₂ : X.map (g hf₁ f₂).op y₂ = y₁ := by
+  dsimp [g]
+  rw [FunctorToTypes.map_comp_apply, ← hy₂, hy₁, ← FunctorToTypes.map_comp_apply, ← op_comp,
+    SplitEpi.id, op_id, FunctorToTypes.map_id_apply]
+
+lemma isIso_factorThruImage_g :
+    IsIso (factorThruImage (g hf₁ f₂)) := by
+  have := map_g_op_y₂ hf₁ hy₁ hy₂
+  rw [← image.fac (g hf₁ f₂), op_comp, FunctorToTypes.map_comp_apply] at this
+  exact X.isIso_of_nonDegenerate y₁ (factorThruImage (g hf₁ f₂)) _ this
+
+lemma mono_g : Mono (g hf₁ f₂) := by
+  have := isIso_factorThruImage_g hf₁ hy₁ hy₂
+  rw [← image.fac (g hf₁ f₂)]
+  infer_instance
+
+lemma le : m₁ ≤ m₂ := by
+  have := isIso_factorThruImage_g hf₁ hy₁ hy₂
+  exact SimplexCategory.len_le_of_mono
+    (f := factorThruImage (g hf₁ f₂) ≫ image.ι _) inferInstance
+
+end
+
+section
+
+variable {X} {x : X _[n]} {m : ℕ} {f₁ : ([n] : SimplexCategory) ⟶ [m]}
+  {y₁ : X.nonDegenerate m} (hy₁ : x = X.map f₁.op y₁)
+  {f₂ : ([n] : SimplexCategory) ⟶ [m]} {y₂ : X _[m]} (hy₂ : x = X.map f₂.op y₂)
+
+include hy₁ hy₂
+
+lemma g_eq_id (hf₁ : SplitEpi f₁) : g hf₁ f₂ = 𝟙 _ := by
+  have := mono_g hf₁ hy₁ hy₂
+  apply SimplexCategory.eq_id_of_mono
+
+end
+
+end unique_nonDegenerate
+
+section
+
+open unique_nonDegenerate
+
+/-!
+The following lemmas `unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
+`unique_nonDegenerate₃` assert the uniqueness of the decomposition
+obtained in the lemma `exists_nonDegenerate`.
+-/
+
+lemma unique_nonDegenerate₁ (x : X _[n])
+    {m₁ m₂ : ℕ} (f₁ : ([n] : SimplexCategory) ⟶ [m₁]) [Epi f₁]
+    (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
+    (f₂ : ([n] : SimplexCategory) ⟶ [m₂]) [Epi f₂]
+    (y₂ : X.nonDegenerate m₂) (hy₂ : x = X.map f₂.op y₂) : m₁ = m₂ := by
+  obtain ⟨⟨hf₁⟩⟩ := isSplitEpi_of_epi f₁
+  obtain ⟨⟨hf₂⟩⟩ := isSplitEpi_of_epi f₂
+  exact le_antisymm (le hf₁ hy₁ hy₂) (le hf₂ hy₂ hy₁)
+
+lemma unique_nonDegenerate₂ (x : X _[n])
+    {m : ℕ} (f₁ : ([n] : SimplexCategory) ⟶ [m]) [Epi f₁]
+    (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
+    (f₂ : ([n] : SimplexCategory) ⟶ [m])
+    (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) : y₁ = y₂ := by
+  obtain ⟨⟨hf₁⟩⟩ := isSplitEpi_of_epi f₁
+  ext
+  simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
+
+lemma unique_nonDegenerate₃ (x : X _[n])
+    {m : ℕ} (f₁ : ([n] : SimplexCategory) ⟶ [m]) [Epi f₁]
+    (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
+    (f₂ : ([n] : SimplexCategory) ⟶ [m])
+    (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) : f₁ = f₂ := by
+  ext x : 3
+  suffices ∃ (hf₁ : SplitEpi f₁), hf₁.section_.toOrderHom (f₁.toOrderHom x) = x by
+    obtain ⟨hf₁, hf₁'⟩ := this
+    dsimp at hf₁'
+    simpa [g, hf₁'] using (SimplexCategory.congr_toOrderHom_apply (g_eq_id hy₁ hy₂ hf₁)
+      (f₁.toOrderHom x)).symm
+  obtain ⟨⟨hf⟩⟩ := isSplitEpi_of_epi f₁
+  let α (y : Fin (m + 1)) : Fin (n + 1) :=
+    if y = f₁.toOrderHom x then x else hf.section_.toOrderHom y
+  have hα₁ (y : Fin (m + 1)) : f₁.toOrderHom (α y) = y := by
+    dsimp [α]
+    split_ifs with hy
+    · rw [hy]
+    · apply SimplexCategory.congr_toOrderHom_apply hf.id
+  have hα₂ : Monotone α := by
+    rintro y₁ y₂ h
+    by_contra! h'
+    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by omega] at h'
+    simpa only [hα₁, hα₁] using f₁.toOrderHom.monotone h'.le
+  exact ⟨{ section_ := SimplexCategory.Hom.mk ⟨α, hα₂⟩, id := by ext : 3; apply hα₁ },
+    by simp [α]⟩
+
+end
 
 end SSet
