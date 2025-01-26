@@ -537,6 +537,10 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using Sigma.ι f b ≫= huv (Sigma.desc (Pi.single b g))
 
+theorem IsSeparating.isSeparator_coproduct {β : Type w} {f : β → C} [HasCoproduct f]
+    (hS : IsSeparating (Set.range f)) : IsSeparator (∐ f) :=
+  (isSeparator_sigma _).2 hS
+
 theorem isSeparator_sigma_of_isSeparator {β : Type w} (f : β → C) [HasCoproduct f] (b : β)
     (hb : IsSeparator (f b)) : IsSeparator (∐ f) :=
   (isSeparator_sigma _).2 <| IsSeparating.mono hb <| by simp
