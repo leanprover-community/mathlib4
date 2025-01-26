@@ -46,7 +46,7 @@ instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid (WithBot α) :=
   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 
-theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
+protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
     y ≤ y + x := by
   induction x
@@ -56,7 +56,7 @@ theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact _root_.le_self_add (α := α)
 
-theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
+protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
     y ≤ x + y := by
   induction x
