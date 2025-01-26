@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Group.Action.Defs
 
-section Actions
-
 /-! ### Actions by `Submonoid`s
 
 These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
@@ -20,7 +18,17 @@ These instances work particularly well in conjunction with `Monoid.toMulAction`,
 
 namespace Submonoid
 
-variable {M' : Type*} {α β : Type*}
+variable {M' : Type*} {α : Type*}
+
+section SetLike
+
+variable [SMul M' α] (S : Type*) [SetLike S M'] (s : S)
+
+@[to_additive]
+instance : SMul s α where
+  smul r a := (r : M') • a
+
+end SetLike
 
 section MulOneClass
 
@@ -28,7 +36,9 @@ variable [MulOneClass M']
 
 @[to_additive]
 instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
-  SMul.comp _ S.subtype
+  inferInstance
+
+variable {β : Type*}
 
 @[to_additive]
 instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
@@ -62,13 +72,17 @@ variable [Monoid M']
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α where
+instance {S : Type*} [SetLike S M'] (s : S) [SubmonoidClass S M'] [MulAction M' α] :
+    MulAction s α where
   one_smul := one_smul M'
-  mul_smul m₁ m₂ := mul_smul (m₁ : M') m₂
+  mul_smul r₁ r₂ := mul_smul (r₁ : M') r₂
+
+/-- The action by a submonoid is the action by the underlying monoid. -/
+@[to_additive
+      "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
+instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
+  inferInstance
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
 
-
 end Submonoid
-
-end Actions
