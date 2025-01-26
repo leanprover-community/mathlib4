@@ -60,7 +60,6 @@ section SMul
 
 variable [SMul G X]
 
---Should this be private?
 /-- Let `G` act on a space `X` and `A : Set X`. We say `f : X → X` is a `DecompOn` `A`
 as witnessed by some `S : Finset G` if for all `a ∈ A`, the value `f a` can be obtained
 by applying some element of `S` to `a` instead.
