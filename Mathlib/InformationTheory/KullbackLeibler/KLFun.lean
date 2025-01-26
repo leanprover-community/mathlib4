@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
@@ -32,105 +32,6 @@ namespace ProbabilityTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {x : ℝ}
 
-section IntegralRNDeriv
--- TODO: move that somewhere
-
-lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν] {f : ℝ → ℝ}
-    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
-    (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν)
-    (hμν : μ ≪ ν) :
-    f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
-  calc f (μ univ).toReal
-    = f (∫ x, (μ.rnDeriv ν x).toReal ∂ν) := by rw [Measure.integral_toReal_rnDeriv hμν]
-  _ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
-    rw [← average_eq_integral, ← average_eq_integral]
-    exact ConvexOn.map_average_le hf_cvx hf_cont isClosed_Ici (by simp)
-      Measure.integrable_toReal_rnDeriv hf_int
-
-lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν] {f : ℝ → ℝ}
-    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
-    (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν)
-    (hμν : μ ≪ ν) :
-    (ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal)
-      ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
-  by_cases hν : ν = 0
-  · simp [hν]
-  have : NeZero ν := ⟨hν⟩
-  let μ' := (ν univ)⁻¹ • μ
-  let ν' := (ν univ)⁻¹ • ν
-  have : IsFiniteMeasure μ' := μ.smul_finite (by simp [hν])
-  have hμν' : μ' ≪ ν' := hμν.smul _
-  have h_rnDeriv_eq : μ'.rnDeriv ν' =ᵐ[ν] μ.rnDeriv ν := by
-    have h1' : μ'.rnDeriv ν' =ᵐ[ν'] (ν univ)⁻¹ • μ.rnDeriv ν' :=
-      Measure.rnDeriv_smul_left_of_ne_top' (μ := ν') (ν := μ) (by simp [hν])
-    have h1 : μ'.rnDeriv ν' =ᵐ[ν] (ν univ)⁻¹ • μ.rnDeriv ν' := by
-      rwa [Measure.ae_smul_measure_eq] at h1'
-      simp
-    have h2 : μ.rnDeriv ν' =ᵐ[ν] (ν univ)⁻¹⁻¹ • μ.rnDeriv ν :=
-      Measure.rnDeriv_smul_right_of_ne_top' (μ := ν) (ν := μ) (by simp) (by simp [hν])
-    filter_upwards [h1, h2] with x h1 h2
-    rw [h1, Pi.smul_apply, smul_eq_mul, h2]
-    simp only [inv_inv, Pi.smul_apply, smul_eq_mul]
-    rw [← mul_assoc, ENNReal.inv_mul_cancel, one_mul]
-    · simp [hν]
-    · simp
-  have h_eq : ∫ x, f (μ'.rnDeriv ν' x).toReal ∂ν'
-      = (ν univ).toReal⁻¹ * ∫ x, f ((μ.rnDeriv ν x).toReal) ∂ν := by
-    rw [integral_smul_measure, smul_eq_mul, ENNReal.toReal_inv]
-    congr 1
-    refine integral_congr_ae ?_
-    filter_upwards [h_rnDeriv_eq] with x hx
-    rw [hx]
-  have h : f (μ' univ).toReal ≤ ∫ x, f (μ'.rnDeriv ν' x).toReal ∂ν' :=
-    le_integral_rnDeriv_of_ac hf_cvx hf_cont ?_ hμν'
-  swap
-  · refine Integrable.smul_measure ?_ (by simp [hν])
-    refine (integrable_congr ?_).mpr hf_int
-    filter_upwards [h_rnDeriv_eq] with x hx
-    rw [hx]
-  rw [h_eq, mul_comm, ← div_le_iff₀, div_eq_inv_mul, inv_inv] at h
-  · convert h
-    · simp only [div_eq_inv_mul, Measure.smul_apply, smul_eq_mul, ENNReal.toReal_mul,
-      ENNReal.toReal_inv, μ']
-  · simp [ENNReal.toReal_pos_iff, hν]
-
-end IntegralRNDeriv
-
-section MulLog
-
-/-!
-### Properties of `x : ℝ ↦ x * log x`
--/
-
-@[simp]
-lemma rightDeriv_mul_log (hx : x ≠ 0) : derivWithin (fun x ↦ x * log x) (Ioi x) x = log x + 1 :=
-  (Real.hasDerivAt_mul_log hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
-
-@[simp]
-lemma leftDeriv_mul_log (hx : x ≠ 0) : derivWithin (fun x ↦ x * log x) (Iio x) x = log x + 1 :=
-  (Real.hasDerivAt_mul_log hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)
-
-lemma tendsto_rightDeriv_mul_log_atTop :
-    Tendsto (fun x ↦ derivWithin (fun x ↦ x * log x) (Ioi x) x) atTop atTop := by
-  have h_tendsto : Tendsto (fun x ↦ log x + 1) atTop atTop :=
-    tendsto_log_atTop.atTop_add tendsto_const_nhds
-  refine (tendsto_congr' ?_).mpr h_tendsto
-  rw [EventuallyEq, eventually_atTop]
-  exact ⟨1, fun _ hx ↦ rightDeriv_mul_log (zero_lt_one.trans_le hx).ne'⟩
-
-lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν
-      ↔ Integrable (llr μ ν) μ :=
-  integrable_rnDeriv_smul_iff hμν
-
-lemma integral_rnDeriv_mul_log [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    ∫ a, (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal ∂ν = ∫ a, llr μ ν a ∂μ := by
-  simp_rw [← smul_eq_mul]
-  rw [integral_rnDeriv_smul hμν]
-  rfl
-
-end MulLog
-
 /-- The function `x : ℝ ↦ x * log x + 1 - x`.
 The Kullback-Leibler divergence is an f-divergence for this function. -/
 noncomputable abbrev klFun (x : ℝ) : ℝ := x * log x + 1 - x
@@ -146,6 +47,20 @@ lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun := by
 
 /-- `klFun` is convex on [0,∞). -/
 lemma convexOn_klFun : ConvexOn ℝ (Ici 0) klFun := strictConvexOn_klFun.convexOn
+
+/-- `klFun` is continuous. -/
+@[continuity, fun_prop]
+lemma continuous_klFun : Continuous klFun := by fun_prop
+
+/-- `klFun` is measurable. -/
+@[measurability, fun_prop]
+lemma measurable_klFun : Measurable klFun := continuous_klFun.measurable
+
+/-- `klFun` is strongly measurable. -/
+@[measurability]
+lemma stronglyMeasurable_klFun : StronglyMeasurable klFun := measurable_klFun.stronglyMeasurable
+
+section Derivatives
 
 /-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
@@ -179,6 +94,8 @@ lemma tendsto_rightDeriv_klFun_atTop :
   rw [tendsto_congr' rightDeriv_klFun_eventually_eq]
   exact tendsto_log_atTop
 
+end Derivatives
+
 lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
   rcases hx.eq_or_lt with rfl | hx
   · simp
@@ -199,10 +116,7 @@ lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
   · exact fun _ s ↦ s
   · exact tendsto_log_atTop.atTop_add tendsto_const_nhds
 
-@[continuity, fun_prop]
-lemma continuous_klFun : Continuous klFun := by fun_prop
-
-/-- For two measures `μ ≪ ν`, the function `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable
+/-- For two finite measures `μ ≪ ν`, the function `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable
 with respect to `ν` iff `llr μ ν` is integrable with respect to `μ`. -/
 lemma integrable_klFun_rnDeriv_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
     Integrable (fun x ↦ klFun (μ.rnDeriv ν x).toReal) ν ↔ Integrable (llr μ ν) μ := by

@@ -75,7 +75,7 @@ lemma exp_neg_llr' [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
   rw [Pi.neg_apply, neg_eq_iff_eq_neg] at hx
   rw [← hx, hx_exp_log]
 
-@[measurability]
+@[measurability, fun_prop]
 lemma measurable_llr (μ ν : Measure α) : Measurable (llr μ ν) :=
   (Measure.measurable_rnDeriv μ ν).ennreal_toReal.log
 
@@ -117,6 +117,17 @@ lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ 
     simp [hx_pos.ne', hx_ne_top.ne]
   rw [ENNReal.toReal_inv, log_inv]
   ring
+
+lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [μ.HaveLebesgueDecomposition ν] (hμν : μ ≪ ν) :
+    Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν
+      ↔ Integrable (llr μ ν) μ :=
+  integrable_rnDeriv_smul_iff hμν
+
+lemma integral_rnDeriv_mul_log [SigmaFinite μ] [μ.HaveLebesgueDecomposition ν] (hμν : μ ≪ ν) :
+    ∫ a, (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal ∂ν = ∫ a, llr μ ν a ∂μ := by
+  simp_rw [← smul_eq_mul]
+  rw [integral_rnDeriv_smul hμν]
+  rfl
 
 section llr_tilted
 
