@@ -137,6 +137,16 @@ theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : �
 
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
+theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
+  ⟨trans_of r (symm_of r h), trans_of r h⟩
+
+theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
+  ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
+
+theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
+    r a c ↔ r b d := by
+  rw [rel_congr_left h₁, rel_congr_right h₂]
+
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
 theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
     {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
