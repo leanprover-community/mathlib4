@@ -1118,6 +1118,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
