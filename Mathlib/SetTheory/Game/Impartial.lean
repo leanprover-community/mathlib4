@@ -194,7 +194,7 @@ theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) �
 /-- A **strategy stealing** argument. If there's a move in `G`, such that any subsequent move could
 have also been reached in the first turn, then `G` is won by the first player.
 
-This version of the theorem is stated exclusively in terms of left moves, see
+This version of the theorem is stated exclusively in terms of left moves; see
 `fuzzy_zero_of_forall_moveRight` for a version stated with right moves. -/
 theorem fuzzy_zero_of_forall_exists_moveLeft (i : G.LeftMoves)
     (H : ∀ j, ∃ k, (G.moveLeft i).moveLeft j ≈ G.moveLeft k) : G ‖ 0 := by
@@ -207,7 +207,7 @@ theorem fuzzy_zero_of_forall_exists_moveLeft (i : G.LeftMoves)
 /-- A **strategy stealing** argument. If there's a move in `G`, such that any subsequent move could
 have also been reached in the first turn, then `G` is won by the first player.
 
-This version of the theorem is stated exclusively in terms of right moves, see
+This version of the theorem is stated exclusively in terms of right moves; see
 `fuzzy_zero_of_forall_moveLeft` for a version stated with left moves. -/
 theorem fuzzy_zero_of_forall_exists_moveRight (i : G.RightMoves)
     (H : ∀ j, ∃ k, (G.moveRight i).moveRight j ≈ G.moveRight k) : G ‖ 0 := by
