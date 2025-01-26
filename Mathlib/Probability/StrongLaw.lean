@@ -62,6 +62,8 @@ open Set (indicator)
 
 open scoped Topology MeasureTheory ProbabilityTheory ENNReal NNReal
 
+open scoped Function -- required for scoped `on` notation
+
 namespace ProbabilityTheory
 
 /-! ### Prerequisites on truncations -/
@@ -426,10 +428,10 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         · simp only [mem_sigma, mem_range, filter_congr_decidable, mem_filter, and_imp,
             Sigma.forall]
           exact fun a b haN hb ↦ ⟨hb.trans_le <| u_mono <| Nat.le_pred_of_lt haN, haN, hb⟩
-        all_goals aesop
+        all_goals simp
       _ ≤ ∑ j ∈ range (u (N - 1)), c ^ 5 * (c - 1)⁻¹ ^ 3 / ↑j ^ 2 * Var[Y j] := by
         apply sum_le_sum fun j hj => ?_
-        rcases @eq_zero_or_pos _ _ j with (rfl | hj)
+        rcases eq_zero_or_pos j with (rfl | hj)
         · simp only [Nat.cast_zero, zero_pow, Ne, Nat.one_ne_zero,
             not_false_iff, div_zero, zero_mul]
           simp only [Y, Nat.cast_zero, truncation_zero, variance_zero, mul_zero, le_rfl]

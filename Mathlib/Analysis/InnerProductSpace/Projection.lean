@@ -63,10 +63,10 @@ local notation "absR" => abs
 -- FIXME this monolithic proof causes a deterministic timeout with `-T50000`
 -- It should be broken in a sequence of more manageable pieces,
 -- perhaps with individual statements for the three steps below.
-/-- Existence of minimizers
+/-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
+
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
-Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`.
- -/
+Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`. -/
 theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h₁ : IsComplete K)
     (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u => by
   let δ := ⨅ w : K, ‖u - w‖
@@ -1288,7 +1288,7 @@ abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → 
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
-      exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
+      exact hV.sum_projection_of_mem_iSup _ ((h.ge :) Submodule.mem_top)
     · intro i
       exact map_zero _
   right_inv x := by

@@ -143,7 +143,7 @@ See also `Tilde.isLocallyFraction`.
 def tildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
   subsheafToTypes (Tilde.isLocallyFraction M)
 
-instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup (M.tildeInType.1.obj U) :=
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
@@ -182,7 +182,7 @@ namespace Tilde
 @[simp]
 theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
     (s : (tildeInModuleCat M).obj (op U)) (x : V) :
-    ((tildeInModuleCat M).map i.op s).1 x = (s.1 (i x) : _) :=
+    ((tildeInModuleCat M).map i.op s).1 x = (s.1 (i x) :) :=
   rfl
 
 lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
@@ -273,7 +273,7 @@ def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx :
   ModuleCat.ofHom
     (X := (tildeInModuleCat M).obj (op U))
     (Y := ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M))
-  { toFun := fun s => (s.1 ⟨x, hx⟩ : _)
+  { toFun := fun s => (s.1 ⟨x, hx⟩ :)
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 
@@ -299,7 +299,7 @@ theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x) (h
 theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) (s : (tildeInModuleCat M).1.obj (op U)) :
     (stalkToFiberLinearMap M x).hom
-      (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ : _) :=
+      (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ :) :=
   DFunLike.ext_iff.1 (ModuleCat.hom_ext_iff.mp (germ_comp_stalkToFiberLinearMap M U x hx)) s
 
 @[reassoc (attr := simp), elementwise (attr := simp)]

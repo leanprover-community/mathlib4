@@ -55,8 +55,6 @@ theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ
 theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   zpow_lt_zpow_iff_right₀ hx
 
-@[deprecated (since := "2024-02-10")] alias ⟨_, zpow_lt_of_lt⟩ := zpow_lt_iff_lt
-
 @[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
   zpow_le_zpow_iff_right₀ hx
@@ -118,7 +116,7 @@ protected lemma Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.zpow_neg_iff, zpow_eq_zero_iff]
   rintro rfl
-  exact Int.not_even_iff_odd.2 hn even_zero
+  exact Int.not_even_iff_odd.2 hn .zero
 
 lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.zpow_nonpos_iff
 

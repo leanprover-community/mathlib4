@@ -67,7 +67,7 @@ theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     (d0 : Nat.beq d 0 = false)
     (dm : x * y = d * m) : Nat.lcm x y = m :=
   mul_right_injective₀ (Nat.ne_of_beq_eq_false d0) <| by
-    dsimp only -- Porting note: the `dsimp only` was not necessary in Lean3.
+    dsimp only
     rw [← dm, ← hd, Nat.gcd_mul_lcm]
 
 theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
