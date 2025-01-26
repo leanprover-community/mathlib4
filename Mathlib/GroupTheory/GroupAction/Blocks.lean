@@ -229,7 +229,7 @@ lemma IsBlock.subgroup {H : Subgroup G} (hB : IsBlock G B) : IsBlock H B := fun 
 /-- A block of a group action is invariant iff it is fixed. -/
 @[to_additive "A block of a group action is invariant iff it is fixed."]
 lemma isInvariantBlock_iff_isFixedBlock : IsInvariantBlock G B ↔ IsFixedBlock G B :=
-  ⟨fun hB g ↦ (hB g).antisymm <| subset_set_smul_iff.2 <| hB _, IsFixedBlock.isInvariantBlock⟩
+  ⟨fun hB g ↦ (hB g).antisymm <| subset_smul_set_iff.2 <| hB _, IsFixedBlock.isInvariantBlock⟩
 
 /-- An invariant block of a group action is a fixed block. -/
 @[to_additive "An invariant block of a group action is a fixed block."]

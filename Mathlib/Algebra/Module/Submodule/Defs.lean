@@ -137,7 +137,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`. -/
-instance (priority := 75) toModule : Module R S' :=
+instance (priority := 75) toModule : Module R S' := fast_instance%
   Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
@@ -246,10 +246,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p :=
+instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
-instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
+instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+    Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
@@ -319,7 +320,7 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 
-instance addCommGroup : AddCommGroup p :=
+instance addCommGroup : AddCommGroup p := fast_instance%
   { p.toAddSubgroup.toAddCommGroup with }
 
 end AddCommGroup

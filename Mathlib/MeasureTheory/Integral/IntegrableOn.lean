@@ -95,7 +95,7 @@ theorem integrableOn_zero : IntegrableOn (fun _ => (0 : E)) s μ :=
 
 @[simp]
 theorem integrableOn_const {C : E} : IntegrableOn (fun _ => C) s μ ↔ C = 0 ∨ μ s < ∞ :=
-  integrable_const_iff.trans <| by rw [Measure.restrict_apply_univ]
+  integrable_const_iff.trans <| by rw [isFiniteMeasure_restrict, lt_top_iff_ne_top]
 
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
@@ -166,8 +166,8 @@ theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
-  rw [IntegrableOn, integrable_congr this, integrable_const_iff]
-  simp
+  rw [IntegrableOn, integrable_congr this, integrable_const_iff, isFiniteMeasure_restrict,
+    lt_top_iff_ne_top]
 
 @[simp]
 theorem integrableOn_finite_biUnion {s : Set β} (hs : s.Finite) {t : β → Set α} :
@@ -240,6 +240,7 @@ theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : Measur
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 
+@[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
@@ -252,9 +253,8 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
-    integrable_const_iff, lt_top_iff_ne_top]
-  right
-  simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply] using hμs
+    integrable_const_iff, isFiniteMeasure_restrict]
+  exact .inr hμs
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
@@ -375,6 +375,18 @@ theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
 protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
   Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
+
+theorem integrableAtFilter_atBot_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≥ x2]
+    [Nonempty α] :
+    IntegrableAtFilter f atBot μ ↔ ∃ a, IntegrableOn f (Iic a) μ := by
+  refine ⟨fun ⟨s, hs, hi⟩ ↦ ?_, fun ⟨a, ha⟩ ↦ ⟨Iic a, Iic_mem_atBot a, ha⟩⟩
+  obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
+  exact ⟨t, hi.mono_set fun _ hx ↦ ht _ hx⟩
+
+theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≤ x2]
+    [Nonempty α] :
+    IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
+  integrableAtFilter_atBot_iff (α := αᵒᵈ)
 
 protected theorem IntegrableAtFilter.add {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :

@@ -67,10 +67,8 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
 Because we do not allow morphisms in `Prop` (only in `Type`),
-somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
-
-See <https://stacks.math.columbia.edu/tag/001A>
--/
+somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`. -/
+@[stacks 001A]
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id _ := ULift.up (PLift.up rfl)
