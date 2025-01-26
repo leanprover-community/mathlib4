@@ -86,7 +86,7 @@ theorem eigenvectorUnitary_apply (i j : n) :
 
 theorem eigenvectorUnitary_mulVec (j : n) :
     eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j) := by
-  simp_rw [mulVec_single, MulOpposite.op_one, eigenvectorUnitary_transpose_apply, one_smul]
+  simp_rw [mulVec_single_one, eigenvectorUnitary_transpose_apply]
 
 theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
