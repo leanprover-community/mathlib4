@@ -109,17 +109,16 @@ lemma Cotangent.exact :
     rw [val_mk]
     convert Q.ker.toCotangent.map_zero
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
-    · sorry
-      --congr
-      --refine MvPolynomial.algHom_ext fun i ↦ ?_
-      --show (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
-      --simp
+    · have : ((Q.ofComp P).comp (Q.toComp P)).toAlgHom =
+          ((IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S)) := by
+        refine MvPolynomial.algHom_ext fun i ↦ ?_
+        simp
+      rw [← this, ← Generators.Hom.toExtensionHom_comp _ _ _ (Q.ofComp P) (Q.toComp P)]
+      rw [Hom.toExtensionHom_toAlgHom_apply]
     · simp [aeval_val_eq_zero hx]
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-    replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
-      sorry
-      --simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using congr(($hx).val)
+    replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by rwa [map_mk, mk_eq_zero_iff] at hx
     rw [← Submodule.restrictScalars_mem R, pow_two, Submodule.restrictScalars_mul,
       ← map_ofComp_ker (P := P), ← Submodule.map_mul, ← Submodule.restrictScalars_mul] at hx
     obtain ⟨y, hy, e⟩ := hx
@@ -128,12 +127,12 @@ lemma Cotangent.exact :
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
+    -- this is needed after #21050
+    letI : Algebra (Q.comp P).Ring T := (Q.comp P).algebra
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
-      Extension.Cotangent.mk z := by
-      sorry
-      --ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
-    sorry
-    /-
+        Extension.Cotangent.mk z := by
+      ext
+      rwa [val_mk, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
       (f := Submodule.subtype _) Subtype.val_injective, Submodule.map_subtype_span_singleton,
@@ -146,11 +145,12 @@ lemma Cotangent.exact :
       Subtype.exists, exists_and_right, exists_eq_right,
       toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
-    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
-      rw [aeval_val_eq_zero hw, map_zero]
+    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
+      -- this is needed after #21050
+      show (aeval (Q.comp P).val) ((Q.toComp P).toAlgHom w) = 0
+      rw [Hom.algebraMap_toAlgHom, aeval_val_eq_zero hw, map_zero]
     · rw [map_mk]
       rfl
-    -/
 
 /-- Given `R[X] → S` and `S[Y] → T`, the cotangent space of `R[X][Y] → T` is isomorphic
 to the direct product of the cotangent space of `S[Y] → T` and `R[X] → S` (base changed to `T`). -/
@@ -167,6 +167,7 @@ section instanceProblem
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
   SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
 
+set_option maxHeartbeats 0 in
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
       LinearMap.inr T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) =
@@ -180,6 +181,12 @@ lemma CotangentSpace.compEquiv_symm_inr :
     Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr,
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
+  rw [repr_CotangentSpaceMap]
+  simp only [toComp_val, pderiv_X]
+  -- this is how it looks at this point on master
+  -- show ((Q.cotangentSpaceBasis.prod (Basis.baseChange T P.cotangentSpaceBasis)).repr
+  --     (0, 1 ⊗ₜ[S] P.cotangentSpaceBasis i)) j =
+  --   (aeval (Q.comp P).val) (Pi.single j 1 (Sum.inr i))
   sorry
   /-
   obtain (j | j) := j <;>

@@ -440,6 +440,12 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
       refine RingHom.ext (fun x ↦ ?_)
       simp
 
+@[simp]
+lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
+    [IsScalarTower R S S'] (f : P.Hom P') (x) :
+    f.toExtensionHom.toAlgHom x = f.toAlgHom x :=
+  rfl
+
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
