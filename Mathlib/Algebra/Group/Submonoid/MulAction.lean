@@ -6,7 +6,8 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Group.Action.Defs
 
-/-! ### Actions by `Submonoid`s
+/-! 
+# Actions by `Submonoid`s
 
 These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
 the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
