@@ -91,19 +91,27 @@ instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
     IsLocallySurjective J (whiskerRight f (forget A)) where
   imageSieve_mem s := imageSieve_mem J f s
 
-theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
-    IsLocallySurjective J f ↔ (imagePresheaf (whiskerRight f (forget A))).sheafify J = ⊤ := by
+theorem isLocallySurjective_iff_range_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
+    IsLocallySurjective J f ↔ (Subpresheaf.range (whiskerRight f (forget A))).sheafify J = ⊤ := by
   simp only [Subpresheaf.ext_iff, funext_iff, Set.ext_iff, Subpresheaf.top_obj,
     Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 
-theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
+@[deprecated (since := "2025-01-26")]
+alias isLocallySurjective_iff_imagePresheaf_sheafify_eq_top :=
+  isLocallySurjective_iff_range_sheafify_eq_top
+
+theorem isLocallySurjective_iff_range_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (Subpresheaf.range f).sheafify J = ⊤ := by
-  apply isLocallySurjective_iff_imagePresheaf_sheafify_eq_top
+  apply isLocallySurjective_iff_range_sheafify_eq_top
+
+@[deprecated (since := "2025-01-26")]
+alias isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' :=
+  isLocallySurjective_iff_range_sheafify_eq_top'
 
 theorem isLocallySurjective_iff_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ IsLocallySurjective J (whiskerRight f (forget A)) := by
-  simp only [isLocallySurjective_iff_imagePresheaf_sheafify_eq_top]
+  simp only [isLocallySurjective_iff_range_sheafify_eq_top]
   rfl
 
 theorem isLocallySurjective_of_surjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
@@ -341,7 +349,7 @@ instance [IsLocallySurjective φ] :
 theorem isLocallySurjective_iff_isIso {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective f ↔ IsIso (Sheaf.imageι f) := by
   dsimp only [IsLocallySurjective]
-  rw [Sheaf.imageι, Presheaf.isLocallySurjective_iff_imagePresheaf_sheafify_eq_top',
+  rw [Sheaf.imageι, Presheaf.isLocallySurjective_iff_range_sheafify_eq_top',
     Subpresheaf.eq_top_iff_isIso]
   exact isIso_iff_of_reflects_iso (f := Sheaf.imageι f) (F := sheafToPresheaf J (Type w))
 
