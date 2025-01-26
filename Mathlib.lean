@@ -3014,6 +3014,7 @@ import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Quot
 import Mathlib.Data.Set.SMulAntidiagonal
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
