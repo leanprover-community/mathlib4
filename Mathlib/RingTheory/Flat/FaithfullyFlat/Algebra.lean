@@ -30,41 +30,17 @@ Let `B` be a faithfully flat `A`-algebra:
 
 Conversely, let `B` be a flat `A`-algebra:
 
-- `Module.FaithfullyFlat.of_primeSpectrum_comap_surjective`: `B` is faithfully flat over `A`,
+- `Module.FaithfullyFlat.of_specComap_surjective`: `B` is faithfully flat over `A`,
   if the induced map on prime spectra is surjective.
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 
 -/
-
-section
-
-variable {R S : Type*} [CommRing R]
-
-/-- `p` is in the image of `Spec S → Spec R` if and only if `p` extended to `S` and
-restricted back to `R` is `p`. -/
-lemma PrimeSpectrum.mem_range_comap_iff [CommRing S] (f : R →+* S)
-    (p : PrimeSpectrum R) :
-    p ∈ Set.range f.specComap ↔ (p.asIdeal.map f).comap f = p.asIdeal := by
-  refine ⟨fun ⟨q, hq⟩ ↦ by simp [← hq], ?_⟩
-  rw [Ideal.comap_map_eq_self_iff_of_isPrime]
-  rintro ⟨q, _, hq⟩
-  exact ⟨⟨q, inferInstance⟩, PrimeSpectrum.ext hq⟩
-
-end
 
 universe u v
 
 variable {A : Type u} {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
 
 open TensorProduct LinearMap
-
-/-- If `M` is a `B`-module that is also an `A`-module, the canonical map
-`M →ₗ[A] B ⊗[A] M` is injective. -/
-lemma Module.tensorProduct_mk_injective_of_isScalarTower (M : Type*) [AddCommGroup M] [Module A M]
-    [Module B M] [IsScalarTower A B M] : Function.Injective (TensorProduct.mk A B M 1) := by
-  apply Function.RightInverse.injective (g := LinearMap.liftBaseChange B LinearMap.id)
-  intro m
-  simp
 
 /-- If `B` is a faithfully flat `A`-module and `M` is any `A`-module, the canonical
 map `M →ₗ[A] B ⊗[A] M` is injective. -/
@@ -78,7 +54,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective [Module.FaithfullyFlat A 
     intro x y
     simp
   rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
-  exact Module.tensorProduct_mk_injective_of_isScalarTower _
+  exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
 open Algebra.TensorProduct in
 /-- If `B` is a faithfully flat `A`-algebra, the preimage of the pushforward of any
@@ -123,7 +99,7 @@ lemma PrimeSpectrum.specComap_surjective_of_faithfullyFlat [Module.FaithfullyFla
       I.asIdeal.comap_map_eq_self_of_faithfullyFlat
 
 /-- If `A →+* B` is flat and surjective on prime spectra, `B` is a faithfully flat `A`-algebra. -/
-lemma Module.FaithfullyFlat.of_primeSpectrum_comap_surjective [Flat A B]
+lemma Module.FaithfullyFlat.of_specComap_surjective [Flat A B]
     (h : Function.Surjective ((algebraMap A B).specComap)) :
     Module.FaithfullyFlat A B := by
   refine ⟨fun m hm ↦ ?_⟩
@@ -134,7 +110,7 @@ lemma Module.FaithfullyFlat.of_primeSpectrum_comap_surjective [Flat A B]
   exact (Submodule.restrictScalars_eq_top_iff _ _ _).ne.mpr
     fun top ↦ m'.isPrime.ne_top <| top_le_iff.mp <| top ▸ Ideal.map_comap_le
 
-/-- If `B` is a local, flat `A`-algebra and `A →+* B` is local, `B` is faithfully flat. -/
+/-- If `A` is local and `B` is a local and flat `A`-algebra, then `B` is faithfully flat. -/
 lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B] [Flat A B]
     [IsLocalHom (algebraMap A B)] : Module.FaithfullyFlat A B := by
   refine ⟨fun m hm ↦ ?_⟩

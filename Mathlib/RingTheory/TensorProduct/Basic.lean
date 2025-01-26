@@ -1178,7 +1178,7 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 /-- If `M` is a `B`-module that is also an `A`-module, the canonical map
 `M →ₗ[A] B ⊗[A] M` is injective. -/
-lemma Module.tensorProduct_mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
+lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
     [Module R M] [Module S M] [IsScalarTower R S M] :
     Function.Injective (TensorProduct.mk R S M 1) := by
   apply Function.RightInverse.injective (g := LinearMap.liftBaseChange S LinearMap.id)

@@ -5,6 +5,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -636,5 +637,15 @@ theorem range_specComap_of_surjective (hf : Surjective f) :
   rw [← Set.image_univ]
   convert image_specComap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
+
+variable {S} in
+/-- `p` is in the image of `Spec S → Spec R` if and only if `p` extended to `S` and
+restricted back to `R` is `p`. -/
+lemma PrimeSpectrum.mem_range_comap_iff (p : PrimeSpectrum R) :
+    p ∈ Set.range f.specComap ↔ (p.asIdeal.map f).comap f = p.asIdeal := by
+  refine ⟨fun ⟨q, hq⟩ ↦ by simp [← hq], ?_⟩
+  rw [Ideal.comap_map_eq_self_iff_of_isPrime]
+  rintro ⟨q, _, hq⟩
+  exact ⟨⟨q, inferInstance⟩, PrimeSpectrum.ext hq⟩
 
 end SpecOfSurjective
