@@ -522,10 +522,12 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| abel_nf ! $cfg:optConfig $(loc)?)
 
-@[inherit_doc abel] syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
+@[inherit_doc abel]
+syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
-@[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
+@[tactic abelNFConv]
+def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default }
@@ -542,14 +544,10 @@ macro_rules
 @[tactic_alt abel]
 macro "abel!" : tactic => `(tactic| abel !)
 
-/--
-The tactic `abel` evaluates expressions in abelian groups.
-This is the conv tactic version, which rewrites a target which is an abel equality to `True`.
-
-See also the `abel` tactic.
--/
+@[inherit_doc abel]
 macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1 | try_this abel_nf)
+
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
