@@ -222,7 +222,7 @@ lemma restrictTerminals_produces_derives_projectString {u v : List (Symbol T (g.
     unfold projectString at hrₒ ⊢
     repeat rw [List.map_append]
     exact ((Produces.append_left
-      ⟨r, hrg, hrₒ ▸ hrᵢ ▸ ContextFreeRule.Rewrites.input_output⟩ _).append_right _).single
+      ⟨r, hrg, hrₒ ▸ hrᵢ ▸ .input_output⟩ _).append_right _).single
   | inr =>
     rw [hu, hv, hr', restrictTerminalRules_right_terminal_output hrg' hr']
     simp only [projectString, List.map_append]
