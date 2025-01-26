@@ -14,9 +14,13 @@ isomorphic to `Set.Iio f.top`.
 
 -/
 
+namespace Set
+
+variable {α : Type*} [Preorder α]
+
 /-- `Set.Iic j` is an initial segment. -/
 @[simps]
-def Set.initialSegIic {α : Type*} [Preorder α] (j : α) :
+def initialSegIic (j : α) :
     Set.Iic j ≤i α where
   toFun := fun ⟨j, hj⟩ ↦ j
   inj' _ _ _ := by aesop
@@ -25,13 +29,39 @@ def Set.initialSegIic {α : Type*} [Preorder α] (j : α) :
 
 /-- `Set.Iio j` is a principal segment. -/
 @[simps]
-def Set.principalSegIio {α : Type*} [Preorder α] (j : α) :
+def principalSegIio (j : α) :
     Set.Iio j <i α where
   top := j
   toFun := fun ⟨j, hj⟩ ↦ j
   inj' _ _ _ := by aesop
   map_rel_iff' := by aesop
   mem_range_iff_rel' := by aesop
+
+/-- If `i ≤ j`, then `Set.Iic i` is an initial segment of `Set.Iic j`. -/
+@[simps]
+def initialSegIicIicOfLE {i j : α} (h : i ≤ j) :
+    Set.Iic i ≤i Set.Iic j where
+  toFun := fun ⟨k, hk⟩ ↦ ⟨k, hk.trans h⟩
+  inj' _ _ _ := by aesop
+  map_rel_iff' := by aesop
+  mem_range_of_rel' x k h := ⟨⟨k.1, (Subtype.coe_le_coe.2 h.le).trans x.2⟩, rfl⟩
+
+/-- If `i ≤ j`, then `Set.Iio i` is a principal segment of `Set.Iic`. -/
+@[simps top]
+def principalSegIioIicOfLE {i j : α} (h : i ≤ j) :
+    Set.Iio i <i Set.Iic j where
+  top := ⟨i, h⟩
+  toFun := fun ⟨k, hk⟩ ↦ ⟨k, hk.le.trans h⟩
+  inj' _ _ _ := by aesop
+  map_rel_iff' := by aesop
+  mem_range_iff_rel' := by aesop
+
+@[simp]
+lemma principalSegIioIicOfLE_toRelEmbedding {i j : α} (h : i ≤ j)
+    (k : α) (hk : k < i) :
+    ((Set.principalSegIioIicOfLE h).toRelEmbedding ⟨k, hk⟩ : α) = k := rfl
+
+end Set
 
 /-- If `f : α <i β` is a principal segment, this is the induced order
 isomorphism `α ≃o Set.Iio f.top`. -/

@@ -6,9 +6,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Transfinite iterations of a successor structure
 
@@ -73,12 +75,13 @@ variable {C : Type u} [Category.{v} C] {J : Type w}
 
 section
 
-variable [Preorder J] {j : J} (F : Set.Iic j ⥤ C) {i : J} (hi : i ≤ j)
+variable [PartialOrder J] {j : J} (F : Set.Iic j ⥤ C) {i : J} (hi : i ≤ j)
 
 /-- The functor `Set.Iio i ⥤ C` obtained by "restriction" of `F : Set.Iic j ⥤ C`
 when `i ≤ j`. -/
 def restrictionLT : Set.Iio i ⥤ C :=
-  (monotone_inclusion_lt_le_of_le hi).functor ⋙ F
+  (Set.principalSegIioIicOfLE hi).monotone.functor ⋙ F
+
 
 @[simp]
 lemma restrictionLT_obj (k : J) (hk : k < i) :
@@ -90,18 +93,14 @@ lemma restrictionLT_map {k₁ k₂ : Set.Iio i} (φ : k₁ ⟶ k₂) :
 
 /-- Given `F : Set.Iic j ⥤ C`, `i : J` such that `hi : i ≤ j`, this is the
 cocone consisting of all maps `F.obj ⟨k, hk⟩ ⟶ F.obj ⟨i, hi⟩` for `k : J` such that `k < i`. -/
-@[simps]
-def coconeOfLE : Cocone (restrictionLT F hi) where
-  pt := F.obj ⟨i, hi⟩
-  ι :=
-    { app := fun ⟨k, hk⟩ => F.map (homOfLE (by simpa using hk.le))
-      naturality := fun ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ _ => by
-        simp [comp_id, ← Functor.map_comp, homOfLE_comp] }
+@[simps!]
+def coconeOfLE : Cocone (restrictionLT F hi) :=
+  (Set.principalSegIioIicOfLE hi).cocone F
 
 /-- The functor `Set.Iic i ⥤ C` obtained by "restriction" of `F : Set.Iic j ⥤ C`
 when `i ≤ j`. -/
 def restrictionLE : Set.Iic i ⥤ C :=
-  (monotone_inclusion_le_le_of_le hi).functor ⋙ F
+  (Set.initialSegIicIicOfLE hi).monotone.functor ⋙ F
 
 @[simp]
 lemma restrictionLE_obj (k : J) (hk : k ≤ i) :

@@ -3,11 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.Interval.Set.InitialSeg
 
 /-!
 # An assumption for constructions by transfinite induction
