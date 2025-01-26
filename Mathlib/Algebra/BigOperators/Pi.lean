@@ -191,7 +191,8 @@ lemma Pi.induction_add {ι M : Type*} [Finite ι] [DecidableEq ι] [AddCommMonoi
   rw [← Finset.univ_sum_single f]
   exact Finset.sum_induction _ _ add zero (by simp [single])
 
-@[elab_as_elim]
+set_option linter.existingAttributeWarning false in
+@[elab_as_elim, to_additive existing]
 lemma Pi.induction_mul {ι M : Type*} [Finite ι] [DecidableEq ι] [CommMonoid M] (p : (ι → M) → Prop)
     (f : ι → M) (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
