@@ -29,7 +29,7 @@ Similar as for accessible functors, we define a type class `IsAccessible`.
 
 -/
 
-universe w w' v'' v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe w w' v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 

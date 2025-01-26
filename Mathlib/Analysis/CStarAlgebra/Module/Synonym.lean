@@ -47,8 +47,8 @@ The pattern here is the same one as is used by `Lex` for order structures; it av
 separate synonym for each type, and allows all the structure-copying code to be shared.
 -/
 
-/-- A type synonym for endowing a given type with a `CStarModule` structure. This has the scoped
-notation `C⋆ᵐᵒᵈ`.
+/-- A type synonym for endowing a given type with a `CStarModule` structure.
+This has the scoped notation `C⋆ᵐᵒᵈ` in the WithCStarModule namespace.
 
 Note: because the C⋆-algebra `A` over which `E` is a `CStarModule` is listed as an `outParam` in
 that class, we don't pass it as an unused argument to `WithCStarModule`, unlike the `p` parameter
