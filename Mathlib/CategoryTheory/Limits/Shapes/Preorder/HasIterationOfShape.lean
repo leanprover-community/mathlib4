@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.InitialSeg
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.Order.SuccPred.Limit
