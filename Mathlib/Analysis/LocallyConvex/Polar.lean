@@ -208,15 +208,16 @@ section Bipolar
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F] [Module ℝ E]
 
-lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
-  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
-  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
-  exact convex_absConvexHull (subset_absConvexHull hw)
-    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
-    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
-variable  [IsScalarTower ℝ 𝕜 E]
+def dualEmbedding : F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
+  toFun := fun x => ⟨B.flip x, WeakBilin.eval_continuous _ _⟩
+  map_add' := fun x y => by
+    simp only [map_add]
+    rfl
+  map_smul' := fun r x => by
+    simp only [map_smul, RingHom.id_apply]
+    rfl
 
 -- See `LinearMap.dualPairing_nondegenerate` in Mathlib/LinearAlgebra/Dual
 -- `WeakBilin B` is `E` with the σ(E,F)-topology`
@@ -224,35 +225,22 @@ variable  [IsScalarTower ℝ 𝕜 E]
 --   Topology/Algebra/Module/WeadDual
 -- `WeakBilin.isEmbedding` - topological
 
-#check LinearMap.Equiv
+lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
+  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
+  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
+  exact convex_absConvexHull (subset_absConvexHull hw)
+    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
+    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
+
+variable  [IsScalarTower ℝ 𝕜 E]
+
+
 
 #check B
 
 variable (B)
 
-def toWeakBilin : E ≃ₗ[𝕜] WeakBilin B := LinearEquiv.refl 𝕜 E
 
-#check LinearMap.compl₂
-
-#check B.toWeakBilin.symm.toLinearMap
-
-variable (x : E) (y : F)
-
-#check (⟨B.flip y, WeakBilin.eval_continuous _ _⟩ : WeakBilin B →L[𝕜] 𝕜)
-
--- Linear embed F into the (algebraic) dual of E (with the weak topology)
-#check B.flip.compl₂ B.toWeakBilin.symm.toLinearMap
-
---def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜
-
-def dualEmbedding : F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
-  toFun := fun x => ⟨B.flip.compl₂ B.toWeakBilin.symm.toLinearMap x, WeakBilin.eval_continuous _ _⟩
-  map_add' := fun x y => by
-    simp only [map_add]
-    rfl
-  map_smul' := fun r x => by
-    simp only [map_smul, RingHom.id_apply]
-    rfl
 
 -- See Bourbaki TVS II.43 or Rudin Theorem 3.10
 lemma dualEmbedding_isSurjective : Function.Surjective B.dualEmbedding := by
