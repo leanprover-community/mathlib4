@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Polynomial.Quotient
 
-variable {R : Type*} [CommRing R]
 /-!
 
 # Krull dimension and non zero-divisors
@@ -17,6 +16,8 @@ variable {R : Type*} [CommRing R]
 - `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
+
+variable {R : Type*} [CommRing R]
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
