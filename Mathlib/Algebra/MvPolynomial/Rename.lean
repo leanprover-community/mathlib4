@@ -102,11 +102,18 @@ theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
   rw [this]
   exact Finsupp.mapDomain_injective (Finsupp.mapDomain_injective hf)
 
+theorem rename_leftInverse {f : σ → τ} {g : τ → σ} (hf : Function.LeftInverse f g) :
+    Function.LeftInverse (rename f : MvPolynomial σ R → MvPolynomial τ R) (rename g) := by
+  intro x
+  simp [hf.comp_eq_id]
+
+theorem rename_rightInverse {f : σ → τ} {g : τ → σ} (hf : Function.RightInverse f g) :
+    Function.RightInverse (rename f : MvPolynomial σ R → MvPolynomial τ R) (rename g) :=
+ rename_leftInverse hf
+
 theorem rename_surjective (f : σ → τ) (hf : Function.Surjective f) :
-    Function.Surjective (rename f : MvPolynomial σ R → MvPolynomial τ R) := by
-  have (x) : rename (R := R) f (rename (Function.surjInv hf) x) = x := by
-    simp [rename_rename, Function.comp_def, Function.surjInv_eq, ← Function.id_def, rename_id]
-  exact Function.LeftInverse.surjective this
+    Function.Surjective (rename f : MvPolynomial σ R → MvPolynomial τ R) :=
+  let ⟨_, hf⟩ := hf.hasRightInverse; rename_rightInverse hf |>.surjective
 
 section
 
