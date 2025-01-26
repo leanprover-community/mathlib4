@@ -427,8 +427,8 @@ lemma Generators.naive_val {σ ι : Type*} (v : ι → MvPolynomial σ R)
   rfl
 
 lemma Generators.naive_ker {σ ι : Type*} (v : ι → MvPolynomial σ R)
-    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R := Quotient.out)
-    (hs : ∀ x, Quotient.mk'' (s x) = x := by simp) :
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+    (hs : ∀ x, Quotient.mk'' (s x) = x) :
     (Generators.naive v s hs).ker = Ideal.span (Set.range v) :=
   (Ideal.span (Set.range v)).mk_ker
 
@@ -446,7 +446,7 @@ def Presentation.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomia
   __ := Generators.naive v s hs
   rels := ι
   relation := v
-  span_range_relation_eq_ker := (Generators.naive_ker v).symm
+  span_range_relation_eq_ker := (Generators.naive_ker v s hs).symm
 
 open _root_.TensorProduct
 
@@ -521,16 +521,85 @@ lemma _root_.LinearEquiv.prodComm_symm_apply (R M N : Type*) [Semiring R] [AddCo
     (LinearEquiv.prodComm R M N).symm x = x.swap :=
   rfl
 
-set_option maxHeartbeats 0 in
-lemma exists_presentation_of_free [Nontrivial S] [Algebra.FinitePresentation R S]
-    (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
-    (u : σ → P.vars) (hu : Function.Injective u) :
+lemma _root_.Submodule.span_range_subtype_eq_top_iff {ι R M : Type*} [CommSemiring R]
+    [AddCommMonoid M]
+    [Module R M] (p : Submodule R M) (s : ι → M) (hs : ∀ i, s i ∈ p) :
+    Submodule.span R (Set.range <| fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔
+      Submodule.span R (Set.range s) = p := by
+  have : (⇑p.subtype '' Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = Set.range s := by
+    ext
+    simp
+  rw [← this]
+  constructor
+  · intro h
+    apply_fun Submodule.map p.subtype at h
+    simpa [Submodule.map_span, Submodule.map_top, Submodule.range_subtype] using h
+  · intro h
+    apply Submodule.map_injective_of_injective p.injective_subtype
+    rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_span]
+    conv_rhs => rw [← h]
+
+lemma _root_.Algebra.Extension.Cotangent.span_eq_top_of_span_eq_ker {ι R S : Type*}
+    [CommRing R] [CommRing S] [Algebra R S] {P : Algebra.Extension R S}
+    (s : ι → P.Ring) (hs : Ideal.span (Set.range s) = P.ker) :
+    Submodule.span S (Set.range <| fun i : ι ↦
+      Extension.Cotangent.mk ⟨s i, by rw [← hs]; exact Ideal.subset_span ⟨i, rfl⟩⟩) = ⊤ := by
+  erw [← Submodule.span_range_subtype_eq_top_iff] at hs
+  · apply_fun Submodule.map Extension.Cotangent.mk at hs
+    rw [Submodule.map_span, Submodule.map_top, LinearMap.range_eq_top_of_surjective] at hs
+    · apply Submodule.span_eq_top_of_span_eq_top (R := P.Ring)
+      convert hs
+      simp_rw [← Set.image_univ]
+      rw [Set.image_image]
+    · exact Extension.Cotangent.mk_surjective
+
+lemma RingHom.ker_eq_top_of_subsingleton {R S : Type*} [Ring R] [Ring S] (f : R →+* S)
+    [Subsingleton S] :
+    RingHom.ker f = (⊤ : Ideal R) := by
+  rw [_root_.eq_top_iff]
+  rintro x -
+  apply Subsingleton.elim
+
+lemma exists_presentation_of_free_of_subsingleton [Subsingleton S] [Algebra.FinitePresentation R S]
+    (P : Generators.{t₁} R S) [Finite P.vars] (σ : Type t₂) :
     ∃ (P' : Presentation.{t₂, t₁} R S)
       (e₁ : Unit ⊕ P.vars ≃ P'.vars)
-      (e₂ : Unit ⊕ σ ≃ P'.rels)
+      (_ : Unit ⊕ σ ≃ P'.rels)
       (b : Basis P'.rels S P'.toExtension.Cotangent),
       P'.val ∘ e₁ ∘ Sum.inr = P.val ∧
       ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
+  let P' : Presentation.{t₂, t₁} R S :=
+    { __ := Generators.ofSurjective
+        (fun i : Unit ⊕ P.vars ↦ 0) (Function.surjective_to_subsingleton _)
+      rels := Unit ⊕ σ
+      relation _ := 1
+      span_range_relation_eq_ker := by
+        simp only [Generators.ker_eq_ker_aeval_val]
+        erw [RingHom.ker_eq_top_of_subsingleton]
+        rw [Ideal.eq_top_iff_one]
+        apply Ideal.subset_span
+        use Sum.inl ()
+      }
+  have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
+  refine ⟨P', Equiv.sumCongr (Equiv.refl _) (Equiv.refl _),
+      Equiv.sumCongr (Equiv.refl _) (Equiv.refl _), default, ?_, ?_⟩
+  · ext x
+    apply Subsingleton.elim
+  · intro r
+    apply Subsingleton.elim
+
+set_option maxHeartbeats 0 in
+lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
+    (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂}
+    (b : Basis σ S P.toExtension.Cotangent) :
+    ∃ (P' : Presentation.{t₂, t₁} R S)
+      (e₁ : Unit ⊕ P.vars ≃ P'.vars)
+      (_ : Unit ⊕ σ ≃ P'.rels)
+      (b : Basis P'.rels S P'.toExtension.Cotangent),
+      P'.val ∘ e₁ ∘ Sum.inr = P.val ∧
+      ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
+  cases subsingleton_or_nontrivial S
+  · apply exists_presentation_of_free_of_subsingleton P σ
   classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   choose s hs using P.algebraMap_surjective
@@ -651,18 +720,13 @@ lemma exists_presentation_of_free [Nontrivial S] [Algebra.FinitePresentation R S
         simp }
   let hom1 : S ⊗[T] Q₁.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
     LinearMap.liftBaseChange _ (Extension.Cotangent.map fhom.toExtensionHom)
-  have : Submodule.span Q₁.toExtension.Ring
-      (Set.range <| fun i : σ ↦ (⟨(v i).val, vmem i⟩ : Q₁.ker)) = ⊤ :=
-    sorry
-  apply_fun Submodule.map Extension.Cotangent.mk at this
-  rw [Submodule.map_span] at this
-  simp at this
-  rw [Submodule.map_span] at this
-  rw [← Set.range_comp] at this
-  rw [LinearMap.range_eq_top_of_surjective _ Extension.Cotangent.mk_surjective] at this
   have hspan : Submodule.span (M := Q₁.toExtension.Cotangent) T
       (Set.range <| fun i : σ ↦ Extension.Cotangent.mk ⟨(v i).val, vmem i⟩) = ⊤ := by
-    sorry
+    apply Extension.Cotangent.span_eq_top_of_span_eq_ker
+    dsimp only [Q₁, Presentation.naive]
+    show _ = Generators.ker _
+    rw [Generators.naive_ker]
+    rfl
   let equiv1 : S ⊗[T] Q₁.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := by
     refine LinearEquiv.ofLinear hom1 hom2 ?_ ?_
     · dsimp [hom1, hom2, fhom]
@@ -684,6 +748,7 @@ lemma exists_presentation_of_free [Nontrivial S] [Algebra.FinitePresentation R S
       simp only [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
         LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.id_coe,
         id_eq]
+      -- use LinearMap.ext_on_range
       induction this using Submodule.span_induction with
       | mem x hx =>
           dsimp [hom1, hom2, fhom]
@@ -751,15 +816,10 @@ lemma exists_presentation_of_free [Nontrivial S] [Algebra.FinitePresentation R S
       simp [bQ₁, equiv1, hom2, P']
       erw [Extension.Cotangent.map_mk]
 
-instance isStandardSmooth_of_subsingleton [Subsingleton S] :
-    IsStandardSmooth R S :=
-  sorry
-
 theorem isStandardSmooth_of [Algebra.FinitePresentation R S]
     [Subsingleton (H1Cotangent R S)]
     {I : Type v} (b : Basis I S (Ω[S⁄R])) (hb : Set.range b ⊆ Set.range (D R S)) :
     IsStandardSmooth.{v, v} R S := by
-  nontriviality S
   obtain ⟨P, hfin, κ, v, b, hv, hb⟩ := exists_generators_of_basis_kaehlerDifferential b hb
   let σ : Type v := ((Set.range v)ᶜ : Set P.vars)
   let u : σ → P.vars := Subtype.val
@@ -772,7 +832,7 @@ theorem isStandardSmooth_of [Algebra.FinitePresentation R S]
   let e := LinearEquiv.ofBijective (cotangentRestrict P u Subtype.val_injective) this
   let bcot' : Basis σ S P.toExtension.Cotangent := Basis.ofRepr e
   obtain ⟨Q, e₁, e₂, bcot, hcomp, hbcot⟩ :=
-    exists_presentation_of_free P bcot' u Subtype.val_injective
+    exists_presentation_of_free P bcot'
   have : Finite Q.rels := Finite.of_equiv _ e₂
   let P' : PreSubmersivePresentation R S :=
     { toPresentation := Q
