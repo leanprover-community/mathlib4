@@ -227,8 +227,8 @@ theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β 
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
   ⟨leftTotal_empty R, rightTotal_empty R⟩
 
-theorem biTotal_empty_iff_left_empty [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
+theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
   simp only [BiTotal, leftTotal_empty, rightTotal_iff_isEmpty_right, true_and]
 
-theorem biTotal_empty_iff_right_empty [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
+theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
   simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
