@@ -74,26 +74,23 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
       let ls := extractSymbols cinfo.value!
       if !declName.isInternal && !ls.isEmpty then symbs := symbs.insert (declName, ls)
   -- From among the parsers in `symbs`, we extract the ones whose `symbols` contain the input `str`
-  let mut msgs := #[]
+  let mut match_results : NameMap (Array (Name × String)) := {}
   for (nm, ar) in symbs.toList do
     let rem : String := " _ ".intercalate (ar.map litToString).toList
     -- If either the name of the parser or the regenerated syntax stub contains the input string,
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
       let some mod := ← findModuleOf? nm | pure default
-      let some rgs ← findDeclarationRanges? nm | pure default
-      let rg := rgs.range
-      msgs := msgs.push <| .ofConstName nm ++ m!": \
-        defined in '{mod}'\n\
-        start: {rg.pos}, end: {rg.endPos}\n  \
-        '{rem.trim}'\n"
+      match_results := match_results.insert mod <| (match_results.findD mod #[]).push (nm, rem.trim)
   -- We sort the messages to produce a more stable output.
-  let msgsToString ← msgs.mapM (·.toString)
-  msgs := (msgs.zip msgsToString).qsort (·.2 < ·.2) |>.map (·.1)
-  let uses := msgs.size
+  -- let msgsToString ← msgs.mapM (·.toString)
+  let mods := (match_results.toList).map fun (mod, msgs) =>
+    m!"In `{mod}`:" ++ (MessageData.nest 2 <|
+      m!"".joinSep <| msgs.toList.map fun (decl, patt) =>
+        m!"\n{MessageData.ofConstName decl}: '{patt}'")
+  let uses := (match_results.toList.map fun (_, msgs) => msgs.size).sum
   let numSymbs := if d.isSome then s!"over {(symbs.size / 100) * 100}" else s!"{symbs.size}"
   let head := m!"Found {uses} use{if uses == 1 then "" else "s"} \
                 among {numSymbs} syntax declarations"
-  logInfo <| .joinSep (head::(msgs.push "").toList) "\n---\n\n"
-
+  logInfo <| head ++ m!"\n" ++ m!"\n\n".joinSep mods
 end Mathlib.FindSyntax
