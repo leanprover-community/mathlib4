@@ -12,7 +12,6 @@ import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Matrix.Basis
 
 /-!
 # Matrices over star rings.
@@ -40,12 +39,6 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
-
-lemma conjTranspose_stdBasisMatrix [DecidableEq m] [DecidableEq n] [AddMonoid α]
-    [StarAddMonoid α] (i : m) (j : n) (a : α) :
-    (stdBasisMatrix i j a)ᴴ = stdBasisMatrix j i (star a) := by
-  show (stdBasisMatrix i j a).transpose.map starAddEquiv = stdBasisMatrix j i (star a)
-  simp [conjTranspose]
 
 section Diagonal
 

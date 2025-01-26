@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
 # Matrices with a single non-zero element.
@@ -61,6 +62,13 @@ lemma map_stdBasisMatrix (i : m) (j : n) (a : α) {β : Type*} [Zero β]
     (stdBasisMatrix i j a).map f = stdBasisMatrix i j (f a) := by
   unfold stdBasisMatrix
   aesop
+
+@[simp]
+lemma conjTranspose_stdBasisMatrix {α : Type*} [AddMonoid α]
+    [StarAddMonoid α] (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᴴ = stdBasisMatrix j i (star a) := by
+  show (stdBasisMatrix i j a).transpose.map starAddEquiv = stdBasisMatrix j i (star a)
+  simp
 
 end Zero
 
