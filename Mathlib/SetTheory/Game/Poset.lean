@@ -157,11 +157,9 @@ decreasing_by
 
 -- TODO: this should generalize to a `Preorder`.
 -- A game should be equal to its antisymmetrization.
-/-- Any poset game on a poset with a top element is won by the first player.
 
-If it weren't, there'd be some position `s` that the second player could move to after the first
-player moved to `{⊤}ᶜ`, such that `s` is won by the second player. But then the first player could
-move to `s` on their first turn to win, a contradiction. -/
+/-- Any poset game on a poset with a top element is won by the first player. This is proven by
+a strategy stealing argument with `{⊤}ᶜ`. -/
 theorem poset_fuzzy_zero {α : Type*} [PartialOrder α] [WellQuasiOrderedLE α] [OrderTop α] :
     poset α ‖ 0 := by
   apply Impartial.fuzzy_zero_of_forall_exists_moveLeft _
