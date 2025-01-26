@@ -142,6 +142,8 @@ lemma of_continuousLinearEquiv_of_finiteDimensional
     --exact Module.Finite.quotient 𝕜 (LinearMap.range ↑T)
 
 -- use the rank-nullity theorem
+-- Any linear operator V\to W between finite-dimensional spaces
+-- is Fredholm with index dim(V)-dim(W).
 lemma index_of_finiteDimensional
     [FiniteDimensional 𝕜 X] [FiniteDimensional 𝕜 Y] {T : X ≃L[𝕜] Y} :
     index 𝕜 X Y T = (Module.finrank 𝕜 X : ℤ) - (Module.finrank 𝕜 Y : ℤ) := by
@@ -164,10 +166,19 @@ lemma index_of_finiteDimensional
   rw [← add_assoc]
 
   sorry
---apply finiteDimensional_submodule
--- Any linear operator V\to W between finite-dimensional spaces
--- is Fredholm with index dim(V)-dim(W).
 
+/-- If `T: X → Y` is Fredholm and `K : X \to Y` is a compact operator,
+then `T + K` is Fredholm. -/
+-- XXX: do I need completeness?
+theorem IsFredholm.of_sum_isCompactOperator {T : X ≃L[𝕜] Y} {K : X →L[𝕜] Y}
+    (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) (hK : IsCompactOperator K) :
+    IsFredholm 𝕜 (X := X) (Y := Y) (T + K) := sorry
 
+--/-- If `T: X → Y` is Fredholm and `K : X \to Y` is a compact operator,
+--then `ind(T+K) = ind(T)`. -/
+theorem IsFredholm.index_sum_isCompactOperator {T : X ≃L[𝕜] Y} {K : X →L[𝕜] Y}
+    (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) (hK : IsCompactOperator K) :
+    index 𝕜 X Y (T + K) = index 𝕜 X Y T := sorry
+  -- each tK is compact, then use local continuity
 
 end IsFredholm
