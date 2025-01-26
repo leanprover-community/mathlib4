@@ -468,8 +468,8 @@ end num_den
 
 section real_sqrt
 
-example : Real.sqrt 25 = 5 / 1 := by norm_num
-example : Real.sqrt (25 / 16) = 1.25 := by norm_num
+example : Real.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (0.25) = 1/2 := by norm_num
 example : NNReal.sqrt 25 = 5 := by norm_num
 example : Real.sqrt (-37) = 0 := by norm_num
