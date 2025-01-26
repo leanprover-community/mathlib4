@@ -33,6 +33,7 @@ namespace ProbabilityTheory
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {x : ℝ}
 
 section IntegralRNDeriv
+-- TODO: move that somewhere
 
 lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν] {f : ℝ → ℝ}
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
@@ -160,7 +161,14 @@ lemma deriv_klFun (hx : x ≠ 0) : deriv klFun x = log x := (hasDerivAt_klFun hx
 lemma rightDeriv_klFun (hx : x ≠ 0) : derivWithin klFun (Ioi x) x = log x :=
   (hasDerivAt_klFun hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
 
+/-- The left derivative of `klFun` at `x ≠ 0` is `log x`. -/
+@[simp]
+lemma leftDeriv_klFun (hx : x ≠ 0) : derivWithin klFun (Iio x) x = log x :=
+  (hasDerivAt_klFun hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)
+
 lemma rightDeriv_klFun_one : derivWithin klFun (Ioi 1) 1 = 0 := by simp
+
+lemma leftDeriv_klFun_one : derivWithin klFun (Iio 1) 1 = 0 := by simp
 
 lemma rightDeriv_klFun_eventually_eq : (fun x ↦ derivWithin klFun (Ioi x) x) =ᶠ[atTop] log := by
   filter_upwards [eventually_ne_atTop 0] with x hx
@@ -219,59 +227,5 @@ lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   · refine Integrable.add ?_ (integrable_const _)
     rwa [integrable_rnDeriv_mul_log_iff hμν]
   · exact Measure.integrable_toReal_rnDeriv
-
-section IntegralInequalities
-
-lemma integral_llr_add_sub_measure_univ_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
-    0 ≤ ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
-  rw [← integral_klFun_rnDeriv hμν h_int]
-  exact integral_nonneg fun x ↦ klFun_nonneg ENNReal.toReal_nonneg
-
-lemma integral_llr_add_mul_log_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
-    0 ≤ ∫ x, llr μ ν x ∂μ + (μ univ).toReal * log (ν univ).toReal + 1 - (μ univ).toReal := by
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  by_cases hν : ν = 0
-  · refine absurd ?_ hμ
-    rw [hν] at hμν
-    exact Measure.absolutelyContinuous_zero_iff.mp hμν
-  have : NeZero ν := ⟨hν⟩
-  let ν' := (ν univ)⁻¹ • ν
-  have hμν' : μ ≪ ν' :=
-    Measure.AbsolutelyContinuous.trans hμν (Measure.absolutelyContinuous_smul (by simp))
-  have h := integral_llr_add_sub_measure_univ_nonneg hμν' ?_
-  swap
-  · rw [integrable_congr (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν]))]
-    exact h_int.sub (integrable_const _)
-  rw [integral_congr_ae (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν]))] at h
-  rw [integral_sub h_int (integrable_const _), integral_const, smul_eq_mul] at h
-  simp only [ENNReal.toReal_inv, log_inv, mul_neg, sub_neg_eq_add, measure_univ, ENNReal.one_toReal]
-    at h
-  exact h
-
-lemma kl_ge_mul_log' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
-    (μ univ).toReal * log ((μ univ).toReal / (ν univ).toReal) + (ν univ).toReal - (μ univ).toReal
-      ≤ ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  by_cases hν : ν = 0
-  · refine absurd ?_ hμ
-    rw [hν] at hμν
-    exact Measure.absolutelyContinuous_zero_iff.mp hμν
-  simp only [tsub_le_iff_right, sub_add_cancel, add_le_add_iff_right]
-  rw [← integral_rnDeriv_mul_log hμν]
-  refine (le_of_eq ?_).trans
-    (mul_le_integral_rnDeriv_of_ac (f := fun x ↦ x * log x) convexOn_mul_log ?_ ?_ hμν)
-  · rw [← mul_assoc]
-    congr 1
-    rw [div_eq_inv_mul, ← mul_assoc, mul_inv_cancel₀, one_mul]
-    simp [ENNReal.toReal_eq_zero_iff, hν]
-  · exact Continuous.continuousOn (by fun_prop)
-  · rwa [integrable_rnDeriv_mul_log_iff hμν]
-
-end IntegralInequalities
 
 end ProbabilityTheory

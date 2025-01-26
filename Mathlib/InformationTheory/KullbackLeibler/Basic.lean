@@ -52,6 +52,15 @@ lemma kl_of_not_ac (h : ¬ μ ≪ ν) : kl μ ν = ∞ := if_neg (not_and_of_not
 lemma kl_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : kl μ ν = ∞ :=
   if_neg (not_and_of_not_right _ h)
 
+/-- **Gibbs' inequality**: the Kullback-Leibler divergence is nonnegative.
+Note that since our `kl` is defined as `ENNReal.ofReal ...`, it is nonnegative by definition.
+This lemma proves that the argument of `ENNReal.ofReal` is also nonnegative. -/
+lemma integral_llr_add_sub_measure_univ_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+    0 ≤ ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
+  rw [← integral_klFun_rnDeriv hμν h_int]
+  exact integral_nonneg fun x ↦ klFun_nonneg ENNReal.toReal_nonneg
+
 lemma toReal_kl [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
     (h_int : Integrable (llr μ ν) μ) :
     (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ + (ν univ).toReal - (μ univ).toReal := by
@@ -104,7 +113,53 @@ lemma kl_eq_integral_klFun [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
       else ∞ :=
   if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
-section kl_nonneg
+section IntegralInequalities
+
+lemma integral_llr_add_mul_log_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+    0 ≤ ∫ x, llr μ ν x ∂μ + (μ univ).toReal * log (ν univ).toReal + 1 - (μ univ).toReal := by
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  by_cases hν : ν = 0
+  · refine absurd ?_ hμ
+    rw [hν] at hμν
+    exact Measure.absolutelyContinuous_zero_iff.mp hμν
+  have : NeZero ν := ⟨hν⟩
+  let ν' := (ν univ)⁻¹ • ν
+  have hμν' : μ ≪ ν' :=
+    Measure.AbsolutelyContinuous.trans hμν (Measure.absolutelyContinuous_smul (by simp))
+  have h := integral_llr_add_sub_measure_univ_nonneg hμν' ?_
+  swap
+  · rw [integrable_congr (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν]))]
+    exact h_int.sub (integrable_const _)
+  rw [integral_congr_ae (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν]))] at h
+  rw [integral_sub h_int (integrable_const _), integral_const, smul_eq_mul] at h
+  simp only [ENNReal.toReal_inv, log_inv, mul_neg, sub_neg_eq_add, measure_univ, ENNReal.one_toReal]
+    at h
+  exact h
+
+lemma kl_ge_mul_log' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+    (μ univ).toReal * log ((μ univ).toReal / (ν univ).toReal) + (ν univ).toReal - (μ univ).toReal
+      ≤ ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  by_cases hν : ν = 0
+  · refine absurd ?_ hμ
+    rw [hν] at hμν
+    exact Measure.absolutelyContinuous_zero_iff.mp hμν
+  simp only [tsub_le_iff_right, sub_add_cancel, add_le_add_iff_right]
+  rw [← integral_rnDeriv_mul_log hμν]
+  refine (le_of_eq ?_).trans
+    (mul_le_integral_rnDeriv_of_ac (f := fun x ↦ x * log x) convexOn_mul_log ?_ ?_ hμν)
+  · rw [← mul_assoc]
+    congr 1
+    rw [div_eq_inv_mul, ← mul_assoc, mul_inv_cancel₀, one_mul]
+    simp [ENNReal.toReal_eq_zero_iff, hν]
+  · exact Continuous.continuousOn (by fun_prop)
+  · rwa [integrable_rnDeriv_mul_log_iff hμν]
+
+end IntegralInequalities
 
 lemma kl_ge_mul_log (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ENNReal.ofReal ((μ univ).toReal * log ((μ univ).toReal / (ν univ).toReal)
@@ -137,13 +192,5 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   refine (Measure.rnDeriv_eq_one_iff_eq hμν).mp ?_
   filter_upwards [h'] with x hx
   rwa [Pi.zero_apply, klFun_eq_zero_iff ENNReal.toReal_nonneg, ENNReal.toReal_eq_one_iff] at hx
-
--- /-- **Gibbs' inequality**: the Kullback-Leibler divergence between two probability distributions
--- is nonnegative.
--- Our definition of `kl` is nonnegative since it has type `ℝ≥0∞`. -/
--- lemma kl_nonneg (μ ν : Measure α) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
---     0 ≤ kl μ ν := kl_nonneg' μ ν (by simp)
-
-end kl_nonneg
 
 end ProbabilityTheory
