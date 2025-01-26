@@ -10,7 +10,15 @@ import Mathlib.InformationTheory.KullbackLeibler.KLFun
 
 ## Main definitions
 
-* `FooBar`
+* `kl μ ν`: Kullback-Leibler divergence between two measures, with value in `ℝ≥0∞`,
+  defined as `∞` if `μ` is not absolutely continuous with respect to `ν` or
+  if the log-likelihood ratio `llr μ ν` is not integrable, and by
+  `ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal)` otherwise.
+
+Note that our Kullback-Leibler divergence is nonnegative by definition (it takes value in `ℝ≥0∞`).
+However `∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal` is nonnegative for all finite
+measures `μ ≪ ν`, as proved in the lemma `integral_llr_add_sub_measure_univ_nonneg`.
+That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence is nonnegative").
 
 ## Main statements
 
