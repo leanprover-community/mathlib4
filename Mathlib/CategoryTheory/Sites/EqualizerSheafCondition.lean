@@ -95,7 +95,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v u :=
-  ∏ᶜ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 
 variable {P S}
 
@@ -224,9 +224,8 @@ theorem compatible_iff (x : FirstObj P R) :
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
 
-/-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer.
-See <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer. -/
+@[stacks 00VM]
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
   rw [Types.type_equalizer_iff_unique,
     ← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
@@ -256,7 +255,7 @@ variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
 
 /--
 The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/00VM>.
-The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arrises if the family of
+The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arises if the family of
 arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 def FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
@@ -270,7 +269,7 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj 
 
 /--
 The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM.
-The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arrises if the
+The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arises if the
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 def SecondObj : Type w  :=
@@ -322,10 +321,8 @@ theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.prod
     apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
-/--
-`P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer.
-See <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer. -/
+@[stacks 00VM]
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]

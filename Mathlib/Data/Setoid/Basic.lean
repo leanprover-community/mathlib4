@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 import Mathlib.Logic.Relation
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations
@@ -19,7 +20,7 @@ The complete lattice instance for equivalence relations could have been defined 
 the Galois insertion of equivalence relations on α into binary relations on α, and then using
 `CompleteLattice.copy` to define a complete lattice instance with more appropriate
 definitional equalities (a similar example is `Filter.CompleteLattice` in
-`Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
+`Mathlib/Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
 
 Partitions are not defined as a separate structure here; users are encouraged to
 reason about them using the existing `Setoid` and its infrastructure.
@@ -88,6 +89,8 @@ theorem trans' (r : Setoid α) : ∀ {x y z}, r x y → r y z → r x z := r.ise
 
 theorem comm' (s : Setoid α) {x y} : s x y ↔ s y x :=
   ⟨s.symm', s.symm'⟩
+
+open scoped Function -- required for scoped `on` notation
 
 /-- The kernel of a function is an equivalence relation. -/
 def ker (f : α → β) : Setoid α :=
