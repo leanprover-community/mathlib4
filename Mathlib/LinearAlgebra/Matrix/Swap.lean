@@ -31,9 +31,9 @@ lemma toPEquiv_toMatrix_mulVec_apply [Fintype n] [DecidableEq n]
     [NonAssocSemiring α] (σ : m ≃ n) (i : m) (a : n → α) :
     (σ.toPEquiv.toMatrix *ᵥ a) i = a (σ i) := by
   induction a using Pi.induction_add with
-  | hone => simp
-  | hmul f g hf hg => simp [hf, hg, Matrix.mulVec_add]
-  | hsingle => simp [Pi.single_apply]
+  | zero => simp
+  | add f g hf hg => simp [hf, hg, Matrix.mulVec_add]
+  | single => simp [Pi.single_apply]
 
 lemma toPEquiv_toMatrix_mulVec [Fintype n] [DecidableEq n]
     [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
@@ -46,9 +46,9 @@ lemma vecMul_toPEquiv_toMatrix_apply [Fintype m] [DecidableEq n]
     (a ᵥ* σ.toPEquiv.toMatrix) i = a (σ.symm i) := by
   classical
   induction a using Pi.induction_add with
-  | hone => simp
-  | hmul f g hf hg => simp [hf, hg, Matrix.add_vecMul]
-  | hsingle =>
+  | zero => simp
+  | add f g hf hg => simp [hf, hg, Matrix.add_vecMul]
+  | single =>
       simp only [single_vecMul, PEquiv.toMatrix_apply, toPEquiv_apply, Option.mem_def,
         Option.some.injEq, mul_ite, mul_one, mul_zero, Pi.single_apply, symm_apply_eq]
       simp_rw [eq_comm]
