@@ -11,6 +11,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.LocallyConvex.WeakDual
 import Mathlib.Analysis.Convex.Normed
 
+
 /-!
 # Polar set
 
@@ -206,24 +207,17 @@ end RCLike
 section Bipolar
 
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
-variable [Module 𝕜 E] [Module 𝕜 F] [Module ℝ E]
+variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
-
-def dualEmbedding : F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
-  toFun := fun x => ⟨B.flip x, WeakBilin.eval_continuous _ _⟩
-  map_add' := fun x y => by
-    simp only [map_add]
-    rfl
-  map_smul' := fun r x => by
-    simp only [map_smul, RingHom.id_apply]
-    rfl
 
 -- See `LinearMap.dualPairing_nondegenerate` in Mathlib/LinearAlgebra/Dual
 -- `WeakBilin B` is `E` with the σ(E,F)-topology`
 -- `((WeakBilin B) →L[𝕜] 𝕜)` is the topological dual of `E` with the σ(E,F)-topology, from
 --   Topology/Algebra/Module/WeadDual
 -- `WeakBilin.isEmbedding` - topological
+
+variable [Module ℝ E]
 
 lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
   obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
@@ -233,14 +227,6 @@ lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜
     (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
 
 variable  [IsScalarTower ℝ 𝕜 E]
-
-
-
-#check B
-
-variable (B)
-
-
 
 -- See Bourbaki TVS II.43 or Rudin Theorem 3.10
 lemma dualEmbedding_isSurjective : Function.Surjective B.dualEmbedding := by

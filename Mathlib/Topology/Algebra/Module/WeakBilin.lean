@@ -5,6 +5,9 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
+import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Weak dual topology
@@ -135,6 +138,16 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   ext
   simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.smul_apply]
+
+def _root_.LinearMap.dualEmbedding [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
+    F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
+  toFun := fun x => ⟨B.flip x, WeakBilin.eval_continuous _ _⟩
+  map_add' := fun x y => by
+    simp only [map_add]
+    rfl
+  map_smul' := fun r x => by
+    simp only [map_smul, RingHom.id_apply]
+    rfl
 
 end Semiring
 
