@@ -402,8 +402,8 @@ lemma input_mem_generators {r : ContextFreeRule T g.NT} (hrg : r ∈ g.rules) :
     simp only [List.mem_toFinset, List.mem_map, List.mem_cons, List.map_cons, List.toFinset_cons,
       Finset.mem_insert] at ih ⊢
     rintro (c1 | c2)
-    · exact Or.intro_left _ (c1 ▸ rfl)
-    · exact Or.intro_right _ (ih c2)
+    · exact Or.inl (c1 ▸ rfl)
+    · exact Or.inr (ih c2)
 
 lemma addIfNullable_subset_generators {r : ContextFreeRule T g.NT} {p : Finset g.NT}
     (hpg : p ⊆ g.generators) (hrg : r ∈ g.rules) :
@@ -782,12 +782,12 @@ lemma nullableRelated_mem_removeNullable {p : Finset g.NT} {u v : List (Symbol T
       | empty_left _ hu =>
         rw [← List.singleton_append] at hu
         rw [hn]
-        exact Or.intro_left _ ⟨hu.empty_of_append_left, ih
+        exact Or.inl ⟨hu.empty_of_append_left, ih
           (NullableRelated.empty_left l hu.empty_of_append_right)⟩
       | cons_nterm_match hu'u => exact Or.inr ⟨_, ih hu'u, rfl⟩
       | cons_nterm_nullable hvu hnn =>
         rw [hn]
-        exact Or.intro_left _ ⟨hnn, ih hvu⟩
+        exact Or.inl ⟨hnn, ih hvu⟩
 
 variable [DecidableEq T]
 

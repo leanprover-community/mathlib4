@@ -124,7 +124,7 @@ lemma generatorsProdDiag_subset_generators_prod :
     | inr hlp =>
       obtain ⟨p', hp', rfl⟩ := hlp
       simp only [Finset.mem_product, Finset.mem_insert, List.mem_toFinset, List.mem_map, and_self]
-      exact Or.intro_right _ ⟨p', ⟨hp', rfl⟩⟩
+      exact Or.inr ⟨p', ⟨hp', rfl⟩⟩
 
 lemma generatorsProdDiag_unitPairs {p : g.NT × g.NT} (hp : p ∈ g.generatorsProdDiag) :
     UnitPair p.1 p.2 := by
@@ -168,26 +168,26 @@ lemma collectUnitPairs_unitPair_rec {nᵢ nₒ : g.NT} {p : g.NT × g.NT} {l : L
     {x : Finset (g.NT × g.NT)} (hp : p ∈ l.foldr (addUnitPair nᵢ nₒ) x) :
     p ∈ x ∨ ∃ v, (nₒ, v) ∈ l ∧ p = (nᵢ, v) := by
   induction l generalizing x with
-  | nil => exact Or.intro_left _ hp
+  | nil => exact Or.inl hp
   | cons a l ih =>
     simp only [addUnitPair, List.foldr_cons, List.mem_cons] at hp
     split at hp <;> rename_i ha
     · simp only [Finset.mem_insert] at hp
       cases hp with
-      | inl hpd => exact Or.intro_right _ ⟨a.2, ha ▸ l.mem_cons_self a, hpd⟩
+      | inl hpd => exact Or.inr ⟨a.2, ha ▸ l.mem_cons_self a, hpd⟩
       | inr hpl =>
         specialize ih hpl
         cases ih with
         | inl => left; assumption
         | inr hlp =>
           obtain ⟨v, hvl, hpv⟩ := hlp
-          exact Or.intro_right _ ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
+          exact Or.inr ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
     · specialize ih hp
       cases ih with
       | inl => left; assumption
       | inr hlp =>
         obtain ⟨v, hvl, hpv⟩ := hlp
-        exact Or.intro_right _ ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
+        exact Or.inr ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
 
 lemma collectUnitPairs_unitPair {r : ContextFreeRule T g.NT} {l : List (g.NT × g.NT)}
     (hrg : r ∈ g.rules) (hp : ∀ p ∈ l, UnitPair p.1 p.2) :

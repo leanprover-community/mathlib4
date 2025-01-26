@@ -406,15 +406,15 @@ lemma DerivesIn.append_split {p q w : List (Symbol T g.NT)} {n : ℕ}
       cases hpqxvy with
       | inl hxq =>
         obtain ⟨a, hx, hq⟩ := hxq
-        exact (Or.intro_right _ ⟨a, ⟨hx, hq⟩⟩)
+        exact (Or.inr ⟨a, ⟨hx, hq⟩⟩)
       | inr hpy =>
         obtain ⟨a, rfl, hq⟩ := hpy
         cases a with
         | nil =>
-          exact (Or.intro_right _ ⟨[], ⟨x.append_nil.symm ▸ x.append_nil.symm ▸ rfl, hq.symm⟩⟩)
+          exact (Or.inr ⟨[], ⟨x.append_nil.symm ▸ x.append_nil.symm ▸ rfl, hq.symm⟩⟩)
         | cons d l =>
           rw [List.cons_append, List.cons.injEq] at hq
-          exact (Or.intro_left _ ⟨l, ⟨hq.2, hq.1 ▸ rfl⟩⟩)
+          exact (Or.inl ⟨l, ⟨hq.2, hq.1 ▸ rfl⟩⟩)
     rcases append_eq_append_cons heq with ⟨a, hq', hp⟩ | ⟨a, hp', hq⟩
     · rw [hv, hq', ← List.append_assoc] at hd
       obtain ⟨x, y, m₁, m₂, hw, hd₁, hd₂, hn⟩ := hd.append_split
