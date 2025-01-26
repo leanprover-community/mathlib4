@@ -1408,14 +1408,8 @@ lemma lift_openEmbedding_trans
     (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) = e.symm.trans e' := by
   ext z
-  · by_cases h': Nonempty X; swap
-    · have := not_nonempty_iff.mp h'
-      exact (IsEmpty.false (e.symm z)).elim
-    exact e.lift_openEmbedding_trans_apply e' hf z
-  · by_cases h': Nonempty X; swap
-    · have := not_nonempty_iff.mp h'
-      exact (IsEmpty.false (e.symm z)).elim
-    simp [hf.injective.extend_apply e]
+  · exact e.lift_openEmbedding_trans_apply e' hf z
+  · simp [hf.injective.extend_apply e]
   · simp_rw [PartialHomeomorph.trans_source, e.lift_openEmbedding_symm_source, e.symm_source,
       e.lift_openEmbedding_symm, e'.lift_openEmbedding_source]
     refine ⟨fun ⟨hx, ⟨y, hy, hxy⟩⟩ ↦ ⟨hx, ?_⟩, fun ⟨hx, hx'⟩ ↦ ⟨hx, mem_image_of_mem f hx'⟩⟩
