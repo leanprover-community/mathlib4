@@ -144,7 +144,7 @@ lemma isCardinalPresentable_iff_of_isEquivalence
   constructor
   · intro
     exact isCardinalPresentable_of_iso
-      (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X : ) κ
+      (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X :) κ
   · intro
     infer_instance
 
