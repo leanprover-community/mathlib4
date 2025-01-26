@@ -65,7 +65,7 @@ noncomputable def orderIsoSubject : Subpresheaf F ≃o Subobject F where
     · intro h
       have : range (Subobject.mk A.ι).arrow ≤ range (Subobject.mk B.ι).arrow :=
         leOfHom (((equivalenceMonoOver F).trans
-        (ThinSkeleton.equivalence _).symm).inverse.map (homOfLE h))
+          (ThinSkeleton.equivalence _).symm).inverse.map (homOfLE h))
       simpa using this
     · intro h
       exact leOfHom (((equivalenceMonoOver F).trans
