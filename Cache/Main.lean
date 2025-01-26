@@ -13,7 +13,7 @@ Commands:
   # No privilege required
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do no compress
+  get- [ARGS]  Download linked files missing to the local cache, but do not decompress
   pack         Compress non-compressed build files into the local cache
   pack!        Compress build files into the local cache (no skipping)
   unpack       Decompress linked already downloaded files
@@ -33,9 +33,9 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get' and 'get!'
+# The arguments for 'get', 'get!' and 'get-'
 
-'get' and 'get!' can process list of paths, allowing the user to be more
+'get', 'get!' and 'get-' can process a list of paths, allowing the user to be more
 specific about what should be downloaded. For example, with automatic glob
 expansion in shell, one can call:
 
@@ -57,14 +57,20 @@ def toPaths (args : List String) : List FilePath :=
     else
       mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
+/-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
+/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
+  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
+    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
+    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
+    Process.exit 1
   -- We pass any following arguments to `getHashMemo`,
   -- so we can use the cache on `Archive` or `Counterexamples`.
   let extraRoots := match args with
@@ -73,6 +79,7 @@ def main (args : List String) : IO Unit := do
   if args.isEmpty then
     println help
     Process.exit 0
+  CacheM.run do
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl

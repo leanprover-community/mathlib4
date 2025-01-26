@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
 -/
 
-/-!
-## The combined state and list monad transformer.
+import Mathlib.Init
 
+/-!
 The combined state and list monad transformer.
 `StateListT σ α` is equivalent to `StateT σ (ListT α)` but more efficient.
 
@@ -22,10 +22,14 @@ def problem : StateListT Unit (StateM (Array Nat)) Unit := do
 ```
 will yield either `#[0,1,0,1]`, or `#[0,0,1,1]`, depending on the order in which the actions
 in the do block are combined.
-v
+
 -/
 
-universe u v w
+/-! StateList -/
+
+namespace Mathlib.Meta.FunProp
+
+universe u v
 
 /-- `StateList` is a List with a state associated to each element.
 This is used instead of `List (α × σ)` as it is more efficient. -/
@@ -59,8 +63,7 @@ private def append : (xs ys : StateList σ α) → StateList σ α
 instance : Append (StateList σ α) := ⟨StateList.append⟩
 
 @[specialize]
-private def foldrM {m : Type u → Type v} [Monad m] :
-    (f : α → σ → β → m β) → (init : β) → StateList σ α → m β
+private def foldrM {m} [Monad m] : (f : α → σ → β → m β) → (init : β) → StateList σ α → m β
   | _, b, .nil     => pure b
   | f, b, .cons a s l => do
     f a s (← l.foldrM f b)
@@ -84,8 +87,7 @@ def StateListT.run' [Functor m] (x : StateListT σ m α) (s : σ) : m (List α) 
   StateList.toList' <$> x s
 
 /-- The combined state and list monad. -/
-@[reducible]
-def StateListM (σ α : Type u) : Type u := StateListT σ Id α
+abbrev StateListM (σ α : Type u) : Type u := StateListT σ Id α
 
 namespace StateListT
 section
@@ -94,10 +96,13 @@ section
 private def pure (a : α) : StateListT σ m α :=
   fun s => return StateList.nil.cons a s
 
+/-- Separately handling lists of length 1 is important to avoid a stack overflow. -/
 @[always_inline, inline]
 private def bind (x : StateListT σ m α) (f : α → StateListT σ m β) : StateListT σ m β :=
-  fun s => do
-    (← x s).foldrM (fun a s bs => return (← f a s) ++ bs) .nil
+  fun s => do match ← x s with
+    | .nil => return .nil
+    | .cons a s .nil => f a s
+    | x => x.foldrM (fun a s bs => return (← f a s) ++ bs) .nil
 
 @[always_inline, inline]
 private def map (f : α → β) (x : StateListT σ m α) : StateListT σ m β :=
@@ -147,7 +152,7 @@ instance : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
 instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
 
 @[always_inline]
-instance {ε : Type w} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
+instance{ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
   throw    := StateListT.lift ∘ throwThe ε
   tryCatch := fun x c s => tryCatchThe ε (x s) (fun e => c e s)
 }
@@ -167,3 +172,5 @@ instance StateListT.monadControl : MonadControl m (StateListT σ m) where
   stM      := StateList σ
   liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
   restoreM := fun x _ => x
+
+end Mathlib.Meta.FunProp

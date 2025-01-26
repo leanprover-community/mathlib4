@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.NormedSpace.ProdLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L²` inner product space structure on products of inner product spaces
@@ -17,7 +17,7 @@ This is recorded in this file as an inner product space instance on `WithLp 2 (E
 -/
 
 variable {𝕜 ι₁ ι₂ E F : Type*}
-variable [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 F]
 
 namespace WithLp

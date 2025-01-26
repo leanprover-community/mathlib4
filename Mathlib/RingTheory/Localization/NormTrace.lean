@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Discriminant
-
-#align_import ring_theory.localization.norm from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 
 /-!
 
@@ -40,15 +38,11 @@ field norm, algebra norm, localization
 open scoped nonZeroDivisors
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
-
 variable (M : Submonoid R)
-
 variable [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
 variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
+include M
 open Algebra
 
 theorem Algebra.map_leftMulMatrix_localization {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -71,7 +65,14 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
   rw [Algebra.norm_eq_matrix_det (b.localizationLocalization Rₘ M Sₘ),
     Algebra.norm_eq_matrix_det b, RingHom.map_det, ← Algebra.map_leftMulMatrix_localization]
-#align algebra.norm_localization Algebra.norm_localization
+
+variable {M} in
+/-- The norm of `a : S` in `R` can be computed in `Sₘ`. -/
+lemma Algebra.norm_eq_iff [Module.Free R S] [Module.Finite R S] {a : S} {b : R}
+    (hM : M ≤ nonZeroDivisors R) : Algebra.norm R a = b ↔
+      (Algebra.norm Rₘ) ((algebraMap S Sₘ) a) = algebraMap R Rₘ b :=
+  ⟨fun h ↦ h.symm ▸ Algebra.norm_localization _ M _, fun h ↦
+    IsLocalization.injective Rₘ hM <| h.symm ▸ (Algebra.norm_localization R M a).symm⟩
 
 /-- Let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M` of `R S` respectively.
 Then the trace of `a : Sₘ` over `Rₘ` is the trace of `a : S` over `R` if `S` is free as `R`-module.
@@ -90,11 +91,8 @@ theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S] (a : S)
 section LocalizationLocalization
 
 variable (Sₘ : Type*) [CommRing Sₘ] [Algebra S Sₘ] [Algebra Rₘ Sₘ] [Algebra R Sₘ]
-
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
 variable [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :

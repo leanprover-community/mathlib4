@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.Basic
 
@@ -72,7 +72,7 @@ theorem period_inv (g : G) (a : α) : period g⁻¹ a = period g a := by
   simp only [period_eq_minimalPeriod, Function.minimalPeriod_eq_minimalPeriod_iff,
     isPeriodicPt_smul_iff]
   intro n
-  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← zpow_ofNat, inv_zpow, inv_inv, zpow_ofNat]
+  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← zpow_natCast, inv_zpow, inv_inv, zpow_natCast]
 
 end Identities
 

@@ -7,7 +7,8 @@ import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Galois objects in Galois categories
@@ -35,8 +36,8 @@ open Limits Functor
 
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
-  choose G' hg hf e using Finite.exists_type_zero_nonempty_mulEquiv G
-  exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
+  choose G' hg hf e using Finite.exists_type_univ_nonempty_mulEquiv G
+  exact Limits.preservesColimitsOfShape_of_equiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
 class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)
@@ -68,8 +69,8 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient
     preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
     (Equiv.toIso <| SingleObj.Types.colimitEquivQuotient (J ⋙ F ⋙ FintypeCat.incl))
   apply Equiv.trans
-  apply (IsTerminal.isTerminalIffObj (F ⋙ FintypeCat.incl) _).trans
-    (isLimitEmptyConeEquiv _ (asEmptyCone _) (asEmptyCone _) e)
+  · apply (IsTerminal.isTerminalIffObj (F ⋙ FintypeCat.incl) _).trans
+      (isLimitEmptyConeEquiv _ (asEmptyCone _) (asEmptyCone _) e)
   exact Types.isTerminalEquivUnique _
 
 lemma isGalois_iff_aux (X : C) [IsConnected X] :
@@ -83,7 +84,7 @@ theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
-/-- If `X` is Galois, the quotient `X / Aut X` is terminal.  -/
+/-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
   Nonempty.some IsGalois.quotientByAutTerminal
@@ -94,6 +95,118 @@ instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [← isGalois_iff_pretransitive]
   infer_instance
+
+lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
+    Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
+  conj_mem n ninstab g := by
+    rw [MulAction.mem_stabilizer_iff]
+    show g • n • (g⁻¹ • x) = x
+    have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
+      MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
+    obtain ⟨φ, h⟩ := this
+    rw [← h, mulAction_naturality, ninstab, h]
+    simp
+
+theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
+    Function.Surjective (fun f : Aut A ↦ F.map f.hom a) :=
+  MulAction.IsPretransitive.exists_smul_eq a
+
+theorem evaluation_aut_bijective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
+    Function.Bijective (fun f : Aut A ↦ F.map f.hom a) :=
+  ⟨evaluation_aut_injective_of_isConnected F A a, evaluation_aut_surjective_of_isGalois F A a⟩
+
+/-- For Galois `A` and a point `a` of the fiber of `A`, the evaluation at `A` as an equivalence. -/
+noncomputable def evaluationEquivOfIsGalois (A : C) [IsGalois A] (a : F.obj A) : Aut A ≃ F.obj A :=
+  Equiv.ofBijective _ (evaluation_aut_bijective_of_isGalois F A a)
+
+@[simp]
+lemma evaluationEquivOfIsGalois_apply (A : C) [IsGalois A] (a : F.obj A) (φ : Aut A) :
+    evaluationEquivOfIsGalois F A a φ = F.map φ.hom a :=
+  rfl
+
+@[simp]
+lemma evaluationEquivOfIsGalois_symm_fiber (A : C) [IsGalois A] (a b : F.obj A) :
+    F.map ((evaluationEquivOfIsGalois F A a).symm b).hom a = b := by
+  change (evaluationEquivOfIsGalois F A a) _ = _
+  simp
+
+section AutMap
+
+/-- For a morphism from a connected object `A` to a Galois object `B` and an automorphism
+of `A`, there exists a unique automorphism of `B` making the canonical diagram commute. -/
+lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : Aut A) :
+    ∃! (τ : Aut B), f ≫ τ.hom = σ.hom ≫ f := by
+  let F := GaloisCategory.getFiberFunctor C
+  obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
+  refine ⟨?_, ?_, ?_⟩
+  · exact (evaluationEquivOfIsGalois F B (F.map f a)).symm (F.map (σ.hom ≫ f) a)
+  · apply evaluation_injective_of_isConnected F A B a
+    simp
+  · intro τ hτ
+    apply evaluation_aut_injective_of_isConnected F B (F.map f a)
+    simpa using congr_fun (F.congr_map hτ) a
+
+/-- A morphism from a connected object to a Galois object induces a map on automorphism
+groups. This is a group homomorphism (see `autMapHom`). -/
+noncomputable def autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A) :
+    Aut B :=
+  (exists_autMap f σ).choose
+
+@[simp]
+lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A) :
+    f ≫ (autMap f σ).hom = σ.hom ≫ f :=
+  (exists_autMap f σ).choose_spec.left
+
+@[simp]
+lemma comp_autMap_apply (F : C ⥤ FintypeCat.{w}) {A B : C} [IsConnected A] [IsGalois B]
+    (f : A ⟶ B) (σ : Aut A) (a : F.obj A) :
+    F.map (autMap f σ).hom (F.map f a) = F.map f (F.map σ.hom a) := by
+  simpa [-comp_autMap] using congrFun (F.congr_map (comp_autMap f σ)) a
+
+/-- `autMap` is uniquely characterized by making the canonical diagram commute. -/
+lemma autMap_unique {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A)
+    (τ : Aut B) (h : f ≫ τ.hom = σ.hom ≫ f) :
+    autMap f σ = τ :=
+  ((exists_autMap f σ).choose_spec.right τ h).symm
+
+@[simp]
+lemma autMap_id {A : C} [IsGalois A] : autMap (𝟙 A) = id :=
+  funext fun σ ↦ autMap_unique (𝟙 A) σ _ (by simp)
+
+@[simp]
+lemma autMap_comp {X Y Z : C} [IsConnected X] [IsGalois Y] [IsGalois Z] (f : X ⟶ Y)
+    (g : Y ⟶ Z) : autMap (f ≫ g) = autMap g ∘ autMap f := by
+  refine funext fun σ ↦ autMap_unique _ σ _ ?_
+  rw [Function.comp_apply, Category.assoc, comp_autMap, ← Category.assoc]
+  simp
+
+/-- `autMap` is surjective, if the source is also Galois. -/
+lemma autMap_surjective_of_isGalois {A B : C} [IsGalois A] [IsGalois B] (f : A ⟶ B) :
+    Function.Surjective (autMap f) := by
+  intro σ
+  let F := GaloisCategory.getFiberFunctor C
+  obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
+  obtain ⟨a', ha'⟩ := surjective_of_nonempty_fiber_of_isConnected F f (F.map σ.hom (F.map f a))
+  obtain ⟨τ, (hτ : F.map τ.hom a = a')⟩ := MulAction.exists_smul_eq (Aut A) a a'
+  use τ
+  apply evaluation_aut_injective_of_isConnected F B (F.map f a)
+  simp [hτ, ha']
+
+@[simp]
+lemma autMap_apply_mul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ τ : Aut A) :
+    autMap f (σ * τ) = autMap f σ * autMap f τ := by
+  let F := GaloisCategory.getFiberFunctor C
+  obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
+  apply evaluation_aut_injective_of_isConnected F (B : C) (F.map f a)
+  simp [Aut.Aut_mul_def]
+
+/-- `MonoidHom` version of `autMap`. -/
+@[simps!]
+noncomputable def autMapHom {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) :
+     Aut A →* Aut B :=
+  MonoidHom.mk' (autMap f) (autMap_apply_mul f)
+
+end AutMap
 
 end PreGaloisCategory
 
