@@ -35,7 +35,13 @@ lemma toPEquiv_toMatrix_mulVec_apply [Fintype n] [DecidableEq n]
   | hmul f g hf hg => simp [hf, hg, Matrix.mulVec_add]
   | hsingle => simp [Pi.single_apply]
 
-lemma toPEquiv_toMatrix_vecMul_apply [Fintype m] [DecidableEq n]
+lemma toPEquiv_toMatrix_mulVec [Fintype n] [DecidableEq n]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
+    σ.toPEquiv.toMatrix *ᵥ a = a ∘ σ := by
+  ext i
+  simp [toPEquiv_toMatrix_mulVec_apply]
+
+lemma vecMul_toPEquiv_toMatrix_apply [Fintype m] [DecidableEq n]
     [NonAssocSemiring α] (σ : m ≃ n) (i : n) (a : m → α) :
     (a ᵥ* σ.toPEquiv.toMatrix) i = a (σ.symm i) := by
   classical
@@ -46,6 +52,12 @@ lemma toPEquiv_toMatrix_vecMul_apply [Fintype m] [DecidableEq n]
       simp only [single_vecMul, PEquiv.toMatrix_apply, toPEquiv_apply, Option.mem_def,
         Option.some.injEq, mul_ite, mul_one, mul_zero, Pi.single_apply, symm_apply_eq]
       simp_rw [eq_comm]
+
+lemma vecMul_toPEquiv_toMatrix [Fintype m] [DecidableEq n]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : m → α) :
+    a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ.symm := by
+  ext
+  simp [vecMul_toPEquiv_toMatrix_apply]
 
 end Equiv
 
@@ -67,9 +79,15 @@ lemma swap_comm (i j : n) :
   simp only [swap, Equiv.swap_comm]
 
 @[simp]
-lemma swap_transpose (i j : n) : (swap R i j).transpose = swap R i j := by
+lemma transpose_swap (i j : n) : (swap R i j).transpose = swap R i j := by
   simp only [swap]
   rw [← PEquiv.toMatrix_symm, ← Equiv.toPEquiv_symm, ← Equiv.Perm.inv_def, Equiv.swap_inv]
+
+@[simp]
+lemma conjTranspose_swap {R : Type*} [Semiring R] [StarRing R] (i j : n) :
+    (swap R i j).conjTranspose = swap R i j := by
+  simp only [conjTranspose, transpose_swap, map, swap]
+  aesop
 
 end Def
 
@@ -84,12 +102,13 @@ lemma map_swap {S : Type*} [Semiring S] (f : R →+* S) (i j : n) :
 
 variable [Fintype n]
 
+@[simp]
 lemma swap_mulVec_single_left (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single i r = Pi.single j r := by
   simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap]
   rw [Equiv.swap_apply_left]
 
-/-- Variant of `Matrix.swap_mulVec_single` with `i` and `j` switched in `Pi.single`. -/
+@[simp]
 lemma swap_mulVec_single_right (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single j r = Pi.single i r := by
   rw [swap_comm, swap_mulVec_single_left]
@@ -99,9 +118,31 @@ lemma swap_mulVec_single_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : 
   simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap,
     Equiv.swap_apply_of_ne_of_ne hik hjk]
 
+@[simp]
+lemma single_vecMul_swap_left (i j : n) (r : R) :
+    Pi.single i r ᵥ* swap R i j = Pi.single j r := by
+  simp only [swap, Equiv.single_vecMul_toPEquiv_toMatrix, Equiv.symm_swap]
+  rw [Equiv.swap_apply_left]
+
+@[simp]
+lemma single_vecMul_swap_right (i j : n) (r : R) :
+    Pi.single j r ᵥ* swap R i j = Pi.single i r := by
+  rw [swap_comm, single_vecMul_swap_left]
+
+lemma single_vecMul_swap_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : R) :
+    Pi.single k r ᵥ* swap R i j = Pi.single k r := by
+  simp only [swap, Equiv.single_vecMul_toPEquiv_toMatrix, Equiv.symm_swap,
+    Equiv.swap_apply_of_ne_of_ne hik hjk]
+
+@[simp]
 lemma swap_mulVec_apply (i j : n) (a : n → R) :
     (swap R i j *ᵥ a) i = a j := by
   simp [swap, Equiv.toPEquiv_toMatrix_mulVec_apply]
+
+@[simp]
+lemma vecMul_swap_apply (i j : n) (a : n → R) :
+    (a ᵥ* swap R i j) i = a j := by
+  simp [swap, Equiv.vecMul_toPEquiv_toMatrix_apply]
 
 /-- Multiplying with `swap R i j` on the left swaps the `i`-th row with the `j`-th row. -/
 @[simp]
