@@ -178,6 +178,7 @@ theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
 
 @[simp] lemma arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
 
+/-- This holds true for all `x : ℂ` because of the junk values `0 / 0 = 0` and `arg 0 = 0`. -/
 @[simp] lemma arg_div_self (x : ℂ) : arg (x / x) = 0 := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
