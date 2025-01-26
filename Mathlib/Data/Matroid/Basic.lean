@@ -263,6 +263,12 @@ instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
 
+instance rkPos_nonempty {M : Matroid α} [M.RkPos] : M.Nonempty := by
+  obtain ⟨B, hB⟩ := M.exists_base
+  obtain rfl | ⟨e, heB⟩ := B.eq_empty_or_nonempty
+  · exact False.elim <| RkPos.empty_not_base hB
+  exact ⟨e, M.subset_ground B hB heB ⟩
+
 @[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rkPos_iff
 
 section exchange
@@ -743,6 +749,43 @@ theorem existsMaximalSubsetProperty_indep (M : Matroid α) :
   M.maximality
 
 end dep_indep
+
+section copy
+
+/-- create a copy of `M : Matroid α` with independence and base predicates and ground set defeq
+to supplied arguments that are provably equal to those of `M`. -/
+@[simps] def copy (M : Matroid α) (E : Set α) (Base Indep : Set α → Prop)
+    (hE : E = M.E) (hB : ∀ B, Base B ↔ M.Base B) (hI : ∀ I, Indep I ↔ M.Indep I) : Matroid α where
+  E := E
+  Base := Base
+  Indep := Indep
+  indep_iff' _ := by simp_rw [hI, hB, M.indep_iff]
+  exists_base := by
+    simp_rw [hB]
+    exact M.exists_base
+  base_exchange := by
+    simp_rw [show Base = M.Base from funext (by simp [hB])]
+    exact M.base_exchange
+  maximality := by
+    simp_rw [hE, show Indep = M.Indep from funext (by simp [hI])]
+    exact M.maximality
+  subset_ground := by
+    simp_rw [hE, hB]
+    exact M.subset_ground
+
+/-- create a copy of `M : Matroid α` with an independence predicate and ground set defeq
+to supplied arguments that are provably equal to those of `M`. -/
+@[simps!] def copyIndep (M : Matroid α) (E : Set α) (Indep : Set α → Prop)
+    (hE : E = M.E) (h : ∀ I, Indep I ↔ M.Indep I) : Matroid α :=
+  M.copy E M.Base Indep hE (fun _ ↦ Iff.rfl) h
+
+/-- create a copy of `M : Matroid α` with a base predicate and ground set defeq
+to supplied arguments that are provably equal to those of `M`. -/
+@[simps!] def copyBase (M : Matroid α) (E : Set α) (Base : Set α → Prop)
+    (hE : E = M.E) (h : ∀ B, Base B ↔ M.Base B) : Matroid α :=
+  M.copy E Base M.Indep hE h (fun _ ↦ Iff.rfl)
+
+end copy
 
 section Basis
 

@@ -50,7 +50,7 @@ assert_not_exists Star
 open Function
 
 -- to ensure these instances are computable
-/-- Nonnegative real numbers. -/
+/-- Nonnegative real numbers, denoted as `ℝ≥0` withinin the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
@@ -58,7 +58,7 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
-scoped notation "ℝ≥0" => NNReal
+@[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
@@ -70,6 +70,9 @@ instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
 instance : Sub ℝ≥0 := Nonneg.sub
 instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+
+-- a computable copy of `Nonneg.instNNRatCast`
+instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
@@ -976,6 +979,10 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
   exact NNReal.exists_lt_of_strictMono hf hs
 
 end StrictMono
+
+/-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
+unsafe instance : Repr ℝ≥0 where
+  reprPrec r _ := f!"({repr r.val}).toNNReal"
 
 namespace Mathlib.Meta.Positivity
 
