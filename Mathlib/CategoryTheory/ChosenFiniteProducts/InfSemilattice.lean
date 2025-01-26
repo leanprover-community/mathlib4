@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 /-!
 # Lattices have chosen finite products
 
-The preorder category of a meet-semilattice `C` with a top element has chosen finite products.
+The preorder category of a meet-semilattice `C` with a greatest element has chosen finite products.
 
 -/
 
@@ -23,9 +23,10 @@ variable (C : Type u) [SemilatticeInf C] [OrderTop C]
 
 namespace SemilatticeInf
 
+/-- The chosen terminal object in the preorder category of `C`. -/
 abbrev chosenTerminal : C := ⊤
 
-/-- The chosen terminal object in `C` is terminal. -/
+/-- The chosen terminal object in the preoder category of `C` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal (chosenTerminal C) where
   lift s := homOfLE (le_top)
 
@@ -35,6 +36,7 @@ variable {C}
 
 variable (X Y : C)
 
+/-- The chosen binary product in the preorder category of `C`. -/
 def chosenProd : C := X ⊓ Y
 
 namespace chosenProd
@@ -54,12 +56,13 @@ end chosenProd
 
 end
 
+/-- Chosen finite products for the preorder category of a meet-semilattice with a greatest element-/
 noncomputable instance : ChosenFiniteProducts C where
   terminal := ⟨_, chosenTerminalIsTerminal C⟩
   product X Y := ⟨_, chosenProd.isLimit X Y⟩
 
-/-- A monoidal structure on a lattice is provided by the instance
-`monoidalOfChosenFiniteProducts`. -/
+/-- A monoidal structure on the preorder category of a meet-semilattice with a greatest element
+is provided by the instance `monoidalOfChosenFiniteProducts`. -/
 noncomputable instance : MonoidalCategory C := by
   infer_instance
 
