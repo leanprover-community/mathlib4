@@ -149,8 +149,7 @@ end Accessible
 
 lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasLimitsOfShape K (Type w')]
-    (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape K (Type w')] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, (F.obj k).IsCardinalAccessible κ] :
     c.pt.IsCardinalAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
