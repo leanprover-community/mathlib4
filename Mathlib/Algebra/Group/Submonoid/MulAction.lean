@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Group.Action.Defs
 
-section Actions
-
 /-! ### Actions by `Submonoid`s
 
 These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
@@ -16,7 +14,6 @@ the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s �
 These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
 `s • m` as an alias for `↑s * m`.
 -/
-
 
 namespace Submonoid
 
@@ -68,7 +65,4 @@ instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α where
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
 
-
 end Submonoid
-
-end Actions
