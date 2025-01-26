@@ -127,7 +127,7 @@ lemma hom_inv_apply {A B : AlgebraCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.in
 instance : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
 
-instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
+instance : HasForget.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
