@@ -15,7 +15,7 @@ The Kullback-Leibler divergence is a measure of the difference between two measu
 
 * `kl μ ν`: Kullback-Leibler divergence between two measures, with value in `ℝ≥0∞`,
   defined as `∞` if `μ` is not absolutely continuous with respect to `ν` or
-  if the log-likelihood ratio `llr μ ν` is not integrable, and by
+  if the log-likelihood ratio `llr μ ν` is not integrable with respect to `μ`, and by
   `ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal)` otherwise.
 
 Note that our Kullback-Leibler divergence is nonnegative by definition (it takes value in `ℝ≥0∞`).
