@@ -164,13 +164,11 @@ player moved to `{⊤}ᶜ`, such that `s` is won by the second player. But then 
 move to `s` on their first turn to win, a contradiction. -/
 theorem poset_fuzzy_zero {α : Type*} [PartialOrder α] [WellQuasiOrderedLE α] [OrderTop α] :
     poset α ‖ 0 := by
-  apply (Impartial.equiv_or_fuzzy_zero _).resolve_left fun h ↦ ?_
-  rw [← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero] at h
-  have h' := h (toLeftMovesPoset ⟨_, top_compl_posetMove_univ⟩)
-  rw [moveLeft_toLeftMovesPoset, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero] at h'
-  obtain ⟨i, hi⟩ := h'
-  apply Equiv.not_fuzzy hi
-  simpa using h (toLeftMovesPoset ⟨_, posetMove_univ_of_posetMove_top_compl
-    (toLeftMovesPoset_symm_prop i)⟩)
+  apply Impartial.fuzzy_zero_of_forall_exists_moveLeft _
+    (toLeftMovesPoset ⟨_, top_compl_posetMove_univ⟩)
+  rw [moveLeft_toLeftMovesPoset]
+  refine fun i ↦ ⟨toLeftMovesPoset ⟨_, posetMove_univ_of_posetMove_top_compl
+    (toLeftMovesPoset_symm_prop i)⟩, ?_⟩
+  simp
 
 end SetTheory.PGame
