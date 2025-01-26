@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.InitialSeg
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 
 /-!
 # Continuity of functors from well ordered types
