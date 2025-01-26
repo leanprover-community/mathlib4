@@ -27,6 +27,6 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
     (by rintro S hS x a ⟨t, ht, hx⟩; use t, ht, hS ht hx)
     (by rintro S hS x a h T hT; exact hS hT <| h T hT)
 
-@[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
+instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 
 end Descriptive

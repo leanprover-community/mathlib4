@@ -215,12 +215,12 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
 
 /-- membership is inherited from `Set X` -/
-def instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
+abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
   coe := (↑)
   coe_injective' := Subtype.val_injective
 
 /-- membership is inherited from `S` -/
-def instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
+abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
   coe := (↑)
   coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
 
