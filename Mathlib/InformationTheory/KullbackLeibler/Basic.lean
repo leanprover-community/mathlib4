@@ -28,6 +28,16 @@ That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence
 * `kl_eq_zero_iff` : the Kullback-Leibler divergence between two finite measures is zero if and only
   if the two measures are equal.
 
+## Implementation details
+
+The definition of the Kullback-Leibler divergence on probability measures is
+`∫ x, llr μ ν x ∂μ` if `μ ≪ ν` (and the log-likelihood ratio is integrable) and `∞` otherwise.
+The definition we use extends this to finite measures by introducing a correction term
+`(ν univ).toReal - (μ univ).toReal`. Our definition of the divergence thus uses the formula
+`∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`, which is nonnegative for all finite
+measures `μ ≪ ν`. This also makes `kl μ ν` equal to an f-divergence: it equals the integral
+`∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν`, in which `klFun x = x * log x + 1 - x`.
+
 -/
 
 open Real MeasureTheory Filter MeasurableSpace Set

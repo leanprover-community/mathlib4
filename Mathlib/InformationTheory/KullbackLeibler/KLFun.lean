@@ -18,9 +18,16 @@ divergence is an f-divergence for `klFun`
 
 * `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
 
+This is a nonnegative, strictly convex function on [0,∞), with minimum value 0 at 1.
+
 ## Main statements
 
-* `fooBar_unique`
+* `integrable_klFun_rnDeriv_iff`: For two finite measures `μ ≪ ν`, the function
+  `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable with respect to `ν` iff `llr μ ν` is integrable
+  with respect to `μ`.
+* `integral_klFun_rnDeriv`: For two finite measures `μ ≪ ν` such that `llr μ ν` is integrable with
+  respect to `μ`,
+  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`.
 
 -/
 
@@ -96,6 +103,7 @@ lemma tendsto_rightDeriv_klFun_atTop :
 
 end Derivatives
 
+/-- The function `klFun` is nonnegative on `[0,∞)`. -/
 lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
   rcases hx.eq_or_lt with rfl | hx
   · simp
