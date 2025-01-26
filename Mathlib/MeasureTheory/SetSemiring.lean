@@ -315,12 +315,12 @@ open Set MeasureTheory Order
 
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
-      J.toSet.PairwiseDisjoint K
-      ∧ (∀ i ∈ J, (K i).toSet ⊆ C)
-      ∧ PairwiseDisjoint (⋃ x ∈ J, (K x).toSet) id
+      PairwiseDisjoint J K
+      ∧ (∀ i ∈ J, ↑(K i) ⊆ C)
+      ∧ PairwiseDisjoint (⋃ x ∈ J, (K x : Set (Set α))) id
       ∧ (∀ j ∈ J, ⋃₀ K j ⊆ j)
       ∧ (∀ j ∈ J, ∅ ∉ K j)
-      ∧ (⋃₀ J.toSet) = ⋃₀ (⋃ x ∈ J, (K x).toSet) := by
+      ∧ ⋃₀ J = ⋃₀ (⋃ x ∈ J, (K x : Set (Set α))) := by
   induction J using Finset.cons_induction with
   | empty => simp
   | cons s J hJ hind =>
@@ -336,7 +336,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       forall_eq_or_imp, coe_insert, sUnion_insert, exists_and_left, exists_prop]
     -- two simplification rules for induction hypothesis
     have ht1' : ∀ x ∈ J, K1 x = K x := fun x hx ↦ hK1_of_ne _ (fun h_eq ↦ hJ (h_eq ▸ hx))
-    have ht2 : (⋃ x ∈ J, (K1 x).toSet) = ⋃ x ∈ J, (K x).toSet := by
+    have ht2 : (⋃ x ∈ J, (K1 x : Set (Set α))) = ⋃ x ∈ J, ((K x : Set (Set α))) := by
       apply iUnion₂_congr
       intros x hx
       exact mod_cast hK1_of_ne _ (ne_of_mem_of_not_mem hx hJ)
@@ -348,7 +348,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
         rw [Function.onFun, ht1' j hj, ht1' i hi]
         exact hK0 hj hi hij
       · intro i hi _
-        have h7 : Disjoint (hC.disjointOfDiffUnion h1.1 h1.2).toSet (K i).toSet := by
+        have h7 : Disjoint ↑(hC.disjointOfDiffUnion h1.1 h1.2) (K i : Set (Set α)) := by
           refine disjoint_of_sSup_disjoint_of_le_of_le
             (hC.sUnion_disjointOfDiffUnion_subsets h1.1 h1.2) ?_
             (@disjoint_sdiff_left _ (⋃₀ J) s) (Or.inl
@@ -386,7 +386,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
         exact disjoint_sdiff_left
     · intros a ha
       simp_rw [hK1_of_ne _ (ne_of_mem_of_not_mem ha hJ)]
-      change ∀ t' ∈ (K a).toSet, t' ⊆ a
+      change ∀ t' ∈ (K a : Set (Set α)), t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
     · refine ⟨hC.empty_not_mem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
@@ -407,37 +407,37 @@ noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : 
   (hC.disjointOfUnion_props hJ).choose j
 
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
-    J.toSet.PairwiseDisjoint (hC.disjointOfUnion hJ) :=
+    PairwiseDisjoint J (hC.disjointOfUnion hJ) :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).1
 
-lemma subsets_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    (disjointOfUnion hC hJ j).toSet ⊆ C :=
+lemma disjointOfUnion_subset (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    (disjointOfUnion hC hJ j : Set (Set α)) ⊆ C :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.1 _ hj
 
-lemma  pairwiseDisjoint_disjointOfUnion_self (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
-    (⋃ x ∈ J, (hC.disjointOfUnion hJ x).toSet).PairwiseDisjoint id :=
+lemma  pairwiseDisjoint_biUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
+    PairwiseDisjoint (⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α))) id :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.1
 
-lemma disjointOfUnion_pairwiseDisjoints (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    PairwiseDisjoint (hC.disjointOfUnion hJ j).toSet id := by
-  apply PairwiseDisjoint.subset (hC.pairwiseDisjoint_disjointOfUnion_self hJ)
+lemma pairwiseDisjoint_disjointOfUnion_of_mem (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+    PairwiseDisjoint (hC.disjointOfUnion hJ j : Set (Set α)) id := by
+  apply PairwiseDisjoint.subset (hC.pairwiseDisjoint_biUnion_disjointOfUnion hJ)
   exact subset_iUnion₂_of_subset j hj fun ⦃a⦄ a ↦ a
 
-lemma subset_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+lemma disjointOfUnion_subset_of_mem (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     ⋃₀ hC.disjointOfUnion hJ j ⊆ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.1 j hj
 
-lemma subsets_disjointOfUnion_self (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
-    ∀ x ∈ (hC.disjointOfUnion hJ) j, x ⊆ j :=
-  sUnion_subset_iff.mp (hC.subset_disjointOfUnion hJ hj)
+lemma subset_of_mem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) {x : Set α}
+    (hx : x ∈ (hC.disjointOfUnion hJ) j) : x ⊆ j :=
+  sUnion_subset_iff.mp (hC.disjointOfUnion_subset_of_mem hJ hj) x hx
 
 lemma empty_nmem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     ∅ ∉ hC.disjointOfUnion hJ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
 
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
-    ⋃₀ J.toSet = ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x).toSet
-    := (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2
+    ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J
+    := (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
 end disjointOfUnion
 
