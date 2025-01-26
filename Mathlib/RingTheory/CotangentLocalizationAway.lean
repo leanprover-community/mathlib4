@@ -32,20 +32,14 @@ lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMa
     ((Generators.localizationAway g).comp P).ker =
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
         Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
-  set Q := Generators.localizationAway (S := T) g
-  have : Q.ker = Ideal.map (Q.ofComp P).toAlgHom
+  have : (localizationAway (S := T) g).ker = Ideal.map ((localizationAway g).ofComp P).toAlgHom
       (Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1}) := by
-    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway]
-    simp only [Hom.toAlgHom, MvPolynomial.aeval_X, ofComp_val, Sum.elim_inl, sub_left_inj,
-      Generators.comp, Generators.ofComp, Generators.localizationAway, Q]
-    rw [MvPolynomial.aeval_rename, Sum.elim_comp_inr]
-    simp_rw [← MvPolynomial.algebraMap_eq, ← IsScalarTower.coe_toAlgHom' R S (MvPolynomial Unit S)]
-    rw [Function.comp_def, ← MvPolynomial.comp_aeval_apply, ← Algebra.Generators.algebraMap_apply,
-      h]
+    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway,
+      Hom.toAlgHom_X, ofComp_toAlgHom_rename, h, ofComp_val, Sum.elim_inl]
   rw [ker_comp_eq_sup, Algebra.Generators.map_toComp_ker, this,
-    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective Q P), ← RingHom.ker_eq_comap_bot,
+    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective _ P), ← RingHom.ker_eq_comap_bot,
     ← sup_assoc]
-  simp [Q]
+  simp
 
 variable (T) in
 /-- If `R[X] → S` generates `S`, `T` is the localization of `S` away from `g` and
@@ -61,7 +55,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway g (S := T)).comp 
 
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
-    compLocalizationAwayAlgHom T g P (((localizationAway g (S := T)).toComp P).toAlgHom x) =
+    compLocalizationAwayAlgHom T g P (rename Sum.inr x) =
       algebraMap P.Ring _ x := by
   simp only [toComp_toAlgHom, Ideal.mem_comap, RingHom.mem_ker, compLocalizationAwayAlgHom, comp,
     localizationAway, AlgHom.toRingHom_eq_coe, aeval_rename,
@@ -75,8 +69,7 @@ lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Su
 
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
     compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
-  rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway g (S := T)) P]
-  show (compLocalizationAwayAlgHom T g P) (((localizationAway g).toComp P).toAlgHom _) * _ - _ = _
+  rw [map_sub, map_one, map_mul]
   rw [compLocalizationAwayAlgHom_toAlgHom_toComp, compLocalizationAwayAlgHom_X_inl,
     IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _)]
   simp
@@ -94,10 +87,9 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
   · apply sup_le
     · rw [← Ideal.map_mul, Ideal.map_le_iff_le_comap, ← sq]
       intro x hx
-      simp only [Ideal.mem_comap, RingHom.mem_ker,
-        compLocalizationAwayAlgHom_toAlgHom_toComp (T := T) g P x]
-      rw [IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _),
-        Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem.mpr hx, map_zero]
+      simp [toComp_toAlgHom, compLocalizationAwayAlgHom_toAlgHom_toComp (T := T) g P x,
+        IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _),
+        Ideal.Quotient.eq_zero_iff_mem.mpr hx]
     · rw [Ideal.mul_le]
       intro x hx y hy
       simp [hsple hy]
@@ -138,9 +130,8 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simpa using hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
-  simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
-    mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
-    LinearMap.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
-    Extension.Cotangent.mk_eq_zero_iff] using hx
+  simp only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply, mk_apply, lift.tmul,
+    LinearMap.coe_restrictScalars, LinearMap.coe_smulRight, LinearMap.one_apply, one_smul, f] at hx
+  rwa [Algebra.Extension.Cotangent.map_mk, Extension.Cotangent.mk_eq_zero_iff] at hx
 
 end Algebra.Generators

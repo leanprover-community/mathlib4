@@ -81,8 +81,8 @@ lemma Cotangent.exact :
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by rwa [map_mk, mk_eq_zero_iff] at hx
-    rw [← Submodule.restrictScalars_mem R, pow_two, Submodule.restrictScalars_mul,
-      ← map_ofComp_ker (P := P), ← Submodule.map_mul, ← Submodule.restrictScalars_mul] at hx
+    rw [pow_two, ← map_ofComp_ker (P := P), ← Ideal.map_mul, Ideal.mem_map_iff_of_surjective
+      _ (toAlgHom_ofComp_surjective Q P)] at hx
     obtain ⟨y, hy, e⟩ := hx
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
