@@ -96,13 +96,12 @@ lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux :
     have := P.linearIndependent_aeval_val_pderiv_relation
     rw [linearIndependent_iff''] at this
     have := this c.support (fun i ↦ (aeval P.val) (c i))
-      (by intro i; simp; intro h; simp [h]) (heq2)
+      (by intro i; simp only [Finsupp.mem_support_iff, ne_eq, not_not]; intro h; simp [h]) heq2
     exact this i
   show _ ∈ P.ker ^ 2
   rw [← hc]
   apply Ideal.sum_mem
   intro i hi
-  simp
   rw [pow_two]
   apply Ideal.mul_mem_mul
   · rw [P.ker_eq_ker_aeval_val]
@@ -251,9 +250,8 @@ theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial
 
 instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton (Ω[S⁄R]) := by
-  wlog h : Nontrivial S
-  · rw [not_nontrivial_iff_subsingleton] at h
-    apply Module.subsingleton S
+  cases subsingleton_or_nontrivial S
+  · exact Module.subsingleton S _
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
