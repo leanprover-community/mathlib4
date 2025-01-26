@@ -53,10 +53,10 @@ noncomputable def isColimitOfIsWellOrderContinuous (F : J ⥤ C) [F.IsWellOrderC
 segment such that `h.top` is a limit element, then
 `F.obj h.top` identifies to the colimit of the `F.obj j` for `j : α`. -/
 noncomputable def isColimitOfIsWellOrderContinuous' (F : J ⥤ C) [F.IsWellOrderContinuous]
-    {α : Type*} [PartialOrder α] (h : α <i J) (hα : Order.IsSuccLimit h.top) :
-    IsColimit (h.cocone F) :=
-  h.coconeIsColimitOfIsColimit F
-    (F.isColimitOfIsWellOrderContinuous h.top hα)
+    {α : Type*} [PartialOrder α] (f : α <i J) (hα : Order.IsSuccLimit f.top) :
+    IsColimit (f.cocone F) :=
+  (F.isColimitOfIsWellOrderContinuous f.top hα).whiskerEquivalence
+    f.orderIsoIio.equivalence
 
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
@@ -68,11 +68,11 @@ lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderC
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
         (Cocones.ext (e.app _)))⟩
 
-instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (h : J' ≤i J)
+instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (f : J' ≤i J)
     [F.IsWellOrderContinuous] :
-    (h.monotone.functor ⋙ F).IsWellOrderContinuous where
+    (f.monotone.functor ⋙ F).IsWellOrderContinuous where
   nonempty_isColimit m' hm' := ⟨F.isColimitOfIsWellOrderContinuous'
-    ((Set.principalSegIio m').transInitial h) (by simpa)⟩
+    ((Set.principalSegIio m').transInitial f) (by simpa)⟩
 
 instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
     [F.IsWellOrderContinuous] :
