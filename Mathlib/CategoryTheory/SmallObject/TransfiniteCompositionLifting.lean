@@ -168,7 +168,8 @@ noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
   w₂ := (F.isColimitOfIsWellOrderContinuous j hj).hom_ext (fun ⟨i, hij⟩ ↦ by
     have := (s.1 ⟨i, hij⟩).w₂
     dsimp at this ⊢
-    rw [liftHom_fac_assoc _ _ _ hij, this, Cocone.w_assoc])
+    rw [liftHom_fac_assoc _ _ _ hij, this, Cocone.w_assoc]
+    rfl)
 
 lemma map_lift {i : J} (hij : i < j) :
     (lift hj s).map (homOfLE hij.le) = s.1 ⟨⟨i, hij⟩⟩ := by
