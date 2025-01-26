@@ -213,7 +213,7 @@ variable (S) in
 /-- If `S` is the localization of `R` at `r`, this is the canonical submersive presentation
 of `S` as `R`-algebra. -/
 @[simps map]
-noncomputable def localizationAway : PreSubmersivePresentation R S where
+noncomputable abbrev localizationAway : PreSubmersivePresentation R S where
   __ := Presentation.localizationAway S r
   map _ := ()
   map_inj _ _ h := h
@@ -247,7 +247,7 @@ variable (Q : PreSubmersivePresentation S T) (P : PreSubmersivePresentation R S)
 /-- Given an `R`-algebra `S` and an `S`-algebra `T` with pre-submersive presentations,
 this is the canonical pre-submersive presentation of `T` as an `R`-algebra. -/
 @[simps map]
-noncomputable def comp : PreSubmersivePresentation R T where
+noncomputable abbrev comp : PreSubmersivePresentation R T where
   __ := Q.toPresentation.comp P.toPresentation
   map := Sum.elim (fun rq ↦ Sum.inl <| Q.map rq) (fun rp ↦ Sum.inr <| P.map rp)
   map_inj := Function.Injective.sum_elim ((Sum.inl_injective).comp (Q.map_inj))
@@ -259,7 +259,6 @@ the sum of the dimensions. -/
 lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
     (Q.comp P).dimension = Q.dimension + P.dimension := by
   simp only [Presentation.dimension]
-  erw [Presentation.comp_rels, Generators.comp_vars]
   have : Nat.card P.rels ≤ Nat.card P.vars :=
     card_relations_le_card_vars_of_isFinite P
   have : Nat.card Q.rels ≤ Nat.card Q.vars :=
@@ -346,11 +345,8 @@ private lemma jacobiMatrix_comp_₂₂_det :
   generalize P.jacobiMatrix i j = p
   induction' p using MvPolynomial.induction_on with a p q hp hq p i hp
   · simp only [algHom_C, algebraMap_eq, eval₂_C]
-    erw [MvPolynomial.eval₂_C]
   · simp [hp, hq]
-  · simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
-    erw [Generators.comp_val]
-    simp
+  · simp [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
 
 end P
 
@@ -382,7 +378,7 @@ variable (T) [CommRing T] [Algebra R T] (P : PreSubmersivePresentation R S)
 
 /-- If `P` is a pre-submersive presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural pre-submersive presentation of `T ⊗[R] S` over `T`. -/
-noncomputable def baseChange : PreSubmersivePresentation T (T ⊗[R] S) where
+noncomputable abbrev baseChange : PreSubmersivePresentation T (T ⊗[R] S) where
   __ := P.toPresentation.baseChange T
   map := P.map
   map_inj := P.map_inj
@@ -397,10 +393,7 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
   have h : (baseChange T P).jacobiMatrix =
       (MvPolynomial.map (algebraMap R T)).mapMatrix P.jacobiMatrix := by
     ext i j : 1
-    simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
-      RingHom.mapMatrix_apply, Matrix.map_apply]
-    erw [MvPolynomial.pderiv_map]
-    rfl
+    simp [baseChange, jacobiMatrix_apply, MvPolynomial.pderiv_map]
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
   rw [P.algebraMap_apply]
@@ -432,7 +425,7 @@ section Constructions
 variable {R S} in
 /-- If `algebraMap R S` is bijective, the empty generators are a submersive
 presentation with no relations. -/
-noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+noncomputable abbrev ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
     SubmersivePresentation.{t, w} R S where
   __ := PreSubmersivePresentation.ofBijectiveAlgebraMap.{t, w} h
   jacobian_isUnit := by
@@ -441,7 +434,7 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
   isFinite := Presentation.ofBijectiveAlgebraMap_isFinite h
 
 /-- The canonical submersive `R`-presentation of `R` with no generators and no relations. -/
-noncomputable def id : SubmersivePresentation.{t, w} R R :=
+noncomputable abbrev id : SubmersivePresentation.{t, w} R R :=
   ofBijectiveAlgebraMap Function.bijective_id
 
 section Composition
@@ -451,7 +444,7 @@ variable (Q : SubmersivePresentation S T) (P : SubmersivePresentation R S)
 
 /-- Given an `R`-algebra `S` and an `S`-algebra `T` with submersive presentations,
 this is the canonical submersive presentation of `T` as an `R`-algebra. -/
-noncomputable def comp : SubmersivePresentation R T where
+noncomputable abbrev comp : SubmersivePresentation R T where
   __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
   jacobian_isUnit := by
     rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
@@ -466,7 +459,7 @@ variable {R} (r : R) [IsLocalization.Away r S]
 
 /-- If `S` is the localization of `R` at `r`, this is the canonical submersive presentation
 of `S` as `R`-algebra. -/
-noncomputable def localizationAway : SubmersivePresentation R S where
+noncomputable abbrev localizationAway : SubmersivePresentation R S where
   __ := PreSubmersivePresentation.localizationAway S r
   jacobian_isUnit := by
     rw [localizationAway_jacobian]
@@ -481,7 +474,7 @@ variable (T) [CommRing T] [Algebra R T] (P : SubmersivePresentation R S)
 
 /-- If `P` is a submersive presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural submersive presentation of `T ⊗[R] S` over `T`. -/
-noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
+noncomputable abbrev baseChange : SubmersivePresentation T (T ⊗[R] S) where
   toPreSubmersivePresentation := P.toPreSubmersivePresentation.baseChange T
   jacobian_isUnit := P.baseChange_jacobian T ▸ P.jacobian_isUnit.map TensorProduct.includeRight
   isFinite := Presentation.baseChange_isFinite T P.toPresentation

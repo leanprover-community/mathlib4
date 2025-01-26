@@ -94,7 +94,7 @@ section Construction
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
 @[simps (config := .lemmasOnly) Ring σ]
 noncomputable
-def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
+abbrev ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
     (h : Function.Surjective f) : Extension.{w} R S where
   Ring := P
   algebra₂ := f.toAlgebra
@@ -106,7 +106,7 @@ variable (R S) in
 /-- The trivial extension of `S`. -/
 @[simps (config := .lemmasOnly) Ring σ]
 noncomputable
-def self : Extension R S where
+abbrev self : Extension R S where
   Ring := S
   σ := _root_.id
   algebraMap_σ _ := rfl
@@ -124,7 +124,7 @@ An `R`-extension `P → S` gives an `R`-extension `Pₘ → Sₘ`.
 Note that this is different from `baseChange` as the base does not change.
 -/
 noncomputable
-def localization (P : Extension.{w} R S) : Extension R S' where
+abbrev localization (P : Extension.{w} R S) : Extension R S' where
   Ring := Localization (M.comap (algebraMap P.Ring S))
   algebra₂ := (IsLocalization.lift (M := (M.comap (algebraMap P.Ring S)))
       (g := (algebraMap S S').comp (algebraMap P.Ring S))
@@ -149,7 +149,7 @@ variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- The base change of an `R`-extension of `S` to `T` gives a `T`-extension of `T ⊗[R] S`. -/
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
+abbrev baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
   Ring := T ⊗[R] P.Ring
   __ := ofSurjective (P := T ⊗[R] P.Ring) (Algebra.TensorProduct.map (AlgHom.id T T)
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
@@ -245,7 +245,7 @@ section Infinitesimal
 /-- Given an `R`-algebra extension `0 → I → P → S → 0` of `S`,
 the infinitesimal extension associated to it is `0 → I/I² → P/I² → S → 0`. -/
 noncomputable
-def infinitesimal (P : Extension R S) : Extension R S where
+abbrev infinitesimal (P : Extension R S) : Extension R S where
   Ring := P.Ring ⧸ P.ker ^ 2
   σ := Ideal.Quotient.mk _ ∘ P.σ
   algebraMap_σ x := by dsimp; exact P.algebraMap_σ x

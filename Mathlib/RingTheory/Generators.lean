@@ -395,6 +395,13 @@ lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S)
     C_mul, Algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
   nth_rw 2 [mul_comm]
 
+@[simp]
+lemma ofComp_toAlgHom_rename (Q : Generators S T) (P : Generators R S) (p : P.Ring) :
+    (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = algebraMap P.Ring Q.Ring p := by
+  simp only [Hom.toAlgHom, ofComp, Function.comp_def, aeval_rename, Sum.elim_inr,
+    MvPolynomial.algebraMap_apply, algebraMap_apply, ← MvPolynomial.algebraMap_eq,
+    ← IsScalarTower.toAlgHom_apply R S (MvPolynomial Q.vars S), ← comp_aeval_apply P.val]
+
 lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
