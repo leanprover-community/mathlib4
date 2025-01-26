@@ -8,7 +8,8 @@ import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.Analysis.Normed.Operator.Compact
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
---import Mathlib
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
 # Fredholm operators
@@ -64,11 +65,15 @@ lemma _root_.ContinuousLinearEquiv.index_eq (T : X ≃L[𝕜] Y) : index 𝕜 X 
   erw [LinearEquiv.ker T.toLinearEquiv, LinearEquiv.range T.toLinearEquiv]
   rw [finrank_bot, Module.finrank_zero_of_subsingleton, Int.sub_eq_zero]
 
-/-- The identity map is Fredholm, with Fredholm index 0. -/
-lemma id : IsFredholm 𝕜 (X := X) (Y := X) (ContinuousLinearEquiv.refl 𝕜 X) :=
+/-- The identity map is Fredholm. -/
+lemma refl : IsFredholm 𝕜 (X := X) (Y := X) (ContinuousLinearEquiv.refl 𝕜 X) :=
   _root_.ContinuousLinearEquiv.isFredholm _
 
-/-- An index zero Fredholm operator is injective iff it's surjective. -/
+/-- The identity map has Fredholm index zero. -/
+lemma index_refl : index 𝕜 X X (ContinuousLinearEquiv.refl 𝕜 X) = 0 :=
+  _root_.ContinuousLinearEquiv.index_eq _
+
+/-- An index zero Fredholm operator is injective iff it is surjective. -/
 lemma index_zero_injective_iff_surjective {T : X ≃L[𝕜] Y}
     (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) (h_ind : index 𝕜 X Y T = 0) :
     Function.Injective T ↔ Function.Surjective T := by
@@ -94,24 +99,72 @@ lemma index_zero_injective_iff_surjective {T : X ≃L[𝕜] Y}
     rw [← Module.finrank_eq_rank]
     norm_cast
 
-/-- A surjective or injective index zero Fredholm operator is a linear isomorphism. -/
--- Pf. By the preceding result, T is bijective.
--- T is a bijective linear operator, hence a linear isomorphism.
--- The inverse $T^{-1}$ is bounded by the open mapping theorem --- since domain and codomain are Banach spaces.
-noncomputable def ContinuousLinearEquiv.foo [CompleteSpace X] [CompleteSpace Y] {T : X ≃L[𝕜] Y}
+/-- A surjective or injective index zero Fredholm operator between Banach spaces
+is a linear isomorphism. -/
+noncomputable def ContinuousLinearEquiv.of_index_zero_of_surjective_of_isFredholm_of_completeSpace
+    [CompleteSpace X] [CompleteSpace Y] {T : X ≃L[𝕜] Y}
     (hT : IsFredholm 𝕜 (X := X) (Y := Y) T)
     (h_ind : index 𝕜 X Y T = 0)
     (hsurj: Function.Surjective T) : X ≃L[𝕜] Y where
+  -- T is bijective by the preceding result, hence a linear isomorphism.
   -- XXX: ContinuousLinearEquiv.ofBijective T doesn't apply...
   toLinearEquiv := LinearEquiv.ofBijective T.toLinearEquiv
     ⟨(hT.index_zero_injective_iff_surjective h_ind).mpr hsurj, hsurj⟩
   continuous_toFun := by simpa using T.continuous
+  -- -- The inverse $T^{-1}$ is bounded by the open mapping theorem,
+  -- since domain and codomain are Banach spaces.
   continuous_invFun := sorry -- this requires the Banach open mapping theorem,
     -- i.e. some completeness! simpa using T.symm.continuous
 
--- A Fredholm operator has closed image.
+/-- An injective index zero Fredholm operator between Banach spaces
+is a linear isomorphism. -/
+noncomputable def ContinuousLinearEquiv.of_index_zero_of_injective_of_isFredholm_of_completeSpace
+    [CompleteSpace X] [CompleteSpace Y] {T : X ≃L[𝕜] Y}
+    (hT : IsFredholm 𝕜 (X := X) (Y := Y) T)
+    (h_ind : index 𝕜 X Y T = 0)
+    (hinj: Function.Injective T) : X ≃L[𝕜] Y :=
+  ContinuousLinearEquiv.of_index_zero_of_surjective_of_isFredholm_of_completeSpace hT h_ind
+    ((hT.index_zero_injective_iff_surjective h_ind).mp hinj)
+
+-- A Fredholm operator between Banach spaces has closed image.
 -- (Chris' notes, Lemma 3.6 plus Exercise 3.7. might exist in mathlib already.)
 
+/-- A (continuous) linear map `T : X → Y` between finite-dimensional spaces
+is Fredholm. -/
+lemma of_continuousLinearEquiv_of_finiteDimensional
+    [FiniteDimensional 𝕜 X] [FiniteDimensional 𝕜 Y] {T : X ≃L[𝕜] Y} :
+    IsFredholm 𝕜 (X := X) (Y := Y) T := by
+  constructor
+  · exact finiteDimensional_submodule _
+  · sorry
+    -- TODO: don't understand quotient sub-modules in Lean yet...
+    -- apply finiteDimensional_submodule (Y ⧸ LinearMap.range T)
+    --exact Module.Finite.quotient 𝕜 (LinearMap.range ↑T)
+
+-- use the rank-nullity theorem
+lemma index_of_finiteDimensional
+    [FiniteDimensional 𝕜 X] [FiniteDimensional 𝕜 Y] {T : X ≃L[𝕜] Y} :
+    index 𝕜 X Y T = (Module.finrank 𝕜 X : ℤ) - (Module.finrank 𝕜 Y : ℤ) := by
+  rw [index]
+  rw [sub_eq_sub_iff_add_eq_add]
+  norm_cast
+  -- rank-nullity theorem: dimension of the quotient
+  have : (Module.finrank 𝕜 Y) =
+    Module.finrank 𝕜 (LinearMap.range T) + (Module.finrank 𝕜 (Y ⧸ LinearMap.range ↑T)) := by
+    -- have : HasRankNullity 𝕜 := sorry
+    -- rw [Submodule.finrank_quotient_add_finrank]
+    sorry
+  rw [this]
+  -- can cancel on the rhs
+  -- rank-nullity theorem: dimension of kernel and range
+  set K := Module.finrank 𝕜 (LinearMap.ker ↑T)
+  set R := Module.finrank 𝕜 (LinearMap.range ↑T)
+
+  have := LinearMap.finrank_range_add_finrank_ker (f := T.toLinearMap)
+  rw [← add_assoc]
+
+  sorry
+--apply finiteDimensional_submodule
 -- Any linear operator V\to W between finite-dimensional spaces
 -- is Fredholm with index dim(V)-dim(W).
 
