@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Integral
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 
 /-!
-# Results about integrals of functions of Radon-Nikodym derivatives
+# Integrals of functions of Radon-Nikodym derivatives
 
 ## Main statements
 
@@ -24,6 +24,11 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {f : ℝ → ℝ}
 
+/-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
+with respect to a probability measure `ν`, then
+`f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
+Note that the `ContinuousOn f (Ici 0)` hypothesis is really only about continuity at 0,
+since the convexity gives continuity elsewhere. -/
 lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
@@ -35,6 +40,11 @@ lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     exact ConvexOn.map_average_le hf_cvx hf_cont isClosed_Ici (by simp)
       Measure.integrable_toReal_rnDeriv hf_int
 
+/-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
+with respect to `ν`, then
+`(ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
+Note that the `ContinuousOn f (Ici 0)` hypothesis is really only about continuity at 0,
+since the convexity gives continuity elsewhere. -/
 lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
