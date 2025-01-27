@@ -41,7 +41,7 @@ theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι �
         ⟨fun i j => l i • l j • polar Q (g i) (g j), fun i j => by
           simp only [polar_comm]
           rw [smul_comm]⟩ p := by
-  simp_rw [linearCombination_apply, map_finsupp_sum,
+  simp_rw [linearCombination_apply, map_finsuppSum,
     polar_smul_left, polar_smul_right, map_smul]
 
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
@@ -51,7 +51,7 @@ theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
         ⟨fun i j => bm.repr x i • bm.repr x j • polar Q (bm i) (bm j), fun i j => by
           simp only [polar_comm]
           rw [smul_comm]⟩ p := by
-  rw [← map_finsupp_linearCombination, Basis.linearCombination_repr]
+  rw [← map_linearCombination, Basis.linearCombination_repr]
 
 end
 
@@ -141,12 +141,12 @@ lemma toBilin_symm_eq_polarBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   _ = (((Q.toBilin bm).toQuadraticMap a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a
     - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
   _ = ((Q a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
-    rw [ toQuadraticMap_toBilin Q]
+    rw [toQuadraticMap_toBilin Q]
   _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + (Q.toBilin bm).toQuadraticMap b)) - Q a
     - Q b := by rw [map_add, LinearMap.add_apply,
       LinearMap.BilinMap.toQuadraticMap_apply (Q.toBilin bm) b]
   _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + Q b)) - Q a - Q b := by
-    rw [ toQuadraticMap_toBilin Q]
+    rw [toQuadraticMap_toBilin Q]
   _ = ((Q.toBilin bm) a) b + ((Q.toBilin bm) b) a := by abel
 
 lemma polar_toQuadraticMap (B : BilinMap R M N) (x y : M) :
@@ -163,7 +163,7 @@ lemma polarBilin_toQuadraticMap (B : BilinMap R M N) :
 theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) (x y : M) :
     let s := (bm.repr x).support ∪ (bm.repr y).support
     B.toQuadraticMap.toBilin bm x y =
-      (∑ i ∈ s,
+      ∑ i ∈ s,
         bm.repr x i • bm.repr y i • B (bm i) (bm i) +
       ∑ p ∈ s.offDiag with p.1 < p.2,
         bm.repr x p.1 • bm.repr y p.2 • (B + B.flip) (bm p.1) (bm p.2) := by
