@@ -9,7 +9,14 @@ import Mathlib.CategoryTheory.Limits.Indization.IndObject
 /-!
 # Parallel pairs of natural transformations between ind-objects
 
-We show that if `A` and `B` are ind-objects and `f` and `g` are maps
+We show that if `A` and `B` are ind-objects and `f` and `g` are natural transformations between
+`A` and `B`, then there is a small filtered category `I` such that `A`, `B`, `f` and `g` are
+commonly presented by diagrams and natural transformations in `I ⥤ C`.
+
+
+## References
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
+  our proof is more direct).
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -147,7 +154,6 @@ namespace IndParallelPairPresentation
 
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)`
 as the colimit of `(P.φ, P.ψ)` in `Cᵒᵖ ⥤ Type v`. -/
-@[simps!]
 noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B}
     (P : IndParallelPairPresentation f g) :
     parallelPair f g ≅ parallelPair P.φ P.ψ ⋙ (whiskeringRight _ _ _).obj yoneda ⋙ colim :=

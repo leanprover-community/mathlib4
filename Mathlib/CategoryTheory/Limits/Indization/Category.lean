@@ -31,7 +31,8 @@ Adopting the theorem numbering of [Kashiwara2006], we show that
 * if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)),
 * if `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
   `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17)
-* the functor `C ⥤ Ind C` preserves small limits.
+* the functor `C ⥤ Ind C` preserves small limits,
+* if `C` has coequalizers, then `Ind C` has coequalizers (6.1.18(i)).
 
 More limit-colimit properties will follow.
 
@@ -236,6 +237,8 @@ instance [HasColimitsOfShape WalkingParallelPair C] :
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
   exact hasColimitOfIso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
 
+/-- A way to understand morphisms in `Ind C`: every morphism is induced by a natural transformation
+of diagrams. -/
 theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
     ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I) (F G : I ⥤ C) (φ : F ⟶ G),
       Nonempty (Arrow.mk f ≅ Arrow.mk ((Ind.lim _).map φ)) := by

@@ -59,6 +59,10 @@ theorem isIndObject_limit_comp_yoneda_comp_colim
 
 end
 
+/-- If `C` has equalizers. then ind-objects are closed under equalizers.
+
+This is Proposition 6.1.17(i) in [Kashiwara2006].
+-/
 theorem closedUnderLimitsOfShape_walkingParallelPair_isIndObject [HasEqualizers C] :
     ClosedUnderLimitsOfShape WalkingParallelPair (IsIndObject (C := C)) := by
   apply closedUnderLimitsOfShape_of_limit
