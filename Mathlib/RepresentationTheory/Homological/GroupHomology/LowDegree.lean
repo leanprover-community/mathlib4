@@ -3,7 +3,6 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -107,7 +106,7 @@ lemma mkQ_comp_dZero : (augmentationSubmodule A.ρ).mkQ ∘ₗ dZero A = 0 := by
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form
 `ρ(g)(x) - x, g ∈ G, x ∈ A`.-/
-def oneChainsToAugmentationSubmodule [DecidableEq G] :
+def oneChainsToAugmentationSubmodule :
     (G →₀ A) →ₗ[k] augmentationSubmodule A.ρ :=
   (dZero A).codRestrict _ <| range_dZero_eq_augmentationSubmodule A ▸ LinearMap.mem_range_self _
 
@@ -633,11 +632,11 @@ theorem isOneCycle_of_mem_oneCycles
 `x : G →₀ A` satisfying the 1-boundary condition, produces a 1-boundary for the representation
 on `A` induced by the `DistribMulAction`. -/
 @[simps]
-def oneBoundariesOfIsOneBoundary [DecidableEq G] (x : G →₀ A) (hx : IsOneBoundary x) :
+def oneBoundariesOfIsOneBoundary (x : G →₀ A) (hx : IsOneBoundary x) :
     oneBoundaries (Rep.ofDistribMulAction k G A) :=
   ⟨x, hx⟩
 
-theorem isOneBoundary_of_mem_oneBoundaries [DecidableEq G]
+theorem isOneBoundary_of_mem_oneBoundaries
     (x : G →₀ A) (hx : x ∈ oneBoundaries (Rep.ofDistribMulAction k G A)) :
     IsOneBoundary x := hx
 
@@ -657,16 +656,15 @@ theorem isTwoCycle_of_mem_twoCycles
 `x : G × G →₀ A` satisfying the 2-boundary condition, produces a 2-boundary for the
 representation on `A` induced by the `DistribMulAction`. -/
 @[simps]
-def twoBoundariesOfIsTwoBoundary [DecidableEq G] (x : G × G →₀ A) (hx : IsTwoBoundary x) :
+def twoBoundariesOfIsTwoBoundary (x : G × G →₀ A) (hx : IsTwoBoundary x) :
     twoBoundaries (Rep.ofDistribMulAction k G A) :=
   ⟨x, hx⟩
 
-theorem isTwoBoundary_of_mem_twoBoundaries [DecidableEq G]
+theorem isTwoBoundary_of_mem_twoBoundaries
     (x : G × G →₀ A) (hx : x ∈ twoBoundaries (Rep.ofDistribMulAction k G A)) :
     IsTwoBoundary x := hx
 
 end ofDistribMulAction
-
 
 section Homology
 variable [DecidableEq G]
