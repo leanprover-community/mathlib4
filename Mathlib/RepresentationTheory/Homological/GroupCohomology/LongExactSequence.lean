@@ -1,4 +1,11 @@
+/-
+Copyright (c) 2025 Amelia Livingston. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Amelia Livingston
+-/
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+
+/-! -/
 
 universe u
 
@@ -18,6 +25,50 @@ theorem CategoryTheory.ShortComplex.ShortExact.δ_apply_aux
     ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, map_zero,
     AddMonoidHom.zero_apply]
 
+namespace CategoryTheory.ShortComplex
+open Limits
+section
+
+variable {C : Type*} [Category C] [Abelian C] (S : SnakeInput C)
+
+theorem SnakeInput.mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem SnakeInput.epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem SnakeInput.isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
+noncomputable def SnakeInput.δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
+
+end
+section
+
+variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
+
+theorem ShortExact.mono_δ (hi : IsZero (S.X₂.homology i)) : Mono (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).mono_δ hi
+
+theorem ShortExact.epi_δ (hj : IsZero (S.X₂.homology j)) : Epi (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).epi_δ hj
+
+theorem ShortExact.isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    IsIso (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
+
+/-- If `c.Rel i j` and `Hᵢ(X₂), Hⱼ(X₂)` are trivial, `δ` defines an isomorphism
+`Hᵢ(X₃) ≅ Hⱼ(X₁)`. -/
+noncomputable def ShortExact.δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    S.X₃.homology i ≅ S.X₁.homology j :=
+  @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
+
+end
+end CategoryTheory.ShortComplex
 namespace CategoryTheory.ShortComplex
 
 variable {R : Type u} [Ring R] {M : ShortComplex (ModuleCat R)}
@@ -159,8 +210,8 @@ open Limits
 
 theorem epi_δ₀_of_isZero (h1 : IsZero (ModuleCat.of k <| H1 X.X₂)) :
     Epi (δ₀ hX) := by
-  letI : Epi ((cochainsMap_shortExact hX).δ 0 1 rfl) := (cochainsMap_shortExact hX).epi_δ _ _ rfl
-    (h1.of_iso (isoH1 X.X₂))
+  letI : Epi ((cochainsMap_shortExact hX).δ 0 1 rfl) :=
+    (cochainsMap_shortExact hX).epi_δ _ _ rfl (h1.of_iso (isoH1 X.X₂))
   exact epi_comp _ _
 
 /-- The degree 1 connecting homomorphism `H¹(G, X₃) ⟶ H²(G, X₁)` associated to an exact sequence
