@@ -10,23 +10,24 @@ import Mathlib.Topology.MetricSpace.Sequences
 /-!
 # smoothingSeminorm
 In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert] : if `f` is a
-nonarchimedean seminorm on `R`, then `iInf (fun (n : pnat), (f(x^(n : ℕ)))^(1/(n : ℝ)))` is a
-power-multiplicative nonarchimedean seminorm on `R`.
+nonarchimedean seminorm on a commutative ring `R`, then `
+`iInf (fun (n : PNat), (f(x^(n : ℕ)))^(1/(n : ℝ)))` is a power-multiplicative nonarchimedean
+seminorm on `R`.
 
 ## Main Definitions
 * `smoothingSeminormSeq` : the `ℝ`-valued sequence sending `n` to `(f (x ^ n))^(1/n : ℝ)`.
-* `smoothingSeminorm'` : the iInf of the sequence `f(x^(n : ℕ)))^(1/(n : ℝ)`.
-* `smoothingSeminorm` : if `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm'`
+* `smoothingFun` : the iInf of the sequence `n ↦ f(x^(n : ℕ)))^(1/(n : ℝ)`.
+* `smoothingSeminorm` : if `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingFun`
   is a ring seminorm.
 
 ## Main Results
 
-* `tendsto_smoothingSeminorm'` :if `f 1 ≤ 1`, then `smoothingSeminorm' f x` is the limit
+* `tendsto_smoothingFun_of_map_one_le_one` : if `f 1 ≤ 1`, then `smoothingFun f x` is the limit
   of `smoothingSeminormSeq f x` as `n` tends to infinity.
-* `isNonarchimedean_smoothingSeminorm'` : if `f 1 ≤ 1` and `f` is nonarchimedean, then
-  `smoothingSeminorm'` is nonarchimedean.
-* `isPowMul_smoothingSeminorm'` : if `f 1 ≤ 1` and `f` is nonarchimedean, then
-  `smoothingSeminorm' f` is power-multiplicative.
+* `isNonarchimedean_smoothingFun` : if `f 1 ≤ 1` and `f` is nonarchimedean, then
+  `smoothingFun` is nonarchimedean.
+* `isPowMul_smoothingFun` : if `f 1 ≤ 1` and `f` is nonarchimedean, then
+  `smoothingFun f` is power-multiplicative.
 
 ## References
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
@@ -47,16 +48,16 @@ variable {R : Type*} [CommRing R] (f : RingSeminorm R)
 section smoothingSeminorm
 
 /-- The `ℝ`-valued sequence sending `n` to `(f (x ^ n))^(1/n : ℝ)`. -/
-def smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => f (x ^ n) ^ (1 / n : ℝ)
+abbrev smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => f (x ^ n) ^ (1 / n : ℝ)
 
 /-- For any positive `ε`, there exists a positive natural number `m` such that
-  `f (x ^ (m : ℕ)) ^ (1 / m : ℝ) < iInf (fun (n : pnat), (f(x ^(n : ℕ)))^(1/(n : ℝ))) + ε/2`. -/
-private theorem smoothingSeminormSeq_hasLimit_m (x : R) {ε : ℝ} (hε : 0 < ε) :
+  `f (x ^ (m : ℕ)) ^ (1 / m : ℝ) < iInf (fun (n : PNat), (f(x ^(n : ℕ)))^(1/(n : ℝ))) + ε/2`. -/
+private theorem smoothingSeminormSeq_exists_pnat (x : R) {ε : ℝ} (hε : 0 < ε) :
     ∃ m : PNat, f (x ^ (m : ℕ)) ^ (1 / m : ℝ) <
         (iInf fun n : PNat => f (x ^ (n : ℕ)) ^ (1 / (n : ℝ))) + ε / 2 :=
   exists_lt_of_ciInf_lt (lt_add_of_le_of_pos (le_refl _) (half_pos hε))
 
-private theorem smoothingSeminormSeq_hasLimit_aux {L : ℝ} (hL : 0 ≤ L) {ε : ℝ} (hε : 0 < ε)
+private theorem smoothingSeminormSeq_tendsto_aux {L : ℝ} (hL : 0 ≤ L) {ε : ℝ} (hε : 0 < ε)
     {m1 : ℕ} (hm1 : 0 < m1) {x : R} (hx : f x ≠ 0) :
     Tendsto
       (fun n : ℕ => (L + ε) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) * (f x ^ (n % m1)) ^ (1 / (n : ℝ)))
@@ -83,13 +84,13 @@ theorem smoothingSeminormSeq_bddBelow (x : R) :
   rintro y ⟨n, rfl⟩
   exact rpow_nonneg (apply_nonneg f _) _
 
-/-- The iInf of the sequence `f(x^(n : ℕ)))^(1/(n : ℝ)`. -/
-def smoothingSeminorm' (x : R) : ℝ :=
+/-- The iInf of the sequence `n ↦ f(x^(n : ℕ)))^(1/(n : ℝ)`. -/
+abbrev smoothingFun (x : R) : ℝ :=
   iInf fun n : PNat => f (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
 
-/-- If `f x = 0`, then `smoothingSeminorm' f x` is the limit of `smoothingSeminormSeq f x`. -/
-theorem tendsto_smoothingSeminorm'_of_eq_zero {x : R} (hx : f x = 0) :
-    Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingSeminorm' f x)) := by
+/-- If `f x = 0`, then `smoothingFun f x` is the limit of `smoothingSeminormSeq f x`. -/
+theorem tendsto_smoothingFun_of_eq_zero {x : R} (hx : f x = 0) :
+    Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingFun f x)) := by
   have h0 (n : ℕ) (hn : 1 ≤ n) : f (x ^ n) ^ (1 / (n : ℝ)) = 0 := by
     have hfn : f (x ^ n) = 0 := by
       apply le_antisymm _ (apply_nonneg f _)
@@ -100,24 +101,22 @@ theorem tendsto_smoothingSeminorm'_of_eq_zero {x : R} (hx : f x = 0) :
     le_antisymm
       (ciInf_le_of_le (smoothingSeminormSeq_bddBelow f x) (1 : PNat) (le_of_eq (h0 1 (le_refl _))))
       (le_ciInf fun n => rpow_nonneg (apply_nonneg f _) _)
-  simp only [hL0, smoothingSeminormSeq, smoothingSeminorm']
-  exact tendsto_atTop_of_eventually_const h0
+  simpa only [hL0] using tendsto_atTop_of_eventually_const h0
 
-/-- If `f 1 ≤ 1` and `f x ≠  0`, then `smoothingSeminorm' f x` is the limit of
+/-- If `f 1 ≤ 1` and `f x ≠  0`, then `smoothingFun f x` is the limit of
 `smoothingSeminormSeq f x`. -/
-theorem tendsto_smoothingSeminorm'_of_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f x ≠ 0) :
-    Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingSeminorm' f x)) := by
-  simp only [smoothingSeminorm']
-  set L := iInf fun n : PNat => f (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
+theorem tendsto_smoothingFun_of_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f x ≠ 0) :
+    Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingFun f x)) := by
+  let L := iInf fun n : PNat => f (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
   have hL0 : 0 ≤ L := le_ciInf fun x => rpow_nonneg (apply_nonneg _ _) _
   rw [Metric.tendsto_atTop]
   intro ε hε
-  obtain ⟨m1, hm1⟩ := smoothingSeminormSeq_hasLimit_m f x hε
+  obtain ⟨m1, hm1⟩ := smoothingSeminormSeq_exists_pnat f x hε
   obtain ⟨m2, hm2⟩ : ∃ m : ℕ, ∀ n ≥ m,
       (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) * (f x ^ (n % m1)) ^ (1 / (n : ℝ)) - 1 ≤
       ε / (2 * (L + ε / 2)) := by
     have hε2 : 0 < ε / 2 := half_pos hε
-    have hL2 := smoothingSeminormSeq_hasLimit_aux f hL0 hε2 (PNat.pos m1) hx
+    have hL2 := smoothingSeminormSeq_tendsto_aux f hL0 hε2 (PNat.pos m1) hx
     rw [Metric.tendsto_atTop] at hL2
     set δ : ℝ := ε / (2 * (L + ε / 2)) with hδ_def
     have hδ : 0 < δ := by
@@ -135,13 +134,10 @@ theorem tendsto_smoothingSeminorm'_of_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f 
   have hn0 : 0 < n := lt_of_lt_of_le (lt_of_lt_of_le (PNat.pos m1) (le_max_left (m1 : ℕ) m2)) hn
   rw [Real.dist_eq, abs_lt]
   have hL_le : L ≤ smoothingSeminormSeq f x n := by
-    simp only [smoothingSeminormSeq]
     rw [← PNat.mk_coe n hn0]
     apply ciInf_le (smoothingSeminormSeq_bddBelow f x)
   refine ⟨lt_of_lt_of_le (neg_lt_zero.mpr hε) (sub_nonneg.mpr hL_le), ?_⟩
-  · suffices h : smoothingSeminormSeq f x n < L + ε by
-      rw [tsub_lt_iff_left hL_le]
-      exact h
+  · suffices h : smoothingSeminormSeq f x n < L + ε by rwa [tsub_lt_iff_left hL_le]
     by_cases hxn : f (x ^ (n % m1)) = 0
     · simp only [smoothingSeminormSeq]
       nth_rw 1 [← div_add_mod n m1]
@@ -208,23 +204,22 @@ theorem tendsto_smoothingSeminorm'_of_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f 
               (f x ^ (n % m1)) ^ (1 / (n : ℝ)) := ((mul_le_mul_left h5).mpr h2)
         _ ≤ L + ε := h3
 
-/-- If `f 1 ≤ 1`, then `smoothingSeminorm' f x` is the limit of `smoothingSeminormSeq f x`
+/-- If `f 1 ≤ 1`, then `smoothingFun f x` is the limit of `smoothingSeminormSeq f x`
   as `n` tends to infinity. -/
-theorem tendsto_smoothingSeminorm' (hf1 : f 1 ≤ 1) (x : R) :
-    Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingSeminorm' f x)) := by
+theorem tendsto_smoothingFun_of_map_one_le_one (hf1 : f 1 ≤ 1) (x : R) :
+    Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingFun f x)) := by
   by_cases hx : f x = 0
-  · exact tendsto_smoothingSeminorm'_of_eq_zero f hx
-  · exact tendsto_smoothingSeminorm'_of_ne_zero f hf1 hx
+  · exact tendsto_smoothingFun_of_eq_zero f hx
+  · exact tendsto_smoothingFun_of_ne_zero f hf1 hx
 
-/-- If `f 1 ≤ 1`, then `smoothingSeminorm' f x` is nonnegative. -/
-theorem smoothingSeminorm_nonneg (hf1 : f 1 ≤ 1) (x : R) : 0 ≤ smoothingSeminorm' f x := by
-  apply ge_of_tendsto (tendsto_smoothingSeminorm' f hf1 x)
-  simp only [eventually_atTop, ge_iff_le]
-  exact ⟨1, fun _ _ ↦ rpow_nonneg (apply_nonneg f _) _⟩
+/-- If `f 1 ≤ 1`, then `smoothingFun f x` is nonnegative. -/
+theorem smoothingFun_nonneg (hf1 : f 1 ≤ 1) (x : R) : 0 ≤ smoothingFun f x := by
+  apply ge_of_tendsto (tendsto_smoothingFun_of_map_one_le_one f hf1 x)
+  simpa only [eventually_atTop, ge_iff_le] using ⟨1, fun _ _ ↦ rpow_nonneg (apply_nonneg f _) _⟩
 
-/-- If `f 1 ≤ 1`, then `smoothingSeminorm' f 1 ≤ 1`. -/
-theorem smoothingSeminorm_one_le (hf1 : f 1 ≤ 1) : smoothingSeminorm' f 1 ≤ 1 := by
-  apply le_of_tendsto (tendsto_smoothingSeminorm' f hf1 (1 : R))
+/-- If `f 1 ≤ 1`, then `smoothingFun f 1 ≤ 1`. -/
+theorem smoothingFun_one_le (hf1 : f 1 ≤ 1) : smoothingFun f 1 ≤ 1 := by
+  apply le_of_tendsto (tendsto_smoothingFun_of_map_one_le_one f hf1 (1 : R))
   simp only [eventually_atTop, ge_iff_le]
   use 1
   rintro n hn
@@ -237,21 +232,21 @@ theorem smoothingSeminorm_one_le (hf1 : f 1 ≤ 1) : smoothingSeminorm' f 1 ≤ 
     exact succ_le_iff.mp hn
   exact (rpow_le_rpow_iff (apply_nonneg f _) zero_le_one hn1).mpr hf1
 
-/-- For any `x` and any positive `n`, `smoothingSeminorm' f x ≤ f (x^(n : ℕ))^(1/n : ℝ)`. -/
-theorem smoothingSeminorm_le_term (x : R) (n : PNat) :
-    smoothingSeminorm' f x ≤ f (x ^ (n : ℕ)) ^ (1 / n : ℝ) :=
+/-- For any `x` and any positive `n`, `smoothingFun f x ≤ f (x ^ (n : ℕ))^(1 / n : ℝ)`. -/
+theorem smoothingFun_le (x : R) (n : PNat) :
+    smoothingFun f x ≤ f (x ^ (n : ℕ)) ^ (1 / n : ℝ) :=
   ciInf_le (smoothingSeminormSeq_bddBelow f x) _
 
-/-- For all `x : R`, `smoothingSeminorm' f x ≤ f x`. -/
-theorem smoothingSeminorm_le (x : R) : smoothingSeminorm' f x ≤ f x := by
-  convert smoothingSeminorm_le_term f x 1
+/-- For all `x : R`, `smoothingFun f x ≤ f x`. -/
+theorem smoothingFun_le_self (x : R) : smoothingFun f x ≤ f x := by
+  apply (smoothingFun_le f x 1).trans
   rw [PNat.one_coe, pow_one, cast_one, div_one, rpow_one]
 
-/- In this section, we prove that if `f` is nonarchimedean, then `smoothingSeminorm' f` is
+/- In this section, we prove that if `f` is nonarchimedean, then `smoothingFun f` is
   nonarchimedean. -/
 section IsNonarchimedean
 
-/-- Auxiliary sequence for the proof that `smoothingSeminorm'` is nonarchimedean. -/
+/-- Auxiliary sequence for the proof that `smoothingFun` is nonarchimedean. -/
 private def mu {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1,
       f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ))) :
     ℕ → ℕ := fun n => Classical.choose (hn n)
@@ -358,16 +353,16 @@ private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ 
       obtain ⟨k, hk⟩ := hf_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
       exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
 
-theorem tendsto_smoothingSeminorm'_comp (hf1 : f 1 ≤ 1) (x : R) {ψ : ℕ → ℕ}
+theorem tendsto_smoothingFun_comp (hf1 : f 1 ≤ 1) (x : R) {ψ : ℕ → ℕ}
     (hψ_mono : StrictMono ψ) :
-    Tendsto (fun n : ℕ => f (x ^ ψ n) ^ (1 / ψ n : ℝ)) atTop (𝓝 (smoothingSeminorm' f x)) :=
+    Tendsto (fun n : ℕ => f (x ^ ψ n) ^ (1 / ψ n : ℝ)) atTop (𝓝 (smoothingFun f x)) :=
   haveI hψ_lim' : Tendsto ψ atTop atTop := StrictMono.tendsto_atTop hψ_mono
-  (tendsto_smoothingSeminorm' f hf1 x).comp hψ_lim'
+  (tendsto_smoothingFun_of_map_one_le_one f hf1 x).comp hψ_lim'
 
 private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R}
     {a : ℝ} (a_in : a ∈ Set.Icc (0 : ℝ) 1) {ψ : ℕ → ℕ} (hψ_mono : StrictMono ψ)
     (hψ_lim : Tendsto ((fun n : ℕ => (s n : ℝ) / ↑n) ∘ ψ) atTop (𝓝 a)) :
-    limsup (fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤ smoothingSeminorm' f x ^ a := by
+    limsup (fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤ smoothingFun f x ^ a := by
   by_cases ha : a = 0
   · rw [ha] at hψ_lim
     calc limsup (fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
@@ -387,7 +382,7 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
               Set.mem_setOf_eq, forall_exists_index]
             exact fun _ m hm ↦ le_trans (rpow_nonneg (apply_nonneg f _) _) (hm m (le_refl _))
       _ ≤ 1 := (f_limsup_le_one f hs_le hψ_lim)
-      _ = smoothingSeminorm' f x ^ a := by rw [ha, rpow_zero]
+      _ = smoothingFun f x ^ a := by rw [ha, rpow_zero]
   · have ha_pos : 0 < a := lt_of_le_of_ne a_in.1 (Ne.symm ha)
     have h_eq : (fun n : ℕ =>
         (f (x ^ s (ψ n)) ^ (1 / (s (ψ n) : ℝ))) ^ ((s (ψ n) : ℝ) / (ψ n : ℝ))) =ᶠ[atTop]
@@ -398,13 +393,14 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
       simp_rw [← rpow_mul (apply_nonneg f _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
     exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq
-      ((((tendsto_smoothingSeminorm' f hf1 x).comp ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
-      Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop)
-        ha_pos hψ_lim)).rpow hψ_lim (Or.inr ha_pos)))))
+      ((((tendsto_smoothingFun_of_map_one_le_one f hf1 x).comp
+      ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
+        Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop)
+          ha_pos hψ_lim)).rpow hψ_lim (Or.inr ha_pos)))))
 
-/-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm'` is nonarchimedean. -/
-theorem sNonarchimedean_smoothingSeminorm' (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) :
-    IsNonarchimedean (smoothingSeminorm' f) := by
+/-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingFun` is nonarchimedean. -/
+theorem sNonarchimedean_smoothingFun (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) :
+    IsNonarchimedean (smoothingFun f) := by
   intro x y
   have hn : ∀ n : ℕ, ∃ m < n + 1,
         f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) :=
@@ -428,13 +424,13 @@ theorem sNonarchimedean_smoothingSeminorm' (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   have b_in : b ∈ Set.Icc (0 : ℝ) 1 := unitInterval.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
   have hx : limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
-      smoothingSeminorm' f x ^ a := limsup_mu_le f hf1 hmu_le a_in hψ_mono hψ_lim
+      smoothingFun f x ^ a := limsup_mu_le f hf1 hmu_le a_in hψ_mono hψ_lim
   have hy : limsup (fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
-      smoothingSeminorm' f y ^ b :=
+      smoothingFun f y ^ b :=
     limsup_mu_le f hf1 hnu_le b_in hψ_mono hb_lim
   have hxy : limsup
       (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
-      smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b := by
+      smoothingFun f x ^ a * smoothingFun f y ^ b := by
     have hxy' :
       limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)))
         atTop ≤ limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop *
@@ -447,30 +443,29 @@ theorem sNonarchimedean_smoothingSeminorm' (hf1 : f 1 ≤ 1) (hna : IsNonarchime
       RingSeminorm.isBoundedUnder f hf1 hnu_le ψ
     apply le_trans hxy' (mul_le_mul hx hy (le_limsup_of_frequently_le (Frequently.of_forall
       (fun n ↦ rpow_nonneg (apply_nonneg f _) _)) h_bdd)
-        (rpow_nonneg (smoothingSeminorm_nonneg f hf1 x) _))
-  conv_lhs => simp only [smoothingSeminorm']
+        (rpow_nonneg (smoothingFun_nonneg f hf1 x) _))
   apply le_of_forall_sub_le
   intro ε hε
   rw [sub_le_iff_le_add]
-  have h_mul : smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε ≤
-      max (smoothingSeminorm' f x) (smoothingSeminorm' f y) + ε :=  by
+  have h_mul : smoothingFun f x ^ a * smoothingFun f y ^ b + ε ≤
+      max (smoothingFun f x) (smoothingFun f y) + ε :=  by
     rw [max_def]
     split_ifs with h
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_right
-        (rpow_le_rpow (smoothingSeminorm_nonneg f hf1 _) h a_in.1)
-        (rpow_nonneg (smoothingSeminorm_nonneg f hf1 _) _))
-      rw [hb, ← rpow_add_of_nonneg (smoothingSeminorm_nonneg f hf1 _) a_in.1
+        (rpow_le_rpow (smoothingFun_nonneg f hf1 _) h a_in.1)
+        (rpow_nonneg (smoothingFun_nonneg f hf1 _) _))
+      rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg f hf1 _) a_in.1
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_left
-        (rpow_le_rpow (smoothingSeminorm_nonneg f hf1 _) (le_of_lt (not_le.mp h)) b_in.1)
-        (rpow_nonneg (smoothingSeminorm_nonneg f hf1 _) _))
-      rw [hb, ← rpow_add_of_nonneg (smoothingSeminorm_nonneg f hf1 _) a_in.1
+        (rpow_le_rpow (smoothingFun_nonneg f hf1 _) (le_of_lt (not_le.mp h)) b_in.1)
+        (rpow_nonneg (smoothingFun_nonneg f hf1 _) _))
+      rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg f hf1 _) a_in.1
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) <
-      smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
+      smoothingFun f x ^ a * smoothingFun f y ^ b + ε :=
     Filter.exists_lt_of_limsup_le (bddAbove_range_mul (f_bddAbove f hf1 hmu_le _ _)
       (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
         fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder_of_range hxy hε
@@ -483,11 +478,11 @@ theorem sNonarchimedean_smoothingSeminorm' (hf1 : f 1 ≤ 1) (hna : IsNonarchime
 
 end IsNonarchimedean
 
-/-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm'` is a ring seminorm. -/
+/-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingFun` is a ring seminorm. -/
 def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminorm R where
-  toFun     := smoothingSeminorm' f
+  toFun     := smoothingFun f
   map_zero' := by
-    apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingSeminorm' f hf1 0)
+    apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one f hf1 0)
       tendsto_const_nhds
     simp only [EventuallyEq, eventually_atTop, ge_iff_le]
     use 1
@@ -495,10 +490,9 @@ def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminor
     simp only [smoothingSeminormSeq]
     rw [zero_pow (pos_iff_ne_zero.mp hn), map_zero, zero_rpow]
     exact one_div_ne_zero (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn))
-  add_le' _ _ :=  (sNonarchimedean_smoothingSeminorm' f hf1 hna).add_le
-    (smoothingSeminorm_nonneg f hf1)
+  add_le' _ _ :=  (sNonarchimedean_smoothingFun f hf1 hna).add_le (smoothingFun_nonneg f hf1)
   neg' n := by
-    simp only [smoothingSeminorm', smoothingSeminorm']
+    simp only [smoothingFun]
     congr
     ext n
     rw [neg_pow]
@@ -506,8 +500,9 @@ def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminor
     · rw [hpos, one_mul]
     · rw [hneg, neg_one_mul, map_neg_eq_map f]
   mul_le' x y := by
-    apply le_of_tendsto_of_tendsto' (tendsto_smoothingSeminorm' f hf1 (x * y))
-      (Tendsto.mul (tendsto_smoothingSeminorm' f hf1 x) (tendsto_smoothingSeminorm' f hf1 y))
+    apply le_of_tendsto_of_tendsto' (tendsto_smoothingFun_of_map_one_le_one f hf1 (x * y))
+      (Tendsto.mul (tendsto_smoothingFun_of_map_one_le_one f hf1 x)
+        (tendsto_smoothingFun_of_map_one_le_one f hf1 y))
     intro n
     have hn : 0 ≤ 1 / (n : ℝ) := by simp only [one_div, inv_nonneg, cast_nonneg]
     simp only [smoothingSeminormSeq]
@@ -517,16 +512,15 @@ def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminor
 /-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm f hf1 hna 1 ≤ 1`. -/
 theorem smoothingSeminorm_map_one_le_one (hf1 : f 1 ≤ 1)
     (hna : IsNonarchimedean f) : smoothingSeminorm f hf1 hna 1 ≤ 1 :=
-  smoothingSeminorm_one_le f hf1
+  smoothingFun_one_le f hf1
 
-/-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm' f` is
+/-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingFun f` is
   power-multiplicative. -/
-theorem isPowMul_smoothingSeminorm' (hf1 : f 1 ≤ 1) : IsPowMul (smoothingSeminorm' f) := by
+theorem isPowMul_smoothingFun (hf1 : f 1 ≤ 1) : IsPowMul (smoothingFun f) := by
   intro x m hm
-  simp only [smoothingSeminorm']
   have hlim : Tendsto (fun n => smoothingSeminormSeq f x (m * n)) atTop
-      (𝓝 (smoothingSeminorm' f x)) :=
-    Tendsto.comp (tendsto_smoothingSeminorm' f hf1 x) (tendsto_atTop_atTop_of_monotone
+      (𝓝 (smoothingFun f x)) :=
+    Tendsto.comp (tendsto_smoothingFun_of_map_one_le_one f hf1 x) (tendsto_atTop_atTop_of_monotone
       (fun n k hnk ↦ mul_le_mul_left' hnk m) (fun n ↦ ⟨n, le_mul_of_one_le_left' hm⟩))
   apply tendsto_nhds_unique _ (Tendsto.pow hlim m)
   have h_eq : ∀ n : ℕ, smoothingSeminormSeq f x (m * n) ^ m = smoothingSeminormSeq f (x ^ m) n := by
@@ -535,13 +529,12 @@ theorem isPowMul_smoothingSeminorm' (hf1 : f 1 ≤ 1) : IsPowMul (smoothingSemin
     simp only [smoothingSeminormSeq]
     rw [pow_mul, ← rpow_natCast, ← rpow_mul (apply_nonneg f _), cast_mul, ← one_div_mul_one_div,
       mul_comm (1 / (m : ℝ)), mul_assoc, one_div_mul_cancel hm', mul_one]
-  simp_rw [h_eq]
-  exact tendsto_smoothingSeminorm' f hf1 _
+  simpa only [h_eq] using tendsto_smoothingFun_of_map_one_le_one f hf1 _
 
-/-- If `f 1 ≤ 1` and `∀ (1 ≤ n), f (x ^ n) = f x ^ n`, then `smoothingSeminorm' f x = f x`. -/
-theorem smoothingSeminorm'_of_powMul (hf1 : f 1 ≤ 1) {x : R}
-    (hx : ∀ (n : ℕ) (_hn : 1 ≤ n), f (x ^ n) = f x ^ n) : smoothingSeminorm' f x = f x := by
-  apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingSeminorm' f hf1 x)
+/-- If `f 1 ≤ 1` and `∀ (1 ≤ n), f (x ^ n) = f x ^ n`, then `smoothingFun f x = f x`. -/
+theorem smoothingFun_of_powMul (hf1 : f 1 ≤ 1) {x : R}
+    (hx : ∀ (n : ℕ) (_hn : 1 ≤ n), f (x ^ n) = f x ^ n) : smoothingFun f x = f x := by
+  apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one f hf1 x)
     tendsto_const_nhds
   simp only [EventuallyEq, eventually_atTop, ge_iff_le]
   use 1
@@ -550,10 +543,11 @@ theorem smoothingSeminorm'_of_powMul (hf1 : f 1 ≤ 1) {x : R}
   have hn0 : (n : ℝ) ≠ 0 := cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn)
   rw [hx n hn, ← rpow_natCast, ← rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
-/-- If `f 1 ≤ 1` and `∀ y : R, f (x * y) = f x * f y`, then `smoothingSeminorm' f x = f x`. -/
-theorem smoothingSeminorm'_apply_of_isMul (hf1 : f 1 ≤ 1) {x : R}
-    (hx : ∀ y : R, f (x * y) = f x * f y) : smoothingSeminorm' f x = f x := by
-  apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingSeminorm' f hf1 x) tendsto_const_nhds
+/-- If `f 1 ≤ 1` and `∀ y : R, f (x * y) = f x * f y`, then `smoothingFun f x = f x`. -/
+theorem smoothingFun_apply_of_isMul (hf1 : f 1 ≤ 1) {x : R}
+    (hx : ∀ y : R, f (x * y) = f x * f y) : smoothingFun f x = f x := by
+  apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one f hf1 x)
+    tendsto_const_nhds
   simp only [EventuallyEq, eventually_atTop, ge_iff_le]
   use 1
   intro n hn
@@ -573,25 +567,26 @@ theorem smoothingSeminorm'_apply_of_isMul (hf1 : f 1 ≤ 1) {x : R}
   `smoothingSeminorm f hf1 hna x = f x`. -/
 theorem smoothingSeminorm_apply_of_is_mul (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) : smoothingSeminorm f hf1 hna x = f x :=
-  smoothingSeminorm'_apply_of_isMul f hf1 hx
+  smoothingFun_apply_of_isMul f hf1 hx
 
 /-- If `f 1 ≤ 1`, and `x` is multiplicative for `f`, then it is multiplicative for
-  `smoothingSeminorm'`. -/
-theorem smoothingSeminorm'_of_isMul (hf1 : f 1 ≤ 1) {x : R} (hx : ∀ y : R, f (x * y) = f x * f y)
-    (y : R) : smoothingSeminorm' f (x * y) = smoothingSeminorm' f x * smoothingSeminorm' f y := by
+  `smoothingFun`. -/
+theorem smoothingFun_of_isMul (hf1 : f 1 ≤ 1) {x : R} (hx : ∀ y : R, f (x * y) = f x * f y)
+    (y : R) : smoothingFun f (x * y) = smoothingFun f x * smoothingFun f y := by
   have hlim : Tendsto (fun n => f x * smoothingSeminormSeq f y n) atTop
-      (𝓝 (smoothingSeminorm' f x * smoothingSeminorm' f y)) := by
-    rw [smoothingSeminorm'_apply_of_isMul f hf1 hx]
-    exact Tendsto.const_mul _ (tendsto_smoothingSeminorm' f hf1 y)
-  apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingSeminorm' f hf1 (x * y)) hlim
+      (𝓝 (smoothingFun f x * smoothingFun f y)) := by
+    rw [smoothingFun_apply_of_isMul f hf1 hx]
+    exact Tendsto.const_mul _ (tendsto_smoothingFun_of_map_one_le_one f hf1 y)
+  apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one f hf1 (x * y))
+    hlim
   simp only [EventuallyEq, eventually_atTop, ge_iff_le]
   use 1
   intro n hn1
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_lt_of_le zero_lt_one hn1))
   simp only [smoothingSeminormSeq]
-  rw [mul_pow, pow_isMul_of_isMul f hx,
-    mul_rpow (pow_nonneg (apply_nonneg f _) _) (apply_nonneg f _), ← rpow_natCast, ←
-    rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
+  rw [mul_pow, pow_isMul_of_isMul f hx, mul_rpow (pow_nonneg (apply_nonneg f _) _)
+    (apply_nonneg f _), ← rpow_natCast, ← rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0,
+    rpow_one]
 
 /-- If `f 1 ≤ 1`, `f` is nonarchimedean, and `x` is multiplicative for `f`, then `x` is
   multiplicative for `smoothingSeminorm`. -/
@@ -599,6 +594,6 @@ theorem smoothingSeminorm_of_mul (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) {x
     (hx : ∀ y : R, f (x * y) = f x * f y) (y : R) :
     smoothingSeminorm f hf1 hna (x * y) =
       smoothingSeminorm f hf1 hna x * smoothingSeminorm f hf1 hna y :=
-  smoothingSeminorm'_of_isMul f hf1 hx y
+  smoothingFun_of_isMul f hf1 hx y
 
 end smoothingSeminorm
