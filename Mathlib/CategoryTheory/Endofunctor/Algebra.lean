@@ -17,7 +17,6 @@ coalgebras over `G`.
 
 ## TODO
 
-* Prove the dual result about the structure map of the terminal coalgebra of an endofunctor.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
