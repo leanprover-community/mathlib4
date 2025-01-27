@@ -413,7 +413,6 @@ def coinvariantsTensorFreeToFinsupp :
 
 variable {A α}
 
-@[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeToFinsupp A α (Submodule.Quotient.mk (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
@@ -435,7 +434,6 @@ variable {A α}
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     finsuppToCoinvariantsTensorFree A α (single i x) =
       Submodule.Quotient.mk (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
-  have := finsuppTensorRight_inv_hom (A := A) (B := leftRegular k G)
   simp_all [finsuppToCoinvariantsTensorFree, coinvariantsMap,
     ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj]
