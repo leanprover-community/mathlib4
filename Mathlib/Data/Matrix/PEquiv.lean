@@ -40,7 +40,7 @@ open Matrix
 universe u v
 
 variable {k l m n : Type*}
-variable {α : Type v}
+variable {α β : Type*}
 
 open Matrix
 
@@ -178,4 +178,36 @@ theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm
 
 @[deprecated (since := "2025-01-27")] alias equiv_toPEquiv_toMatrix := toMatrix_toPEquiv_eq
 
+@[simp]
+lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
+  ext i j
+  simp
+
 end PEquiv
+
+namespace Equiv
+
+open Matrix
+
+variable {α m n : Type*} [DecidableEq m] [DecidableEq n]
+
+lemma toMatrix_toPEquiv_mulVec_single [Fintype n] [NonAssocSemiring α] (σ : m ≃ n) (i : n) (x : α) :
+    σ.toPEquiv.toMatrix *ᵥ Pi.single i x = Pi.single (σ.symm i) x := by
+  ext j
+  simp [Pi.single_apply, Equiv.apply_eq_iff_eq_symm_apply σ]
+
+lemma single_vecMul_toMatrix_toPEquiv [Fintype m] [NonAssocSemiring α] (σ : m ≃ n) (i : m) (x : α) :
+    Pi.single i x ᵥ* σ.toPEquiv.toMatrix = Pi.single (σ i) x := by
+  ext j
+  simp only [single_vecMul, PEquiv.toMatrix_apply, toPEquiv_apply, Option.mem_def,
+    Option.some.injEq, mul_ite, mul_one, mul_zero, Pi.single_apply]
+  simp_rw [eq_comm]
+
+@[simp]
+lemma toMatrix_toPEquiv_mul_toMatrix_toPEquiv_symm [Fintype m] [Semiring α] (σ : m ≃ m) :
+    σ.toPEquiv.toMatrix (α := α) * σ.symm.toPEquiv.toMatrix = 1 := by
+  rw [← PEquiv.toMatrix_trans, ← Equiv.toPEquiv_trans, Equiv.self_trans_symm, Equiv.toPEquiv_refl,
+    PEquiv.toMatrix_refl]
+
+end Equiv
