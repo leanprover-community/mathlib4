@@ -1939,6 +1939,7 @@ import Mathlib.CategoryTheory.Limits.MorphismProperty
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi
+import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
