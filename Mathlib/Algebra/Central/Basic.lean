@@ -55,24 +55,17 @@ lemma baseField_essentially_unique
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
 lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
-  out x hx := by
-    obtain ⟨k, hk⟩ := h.1 (show e.symm x ∈ _ by
-      simp only [Subalgebra.mem_center_iff] at hx ⊢
-      exact fun x => by simpa using congr(e.symm $(hx (e x))))
-    exact ⟨k, by apply_fun e.symm; rw [← hk]; simp [ofId_apply]⟩
+  out x hx :=
+    have ⟨k, hk⟩ := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)
+    ⟨k, by simpa [ofId] using congr(e $hk)⟩
 
 open MulOpposite in
 /-- This instance combined with the coming `IsSimpleRing` instance for a
   central simple algebra will be an inverse for an element in `BrauerGroup`,
   find out more about this in `Mathlib.Algebra.BrauerGroup.Basic`. -/
 instance : IsCentral K Dᵐᵒᵖ where
-  out z hz := by
-    have hz' : ∀ (x : D), x * z.unop = z.unop * x := fun x => by
-      rw [Subalgebra.mem_center_iff] at hz
-      specialize hz (op x)
-      rw [show z = op z.unop from rfl, ← MulOpposite.op_mul, ← MulOpposite.op_mul] at hz
-      exact op_injective hz |>.symm
-    obtain ⟨k, hk⟩ := h.1 <| Subalgebra.mem_center_iff.mpr hz'
-    exact ⟨k, MulOpposite.unop_inj.mp hk⟩
+  out z hz :=
+    have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)
+    ⟨k, by simpa using congr(op $hk)⟩
 
 end Algebra.IsCentral
