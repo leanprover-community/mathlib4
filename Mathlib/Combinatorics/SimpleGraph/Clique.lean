@@ -237,6 +237,23 @@ lemma IsNClique.insert_erase (hs : G.IsNClique n s) (had: ∀ w ∈ s, w ≠ b �
     intro w h; rw [mem_erase] at h; symm
     apply had w h.2 h.1
 
+
+/-- If s is a clique in G ⊔ {xy} then s-{x} is a clique in G -/
+lemma IsNClique.erase_of_sup_edge_of_mem  {v w : α} (hc: (G ⊔ edge v w).IsNClique (n + 1) s)
+(hx : v ∈ s) : G.IsNClique n (s.erase v):=by
+  constructor
+  · intro u hu v hv huvne
+    push_cast at *
+    obtain (h | h):= (hc.1 hu.1 hv.1 huvne)
+    · exact h
+    · simp only [edge_adj, Set.mem_singleton_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+        Prod.swap_prod_mk, ne_eq] at h
+      exfalso; obtain ⟨⟨rfl,rfl⟩|⟨rfl,rfl⟩,_⟩:=h
+      · exact hu.2 <| Set.mem_singleton _
+      · exact hv.2 <| Set.mem_singleton _
+  · rw [card_erase_of_mem hx,hc.2]
+    rfl
+
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
@@ -402,7 +419,7 @@ lemma IsNClique.exists_non_adj_of_cliqueFree_succ [DecidableEq α] (hc : G.IsNCl
 (h: G.CliqueFree (n + 1)) (x : α) : ∃ y, y ∈ s ∧ ¬G.Adj x y:=by
   by_contra! hf
   apply (hc.insert hf).not_cliqueFree h
-  
+
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     (G ⊔ edge v w).CliqueFree (n + 1) := by
