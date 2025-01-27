@@ -48,8 +48,8 @@ private lemma IsNClique.insert_insert (h1 : G.IsNClique r (Insert.insert a s))
     · simp [h]
     · rintro rfl; contradiction
 
-private lemma IsNClique.insert_insert_erase (hs: IsNClique G (r + 1) (Insert.insert a s)) (hc: c ∈ s)
-(ha: a ∉ s) (had: ∀ w ∈ (Insert.insert a s), w ≠ c → G.Adj w b) :
+private lemma IsNClique.insert_insert_erase (hs: IsNClique G (r + 1) (Insert.insert a s))
+(hc: c ∈ s) (ha: a ∉ s) (had: ∀ w ∈ (Insert.insert a s), w ≠ c → G.Adj w b) :
     IsNClique G (r + 1) (Insert.insert a (Insert.insert b (erase s c))):= by
   rw [insert_comm]
   convert hs.insert_erase had (mem_insert_of_mem hc)
@@ -81,10 +81,10 @@ lemma symm :  G.IsWheel r v w₂ w₁ t s := by
 /-- We automatically have w₁ ∉ t and w₂ ∉ s for any wheel -/
 lemma disj' : w₁ ∉ t ∧ w₂ ∉ s:=by
   constructor <;> intro hf
-  · apply hw.IsP2Complement.nonedge.1 <| hw.cliques.2.2.1.1 (mem_insert_self ..) (mem_insert_of_mem hf)
-       (hw.IsP2Complement.ne.1)
-  · apply hw.IsP2Complement.nonedge.2 <| hw.cliques.1.1 (mem_insert_self ..) (mem_insert_of_mem hf)
-       (hw.IsP2Complement.ne.2)
+  · apply hw.IsP2Complement.nonedge.1 <| hw.cliques.2.2.1.1 (mem_insert_self ..)
+      (mem_insert_of_mem hf) (hw.IsP2Complement.ne.1)
+  · apply hw.IsP2Complement.nonedge.2 <| hw.cliques.1.1 (mem_insert_self ..)
+      (mem_insert_of_mem hf) (hw.IsP2Complement.ne.2)
 
 lemma card_cliques : s.card = r ∧ t.card = r:=by
   constructor
@@ -108,8 +108,9 @@ lemma card_verts_add_inter  : #(insert v (insert w₁ (insert w₂ (s ∪ t)))) 
     exact ⟨hw.IsP2Complement.ne.1,hw.IsP2Complement.ne.2, hw.disj.1,hw.disj.2.1⟩
 
 /-- Every wheel contains at least 3 vertices: v w₁ w₂-/
-lemma three_le_card_verts : 3 ≤ #(insert v (insert w₁ (insert w₂ (s ∪ t)))) := two_lt_card.2
-  ⟨v,by simp,w₁,by simp,w₂,by simp,hw.IsP2Complement.ne.1,hw.IsP2Complement.ne.2,hw.IsP2Complement.edge.ne⟩
+lemma three_le_card_verts : 3 ≤ #(insert v (insert w₁ (insert w₂ (s ∪ t)))) :=two_lt_card.2
+  ⟨v,by simp,w₁,by simp,w₂,by simp,hw.IsP2Complement.ne.1,
+    hw.IsP2Complement.ne.2, hw.IsP2Complement.edge.ne⟩
 
 /-- If s ∩ t contains an r-set then then s ∪ {w₁,w₂} is Kᵣ₊₂ so -/
 lemma card_clique_free (h : G.CliqueFree (r + 2)) : #(s ∩ t) < r:=by
@@ -121,9 +122,9 @@ lemma card_clique_free (h : G.CliqueFree (r + 2)) : #(s ∩ t) < r:=by
 
 omit hw in
 /-- If G is maximally Kᵣ₊₂-free and not complete partite then it contains a maximal wheel -/
-lemma _root_.SimpleGraph.exists_max_isWheel (h: G.MaxCliqueFree (r + 2)) (hnc : ¬ G.IsCompletePartite)
-: ∃ v w₁ w₂ s t, G.IsWheel r v w₁ w₂ s t ∧ ∀ s' t', G.IsWheel r v w₁ w₂ s' t'
-    → #(s' ∩ t') ≤ #(s ∩ t):= by
+lemma _root_.SimpleGraph.exists_max_isWheel (h: G.MaxCliqueFree (r + 2))
+(hnc : ¬ G.IsCompletePartite) : ∃ v w₁ w₂ s t, G.IsWheel r v w₁ w₂ s t ∧
+    ∀ s' t', G.IsWheel r v w₁ w₂ s' t' → #(s' ∩ t') ≤ #(s ∩ t):= by
   classical
   obtain ⟨v,w₁,w₂,s,t,hw⟩:=exists_IsWheel h hnc
   let P : ℕ → Prop := fun k => ∃ s t, G.IsWheel r v w₁ w₂ s t ∧ #(s ∩ t) = k
@@ -213,7 +214,7 @@ lemma bigger_wheel (h: G.CliqueFree (r + 2)) (hWc: ∀ {y}, y ∈ s ∩ t → G.
       · apply hw.disj.2.2.2 (hbx ▸ hbt)
       · apply hbj; apply hw.cliques.2.2.2.1; apply mem_insert_self
         apply mem_insert_of_mem hbt; exact hbx
-  have wadj: ∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x:=by
+  have wa: ∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x:=by
     intro z hz haz hbz
     by_contra hf; push_neg at hf
     have gt2: 2 < #(W.filter (fun z => ¬ G.Adj x z)):=by
@@ -233,17 +234,17 @@ lemma bigger_wheel (h: G.CliqueFree (r + 2)) (hWc: ∀ {y}, y ∈ s ∩ t → G.
            ⟨hxvw12.2.1.symm,fun hw1 => hw.disj.2.2.1 (mem_erase.1 hw1).2⟩,
            ⟨hxvw12.2.2.symm,fun hv => hw.disj.2.2.2 (mem_erase.1 hv).2⟩⟩
 -- Finally we prove that the new cliques are indeed (r + 1)-cliques
-  · refine ⟨hw.cliques.1.insert_insert_erase has hw.disj.1 (fun z hz hz' => wadj _ (by aesop) hz' ?_),
-      hw.cliques.2.1.insert_insert_erase has hw.disj.2.2.1 (fun z hz hz' =>  wadj _ (by aesop) hz' ?_),
-      hw.cliques.2.2.1.insert_insert_erase hbt hw.disj.2.1 (fun z hz hz' =>  wadj _ (by aesop)  ?_ hz'),
-      hw.cliques.2.2.2.insert_insert_erase hbt hw.disj.2.2.2 (fun z hz hz' => wadj _ (by aesop) ?_ hz')⟩
+  · refine ⟨hw.cliques.1.insert_insert_erase has hw.disj.1 (fun z hz hZ => wa _ (by aesop) hZ ?_),
+      hw.cliques.2.1.insert_insert_erase has hw.disj.2.2.1 (fun z hz hZ =>  wa _ (by aesop) hZ ?_),
+      hw.cliques.2.2.1.insert_insert_erase hbt hw.disj.2.1 (fun z hz hZ =>  wa _ (by aesop)  ?_ hZ),
+      hw.cliques.2.2.2.insert_insert_erase hbt hw.disj.2.2.2 (fun z hz hZ => wa _ (by aesop) ?_ hZ)⟩
     <;> rintro rfl <;> rw [mem_insert] at hz;
     · apply habv.2.symm (hz.resolve_right hbs)
     · apply hbw1 (hz.resolve_right hbs)
     · apply habv.1.symm (hz.resolve_right hat)
     · apply haw2 (hz.resolve_right hat)
 
-/-- For any x there is a wheel vertex that is not adjacent to x (in fact there is one in s ∪ {w₁}) -/
+/-- For any x there is a wheel vertex that is not adjacent to x (in fact there is one in s ∪ {w₁})-/
 lemma one_le_non_adj  (hcf: G.CliqueFree (r + 2)) (x : α) :
     1 ≤ #(((insert v (insert w₁ (insert w₂ (s ∪ t))))).filter (fun z => ¬ G.Adj  x z)):=by
   apply card_pos.2
