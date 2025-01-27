@@ -178,9 +178,7 @@ lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (
     simp [Fin.ext_iff] at this
   · intro hf
     refine ((strictMono_iff_lt_succ (f := f)).2 (fun i ↦ ?_)).injective
-    obtain hi | hi := (f.monotone (Fin.castSucc_le_succ i)).lt_or_eq
-    · exact hi
-    · exact (hf i hi).elim
+    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
 
 /-! #### Order isomorphisms -/
 
