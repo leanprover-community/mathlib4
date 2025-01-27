@@ -72,7 +72,7 @@ theorem δ_apply (i j l : ℕ) (hij : i + 1 = j) (hjl : (ComplexShape.up ℕ).ne
       (moduleCatCyclesIso _).inv ⟨z, show ((inhomogeneousCochains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) = groupCohomologyπ X.X₁ j
       ((moduleCatCyclesIso _).inv ⟨x, ((cochainsMap_shortExact hX).δ_apply_aux i j y x
-        (by simpa [cochainsMap_id_eq_compLeft] using hx) l)⟩) := by
+        (by simpa [cochainsMap_id_eq_compLeft] using hx) _)⟩) := by
   convert (cochainsMap_shortExact hX).δ_apply i j hij z
     hz y hy x (by simpa [cochainsMap_id_eq_compLeft] using hx) l hjl
   <;> rw [moduleCatCyclesIso_inv_apply]
@@ -88,7 +88,7 @@ noncomputable def δ₀ :
 theorem δ₀_apply_aux (y : X.X₂) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     dOne X.X₁ x = 0 := by
   have hδ := (cochainsMap_shortExact hX).δ_apply_aux 0 1 ((zeroCochainsLequiv X.X₂).symm y)
-    ((oneCochainsLequiv X.X₁).symm x) ?_ 2
+    ((oneCochainsLequiv X.X₁).symm x)
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
   have h0 := congr($((CommSq.vert_inv
@@ -137,7 +137,7 @@ noncomputable def δ₁ :
 theorem δ₁_apply_aux (y : G → X.X₂) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     dTwo X.X₁ x = 0 := by
   have hδ := (cochainsMap_shortExact hX).δ_apply_aux 1 2 ((oneCochainsLequiv X.X₂).symm y)
-    ((twoCochainsLequiv X.X₁).symm x) ?_ 3
+    ((twoCochainsLequiv X.X₁).symm x)
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH2Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH2Iso X.X₁).hom.comm₂₃) x)
   have h2 := congr($((CommSq.vert_inv
