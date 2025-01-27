@@ -102,32 +102,35 @@ theorem transpose_toMatrix_toPEquiv_apply
   ext
   simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
 
-theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
-    (M : Matrix m n α) : f.toPEquiv.toMatrix * M = M.submatrix f id := by
+theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
+    [Semiring α] (f : n ≃ m) (M : Matrix m n α) :
+    f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
   rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
 
-theorem mul_toMatrix_toPEquiv {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
-    (M : Matrix m n α) : M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
+theorem mul_toMatrix_toPEquiv [Fintype n] [DecidableEq m]
+    [Semiring α] (f : n ≃ m) (M : Matrix m n α) :
+    M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias mul_toPEquiv_toMatrix := mul_toMatrix_toPEquiv
 
-lemma toMatrix_toPEquiv_mulVec_single [DecidableEq n] [DecidableEq m] [Fintype n]
-    [NonAssocSemiring α] (σ : m ≃ n) (i : n) (x : α) :
-    σ.toPEquiv.toMatrix *ᵥ Pi.single i x = Pi.single (σ.symm i) x := by
+lemma toMatrix_toPEquiv_mulVec [DecidableEq n] [Fintype n]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
+    σ.toPEquiv.toMatrix *ᵥ a = a ∘ σ := by
   ext j
-  simp [Pi.single_apply, Equiv.apply_eq_iff_eq_symm_apply σ]
+  simp [toMatrix, mulVec, dotProduct]
 
-lemma single_vecMul_toMatrix_toPEquiv [DecidableEq n] [DecidableEq m] [Fintype m]
-    [NonAssocSemiring α] (σ : m ≃ n) (i : m) (x : α) :
-    Pi.single i x ᵥ* σ.toPEquiv.toMatrix = Pi.single (σ i) x := by
+lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : m → α) :
+    a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ.symm := by
+  classical
   ext j
-  simp [Pi.single_apply]
+  simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
