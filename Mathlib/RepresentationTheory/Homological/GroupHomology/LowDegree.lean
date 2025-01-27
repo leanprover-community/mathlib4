@@ -870,7 +870,7 @@ sending `⟦g⟧, a` to `⟦single g a⟧`. -/
 def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
   AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
     toFun := fun g => Multiplicative.ofAdd <| AddMonoidHom.toIntLinearMap <|
-      ((H1π A).hom ∘ₗ (oneCyclesLEquivOfIsTrivial A).symm.toLinearMap ∘ₗ lsingle g).toAddMonoidHom
+      ((H1π A).hom ∘ₗ (oneCyclesLequivOfIsTrivial A).symm.toLinearMap ∘ₗ lsingle g).toAddMonoidHom
     map_one' := Multiplicative.toAdd.bijective.1 <|
       LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_oneBoundaries _
     map_mul' := fun g h => Multiplicative.toAdd.bijective.1 <| LinearMap.ext fun a => by
@@ -883,12 +883,12 @@ variable {A} in
 @[simp]
 lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
     mkH1OfIsTrivial A (Additive.ofMul (Abelianization.of g)) a =
-      H1π A ((oneCyclesLEquivOfIsTrivial A).symm (single g a)) := rfl
+      H1π A ((oneCyclesLequivOfIsTrivial A).symm (single g a)) := rfl
 
 /-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
 `H₁(G, A) ≃ Gᵃᵇ ⊗[ℤ] A` sending `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
 @[simps! (config := .lemmasOnly)]
-def H1LEquivOfIsTrivial :
+def H1LequivOfIsTrivial :
     H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
   LinearEquiv.toAddEquiv (LinearEquiv.ofLinear
     (QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => (TensorProduct.mk ℤ _ _
@@ -905,25 +905,25 @@ def H1LEquivOfIsTrivial :
           LinearMap.toAddMonoidHom_coe, Function.comp_apply, toAdd_ofAdd, LinearMap.compr₂_apply,
           LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap]
         show QuotientAddGroup.lift _ _ _
-          (QuotientAddGroup.mk ((oneCyclesLEquivOfIsTrivial A).symm (single g a))) = _
-        simp [QuotientAddGroup.lift_mk, oneCyclesLEquivOfIsTrivial, AddSubgroup.subtype])
+          (QuotientAddGroup.mk ((oneCyclesLequivOfIsTrivial A).symm (single g a))) = _
+        simp [QuotientAddGroup.lift_mk, oneCyclesLequivOfIsTrivial, AddSubgroup.subtype])
     (LinearMap.toAddMonoidHom_injective <| QuotientAddGroup.addMonoidHom_ext _ <|
-      (oneCyclesLEquivOfIsTrivial A).symm.toAddEquiv.comp_left_injective <| Finsupp.addHom_ext
+      (oneCyclesLequivOfIsTrivial A).symm.toAddEquiv.comp_left_injective <| Finsupp.addHom_ext
       fun _ _ => show lift _ ((single _ _).sum _) = _ by aesop) : _ ≃ₗ[ℤ] _)
 
 @[simp]
-lemma H1LEquivOfIsTrivial_single (g : G) (a : A) :
-    H1LEquivOfIsTrivial A (H1π A <| (oneCyclesLEquivOfIsTrivial A).symm <| single g a) =
+lemma H1LequivOfIsTrivial_single (g : G) (a : A) :
+    H1LequivOfIsTrivial A (H1π A <| (oneCyclesLequivOfIsTrivial A).symm <| single g a) =
       Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
-  rw [H1LEquivOfIsTrivial_apply]
+  rw [H1LequivOfIsTrivial_apply]
   show QuotientAddGroup.lift _ _ _
-    (QuotientAddGroup.mk ((oneCyclesLEquivOfIsTrivial A).symm (single g a))) = _
-  simp [QuotientAddGroup.lift_mk, oneCyclesLEquivOfIsTrivial, AddSubgroup.subtype]
+    (QuotientAddGroup.mk ((oneCyclesLequivOfIsTrivial A).symm (single g a))) = _
+  simp [QuotientAddGroup.lift_mk, oneCyclesLequivOfIsTrivial, AddSubgroup.subtype]
 
 @[simp]
-lemma H1LEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
-    (H1LEquivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
-      H1π A ((oneCyclesLEquivOfIsTrivial A).symm <| single g a) := by
+lemma H1LequivOfIsTrivial_symm_tmul (g : G) (a : A) :
+    (H1LequivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
+      H1π A ((oneCyclesLequivOfIsTrivial A).symm <| single g a) := by
   rfl
 
 end Trivial
