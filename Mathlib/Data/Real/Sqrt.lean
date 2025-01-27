@@ -458,17 +458,17 @@ open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum
 lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (Real.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
-lemma isNat_nnreal_sqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
+lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
-lemma isNat_real_sqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
+lemma isNat_realSqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
     IsNat (Real.sqrt x) 0 := by
   refine ⟨?_⟩
   simp only [Nat.cast_zero]
   refine Real.sqrt_eq_zero_of_nonpos ?_
   simp [h.out]
 
-lemma isNat_real_sqrt_neg_of_isRat {x : ℝ} {num : ℤ} {denom : ℕ} (hnum : num ≤ 0)
+lemma isNat_realSqrt_neg_of_isRat {x : ℝ} {num : ℤ} {denom : ℕ} (hnum : num ≤ 0)
     (h : IsRat x num denom) : IsNat (Real.sqrt x) 0 := by
   refine ⟨?_⟩
   simp only [Nat.cast_zero]
@@ -503,13 +503,13 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
         have ey : Q(ℕ) := mkRawNatLit y
         have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
         assumeInstancesCommute
-        have pf_final : Q(IsNat (Real.sqrt $x) $ey) := q(isNat_real_sqrt $pf $pf₁)
+        have pf_final : Q(IsNat (Real.sqrt $x) $ey) := q(isNat_realSqrt $pf $pf₁)
         return .isNat sℝ ey pf_final
       else failure
   | .isNegNat _ ex pf =>
       -- Recall that `Real.sqrt` returns 0 for negative inputs
       assumeInstancesCommute
-      have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_real_sqrt_neg $pf)
+      have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_realSqrt_neg $pf)
       let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
       return .isNat sℝ (mkRawNatLit 0) pf_final
   | .isRat sℝ eq en ed pf =>
@@ -519,7 +519,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
         -- Square root of a negative number, defined to be zero
         let hnum : Q($en ≤ 0) ← mkDecideProof q($en ≤ 0)
         assumeInstancesCommute
-        have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_real_sqrt_neg_of_isRat $hnum $pf)
+        have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_realSqrt_neg_of_isRat $hnum $pf)
         let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
         return .isNat sℝ (mkRawNatLit 0) pf_final
       let n : ℕ := n'.toNat
@@ -554,7 +554,7 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
           have ey : Q(ℕ) := mkRawNatLit y
           have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
           assumeInstancesCommute
-          have pf_final : Q(IsNat (NNReal.sqrt $x) $ey) := q(isNat_nnreal_sqrt $pf $pf₁)
+          have pf_final : Q(IsNat (NNReal.sqrt $x) $ey) := q(isNat_nnrealSqrt $pf $pf₁)
           return .isNat sℝ ey pf_final
         else failure
     | .isNegNat _ ex pf => failure
