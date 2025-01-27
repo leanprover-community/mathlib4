@@ -25,7 +25,7 @@ variable {ι R M N}
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [DecidableEq ι]
 
 open Finsupp in
-theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) = (f.sum fun i r => Q (g i r)) +
     ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
       Sym2.lift
