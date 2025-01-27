@@ -722,12 +722,12 @@ theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (j : n) (x : R) : M *ᵥ Pi.single j x = fun i => M i j * x :=
+    (j : n) (x : R) : M *ᵥ Pi.single j x = MulOpposite.op x • Mᵀ j :=
   funext fun _ => dotProduct_single _ _ _
 
 @[simp]
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
+    (i : m) (x : R) : Pi.single i x ᵥ* M = x • M i :=
   funext fun _ => single_dotProduct _ _ _
 
 theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
@@ -736,7 +736,7 @@ theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
 
 theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
     (i : m) (M : Matrix m n R) :
-    Pi.single i 1 ᵥ* M = M i := by simp
+    Pi.single i 1 ᵥ* M = M i := by ext; simp
 
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
@@ -781,11 +781,13 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
-theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = fun i => ∑ j, A i j := by
+theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = ∑ j, Aᵀ j := by
   ext; simp [mulVec, dotProduct]
 
-theorem vec_one_mul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = fun j => ∑ i, A i j := by
+theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
+
+@[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
 
 variable [Fintype m] [Fintype n] [DecidableEq m]
 
