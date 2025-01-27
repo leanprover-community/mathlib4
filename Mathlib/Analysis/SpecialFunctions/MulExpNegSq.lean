@@ -32,7 +32,10 @@ section mulExpNegSq
 
 /-! ### Definition and properties of `fun x => x * Real.exp (- x * x)`-/
 
-/-- Definition of `mulExpNegSq` -/
+/--
+`mulExpNegSq` is the bounded function `fun x => x * Real.exp (- x * x)`. It can be used to transform
+functions into bounded functions, see `MulExpNegMulSq`.
+-/
 noncomputable
 def mulExpNegSq (x : ℝ) := x * exp (- x * x)
 
