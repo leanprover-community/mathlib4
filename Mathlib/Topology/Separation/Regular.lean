@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.Compactness.Lindelof
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
