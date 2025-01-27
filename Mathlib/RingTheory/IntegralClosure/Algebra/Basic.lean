@@ -41,6 +41,11 @@ theorem Algebra.IsIntegral.of_injective (f : A →ₐ[R] B) (hf : Function.Injec
     [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
 
+/-- Homomorphic image of an integral algebra is an integral algebra. -/
+theorem Algebra.IsIntegral.of_surjective [Algebra.IsIntegral R A]
+    (f : A →ₐ[R] B) (hf : Function.Surjective f) : Algebra.IsIntegral R B :=
+  isIntegral_def.mpr fun b ↦ let ⟨a, ha⟩ := hf b; ha ▸ (isIntegral_def.mp ‹_› a).map f
+
 theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
   ⟨fun h ↦ h.of_injective e.symm e.symm.injective, fun h ↦ h.of_injective e e.injective⟩
 
