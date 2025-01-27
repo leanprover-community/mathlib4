@@ -165,6 +165,17 @@ lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
     IsCofiltered (Comma L R) :=
  IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
 
+attribute [local instance] final_of_isFiltered_of_pUnit in
+lemma final_snd [IsFiltered A] [IsFiltered B] [R.Final] :
+    (Comma.snd L R).Final := by
+  let iL : star.{1} A ⋙ 𝟭 _ ≅ L ⋙ star _ := Iso.refl _
+  let iR : 𝟭 B ⋙ star.{1} B ≅ R ⋙ star _ := Iso.refl _
+  have := map_final iL iR
+  let s := (equivProd (𝟭 _) (star B)).trans <| prod.leftUnitorEquivalence B
+  let iS : map iL.hom iR.inv ⋙ s.functor ≅ snd L R :=
+    NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [iL, iR, s])
+  apply final_of_natIso iS
+
 end Filtered
 
 end Comma
