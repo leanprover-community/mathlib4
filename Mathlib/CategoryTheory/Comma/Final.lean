@@ -6,6 +6,7 @@ Authors: Jakob von Raumer
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.Filtered.Flat
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
@@ -19,9 +20,12 @@ final and `A` is connected.
 We then use this in a proof that derives finality of `map` between two comma categories
 on a quasi-commutative diagram of functors, some of which need to be final.
 
+Finally we prove filteredness of a `Comma L R` given that `R` is final and `A` and `B` are
+filtered.
+
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 & 3.4.4
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5]
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
@@ -131,6 +135,31 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{u
   haveI := final_of_natIso this.symm
   rw [IsIso.Iso.inv_inv]
   infer_instance⟩
+
+section Filtered
+
+variable {A : Type u₁} [Category.{v₁} A]
+variable {B : Type u₂} [Category.{u₂} B]
+variable {T : Type u₂} [Category.{u₂} T]
+variable (L : A ⥤ T) (R : B ⥤ T)
+
+/-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
+comma category `Comma L R` is filtered. -/
+lemma filtered [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
+  haveI (a : A) : IsFiltered (Comma (fromPUnit (L.obj a)) R) :=
+    (Functor.final_iff_isFiltered_structuredArrow R).mp inferInstance (L.obj a)
+  haveI (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
+  have η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
+    NatIso.ofComponents (fun _ => Iso.refl _)
+  haveI (a : A) := map_final (A := Discrete PUnit.{1}) (L := Functor.fromPUnit (L.obj a)) (R := R)
+    (G := 𝟭 _) (H := 𝟭 _) (η a) (Iso.refl _)
+  haveI := fun a =>  IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T)
+    (η a).hom (Iso.refl (𝟭 B ⋙ R)).inv)
+  haveI : RepresentablyCoflat (fst L R) :=
+    ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
+  apply isFiltered_of_representablyCoflat (fst L R)
+
+end Filtered
 
 end Comma
 
