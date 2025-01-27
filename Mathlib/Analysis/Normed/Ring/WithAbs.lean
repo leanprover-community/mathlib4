@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Module.Completion
 
@@ -22,7 +22,7 @@ being used to define Archimedean completions of a number field.
   to assign and infer instances on a semiring that depend on absolute values.
  - `WithAbs.equiv v` : the canonical (type) equivalence between `WithAbs v` and `R`.
  - `WithAbs.ringEquiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
- - `AbsoluteValue.completion` : the uniform space completion of a field `K` according to the
+ - `AbsoluteValue.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified real absolute value.
 -/
 
@@ -141,18 +141,20 @@ open WithAbs
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 /-- The completion of a field with respect to a real absolute value. -/
-abbrev completion := UniformSpace.Completion (WithAbs v)
+abbrev Completion := UniformSpace.Completion (WithAbs v)
+
+@[deprecated (since := "2024-12-01")] alias completion := Completion
 
 namespace Completion
 
-instance : Coe K v.completion :=
+instance : Coe K v.Completion :=
   inferInstanceAs <| Coe (WithAbs v) (UniformSpace.Completion (WithAbs v))
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
-`L`, then we can extend that embedding to an embedding on the completion `v.completion →+* L`. -/
-abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.completion →+* L :=
+`L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
+abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
   UniformSpace.Completion.extensionHom _
     (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
 
@@ -162,8 +164,8 @@ theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
     (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous]
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.completion →+* L` preserves distances. -/
-theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.completion) :
+then the extended embedding `v.Completion →+* L` preserves distances. -/
+theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
     dist (extensionEmbedding_of_comp h x) (extensionEmbedding_of_comp h y) =
       dist x y := by
   refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
@@ -173,13 +175,13 @@ theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v
     exact UniformSpace.Completion.dist_eq x y ▸ (WithAbs.isometry_of_comp h).dist_eq _ _
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.completion →+* L` is an isometry. -/
+then the extended embedding `v.Completion →+* L` is an isometry. -/
 theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     Isometry (extensionEmbedding_of_comp h) :=
   Isometry.of_dist_eq <| extensionEmbedding_dist_eq_of_comp h
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.completion →+* L` is a closed embedding. -/
+then the extended embedding `v.Completion →+* L` is a closed embedding. -/
 theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     IsClosedEmbedding (extensionEmbedding_of_comp h) :=
   (isometry_extensionEmbedding_of_comp h).isClosedEmbedding
@@ -187,7 +189,7 @@ theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v x)  :
-    LocallyCompactSpace (v.completion) :=
+    LocallyCompactSpace (v.Completion) :=
   (isClosedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
 
 end AbsoluteValue.Completion

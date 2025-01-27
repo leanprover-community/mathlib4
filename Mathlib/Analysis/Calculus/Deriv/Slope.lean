@@ -79,11 +79,11 @@ alias ⟨HasDerivAt.tendsto_slope_zero, _⟩ := hasDerivAt_iff_tendsto_slope_zer
 
 theorem HasDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[>] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhdsGT_le_nhdsNE 0)
 
 theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhdsLT_le_nhdsNE 0)
 
 /-- Given a set `t` such that `s ∩ t` is dense in `s`, then the range of `derivWithin f s` is
 contained in the closure of the submodule spanned by the image of `t`. -/
@@ -92,7 +92,7 @@ theorem range_derivWithin_subset_closure_span_image
     range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
   rintro - ⟨x, rfl⟩
   rcases eq_or_neBot (𝓝[s \ {x}] x) with H|H
-  · simpa [derivWithin, fderivWithin, H] using subset_closure (zero_mem _)
+  · simpa [derivWithin_zero_of_isolated H] using subset_closure (zero_mem _)
   by_cases H' : DifferentiableWithinAt 𝕜 f s x; swap
   · rw [derivWithin_zero_of_not_differentiableWithinAt H']
     exact subset_closure (zero_mem _)

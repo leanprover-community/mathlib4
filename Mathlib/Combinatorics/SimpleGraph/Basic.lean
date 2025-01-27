@@ -197,6 +197,12 @@ theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
   adj_injective.eq_iff
 
+theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ G.Adj w x := by
+  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h
+  cases' h with hl hr
+  · rw [hl.1, hl.2]
+  · rw [hr.1, hr.2, adj_comm]
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -603,7 +609,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
   ext v w
   constructor <;> simp +contextual
 
-@[mono]
+@[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
   simp +contextual only [fromEdgeSet_adj, Ne, not_false_iff,

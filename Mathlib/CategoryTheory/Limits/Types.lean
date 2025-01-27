@@ -23,7 +23,7 @@ and the type `lim Hom(F·, X)`.
 
 open CategoryTheory CategoryTheory.Limits
 
-universe v u w
+universe u' v u w
 
 namespace CategoryTheory.Limits
 
@@ -356,6 +356,56 @@ lemma Quot.ι_desc (j : J) (x : F.obj j) : Quot.desc c (Quot.ι F j x) = c.ι.ap
 @[simp]
 lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) : Quot.ι F j' (F.map f x) = Quot.ι F j x :=
   (Quot.sound ⟨f, rfl⟩).symm
+
+/--
+The obvious map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+def quotToQuotUlift (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'}) := by
+  refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) ?_
+  intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = F.map f x)⟩
+  dsimp
+  have eq : ULift.up y = (F ⋙ uliftFunctor.{u'}).map f (ULift.up x) := by
+    rw [eq]
+    dsimp
+  rw [eq, Quot.map_ι]
+
+@[simp]
+lemma quotToQuotUlift_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
+    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
+  dsimp [quotToQuotUlift, Quot.ι]
+
+/--
+The obvious map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
+-/
+def quotUliftToQuot (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot F :=
+  Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j x.down)
+  (fun ⟨_, x⟩ ⟨_, y⟩ ⟨f, (eq : y = ULift.up (F.map f x.down))⟩ ↦ by simp [eq, Quot.map_ι])
+
+@[simp]
+lemma quotUliftToQuot_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
+    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
+  dsimp [quotUliftToQuot, Quot.ι]
+
+/--
+The equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+@[simp]
+def quotQuotUliftEquiv (F : J ⥤ Type u) : Quot F ≃ Quot (F ⋙ uliftFunctor.{u'}) where
+  toFun := quotToQuotUlift F
+  invFun := quotUliftToQuot F
+  left_inv x := by
+    obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
+    rw [quotToQuotUlift_ι, quotUliftToQuot_ι]
+  right_inv x := by
+    obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
+    rw [quotUliftToQuot_ι, quotToQuotUlift_ι]
+    rfl
+
+lemma Quot.desc_quotQuotUliftEquiv {F : J ⥤ Type u} (c : Cocone F) :
+    Quot.desc (uliftFunctor.{u'}.mapCocone c) ∘ quotQuotUliftEquiv F = ULift.up ∘ Quot.desc c := by
+  ext x
+  obtain ⟨_, _, rfl⟩ := Quot.jointly_surjective x
+  dsimp
 
 /-- (implementation detail) A function `Quot F → α` induces a cocone on `F` as long as the universes
     work out. -/

@@ -244,7 +244,7 @@ variable (R A)
 protected def id : A →ₐ[R] A :=
   { RingHom.id A with commutes' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(AlgHom.id R A) = id :=
   rfl
 

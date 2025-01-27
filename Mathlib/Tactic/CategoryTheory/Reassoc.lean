@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Lean.Meta.Simp
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Util.AddRelatedDecl
 
 /-!

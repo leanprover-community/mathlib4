@@ -12,15 +12,14 @@ import Mathlib.Analysis.SpecialFunctions.Exponential
 /-!
 # Complex and real exponential
 
-In this file we prove that `Complex.exp` and `Real.exp` are infinitely smooth functions.
+In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 
 ## Tags
 
 exp, derivative
 -/
 
-assert_not_exists IsConformalMap
-assert_not_exists Conformal
+assert_not_exists IsConformalMap Conformal
 
 noncomputable section
 
@@ -187,7 +186,7 @@ open Complex in
 @[simp]
 theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
     (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
-  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
+  rw [iteratedDeriv_comp_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
 
 /-! ## `Real.exp` -/
 
@@ -351,4 +350,4 @@ open Real in
 @[simp]
 theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
     (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
-  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
+  rw [iteratedDeriv_comp_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]

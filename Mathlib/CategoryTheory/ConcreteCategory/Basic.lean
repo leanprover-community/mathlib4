@@ -34,8 +34,7 @@ related work.
 -/
 
 
-assert_not_exists CategoryTheory.CommSq
-assert_not_exists CategoryTheory.Adjunction
+assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction
 
 universe w w' v v' v'' u u' u''
 

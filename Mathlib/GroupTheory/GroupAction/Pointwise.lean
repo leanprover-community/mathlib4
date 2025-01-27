@@ -130,7 +130,7 @@ variable [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     (c : R) (s : Set M₁) (t : Set M₂)
 
 -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem image_smul_set :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
