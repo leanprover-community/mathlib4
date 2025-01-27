@@ -115,9 +115,9 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
     (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
     Tendsto d l (𝓝 0) := by
   rw [tendsto_norm_atTop_iff_cobounded] at hc
-  have : ∀ᶠ n in l, (c n)⁻¹ • (c n) • d n = d n := by
+  have : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n := by
     filter_upwards [hc.eventually_ne_cobounded 0] with n hn using inv_smul_smul₀ hn _
-  simpa only [← tendsto_congr' this, zero_smul] using tendsto_inv₀_cobounded.comp hc |>.smul hd
+  simpa only [zero_smul] using (tendsto_inv₀_cobounded.comp hc |>.smul hd).congr' this
 
 variable [ContinuousAdd E]
 
