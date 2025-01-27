@@ -62,23 +62,24 @@ Strict Segal, one can produce an `n`-simplex in `X`. -/
 @[simp]
 noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙
-      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _[n] :=
-  sx.spineToSimplex {
-    vertex := fun i ↦ s.π.app (.mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))) x
-    arrow := fun i ↦ s.π.app (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
-    arrow_src := fun i ↦ by
+      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _[n] := by
+  apply sx.spineToSimplex
+  exact Path.mk
+    (vertex := fun i ↦ s.π.app (.mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))) x)
+    (arrow := fun i ↦ s.π.app (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x)
+    (arrow_src := fun i ↦ by
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
         strArrowMk₂ ([0].const _ i.castSucc) :=
           StructuredArrow.homMk (δ 1).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
-      exact congr_fun (s.w φ) x
-    arrow_tgt := fun i ↦ by
+      exact congr_fun (s.w φ) x)
+    (arrow_tgt := fun i ↦ by
       dsimp
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
           strArrowMk₂ ([0].const _ i.succ) :=
         StructuredArrow.homMk (δ 0).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
-      exact congr_fun (s.w φ) x }
+      exact congr_fun (s.w φ) x)
 
 lemma fac_aux₁ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
@@ -87,7 +88,9 @@ lemma fac_aux₁ {n : ℕ}
       s.π.app (strArrowMk₂ (mkOfSucc ⟨i, hi⟩)) x := by
   dsimp [lift]
   rw [spineToSimplex_arrow]
-  rfl
+  induction n
+  · exact False.elim <| Nat.not_succ_le_zero i hi
+  · rfl
 
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
@@ -116,7 +119,7 @@ lemma fac_aux₂ {n : ℕ}
       refine congrArg (X.map ([1].const [0] 0).op) ?_
       unfold strArrowMk₂
       rw [lift, StrictSegal.spineToSimplex_vertex]
-      congr
+      induction n <;> congr
   | succ k hk =>
       intro i j hij hj hik
       let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩
@@ -184,11 +187,12 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     ext k
     · dsimp only [spineEquiv_coe_fn]
       have : op f = f.op := rfl
-      rw [this, spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
+      rw [this, spine_map_vertex, spine_spineToSimplex_apply, spine_vertex,
+        Path.mk_vertex]
       let α : strArrowMk₂ f ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
-    · rw [spineEquiv_coe_fn, spine_arrow, ← FunctorToTypes.map_comp_apply]
+    · simp only [spineEquiv_coe_fn, spine_arrow, ← FunctorToTypes.map_comp_apply]
       let α : strArrowMk₂ f ⟶ strArrowMk₂ (mkOfSucc k ≫ f) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans (congr_fun (s.w α).symm x)
@@ -198,8 +202,10 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     dsimp only [spineEquiv_coe_fn, lift]
     rw [spine_spineToSimplex_apply]
     ext i
-    · exact congr_fun (hm (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
-    · exact congr_fun (hm (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
+    · simp only [spine_vertex, Path.mk_vertex]
+      exact congr_fun (hm (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
+    · rw [spine_arrow, Path.mk_arrow]
+      exact congr_fun (hm (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
 
 /-- Since `StrictSegal.isPointwiseRightKanExtensionAt` proves that the appropriate
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension.-/

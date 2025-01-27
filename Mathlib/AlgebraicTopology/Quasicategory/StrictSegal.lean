@@ -71,9 +71,9 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     /- The interval spanning from `k` to `k + 2` is equivalently the spine
     of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
     have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 =
-        X.spine (σ₀.app _ triangle) := by
+        X.spine _ (σ₀.app _ triangle) := by
       ext m
-      dsimp only [spine_arrow]
+      simp only [spine_arrow]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
       apply congr_arg _ ∘ Subtype.ext
       dsimp only [stdSimplex, uliftFunctor, Functor.comp_obj, yoneda_obj_obj,
