@@ -196,7 +196,7 @@ abbrev opcycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).opcycles n
 
 /-- The natural projection of the `n`-chains `Cₙ(G, A)` onto the `n`-opcycles. -/
 noncomputable abbrev pOpcycles (n : ℕ) :
-    ModuleCat.of k ((inhomogeneousChains A).X n →₀ A) ⟶ opcycles A n :=
+    ModuleCat.of k ((inhomogeneousChains A).X n) ⟶ opcycles A n :=
   (inhomogeneousChains A).pOpcycles n
 
 /-- The map from the `i` opcycles to the `j`-chains induced by the differential `i, j`th
