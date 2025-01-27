@@ -7,6 +7,7 @@ import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 
