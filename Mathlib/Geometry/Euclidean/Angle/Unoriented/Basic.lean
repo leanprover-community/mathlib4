@@ -336,23 +336,23 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
 
 open Matrix
 
-/-- Returns the l2 norm of a vector. This function is necessary to make sure the l2 norm is taken
-for members of `Fin 3 → ℝ` instead of the sup norm-/
-noncomputable def l2Norm (v : EuclideanSpace ℝ (Fin 3)) : ℝ :=
-  ‖v‖
-
 /- The norm of the cross product of two real vectors equals the product of their individual norms
   times the sine of the angle between them. -/
-theorem crossProduct_norm_eq_norm_mul_norm_mul_sin (a b : EuclideanSpace ℝ (Fin 3)) :
-    l2Norm (a ×₃ b) = ‖a‖ * ‖b‖ * sin (angle a b) := by
-  have h_lhs_nonneg : 0 ≤ l2Norm (a ×₃ b) := norm_nonneg _
+theorem norm_withLpEquiv_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
+    ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (WithLp.equiv _ _ a ×₃ WithLp.equiv _ _ b)‖ =
+    ‖a‖ * ‖b‖ * sin (angle a b) := by
+  have h_lhs_nonneg :
+    0 ≤ ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (WithLp.equiv _ _ a ×₃ WithLp.equiv _ _ b)‖ :=
+    norm_nonneg _
   have h_rhs_nonneg : 0 ≤ ‖a‖ * ‖b‖ * Real.sin (angle a b) :=
     mul_nonneg (mul_nonneg (norm_nonneg _) (norm_nonneg _)) (sin_angle_nonneg)
   have h_norm_sq_eq_inner (v : EuclideanSpace ℝ (Fin 3)) : (‖v‖ ^ 2 = v ⬝ᵥ v) :=
     norm_sq_eq_inner (𝕜 := ℝ) v
+  have h_with_lp_equiv_cross: (WithLp.equiv 2 (Fin 3 → ℝ)).symm
+    (((WithLp.equiv 2 (Fin 3 → ℝ)) a) ×₃ ((WithLp.equiv 2 (Fin 3 → ℝ)) b)) = a ×₃ b := rfl
   have dotProduct_eq_inner (v w : EuclideanSpace ℝ (Fin 3)) : v ⬝ᵥ w = inner v w := rfl
-  simp_rw [← sq_eq_sq₀ h_lhs_nonneg h_rhs_nonneg, l2Norm, h_norm_sq_eq_inner, cross_dot_cross,
-      ← h_norm_sq_eq_inner, dotProduct_comm b a, dotProduct_eq_inner]
+  simp_rw [← sq_eq_sq₀ h_lhs_nonneg h_rhs_nonneg, h_norm_sq_eq_inner, h_with_lp_equiv_cross,
+  cross_dot_cross, ← h_norm_sq_eq_inner, dotProduct_comm b a, dotProduct_eq_inner]
   linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
     congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
 
