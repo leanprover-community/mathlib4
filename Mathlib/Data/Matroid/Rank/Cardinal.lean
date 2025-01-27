@@ -68,10 +68,11 @@ section Rank
 
 variable {κ : Cardinal}
 
-/-- The rank (size of a largest base) of a matroid `M` as a `Cardinal`. -/
+/-- The rank (supremum of the cardinalities of bases) of a matroid `M` as a `Cardinal`. -/
 noncomputable def cRank (M : Matroid α) := ⨆ (B : {B // M.Base B}), #B
 
-/-- The rank (size of a largest basis) of a set `X` in a matroid `M`, as a `Cardinal`. -/
+/-- The rank (supremum of the cardinalities of bases) of a set `X` in a matroid `M`,
+as a `Cardinal`. -/
 noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem Base.cardinalMk_le_cRank (hB : M.Base B) : #B ≤ M.cRank :=
