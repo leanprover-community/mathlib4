@@ -493,7 +493,7 @@ theorem restr_coe_symm (s : Set α) : ((e.restr s).symm : β → α) = e.symm :=
 theorem restr_source (s : Set α) : (e.restr s).source = e.source ∩ s :=
   rfl
 
-theorem restr_source_subset_source (s : Set α) : (e.restr s).source ⊆ e.source := inter_subset_left
+theorem source_restr_subset_source (s : Set α) : (e.restr s).source ⊆ e.source := inter_subset_left
 
 @[simp, mfld_simps]
 theorem restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻¹' s :=

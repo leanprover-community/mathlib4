@@ -16,17 +16,17 @@ This file develops the basic theory of equidecompositions.
 
 Let `G` be a group acting on a space `X`, and `A B : Set X`.
 
-* An *Equidecomposition* of `A` and `B` is typically defined as a finite partition of `A` together
-  with a finite list of elements of `G` of the same size such that applying each element to the
-  matching piece of the partition yields a partition of `B`.
+An *Equidecomposition* of `A` and `B` is typically defined as a finite partition of `A` together
+with a finite list of elements of `G` of the same size such that applying each element to the
+matching piece of the partition yields a partition of `B`.
 
-  This yields a bijection `f : A ≃ B` where, given `a : A`, `f a = γ • a` for `γ : G` the group
-  element for `a`'s piece of the partition. Reversing this is easy, and so we get an equivalent
-  (up to the choice of group elements) definition: an *Equidecomposition* of `A` and `B` is a
-  bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for all `a`.
+This yields a bijection `f : A ≃ B` where, given `a : A`, `f a = γ • a` for `γ : G` the group
+element for `a`'s piece of the partition. Reversing this is easy, and so we get an equivalent
+(up to the choice of group elements) definition: an *Equidecomposition* of `A` and `B` is a
+bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for all `a`.
 
-  We take this as our definition as it is easier to work with. It is implemented as an element
-  `PartialEquiv X X` with source `A` and target `B`.
+We take this as our definition as it is easier to work with. It is implemented as an element
+`PartialEquiv X X` with source `A` and target `B`.
 
 ## Implementation Notes
 
@@ -60,13 +60,13 @@ section SMul
 
 variable [SMul G X]
 
-/-- Let `G` act on a space `X` and `A : Set X`. We say `f : X → X` is a `DecompOn` `A`
+/-- Let `G` act on a space `X` and `A : Set X`. We say `f : X → X` is a decomposition on `A`
 as witnessed by some `S : Finset G` if for all `a ∈ A`, the value `f a` can be obtained
 by applying some element of `S` to `a` instead.
 
 More familiarly, the restriction of `f` to `A` is the result of partitioning `A` into finitely many
 pieces, then applying a single element of `G` to each piece. -/
-def DecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀ a ∈ A, ∃ g ∈ S, f a = g • a
+def IsDecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀ a ∈ A, ∃ g ∈ S, f a = g • a
 
 variable (X G)
 
@@ -108,7 +108,8 @@ theorem DecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : Decomp
   use γ, γ_mem
   rwa [← hf' ha]
 
-/-- The restriction of an equidecomposition is an equidecomposition. -/
+/-- The restriction of an equidecomposition as an equidecomposition. -/
+@[simps]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
   decomp' := ⟨f.elements,
@@ -182,7 +183,7 @@ theorem DecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
   rw [left_eq_inter.mpr h]
   exact hg.comp' hf
 
-/-- The composition of two equidecompositions is an equidecomposition.-/
+/-- The composition of two equidecompositions as an equidecomposition. -/
 @[trans]
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
@@ -207,7 +208,6 @@ theorem DecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
   rcases hf a ha with ⟨γ, γ_mem, hγ⟩
   use γ⁻¹, Finset.inv_mem_inv γ_mem
   rw [hγ, inv_smul_smul, ← hγ, h ha]
-
 
 /-- The inverse function of an equidecomposition is an equidecomposition.-/
 @[symm]
