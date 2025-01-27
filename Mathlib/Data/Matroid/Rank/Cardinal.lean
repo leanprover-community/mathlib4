@@ -46,8 +46,8 @@ they are well-defined for all matroids.
 However, for matroids that do not satisfy `InvariantCardinalRank`, they are badly behaved.
 For instance, in general `cRk` is not submodular,
 and its value may differ on a set `X` and the closure of `X`.
-We state and prove theorems without the instance whenever possible,
-which sometime makes their proofs longer than they would be without the instance.
+We state and prove theorems without `InvariantCardinalRank` whenever possible,
+which sometime makes their proofs longer than they would be with the instance.
 
 # TODO
 
@@ -248,25 +248,22 @@ theorem Basis.cardinalMk_eq_cRk (hIX : M.Basis I X) : #I = M.cRk X :=
 theorem cRk_closure_congr (hXY : M.closure X = M.closure Y) : M.cRk X = M.cRk Y := by
   rw [← cRk_closure, hXY, cRk_closure]
 
-@[simp] theorem cRk_union_closure_right_eq (M : Matroid α) [InvariantCardinalRank M] (X Y : Set α) :
-    M.cRk (X ∪ M.closure Y) = M.cRk (X ∪ Y) :=
+variable (M : Matroid α) [InvariantCardinalRank M] (e : α) (X Y : Set α)
+
+@[simp] theorem cRk_union_closure_right_eq : M.cRk (X ∪ M.closure Y) = M.cRk (X ∪ Y) :=
   M.cRk_closure_congr (M.closure_union_closure_right_eq _ _)
 
-@[simp] theorem cRk_union_closure_left_eq (M : Matroid α) [InvariantCardinalRank M] (X Y : Set α) :
-    M.cRk (M.closure X ∪ Y) = M.cRk (X ∪ Y) :=
+@[simp] theorem cRk_union_closure_left_eq : M.cRk (M.closure X ∪ Y) = M.cRk (X ∪ Y) :=
   M.cRk_closure_congr (M.closure_union_closure_left_eq _ _)
 
-@[simp] theorem cRk_insert_closure_eq (M : Matroid α) [InvariantCardinalRank M] (e : α)
-    (X : Set α) : M.cRk (insert e (M.closure X)) = M.cRk (insert e X) := by
+@[simp] theorem cRk_insert_closure_eq : M.cRk (insert e (M.closure X)) = M.cRk (insert e X) := by
   rw [← union_singleton, cRk_union_closure_left_eq, union_singleton]
 
-theorem cRk_union_closure_eq (M : Matroid α) [InvariantCardinalRank M] (X Y : Set α) :
-    M.cRk (M.closure X ∪ M.closure Y) = M.cRk (X ∪ Y) := by
+theorem cRk_union_closure_eq : M.cRk (M.closure X ∪ M.closure Y) = M.cRk (X ∪ Y) := by
   simp
 
 /-- The `Cardinal` rank function is submodular. -/
-theorem cRk_inter_add_cRk_union_le (M : Matroid α) [InvariantCardinalRank M] (X Y : Set α) :
-    M.cRk (X ∩ Y) + M.cRk (X ∪ Y) ≤ M.cRk X + M.cRk Y := by
+theorem cRk_inter_add_cRk_union_le : M.cRk (X ∩ Y) + M.cRk (X ∪ Y) ≤ M.cRk X + M.cRk Y := by
   obtain ⟨Ii, hIi⟩ := M.exists_basis' (X ∩ Y)
   obtain ⟨IX, hIX, hIX'⟩ :=
     hIi.indep.subset_basis'_of_subset (hIi.subset.trans inter_subset_left)
