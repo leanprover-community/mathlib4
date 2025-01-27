@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 /-!
 # Functoriality of group homology
@@ -159,7 +159,7 @@ lemma chainsMap_id_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
   refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
   simp [chainsMap_f, MonoidHom.coe_id]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K] {A : Rep k G} {B : Rep k H} {C : Rep k K}
     (f : G →* H) (g : H →* K) (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
@@ -168,7 +168,7 @@ lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
   refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
   simp [chainsMap_f, Function.comp_assoc]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     chainsMap (MonoidHom.id G) (φ ≫ ψ) =
       chainsMap (MonoidHom.id G) φ ≫ chainsMap (MonoidHom.id G) ψ :=
@@ -206,7 +206,7 @@ noncomputable abbrev cyclesMap (n : ℕ) :
     groupHomology.cycles A n ⟶ groupHomology.cycles B n :=
   HomologicalComplex.cyclesMap (chainsMap f φ) n
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem cyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     cyclesMap (MonoidHom.id G) (φ ≫ ψ) n =
       cyclesMap (MonoidHom.id G) φ n ≫ cyclesMap (MonoidHom.id G) ψ n := by
@@ -219,7 +219,7 @@ noncomputable abbrev map (n : ℕ) :
   groupHomology A n ⟶ groupHomology B n :=
 HomologicalComplex.homologyMap (chainsMap f φ) n
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
@@ -287,7 +287,7 @@ omit [DecidableEq G] in
 theorem H0Map_id : H0Map (MonoidHom.id G) (𝟙 A) = 𝟙 _ :=
   ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem H0Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
@@ -349,7 +349,7 @@ theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = �
     show Finsupp.mapRange.linearMap LinearMap.id _ = Finsupp.single _ _
     simp [MonoidHom.coe_id] }
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -361,7 +361,7 @@ theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
   { refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
     simp [shortComplexH1, Prod.map, fTwo, fOne] }
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH1 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH1 (MonoidHom.id G) φ ≫ mapShortComplexH1 (MonoidHom.id G) ψ :=
@@ -387,7 +387,7 @@ theorem H1Map_id : H1Map (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   simp only [H1Map, shortComplexH1, mapShortComplexH1_id, leftHomologyMap'_id]
   rfl
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem H1Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -395,7 +395,7 @@ theorem H1Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     H1Map (g.comp f) (φ ≫ (Action.res _ f).map ψ) = H1Map f φ ≫ H1Map g ψ := by
   simpa [H1Map, shortComplexH1, mapShortComplexH1_comp] using leftHomologyMap'_comp _ _ _ _ _
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H1Map (MonoidHom.id G) (φ ≫ ψ) = H1Map (MonoidHom.id G) φ ≫ H1Map (MonoidHom.id G) ψ :=
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
@@ -465,7 +465,7 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     show Finsupp.mapRange.linearMap LinearMap.id _ = Finsupp.single _ _
     simp [MonoidHom.coe_id] }
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -477,7 +477,7 @@ theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
   { refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => ?_
     simp [shortComplexH2, Prod.map, fThree, fTwo, fOne] }
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem mapShortComplexH2_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH2 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH2 (MonoidHom.id G) φ ≫ mapShortComplexH2 (MonoidHom.id G) ψ :=
@@ -503,7 +503,7 @@ theorem H2Map_id : H2Map (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   simp only [H2Map, shortComplexH2, mapShortComplexH2_id, leftHomologyMap'_id]
   rfl
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem H2Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -511,7 +511,7 @@ theorem H2Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     H2Map (g.comp f) (φ ≫ (Action.res _ f).map ψ) = H2Map f φ ≫ H2Map g ψ := by
   simpa [H2Map, shortComplexH2, mapShortComplexH2_comp] using leftHomologyMap'_comp _ _ _ _ _
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem H2Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H2Map (MonoidHom.id G) (φ ≫ ψ) = H2Map (MonoidHom.id G) φ ≫ H2Map (MonoidHom.id G) ψ :=
   H2Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
@@ -570,3 +570,5 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+end groupHomology
