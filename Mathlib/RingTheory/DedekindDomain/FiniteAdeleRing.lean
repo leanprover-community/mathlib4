@@ -180,6 +180,10 @@ theorem algebraMap_injective : Function.Injective (algebraMap (R_hat R K) (K_hat
   convert funext_iff.1 hxy v
   rw [SetLike.coe_eq_coe]
 
+@[simp]
+theorem mul_integer_apply (x : FiniteIntegralAdeles R K) (r : R) :
+    (x * algebraMap _ _ r) v = x v * algebraMap _ _ r := rfl
+
 end FiniteIntegralAdeles
 
 /-! ### The finite adèle ring of a Dedekind domain
@@ -460,6 +464,97 @@ instance : TopologicalSpace (FiniteAdeleRing R K) :=
 
 -- the point of `submodulesRingBasis` above: this now works
 example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
+
+local notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
+
+theorem algebraMap_apply (r : R_hat R K) :
+    algebraMap (R_hat R K) (FiniteAdeleRing R K) r = ↑r := rfl
+
+theorem algebraMap_injective :
+    Function.Injective (algebraMap (R_hat R K) (FiniteAdeleRing R K)) := by
+  intro x y hxy
+  funext v
+  simp [algebraMap_apply] at hxy
+  convert (funext_iff.1 <| FiniteAdeleRing.ext_iff.1 hxy) v
+  rw [← Subtype.val_inj]
+  rfl
+
+open AdicCompletion in
+/-- Let `x` be a finite adele and let `r` be a non-zero integral divisor. If, for a
+set of primes `v ∈ S` containing the factors of `r`, the valuation of `xᵥ` is less than the
+valuation of `r`, then `x` is an integral multiple of the global embedding of `r`. -/
+theorem dvd_of_valued_lt {x : FiniteAdeleRing R K} {r : nonZeroDivisors R}
+    {S : Set (HeightOneSpectrum R)}
+    (hS : ∀ v, v.asIdeal ∣ Ideal.span {r.val} → v ∈ S)
+    (hvS : ∀ v ∈ S, Valued.v (x v) < Valued.v (algebraMap _ (v.adicCompletion K) r.val))
+    (hvnS : ∀ v ∉ S, x v ∈ v.adicCompletionIntegers K) :
+    ∃ a : FiniteIntegralAdeles R K, a • (algebraMap _ _ r.val) = x := by
+  have (v : HeightOneSpectrum R) :
+      Valued.v (x v) ≤ Valued.v (algebraMap _ (v.adicCompletion K) r.val) := by
+    by_cases hv : v ∈ S
+    · exact le_of_lt <| hvS v hv
+    · have : Valued.v (algebraMap _ (v.adicCompletion K) r.val) = 1 := by
+        rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef]
+        exact le_antisymm (v.intValuation_le_one _)
+          (not_lt.1 <| (v.intValuation_lt_one_iff_dvd _).1.mt <| (hS v).mt hv)
+      exact this ▸ hvnS v hv
+  choose a ha using fun v =>
+    dvd_of_valued_le (this v) <| (map_ne_zero _).1 (valued_ne_zero K v r)
+  exact ⟨a, FiniteAdeleRing.ext _ _ <| funext (fun v => ha v)⟩
+
+/-- The embedding of the integral adeles into the finite adele ring preserves neighbourhoods. -/
+theorem algebraMap_image_mem_nhds
+    {U : Set (FiniteIntegralAdeles R K)} (h : U ∈ nhds 0) :
+    algebraMap (R_hat R K) (FiniteAdeleRing R K) '' U ∈ nhds 0 := by
+  simp only [(RingSubgroupsBasis.hasBasis_nhds_zero _).mem_iff, true_and,
+    Subtype.exists, exists_prop]
+  rw [nhds_pi, Filter.mem_pi] at h
+  obtain ⟨I, hI, V, hV, hVU⟩ := h
+  choose V hV using fun v => (mem_nhds_subtype _ _ _).1 (hV v)
+  choose γ hγ using fun v => Valued.mem_nhds_zero.1 <| (hV v).1
+  choose r hr using AdicCompletion.exists_nonZeroDivisor_finset_valued_lt K I hI (fun v => (γ v))
+  refine ⟨r, r.2, fun z hz => ?_⟩
+  simp only [Submodule.coe_toAddSubgroup, SetLike.mem_coe, Submodule.mem_span_singleton] at hz
+  apply (Set.image_subset_image_iff (algebraMap_injective R K)).2 hVU
+  obtain ⟨a, rfl⟩ := hz
+  refine ⟨a * (algebraMap _ _ r.1), fun v hv => (hV v).2 (hγ v ?_), rfl⟩
+  rw [FiniteIntegralAdeles.mul_integer_apply, Set.mem_setOf_eq, Submonoid.coe_mul, map_mul]
+  apply lt_of_le_of_lt <| mul_le_mul_right' ((v.mem_adicCompletionIntegers R K).1 (a v).2) _
+  rw [one_mul]
+  exact hr v hv
+
+open FiniteAdeleRing Ideal in
+/-- The pullback of a neighbourhood in the finite adele ring is a neighbourhood in the
+integral adeles. -/
+theorem mem_nhds_comap_algebraMap
+    {U : Set (FiniteIntegralAdeles R K)}
+    (h : U ∈ Filter.comap (algebraMap (R_hat R K) (FiniteAdeleRing R K)) (nhds 0)) :
+    U ∈ nhds 0 := by
+  rw [nhds_pi, Filter.mem_pi]
+  simp only [Filter.mem_comap, (RingSubgroupsBasis.hasBasis_nhds_zero _).mem_iff, true_and] at h
+  obtain ⟨t, ⟨r, hrt⟩, htU⟩ := h
+  let hI := (Ideal.span {r.val}).finite_factors
+    ((nonZeroDivisors.ne_zero <| (Ideal.span_singleton_nonZeroDivisors.2 r.2)))
+  refine ⟨_, hI, fun v => {y | Valued.v y.1 < Valued.v (algebraMap _ (v.adicCompletion K) r.1)}, ?_⟩
+  let γr (v : HeightOneSpectrum R) :=
+    (isUnit_iff_ne_zero.2 (AdicCompletion.valued_ne_zero K v r))
+  refine ⟨fun v => ?_, subset_trans (fun y hy => hrt ?_) htU⟩
+  · rw [mem_nhds_subtype]
+    simp only [Pi.zero_apply v, ZeroMemClass.coe_zero, Valued.mem_nhds_zero]
+    refine ⟨{x | Valued.v x < (γr v).unit}, ⟨(γr v).unit, subset_rfl⟩, ?_⟩
+    simp only [SetLike.coe_sort_coe, Set.preimage_setOf_eq, Set.setOf_subset_setOf]
+    exact fun _ h => h
+  · simp only [Submodule.coe_toAddSubgroup, SetLike.mem_coe, Submodule.mem_span_singleton]
+    exact dvd_of_valued_lt R K (fun _ hv => hv) hy (fun v _ => (y v).2)
+
+open Topology TopologicalRing in
+/-- The topologies of the integral adeles when viewed as a subspace of
+`ProdAdicCompletions R K` and as a subspace of the finite adele ring coincide. -/
+theorem algebraMap_inducing : IsInducing (algebraMap (R_hat R K) (FiniteAdeleRing R K)):= by
+  rw [TopologicalRing.isInducing_iff_nhds_zero]
+  refine Filter.ext (fun U => ⟨fun hU => ?_, mem_nhds_comap_algebraMap R K⟩)
+  exact ⟨algebraMap (R_hat R K) (FiniteAdeleRing R K) '' U, algebraMap_image_mem_nhds R K hU,
+    by rw [(algebraMap_injective R K).preimage_image]⟩
 
 end Topology
 

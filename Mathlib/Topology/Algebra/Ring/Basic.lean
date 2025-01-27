@@ -254,6 +254,12 @@ theorem TopologicalRing.of_nhds_zero
   have := TopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
   TopologicalRing.of_addGroup_of_nhds_zero hmul hmul_left hmul_right
 
+theorem TopologicalRing.isInducing_iff_nhds_zero {G H : Type*} [Ring G] [TopologicalSpace G]
+    [Ring H] [TopologicalRing G] [TopologicalSpace H] [TopologicalRing H] (f : G →+* H) :
+    IsInducing f ↔ nhds 0 = Filter.comap f (nhds 0) := by
+  rw [← AddMonoidHom.coe_coe, ← RingHom.toAddMonoidHom_eq_coe]
+  exact TopologicalAddGroup.isInducing_iff_nhds_zero
+
 end
 
 variable [TopologicalSpace α]

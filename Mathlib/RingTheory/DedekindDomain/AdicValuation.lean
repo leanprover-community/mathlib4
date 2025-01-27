@@ -583,28 +583,29 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     -- and now it's easy
     omega
 
-variable {R K}
+variable {R}
 
-open WithZero in
-theorem AdicCompletion.valued_intValuation_uniformizer_le {v : HeightOneSpectrum R} {π : R}
-    (hπ : v.intValuationDef π = ofAdd (-1 : ℤ)) :
-    Valued.v (algebraMap _ (v.adicCompletion K) π) ≤ 1 := by
-  rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ, ← coe_one,
-    coe_le_coe, ← ofAdd_zero, ofAdd_le]
-  linarith
+theorem AdicCompletion.valued_le_one (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 := by
+  rw [v.valuedAdicCompletion_eq_valuation]
+  exact v.valuation_le_one r
 
-open WithZero Multiplicative in
+theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivisors R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 := by
+  rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
+  exact v.intValuation_ne_zero' _
+
+open Filter WithZero Multiplicative in
 theorem AdicCompletion.tendsto_intValuation_uniformizer_pow (v : HeightOneSpectrum R) {π : R}
     (hπ : v.intValuationDef π = ofAdd (-1 : ℤ)) :
-    Filter.Tendsto (fun (n : ℕ) => algebraMap _ (v.adicCompletion K) π ^ n)
-      Filter.atTop (𝓝 0) := by
-  simp only [Filter.HasBasis.tendsto_right_iff (Valued.hasBasis_nhds_zero _ _),
-    Set.mem_setOf_eq, map_pow, Filter.eventually_atTop]
+    Tendsto (fun (n : ℕ) => algebraMap _ (v.adicCompletion K) π ^ n) atTop (𝓝 0) := by
+  simp only [HasBasis.tendsto_right_iff (Valued.hasBasis_nhds_zero _ _), Set.mem_setOf_eq,
+    map_pow, eventually_atTop]
   intro γ _
   by_cases hγ : γ.val ≤ 1
   · let m := - toAdd (unitsWithZeroEquiv γ) + 1 |>.toNat
     refine ⟨m, fun b hb => lt_of_le_of_lt
-      (pow_le_pow_of_le_one zero_le' (valued_intValuation_uniformizer_le hπ) hb) ?_⟩
+      (pow_le_pow_of_le_one zero_le' (valued_le_one K v π) hb) ?_⟩
     replace hγ : 0 ≤ -toAdd (unitsWithZeroEquiv γ) + 1 := by
       rw [units_val_eq_coe_unitsWithZeroEquiv, ← coe_one, coe_le_coe, ← toAdd_le, toAdd_one] at hγ
       linarith
@@ -615,10 +616,49 @@ theorem AdicCompletion.tendsto_intValuation_uniformizer_pow (v : HeightOneSpectr
     rw [← ofAdd_zero, ofAdd_lt]
     exact zero_lt_one
   · refine ⟨1, fun b hb => lt_of_le_of_lt
-      (pow_le_pow_of_le_one zero_le' (valued_intValuation_uniformizer_le hπ) hb) ?_⟩
+      (pow_le_pow_of_le_one zero_le' (valued_le_one K v π) hb) ?_⟩
     apply lt_trans _ (lt_of_not_le hγ)
     rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ, ← coe_one, pow_one,
       coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
     exact neg_one_lt_zero
+
+open Valued Filter in
+theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
+    ∃ (r : nonZeroDivisors R), Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ := by
+  let ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  have := tendsto_intValuation_uniformizer_pow K v hπ
+  let ⟨a, ha⟩ := eventually_atTop.1 <|
+    (HasBasis.tendsto_right_iff (hasBasis_nhds_zero _ _)).1 this γ trivial
+  use ⟨algebraMap _ _ π ^ a,
+    mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ <| v.intValuation_uniformizer_ne_zero hπ)⟩
+  convert ha _ le_rfl
+  simp
+
+open scoped Classical in
+/-- Given a finite set of primes `v` and an open ball in each, we can find a global integer that
+lies in each of the balls. -/
+theorem AdicCompletion.exists_nonZeroDivisor_finset_valued_lt
+    (S : Set (HeightOneSpectrum R))
+    (hS : Set.Finite S)
+    (γ : (v : HeightOneSpectrum R) → ℤₘ₀ˣ) :
+    ∃ (r : nonZeroDivisors R), ∀ v ∈ S, Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ v := by
+  choose s hs using fun v => AdicCompletion.exists_nonZeroDivisor_valued_lt K v (γ v)
+  refine ⟨hS.toFinset.prod s, fun v hv => ?_⟩
+  simp only [Submonoid.coe_finset_prod, map_prod]
+  rw [← hS.toFinset.prod_erase_mul _ (hS.mem_toFinset.2 hv)]
+  refine mul_lt_of_le_one_of_lt (Finset.prod_le_one' (fun _ _ => ?_)) (hs v)
+  rw [v.valuedAdicCompletion_eq_valuation]
+  exact v.valuation_le_one _
+
+variable {K v}
+
+/-- If `x ∈ Kᵥ` has valuation at most that of `y ∈ Kᵥ`, then `x` is an integral
+multiple of `y`. -/
+theorem AdicCompletion.dvd_of_valued_le
+    {x y : v.adicCompletion K} (h : Valued.v x ≤ Valued.v y) (hy : y ≠ 0):
+    ∃ r : v.adicCompletionIntegers K, r * y = x := by
+  have : Valued.v (x * y⁻¹) ≤ 1 := by
+    rwa [Valued.v.map_mul, map_inv₀, mul_inv_le_iff₀ (Valued.v.pos_iff.2 hy), one_mul]
+  exact ⟨⟨x * y⁻¹, this⟩, by rw [inv_mul_cancel_right₀ hy]⟩
 
 end IsDedekindDomain.HeightOneSpectrum
