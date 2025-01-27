@@ -143,18 +143,17 @@ variable {B : Type u₂} [Category.{u₂} B]
 variable {T : Type u₂} [Category.{u₂} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
+attribute [local instance] map_final in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
 lemma filtered [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
   haveI (a : A) : IsFiltered (Comma (fromPUnit (L.obj a)) R) :=
-    (Functor.final_iff_isFiltered_structuredArrow R).mp inferInstance (L.obj a)
+    R.final_iff_isFiltered_structuredArrow.mp inferInstance (L.obj a)
   haveI (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
-  have η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
+  let η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
     NatIso.ofComponents (fun _ => Iso.refl _)
-  haveI (a : A) := map_final (A := Discrete PUnit.{1}) (L := Functor.fromPUnit (L.obj a)) (R := R)
-    (G := 𝟭 _) (H := 𝟭 _) (η a) (Iso.refl _)
-  haveI := fun a =>  IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T)
-    (η a).hom (Iso.refl (𝟭 B ⋙ R)).inv)
+  haveI (a : A) := IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T) (η a).hom
+    ((Iso.refl (𝟭 B ⋙ R)).inv))
   haveI : RepresentablyCoflat (fst L R) :=
     ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
   apply isFiltered_of_representablyCoflat (fst L R)
