@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 
 /-! -/
@@ -11,9 +12,10 @@ universe u
 
 namespace groupHomology
 
-open CategoryTheory ShortComplex
+open CategoryTheory ShortComplex Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)} (hX : ShortExact X)
+variable {k G : Type u} [CommRing k] [Group G] [DecidableEq G]
+  {X : ShortComplex (Rep k G)} (hX : ShortExact X)
 
 include hX
 
@@ -141,7 +143,7 @@ theorem δ₁_apply (z : G × G →₀ X.X₃) (hz : dOne X.X₃ z = 0) (y : G �
         (inhomogeneousChains X.X₂).d 2 1 ((twoChainsLequiv X.X₂).symm y) :=
     have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₂⟩).w) y)
     Finsupp.ext fun _ => by simp_all [← hx, oneChainsLequiv]
-  have δ_2_1 := congr((isoH1 X.X₁).hom $(δ_succ_apply hX _ _ 0 rfl (by simp)
+  have δ_2_1 := congr((isoH1 X.X₁).hom $(δ_apply hX _ _ 0 rfl (by simp)
     ((twoChainsLequiv X.X₃).symm z)
     (by simpa [hz] using congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₃⟩).w) z))
     ((twoChainsLequiv X.X₂).symm y) (Finsupp.ext fun _ => by simp [← hy, twoChainsLequiv])

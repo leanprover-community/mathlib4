@@ -3,6 +3,7 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 
@@ -705,6 +706,14 @@ lemma isoZeroCycles_inv_comp_iCycles :
     (isoZeroCycles A).inv ≫ iCycles A 0 = (zeroChainsLequiv A).toModuleIso.inv := by
   simp [isoZeroCycles]
 
+lemma isoZeroCycles_inv_apply_eq_cyclesMk (x : A) :
+    (isoZeroCycles A).inv x = (inhomogeneousChains A).cyclesMk
+      ((zeroChainsLequiv A).symm x) _ rfl (by simp) := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousChains A).sc 0).iCycles using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.cyclesMk, i_cyclesMk] using
+    congr($(isoZeroCycles_inv_comp_iCycles A) x)
+
 end
 
 /-- The (exact) short complex `(G →₀ A) ⟶ A ⟶ A.ρ.coinvariants`. -/
@@ -848,6 +857,17 @@ lemma toCycles_comp_isoOneCycles_hom :
         ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
   simp [isoOneCycles]
 
+lemma isoOneCycles_inv_apply_eq_cyclesMk (x : oneCycles A) :
+    (isoOneCycles A).inv x =
+    (inhomogeneousChains A).cyclesMk ((oneChainsLequiv A).symm x.1) _ rfl (by
+      show ((inhomogeneousChains A).dFrom 1).hom _ = 0
+      have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq A⟩).w) x.1)
+      simp_all [(inhomogeneousChains A).dFrom_eq (i := 1) (j := 0) rfl, x.2]) := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousChains A).sc 1).iCycles using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.cyclesMk, i_cyclesMk] using
+    congr($(isoOneCycles_inv_comp_iCycles A) x)
+
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `oneCycles A ⧸ oneBoundaries A`, which is a simpler type. -/
 def isoH1 : groupHomology A 1 ≅ ModuleCat.of k (H1 A) :=
@@ -918,6 +938,17 @@ lemma toCycles_comp_isoTwoCycles_hom :
       (threeChainsLequiv A).toModuleIso.hom ≫
         ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCycles]
+
+lemma isoTwoCycles_inv_apply_eq_cyclesMk (x : twoCycles A) :
+    (isoTwoCycles A).inv x =
+    (inhomogeneousChains A).cyclesMk ((twoChainsLequiv A).symm x.1) _ rfl (by
+      show ((inhomogeneousChains A).dFrom 2).hom _ = 0
+      have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq A⟩).w) x.1)
+      simp_all [(inhomogeneousChains A).dFrom_eq (i := 2) (j := 1) rfl, x.2]) := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousChains A).sc 2).iCycles using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.cyclesMk, i_cyclesMk] using
+    congr($(isoTwoCycles_inv_comp_iCycles A) x)
 
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `twoCycles A ⧸ twoBoundaries A`, which is a simpler type. -/
