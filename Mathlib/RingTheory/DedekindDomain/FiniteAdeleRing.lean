@@ -556,6 +556,26 @@ theorem algebraMap_inducing : IsInducing (algebraMap (R_hat R K) (FiniteAdeleRin
   exact ⟨algebraMap (R_hat R K) (FiniteAdeleRing R K) '' U, algebraMap_image_mem_nhds R K hU,
     by rw [(algebraMap_injective R K).preimage_image]⟩
 
+/-- The image of the embedding from the finite integral adeles to the finite adele ring is
+a neighbourhood of zero. -/
+theorem algebraMap_range_mem_nhds :
+    Set.range (algebraMap (R_hat R K) (FiniteAdeleRing R K)) ∈ nhds 0 :=
+  Set.image_univ ▸ algebraMap_image_mem_nhds R K (Filter.univ_mem)
+
+theorem algebraMap_range_isCompact
+    [(v : HeightOneSpectrum R) → CompactSpace (v.adicCompletionIntegers K)] :
+    IsCompact (Set.range <| algebraMap (R_hat R K) (FiniteAdeleRing R K)) := by
+  rw [← Set.image_univ, ← (algebraMap_inducing R K).isCompact_iff]
+  haveI : CompactSpace (R_hat R K) := Pi.compactSpace
+  exact CompactSpace.isCompact_univ
+
+/-- The finite adele ring is locally compact if each `Oᵥ` is compact. -/
+theorem locallyCompactSpace
+    [(v : HeightOneSpectrum R) → CompactSpace (v.adicCompletionIntegers K)] :
+    LocallyCompactSpace (FiniteAdeleRing R K) :=
+  IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup (algebraMap_range_isCompact R K)
+    (algebraMap_range_mem_nhds R K)
+
 end Topology
 
 end FiniteAdeleRing
