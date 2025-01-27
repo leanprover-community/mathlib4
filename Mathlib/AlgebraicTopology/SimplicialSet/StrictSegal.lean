@@ -363,7 +363,7 @@ open SSet Truncated
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
 property describes the essential image of the nerve functor.-/
-noncomputable instance CategoryTheory.Nerve.strictSegal
+noncomputable def CategoryTheory.Nerve.strictSegal
   (C : Type u) [Category.{v} C] : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
