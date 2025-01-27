@@ -111,7 +111,7 @@ theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
 @[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
 
 theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
-    [Semiring α] (M : Matrix l m α) (f : m ≃ n):
+    [Semiring α] (M : Matrix l m α) (f : m ≃ n) :
     (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
