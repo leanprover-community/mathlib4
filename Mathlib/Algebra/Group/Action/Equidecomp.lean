@@ -192,7 +192,7 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
   use γ⁻¹, Finset.inv_mem_inv γ_mem
   rw [hγ, inv_smul_smul, ← hγ, h ha]
 
-/-- The inverse function of an equidecomposition is an equidecomposition.-/
+/-- The inverse function of an equidecomposition as an equidecomposition.-/
 @[symm]
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
