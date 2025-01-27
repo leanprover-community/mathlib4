@@ -570,3 +570,5 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+end groupHomology
