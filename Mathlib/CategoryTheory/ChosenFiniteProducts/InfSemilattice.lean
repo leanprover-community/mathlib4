@@ -34,6 +34,8 @@ is provided by the instance `monoidalOfChosenFiniteProducts`. -/
 noncomputable scoped instance monoidalCategory : MonoidalCategory C := by
   infer_instance
 
+/-- The symmetric monoidal structure on the preorder category of a
+meet-semilattice with a greatest element. -/
 noncomputable scoped instance symmetricCategory : SymmetricCategory C := by
   infer_instance
 
