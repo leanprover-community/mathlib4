@@ -116,7 +116,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     · exact isBigO_norm_left.mp <| (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.natCast_atTop
     · linarith
   · refine .mul_atTop_rpow_of_isBigO_rpow (-(s + 1).re) r _ ?_ ?_ (by rw [← neg_re, neg_add'])
-    · simpa only [add_re, one_re, neg_add'] using isBigO_deriv_ofReal_cpow_const_atTop _
+    · simpa [- neg_add_rev, neg_add'] using isBigO_deriv_ofReal_cpow_const_atTop _
     · exact (hO.comp_tendsto tendsto_nat_floor_atTop).trans <|
         isEquivalent_nat_floor.isBigO.rpow hr (eventually_ge_atTop 0)
 
