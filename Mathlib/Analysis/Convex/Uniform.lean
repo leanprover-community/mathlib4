@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 
 /-!
@@ -36,40 +35,6 @@ open Set Metric Filter Topology Uniformity
 
 open Convex Pointwise
 
-theorem tendsto_smul_sub_smul_zero_iff_tendsto_sub (𝕜 : Type*) {ι E : Type*} [NormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {𝓕 : Filter ι} {a b : ι → 𝕜}
-    {x y : ι → E} (hab : Tendsto (a - b) 𝓕 (𝓝 0)) (hau : 𝓕.IsBoundedUnder (· ≤ ·) (‖a ·‖))
-    (had : ∃ m > 0, ∀ᶠ x in 𝓕, m ≤ ‖a x‖) (hy : 𝓕.IsBoundedUnder (· ≤ ·) (‖y ·‖)) :
-    Tendsto (a • x - b • y) 𝓕 (𝓝 0) ↔ Tendsto (x - y) 𝓕 (𝓝 0) := by
-  rcases had with ⟨m, m_pos, hm⟩
-  have had' : 𝓕.IsBoundedUnder (· ≤ ·) (‖a⁻¹ ·‖) := by
-    refine Filter.isBoundedUnder_of_eventually_le (a := m⁻¹) ?_
-    filter_upwards [hm] with i hi
-    simpa only [Pi.inv_apply, norm_inv] using inv_anti₀ m_pos hi
-  have eq : a • x - b • y = a • (x - y) + (a - b) • y := by module
-  have lim : Tendsto ((a - b) • y) 𝓕 (𝓝 0) := hab.zero_smul_isBoundedUnder_le hy
-  have scale : Tendsto (a • (x - y)) 𝓕 (𝓝 0) ↔ Tendsto (x - y) 𝓕 (𝓝 0) := by
-    refine ⟨fun H ↦ (had'.smul_tendsto_zero H).congr' ?_, fun H ↦ hau.smul_tendsto_zero H⟩
-    filter_upwards [hm] with i hi
-    simp [ne_zero_of_norm_ne_zero (m_pos.trans_le hi).ne']
-  rw [eq, ← scale]
-  exact ⟨fun H ↦ by simpa using H.sub lim, fun H ↦ by simpa using H.add lim⟩
-
-theorem tendsto_smul_inv_norm_uniformity_iff_of_norm {ι E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace ℝ E] {𝓕 : Filter ι} {x y : ι → E}
-    {l : ℝ} (l_pos : 0 < l) (normx : Tendsto (‖x ·‖) 𝓕 (𝓝 l)) (normy : Tendsto (‖y ·‖) 𝓕 (𝓝 l)) :
-    Tendsto ((‖x ·‖⁻¹) • x - (‖y ·‖⁻¹) • y) 𝓕 (𝓝 0) ↔ Tendsto (x - y) 𝓕 (𝓝 0) := by
-  apply tendsto_smul_sub_smul_zero_iff_tendsto_sub ℝ
-  · simpa using (normx.inv₀ l_pos.ne').sub (normy.inv₀ l_pos.ne')
-  · exact normx.inv₀ l_pos.ne' |>.norm.isBoundedUnder_le
-  · rcases exists_gt l with ⟨M, hM⟩
-    use M⁻¹, inv_pos.mpr (l_pos.trans hM)
-    filter_upwards [eventually_le_of_tendsto_lt hM normx, eventually_gt_of_tendsto_gt l_pos normx]
-    exact fun i hiM hi0 ↦ (Real.norm_of_nonneg (inv_nonneg.mpr (norm_nonneg (x i)))).symm ▸
-      inv_anti₀ hi0 hiM
-  · exact normy.isBoundedUnder_le
-
--- This can probably stay here
 theorem norm_tendsto_of_norm_add_of_le {ι E : Type*} [SeminormedAddCommGroup E]
     {a : ℝ} {𝓕 : Filter ι} {f g : ι → E}
     (norm_f : ∀ᶠ i in 𝓕, ‖f i‖ ≤ a)
@@ -82,6 +47,16 @@ theorem norm_tendsto_of_norm_add_of_le {ι E : Type*} [SeminormedAddCommGroup E]
     exact norm_add_le _ _ |>.trans (add_le_add_left hgi _)
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ tendsto_const_nhds this norm_f
   simpa only [add_sub_cancel_right a a] using norm_add.sub_const a
+
+theorem normalize_tendsto_uniformity_of_norm_tendsto {ι E : Type*}
+    [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+    {a : ℝ} {𝓕 : Filter ι} {f : ι → E} (ha : a ≠ 0)
+    (norm_f : Tendsto (fun i ↦ ‖f i‖) 𝓕 (𝓝 a)) :
+    Tendsto (fun i ↦ (‖f i‖⁻¹ • f i, a⁻¹ • f i)) 𝓕 (𝓤 E) := by
+  simp_rw [uniformity_eq_comap_nhds_zero, tendsto_comap_iff, Function.comp_def, ← sub_smul]
+  have : Tendsto (fun i ↦ a⁻¹ - ‖f i‖⁻¹) 𝓕 (𝓝 0) := by
+    simpa using (norm_f.inv₀ ha).const_sub a⁻¹
+  exact this.zero_smul_isBoundedUnder_le norm_f.isBoundedUnder_le
 
 /-- A *uniformly convex space* is a real normed space where `‖x - y‖` tends to `0` when
 `‖x+y‖` tends to `2` and `‖x‖` and `‖y‖` tend to `1`. This is a strenghtening of strict convexity,
@@ -123,7 +98,7 @@ theorem tendsto_uniformity_of_norm_add {ι : Type*} [H : UniformConvexSpace E]
   rcases lt_trichotomy a 0 with (ha|rfl|ha)
   · have : 𝓕 = ⊥ := by
       rw [← eventually_false_iff_eq_bot]
-      filter_upwards [eventually_lt_of_tendsto_lt ha norm_f] using fun i ↦ norm_nonneg _ |>.not_lt
+      filter_upwards [norm_f.eventually_lt_const ha] using fun i ↦ norm_nonneg _ |>.not_lt
     exact this ▸ tendsto_bot
   · rw [← tendsto_zero_iff_norm_tendsto_zero] at norm_f norm_g
     exact le_trans (Filter.le_prod.mpr ⟨norm_f, norm_g⟩)
@@ -193,42 +168,28 @@ theorem uniformConvexSpace_iff_le_uniformity_of_norm_add_of_sphere
       𝓕 ≤ 𝓤 E := by
   refine ⟨fun H 𝓕 ↦ tendsto_uniformity_of_norm_add_of_sphere,
     fun H ↦ uniformConvexSpace_iff_le_uniformity_of_norm_add'.mpr
-      fun a' ha' 𝓕 norm_fst norm_snd norm_add ↦ ?_⟩
-  simp_rw [Metric.uniformity_eq_comap_nhds_zero, ← tendsto_iff_comap, dist_eq_norm_sub,
-    ← tendsto_zero_iff_norm_tendsto_zero]
-  refine tendsto_smul_inv_norm_uniformity_iff_of_norm ha' norm_fst norm_snd |>.mp ?_
-  have fact1 : ∀ᶠ xy in 𝓕, ‖(a * ‖xy.1‖⁻¹) • xy.1‖ = a ∧ ‖(a * ‖xy.2‖⁻¹) • xy.2‖ = a := by
-    filter_upwards [eventually_gt_of_tendsto_gt ha' norm_fst,
-      eventually_gt_of_tendsto_gt ha' norm_snd] with ⟨x, y⟩ hx hy
-    simp [norm_smul, hx.ne', hy.ne', a_pos.le]
-  have fact2 : Tendsto (fun xy ↦ ‖(a * ‖xy.1‖⁻¹) • xy.1 + (a * ‖xy.2‖⁻¹) • xy.2‖) 𝓕 (𝓝 (a+a)) := by
-    conv in 𝓝 _ => rw [← inv_mul_cancel_right₀ ha'.ne' a, ← mul_add]
-    refine norm_add.const_mul (a * a'⁻¹) |>.congr_dist ?_
-    have : ∀ p : E × E, dist (a * a'⁻¹ * ‖p.1 + p.2‖) ‖(a * ‖p.1‖⁻¹) • p.1 + (a * ‖p.2‖⁻¹) • p.2‖ ≤
-        a * (‖a'⁻¹ - ‖p.1‖⁻¹‖ * ‖p.1‖ + ‖a'⁻¹ - ‖p.2‖⁻¹‖ * ‖p.2‖) := fun p ↦ by
-      calc
-        _ = dist ‖(a * a'⁻¹) • (p.1 + p.2)‖ ‖(a * ‖p.1‖⁻¹) • p.1 + (a * ‖p.2‖⁻¹) • p.2‖ := by
-            rw [← norm_smul_of_nonneg (mul_nonneg a_pos.le (inv_pos.mpr ha').le)]
-        _ ≤ ‖(a * a'⁻¹) • (p.1 + p.2) - ((a * ‖p.1‖⁻¹) • p.1 + (a * ‖p.2‖⁻¹) • p.2)‖ :=
-            dist_norm_norm_le _ _
-        _ = a * ‖(a'⁻¹ - ‖p.1‖⁻¹) • p.1 + (a'⁻¹ - ‖p.2‖⁻¹) • p.2‖ := by
-            simp_rw [mul_smul, ← smul_add, ← smul_sub, norm_smul_of_nonneg a_pos.le, smul_add,
-              add_sub_add_comm, ← sub_smul]
-        _ ≤ a * (‖a'⁻¹ - ‖p.1‖⁻¹‖ * ‖p.1‖ + ‖a'⁻¹ - ‖p.2‖⁻¹‖ * ‖p.2‖) :=
-            mul_le_mul_of_nonneg_left (norm_add_le_of_le (by rw [norm_smul]) (by rw [norm_smul]))
-              a_pos.le
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_
-      (fun _ ↦ dist_nonneg) this
-    simpa using Tendsto.const_mul a <|
-      (tendsto_const_nhds (x := a'⁻¹) |>.sub <| norm_fst.inv₀ ha'.ne').norm.mul norm_fst |>.add <|
-      (tendsto_const_nhds (x := a'⁻¹) |>.sub <| norm_snd.inv₀ ha'.ne').norm.mul norm_snd
-  specialize H (map (Prod.map (fun x ↦ (a * ‖x‖⁻¹) • x) (fun x ↦ (a * ‖x‖⁻¹) • x)) 𝓕)
-    (eventually_map.mpr <| fact1.mono fun _ ↦ And.left)
-    (eventually_map.mpr <| fact1.mono fun _ ↦ And.right)
-    (tendsto_map'_iff.mpr fact2)
-  simp_rw [uniformity_eq_comap_nhds_zero_swapped, map_le_iff_le_comap, comap_comap,
-    ← tendsto_iff_comap] at H
-  simpa [smul_sub, smul_smul, a_pos.ne'] using H.const_smul (a⁻¹)
+      fun b b_pos 𝓕 norm_fst norm_snd norm_add ↦ ?_⟩
+  change Tendsto id 𝓕 (𝓤 E)
+  rw [← smul_tendsto_smul_iff₀ (inv_ne_zero b_pos.ne'), smul_uniformity₀ (inv_ne_zero b_pos.ne')]
+  have key_fst := normalize_tendsto_uniformity_of_norm_tendsto b_pos.ne' norm_fst
+  have key_snd := normalize_tendsto_uniformity_of_norm_tendsto b_pos.ne' norm_snd
+  have key_add : Tendsto (fun xy ↦ ‖‖xy.1‖⁻¹ • xy.1 + ‖xy.2‖⁻¹ • xy.2‖) 𝓕 (𝓝 (1 + 1)) := by
+    have := Tendsto.comp uniformContinuous_norm (key_fst.uniformity_add key_snd)
+    refine .congr_uniformity ?_ this.uniformity_symm
+    simpa [← smul_add, norm_smul_of_nonneg (inv_pos.mpr b_pos).le, mul_add, b_pos.ne'] using
+      norm_add.const_mul b⁻¹
+  refine key_fst.uniformity_symm.uniformity_trans ?_ |>.uniformity_trans key_snd
+  rw [← smul_tendsto_smul_iff₀ a_pos.ne', smul_uniformity₀ a_pos.ne']
+  refine H _ ?_ ?_ ?_
+  · rw [eventually_map]
+    filter_upwards [norm_fst.eventually_ne b_pos.ne'] with xy hx
+    simpa [norm_smul, hx] using a_pos.le
+  · rw [eventually_map]
+    filter_upwards [norm_snd.eventually_ne b_pos.ne'] with xy hy
+    simpa [norm_smul, hy] using a_pos.le
+  · rw [tendsto_map'_iff]
+    simpa [Function.comp_def, ← smul_add, norm_smul_of_nonneg a_pos.le, mul_add]
+      using key_add.const_mul a
 
 theorem uniformConvexSpace_iff_le_uniformity_of_norm_add_of_closedBall
     [NormedSpace ℝ E] {a : ℝ} (a_pos : a > 0) :
@@ -265,8 +226,8 @@ theorem uniformConvexSpace_iff_exists_forall_sphere_norm_add_le_add_sub [NormedS
     intro 𝓕 norm_fst norm_snd norm_add
     refine uniformity_basis_dist.ge_iff.mpr fun ε ε_pos ↦ ?_
     rcases H ε ε_pos with ⟨δ, δ_pos, hδ⟩
-    filter_upwards [norm_fst, norm_snd, eventually_gt_of_tendsto_gt
-      (show a + a - δ < a + a by linarith) norm_add] with p norm_p_fst norm_p_snd
+    filter_upwards [norm_fst, norm_snd, norm_add.eventually_const_lt
+      (show a + a - δ < a + a by linarith)] with p norm_p_fst norm_p_snd
     exact le_imp_le_iff_lt_imp_lt.mp <| dist_eq_norm p.1 p.2 ▸ hδ norm_p_fst norm_p_snd
 
 theorem uniformConvexSpace_iff_exists_forall_closedBall_norm_add_le_add_sub [NormedSpace ℝ E]
@@ -289,6 +250,9 @@ instance (priority := 100) UniformConvexSpace.toStrictConvexSpace [NormedSpace �
     let ⟨_, hδ, h⟩ := exists_forall_closedBall_norm_add_le_two_sub E (norm_sub_pos_iff.2 hxy)
     ((h hx.le hy.le le_rfl).trans_lt <| sub_lt_self _ hδ).ne
 
+/-- In a uniformly convex space over `ℝ` or `ℂ`, the only obstruction for weak convergence to imply
+convergence is the potential loss of mass. More explicitly, if `f i` converges to `x` weakly
+and `‖f i‖` converges to `‖x‖`, then `f i` converges to `x` in norm. -/
 theorem tendsto_iff_forall_dual_and_norm {𝕜 ι : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E]
     {𝓕 : Filter ι} {f : ι → E} {x : E} :
     Tendsto f 𝓕 (𝓝 x) ↔
