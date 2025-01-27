@@ -214,8 +214,7 @@ theorem fuzzy_zero_of_forall_exists_moveRight (i : G.RightMoves)
   rw [← neg_fuzzy_zero_iff]
   apply fuzzy_zero_of_forall_exists_moveLeft (-G) (toLeftMovesNeg i)
   rw [moveLeft_neg_toLeftMovesNeg]
-  simpa [← toLeftMovesNeg.forall_congr_right, ← toLeftMovesNeg.exists_congr_right]
-
+  simpa
 
 end Impartial
 
