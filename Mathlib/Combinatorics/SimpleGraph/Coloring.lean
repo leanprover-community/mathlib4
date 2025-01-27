@@ -451,4 +451,9 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
+@[simp]
+theorem colorable_of_cliqueFree_one (h : G.CliqueFree 1) : G.Colorable n :=by
+  have :=isEmpty_of_cliqueFree_one h
+  exact colorable_of_isEmpty G n
+
 end SimpleGraph

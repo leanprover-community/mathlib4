@@ -367,6 +367,10 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
     conv at hφ => enter [a, b]; rw [G.adj_replaceVertex_iff_of_ne _ (mt a) (mt b)]
     exact hφ
 
+lemma isEmpty_of_cliqueFree_one (h : G.CliqueFree 1) : IsEmpty α:=by
+  simp only [CliqueFree, isNClique_one, not_exists, forall_eq_apply_imp_iff] at h
+  exact { false := h }
+
 @[simp]
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   classical
