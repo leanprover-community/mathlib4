@@ -45,7 +45,7 @@ theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι �
     polar_smul_left, polar_smul_right, map_smul]
 
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
+    Q x = (bm.repr x).sum (fun i r => (r * r) • Q (bm i)) +
     ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
       Sym2.lift
         ⟨fun i j => bm.repr x i • bm.repr x j • polar Q (bm i) (bm j), fun i j => by
