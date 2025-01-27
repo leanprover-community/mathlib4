@@ -33,7 +33,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   intro j hj
   apply sx.spineInjective
   ext k
-  dsimp only [spineEquiv_coe_fn]
+  dsimp only [spineEquiv, Equiv.coe_fn_mk]
   slice_rhs 1 2 => rw [spine_arrow]
   rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
   let ksucc := k.succ.castSucc
@@ -82,14 +82,8 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       | zero => contradiction
       | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
     rw [spine_δ_arrow_eq sx _ heq, hi]
-    dsimp only [Truncated.StrictSegal.spineToDiagonal, Function.comp_apply]
-    rw [← truncation_spine X (n + 2) 2, (sx _).spineToSimplex_spine_apply 2]
-    dsimp only [truncation, SimplicialObject.truncation, inclusion,
-      whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
-      fullSubcategoryInclusion.obj, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op, fullSubcategoryInclusion.map]
-    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality,
-      types_comp_apply]
+    simp only [spineToDiagonal, diagonal, spineToSimplex_spine_apply]
+    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
     apply congr_arg
     dsimp only [horn, stdSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, horn.face_coe,
@@ -99,8 +93,8 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     | zero => contradiction
     | succ _ =>
       fin_cases z <;>
-      · dsimp only [stdSimplex.objEquiv, yoneda_obj_map, Quiver.Hom.unop_op,
-          Equiv.ulift_symm_down]
+      · simp only [stdSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
+          Quiver.Hom.unop_op, Equiv.ulift_symm_down]
         rw [mkOfSucc_δ_eq heq]
         rfl
 
