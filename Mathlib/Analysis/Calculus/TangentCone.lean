@@ -114,19 +114,10 @@ the sequence `d` tends to 0 at infinity. -/
 theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
     Tendsto d l (𝓝 0) := by
-  have hc'' : Tendsto (fun n => c n) l (Bornology.cobounded _) := by
-    rwa [tendsto_norm_atTop_iff_cobounded] at hc
-  have hc' : Tendsto (fun n => (c n)⁻¹) l (𝓝[≠] 0) :=
-    Filter.tendsto_inv₀_cobounded'.comp hc''
-  replace hc : Tendsto (fun n => (c n)⁻¹) l (𝓝 0) := hc'.mono_right nhdsWithin_le_nhds
-  have B := hc.smul hd
-  rw [zero_smul] at B
-  refine B.congr' ?_
-  refine .inv_smul_smul_cancel ?_
-  refine hc''.mono_right ?_
-  simp only [le_principal_iff]
-  rw [← Bornology.isCobounded_def]
-  simp
+  rw [tendsto_norm_atTop_iff_cobounded] at hc
+  have : ∀ᶠ n in l, (c n)⁻¹ • (c n) • d n = d n := by
+    filter_upwards [hc.eventually_ne_cobounded 0] with n hn using inv_smul_smul₀ hn _
+  simpa only [← tendsto_congr' this, zero_smul] using tendsto_inv₀_cobounded.comp hc |>.smul hd
 
 variable [ContinuousAdd E]
 
