@@ -55,8 +55,6 @@ open Category Limits MonoidalCategory Distributive ChosenFiniteProducts
 
 variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoproducts C]
 
-attribute [local instance] monoidalOfChosenFiniteProducts
-
 /-- A category `C` with finite products is cartesian distributive if is monoidal distributive
 with respect to the cartesian monoidal structure. -/
 abbrev CartesianDistributive :=
