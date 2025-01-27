@@ -174,7 +174,7 @@ lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (
     Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
   constructor
   · intro hf i hi
-    have :=  hf hi
+    have := hf hi
     simp [Fin.ext_iff] at this
   · intro hf
     refine ((strictMono_iff_lt_succ (f := f)).2 (fun i ↦ ?_)).injective
