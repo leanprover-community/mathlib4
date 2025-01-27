@@ -3,15 +3,13 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 
 /-! -/
 
 universe u
 
-section
-
-namespace groupCohomology
+namespace groupHomology
 
 open CategoryTheory ShortComplex
 
@@ -94,15 +92,15 @@ noncomputable def δ₀ :
 theorem δ₀_apply (z : G →₀ X.X₃) (hz : dZero X.X₃ z = 0) (y : G →₀ X.X₂)
     (hy : mapRange.linearMap X.g.hom.hom y = z) (x : X.X₁) (hx : X.f.hom x = dZero X.X₂ y) :
     δ₀ hX (H1π X.X₃ ⟨z, hz⟩) = H0π X.X₁ x := by
-  have hxy : mapRange.linearMap X.f.hom.hom ((zeroChainsLEquiv X.X₁).symm x) =
-      (inhomogeneousChains X.X₂).d 1 0 ((oneChainsLEquiv X.X₂).symm y) := by
+  have hxy : mapRange.linearMap X.f.hom.hom ((zeroChainsLequiv X.X₁).symm x) =
+      (inhomogeneousChains X.X₂).d 1 0 ((oneChainsLequiv X.X₂).symm y) := by
     have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq X.X₂⟩).w) y)
-    simp_all [← hx, zeroChainsLEquiv, single_eq_same]
+    simp_all [← hx, zeroChainsLequiv, single_eq_same]
   have δ_1_0 := congr((isoH0 X.X₁).hom $((chainsMap_shortExact hX).δ_apply 1 0 rfl
-    ((oneChainsLEquiv X.X₃).symm z)
+    ((oneChainsLequiv X.X₃).symm z)
     (by simpa [hz] using congr($((CommSq.horiz_inv ⟨dZero_comp_eq X.X₃⟩).w) z))
-    ((oneChainsLEquiv X.X₂).symm y) (Finsupp.ext fun _ => by simp [← hy, oneChainsLEquiv])
-    ((zeroChainsLEquiv X.X₁).symm x) (by simpa using hxy) 0 (by simp)))
+    ((oneChainsLequiv X.X₂).symm y) (Finsupp.ext fun _ => by simp [← hy, oneChainsLequiv])
+    ((zeroChainsLequiv X.X₁).symm x) (by simpa using hxy) 0 (by simp)))
   · convert δ_1_0
     · show (H1π X.X₃ ≫ δ₀ hX) ⟨z, hz⟩ = _
       simp [δ₀, ← Category.assoc, (CommSq.vert_inv ⟨groupHomologyπ_comp_isoH1_hom X.X₃⟩).w,
@@ -131,23 +129,23 @@ theorem δ₁_apply_aux (y : G × G →₀ X.X₂) (x : G →₀ X.X₁)
     ((oneChainsLequiv X.X₁).symm x)
   have h2 := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h3 := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
-  have h4 := congr($((CommSq.vert_inv (h := (oneChainsLEquiv X.X₂).toModuleIso)
-    ⟨(chainsMap_f_1_comp_oneChainsLEquiv (MonoidHom.id G) X.f)⟩).w) x)
+  have h4 := congr($((CommSq.vert_inv (h := (oneChainsLequiv X.X₂).toModuleIso)
+    ⟨(chainsMap_f_1_comp_oneChainsLequiv (MonoidHom.id G) X.f)⟩).w) x)
   simp_all [shortComplexH1, fOne, MonoidHom.coe_id]
 
 theorem δ₁_apply (z : G × G →₀ X.X₃) (hz : dOne X.X₃ z = 0) (y : G × G →₀ X.X₂)
     (hy : mapRange.linearMap X.g.hom.hom y = z) (x : G →₀ X.X₁)
     (hx : mapRange.linearMap X.f.hom.hom x = dOne X.X₂ y) :
     δ₁ hX (H2π X.X₃ ⟨z, hz⟩) = H1π X.X₁ ⟨x, δ₁_apply_aux hX y x hx⟩ := by
-  have hxy : Finsupp.mapRange.linearMap X.f.hom.hom ((oneChainsLEquiv X.X₁).symm x) =
-        (inhomogeneousChains X.X₂).d 2 1 ((twoChainsLEquiv X.X₂).symm y) :=
+  have hxy : Finsupp.mapRange.linearMap X.f.hom.hom ((oneChainsLequiv X.X₁).symm x) =
+        (inhomogeneousChains X.X₂).d 2 1 ((twoChainsLequiv X.X₂).symm y) :=
     have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₂⟩).w) y)
-    Finsupp.ext fun _ => by simp_all [← hx, oneChainsLEquiv]
+    Finsupp.ext fun _ => by simp_all [← hx, oneChainsLequiv]
   have δ_2_1 := congr((isoH1 X.X₁).hom $(δ_succ_apply hX _ _ 0 rfl (by simp)
-    ((twoChainsLEquiv X.X₃).symm z)
+    ((twoChainsLequiv X.X₃).symm z)
     (by simpa [hz] using congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₃⟩).w) z))
-    ((twoChainsLEquiv X.X₂).symm y) (Finsupp.ext fun _ => by simp [← hy, twoChainsLEquiv])
-    ((oneChainsLEquiv X.X₁).symm x) hxy))
+    ((twoChainsLequiv X.X₂).symm y) (Finsupp.ext fun _ => by simp [← hy, twoChainsLequiv])
+    ((oneChainsLequiv X.X₁).symm x) hxy))
   · convert δ_2_1
     · show (H2π X.X₃ ≫ δ₁ hX) ⟨z, hz⟩ = _
       rw [moduleCatCyclesIso_inv_apply]
