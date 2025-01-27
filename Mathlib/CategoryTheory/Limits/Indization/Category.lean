@@ -219,6 +219,7 @@ instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
 
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)` as
 the colimit of `(P.φ, P.ψ)` in `Ind C` -/
+-- @[simps!]
 noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompIndYoneda
     {A B : Ind C} {f g : A ⟶ B}
     (P : IndParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
@@ -235,5 +236,16 @@ instance [HasColimitsOfShape WalkingParallelPair C] :
     (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
   exact hasColimitOfIso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
+
+theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
+    ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I) (F G : I ⥤ C) (φ : F ⟶ G),
+      Nonempty (Arrow.mk f ≅ Arrow.mk ((Ind.lim _).map φ)) := by
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.2 B.2
+    (Ind.inclusion _ |>.map f) (Ind.inclusion _ |>.map f)
+  refine ⟨P.I, inferInstance, inferInstance, P.F₁, P.F₂, P.φ, ⟨Arrow.isoMk ?_ ?_ ?_⟩⟩
+  · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.zero
+  · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
+  · simpa using
+      (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
 
 end CategoryTheory

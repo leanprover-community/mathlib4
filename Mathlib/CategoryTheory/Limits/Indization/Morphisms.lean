@@ -7,9 +7,9 @@ import Mathlib.CategoryTheory.Comma.Final
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 /-!
-# Morphisms of ind-objects
+# Parallel pairs of natural transformations between ind-objects
 
-We
+We show that if `A` and `B` are ind-objects and `f` and `g` are maps
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -156,6 +156,7 @@ namespace IndParallelPairPresentation
 
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)`
 as the colimit of `(P.φ, P.ψ)` in `Cᵒᵖ ⥤ Type v`. -/
+@[simps!]
 noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B}
     (P : IndParallelPairPresentation f g) :
     parallelPair f g ≅ parallelPair P.φ P.ψ ⋙ (whiskeringRight _ _ _).obj yoneda ⋙ colim :=
