@@ -181,3 +181,21 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
       MonoidHom.mul_apply, mul_apply]
 
 end MulEquiv
+
+-- manually additivized to fix variable names
+@[elab_as_elim]
+lemma Pi.single_induction {ι M : Type*} [Finite ι] [DecidableEq ι] [AddCommMonoid M]
+    (p : (ι → M) → Prop) (f : ι → M) (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
+    (single : ∀ i m, p (Pi.single i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_sum_single f]
+  exact Finset.sum_induction _ _ add zero (by simp [single])
+
+set_option linter.existingAttributeWarning false in
+@[elab_as_elim, to_additive existing]
+lemma Pi.mulSingle_induction {ι M : Type*} [Finite ι] [DecidableEq ι] [CommMonoid M]
+    (p : (ι → M) → Prop) (f : ι → M) (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
+    (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_prod_mulSingle f]
+  exact Finset.prod_induction _ _ mul one (by simp [mulSingle])
