@@ -750,6 +750,17 @@ lemma isoZeroCocycles_inv_comp_iCocycles :
       ModuleCat.ofHom A.ρ.invariants.subtype ≫ (zeroCochainsLequiv A).toModuleIso.inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_subtype]
 
+lemma isoZeroCocycles_inv_apply_eq_cyclesMk (x : A.ρ.invariants) :
+    (isoZeroCocycles A).inv x =
+    (inhomogeneousCochains A).cyclesMk ((zeroCochainsLequiv A).symm x) _ rfl (by
+      show ((inhomogeneousCochains A).dFrom 0).hom _ = 0
+      have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq A⟩).w) x)
+      simp_all [this, (inhomogeneousCochains A).dFrom_eq (i := 0) (j := 1) rfl,
+        (dZero_eq_zero_iff A x).2 x.2]) := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 0) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using congr($(isoZeroCocycles_inv_comp_iCocycles A) x)
+
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
 def isoH0 : groupCohomology A 0 ≅ ModuleCat.of k (H0 A) :=
@@ -826,6 +837,16 @@ lemma toCocycles_comp_isoOneCocycles_hom :
       (zeroCochainsLequiv A).toModuleIso.hom ≫
         ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
   simp [isoOneCocycles]
+
+lemma isoOneCocycles_inv_apply_eq_cyclesMk (x : oneCocycles A) :
+    (isoOneCocycles A).inv x =
+    (inhomogeneousCochains A).cyclesMk ((oneCochainsLequiv A).symm x) _ rfl (by
+      show ((inhomogeneousCochains A).dFrom 1).hom _ = 0
+      have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq A⟩).w) x)
+      simp_all [this, (inhomogeneousCochains A).dFrom_eq (i := 1) (j := 2) rfl]) := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using congr($(isoOneCocycles_inv_comp_iCocycles A) x)
 
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
@@ -913,6 +934,16 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
       (oneCochainsLequiv A).toModuleIso.hom ≫
         ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCocycles]
+
+lemma isoTwoCocycles_inv_apply_eq_cyclesMk (x : twoCocycles A) :
+    (isoTwoCocycles A).inv x =
+    (inhomogeneousCochains A).cyclesMk ((twoCochainsLequiv A).symm x) _ rfl (by
+      show ((inhomogeneousCochains A).dFrom 2).hom _ = 0
+      have := congr($((CommSq.horiz_inv ⟨dTwo_comp_eq A⟩).w) x)
+      simp_all [this, (inhomogeneousCochains A).dFrom_eq (i := 2) (j := 3) rfl]) := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using congr($(isoTwoCocycles_inv_comp_iCocycles A) x)
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
