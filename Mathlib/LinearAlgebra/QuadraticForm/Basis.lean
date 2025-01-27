@@ -135,7 +135,7 @@ lemma toBilin_symm_eq_polarBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   simp only [toQuadraticMap_toBilin]
   symm
   calc Q (a + b) - Q a - Q b = (Q.toBilin bm).toQuadraticMap (a + b) - Q a - Q b := by
-        rw [ toQuadraticMap_toBilin Q]
+        rw [toQuadraticMap_toBilin Q]
   _ = (((Q.toBilin bm) a a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
     rw [LinearMap.BilinMap.toQuadraticMap_apply, map_add, map_add, LinearMap.add_apply]
   _ = (((Q.toBilin bm).toQuadraticMap a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a
