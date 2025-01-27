@@ -71,7 +71,6 @@ variable {F : J ⥤ C}
 section Limit
 
 /-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed; linter not ported yet
 structure LimitCone (F : J ⥤ C) where
   /-- The cone itself -/
   cone : Cone F
@@ -583,7 +582,6 @@ section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
     colimit. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed; linter not ported yet
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F
@@ -985,7 +983,7 @@ section
 -- attribute [local simp] colimMap -- Porting note: errors out colim.map_id and map_comp now
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
-@[simps] -- Porting note: simps on all fields now
+@[simps]
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α

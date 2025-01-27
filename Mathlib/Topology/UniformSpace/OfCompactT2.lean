@@ -79,8 +79,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       · simp only [W, mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
-    have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in
-      -- Porting note: was `by simpa only using mem_lift' W_in`
+    have : W ○ W ∈ F := by simpa only using mem_lift' W_in
     -- And V₁ ×ˢ V₂ ∈ 𝓝 (x, y)
     have hV₁₂ : V₁ ×ˢ V₂ ∈ 𝓝 (x, y) := prod_mem_nhds V₁_in V₂_in
     -- But (x, y) is also a cluster point of F so (V₁ ×ˢ V₂) ∩ (W ○ W) ≠ ∅

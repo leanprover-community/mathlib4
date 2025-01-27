@@ -297,7 +297,7 @@ theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
     _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
       filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const hx hc]
     _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
-      (Asymptotics.IsTheta.of_norm_eventuallyEq (Eq.eventuallyEq rfl)).const_mul_left hc
+      (Asymptotics.IsTheta.of_norm_eventuallyEq EventuallyEq.rfl).const_mul_left hc
     _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
       rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
@@ -622,6 +622,13 @@ theorem derivWithin_rpow_const (hf : DifferentiableWithinAt ℝ f s x) (hx : f x
 theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 ≤ p) :
     deriv (fun x => f x ^ p) x = deriv f x * p * f x ^ (p - 1) :=
   (hf.hasDerivAt.rpow_const hx).deriv
+
+theorem deriv_norm_ofReal_cpow (c : ℂ) {t : ℝ} (ht : 0 < t) :
+    (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ c‖) t = c.re * t ^ (c.re - 1) := by
+  rw [EventuallyEq.deriv_eq (f := fun x ↦ x ^ c.re)]
+  · rw [Real.deriv_rpow_const (Or.inl ht.ne')]
+  · filter_upwards [eventually_gt_nhds ht] with x hx
+    rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx]
 
 lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
     deriv (fun (x : ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
