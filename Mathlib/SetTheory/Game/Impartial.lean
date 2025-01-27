@@ -104,7 +104,7 @@ variable (G : PGame) [Impartial G]
 
 theorem nonpos : ¬0 < G := by
   apply (lt_asymm · ?_)
-  rwa [← neg_lt_neg_iff, neg_zero, lt_congr_right (Equiv.symm (neg_equiv_self G))]
+  rwa [← neg_lt_neg_iff, neg_zero, ← lt_congr_right (neg_equiv_self G)]
 
 theorem nonneg : ¬G < 0 := by
   simpa using nonpos (-G)
