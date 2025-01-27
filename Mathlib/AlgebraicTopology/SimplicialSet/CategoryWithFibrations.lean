@@ -76,6 +76,10 @@ lemma fibration_iff : Fibration f ↔ J.rlp f := by
   rw [HomotopicalAlgebra.fibration_iff]
   rfl
 
+instance [Cofibration f] : Mono f := by rwa [← cofibration_iff]
+
+lemma cofibration_of_mono [Mono f] : Cofibration f := by rwa [cofibration_iff]
+
 instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
     HasLiftingProperty (subcomplexHorn (n + 1) i).ι f := by
   rw [fibration_iff] at hf
