@@ -57,7 +57,7 @@ end chosenProd
 end
 
 /-- Chosen finite products for the preorder category of a meet-semilattice with a greatest element-/
-noncomputable instance : ChosenFiniteProducts C where
+noncomputable scoped instance : ChosenFiniteProducts C where
   terminal := ⟨_, chosenTerminalIsTerminal C⟩
   product X Y := ⟨_, chosenProd.isLimit X Y⟩
 
