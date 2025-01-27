@@ -51,31 +51,19 @@ namespace IsFredholm
 
 -- TODO: avoid the erw's here!
 /-- If `T` is Fredholm, so is any scalar multiple `c T` for `c ≠ 0`. -/
-lemma smul {T : X ≃L[𝕜] Y} (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) {c : 𝕜} (hc : c ≠ 0) :
+lemma smul (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) {c : 𝕜} (hc : c ≠ 0) :
     IsFredholm 𝕜 (X := X) (Y := Y) (c • T) := by
   constructor
   · erw [LinearMap.ker_smul T.toLinearMap _ hc]
     exact hT.1
-  · have : LinearMap.range (c • T.toLinearMap) = LinearMap.range T.toLinearMap := by
-      -- TODO: missing lemma. loogle doesn't find anything with range and smul
-      ext x
-      refine ⟨fun ⟨y, hy⟩ ↦ ⟨c • y, by simpa⟩, fun ⟨y, hy⟩ ↦ ?_⟩
-      rw [← hy]
-      use c⁻¹ • y
-      simp only [LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, map_smul,
-        LinearMap.smul_apply, LinearEquiv.coe_coe]
-      match_scalars
-      simpa only [mul_one] using inv_mul_cancel₀ hc
-    erw [this]
+  · erw [T.range_smul _ hc]
     exact hT.2
 
-/-- if `T` is Fredholm and `c ≠ 0`, then `c T` has the same Fredholm index as `T`. -/
-lemma index_smul {T : X ≃L[𝕜] Y} (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) {c : 𝕜} (hc : c ≠ 0) :
+/-- If `T` is Fredholm and `c ≠ 0`, then `c • T` has the same Fredholm index as `T`. -/
+lemma index_smul (_hT : IsFredholm 𝕜 (X := X) (Y := Y) T) {c : 𝕜} (hc : c ≠ 0) :
     index 𝕜 X Y (c • T) = index 𝕜 X Y T := by
-  -- same sorry as above, TODO extract!
-  have : LinearMap.range (c • T.toLinearMap) = LinearMap.range T.toLinearMap := sorry
   simp only [index]
-  erw [LinearMap.ker_smul T.toLinearMap _ hc, this]
+  erw [LinearMap.ker_smul T.toLinearMap _ hc, T.range_smul _ hc]
   norm_cast
 
 /-- A continuous linear equivalence is Fredholm, with Fredholm index 0. -/
