@@ -34,7 +34,7 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
   exact congrArg (HAdd.hAdd _) rfl
 
 open Finsupp in
-theorem map_finsupp_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
+theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
     ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
       Sym2.lift
