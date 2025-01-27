@@ -39,7 +39,7 @@ Return `true` iff there was an error.
 def checkInitImports : IO Bool := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
-  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries
+  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries |>.erase `Std
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
