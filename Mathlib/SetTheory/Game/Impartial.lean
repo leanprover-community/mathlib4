@@ -59,7 +59,7 @@ theorem neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
 
 @[simp]
 theorem mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Game) = ⟦G⟧ :=
-  game_eq (Equiv.symm (neg_equiv_self G))
+  game_eq (neg_equiv_self G).symm
 
 instance moveLeft_impartial {G : PGame} [h : G.Impartial] (i : G.LeftMoves) :
     (G.moveLeft i).Impartial :=
@@ -71,14 +71,14 @@ instance moveRight_impartial {G : PGame} [h : G.Impartial] (j : G.RightMoves) :
 
 theorem impartial_congr {G H : PGame} (e : G ≡r H) [G.Impartial] : H.Impartial :=
   impartial_def.2
-    ⟨Equiv.trans e.symm.equiv (Equiv.trans (neg_equiv_self G) (neg_equiv_neg_iff.2 e.equiv)),
+    ⟨e.symm.equiv.trans ((neg_equiv_self G).trans (neg_equiv_neg_iff.2 e.equiv)),
       fun i => impartial_congr (e.moveLeftSymm i), fun j => impartial_congr (e.moveRightSymm j)⟩
 termination_by G
 
 instance impartial_add (G H : PGame) [G.Impartial] [H.Impartial] : (G + H).Impartial := by
   rw [impartial_def]
-  refine ⟨Equiv.trans (add_congr (neg_equiv_self G) (neg_equiv_self _))
-      (Equiv.symm (negAddRelabelling _ _).equiv), fun k => ?_, fun k => ?_⟩
+  refine ⟨(add_congr (neg_equiv_self G) (neg_equiv_self _)).trans
+      (negAddRelabelling _ _).equiv.symm, fun k => ?_, fun k => ?_⟩
   · apply leftMoves_add_cases k
     all_goals
       intro i; simp only [add_moveLeft_inl, add_moveLeft_inr]
@@ -93,7 +93,7 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
   rw [impartial_def]
   refine ⟨?_, fun i => ?_, fun i => ?_⟩
   · rw [neg_neg]
-    exact Equiv.symm (neg_equiv_self G)
+    exact (neg_equiv_self G).symm
   · rw [moveLeft_neg]
     exact impartial_neg _
   · rw [moveRight_neg]
@@ -105,7 +105,7 @@ variable (G : PGame) [Impartial G]
 theorem nonpos : ¬0 < G := by
   intro h
   have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_left (Equiv.symm (neg_equiv_self G))] at h'
+  rw [neg_zero, ← (neg_equiv_self G).lt_congr_left] at h'
   exact (h.trans h').false
 
 theorem nonneg : ¬G < 0 := by
@@ -148,7 +148,7 @@ theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := b
     Eq.comm, quot_zero]
 
 theorem le_zero_iff {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by
-  rw [← zero_le_neg_iff, le_congr_right (neg_equiv_self G)]
+  rw [← zero_le_neg_iff, (neg_equiv_self G).le_congr_right]
 
 theorem lf_zero_iff {G : PGame} [G.Impartial] : G ⧏ 0 ↔ 0 ⧏ G := by
   rw [← zero_lf_neg_iff, lf_congr_right (neg_equiv_self G)]
