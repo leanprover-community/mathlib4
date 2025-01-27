@@ -131,6 +131,16 @@ theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
   rfl
 
+theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
+  ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
+  fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
+    ((forget₂ _ _).map f)).2 h)⟩
+
+theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
+  ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
+  fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
+    ((forget₂ _ _).map f)).2 h)⟩
+
 section
 
 open MonoidalCategory
