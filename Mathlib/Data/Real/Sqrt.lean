@@ -479,7 +479,7 @@ lemma isNat_realSqrt_neg_of_isRat {x : ℝ} {num : ℤ} {denom : ℕ} (hnum : nu
   rw [invOf_nonneg]
   exact Nat.cast_nonneg' denom
 
-lemma isRat_real_sqrt {x : ℝ} {n sn : ℤ} {d sd : ℕ} (hn : sn * sn = n)
+lemma isRat_realSqrt {x : ℝ} {n sn : ℤ} {d sd : ℕ} (hn : sn * sn = n)
     (hn₂ : 0 ≤ sn) (hd : sd * sd = d) (hd₂ : sd ≠ 0) (h : IsRat x n d) :
     IsRat (Real.sqrt x) sn sd := by
   refine .mk (invertibleOfNonzero (by exact_mod_cast hd₂)) ?out
@@ -534,7 +534,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
         let hd₂ : Q($esd ≠ 0) ← mkDecideProof q($esd ≠ 0)
         assumeInstancesCommute
         have pf_final : Q(IsRat (Real.sqrt $x) $esn $esd) :=
-          q(isRat_real_sqrt $hn $hn₂ $hd $hd₂ $pf)
+          q(isRat_realSqrt $hn $hn₂ $hd $hd₂ $pf)
         return .isRat sℝ (sn / sd) esn esd pf_final
       else failure
 
