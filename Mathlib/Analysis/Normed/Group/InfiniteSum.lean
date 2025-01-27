@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Instances.NNReal.Lemmas
 
 /-!
 # Infinite sums in (semi)normed groups

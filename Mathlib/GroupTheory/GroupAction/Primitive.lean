@@ -8,7 +8,6 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.GroupTheory.MaximalSubgroups
 
 /-!
 # Primitive actions
@@ -231,7 +230,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     exact H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
-(pretransitivity is automatic) -/
+    (pretransitivity is automatic) -/
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic)"]
@@ -322,7 +321,7 @@ theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
   apply Set.mem_univ
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
-the set of blocks containing a given element is a simple order -/
+    the set of blocks containing a given element is a simple order -/
 @[to_additive
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
@@ -360,8 +359,8 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5)"]
 theorem maximal_stabilizer_iff_preprimitive
     [htGX : IsPretransitive G X] [hnX : Nontrivial X] (a : X) :
-    (stabilizer G a).IsMaximal ↔ IsPreprimitive G X := by
-  rw [isPreprimitive_iff_isSimpleOrder_blocks G a, Subgroup.isMaximal_def,
+    IsCoatom (stabilizer G a) ↔ IsPreprimitive G X := by
+  rw [isPreprimitive_iff_isSimpleOrder_blocks G a,
     ← Set.isSimpleOrder_Ici_iff_isCoatom]
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
@@ -370,7 +369,7 @@ theorem maximal_stabilizer_iff_preprimitive
 @[to_additive "In a preprimitive action, stabilizers are maximal subgroups."]
 theorem hasMaximalStabilizersOfPreprimitive
     [hnX : Nontrivial X] (hpGX : IsPreprimitive G X) (a : X) :
-    (stabilizer G a).IsMaximal := by
+    IsCoatom (stabilizer G a) := by
   haveI : IsPretransitive G X := hpGX.toIsPretransitive
   rw [maximal_stabilizer_iff_preprimitive]
   exact hpGX

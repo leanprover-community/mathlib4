@@ -206,10 +206,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     map_one_eq_zero' := ?_
     leibniz' := ?_ }
   · ext
-    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
-      Cotangent.val_mk, Cotangent.val_zero, Ideal.toCotangent_eq_zero]
-    erw [LinearMap.codRestrict_apply]
-    simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, map_one, sub_self, Submodule.zero_mem]
+    simp [Ideal.toCotangent_eq_zero]
   · intro x y
     ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
@@ -353,6 +350,23 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+/-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
+induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
+@[simps! apply]
+noncomputable
+def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ : P₂.Hom P₁) :
+    P₁.H1Cotangent ≃ₗ[S] P₂.H1Cotangent where
+  __ := map f₁
+  invFun := map f₂
+  left_inv x :=
+    show (map f₂ ∘ₗ map f₁) x = LinearMap.id x by
+    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₂.comp f₁),
+      Extension.H1Cotangent.map_comp]; rfl
+  right_inv x :=
+    show (map f₁ ∘ₗ map f₂) x = LinearMap.id x by
+    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
+      Extension.H1Cotangent.map_comp]; rfl
+
 end Extension
 
 namespace Generators
@@ -377,7 +391,7 @@ lemma cotangentSpaceBasis_repr_one_tmul (x i) :
   simp
 
 lemma cotangentSpaceBasis_apply (i) :
-    P.cotangentSpaceBasis i = 1 ⊗ₜ .D _ _ (.X i) := by
+    P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) :) := by
   simp [cotangentSpaceBasis, toExtension]
 
 universe w' u' v'
@@ -411,6 +425,12 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
 
+@[simp]
+lemma toKaehler_cotangentSpaceBasis (i) :
+    P.toExtension.toKaehler (P.cotangentSpaceBasis i) = D R S (P.val i) := by
+  rw [cotangentSpaceBasis_apply]
+  exact (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
+
 end Generators
 
 variable {P : Generators R S}
@@ -420,19 +440,9 @@ open Extension.H1Cotangent in
 @[simps! apply]
 noncomputable
 def Generators.H1Cotangent.equiv (P : Generators R S) (P' : Generators R S) :
-    P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent where
-  __ := map (Generators.defaultHom P P').toExtensionHom
-  invFun := map (Generators.defaultHom P' P).toExtensionHom
-  left_inv x :=
-    show ((map (defaultHom P' P).toExtensionHom) ∘ₗ
-      (map (defaultHom P P').toExtensionHom)) x = LinearMap.id x by
-    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ ((defaultHom P' P).toExtensionHom.comp
-      (defaultHom P P').toExtensionHom), Extension.H1Cotangent.map_comp]; rfl
-  right_inv x :=
-    show ((map (defaultHom P P').toExtensionHom) ∘ₗ
-      (map (defaultHom P' P).toExtensionHom)) x = LinearMap.id x by
-    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ ((defaultHom P P').toExtensionHom.comp
-      (defaultHom P' P).toExtensionHom), Extension.H1Cotangent.map_comp]; rfl
+    P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent :=
+  Extension.H1Cotangent.equiv
+    (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
 
 variable {S' : Type*} [CommRing S'] [Algebra R S']
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

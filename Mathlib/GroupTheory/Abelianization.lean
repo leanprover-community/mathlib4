@@ -50,6 +50,11 @@ theorem commutator_eq_closure : commutator G = Subgroup.closure (commutatorSet G
 theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (commutatorSet G) := by
   simp [commutator, Subgroup.commutator_def', commutatorSet]
 
+variable {G} in
+theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
+    (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
+  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
+
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
 
@@ -126,6 +131,11 @@ def of : G →* Abelianization G where
 @[simp]
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
   rfl
+
+variable (G) in
+@[simp]
+theorem ker_of : of.ker = commutator G :=
+  QuotientGroup.ker_mk' (commutator G)
 
 section lift
 
@@ -388,4 +398,4 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top
   rw [← sup_assoc]
   congr
   · rw [left_eq_sup]
-  · rw [← MonoidHom.range_eq_map, subtype_range]
+  · rw [← MonoidHom.range_eq_map, range_subtype]

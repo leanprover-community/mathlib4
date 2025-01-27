@@ -294,7 +294,7 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun hn ↦ by
     rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, max_eq_right_of_lt zero_lt_one,
       rootsOfUnity_one]
-    exact MulEquiv.mulEquivOfUnique)
+    exact MulEquiv.ofUnique)
   (fun _ ↦
     (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
       center_equiv_rootsOfUnity' (Classical.arbitrary n))
@@ -475,7 +475,7 @@ theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
   ext j
-  simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
+  simp [coe_T_zpow, Matrix.vecMul, dotProduct, Fin.sum_univ_succ, vecTail]
 
 @[simp]
 theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
@@ -490,5 +490,9 @@ lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
     vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
     empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
   exact Eq.symm (eta_fin_two (-1))
+
+lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> rfl
 
 end ModularGroup

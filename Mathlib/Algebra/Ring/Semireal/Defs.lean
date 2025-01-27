@@ -8,12 +8,11 @@ import Mathlib.Algebra.Ring.SumsOfSquares
 /-!
 # Semireal rings
 
-A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
-squares. Note that `-1` does not make sense in a semiring.
+A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a
+sum of squares.
 
-For instance, linearly ordered fields are semireal, because sums of squares are positive and `-1` is
-not. More generally, linearly ordered semirings in which `a ≤ b → ∃ c, a + c = b` holds, are
-semireal.
+For instance, linearly ordered rings are semireal, because sums of squares are positive and `-1` is
+not.
 
 ## Main declaration
 
@@ -29,8 +28,8 @@ variable (R : Type*)
 
 /--
 A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
-squares. Note that `-1` does not make sense in a semiring. Below we define the class `IsSemireal R`
-for all additive monoid `R` equipped with a multiplication, a multiplicative unit and a negation.
+squares. We define the class `IsSemireal R`
+for all additive monoids `R` equipped with a multiplication, a multiplicative unit and a negation.
 -/
 @[mk_iff]
 class IsSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
