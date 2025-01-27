@@ -71,13 +71,34 @@ instance instLattice      : Lattice (Fin n)      := inferInstance
 
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
-lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
+lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
 
 @[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
 theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
 theorem rev_last_eq_bot (n : ℕ) : rev (last n) = ⊥ := by rw [rev_last, bot_eq_zero]
+
+@[simp]
+theorem succ_top (n : ℕ) [NeZero n] : (⊤ : Fin n).succ = ⊤ := by
+  rw [← rev_zero_eq_top, ← rev_zero_eq_top, ← rev_castSucc, castSucc_zero']
+
+@[simp]
+theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
+
+@[simp]
+theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.le_iff_eq]
+  exact pos_of_neZero n
+
+@[simp]
+theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
+  eq_comm.trans zero_eq_top
+
+@[simp]
+theorem cast_top {m n : ℕ} [NeZero m] (h : m = n) :
+    (⊤ : Fin m).cast h = haveI : NeZero n := h ▸ ‹_›; ⊤ := by
+  simp [← val_inj, h]
 
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
@@ -224,6 +245,8 @@ instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).i
 def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strictMono_succ
 
 @[simp, norm_cast] lemma coe_succOrderEmb : ⇑(succOrderEmb n) = Fin.succ := rfl
+
+@[simp] lemma succOrderEmb_toEmbedding : (succOrderEmb n).toEmbedding = succEmb n := rfl
 
 /-- `Fin.castLE` as an `OrderEmbedding`.
 

@@ -56,6 +56,10 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
+theorem mem_dite {p : Prop} [Decidable p] {a : α} {s : p → Finset α} {t : ¬p → Finset α} :
+    (a ∈ if h : p then s h else t h) ↔ if h : p then a ∈ s h else a ∈ t h :=
+  iff_of_eq <| apply_dite (a ∈ ·) p s t
+
 /-! ### Lattice structure -/
 
 section Lattice
