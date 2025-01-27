@@ -67,16 +67,15 @@ variable (G : Type u) [Monoid G]
 
 section
 
+/-- The action defined by sending every group element to the identity. -/
+@[simps]
+def trivial (X : V) : Action V G := { V := X, ρ := 1 }
+
 instance inhabited' : Inhabited (Action (Type u) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
-/-- The trivial representation of a group. -/
-def trivial : Action AddCommGrp G where
-  V := AddCommGrp.of PUnit
-  ρ := 1
-
 instance : Inhabited (Action AddCommGrp G) :=
-  ⟨trivial G⟩
+  ⟨trivial G <| AddCommGrp.of PUnit⟩
 
 end
 
