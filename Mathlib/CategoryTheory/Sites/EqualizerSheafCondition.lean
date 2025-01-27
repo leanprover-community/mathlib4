@@ -182,7 +182,7 @@ The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp, stacks 00VL "This is the rightmost object of the fork diagram there."]
-] def SecondObj : Type max v u :=
+def SecondObj : Type max v u :=
   ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
