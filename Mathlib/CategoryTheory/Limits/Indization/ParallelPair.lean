@@ -145,7 +145,6 @@ noncomputable def presentation : IndParallelPairPresentation f g where
 
 end NonemptyParallelPairPresentationAux
 
-open NonemptyParallelPairPresentationAux in
 theorem nonempty_indParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (hA : IsIndObject A)
     (hB : IsIndObject B) (f g : A ⟶ B) : Nonempty (IndParallelPairPresentation f g) :=
   ⟨NonemptyParallelPairPresentationAux.presentation f g hA.presentation hB.presentation⟩
