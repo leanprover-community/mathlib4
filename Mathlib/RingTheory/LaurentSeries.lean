@@ -1058,6 +1058,11 @@ abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
 @[simp]
+lemma LaurentSeriesRingEquiv_def (f : K⟦X⟧) :
+    (LaurentSeriesRingEquiv K) f = (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (f : K⸨X⸩) :=
+  rfl
+
+@[simp]
 theorem ratfuncAdicComplRingEquiv_apply (x : RatFuncAdicCompl K) :
     ratfuncAdicComplRingEquiv K x = ratfuncAdicComplPkg.compare (LaurentSeriesPkg K) x := rfl
 
@@ -1160,10 +1165,9 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
 completion of `RatFunc K`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers (RatFunc K) := by
-  have : (LaurentSeriesRingEquiv K) F =
-    (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (F : K⸨X⸩) := rfl
   simp only [Subring.mem_map, exists_prop, ValuationSubring.mem_toSubring,
-    mem_adicCompletionIntegers, this,  valuation_compare, val_le_one_iff_eq_coe]
+    mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
+    valuation_compare, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
 
 /- Conversely, all elements in the unit ball inside the completion of `RatFunc K` come from a power
@@ -1203,16 +1207,14 @@ lemma powerSeriesRingEquiv_coe_apply (f : K⟦X⟧) :
 lemma LaurentSeriesRingEquiv_mem_valuationSubring (f : K⟦X⟧) :
     LaurentSeriesRingEquiv K f ∈ Valued.v.valuationSubring := by
   simp only [Valuation.mem_valuationSubring_iff]
-  have : (LaurentSeriesRingEquiv K) f =
-    (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (f : K⸨X⸩) := rfl
-  rw [this, valuation_compare, val_le_one_iff_eq_coe]
+  rw [LaurentSeriesRingEquiv_def, valuation_compare, val_le_one_iff_eq_coe]
   use f
 
 lemma algebraMap_C_mem_adicCompletionIntegers (x : K) :
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C) x ∈
       adicCompletionIntegers (RatFunc K) (idealX K) := by
   have : HahnSeries.C x = ofPowerSeries ℤ K (PowerSeries.C K x) := by
-    simp only [C_apply, ofPowerSeries_C]
+    simp [C_apply, ofPowerSeries_C]
   simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, this]
   apply LaurentSeriesRingEquiv_mem_valuationSubring
 
@@ -1230,9 +1232,9 @@ instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
 def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (RatFunc K) := by
   apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
   intro a
-  simp only [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra]
-  rw [← Subtype.coe_inj, powerSeriesRingEquiv_coe_apply]
-  rw [RingHom.codRestrict_apply _ _ (algebraMap_C_mem_adicCompletionIntegers K)]
+  rw [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra, ← Subtype.coe_inj,
+    powerSeriesRingEquiv_coe_apply,
+    RingHom.codRestrict_apply _ _ (algebraMap_C_mem_adicCompletionIntegers K)]
   simp
 
 end PowerSeries
