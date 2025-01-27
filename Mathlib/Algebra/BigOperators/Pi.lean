@@ -183,6 +183,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
 end MulEquiv
 
 -- manually additivized to fix variable names
+-- See https://github.com/leanprover-community/mathlib4/issues/11462
 @[elab_as_elim]
 lemma Pi.single_induction {ι M : Type*} [Finite ι] [DecidableEq ι] [AddCommMonoid M]
     (p : (ι → M) → Prop) (f : ι → M) (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
