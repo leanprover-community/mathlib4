@@ -30,7 +30,7 @@ universe u
 
 namespace Ordinal
 
-variable {f : Ordinal.{u} → Ordinal.{u}} {o a b c d : Ordinal.{u}}
+variable {f : Ordinal.{u} → Ordinal.{u}} {o o₁ o₂ a b c d : Ordinal.{u}}
 
 /-! ### Veblen function with a given starting function -/
 
@@ -73,8 +73,8 @@ theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
 
 protected alias IsNormal.veblenWith := isNormal_veblenWith
 
-theorem veblenWith_veblenWith_of_lt (h : a < b) (c : Ordinal) :
-    veblenWith f a (veblenWith f b c) = veblenWith f b c := by
+theorem veblenWith_veblenWith_of_lt (h : o₁ < o₂) (a : Ordinal) :
+    veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a := by
   let x : {a // a < b} := ⟨a, h⟩
   rw [veblenWith_of_ne_zero f h.bot_lt.ne',
     derivFamily_fp (f := fun y : Set.Iio b ↦ veblenWith f y.1) (i := x)]
@@ -97,15 +97,18 @@ theorem veblenWith_succ (o : Ordinal) : veblenWith f (Order.succ o) = deriv (veb
 theorem veblenWith_right_strictMono (o : Ordinal) : StrictMono (veblenWith f o) :=
   (hf.veblenWith o).strictMono
 
+@[simp]
 theorem veblenWith_lt_veblenWith_iff_right : veblenWith f o a < veblenWith f o b ↔ a < b :=
   (veblenWith_right_strictMono hf o).lt_iff_lt
 
+@[simp]
 theorem veblenWith_le_veblenWith_iff_right : veblenWith f o a ≤ veblenWith f o b ↔ a ≤ b :=
   (veblenWith_right_strictMono hf o).le_iff_le
 
 theorem veblenWith_injective (o : Ordinal) : Function.Injective (veblenWith f o) :=
   (veblenWith_right_strictMono hf o).injective
 
+@[simp]
 theorem veblenWith_inj : veblenWith f o a = veblenWith f o b ↔ a = b :=
   (veblenWith_injective hf o).eq_iff
 
