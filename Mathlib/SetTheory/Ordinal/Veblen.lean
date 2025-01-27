@@ -8,7 +8,7 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 /-!
 # Veblen hierarchy
 
-We define the two-argument Veblen function, which satisfes `veblen 0 a = ω ^ a` and that for
+We define the two-arguments Veblen function, which satisfies `veblen 0 a = ω ^ a` and that for
 `a ≠ 0`, `veblen a` enumerates the common fixed points of `veblen b` for `b < a`.
 
 ## Main definitions
