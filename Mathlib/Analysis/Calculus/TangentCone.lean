@@ -102,13 +102,6 @@ theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeA
 
 variable [ContinuousSMul 𝕜 E]
 
-theorem Filter.EventuallyEq.inv_smul_smul_cancel {α G K : Type*} [GroupWithZero G] [MulAction G K]
-    {f : α → G} {g : α → K}
-    {l : Filter α} (hg : Tendsto f l (𝓟 {0}ᶜ)) :
-    (fun x ↦ (f x)⁻¹ • f x • g x) =ᶠ[l] fun x ↦ g x := by
-  filter_upwards [hg.le_comap <| preimage_mem_comap (m := f) (mem_principal_self {0}ᶜ)] with x hx
-  exact inv_smul_smul₀ hx _
-
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
 theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
