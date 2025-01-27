@@ -9,6 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Action.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.RepresentationTheory.Basic
 
 /-!
