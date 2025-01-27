@@ -103,16 +103,16 @@ theorem transpose_toMatrix_toPEquiv_apply
   simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
 
 theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
-    [Semiring α] (f : n ≃ m) (M : Matrix m n α) :
+    [Semiring α] (f : l ≃ m) (M : Matrix m n α) :
     f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
   rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
 
-theorem mul_toMatrix_toPEquiv [Fintype n] [DecidableEq m]
-    [Semiring α] (f : n ≃ m) (M : Matrix m n α) :
-    M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
+theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
+    [Semiring α] (M : Matrix l m α) (f : m ≃ n):
+    (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
