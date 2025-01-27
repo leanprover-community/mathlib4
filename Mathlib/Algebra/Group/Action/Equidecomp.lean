@@ -104,9 +104,8 @@ theorem toPartialEquiv_injective : Injective <| toPartialEquiv (X := X) (G := G)
 theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDecompOn f A S)
     (hA' : A' ⊆ A) (hf' : EqOn f f' A') : IsDecompOn f' A' S := by
   intro a ha
-  rcases h _ (hA' ha) with ⟨γ, γ_mem, hγ⟩
-  use γ, γ_mem
-  rwa [← hf' ha]
+  rw [← hf' ha]
+  exact h a (hA' ha)
 
 /-- The restriction of an equidecomposition as an equidecomposition. -/
 @[simps!]
