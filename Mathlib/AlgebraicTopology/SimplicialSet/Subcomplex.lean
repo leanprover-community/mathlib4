@@ -29,4 +29,14 @@ abbrev Subcomplex := Subpresheaf X
 instance : CoeOut X.Subcomplex SSet.{u} where
   coe := fun S ↦ S.toPresheaf
 
+variable {X}
+
+/-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` considered in the
+category `SSet` (which is definitionally equal to `SimplexCategoryᵒᵖ ⥤ Type _`). -/
+abbrev Subcomplex.ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A
+
+instance (A : X.Subcomplex) :
+    Mono A.ι :=
+  inferInstanceAs (Mono (Subpresheaf.ι A))
+
 end SSet

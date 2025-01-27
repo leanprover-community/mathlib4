@@ -124,6 +124,37 @@ lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
   obtain rfl : f' = f := by simpa using h
   exact hf
 
+/-- The term in `Set (Arrow C)` associated to `P : MorphismProperty C`. -/
+def toSet (P : MorphismProperty C) : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+
+/-- Given `P : MorphismProperty C`, this is the family of morphisms parametrized
+by `P.toSet`. -/
+def homFamily (P : MorphismProperty C) (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom
+
+lemma homFamily_apply (P : MorphismProperty C) (f : P.toSet) :
+    P.homFamily f = f.1.hom := rfl
+
+@[simp]
+lemma homFamily_arrow_mk (P : MorphismProperty C) {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    P.homFamily ⟨Arrow.mk f, hf⟩ = f := rfl
+
+@[simp]
+lemma arrow_mk_mem_toSet_iff (P : MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    Arrow.mk f ∈ P.toSet ↔ P f := Iff.rfl
+
+/-- The class of morphisms given by a family of morphisms `f i : X i ⟶ Y i`. -/
+inductive ofHoms {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) : MorphismProperty C
+  | mk (i : ι) : ofHoms f (f i)
+
+lemma ofHoms_iff {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) {A B : C} (g : A ⟶ B) :
+    ofHoms f g ↔ ∃ i, Arrow.mk g = Arrow.mk (f i) := by
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨i, rfl⟩
+  · rintro ⟨i, h⟩
+    rw [← (ofHoms f).arrow_mk_mem_toSet_iff, h, arrow_mk_mem_toSet_iff]
+    constructor
+
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
 holds for `f ≫ i`. -/
