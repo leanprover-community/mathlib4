@@ -73,7 +73,7 @@ lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ where
   app X := f.app X ⊗ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
-    dsimp [map]
+    dsimp
     rw [tensorObj_map_tmul]
     -- Need `erw` because of the type mismatch in `map` and the tensor product.
     erw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul]
