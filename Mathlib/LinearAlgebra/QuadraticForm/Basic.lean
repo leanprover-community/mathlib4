@@ -369,6 +369,9 @@ Lift the polar
 def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
   Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩
 
+def polar_lift1 {ι} (Q : QuadraticMap R M N) (g : ι → M) : Sym2 ι → N :=
+  Sym2.lift ⟨fun i j => (polar Q) (g i) (g j ), fun i j => by simp only [polar_comm]⟩
+
 open Finsupp in
 theorem map_finsupp_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) = (f.sum fun i r => Q (g i r)) +

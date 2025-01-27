@@ -153,6 +153,16 @@ theorem tensor_map_finsupp_linearCombination1 {ι : Type*} [DecidableEq ι] --[I
   simp_rw [tensor_map_finsupp_linearCombination]
   simp_all only [QuadraticMap.tensorDistrib_tmul, implies_true, g]
 
+/-
+This statement requires ⅟(2 : R)
+-/
+lemma polar_lift_lc_lemma {ι : Type*} [DecidableEq ι]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) (p : Sym2 ι) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
+    QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p =
+       ⅟(2 : R) • (Q₁.polar_lift_lc g₁ l p) ⊗ₜ[R] (Q₂.polar_lift1 g₂ p) := sorry
+
 variable (A) in
 /-- The base change of a quadratic form. -/
 -- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
