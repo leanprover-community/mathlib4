@@ -218,8 +218,7 @@ instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   hasCoproducts_of_finite_and_filtered
 
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)` as
-the colimit of `(P.φ, P.ψ)` in `Ind C` -/
--- @[simps!]
+the colimit of `(P.φ, P.ψ)` in `Ind C`. -/
 noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompIndYoneda
     {A B : Ind C} {f g : A ⟶ B}
     (P : IndParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
