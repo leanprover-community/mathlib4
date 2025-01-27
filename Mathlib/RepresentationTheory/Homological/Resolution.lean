@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.RepresentationTheory.Rep
 
 /-!

@@ -296,3 +296,4 @@ theorem dOne_comp_dTwo [DecidableEq G] : dOne A ∘ₗ dTwo A = 0 := by
     ModuleCat.hom_ext_iff]
 
 end Differentials
+end groupHomology
