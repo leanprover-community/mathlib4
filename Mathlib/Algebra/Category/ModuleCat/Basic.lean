@@ -444,14 +444,17 @@ end
 
 variable (M N : ModuleCat.{v} R)
 
-/-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
-@[simps]
-def endMulEquiv : End M ≃* (M →ₗ[R] M) where
+/-- `ModuleCat.Hom.hom` as an isomorphism of rings. -/
+@[simps!] def endRingEquiv : End M ≃+* (M →ₗ[R] M) where
   toFun := ModuleCat.Hom.hom
   invFun := ModuleCat.ofHom
   map_mul' _ _ := rfl
   left_inv _ := rfl
   right_inv _ := rfl
+  map_add' _ _ := rfl
+
+/-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
+@[deprecated (since := "2025-01-23")] alias endMulEquiv := endRingEquiv
 
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
