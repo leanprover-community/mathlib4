@@ -12,10 +12,6 @@ import Mathlib.LinearAlgebra.CrossProduct
 
 This file proves `InnerProductGeometry.norm_withLpEquiv_crossProduct`, relating the norm of the
 cross-product of two real vectors with their individual norms.
-
-## Main definitions
-
-* `InnerProductGeometry.angle` is the undirected angle between two vectors.
 -/
 
 
