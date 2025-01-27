@@ -40,7 +40,7 @@ open Matrix
 universe u v
 
 variable {k l m n : Type*}
-variable {α : Type v}
+variable {α β : Type*}
 
 open Matrix
 
@@ -117,6 +117,18 @@ theorem mul_toMatrix_toPEquiv {m n α : Type*} [Fintype n] [DecidableEq n] [Semi
 
 @[deprecated (since := "2025-01-27")] alias mul_toPEquiv_toMatrix := mul_toMatrix_toPEquiv
 
+lemma toMatrix_toPEquiv_mulVec_single [DecidableEq n] [DecidableEq m] [Fintype n]
+    [NonAssocSemiring α] (σ : m ≃ n) (i : n) (x : α) :
+    σ.toPEquiv.toMatrix *ᵥ Pi.single i x = Pi.single (σ.symm i) x := by
+  ext j
+  simp [Pi.single_apply, Equiv.apply_eq_iff_eq_symm_apply σ]
+
+lemma single_vecMul_toMatrix_toPEquiv [DecidableEq n] [DecidableEq m] [Fintype m]
+    [NonAssocSemiring α] (σ : m ≃ n) (i : m) (x : α) :
+    Pi.single i x ᵥ* σ.toPEquiv.toMatrix = Pi.single (σ i) x := by
+  ext j
+  simp [Pi.single_apply]
+
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
   ext i j
@@ -179,27 +191,9 @@ theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm
 @[deprecated (since := "2025-01-27")] alias equiv_toPEquiv_toMatrix := toMatrix_toPEquiv_eq
 
 @[simp]
-lemma map_toMatrix {β : Type*} [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
+lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
     (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
   ext i j
   simp
 
 end PEquiv
-
-namespace Equiv
-
-open Matrix
-
-variable {α m n : Type*} [DecidableEq m] [DecidableEq n]
-
-lemma toMatrix_toPEquiv_mulVec_single [Fintype n] [NonAssocSemiring α] (σ : m ≃ n) (i : n) (x : α) :
-    σ.toPEquiv.toMatrix *ᵥ Pi.single i x = Pi.single (σ.symm i) x := by
-  ext j
-  simp [Pi.single_apply, Equiv.apply_eq_iff_eq_symm_apply σ]
-
-lemma single_vecMul_toMatrix_toPEquiv [Fintype m] [NonAssocSemiring α] (σ : m ≃ n) (i : m) (x : α) :
-    Pi.single i x ᵥ* σ.toPEquiv.toMatrix = Pi.single (σ i) x := by
-  ext j
-  simp [Pi.single_apply]
-
-end Equiv
