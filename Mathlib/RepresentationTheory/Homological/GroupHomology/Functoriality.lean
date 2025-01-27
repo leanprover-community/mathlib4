@@ -159,7 +159,7 @@ lemma chainsMap_id_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
   refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
   simp [chainsMap_f, MonoidHom.coe_id]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K] {A : Rep k G} {B : Rep k H} {C : Rep k K}
     (f : G →* H) (g : H →* K) (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
@@ -168,7 +168,7 @@ lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
   refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
   simp [chainsMap_f, Function.comp_assoc]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     chainsMap (MonoidHom.id G) (φ ≫ ψ) =
       chainsMap (MonoidHom.id G) φ ≫ chainsMap (MonoidHom.id G) ψ :=
@@ -206,7 +206,7 @@ noncomputable abbrev cyclesMap (n : ℕ) :
     groupHomology.cycles A n ⟶ groupHomology.cycles B n :=
   HomologicalComplex.cyclesMap (chainsMap f φ) n
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem cyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     cyclesMap (MonoidHom.id G) (φ ≫ ψ) n =
       cyclesMap (MonoidHom.id G) φ n ≫ cyclesMap (MonoidHom.id G) ψ n := by
@@ -219,7 +219,7 @@ noncomputable abbrev map (n : ℕ) :
   groupHomology A n ⟶ groupHomology B n :=
 HomologicalComplex.homologyMap (chainsMap f φ) n
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
