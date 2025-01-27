@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
-import Mathlib.CategoryTheory.Limits.Indization.Morphisms
+import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.Products
 

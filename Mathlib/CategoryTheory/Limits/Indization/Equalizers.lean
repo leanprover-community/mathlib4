@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Indization.Morphisms
+import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 
 /-!
 # Equalizers of ind-objects
