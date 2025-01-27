@@ -254,14 +254,15 @@ variable {C}
 section Meta
 
 open Mathlib.Tactic (subscriptTerm) in
-/-- For `X : Truncated n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
+/-- For `X : Truncated C n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
 scoped macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by trunc⟩))
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | trunc |
+      fail "Failed to prove truncation property. Try writing `X _[m, by ...]ₙ`."⟩))
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
@@ -733,14 +734,15 @@ variable {C}
 section Meta
 
 open Mathlib.Tactic (subscriptTerm) in
-/-- For `X : Truncated n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
+/-- For `X : Truncated C n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
 scoped macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-      ⟨SimplexCategory.mk $m, by trunc⟩)
+      ⟨SimplexCategory.mk $m, by first | trunc |
+      fail "Failed to prove truncation property. Try writing `X _[m, by ...]ₙ`."⟩)
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
