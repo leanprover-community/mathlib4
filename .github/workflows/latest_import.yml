@@ -50,9 +50,9 @@ jobs:
       run: |
         # shellcheck complains if there are two backticks inside single quotes :(
         # set `linter.minImports option` to true in `lakefile`
-        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨\`linter.minImports, true⟩,\n=}' lakefile.lean
+        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
         # set `Elab.async` to false in `lakefile`
-        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨\`Elab.async, false⟩,\n=}' lakefile.lean
+        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`Elab.async, false⟩,\n=}' lakefile.lean
 
         # import the `minImports` linter in `Mathlib.Init`
         sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
