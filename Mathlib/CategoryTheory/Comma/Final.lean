@@ -146,7 +146,7 @@ variable (L : A ⥤ T) (R : B ⥤ T)
 attribute [local instance] map_final in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
-lemma filtered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
+lemma isFiltered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
   haveI (a : A) : IsFiltered (Comma (fromPUnit (L.obj a)) R) :=
     R.final_iff_isFiltered_structuredArrow.mp inferInstance (L.obj a)
   have (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
@@ -161,7 +161,7 @@ lemma filtered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Co
 attribute [local instance] filtered_of_final in
 /-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
 comma category `Comma L R` is cofiltered. -/
-lemma cofiltered_of_final [IsCofiltered A] [IsCofiltered B] [L.Initial] :
+lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
     IsCofiltered (Comma L R) :=
  IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
 
