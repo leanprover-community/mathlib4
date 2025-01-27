@@ -193,7 +193,6 @@ theorem extremePoints_doublyStochastic :
     apply Set.Ioo_subset_Ioo <;>
     simp_all [nonneg_of_mem_doublyStochastic, le_one_of_mem_doublyStochastic]
   specialize h₂ h₁
-  simp only [PEquiv.toMatrix_apply, Equiv.toPEquiv] at h₂
   aesop
 
 end LinearOrderedField
