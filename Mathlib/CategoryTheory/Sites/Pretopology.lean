@@ -35,7 +35,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits Presieve
+open Category Limits Presieve
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C]
 variable (C)
@@ -101,8 +101,9 @@ instance : Inhabited (Pretopology C) :=
 /-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
 `J`-covering if it contains a family in `K`.
 
-See <https://stacks.math.columbia.edu/tag/00ZC>, or [MM92] Chapter III, Section 2, Equation (2).
+See also [MM92] Chapter III, Section 2, Equation (2).
 -/
+@[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
   top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
@@ -162,17 +163,15 @@ lemma mem_ofGrothendieck (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
 
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
-also known as the indiscrete, coarse, or chaotic topology.
-
-See <https://stacks.math.columbia.edu/tag/07GE>
--/
+also known as the indiscrete, coarse, or chaotic topology. -/
+@[stacks 07GE]
 def trivial : Pretopology C where
   coverings X S := ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f
   has_isos _ _ _ i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
     refine ⟨pullback g f, pullback.snd _ _, ?_, ?_⟩
-    · refine ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨?_, by aesop_cat⟩⟩⟩
+    · refine ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨?_, by simp⟩⟩⟩
       ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
         simp
@@ -183,7 +182,7 @@ def trivial : Pretopology C where
     rcases hS g (singleton_self g) with ⟨Y, f, i, hTi⟩
     refine ⟨_, f ≫ g, ?_, ?_⟩
     · infer_instance
-    -- Porting note (#11041): the next four lines were just "ext (W k)"
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): the next four lines were just "ext (W k)"
     apply funext
     rintro W
     apply Set.ext

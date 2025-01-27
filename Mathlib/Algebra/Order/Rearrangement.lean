@@ -3,11 +3,12 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Finset.Max
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Tactic.Abel
@@ -98,12 +99,12 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
   simp only [hτ, swap_apply_left, Function.comp_apply, Equiv.coe_trans, apply_inv_self]
   refine add_le_add (smul_add_smul_le_smul_add_smul' ?_ ?_) (sum_congr rfl fun x hx ↦ ?_).le
   · specialize hamax (σ⁻¹ a) h1s
-    rw [Prod.Lex.le_iff] at hamax
+    rw [Prod.Lex.toLex_le_toLex] at hamax
     cases' hamax with hamax hamax
     · exact hfg (mem_insert_of_mem h1s) (mem_insert_self _ _) hamax
     · exact hamax.2
   · specialize hamax (σ a) (mem_of_mem_insert_of_ne (hσ <| σ.injective.ne hσa.symm) hσa.symm)
-    rw [Prod.Lex.le_iff] at hamax
+    rw [Prod.Lex.toLex_le_toLex] at hamax
     cases' hamax with hamax hamax
     · exact hamax.le
     · exact hamax.1.le

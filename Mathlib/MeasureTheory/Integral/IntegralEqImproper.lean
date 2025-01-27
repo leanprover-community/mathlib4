@@ -76,9 +76,8 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open scoped ENNReal NNReal Topology
+open MeasureTheory Filter Set TopologicalSpace Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -389,9 +388,7 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
   have := hφ.lintegral_tendsto_of_countably_generated hfm
   refine ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => ?_
-  rcases exists_between hw with ⟨m, hm₁, hm₂⟩
-  rcases (eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
-  exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
+  exact (this.eventually_const_lt hw).exists
 
 end Lintegral
 
@@ -436,10 +433,9 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
         hfm.norm.restrict]
   conv at hbounded in ENNReal.ofReal _ =>
-    rw [← coe_nnnorm]
-    rw [ENNReal.ofReal_coe_nnreal]
+    rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
   refine hbounded.mono fun i hi => ?_
-  rw [← ENNReal.ofReal_toReal (ne_top_of_lt (hfi i).2)]
+  rw [← ENNReal.ofReal_toReal <| ne_top_of_lt <| hasFiniteIntegral_iff_nnnorm.mp (hfi i).2]
   apply ENNReal.ofReal_le_ofReal hi
 
 theorem AECover.integrable_of_integral_norm_tendsto [l.NeBot] [l.IsCountablyGenerated]
@@ -711,8 +707,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -908,8 +904,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     apply le_antisymm (le_top)
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -975,7 +971,7 @@ lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
     exact ennnorm_integral_le_lintegral_ennnorm _
   convert this with y
   · simp [f', I, Completion.nnnorm_coe]
-  · rw [fderiv.comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
@@ -1269,11 +1265,11 @@ theorem integral_Ioi_deriv_mul_eq_sub
     intro x (hx : a < x)
     apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
     filter_upwards [eventually_ne_nhds hx.ne.symm] with y hy
-    exact Function.update_noteq hy a' (u * v)
+    exact Function.update_of_ne hy a' (u * v)
   have htendsto : Tendsto f atTop (𝓝 b') := by
     apply h_infty.congr'
     filter_upwards [eventually_ne_atTop a] with x hx
-    exact (Function.update_noteq hx a' (u * v)).symm
+    exact (Function.update_of_ne hx a' (u * v)).symm
   simpa using integral_Ioi_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
@@ -1300,11 +1296,11 @@ theorem integral_Iic_deriv_mul_eq_sub
     intro x hx
     apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
     filter_upwards [Iio_mem_nhds hx] with x (hx : x < a)
-    exact Function.update_noteq (ne_of_lt hx) a' (u * v)
+    exact Function.update_of_ne (ne_of_lt hx) a' (u * v)
   have htendsto : Tendsto f atBot (𝓝 b') := by
     apply h_infty.congr'
     filter_upwards [Iio_mem_atBot a] with x (hx : x < a)
-    exact (Function.update_noteq (ne_of_lt hx) a' (u * v)).symm
+    exact (Function.update_of_ne (ne_of_lt hx) a' (u * v)).symm
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 

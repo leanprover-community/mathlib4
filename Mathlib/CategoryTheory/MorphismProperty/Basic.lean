@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
@@ -62,6 +61,26 @@ lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
+@[simp]
+lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
+    sSup S f ↔ ∃ (W : S), W.1 f := by
+  dsimp [sSup, iSup]
+  constructor
+  · rintro ⟨_, ⟨⟨_, ⟨⟨_, ⟨_, h⟩, rfl⟩, rfl⟩⟩, rfl⟩, hf⟩
+    exact ⟨⟨_, h⟩, hf⟩
+  · rintro ⟨⟨W, hW⟩, hf⟩
+    exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
+
+@[simp]
+lemma iSup_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    iSup W f ↔ ∃ i, W i f := by
+  apply (sSup_iff (Set.range W) f).trans
+  constructor
+  · rintro ⟨⟨_, i, rfl⟩, hf⟩
+    exact ⟨i, hf⟩
+  · rintro ⟨i, hf⟩
+    exact ⟨⟨_, i, rfl⟩, hf⟩
+
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
 def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
@@ -95,6 +114,15 @@ lemma monotone_map (F : C ⥤ D) :
     Monotone (map · F) := by
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
+
+lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
+    {X' Y' : C} {f' : X' ⟶ Y'}
+    (hX : X = X') (hY : Y = Y') (h : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
+    P f' := by
+  obtain rfl := hX
+  obtain rfl := hY
+  obtain rfl : f' = f := by simpa using h
+  exact hf
 
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
@@ -158,6 +186,10 @@ lemma RespectsIso.precomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (
     [IsIso e] (f : Y ⟶ Z) (hf : P f) : P (e ≫ f) :=
   RespectsLeft.precomp (Q := isomorphisms C) e ‹IsIso e› f hf
 
+instance : RespectsIso (⊤ : MorphismProperty C) where
+  precomp _ _ _ _ := trivial
+  postcomp _ _ _ _ := trivial
+
 lemma RespectsIso.postcomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (e : Y ⟶ Z)
     [IsIso e] (f : X ⟶ Y) (hf : P f) : P (f ≫ e) :=
   RespectsRight.postcomp (Q := isomorphisms C) e ‹IsIso e› f hf
@@ -196,10 +228,14 @@ theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
   ⟨fun h => by simpa using RespectsIso.postcomp P (inv g) (f ≫ g) h, RespectsIso.postcomp P g f⟩
 
+lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A B : Type*} [Category A] [Category B]
+    {L : A ⥤ C} {R : B ⥤ C} {f g : Comma L R} (e : f ≅ g) :
+    P f.hom ↔ P g.hom := by
+  simp [← Comma.inv_left_hom_right e.hom, cancel_left_of_respectsIso, cancel_right_of_respectsIso]
+
 theorem arrow_iso_iff (P : MorphismProperty C) [RespectsIso P] {f g : Arrow C}
-    (e : f ≅ g) : P f.hom ↔ P g.hom := by
-  simp [← Arrow.inv_left_hom_right e.hom, cancel_left_of_respectsIso,
-    cancel_right_of_respectsIso]
+    (e : f ≅ g) : P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
 
 theorem arrow_mk_iso_iff (P : MorphismProperty C) [RespectsIso P] {W X Y Z : C}
     {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=

@@ -135,7 +135,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
   convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
+  exact (nhdsLE_sup_nhdsGT 0).symm
 
 /-- If a closed set has a closed thickening with finite measure, then the measure of its closed
 `r`-thickenings converge to its measure as `r` tends to `0`. -/
@@ -196,9 +196,9 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
   letI := induced f inferInstance
-  let F := f.toEquiv.toHomeomorphOfInducing <| inducing_induced _
+  let F := f.toEquiv.toHomeomorphOfIsInducing <| .induced _
   exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
-    MeasurableEmbedding.borelSpace f.measurableEmbedding F.inducing⟩
+    f.measurableEmbedding.borelSpace F.isInducing⟩
 
 /-- If a measurable space on `α` is countably generated and separates points, there is some
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every

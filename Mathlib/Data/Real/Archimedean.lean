@@ -14,7 +14,8 @@ import Mathlib.Order.Interval.Set.Disjoint
 
 -/
 
-open scoped Classical
+assert_not_exists Finset
+
 open Pointwise CauSeq
 
 namespace Real
@@ -109,9 +110,11 @@ theorem exists_isGLB (hne : s.Nonempty) (hbdd : BddBelow s) : ∃ x, IsGLB s x :
   rw [← isLUB_neg]
   exact Classical.choose_spec (Real.exists_isLUB hne' hbdd')
 
+open scoped Classical in
 noncomputable instance : SupSet ℝ :=
   ⟨fun s => if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
 
+open scoped Classical in
 theorem sSup_def (s : Set ℝ) :
     sSup s = if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0 :=
   rfl
@@ -251,6 +254,7 @@ lemma iInf_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f := Real.le_iInf hf le_r
 /-- As `sSup s = 0` when `s` is a set of reals that's unbounded above, it suffices to show that `s`
 contains a nonnegative element to show that `0 ≤ sSup s`. -/
 lemma sSup_nonneg' (hs : ∃ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
+  classical
   obtain ⟨x, hxs, hx⟩ := hs
   exact dite _ (fun h ↦ le_csSup_of_le h hxs hx) fun h ↦ (sSup_of_not_bddAbove h).ge
 
@@ -261,6 +265,7 @@ lemma iSup_nonneg' (hf : ∃ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg' <|
 /-- As `sInf s = 0` when `s` is a set of reals that's unbounded below, it suffices to show that `s`
 contains a nonpositive element to show that `sInf s ≤ 0`. -/
 lemma sInf_nonpos' (hs : ∃ x ∈ s, x ≤ 0) : sInf s ≤ 0 := by
+  classical
   obtain ⟨x, hxs, hx⟩ := hs
   exact dite _ (fun h ↦ csInf_le_of_le h hxs hx) fun h ↦ (sInf_of_not_bddBelow h).le
 
@@ -371,17 +376,13 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    rw [le_tsub_iff_left hq.le]
-    exact hq
+    omega
   use 2 * k ^ 2
-  refine (pow_lt_pow_left hk (by positivity) (by simp [posk.ne'])).trans_le' ?_
-  rcases k.zero_le.eq_or_lt with rfl|kpos
-  · simp
-  rw [pow_two, mul_left_comm, pow_mul]
-  have := mul_add_one_le_add_one_pow (a := 1 / k) (by simp) k
-  rw [div_mul_cancel₀ _ (by simp [kpos.ne'])] at this
-  refine (pow_le_pow_left (by positivity) this _).trans' ?_
-  rw [mul_left_comm, ← pow_two]
-  exact_mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _
+  calc
+    ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _
+    _ = (1 / k * k + 1 : ℝ) ^ (2 * k) := by simp [posk.ne']; norm_num
+    _ ≤ ((1 / k + 1) ^ k : ℝ) ^ (2 * k) := by gcongr; exact mul_add_one_le_add_one_pow (by simp) _
+    _ = (1 / k + 1 : ℝ) ^ (2 * k ^ 2) := by rw [← pow_mul, mul_left_comm, sq]
+    _ < a ^ (2 * k ^ 2) := by gcongr
 
 end Real

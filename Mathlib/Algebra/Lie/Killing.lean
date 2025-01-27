@@ -38,7 +38,7 @@ This file contains basic definitions and results for such Lie algebras.
 
 -/
 
-variable (R K L M : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
+variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
 

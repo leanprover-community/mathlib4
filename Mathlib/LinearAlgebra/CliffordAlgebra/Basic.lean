@@ -46,7 +46,6 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable (Q : QuadraticForm R M)
-variable {n : ℕ}
 
 namespace CliffordAlgebra
 
@@ -79,9 +78,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
   RingQuot.instAlgebra _
 
 -- verify there are no diamonds
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
@@ -208,7 +207,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
-    simp [of]
+    simp [of, h]
     -- Porting note: `simp` can't apply this
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra

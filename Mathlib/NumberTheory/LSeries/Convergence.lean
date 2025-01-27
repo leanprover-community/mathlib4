@@ -119,3 +119,35 @@ lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O
   convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
   · simp only [EReal.coe_zero, zero_add]
   · simpa only [Real.rpow_zero] using h
+
+/-- If `f` is real-valued and `x` is strictly greater than the abscissa of absolute convergence
+of `f`, then the real series `∑' n, f n / n ^ x` converges. -/
+lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
+    (h : abscissaOfAbsConv (f ·) < x) :
+    Summable fun n : ℕ ↦ f n / (n : ℝ) ^ x := by
+  have h' : abscissaOfAbsConv (f ·) < (x : ℂ).re := by simpa only [ofReal_re] using h
+  have := LSeriesSummable_of_abscissaOfAbsConv_lt_re h'
+  rw [LSeriesSummable, show term _ _ = fun n ↦ _ from rfl] at this
+  conv at this =>
+    enter [1, n]
+    rw [term_def, ← ofReal_natCast, ← ofReal_cpow n.cast_nonneg, ← ofReal_div, ← ofReal_zero,
+      ← apply_ite]
+  rw [summable_ofReal] at this
+  refine this.congr_cofinite ?_
+  filter_upwards [Set.Finite.compl_mem_cofinite <| Set.finite_singleton 0] with n hn
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hn
+  exact if_neg hn
+
+/-- If `F` is a binary operation on `ℕ → ℂ` with the property that the `LSeries` of `F f g`
+converges whenever the `LSeries` of `f` and `g` do, then the abscissa of absolute convergence
+of `F f g` is at most the maximum of the abscissa of absolute convergence of `f`
+and that of `g`. -/
+lemma LSeries.abscissaOfAbsConv_binop_le {F : (ℕ → ℂ) → (ℕ → ℂ) → (ℕ → ℂ)}
+    (hF : ∀ {f g s}, LSeriesSummable f s → LSeriesSummable g s → LSeriesSummable (F f g) s)
+    (f g : ℕ → ℂ) :
+    abscissaOfAbsConv (F f g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) := by
+  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦  hF ?_ ?_
+  · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
+      (ofReal_re x).symm ▸ (le_max_left ..).trans_lt hx
+  · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
+      (ofReal_re x).symm ▸ (le_max_right ..).trans_lt hx

@@ -37,8 +37,6 @@ variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ P : Type*} {Mᵢ Nᵢ : �
 
 namespace QuadraticMap
 
-open QuadraticMap
-
 section Prod
 
 section Semiring
@@ -282,7 +280,7 @@ def Isometry.proj [Fintype ι] [DecidableEq ι] (i : ι) (Q : QuadraticMap R (M�
     rw [Pi.single_eq_of_ne hij, zero_apply]
 
 /-- Note that `QuadraticMap.Isometry.id` would not be well-typed as the RHS. -/
-@[simp, nolint simpNF]  -- ignore the bogus "Left-hand side does not simplify" lint error
+@[simp]
 theorem Isometry.proj_comp_single_of_same [Fintype ι] [DecidableEq ι]
     (i : ι) (Q : QuadraticMap R (Mᵢ i) P) :
     (proj i Q).comp (single _ i) = .ofEq (Pi.single_eq_same _ _) :=
@@ -346,9 +344,7 @@ end Semiring
 namespace Ring
 
 variable [CommRing R]
-variable [∀ i, AddCommGroup (Mᵢ i)] [∀ i, AddCommGroup (Nᵢ i)] [AddCommGroup P]
-variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)] [Module R P]
-variable [Fintype ι]
+variable [∀ i, AddCommGroup (Mᵢ i)] [AddCommGroup P] [∀ i, Module R (Mᵢ i)] [Module R P] [Fintype ι]
 
 @[simp] theorem polar_pi (Q : ∀ i, QuadraticMap R (Mᵢ i) P) (x y : ∀ i, Mᵢ i) :
     polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by
