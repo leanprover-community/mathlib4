@@ -789,14 +789,14 @@ theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
 
 @[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
 
-lemma ext_of_mulVec [DecidableEq n] [Fintype n] {M N : Matrix m n α}
+lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
     M = N := by
   ext i j
   simp_rw [mulVec_single_one] at h
   exact congrFun (h j) i
 
-lemma ext_of_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
+lemma ext_of_single_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
     (h : ∀ i, Pi.single i 1 ᵥ* M = Pi.single i 1 ᵥ* N) :
     M = N := by
   ext i j
