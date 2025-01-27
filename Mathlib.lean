@@ -1846,6 +1846,7 @@ import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.CategoryTheory.Generator.Abelian
 import Mathlib.CategoryTheory.Generator.Basic
+import Mathlib.CategoryTheory.Generator.Indization
 import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Generator.Presheaf
 import Mathlib.CategoryTheory.Generator.Sheaf
