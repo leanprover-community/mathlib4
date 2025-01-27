@@ -31,12 +31,12 @@ open KaehlerDifferential TensorProduct MvPolynomial
 
 namespace Algebra
 
-universe d e f g h i a b c
+universe w₁ w₂ w₃ w₄ w₅ u₁ u₂ u₃
 
-variable {R : Type a} {S : Type b} [CommRing R] [CommRing S] [Algebra R S]
-variable {T : Type c} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable (Q : Generators.{h} S T) (P : Generators.{g} R S)
-variable (Q' : Generators.{f} S T) (P' : Generators.{e} R S) (W : Generators.{d} R T)
+variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] [Algebra R S]
+variable {T : Type u₃} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (Q : Generators.{w₁} S T) (P : Generators.{w₂} R S)
+variable (Q' : Generators.{w₃} S T) (P' : Generators.{w₄} R S) (W : Generators.{w₅} R T)
 
 attribute [local instance] SMulCommClass.of_commMonoid
 
@@ -465,7 +465,7 @@ end instanceProblem
 
 end Generators
 
-variable {T : Type c} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T : Type u₃} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable (R S T)
 
