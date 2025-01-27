@@ -29,7 +29,7 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
     Q (f.sum g) = f.sum (fun i r => Q (g i r)) +
     ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
       Sym2.lift
-        ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩ p := by
+        ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩ p := by
   rw [sum, QuadraticMap.map_sum]
   exact congrArg (HAdd.hAdd _) rfl
 
