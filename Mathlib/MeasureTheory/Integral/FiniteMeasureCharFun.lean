@@ -35,8 +35,8 @@ The characteristic function of a `FiniteMeasure P` on `V` is the mapping
 `fun w => ∫ v, e (-L v w) ∂P = ∫ v, probChar w ∂P`
 
 We show:
-- `ext_of_charFun_eq`: If the characteristic functions of two measures `P` and `P'`
-  are equal, then `P = P'`. In other words, characteristic functions separate measures.
+- `ext_of_charFun_eq`: If the characteristic functions of two finite measures `P` and `P'`
+  are equal, then `P = P'`. In other words, characteristic functions separate finite measures.
 
 ## Example: Finite Dimensional Case
 
@@ -213,8 +213,8 @@ variable {V : Type*} [AddCommGroup V] [Module ℝ V] [PseudoEMetricSpace V] [Mea
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
 
 /--
-If the characteristic functions of two measures `P` and `P'` are equal, then `P = P'`. In other
-words, characteristic functions separate measures.
+If the characteristic functions of two finite measures `P` and `P'` are equal, then `P = P'`. In
+other words, characteristic functions separate finite measures.
 -/
 theorem FiniteMeasure.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
