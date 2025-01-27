@@ -26,6 +26,7 @@ of the Hahn-Banach theorem for TVS, which does not exist yet
 variable {𝕜: Type*} [NormedField 𝕜]
   {X Y Z: Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
   [NormedAddCommGroup Z] [NormedSpace 𝕜 Z]
+  {X' Y' : Type*} [NormedAddCommGroup X'] [NormedSpace 𝕜 X'] [NormedAddCommGroup Y'] [NormedSpace 𝕜 Y']
   {S T : X →L[𝕜] Y}
 
 open FiniteDimensional
@@ -89,6 +90,35 @@ lemma refl : IsFredholm 𝕜 (X := X) (Y := X) (ContinuousLinearEquiv.refl 𝕜 
 /-- The identity map has Fredholm index zero. -/
 lemma index_refl : index 𝕜 X X (ContinuousLinearEquiv.refl 𝕜 X) = 0 :=
   _root_.ContinuousLinearEquiv.index_eq _
+
+-- what about prod? does that make any sense?
+
+lemma prodMap {T' : X' ≃L[𝕜] Y'} (hT : IsFredholm 𝕜 (X := X) (Y := Y) T)
+    (hT' : IsFredholm 𝕜 (X := X') (Y := Y') T') :
+    IsFredholm 𝕜 (X := X × X') (Y := Y × Y') (T.prodMap T') := by
+  constructor
+  · erw [LinearMap.ker_prodMap]
+    -- TODO: FiniteDimensional.prod seems to be missing...
+    sorry
+  · dsimp
+    -- erw [Set.range_prod_map] fails
+    -- then, need the same lemma about finite-dimenisonality
+    sorry
+
+lemma index_prodMap {T' : X' ≃L[𝕜] Y'} (hT : IsFredholm 𝕜 (X := X) (Y := Y) T)
+    (hT' : IsFredholm 𝕜 (X := X') (Y := Y') T') :
+    index 𝕜 (X × X') (Y × Y') (T.prodMap T') = index 𝕜 X Y T + index 𝕜 X' Y' T' := by
+  rw [index]
+  --norm_cast does sth weird...
+  erw [LinearMap.ker_prodMap]
+  -- perhaps do a calc block?
+  -- rw [Module.finrank_prod]
+  -- erw [Finrank.prod]
+  -- simp
+  -- erw [Set.range_prod_map]
+  sorry
+
+#exit
 
 /-- An index zero Fredholm operator is injective iff it is surjective. -/
 lemma index_zero_injective_iff_surjective {T : X ≃L[𝕜] Y}
@@ -196,6 +226,6 @@ theorem IsFredholm.of_sum_isCompactOperator {T : X ≃L[𝕜] Y} {K : X →L[�
 theorem IsFredholm.index_sum_isCompactOperator {T : X ≃L[𝕜] Y} {K : X →L[𝕜] Y}
     (hT : IsFredholm 𝕜 (X := X) (Y := Y) T) (hK : IsCompactOperator K) :
     index 𝕜 X Y (T + K) = index 𝕜 X Y T := sorry
-  -- each tK is compact, then use local continuity
+  -- each tK is compact (by IsCompactOperator.smul), then use local continuity
 
 end IsFredholm
