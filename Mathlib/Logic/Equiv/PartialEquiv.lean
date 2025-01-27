@@ -563,15 +563,15 @@ theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofS
 /-- `Function.const` as a `PartialEquiv`.
   It consists of two constant maps in opposite directions. -/
 @[simps]
-def single {X Y : Type*} (x : X) (y : Y) : PartialEquiv X Y where
-  toFun := Function.const X y
-  invFun := Function.const Y x
-  source := {x}
-  target := {y}
+def single (a : α) (b : β) : PartialEquiv α β where
+  toFun := Function.const α b
+  invFun := Function.const β a
+  source := {a}
+  target := {b}
   map_source' := fun _ _ ↦ by rfl
   map_target' := fun _ _ ↦ by rfl
-  left_inv' := fun x' x'mem  ↦ by rw [Set.eq_of_mem_singleton x'mem]; rfl
-  right_inv' := fun y' y'mem ↦ by rw [Set.eq_of_mem_singleton y'mem]; rfl
+  left_inv' := fun a' ha'  ↦ by rw [eq_of_mem_singleton ha']; rfl
+  right_inv' := fun b' hb' ↦ by rw [eq_of_mem_singleton hb']; rfl
 
 /-- Composing two partial equivs if the target of the first coincides with the source of the
 second. -/
