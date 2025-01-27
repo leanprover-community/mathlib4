@@ -3,6 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.Integral
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 
@@ -26,27 +27,31 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {f : ℝ �
 
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to a probability measure `ν`, then
-`f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
-Note that the `ContinuousOn f (Ici 0)` hypothesis is really only about continuity at 0,
-since the convexity gives continuity elsewhere. -/
+`f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
 lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
-    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
+    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousWithinAt f (Ici 0) 0)
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
     f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
+  have hf_cont' : ContinuousOn f (Ici 0) := by
+    intro x hx
+    rcases eq_or_lt_of_le (α := ℝ) (hx : 0 ≤ x) with rfl | hx_pos
+    · exact hf_cont
+    · have h := hf_cvx.continuousOn_interior x
+      simp only [nonempty_Iio, interior_Ici', mem_Ioi] at h
+      rw [continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
+      exact (h hx_pos).continuousWithinAt
   calc f (μ univ).toReal
     = f (∫ x, (μ.rnDeriv ν x).toReal ∂ν) := by rw [Measure.integral_toReal_rnDeriv hμν]
   _ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
     rw [← average_eq_integral, ← average_eq_integral]
-    exact ConvexOn.map_average_le hf_cvx hf_cont isClosed_Ici (by simp)
+    exact ConvexOn.map_average_le hf_cvx hf_cont' isClosed_Ici (by simp)
       Measure.integrable_toReal_rnDeriv hf_int
 
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to `ν`, then
-`(ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
-Note that the `ContinuousOn f (Ici 0)` hypothesis is really only about continuity at 0,
-since the convexity gives continuity elsewhere. -/
+`(ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
 lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
+    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousWithinAt f (Ici 0) 0)
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
     (ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal)
       ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by

@@ -194,7 +194,7 @@ lemma mul_log_le_toReal_kl [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     congr 1
     rw [div_eq_inv_mul, ← mul_assoc, mul_inv_cancel₀, one_mul]
     simp [ENNReal.toReal_eq_zero_iff, hν]
-  · exact Continuous.continuousOn (by fun_prop)
+  · exact (Continuous.continuousAt (by fun_prop)).continuousWithinAt
   · rwa [integrable_rnDeriv_mul_log_iff hμν]
 
 lemma mul_log_le_kl (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
