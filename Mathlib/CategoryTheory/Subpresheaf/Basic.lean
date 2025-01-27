@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Basic
 
-
 /-!
 
 # Subpresheaf of types
@@ -46,6 +45,8 @@ variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
+
+lemma Subpresheaf.le_def (S T : Subpresheaf F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := Iff.rfl
 
 instance : Top (Subpresheaf F) :=
   ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by simp⟩⟩
