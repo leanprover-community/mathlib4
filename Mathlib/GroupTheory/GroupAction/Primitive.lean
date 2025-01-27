@@ -216,7 +216,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     exact H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
-(pretransitivity is automatic) -/
+    (pretransitivity is automatic) -/
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic)"]
@@ -307,7 +307,7 @@ theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
   apply Set.mem_univ
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
-the set of blocks containing a given element is a simple order -/
+    the set of blocks containing a given element is a simple order -/
 @[to_additive
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
