@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Sites.IsSheafFor
-
+import Mathlib.Data.Set.Basic
 
 /-!
 
@@ -48,6 +45,8 @@ variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
+
+lemma Subpresheaf.le_def (S T : Subpresheaf F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := Iff.rfl
 
 instance : Top (Subpresheaf F) :=
   ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by simp⟩⟩
@@ -115,94 +114,12 @@ theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 
-/-- If the image of a morphism falls in a subpresheaf, then the morphism factors through it. -/
-@[simps!]
-def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' ⟶ G.toPresheaf where
-  app U x := ⟨f.app U x, hf U x⟩
-  naturality := by
-    have := elementwise_of% f.naturality
-    intros
-    refine funext fun x => Subtype.ext ?_
-    simp only [toPresheaf_obj, types_comp_apply]
-    exact this _ _
-
-@[reassoc (attr := simp)]
-theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
-    G.lift f hf ≫ G.ι = f := by
-  ext
-  rfl
-
-/-- Given a subpresheaf `G` of `F`, an `F`-section `s` on `U`, we may define a sieve of `U`
-consisting of all `f : V ⟶ U` such that the restriction of `s` along `f` is in `G`. -/
-@[simps]
-def Subpresheaf.sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) where
-  arrows V f := F.map f.op s ∈ G.obj (op V)
-  downward_closed := @fun V W i hi j => by
-    simp only [op_unop, op_comp, FunctorToTypes.map_comp_apply]
-    exact G.map _ hi
-
-/-- Given an `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
-`G` consisting of the restrictions of `s` -/
-def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
-    (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun _ i hi => ⟨F.map i.op s, hi⟩
-
-theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
-    (G.familyOfElementsOfSection s).Compatible := by
-  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
-  change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
-  rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
-
 theorem Subpresheaf.nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
-section Image
-
-/-- The image presheaf of a morphism, whose components are the set-theoretic images. -/
-@[simps]
-def imagePresheaf (f : F' ⟶ F) : Subpresheaf F where
-  obj U := Set.range (f.app U)
-  map := by
-    rintro U V i _ ⟨x, rfl⟩
-    have := elementwise_of% f.naturality
-    exact ⟨_, this i x⟩
-
 @[simp]
 theorem top_subpresheaf_obj (U) : (⊤ : Subpresheaf F).obj U = ⊤ :=
   rfl
-
-@[simp]
-theorem imagePresheaf_id : imagePresheaf (𝟙 F) = ⊤ := by
-  ext
-  simp
-
-/-- A morphism factors through the image presheaf. -/
-@[simps!]
-def toImagePresheaf (f : F' ⟶ F) : F' ⟶ (imagePresheaf f).toPresheaf :=
-  (imagePresheaf f).lift f fun _ _ => Set.mem_range_self _
-
-@[reassoc (attr := simp)]
-theorem toImagePresheaf_ι (f : F' ⟶ F) : toImagePresheaf f ≫ (imagePresheaf f).ι = f :=
-  (imagePresheaf f).lift_ι _ _
-
-theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
-    imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
-
-instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') [hf : Mono f] :
-  IsIso (toImagePresheaf f) := by
-  have : ∀ (X : Cᵒᵖ), IsIso ((toImagePresheaf f).app X) := by
-    intro X
-    rw [isIso_iff_bijective]
-    constructor
-    · intro x y e
-      have := (NatTrans.mono_iff_mono_app f).mp hf X
-      rw [mono_iff_injective] at this
-      exact this (congr_arg Subtype.val e :)
-    · rintro ⟨_, ⟨x, rfl⟩⟩
-      exact ⟨x, rfl⟩
-  apply NatIso.isIso_of_isIso_app
-
-end Image
 
 end CategoryTheory

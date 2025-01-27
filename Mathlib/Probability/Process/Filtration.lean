@@ -212,10 +212,14 @@ instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
 filtration is uniformly integrable. -/
-theorem Integrable.uniformIntegrable_condexp_filtration [Preorder ι] {μ : Measure Ω}
+theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
-  hg.uniformIntegrable_condexp f.le
+  hg.uniformIntegrable_condExp f.le
+
+@[deprecated (since := "2025-01-21")]
+alias Integrable.uniformIntegrable_condexp_filtration :=
+  Integrable.uniformIntegrable_condExp_filtration
 
 section OfSet
 
