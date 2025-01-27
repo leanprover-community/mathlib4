@@ -51,7 +51,7 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
     | _, _, _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun e₁ _ ↦ n e₁
 
 -- sometimes the built-in injectivity support does not work
-@[simp] -- @[nolint simpNF]
+@[simp]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
   ⟨fun h ↦ by cases h; simp,
@@ -169,11 +169,11 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   obtain rfl | ha := eq_or_ne ia ja
   · obtain rfl | hb := eq_or_ne ib jb
     · simp
-    · simp only [update_same]
-      rw [Function.update_noteq (mt _ hb.symm), Function.update_noteq hb.symm]
+    · simp only [update_self]
+      rw [Function.update_of_ne (mt _ hb.symm), Function.update_of_ne hb.symm]
       rintro h
       injection h
-  · rw [Function.update_noteq (ne_of_apply_ne Sigma.fst _), Function.update_noteq]
+  · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm
     · exact ha.symm
 

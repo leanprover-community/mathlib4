@@ -491,10 +491,10 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
-  { Polynomial.toLaurent with
-    commutes' := fun f l => by simp [mul_comm]
-    smul_def' := fun _ _ => rfl }
+instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] where
+  algebraMap := Polynomial.toLaurent
+  commutes' := fun f l => by simp [mul_comm]
+  smul_def' := fun _ _ => rfl
 
 theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :=
   Polynomial.toLaurent_X_pow n

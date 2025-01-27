@@ -41,12 +41,11 @@ between both types, we attempt to prove and state most results on `Ordinal`.
 
 universe u v
 
-open Function Order
+open Function Order Set
 
 noncomputable section
 
 /-! ### Basic casts between `Ordinal` and `NatOrdinal` -/
-
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
@@ -180,9 +179,10 @@ to normal ordinal addition, it is commutative.
 
 Natural addition can equivalently be characterized as the ordinal resulting from adding up
 corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
-noncomputable def nadd (a b : Ordinal) : Ordinal :=
-  max (blsub.{u, u} a fun a' _ => nadd a' b) (blsub.{u, u} b fun b' _ => nadd a b')
+noncomputable def nadd (a b : Ordinal.{u}) : Ordinal.{u} :=
+  max (⨆ x : Iio a, succ (nadd x.1 b)) (⨆ x : Iio b, succ (nadd a x.1))
 termination_by (a, b)
+decreasing_by all_goals cases x; decreasing_tactic
 
 @[inherit_doc]
 scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
@@ -206,18 +206,13 @@ scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
 
 /-! ### Natural addition -/
 
-
-theorem nadd_def (a b : Ordinal) :
-    a ♯ b = max (blsub.{u, u} a fun a' _ => a' ♯ b) (blsub.{u, u} b fun b' _ => a ♯ b') := by
-  rw [nadd]
-
 theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
-  rw [nadd_def]
-  simp [lt_blsub_iff]
+  rw [nadd]
+  simp [Ordinal.lt_iSup_iff]
 
 theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
-  rw [nadd_def]
-  simp [blsub_le_iff]
+  rw [← not_lt, lt_nadd_iff]
+  simp
 
 theorem nadd_lt_nadd_left (h : b < c) (a) : a ♯ b < a ♯ c :=
   lt_nadd_iff.2 (Or.inr ⟨b, h, le_rfl⟩)
@@ -238,13 +233,13 @@ theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
 variable (a b)
 
 theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
-  rw [nadd_def, nadd_def, max_comm]
-  congr <;> ext <;> apply nadd_comm
+  rw [nadd, nadd, max_comm]
+  congr <;> ext x <;> cases x <;> apply congr_arg _ (nadd_comm _ _)
 termination_by (a, b)
 
+@[deprecated "blsub will soon be deprecated" (since := "2024-11-18")]
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
-    -- Porting note: needed to add universe hint blsub.{u,v} in the line below
     blsub.{u,v} _ f =
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
         (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
@@ -258,30 +253,48 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     rintro c ⟨d, hd, rfl⟩
     apply mem_brange_self
 
+private theorem iSup_nadd_of_monotone {a b} (f : Ordinal.{u} → Ordinal.{u}) (h : Monotone f) :
+    ⨆ x : Iio (a ♯ b), f x = max (⨆ a' : Iio a, f (a'.1 ♯ b)) (⨆ b' : Iio b, f (a ♯ b'.1)) := by
+  apply (max_le _ _).antisymm'
+  · rw [Ordinal.iSup_le_iff]
+    rintro ⟨i, hi⟩
+    obtain ⟨x, hx, hi⟩ | ⟨x, hx, hi⟩ := lt_nadd_iff.1 hi
+    · exact le_max_of_le_left ((h hi).trans <| Ordinal.le_iSup (fun x : Iio a ↦ _) ⟨x, hx⟩)
+    · exact le_max_of_le_right ((h hi).trans <| Ordinal.le_iSup (fun x : Iio b ↦ _) ⟨x, hx⟩)
+  all_goals
+    apply csSup_le_csSup' (bddAbove_of_small _)
+    rintro _ ⟨⟨c, hc⟩, rfl⟩
+    refine mem_range_self (⟨_, ?_⟩ : Iio _)
+    apply_rules [nadd_lt_nadd_left, nadd_lt_nadd_right]
+
 theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
-  rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
-  · congr <;> ext <;> apply nadd_assoc
-  · exact fun _ _ h => nadd_le_nadd_left h a
-  · exact fun _ _ h => nadd_le_nadd_right h c
+  unfold nadd
+  rw [iSup_nadd_of_monotone fun a' ↦ succ (a' ♯ c), iSup_nadd_of_monotone fun b' ↦ succ (a ♯ b'),
+    max_assoc]
+  · congr <;> ext x <;> cases x <;> apply congr_arg _ (nadd_assoc _ _ _)
+  · exact succ_mono.comp fun x y h ↦ nadd_le_nadd_left h _
+  · exact succ_mono.comp fun x y h ↦ nadd_le_nadd_right h _
 termination_by (a, b, c)
 
 @[simp]
-theorem nadd_zero : a ♯ 0 = a := by
-  induction' a using Ordinal.induction with a IH
-  rw [nadd_def, blsub_zero, max_zero_right]
-  convert blsub_id a
-  rename_i hb
-  exact IH _ hb
+theorem nadd_zero (a : Ordinal) : a ♯ 0 = a := by
+  rw [nadd, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
+  convert iSup_succ a
+  rename_i x
+  cases x
+  exact nadd_zero _
+termination_by a
 
 @[simp]
 theorem zero_nadd : 0 ♯ a = a := by rw [nadd_comm, nadd_zero]
 
 @[simp]
-theorem nadd_one : a ♯ 1 = succ a := by
-  induction' a using Ordinal.induction with a IH
-  rw [nadd_def, blsub_one, nadd_zero, max_eq_right_iff, blsub_le_iff]
-  intro i hi
-  rwa [IH i hi, succ_lt_succ_iff]
+theorem nadd_one (a : Ordinal) : a ♯ 1 = succ a := by
+  rw [nadd, ciSup_unique (s := fun _ : Iio 1 ↦ _), Iio_one_default_eq, nadd_zero,
+    max_eq_right_iff, Ordinal.iSup_le_iff]
+  rintro ⟨i, hi⟩
+  rwa [nadd_one, succ_le_succ_iff, succ_le_iff]
+termination_by a
 
 @[simp]
 theorem one_nadd : 1 ♯ a = succ a := by rw [nadd_comm, nadd_one]
@@ -305,8 +318,9 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
   | H₃ c hc H =>
-    simp_rw [← IsNormal.blsub_eq.{u, u} (isNormal_add_right a) hc, blsub_le_iff]
-    exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
+    rw [(isNormal_add_right a).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+    rintro ⟨i, hi⟩
+    exact (H i hi).trans (nadd_le_nadd_left hi.le a)
 
 end Ordinal
 
@@ -435,7 +449,6 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
   @add_right_comm NatOrdinal _
 
 /-! ### Natural multiplication -/
-
 
 variable {a b c d : Ordinal.{u}}
 
@@ -697,8 +710,9 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [← IsNormal.blsub_eq.{u, u} (isNormal_mul_right ha) hc, blsub_le_iff]
-      exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
+    · rw [(isNormal_mul_right ha).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+      rintro ⟨i, hi⟩
+      exact (H i hi).trans (nmul_le_nmul_left hi.le a)
 
 @[deprecated mul_le_nmul (since := "2024-08-20")]
 alias _root_.NatOrdinal.mul_le_nmul := mul_le_nmul

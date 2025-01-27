@@ -6,6 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
@@ -76,6 +77,23 @@ export ENorm (enorm)
 @[inherit_doc] notation "‖" e "‖" => norm e
 @[inherit_doc] notation "‖" e "‖₊" => nnnorm e
 @[inherit_doc] notation "‖" e "‖ₑ" => enorm e
+
+section ENorm
+variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
+
+instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
+
+lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
+
+@[simp, norm_cast] lemma coe_le_enorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [enorm]
+@[simp, norm_cast] lemma enorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [enorm]
+@[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
+@[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
+
+@[simp] lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
+@[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
+
+end ENorm
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -428,33 +446,6 @@ attribute [bound] norm_nonneg
 @[to_additive (attr := simp) abs_norm]
 theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
-`norm_nonneg'`. -/
-@[positivity Norm.norm _]
-def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
-    let _inst ← synthInstanceQ q(SeminormedGroup $β)
-    assertInstancesCommute
-    pure (.nonnegative q(norm_nonneg' $a))
-  | _, _, _ => throwError "not ‖ · ‖"
-
-/-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
-@[positivity Norm.norm _]
-def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
-    let _inst ← synthInstanceQ q(SeminormedAddGroup $β)
-    assertInstancesCommute
-    pure (.nonnegative q(norm_nonneg $a))
-  | _, _, _ => throwError "not ‖ · ‖"
-
-end Mathlib.Meta.Positivity
-
 @[to_additive (attr := simp) norm_zero]
 theorem norm_one' : ‖(1 : E)‖ = 0 := by rw [← dist_one_right, dist_self]
 
@@ -678,6 +669,13 @@ theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
   @Real.toNNReal_coe ‖a‖₊
 
+@[to_additive toReal_enorm]
+lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
+
+@[to_additive ofReal_norm]
+lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
+  simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
+
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
@@ -704,6 +702,10 @@ theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
 theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
+@[to_additive enorm_add_le]
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
+  simpa [enorm, ← ENNReal.coe_add] using nnnorm_mul_le' a b
+
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
@@ -716,6 +718,9 @@ lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
@@ -749,6 +754,10 @@ theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
 @[to_additive]
 theorem nnnorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_div_le _ _
+
+@[to_additive]
+lemma enorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
+  simpa [enorm, ← ENNReal.coe_add] using nnnorm_div_le a b
 
 @[to_additive nndist_nnnorm_nnnorm_le]
 theorem nndist_nnnorm_nnnorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
@@ -820,19 +829,16 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r
 
 end NNNorm
 
-section ENNNorm
+section ENorm
 
-instance {E : Type*} [NNNorm E] : ENorm E where
-  enorm := (‖·‖₊ : E → ℝ≥0∞)
-
-lemma enorm_eq_nnnorm {E : Type*} [NNNorm E] {x : E} : ‖x‖ₑ = ‖x‖₊ := rfl
+@[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
 
 instance : ENorm ℝ≥0∞ where
   enorm x := x
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-end ENNNorm
+end ENorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -876,6 +882,10 @@ theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) 
   simpa [dist_eq_norm_div] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
+@[to_additive]
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
+
 @[to_additive tendsto_norm]
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
@@ -892,6 +902,10 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 @[to_additive (attr := continuity) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
+
+@[to_additive (attr := continuity) continuous_enorm]
+lemma continuous_enorm' : Continuous fun a : E ↦ ‖a‖ₑ :=
+  ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -923,11 +937,15 @@ theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f
 theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
   Tendsto.comp continuous_nnnorm'.continuousAt h
 
+@[to_additive Filter.Tendsto.enorm]
+lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
+  .comp continuous_enorm'.continuousAt h
+
 end
 
 section
 
-variable [TopologicalSpace α] {f : α → E}
+variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
 
 @[to_additive (attr := fun_prop) Continuous.norm]
 theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
@@ -937,6 +955,9 @@ theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
 theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
   continuous_nnnorm'.comp
 
+@[to_additive (attr := fun_prop) Continuous.enorm]
+lemma Continuous.enorm' : Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm'.comp
+
 @[to_additive (attr := fun_prop) ContinuousAt.norm]
 theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖) a :=
   Tendsto.norm' h
@@ -944,6 +965,9 @@ theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x
 @[to_additive (attr := fun_prop) ContinuousAt.nnnorm]
 theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
   Tendsto.nnnorm' h
+
+@[to_additive (attr := fun_prop) ContinuousAt.enorm]
+lemma ContinuousAt.enorm' (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
 
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
@@ -955,6 +979,10 @@ theorem ContinuousWithinAt.nnnorm' {s : Set α} {a : α} (h : ContinuousWithinAt
     ContinuousWithinAt (fun x => ‖f x‖₊) s a :=
   Tendsto.nnnorm' h
 
+@[to_additive ContinuousWithinAt.enorm]
+lemma ContinuousWithinAt.enorm' (h : ContinuousWithinAt f s a) : ContinuousWithinAt (‖f ·‖ₑ) s a :=
+  Tendsto.enorm' h
+
 @[to_additive (attr := fun_prop) ContinuousOn.norm]
 theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x => ‖f x‖) s :=
   fun x hx => (h x hx).norm'
@@ -962,6 +990,10 @@ theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (f
 @[to_additive (attr := fun_prop) ContinuousOn.nnnorm]
 theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
     ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnnorm'
+
+@[to_additive (attr := fun_prop) ContinuousOn.enorm]
+lemma ContinuousOn.enorm' (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
+  fun x hx => (h x hx).enorm'
 
 end
 
@@ -980,9 +1012,6 @@ theorem SeminormedCommGroup.mem_closure_iff :
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  #adaptation_note /-- nightly-2024-03-11.
-  Originally this was `simp_rw` instead of `simp only`,
-  but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`. -/
   simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 
 @[to_additive]
@@ -1261,15 +1290,16 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 
 @[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
 @[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
+@[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
 
 @[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
+    ‖(ofNat(n) : ℝ)‖ = ofNat(n) := norm_natCast n
 
 @[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+    ‖(ofNat(n) : ℝ)‖₊ = ofNat(n) := nnnorm_natCast n
 
 lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
 lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
@@ -1283,8 +1313,11 @@ lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by simp [nnnorm
 theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
   NNReal.eq <| norm_of_nonneg hr
 
-@[simp]
-theorem nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
+lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
+  simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
+
+@[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
+@[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]
 
 theorem ennnorm_eq_ofReal (hr : 0 ≤ r) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal r := by
   rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg hr]
@@ -1315,6 +1348,16 @@ instance : NNNorm ℝ≥0 where
 @[simp] lemma nnnorm_eq_self (x : ℝ≥0) : ‖x‖₊ = x := rfl
 
 end NNReal
+
+ -- Porting note: increase priority so that the LHS doesn't simplify
+@[to_additive (attr := simp 1001) norm_norm]
+lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)
+
+@[to_additive (attr := simp) nnnorm_norm]
+lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]
+
+@[to_additive (attr := simp) enorm_norm]
+lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 end SeminormedCommGroup
 
@@ -1368,12 +1411,21 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
+@[to_additive (attr := simp) enorm_eq_zero]
+lemma enorm_eq_zero' : ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm]
+
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnnorm_eq_zero'.not
 
+@[to_additive enorm_ne_zero]
+lemma enorm_ne_zero' : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+
+@[to_additive (attr := simp) enorm_pos]
+lemma enorm_pos' : 0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
@@ -1435,6 +1487,58 @@ theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ 
 alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff
 
 end NormedAddGroup
+
+/-! ### `positivity` extensions -/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
+on non-one inputs. -/
+@[positivity ‖_‖]
+def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
+    assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
+    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
+      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
+      return some (normedGroup_E, pa)
+    match o with
+    -- If so, return a proof of `0 < ‖a‖`
+    | some (_normedGroup_E, pa) =>
+      assertInstancesCommute
+      return .positive q(norm_pos_iff'.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
+    | none => return .nonnegative q(norm_nonneg' $a)
+  | _, _, _ => throwError "not `‖·‖`"
+
+/-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
+on non-zero inputs. -/
+@[positivity ‖_‖]
+def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
+    assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
+    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
+      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
+      return some (normedAddGroup_E, pa)
+    match o with
+    -- If so, return a proof of `0 < ‖a‖`
+    | some (_normedAddGroup_E, pa) =>
+      assertInstancesCommute
+      return .positive q(norm_pos_iff.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
+    | none => return .nonnegative q(norm_nonneg $a)
+  | _, _, _ => throwError "not `‖·‖`"
+
+end Mathlib.Meta.Positivity
 
 /-! ### Subgroups of normed groups -/
 

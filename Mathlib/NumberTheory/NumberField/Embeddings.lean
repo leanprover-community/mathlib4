@@ -881,7 +881,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype (K ≃ₐ[k] K)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert even_zero
+  · convert Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -894,7 +894,7 @@ lemma even_finrank_of_not_isUnramified [IsGalois k K]
     (hw : ¬ IsUnramified k w) : Even (finrank k K) := by
   by_cases FiniteDimensional k K
   · exact IsGalois.card_aut_eq_finrank k K ▸ even_card_aut_of_not_isUnramified hw
-  · exact finrank_of_not_finite ‹_› ▸ even_zero
+  · exact finrank_of_not_finite ‹_› ▸ Even.zero
 
 lemma isUnramified_smul_iff :
     IsUnramified k (σ • w) ↔ IsUnramified k w := by
@@ -1096,4 +1096,28 @@ lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
 instance : Subsingleton (InfinitePlace ℚ) where
   allEq a b := by ext; simp
 
+lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
+  ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
+
 end Rat
+
+/-
+
+## Totally real number fields
+
+-/
+
+namespace NumberField
+
+/-- A number field `K` is totally real if all of its infinite places
+are real. In other words, the image of every ring homomorphism `K → ℂ`
+is a subset of `ℝ`. -/
+class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+  isReal : ∀ v : InfinitePlace K, v.IsReal
+
+instance : IsTotallyReal ℚ where
+  isReal v := by
+    rw [Subsingleton.elim v Rat.infinitePlace]
+    exact Rat.isReal_infinitePlace
+
+end NumberField
