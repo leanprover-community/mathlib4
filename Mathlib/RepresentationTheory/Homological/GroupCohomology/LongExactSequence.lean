@@ -9,89 +9,7 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 universe u
 
-lemma MonoidHom.coe_id {G : Type*} [MulOneClass G] :
-    ⇑(MonoidHom.id G) = _root_.id := rfl
-
-theorem CategoryTheory.ShortComplex.ShortExact.δ_apply_aux
-    {C : Type*} [Category C] [HasForget C] [HasForget₂ C Ab] [Abelian C]
-    [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*} {c : ComplexShape ι}
-    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι)
-    (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
-    (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :
-    ((forget₂ C Ab).map (S.X₁.d j k)) x₁ = 0 := by
-  have := hS.mono_f
-  apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
-  rw [← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply, hx₁,
-    ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, map_zero,
-    AddMonoidHom.zero_apply]
-
-namespace CategoryTheory.ShortComplex
-open Limits
 section
-
-variable {C : Type*} [Category C] [Abelian C] (S : SnakeInput C)
-
-theorem SnakeInput.mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
-  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
-
-theorem SnakeInput.epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
-  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
-
-theorem SnakeInput.isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
-  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
-
-/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
-noncomputable def SnakeInput.δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
-    S.L₀.X₃ ≅ S.L₃.X₁ :=
-  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
-
-end
-section
-
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
-    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
-
-theorem ShortExact.mono_δ (hi : IsZero (S.X₂.homology i)) : Mono (hS.δ i j hij) :=
-  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).mono_δ hi
-
-theorem ShortExact.epi_δ (hj : IsZero (S.X₂.homology j)) : Epi (hS.δ i j hij) :=
-  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).epi_δ hj
-
-theorem ShortExact.isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
-    IsIso (hS.δ i j hij) :=
-  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
-
-/-- If `c.Rel i j` and `Hᵢ(X₂), Hⱼ(X₂)` are trivial, `δ` defines an isomorphism
-`Hᵢ(X₃) ≅ Hⱼ(X₁)`. -/
-noncomputable def ShortExact.δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
-    S.X₃.homology i ≅ S.X₁.homology j :=
-  @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
-
-end
-end CategoryTheory.ShortComplex
-namespace CategoryTheory.ShortComplex
-
-variable {R : Type u} [Ring R] {M : ShortComplex (ModuleCat R)}
-    (x : LinearMap.ker M.g.hom)
-
-theorem forget₂_moduleCat_mapCyclesIso (M : ShortComplex (ModuleCat R)) :
-    (M.mapCyclesIso (forget₂ (ModuleCat R) Ab)) ≪≫
-      (forget₂ (ModuleCat R) Ab).mapIso M.moduleCatCyclesIso = ShortComplex.abCyclesIso _ := by
-  apply Iso.ext
-  rw [← Iso.inv_eq_inv]
-  refine (cancel_mono (M.map (forget₂ (ModuleCat R) Ab)).iCycles).1 ?_
-  simp only [Iso.trans_inv, Functor.mapIso_inv, ← Functor.map_comp, Category.assoc, mapCyclesIso,
-    LeftHomologyData.cyclesIso_inv_comp_iCycles, abCyclesIso]
-  exact congr((forget₂ (ModuleCat R) Ab).map $(moduleCatCyclesIso_inv_iCycles _))
-
-theorem moduleCatCyclesIso_inv_apply {M : ShortComplex (ModuleCat R)}
-    (x : M.X₂) (hx : M.g x = 0) :
-    M.moduleCatCyclesIso.inv ⟨x, hx⟩ = M.cyclesMk x hx := by
-  have := congr(Iso.inv $(forget₂_moduleCat_mapCyclesIso M))
-  rw [Iso.trans_inv, Iso.comp_inv_eq] at this
-  exact congr($this ⟨x, _⟩)
-
-end CategoryTheory.ShortComplex
 
 namespace groupCohomology
 
@@ -146,12 +64,6 @@ lemma mapShortComplex₃_exact {i j : ℕ} (hij : i + 1 = j) :
     (mapShortComplex₃ hX hij).Exact :=
   (cochainsMap_shortExact hX).homology_exact₃ i j hij
 
-theorem δ_apply_aux {i j l : ℕ} (y : (Fin i → G) → X.X₂)
-    (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
-    (inhomogeneousCochains X.X₁).d j l x = 0 :=
-  ShortExact.δ_apply_aux (cochainsMap_shortExact hX) i j y x
-    (by simpa [cochainsMap_id_eq_compLeft] using hx) l
-
 theorem δ_apply (i j l : ℕ) (hij : i + 1 = j) (hjl : (ComplexShape.up ℕ).next j = l)
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
     (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
@@ -159,8 +71,9 @@ theorem δ_apply (i j l : ℕ) (hij : i + 1 = j) (hjl : (ComplexShape.up ℕ).ne
     (cochainsMap_shortExact hX).δ i j hij (groupCohomologyπ X.X₃ i <|
       (moduleCatCyclesIso _).inv ⟨z, show ((inhomogeneousCochains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) = groupCohomologyπ X.X₁ j
-      ((moduleCatCyclesIso _).inv ⟨x, δ_apply_aux hX y x hx⟩) := by
-  convert ShortExact.δ_apply (cochainsMap_shortExact hX) i j hij z
+      ((moduleCatCyclesIso _).inv ⟨x, ((cochainsMap_shortExact hX).δ_apply_aux i j y x
+        (by simpa [cochainsMap_id_eq_compLeft] using hx) l)⟩) := by
+  convert (cochainsMap_shortExact hX).δ_apply i j hij z
     hz y hy x (by simpa [cochainsMap_id_eq_compLeft] using hx) l hjl
   <;> rw [moduleCatCyclesIso_inv_apply]
   <;> rfl
@@ -174,8 +87,8 @@ noncomputable def δ₀ :
 
 theorem δ₀_apply_aux (y : X.X₂) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     dOne X.X₁ x = 0 := by
-  have hδ := δ_apply_aux hX (l := 2) ((zeroCochainsLequiv X.X₂).symm y)
-    ((oneCochainsLequiv X.X₁).symm x)
+  have hδ := (cochainsMap_shortExact hX).δ_apply_aux 0 1 ((zeroCochainsLequiv X.X₂).symm y)
+    ((oneCochainsLequiv X.X₁).symm x) ?_ 2
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
   have h0 := congr($((CommSq.vert_inv
@@ -223,8 +136,8 @@ noncomputable def δ₁ :
 
 theorem δ₁_apply_aux (y : G → X.X₂) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     dTwo X.X₁ x = 0 := by
-  have hδ := δ_apply_aux hX (l := 3) ((oneCochainsLequiv X.X₂).symm y)
-    ((twoCochainsLequiv X.X₁).symm x)
+  have hδ := (cochainsMap_shortExact hX).δ_apply_aux 1 2 ((oneCochainsLequiv X.X₂).symm y)
+    ((twoCochainsLequiv X.X₁).symm x) ?_ 3
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH2Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH2Iso X.X₁).hom.comm₂₃) x)
   have h2 := congr($((CommSq.vert_inv
