@@ -202,10 +202,4 @@ lemma single_vecMul_toMatrix_toPEquiv [Fintype m] [NonAssocSemiring α] (σ : m 
   ext j
   simp [Pi.single_apply]
 
-@[simp]
-lemma toMatrix_toPEquiv_mul_toMatrix_toPEquiv_symm [Fintype m] [Semiring α] (σ : m ≃ m) :
-    σ.toPEquiv.toMatrix (α := α) * σ.symm.toPEquiv.toMatrix = 1 := by
-  rw [← PEquiv.toMatrix_trans, ← Equiv.toPEquiv_trans, Equiv.self_trans_symm, Equiv.toPEquiv_refl,
-    PEquiv.toMatrix_refl]
-
 end Equiv
