@@ -203,3 +203,5 @@ lemma cochainsMap_f_3_comp_threeCochainsLequiv :
   show φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
+
+end groupCohomology
