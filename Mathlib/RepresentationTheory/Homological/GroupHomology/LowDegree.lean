@@ -695,6 +695,7 @@ section H0
 section
 variable [DecidableEq G]
 
+/-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
 def isoZeroCycles : cycles A 0 ≅ ModuleCat.of k A :=
   (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop)
     ≪≫ (zeroChainsLequiv A).toModuleIso
@@ -710,6 +711,7 @@ end
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (mkQ_comp_dZero A)
 
+/-- The quotient map `Z₀(G, A) → H₀(G, A).` -/
 abbrev H0π : ModuleCat.of k A ⟶ ModuleCat.of k (H0 A) := (shortComplexH0 A).g
 
 lemma H0π_eq_zero_iff (x : A) : H0π A x = 0 ↔ x ∈ augmentationSubmodule A.ρ :=
@@ -933,3 +935,4 @@ end H2
 end groupHomologyIso
 
 end groupHomology
+#lint
