@@ -382,6 +382,29 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G w
   counitIso :=
     (functorOfNatTransComp _ _).symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransId
 
+namespace Terminal
+
+variable {A} (h : @Limits.IsTerminal (Coalgebra F) _ A)
+
+/-- The inverse of the structure map of an terminal coalgebra -/
+@[simp]
+def strInv : F.obj A.1 ⟶ A.1 :=
+  (h.from ⟨F.obj A.V, F.map A.str⟩ ).f
+
+theorem left_inv : A.str ≫ strInv h = 𝟙 _ := by
+  sorry
+
+theorem right_inv : strInv h ≫ A.str = 𝟙 _ := by
+  sorry
+
+/-- The structure map of the terminal coalgebra is an isomorphism,
+hence endofunctors preserve their terminal coalgebras
+-/
+theorem str_isIso (h : Limits.IsTerminal A) : IsIso A.str :=
+  { out := ⟨strInv h, left_inv _, right_inv _⟩  }
+
+end Terminal
+
 end Coalgebra
 
 namespace Adjunction
