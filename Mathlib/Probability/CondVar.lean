@@ -26,7 +26,7 @@ variable {Ω : Type*} {m₀ m : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω 
   {s : Set Ω}
 
 variable (m X μ) in
-/-- Conditional variance of a real-valued random variable. It is defined as 0 if any one of the
+/-- Conditional variance of a real-valued random variable. It is defined as `0` if any one of the
 following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
@@ -34,6 +34,13 @@ following conditions is true:
 noncomputable def condVar : Ω → ℝ := μ[(X - μ[X | m]) ^ 2 | m]
 
 @[inherit_doc] scoped notation "Var[" X " ; " μ " | " m "]" => condVar m X μ
+
+/-- Conditional variance of a real-valued random variable. It is defined as `0` if any one of the
+following conditions is true:
+- `m` is not a sub-σ-algebra of `m₀`,
+- `volume` is not σ-finite with respect to `m`,
+- `X - 𝔼[X | m]` is not square-integrable. -/
+scoped notation "Var[" f "|" m "]" => Var[f ; MeasureTheory.volume | m]
 
 lemma condVar_of_not_le (hm : ¬m ≤ m₀) : Var[X ; μ | m] = 0 := by rw [condVar, condExp_of_not_le hm]
 
