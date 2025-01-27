@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
+import Mathlib.CategoryTheory.Comma.Final
 
 /-!
 # Morphisms of ind-objects
@@ -19,7 +20,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E] (F : D ⥤ C) (G : E ⥤ C)
 
 instance [IsFiltered D] [IsFiltered E] [G.Final] : IsFiltered (Comma F G) := sorry
-instance [IsFiltered D] [IsFiltered E] [G.Final] : (Comma.fst F G).Final := sorry
 instance [IsFiltered D] [IsFiltered E] [G.Final] : (Comma.snd F G).Final := sorry
 
 end CommaFacts

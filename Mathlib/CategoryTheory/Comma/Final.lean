@@ -69,7 +69,7 @@ variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-instance final_fst [R.Final] : (fst L R).Final := by
+/- instance final_fst [R.Final] : (fst L R).Final := by
   let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
   let sB : B ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} B := AsSmall.equiv
   let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
@@ -81,7 +81,7 @@ instance final_fst [R.Final] : (fst L R).Final := by
       (isoWhiskerRight sB.unitIso (R ⋙ sT.functor)).hom
   have : Final (fst L' R') := final_fst_small _ _
   apply final_of_natIso (F := (fC ⋙ fst L' R' ⋙ sA.inverse))
-  exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _))
+  exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _) -/)
 
 instance initial_snd [L.Initial] : (snd L R).Initial := by
   haveI : ((opFunctor L R).leftOp ⋙ fst R.op L.op).Final :=
