@@ -38,7 +38,7 @@ theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι �
     Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
     ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
       Sym2.lift
-        ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j => by
+        ⟨fun i j => l i • l j • polar Q (g i) (g j), fun i j => by
           simp only [polar_comm]
           rw [smul_comm]⟩ p := by
   simp_rw [linearCombination_apply, map_finsupp_sum,
