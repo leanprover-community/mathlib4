@@ -467,11 +467,25 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
+/-- Represents a permutation as product of disjoint cycles:
+```
+#eval (1 : Perm (Fin 4))
+-- 1
+
+#eval (c[0, 1] : Perm (Fin 4))
+-- c[0, 1]
+
+#eval (c[0, 1] * c[2, 3] : Perm (Fin 4))
+-- c[0, 1] * c[2, 3]
+```
+-/
 unsafe instance instRepr [Repr α] : Repr (Perm α) where
   reprPrec f prec :=
+    -- Obtains a list of formats which represents disjoint cycles.
     letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
       (Perm.cycleFactorsFinset f).val
       fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
+    -- And, intercalate `*`s.
     match l with
     | []  => "1"
     | [f] => f
