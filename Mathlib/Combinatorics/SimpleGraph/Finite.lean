@@ -451,6 +451,7 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   · simp [Finset.card_univ, h]
   · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
 
+variable {G}
 /--If V is finite and `P G` holds then there exists a maximal supergraph H of G
 for which `P H` holds. -/
 lemma exists_maximal_supergraph (P : SimpleGraph V → Prop) (hG : P G) :
