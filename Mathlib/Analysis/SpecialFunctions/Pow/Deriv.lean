@@ -105,6 +105,10 @@ theorem DifferentiableAt.const_cpow (hf : DifferentiableAt ℂ f x) (h0 : c ≠ 
     DifferentiableAt ℂ (fun x => c ^ f x) x :=
   (hf.hasFDerivAt.const_cpow h0).differentiableAt
 
+theorem DifferentiableAt.cpow_const (hf : DifferentiableAt ℂ f x) (h0 : f x ∈ slitPlane) :
+    DifferentiableAt ℂ (fun x => f x ^ c) x :=
+  hf.cpow (differentiableAt_const c) h0
+
 theorem DifferentiableWithinAt.cpow (hf : DifferentiableWithinAt ℂ f s x)
     (hg : DifferentiableWithinAt ℂ g s x) (h0 : f x ∈ slitPlane) :
     DifferentiableWithinAt ℂ (fun x => f x ^ g x) s x :=
@@ -114,6 +118,11 @@ theorem DifferentiableWithinAt.const_cpow (hf : DifferentiableWithinAt ℂ f s x
     (h0 : c ≠ 0 ∨ f x ≠ 0) : DifferentiableWithinAt ℂ (fun x => c ^ f x) s x :=
   (hf.hasFDerivWithinAt.const_cpow h0).differentiableWithinAt
 
+theorem DifferentiableWithinAt.cpow_const (hf : DifferentiableWithinAt ℂ f s x)
+    (h0 : f x ∈ slitPlane) :
+    DifferentiableWithinAt ℂ (fun x => f x ^ c) s x :=
+  hf.cpow (differentiableWithinAt_const c) h0
+
 theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : DifferentiableOn ℂ g s)
     (h0 : Set.MapsTo f s slitPlane) : DifferentiableOn ℂ (fun x ↦ f x ^ g x) s :=
   fun x hx ↦ (hf x hx).cpow (hg x hx) (h0 hx)
@@ -121,6 +130,11 @@ theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : Differentiab
 theorem DifferentiableOn.const_cpow (hf : DifferentiableOn ℂ f s)
     (h0 : c ≠ 0 ∨ ∀ x ∈ s, f x ≠ 0) : DifferentiableOn ℂ (fun x ↦ c ^ f x) s :=
   fun x hx ↦ (hf x hx).const_cpow (h0.imp_right fun h ↦ h x hx)
+
+theorem DifferentiableOn.cpow_const (hf : DifferentiableOn ℂ f s)
+    (h0 : ∀ x ∈ s, f x ∈ slitPlane) :
+    DifferentiableOn ℂ (fun x => f x ^ c) s :=
+  hf.cpow (differentiableOn_const c) h0
 
 theorem Differentiable.cpow (hf : Differentiable ℂ f) (hg : Differentiable ℂ g)
     (h0 : ∀ x, f x ∈ slitPlane) : Differentiable ℂ (fun x ↦ f x ^ g x) :=
@@ -204,8 +218,9 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
-line, it is still real-differentiable, and the derivative is what one would formally expect. -/
-theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
+line, it is still real-differentiable, and the derivative is what one would formally expect.
+See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
+theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
   rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
@@ -247,6 +262,51 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     · rw [add_sub_cancel_right, add_sub_cancel_right]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
+
+@[deprecated (since := "2024-12-15")] alias hasDerivAt_ofReal_cpow := hasDerivAt_ofReal_cpow_const'
+
+/-- An alternate formulation of `hasDerivAt_ofReal_cpow_const'`. -/
+theorem hasDerivAt_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
+    HasDerivAt (fun y : ℝ => (y : ℂ) ^ r) (r * x ^ (r - 1)) x := by
+  have := HasDerivAt.const_mul r <| hasDerivAt_ofReal_cpow_const' hx
+    (by rwa [ne_eq, sub_eq_neg_self])
+  simpa [sub_add_cancel, mul_div_cancel₀ _ hr] using this
+
+/-- A version of `DifferentiableAt.cpow_const` for a real function. -/
+theorem DifferentiableAt.ofReal_cpow_const {f : ℝ → ℝ} {x : ℝ} (hf : DifferentiableAt ℝ f x)
+    (h0 : f x ≠ 0) (h1 : c ≠ 0) :
+    DifferentiableAt ℝ (fun (y : ℝ) => (f y : ℂ) ^ c) x :=
+  (hasDerivAt_ofReal_cpow_const h0 h1).differentiableAt.comp x hf
+
+theorem Complex.deriv_cpow_const (hx : x ∈ Complex.slitPlane) :
+    deriv (fun (x : ℂ) ↦ x ^ c) x = c * x ^ (c - 1) :=
+  (hasStrictDerivAt_cpow_const hx).hasDerivAt.deriv
+
+/-- A version of `Complex.deriv_cpow_const` for a real variable. -/
+theorem Complex.deriv_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) (hc : c ≠ 0) :
+    deriv (fun x : ℝ ↦ (x : ℂ) ^ c) x = c * x ^ (c - 1) :=
+  (hasDerivAt_ofReal_cpow_const hx hc).deriv
+
+theorem deriv_cpow_const (hf : DifferentiableAt ℂ f x) (hx : f x ∈ Complex.slitPlane) :
+    deriv (fun (x : ℂ) ↦ f x ^ c) x = c * f x ^ (c - 1) * deriv f x :=
+  (hf.hasDerivAt.cpow_const hx).deriv
+
+theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
+    deriv (fun (x : ℝ) => (x : ℂ) ^ c) =Θ[atTop] fun x => x ^ (c.re - 1) := by
+  calc
+    _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
+      filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const hx hc]
+    _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
+      (Asymptotics.IsTheta.of_norm_eventuallyEq EventuallyEq.rfl).const_mul_left hc
+    _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
+      filter_upwards [eventually_gt_atTop 0] with x hx
+      rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
+
+theorem isBigO_deriv_ofReal_cpow_const_atTop (c : ℂ) :
+    deriv (fun (x : ℝ) => (x : ℂ) ^ c) =O[atTop] fun x => x ^ (c.re - 1) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  · exact (isTheta_deriv_ofReal_cpow_const_atTop hc).1
 
 end deriv
 
@@ -562,6 +622,13 @@ theorem derivWithin_rpow_const (hf : DifferentiableWithinAt ℝ f s x) (hx : f x
 theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 ≤ p) :
     deriv (fun x => f x ^ p) x = deriv f x * p * f x ^ (p - 1) :=
   (hf.hasDerivAt.rpow_const hx).deriv
+
+theorem deriv_norm_ofReal_cpow (c : ℂ) {t : ℝ} (ht : 0 < t) :
+    (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ c‖) t = c.re * t ^ (c.re - 1) := by
+  rw [EventuallyEq.deriv_eq (f := fun x ↦ x ^ c.re)]
+  · rw [Real.deriv_rpow_const (Or.inl ht.ne')]
+  · filter_upwards [eventually_gt_nhds ht] with x hx
+    rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx]
 
 lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
     deriv (fun (x : ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
