@@ -363,7 +363,7 @@ lemma eqOn_LFunctionResidueClassAux (ha : IsUnit a) :
   congrm (?_ + _)
   have hs₁ : s ≠ 1 := fun h ↦ ((h ▸ hs).trans_eq one_re).false
   rw [deriv_LFunctionTrivChar₁_apply_of_ne_one _ hs₁, LFunctionTrivChar₁,
-    Function.update_noteq hs₁, LFunctionTrivChar, add_div,
+    Function.update_of_ne hs₁, LFunctionTrivChar, add_div,
     mul_div_mul_left _ _ (sub_ne_zero_of_ne hs₁)]
   conv_lhs => enter [2, 1]; rw [← mul_one (LFunction ..)]
   rw [mul_comm _ 1, mul_div_mul_right _ _ <| LFunction_ne_zero_of_one_le_re 1 (.inr hs₁) hs.le]

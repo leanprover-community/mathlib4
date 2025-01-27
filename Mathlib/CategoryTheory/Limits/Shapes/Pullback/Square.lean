@@ -79,7 +79,7 @@ lemma IsPullback.of_iso {sq₁ sq₂ : Square C} (h : sq₁.IsPullback)
   refine CategoryTheory.IsPullback.of_iso h
     (evaluation₁.mapIso e) (evaluation₂.mapIso e)
     (evaluation₃.mapIso e) (evaluation₄.mapIso e) ?_ ?_ ?_ ?_
-  all_goals aesop_cat
+  all_goals simp
 
 lemma IsPullback.iff_of_iso {sq₁ sq₂ : Square C} (e : sq₁ ≅ sq₂) :
     sq₁.IsPullback ↔ sq₂.IsPullback :=
@@ -90,7 +90,7 @@ lemma IsPushout.of_iso {sq₁ sq₂ : Square C} (h : sq₁.IsPushout)
   refine CategoryTheory.IsPushout.of_iso h
     (evaluation₁.mapIso e) (evaluation₂.mapIso e)
     (evaluation₃.mapIso e) (evaluation₄.mapIso e) ?_ ?_ ?_ ?_
-  all_goals aesop_cat
+  all_goals simp
 
 lemma IsPushout.iff_of_iso {sq₁ sq₂ : Square C} (e : sq₁ ≅ sq₂) :
     sq₁.IsPushout ↔ sq₂.IsPushout :=

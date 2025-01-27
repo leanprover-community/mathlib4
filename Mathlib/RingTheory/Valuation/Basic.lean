@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
+import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
@@ -57,7 +58,6 @@ If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by
 boilerplate lemmas to `ValuationClass`.
 -/
 
-open scoped Classical
 open Function Ideal
 
 noncomputable section
@@ -68,7 +68,6 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -168,6 +167,7 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 
 theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
     v (∑ i ∈ s, f i) ≤ g := by
+  classical
   refine
     Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
       (fun a s has ih hf => ?_) hf
@@ -176,6 +176,7 @@ theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf :
 
 theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
+  classical
   refine
     Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
       (fun a s has ih hf => ?_) hf
@@ -252,6 +253,14 @@ lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
   ∀ r s, v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s
 
+/-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
+`Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
+def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
+  toFun := map f f.toOrderIso.monotone
+  invFun := map f.symm f.toOrderIso.symm.monotone
+  left_inv ν := by ext; simp
+  right_inv ν := by ext; simp
+
 end Monoid
 
 section Group
@@ -305,6 +314,7 @@ theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
   rwa [map_neg]
 
+open scoped Classical in
 theorem map_sum_eq_of_lt {ι : Type*} {s : Finset ι} {f : ι → R} {j : ι}
     (hj : j ∈ s) (h0 : v (f j) ≠ 0) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
     v (∑ i ∈ s, f i) = v (f j) := by
@@ -592,7 +602,6 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 
@@ -892,17 +901,28 @@ end AddValuation
 
 namespace Valuation
 
-
-variable {Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
+variable {K Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 /-- The `AddValuation` associated to a `Valuation`. -/
 def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ :=
-  AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ)
+  .trans (congr
+    { toFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
+      invFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
+      left_inv := fun _x ↦ rfl
+      right_inv := fun _x ↦ rfl
+      map_mul' := fun _x _y ↦ rfl
+      map_le_map_iff' := .rfl }) (AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ))
 
 /-- The `Valuation` associated to a `AddValuation`.
 -/
 def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
-  AddValuation.toValuation
+  AddValuation.toValuation.trans <| congr <|
+    { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
+      invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
+      left_inv := fun _x ↦ rfl
+      right_inv := fun _x ↦ rfl
+      map_mul' := fun _x _y ↦ rfl
+      map_le_map_iff' := .rfl }
 
 @[simp]
 lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ₀ := Γ₀) := rfl
@@ -927,5 +947,30 @@ theorem toAddValuation_apply (v : Valuation R Γ₀) (r : R) :
 theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R) :
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
+
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
+  zero := ⟨0, 0, by simp⟩
+  zero_mul := by
+    intro a
+    exact Subtype.ext (zero_mul a.val)
+  mul_zero := by
+    intro a
+    exact Subtype.ext (mul_zero a.val)
+
+@[simp]
+lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
+
+instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
+    CommGroupWithZero (MonoidHom.mrange v) where
+  inv := fun x ↦ ⟨x⁻¹, by
+    obtain ⟨y, hy⟩ := x.prop
+    simp_rw [← hy, ← v.map_inv]
+    exact MonoidHom.mem_mrange.mpr ⟨_, rfl⟩⟩
+  exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- _root_.map_one]⟩, by simp⟩
+  inv_zero := Subtype.ext inv_zero
+  mul_inv_cancel := by
+    rintro ⟨a, ha⟩ h
+    simp only [ne_eq, Subtype.ext_iff] at h
+    simpa using mul_inv_cancel₀ h
 
 end Valuation

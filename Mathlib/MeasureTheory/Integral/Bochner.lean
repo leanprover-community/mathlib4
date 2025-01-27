@@ -1367,6 +1367,9 @@ theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ �
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     exact integral_nonneg_of_ae le_ae
 
+lemma abs_integral_le_integral_abs {f : α → ℝ} : |∫ a, f a ∂μ| ≤ ∫ a, |f a| ∂μ :=
+  norm_integral_le_integral_norm f
+
 theorem norm_integral_le_of_norm_le {f : α → G} {g : α → ℝ} (hg : Integrable g μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) : ‖∫ x, f x ∂μ‖ ≤ ∫ x, g x ∂μ :=
   calc
@@ -1385,16 +1388,14 @@ theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
 
 @[simp]
 theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c := by
-  cases' (@le_top _ _ _ (μ univ)).lt_or_eq with hμ hμ
-  · haveI : IsFiniteMeasure μ := ⟨hμ⟩
-    simp only [integral, hE, L1.integral]
+  by_cases hμ : IsFiniteMeasure μ
+  · simp only [integral, hE, L1.integral]
     exact setToFun_const (dominatedFinMeasAdditive_weightedSMul _) _
-  · by_cases hc : c = 0
-    · simp [hc, integral_zero]
-    · have : ¬Integrable (fun _ : α => c) μ := by
-        simp only [integrable_const_iff, not_or]
-        exact ⟨hc, hμ.not_lt⟩
-      simp [integral_undef, *]
+  by_cases hc : c = 0
+  · simp [hc, integral_zero]
+  · simp [integral_undef, (integrable_const_iff_isFiniteMeasure hc).not.2 hμ, *]
+    simp only [isFiniteMeasure_iff, not_lt, top_le_iff] at hμ
+    simp [hμ]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
@@ -1846,33 +1847,10 @@ theorem integral_trim (hm : m ≤ m0) {f : β → G} (hf : StronglyMeasurable[m]
       (hf_int.trim hm hf)
   exact tendsto_nhds_unique h_lim_1 h_lim_2
 
-theorem integral_trim_ae (hm : m ≤ m0) {f : β → G} (hf : AEStronglyMeasurable f (μ.trim hm)) :
+theorem integral_trim_ae (hm : m ≤ m0) {f : β → G} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
     ∫ x, f x ∂μ = ∫ x, f x ∂μ.trim hm := by
   rw [integral_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk), integral_congr_ae hf.ae_eq_mk]
   exact integral_trim hm hf.stronglyMeasurable_mk
-
-theorem ae_eq_trim_of_stronglyMeasurable [TopologicalSpace γ] [MetrizableSpace γ] (hm : m ≤ m0)
-    {f g : β → γ} (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g)
-    (hfg : f =ᵐ[μ] g) : f =ᵐ[μ.trim hm] g := by
-  rwa [EventuallyEq, ae_iff, trim_measurableSet_eq hm]
-  exact (hf.measurableSet_eq_fun hg).compl
-
-theorem ae_eq_trim_iff [TopologicalSpace γ] [MetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ}
-    (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) :
-    f =ᵐ[μ.trim hm] g ↔ f =ᵐ[μ] g :=
-  ⟨ae_eq_of_ae_eq_trim, ae_eq_trim_of_stronglyMeasurable hm hf hg⟩
-
-theorem ae_le_trim_of_stronglyMeasurable [LinearOrder γ] [TopologicalSpace γ]
-    [OrderClosedTopology γ] [PseudoMetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ}
-    (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) :
-    f ≤ᵐ[μ.trim hm] g := by
-  rwa [EventuallyLE, ae_iff, trim_measurableSet_eq hm]
-  exact (hf.measurableSet_le hg).compl
-
-theorem ae_le_trim_iff [LinearOrder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
-    [PseudoMetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ} (hf : StronglyMeasurable[m] f)
-    (hg : StronglyMeasurable[m] g) : f ≤ᵐ[μ.trim hm] g ↔ f ≤ᵐ[μ] g :=
-  ⟨ae_le_of_ae_le_trim, ae_le_trim_of_stronglyMeasurable hm hf hg⟩
 
 end IntegralTrim
 

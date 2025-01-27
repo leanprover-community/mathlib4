@@ -118,6 +118,7 @@ theorem AnalyticWithinAt.differentiableWithinAt (h : AnalyticWithinAt 𝕜 f s x
   obtain ⟨p, hp⟩ := h
   exact hp.differentiableWithinAt
 
+@[fun_prop]
 theorem AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt 𝕜 f x
   | ⟨_, hp⟩ => hp.differentiableAt
 
@@ -234,6 +235,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace
   exact this.symm
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
+@[fun_prop]
 protected theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (fderiv 𝕜 f) x := by
   rcases h with ⟨p, r, hp⟩
@@ -595,8 +597,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr; ext j
   obtain rfl | hj := eq_or_ne j i
-  · rw [Function.update_same, if_pos rfl]
-  · rw [Function.update_noteq hj, if_neg hj]
+  · rw [Function.update_self, if_pos rfl]
+  · rw [Function.update_of_ne hj, if_neg hj]
 
 protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
@@ -688,7 +690,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDIte, Pi.compRightL,
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
-      rw [Function.update_noteq]
+      rw [Function.update_of_ne]
       contrapose! hke
       rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
@@ -812,7 +814,7 @@ theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
     simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
       coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,
       MultilinearMap.coe_mkContinuous, MultilinearMap.coe_mk, ne_eq, reduceCtorEq,
-      not_false_eq_true, Function.update_noteq, coe_comp', coe_snd', Function.comp_apply,
+      not_false_eq_true, Function.update_of_ne, coe_comp', coe_snd', Function.comp_apply,
       proj_apply]
     congr
     ext j
