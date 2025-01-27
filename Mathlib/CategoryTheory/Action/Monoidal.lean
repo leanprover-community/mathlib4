@@ -26,12 +26,6 @@ open CategoryTheory Limits MonoidalCategory
 
 variable {V : Type (u + 1)} [LargeCategory V] {G : Type u} [Monoid G]
 
-@[simp]
-theorem CategoryTheory.types_β_hom {X Y : Type u} : (β_ X Y).hom = _root_.Prod.swap := rfl
-
-@[simp]
-theorem CategoryTheory.types_β_inv {X Y : Type u} : (β_ X Y).inv = _root_.Prod.swap := rfl
-
 namespace Action
 
 section Monoidal

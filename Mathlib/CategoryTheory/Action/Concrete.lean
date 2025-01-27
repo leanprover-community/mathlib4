@@ -19,12 +19,6 @@ universe u v
 
 open CategoryTheory Limits
 
-theorem CategoryTheory.types_end {X : Type*} : End X = Function.End X := rfl
-
-@[simp]
-theorem MulAction.toEndHom_apply {G A : Type*} [Monoid G] [MulAction G A] (g : G) (a : A) :
-    MulAction.toEndHom g a = g • a := rfl
-
 namespace Action
 
 section
