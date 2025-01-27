@@ -31,11 +31,12 @@ open KaehlerDifferential TensorProduct MvPolynomial
 
 namespace Algebra
 
-universe u₁ u₂ u₃ u₄ w' w u v uT
+universe d e f g h i a b c
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {P : Generators.{w} R S}
-variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+variable {R : Type a} {S : Type b} [CommRing R] [CommRing S] [Algebra R S]
+variable {T : Type c} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (Q : Generators.{h} S T) (P : Generators.{g} R S)
+variable (Q' : Generators.{f} S T) (P' : Generators.{e} R S) (W : Generators.{d} R T)
 
 attribute [local instance] SMulCommClass.of_commMonoid
 
@@ -156,7 +157,7 @@ lemma Cotangent.exact :
 /-- Given `R[X] → S` and `S[Y] → T`, the cotangent space of `R[X][Y] → T` is isomorphic
 to the direct product of the cotangent space of `S[Y] → T` and `R[X] → S` (base changed to `T`). -/
 noncomputable
-def CotangentSpace.compEquiv (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
+def CotangentSpace.compEquiv :
     (Q.comp P).toExtension.CotangentSpace ≃ₗ[T]
       Q.toExtension.CotangentSpace × (T ⊗[S] P.toExtension.CotangentSpace) :=
   (Q.comp P).cotangentSpaceBasis.repr.trans
@@ -277,8 +278,8 @@ lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
 
-lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
-    {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
+variable {Q} {Q'} in
+lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
@@ -419,9 +420,7 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
-lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (P' : Generators.{u₃} R S) :
-    δ Q P = δ Q P' := by
+lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
   rw [δ_eq_δAux, δ_eq_δAux]
@@ -434,9 +433,7 @@ lemma exact_map_δ :
   · ext x; rfl
   · exact Subtype.val_injective
 
-lemma δ_map
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) (f : Hom Q' Q) (x) :
+lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
@@ -448,18 +445,15 @@ lemma δ_map
   refine (δAux_toAlgHom f _).trans ?_
   rw [hx, map_zero, map_zero, add_zero]
 
-lemma δ_comp_equiv
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) :
+lemma δ_comp_equiv :
     δ Q P ∘ₗ (H1Cotangent.equiv _ _).toLinearMap = δ Q' P' := by
   ext x
   exact δ_map Q P Q' P' _ _
 
 /-- A variant of `exact_map_δ` that takes in an arbitrary map between generators. -/
-lemma exact_map_δ'
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S) (P' : Generators.{u₃} R T) (f : Hom P' Q) :
+lemma exact_map_δ' (f : Hom W Q) :
     Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (δ Q P) := by
-  refine (H1Cotangent.equiv (Q.comp P) P').surjective.comp_exact_iff_exact.mp ?_
+  refine (H1Cotangent.equiv (Q.comp P) W).surjective.comp_exact_iff_exact.mp ?_
   show Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
     (Extension.H1Cotangent.map _)) (δ Q P)
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
@@ -471,7 +465,7 @@ end instanceProblem
 
 end Generators
 
-variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T : Type c} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable (R S T)
 
