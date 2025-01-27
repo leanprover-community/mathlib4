@@ -444,8 +444,9 @@ theorem ones_sizeUpTo (n : ℕ) (i : ℕ) : (ones n).sizeUpTo i = min i n := by
   simp [sizeUpTo, ones_blocks, take_replicate]
 
 @[simp]
-theorem ones_embedding (i : Fin (ones n).length) (h : 0 < (ones n).blocksFun i) :
-    (ones n).embedding i ⟨0, h⟩ = ⟨i, lt_of_lt_of_le i.2 (ones n).length_le⟩ := by
+theorem ones_embedding (i : Fin (ones n).length) :
+    haveI : NeZero ((ones n).blocksFun i) := .of_pos <| by simp
+    (ones n).embedding i 0 = i.cast (ones_length n) := by
   ext
   simpa using i.2.le
 
@@ -822,8 +823,10 @@ def boundary : Fin c.boundaries.card ↪o Fin (n + 1) :=
   c.boundaries.orderEmbOfFin rfl
 
 @[simp]
-theorem boundary_zero : (c.boundary ⟨0, c.card_boundaries_pos⟩ : Fin (n + 1)) = 0 := by
-  rw [boundary, Finset.orderEmbOfFin_zero rfl c.card_boundaries_pos]
+theorem boundary_zero :
+    haveI : NeZero c.boundaries.card := .of_pos c.card_boundaries_pos
+    (c.boundary 0 : Fin (n + 1)) = 0 := by
+  rw [boundary, ← Fin.mk_zero', Finset.orderEmbOfFin_zero rfl c.card_boundaries_pos]
   exact le_antisymm (Finset.min'_le _ _ c.zero_mem) (Fin.zero_le _)
 
 @[simp]

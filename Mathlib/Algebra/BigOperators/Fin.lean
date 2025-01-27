@@ -215,17 +215,7 @@ theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
 @[to_additive]
 theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n) :
     (partialProd f (Fin.castSucc i))⁻¹ * partialProd f i.succ = f i := by
-  obtain ⟨i, hn⟩ := i
-  induction i with
-  | zero => simp [-Fin.succ_mk, partialProd_succ]
-  | succ i hi =>
-    specialize hi (lt_trans (Nat.lt_succ_self i) hn)
-    simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi ⊢
-    rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk _ _ hn]
-    simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
-    -- Porting note: was
-    -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, inv_mul_cancel]
+  rw [partialProd_succ, inv_mul_cancel_left]
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.

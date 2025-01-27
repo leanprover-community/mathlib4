@@ -193,10 +193,8 @@ theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :
 theorem length_ne_zero (irrefl : Irreflexive r) : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
   refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def], fun rid ↦ irrefl (s 0) ?_⟩,
     length_ne_zero_of_nontrivial⟩
-  nth_rw 2 [rid]
-  convert s.step ⟨0, by omega⟩
-  ext
-  simpa [Nat.pos_iff_ne_zero]
+  have : NeZero s.length := ⟨h⟩
+  simpa [rid] using s.step 0
 
 theorem length_pos (irrefl : Irreflexive r) : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
   Nat.pos_iff_ne_zero.trans <| length_ne_zero irrefl
