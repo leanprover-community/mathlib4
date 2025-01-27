@@ -5,7 +5,6 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Order.CompleteLatticeIntervals
 
@@ -58,13 +57,16 @@ def SupIndep (s : Finset ι) (f : ι → α) : Prop :=
 
 variable {s t : Finset ι} {f : ι → α} {i : ι}
 
-instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) := by
-  refine @Finset.decidableForallOfDecidableSubsets _ _ _ (?_)
-  rintro t -
-  refine @Finset.decidableDforallFinset _ _ _ (?_)
-  rintro i -
-  have : Decidable (Disjoint (f i) (sup t f)) := decidable_of_iff' (_ = ⊥) disjoint_iff
-  infer_instance
+/-- The RHS looks like the definition of `iSupIndep`. -/
+theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
+    s.SupIndep f ↔ ∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f) :=
+  ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs _ ht i hi hit =>
+    (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
+
+instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) :=
+  have : ∀ i, Decidable (Disjoint (f i) ((s.erase i).sup f)) := fun _ ↦
+    decidable_of_iff _ disjoint_iff.symm
+  decidable_of_iff _ supIndep_iff_disjoint_erase.symm
 
 theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun _ hu _ hi =>
   ht (hu.trans h) (h hi)
@@ -87,12 +89,6 @@ theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (
   refine ⟨fun h => ?_, le_sup⟩
   by_contra hit
   exact hf i (disjoint_self.1 <| (hs hts hi hit).mono_right h)
-
-/-- The RHS looks like the definition of `iSupIndep`. -/
-theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
-    s.SupIndep f ↔ ∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f) :=
-  ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs _ ht i hi hit =>
-    (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
 
 theorem supIndep_antimono_fun {g : ι → α} (h : ∀ x ∈ s, f x ≤ g x) (h : s.SupIndep g) :
     s.SupIndep f := by
