@@ -176,7 +176,7 @@ instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
 
 end SemiRingCat
 
-/-- The category of semirings. -/
+/-- The category of rings. -/
 structure RingCat where
   private mk ::
   /-- The underlying type. -/
@@ -334,7 +334,7 @@ instance forgetReflectIsos : (forget RingCat).ReflectsIsomorphisms where
 
 end RingCat
 
-/-- The category of semirings. -/
+/-- The category of commutative semirings. -/
 structure CommSemiRingCat where
   private mk ::
   /-- The underlying type. -/
@@ -491,7 +491,7 @@ instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
 
 end CommSemiRingCat
 
-/-- The category of semirings. -/
+/-- The category of commutative rings. -/
 structure CommRingCat where
   private mk ::
   /-- The underlying type. -/

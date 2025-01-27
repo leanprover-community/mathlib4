@@ -392,8 +392,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             rw [← (D.V (j, k)).presheaf.map_comp]
             erw [← (D.V (j, k)).presheaf.map_comp]
             repeat rw [← (D.V (j, k)).presheaf.map_comp]
-            -- Porting note: was just `congr`
-            exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
+            rfl } }
 
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
