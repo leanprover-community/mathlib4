@@ -166,21 +166,16 @@ theorem zero_lf_iff_fuzzy : 0 ⧏ G ↔ G ‖ 0 :=
   ⟨fun h ↦ ⟨lf_zero_iff.2 h, h⟩, And.right⟩
 
 theorem equiv_zero_iff_forall_leftMoves_fuzzy : G ≈ 0 ↔ ∀ i, G.moveLeft i ‖ 0 := by
-  refine ⟨fun hp i ↦ ?_, fun hb ↦ ?_⟩
-  · rw [← lf_zero_iff_fuzzy]
-    exact hp.1.moveLeft_lf i
-  · rw [← le_zero_iff_equiv, le_zero_lf]
-    exact fun i => (hb i).1
+  simpa using le_zero_lf (x := G)
 
 theorem equiv_zero_iff_forall_rightMoves_fuzzy : G ≈ 0 ↔ ∀ j, G.moveRight j ‖ 0 := by
-  simpa using equiv_zero_iff_forall_leftMoves_fuzzy (G := -G)
+  simpa using zero_le_lf (x := G)
 
 theorem fuzzy_zero_iff_exists_leftMoves_equiv : G ‖ 0 ↔ ∃ i, G.moveLeft i ≈ 0 := by
-  apply not_iff_not.1
-  simpa using equiv_zero_iff_forall_leftMoves_fuzzy
+  simpa using zero_lf_le (x := G)
 
 theorem fuzzy_zero_iff_exists_rightMoves_equiv : G ‖ 0 ↔ ∃ j, G.moveRight j ≈ 0 := by
-  simpa using fuzzy_zero_iff_exists_leftMoves_equiv (G := -G)
+  simpa using lf_zero_le (x := G)
 
 section deprecated
 

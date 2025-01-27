@@ -192,19 +192,20 @@ instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
-  rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
-  use toRightMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
-  simp
+  rw [Impartial.fuzzy_zero_iff_exists_leftMoves_equiv]
+  use toLeftMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
+  simpa using nim_zero_equiv
 
 @[simp]
-theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
+theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : nim o₁ + nim o₂ ≈ 0 ↔ o₁ = o₂ := by
   constructor
-  · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
+  · rw [← not_imp_not, Impartial.not_equiv_zero_iff, ← ne_eq]
+    intro hne
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
-    rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le]
+    rw [Impartial.fuzzy_zero_iff_exists_leftMoves_equiv]
     use toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, h⟩)
-    · simpa using (Impartial.add_self (nim o₁)).2
+    simpa using (Impartial.add_self (nim o₁)).2
   · rintro rfl
     exact Impartial.add_self (nim o₁)
 
@@ -267,7 +268,7 @@ theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
 namely the game of nim corresponding to the game's Grundy value. -/
 theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
     G ≈ nim (toOrdinal (grundyValue G)) := by
-  rw [Impartial.equiv_iff_add_equiv_zero, ← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero]
+  rw [Impartial.equiv_iff_add_equiv_zero, Impartial.equiv_zero_iff_forall_leftMoves_fuzzy]
   intro x
   apply leftMoves_add_cases x <;>
   intro i
@@ -275,7 +276,7 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
       ← fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue _))),
       nim_add_fuzzy_zero_iff]
     exact grundyValue_ne_moveLeft i
-  · rw [add_moveLeft_inr, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero]
+  · rw [add_moveLeft_inr, Impartial.fuzzy_zero_iff_exists_leftMoves_equiv]
     obtain ⟨j, hj⟩ := exists_grundyValue_moveLeft_of_lt <| toLeftMovesNim_symm_lt i
     use toLeftMovesAdd (Sum.inl j)
     rw [add_moveLeft_inl, moveLeft_nim]
