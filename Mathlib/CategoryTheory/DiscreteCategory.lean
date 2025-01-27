@@ -67,10 +67,8 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
 Because we do not allow morphisms in `Prop` (only in `Type`),
-somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
-
-See <https://stacks.math.columbia.edu/tag/001A>
--/
+somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`. -/
+@[stacks 001A]
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id _ := ULift.up (PLift.up rfl)
@@ -246,9 +244,9 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
-    Discrete.natIso fun i => eqToIso (by aesop_cat)
+    Discrete.natIso fun i => eqToIso (by simp)
   counitIso :=
-    Discrete.natIso fun j => eqToIso (by aesop_cat)
+    Discrete.natIso fun j => eqToIso (by simp)
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]

@@ -3,7 +3,8 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import ImportGraph
+import ImportGraph.CurrentModule
+import ImportGraph.Imports
 import Mathlib.Data.String.Defs
 import Mathlib.Util.FormatTable
 import Cli
@@ -33,7 +34,7 @@ def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
 namespace SpeedCenterAPI
 
 def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
-  runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
+  runCurl #[s!"https://speed.lean-lang.org/mathlib4/api/run/{repoId}?hash={hash}"]
 
 def getRunResponse (hash : String) : IO RunResponse := do
   let r ← runJson hash
@@ -43,7 +44,7 @@ def getRunResponse (hash : String) : IO RunResponse := do
     | .ok v => pure v
     | .error e => match fromJson? j with
       | .ok (v : ErrorMessage) =>
-        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
+        IO.eprintln s!"https://speed.lean-lang.org says: {v.message}"
         IO.eprintln s!"Try moving to an older commit?"
         IO.Process.exit 1
       | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
@@ -122,9 +123,8 @@ open System in
 def countLOC (modules : List Name) : IO (NameMap Float) := do
   let mut r := {}
   for m in modules do
-    let fp := FilePath.mk ((← findOLean m).toString.replace ".lake/build/lib/" "")
-      |>.withExtension "lean"
-    if ← fp.pathExists then
+    if let .some fp ← Lean.SearchPath.findModuleWithExt [s!".{FilePath.pathSeparator}"] "lean" m
+    then
       let src ← IO.FS.readFile fp
       r := r.insert m (src.toList.count '\n').toFloat
   return r
@@ -135,6 +135,8 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   | some to => pure <| to.as! ModuleName
   | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
   searchPathRef.set compile_time_search_path%
+  -- It may be reasonable to remove this again after https://github.com/leanprover/lean4/pull/6325
+  unsafe enableInitializersExecution
   unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
     let sha ← headSha
@@ -154,8 +156,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let c := cumulative.find! n'
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
-      table := table.push
-        #[n.get!.toString, toString (i |>.toUInt64), toString (c |>.toUInt64), r]
+      table := table.push #[n.get!.toString, toString i.toUInt64, toString c.toUInt64, r]
       n := slowest.find? n'
     let instructionsHeader := if args.hasFlag "loc" then "LoC" else "instructions"
     IO.println (formatTable

@@ -321,7 +321,8 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}
     have : AEStronglyMeasurable f (μ.restrict v) :=
-      (ContinuousAt.continuousOn fun _ h ↦ h).aestronglyMeasurable (measurableSet_of_continuousAt f)
+      (continuousOn_of_forall_continuousAt fun _ h ↦ h).aestronglyMeasurable
+      (measurableSet_of_continuousAt f)
     refine this.mono_measure (Measure.le_iff.2 fun s hs ↦ ?_)
     repeat rw [μ.restrict_apply hs]
     apply le_of_le_of_eq <| μ.mono s.inter_subset_left

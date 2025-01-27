@@ -58,12 +58,12 @@ theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
 theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).right = f.right ≫ g.right := rfl
@@ -94,15 +94,16 @@ instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
     category. -/
 @[simps]
-def homMk {f g : Arrow T} {u : f.left ⟶ g.left} {v : f.right ⟶ g.right}
-    (w : u ≫ g.hom = f.hom ≫ v) : f ⟶ g where
+def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
+    (w : u ≫ g.hom = f.hom ≫ v := by aesop_cat) : f ⟶ g where
   left := u
   right := v
   w := w
 
 /-- We can also build a morphism in the arrow category out of any commutative square in `T`. -/
 @[simps]
-def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} {u : X ⟶ P} {v : Y ⟶ Q} (w : u ≫ g = f ≫ v) :
+def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y ⟶ Q)
+    (w : u ≫ g = f ≫ v := by aesop_cat) :
     Arrow.mk f ⟶ Arrow.mk g where
   left := u
   right := v
@@ -276,6 +277,16 @@ def rightFunc : Arrow C ⥤ C :=
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
 
+lemma ext {f g : Arrow C}
+    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
+    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
+  obtain ⟨X, Y, f⟩ := f
+  obtain ⟨X', Y', g⟩ := g
+  obtain rfl : X = X' := h₁
+  obtain rfl : Y = Y' := h₂
+  obtain rfl : f = g := by simpa using h₃
+  rfl
+
 end Arrow
 
 namespace Functor
@@ -332,5 +343,26 @@ isomorphic arrows in `D`. -/
 def Arrow.isoOfNatIso {C D : Type*} [Category C] [Category D] {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right)
+
+variable (T)
+
+/-- `Arrow T` is equivalent to a sigma type. -/
+@[simps!]
+def Arrow.equivSigma :
+    Arrow T ≃ Σ (X Y : T), X ⟶ Y where
+  toFun f := ⟨_, _, f.hom⟩
+  invFun x := Arrow.mk x.2.2
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The equivalence `Arrow (Discrete S) ≃ S`. -/
+def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
+  toFun f := f.left.as
+  invFun s := Arrow.mk (𝟙 (Discrete.mk s))
+  left_inv := by
+    rintro ⟨⟨_⟩, ⟨_⟩, f⟩
+    obtain rfl := Discrete.eq_of_hom f
+    rfl
+  right_inv _ := rfl
 
 end CategoryTheory

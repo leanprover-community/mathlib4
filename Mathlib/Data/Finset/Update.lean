@@ -37,7 +37,7 @@ theorem updateFinset_singleton {i y} :
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dif_pos, Finset.mem_singleton, update_same, updateFinset]
+    simp only [dif_pos, Finset.mem_singleton, update_self, updateFinset]
   · simp [hj, updateFinset]
 
 theorem update_eq_updateFinset {i y} :
@@ -45,7 +45,7 @@ theorem update_eq_updateFinset {i y} :
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dif_pos, Finset.mem_singleton, update_same, updateFinset]
+    simp only [dif_pos, Finset.mem_singleton, update_self, updateFinset]
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateFinset]
 

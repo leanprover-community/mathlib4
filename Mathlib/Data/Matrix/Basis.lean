@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Matrices with a single non-zero element.
@@ -13,13 +12,12 @@ This file provides `Matrix.stdBasisMatrix`. The matrix `Matrix.stdBasisMatrix i 
 at position `(i, j)`, and zeroes elsewhere.
 -/
 
+assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
 variable {R α : Type*}
 
 namespace Matrix
-
-open Matrix
 
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
 
@@ -70,14 +68,9 @@ theorem mulVec_stdBasisMatrix [NonUnitalNonAssocSemiring α] [Fintype m]
 
 theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
-  ext i j; symm
-  iterate 2 rw [Finset.sum_apply]
-  convert (Fintype.sum_eq_single i ?_).trans ?_; swap
-  · -- Porting note(#12717): `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp (config := { unfoldPartialApp := true }) [stdBasisMatrix, (Fintype.sum_apply)]
-  · intro j' hj'
-    -- Porting note(#12717): `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp (config := { unfoldPartialApp := true }) [stdBasisMatrix, (Fintype.sum_apply), hj']
+  ext i j
+  rw [← Fintype.sum_prod_type']
+  simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk.inj_iff]
 
 @[deprecated (since := "2024-08-11")] alias matrix_eq_sum_std_basis := matrix_eq_sum_stdBasisMatrix
 
@@ -159,54 +152,43 @@ theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
 
 end
 
-section trace
-variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
-
-@[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply, h]
-
-@[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply]
-
-end trace
-
 section mul
-variable [Fintype n] [NonUnitalNonAssocSemiring α] (i j : n) (c : α)
+variable [Fintype m] [NonUnitalNonAssocSemiring α] (c : α)
 
+omit [DecidableEq n] in
 @[simp]
-theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
+theorem mul_left_apply_same (i : l) (j : m) (b : n) (M : Matrix m n α) :
     (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 
+omit [DecidableEq l] in
 @[simp]
-theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
+theorem mul_right_apply_same (i : m) (j : n) (a : l) (M : Matrix l m α) :
     (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 
+omit [DecidableEq n] in
 @[simp]
-theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
+theorem mul_left_apply_of_ne (i : l) (j : m) (a : l) (b : n) (h : a ≠ i) (M : Matrix m n α) :
     (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 
+omit [DecidableEq l] in
 @[simp]
-theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
+theorem mul_right_apply_of_ne (i : m) (j : n) (a : l) (b : n) (hbj : b ≠ j) (M : Matrix l m α) :
     (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 
 @[simp]
-theorem mul_same (k : n) (d : α) :
+theorem mul_same (i : l) (j : m) (k : n) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
   ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 
 @[simp]
-theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
+theorem mul_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix, of_apply]
   by_cases h₁ : i = a
-  -- porting note (#10745): was `simp [h₁, h, h.symm]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
     refine Finset.sum_eq_zero (fun x _ => ?_)
     apply if_neg
