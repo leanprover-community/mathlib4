@@ -205,34 +205,37 @@ lemma map_interval (j l : ℕ) (h : j + l ≤ n) :
 
 end Path
 
-/-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed
-by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
-abbrev spine (n : ℕ) : X _[n] → Path X n :=
-  truncation (n + 1) |>.obj X |>.spine n
+/-- The spine of an `n + 1`-simplex in `X` is the path of edges of length
+`n + 1` formed by traversing in order through the vertices of `X _[n + 1]ₙ₊₁`. -/
+abbrev spine {n : ℕ} : X _[n + 1] → Path X (n + 1) :=
+  truncation (n + 1) |>.obj X |>.spine (n + 1)
 
-lemma spine_vertex {n : ℕ} (Δ : X _[n]) (i : Fin (n + 1)) :
-    (X.spine n Δ).vertex i = X.map (const [0] [n] i).op Δ := rfl
+lemma spine_vertex {n : ℕ} (Δ : X _[n + 1]) (i : Fin (n + 2)) :
+    (X.spine Δ).vertex i = X.map (const [0] [n + 1] i).op Δ := rfl
 
-lemma spine_arrow {n : ℕ} (Δ : X _[n]) (i : Fin n) :
-    (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ := rfl
+lemma spine_arrow {n : ℕ} (Δ : X _[n + 1]) (i : Fin (n + 1)) :
+    (X.spine Δ).arrow i = X.map (mkOfSucc i).op Δ := rfl
 
-/-- For `m ≤ n + 1`, the `m`-spine of `X` factors through the `n + 1`-truncation. -/
-lemma truncation_spine (n m : ℕ) (h : m ≤ n + 1 := by omega) :
-    ((truncation (n + 1)).obj X).spine m = X.spine m := rfl
+/-- For `m ≤ n`, the `m`-spine of `X` factors through the `n + 1`-truncation. -/
+lemma truncation_spine (n m : ℕ) (h : m ≤ n := by omega) :
+    ((truncation (n + 1)).obj X).spine (m + 1) = X.spine := rfl
 
-lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n])
+lemma spine_map_vertex {n : ℕ} (Δ : X _[n + 1]) {m : ℕ} (φ : [m + 1] ⟶ [n + 1])
     (i : Fin (m + 1)) :
-    (spine X m (X.map φ.op Δ)).vertex i =
-      (spine X n Δ).vertex (φ.toOrderHom i) :=
+    (spine X (X.map φ.op Δ)).vertex i =
+      (spine X Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
+    |>.spine_map_vertex (n + 1) (by omega) Δ (m + 1) (by omega) φ i
 
-lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n]) :
-    X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
-  truncation (n + 1) |>.obj X |>.spine_map_subinterval n _ j l h Δ
+lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n + 1]) :
+    X.spine (X.map (subinterval j (l + 1) (by omega)).op Δ) =
+      (X.spine Δ).interval j (l + 1) (by omega) :=
+  truncation (n + 1) |>.obj X
+    |>.spine_map_subinterval (n + 1) _ j (l + 1) _ Δ
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def stdSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
+def stdSimplex.spineId (n : ℕ) : Path Δ[n + 1] (n + 1) :=
+  spine Δ[n + 1] (id (n + 1))
 
 /-- Any inner horn contains `stdSimplex.spineId`. -/
 @[simps]
@@ -251,16 +254,16 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
   arrow_src := by
     simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,
       Functor.comp_obj, Functor.comp_map, Subtype.mk.injEq]
-    exact stdSimplex.spineId (n + 2) |>.arrow_src
+    exact stdSimplex.spineId (n + 1) |>.arrow_src
   arrow_tgt := by
     simp only [SimplicialObject.truncation, horn, whiskeringLeft_obj_obj,
       Functor.comp_obj, Functor.comp_map, Subtype.mk.injEq]
-    exact stdSimplex.spineId (n + 2) |>.arrow_tgt
+    exact stdSimplex.spineId (n + 1) |>.arrow_tgt
 
 @[simp]
 lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path.map (horn.spineId i h₀ hₙ) (hornInclusion (n + 2) i) =
-      stdSimplex.spineId (n + 2) := rfl
+      stdSimplex.spineId (n + 1) := rfl
 
 end SSet
