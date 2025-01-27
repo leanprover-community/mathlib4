@@ -868,7 +868,7 @@ instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' 
     IsScalarTower S α β :=
   inferInstance
 
-instance Submonoid.faithfulSMul {M' α : Type*} [MulOneClass M'] [SMul M' α] {S' : Type*}
+instance {M' α : Type*} [MulOneClass M'] [SMul M' α] {S' : Type*}
     [SetLike S' M'] [SubmonoidClass S' M'] (s : S') [FaithfulSMul M' α] : FaithfulSMul s α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
