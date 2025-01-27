@@ -131,8 +131,6 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
 lemma toBilin_symm_eq_polarBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     Q.toBilin bm + (Q.toBilin bm).flip = polarBilin Q := by
   ext a b
-  conv_rhs => rw [← toQuadraticMap_toBilin Q bm]
-  simp only [toQuadraticMap_toBilin]
   symm
   calc Q (a + b) - Q a - Q b = (Q.toBilin bm).toQuadraticMap (a + b) - Q a - Q b := by
         rw [toQuadraticMap_toBilin Q]
