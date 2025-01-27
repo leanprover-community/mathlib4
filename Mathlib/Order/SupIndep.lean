@@ -5,7 +5,6 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Order.CompleteLatticeIntervals
 
