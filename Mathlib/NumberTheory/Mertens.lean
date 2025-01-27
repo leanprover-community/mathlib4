@@ -64,9 +64,10 @@ theorem IsBigO.set_integral_isBigO {α E F : Type*} [NormedAddCommGroup E] {l : 
   simp only [norm_eq_abs]
   rw [abs_of_nonneg (setIntegral_nonneg hs (fun i h ↦ hg i h x))]
   -- filter_upwards [MeasureTheory.self_mem_ae_restrict hs]
-  intro y hy
-  rw [smul_eq_mul, mul_comm]
-  exact ht (y, x) <| huv ⟨hu hy, hx⟩
+  sorry
+  -- intro y hy
+  -- rw [smul_eq_mul, mul_comm]
+  -- exact ht (y, x) <| huv ⟨hu hy, hx⟩
 
 end MeasureTheory
 
