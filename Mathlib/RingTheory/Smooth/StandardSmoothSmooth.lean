@@ -4,137 +4,121 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+import Mathlib.RingTheory.Smooth.FreeKaehler
 import Mathlib.RingTheory.Smooth.Kaehler
+import Mathlib.RingTheory.Smooth.Locus
 import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.RingTheory.RingHom.Locally
+import Mathlib.RingTheory.RingHom.StandardSmooth
 
 /-!
 # Smooth and locally standard smooth
 -/
 
-noncomputable section
+suppress_compilation
 
 universe u
 
-section
+namespace RingHom
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Projective R M]
-variable [Module.Finite R M]
-variable (s : Set M) (hs : Submodule.span R s = ⊤)
+def Smooth {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+  @Algebra.Smooth R _ S _ f.toAlgebra
 
-lemma exists_basis_of_projective_of_span (p : Ideal R) [p.IsPrime] :
-    ∃ (t : Set M) (f : R) (hp : f ∉ p)
-      (b : Basis t (Localization.Away f) (LocalizedModule (Submonoid.powers f) M)),
-      t ⊆ s ∧ (∀ m, b m = LocalizedModule.mk m.val 1) :=
+end RingHom
+
+namespace Module
+
+variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N]
+  [Module R M] [Module R N]
+
+lemma exists_of_bijective [Module.Finite R M] [Module.Finite R N] (f : M →ₗ[R] N)
+    (p : Ideal R) [p.IsPrime] {Rₚ Mₚ Nₚ : Type*}
+    [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
+    [AddCommGroup Mₚ] [AddCommGroup Nₚ] [Module R Mₚ] [Module R Nₚ]
+    (fM : M →ₗ[R] Mₚ) (fN : N →ₗ[R] Nₚ)
+    [IsLocalizedModule p.primeCompl fM]
+    [IsLocalizedModule p.primeCompl fN]
+    (hf : Function.Bijective (IsLocalizedModule.map p.primeCompl fM fN f)) :
+    ∃ (g : R), g ∉ p ∧ Function.Bijective (LocalizedModule.map (Submonoid.powers g) f) :=
   sorry
 
-end
-
-open TensorProduct
+end Module
 
 namespace Algebra
 
-open MvPolynomial
+variable {R S : Type u} [CommRing R] [CommRing S]
 
 section
 
-namespace Generators
+variable [Algebra R S]
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-  [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
-  (P : Generators R S) (Q : Generators S T)
+variable (R) in
+lemma isSmoothAt_of_smooth [Smooth R S] (p : Ideal S) [p.IsPrime] :
+    IsSmoothAt R p := by
+  have : smoothLocus R S = Set.univ := by
+    rw [smoothLocus_eq_univ_iff]
+    infer_instance
+  show ⟨p, inferInstance⟩ ∈ smoothLocus R S
+  rw [this]
+  trivial
 
-def _root_.Algebra.Extension.Cotangent.lift (P : Extension R S) {M : Type*} [AddCommGroup M]
-    [Module S M] [Module R M] [IsScalarTower R S M] [Module P.Ring M]
-    [IsScalarTower P.Ring S M]
-    (f : P.ker →ₗ[P.Ring] M) (hf : ∀ x : P.ker, x.val ∈ P.ker ^ 2 → f x = 0) :
-    P.Cotangent →ₗ[S] M :=
-  let g := Submodule.liftQ (P.ker • ⊤ : Submodule P.Ring P.ker) f <| by
-    intro x hx
-    have : x.val ∈ P.ker ^ 2 := sorry
-    exact hf x this
-  { __ := g.toAddMonoidHom,
-    map_smul' := by
-      intro m x
-      dsimp
-      show g (P.σ m • x.val) = m • g x
-      rw [map_smul]
-      show P.σ m • g x = m • g x
-      conv_rhs => rw [← P.algebraMap_σ m, ← mul_one (algebraMap P.Ring S _)]
-      rw [← Algebra.smul_def, IsScalarTower.smul_assoc]
-      simp
-      }
-
-open Extension
-
-/-- Given generators `R[X] → S` and `S[Y] → T`, this is the algebra map
-`R[X,Y] → T ⊗[R] R[X]`. -/
-def compRingToTensorRing : (Q.comp P).Ring →ₐ[R] T ⊗[R] P.Ring :=
-  (aevalTower (IsScalarTower.toAlgHom R T _) (fun i ↦ 1 ⊗ₜ X i)).comp
-    (aeval (Sum.elim (C ∘ Q.val) X))
-
-@[simp]
-lemma compRingToTensorRing_X_inr (i : P.vars) :
-    compRingToTensorRing P Q (X (Sum.inr i)) = 1 ⊗ₜ X i := by
-  simp [compRingToTensorRing]
-
-@[simp]
-lemma compRingToTensorRing_X_inl (i : Q.vars) :
-    compRingToTensorRing P Q (X (Sum.inl i)) = Q.val i ⊗ₜ 1 := by
-  simp [compRingToTensorRing]
-
-def tensorRingEval : T ⊗[R] P.Ring →ₐ[R] T :=
-  Algebra.TensorProduct.lift (AlgHom.id R T)
-    ((IsScalarTower.toAlgHom R S T).comp (aeval P.val))
-    (fun _ _ ↦ Commute.all _ _)
-
-@[simp]
-lemma tensorRingEval_tmul (t : T) (x : P.Ring) :
-    tensorRingEval P (t ⊗ₜ x) = t * algebraMap S T (aeval P.val x) :=
-  rfl
-
-lemma tensorRingEval_comp_compRingToTensorRing :
-    (tensorRingEval P).comp (compRingToTensorRing P Q) = aeval (Q.comp P).val := by
-  ext (i|j)
-  · simp
-  · simp
-
-lemma aux1_mem_ker (x : (Q.comp P).Ring) (hx : x ∈ (Q.comp P).ker) :
-    compRingToTensorRing P Q x ∈ Set.range ((P.ker.subtype.restrictScalars R).lTensor T) := by
-  have : (tensorRingEval P) (compRingToTensorRing P Q x) = 0 := by
-    rw [← AlgHom.comp_apply, tensorRingEval_comp_compRingToTensorRing]
-    exact hx
-
-
-def compKerToTensorKer : (Q.comp P).ker →ₗ[R] T ⊗[R] P.ker := sorry
-
-def kerToTensorCotangent : (Q.comp P).ker →ₗ[R] T ⊗[S] P.toExtension.Cotangent := sorry
-
-noncomputable
-def aux :
-    (Q.comp P).ker →ₗ[(Q.comp P).Ring]
-      T ⊗[R] P.toExtension.Cotangent × Q.toExtension.Cotangent where
-  toFun := fun ⟨(x : MvPolynomial _ R), hx⟩ ↦
-    ⟨1 ⊗ₜ Cotangent.mk ⟨aeval (Sum.elim (C ∘ Q.val) X) x, sorry⟩,
-      Cotangent.mk ⟨aeval (Sum.elim X (C ∘ P.val)) x, sorry⟩⟩
-  map_add' := sorry
-  map_smul' := sorry
-
-noncomputable
-def compCotangent : (Q.comp P).toExtension.Cotangent →ₗ[T]
-    T ⊗[S] P.toExtension.Cotangent × Q.toExtension.Cotangent := by
-  fapply Extension.Cotangent.lift
-  · sorry
+theorem exists_isStandardSmooth [Smooth R S] (p : Ideal S) [p.IsPrime] :
+    ∃ (f : S), f ∉ p ∧ IsStandardSmooth R (Localization.Away f) := by
+  have : FormallySmooth R (Localization.AtPrime p) := isSmoothAt_of_smooth R p
+  have : Module.Projective (Localization.AtPrime p) (Ω[Localization.AtPrime p ⁄R]) :=
+    inferInstance
+  let v (s : S) : (Ω[Localization.AtPrime p ⁄R]) :=
+    KaehlerDifferential.D _ _ (algebraMap _ _ s)
+  have hv : Submodule.span (Localization.AtPrime p) (Set.range v) = ⊤ :=
+    sorry
+  have : Module.FinitePresentation (Localization.AtPrime p) (Ω[Localization.AtPrime p⁄R]) :=
+    sorry
+  obtain ⟨κ, a, b, hb⟩ := Module.exists_basis_of_span_of_flat v hv
+  let e : (κ →₀ S) →ₗ[S] (Ω[S ⁄R]) := sorry
+  let a : (κ →₀ S) →ₗ[S] (κ →₀ Localization.AtPrime p) := sorry
+  have : IsLocalizedModule p.primeCompl a := sorry
+  let b : (Ω[S⁄R]) →ₗ[S] (Ω[Localization.AtPrime p⁄R]) := sorry
+  have : IsLocalizedModule p.primeCompl b := sorry
+  let eₚ : (κ →₀ Localization.AtPrime p) →ₗ[S] (Ω[Localization.AtPrime p⁄R]) :=
+    IsLocalizedModule.map p.primeCompl a b e
+  have heₚ : Function.Bijective eₚ := sorry
+  have : Finite κ := sorry
+  obtain ⟨g, hg, h⟩ := Module.exists_of_bijective e p a b (Rₚ := Localization.AtPrime p) heₚ
+  use g, hg
+  have : Subsingleton (H1Cotangent R (Localization.Away g)) := sorry
+  -- universe problem
+  -- apply isStandardSmooth_of
   sorry
 
-def compCotangentEquiv :
-    (Q.comp P).toExtension.Cotangent ≃ₗ[T]
-      T ⊗[R] P.toExtension.Cotangent × Q.toExtension.Cotangent :=
+theorem exists_cover [Smooth R S] : ∃ (s : Set S) (hs : Ideal.span s = ⊤),
+    ∀ x ∈ s, IsStandardSmooth.{0, 0} R (Localization.Away x) :=
   sorry
-
-end Generators
 
 end
 
-variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] [Smooth R S]
-
 end Algebra
+
+namespace RingHom
+
+variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+
+theorem locally_isStandardSmooth_of_smooth (f : R →+* S)
+    (hf : f.Smooth) : Locally IsStandardSmooth.{0, 0} f := by
+  algebraize [f]
+  have : Algebra.Smooth R S := hf
+  obtain ⟨s, hs, h⟩ := Algebra.exists_cover (R := R) (S := S)
+  use s, hs
+  intro t ht
+  suffices h : Algebra.IsStandardSmooth.{0, 0} R (Localization.Away t) by
+    rw [RingHom.IsStandardSmooth]
+    convert h
+    ext
+    rw [Algebra.smul_def]
+    rfl
+  convert h t ht
+
+theorem smooth_iff_locally_isStandardSmooth (f : R →+* S) :
+    Smooth f ↔ Locally IsStandardSmooth f :=
+  sorry
+
+end RingHom
