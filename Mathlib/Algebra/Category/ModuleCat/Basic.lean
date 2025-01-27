@@ -104,11 +104,11 @@ section
 
 variable {R}
 
-/-- Turn a morphism in `ModuleCat` back into an `AlgHom`. -/
+/-- Turn a morphism in `ModuleCat` back into a `LinearMap`. -/
 abbrev Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := ModuleCat R) f
 
-/-- Typecheck an `AlgHom` as a morphism in `ModuleCat`. -/
+/-- Typecheck a `LinearMap` as a morphism in `ModuleCat`. -/
 abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := ModuleCat R) f
