@@ -55,13 +55,6 @@ theorem exp_log (hx : 0 < x) : exp (log x) = x := by
   rw [exp_log_eq_abs hx.ne']
   exact abs_of_pos hx
 
-theorem exp_one_mul_le_exp {x : ℝ} : Real.exp 1 * x ≤ x.exp := by
-  by_cases hx0 : x ≤ 0
-  · apply le_trans
-        (mul_nonpos_of_nonneg_of_nonpos (Real.exp_pos 1).le hx0) (Real.exp_nonneg x)
-  · have h := Real.add_one_le_exp (Real.log x)
-    rwa [← Real.exp_le_exp, Real.exp_add, Real.exp_log (lt_of_not_le hx0), mul_comm] at h
-
 theorem exp_log_of_neg (hx : x < 0) : exp (log x) = -x := by
   rw [exp_log_eq_abs (ne_of_lt hx)]
   exact abs_of_neg hx
@@ -76,6 +69,12 @@ theorem le_exp_log (x : ℝ) : x ≤ exp (log x) := by
 @[simp]
 theorem log_exp (x : ℝ) : log (exp x) = x :=
   exp_injective <| exp_log (exp_pos x)
+
+theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
+  by_cases hx0 : x ≤ 0
+  · apply le_trans (mul_nonpos_of_nonneg_of_nonpos (exp_pos 1).le hx0) (exp_nonneg x)
+  · have h := add_one_le_exp (log x)
+    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_le hx0), mul_comm] at h
 
 theorem surjOn_log : SurjOn log (Ioi 0) univ := fun x _ => ⟨exp x, exp_pos x, log_exp x⟩
 
