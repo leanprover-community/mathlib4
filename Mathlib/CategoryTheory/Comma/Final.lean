@@ -25,7 +25,7 @@ filtered.
 
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5]
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
@@ -113,9 +113,9 @@ end NonSmall
 
 Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
 categories of the first and second row of the diagram is final. -/
-lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{u₂} B] {T : Type u₃}
+lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {T : Type u₃}
     [Category.{v₃} T] {L : A ⥤ T} {R : B ⥤ T} {A' : Type u₄} [Category.{v₄} A'] {B' : Type u₅}
-    [Category.{v₅} B'] {T' : Type u₂} [Category.{u₂} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}
+    [Category.{v₅} B'] {T' : Type u₆} [Category.{v₆} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}
     {G : B ⥤ B'} {H : T ⥤ T'} (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H) [IsFiltered B]
     [R.Final] [R'.Final] [F.Final] [G.Final] :
     (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ => by
@@ -139,24 +139,31 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{u
 section Filtered
 
 variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{u₂} B]
-variable {T : Type u₂} [Category.{u₂} T]
+variable {B : Type u₂} [Category.{v₂} B]
+variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
 attribute [local instance] map_final in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
-lemma filtered [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
+lemma filtered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
   haveI (a : A) : IsFiltered (Comma (fromPUnit (L.obj a)) R) :=
     R.final_iff_isFiltered_structuredArrow.mp inferInstance (L.obj a)
-  haveI (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
+  have (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
   let η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
     NatIso.ofComponents (fun _ => Iso.refl _)
-  haveI (a : A) := IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T) (η a).hom
+  have (a : A) := IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T) (η a).hom
     ((Iso.refl (𝟭 B ⋙ R)).inv))
-  haveI : RepresentablyCoflat (fst L R) :=
+  have : RepresentablyCoflat (fst L R) :=
     ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
   apply isFiltered_of_representablyCoflat (fst L R)
+
+attribute [local instance] filtered_of_final in
+/-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
+comma category `Comma L R` is cofiltered. -/
+lemma cofiltered_of_final [IsCofiltered A] [IsCofiltered B] [L.Initial] :
+    IsCofiltered (Comma L R) :=
+ IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
 
 end Filtered
 
