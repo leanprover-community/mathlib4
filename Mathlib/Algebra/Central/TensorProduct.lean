@@ -84,9 +84,9 @@ lemma left_of_tensor (B C : Type v)
     (by rw [ee.toLinearEquiv.finrank_eq, Subalgebra.finrank_bot, Module.finrank_self])|>.symm⟩
 
 lemma right_of_tensor (B C : Type v) [Ring B] [Ring C] [Nontrivial B] [Nontrivial C]
-    [Algebra K C] [Algebra K B] [FiniteDimensional K C] [hbc : Algebra.IsCentral K (B ⊗[K] C)] :
+    [Algebra K C] [Algebra K B] [FiniteDimensional K C] [Algebra.IsCentral K (B ⊗[K] C)] :
     IsCentral K C :=
-  letI : IsCentral K (C ⊗[K] B) := IsCentral.ofAlgEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
+  letI : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
   left_of_tensor K C B
 
 end Algebra.IsCentral

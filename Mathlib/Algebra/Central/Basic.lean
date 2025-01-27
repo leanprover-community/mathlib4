@@ -23,8 +23,8 @@ universe u v
 
 namespace Algebra.IsCentral
 
-variable (K : Type u) [CommSemiring K] (D D': Type v) [Semiring D] [Algebra K D] [IsCentral K D]
-  [Semiring D'] [Algebra K D']
+variable (K : Type u) [CommSemiring K] (D D': Type v) [Semiring D] [Algebra K D]
+  [h : IsCentral K D] [Semiring D'] [Algebra K D']
 
 @[simp]
 lemma center_eq_bot : Subalgebra.center K D = ⊥ := eq_bot_iff.2 IsCentral.out
@@ -56,7 +56,6 @@ lemma baseField_essentially_unique
 
 lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
   out x hx := by
-    rename_i _ h _ _
     obtain ⟨k, hk⟩ := h.1 (show e.symm x ∈ _ by
       simp only [Subalgebra.mem_center_iff] at hx ⊢
       exact fun x => by simpa using congr(e.symm $(hx (e x))))
@@ -68,7 +67,6 @@ open MulOpposite in
   find out more about this in `Mathlib.Algebra.BrauerGroup.Basic`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz := by
-    rename_i _ h _ _
     have hz' : ∀ (x : D), x * z.unop = z.unop * x := fun x => by
       rw [Subalgebra.mem_center_iff] at hz
       specialize hz (op x)
