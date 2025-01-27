@@ -873,8 +873,7 @@ lemma homEquiv_extendScalarsId (M : ModuleCat R) :
     (extendRestrictScalarsAdj (RingHom.id R)).homEquiv _ _ ((extendScalarsId R).hom.app M) =
       (restrictScalarsId R).inv.app M := by
   ext m
-  rw [extendRestrictScalarsAdj_homEquiv_apply, ← extendScalarsId_inv_app_apply]
-  erw [← comp_apply]
+  rw [extendRestrictScalarsAdj_homEquiv_apply, ← extendScalarsId_inv_app_apply, ← comp_apply]
   simp
 
 lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :
