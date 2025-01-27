@@ -48,8 +48,8 @@ jobs:
 
     - name: add minImports linter option
       run: |
-        # set `linter.minImports option` to true and `Leab.async` to false in `lakefile`
-        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n  ⟨`Elab.async, false⟩,\n=}' lakefile.lean
+        # set `linter.minImports option` to true and `Elab.async` to false in `lakefile`
+        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨\`linter.minImports, true⟩,\n  ⟨\`Elab.async, false⟩,\n=}' lakefile.lean
 
         # import the `minImports` linter in `Mathlib.Init`
         sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
