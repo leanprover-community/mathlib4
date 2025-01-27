@@ -406,9 +406,6 @@ lemma isValuedIn_iff_mem_range :
     P.IsValuedIn S ↔ ∀ i j, P.pairing i j ∈ range (algebraMap S R) := by
   simp only [isValuedIn_iff, mem_range]
 
-instance : P.IsValuedIn R where
-  exists_value := by simp
-
 instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
   rw [isValuedIn_iff, forall_comm]
   exact P.exists_value
@@ -417,7 +414,7 @@ instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
 coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
-`[NoZeroSMulDivisors S R]`. -/
+`[FaithfulSMul S R]`. -/
 def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
   (P.exists_value i j).choose
 
@@ -425,6 +422,11 @@ def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
 lemma algebraMap_pairingIn [P.IsValuedIn S] (i j : ι) :
     algebraMap S R (P.pairingIn S i j) = P.pairing i j :=
   (P.exists_value i j).choose_spec
+
+@[simp]
+lemma pairingIn_same [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
+    P.pairingIn S i i = 2 :=
+  FaithfulSMul.injective_algebraMap S R <| by simp [map_ofNat]
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
@@ -582,7 +584,7 @@ lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
 coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
-`[NoZeroSMulDivisors S R]`. -/
+`[FaithfulSMul S R]`. -/
 def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
   P.pairingIn S i j * P.pairingIn S j i
 

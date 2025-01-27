@@ -288,6 +288,15 @@ theorem of_algebraMap_injective [CommSemiring R] [Semiring A] [Algebra R A] [NoZ
 
 variable (R A)
 
+instance [CommRing R] [Ring A] [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] :
+    FaithfulSMul R A where
+  eq_of_smul_eq_smul {r₁ r₂} h := by
+    specialize h 1
+    rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at h
+    exact h.resolve_right one_ne_zero
+
+-- TODO (Re)move most of the below: they should be stated for `[FaithfulSMul R A]`
+
 theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
   simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
@@ -391,6 +400,47 @@ def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoi
 end LinearMap
 
 end IsScalarTower
+
+section FaithfulSMul
+
+-- TODO Some / all of the results in this section need to be moved, tidied up. More work to do here.
+
+instance (R : Type*) [NonAssocRing R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
+
+variable (R A : Type*) [CommSemiring R] [Semiring A]
+
+lemma faithfulSMul_iff_injective_smul_one [Module R A] [IsScalarTower R A A] :
+    FaithfulSMul R A ↔ Function.Injective (fun r : R ↦ r • (1 : A)) := by
+  refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
+  · simp only at hr
+    rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
+  · simpa using hr 1
+
+lemma faithfulSMul_iff_injective_algebraMap [Algebra R A] :
+    FaithfulSMul R A ↔ Function.Injective (algebraMap R A) := by
+  rw [faithfulSMul_iff_injective_smul_one, Algebra.algebraMap_eq_smul_one']
+
+lemma FaithfulSMul.injective_algebraMap [Algebra R A] [FaithfulSMul R A] :
+    Function.Injective (algebraMap R A) :=
+  (faithfulSMul_iff_injective_algebraMap R A).mp inferInstance
+
+@[simp]
+lemma FaithfulSMul.algebraMap_eq_zero_iff [Algebra R A] [FaithfulSMul R A] {r : R} :
+    algebraMap R A r = 0 ↔ r = 0 :=
+  map_eq_zero_iff (algebraMap R A) <| injective_algebraMap R A
+
+lemma Algebra.charZero_of_charZero (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [CharZero R] [FaithfulSMul R A] :
+    CharZero A := by
+  have : Nat.cast (R := A) = algebraMap R A ∘ Nat.cast (R := R) := by ext; simp
+  constructor
+  rw [this]
+  exact Function.Injective.comp (FaithfulSMul.injective_algebraMap R A) (CharZero.cast_injective)
+
+instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
+  simpa only [faithfulSMul_iff_injective_algebraMap] using (algebraMap ℤ R).injective_int
+
+end FaithfulSMul
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
 to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
