@@ -48,34 +48,22 @@ to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
 noncomputable
 def kerCompPreimage (x : Q.ker) :
     (Q.comp P).ker := by
-  refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
-  · -- The use of `refine` is intentional to control the elaboration order
-    -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.vars ⊕ P.vars) R`
-    refine rename ?_ (P.σ r) * monomial ?_ 1
-    exacts [Sum.inr, n.mapDomain Sum.inl]
-  · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
-    conv_rhs => rw [← aeval_val_eq_zero x.2, ← x.1.support_sum_monomial_coeff]
-    simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
-      Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-      Sum.elim_inl, one_mul]
-    congr! with v i
-    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
-    rfl
+  refine ⟨x.1.sum fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1, ?_⟩
+  simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
+  conv_rhs => rw [← aeval_val_eq_zero x.2, ← x.1.support_sum_monomial_coeff]
+  simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
+    Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
+    Sum.elim_inl, one_mul]
+  congr! with v i
+  simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
+  rfl
 
 lemma ofComp_kerCompPreimage (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
-  conv_rhs => rw [← x.1.support_sum_monomial_coeff]
-  rw [kerCompPreimage, map_finsupp_sum, Finsupp.sum]
+  rw [← x.1.support_sum_monomial_coeff, kerCompPreimage, map_finsupp_sum, Finsupp.sum]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
-  simp only [AlgHom.toLinearMap_apply, _root_.map_mul, Hom.toAlgHom_monomial]
-  rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
-  rw [rename, ← AlgHom.comp_apply, comp_aeval]
-  simp only [ofComp_val, Sum.elim_inr, Function.comp_apply, self_val, id_eq,
-    Sum.elim_inl, monomial_eq, Hom.toAlgHom_X]
-  congr 1
-  rw [aeval_def, IsScalarTower.algebraMap_eq R S, ← MvPolynomial.algebraMap_eq,
-    ← coe_eval₂Hom, ← map_aeval, P.aeval_val_σ]
-  rfl
+  rw [_root_.map_mul, Hom.toAlgHom_monomial, ofComp_toAlgHom_rename]
+  simp [Finsupp.prod_mapDomain_index_inj Sum.inl_injective, monomial_eq, coeff]
 
 lemma Cotangent.map_ofComp_ker :
     Submodule.map (Q.ofComp P).toAlgHom.toLinearMap ((Q.comp P).ker.restrictScalars R) =
@@ -84,8 +72,7 @@ lemma Cotangent.map_ofComp_ker :
   · rintro _ ⟨x, hx, rfl⟩
     simp only [ker_eq_ker_aeval_val, Submodule.coe_restrictScalars, SetLike.mem_coe,
       RingHom.mem_ker, AlgHom.toLinearMap_apply, Submodule.restrictScalars_mem] at hx ⊢
-    rw [← hx, Hom.algebraMap_toAlgHom]
-    rfl
+    rw [← hx, Hom.algebraMap_toAlgHom, id.map_eq_id, RingHom.id_apply]
   · intro x hx
     exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
 
@@ -164,6 +151,21 @@ def CotangentSpace.compEquiv (Q : Generators.{w} S T) (P : Generators.{w'} R S) 
       Q.toExtension.CotangentSpace × (T ⊗[S] P.toExtension.CotangentSpace) :=
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
+
+lemma CotangentSpace.compEquiv_tmul_D_X_inr (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+    (n : P.vars) :
+    ((CotangentSpace.compEquiv Q P) (1 ⊗ₜ D R (Q.comp P).Ring (X <| Sum.inr n))).2 =
+      1 ⊗ₜ[S] P.cotangentSpaceBasis n := by
+  rw [← cotangentSpaceBasis_apply (Q.comp P) (Sum.inr n), compEquiv, LinearEquiv.trans_apply,
+    Basis.repr_self, Basis.repr_symm_apply, Finsupp.linearCombination_single, one_smul,
+    Basis.prod_apply_inr_snd, Basis.baseChange_apply]
+
+lemma CotangentSpace.compEquiv_tmul_D_X_inl (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+    (n : Q.vars) :
+    ((CotangentSpace.compEquiv Q P) (1 ⊗ₜ D R (Q.comp P).Ring (X <| Sum.inl n))).2 = 0 := by
+  rw [← cotangentSpaceBasis_apply (Q.comp P) (Sum.inl n), compEquiv, LinearEquiv.trans_apply,
+    Basis.repr_self, Basis.repr_symm_apply, Finsupp.linearCombination_single, one_smul,
+    Basis.prod_apply_inl_snd]
 
 section instanceProblem
 
@@ -300,35 +302,37 @@ lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     rw [add_left_comm]
     rfl
 
-set_option maxHeartbeats 300000 in
+lemma smul_δAux_elim (p : (Q.comp P).Ring) (n : (Q.comp P).vars) :
+    (algebraMap Q.Ring T) ((Q.ofComp P).toAlgHom p) • (δAux R Q) (Sum.elim X (C ∘ P.val) n) =
+    (aeval (Q.comp P).val) p • (LinearMap.baseChange T P.toExtension.toKaehler)
+      ((CotangentSpace.compEquiv Q P) (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) (X n))).2 := by
+  obtain (n | n) := (n : Q.vars ⊕ P.vars)
+  · rw [CotangentSpace.compEquiv_tmul_D_X_inl]
+    simp_rw [Sum.elim_inl, δAux_X, map_zero, smul_zero]
+  · rw [CotangentSpace.compEquiv_tmul_D_X_inr]
+    simp_rw [Sum.elim_inr, Function.comp_apply, algebraMap_apply, Hom.algebraMap_toAlgHom,
+      id.map_eq_id, RingHom.id_apply, δAux_C,
+      LinearMap.baseChange_tmul, toKaehler_cotangentSpaceBasis]
+
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
-        (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
+        (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x)).2 := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH
   · simp only [algHom_C, δAux_C, sub_self, derivation_C, Derivation.map_algebraMap,
       tmul_zero, map_zero, add_zero, MvPolynomial.algebraMap_apply, Prod.snd_zero]
   · simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
-  · simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
-      ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
-      id.map_eq_id, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply, coe_eval₂Hom,
-      IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply,
-      ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, LinearEquiv.map_add,
-      LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, LinearMap.map_add]
-    obtain (n | n) := n
-    · simp only [Sum.elim_inl, δAux_X, smul_zero, aeval_X, zero_add, self_eq_add_left,
-        CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_self, Basis.repr_symm_apply,
-        Finsupp.linearCombination_single,
-        Basis.prod_apply, LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply,
-        one_smul, map_zero, smul_zero]
-    · simp only [comp_vars, Sum.elim_inr, Function.comp_apply, algHom_C, δAux_C,
-        CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply,
-        algebraMap_smul, Basis.repr_self, Finsupp.linearCombination_single, Basis.prod_apply,
-        LinearMap.coe_inr, Basis.baseChange_apply, one_smul, LinearMap.baseChange_tmul,
-        toKaehler_cotangentSpaceBasis, add_left_inj, LinearMap.coe_inl]
-      rfl
+  · simp_rw [map_mul, Hom.toAlgHom_X, ofComp_val, Derivation.leibniz]
+    simp_rw [δAux_mul, IH, tmul_add, map_add, Prod.snd_add, map_add, tmul_smul,
+      ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, map_smul, Prod.smul_snd, map_smul,
+      algebraMap_apply, aeval_X, comp_val, ← @IsScalarTower.algebraMap_smul Q.Ring T]
+    have : (algebraMap Q.Ring T) (Sum.elim X (⇑C ∘ P.val) n) =
+        Sum.elim Q.val (⇑(algebraMap S T) ∘ P.val) n := by
+      cases n <;> simp
+    simp_rw [this, add_left_inj]
+    exact smul_δAux_elim Q P p n
 
 lemma map_comp_cotangentComplex_baseChange :
     (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T ∘ₗ
