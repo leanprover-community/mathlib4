@@ -18,11 +18,7 @@ impartial.
 
 universe u
 
-namespace SetTheory
-
-open scoped PGame
-
-namespace PGame
+namespace SetTheory.PGame
 
 private def ImpartialAux (G : PGame) : Prop :=
   (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
@@ -49,6 +45,8 @@ theorem impartial_def {G : PGame} :
 
 namespace Impartial
 
+variable (G : PGame) [h : Impartial G]
+
 instance impartial_zero : Impartial 0 := by
   rw [impartial_def]
   simp
@@ -57,11 +55,11 @@ instance impartial_star : Impartial star := by
   rw [impartial_def]
   simpa using Impartial.impartial_zero
 
-theorem neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
+theorem neg_equiv_self : G ≈ -G :=
   (impartial_def.1 h).1
 
 @[simp]
-theorem mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Game) = ⟦G⟧ :=
+theorem mk'_neg_equiv_self : -(⟦G⟧ : Game) = ⟦G⟧ :=
   game_eq (Equiv.symm (neg_equiv_self G))
 
 instance moveLeft_impartial {G : PGame} [h : G.Impartial] (i : G.LeftMoves) :
@@ -103,8 +101,6 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
     exact impartial_neg _
 termination_by G
 
-variable (G : PGame) [Impartial G]
-
 theorem nonpos : ¬0 < G := by
   apply (lt_asymm · ?_)
   rwa [← neg_lt_neg_iff, neg_zero, ← lt_congr_right (neg_equiv_self G)]
@@ -115,18 +111,10 @@ theorem nonneg : ¬G < 0 := by
 /-- In an impartial game, either the first player always wins, or the second player always wins. -/
 theorem equiv_or_fuzzy_zero : G ≈ 0 ∨ G ‖ 0 := by
   rcases lt_or_equiv_or_gt_or_fuzzy G 0 with (h | h | h | h)
-  · exact ((nonneg G) h).elim
+  · exact (nonneg G h).elim
   · exact Or.inl h
-  · exact ((nonpos G) h).elim
+  · exact (nonpos G h).elim
   · exact Or.inr h
-
-@[simp]
-theorem not_equiv_zero_iff : ¬ G ≈ 0 ↔ G ‖ 0 :=
-  ⟨(equiv_or_fuzzy_zero G).resolve_left, Fuzzy.not_equiv⟩
-
-@[simp]
-theorem not_fuzzy_zero_iff : ¬ G ‖ 0 ↔ G ≈ 0 :=
-  ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
 
 theorem add_self : G + G ≈ 0 :=
   Equiv.trans (add_congr_left (neg_equiv_self G)) (neg_add_cancel_equiv G)
@@ -145,52 +133,93 @@ theorem equiv_iff_add_equiv_zero' (H : PGame) : G ≈ H ↔ G + H ≈ 0 := by
   rw [equiv_iff_game_eq, ← add_left_cancel_iff, mk'_add_self, ← quot_add, equiv_iff_game_eq,
     Eq.comm, quot_zero]
 
-theorem le_zero_iff {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by
+variable {G}
+
+@[simp]
+theorem not_equiv_zero_iff : ¬ G ≈ 0 ↔ G ‖ 0 :=
+  ⟨(equiv_or_fuzzy_zero G).resolve_left, Fuzzy.not_equiv⟩
+
+@[simp]
+theorem not_fuzzy_zero_iff : ¬ G ‖ 0 ↔ G ≈ 0 :=
+  ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
+
+theorem le_zero_iff : G ≤ 0 ↔ 0 ≤ G := by
   rw [← zero_le_neg_iff, le_congr_right (neg_equiv_self G)]
 
-theorem lf_zero_iff {G : PGame} [G.Impartial] : G ⧏ 0 ↔ 0 ⧏ G := by
+theorem lf_zero_iff : G ⧏ 0 ↔ 0 ⧏ G := by
   rw [← zero_lf_neg_iff, lf_congr_right (neg_equiv_self G)]
 
-theorem equiv_zero_iff_le : (G ≈ 0) ↔ G ≤ 0 :=
-  ⟨And.left, fun h => ⟨h, le_zero_iff.1 h⟩⟩
+@[simp]
+theorem le_zero_iff_equiv : G ≤ 0 ↔ G ≈ 0 :=
+  ⟨fun h ↦ ⟨h, le_zero_iff.1 h⟩, And.left⟩
 
+@[simp]
+theorem zero_le_iff_equiv : 0 ≤ G ↔ G ≈ 0 :=
+  ⟨fun h ↦ ⟨le_zero_iff.2 h, h⟩, And.right⟩
+
+@[simp]
+theorem lf_zero_iff_fuzzy : G ⧏ 0 ↔ G ‖ 0 :=
+  ⟨fun h ↦ ⟨h, lf_zero_iff.1 h⟩, And.left⟩
+
+@[simp]
+theorem zero_lf_iff_fuzzy : 0 ⧏ G ↔ G ‖ 0 :=
+  ⟨fun h ↦ ⟨lf_zero_iff.2 h, h⟩, And.right⟩
+
+theorem equiv_zero_iff_forall_leftMoves_fuzzy : G ≈ 0 ↔ ∀ i, G.moveLeft i ‖ 0 := by
+  refine ⟨fun hp i ↦ ?_, fun hb ↦ ?_⟩
+  · rw [← lf_zero_iff_fuzzy]
+    exact hp.1.moveLeft_lf i
+  · rw [← le_zero_iff_equiv, le_zero_lf]
+    exact fun i => (hb i).1
+
+theorem equiv_zero_iff_forall_rightMoves_fuzzy : G ≈ 0 ↔ ∀ j, G.moveRight j ‖ 0 := by
+  simpa using equiv_zero_iff_forall_leftMoves_fuzzy (G := -G)
+
+theorem fuzzy_zero_iff_exists_leftMoves_equiv : G ‖ 0 ↔ ∃ i, G.moveLeft i ≈ 0 := by
+  apply not_iff_not.1
+  simpa using equiv_zero_iff_forall_leftMoves_fuzzy
+
+theorem fuzzy_zero_iff_exists_rightMoves_equiv : G ‖ 0 ↔ ∃ j, G.moveRight j ≈ 0 := by
+  simpa using fuzzy_zero_iff_exists_leftMoves_equiv (G := -G)
+
+section deprecated
+
+variable (G)
+
+@[deprecated le_zero_iff_equiv (since := "2025-01-26")]
+theorem equiv_zero_iff_le : (G ≈ 0) ↔ G ≤ 0 :=
+  le_zero_iff_equiv.symm
+
+@[deprecated lf_zero_iff_fuzzy (since := "2025-01-26")]
 theorem fuzzy_zero_iff_lf : G ‖ 0 ↔ G ⧏ 0 :=
   ⟨And.left, fun h => ⟨h, lf_zero_iff.1 h⟩⟩
 
+@[deprecated zero_le_iff_equiv (since := "2025-01-26")]
 theorem equiv_zero_iff_ge : (G ≈ 0) ↔ 0 ≤ G :=
   ⟨And.right, fun h => ⟨le_zero_iff.2 h, h⟩⟩
 
+@[deprecated zero_lf_iff_fuzzy (since := "2025-01-26")]
 theorem fuzzy_zero_iff_gf : G ‖ 0 ↔ 0 ⧏ G :=
   ⟨And.right, fun h => ⟨lf_zero_iff.2 h, h⟩⟩
 
-theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ G ≈ 0 := by
-  refine ⟨fun hb => ?_, fun hp i => ?_⟩
-  · rw [equiv_zero_iff_le G, le_zero_lf]
-    exact fun i => (hb i).1
-  · rw [fuzzy_zero_iff_lf]
-    exact hp.1.moveLeft_lf i
+@[deprecated equiv_zero_iff_forall_leftMoves_fuzzy (since := "2025-01-26")]
+theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ G ≈ 0 :=
+  equiv_zero_iff_forall_leftMoves_fuzzy.symm
 
-theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ G ≈ 0 := by
-  refine ⟨fun hb => ?_, fun hp i => ?_⟩
-  · rw [equiv_zero_iff_ge G, zero_le_lf]
-    exact fun i => (hb i).2
-  · rw [fuzzy_zero_iff_gf]
-    exact hp.2.lf_moveRight i
+@[deprecated equiv_zero_iff_forall_rightMoves_fuzzy (since := "2025-01-26")]
+theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ G ≈ 0 :=
+  equiv_zero_iff_forall_rightMoves_fuzzy.symm
 
-theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 := by
-  refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_gf G).2 (lf_of_le_moveLeft hi.2), fun hn => ?_⟩
-  rw [fuzzy_zero_iff_gf G, zero_lf_le] at hn
-  cases' hn with i hi
-  exact ⟨i, (equiv_zero_iff_ge _).2 hi⟩
+@[deprecated fuzzy_zero_iff_exists_leftMoves_equiv (since := "2025-01-26")]
+theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 :=
+  fuzzy_zero_iff_exists_leftMoves_equiv.symm
 
-theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 := by
-  refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_lf G).2 (lf_of_moveRight_le hi.1), fun hn => ?_⟩
-  rw [fuzzy_zero_iff_lf G, lf_zero_le] at hn
-  cases' hn with i hi
-  exact ⟨i, (equiv_zero_iff_le _).2 hi⟩
+@[deprecated fuzzy_zero_iff_exists_rightMoves_equiv (since := "2025-01-26")]
+theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 :=
+  fuzzy_zero_iff_exists_rightMoves_equiv.symm
+
+end deprecated
 
 end Impartial
 
-end PGame
-
-end SetTheory
+end SetTheory.PGame
