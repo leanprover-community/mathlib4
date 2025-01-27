@@ -4223,6 +4223,7 @@ import Mathlib.Order.Filter.Ultrafilter.Basic
 import Mathlib.Order.Filter.Ultrafilter.Defs
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
+import Mathlib.Order.Fin.Finset
 import Mathlib.Order.Fin.Monotone
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.FixedPoints
