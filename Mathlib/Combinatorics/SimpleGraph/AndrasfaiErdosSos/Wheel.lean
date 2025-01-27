@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
-import MathlibCombinatorics.SimpleGraph.CompletePartite
+import Mathlib.Combinatorics.SimpleGraph.CompletePartite
 
 /-!
 If G is maximally Kᵣ₊₂-free and xy is a non-edge then there exists an r-set such that
