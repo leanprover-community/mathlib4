@@ -185,6 +185,7 @@ end MulEquiv
 variable [Finite ι] [DecidableEq ι] {M : Type*}
 
 -- manually additivized to fix variable names
+-- See https://github.com/leanprover-community/mathlib4/issues/11462
 lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
     (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
     (single : ∀ i m, p (Pi.single i m)) : p f := by
