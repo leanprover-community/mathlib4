@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 /-!
 # (Co)limits in a preoder category
 
-We provide basic results about the limits and colimits in the associated category of
+We provide basic results about the nullary and binary (co)products in the associated category of
 a preordered type.
 
 -/
