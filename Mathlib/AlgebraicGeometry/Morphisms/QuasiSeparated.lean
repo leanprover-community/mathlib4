@@ -275,14 +275,12 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       intro i; change (i : X.Opens) ≤ S
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
-      -- Porting note: have to add argument explicitly
-      exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
+      exact le_iSup_iff.mpr fun b a ↦ a i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : X.Opens) ≤ U
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
-      -- Porting note: have to add argument explicitly
-      exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
+      exact le_iSup_iff.mpr fun b a ↦ a i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- for some `n` since `f ^ n₂ * y₁ = f ^ (n₁ + n₂) * x = f ^ n₁ * y₂` on `X_f`.
     have := fun i ↦ exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
@@ -297,8 +295,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
       · refine fun i => homOfLE ?_; rw [hs]
-        -- Porting note: have to add argument explicitly
-        exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
+        exact le_iSup_iff.mpr fun b a ↦ a i
       · exact le_of_eq hs
       · intro i
         -- This unfolds `X.sheaf` and ensures we use `CommRingCat.hom` to apply the morphism

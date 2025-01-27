@@ -497,8 +497,7 @@ instance : Algebra (RatFunc F) F⸨X⸩ := RingHom.toAlgebra (coeAlgHom F).toRin
 theorem algebraMap_apply_div :
     algebraMap (RatFunc F) F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] F⸨X⸩ p / algebraMap _ _ q := by
-  -- Porting note: had to supply implicit arguments to `convert`
-  convert coe_div (algebraMap F[X] (RatFunc F) p) (algebraMap F[X] (RatFunc F) q) <;>
+  convert coe_div _ _ <;>
     rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
       Algebra.ofId_apply]
 

@@ -390,12 +390,7 @@ protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
 
 @[simp]
-protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := by
-  rw [OrthonormalBasis.toBasis] -- Porting note: was `change`
-  ext j
-  classical
-    rw [Basis.coe_ofEquivFun]
-    congr
+protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := by rfl
 
 @[simp]
 protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
@@ -677,10 +672,9 @@ def Complex.isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) : ℂ ≃
 @[simp]
 theorem Complex.map_isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) (f : F ≃ₗᵢ[ℝ] F') :
     Complex.isometryOfOrthonormal (v.map f) = (Complex.isometryOfOrthonormal v).trans f := by
-  simp only [isometryOfOrthonormal, OrthonormalBasis.map, LinearIsometryEquiv.symm_trans,
+  simp [isometryOfOrthonormal, OrthonormalBasis.map, LinearIsometryEquiv.symm_trans,
     LinearIsometryEquiv.symm_symm]
-  -- Porting note: `LinearIsometryEquiv.trans_assoc` doesn't trigger in the `simp` above
-  rw [LinearIsometryEquiv.trans_assoc]
+  rfl
 
 theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) ℝ F) (f : F) :
     (Complex.isometryOfOrthonormal v).symm f =
@@ -689,10 +683,7 @@ theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) �
 
 theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F) (z : ℂ) :
     Complex.isometryOfOrthonormal v z = z.re • v 0 + z.im • v 1 := by
-  -- Porting note: was
-  -- simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
-  rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
-  simp [← v.sum_repr_symm]
+  simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
 
 end Complex
 
