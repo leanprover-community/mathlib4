@@ -102,16 +102,13 @@ def diagonalSucc (n : ℕ) :
 
 variable {k G n}
 
+open ModuleCat.MonoidalCategory in
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-  dsimp [diagonalSucc]
-  erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
-    LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
-  erw [lcongr_single]
-  rw [TensorProduct.lid_symm_apply, diagonalSuccIsoTensorTrivial_hom_hom,
-    finsuppTensorFinsupp_symm_single]
-  rfl
+  simp [diagonalSucc, instMonoidalCategoryStruct_whiskerLeft, instMonoidalCategoryStruct_tensorObj,
+    ModuleCat.MonoidalCategory.whiskerLeft, ModuleCat.MonoidalCategory.tensorObj,
+    tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
