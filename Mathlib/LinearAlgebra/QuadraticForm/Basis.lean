@@ -164,7 +164,7 @@ theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) (x y : M
     let s := (bm.repr x).support ∪ (bm.repr y).support
     B.toQuadraticMap.toBilin bm x y =
       (∑ i ∈ s,
-        ((bm.repr x) i) •((bm.repr y) i) • B (bm i) (bm i)) +
+        bm.repr x i • bm.repr y i • B (bm i) (bm i) +
       ∑ p ∈ s.offDiag with p.1 < p.2,
         bm.repr x p.1 • bm.repr y p.2 • (B + B.flip) (bm p.1) (bm p.2) := by
   simp_rw [toBilin, polar_toQuadraticMap, BilinMap.toQuadraticMap_apply]
