@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids
