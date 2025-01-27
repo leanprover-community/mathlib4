@@ -26,31 +26,30 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N
 
 open Finsupp in
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
-    Q (f.sum g) = f.sum (fun i r => Q (g i r)) +
-    ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩ p := by
-  rw [sum, QuadraticMap.map_sum]
-  exact congrArg (HAdd.hAdd _) rfl
+    Q (f.sum g) =
+      f.sum (fun i r => Q (g i r)) +
+      ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
+        p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
+  QuadraticMap.map_sum _ _ _
 
 open Finsupp in
 theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
-    Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
-    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => l i • l j • polar Q (g i) (g j), fun i j => by
-          simp only [polar_comm]
-          rw [smul_comm]⟩ p := by
-  simp_rw [linearCombination_apply, map_finsuppSum,
-    polar_smul_left, polar_smul_right, map_smul]
+    Q (linearCombination R g l) =
+      (l.sum fun i r => (r * r) • Q (g i)) +
+      ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
+        p.lift
+          ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
+            simp only [polar_comm, mul_comm]⟩ := by
+  simp_rw [linearCombination_apply, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
+    mul_smul]
 
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    Q x = (bm.repr x).sum (fun i r => (r * r) • Q (bm i)) +
-    ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => bm.repr x i • bm.repr x j • polar Q (bm i) (bm j), fun i j => by
-          simp only [polar_comm]
-          rw [smul_comm]⟩ p := by
+    Q x =
+      (bm.repr x).sum (fun i r => (r * r) • Q (bm i)) +
+      ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
+        p.lift
+          ⟨fun i j => (bm.repr x i * bm.repr x j) • polar Q (bm i) (bm j), fun i j => by
+            simp only [polar_comm, mul_comm]⟩ := by
   rw [← map_linearCombination, Basis.linearCombination_repr]
 
 end
