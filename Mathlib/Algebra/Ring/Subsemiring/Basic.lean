@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subsemiring.Defs
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.Algebra.Module.Defs
 
 /-!
 # Bundled subsemirings
