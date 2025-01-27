@@ -481,7 +481,7 @@ notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) Lis
 -/
 unsafe instance instRepr [Repr α] : Repr (Perm α) where
   reprPrec f prec :=
-    -- Obtains a list of formats which represents disjoint cycles.
+    -- Obtain a list of formats which represents disjoint cycles.
     letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
       (Perm.cycleFactorsFinset f).val
       fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
