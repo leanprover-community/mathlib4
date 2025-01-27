@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 /-!
 # Functoriality of group homology
