@@ -170,6 +170,18 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
 
+lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
+    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
+  constructor
+  · intro hf i hi
+    have :=  hf hi
+    simp [Fin.ext_iff] at this
+  · intro hf
+    refine ((strictMono_iff_lt_succ (f := f)).2 (fun i ↦ ?_)).injective
+    obtain hi | hi := (f.monotone (Fin.castSucc_le_succ i)).lt_or_eq
+    · exact hi
+    · exact (hf i hi).elim
+
 /-! #### Order isomorphisms -/
 
 /-- The equivalence `Fin n ≃ {i // i < n}` is an order isomorphism. -/
