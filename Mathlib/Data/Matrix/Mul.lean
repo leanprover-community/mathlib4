@@ -832,14 +832,14 @@ omit [Fintype n] in
 lemma ext_of_mulVec {M N : Matrix n m α} (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
     M = N := by
   ext i j
-  simp only [mulVec_single, mul_one] at h
+  simp_rw [mulVec_single_one] at h
   exact congrFun (h j) i
 
 omit [Fintype n] in
 lemma ext_of_vecMul {M N : Matrix m n α} (h : ∀ i, Pi.single i 1 ᵥ* M = Pi.single i 1 ᵥ* N) :
     M = N := by
   ext i j
-  simp only [single_vecMul, one_mul] at h
+  simp_rw [single_one_vecMul] at h
   exact congrFun (h i) j
 
 end NonAssocSemiring

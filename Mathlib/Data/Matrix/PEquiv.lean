@@ -40,7 +40,7 @@ open Matrix
 universe u v
 
 variable {k l m n : Type*}
-variable {α : Type v}
+variable {α β : Type*}
 
 open Matrix
 
@@ -157,7 +157,7 @@ theorem equiv_toPEquiv_toMatrix [DecidableEq n] [Zero α] [One α] (σ : Equiv n
   if_congr Option.some_inj rfl rfl
 
 @[simp]
-lemma map_toMatrix [DecidableEq n] {β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
+lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
     (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
   ext i j
   simp
