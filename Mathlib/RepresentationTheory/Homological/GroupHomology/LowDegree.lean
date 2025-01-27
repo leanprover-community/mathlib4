@@ -633,11 +633,11 @@ theorem isOneCycle_of_mem_oneCycles
 `x : G →₀ A` satisfying the 1-boundary condition, produces a 1-boundary for the representation
 on `A` induced by the `DistribMulAction`. -/
 @[simps]
-def oneBoundariesOfIsOneBoundary [DecidableEq G] (x : G →₀ A) (hx : IsOneBoundary x) :
+def oneBoundariesOfIsOneBoundary (x : G →₀ A) (hx : IsOneBoundary x) :
     oneBoundaries (Rep.ofDistribMulAction k G A) :=
   ⟨x, hx⟩
 
-theorem isOneBoundary_of_mem_oneBoundaries [DecidableEq G]
+theorem isOneBoundary_of_mem_oneBoundaries
     (x : G →₀ A) (hx : x ∈ oneBoundaries (Rep.ofDistribMulAction k G A)) :
     IsOneBoundary x := hx
 
@@ -657,11 +657,11 @@ theorem isTwoCycle_of_mem_twoCycles
 `x : G × G →₀ A` satisfying the 2-boundary condition, produces a 2-boundary for the
 representation on `A` induced by the `DistribMulAction`. -/
 @[simps]
-def twoBoundariesOfIsTwoBoundary [DecidableEq G] (x : G × G →₀ A) (hx : IsTwoBoundary x) :
+def twoBoundariesOfIsTwoBoundary (x : G × G →₀ A) (hx : IsTwoBoundary x) :
     twoBoundaries (Rep.ofDistribMulAction k G A) :=
   ⟨x, hx⟩
 
-theorem isTwoBoundary_of_mem_twoBoundaries [DecidableEq G]
+theorem isTwoBoundary_of_mem_twoBoundaries
     (x : G × G →₀ A) (hx : x ∈ twoBoundaries (Rep.ofDistribMulAction k G A)) :
     IsTwoBoundary x := hx
 
