@@ -3,7 +3,6 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
@@ -465,3 +464,5 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+end groupCohomology

@@ -386,7 +386,7 @@ abbrev oneCoboundariesToOneCocycles : oneCoboundaries A →ₗ[k] oneCocycles A 
 
 @[simp]
 lemma oneCoboundariesToOneCocycles_apply (x : oneCoboundaries A) :
-    (oneCoboundariesToOneCocycles A x).1 = x.1 := rfl
+    oneCoboundariesToOneCocycles A x = x.1 := rfl
 
 theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.ρ.IsTrivial] :
     oneCoboundaries A = ⊥ := by
@@ -409,7 +409,7 @@ abbrev twoCoboundariesToTwoCocycles : twoCoboundaries A →ₗ[k] twoCocycles A 
 
 @[simp]
 lemma twoCoboundariesToTwoCocycles_apply (x : twoCoboundaries A) :
-    (twoCoboundariesToTwoCocycles A x).1 = x.1 := rfl
+    twoCoboundariesToTwoCocycles A x = x.1 := rfl
 
 end Coboundaries
 
