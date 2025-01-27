@@ -104,7 +104,7 @@ variable [Fintype n]
 
 lemma swap_mulVec_single_left (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single i r = Pi.single j r := by
-  simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap]
+  simp only [swap, Equiv.toMatrix_toPEquiv_mulVec_single, Equiv.symm_swap]
   rw [Equiv.swap_apply_left]
 
 lemma swap_mulVec_single_right (i j : n) (r : R) :
@@ -113,12 +113,12 @@ lemma swap_mulVec_single_right (i j : n) (r : R) :
 
 lemma swap_mulVec_single_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : R) :
     swap R i j *ᵥ Pi.single k r = Pi.single k r := by
-  simp only [swap, Equiv.toPEquiv_toMatrix_mulVec_single, Equiv.symm_swap,
+  simp only [swap, Equiv.toMatrix_toPEquiv_mulVec_single, Equiv.symm_swap,
     Equiv.swap_apply_of_ne_of_ne hik hjk]
 
 lemma single_vecMul_swap_left (i j : n) (r : R) :
     Pi.single i r ᵥ* swap R i j = Pi.single j r := by
-  simp only [swap, Equiv.single_vecMul_toPEquiv_toMatrix, Equiv.symm_swap]
+  simp only [swap, Equiv.single_vecMul_toMatrix_toPEquiv, Equiv.symm_swap]
   rw [Equiv.swap_apply_left]
 
 lemma single_vecMul_swap_right (i j : n) (r : R) :
@@ -127,7 +127,7 @@ lemma single_vecMul_swap_right (i j : n) (r : R) :
 
 lemma single_vecMul_swap_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : R) :
     Pi.single k r ᵥ* swap R i j = Pi.single k r := by
-  simp only [swap, Equiv.single_vecMul_toPEquiv_toMatrix, Equiv.symm_swap,
+  simp only [swap, Equiv.single_vecMul_toMatrix_toPEquiv, Equiv.symm_swap,
     Equiv.swap_apply_of_ne_of_ne hik hjk]
 
 @[simp]
@@ -176,7 +176,7 @@ lemma mul_swap_of_ne {a b : n} {i j : n} (hbi : b ≠ i) (hbj : b ≠ j) (g : Ma
 lemma swap_mul_self (i j : n) : swap R i j * swap R i j = 1 := by
   simp only [swap]
   rw [← Equiv.swap_inv, Equiv.Perm.inv_def]
-  apply Equiv.toPEquiv_toMatrix_mul_symm_toPEquiv_toMatrix
+  apply Equiv.toMatrix_toPEquiv_mul_toMatrix_toPEquiv_symm
 
 end
 
