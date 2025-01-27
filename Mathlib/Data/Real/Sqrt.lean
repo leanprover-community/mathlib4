@@ -455,7 +455,7 @@ namespace Tactic.NormNum
 
 open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum
 
-lemma isNat_real_sqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
+lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (Real.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
 lemma isNat_nnreal_sqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
