@@ -158,7 +158,7 @@ lemma isFiltered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (
     ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
   apply isFiltered_of_representablyCoflat (fst L R)
 
-attribute [local instance] filtered_of_final in
+attribute [local instance] isFiltered_of_final in
 /-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
 comma category `Comma L R` is cofiltered. -/
 lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
