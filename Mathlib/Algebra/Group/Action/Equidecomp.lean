@@ -149,15 +149,7 @@ def refl : Equidecomp X G where
 @[simp]
 theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = PartialEquiv.refl X := rfl
 
-variable {X}
-
-@[simp]
-theorem restr_refl_toPartialEquiv (A : Set X) :
-    ((Equidecomp.refl X G).restr A).toPartialEquiv = PartialEquiv.ofSet A := by
-  ext <;> try rfl
-  simp
-
-variable {G}
+variable {X} {G}
 
 theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) :
