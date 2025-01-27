@@ -397,6 +397,12 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   · rintro rfl
     exact cliqueFree_bot le_rfl
 
+/-- If G is Kᵣ₊₁-free and s is an r-clique then every vertex is not adjacent to something in s -/
+lemma IsNClique.exists_non_adj_of_cliqueFree_succ [DecidableEq α] (hc : G.IsNClique n s)
+(h: G.CliqueFree (n + 1)) (x : α) : ∃ y, y ∈ s ∧ ¬G.Adj x y:=by
+  by_contra! hf
+  apply (hc.insert hf).not_cliqueFree h
+  
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     (G ⊔ edge v w).CliqueFree (n + 1) := by
