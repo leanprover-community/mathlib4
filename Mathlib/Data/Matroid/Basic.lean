@@ -263,6 +263,12 @@ instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
 
+instance rkPos_nonempty {M : Matroid α} [M.RkPos] : M.Nonempty := by
+  obtain ⟨B, hB⟩ := M.exists_base
+  obtain rfl | ⟨e, heB⟩ := B.eq_empty_or_nonempty
+  · exact False.elim <| RkPos.empty_not_base hB
+  exact ⟨e, M.subset_ground B hB heB ⟩
+
 @[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rkPos_iff
 
 section exchange
