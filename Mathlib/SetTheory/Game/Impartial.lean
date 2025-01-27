@@ -211,11 +211,11 @@ This version of the theorem is stated exclusively in terms of right moves; see
 `fuzzy_zero_of_forall_moveLeft` for a version stated with left moves. -/
 theorem fuzzy_zero_of_forall_exists_moveRight (i : G.RightMoves)
     (H : ∀ j, ∃ k, (G.moveRight i).moveRight j ≈ G.moveRight k) : G ‖ 0 := by
-  apply (equiv_or_fuzzy_zero _).resolve_left fun hG ↦ ?_
-  rw [← forall_rightMoves_fuzzy_iff_equiv_zero] at hG
-  obtain ⟨j, hj⟩ := (exists_right_move_equiv_iff_fuzzy_zero _).2 (hG i)
-  obtain ⟨k, hk⟩ := H j
-  exact (hG k).not_equiv ((Equiv.trans (Equiv.symm hk)) hj)
+  rw [← neg_fuzzy_zero_iff]
+  apply fuzzy_zero_of_forall_exists_moveLeft (-G) (toLeftMovesNeg i)
+  rw [moveLeft_neg_toLeftMovesNeg]
+  simpa [← toLeftMovesNeg.forall_congr_right, ← toLeftMovesNeg.exists_congr_right]
+
 
 end Impartial
 
