@@ -13,6 +13,13 @@ Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subpresheaf X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
+## Implementation note
+
+`SSet.{u}` is defined as `Cᵒᵖ ⥤ Type u`, but it is not an abbreviation.
+This is the reason why `Subpresheaf.ι` is redefined here as `Subcomplex.ι`
+so that this morphism appears as a morphism in `SSet` instead of a morphism
+in the category of presheaves.
+
 -/
 
 universe u
@@ -26,13 +33,15 @@ variable (X : SSet.{u})
 /-- The complete lattice of subcomplexes of a simplicial set. -/
 abbrev Subcomplex := Subpresheaf X
 
-instance : CoeOut X.Subcomplex SSet.{u} where
-  coe := fun S ↦ S.toPresheaf
-
 variable {X}
 
-/-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` considered in the
-category `SSet` (which is definitionally equal to `SimplexCategoryᵒᵖ ⥤ Type _`). -/
+/-- The underlying simplicial set of a subcomplex. -/
+abbrev Subcomplex.toSSet (A : X.Subcomplex) : SSet.{u} := A.toPresheaf
+
+instance : CoeOut X.Subcomplex SSet.{u} where
+  coe := fun S ↦ S.toSSet
+
+/-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
 abbrev Subcomplex.ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A
 
 instance (A : X.Subcomplex) :
