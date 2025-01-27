@@ -16,15 +16,6 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-namespace CommaFacts
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  {E : Type u₃} [Category.{v₃} E] (F : D ⥤ C) (G : E ⥤ C)
-
-instance [IsFiltered D] [IsFiltered E] [G.Final] : (Comma.snd F G).Final := sorry
-
-end CommaFacts
-
 open Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
