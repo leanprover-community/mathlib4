@@ -10,6 +10,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Action.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.RepresentationTheory.Basic
 
 /-!
@@ -122,18 +123,6 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget.{u} _ _
-
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
-  rfl
-
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
-  rfl
 
 section
 
@@ -433,7 +422,6 @@ end
 end Finsupp
 
 end
-
 section Group
 
 open Finsupp Action
@@ -451,19 +439,20 @@ def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
     fun _ => ModuleCat.hom_ext <| lhom_ext fun _ _ => by
       simp only [ModuleCat.hom_comp, ρ_hom, linearization_obj_ρ, Action.tensor_ρ, Action.trivial_ρ,
         Action.trivial_V, MonoidHom.one_apply]
-      simp [types_end, types_tensorObj]
+      simp [End, Function.End, types_hom, MulAction.toEndHom, tensorObj_def]
 
 variable {k G n}
 
 theorem diagonalSuccIsoFree_hom_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
-    (diagonalSuccIsoFree k G n).hom.hom.hom (single f a) =
+    (diagonalSuccIsoFree k G n).hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
-  simp [diagonalSuccIsoFree, types_tensorObj]
+  simp [diagonalSuccIsoFree, tensorObj_def, braiding_hom_def]
 
 theorem diagonalSuccIsoFree_inv_hom_hom_single_single (g : G) (f : Fin n → G) (a : k) :
     (diagonalSuccIsoFree k G n).inv.hom.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
-  simp [diagonalSuccIsoFree, types_tensorObj, diagonalSuccIsoTensorTrivial_inv_hom g f]
+  simp [diagonalSuccIsoFree, tensorObj_def, diagonalSuccIsoTensorTrivial_inv_hom g f,
+    braiding_inv_def]
 
 theorem diagonalSuccIsoFree_inv_hom_hom_single (g : G →₀ k) (f : Fin n → G) :
     (diagonalSuccIsoFree k G n).inv.hom.hom (single f g) =
@@ -595,6 +584,7 @@ theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) 
 
 end MonoidalClosed
 end Group
+
 end Rep
 
 namespace Representation
