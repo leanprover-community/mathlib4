@@ -49,6 +49,7 @@ end
 namespace Representation
 
 section
+
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
