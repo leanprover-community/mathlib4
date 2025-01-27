@@ -58,7 +58,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Multiplicative
+open scoped Multiplicative Topology
 
 open Multiplicative IsDedekindDomain
 
@@ -295,6 +295,13 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
   rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
+
+theorem intValuation_uniformizer_ne_zero (v : HeightOneSpectrum R) {π : R}
+    (hπ : v.intValuation π = Multiplicative.ofAdd (-1 : ℤ)) :
+    π ≠ 0 := by
+  contrapose! hπ
+  rw [hπ, intValuation_apply, intValuationDef_zero]
+  exact WithZero.zero_ne_coe
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
@@ -575,5 +582,43 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     -- and now it's easy
     omega
+
+variable {R K}
+
+open WithZero in
+theorem AdicCompletion.valued_intValuation_uniformizer_le {v : HeightOneSpectrum R} {π : R}
+    (hπ : v.intValuationDef π = ofAdd (-1 : ℤ)) :
+    Valued.v (algebraMap _ (v.adicCompletion K) π) ≤ 1 := by
+  rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ, ← coe_one,
+    coe_le_coe, ← ofAdd_zero, ofAdd_le]
+  linarith
+
+open WithZero Multiplicative in
+theorem AdicCompletion.tendsto_intValuation_uniformizer_pow (v : HeightOneSpectrum R) {π : R}
+    (hπ : v.intValuationDef π = ofAdd (-1 : ℤ)) :
+    Filter.Tendsto (fun (n : ℕ) => algebraMap _ (v.adicCompletion K) π ^ n)
+      Filter.atTop (𝓝 0) := by
+  simp only [Filter.HasBasis.tendsto_right_iff (Valued.hasBasis_nhds_zero _ _),
+    Set.mem_setOf_eq, map_pow, Filter.eventually_atTop]
+  intro γ _
+  by_cases hγ : γ.val ≤ 1
+  · let m := - toAdd (unitsWithZeroEquiv γ) + 1 |>.toNat
+    refine ⟨m, fun b hb => lt_of_le_of_lt
+      (pow_le_pow_of_le_one zero_le' (valued_intValuation_uniformizer_le hπ) hb) ?_⟩
+    replace hγ : 0 ≤ -toAdd (unitsWithZeroEquiv γ) + 1 := by
+      rw [units_val_eq_coe_unitsWithZeroEquiv, ← coe_one, coe_le_coe, ← toAdd_le, toAdd_one] at hγ
+      linarith
+    rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ,
+      units_val_eq_coe_unitsWithZeroEquiv, ← coe_pow, coe_lt_coe, ← ofAdd_nsmul,
+      nsmul_eq_mul, Int.toNat_of_nonneg hγ]
+    simp
+    rw [← ofAdd_zero, ofAdd_lt]
+    exact zero_lt_one
+  · refine ⟨1, fun b hb => lt_of_le_of_lt
+      (pow_le_pow_of_le_one zero_le' (valued_intValuation_uniformizer_le hπ) hb) ?_⟩
+    apply lt_trans _ (lt_of_not_le hγ)
+    rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ, ← coe_one, pow_one,
+      coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
+    exact neg_one_lt_zero
 
 end IsDedekindDomain.HeightOneSpectrum

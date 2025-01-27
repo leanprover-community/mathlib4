@@ -170,6 +170,16 @@ def Coe.algHom : AlgHom R (R_hat R K) (K_hat R K) :=
 theorem Coe.algHom_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (Coe.algHom R K) x v = x v :=
   rfl
 
+theorem algebraMap_apply (x : R_hat R K) :
+    algebraMap (R_hat R K) (K_hat R K) x = fun v => ↑(x v) := rfl
+
+theorem algebraMap_injective : Function.Injective (algebraMap (R_hat R K) (K_hat R K)) := by
+  intro x y hxy
+  funext v
+  simp [algebraMap_apply] at hxy
+  convert funext_iff.1 hxy v
+  rw [SetLike.coe_eq_coe]
+
 end FiniteIntegralAdeles
 
 /-! ### The finite adèle ring of a Dedekind domain
