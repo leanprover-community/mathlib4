@@ -754,8 +754,7 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 /-- Some quick attempts to prove that `[m]` is `n`-truncated (`[m].len ≤ n`). -/
 macro "trunc" : tactic =>
   `(tactic| first | decide | assumption |
-    dsimp only [SimplexCategory.len_mk]; omega |
-    fail "Failed to prove truncation property.")
+    dsimp only [SimplexCategory.len_mk]; omega)
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. The
@@ -763,8 +762,9 @@ proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   "[" term ("," term)? "]" noWs subscriptTerm : term
 scoped macro_rules
-  | `([$m:term]$n:subscript) =>
-    `((⟨SimplexCategory.mk $m, by trunc⟩ : SimplexCategory.Truncated $n))
+  | `([$m:term]$n:subscript) => `((⟨SimplexCategory.mk $m, by first | trunc |
+      fail "Failed to prove truncation property. Try writing `[m, by ...]ₙ`."⟩ :
+      SimplexCategory.Truncated $n))
   | `([$m:term, $p:term]$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
