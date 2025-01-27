@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Localizations of commutative monoids

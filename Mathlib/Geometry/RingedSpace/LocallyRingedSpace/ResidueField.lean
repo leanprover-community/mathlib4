@@ -113,7 +113,7 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
   simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap,
     CommRingCat.hom_comp, TopCat.comp_app]
   simp_rw [stalkMap_comp]
-  apply IsLocalRing.ResidueField.map_comp
+  apply IsLocalRing.ResidueField.map_comp (Hom.stalkMap g (f.base x)).hom (Hom.stalkMap f x).hom
 
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.base).obj V) :
