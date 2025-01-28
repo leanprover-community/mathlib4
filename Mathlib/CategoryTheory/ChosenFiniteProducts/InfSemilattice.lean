@@ -43,9 +43,9 @@ namespace Monoidal
 
 open MonoidalCategory ChosenFiniteProducts
 
-lemma tensorObj {C : Type u} [Lattice C] [OrderTop C] {X Y : C} : X ⊗ Y = X ⊓ Y := rfl
+lemma tensorObj {C : Type u} [SemilatticeInf C] [OrderTop C] {X Y : C} : X ⊗ Y = X ⊓ Y := rfl
 
-lemma tensorUnit {C : Type u} [Lattice C] [OrderTop C] :
+lemma tensorUnit {C : Type u} [SemilatticeInf C] [OrderTop C] :
     𝟙_ C = ⊤ := rfl
 
 end Monoidal
