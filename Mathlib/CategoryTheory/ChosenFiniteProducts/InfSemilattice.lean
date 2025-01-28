@@ -12,6 +12,9 @@ import Mathlib.CategoryTheory.Limits.Preorder
 
 The preorder category of a meet-semilattice `C` with a greatest element has chosen finite products.
 
+A symmetric monoidal structure on the preorder category is automatically provided by the
+instances `monoidalOfChosenFiniteProducts` and `ChosenFiniteProducts.instSymmetricCategory`.
+
 -/
 
 namespace CategoryTheory
@@ -28,16 +31,6 @@ namespace SemilatticeInf
 noncomputable scoped instance chosenFiniteProducts : ChosenFiniteProducts C where
   terminal := ⟨_, Preorder.isTerminalTop C⟩
   product X Y := ⟨_,  Preorder.isLimitBinaryFan X Y⟩
-
-/-- A monoidal structure on the preorder category of a meet-semilattice with a greatest element
-is provided by the instance `monoidalOfChosenFiniteProducts`. -/
-noncomputable scoped instance monoidalCategory : MonoidalCategory C := by
-  infer_instance
-
-/-- The symmetric monoidal structure on the preorder category of a
-meet-semilattice with a greatest element. -/
-noncomputable scoped instance symmetricCategory : SymmetricCategory C := by
-  infer_instance
 
 namespace Monoidal
 
