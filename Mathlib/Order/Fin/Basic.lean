@@ -117,6 +117,16 @@ lemma strictAnti_iff_succ_lt : StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (cas
 lemma antitone_iff_succ_le : Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
 
+lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
+    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
+  constructor
+  · intro hf i hi
+    have := hf hi
+    simp [Fin.ext_iff] at this
+  · intro hf
+    refine (strictMono_iff_lt_succ (f := f).2 fun i ↦ ?_).injective
+    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
+
 end FromFin
 
 /-! #### Monotonicity -/
@@ -169,16 +179,6 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
 /--  `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
-
-lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
-    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
-  constructor
-  · intro hf i hi
-    have := hf hi
-    simp [Fin.ext_iff] at this
-  · intro hf
-    refine (strictMono_iff_lt_succ (f := f).2 fun i ↦ ?_).injective
-    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
 
 /-! #### Order isomorphisms -/
 
