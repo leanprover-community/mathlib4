@@ -61,9 +61,7 @@ end SemilatticeInf
 
 section SemilatticeSup
 
-variable {C}
-
-variable [SemilatticeSup C]
+variable {C} [SemilatticeSup C]
 
 /-- The supremum of two elements in a preordered type is a binary coproduct
 in the category associated to this preorder. -/
