@@ -227,9 +227,8 @@ lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : An
 lemma order_of_locallyZero_mul_meromorphic {f g : 𝕜 → 𝕜} {x : 𝕜}
     (hf : MeromorphicAt f x)  (hg : MeromorphicAt g x) (h'f : hf.order = ⊤) :
     (hf.mul hg).order = ⊤ := by
-  rw [order_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff] at *
-  obtain ⟨t, h₁t, h₂t⟩ := h'f
-  use t, fun y h₁y h₂y ↦ (by rw [Pi.mul_apply, h₁t y h₁y h₂y, zero_mul])
+  rw [order_eq_top_iff] at *
+  filter_upwards [h'f] with z hz using by simp [hz]
 
 /-- The order is additive when multiplying meromorphic functions -/
 theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
