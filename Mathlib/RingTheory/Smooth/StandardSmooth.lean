@@ -254,11 +254,11 @@ noncomputable def comp : PreSubmersivePresentation R T where
     ((Sum.inr_injective).comp (P.map_inj)) <| by simp
   relations_finite := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
 
-/-- Let lean see through the `rels` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint comp_rels_eq where
   ⊢ (Q.comp P).rels ≟ Q.rels ⊕ P.rels
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint comp_vars_eq where
   ⊢ (Q.comp P).vars ≟ Q.vars ⊕ P.vars
 

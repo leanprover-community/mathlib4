@@ -112,7 +112,21 @@ def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R :=
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+library_note "type fields of generators and presentations"/--
+When working with generators and presentations, we rely on the MvPolynomial API, but since the
+type of variables is bundled in `Generators R S`, many lemmas don't apply with rw or simp, because
+they can't see through the definition of vars in constructions such as `Generators.comp` and
+`Generators.localizationAway`.
+
+A possible approach is to make all of these constructions abbrevs, but this causes simp to also
+unfold val which is not always desirable. More generally, it is then harder to predict how instance
+search and simp behave. This approached was tried, but caused too many regressions.
+
+Instead we use unification hints, to allow Lean to see through the `vars` (and `rels`) fields
+at reducible transparency.
+-/
+
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint ofSurjective_vars_eq {vars} (val : vars → S)
     (h : Function.Surjective (aeval (R := R) val)) where
   ⊢ (ofSurjective val h).vars ≟ vars
@@ -124,7 +138,7 @@ noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R 
     use C (h s).choose
     simp [(h s).choose_spec]
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint ofSurjectiveAlgebraMap_vars_eq (h : Function.Surjective (algebraMap R S)) where
   ⊢ (ofSurjectiveAlgebraMap.{w} h).vars ≟ PEmpty.{w+1}
 
@@ -133,7 +147,7 @@ noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
   rw [id.map_eq_id]
   exact RingHomSurjective.is_surjective
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint id_vars_eq where
   ⊢ (id (R := R)).vars ≟ PEmpty.{w+1}
 
@@ -143,7 +157,7 @@ def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) 
     Generators R S :=
   ofSurjective (f ∘ X) (by rwa [show aeval (f ∘ X) = f by ext; simp])
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint ofAlgHom_vars {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) where
   ⊢ (ofAlgHom f h).vars ≟ PEmpty.{w+1}
 
@@ -154,7 +168,7 @@ def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint ofSet_vars {s : Set S} (hs : Algebra.adjoin R s = ⊤) where
   ⊢ (ofSet hs).vars ≟ s
 
@@ -168,7 +182,7 @@ def self : Generators R S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint self_vars_eq where ⊢ (self R S).vars ≟ S
 
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
@@ -202,7 +216,7 @@ def localizationAway : Generators R S where
     rw [mul_one, one_mul, IsLocalization.mk'_pow]
     simp
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint localizationAway_vars_eq_unit where
   ⊢ (localizationAway r (S := S)).vars ≟ Unit
 
@@ -230,7 +244,7 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
       aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
       one_mul, single_eq_monomial]
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint comp_vars_eq_sum (Q : Generators S T) (P : Generators R S) where
   ⊢ (Q.comp P).vars ≟ Q.vars ⊕ P.vars
 
@@ -255,7 +269,7 @@ def extendScalars (P : Generators R T) : Generators S T where
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint extendsScalars_vars (P : Generators R T) where
   ⊢ (P.extendScalars S).vars ≟ P.vars
 
@@ -289,7 +303,7 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) :
     use (a + b)
     rw [map_add, ha, hb]
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint baseChange_vars_eq (P : Generators R S) where
   ⊢ (P.baseChange (T := T)).vars ≟ P.vars
 

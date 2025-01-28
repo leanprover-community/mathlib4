@@ -143,11 +143,11 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
     rw [aeval_injective_iff_of_isEmpty]
     exact h.injective
 
-/-- Let lean see through the `rels` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint ofBijectiveAlgebraMap_rels_eq (h : Function.Bijective (algebraMap R S)) where
   ⊢ (ofBijectiveAlgebraMap.{t, w} h).rels ≟ PEmpty
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint ofBijectiveAlgebraMap_toGenerators (h : Function.Bijective (algebraMap R S)) where
   ⊢ (ofBijectiveAlgebraMap.{t, w} h).vars ≟ PEmpty
 
@@ -205,11 +205,11 @@ noncomputable def localizationAway : Presentation R S where
     simp only [Generators.localizationAway_vars, Set.range_const]
     apply span_range_relation_eq_ker_localizationAway r
 
-/-- Let lean see through the `rels` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint localizationAway_rels_eq where
   ⊢ (localizationAway S r).rels ≟ Unit
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint localizationAway_vars_eq where
   ⊢ (localizationAway S r).vars ≟ Unit
 
@@ -281,11 +281,11 @@ def baseChange : Presentation T (T ⊗[R] S) where
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
   span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T
 
-/-- Let lean see through the `rels` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint baseChange_rels_eq where
   ⊢ (P.baseChange T).rels ≟ P.rels
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint baseChange_vars_eq where
   ⊢ (P.baseChange T).vars ≟ P.vars
 
@@ -434,11 +434,11 @@ noncomputable def comp : Presentation R T where
     (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
   span_range_relation_eq_ker := Q.span_range_relation_eq_ker_comp P
 
-/-- Let lean see through the `rels` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint comp_rels_eq where
   ⊢ (Q.comp P).rels ≟ Q.rels ⊕ P.rels
 
-/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+/-- See library note [type fields of generators and presentations]. -/
 unif_hint comp_vars_eq where
   ⊢ (Q.comp P).vars ≟ Q.vars ⊕ P.vars
 
