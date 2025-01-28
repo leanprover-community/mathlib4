@@ -37,8 +37,15 @@ private theorem dvd_prime {r p : ℕ} (hp : p.Prime) (h : r ∣ p !)
 
 /-- A subgroup of a finite group whose index is the smallest prime factor is normal -/
 theorem normal_of_index_eq_smallest_prime_factor [Finite G]
-    (hp : p.Prime) (hHp : H.index = p) (hp' : ∀ {l : ℕ} (_ : l.Prime) (_: l ∣ Nat.card G), p ≤ l) :
+    (hHp : H.index = (Nat.card G).minFac) :
     H.Normal := by
+  by_cases hG : Nat.card G = 1
+  · rw [hG, minFac_one, index_eq_one] at hHp
+    rw [hHp]
+    infer_instance
+  have hp : (Nat.card G).minFac.Prime := minFac_prime hG
+  have hp' {l : ℕ} (h1 : l.Prime) (h2 : l ∣ Nat.card G) : (Nat.card G).minFac ≤ l :=
+    minFac_le_of_dvd h1.two_le h2
   set f := toPermHom G (G ⧸ H) with hf
   convert MonoidHom.normal_ker f
   suffices H.normalCore.relindex H = 1 by
@@ -73,32 +80,14 @@ theorem normal_of_index_eq_smallest_prime_factor [Finite G]
 /-- A subgroup of index 2 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_two (hH : H.index = 2) :
     H.Normal := by
-  classical
-  set f := MulAction.toPermHom G (G ⧸ H)
-  convert MonoidHom.normal_ker f
-  suffices H.normalCore.relindex H = 1 by
-    rw [← Subgroup.normalCore_eq_ker]
-    rw [Subgroup.relindex_eq_one] at this
-    exact le_antisymm this (normalCore_le H)
-  have index_ne_zero : H.index ≠ 0 := by rw [hH]; exact two_ne_zero
-  apply mul_left_injective₀ index_ne_zero; dsimp only
-  rw [relindex_mul_index H.normalCore_le, one_mul, normalCore_eq_ker, hH]
-  have _ : Fintype (G ⧸ H) := by apply fintypeOfIndexNeZero index_ne_zero
-  apply Nat.eq_of_lt_succ_of_not_lt
-  · rw [index_ker f, card_eq_fintype_card, Nat.lt_succ_iff]
-    apply le_of_dvd two_pos
-    rw [← card_eq_fintype_card]
-    apply dvd_trans f.range.card_subgroup_dvd_card
-    rw [card_eq_fintype_card, Fintype.card_perm, ← card_eq_fintype_card]
-    unfold index at hH ; rw [hH]; norm_num
-  · -- ¬(f.ker.index < 2)
-    intro h
-    apply not_le.mpr Nat.one_lt_two
-    rw [Nat.lt_succ_iff] at h
-    apply le_trans _ h
-    rw [← hH, ← H.normalCore_eq_ker]
-    apply Nat.le_of_dvd _ (index_dvd_of_le H.normalCore_le)
-    rw [zero_lt_iff, H.normalCore_eq_ker, index_ker f, card_eq_fintype_card]
-    exact Fintype.card_ne_zero
+  obtain ⟨a, ha⟩ := index_eq_two_iff.mp hH
+  have ha1 : ∀ b, b * a ∈ H ↔ ¬ b ∈ H := by simpa only [xor_iff_iff_not] using ha
+  have ha2 : ∀ b, ¬ b * a ∈ H ↔ b ∈ H := by simpa only [xor_iff_not_iff'] using ha
+  refine ⟨fun b hb c ↦ ?_⟩
+  by_cases hc : c ∈ H
+  · exact H.mul_mem (H.mul_mem hc hb) (H.inv_mem hc)
+  rw [← ha1, ← H.inv_mem_iff] at hc
+  rw [← H.inv_mem_iff, ← ha2, ← H.inv_mem_iff, ← ha1] at hb
+  simpa [mul_assoc] using H.mul_mem (H.inv_mem hc) (H.mul_mem hb hc)
 
 end Subgroup
