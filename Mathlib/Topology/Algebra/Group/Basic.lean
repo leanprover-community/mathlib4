@@ -811,9 +811,6 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
     (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
   simp only [map_one, mul_one, MonoidHom.one_apply]
 
-variable {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] {F : Type*}
-    [FunLike F G H] {f : MonoidHomClass F G H}
-
 @[to_additive]
 lemma TopologicalGroup.isInducing_iff_nhds_one
     {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] {F : Type*}
