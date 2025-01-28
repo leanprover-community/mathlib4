@@ -293,6 +293,7 @@ lemma Acyclic.unop {K : HomologicalComplex Vᵒᵖ c} (h : K.Acyclic) :
     K.unop.Acyclic :=
   fun i ↦ (h i).unop
 
+@[simp]
 lemma acyclic_op_iff (K : HomologicalComplex V c) :
     K.op.Acyclic ↔ K.Acyclic :=
   ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
