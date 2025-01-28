@@ -289,15 +289,14 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
     _ = _ := integral_pdf_smul measurable_id.aestronglyMeasurable
 
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
-    (hgi : ∫⁻ x, ‖f x‖₊ * g x ≠ ∞) :
+    (hgi : ∫⁻ x, ‖f x‖ₑ * g x ≠ ∞) :
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
-  rw [hasFiniteIntegral_iff_nnnorm]
-  have : (fun x => ↑‖f x‖₊ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖₊ := by
-    refine ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x => (‖f x‖₊ : ℝ≥0∞))
-      (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
-    simp_rw [← smul_eq_mul, nnnorm_smul, ENNReal.coe_mul, smul_eq_mul]
-    refine Filter.EventuallyEq.mul (ae_eq_refl _) ?_
-    simp only [Real.ennnorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+  rw [hasFiniteIntegral_iff_enorm]
+  have : (fun x => ‖f x‖ₑ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖ₑ := by
+    refine ae_eq_trans ((ae_eq_refl _).mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
+    simp_rw [← smul_eq_mul, enorm_smul, smul_eq_mul]
+    refine .mul (ae_eq_refl _) ?_
+    simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real
