@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Compactness.Lindelof
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
