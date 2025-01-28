@@ -96,7 +96,7 @@ section IndepMatroid
 /-- A matroid as defined by a ground set and an independence predicate.
 This definition is an implementation detail whose purpose is to organize the multiple
 different versions of the independence axioms;
-as a rule, the term `IndepMatroid` should never appear in type signatures outside this file.
+as a rule, the type `IndepMatroid` should never appear in type signatures outside this file.
 
 The intended pattern for defining a `Matroid α` from a known independence predicate
 `MyIndep : Set α → Prop` and ground set `E : Set α` is to write
