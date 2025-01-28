@@ -1028,8 +1028,9 @@ Q943246:
 
 Q944297:
   title: Open mapping theorem
-  # TODO: this entry points to Wikipedia's disambiguation page => wikipedia should be fixed
-  # Banach open mapping theorem/Banach-Schauder theorem in functional analysis is in mathlib (ContinuousLinearMap.isOpenMap)
+  decl: ContinuousLinearMap.isOpenMap
+  authors: Sébastien Gouëzel
+  date: 2019
 
 Q948664:
   title: Kneser's addition theorem
