@@ -292,15 +292,18 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
     trace R M f = (finrank R p : R) := by
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 
-variable [Module.Free R M] [Module.Finite R M] in
 lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) :
     IsNilpotent (trace R M f) := by
-  let b : Basis _ R M := Module.Free.chooseBasis R M
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
+  swap
+  · rw [LinearMap.trace, dif_neg H]
+    exact IsNilpotent.zero
+  obtain ⟨s, ⟨b⟩⟩ := H
+  classical
   rw [trace_eq_matrix_trace R b]
   apply Matrix.isNilpotent_trace_of_isNilpotent
   simpa
 
-variable [Module.Free R M] [Module.Finite R M] in
 lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.End R M}
     (μ : R) (h_comm : Commute f g) (hg : IsNilpotent (g - algebraMap R _ μ)) :
     trace R M (f ∘ₗ g) = μ * trace R M f := by

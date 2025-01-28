@@ -3,10 +3,10 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # The topological dual of a normed space
@@ -41,7 +41,6 @@ dual, polar
 
 noncomputable section
 
-open scoped Classical
 open Topology Bornology
 
 universe u v
@@ -241,7 +240,7 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
   apply le_antisymm
   · intro x hx
     rw [mem_closedBall_zero_iff]
-    apply le_of_forall_le_of_dense
+    apply le_of_forall_gt_imp_ge_of_dense
     intro a ha
     rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one

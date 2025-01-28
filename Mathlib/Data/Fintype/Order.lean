@@ -3,9 +3,11 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Atoms
-import Mathlib.Data.Set.Finite
 import Mathlib.Order.Minimal
 
 /-!
@@ -78,8 +80,7 @@ section BoundedOrder
 
 variable (α)
 
-open scoped Classical
-
+open scoped Classical in
 -- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where

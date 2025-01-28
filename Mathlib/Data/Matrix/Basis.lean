@@ -19,8 +19,6 @@ variable {R α : Type*}
 
 namespace Matrix
 
-open Matrix
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
 
 section Zero
@@ -50,6 +48,17 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
   unfold stdBasisMatrix
   ext
   simp
+
+@[simp]
+lemma transpose_stdBasisMatrix (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᵀ = stdBasisMatrix j i a := by
+  aesop (add unsafe unfold stdBasisMatrix)
+
+@[simp]
+lemma map_stdBasisMatrix (i : m) (j : n) (a : α) {β : Type*} [Zero β]
+    {F : Type*} [FunLike F α β] [ZeroHomClass F α β] (f : F) :
+    (stdBasisMatrix i j a).map f = stdBasisMatrix i j (f a) := by
+  aesop (add unsafe unfold stdBasisMatrix)
 
 end Zero
 
@@ -155,33 +164,37 @@ theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
 end
 
 section mul
-variable [Fintype n] [NonUnitalNonAssocSemiring α] (i j : n) (c : α)
+variable [Fintype m] [NonUnitalNonAssocSemiring α] (c : α)
 
+omit [DecidableEq n] in
 @[simp]
-theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
+theorem mul_left_apply_same (i : l) (j : m) (b : n) (M : Matrix m n α) :
     (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 
+omit [DecidableEq l] in
 @[simp]
-theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
+theorem mul_right_apply_same (i : m) (j : n) (a : l) (M : Matrix l m α) :
     (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 
+omit [DecidableEq n] in
 @[simp]
-theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
+theorem mul_left_apply_of_ne (i : l) (j : m) (a : l) (b : n) (h : a ≠ i) (M : Matrix m n α) :
     (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 
+omit [DecidableEq l] in
 @[simp]
-theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
+theorem mul_right_apply_of_ne (i : m) (j : n) (a : l) (b : n) (hbj : b ≠ j) (M : Matrix l m α) :
     (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 
 @[simp]
-theorem mul_same (k : n) (d : α) :
+theorem mul_same (i : l) (j : m) (k : n) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
   ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 
 @[simp]
-theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
+theorem mul_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix, of_apply]

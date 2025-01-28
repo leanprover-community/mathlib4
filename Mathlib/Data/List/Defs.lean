@@ -488,9 +488,9 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) :=
-  (range n).pmap Fin.mk fun _ => List.mem_range.1
+/- #adaptation_note: this attribute should be removed after Mathlib moves to v4.15.0-rc1. -/
+set_option allowUnsafeReducibility true in
+attribute [semireducible] Fin.foldr.loop
 
 section Deprecated
 
@@ -504,8 +504,6 @@ alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
   fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
 
-@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
-@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
 
 @[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
 

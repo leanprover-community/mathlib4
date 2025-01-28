@@ -142,6 +142,35 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   guard_hyp w : 0 = y + z
   assumption
 
+section
+abbrev myId (a : ℤ) : ℤ := a
+
+/-
+Test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expressions.
+
+We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+about differing instance paths.
+-/
+/--
+info: α : Type _
+a b : α
+x : ℤ
+R : ℤ → ℤ → Prop
+hR : Reflexive R
+h : R (2 • myId x) (2 • myId x)
+⊢ True
+-/
+#guard_msgs (info) in
+set_option pp.mvars false in
+example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
+  have h : R (myId x + x) (x + myId x) := hR ..
+  abel_nf at h
+  trace_state
+  trivial
+
+end
+
 -- check that abel_nf does not unfold lets whose head is an algebraic operation
 example (a : ℤ) : True := by
   have h1 : a + (1 - a) = 1 := by abel

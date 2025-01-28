@@ -79,7 +79,6 @@ titlesPathsAndRegexes=(
   "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
   "adaptation notes"               "*"      "adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
-  "disabled deprecation lints"     "*"      "set_option linter.deprecated false"
   "erw"                            "*"      "erw \["
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
 )
@@ -98,12 +97,23 @@ for i in ${!titlesPathsAndRegexes[@]}; do
   fi
 done
 
+# count total number of `set_option linter.deprecated false` outside of `Mathlib/Deprecated`
+deprecs="$(git grep -c -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
+  awk -F: 'BEGIN{total=0} {total+=$2} END{print total}')"
+
+# count the `linter.deprecated` exceptions that are themselves followed by `deprecated ...(since`
+# we subtract these from `deprecs`
+doubleDeprecs="$(git grep -A1 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
+  grep -c "deprecated .*(since")"
+
+printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
+
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
-printf '%s|%s\n' "$(wc -l < scripts/no_lints_prime_decls.txt)" "exceptions for the docPrime linter"
+printf '%s|%s\n' "$(wc -l < scripts/nolints_prime_decls.txt)" "exceptions for the docPrime linter"
 
 deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
 
@@ -149,12 +159,14 @@ then
   then
     printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '%s\n' "${rep}" |
+    printf '%s\n' "${rep}" |  # outputs lines containing `|Current number|Change|Type|`, so
+                              # `$2` refers to `Current number` and `$3` to `Change`.
       awk -F '|' -v rep="${rep}" '
-        BEGIN{total=0; weight=0}
+        BEGIN{total=0; weight=0; absWeight=0}
+        {absWeight+=$3+0}
         (($3+0 == $3) && (!($2+0 == 0))) {total+=1 / $2; weight+=$3 / $2}
         END{
-          average=weight/total
+          if (total == 0) {average=absWeight} else {average=weight/total}
           if(average < 0) {change= "Decrease"; average=-average; weight=-weight} else {change= "Increase"}
           printf("<details><summary>%s in tech debt: (relative, absolute) = (%4.2f, %4.2f)</summary>\n\n%s\n", change, average, weight, rep) }'
   fi

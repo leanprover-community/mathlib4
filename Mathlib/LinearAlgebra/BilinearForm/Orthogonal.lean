@@ -148,7 +148,11 @@ theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _
 theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
   fun n hn _ hm => b _ _ (hm n hn)
 
-lemma orthogonal_top (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
+lemma orthogonal_top_eq_ker (hB : B.IsRefl) :
+    B.orthogonal ⊤ = LinearMap.ker B := by
+  ext; simp [LinearMap.BilinForm.IsOrtho, LinearMap.ext_iff, hB.eq_iff]
+
+lemma orthogonal_top_eq_bot (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
     B.orthogonal ⊤ = ⊥ :=
   (Submodule.eq_bot_iff _).mpr fun _ hx ↦ hB _ fun y ↦ hB₀ _ _ <| hx y Submodule.mem_top
 
@@ -320,15 +324,13 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
 lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     finrank K (B.orthogonal W) = finrank K V - finrank K W := by
   have := finrank_add_finrank_orthogonal hB₀ (W := W)
-  rw [B.orthogonal_top hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
-  have : finrank K W ≤ finrank K V := finrank_le W
+  rw [B.orthogonal_top_eq_bot hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
   omega
 
 lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     B.orthogonal (B.orthogonal W) = W := by
   apply (eq_of_le_of_finrank_le (LinearMap.BilinForm.le_orthogonal_orthogonal hB₀) _).symm
   simp only [finrank_orthogonal hB hB₀]
-  have : finrank K W ≤ finrank K V := finrank_le W
   omega
 
 variable {W : Submodule K V}

@@ -38,8 +38,8 @@ attribute [instance] fintype
 instance : Category FinTopCat :=
   InducedCategory.category toTop
 
-instance : ConcreteCategory FinTopCat :=
-  InducedCategory.concreteCategory _
+instance : HasForget FinTopCat :=
+  InducedCategory.hasForget _
 
 instance (X : FinTopCat) : TopologicalSpace ((forget FinTopCat).obj X) :=
   inferInstanceAs <| TopologicalSpace X

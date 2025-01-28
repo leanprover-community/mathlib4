@@ -5,9 +5,11 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.MulAction
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Operations on `Submonoid`s
@@ -628,6 +630,10 @@ theorem mem_mrange {f : F} {y : N} : y ∈ mrange f ↔ ∃ x, f x = y :=
   Iff.rfl
 
 @[to_additive]
+lemma mrange_comp {O : Type*} [Monoid O] (f : N →* O) (g : M →* N) :
+    mrange (f.comp g) = (mrange g).map f := SetLike.coe_injective <| Set.range_comp f _
+
+@[to_additive]
 theorem mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
   Submonoid.copy_eq _
 
@@ -640,18 +646,18 @@ theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
 
 @[to_additive]
-theorem mrange_eq_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
+theorem mrange_eq_top {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_eq_univ
 
 @[deprecated (since := "2024-11-11")]
-alias mrange_top_iff_surjective := mrange_eq_top_iff_surjective
+alias mrange_top_iff_surjective := mrange_eq_top
 
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
 theorem mrange_eq_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
-  mrange_eq_top_iff_surjective.2 hf
+  mrange_eq_top.2 hf
 
 @[deprecated (since := "2024-11-11")] alias mrange_top_of_surjective := mrange_eq_top_of_surjective
 
@@ -862,8 +868,16 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
   S.subtype.codRestrict _ fun x => h x.2
 
 @[to_additive (attr := simp)]
-theorem range_subtype (s : Submonoid M) : mrange s.subtype = s :=
+theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive] alias range_subtype := mrange_subtype
+attribute [deprecated mrange_subtype (since := "2024-11-25")] range_subtype
+attribute [deprecated AddSubmonoid.mrange_subtype (since := "2024-11-25")]
+AddSubmonoid.range_subtype
+
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=
@@ -960,74 +974,9 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
   ext
   rfl
 
-section Actions
-
-/-! ### Actions by `Submonoid`s
-
-These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
-the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
-
-These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
-`s • m` as an alias for `↑s * m`.
--/
-
-
-namespace Submonoid
-
-variable {M' : Type*} {α β : Type*}
-
-section MulOneClass
-
-variable [MulOneClass M']
-
-@[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
-  SMul.comp _ S.subtype
-
-@[to_additive]
-instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
-    (S : Submonoid M') : SMulCommClass S α β :=
-  ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
-
-@[to_additive]
-instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
-    (S : Submonoid M') : SMulCommClass α S β :=
-  ⟨fun a s => (smul_comm a (s : M') : _)⟩
-
-/-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
-instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
-      (S : Submonoid M') :
-    IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
-
-section SMul
-variable [SMul M' α] {S : Submonoid M'}
-
-@[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
-
-@[to_additive (attr := simp)]
-lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
-
-instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
+instance Submonoid.faithfulSMul {M' α : Type*} [MulOneClass M'] [SMul M' α] {S : Submonoid M'}
+    [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
-
-end SMul
-end MulOneClass
-
-variable [Monoid M']
-
-/-- The action by a submonoid is the action by the underlying monoid. -/
-@[to_additive
-      "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
-  MulAction.compHom _ S.subtype
-
-example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
-
-
-end Submonoid
-
-end Actions
 
 section Units
 

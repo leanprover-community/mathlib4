@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
+import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types

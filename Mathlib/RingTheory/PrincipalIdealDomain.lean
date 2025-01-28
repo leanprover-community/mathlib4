@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
 -/
 import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
@@ -13,20 +15,21 @@ import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 A principal ideal ring (PIR) is a ring in which all left ideals are principal. A
 principal ideal domain (PID) is an integral domain which is a principal ideal ring.
 
+The definition of `IsPrincipalIdealRing` can be found in `Mathlib.RingTheory.Ideal.Span`.
+
 # Main definitions
 
 Note that for principal ideal domains, one should use
 `[IsDomain R] [IsPrincipalIdealRing R]`. There is no explicit definition of a PID.
-Theorems about PID's are in the `principal_ideal_ring` namespace.
+Theorems about PID's are in the `PrincipalIdealRing` namespace.
 
-- `IsPrincipalIdealRing`: a predicate on rings, saying that every left ideal is principal.
 - `IsBezout`: the predicate saying that every finitely generated left ideal is principal.
 - `generator`: a generator of a principal ideal (or more generally submodule)
 - `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
 
 # Main results
 
-- `to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
+- `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
 - `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
@@ -300,18 +303,11 @@ theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
       refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_lt hI))
       erw [Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
-@[deprecated (since := "2024-02-12")]
-protected alias irreducible_iff_prime := irreducible_iff_prime
-
-@[deprecated (since := "2024-02-12")]
-protected alias associates_irreducible_iff_prime := associates_irreducible_iff_prime
-
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
 
-open scoped Classical
-
+open scoped Classical in
 /-- `factors a` is a multiset of irreducible elements whose product is `a`, up to units -/
 noncomputable def factors (a : R) : Multiset R :=
   if h : a = 0 then ∅ else Classical.choose (WfDvdMonoid.exists_factors a h)
@@ -396,23 +392,31 @@ theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
   (isRelPrime_of_no_nonunits_factors nonzero H).isCoprime
 
-theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
+theorem dvd_or_isCoprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
   h.dvd_or_isRelPrime.imp_right IsRelPrime.isCoprime
+
+@[deprecated (since := "2025-01-23")] alias dvd_or_coprime := dvd_or_isCoprime
 
 /-- See also `Irreducible.isRelPrime_iff_not_dvd`. -/
 theorem Irreducible.coprime_iff_not_dvd {p n : R} (hp : Irreducible p) :
     IsCoprime p n ↔ ¬p ∣ n := by rw [← isRelPrime_iff_isCoprime, hp.isRelPrime_iff_not_dvd]
 
 /-- See also `Irreducible.coprime_iff_not_dvd'`. -/
-theorem Irreducible.dvd_iff_not_coprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
+theorem Irreducible.dvd_iff_not_isCoprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
   iff_not_comm.2 hp.coprime_iff_not_dvd
+
+@[deprecated (since := "2025-01-23")]
+alias Irreducible.dvd_iff_not_coprime := Irreducible.dvd_iff_not_isCoprime
 
 theorem Irreducible.coprime_pow_of_not_dvd {p a : R} (m : ℕ) (hp : Irreducible p) (h : ¬p ∣ a) :
     IsCoprime a (p ^ m) :=
   (hp.coprime_iff_not_dvd.2 h).symm.pow_right
 
-theorem Irreducible.coprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCoprime p i ∨ p ∣ i :=
-  (_root_.em _).imp_right hp.dvd_iff_not_coprime.2
+theorem Irreducible.isCoprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCoprime p i ∨ p ∣ i :=
+  (_root_.em _).imp_right hp.dvd_iff_not_isCoprime.2
+
+@[deprecated (since := "2025-01-23")]
+alias Irreducible.coprime_or_dvd := Irreducible.isCoprime_or_dvd
 
 variable [IsDomain R]
 

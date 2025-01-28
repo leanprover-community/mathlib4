@@ -172,6 +172,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
 theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
     ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
+  rw [← Nat.card_eq_fintype_card] at k_lt_card_G
   nontriviality K
   have := NoZeroDivisors.to_isDomain K
   rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
@@ -248,6 +249,10 @@ theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (
   let ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
 
+lemma isPrimePow_card : IsPrimePow (Fintype.card K) := by
+  obtain ⟨p, n, hp, hn⟩ := card' K
+  exact ⟨p, n, Nat.prime_iff.mp hp, n.prop, hn.symm⟩
+
 -- Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
@@ -255,7 +260,7 @@ theorem cast_card_eq_zero : (q : K) = 0 := by
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
-    rw [← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
       orderOf_dvd_iff_pow_eq_one]
     constructor
     · intro h; apply h
@@ -525,6 +530,41 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     · exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
+theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
+  induction' m with m hm
+  · exact Nat.modEq_one
+  · rw [Nat.ModEq.comm, add_comm, Nat.modEq_iff_dvd' (Nat.one_le_pow' _ _)] at hm
+    obtain ⟨d, hd⟩ := hm
+    rw [tsub_eq_iff_eq_add_of_le (Nat.one_le_pow' _ _), add_comm] at hd
+    rw [pow_succ, pow_mul, hd, add_pow, Finset.sum_range_succ', pow_zero, one_mul, one_pow,
+      one_mul, Nat.choose_zero_right, Nat.cast_one]
+    refine Nat.ModEq.add_right 1 (Nat.modEq_zero_iff_dvd.mpr ?_)
+    simp_rw [one_pow, mul_one, pow_succ', mul_assoc, ← Finset.mul_sum]
+    refine mul_dvd_mul_left (p ^ m) (dvd_mul_of_dvd_right (Finset.dvd_sum fun k hk ↦ ?_) d)
+    cases m
+    · rw [pow_zero, pow_one, one_mul, add_comm, add_left_inj] at hd
+      cases k <;> simp [← hd, mul_assoc, pow_succ']
+    · cases k <;> simp [mul_assoc, pow_succ']
+
+theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^ k) (a : ZMod n)
+    (ha : (orderOf a).Coprime n) : a = 1 ∨ IsUnit (a - 1) := by
+  rcases eq_or_ne n 0 with rfl | hn0
+  · exact Or.inl (orderOf_eq_one_iff.mp ((orderOf a).coprime_zero_right.mp ha))
+  rcases eq_or_ne a 0 with rfl | ha0
+  · exact Or.inr (zero_sub (1 : ZMod n) ▸ isUnit_neg_one)
+  have : NeZero n := ⟨hn0⟩
+  obtain ⟨a, rfl⟩ := ZMod.natCast_zmod_surjective a
+  rw [← orderOf_eq_one_iff, or_iff_not_imp_right]
+  refine fun h ↦ ha.eq_one_of_dvd ?_
+  rw [orderOf_dvd_iff_pow_eq_one, ← Nat.cast_pow, ← Nat.cast_one, ZMod.eq_iff_modEq_nat, hn]
+  replace ha0 : 1 ≤ a := by
+    contrapose! ha0
+    rw [Nat.lt_one_iff.mp ha0, Nat.cast_zero]
+  rw [← Nat.cast_one, ← Nat.cast_sub ha0, ZMod.isUnit_iff_coprime, hn] at h
+  obtain ⟨b, hb⟩ := not_imp_comm.mp (Nat.Prime.coprime_pow_of_not_dvd Fact.out) h
+  rw [tsub_eq_iff_eq_add_of_le ha0, add_comm] at hb
+  exact hb ▸ pow_pow_modEq_one p k b
+
 section
 
 namespace FiniteField
@@ -586,11 +626,12 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
       push_cast
       exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h
-      have key : 2 * (Fintype.card F / 2) ∣ n * (Fintype.card F / 2) := by
+      rw [← Nat.card_eq_fintype_card] at hodd h
+      have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
         rw [← pow_mul] at h
-        rw [hodd, ← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
+        rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
         apply orderOf_dvd_of_pow_eq_one h
-      have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card (by norm_num)
+      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by norm_num)
       obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
       refine ⟨g ^ m, ?_⟩
       dsimp

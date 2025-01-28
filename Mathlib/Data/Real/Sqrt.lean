@@ -3,7 +3,7 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
@@ -39,7 +39,7 @@ variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC https://github.com/leanprover/lean4/issues/1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
@@ -62,11 +62,6 @@ lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnecti
 
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
 
-@[deprecated (since := "2024-02-14")] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
-@[deprecated (since := "2024-02-14")] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
-@[deprecated (since := "2024-02-14")] alias sqrt_le_iff := sqrt_le_iff_le_sq
-@[deprecated (since := "2024-02-14")] alias le_sqrt_iff := le_sqrt_iff_sq_le
-@[deprecated (since := "2024-02-14")] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 
@@ -310,8 +305,6 @@ def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
 end Mathlib.Meta.Positivity
 
 namespace Real
-
-variable {x y : ℝ}
 
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
