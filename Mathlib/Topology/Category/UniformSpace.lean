@@ -36,8 +36,8 @@ instance : UnbundledHom @UniformContinuous :=
 
 deriving instance LargeCategory for UniformSpaceCat
 
-instance : ConcreteCategory UniformSpaceCat :=
-  inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
+instance : HasForget UniformSpaceCat :=
+  inferInstanceAs <| HasForget <| Bundled UniformSpace
 
 instance : CoeSort UniformSpaceCat Type* :=
   Bundled.coeSort
@@ -126,8 +126,8 @@ instance category : LargeCategory CpltSepUniformSpace :=
   InducedCategory.category toUniformSpace
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
-instance concreteCategory : ConcreteCategory CpltSepUniformSpace :=
-  InducedCategory.concreteCategory toUniformSpace
+instance hasForget : HasForget CpltSepUniformSpace :=
+  InducedCategory.hasForget toUniformSpace
 
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
   InducedCategory.hasForget₂ toUniformSpace
@@ -169,7 +169,7 @@ instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
 -- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike in
+attribute [local instance] CategoryTheory.HasForget.instFunLike in
 @[simp]
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=

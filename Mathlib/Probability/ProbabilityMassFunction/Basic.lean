@@ -34,7 +34,6 @@ noncomputable section
 
 variable {α : Type*}
 
-open scoped Classical
 open NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
@@ -99,6 +98,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     fun h => _root_.trans (symm <| tsum_eq_single a
       fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
+  classical
   have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
     ((tsum_ne_zero_iff ENNReal.summable).2
       ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
@@ -114,6 +114,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
+  classical
   refine hasSum_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
   split_ifs with h <;> simp only [h, zero_le', le_rfl]
 
@@ -152,8 +153,8 @@ theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x
 
 theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by
   refine (p.toOuterMeasure_apply {a}).trans ((tsum_eq_single a fun b hb => ?_).trans ?_)
-  · exact ite_eq_right_iff.2 fun hb' => False.elim <| hb hb'
-  · exact ite_eq_left_iff.2 fun ha' => False.elim <| ha' rfl
+  · classical exact ite_eq_right_iff.2 fun hb' => False.elim <| hb hb'
+  · classical exact ite_eq_left_iff.2 fun ha' => False.elim <| ha' rfl
 
 theorem toOuterMeasure_injective : (toOuterMeasure : PMF α → OuterMeasure α).Injective :=
   fun p q h => PMF.ext fun x => (p.toOuterMeasure_apply_singleton x).symm.trans
@@ -174,7 +175,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
     have hsa : s.indicator p a < p a := hs'.symm ▸ (p.apply_pos_iff a).2 hap
     exact ENNReal.tsum_lt_tsum (p.tsum_coe_indicator_ne_top s)
       (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
-  · suffices ∀ (x) (_ : x ∉ s), p x = 0 from
+  · classical suffices ∀ (x) (_ : x ∉ s), p x = 0 from
       _root_.trans (tsum_congr
         fun a => (Set.indicator_apply s p a).trans
           (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
