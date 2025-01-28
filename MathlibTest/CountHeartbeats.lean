@@ -44,7 +44,7 @@ example : True := trivial
 #guard_msgs in
 example : True := trivial
 
-/-- info: 'YX' used 2 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'YX' used 4 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
@@ -71,10 +71,33 @@ example : True := trivial
 #guard_msgs in
 example : True := trivial
 
-/-- info: 'YX'' used 2 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'YX'' used 4 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 theorem YX' : True := trivial
 
+/-- info: 'XX' used 188 heartbeats, which is less than the current maximum of 200000. -/
+#guard_msgs in
+theorem XX : (3 : ℤ) + 4 + 5 + a - a = 12 := by
+  ring
+
 end using_linter_option
+
+
+/-
+Test: `#count_heartbeats in` and `set_option linter.countHeartbeats true` should return
+the same result.
+TODO: why is is one hearbeat difference in the second example?
+-/
+
+/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+#guard_msgs in
+#count_heartbeats in
+theorem YX'₂ : True := trivial
+
+/-- info: Used 187 heartbeats, which is less than the current maximum of 200000. -/
+#guard_msgs in
+#count_heartbeats in
+theorem XX₂ : (3 : ℤ) + 4 + 5 + a - a = 12 := by
+  ring

@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Init
 import Lean.Util.Heartbeats
 import Lean.Meta.Tactic.TryThis
+import Lean.Elab.BuiltinCommand
 
 /-!
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
@@ -221,8 +222,9 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
     let s ← get
-    elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
-    msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
+    withNamespace `CountHeartbeatsPrivateNamespace <|
+      elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
+    msgs := (← get).messages.unreported.toArray
     set s
   match stx.find? (·.isOfKind ``Parser.Command.declId) with
     | some decl =>
