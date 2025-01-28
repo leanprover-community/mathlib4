@@ -2664,6 +2664,9 @@ Q4877965:
 
 Q4878586:
   title: Beck's monadicity theorem
+  decl: CategoryTheory.Monad.monadicOfCreatesGSplitCoequalizers
+  authors: Bhavik Mehta
+  date: 2020
 
 Q4880958:
   title: Behnke–Stein theorem
