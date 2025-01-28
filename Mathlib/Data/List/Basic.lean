@@ -29,6 +29,10 @@ open Nat hiding one_pos
 
 namespace List
 
+-- Renamed in lean core; to be removed with the version bump.
+alias replicate_append_replicate := append_replicate_replicate
+alias append_eq_nil_iff := append_eq_nil
+
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
@@ -688,6 +692,9 @@ theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l �
   · simp only [Ne.symm h, false_or]
     rw [← ih]
     exact succ_inj'
+
+@[deprecated (since := "2025-01-28")]
+alias indexOf_eq_length := indexOf_eq_length_iff
 
 @[simp]
 theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = length l :=
