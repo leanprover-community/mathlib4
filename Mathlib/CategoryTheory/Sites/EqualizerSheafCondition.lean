@@ -45,7 +45,7 @@ noncomputable section
 
 /--
 The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
+of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
 def FirstObj : Type max v u :=
@@ -79,7 +79,7 @@ instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
 
 /--
 The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
+of the Stacks entry.
 -/
 @[stacks 00VM "This is the left morphism of the fork diagram there."]
 def forkMap : P.obj (op X) ⟶ FirstObj P R :=
@@ -178,17 +178,17 @@ namespace Presieve
 variable [R.hasPullbacks]
 
 /--
-The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+The rightmost object of the fork diagram of the Stacks entry, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
-@[simp, stacks 00VL "This is the rightmost object of the fork diagram there."]
+@[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type max v u :=
   ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/
-@[stacks 00VL "This is the map `pr₀*` there."]
+@[stacks 00VM "This is the map `pr₀*` there."]
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
@@ -198,7 +198,7 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
   ⟨firstMap _ _ default⟩
 
 /-- The map `pr₁*` of the Stacks entry. -/
-@[stacks 00VL "This is the map `pr₁*` there."]
+@[stacks 00VM "This is the map `pr₁*` there."]
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
