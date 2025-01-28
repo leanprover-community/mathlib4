@@ -204,17 +204,21 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
 
 /-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
-Then `∫⁻ x in s, ‖g x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ` on all `m`-measurable sets with finite
+Then `∫⁻ x in s, ‖g x‖ₑ ∂μ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ` on all `m`-measurable sets with finite
 measure. -/
-theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
+theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
-    (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖₊ ∂μ) ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ := by
-  rw [← ofReal_integral_norm_eq_lintegral_nnnorm hfi, ←
-    ofReal_integral_norm_eq_lintegral_nnnorm hgi, ENNReal.ofReal_le_ofReal_iff]
+    (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖ₑ ∂μ) ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ := by
+  rw [← ofReal_integral_norm_eq_lintegral_enorm hfi, ←
+    ofReal_integral_norm_eq_lintegral_enorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
+
+@[deprecated (since := "2025-01-21")]
+alias lintegral_nnnorm_le_of_forall_fin_meas_integral_eq :=
+  lintegral_enorm_le_of_forall_fin_meas_integral_eq
 
 end IntegralNormLE
 
