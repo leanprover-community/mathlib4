@@ -296,7 +296,7 @@ lemma Circuit.subset_closure_diff_singleton (hC : M.Circuit C) (e : α) :
 
 lemma Circuit.mem_closure_diff_singleton_of_mem (hC : M.Circuit C) (heC : e ∈ C) :
     e ∈ M.closure (C \ {e}) :=
-  (hC.subset_closure_diff_singleton e) heC
+  hC.subset_closure_diff_singleton e heC
 
 lemma exists_circuit_of_mem_closure (he : e ∈ M.closure X) (heX : e ∉ X) :
     ∃ C ⊆ insert e X, M.Circuit C ∧ e ∈ C :=
@@ -340,10 +340,10 @@ section Elimination
 
 /-! ### Circuit Elimination -/
 
-variable {ι : Type*} (x : ι → α) {z : α} {C₁ C₂ : Set α}
+variable {ι : Type*} {J C₀ C₁ C₂ : Set α}
 
 /-- A version of `Matroid.Circuit.strong_multi_elimination` that is phrased using insertion. -/
-lemma strong_multi_elimination_insert (I : ι → Set α) (hxI : ∀ i, x i ∉ I i) {J : Set α}
+lemma strong_multi_elimination_insert (x : ι → α) (I : ι → Set α) (z : α) (hxI : ∀ i, x i ∉ I i)
     (hC : ∀ i, M.Circuit (insert (x i) (I i))) (hJx : M.Circuit (J ∪ range x)) (hzJ : z ∈ J)
     (hzI : ∀ i, z ∉ I i) : ∃ C' ⊆ J ∪ ⋃ i, I i, M.Circuit C' ∧ z ∈ C' := by
   -- we may assume that `ι` is nonempty, and it suffices to show that
@@ -355,10 +355,10 @@ lemma strong_multi_elimination_insert (I : ι → Set α) (hxI : ∀ i, x i ∉ 
     obtain ⟨C', hC'ss, hC', hzC'⟩ := hcl
     refine ⟨C', ?_, hC', hzC'⟩
     rwa [union_comm, ← insert_union, insert_diff_singleton, insert_eq_of_mem hzJ] at hC'ss
-  replace hC := show ∀ (i : ι), M.closure (I i) = M.closure ({x i} ∪ (I i))
-    by simpa [diff_singleton_eq_self (hxI _)] using fun i ↦ (hC i).closure_diff_singleton_eq (x i)
+  have hC' (i) : M.closure (I i) = M.closure ({x i} ∪ I i) := by
+    simpa [diff_singleton_eq_self (hxI _)] using (hC i).closure_diff_singleton_eq (x i)
   -- This is true because each `I i` spans `x i` and `(range x) ∪ (J \ {z})` spans `z`.
-  rw [closure_union_congr_left <| closure_iUnion_congr _ _ hC, iUnion_union_distrib,
+  rw [closure_union_congr_left <| closure_iUnion_congr _ _ hC', iUnion_union_distrib,
     iUnion_singleton_eq_range, union_right_comm]
   refine mem_of_mem_of_subset (hJx.mem_closure_diff_singleton_of_mem (.inl hzJ))
     (M.closure_subset_closure (subset_trans ?_ subset_union_left))
@@ -367,11 +367,16 @@ lemma strong_multi_elimination_insert (I : ι → Set α) (hxI : ∀ i, x i ∉ 
 
 /-- A generalization of the strong circuit elimination axiom `Matroid.Circuit.strong_elimination`
 to an infinite collection of circuits.
-This version is one of the axioms when defining infinite matroids via circuits.
+
+It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
+an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
+the union of `C₀` and the `C i` contains a circuit containing `z` but none of the `x i`.
+
+This is one of the axioms when defining infinite matroids via circuits.
 
 TODO : A similar statement will hold even when all mentions of `z` are removed. -/
-lemma Circuit.strong_multi_elimination {C₀ : Set α} (C : ι → Set α) (hC₀ : M.Circuit C₀)
-    (hC : ∀ i, M.Circuit (C i))(h_mem_C₀ : ∀ i, x i ∈ C₀) (h_mem : ∀ i, x i ∈ C i)
+lemma Circuit.strong_multi_elimination (hC₀ : M.Circuit C₀) (x : ι → α) (C : ι → Set α) (z : α)
+    (hC : ∀ i, M.Circuit (C i)) (h_mem_C₀ : ∀ i, x i ∈ C₀) (h_mem : ∀ i, x i ∈ C i)
     (h_unique : ∀ ⦃i i'⦄, x i ∈ C i' → i = i') (hzC₀ : z ∈ C₀) (hzC : ∀ i, z ∉ C i) :
     ∃ C' ⊆ (C₀ ∪ ⋃ i, C i) \ range x, M.Circuit C' ∧ z ∈ C' := by
   have hwin := M.strong_multi_elimination_insert x (fun i ↦ (C i \ {x i}))
@@ -394,25 +399,44 @@ lemma Circuit.strong_multi_elimination {C₀ : Set α} (C : ι → Set α) (hC�
   simp only [mem_diff, mem_singleton_iff, not_and, not_not]
   exact fun i hzi ↦ (hzC i hzi).elim
 
-/-- The strong circuit elimination axiom. For any two circuits `C₁, C₂` and all `e ∈ C₁ ∩ C₂` and
-`f ∈ C₁ \ C₂`, there is a circuit `C` with `f ∈ C ⊆ (C₁ ∪ C₂) \ {e}`. -/
+/-- A version of `Circuit.strong_multi_elimination` where the collection of circuits is
+a `Set (Set α)` and the distinguished elements are a `Set α`, rather than both being indexed. -/
+lemma Circuit.strong_multi_elimination_set (hC₀ : M.Circuit C₀) (X : Set α) (S : Set (Set α))
+    (z : α) (hCS : ∀ C ∈ S, M.Circuit C) (hXC₀ : X ⊆ C₀) (hX : ∀ x ∈ X, ∃ C ∈ S, C ∩ X = {x})
+    (hzC₀ : z ∈ C₀) (hz : ∀ C ∈ S, z ∉ C) : ∃ C' ⊆ (C₀ ∪ ⋃₀ S) \ X, M.Circuit C' ∧ z ∈ C' := by
+  choose! C hC using hX
+  simp only [and_imp, forall_and, and_assoc] at hC
+  have hwin := hC₀.strong_multi_elimination (fun x : X ↦ x) (fun x ↦ C x) z ?_ ?_ ?_ ?_ hzC₀ ?_
+  · obtain ⟨C', hC'ss, hC', hz⟩ := hwin
+    refine ⟨C', hC'ss.trans (diff_subset_diff (union_subset_union_right _ ?_) (by simp)), hC', hz⟩
+    simpa using fun e heX ↦ (subset_sUnion_of_mem (hC.1 e heX))
+  · simpa using fun e heX ↦ hCS _ <| hC.1 e heX
+  · simpa using fun e heX ↦ hXC₀ heX
+  · simp only [Subtype.forall, ← singleton_subset_iff (s := C _)]
+    exact fun e heX ↦ by simp [← hC.2 e heX]
+  · simp only [Subtype.forall, Subtype.mk.injEq]
+    refine fun e heX f hfX hef ↦ ?_
+    simpa [hC.2 f hfX] using subset_inter (singleton_subset_iff.2 hef) (singleton_subset_iff.2 heX)
+  simpa using fun e heX heC ↦ hz _ (hC.1 e heX) heC
+
+/-- The strong circuit elimination axiom. For any pair of distinct circuits `C₁, C₂` and all
+`e ∈ C₁ ∩ C₂` and `f ∈ C₁ \ C₂`, there is a circuit `C` with `f ∈ C ⊆ (C₁ ∪ C₂) \ {e}`. -/
 lemma Circuit.strong_elimination (hC₁ : M.Circuit C₁) (hC₂ : M.Circuit C₂) (heC₁ : e ∈ C₁)
     (heC₂ : e ∈ C₂) (hfC₁ : f ∈ C₁) (hfC₂ : f ∉ C₂) :
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.Circuit C ∧ f ∈ C := by
-  obtain ⟨C, hCs, hC, hfC⟩ := hC₁.strong_multi_elimination (fun i : Unit ↦ e) (fun _ ↦ C₂)
-    (by simpa) (z := f) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
+  obtain ⟨C, hCs, hC, hfC⟩ := hC₁.strong_multi_elimination (fun i : Unit ↦ e) (fun _ ↦ C₂) f
+    (by simpa) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
   exact ⟨C, hCs.trans (diff_subset_diff (by simp) (by simp)), hC, hfC⟩
 
-/-- The circuit elimination axiom : for any pair of distinct circuits `C₁,C₂` and any `e`, some
-circuit is contained in `(C₁ ∪ C₂) \ {e}`.
+/-- The circuit elimination axiom : for any pair of distinct circuits `C₁, C₂` and any `e`,
+some circuit is contained in `(C₁ ∪ C₂) \ {e}`.
 
-This is one of the axioms when definining finitary matroid via circuits;
-as an axiom, it is usually stated with the extra assumption that `e ∈ C₁ ∩ C₂`. --/
+This is one of the axioms when definining a finitary matroid via circuits;
+as an axiom, it is usually stated with the extra assumption that `e ∈ C₁ ∩ C₂`. -/
 lemma Circuit.elimination (hC₁ : M.Circuit C₁) (hC₂ : M.Circuit C₂) (h : C₁ ≠ C₂) (e : α) :
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.Circuit C := by
-  obtain ⟨f, hf₁, hf₂⟩ : (C₁ \ C₂).Nonempty := by
-    rw [nonempty_iff_ne_empty, Ne, diff_eq_empty]
-    exact fun hss ↦ h (hC₁.eq_of_subset_circuit hC₂ hss)
+  have hnss : ¬ (C₁ ⊆ C₂) := fun hss ↦ h <| hC₁.eq_of_subset_circuit hC₂ hss
+  obtain ⟨f, hf₁, hf₂⟩ := not_subset.1 hnss
   by_cases he₁ : e ∈ C₁
   · by_cases he₂ : e ∈ C₂
     · obtain ⟨C, hC, hC', -⟩ := hC₁.strong_elimination hC₂ he₁ he₂ hf₁ hf₂
@@ -437,9 +461,11 @@ lemma finitary_iff_forall_circuit_finite : M.Finitary ↔ ∀ C, M.Circuit C →
     exact hC.dep.not_indep <| hI _ hCI (h C hC)
   simpa using (hI {x} (by simpa) (finite_singleton _)).subset_ground
 
-lemma exists_mem_finite_closure_of_mem_closure {Y : Set α} [M.Finitary] (he : e ∈ M.closure Y) :
-    ∃ I ⊆ Y, I.Finite ∧ M.Indep I ∧ e ∈ M.closure I := by
-  by_cases heY : e ∈ Y
+/-- In a finitary matroid, every element spanned by a set `X` is in fact
+spanned by a finite independent subset of `X`.  -/
+lemma exists_mem_finite_closure_of_mem_closure [M.Finitary] (he : e ∈ M.closure X) :
+    ∃ I ⊆ X, I.Finite ∧ M.Indep I ∧ e ∈ M.closure I := by
+  by_cases heY : e ∈ X
   · obtain ⟨J, hJ⟩ := M.exists_basis {e}
     exact ⟨J, hJ.subset.trans (by simpa), (finite_singleton e).subset hJ.subset, hJ.indep,
       by simpa using hJ.subset_closure⟩
@@ -447,17 +473,17 @@ lemma exists_mem_finite_closure_of_mem_closure {Y : Set α} [M.Finitary] (he : e
   exact ⟨C \ {e}, by simpa, hC.finite.diff, hC.diff_singleton_indep heC,
     hC.mem_closure_diff_singleton_of_mem heC⟩
 
-/-- In a finitary matroid, each finite set spanned by `X` is spanned by a finite independent
-subset of `X`. -/
+/-- In a finitary matroid, each finite set `X` spanned by a set `Y` is in fact
+spanned by a finite independent subset of `Y`. -/
 lemma exists_subset_finite_closure_of_subset_closure [M.Finitary] (hX : X.Finite)
     (hXY : X ⊆ M.closure Y) : ∃ I ⊆ Y, I.Finite ∧ M.Indep I ∧ X ⊆ M.closure I := by
-  refine Set.Finite.induction_on_subset X hX ⟨∅, by simp⟩
-    (@fun e Z heX hZX heZ ⟨J, hJY, hJfin, hJ, hJcl⟩ ↦ ?_)
-  obtain ⟨K, hKY, hKfin, hK, heK⟩ := exists_mem_finite_closure_of_mem_closure (hXY heX)
-  obtain ⟨I, hI⟩ := M.exists_basis (J ∪ K)
-  refine ⟨I, hI.subset.trans (union_subset hJY hKY), (hJfin.union hKfin).subset hI.subset, hI.indep,
-    (subset_trans (insert_subset ?_ ?_) hI.closure_eq_closure.symm.subset)⟩
-  · exact mem_of_mem_of_subset heK (M.closure_subset_closure subset_union_right)
-  exact hJcl.trans (M.closure_subset_closure subset_union_left)
+  suffices aux : ∃ T ⊆ Y, T.Finite ∧ X ⊆ M.closure T by
+    obtain ⟨T, hT, hTfin, hXT⟩ := aux
+    obtain ⟨I, hI⟩ := M.exists_basis' T
+    exact ⟨_, hI.subset.trans hT, hTfin.subset hI.subset, hI.indep, by rwa [hI.closure_eq_closure]⟩
+  refine Finite.induction_on_subset X hX ⟨∅, by simp⟩ (@fun e Z heX _ heZ ⟨T, hTY, hTfin, hT⟩ ↦ ?_)
+  obtain ⟨S, hSY, hSfin, -, heS⟩ := exists_mem_finite_closure_of_mem_closure (hXY heX)
+  exact ⟨S ∪ T, union_subset hSY hTY, hSfin.union hTfin, insert_subset
+    (M.closure_mono subset_union_left heS) (hT.trans (M.closure_mono subset_union_right))⟩
 
 end Matroid
