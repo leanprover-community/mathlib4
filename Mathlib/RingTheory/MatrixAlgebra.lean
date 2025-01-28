@@ -12,7 +12,12 @@ import Mathlib.RingTheory.TensorProduct.Basic
 /-!
 # Algebra isomorphisms between tensor products and matrices
 
-We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
+## Main definitions
+
+* `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
+* `Matrix.kroneckerTMulAlgEquiv :
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B)`,
+  where the forward map is the (tensor-ified) kronecker product.
 -/
 
 suppress_compilation
@@ -149,15 +154,23 @@ theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
-    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
+    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = a • M.map (algebraMap R A) :=
   rfl
+
+namespace Matrix
+open scoped Kronecker
 
 variable (m) (B) [Fintype m] [DecidableEq m]
 
-/-- A tensor product of matrices is equivalent as an algebra to a matrix of tensor products.
+/--
+`Matrix.kroneckerTMul` as an algebra equivalence, when the two arguments are tensored.
 
-The forward map is the (tensor-ified) Kronecker product. -/
-def matrixTensorAlgEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
+TODO:
+* Generalize this to rectangular matrices
+* Make `Matrix.kroneckerTMulAlgEquiv_tmul` true by `rfl`
+-/
+def kroneckerTMulAlgEquiv :
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
   Algebra.TensorProduct.congr (matrixEquivTensor R A m) (matrixEquivTensor R B n)
     |>.trans <| (Algebra.TensorProduct.tensorTensorTensorComm R A _ B _)
     |>.trans <|
@@ -165,36 +178,35 @@ def matrixTensorAlgEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m 
         Algebra.TensorProduct.comm R _ _
           |>.trans <| (matrixEquivTensor R _ m).symm
           |>.trans <| Matrix.compAlgEquiv m n R R)
-      |>.trans <| (matrixEquivTensor ..).symm
+    |>.trans <| (matrixEquivTensor ..).symm
+
+variable {m n A B}
 
 @[simp]
-theorem matrixTensorAlgEquiv_symm_stdBasisMatrix_tmul
+theorem kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul
     (ia ja : m) (ib jb : n) (a : A) (b : B) :
-    (matrixTensorAlgEquiv R A B m n).symm (stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b)) =
+    (kroneckerTMulAlgEquiv R A B m n).symm (stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b)) =
       stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b := by
-  -- ext ⟨ia', ja'⟩ ⟨ib', jb'⟩
-  dsimp [matrixTensorAlgEquiv, -matrixEquivTensor_apply]
-  rw [matrixEquivTensor_apply_stdBasisMatrix]
-  simp [-matrixEquivTensor_apply]
-  congr <;> ext <;> simp [stdBasisMatrix]
+  simp [kroneckerTMulAlgEquiv]
 
-theorem matrixTensorAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix
+theorem kroneckerTMulAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix
     (ia ja : m) (ib jb : n) (a : A) (b : B) :
-    matrixTensorAlgEquiv R A B m n (stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b) =
+    kroneckerTMulAlgEquiv R A B m n (stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b) =
       stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b) :=
-  (matrixTensorAlgEquiv R A B m n).apply_eq_iff_eq_symm_apply.2 <|
-    matrixTensorAlgEquiv_symm_stdBasisMatrix_tmul _ _ _ _ _ _ _ _ _ _ _ |>.symm
+  (kroneckerTMulAlgEquiv R A B m n).apply_eq_iff_eq_symm_apply.2 <|
+    kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul _ _ _ _ _ _ _ |>.symm
 
-attribute [local ext] ext_stdBasisMatrix
-open scoped Kronecker
+attribute [local ext] ext_stdBasisMatrix in
 @[simp]
-theorem matrixTensorAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
-    matrixTensorAlgEquiv R A B m n (a ⊗ₜ b) = a ⊗ₖₜ b := by
+theorem kroneckerTMulAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
+    kroneckerTMulAlgEquiv R A B m n (a ⊗ₜ b) = a ⊗ₖₜ b := by
   suffices
-      (TensorProduct.mk R _ _).compr₂ (matrixTensorAlgEquiv R A B m n).toLinearMap =
+      (TensorProduct.mk R _ _).compr₂ (kroneckerTMulAlgEquiv R A B m n).toLinearMap =
         kroneckerTMulBilinear R from
     DFunLike.congr_fun (DFunLike.congr_fun this a) b
   ext ia ja a ib jb b : 4
   dsimp
-  rw [matrixTensorAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix,
+  rw [kroneckerTMulAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix,
     stdBasisMatrix_kroneckerTMul_stdBasisMatrix]
+
+end Matrix
