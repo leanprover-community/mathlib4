@@ -76,6 +76,11 @@ lemma complexMGF_id_map (hX : AEMeasurable X μ) : complexMGF id (μ.map X) = co
   · rfl
   · exact AEMeasurable.aestronglyMeasurable <| by fun_prop
 
+lemma complexMGF_congr_identdistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
+    {Y : Ω' → ℝ}  (h : IdentDistrib X Y μ μ') :
+    complexMGF X μ = complexMGF Y μ' := by
+  rw [← complexMGF_id_map h.aemeasurable_fst, ← complexMGF_id_map h.aemeasurable_snd, h.map_eq]
+
 lemma abs_complexMGF_le_mgf : abs (complexMGF X μ z) ≤ mgf X μ z.re := by
   rw [complexMGF, ← re_add_im z]
   simp_rw [add_mul, Complex.exp_add, re_add_im, ← Complex.norm_eq_abs]
