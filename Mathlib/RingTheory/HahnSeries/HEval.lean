@@ -53,7 +53,7 @@ theorem powerSeriesFamily_add (g : PowerSeries R) :
   simp [add_smul]
 
 theorem powerSeriesFamily_smul (r : R) :
-    powerSeriesFamily hx (r • f) = (HahnSeries.single (0 : Γ) r) • (powerSeriesFamily hx f) := by
+    powerSeriesFamily hx (r • f) = (HahnSeries.single (0 : Γ) r) • powerSeriesFamily hx f := by
   ext1 n
   simp [mul_smul]
 
@@ -67,8 +67,8 @@ theorem support_powerSeriesFamily_subset (hx : 0 < x.orderTop) (a b : PowerSerie
     Function.mem_support, Prod.exists]
   intro n hn
   simp_rw [PowerSeries.coeff_mul, ← ne_eq, sum_smul, mul_smul] at hn
-  have he : ∃p ∈ antidiagonal n, ¬((PowerSeries.coeff R p.1) a •
-      (PowerSeries.coeff R p.2) b • (x ^ n).coeff g) = 0 :=
+  have he : ∃p ∈ antidiagonal n, ¬(PowerSeries.coeff R p.1 a •
+      PowerSeries.coeff R p.2 b • (x ^ n).coeff g) = 0 :=
     exists_ne_zero_of_sum_ne_zero hn
   use he.choose.1, he.choose.2
   refine ⟨?_, mem_antidiagonal.mp he.choose_spec.1⟩
@@ -97,7 +97,7 @@ theorem hsum_powerSeriesFamily_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
         Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Prod.exists, mem_antidiagonal,
         Set.Finite.coe_toFinset, Set.mem_image, not_exists, not_and]
       have hisc : ∀ j k : ℕ, ⟨j + k, (j, k)⟩ = i → (PowerSeries.coeff R k) b •
-          ((PowerSeries.coeff R j) a • (x ^ j * x ^ k).coeff g) = 0 := by
+          (PowerSeries.coeff R j a • (x ^ j * x ^ k).coeff g) = 0 := by
         intro m n
         contrapose!
         exact his m n
