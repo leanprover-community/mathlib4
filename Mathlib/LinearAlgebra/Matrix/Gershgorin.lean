@@ -37,7 +37,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       refine (h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)).trans ?_
       exact norm_le_zero_iff.mpr h_nz
     have h_le : ∀ j, ‖v j * (v i)⁻¹‖ ≤ 1 := fun j => by
-      rw [norm_mul, norm_inv, mul_inv_le_iff' (norm_pos_iff.mpr h_nz), one_mul]
+      rw [norm_mul, norm_inv, mul_inv_le_iff₀ (norm_pos_iff.mpr h_nz), one_mul]
       exact h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)
     simp_rw [mem_closedBall_iff_norm']
     refine ⟨i, ?_⟩
@@ -45,7 +45,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       _ = ‖(A i i * v i - μ * v i) * (v i)⁻¹‖ := by congr; field_simp [h_nz]; ring
       _ = ‖(A i i * v i - ∑ j, A i j * v j) * (v i)⁻¹‖ := by
                 rw [show μ * v i = ∑ x : n, A i x * v x by
-                  rw [← Matrix.dotProduct, ← Matrix.mulVec]
+                  rw [← dotProduct, ← Matrix.mulVec]
                   exact (congrFun (Module.End.mem_eigenspace_iff.mp h_eg) i).symm]
       _ = ‖(∑ j ∈ Finset.univ.erase i, A i j * v j) * (v i)⁻¹‖ := by
                 rw [Finset.sum_erase_eq_sub (Finset.mem_univ i), ← neg_sub, neg_mul, norm_neg]

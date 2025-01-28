@@ -15,10 +15,10 @@ In this file we prove many facts about `Pairwise` and the set lattice.
 
 open Function Set Order
 
-variable {α β γ ι ι' : Type*} {κ : Sort*} {r p q : α → α → Prop}
+variable {α ι ι' : Type*} {κ : Sort*} {r : α → α → Prop}
 section Pairwise
 
-variable {f g : ι → α} {s t u : Set α} {a b : α}
+variable {f : ι → α} {s : Set α}
 
 namespace Set
 
@@ -45,7 +45,7 @@ namespace Set
 
 section PartialOrderBot
 
-variable [PartialOrder α] [OrderBot α] {s t : Set ι} {f g : ι → α}
+variable [PartialOrder α] [OrderBot α] {s : Set ι} {f : ι → α}
 
 theorem pairwiseDisjoint_iUnion {g : ι' → Set ι} (h : Directed (· ⊆ ·) g) :
     (⋃ n, g n).PairwiseDisjoint f ↔ ∀ ⦃n⦄, (g n).PairwiseDisjoint f :=
@@ -133,6 +133,18 @@ section
 
 variable {f : ι → Set α} {s t : Set ι}
 
+lemma Set.pairwiseDisjoint_iff :
+    s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+    not_disjoint_iff_nonempty_inter]
+
+lemma Set.pairwiseDisjoint_pair_insert {s : Set α} {a : α} (ha : a ∉ s) :
+    s.powerset.PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Set α)) := by
+  rw [pairwiseDisjoint_iff]
+  rintro i hi j hj
+  have := insert_erase_invOn.2.injOn (not_mem_subset hi ha) (not_mem_subset hj ha)
+  aesop (add simp [Set.Nonempty, Set.subset_def])
+
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
   rintro i hi
@@ -154,7 +166,7 @@ theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀
 theorem pairwiseDisjoint_unique {y : α}
     (h_disjoint : PairwiseDisjoint s f)
     (hy : y ∈ (⋃ i ∈ s, f i)) : ∃! i, i ∈ s ∧ y ∈ f i := by
-  refine exists_unique_of_exists_of_unique ?ex ?unique
+  refine existsUnique_of_exists_of_unique ?ex ?unique
   · simpa only [mem_iUnion, exists_prop] using hy
   · rintro i j ⟨his, hi⟩ ⟨hjs, hj⟩
     exact h_disjoint.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩

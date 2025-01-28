@@ -3,8 +3,9 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.Matroid.Restrict
+import Mathlib.Data.Matroid.Map
 import Mathlib.Order.Closure
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Matroid Closure
@@ -21,6 +22,8 @@ For `M : Matroid α`, this file defines a predicate `M.Flat : Set α → Prop` a
 API for `Matroid.Flat` will appear in another file; we include the definition here since
 it is used in the definition of `Matroid.closure`.
 
+We also define a predicate `Spanning`, to describe a set whose closure is the entire ground set.
+
 ## Main definitions
 
 * For `M : Matroid α` and `F : Set α`, `M.Flat F` means that `F` is a flat of `M`.
@@ -28,6 +31,8 @@ it is used in the definition of `Matroid.closure`.
 * For `M : Matroid α` and `X : ↑(Iic M.E)` (i.e. a bundled subset of `M.E`),
   `M.subtypeClosure X` is the closure of `X`, viewed as a term in `↑(Iic M.E)`.
   This is a `ClosureOperator` on `↑(Iic M.E)`.
+* For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
+  or equivalently that `S` contains a base of `M`.
 
 ## Implementation details
 
@@ -64,12 +69,19 @@ so we go with (1). It may be helpful at some point to define a primed version
 `Matroid.closure' : ClosureOperator (Set α)` corresponding to choice (2).
 Failing that, the `ClosureOperator`/`GaloisInsertion` API is still available on
 the subtype `↑(Iic M.E)` via `Matroid.SubtypeClosure`, albeit less elegantly.
+
+## Naming conventions
+
+In lemma names, the words `spanning` and `flat` are used as suffixes,
+for instance we have `ground_spanning` rather than `spanning_ground`.
 -/
+
+assert_not_exists Field
 
 open Set
 namespace Matroid
 
-variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e : α}
+variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section Flat
 
@@ -144,7 +156,7 @@ lemma closure_subset_ground (M : Matroid α) (X : Set α) : M.closure X ⊆ M.E 
   simp_rw [closure_def, inter_assoc, inter_self]
 
 lemma inter_ground_subset_closure (M : Matroid α) (X : Set α) : X ∩ M.E ⊆ M.closure X := by
-  simp_rw [closure_def, subset_sInter_iff]; aesop
+  simp_rw [closure_def, subset_sInter_iff]; simp
 
 lemma mem_closure_iff_forall_mem_flat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     e ∈ M.closure X ↔ ∀ F, M.Flat F → X ⊆ F → e ∈ F := by
@@ -167,6 +179,7 @@ lemma Flat.closure (hF : M.Flat F) : M.closure F = F :=
 @[simp] lemma closure_univ (M : Matroid α) : M.closure univ = M.E := by
   rw [← closure_inter_ground, univ_inter, closure_ground]
 
+@[gcongr]
 lemma closure_subset_closure (M : Matroid α) (h : X ⊆ Y) : M.closure X ⊆ M.closure Y :=
   subset_sInter (fun _ h' ↦ sInter_subset_of_mem
     ⟨h'.1, subset_trans (inter_subset_inter_left _ h) h'.2⟩)
@@ -257,6 +270,18 @@ lemma closure_closure_union_closure_eq_closure_union (M : Matroid α) (X Y : Set
     M.closure (insert e (M.closure X)) = M.closure (insert e X) := by
   simp_rw [← singleton_union, closure_union_closure_right_eq]
 
+lemma closure_union_congr_left {X' : Set α} (h : M.closure X = M.closure X') :
+    M.closure (X ∪ Y) = M.closure (X' ∪ Y) := by
+  rw [← M.closure_union_closure_left_eq, h, M.closure_union_closure_left_eq]
+
+lemma closure_union_congr_right {Y' : Set α} (h : M.closure Y = M.closure Y') :
+    M.closure (X ∪ Y) = M.closure (X ∪ Y') := by
+  rw [← M.closure_union_closure_right_eq, h, M.closure_union_closure_right_eq]
+
+lemma closure_insert_congr_right (h : M.closure X = M.closure Y) :
+    M.closure (insert e X) = M.closure (insert e Y) := by
+  simp [← union_singleton, closure_union_congr_left h]
+
 @[simp] lemma closure_union_closure_empty_eq (M : Matroid α) (X : Set α) :
     M.closure X ∪ M.closure ∅ = M.closure X :=
   union_eq_self_of_subset_right (M.closure_subset_closure (empty_subset _))
@@ -274,7 +299,7 @@ lemma mem_closure_self (M : Matroid α) (e : α) (he : e ∈ M.E := by aesop_mat
 
 section Indep
 
-variable {ι : Sort*} {I J B : Set α} {f x y : α}
+variable {ι : Sort*} {I J B : Set α} {x : α}
 
 lemma Indep.closure_eq_setOf_basis_insert (hI : M.Indep I) :
     M.closure I = {x | M.Basis I (insert x I)} := by
@@ -462,7 +487,7 @@ lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set 
   convert closure_iInter_eq_iInter_closure_of_iUnion_indep (Is := fun i : A ↦ I i) (by simpa) <;>
   simp
 
-lemma Indep.closure_iInter_eq_biInter_closure_of_forall_subset [hι : Nonempty ι] {Js : ι → Set α}
+lemma Indep.closure_iInter_eq_biInter_closure_of_forall_subset [Nonempty ι] {Js : ι → Set α}
     (hI : M.Indep I) (hJs : ∀ i, Js i ⊆ I) : M.closure (⋂ i, Js i) = ⋂ i, M.closure (Js i) :=
   closure_iInter_eq_iInter_closure_of_iUnion_indep _ (hI.subset <| by simpa)
 
@@ -471,6 +496,27 @@ lemma Indep.closure_inter_eq_inter_closure (h : M.Indep (I ∪ J)) :
   rw [inter_eq_iInter, closure_iInter_eq_iInter_closure_of_iUnion_indep, inter_eq_iInter]
   · exact iInter_congr (by simp)
   rwa [← union_eq_iUnion]
+
+lemma Indep.inter_Basis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set α} {A : Set ι}
+    (hA : A.Nonempty) (h : ∀ i ∈ A, M.Basis ((X i) ∩ I) (X i)) :
+    M.Basis ((⋂ i ∈ A, X i) ∩ I) (⋂ i ∈ A, X i) := by
+  refine (hI.inter_left _).basis_of_subset_of_subset_closure inter_subset_left ?_
+  simp_rw [← biInter_inter hA,
+  closure_biInter_eq_biInter_closure_of_biUnion_indep hA (I := fun i ↦ (X i) ∩ I)
+      (hI.subset (by simp)), subset_iInter_iff]
+  exact fun i hiA ↦ (biInter_subset_of_mem hiA).trans (h i hiA).subset_closure
+
+lemma Indep.inter_Basis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep I)
+    (h : ∀ i, M.Basis ((X i) ∩ I) (X i)) : M.Basis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
+  convert hI.inter_Basis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
+    (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
+  · simp only [mem_univ, iInter_true]
+    exact (iInter_plift_down X).symm
+
+lemma Indep.inter_Basis_sInter {Xs : Set (Set α)} (hI : M.Indep I) (hXs : Xs.Nonempty)
+    (h : ∀ X ∈ Xs, M.Basis (X ∩ I) X) : M.Basis (⋂₀ Xs ∩ I) (⋂₀ Xs) := by
+  rw [sInter_eq_biInter]
+  exact hI.inter_Basis_biInter hXs h
 
 lemma basis_iff_basis_closure_of_subset (hIX : I ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X ↔ M.Basis I (M.closure X) :=
@@ -506,14 +552,395 @@ lemma basis_iff_indep_closure : M.Basis I X ↔ M.Indep I ∧ X ⊆ M.closure I 
   ⟨fun h ↦ ⟨h.indep, h.subset_closure, h.subset⟩, fun h ↦
     (basis_union_iff_indep_closure.mpr ⟨h.1, h.2.1⟩).basis_subset h.2.2 subset_union_right⟩
 
+lemma Indep.inter_basis_closure_iff_subset_closure_inter {X : Set α} (hI : M.Indep I) :
+    M.Basis (X ∩ I) X ↔ X ⊆ M.closure (X ∩ I) :=
+  ⟨Basis.subset_closure, (hI.inter_left X).basis_of_subset_of_subset_closure inter_subset_left⟩
+
+lemma Basis.closure_inter_basis_closure (h : M.Basis (X ∩ I) X) (hI : M.Indep I) :
+    M.Basis (M.closure X ∩ I) (M.closure X) := by
+  rw [hI.inter_basis_closure_iff_subset_closure_inter] at h ⊢
+  exact (M.closure_subset_closure_of_subset_closure h).trans (M.closure_subset_closure
+    (inter_subset_inter_left _ (h.trans (M.closure_subset_closure inter_subset_left))))
+
 lemma Basis.eq_of_closure_subset (hI : M.Basis I X) (hJI : J ⊆ I) (hJ : X ⊆ M.closure J) :
     J = I := by
   rw [← hI.indep.closure_inter_eq_self_of_subset hJI, inter_eq_self_of_subset_right]
   exact hI.subset.trans hJ
 
+lemma Basis.insert_basis_insert_of_not_mem_closure (hIX : M.Basis I X) (heI : e ∉ M.closure I)
+    (heE : e ∈ M.E := by aesop_mat) : M.Basis (insert e I) (insert e X) :=
+  hIX.insert_basis_insert <| hIX.indep.insert_indep_iff.2 <| .inl ⟨heE, heI⟩
+
 @[simp] lemma empty_basis_iff : M.Basis ∅ X ↔ X ⊆ M.closure ∅ := by
   rw [basis_iff_indep_closure, and_iff_right M.empty_indep, and_iff_left (empty_subset _)]
 
+lemma indep_iff_forall_not_mem_closure_diff (hI : I ⊆ M.E := by aesop_mat) :
+    M.Indep I ↔ ∀ ⦃e⦄, e ∈ I → e ∉ M.closure (I \ {e}) := by
+  use fun h e heI he ↦ ((h.closure_inter_eq_self_of_subset diff_subset).subset ⟨he, heI⟩).2 rfl
+  intro h
+  obtain ⟨J, hJ⟩ := M.exists_basis I
+  convert hJ.indep
+  refine hJ.subset.antisymm' (fun e he ↦ by_contra fun heJ ↦ h he ?_)
+  exact mem_of_mem_of_subset
+    (hJ.subset_closure he) (M.closure_subset_closure (subset_diff_singleton hJ.subset heJ))
+
+/-- An alternative version of `Matroid.indep_iff_forall_not_mem_closure_diff` where the
+hypothesis that `I ⊆ M.E` is contained in the RHS rather than the hypothesis. -/
+lemma indep_iff_forall_not_mem_closure_diff' :
+    M.Indep I ↔ I ⊆ M.E ∧ ∀ e ∈ I, e ∉ M.closure (I \ {e}) :=
+  ⟨fun h ↦ ⟨h.subset_ground, (indep_iff_forall_not_mem_closure_diff h.subset_ground).mp h⟩, fun h ↦
+    (indep_iff_forall_not_mem_closure_diff h.1).mpr h.2⟩
+
+lemma Indep.not_mem_closure_diff_of_mem (hI : M.Indep I) (he : e ∈ I) : e ∉ M.closure (I \ {e}) :=
+  (indep_iff_forall_not_mem_closure_diff'.1 hI).2 e he
+
+lemma indep_iff_forall_closure_diff_ne :
+    M.Indep I ↔ ∀ ⦃e⦄, e ∈ I → M.closure (I \ {e}) ≠ M.closure I := by
+  rw [indep_iff_forall_not_mem_closure_diff']
+  refine ⟨fun ⟨hIE, h⟩ e heI h_eq ↦ h e heI (h_eq.symm.subset (M.mem_closure_of_mem heI)),
+    fun h ↦ ⟨fun e heI ↦ by_contra fun heE ↦ h heI ?_,fun e heI hin ↦ h heI ?_⟩⟩
+  · rw [← closure_inter_ground, inter_comm, inter_diff_distrib_left,
+      inter_singleton_eq_empty.mpr heE, diff_empty, inter_comm, closure_inter_ground]
+  nth_rw 2 [show I = insert e (I \ {e}) by simp [heI]]
+  rw [← closure_insert_closure_eq_closure_insert, insert_eq_of_mem hin, closure_closure]
+
+lemma Indep.union_indep_iff_forall_not_mem_closure_right (hI : M.Indep I) (hJ : M.Indep J) :
+    M.Indep (I ∪ J) ↔ ∀ e ∈ J \ I, e ∉ M.closure (I ∪ (J \ {e})) := by
+  refine ⟨fun h e heJ hecl ↦ h.not_mem_closure_diff_of_mem (.inr heJ.1) ?_, fun h ↦ ?_⟩
+  · rwa [union_diff_distrib, diff_singleton_eq_self heJ.2]
+  obtain ⟨K, hKIJ, hK⟩ := hI.subset_basis_of_subset (show I ⊆ I ∪ J from subset_union_left)
+  obtain rfl | hssu := hKIJ.subset.eq_or_ssubset
+  · exact hKIJ.indep
+  exfalso
+  obtain ⟨e, heI, heK⟩ := exists_of_ssubset hssu
+  have heJI : e ∈ J \ I := by
+    rw [← union_diff_right, union_comm]
+    exact ⟨heI, not_mem_subset hK heK⟩
+  refine h _ heJI ?_
+  rw [← diff_singleton_eq_self heJI.2, ← union_diff_distrib]
+  exact M.closure_subset_closure (subset_diff_singleton hKIJ.subset heK) <| hKIJ.subset_closure heI
+
+lemma Indep.union_indep_iff_forall_not_mem_closure_left (hI : M.Indep I) (hJ : M.Indep J) :
+    M.Indep (I ∪ J) ↔ ∀ e ∈ I \ J, e ∉ M.closure ((I \ {e}) ∪ J) := by
+  simp_rw [union_comm I J, hJ.union_indep_iff_forall_not_mem_closure_right hI, union_comm]
+
+lemma Indep.closure_ssubset_closure (hI : M.Indep I) (hJI : J ⊂ I) : M.closure J ⊂ M.closure I := by
+  obtain ⟨e, heI, heJ⟩ := exists_of_ssubset hJI
+  exact (M.closure_subset_closure hJI.subset).ssubset_of_not_subset fun hss ↦ heJ <|
+    (hI.closure_inter_eq_self_of_subset hJI.subset).subset ⟨hss (M.mem_closure_of_mem heI), heI⟩
+
+lemma indep_iff_forall_closure_ssubset_of_ssubset (hI : I ⊆ M.E := by aesop_mat) :
+    M.Indep I ↔ ∀ ⦃J⦄, J ⊂ I → M.closure J ⊂ M.closure I := by
+  refine ⟨fun h _ ↦ h.closure_ssubset_closure,
+    fun h ↦ (indep_iff_forall_not_mem_closure_diff hI).2 fun e heI hecl ↦ ?_⟩
+  refine (h (diff_singleton_sSubset.2 heI)).ne ?_
+  rw [show I = insert e (I \ {e}) by simp [heI], ← closure_insert_closure_eq_closure_insert,
+    insert_eq_of_mem hecl]
+  simp
+
+lemma Indep.closure_diff_ssubset (hI : M.Indep I) (hX : (I ∩ X).Nonempty) :
+    M.closure (I \ X) ⊂ M.closure I := by
+  refine hI.closure_ssubset_closure <| diff_subset.ssubset_of_ne fun h ↦ ?_
+  rw [sdiff_eq_left, disjoint_iff_inter_eq_empty] at h
+  simp [h] at hX
+
+lemma Indep.closure_diff_singleton_ssubset (hI : M.Indep I) (he : e ∈ I) :
+    M.closure (I \ {e}) ⊂ M.closure I :=
+  hI.closure_ssubset_closure <| by simpa
+
 end Indep
+
+section insert
+
+lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert f X)) :
+    f ∈ M.closure (insert e X) := by
+  rw [← closure_inter_ground] at *
+  have hfE : f ∈ M.E := by
+    by_contra! hfE; rw [insert_inter_of_not_mem hfE] at hef; exact he hef
+  have heE : e ∈ M.E := (M.closure_subset_ground _) hef
+  rw [insert_inter_of_mem hfE] at hef; rw [insert_inter_of_mem heE]
+
+  obtain ⟨I, hI⟩ := M.exists_basis (X ∩ M.E)
+  rw [← hI.closure_eq_closure, hI.indep.not_mem_closure_iff] at he
+  rw [← closure_insert_closure_eq_closure_insert, ← hI.closure_eq_closure,
+    closure_insert_closure_eq_closure_insert, he.1.mem_closure_iff] at *
+  rw [or_iff_not_imp_left, dep_iff, insert_comm,
+    and_iff_left (insert_subset heE (insert_subset hfE hI.indep.subset_ground)), not_not]
+  intro h
+  rw [(h.subset (subset_insert _ _)).mem_closure_iff, or_iff_right (h.not_dep), mem_insert_iff,
+    or_iff_left he.2] at hef
+  subst hef; apply mem_insert
+
+lemma closure_exchange (he : e ∈ M.closure (insert f X) \ M.closure X) :
+    f ∈ M.closure (insert e X) \ M.closure X :=
+  ⟨mem_closure_insert he.2 he.1, fun hf ↦ by
+    rwa [closure_insert_eq_of_mem_closure hf, diff_self, iff_false_intro (not_mem_empty _)] at he⟩
+
+lemma closure_exchange_iff :
+    e ∈ M.closure (insert f X) \ M.closure X ↔ f ∈ M.closure (insert e X) \ M.closure X :=
+  ⟨closure_exchange, closure_exchange⟩
+
+lemma closure_insert_congr (he : e ∈ M.closure (insert f X) \ M.closure X) :
+    M.closure (insert e X) = M.closure (insert f X) := by
+  have hf := closure_exchange he
+  rw [eq_comm, ← closure_closure, ← insert_eq_of_mem he.1, closure_insert_closure_eq_closure_insert,
+    insert_comm, ← closure_closure, ← closure_insert_closure_eq_closure_insert,
+    insert_eq_of_mem hf.1, closure_closure, closure_closure]
+
+lemma closure_diff_eq_self (h : Y ⊆ M.closure (X \ Y)) : M.closure (X \ Y) = M.closure X := by
+  rw [← diff_union_inter X Y, ← closure_union_closure_left_eq,
+    union_eq_self_of_subset_right (inter_subset_right.trans h), closure_closure, diff_union_inter]
+
+lemma closure_diff_singleton_eq_closure (h : e ∈ M.closure (X \ {e})) :
+    M.closure (X \ {e}) = M.closure X :=
+  closure_diff_eq_self (by simpa)
+
+lemma subset_closure_diff_iff_closure_eq (h : Y ⊆ X) (hY : Y ⊆ M.E := by aesop_mat) :
+    Y ⊆ M.closure (X \ Y) ↔ M.closure (X \ Y) = M.closure X :=
+  ⟨closure_diff_eq_self, fun h' ↦ (M.subset_closure_of_subset' h).trans h'.symm.subset⟩
+
+lemma mem_closure_diff_singleton_iff_closure (he : e ∈ X) (heE : e ∈ M.E := by aesop_mat) :
+    e ∈ M.closure (X \ {e}) ↔ M.closure (X \ {e}) = M.closure X := by
+  simpa using subset_closure_diff_iff_closure_eq (Y := {e}) (X := X) (by simpa)
+
+end insert
+
+lemma ext_closure {M₁ M₂ : Matroid α} (h : ∀ X, M₁.closure X = M₂.closure X) : M₁ = M₂ :=
+  ext_indep (by simpa using h univ)
+    (fun _ _ ↦ by simp_rw [indep_iff_forall_closure_diff_ne, h])
+
+
+section Spanning
+
+variable {S T I B : Set α}
+
+/-- A set is `spanning` in `M` if its closure is equal to `M.E`, or equivalently if it contains
+  a base of `M`. -/
+@[mk_iff]
+structure Spanning (M : Matroid α) (S : Set α) : Prop where
+  closure_eq : M.closure S = M.E
+  subset_ground : S ⊆ M.E
+
+attribute [aesop unsafe 10% (rule_sets := [Matroid])] Spanning.subset_ground
+
+lemma spanning_iff_closure_eq (hS : S ⊆ M.E := by aesop_mat) :
+    M.Spanning S ↔ M.closure S = M.E := by
+  rw [spanning_iff, and_iff_left hS]
+
+@[simp] lemma closure_spanning_iff (hS : S ⊆ M.E := by aesop_mat) :
+    M.Spanning (M.closure S) ↔ M.Spanning S := by
+  rw [spanning_iff_closure_eq, closure_closure, ← spanning_iff_closure_eq]
+
+lemma spanning_iff_ground_subset_closure (hS : S ⊆ M.E := by aesop_mat) :
+    M.Spanning S ↔ M.E ⊆ M.closure S := by
+  rw [spanning_iff_closure_eq, subset_antisymm_iff, and_iff_right (closure_subset_ground _ _)]
+
+lemma not_spanning_iff_closure_ssubset (hS : S ⊆ M.E := by aesop_mat) :
+    ¬M.Spanning S ↔ M.closure S ⊂ M.E := by
+  rw [spanning_iff_closure_eq, ssubset_iff_subset_ne, iff_and_self,
+    iff_true_intro (M.closure_subset_ground _)]
+  exact fun _ ↦ trivial
+
+lemma Spanning.superset (hS : M.Spanning S) (hST : S ⊆ T) (hT : T ⊆ M.E := by aesop_mat) :
+    M.Spanning T :=
+  ⟨(M.closure_subset_ground _).antisymm
+    (by rw [← hS.closure_eq]; exact M.closure_subset_closure hST), hT⟩
+
+lemma Spanning.closure_eq_of_superset (hS : M.Spanning S) (hST : S ⊆ T) : M.closure T = M.E := by
+  rw [← closure_inter_ground, ← spanning_iff_closure_eq]
+  exact hS.superset (subset_inter hST hS.subset_ground)
+
+lemma Spanning.union_left (hS : M.Spanning S) (hX : X ⊆ M.E := by aesop_mat) : M.Spanning (S ∪ X) :=
+  hS.superset subset_union_left
+
+lemma Spanning.union_right (hS : M.Spanning S) (hX : X ⊆ M.E := by aesop_mat) :
+    M.Spanning (X ∪ S) :=
+  hS.superset subset_union_right
+
+lemma Base.spanning (hB : M.Base B) : M.Spanning B :=
+  ⟨hB.closure_eq, hB.subset_ground⟩
+
+lemma ground_spanning (M : Matroid α) : M.Spanning M.E :=
+  ⟨M.closure_ground, rfl.subset⟩
+
+lemma Base.spanning_of_superset (hB : M.Base B) (hBX : B ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
+    M.Spanning X :=
+  hB.spanning.superset hBX
+
+/-- A version of `Matroid.spanning_iff_exists_base_subset` in which the `S ⊆ M.E` condition
+appears in the RHS of the equivalence rather than as a hypothesis. -/
+lemma spanning_iff_exists_base_subset' : M.Spanning S ↔ (∃ B, M.Base B ∧ B ⊆ S) ∧ S ⊆ M.E := by
+  refine ⟨fun h ↦ ⟨?_, h.subset_ground⟩, fun ⟨⟨B, hB, hBS⟩, hSE⟩ ↦ hB.spanning.superset hBS⟩
+  obtain ⟨B, hB⟩ := M.exists_basis S
+  have hB' := hB.basis_closure_right
+  rw [h.closure_eq, basis_ground_iff] at hB'
+  exact ⟨B, hB', hB.subset⟩
+
+lemma spanning_iff_exists_base_subset (hS : S ⊆ M.E := by aesop_mat) :
+    M.Spanning S ↔ ∃ B, M.Base B ∧ B ⊆ S := by
+  rw [spanning_iff_exists_base_subset', and_iff_left hS]
+
+lemma Spanning.exists_base_subset (hS : M.Spanning S) : ∃ B, M.Base B ∧ B ⊆ S := by
+  rwa [spanning_iff_exists_base_subset] at hS
+
+lemma coindep_iff_compl_spanning (hI : I ⊆ M.E := by aesop_mat) :
+    M.Coindep I ↔ M.Spanning (M.E \ I) := by
+  rw [coindep_iff_exists, spanning_iff_exists_base_subset]
+
+lemma spanning_iff_compl_coindep (hS : S ⊆ M.E := by aesop_mat) :
+    M.Spanning S ↔ M.Coindep (M.E \ S) := by
+  rw [coindep_iff_compl_spanning, diff_diff_cancel_left hS]
+
+lemma Coindep.compl_spanning (hI : M.Coindep I) : M.Spanning (M.E \ I) :=
+  (coindep_iff_compl_spanning hI.subset_ground).mp hI
+
+lemma coindep_iff_closure_compl_eq_ground (hK : X ⊆ M.E := by aesop_mat) :
+    M.Coindep X ↔ M.closure (M.E \ X) = M.E := by
+  rw [coindep_iff_compl_spanning, spanning_iff_closure_eq]
+
+lemma Coindep.closure_compl (hX : M.Coindep X) : M.closure (M.E \ X) = M.E :=
+  (coindep_iff_closure_compl_eq_ground hX.subset_ground).mp hX
+
+lemma Indep.base_of_spanning (hI : M.Indep I) (hIs : M.Spanning I) : M.Base I := by
+  obtain ⟨B, hB, hBI⟩ := hIs.exists_base_subset; rwa [← hB.eq_of_subset_indep hI hBI]
+
+lemma Spanning.base_of_indep (hIs : M.Spanning I) (hI : M.Indep I) : M.Base I :=
+  hI.base_of_spanning hIs
+
+lemma Indep.eq_of_spanning_subset (hI : M.Indep I) (hS : M.Spanning S) (hSI : S ⊆ I) : S = I :=
+  ((hI.subset hSI).base_of_spanning hS).eq_of_subset_indep hI hSI
+
+lemma Basis.spanning_iff_spanning (hIX : M.Basis I X) : M.Spanning I ↔ M.Spanning X := by
+  rw [spanning_iff_closure_eq, spanning_iff_closure_eq, hIX.closure_eq_closure]
+
+lemma Spanning.base_restrict_iff (hS : M.Spanning S) : (M ↾ S).Base B ↔ M.Base B ∧ B ⊆ S := by
+  rw [base_restrict_iff', basis'_iff_basis]
+  refine ⟨fun h ↦ ⟨?_, h.subset⟩, fun h ↦ h.1.indep.basis_of_subset_of_subset_closure h.2 ?_⟩
+  · exact h.indep.base_of_spanning <| by rwa [h.spanning_iff_spanning]
+  rw [h.1.closure_eq]
+  exact hS.subset_ground
+
+lemma Spanning.compl_coindep (hS : M.Spanning S) : M.Coindep (M.E \ S) := by
+  rwa [← spanning_iff_compl_coindep]
+
+lemma Basis.base_of_spanning (hIX : M.Basis I X) (hX : M.Spanning X) : M.Base I :=
+  hIX.indep.base_of_spanning <| by rwa [hIX.spanning_iff_spanning]
+
+lemma Indep.exists_base_subset_spanning (hI : M.Indep I) (hS : M.Spanning S) (hIS : I ⊆ S) :
+    ∃ B, M.Base B ∧ I ⊆ B ∧ B ⊆ S := by
+  obtain ⟨B, hB⟩ := hI.subset_basis_of_subset hIS
+  exact ⟨B, hB.1.base_of_spanning hS, hB.2, hB.1.subset⟩
+
+lemma Restriction.base_iff_of_spanning {N : Matroid α} (hR : N ≤r M) (hN : M.Spanning N.E) :
+    N.Base B ↔ (M.Base B ∧ B ⊆ N.E) := by
+  obtain ⟨R, hR : R ⊆ M.E, rfl⟩ := hR
+  rw [Spanning.base_restrict_iff (show M.Spanning R from hN), restrict_ground_eq]
+
+lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
+    (hsp : ∀ S, S ⊆ M.E → (M.Spanning S ↔ M'.Spanning S )) : M = M' := by
+  have hsp' : M.Spanning = M'.Spanning := by
+    ext S
+    refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE] )
+      (fun hSE ↦ iff_of_false (fun h ↦ hSE h.subset_ground)
+      (fun h' ↦ hSE (h'.subset_ground.trans h.symm.subset)))
+  rw [← dual_inj, ext_iff_indep, dual_ground, dual_ground, and_iff_right h]
+  intro I hIE
+  rw [← coindep_def, ← coindep_def, coindep_iff_compl_spanning, coindep_iff_compl_spanning, hsp', h]
+
+end Spanning
+
+section Constructions
+
+variable {R S : Set α}
+
+@[simp] lemma restrict_closure_eq' (M : Matroid α) (X R : Set α) :
+    (M ↾ R).closure X = (M.closure (X ∩ R) ∩ R) ∪ (R \ M.E) := by
+  obtain ⟨I, hI⟩ := (M ↾ R).exists_basis' X
+  obtain ⟨hI', hIR⟩ := basis'_restrict_iff.1 hI
+  ext e
+  rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, hI.indep.mem_closure_iff', mem_union,
+    mem_inter_iff, hI'.indep.mem_closure_iff', restrict_ground_eq, restrict_indep_iff, mem_diff]
+  by_cases he : M.Indep (insert e I)
+  · simp [he, and_comm, insert_subset_iff, hIR, (he.subset_ground (mem_insert ..)), imp_or]
+  tauto
+
+lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
+    (M ↾ R).closure X = M.closure X ∩ R := by
+  rw [restrict_closure_eq', diff_eq_empty.mpr hR, union_empty, inter_eq_self_of_subset_left hXR]
+
+@[simp] lemma emptyOn_closure_eq (X : Set α) : (emptyOn α).closure X = ∅ :=
+  (closure_subset_ground ..).antisymm <| empty_subset _
+
+@[simp] lemma loopyOn_closure_eq (E X : Set α) : (loopyOn E).closure X = E := by
+  simp [loopyOn, restrict_closure_eq']
+
+@[simp] lemma loopyOn_spanning_iff {E : Set α} : (loopyOn E).Spanning X ↔ X ⊆ E := by
+  rw [spanning_iff, loopyOn_closure_eq, loopyOn_ground, and_iff_right rfl]
+
+@[simp] lemma freeOn_closure_eq (E X : Set α) : (freeOn E).closure X = X ∩ E := by
+  simp (config := {contextual := true}) [← closure_inter_ground _ X, Set.ext_iff, and_comm,
+    insert_subset_iff, freeOn_indep_iff, (freeOn_indep inter_subset_right).mem_closure_iff']
+
+@[simp] lemma uniqueBaseOn_closure_eq (I E X : Set α) :
+    (uniqueBaseOn I E).closure X = (X ∩ I ∩ E) ∪ (E \ I) := by
+  rw [uniqueBaseOn, restrict_closure_eq', freeOn_closure_eq, inter_right_comm,
+    inter_assoc (c := E), inter_self, inter_right_comm, freeOn_ground]
+
+lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := by
+  refine ⟨fun h ↦ ext_closure ?_, fun h ↦ by rw [h, loopyOn_closure_eq, loopyOn_ground]⟩
+  refine fun X ↦ subset_antisymm (by simp [closure_subset_ground]) ?_
+  rw [loopyOn_closure_eq, ← h]
+  exact M.closure_mono (empty_subset _)
+
+@[simp] lemma comap_closure_eq {β : Type*} (M : Matroid β) (f : α → β) (X : Set α) :
+    (M.comap f).closure X = f ⁻¹' M.closure (f '' X) := by
+  -- Use a choice of basis and extensionality to change the goal to a statement about independence.
+  obtain ⟨I, hI⟩ := (M.comap f).exists_basis' X
+  obtain ⟨hI', hIinj, -⟩ := comap_basis'_iff.1 hI
+  simp_rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, Set.ext_iff,
+    hI.indep.mem_closure_iff', comap_ground_eq, mem_preimage, hI'.indep.mem_closure_iff',
+    comap_indep_iff, and_imp, mem_image, and_congr_right_iff, ← image_insert_eq]
+  -- the lemma now easily follows by considering elements/non-elements of `I` separately.
+  intro x hxE
+  by_cases hxI : x ∈ I
+  · simp [hxI, show ∃ y ∈ I, f y = f x from ⟨x, hxI, rfl⟩]
+  simp [hxI, injOn_insert hxI, hIinj]
+
+@[simp] lemma map_closure_eq {β : Type*} (M : Matroid α) (f : α → β) (hf) (X : Set β) :
+    (M.map f hf).closure X = f '' M.closure (f ⁻¹' X) := by
+  -- It is enough to prove that `map` and `closure` commute for `M`-independent sets.
+  suffices aux : ∀ ⦃I⦄, M.Indep I → (M.map f hf).closure (f '' I) = f '' (M.closure I) by
+    obtain ⟨I, hI⟩ := M.exists_basis (f ⁻¹' X ∩ M.E)
+    rw [← closure_inter_ground, map_ground, ← M.closure_inter_ground, ← hI.closure_eq_closure,
+      ← aux hI.indep, ← image_preimage_inter, ← (hI.map hf).closure_eq_closure]
+  -- Let `I` be independent, and transform the goal using closure/independence lemmas
+  refine fun I hI ↦ Set.ext fun e ↦ ?_
+  simp only [(hI.map f hf).mem_closure_iff', map_ground, mem_image, map_indep_iff,
+    forall_exists_index, and_imp, hI.mem_closure_iff']
+  -- The goal now easily follows from the invariance of independence under maps.
+  constructor
+  · rintro ⟨⟨x, hxE, rfl⟩, h2⟩
+    refine ⟨x, ⟨hxE, fun hI' ↦ ?_⟩, rfl⟩
+    obtain ⟨y, hyI, hfy⟩ := h2 _ hI' image_insert_eq.symm
+    rw [hf.eq_iff (hI.subset_ground hyI) hxE] at hfy
+    rwa [← hfy]
+  rintro ⟨x, ⟨hxE, hxi⟩, rfl⟩
+  refine ⟨⟨x, hxE, rfl⟩, fun J hJ hJI ↦ ⟨x, hxi ?_, rfl⟩⟩
+  replace hJ := hJ.map f hf
+  have hrw := image_insert_eq ▸ hJI
+  rwa [← hrw, map_image_indep_iff (insert_subset hxE hI.subset_ground)] at hJ
+
+lemma restrict_spanning_iff (hSR : S ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
+    (M ↾ R).Spanning S ↔ R ⊆ M.closure S := by
+  rw [spanning_iff, restrict_ground_eq, and_iff_left hSR, restrict_closure_eq _ hSR, inter_eq_right]
+
+lemma restrict_spanning_iff' : (M ↾ R).Spanning S ↔ R ∩ M.E ⊆ M.closure S ∧ S ⊆ R := by
+  rw [spanning_iff, restrict_closure_eq', restrict_ground_eq, and_congr_left_iff,
+    diff_eq_compl_inter, ← union_inter_distrib_right, inter_eq_right, union_comm,
+    ← diff_subset_iff, diff_compl]
+  intro hSR
+  rw [inter_eq_self_of_subset_left hSR]
+
+end Constructions
 
 end Matroid

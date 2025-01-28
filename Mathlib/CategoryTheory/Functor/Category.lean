@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Iso
@@ -22,7 +22,7 @@ this is a small category at the next higher level.
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [CategoryTheory universes].
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open NatTrans Category CategoryTheory.Functor
 
@@ -31,6 +31,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 attribute [local simp] vcomp_app
 
 variable {C D} {E : Type u₃} [Category.{v₃} E]
+variable {E' : Type u₄} [Category.{v₄} E']
 variable {F G H I : C ⥤ D}
 
 /-- `Functor.category C D` gives the category structure on functors and natural transformations
@@ -48,10 +49,6 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
 
 namespace NatTrans
 
--- Porting note: the behaviour of `ext` has changed here.
--- We need to provide a copy of the `NatTrans.ext` lemma,
--- written in terms of `F ⟶ G` rather than `NatTrans F G`,
--- or `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext w
 
@@ -80,6 +77,13 @@ theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f 
 theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : X ⟶ Y) :
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
   congr_fun (congr_arg app (T.naturality f)) Z
+
+@[reassoc]
+theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
+    (α : F ⟶ G) {X₁ Y₁ : C} (f : X₁ ⟶ Y₁) (X₂ : D) (X₃ : E) :
+    ((F.map f).app X₂).app X₃ ≫ ((α.app Y₁).app X₂).app X₃ =
+      ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
+  congr_app (NatTrans.naturality_app α X₂ f) X₃
 
 /-- A natural transformation is a monomorphism if each component is. -/
 theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
@@ -137,6 +141,18 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   map f := { app := fun j => (F.obj j).map f }
 
 end Functor
+
+variable (C D E) in
+/-- The functor `(C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E` which flips the variables. -/
+@[simps]
+def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
+  obj F := F.flip
+  map {F₁ F₂} φ :=
+    { app := fun Y =>
+        { app := fun X => (φ.app X).app Y
+          naturality := fun X₁ X₂ f => by
+            dsimp
+            simp only [← NatTrans.comp_app, naturality] } }
 
 namespace Iso
 

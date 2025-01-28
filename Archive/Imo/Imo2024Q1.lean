@@ -71,7 +71,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   by_contra! hn
   have hr : 1 < ⌈α⁻¹⌉₊ := by
     rw [Nat.lt_ceil]
-    exact_mod_cast one_lt_inv h0 hn
+    exact_mod_cast (one_lt_inv₀ h0).2 hn
   apply hr.ne'
   suffices ⌈α⁻¹⌉₊ = (1 : ℤ) from mod_cast this
   apply Int.eq_one_of_dvd_one (Int.zero_le_ofNat _)
@@ -153,7 +153,7 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
     convert hna using 1
     field_simp
   rw [sub_eq_add_neg, ← le_sub_iff_add_le', neg_le, neg_sub] at hna'
-  rw [le_inv (by linarith) (mod_cast hn), ← not_lt] at hna'
+  rw [le_inv_comm₀ (by linarith) (mod_cast hn), ← not_lt] at hna'
   apply hna'
   exact_mod_cast Nat.lt_floor_add_one (_ : ℝ)
 

@@ -37,8 +37,6 @@ variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ P : Type*} {Mᵢ Nᵢ : �
 
 namespace QuadraticMap
 
-open QuadraticMap
-
 section Prod
 
 section Semiring
@@ -144,7 +142,7 @@ theorem anisotropic_of_prod
     refine (h 0 x ?_).2
     rw [hx, add_zero, map_zero]
 
-theorem nonneg_prod_iff [Preorder P] [CovariantClass P P (· + ·) (· ≤ ·)]
+theorem nonneg_prod_iff [Preorder P] [AddLeftMono P]
     {Q₁ : QuadraticMap R M₁ P} {Q₂ : QuadraticMap R M₂ P} :
     (∀ x, 0 ≤ (Q₁.prod Q₂) x) ↔ (∀ x, 0 ≤ Q₁ x) ∧ ∀ x, 0 ≤ Q₂ x := by
   simp_rw [Prod.forall, prod_apply]
@@ -156,7 +154,7 @@ theorem nonneg_prod_iff [Preorder P] [CovariantClass P P (· + ·) (· ≤ ·)]
   · rintro ⟨h₁, h₂⟩ x₁ x₂
     exact add_nonneg (h₁ x₁) (h₂ x₂)
 
-theorem posDef_prod_iff [PartialOrder P] [CovariantClass P P (· + ·) (· ≤ ·)]
+theorem posDef_prod_iff [PartialOrder P] [AddLeftMono P]
     {Q₁ : QuadraticMap R M₁ P} {Q₂ : QuadraticMap R M₂ P} :
     (Q₁.prod Q₂).PosDef ↔ Q₁.PosDef ∧ Q₂.PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_prod_iff]
@@ -170,7 +168,7 @@ theorem posDef_prod_iff [PartialOrder P] [CovariantClass P P (· + ·) (· ≤ �
     rw [add_eq_zero_iff_of_nonneg (hle₁ x₁) (hle₂ x₂), ha₁.eq_zero_iff, ha₂.eq_zero_iff] at hx
     rwa [Prod.mk_eq_zero]
 
-theorem PosDef.prod [PartialOrder P] [CovariantClass P P (· + ·) (· ≤ ·)]
+theorem PosDef.prod [PartialOrder P] [AddLeftMono P]
     {Q₁ : QuadraticMap R M₁ P} {Q₂ : QuadraticMap R M₂ P} (h₁ : Q₁.PosDef) (h₂ : Q₂.PosDef) :
     (Q₁.prod Q₂).PosDef :=
   posDef_prod_iff.mpr ⟨h₁, h₂⟩
@@ -282,7 +280,7 @@ def Isometry.proj [Fintype ι] [DecidableEq ι] (i : ι) (Q : QuadraticMap R (M�
     rw [Pi.single_eq_of_ne hij, zero_apply]
 
 /-- Note that `QuadraticMap.Isometry.id` would not be well-typed as the RHS. -/
-@[simp, nolint simpNF]  -- ignore the bogus "Left-hand side does not simplify" lint error
+@[simp]
 theorem Isometry.proj_comp_single_of_same [Fintype ι] [DecidableEq ι]
     (i : ι) (Q : QuadraticMap R (Mᵢ i) P) :
     (proj i Q).comp (single _ i) = .ofEq (Pi.single_eq_same _ _) :=
@@ -303,7 +301,7 @@ theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticMap R (Mᵢ i) P}
 /-- If a family is anisotropic then its components must be. The converse is not true. -/
 theorem anisotropic_of_pi [Fintype ι]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} (h : (pi Q).Anisotropic) : ∀ i, (Q i).Anisotropic := by
-  simp_rw [Anisotropic, pi_apply, Function.funext_iff, Pi.zero_apply] at h
+  simp_rw [Anisotropic, pi_apply, funext_iff, Pi.zero_apply] at h
   intro i x hx
   classical
   have := h (Pi.single i x) ?_ i
@@ -346,9 +344,7 @@ end Semiring
 namespace Ring
 
 variable [CommRing R]
-variable [∀ i, AddCommGroup (Mᵢ i)] [∀ i, AddCommGroup (Nᵢ i)] [AddCommGroup P]
-variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)] [Module R P]
-variable [Fintype ι]
+variable [∀ i, AddCommGroup (Mᵢ i)] [AddCommGroup P] [∀ i, Module R (Mᵢ i)] [Module R P] [Fintype ι]
 
 @[simp] theorem polar_pi (Q : ∀ i, QuadraticMap R (Mᵢ i) P) (x y : ∀ i, Mᵢ i) :
     polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by

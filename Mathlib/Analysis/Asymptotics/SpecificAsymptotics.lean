@@ -3,9 +3,8 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # A collection of specific asymptotic results
@@ -28,7 +27,7 @@ theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedFie
     f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
   refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
   simp only [Function.comp_def, norm_inv]
-  exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
+  exact (tendsto_norm_sub_self_nhdsNE a).inv_tendsto_nhdsGT_zero
 
 end NormedField
 
@@ -107,11 +106,9 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       (add_le_add le_rfl (norm_sum_le_of_le _ fun i hi => hN _ (mem_Ico.1 hi).1))
     _ ≤ ‖∑ i ∈ range N, f i‖ + ∑ i ∈ range n, ε / 2 * g i := by
       gcongr
-      apply sum_le_sum_of_subset_of_nonneg
+      · exact fun i _ _ ↦ mul_nonneg (half_pos εpos).le (hg i)
       · rw [range_eq_Ico]
         exact Ico_subset_Ico (zero_le _) le_rfl
-      · intro i _ _
-        exact mul_nonneg (half_pos εpos).le (hg i)
     _ ≤ ε / 2 * ‖∑ i ∈ range n, g i‖ + ε / 2 * ∑ i ∈ range n, g i := by rw [← mul_sum]; gcongr
     _ = ε * ‖∑ i ∈ range n, g i‖ := by
       simp only [B]
@@ -145,3 +142,19 @@ theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (
   h.cesaro_smul
 
 end Real
+
+section NormedLinearOrderedField
+
+variable {R : Type*} [NormedLinearOrderedField R] [OrderTopology R] [FloorRing R]
+
+theorem Asymptotics.isEquivalent_nat_floor :
+    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by
+  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_floor_div_atTop
+  filter_upwards with x hx using by rw [hx, Nat.floor_zero, Nat.cast_eq_zero]
+
+theorem Asymptotics.isEquivalent_nat_ceil :
+    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) := by
+  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_ceil_div_atTop
+  filter_upwards with x hx using by rw [hx, Nat.ceil_zero, Nat.cast_eq_zero]
+
+end NormedLinearOrderedField

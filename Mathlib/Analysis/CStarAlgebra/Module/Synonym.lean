@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
 
@@ -47,8 +47,8 @@ The pattern here is the same one as is used by `Lex` for order structures; it av
 separate synonym for each type, and allows all the structure-copying code to be shared.
 -/
 
-/-- A type synonym for endowing a given type with a `CStarModule` structure. This has the scoped
-notation `C⋆ᵐᵒᵈ`.
+/-- A type synonym for endowing a given type with a `CStarModule` structure.
+This has the scoped notation `C⋆ᵐᵒᵈ` in the WithCStarModule namespace.
 
 Note: because the C⋆-algebra `A` over which `E` is a `CStarModule` is listed as an `outParam` in
 that class, we don't pass it as an unused argument to `WithCStarModule`, unlike the `p` parameter
@@ -167,7 +167,8 @@ instance [u : UniformSpace E] : UniformSpace (C⋆ᵐᵒᵈ E) := u.comap <| equ
 instance [Bornology E] : Bornology (C⋆ᵐᵒᵈ E) := Bornology.induced <| equiv E
 
 /-- `WithCStarModule.equiv` as a uniform equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
-def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E := equiv E |>.toUniformEquivOfUniformInducing ⟨rfl⟩
+def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E :=
+  equiv E |>.toUniformEquivOfIsUniformInducing ⟨rfl⟩
 
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance

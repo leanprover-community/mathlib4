@@ -39,7 +39,7 @@ section MonoidHomCompTriple
 namespace MonoidHom
 
 /-- Class of composing triples -/
-class CompTriple  {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
+class CompTriple {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
   (φ : M →* N) (ψ : N →* P) (χ : outParam (M →* P)) : Prop where
   /-- The maps form a commuting triangle -/
   comp_eq : ψ.comp φ = χ
@@ -48,7 +48,6 @@ attribute [simp] CompTriple.comp_eq
 
 namespace CompTriple
 
-variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 /-- Class of Id maps -/
@@ -94,7 +93,6 @@ lemma comp_apply
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
-@[simp]
 theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
     (κ : CompTriple φ₁ φ₂ φ₁₂)

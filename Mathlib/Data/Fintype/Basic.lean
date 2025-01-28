@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
@@ -37,8 +39,7 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -71,9 +72,7 @@ def univ : Finset α :=
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
--- Porting note: removing @[simp], simp can prove it
-theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
-  mem_univ
+theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 := by simp
 
 theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
@@ -93,7 +92,7 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 
-@[aesop unsafe apply (rule_sets := [finsetNonempty])]
+@[simp, aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
@@ -139,7 +138,7 @@ theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t :=
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
 
 theorem codisjoint_right : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ t → a ∈ s :=
-  Codisjoint_comm.trans codisjoint_left
+  codisjoint_comm.trans codisjoint_left
 
 instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
   GeneralizedBooleanAlgebra.toBooleanAlgebra
@@ -376,7 +375,7 @@ namespace Fintype
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [Function.funext_iff, Fintype.complete])
+    (by simp [funext_iff, Fintype.complete])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -399,6 +398,11 @@ instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α
 
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
+
+@[to_additive]
+instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
+    DecidableEq (α ≃* β) :=
+  fun a b => decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 
 end BundledHoms
 
@@ -492,7 +496,7 @@ This function computes by checking all terms `a : α` to find the `f a = b`, so 
 -/
 def invOfMemRange : Set.range f → α := fun b =>
   Finset.choose (fun a => f a = b) Finset.univ
-    ((existsUnique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
+    ((existsUnique_congr (by simp)).mp (hf.existsUnique_of_mem_range b.property))
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
   (Finset.choose_spec (fun a => f a = b) _ _).right
@@ -621,9 +625,12 @@ def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decida
 theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
@@ -702,7 +709,7 @@ theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ 
 
 /- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
 it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
-Reported in leanprover-community/lean#672 -/
+Reported in https://github.com/leanprover-community/lean/issues/672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
     (Set.univ : Set α).toFinset = Finset.univ := by
@@ -724,9 +731,8 @@ theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype
   ext
   simp
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
-    s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by rw [← coe_ssubset, coe_toFinset, coe_univ]
+    s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by simp
 
 @[simp]
 theorem toFinset_image [DecidableEq β] (f : α → β) (s : Set α) [Fintype s] [Fintype (f '' s)] :
@@ -767,6 +773,11 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
+theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) := by
+  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+  exact ⟨.ofEquiv _ e.symm⟩
 
 @[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
   ext; simp
@@ -843,11 +854,9 @@ since that relies on a subsingleton elimination for `Unique`. -/
 instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 
--- Porting note: removing @[simp], simp can prove it
 theorem Fintype.univ_empty : @univ Empty _ = ∅ :=
   rfl
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_pempty : @univ PEmpty _ = ∅ :=
   rfl
 
@@ -860,7 +869,6 @@ theorem Fintype.univ_unit : @univ Unit _ = {()} :=
 instance PUnit.fintype : Fintype PUnit :=
   Fintype.ofSubsingleton PUnit.unit
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 
@@ -986,7 +994,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
+  Fintype.ofSurjective Quotient.mk'' Quotient.mk''_surjective
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
@@ -1052,11 +1060,7 @@ variable [Fintype α] [DecidableEq β] {f : α → β}
 /-- `bijInv f` is the unique inverse to a bijection `f`. This acts
   as a computable alternative to `Function.invFun`. -/
 def bijInv (f_bij : Bijective f) (b : β) : α :=
-  Fintype.choose (fun a => f a = b)
-    (by
-      rcases f_bij.right b with ⟨a', fa_eq_b⟩
-      rw [← fa_eq_b]
-      exact ⟨a', ⟨rfl, fun a h => f_bij.left h⟩⟩)
+  Fintype.choose (fun a => f a = b) (f_bij.existsUnique b)
 
 theorem leftInverse_bijInv (f_bij : Bijective f) : LeftInverse (bijInv f_bij) f := fun a =>
   f_bij.left (choose_spec (fun a' => f a' = f a) _)
@@ -1171,13 +1175,14 @@ function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
-    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
+    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim
-  · apply symm
+  · unfold Function.onFun
+    apply symm
     exact hf' n m h
 
 open Batteries.ExtendedBinder Lean Meta

@@ -30,7 +30,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 
 namespace FinVec
 
-variable {m n : ℕ} {α β γ : Type*}
+variable {m : ℕ} {α β : Type*}
 
 /-- Evaluate `FinVec.seq f v = ![(f 0) (v 0), (f 1) (v 1), ...]` -/
 def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
@@ -39,7 +39,7 @@ def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
 
 @[simp]
 theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
-  | 0, f, v => Subsingleton.elim _ _
+  | 0, _, _ => Subsingleton.elim _ _
   | n + 1, f, v =>
     funext fun i => by
       simp_rw [seq, seq_eq]
@@ -54,7 +54,7 @@ example {f₁ f₂ : α → β} (a₁ a₂ : α) : seq ![f₁, f₂] ![a₁, a�
 def map (f : α → β) {m} : (Fin m → α) → Fin m → β :=
   seq fun _ => f
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a₂] :=
   (map_eq _ _).symm
@@ -71,7 +71,7 @@ example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a�
 def etaExpand {m} (v : Fin m → α) : Fin m → α :=
   map id v
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (a : Fin 2 → α) : a = ![a 0, a 1] :=
   (etaExpand_eq _).symm
@@ -89,7 +89,7 @@ def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
   | _ + 1, P => ∀ x : α, Forall fun v => P (Matrix.vecCons x v)
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
   (forall_iff _).symm
@@ -110,7 +110,7 @@ def Exists : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
   | _ + 1, P => ∃ x : α, Exists fun v => P (Matrix.vecCons x v)
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm
@@ -140,7 +140,7 @@ example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
 -/
 @[simp]
 theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
-  | 0, a => rfl
+  | 0, _ => rfl
   | 1, a => (Fintype.sum_unique a).symm
   | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]
 
