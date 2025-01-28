@@ -111,12 +111,6 @@ namespace Grp
 def free : Type u ⥤ Grp where
   obj α := of (FreeGroup α)
   map f := ofHom (FreeGroup.map f)
-  map_id := by
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    intros; ext; erw [← FreeGroup.map.unique] <;> intros <;> rfl
-  map_comp := by
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    intros; ext; erw [← FreeGroup.map.unique] <;> intros <;> rfl
 
 /-- The free-forgetful adjunction for groups.
 -/
