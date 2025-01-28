@@ -437,6 +437,7 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
   let ctx ← Simp.mkContext
+    (config := { zetaDelta := cfg.zetaDelta })
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
