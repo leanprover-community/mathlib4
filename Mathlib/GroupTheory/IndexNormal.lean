@@ -74,7 +74,7 @@ theorem normal_of_index_eq_smallest_prime_factor [Finite G]
 theorem normal_of_index_eq_two (hH : H.index = 2) :
     H.Normal := by
   classical
-  set f := MulAction.toPermHom G (G ⧸ H) with hf
+  set f := MulAction.toPermHom G (G ⧸ H)
   convert MonoidHom.normal_ker f
   suffices H.normalCore.relindex H = 1 by
     rw [← Subgroup.normalCore_eq_ker]
