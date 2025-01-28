@@ -336,8 +336,7 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι =>
       index := default
       mem_index := Set.mem_univ }⟩
 
--- Porting note: `simpNF` complains about `mem_index`
-attribute [simp] some_mem --mem_index
+attribute [simp] some_mem
 
 variable (hs : IndexedPartition s)
 
