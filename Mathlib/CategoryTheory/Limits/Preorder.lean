@@ -48,9 +48,7 @@ end OrderTop
 
 section SemilatticeInf
 
-variable {C}
-
-variable [SemilatticeInf C]
+variable {C} [SemilatticeInf C]
 
 /-- The infimum of two elements in a preordered type is a binary product in
 the category associated to this preorder. -/
