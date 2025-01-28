@@ -129,7 +129,7 @@ variable {𝕜 E F : Type*}
 
 noncomputable section
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -222,7 +222,7 @@ theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   ext
   rw [fderiv]
 
-end TVS
+end TS
 
 section Normed
 variable [NontriviallyNormedField 𝕜]
@@ -252,16 +252,15 @@ alias ⟨HasStrictFDerivAt.isLittleO, HasStrictFDerivAt.of_isLittleO⟩ :=
 end Normed
 section DerivativeUniqueness
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
-variable [ContinuousAdd E] [ContinuousAdd F] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F]
 
 /- In this section, we discuss the uniqueness of the derivative.
 We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
@@ -322,7 +321,7 @@ theorem UniqueDiffOn.eq (H : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : HasFDerivW
     (h₁ : HasFDerivWithinAt f f₁' s x) : f' = f₁' :=
   (H x hx).eq h h₁
 
-end TVS
+end TS
 
 end DerivativeUniqueness
 
@@ -366,7 +365,7 @@ theorem hasFDerivAt_iff_isLittleO_nhds_zero :
 
 end Normed
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -450,7 +449,7 @@ theorem hasFDerivWithinAt_diff_singleton [T1Space E] (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
 
-end TVS
+end TS
 
 section Normed
 variable [NontriviallyNormedField 𝕜]
@@ -472,7 +471,7 @@ theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
 
 end Normed
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -492,7 +491,7 @@ protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f
     DifferentiableAt 𝕜 f x :=
   hf.hasFDerivAt.differentiableAt
 
-end TVS
+end TS
 
 section Normed
 variable [NontriviallyNormedField 𝕜]
@@ -521,6 +520,18 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
     ∃ K, ∃ s ∈ 𝓝 x, LipschitzOnWith K f s :=
   (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnnorm_lt
 
+end Normed
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {x : E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
+
 /-- Directional derivative agrees with `HasFDeriv`. -/
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
@@ -532,13 +543,14 @@ theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α �
   dsimp only
   rw [← mul_smul, mul_inv_cancel₀ hy, one_smul]
 
-theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f₀' x) (h₁ : HasFDerivAt f f₁' x) : f₀' = f₁' := by
+theorem HasFDerivAt.unique [T2Space F] (h₀ : HasFDerivAt f f₀' x) (h₁ : HasFDerivAt f f₁' x) :
+  f₀' = f₁' := by
   rw [← hasFDerivWithinAt_univ] at h₀ h₁
   exact uniqueDiffWithinAt_univ.eq h₀ h₁
 
-end Normed
+end TVS
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -616,17 +628,19 @@ theorem DifferentiableOn.eventually_differentiableAt (h : DifferentiableOn 𝕜 
     ∀ᶠ y in 𝓝 x, DifferentiableAt 𝕜 f y :=
   (eventually_eventually_nhds.2 hs).mono fun _ => h.differentiableAt
 
-end TVS
+end TS
 
-section Normed
+section TVS
 variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
+
+variable [T2Space F]
 
 protected theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x = f' := by
   ext
@@ -639,9 +653,9 @@ protected theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
   (hxs.eq h h.differentiableWithinAt.hasFDerivWithinAt).symm
 
-end Normed
+end TVS
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -706,25 +720,25 @@ theorem DifferentiableAt.differentiableWithinAt (h : DifferentiableAt 𝕜 f x) 
 theorem Differentiable.differentiableAt (h : Differentiable 𝕜 f) : DifferentiableAt 𝕜 f x :=
   h x
 
-end TVS
+end TS
 
-section Normed
+section TVS
 variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
 
-protected theorem DifferentiableAt.fderivWithin (h : DifferentiableAt 𝕜 f x)
+protected theorem DifferentiableAt.fderivWithin [T2Space F] (h : DifferentiableAt 𝕜 f x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   h.hasFDerivAt.hasFDerivWithinAt.fderivWithin hxs
 
-end Normed
+end TVS
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -752,17 +766,18 @@ theorem differentiableOn_of_locally_differentiableOn
   rcases h x xs with ⟨t, t_open, xt, ht⟩
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 (ht x ⟨xs, xt⟩)
 
-end TVS
+end TS
 
-section Normed
+section TVS
 variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
+variable [T2Space F]
 
 theorem fderivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
@@ -775,9 +790,9 @@ theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
 
-end Normed
+end TVS
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -797,26 +812,27 @@ theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = 
 theorem fderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   fderivWithin_of_mem_nhds (hs.mem_nhds hx)
 
-end TVS
+end TS
 
-section Normed
+section TVS
 variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
+variable [T2Space F]
 
 theorem fderivWithin_eq_fderiv (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableAt 𝕜 f x) :
     fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
   rw [← fderivWithin_univ]
   exact fderivWithin_subset (subset_univ _) hs h.differentiableWithinAt
 
-end Normed
+end TVS
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -837,7 +853,7 @@ theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)
   by_cases hx : DifferentiableWithinAt 𝕜 f t x <;>
     simp [fderivWithin_zero_of_not_differentiableWithinAt, *]
 
-end TVS
+end TS
 
 section Normed
 variable [NontriviallyNormedField 𝕜]
@@ -954,7 +970,7 @@ section congr
 
 /-! ### congr properties of the derivative -/
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -1115,26 +1131,27 @@ theorem DifferentiableAt.congr_of_eventuallyEq (h : DifferentiableAt 𝕜 f x) (
     DifferentiableAt 𝕜 f₁ x :=
   hL.differentiableAt_iff.2 h
 
-end TVS
+end TS
 
-section Normed
+section TVS
 variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
+variable [T2Space F]
 
 theorem DifferentiableWithinAt.fderivWithin_congr_mono (h : DifferentiableWithinAt 𝕜 f s x)
     (hs : EqOn f₁ f t) (hx : f₁ x = f x) (hxt : UniqueDiffWithinAt 𝕜 t x) (h₁ : t ⊆ s) :
     fderivWithin 𝕜 f₁ t x = fderivWithin 𝕜 f s x :=
   (HasFDerivWithinAt.congr_mono h.hasFDerivWithinAt hs hx h₁).fderivWithin hxt
 
-end Normed
+end TVS
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -1187,7 +1204,7 @@ theorem Filter.EventuallyEq.fderiv_eq (h : f₁ =ᶠ[𝓝 x] f) : fderiv 𝕜 f�
 protected theorem Filter.EventuallyEq.fderiv (h : f₁ =ᶠ[𝓝 x] f) : fderiv 𝕜 f₁ =ᶠ[𝓝 x] fderiv 𝕜 f :=
   h.eventuallyEq_nhds.mono fun _ h => h.fderiv_eq
 
-end TVS
+end TS
 
 end congr
 
@@ -1195,7 +1212,7 @@ section id
 
 /-! ### Derivative of the identity -/
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -1250,17 +1267,19 @@ theorem differentiable_id' : Differentiable 𝕜 fun x : E => x := fun _ => diff
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 
-end TVS
+end TS
 
-section Normed
+section TVS
 variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
+
+variable [T2Space E]
 
 @[simp]
 theorem fderiv_id : fderiv 𝕜 id x = id 𝕜 E :=
@@ -1278,7 +1297,7 @@ theorem fderivWithin_id' (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x : E => x) s x = ContinuousLinearMap.id 𝕜 E :=
   fderivWithin_id hxs
 
-end Normed
+end TVS
 
 end id
 
@@ -1286,7 +1305,7 @@ section Const
 
 /-! ### Derivative of a constant function -/
 
-section TVS
+section TS
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -1333,36 +1352,12 @@ theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
   ext
   rw [fderivWithin_const_apply, Pi.zero_apply]
 
-end TVS
-
-section Normed
-variable [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
-
-theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
-  (hasFDerivAt_const c x).fderiv
+theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 := by
+  rw [← fderivWithin_univ, fderivWithin_const_apply]
 
 @[simp]
 theorem fderiv_const (c : F) : (fderiv 𝕜 fun _ : E => c) = 0 := by
   rw [← fderivWithin_univ, fderivWithin_const]
-
-end Normed
-
-section TVS
-variable [NontriviallyNormedField 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
 
 @[simp, fun_prop]
 theorem differentiable_const (c : F) : Differentiable 𝕜 fun _ : E => c := fun _ =>
@@ -1402,7 +1397,7 @@ theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ 
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
   (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
 
-end TVS
+end TS
 
 end Const
 
