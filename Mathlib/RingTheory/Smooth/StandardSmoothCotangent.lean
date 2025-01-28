@@ -260,13 +260,13 @@ end
 
 variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
-instance [IsStandardSmooth R S] : Smooth R S where
+instance (priority := 900) [IsStandardSmooth R S] : Smooth R S where
   formallySmooth := by
     rw [Algebra.FormallySmooth.iff_subsingleton_and_projective]
     exact ⟨inferInstance, inferInstance⟩
 
 /-- If `S` is `R`-standard smooth of relative dimension zero, it is étale. -/
-instance [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R S where
+instance (priority := 900) [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R S where
   finitePresentation := (IsStandardSmoothOfRelativeDimension.isStandardSmooth 0).finitePresentation
   formallyEtale :=
     have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
