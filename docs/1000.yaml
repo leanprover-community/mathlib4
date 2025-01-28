@@ -1794,6 +1794,9 @@ Q1930577:
 
 Q1933521:
   title: Kleene's recursion theorem
+  decl: Nat.Partrec.Code.fixed_point₂
+  authors: Mario Carneiro
+  date: 2018
 
 Q1938251:
   title: Hasse–Minkowski theorem
