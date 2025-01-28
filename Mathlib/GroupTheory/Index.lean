@@ -11,9 +11,6 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
-import Mathlib.Data.Nat.Prime.Factorial
-import Mathlib.Data.Fintype.Perm
-
 /-!
 # Index of a Subgroup
 
