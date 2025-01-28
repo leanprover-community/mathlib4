@@ -166,10 +166,8 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
-  forget₂ := {
-    obj := fun P => ⟨P, P.group⟩
-    map := fun f => Grp.ofHom f.toMonoidHom
-  }
+  forget₂.obj P := Grp.of P
+  forget₂.map f := Grp.ofHom f.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
