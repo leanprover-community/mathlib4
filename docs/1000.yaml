@@ -818,6 +818,9 @@ Q794269:
 
 Q810431:
   title: Basel problem
+  decl: hasSum_zeta_two
+  authors: David Loeffler
+  date: 2022
 
 Q828284:
   title: Parallel axis theorem
