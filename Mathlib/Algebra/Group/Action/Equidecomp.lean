@@ -97,8 +97,7 @@ theorem map_source {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := f.toPartialEquiv.map_source h
 
 theorem toPartialEquiv_injective : Injective <| toPartialEquiv (X := X) (G := G) := by
-  intro f f' _
-  let ⟨_, _, _⟩ := f
+  intro ⟨_, _, _⟩ _ _
   congr
 
 theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDecompOn f A S)
