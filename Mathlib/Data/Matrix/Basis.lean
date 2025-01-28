@@ -15,7 +15,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
-variable {R α : Type*}
+variable {R α β : Type*}
 
 namespace Matrix
 
@@ -123,6 +123,29 @@ protected theorem induction_on
       inhabit n
       simpa using h_std_basis default default 0)
     h_add h_std_basis
+
+
+section ext
+variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+
+/-- `Matrix.stdBasisMatrix` as a bundled linear map. -/
+@[simps]
+def stdBasisMatrixLinearMap (i : m) (j : n) : α →ₗ[R] Matrix m n α where
+  toFun := stdBasisMatrix i j
+  map_add' _ _ := stdBasisMatrix_add _ _ _ _
+  map_smul' _ _:= smul_stdBasisMatrix _ _ _ _ |>.symm
+
+/-- Linear maps from matrices are equal if they agree on the standard basis. -/
+theorem ext_stdBasisMatrix [Fintype m] [Fintype n] ⦃f g : Matrix m n α →ₗ[R] β⦄
+    (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap i j = g ∘ₗ stdBasisMatrixLinearMap i j) :
+    f = g := by
+  ext x
+  rw [matrix_eq_sum_stdBasisMatrix x]
+  simp_rw [map_sum]
+  congr! 2
+  exact DFunLike.congr_fun (h _ _) _
+
+end ext
 
 namespace StdBasisMatrix
 

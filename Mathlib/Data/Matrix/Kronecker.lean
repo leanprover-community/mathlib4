@@ -106,6 +106,16 @@ theorem kroneckerMap_smul_right [SMul R β] [SMul R γ] (f : α → β → γ) (
     kroneckerMap f A (r • B) = r • kroneckerMap f A B :=
   ext fun _ _ => hf _ _
 
+theorem kroneckerMap_stdBasisMatrix_stdBasisMatrix
+    [Zero α] [Zero β] [Zero γ] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
+    (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p)
+    (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : α) (b : β) :
+    kroneckerMap f (stdBasisMatrix i₁ j₁ a) (stdBasisMatrix i₂ j₂ b) =
+      stdBasisMatrix (i₁, i₂) (j₁, j₂) (f a b) := by
+  ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
+  dsimp [stdBasisMatrix]
+  aesop
+
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
     kroneckerMap f (diagonal a) (diagonal b) = diagonal fun mn => f (a mn.1) (b mn.2) := by
@@ -435,6 +445,10 @@ theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j
 def kroneckerTMulBilinear :
     Matrix l m α →ₗ[R] Matrix n p β →ₗ[R] Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMapBilinear (TensorProduct.mk R α β)
+
+@[simp]
+theorem kroneckerTMulBilinear_apply (A : Matrix l m α) (B : Matrix n p β) :
+    kroneckerTMulBilinear R A B = A ⊗ₖₜ B := rfl
 
 /-! What follows is a copy, in order, of every `Matrix.kroneckerMap` lemma above that has
 hypotheses which can be filled by properties of `⊗ₜ`. -/

@@ -5,6 +5,7 @@ Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
+import Mathlib.Data.Matrix.Kronecker
 import Mathlib.RingTheory.TensorProduct.Basic
 
 
@@ -153,7 +154,10 @@ theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
 
 variable (m) (B) [Fintype m] [DecidableEq m]
 
-def matrixTensorEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
+/-- A tensor product of matrices is equivalent as an algebra to a matrix of tensor products.
+
+The forward map is the (tensor-ified) Kronecker product. -/
+def matrixTensorAlgEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
   Algebra.TensorProduct.congr (matrixEquivTensor R A m) (matrixEquivTensor R B n)
     |>.trans <| (Algebra.TensorProduct.tensorTensorTensorComm R A _ B _)
     |>.trans <|
@@ -163,17 +167,35 @@ def matrixTensorEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × 
           |>.trans <| Matrix.compAlgEquiv m n R R)
       |>.trans <| (matrixEquivTensor ..).symm
 
--- @[simp]
--- theorem matrixTensorEquiv_stdBasisMatrix_tmul_stdBasisMatrix (a : Matrix m m A) (b : Matrix n n B) :
---     matrixTensorEquiv R A B m n (a ⊗ₜ b) = sorry := sorry
-
 @[simp]
-theorem matrixTensorEquiv_stdBasisMatrix_tmul_stdBasisMatrix
-    (i₁ i₂ : m) (j₁ j₂ : n) (a : A) (b : B) :
-    matrixTensorEquiv R A B m n (stdBasisMatrix i₁ i₂ a ⊗ₜ stdBasisMatrix j₁ j₂ b) = sorry := by
-  ext i j
-  dsimp [matrixTensorEquiv, Matrix.compAlgEquiv]
-  simp only [← sum_tmul, ← tmul_sum]
+theorem matrixTensorAlgEquiv_symm_stdBasisMatrix_tmul
+    (ia ja : m) (ib jb : n) (a : A) (b : B) :
+    (matrixTensorAlgEquiv R A B m n).symm (stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b)) =
+      stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b := by
+  -- ext ⟨ia', ja'⟩ ⟨ib', jb'⟩
+  dsimp [matrixTensorAlgEquiv, -matrixEquivTensor_apply]
+  rw [matrixEquivTensor_apply_stdBasisMatrix]
+  simp [-matrixEquivTensor_apply]
+  congr <;> ext <;> simp [stdBasisMatrix]
+
+theorem matrixTensorAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix
+    (ia ja : m) (ib jb : n) (a : A) (b : B) :
+    matrixTensorAlgEquiv R A B m n (stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b) =
+      stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b) :=
+  (matrixTensorAlgEquiv R A B m n).apply_eq_iff_eq_symm_apply.2 <|
+    matrixTensorAlgEquiv_symm_stdBasisMatrix_tmul _ _ _ _ _ _ _ _ _ _ _ |>.symm
+
+attribute [ext] ext_stdBasisMatrix
+open scoped Kronecker
+@[simp]
+theorem matrixTensorAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
+    matrixTensorAlgEquiv R A B m n (a ⊗ₜ b) = a ⊗ₖₜ b := by
+  suffices
+      (TensorProduct.mk R _ _).compr₂ (matrixTensorAlgEquiv R A B m n).toLinearMap =
+        kroneckerTMulBilinear R from
+    DFunLike.congr_fun (DFunLike.congr_fun this a) b
+  ext ia ja a ib jb b : 4
   dsimp
-  simp [comp_]
-  sorry
+  rw [matrixTensorAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix,
+    kroneckerMap_stdBasisMatrix_stdBasisMatrix]
+  all_goals simp

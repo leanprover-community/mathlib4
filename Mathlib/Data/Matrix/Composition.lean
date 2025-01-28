@@ -25,7 +25,7 @@ Semiring, and Algebra over a CommSemiring K.
 
 namespace Matrix
 
-variable (I J K L R : Type*)
+variable (I J K L R R' : Type*)
 
 /-- I by J matrix where each entry is a K by L matrix is equivalent to
     I × K by J × L matrix -/
@@ -35,6 +35,9 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   invFun n i j k l := n (i, k) (j, l)
   left_inv _ := rfl
   right_inv _ := rfl
+
+theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
+  comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
 variable {R I J K L} in
 @[simp]
@@ -58,6 +61,14 @@ theorem comp_stdBasisMatrix_stdBasisMatrix
   · rw [StdBasisMatrix.apply_of_col_ne _ _ hj,
       StdBasisMatrix.apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
   rw [StdBasisMatrix.apply_same, StdBasisMatrix.apply_same]
+
+variable {R I J K L} in
+@[simp]
+theorem comp_symm_stdBasisMatrix_stdBasisMatrix
+    [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (ii jj r) :
+    (comp I J K L R).symm (stdBasisMatrix ii jj r) =
+      (stdBasisMatrix ii.1 jj.1 (stdBasisMatrix ii.2 jj.2 r)) :=
+  (comp I J K L R).symm_apply_eq.2 <| comp_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ |>.symm
 
 variable {R I J K L} in
 @[simp]
@@ -124,7 +135,6 @@ variable (K : Type*) [CommSemiring K] [Semiring R] [Fintype I] [Fintype J] [Alge
 variable [DecidableEq I] [DecidableEq J]
 
 /-- `Matrix.comp` as `AlgEquiv` -/
-@[simps!]
 def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R where
   __ := Matrix.compRingEquiv I J R
   commutes' c := by
@@ -135,6 +145,14 @@ def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) 
     rw [Pi.algebraMap_def, Pi.algebraMap_def, Algebra.algebraMap_eq_smul_one',
       Algebra.algebraMap_eq_smul_one', ← diagonal_one, diagonal_apply, diagonal_apply]
     aesop
+
+@[simp]
+theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
+    compAlgEquiv I J R K M = comp I I J J R M := rfl
+
+@[simp]
+theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
+    (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
 
 end Algebra
 
