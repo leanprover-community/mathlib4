@@ -93,10 +93,24 @@ variable {α : Type*}
 
 section IndepMatroid
 
-/-- A matroid as defined by the independence axioms. This is the same thing as a `Matroid`,
-  and so does not need its own API; it exists to make it easier to construct a matroid from its
-  independent sets. The constructed `IndepMatroid` can then be converted into a matroid
-  with `IndepMatroid.matroid`. -/
+/-- A matroid as defined by a ground set and an independence predicate.
+This definition is an implementation detail whose purpose is to organize the multiple
+different versions of the independence axioms;
+as a rule, the term `IndepMatroid` should never appear in type signatures outside this file.
+
+The intended pattern for defining a `Matroid α` from a known independence predicate
+`MyIndep : Set α → Prop` and ground set `E : Set α` is to write
+
+```
+def MyMatroid : Matroid α := IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
+```
+
+where `IndepMatroid.ofFoo` is one of the several available constructors for `IndepMatroid`,
+and the `_` represent the proofs that this constructor requires.
+
+After such a definition is made, the facts that `myMatroid.Indep = myIndep` and `myMatroid.E = E`
+are true by either `rfl` or `simp`.
+-/
 structure IndepMatroid (α : Type*) where
   /-- The ground set -/
   (E : Set α)
