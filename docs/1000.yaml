@@ -554,6 +554,9 @@ Q594571:
 
 Q595466:
   title: Dini's theorem
+  decl: Monotone.tendstoLocallyUniformly_of_forall_tendsto
+  authors: Jireh Loreaux
+  date: 2024
 
 Q599876:
   title: Cochran's theorem
@@ -634,7 +637,9 @@ Q656198:
 
 Q656645:
   title: Hilbert's basis theorem
-  # search mathlib or zulip; mathlib is close to this!
+  decl: Polynomial.isNoetherianRing
+  authors: Kenny Lau
+  date: 2019
 
 Q656772:
   title: Cayley–Hamilton theorem
@@ -818,6 +823,9 @@ Q794269:
 
 Q810431:
   title: Basel problem
+  decl: hasSum_zeta_two
+  authors: David Loeffler
+  date: 2022
 
 Q828284:
   title: Parallel axis theorem
@@ -1025,8 +1033,9 @@ Q943246:
 
 Q944297:
   title: Open mapping theorem
-  # TODO: this entry points to Wikipedia's disambiguation page => wikipedia should be fixed
-  # Banach open mapping theorem/Banach-Schauder theorem in functional analysis is in mathlib (ContinuousLinearMap.isOpenMap)
+  decl: ContinuousLinearMap.isOpenMap
+  authors: Sébastien Gouëzel
+  date: 2019
 
 Q948664:
   title: Kneser's addition theorem
@@ -1564,6 +1573,9 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
+  decl: exists_wellOrder
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  date: 2017
 
 Q1471282:
   title: Radon's theorem
@@ -1729,6 +1741,12 @@ Q1765521:
 
 Q1766814:
   title: Smn theorem
+  decls:
+    - Nat.Partrec.Code.smn
+    - Nat.Partrec'.part_iff
+  authors: Mario Carneiro
+  date: 2018
+  comment: "This theorem is trivial when using Mathlib's computability definition, but this definition is equivalent to the usual one, as shown in `Nat.Partrec'.part_iff`."
 
 Q1785610:
   title: Poncelet's closure theorem
@@ -1781,6 +1799,9 @@ Q1930577:
 
 Q1933521:
   title: Kleene's recursion theorem
+  decl: Nat.Partrec.Code.fixed_point₂
+  authors: Mario Carneiro
+  date: 2018
 
 Q1938251:
   title: Hasse–Minkowski theorem
@@ -2664,6 +2685,9 @@ Q4877965:
 
 Q4878586:
   title: Beck's monadicity theorem
+  decl: CategoryTheory.Monad.monadicOfCreatesGSplitCoequalizers
+  authors: Bhavik Mehta
+  date: 2020
 
 Q4880958:
   title: Behnke–Stein theorem
