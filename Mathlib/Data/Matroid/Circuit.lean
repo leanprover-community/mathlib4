@@ -251,7 +251,7 @@ lemma Base.fundCircuit_circuit {B : Set α} (hB : M.Base B) (hxE : x ∈ M.E) (h
     M.Circuit (M.fundCircuit x B) :=
   hB.indep.fundCircuit_circuit (by rwa [hB.closure_eq]) hxB
 
-/-- For `I` independent, `M.fundCircuit e I` is the only circuit contained in `{e} ∪ I`. -/
+/-- For `I` independent, `M.fundCircuit e I` is the only circuit contained in `insert e I`. -/
 lemma Circuit.eq_fundCircuit_of_subset (hC : M.Circuit C) (hI : M.Indep I) (hCss : C ⊆ insert e I) :
     C = M.fundCircuit e I := by
   obtain hCI | ⟨heC, hCeI⟩ := subset_insert_iff.1 hCss
