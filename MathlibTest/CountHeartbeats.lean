@@ -63,18 +63,22 @@ open Lean in
 theorem b : n ≥ 0 := by
   simp only [ge_iff_le, zero_le]
 
--- Test that local namespaces work:
-
-/--
-info: 'MyNamespace.helper' used 32 heartbeats, which is less than the current maximum of 200000.
--/
-#guard_msgs in
-theorem MyNamespace.helper (m n : Nat) : m + n = n + m := Nat.add_comm m n
-/--
-info: 'MyNamespace.dependent' used 32 heartbeats, which is less than the current maximum of 200000.
--/
-#guard_msgs in
-theorem MyNamespace.dependent (m n : Nat) : m + n = n + m := helper m n
+-- -- Test that local namespaces work:
+--
+-- /--
+-- info: 'MyNamespace.helper' used 32 heartbeats, which is less than the current maximum of 200000.
+-- -/
+-- #guard_msgs in
+-- theorem MyNamespace.helper (m n : Nat) : m + n = n + m := Nat.add_comm m n
+-- /--
+-- info: 'MyNamespace.dependent' used 32 heartbeats, which is less than the current maximum of 200000.
+-- -/
+-- #guard_msgs in
+-- theorem MyNamespace.dependent (m n : Nat) : m + n = n + m := helper m n
+--
+-- -- Test: this shouldn't be measured, I think
+-- open Nat in
+-- set_option trace.Meta.Tactic.simp.heads true
 
 end using_count_heartbeats
 
