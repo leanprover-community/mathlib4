@@ -202,7 +202,7 @@ lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   · rfl
   · exact (measurable_const_mul _).exp.aestronglyMeasurable
 
-lemma mgf_congr_identdistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
+lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
     {Y : Ω' → ℝ}  (h : IdentDistrib X Y μ μ') :
     mgf X μ = mgf Y μ' := by
   rw [← mgf_id_map h.aemeasurable_fst, ← mgf_id_map h.aemeasurable_snd, h.map_eq]
