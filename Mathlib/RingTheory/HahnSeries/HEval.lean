@@ -44,7 +44,7 @@ abbrev powerSeriesFamily : SummableFamily Γ V ℕ :=
 
 @[simp]
 theorem powerSeriesFamily_toFun (n : ℕ) :
-    powerSeriesFamily hx f n = (PowerSeries.coeff R n f) • x ^ n :=
+    powerSeriesFamily hx f n = PowerSeries.coeff R n f • x ^ n :=
   rfl
 
 theorem powerSeriesFamily_add (g : PowerSeries R) :
@@ -57,7 +57,7 @@ theorem powerSeriesFamily_smul (r : R) :
   ext1 n
   simp [mul_smul]
 
-theorem powerSeriesFamily_supp_subset (hx : 0 < x.orderTop) (a b : PowerSeries R) (g : Γ) :
+theorem support_powerSeriesFamily_subset (hx : 0 < x.orderTop) (a b : PowerSeries R) (g : Γ) :
     ((powerSeriesFamily hx (a * b)).coeff g).support ⊆
     (((powerSeriesFamily hx a).mul (powerSeriesFamily hx b)).coeff g).support.image
       fun i => i.1 + i.2 := by
@@ -75,13 +75,13 @@ theorem powerSeriesFamily_supp_subset (hx : 0 < x.orderTop) (a b : PowerSeries R
   rw [← pow_add, mem_antidiagonal.mp he.choose_spec.1, smul_comm]
   exact he.choose_spec.2
 
-theorem powerSeriesFamily_mul_hsum (hx : 0 < x.orderTop) (a b : PowerSeries R) :
+theorem hsum_powerSeriesFamily_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
     (powerSeriesFamily hx (a * b)).hsum =
     ((powerSeriesFamily hx a).mul (powerSeriesFamily hx b)).hsum := by
   ext g
   simp only [powerSeriesFamily_toFun, PowerSeries.coeff_mul, Finset.sum_smul, ← Finset.sum_product,
     hsum_coeff_eq_sum, mul_toFun]
-  rw [sum_subset (powerSeriesFamily_supp_subset hx a b g)]
+  rw [sum_subset (support_powerSeriesFamily_subset hx a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp_all) ?_ ?_
       (fun _ _ => by simp only [smul_mul_smul_comm, pow_add])).symm
