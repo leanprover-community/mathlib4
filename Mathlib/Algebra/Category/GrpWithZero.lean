@@ -72,8 +72,8 @@ instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
 
 instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
-      { obj := fun X => ⟨ X , _ ⟩
-        map := fun f => f.toMonoidHom }
+      { obj := fun X => MonCat.of X
+        map := fun f => MonCat.ofHom f.toMonoidHom }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]

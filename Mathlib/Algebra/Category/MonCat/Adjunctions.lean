@@ -32,21 +32,21 @@ namespace MonCat
 @[to_additive (attr := simps) "The functor of adjoining a neutral element `zero` to a semigroup"]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map := WithOne.map
-  map_id _ := WithOne.map_id
-  map_comp := WithOne.map_comp
+  map f := ofHom (WithOne.map f)
+  map_id _ := MonCat.hom_ext WithOne.map_id
+  map_comp _ _ := MonCat.hom_ext (WithOne.map_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
   forget₂ :=
     { obj := fun M => Semigrp.of M
-      map := MonoidHom.toMulHom }
+      map f := f.hom.toMulHom }
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/
 @[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => WithOne.lift.symm
+    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans WithOne.lift.symm
       homEquiv_naturality_left_symm := by
         intro S T M f g
         ext x
@@ -60,15 +60,15 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
 def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
-  map := FreeMonoid.map
-  map_id _ := FreeMonoid.hom_eq (fun _ => rfl)
-  map_comp _ _ := FreeMonoid.hom_eq (fun _ => rfl)
+  map f := ofHom (FreeMonoid.map f)
+  map_id _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
+  map_comp _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
 
 /-- The free-forgetful adjunction for monoids. -/
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => FreeMonoid.lift.symm
-      homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
+    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeMonoid.lift.symm
+      homEquiv_naturality_left_symm := fun _ _ => MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
