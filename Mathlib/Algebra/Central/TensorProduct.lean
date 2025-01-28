@@ -50,9 +50,7 @@ lemma Algebra.TensorProduct.includeRight_mep_center_le :
   | tmul b c' => simp [hc0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 
-
 namespace Algebra.IsCentral
-
 
 open Algebra.TensorProduct in
 lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K B]
