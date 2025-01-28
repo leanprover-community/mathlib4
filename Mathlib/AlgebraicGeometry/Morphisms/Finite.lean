@@ -41,7 +41,7 @@ instance : HasAffineProperty @IsFinite
     (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop).hom) := by
   show HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.finite_respectsIso
-    RingHom.finite_localizationPreserves RingHom.finite_ofLocalizationSpan]
+    RingHom.finite_localizationPreserves.away RingHom.finite_ofLocalizationSpan]
   simp [isFinite_iff]
 
 instance : IsStableUnderComposition @IsFinite :=

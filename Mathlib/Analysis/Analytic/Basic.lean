@@ -3,7 +3,6 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
@@ -443,6 +442,7 @@ variable (𝕜)
 
 /-- Given a function `f : E → F`, we say that `f` is analytic at `x` if it admits a convergent power
 series expansion around `x`. -/
+@[fun_prop]
 def AnalyticAt (f : E → F) (x : E) :=
   ∃ p : FormalMultilinearSeries 𝕜 E F, HasFPowerSeriesAt f p x
 
@@ -1344,6 +1344,7 @@ protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt �
     ContinuousWithinAt f s x :=
   hf.continuousWithinAt_insert.mono (subset_insert x s)
 
+@[fun_prop]
 protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : ContinuousAt f x :=
   let ⟨_, hp⟩ := hf
   hp.continuousAt

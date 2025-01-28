@@ -198,16 +198,10 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  have := Nat.mul_le_mul_right cf.encodeCode (by decide : 1 ≤ 2 * 2)
-  rw [one_mul, mul_assoc] at this
-  refine lt_of_le_of_lt (le_trans this ?_) (lt_add_of_pos_right _ (by decide : 0 < 4))
-  exact le_of_lt (Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_of_lt <|
-    Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_rfl)
+  omega
 
 end Nat.Partrec.Code
 
--- Porting note: Opening `Primrec` inside `namespace Nat.Partrec.Code` causes it to resolve
--- to `Nat.Partrec`. Needs `open _root_.Partrec` support
 section
 open Primrec
 namespace Nat.Partrec.Code
@@ -557,7 +551,6 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     | prec cf cg pf pg => exact pf.prec pg
     | rfind' cf pf => exact pf.rfind'
 
--- Porting note: `>>`s in `evaln` are now `>>=` because `>>`s are not elaborated well in Lean4.
 /-- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
 undecidability, `evaln` takes a parameter `k` and fails if it encounters a number ≥ k in the course
 of its execution. Other than this, the semantics are the same as in `Nat.Partrec.Code.eval`.

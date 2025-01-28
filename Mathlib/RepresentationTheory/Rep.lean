@@ -48,7 +48,7 @@ section
 variable [Monoid G]
 
 instance : CoeSort (Rep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  HasForget.hasCoeToSort _
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -61,11 +61,11 @@ instance (V : Rep k G) : Module k V := by
 -/
 def ρ (V : Rep k G) : Representation k G V :=
 -- Porting note: was `V.ρ`
-  (ModuleCat.endMulEquiv V.V).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
 /-- Lift an unbundled representation to `Rep`. -/
 def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
-  ⟨ModuleCat.of k V, MonCat.ofHom ((ModuleCat.endMulEquiv _).symm.toMonoidHom.comp ρ) ⟩
+  ⟨ModuleCat.of k V, MonCat.ofHom ((ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ) ⟩
 
 @[simp]
 theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
@@ -77,7 +77,7 @@ theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k
   rfl
 
 theorem Action_ρ_eq_ρ {A : Rep k G} :
-    Action.ρ A = (ModuleCat.endMulEquiv _).symm.toMonoidHom.comp A.ρ :=
+    Action.ρ A = (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp A.ρ :=
   rfl
 
 @[simp]
@@ -574,11 +574,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
   LinearEquiv.toModuleIso
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
-        set_option tactic.skipAssignedInstances false in
         dsimp [counitIsoAddEquiv]
-        /- Porting note: rest of broken proof was `simp`. -/
-        rw [AddEquiv.trans_apply]
-        rw [AddEquiv.trans_apply]
         erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
 

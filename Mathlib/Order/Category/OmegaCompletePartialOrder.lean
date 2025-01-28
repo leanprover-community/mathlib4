@@ -19,7 +19,7 @@ an `OmegaCompletePartialOrder`.
 ## Main definitions
 
  * `ωCPO`
-   * an instance of `Category` and `ConcreteCategory`
+   * an instance of `Category` and `HasForget`
 
  -/
 
@@ -43,9 +43,9 @@ instance : BundledHom @ContinuousHom where
   comp := @ContinuousHom.comp
   hom_ext := @ContinuousHom.coe_inj
 
--- Porting note: `deriving instance ConcreteCategory` didn't work.
+-- Porting note: `deriving instance HasForget` didn't work.
 deriving instance LargeCategory for ωCPO
-instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
+instance : HasForget ωCPO := by unfold ωCPO; infer_instance
 
 instance : CoeSort ωCPO Type* :=
   Bundled.coeSort
