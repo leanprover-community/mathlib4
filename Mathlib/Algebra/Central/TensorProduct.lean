@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Yunzhou Xie
 
 import Mathlib.Algebra.Central.Basic
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 
@@ -39,7 +40,19 @@ lemma Algebra.TensorProduct.includeLeft_map_center_le :
   | tmul b' c => simp [hb0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 
+lemma Algebra.TensorProduct.includeRight_mep_center_le :
+    (Subalgebra.center K C).map includeRight ≤ Subalgebra.center K (B ⊗[K] C) := fun x hx ↦ by
+  simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
+  obtain ⟨c, hc0, rfl⟩ := hx
+  intro bc
+  induction bc using TensorProduct.induction_on with
+  | zero => simp
+  | tmul b c' => simp [hc0]
+  | add _ _ _ _ => simp_all [add_mul, mul_add]
+
+
 namespace Algebra.IsCentral
+
 
 open Algebra.TensorProduct in
 lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K B]
@@ -47,9 +60,19 @@ lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K 
   out := (Subalgebra.map_le.mp ((includeLeft_map_center_le K B C).trans hbc.1)).trans
     fun _ ⟨k, hk⟩ ↦ ⟨k, includeLeft_injective (S := K) inj hk⟩
 
+
 lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K C]
     [Algebra.IsCentral K (B ⊗[K] C)] : IsCentral K C :=
   letI : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
   left_of_tensor K C B inj
+
+lemma left_of_tensor' (K : Type u) [Field K] (A B : Type v) [Ring A] [Ring B] [Nontrivial B]
+    [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K A :=
+    left_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K B
+
+lemma right_of_tensor' (K : Type u) [Field K] (A B : Type v) [Ring A] [Ring B] [Nontrivial A]
+    [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K B :=
+    right_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K A
+
 
 end Algebra.IsCentral
