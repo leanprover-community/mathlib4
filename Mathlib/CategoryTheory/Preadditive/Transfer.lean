@@ -3,7 +3,7 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
@@ -29,10 +29,10 @@ def ofFullyFaithful : Preadditive C where
   add_comp P Q R f f' g := hF.map_injective (by simp [Equiv.add_def])
   comp_add P Q R f g g' := hF.map_injective (by simp [Equiv.add_def])
 
-@[simp low]
-lemma ofFullyFaithful_map_add {P Q : C} (f g : P ⟶ Q) :
-    have : Preadditive C := ofFullyFaithful hF
-    F.map (f + g) = F.map f + F.map g := by
-  simp [Equiv.add_def]
+instance additive_ofFullyFaithful :
+    let _ : Preadditive C := ofFullyFaithful hF
+    F.Additive :=
+  let _ : Preadditive C := ofFullyFaithful hF
+  { map_add := by simp [Equiv.add_def] }
 
 end CategoryTheory.Preadditive
