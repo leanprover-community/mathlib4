@@ -6,7 +6,6 @@ Authors: Fox Thomson, Chris Wong
 import Mathlib.Computability.Language
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.Indexes
 import Mathlib.Tactic.NormNum
 
 /-!
