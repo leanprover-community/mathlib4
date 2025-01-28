@@ -105,7 +105,8 @@ The intended pattern for defining a `Matroid α` from a known independence predi
 def myMatroid : Matroid α := IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
 ```
 
-where `IndepMatroid.ofFoo` is one of the several available constructors for `IndepMatroid`,
+where `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
+or one of the several other available constructors for `IndepMatroid`,
 and the `_` represent the proofs that this constructor requires.
 
 After such a definition is made, the facts that `myMatroid.Indep = myIndep` and `myMatroid.E = E`
