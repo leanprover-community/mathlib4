@@ -44,6 +44,15 @@ For example:
 example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
 ```
+
+## Future work
+
+* In mathlib 3, `abel` accepted addtional optional arguments:
+  ```
+  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
+  ```
+  It is undecided whether these features should be restored eventually.
+
 -/
 syntax (name := abel) "abel" "!"? : tactic
 
