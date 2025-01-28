@@ -5,7 +5,9 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Fintype.Units
+import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
 
@@ -31,6 +33,9 @@ consisting of the even permutations.
   3-cycle.
 
 * `alternatingGroup.isCharacteristic` shows that the alternating group is characteristic
+
+* `EquivPerm.alternatingGroup_le_of_index_le_two` shows that a subgroup of index at most 2
+  of `Equiv.Perm α` contains the alternating group.
 
 ## Tags
 alternating group permutation
@@ -391,3 +396,86 @@ theorem isCharacteristic : (alternatingGroup α).Characteristic := by
     rw [← s.map_mul, SemiconjBy.eq hu, s.map_mul, hk, mul_one, one_mul]
 
 end alternatingGroup
+
+/-- A finite group of prime order is commutative -/
+@[to_additive]
+theorem Group.isCommutative_of_prime_order {G : Type*} [Group G]
+    {p : ℕ} [hp : Fact p.Prime] (h : Nat.card G = p) :
+    Std.Commutative (· * · : G → G → G) := by
+  haveI := isCyclic_of_prime_card h
+  exact Std.Commutative.mk (IsCyclic.commGroup.mul_comm)
+
+namespace Equiv.Perm
+
+open Subgroup Group
+
+/-- The alternating group is the only subgroup of index 2 of the permutation group -/
+theorem is_alternating_of_index_2 {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
+    G = alternatingGroup α := by
+  have hG' : G.Normal := Subgroup.normal_of_index_eq_two hG
+  rw [alternatingGroup_eq_sign_ker, ← QuotientGroup.ker_mk' G]
+  ext g
+  simp only [Equiv.Perm.sign.mem_ker, (QuotientGroup.mk' G).mem_ker]
+  have h2 : Fact (Nat.Prime 2) := Fact.mk Nat.prime_two
+  have hG'' : Std.Commutative (α := (Perm α ⧸ G)) (op := Mul.mul) := by
+     haveI := isCyclic_of_prime_card hG
+     exact Std.Commutative.mk (IsCyclic.commGroup.mul_comm)
+  have : ∃ g : Equiv.Perm α, g.IsSwap ∧ g ∉ G := by
+    by_contra h; push_neg at h
+    suffices G = ⊤ by
+      rw [this, Subgroup.index_top] at hG
+      norm_num at hG
+    rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le G]
+    intro g hg
+    simp only [Set.mem_setOf_eq] at hg
+    simp only [SetLike.mem_coe]
+    exact h g hg
+  obtain ⟨k, hk, hk'⟩ := this
+  have this' (g) (hg : g.IsSwap) : QuotientGroup.mk' G g = QuotientGroup.mk' G k := by
+    obtain ⟨a, b, hab, habg⟩ := hg
+    obtain ⟨x, y, hxy, hxyk⟩ := hk
+    obtain ⟨u, hu⟩ := Equiv.Perm.isConj_swap hab hxy
+    let hu' := congr_arg (QuotientGroup.mk' G) (SemiconjBy.eq hu)
+    simp only [map_mul] at hu'
+    apply mul_left_cancel (a := QuotientGroup.mk' G u)
+    rw [habg, hxyk, hu']
+    apply hG''.comm
+  have hsk2 : QuotientGroup.mk' G k ^ 2 = 1 := by
+    obtain ⟨x, y, _, hxyk⟩ := hk
+    rw [pow_two, ← map_mul, hxyk, Equiv.swap_mul_self, map_one]
+  symm
+  induction' g using Equiv.Perm.swap_induction_on with f x y hxy hf
+  · simp
+  · simp only [sign_mul, sign_swap', ite_mul, one_mul, neg_mul,
+      QuotientGroup.mk'_apply, QuotientGroup.mk_mul, if_neg hxy]
+    simp only [neg_eq_iff_eq_neg, Iff.symm Int.units_ne_iff_eq_neg, ne_eq, hf]
+    have := this' (swap x y) ⟨x, y, hxy, rfl⟩
+    simp only [QuotientGroup.mk'_apply] at hf this hsk2
+    rw [this]
+    conv_rhs => rw [← (Group.mulLeft_bijective (a := QuotientGroup.mk' G k)).injective.eq_iff]
+    simp only [QuotientGroup.mk'_apply, ← mul_assoc, ← pow_two, hsk2, mul_one, one_mul]
+    constructor
+    · intro h
+      rw [Subgroup.index, Nat.card_eq_two_iff' 1] at hG
+      apply hG.unique (y₁ := QuotientGroup.mk' G f) (y₂ := QuotientGroup.mk' G k) h
+      simp only [QuotientGroup.mk'_apply, ne_eq, QuotientGroup.eq_one_iff]
+      exact hk'
+    · intro h; simp only [h, QuotientGroup.eq_one_iff]; exact hk'
+
+/-- A subgroup of the permutation group of index ≤ 2 contains the alternating group -/
+theorem alternatingGroup_le_of_index_le_two
+    {G : Subgroup (Equiv.Perm α)} (hG : G.index ≤ 2) :
+    alternatingGroup α ≤ G := by
+  cases' Nat.eq_zero_or_pos G.index with h h
+  · exfalso
+    exact Subgroup.index_ne_zero_of_finite h
+  cases' eq_or_gt_of_le (Nat.succ_le_iff.mpr h) with h h
+  · rw [Subgroup.index_eq_one] at h ; rw [h]; exact le_top
+  rw [← Nat.succ_le_iff] at h ; norm_num at h
+  rw [is_alternating_of_index_2 (le_antisymm _ h)]
+  refine Nat.le_of_mul_le_mul_left (c := Nat.card G) ?_ Nat.card_pos
+  rw [mul_comm, Subgroup.index_mul_card, mul_comm]
+  rw [← Subgroup.index_mul_card G]
+  apply Nat.mul_le_mul_right _ hG
+
+end Equiv.Perm
