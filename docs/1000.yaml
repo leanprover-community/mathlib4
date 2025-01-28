@@ -554,7 +554,7 @@ Q594571:
 
 Q595466:
   title: Dini's theorem
-  decl: Monotone.tendstoUniformlyOn_of_forall_tendsto
+  decl: Monotone.tendstoLocallyUniformly_of_forall_tendsto
   authors: Jireh Loreaux
   date: 2024
 
