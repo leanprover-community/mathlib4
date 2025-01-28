@@ -56,9 +56,9 @@ theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f co
   simpa using Finset.disjoint_left.mp ht hi
 
 /-- Let `G` be a nonarchimedean abelian group, and let `f : ℕ → G` be a function
-such that the quotients `f (n + 1) / f 1` tend to one. Then the function is a Cauchy sequence. -/
+such that the quotients `f (n + 1) / f n` tend to one. Then the function is a Cauchy sequence. -/
 @[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : ℕ → G` be a
-function such that the differences `f (n + 1) - f 0` tend to zero.
+function such that the differences `f (n + 1) - f n` tend to zero.
 Then the function is a Cauchy sequence."]
 lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
     (hf : Tendsto (fun n ↦ f (n + 1) / f n) atTop (𝓝 1)) :
