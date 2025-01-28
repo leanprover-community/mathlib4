@@ -1568,6 +1568,9 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
+  decl: exists_wellOrder
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  date: 2017
 
 Q1471282:
   title: Radon's theorem
