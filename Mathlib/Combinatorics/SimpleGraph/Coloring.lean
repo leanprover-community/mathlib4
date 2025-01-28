@@ -137,6 +137,10 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   obtain ⟨i, hi⟩ := h.some v
   exact Nat.not_lt_zero _ hi
 
+@[simp]
+lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
+   ⟨fun h => G.isEmpty_of_colorable_zero h, fun _ => G.colorable_of_isEmpty 0⟩
+
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 
