@@ -508,12 +508,14 @@ import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.ChevalleyEilenberg
 import Mathlib.Algebra.Lie.Classical
+import Mathlib.Algebra.Lie.Cocycle
 import Mathlib.Algebra.Lie.Derivation.AdjointAction
 import Mathlib.Algebra.Lie.Derivation.Basic
 import Mathlib.Algebra.Lie.Derivation.Killing
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
+import Mathlib.Algebra.Lie.Extension
 import Mathlib.Algebra.Lie.Extension.Basic
 import Mathlib.Algebra.Lie.Extension.CentralExtension
 import Mathlib.Algebra.Lie.Free
