@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kim Morrison
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.AtomM
-import Mathlib.Util.WHNF
 
 /-!
 # The `abel` tactic
