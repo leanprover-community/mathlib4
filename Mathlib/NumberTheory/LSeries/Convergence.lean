@@ -103,15 +103,13 @@ lemma LSeries.abscissaOfAbsConv_le_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ}
 /-- If `f` is bounded, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
 lemma LSeries.abscissaOfAbsConv_le_of_le_const {f : ℕ → ℂ} (h : ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C) :
     abscissaOfAbsConv f ≤ 1 := by
-  convert abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) ?_ <;>
-  simp_all
+  simpa using abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) (by simpa using h)
 
 open Filter in
 /-- If `f` is `O(1)`, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
 lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O[atTop] fun _ ↦ (1 : ℝ)) :
     abscissaOfAbsConv f ≤ 1 := by
-  convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_ <;>
-  simp_all
+  simpa using abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) (by simpa using h)
 
 /-- If `f` is real-valued and `x` is strictly greater than the abscissa of absolute convergence
 of `f`, then the real series `∑' n, f n / n ^ x` converges. -/

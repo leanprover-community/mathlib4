@@ -106,8 +106,9 @@ open ArithmeticFunction in
 lemma isMultiplicative_toArithmeticFunction {N : ℕ} {R : Type*} [CommMonoidWithZero R]
     (χ : DirichletCharacter R N) :
     (toArithmeticFunction (χ ·)).IsMultiplicative := by
-  refine IsMultiplicative.iff_ne_zero.mpr ⟨?_, fun {m} {n} hm hn _ ↦ ?_⟩ <;>
-  simp_all [toArithmeticFunction]
+  refine IsMultiplicative.iff_ne_zero.mpr ⟨?_, fun {m} {n} hm hn _ ↦ ?_⟩
+  · simp [toArithmeticFunction]
+  · simp [toArithmeticFunction, hm, hn]
 
 lemma apply_eq_toArithmeticFunction_apply {N : ℕ} {R : Type*} [CommMonoidWithZero R]
     (χ : DirichletCharacter R N) {n : ℕ} (hn : n ≠ 0) :
@@ -150,7 +151,7 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   rcases eq_or_ne n 1 with rfl | hn'
   · simp [delta]
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
-  simp_all [χ.map_nonunit, delta]
+  simp_all [χ.map_nonunit this, delta]
 
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
 lemma modOne_eq_one {R : Type*} [CommSemiring R] {χ : DirichletCharacter R 1} :
