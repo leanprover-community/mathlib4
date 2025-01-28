@@ -34,10 +34,10 @@ variable (x y : ∀ i, f i) (i : I)
 variable (I f)
 
 instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
-    Algebra R (∀ i : I, f i) :=
-  { (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i) with
-    commutes' := fun a f => by ext; simp [Algebra.commutes]
-    smul_def' := fun a f => by ext; simp [Algebra.smul_def] }
+    Algebra R (∀ i : I, f i) where
+  algebraMap := (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i)
+  commutes' := fun a f => by ext; simp [Algebra.commutes]
+  smul_def' := fun a f => by ext; simp [Algebra.smul_def]
 
 theorem algebraMap_def {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) : algebraMap R (∀ i, f i) a = fun i => algebraMap R (f i) a :=
@@ -47,6 +47,15 @@ theorem algebraMap_def {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i,
 theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) (i : I) : algebraMap R (∀ i, f i) a i = algebraMap R (f i) a :=
   rfl
+
+variable {I} in
+instance (g : I → Type*) [∀ i, CommSemiring (f i)] [∀ i, Semiring (g i)]
+    [∀ i, Algebra (f i) (g i)] : Algebra (∀ i, f i) (∀ i, g i) where
+  algebraMap := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom f _)
+  commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
+  smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
+
+example [∀ i, CommSemiring (f i)] : Pi.instAlgebraForall f f = Algebra.id _ := rfl
 
 -- One could also build a `∀ i, R i`-algebra structure on `∀ i, A i`,
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.

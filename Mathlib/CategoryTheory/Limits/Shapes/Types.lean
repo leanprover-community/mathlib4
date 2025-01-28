@@ -208,9 +208,6 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
     (binaryProductIso X Y).inv ≫ Limits.prod.snd = _root_.Prod.snd :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 
--- Porting note: it was originally @[simps (config := { typeMd := reducible })]
--- We add the option `type_md` to tell `@[simps]` to not treat homomorphisms `X ⟶ Y` in `Type*` as
--- a function type
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
 @[simps]
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
@@ -588,7 +585,6 @@ instance : HasPushouts.{u} (Type u) :=
 variable {X Y Z : Type u} {X' Y' Z' : Type v}
 variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/

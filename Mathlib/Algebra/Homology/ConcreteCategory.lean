@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 # Homology of complexes in concrete categories
 
 The homology of short complexes in concrete categories was studied in
-`Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory`. In this file,
+`Mathlib.Algebra.Homology.ShortComplex.HasForget`. In this file,
 we introduce specific definitions and lemmas for the homology
 of homological complexes in concrete categories. In particular,
 we give a computation of the connecting homomorphism of
@@ -22,7 +22,7 @@ open CategoryTheory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab.{v}]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] [HasForget₂ C Ab.{v}]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
   {ι : Type*} {c : ComplexShape ι}
 
@@ -80,7 +80,7 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
             AddMonoidHom.zero_apply])) := by
   refine hS.δ_apply' i j hij _ ((forget₂ C Ab).map (S.X₂.pOpcycles i) x₂) _ ?_ ?_
   · rw [← forget₂_comp_apply, ← forget₂_comp_apply,
-      HomologicalComplex.p_opcyclesMap, Functor.map_comp, comp_apply,
+      HomologicalComplex.p_opcyclesMap, Functor.map_comp, CategoryTheory.comp_apply,
       HomologicalComplex.homology_π_ι, forget₂_comp_apply, hx₂, HomologicalComplex.i_cyclesMk]
   · apply (Preadditive.mono_iff_injective (S.X₂.iCycles j)).1 inferInstance
     conv_lhs =>

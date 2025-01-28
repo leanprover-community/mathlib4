@@ -82,10 +82,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /--
 A functor `F : C ⥤ D` is final if for every `d : D`, the comma category of morphisms `d ⟶ F.obj c`
-is connected.
-
-See <https://stacks.math.columbia.edu/tag/04E6>
--/
+is connected. -/
+@[stacks 04E6]
 class Final (F : C ⥤ D) : Prop where
   out (d : D) : IsConnected (StructuredArrow d F)
 
@@ -1026,5 +1024,18 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))
 
 end Grothendieck
+
+section Prod
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {C' : Type u₃} [Category.{v₃} C']
+variable {D' : Type u₄} [Category.{v₄} D']
+variable (F : C ⥤ D) (G : C' ⥤ D')
+
+instance [F.Final] [G.Final] : (F.prod G).Final where
+  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
+
+end Prod
 
 end CategoryTheory
