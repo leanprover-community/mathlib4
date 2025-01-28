@@ -31,7 +31,8 @@ of some code.
 * `Nat.Partrec.Code.smn`: The $S_n^m$ theorem.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
 * `Nat.Partrec.Code.evaln_prim`: `evaln` is primitive recursive.
-* `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
+* `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem
+* `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem
 
 ## References
 
@@ -979,9 +980,9 @@ theorem eval_part : Partrec₂ eval :=
     (evaln_prim.to_comp.comp ((Computable.snd.pair (fst.comp fst)).pair (snd.comp fst))).to₂).of_eq
     fun a => by simp [eval_eq_rfindOpt]
 
-/-- Roger's fixed-point theorem: Any total, computable `f` has a fixed point: That is, under the
-interpretation given by `Nat.Partrec.Code.eval`, there is a code `c` such that `c` and `f c` have
-the same evaluation.
+/-- **Roger's fixed-point theorem**: any total, computable `f` has a fixed point.
+That is, under the interpretation given by `Nat.Partrec.Code.eval`, there is a code `c`
+such that `c` and `f c` have the same evaluation.
 -/
 theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval (f c) = eval c :=
   let g (x y : ℕ) : Part ℕ := eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
@@ -1000,6 +1001,7 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
       show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
         simp [F, g, eg', eF', Part.map_id']⟩
 
+/-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   (fixed_point (curry_prim.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp fun c e =>
