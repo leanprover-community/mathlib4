@@ -400,7 +400,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     simpa
   refine (mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum).congr_fun
     fun n ↦ ?_
-  simp [Int.sign_eq_sign, ← Int.cast_abs] -- non-terminal simp OK when `ring` follows?
+  simp [Int.sign_eq_sign, ← Int.cast_abs] -- non-terminal simp OK when `ring` follows
   ring
 
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
