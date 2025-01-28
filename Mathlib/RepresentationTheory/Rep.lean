@@ -131,18 +131,6 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget.{u} _ _
 
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
-  rfl
-
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
-  rfl
-
 section
 
 open MonoidalCategory
@@ -242,8 +230,22 @@ noncomputable abbrev leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-noncomputable def diagonal (n : ℕ) : Rep k G :=
+noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
+
+@[simps! hom_hom inv_hom]
+def diagonalOneIsoLeftRegular [Monoid G] :
+    diagonal k G 1 ≅ leftRegular k G :=
+  Action.mkIso (Finsupp.domLCongr <| Equiv.funUnique (Fin 1) G).toModuleIso fun _ =>
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp
+
+@[simps! hom_hom inv_hom]
+def ofMulActionSubsingletonIsoTrivial
+    (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
+    ofMulAction k G H ≅ trivial k G k :=
+  letI : Unique H := uniqueOfSubsingleton 1
+  Action.mkIso (Finsupp.LinearEquiv.finsuppUnique _ _ _).toModuleIso fun _ =>
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [Subsingleton.elim _ (1 : H)]
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
