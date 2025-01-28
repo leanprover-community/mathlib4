@@ -653,6 +653,9 @@ instance semiring [Semiring R] [AddCommMonoid M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] : Semiring (tsze R M) :=
   { TrivSqZeroExt.monoid, TrivSqZeroExt.nonAssocSemiring with }
 
+-- TODO: `List.enum` has been deprecated in favour of `List.zipIdx`.
+-- We need to update this statement and proof, but it's slightly tricky.
+set_option linter.deprecated false in
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
 theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]

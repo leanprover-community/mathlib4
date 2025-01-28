@@ -70,7 +70,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le length_mapIdx.ge) :
     (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
-  simp [mapIdx_eq_enum_map, enum_eq_zip_range]
+  simp [mapIdx_eq_zipIdx_map, enum_eq_zip_range]
 
 @[deprecated (since := "2024-08-19")] alias nthLe_mapIdx := get_mapIdx
 
