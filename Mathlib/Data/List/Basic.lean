@@ -689,9 +689,6 @@ theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l �
     rw [← ih]
     exact succ_inj'
 
-@[deprecated (since := "2025-01-28")]
-alias indexOf_eq_length := indexOf_eq_length_iff
-
 @[simp]
 theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = length l :=
   indexOf_eq_length_iff.2
