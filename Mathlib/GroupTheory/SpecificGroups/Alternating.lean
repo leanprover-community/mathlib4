@@ -360,34 +360,22 @@ theorem isCharacteristic : (alternatingGroup α).Characteristic := by
   rw [alternatingGroup_eq_sign_ker, MonoidHom.comap_ker]
   set s := sign.comp e.toMonoidHom with s_def
   have hs : Function.Surjective s :=  by
-    simp only [s_def, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
-      EquivLike.surjective_comp]
-    exact Equiv.Perm.sign_surjective α
+    have := Function.Surjective.comp (Equiv.Perm.sign_surjective α) e.surjective
+    exact this
   obtain ⟨g', hg'⟩ := hs (-1)
-  have hg' : s g' ≠ 1 := by
-    rw [hg', ← bne_iff_ne]
-    rfl
   apply congr_arg
-  ext g
-  simp only [s_def, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom, Function.comp_apply]
-  apply congr_arg
-  refine swap_induction_on g ?_ ?_
-  · rw [map_one, sign.map_one]
-  · intro f x y hxy hf
-    simp only [map_mul, hf]
-    apply congr_arg₂ _ _ rfl
-    revert x y hxy
-    by_contra h
-    push_neg at h
-    obtain ⟨a, b, hab, hk⟩ := h
-    rw [sign_swap hab] at hk
-    let hk := Or.resolve_right (Int.units_eq_one_or (s _)) hk
-    apply hg'
-    refine swap_induction_on g' s.map_one ?_
-    intro f x y hxy hf
-    rw [s.map_mul, hf, mul_one]
-    obtain ⟨u, hu⟩ := isConj_swap hxy hab
-    apply mul_left_cancel (a := s u)
-    rw [← s.map_mul, SemiconjBy.eq hu, s.map_mul, hk, mul_one, one_mul]
+  ext1 g
+  have h : ∃ x y, x ≠ y ∧ s (Equiv.swap x y) = -1 := by
+    contrapose! hg'
+    rw [Int.units_ne_iff_eq_neg, neg_neg]
+    refine swap_induction_on g' (map_one s) fun f x y hxy hf ↦ ?_
+    rw [map_mul, hf, mul_one]
+    exact (Int.units_eq_one_or _).resolve_right (hg' x y hxy)
+  replace h x y (hxy : x ≠ y) : s (Equiv.swap x y) = -1 := by
+    obtain ⟨a, b, hab, h⟩ := h
+    obtain ⟨u, hu⟩ := isConj_iff.mp (s.map_isConj (isConj_swap hxy hab))
+    rwa [mul_inv_cancel_comm, h] at hu
+  refine swap_induction_on g ((map_one s).trans (map_one sign).symm) fun f x y hxy hf ↦ ?_
+  rw [map_mul, hf, map_mul, h x y hxy, sign_swap hxy]
 
 end alternatingGroup
