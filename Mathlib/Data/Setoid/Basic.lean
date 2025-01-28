@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 import Mathlib.Logic.Relation
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations

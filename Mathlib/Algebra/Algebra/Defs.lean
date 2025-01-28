@@ -95,7 +95,6 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.
   Use `algebraMap` from the root namespace instead.-/

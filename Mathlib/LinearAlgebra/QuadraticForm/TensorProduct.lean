@@ -66,6 +66,15 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
     (Q₂ : QuadraticMap R M₂ N₂) : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
+theorem associated_tmul [Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) :
+    (Q₁.tmul Q₂).associated = Q₁.associated.tmul Q₂.associated := by
+  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  rw [QuadraticMap.tmul, BilinMap.tmul]
+  have : Subsingleton (Invertible (2 : A)) := inferInstance
+  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
+    (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
+
 end QuadraticMap
 
 namespace QuadraticForm
@@ -96,26 +105,10 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R := A) (Q₁.tmul Q₂)
-      = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
-  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  /- Previously `QuadraticForm.tensorDistrib` was defined in a similar way to
-  `QuadraticMap.tensorDistrib`. We now obtain the definition of `QuadraticForm.tensorDistrib`
-  from `QuadraticMap.tensorDistrib` using `A ⊗[R] R ≃ₗ[A] A`. Hypothesis `e1` below shows that the
-  new definition is equal to the old, and allows us to reuse the old proof.
-
-  TODO: Define `IsSymm` for bilinear maps and generalise this result to Quadratic Maps.
-  -/
-  have e1: (BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂) ∘
-    BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂) ∘
-    AlgebraTensorModule.map
-      (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
-      (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)) =
-       tensorDistrib R A := rfl
-  rw [QuadraticForm.tmul, ← e1, BilinForm.tmul]
-  dsimp
-  have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
+    (Q₁.tmul Q₂).associated = BilinForm.tmul Q₁.associated Q₂.associated := by
+  rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
+    ← QuadraticMap.associated_tmul Q₁ Q₂]
+  aesop
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
