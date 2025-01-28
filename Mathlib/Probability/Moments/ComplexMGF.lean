@@ -89,11 +89,8 @@ lemma abs_complexMGF_le_mgf : abs (complexMGF X μ z) ≤ mgf X μ z.re := by
   _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.abs_exp]
 
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
-  rw [complexMGF]
+  rw [complexMGF, mgf, ← integral_complex_ofReal]
   norm_cast
-  have : ∫ ω, (rexp (x * X ω) : ℂ) ∂μ = ∫ ω, rexp (x * X ω) ∂μ := integral_ofReal
-  rw [this]
-  simp only [mgf]
 
 lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
   simp [complexMGF_ofReal]
