@@ -77,6 +77,12 @@ theorem normal_of_index_eq_smallest_prime_factor [Finite G]
       intro l hl hl'
       exact hp' hl (dvd_trans hl' f.ker.index_dvd_card)
 
+/-- A subgroup of index 1 is normal (does not require finiteness of G) -/ 
+theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by 
+  rw [index_eq_one] at hH 
+  rw [hH] 
+  infer_instance
+
 /-- A subgroup of index 2 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_two (hH : H.index = 2) :
     H.Normal := by
