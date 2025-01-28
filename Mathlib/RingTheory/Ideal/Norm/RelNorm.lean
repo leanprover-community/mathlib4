@@ -47,7 +47,7 @@ over `I`.
 See also `Ideal.relNorm`.
 -/
 def spanNorm (I : Ideal S) : Ideal R :=
-  Ideal.span (Algebra.intNorm R S '' (I : Set S))
+  Ideal.map (Algebra.intNorm R S) I
 
 @[simp]
 theorem spanNorm_bot :
@@ -58,7 +58,7 @@ variable {R}
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def]
+    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map]
   rfl
 
 variable (R)
@@ -85,16 +85,13 @@ theorem spanNorm_singleton {r : S} :
 
 @[simp]
 theorem spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
-  -- Porting note: was
-  -- simp [← Ideal.span_singleton_one]
-  rw [← Ideal.span_singleton_one, spanNorm_singleton]
-  simp
+  simp [← Ideal.span_singleton_one]
 
 theorem map_spanIntNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
     map f (spanNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) := by
-  rw [spanNorm, map_span, Set.image_image]
-  -- Porting note: `Function.comp` reducibility
-  rfl
+  rw [spanNorm]
+  nth_rw 2 [map]
+  simp [map_span, Set.image_image]
 
 @[mono]
 theorem spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm R J :=
@@ -161,7 +158,9 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
 
 theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
     spanNorm R I * spanNorm R J ≤ spanNorm R (I * J) := by
-  rw [spanNorm, spanNorm, spanNorm, Ideal.span_mul_span', ← Set.image_mul]
+  rw [spanNorm, spanNorm, spanNorm]
+  nth_rw 1 [map]; nth_rw 1 [map]
+  rw [Ideal.span_mul_span', ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
   rintro _ ⟨x, hxI, y, hyJ, rfl⟩
   exact Ideal.mul_mem_mul hxI hyJ
