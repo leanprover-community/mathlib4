@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Nat.Cast.Defs
