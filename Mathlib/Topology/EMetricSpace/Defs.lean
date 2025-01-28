@@ -25,9 +25,8 @@ theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y`
 to `EMetricSpace` at the end.
 -/
 
-assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists IsUniformEmbedding
-assert_not_exists TendstoUniformlyOnFilter
+
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
 
 open Filter Set Topology
 
@@ -276,8 +275,15 @@ instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricS
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
-the original pseudodistance, by definition -/
+the original pseudodistance, by definition. -/
 theorem Subtype.edist_eq {p : α → Prop} (x y : Subtype p) : edist x y = edist (x : α) y := rfl
+
+/-- The extended pseudodistance on a subtype of a pseudoemetric space is the restriction of
+the original pseudodistance, by definition. -/
+@[simp]
+theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
+    edist (⟨x, hx⟩ : Subtype p) ⟨y, hy⟩ = edist x y :=
+  rfl
 
 namespace MulOpposite
 
@@ -590,7 +596,7 @@ theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
-  eq_of_edist_eq_zero (eq_of_le_of_forall_le_of_dense bot_le h)
+  eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.

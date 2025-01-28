@@ -49,7 +49,7 @@ alias snorm'_add_le_of_le_one := eLpNorm'_add_le_of_le_one
 theorem eLpNormEssSup_add_le {f g : α → E} :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
   refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
-  simp_rw [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe]
+  simp_rw [Pi.add_apply, enorm_eq_nnnorm, ← ENNReal.coe_add, ENNReal.coe_le_coe]
   exact nnnorm_add_le _ _
 
 @[deprecated (since := "2024-07-27")]
@@ -191,7 +191,7 @@ theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ 
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [zero_mem_ℒp', Finset.sum_empty, imp_true_iff]
+  · simp only [Memℒp.zero', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))

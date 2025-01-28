@@ -27,8 +27,7 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 -/
 
-assert_not_exists One
-assert_not_exists Function.Injective
+assert_not_exists One Function.Injective
 
 universe u v w
 
@@ -141,7 +140,7 @@ variable {G : Type*}
 /-- Class of types that have an inversion operation. -/
 @[to_additive, notation_class]
 class Inv (α : Type u) where
-  /-- Invert an element of α. -/
+  /-- Invert an element of α, denoted by `a⁻¹`. -/
   inv : α → α
 
 @[inherit_doc]

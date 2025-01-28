@@ -71,6 +71,38 @@ assert_not_exists Ideal
 
 open Function
 
+namespace Localization
+
+open IsLocalization
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (S : Submonoid (R i))
+
+/-- `IsLocalization.map` applied to a projection homomorphism from a product ring. -/
+noncomputable abbrev mapPiEvalRingHom :
+    Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
+  map (T := S) _ (Pi.evalRingHom R i) le_rfl
+
+open Function in
+theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
+  let T := S.comap (Pi.evalRingHom R i)
+  classical
+  refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
+  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective T x₁
+    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective T x₂
+    simp_rw [map_mk'] at eq
+    rw [IsLocalization.eq] at eq ⊢
+    obtain ⟨s, hs⟩ := eq
+    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    obtain rfl | ne := eq_or_ne j i
+    · simpa using hs
+    · simp [update_of_ne ne]
+  · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
+    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
+      by simp [map_mk']⟩
+
+end Localization
+
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {M N : Submonoid R} {S : Type*} [CommSemiring S]
@@ -263,6 +295,11 @@ theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalizatio
     [Algebra R P] : IsLocalization M P ↔ IsLocalization N P :=
   ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
     fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
+
+theorem iff_of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization M S ↔ IsLocalization N S :=
+  have : IsLocalization N (Localization M) := of_le_of_exists_dvd _ _ h₁ h₂
+  isLocalization_iff_of_isLocalization _ _ (Localization M)
 
 end
 

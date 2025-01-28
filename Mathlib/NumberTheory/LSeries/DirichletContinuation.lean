@@ -334,7 +334,7 @@ noncomputable abbrev LFunctionTrivChar₁ : ℂ → ℂ :=
     (∏ p ∈ n.primeFactors, (1 - (p : ℂ)⁻¹))
 
 lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 := by
-  simp only [Function.update_same]
+  simp only [Function.update_self]
   refine Finset.prod_ne_zero_iff.mpr fun p hp ↦ ?_
   simpa only [ne_eq, sub_ne_zero, one_eq_inv, Nat.cast_eq_one]
     using (Nat.prime_of_mem_primeFactors hp).ne_one
@@ -345,7 +345,7 @@ lemma differentiable_LFunctionTrivChar₁ : Differentiable ℂ (LFunctionTrivCha
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all [hs]))
-   fun _ hs ↦ Function.update_noteq (Set.mem_diff_singleton.mp hs).2 ..,
+   fun _ hs ↦ Function.update_of_ne (Set.mem_diff_singleton.mp hs).2 ..,
     continuousWithinAt_compl_self.mp ?_⟩
   simpa only [continuousWithinAt_compl_self, continuousAt_update_same]
     using LFunctionTrivChar_residue_one
@@ -356,7 +356,7 @@ lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
   have H : deriv (LFunctionTrivChar₁ n) s =
       deriv (fun w ↦ (w - 1) * LFunctionTrivChar n w) s := by
     refine eventuallyEq_iff_exists_mem.mpr ?_ |>.deriv_eq
-    exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_noteq (Set.mem_setOf.mp hw) ..⟩
+    exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_of_ne (Set.mem_setOf.mp hw) ..⟩
   rw [H, deriv_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
     deriv_id'', one_mul, add_comm]
 
@@ -371,7 +371,7 @@ lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
     h.continuous.continuousOn fun w hw ↦ ?_).neg
   rcases eq_or_ne w 1 with rfl | hw'
   · exact LFunctionTrivChar₁_apply_one_ne_zero _
-  · rw [LFunctionTrivChar₁, Function.update_noteq hw', mul_ne_zero_iff]
+  · rw [LFunctionTrivChar₁, Function.update_of_ne hw', mul_ne_zero_iff]
     exact ⟨sub_ne_zero_of_ne hw', (Set.mem_setOf.mp hw).resolve_left hw'⟩
 
 end trivial

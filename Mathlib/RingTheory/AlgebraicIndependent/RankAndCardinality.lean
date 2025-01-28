@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
@@ -31,8 +32,6 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open scoped Classical
-
 universe u v w
 
 open AlgebraicIndependent
@@ -44,7 +43,7 @@ theorem IsTranscendenceBasis.lift_cardinalMk_eq_max_lift
     {ι : Type w} {x : ι → E} [Nonempty ι] (hx : IsTranscendenceBasis F x) :
     lift.{max u w} #E = lift.{max v w} #F ⊔ lift.{max u v} #ι ⊔ ℵ₀ := by
   let K := Algebra.adjoin F (Set.range x)
-  suffices #E = #K by simp [this, ← lift_mk_eq'.2 ⟨hx.1.aevalEquiv.toEquiv⟩]
+  suffices #E = #K by simp [K, this, ← lift_mk_eq'.2 ⟨hx.1.aevalEquiv.toEquiv⟩]
   haveI : Algebra.IsAlgebraic K E := hx.isAlgebraic
   refine le_antisymm ?_ (mk_le_of_injective Subtype.val_injective)
   haveI : Infinite K := hx.1.aevalEquiv.infinite_iff.1 inferInstance
@@ -60,7 +59,7 @@ theorem IsTranscendenceBasis.lift_rank_eq_max_lift
     MvRatFunc.rank_eq_max_lift, lift_max, lift_max, lift_lift, lift_lift, lift_aleph0]
   refine mul_eq_left le_sup_right ((lift_le.2 ((rank_le_card K E).trans
     (Algebra.IsAlgebraic.cardinalMk_le_max K E))).trans_eq ?_) (by simp [rank_pos.ne'])
-  simp [← lift_mk_eq'.2 ⟨hx.1.aevalEquivField.toEquiv⟩]
+  simp [K, ← lift_mk_eq'.2 ⟨hx.1.aevalEquivField.toEquiv⟩]
 
 theorem Algebra.Transcendental.rank_eq_cardinalMk
     (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E] [Algebra.Transcendental F E] :

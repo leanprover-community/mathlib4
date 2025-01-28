@@ -56,7 +56,7 @@ theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
   rw [zero_add]
   have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_gt hε])
   refine (biInf_le diam this).trans (le_of_le_of_eq diam_ball ?_)
-  exact (ENNReal.mul_div_cancel' (by norm_num) (by norm_num))
+  exact (ENNReal.mul_div_cancel (by norm_num) (by norm_num))
 
 end ContinuousWithinAt
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Topological (sub)algebras
@@ -51,6 +51,10 @@ theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
 theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (algebraMap R A)) :
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
+
+instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
+    [ContinuousSMul A X] : ContinuousSMul S X :=
+  Subsemiring.continuousSMul S.toSubsemiring X
 
 section
 variable [ContinuousSMul R A]
@@ -157,7 +161,7 @@ def Simps.apply (h : A →A[R] B) : A → B := h
 /-- See Note [custom simps projection]. -/
 def Simps.coe (h : A →A[R] B) : A →ₐ[R] B := h
 
-initialize_simps_projections ContinuousAlgHom (toAlgHom_toFun → apply, toAlgHom → coe)
+initialize_simps_projections ContinuousAlgHom (toFun → apply, toAlgHom → coe)
 
 @[ext]
 theorem ext {f g : A →A[R] B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
