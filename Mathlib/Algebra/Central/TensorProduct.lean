@@ -60,7 +60,6 @@ lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K 
   out := (Subalgebra.map_le.mp ((includeLeft_map_center_le K B C).trans hbc.1)).trans
     fun _ ⟨k, hk⟩ ↦ ⟨k, includeLeft_injective (S := K) inj hk⟩
 
-
 lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K C]
     [Algebra.IsCentral K (B ⊗[K] C)] : IsCentral K C :=
   letI : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
