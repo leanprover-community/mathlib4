@@ -519,13 +519,14 @@ theorem helper1 (n : ℕ) :
     omega
   · simp only [implies_true]
 
-theorem extracted_1 (t : ℝ) :
-  MeasureTheory.Integrable (fun a ↦ a⁻¹ * (Real.log a)⁻¹)
-    (MeasureTheory.volume.restrict (Set.Icc (3 / 2) t)) := by
+theorem extracted_1 (a b : ℝ) (ha : 1 < a):
+  MeasureTheory.Integrable (fun t ↦ t⁻¹ * (Real.log t)⁻¹)
+    (MeasureTheory.volume.restrict (Set.Icc a b)) := by
   rw [← MeasureTheory.IntegrableOn]
-  have hsub : Set.Icc (3 / 2) t ⊆ {0}ᶜ := by
-    simp only [Set.subset_compl_singleton_iff, Set.mem_Icc, not_and, not_le, isEmpty_Prop,
-      ofNat_pos, div_pos_iff_of_pos_left, IsEmpty.forall_iff]
+  have hsub : Set.Icc a b ⊆ {0}ᶜ := by
+    simp only [Set.subset_compl_singleton_iff, Set.mem_Icc, not_and, not_le]
+    intros
+    linarith
   apply ((continuousOn_inv₀.mono hsub).mul ((continuousOn_log.mono hsub).inv₀ ?_))
     |>.integrableOn_compact isCompact_Icc
   intro x
@@ -598,7 +599,10 @@ theorem integral_mul_E₁_eq_const_sub_integral (x a : ℝ) (ha : 1 < a) (hx : a
 of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
 
 
-theorem integral_mul_E₁_tail_isBigO (a : ℝ) : (fun x ↦ ∫ (t : ℝ) in Set.Ioi x, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
+theorem integral_mul_E₁_tail_isBigO (a : ℝ) :
+    (fun x ↦ ∫ (t : ℝ) in Set.Ioi x, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t)
+    =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
+
   sorry
 
 
@@ -611,27 +615,33 @@ theorem extracted_2 (t : ℝ) :
   rw [← IntegrableOn]
   apply (integrable_fun_mul_E₁ (3/2) (by linarith)).mono Set.Icc_subset_Ici_self le_rfl
 
-theorem helper2 (t : ℝ) (ht : 3/2 ≤ t) :
-    ∫ (t : ℝ) in Set.Ioc (3 / 2) t, (t⁻¹ * (Real.log t)⁻¹) =
-      Real.log (Real.log t) - Real.log (Real.log (3/2)) := by
-  have hsub : Set.uIcc (3 / 2) t ⊆ {0}ᶜ := by
+theorem hasDerivAt_loglog (x : ℝ) (hx : 1 < x) : HasDerivAt (fun t ↦ Real.log (Real.log t)) (x⁻¹ * (Real.log x)⁻¹) x := by
+  rw [← Function.comp_def, mul_comm]
+  apply (hasDerivAt_log (Real.log_pos hx).ne.symm).comp
+  apply hasDerivAt_log (by linarith)
+
+theorem integral_inv_mul_invlog (a b : ℝ) (ha : 1 < a) (hb : a ≤ b) :
+    ∫ (t : ℝ) in Set.Ioc a b, (t⁻¹ * (Real.log t)⁻¹) =
+      Real.log (Real.log b) - Real.log (Real.log a) := by
+  have hsub : Set.uIcc (3 / 2) b ⊆ {0}ᶜ := by
     simp only [Set.subset_compl_singleton_iff]
     refine Set.not_mem_uIcc_of_lt (by norm_num) (by linarith)
-  have htzero : t ≠ 0 := by linarith
-  have hlogzero : Real.log t ≠ 0 := (Real.log_pos (by linarith)).ne.symm
-  have h {x : ℝ} (hx : 3/2 ≤ x) : HasDerivAt (Real.log ∘ Real.log) (x⁻¹ * (Real.log x)⁻¹) x := by
-    rw [mul_comm]
-    apply HasDerivAt.comp
-    · refine hasDerivAt_log (Real.log_pos (by linarith)).ne.symm
-    · refine hasDerivAt_log (by linarith)
-  rw [← intervalIntegral.integral_of_le ht]
+  have htzero : b ≠ 0 := by linarith
+  have hlogzero : Real.log b ≠ 0 := (Real.log_pos (by linarith)).ne.symm
+  rw [← intervalIntegral.integral_of_le hb]
   apply intervalIntegral.integral_eq_sub_of_hasDerivAt
   · intro x
-    simpa only [h, Set.uIcc_of_le ht, Set.mem_Icc, and_imp] using fun hx _ ↦ h hx
+    simpa only [hasDerivAt_loglog, Set.uIcc_of_le hb, Set.mem_Icc, and_imp] using
+      fun h _ ↦ hasDerivAt_loglog _ (by linarith)
   apply MeasureTheory.IntegrableOn.intervalIntegrable
-  rw [Set.uIcc_of_le ht, MeasureTheory.IntegrableOn]
-  exact extracted_1 t
+  rw [Set.uIcc_of_le hb, MeasureTheory.IntegrableOn]
+  exact extracted_1 a b ha
 
+
+theorem integral_stuff (a b : ℝ) (ha : 1 < a) (hb : a ≤ b) :
+    ∫ (t : ℝ) in Set.Icc a b, t⁻¹ * (Real.log t)⁻¹ = Real.log (Real.log b) - Real.log (Real.log a) := by
+
+  sorry
 
 def Mertens₂Const : ℝ := sorry
 
@@ -722,6 +732,7 @@ theorem mertens_second : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1),
       ring
     _ =
      (1 + (Real.log t)⁻¹ * E₁ t) +
-        ((∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹) + ∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) := by
-      rw [MeasureTheory.integral_add (extracted_1 _) (extracted_2 _)]
+        ((∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹) +
+          ∫ (t : ℝ) in Set.Icc (3 / 2) t, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) := by
+      rw [MeasureTheory.integral_add (extracted_1 _ _ (by linarith)) (extracted_2 _)]
   sorry
