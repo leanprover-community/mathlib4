@@ -110,7 +110,7 @@ or one of the several other available constructors for `IndepMatroid`,
 and the `_` represent the proofs that this constructor requires.
 
 After such a definition is made, the facts that `myMatroid.Indep = myIndep` and `myMatroid.E = E`
-are true by either `rfl` or `simp`.
+are true by either `rfl` or `simp [myMatroid]`.
 -/
 structure IndepMatroid (α : Type*) where
   /-- The ground set -/
