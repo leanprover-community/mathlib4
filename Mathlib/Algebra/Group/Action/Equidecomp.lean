@@ -112,7 +112,7 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
   decomp' := ⟨f.elements,
-    f.decomp.mono (source_restr_subset_source _ _) (by exact fun ⦃x⦄ ↦ congrFun rfl)⟩
+    f.decomp.mono (source_restr_subset_source _ _) fun _ ↦ congrFun rfl⟩
 
 @[simp]
 theorem restr_toPartialEquiv (f : Equidecomp X G) (A : Set X) :
