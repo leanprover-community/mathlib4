@@ -225,12 +225,9 @@ end Diagonal
 section Diag
 
 /-- The diagonal of a square matrix. -/
--- @[simp] -- Porting note: simpNF does not like this.
 def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 
--- Porting note: new, because of removed `simp` above.
--- TODO: set as an equation lemma for `diag`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl

@@ -266,8 +266,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
   swap; · rw [← sub_ne_zero]; simp [ht]
   rw [← integrable_norm_iff]
   swap
-  · refine AEMeasurable.aestronglyMeasurable ?_
-    exact AEMeasurable.mul (by fun_prop) (measurable_exp.comp_aemeasurable (by fun_prop))
+  · exact AEMeasurable.aestronglyMeasurable <| by fun_prop
   simp only [norm_mul, norm_pow, norm_eq_abs, sq_abs, abs_exp]
   have h_le a : |X a| ^ p * exp (v * X a + x * |X a|)
       ≤ (p / (|t| - x)) ^ p * exp (v * X a + |t| * |X a|) := by
