@@ -196,8 +196,9 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
     simp only [forget_map_eq_coe]
-    erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← comp_apply, ← comp_apply,
-      colimit.ι_desc_assoc, ← comp_apply, ← comp_apply, colimit.ι_desc_assoc]
+    erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← CategoryTheory.comp_apply,
+      ← CategoryTheory.comp_apply, colimit.ι_desc_assoc, ← CategoryTheory.comp_apply,
+      ← CategoryTheory.comp_apply, colimit.ι_desc_assoc]
       -- previous line now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
