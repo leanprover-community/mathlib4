@@ -129,7 +129,7 @@ partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
     catch _ => pure <| Poly.var (← addAtom e).1
-  let e ← withReducible <| withConfig ({ · with zetaDelta := false }) <| whnf e
+  let e : Q($α) ← withReducible <| withConfig ({ · with zetaDelta := false }) <| whnf e
   let .const n _ := e.getAppFn | els
   match n, c.rα with
   | ``HAdd.hAdd, _ | ``Add.add, _ => match e with

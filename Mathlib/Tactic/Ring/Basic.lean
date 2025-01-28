@@ -1103,7 +1103,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   let els := do
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
-  let e ← withReducible <| withConfig ({ · with zetaDelta := false }) <| whnf e
+  let e : Q($α) ← withReducible <| withConfig ({ · with zetaDelta := false }) <| whnf e
   let .const n _ := e.getAppFn | els
   match n, c.rα, c.dα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
