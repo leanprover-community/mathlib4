@@ -84,11 +84,19 @@ Computes the hash of a file, which mixes:
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
-partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
+partial def getFileHash (filePath : FilePath) (extraRoots : Array FilePath) :
+    HashM <| Option UInt64 := do
   match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
-    let fixedPath := (← IO.getPackageDir filePath) / filePath
+    -- note: hack to enable cash in downstream projects
+    -- if the `TODO` in `Cache.IO.CacheM.getContext` was resolved, this would
+    -- become superfluous
+    let pkgDir? ← IO.getPackageDir? filePath
+    let fixedPath : FilePath := match pkgDir? with
+      | some pkgDir => pkgDir / filePath
+      | none => filePath
+
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
       if fixedPath.extension != "lean" then
@@ -97,9 +105,17 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
-    let fileImports := getFileImports content (← getPackageDirs)
+
+    let mut packageDirs ← getPackageDirs
+    -- note: adding `extraRoots` as part of the hack mentioned above
+    for extra in extraRoots do
+      let extraPkgDir := extra.withExtension "" |>.components[0]!
+      if !(packageDirs.contains extraPkgDir) then
+        packageDirs := packageDirs.insert extraPkgDir extraPkgDir
+    let fileImports := getFileImports content packageDirs
+
     let mut importHashes := #[]
-    for importHash? in ← fileImports.mapM getFileHash do
+    for importHash? in ← fileImports.mapM (getFileHash (extraRoots := extraRoots)) do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
@@ -119,6 +135,7 @@ def roots : Array FilePath := #["Mathlib.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Array FilePath) : CacheM HashMemo :=
-  return (← StateT.run ((roots ++ extraRoots).mapM getFileHash) { rootHash := ← getRootHash }).2
+  return (← StateT.run ((roots ++ extraRoots).mapM (getFileHash (extraRoots := extraRoots)))
+    { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

@@ -152,12 +152,17 @@ def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
 
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
-def getPackageDir (path : FilePath) : CacheM FilePath := do
+def getPackageDir? (path : FilePath) : CacheM <| Option FilePath := do
   match path.withExtension "" |>.components.head? with
   | none => throw <| IO.userError "Can't find package directory for empty path"
   | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
+    | none => return none
     | some path => return path
+
+def getPackageDir! (path : FilePath) : CacheM FilePath := do
+  match ← getPackageDir? path with
+  | none => throw <| IO.userError s!"Unknown package directory for {path}"
+  | some pkg => pure pkg
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
@@ -288,7 +293,7 @@ Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
 def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir path
+  let packageDir ← getPackageDir! path
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),

@@ -126,8 +126,9 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.FS.removeFile IO.CURLCFG
       if success + failed < done then
         IO.eprintln "Warning: some files were not found in the cache."
-        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
+        IO.eprintln "* If you have mathlib4 as a dependency, this is expected, but you can use `lake clean mathlib` if the cache is not applied."
+        IO.eprintln "* If you are on a clone of mathlib4, this usually means that your local checkout has diverged from upstream."
+        IO.eprintln "  If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
