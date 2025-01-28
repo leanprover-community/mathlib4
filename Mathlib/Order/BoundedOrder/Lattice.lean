@@ -34,11 +34,9 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α]
 
--- Porting note: Not simp because simp can prove it
 theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
   sup_of_le_left le_top
 
--- Porting note: Not simp because simp can prove it
 theorem sup_top_eq (a : α) : a ⊔ ⊤ = ⊤ :=
   sup_of_le_right le_top
 
@@ -48,11 +46,9 @@ section SemilatticeSupBot
 
 variable [SemilatticeSup α] [OrderBot α] {a b : α}
 
--- Porting note: Not simp because simp can prove it
 theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a :=
   sup_of_le_right bot_le
 
--- Porting note: Not simp because simp can prove it
 theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a :=
   sup_of_le_left bot_le
 
@@ -65,10 +61,8 @@ section SemilatticeInfTop
 
 variable [SemilatticeInf α] [OrderTop α] {a b : α}
 
--- Porting note: Not simp because simp can prove it
 lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_le_right le_top
 
--- Porting note: Not simp because simp can prove it
 lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 
 @[simp]
@@ -81,10 +75,8 @@ section SemilatticeInfBot
 
 variable [SemilatticeInf α] [OrderBot α]
 
--- Porting note: Not simp because simp can prove it
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
 
--- Porting note: Not simp because simp can prove it
 lemma inf_bot_eq (a : α) : a ⊓ ⊥ = ⊥ := inf_of_le_right bot_le
 
 end SemilatticeInfBot

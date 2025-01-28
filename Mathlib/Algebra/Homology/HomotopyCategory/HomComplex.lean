@@ -31,6 +31,8 @@ We follow the signs conventions appearing in the introduction of
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Preadditive
 
 universe v u

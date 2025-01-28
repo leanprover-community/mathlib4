@@ -41,11 +41,8 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally smooth if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`.
-
-See <https://stacks.math.columbia.edu/tag/00TI>.
--/
-@[mk_iff]
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
+@[mk_iff, stacks 00TI]
 class FormallySmooth : Prop where
   comp_surjective :
     ∀ ⦃B : Type u⦄ [CommRing B],
@@ -98,7 +95,7 @@ theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 @[simp]
 theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
-  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g : _) x
+  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
 
 variable {C : Type u} [CommRing C] [Algebra R C]
 
@@ -202,7 +199,7 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
     refine Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) ?_
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
-      have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
+      have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x :)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
     have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
@@ -343,12 +340,9 @@ section
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
-/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation.
-
-In the stacks project, the definition of smooth is completely different, and tag
-<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent
-to this.
--/
+/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
+@[stacks 00T2 "In the stacks project, the definition of smooth is completely different, and tag
+<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent to this."]
 class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
   formallySmooth : FormallySmooth R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance

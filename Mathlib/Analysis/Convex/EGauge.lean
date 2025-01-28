@@ -61,6 +61,14 @@ lemma egauge_eq_top : egauge 𝕜 s x = ∞ ↔ ∀ c : 𝕜, x ∉ c • s := b
 lemma egauge_lt_iff : egauge 𝕜 s x < r ↔ ∃ c : 𝕜, x ∈ c • s ∧ ‖c‖₊ < r := by
   simp [egauge, iInf_lt_iff]
 
+lemma egauge_union (s t : Set E) (x : E) : egauge 𝕜 (s ∪ t) x = egauge 𝕜 s x ⊓ egauge 𝕜 t x := by
+  unfold egauge
+  simp [smul_set_union, iInf_or, iInf_inf_eq]
+
+lemma le_egauge_inter (s t : Set E) (x : E) :
+    egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=
+  max_le (egauge_anti _ inter_subset_left _) (egauge_anti _ inter_subset_right _)
+
 end SMul
 
 section SMulZero
@@ -159,6 +167,23 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     rw [inv_smul_smul₀ hc]
 
 end Module
+
+section VectorSpace
+
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+
+theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
+    egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  refine le_of_forall_lt' fun c hc ↦ ?_
+  simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
+  rcases hc with ⟨⟨x, hx, hxc⟩, ⟨y, hy, hyc⟩⟩
+  wlog hxy : ‖x‖ ≤ ‖y‖ generalizing a b x y U V
+  · simpa only [add_comm] using this hV hU b a y hy hyc x hx hxc (le_of_not_le hxy)
+  refine ⟨y, ?_, hyc⟩
+  rw [smul_add]
+  exact add_mem_add (hU.smul_mono hxy hx) hy
+
+end VectorSpace
 
 section SeminormedAddCommGroup
 

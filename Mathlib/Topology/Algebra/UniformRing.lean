@@ -191,13 +191,13 @@ theorem map_smul_eq_mul_coe (r : R) :
   · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
-instance algebra : Algebra R (Completion A) :=
-  { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
-    commutes' := fun r x =>
-      Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
-        fun a => by
-        simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
-    smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x }
+instance algebra : Algebra R (Completion A) where
+  algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
+  commutes' := fun r x =>
+    Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
+      fun a => by
+      simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
+  smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x
 
 theorem algebraMap_def (r : R) :
     algebraMap R (Completion A) r = (algebraMap R A r : Completion A) :=
@@ -232,16 +232,6 @@ theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [Topolog
     inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
-
-@[deprecated (since := "2024-03-09")]
-alias ring_sep_rel := inseparableSetoid_ring
-
--- Equality of types is evil
-@[deprecated UniformSpace.inseparableSetoid_ring (since := "2024-02-16")]
-theorem ring_sep_quot (α : Type u) [r : CommRing α] [TopologicalSpace α] [TopologicalRing α] :
-    SeparationQuotient α = (α ⧸ (⊥ : Ideal α).closure) := by
-  rw [SeparationQuotient, @inseparableSetoid_ring α r]
-  rfl
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
