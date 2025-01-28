@@ -48,12 +48,10 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   have e1 : (l * l).support ⊆ l.support := by
     rw [← e0]
     apply Finsupp.support_mul
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset (l * l) (e1) (fun i a => a • (⇑Q ∘ g) i) (by
-    intro i hi
-    simp only [Function.comp_apply, zero_smul]
-  )]
-  simp_all only [Finset.inter_self, mul_apply, Function.comp_apply]
-  simp_rw [←smul_eq_mul, smul_assoc]
+  rw [Finsupp.sum, Finsupp.sum_of_support_subset (l * l) (e1) (fun i a => a • (⇑Q ∘ g) i)
+    (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
+  simp only [Finset.inter_self, mul_apply, Function.comp_apply]
+  simp only [←smul_eq_mul, smul_assoc]
 
 -- c.f. `LinerMap.sum_repr_mul_repr_mul`
 open Finsupp in
