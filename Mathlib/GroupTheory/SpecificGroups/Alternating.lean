@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Fintype.Units
@@ -30,12 +30,15 @@ consisting of the even permutations.
   The proof shows that the normal closure of any non-identity element of this group contains a
   3-cycle.
 
+* `alternatingGroup.isCharacteristic` shows that the alternating group is characteristic
+
 ## Tags
 alternating group permutation
 
 
 ## TODO
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
+* Show that `alternatingGroup α` is the only subgroup of index 2
 
 -/
 
@@ -201,6 +204,17 @@ namespace alternatingGroup
 
 open Equiv.Perm
 
+theorem eq_bot_of_card_le_two (h2 : card α ≤ 2) : alternatingGroup α = ⊥ := by
+  by_cases hα : Nontrivial α
+  · suffices hα' : card α = 2 by
+      rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by norm_num),
+        Nat.card_eq_fintype_card, two_mul_card_alternatingGroup, mul_one, card_perm, hα',
+        Nat.factorial_two]
+    rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.succ_le_iff] at hα
+    exact le_antisymm h2 hα
+  · rw [not_nontrivial_iff_subsingleton] at hα
+    apply eq_bot_of_subsingleton
+
 theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
   haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
   rw [← Fintype.one_lt_card_iff_nontrivial]
@@ -333,5 +347,47 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
+
+/-- The alternating group is a characteristic subgroup -/
+theorem isCharacteristic : (alternatingGroup α).Characteristic := by
+  cases' subsingleton_or_nontrivial α with hα hα
+  -- hα : subsingleton α
+  · convert Subgroup.botCharacteristic
+    apply eq_bot_of_subsingleton
+  -- hα : nontrivial α
+  apply Subgroup.Characteristic.mk
+  intro e
+  rw [alternatingGroup_eq_sign_ker, MonoidHom.comap_ker]
+  set s := sign.comp e.toMonoidHom with s_def
+  have hs : Function.Surjective s :=  by
+    simp only [s_def, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
+      EquivLike.surjective_comp]
+    exact Equiv.Perm.sign_surjective α
+  obtain ⟨g', hg'⟩ := hs (-1)
+  have hg' : s g' ≠ 1 := by
+    rw [hg', ← bne_iff_ne]
+    rfl
+  apply congr_arg
+  ext g
+  simp only [s_def, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom, Function.comp_apply]
+  apply congr_arg
+  refine swap_induction_on g ?_ ?_
+  · rw [map_one, sign.map_one]
+  · intro f x y hxy hf
+    simp only [map_mul, hf]
+    apply congr_arg₂ _ _ rfl
+    revert x y hxy
+    by_contra h
+    push_neg at h
+    obtain ⟨a, b, hab, hk⟩ := h
+    rw [sign_swap hab] at hk
+    let hk := Or.resolve_right (Int.units_eq_one_or (s _)) hk
+    apply hg'
+    refine swap_induction_on g' s.map_one ?_
+    intro f x y hxy hf
+    rw [s.map_mul, hf, mul_one]
+    obtain ⟨u, hu⟩ := isConj_swap hxy hab
+    apply mul_left_cancel (a := s u)
+    rw [← s.map_mul, SemiconjBy.eq hu, s.map_mul, hk, mul_one, one_mul]
 
 end alternatingGroup
