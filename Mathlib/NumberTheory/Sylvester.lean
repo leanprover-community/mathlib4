@@ -170,21 +170,17 @@ theorem sylvesterConstant_pos : 0 < sylvesterConstant := by
 
 private theorem sylvester_le_const_pow {n : ℕ} :
     sylvester n ≤ sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 := by
-  suffices h : sylvesterBelow n ≤ sylvesterConstant by
-    rw [← tsub_le_iff_right, one_div]
-    exact_mod_cast (Real.rpow_inv_le_iff_of_pos (by linarith [cast_one_lt_sylvester n])
-      (by linarith [sylvesterConstant_pos]) (by positivity)).mp h
-  exact le_ciSup sylvesterBelow_bddAbove _
+  rw [← tsub_le_iff_right, one_div]
+  exact_mod_cast (Real.rpow_inv_le_iff_of_pos (by linarith [cast_one_lt_sylvester n])
+    (by linarith! [sylvesterConstant_pos]) (by positivity)).mp <| le_ciSup sylvesterBelow_bddAbove _
 
 private theorem const_pow_lt_sylvester_add_one {n : ℕ} :
     sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 < sylvester n + 1 := by
-  suffices h : sylvesterConstant < sylvesterAbove n by
-    rw [← lt_tsub_iff_right, add_sub_assoc, sub_self_div_two, one_div]
-    exact_mod_cast (Real.lt_rpow_inv_iff_of_pos (by linarith [sylvesterConstant_pos])
-      (by positivity) (by positivity)).mp h
-  suffices h : sylvesterConstant ≤ sylvesterAbove (n + 1) by
-    linarith [sylvesterAbove_strictAnti ((by linarith) : n < n + 1)]
-  exact ciSup_le (sylvesterBelow_le_sylvesterAbove · _)
+  rw [← lt_tsub_iff_right, add_sub_assoc, sub_self_div_two, one_div]
+  exact_mod_cast (Real.lt_rpow_inv_iff_of_pos
+    (by linarith! [sylvesterConstant_pos]) (by positivity) (by positivity)).mp
+    <| lt_of_le_of_lt (ciSup_le (sylvesterBelow_le_sylvesterAbove · (n + 1)))
+      (sylvesterAbove_strictAnti ((by linarith) : n < n + 1))
 
 /--
 Explicit formula for the Sylvester's sequence:
