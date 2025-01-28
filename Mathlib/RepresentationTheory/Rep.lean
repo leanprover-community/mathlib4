@@ -102,7 +102,6 @@ abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
 
 variable {k G}
 
-@[simp]
 theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id :=
   rfl
