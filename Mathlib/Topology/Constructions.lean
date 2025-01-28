@@ -1213,30 +1213,22 @@ theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
     Subtype.preimage_coe_self_inter]
 
 open scoped Set.Notation in
-lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) := isOpen_induced ht
+lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
 
 open scoped Set.Notation in
-lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) := by
-  rw [← isOpen_compl_iff] at ht ⊢
-  exact ht.preimage_val
+lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
 
 open scoped Set.Notation in
 lemma isOpen_inter_of_isOpen_preimage_val {s t : Set X} (hs : IsOpen s) (hst : IsOpen (s ↓∩ t)) :
     IsOpen (s ∩ t) := by
-  rw [isOpen_induced_iff] at hst
-  obtain ⟨u, hu, hust⟩ := hst
-  rw [Subtype.preimage_val_eq_preimage_val_iff] at hust
-  rw [← hust]
-  exact hs.inter hu
+  simpa using hs.isOpenMap_subtype_val _ hst
 
 open scoped Set.Notation in
 lemma isClosed_inter_of_isClosed_preimage_val {s t : Set X} (hs : IsClosed s)
     (hst : IsClosed (s ↓∩ t)) : IsClosed (s ∩ t) := by
-  rw [isClosed_induced_iff] at hst
-  obtain ⟨u, hu, hust⟩ := hst
-  rw [Subtype.preimage_val_eq_preimage_val_iff] at hust
-  rw [← hust]
-  exact hs.inter hu
+  simpa using hs.isClosedMap_subtype_val _ hst
 
 end Subtype
 
