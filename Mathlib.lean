@@ -1589,7 +1589,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
-import Mathlib.Analysis.SpecialFunctions.MulExpNegSq
+import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
