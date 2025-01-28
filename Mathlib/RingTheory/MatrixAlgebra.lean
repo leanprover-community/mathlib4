@@ -185,7 +185,7 @@ theorem matrixTensorAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix
   (matrixTensorAlgEquiv R A B m n).apply_eq_iff_eq_symm_apply.2 <|
     matrixTensorAlgEquiv_symm_stdBasisMatrix_tmul _ _ _ _ _ _ _ _ _ _ _ |>.symm
 
-attribute [ext] ext_stdBasisMatrix
+attribute [local ext] ext_stdBasisMatrix
 open scoped Kronecker
 @[simp]
 theorem matrixTensorAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
@@ -197,5 +197,4 @@ theorem matrixTensorAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
   ext ia ja a ib jb b : 4
   dsimp
   rw [matrixTensorAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix,
-    kroneckerMap_stdBasisMatrix_stdBasisMatrix]
-  all_goals simp
+    stdBasisMatrix_kroneckerTMul_stdBasisMatrix]

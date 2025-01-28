@@ -136,6 +136,7 @@ def stdBasisMatrixLinearMap (i : m) (j : n) : α →ₗ[R] Matrix m n α where
   map_smul' _ _:= smul_stdBasisMatrix _ _ _ _ |>.symm
 
 /-- Linear maps from matrices are equal if they agree on the standard basis. -/
+@[local ext]
 theorem ext_stdBasisMatrix [Fintype m] [Fintype n] ⦃f g : Matrix m n α →ₗ[R] β⦄
     (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap i j = g ∘ₗ stdBasisMatrixLinearMap i j) :
     f = g := by
