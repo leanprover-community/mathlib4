@@ -22,7 +22,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- Defining the homomorphism in the category R-Alg. -/
+/-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -413,8 +413,8 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type u) (A : Type v)
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R : Type u) (A : Type v) (B : Type w)
+variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -432,6 +432,9 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 /-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
+
+@[simp]
+theorem comp_ofId (φ : A →ₐ[R] B) : φ.comp (Algebra.ofId R A) = Algebra.ofId R B := by ext
 
 section MulDistribMulAction
 
