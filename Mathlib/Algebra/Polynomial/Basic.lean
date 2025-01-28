@@ -8,6 +8,7 @@ import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Theory of univariate polynomials
@@ -53,7 +54,8 @@ in general not be used once the basic API for polynomials is constructed.
 
 noncomputable section
 
-/-- `Polynomial R` is the type of univariate polynomials over `R`.
+/-- `Polynomial R` is the type of univariate polynomials over `R`,
+denoted as `R[X]` within the `Polynomial` namespace.
 
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
