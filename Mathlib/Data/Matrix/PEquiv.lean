@@ -40,7 +40,7 @@ open Matrix
 universe u v
 
 variable {k l m n : Type*}
-variable {α : Type v}
+variable {α β : Type*}
 
 open Matrix
 
@@ -102,20 +102,35 @@ theorem transpose_toMatrix_toPEquiv_apply
   ext
   simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
 
-theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
-    (M : Matrix m n α) : f.toPEquiv.toMatrix * M = M.submatrix f id := by
+theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
+    [Semiring α] (f : l ≃ m) (M : Matrix m n α) :
+    f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
   rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
 
-theorem mul_toMatrix_toPEquiv {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
-    (M : Matrix m n α) : M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
+theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
+    [Semiring α] (M : Matrix l m α) (f : m ≃ n) :
+    (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias mul_toPEquiv_toMatrix := mul_toMatrix_toPEquiv
+
+lemma toMatrix_toPEquiv_mulVec [DecidableEq n] [Fintype n]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
+    σ.toPEquiv.toMatrix *ᵥ a = a ∘ σ := by
+  ext j
+  simp [toMatrix, mulVec, dotProduct]
+
+lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : m → α) :
+    a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ.symm := by
+  classical
+  ext j
+  simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
@@ -177,5 +192,11 @@ theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm
   Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
 
 @[deprecated (since := "2025-01-27")] alias equiv_toPEquiv_toMatrix := toMatrix_toPEquiv_eq
+
+@[simp]
+lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
+  ext i j
+  simp
 
 end PEquiv
