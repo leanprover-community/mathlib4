@@ -58,7 +58,7 @@ lemma LSeriesSummable.abscissaOfAbsConv_le {f : ℕ → ℂ} {s : ℂ} (h : LSer
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ} {x : ℝ}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by
-  refine sInf_le_iff.mpr fun y hy ↦ le_of_forall_le_of_dense fun a ↦ ?_
+  refine sInf_le_iff.mpr fun y hy ↦ le_of_forall_gt_imp_ge_of_dense fun a ↦ ?_
   replace hy : ∀ (a : ℝ), LSeriesSummable f a → y ≤ a := by simpa [mem_lowerBounds] using hy
   cases a with
   | h_real a₀ => exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
