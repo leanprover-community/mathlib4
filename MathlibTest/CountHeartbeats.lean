@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Ring
+import Mathlib.Util.CountHeartbeats
 
 set_option linter.style.header false
 
@@ -33,35 +33,35 @@ mutual -- mutual declarations get ignored
 theorem XY : True := trivial
 end
 
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 -- we use two nested `set_option ... in` to test that the `heartBeats` linter enters both.
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 example : True := trivial
 
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 example : True := trivial
 
-/-- info: 'YX' used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'YX' used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 theorem YX : True := trivial
 
 -- Test it goes into local `open in`
-/-- info: 'a' used 8 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'a' used 5 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 open Lean Meta in
 theorem a : True := trivial
 
-/-- info: 'b' used 56 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'b' used 30 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 variable (n : Nat) in
 open Lean in
 theorem b : n ≥ 0 := by
-  simp only [ge_iff_le, zero_le]
+  simp only [ge_iff_le, Nat.zero_le]
 
 -- -- Test that local namespaces work (currently broken):
 --
@@ -90,27 +90,27 @@ mutual -- mutual declarations get ignored
 theorem XY' : True := trivial
 end
 
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 -- we use two nested `set_option ... in` to test that the `heartBeats` linter enters both.
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 example : True := trivial
 
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 example : True := trivial
 
-/-- info: 'YX'' used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'YX'' used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 theorem YX' : True := trivial
 
-/-- info: 'XX' used 182 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'XX' used 93 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-theorem XX (a : ℤ) : (3 : ℤ) + 4 + 5 + a - a = 12 := by
-  ring
+theorem XX : 3 + 4 + 5 = 12 := by
+  decide
 
 end using_linter_option
 
@@ -120,13 +120,13 @@ Test: `#count_heartbeats in` and `set_option linter.countHeartbeats true` should
 the same result.
 -/
 
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 #count_heartbeats in
 theorem YX'₂ : True := trivial
 
-/-- info: Used 182 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 93 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 #count_heartbeats in
-theorem XX₂ (a : ℤ): (3 : ℤ) + 4 + 5 + a - a = 12 := by
-  ring
+theorem XX₂ : 3 + 4 + 5 = 12 := by
+  decide
