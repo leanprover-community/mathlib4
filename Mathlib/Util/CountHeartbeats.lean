@@ -220,7 +220,7 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let mut msgs := #[]
-  if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
+  if [``Lean.Parser.Command.declaration, `lemma, ``Lean.Parser.Command.in].contains stx.getKind then
     let s ← get
     withNamespace `CountHeartbeatsPrivateNamespace <|
       elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))

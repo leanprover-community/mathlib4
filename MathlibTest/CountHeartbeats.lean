@@ -51,15 +51,16 @@ set_option linter.unusedTactic false in
 theorem YX : True := trivial
 
 -- Test it goes into local `open in`
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'a' used 8 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 open Lean Meta in
-example : True := trivial
+theorem a : True := trivial
 
-/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'b' used 56 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 variable (n : Nat) in
-example : n ≥ 0 := by
+open Lean in
+theorem b : n ≥ 0 := by
   simp only [ge_iff_le, zero_le]
 
 -- Test that local namespaces work:
@@ -74,7 +75,6 @@ info: 'MyNamespace.dependent' used 32 heartbeats, which is less than the current
 -/
 #guard_msgs in
 theorem MyNamespace.dependent (m n : Nat) : m + n = n + m := helper m n
-
 
 end using_count_heartbeats
 
@@ -103,9 +103,9 @@ set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 theorem YX' : True := trivial
 
-/-- info: 'XX' used 188 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: 'XX' used 182 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-theorem XX : (3 : ℤ) + 4 + 5 + a - a = 12 := by
+theorem XX (a : ℤ) : (3 : ℤ) + 4 + 5 + a - a = 12 := by
   ring
 
 end using_linter_option
@@ -114,7 +114,6 @@ end using_linter_option
 /-
 Test: `#count_heartbeats in` and `set_option linter.countHeartbeats true` should return
 the same result.
-TODO: why is there one heartbeat difference in the second example?
 -/
 
 /-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
@@ -122,8 +121,8 @@ TODO: why is there one heartbeat difference in the second example?
 #count_heartbeats in
 theorem YX'₂ : True := trivial
 
-/-- info: Used 187 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used 182 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 #count_heartbeats in
-theorem XX₂ : (3 : ℤ) + 4 + 5 + a - a = 12 := by
+theorem XX₂ (a : ℤ): (3 : ℤ) + 4 + 5 + a - a = 12 := by
   ring
