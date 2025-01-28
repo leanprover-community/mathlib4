@@ -496,7 +496,7 @@ theorem dvd_of_valued_lt {x : FiniteAdeleRing R K} {r : nonZeroDivisors R}
     · exact le_of_lt <| hvS v hv
     · have : Valued.v (algebraMap _ (v.adicCompletion K) r.val) = 1 := by
         rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef]
-        exact le_antisymm (v.intValuation_le_one _)
+        apply le_antisymm (v.intValuation_le_one _)
           (not_lt.1 <| (v.intValuation_lt_one_iff_dvd _).1.mt <| (hS v).mt hv)
       exact this ▸ hvnS v hv
   choose a ha using fun v =>
@@ -553,7 +553,7 @@ open Topology TopologicalRing in
 /-- The topologies of the integral adeles when viewed as a subspace of
 `ProdAdicCompletions R K` and as a subspace of the finite adele ring coincide. -/
 theorem algebraMap_inducing : IsInducing (algebraMap (R_hat R K) (FiniteAdeleRing R K)):= by
-  rw [TopologicalRing.isInducing_iff_nhds_zero]
+  rw [TopologicalAddGroup.isInducing_iff_nhds_zero]
   refine Filter.ext (fun U => ⟨fun hU => ?_, mem_nhds_comap_algebraMap R K⟩)
   exact ⟨algebraMap (R_hat R K) (FiniteAdeleRing R K) '' U, algebraMap_image_mem_nhds R K hU,
     by rw [(algebraMap_injective R K).preimage_image]⟩
