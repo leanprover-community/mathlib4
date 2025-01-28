@@ -40,8 +40,7 @@ open Function
 namespace NeZero
 variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
 
-#adaptation_note
-/--
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 We name `neZero` so it can be used as a named argument,
 but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
 so we need to disable the linter.
