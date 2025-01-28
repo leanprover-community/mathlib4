@@ -154,13 +154,13 @@ instance instUnique [Unique A] : Unique (CStarMatrix m n A) :=
 instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
   inferInstanceAs <| Subsingleton <| m → n → A
 
-instance instNonempty [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
+instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
   Function.nontrivial
 
-instance instSmul [SMul R A] : SMul R (CStarMatrix m n A) :=
+instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
   Pi.instSMul
 
-instance instSmulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
+instance instSMulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
     SMulCommClass R S (CStarMatrix m n A) :=
   Pi.smulCommClass
 
