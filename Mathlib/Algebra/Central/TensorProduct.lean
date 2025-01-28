@@ -63,13 +63,13 @@ lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K
   letI : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
   left_of_tensor K C B inj
 
-lemma left_of_tensor' (K : Type u) [Field K] (A B : Type v) [Ring A] [Ring B] [Nontrivial B]
+lemma left_of_tensor' (K A B : Type*) [Field K] [Ring A] [Ring B] [Nontrivial B]
     [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K A :=
-    left_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K B
+  left_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K B
 
-lemma right_of_tensor' (K : Type u) [Field K] (A B : Type v) [Ring A] [Ring B] [Nontrivial A]
+lemma right_of_tensor' (K A B : Type*) [Field K] [Ring A] [Ring B] [Nontrivial A]
     [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K B :=
-    right_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K A
+  right_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K A
 
 
 end Algebra.IsCentral
