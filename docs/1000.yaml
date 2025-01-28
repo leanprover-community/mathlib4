@@ -554,6 +554,9 @@ Q594571:
 
 Q595466:
   title: Dini's theorem
+  decl: Monotone.tendstoUniformlyOn_of_forall_tendsto
+  authors: Jireh Loreaux
+  date: 2024
 
 Q599876:
   title: Cochran's theorem
