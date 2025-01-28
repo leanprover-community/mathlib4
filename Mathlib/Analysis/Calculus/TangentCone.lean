@@ -232,6 +232,7 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable {x y : E} {s t : Set E}
+
 /-- The tangent cone at a non-isolated point contains `0`. -/
 theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
     0 ∈ tangentConeAt 𝕜 s x := by
