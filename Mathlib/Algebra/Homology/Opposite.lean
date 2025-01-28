@@ -280,6 +280,7 @@ lemma ExactAt.unop {K : HomologicalComplex Vᵒᵖ c} {i : ι} (h : K.ExactAt i)
     K.unop.ExactAt i :=
   ShortComplex.Exact.unop h
 
+@[simp]
 lemma exactAt_op_iff (K : HomologicalComplex V c) {i : ι} :
     K.op.ExactAt i ↔ K.ExactAt i :=
   ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
