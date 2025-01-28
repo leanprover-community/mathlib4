@@ -63,7 +63,7 @@ open Lean in
 theorem b : n ≥ 0 := by
   simp only [ge_iff_le, zero_le]
 
--- -- Test that local namespaces work:
+-- -- Test that local namespaces work (currently broken):
 --
 -- /--
 -- info: 'MyNamespace.helper' used 32 heartbeats, which is less than the current maximum of 200000.
