@@ -50,6 +50,32 @@ set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
 theorem YX : True := trivial
 
+-- Test it goes into local `open in`
+/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+#guard_msgs in
+open Lean Meta in
+example : True := trivial
+
+/-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
+#guard_msgs in
+variable (n : Nat) in
+example : n ≥ 0 := by
+  simp only [ge_iff_le, zero_le]
+
+-- Test that local namespaces work:
+
+/--
+info: 'MyNamespace.helper' used 32 heartbeats, which is less than the current maximum of 200000.
+-/
+#guard_msgs in
+theorem MyNamespace.helper (m n : Nat) : m + n = n + m := Nat.add_comm m n
+/--
+info: 'MyNamespace.dependent' used 32 heartbeats, which is less than the current maximum of 200000.
+-/
+#guard_msgs in
+theorem MyNamespace.dependent (m n : Nat) : m + n = n + m := helper m n
+
+
 end using_count_heartbeats
 
 section using_linter_option
@@ -88,7 +114,7 @@ end using_linter_option
 /-
 Test: `#count_heartbeats in` and `set_option linter.countHeartbeats true` should return
 the same result.
-TODO: why is is one hearbeat difference in the second example?
+TODO: why is there one heartbeat difference in the second example?
 -/
 
 /-- info: Used 4 heartbeats, which is less than the current maximum of 200000. -/
