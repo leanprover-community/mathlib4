@@ -7,7 +7,7 @@ Authors: Sina Hazratpour, Joël Riou
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
-# (Co)limits in a preoder category
+# (Co)limits in a preorder category
 
 We provide basic results about the nullary and binary (co)products in the associated category of
 a preordered type.
