@@ -295,7 +295,7 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
     _ ≤ (L'.map f).sum := listSum_le f L'
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
   simp only [hL', List.mapIdx_eq_zipIdx_map, List.map_map]
-  refine List.sum_le_sum fun ⟨i, a⟩ hia ↦ ?_
+  refine List.sum_le_sum fun ⟨a, i⟩ hia ↦ ?_
   dsimp only [Function.comp_apply, Function.uncurry_apply_pair]
   replace hia := List.mem_zipIdx hia
   push_cast
