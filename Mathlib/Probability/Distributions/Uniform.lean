@@ -39,7 +39,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
@@ -153,11 +153,11 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
       (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
   refine hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) ?_
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
-  have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
+  have : ∀ x, ‖x‖ₑ * s.indicator ind x = s.indicator (fun x => ‖x‖ₑ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
   simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
-  rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
+  rw [lintegral_mul_const _ measurable_enorm]
   exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
     (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne
 
@@ -193,6 +193,7 @@ lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X
   unfold uniformPDF
   exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
 
+open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
