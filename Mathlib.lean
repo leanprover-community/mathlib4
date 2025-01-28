@@ -1932,6 +1932,7 @@ import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 import Mathlib.CategoryTheory.Limits.Indization.Products
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
@@ -3085,7 +3086,6 @@ import Mathlib.Deprecated.Cardinal.Finite
 import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Combinator
 import Mathlib.Deprecated.Equiv
-import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.HashMap
 import Mathlib.Deprecated.LazyList
 import Mathlib.Deprecated.Logic
@@ -3093,11 +3093,6 @@ import Mathlib.Deprecated.MinMax
 import Mathlib.Deprecated.NatLemmas
 import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RelClasses
-import Mathlib.Deprecated.Ring
-import Mathlib.Deprecated.Subfield
-import Mathlib.Deprecated.Subgroup
-import Mathlib.Deprecated.Submonoid
-import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
