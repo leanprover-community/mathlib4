@@ -214,3 +214,20 @@ theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
   isNoetherian_of_fg_of_noetherian _ (fg_adjoin_of_finite s.finite_toSet hs)
 
 end
+
+section Prod
+
+variable {R A B : Type*}
+variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+
+/-- An element of a product algebra is integral if each component is integral. -/
+theorem IsIntegral.pair {x : A × B} (hx₁ : IsIntegral R x.1) (hx₂ : IsIntegral R x.2) :
+    IsIntegral R x := by
+  obtain ⟨p₁, ⟨hp₁Monic, hp₁Eval⟩⟩ := hx₁
+  obtain ⟨p₂, ⟨hp₂Monic, hp₂Eval⟩⟩ := hx₂
+  refine ⟨p₁ * p₂, ⟨hp₁Monic.mul hp₂Monic, ?_⟩⟩
+  rw [← aeval_def] at *
+  rw [aeval_prod_apply, aeval_mul, hp₁Eval, zero_mul, aeval_mul, hp₂Eval, mul_zero,
+    Prod.zero_eq_mk]
+
+end Prod
