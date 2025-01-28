@@ -332,13 +332,13 @@ def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
 
 lemma freeLift_hom_single_single {α : Type u} (A : Rep k G)
     (f : α → A) (i : α) (g : G) (r : k) :
-    (freeLift A f).hom.hom (single i (single g r)) = r • A.ρ g (f i) := by
+    (freeLift A f).hom (single i (single g r)) = r • A.ρ g (f i) := by
   simp
 
 /-- The natural linear equivalence between functions `α → A` and representation morphisms
 `(α →₀ k[G]) ⟶ A`. -/
 @[simps]
-def freeLiftEquiv (α : Type u) (A : Rep k G) :
+def freeLiftLEquiv (α : Type u) (A : Rep k G) :
     (free k G α ⟶ A) ≃ₗ[k] (α → A) where
   toFun f i := f.hom (single i (single 1 1))
   invFun := freeLift A
@@ -352,7 +352,7 @@ def freeLiftEquiv (α : Type u) (A : Rep k G) :
 @[ext]
 lemma free_ext {α : Type u} {A : Rep k G} (f g : free k G α ⟶ A)
     (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g :=
-  (freeLiftEquiv α A).injective (funext_iff.2 h)
+  (freeLiftLEquiv α A).injective (funext_iff.2 h)
 
 section
 

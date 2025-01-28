@@ -18,6 +18,7 @@ representations.
   * `Representation.tprod`
   * `Representation.linHom`
   * `Representation.dual`
+  * `Representation.free`
 
 ## Implementation notes
 
@@ -470,13 +471,15 @@ theorem dualTensorHom_comm (g : G) :
 
 end LinearHom
 
+section
+
 variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
   [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
   [AddCommMonoid B] [Module k B] (τ : Representation k G B)
 
 open Finsupp
 
-/-- The natural representation on `α →₀ A` given a representation on `A`. -/
+/-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
 @[simps (config := .lemmasOnly)]
 noncomputable def finsupp (α : Type*) :
     Representation k G (α →₀ A) where
@@ -489,7 +492,7 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
     ρ.finsupp α g (single x a) = single x (ρ g a) := by
   simp [finsupp_apply]
 
-/-- The natural representation on `α →₀ k[G]` induced by the left regular representation on
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
 noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
@@ -527,4 +530,5 @@ theorem free_asModule_free :
     Module.Free (MonoidAlgebra k G) (free k G α).asModule :=
   Module.Free.of_basis (freeAsModuleBasis k G α)
 
+end
 end Representation
