@@ -230,14 +230,14 @@ noncomputable abbrev leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
+noncomputable def diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
 @[simps! hom_hom inv_hom]
 def diagonalOneIsoLeftRegular [Monoid G] :
     diagonal k G 1 ≅ leftRegular k G :=
   Action.mkIso (Finsupp.domLCongr <| Equiv.funUnique (Fin 1) G).toModuleIso fun _ =>
-    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal]
 
 @[simps! hom_hom inv_hom]
 def ofMulActionSubsingletonIsoTrivial
