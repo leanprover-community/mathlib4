@@ -23,7 +23,7 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 open MeasureTheory Filter Finset Real
 
-open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
+open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology Nat
 
 namespace ProbabilityTheory
 
@@ -95,7 +95,7 @@ lemma analyticOnNhd_mgf : AnalyticOnNhd ℝ (mgf X μ) (interior (integrableExpS
 lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ
-        (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v := by
+        (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n !)) v := by
   convert (analyticAt_mgf hv).hasFPowerSeriesAt
   rw [iteratedDeriv_mgf hv]
 
