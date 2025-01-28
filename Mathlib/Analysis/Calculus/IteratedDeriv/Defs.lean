@@ -292,8 +292,7 @@ theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f
   rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate]; rfl
 
 lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [CharZero 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
-    (h : AnalyticAt 𝕜 f x) :
+    [CharZero 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} (h : AnalyticAt 𝕜 f x) :
     HasFPowerSeriesAt f
       (FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial)) x := by
   obtain ⟨p, hp⟩ := h
