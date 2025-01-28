@@ -221,13 +221,17 @@ theorem toFinsupp_single (a : G) (b : k) : (single a b).toFinsupp = Finsupp.sing
 @[simp]
 theorem ofFinsupp_single (a : G) (b : k) : ⟨Finsupp.single a b⟩ = single a b := rfl
 
-theorem coeff_single {a a' : G} {b : k} [Decidable (a = a')] :
+theorem coeff_single (a : G) (b : k) [DecidableEq G] :
+    coeff (single a b) = Pi.single a b := by
+  simp [coeff, Finsupp.single_eq_pi_single]
+
+theorem coeff_single_apply {a a' : G} {b : k} [Decidable (a = a')] :
     coeff (single a b) a' = if a = a' then b else 0 := by
   simp [coeff, Finsupp.single_apply]
 
 theorem single_zero_right (a : G) : single a (0 : k) = 0 := by
   ext a'; classical
-  by_cases h : a = a' <;> (rw [coeff_single]; simp only [h, ↓reduceIte, coeff_zero])
+  by_cases h : a = a' <;> (rw [coeff_single_apply]; simp only [h, ↓reduceIte, coeff_zero])
 
 @[simp]
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ := by
@@ -302,7 +306,7 @@ theorem coeff_one {a : G} [Decidable (a = 1)] :
     (1 : SkewMonoidAlgebra k G).coeff a = if a = 1 then 1 else 0 := by
   classical
   simp_rw [eq_comm (a := (a : G)) (b := (1 : G))]
-  simpa using coeff_single
+  simpa using coeff_single_apply
 
 end One
 
