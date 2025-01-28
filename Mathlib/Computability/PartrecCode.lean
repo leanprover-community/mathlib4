@@ -31,8 +31,8 @@ of some code.
 * `Nat.Partrec.Code.smn`: The $S_n^m$ theorem.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
 * `Nat.Partrec.Code.evaln_prim`: `evaln` is primitive recursive.
-* `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem
-* `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem
+* `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
+* `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem.
 
 ## References
 
