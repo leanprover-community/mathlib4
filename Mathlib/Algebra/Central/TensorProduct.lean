@@ -5,8 +5,7 @@ Authors: Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.Algebra.Central.Basic
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
