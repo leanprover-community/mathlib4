@@ -416,6 +416,8 @@ inductive AbelMode where
 structure AbelNF.Config where
   /-- the reducibility setting to use when comparing atoms for defeq -/
   red := TransparencyMode.reducible
+  /-- if true, local let variables can be unfolded -/
+  zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
   /-- The normalization style. -/
@@ -469,7 +471,7 @@ partial def abelNFCore
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/
     evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
-  go true e
+  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
 
 open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
@@ -506,13 +508,14 @@ which rewrites all group expressions into a normal form.
 * `abel_nf!` will use a more aggressive reducibility setting to identify atoms.
 * `abel_nf (config := cfg)` allows for additional configuration:
   * `red`: the reducibility setting (overridden by `!`)
+  * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
   * `recursive`: if true, `abel_nf` will also recurse into atoms
 * `abel_nf` works as both a tactic and a conv tactic.
   In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
 -/
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
@@ -527,7 +530,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
 @[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
-    if tk.isSome then cfg := { cfg with red := .default }
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 

@@ -60,6 +60,8 @@ inductive RingMode where
 structure Config where
   /-- the reducibility setting to use when comparing atoms for defeq -/
   red := TransparencyMode.reducible
+  /-- if true, local let variables can be unfolded -/
+  zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
   /-- The normalization style. -/
@@ -156,7 +158,7 @@ partial def M.run
     evalAtom := if cfg.recursive
       then fun e ↦ rewrite e false nctx rctx s
       else fun e ↦ pure { expr := e }
-  x nctx rctx s
+  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
@@ -192,6 +194,7 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf!` will use a more aggressive reducibility setting to identify atoms.
 * `ring_nf (config := cfg)` allows for additional configuration:
   * `red`: the reducibility setting (overridden by `!`)
+  * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
   * `recursive`: if true, `ring_nf` will also recurse into atoms
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
@@ -203,7 +206,7 @@ This can be used non-terminally to normalize ring expressions in the goal such a
 -/
 elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
@@ -223,7 +226,7 @@ Tactic for solving equations of *commutative* (semi)rings, allowing variables in
 -/
 elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
   liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
 
@@ -234,7 +237,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
 @[tactic ringNFConv] def elabRingNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| ring_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabConfig cfg
-    if tk.isSome then cfg := { cfg with red := .default }
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult (← M.run s cfg <| rewrite (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
