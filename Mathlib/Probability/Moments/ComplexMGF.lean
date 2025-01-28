@@ -33,7 +33,7 @@ properties of the mgf from those of the characteristic function).
   with derivative `μ[X * exp (z * X)]`.
 * `differentiableOn_complexMGF`: `complexMGF X μ` is holomorphic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
-* `analyticOnNhd_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
+* `analyticOn_complexMGF`: `complexMGF X μ` is analytic on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
 
 * `eqOn_complexMGF_of_mgf`: if two random variables have the same moment generating function,
@@ -162,15 +162,20 @@ theorem differentiableOn_complexMGF :
   rw [hasDerivAt_iff_hasFDerivAt] at h
   exact h.hasFDerivWithinAt.differentiableWithinAt
 
-/-- `complexMGF X μ` is analytic on the vertical strip
-  `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
 theorem analyticOnNhd_complexMGF :
     AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
   differentiableOn_complexMGF.analyticOnNhd (isOpen_interior.preimage Complex.continuous_re)
 
+/-- `complexMGF X μ` is analytic on the vertical strip
+  `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+theorem analyticOn_complexMGF :
+    AnalyticOn ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
+  analyticOnNhd_complexMGF.analyticOn
+
 /-- `complexMGF X μ` is analytic at any point `z` with `z.re ∈ interior (integrableExpSet X μ)`. -/
 lemma analyticAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
-    AnalyticAt ℂ (complexMGF X μ) z := analyticOnNhd_complexMGF z hz
+    AnalyticAt ℂ (complexMGF X μ) z :=
+  analyticOnNhd_complexMGF z hz
 
 end Analytic
 

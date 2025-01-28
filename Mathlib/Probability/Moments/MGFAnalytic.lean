@@ -14,7 +14,7 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 ## Main results
 
-* `analyticOnNhd_mgf`: the moment generating function is analytic on the interior of the interval
+* `analyticOn_mgf`: the moment generating function is analytic on the interior of the interval
   on which it is defined.
 * `iteratedDeriv_mgf`: the nth derivative of the mgf at `t` is `μ[X ^ n * exp (t * X)]`.
 
@@ -87,10 +87,13 @@ lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
   rw [← re_complexMGF_ofReal']
   exact (analyticAt_complexMGF (by simp [ht])).re_ofReal
 
-/-- The moment generating function is analytic on the interior of the interval on which it is
-defined. -/
 lemma analyticOnNhd_mgf : AnalyticOnNhd ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
   fun _ hx ↦ analyticAt_mgf hx
+
+/-- The moment generating function is analytic on the interior of the interval on which it is
+defined. -/
+lemma analyticOn_mgf : AnalyticOn ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
+  analyticOnNhd_mgf.analyticOn
 
 lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
     HasFPowerSeriesAt (mgf X μ)
