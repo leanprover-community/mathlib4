@@ -1348,6 +1348,26 @@ theorem moveRight_neg_symm {x : PGame} (i) :
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
+@[simp]
+theorem forall_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :
+    (∀ i : (-x).LeftMoves, p i) ↔ (∀ i : x.RightMoves, p (toLeftMovesNeg i)) :=
+  toLeftMovesNeg.forall_congr_right.symm
+
+@[simp]
+theorem exists_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :
+    (∃ i : (-x).LeftMoves, p i) ↔ (∃ i : x.RightMoves, p (toLeftMovesNeg i)) :=
+  toLeftMovesNeg.exists_congr_right.symm
+
+@[simp]
+theorem forall_rightMoves_neg {x : PGame} {p : (-x).RightMoves → Prop} :
+    (∀ i : (-x).RightMoves, p i) ↔ (∀ i : x.LeftMoves, p (toRightMovesNeg i)) :=
+  toRightMovesNeg.forall_congr_right.symm
+
+@[simp]
+theorem exists_rightMoves_neg {x : PGame} {p : (-x).RightMoves → Prop} :
+    (∃ i : (-x).RightMoves, p i) ↔ (∃ i : x.LeftMoves, p (toRightMovesNeg i)) :=
+  toRightMovesNeg.exists_congr_right.symm
+
 theorem leftMoves_neg_cases {x : PGame} (k) {P : (-x).LeftMoves → Prop}
     (h : ∀ i, P <| toLeftMovesNeg i) :
     P k := by
