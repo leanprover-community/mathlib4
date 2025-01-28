@@ -469,14 +469,17 @@ notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) Lis
 
 /-- Represents a permutation as product of disjoint cycles:
 ```
-#eval (1 : Perm (Fin 4))
--- 1
+#eval (c[0, 1, 2, 3] : Perm (Fin 4))
+-- c[0, 1, 2, 3]
 
-#eval (c[0, 1] : Perm (Fin 4))
--- c[0, 1]
+#eval (c[3, 1] * c[0, 2] : Perm (Fin 4))
+-- c[0, 2] * c[1, 3]
 
-#eval (c[0, 1] * c[2, 3] : Perm (Fin 4))
+#eval (c[0, 1, 2] * c[1, 2, 3] : Perm (Fin 4))
 -- c[0, 1] * c[2, 3]
+
+#eval (c[0, 1, 2] * c[1, 2, 3] * c[1, 0] * c[3, 2] : Perm (Fin 4))
+-- 1
 ```
 -/
 unsafe instance instRepr [Repr α] : Repr (Perm α) where
