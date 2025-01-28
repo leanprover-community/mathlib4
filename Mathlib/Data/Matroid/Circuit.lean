@@ -177,8 +177,7 @@ lemma Circuit.mem_closure_diff_singleton_of_mem (hC : M.Circuit C) (heC : e ∈ 
 
 /-! ### Restriction -/
 
-lemma Circuit.circuit_restrict_of_subset (hC : M.Circuit C) (hCR : C ⊆ R) :
-    (M ↾ R).Circuit C := by
+lemma Circuit.circuit_restrict_of_subset (hC : M.Circuit C) (hCR : C ⊆ R) : (M ↾ R).Circuit C := by
   simp_rw [circuit_iff, restrict_dep_iff, dep_iff, and_imp] at *
   exact ⟨⟨hC.1.1, hCR⟩, fun I hI _ hIC ↦ hC.2 hI (hIC.trans hC.1.2) hIC⟩
 
@@ -257,7 +256,7 @@ lemma Circuit.eq_fundCircuit_of_subset (hC : M.Circuit C) (hI : M.Indep I) (hCss
   obtain hCI | ⟨heC, hCeI⟩ := subset_insert_iff.1 hCss
   · exact (hC.not_indep (hI.subset hCI)).elim
   suffices hss : M.fundCircuit e I ⊆ C by
-    refine hC.eq_of_superset_circuit (hI.fundCircuit_circuit ?_ (fun heI ↦ ?_)) hss
+    refine hC.eq_of_superset_circuit (hI.fundCircuit_circuit ?_ fun heI ↦ ?_) hss
     · rw [hI.mem_closure_iff]
       exact .inl (hC.dep.superset hCss (insert_subset (hC.subset_ground heC) hI.subset_ground))
     exact hC.not_indep (hI.subset (hCss.trans (by simp [heI])))
@@ -283,9 +282,12 @@ as part of the equivalence, rather than a hypothesis. -/
 lemma dep_iff_superset_circuit' : M.Dep X ↔ (∃ C, C ⊆ X ∧ M.Circuit C) ∧ X ⊆ M.E :=
   ⟨fun h ↦ ⟨h.exists_circuit_subset, h.subset_ground⟩, fun ⟨⟨C, hCX, hC⟩, h⟩ ↦ hC.dep.superset hCX⟩
 
+/-- A version of `Matroid.indep_iff_forall_subset_not_circuit` that has the supportedness hypothesis
+as part of the equivalence, rather than a hypothesis. -/
 lemma indep_iff_forall_subset_not_circuit' :
     M.Indep I ↔ (∀ C, C ⊆ I → ¬M.Circuit C) ∧ I ⊆ M.E := by
-  simp_rw [indep_iff_not_dep, dep_iff_superset_circuit', not_and, imp_not_comm (b := _ ⊆ _)]; aesop
+  simp_rw [indep_iff_not_dep, dep_iff_superset_circuit']
+  aesop
 
 lemma indep_iff_forall_subset_not_circuit (hI : I ⊆ M.E := by aesop_mat) :
     M.Indep I ↔ ∀ C, C ⊆ I → ¬M.Circuit C := by
@@ -297,7 +299,7 @@ lemma ext_circuit {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ ⦃C⦄, C ⊆ M₁.E → (M₁.Circuit C ↔ M₂.Circuit C)) : M₁ = M₂ := by
   have h' {C} : M₁.Circuit C ↔ M₂.Circuit C :=
     (em (C ⊆ M₁.E)).elim (h (C := C)) (fun hC ↦ iff_of_false (mt Circuit.subset_ground hC)
-      (mt Circuit.subset_ground (fun hss ↦ hC (hss.trans_eq hE.symm))))
+      (mt Circuit.subset_ground fun hss ↦ hC (hss.trans_eq hE.symm)))
   refine ext_indep hE fun I hI ↦ ?_
   simp_rw [indep_iff_forall_subset_not_circuit hI, h',
     indep_iff_forall_subset_not_circuit (hI.trans_eq hE)]
