@@ -197,7 +197,7 @@ theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 :=
 @[simp] theorem neg_apply [Neg A] (M : Matrix m n A) (i : m) (j : n) :
     (-M) i j = -(M i j) := rfl
 
-/-! simp-normal form pulls `of` to the outside. -/
+/-! simp-normal form pulls `of` to the outside, to match the `Matrix` API. -/
 
 @[simp] theorem of_zero [Zero A] : ofMatrix (0 : Matrix m n A) = 0 := rfl
 
@@ -255,6 +255,8 @@ instance instAddCommGroupWithOne [AddCommGroupWithOne A] :
   __ := instAddCommGroup
   __ := instAddGroupWithOne
 
+-- We want to be lower priority than `instHMul`, but without this we can't have operands with
+-- implicit dimensions.
 @[default_instance 100]
 instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
     HMul (CStarMatrix l m A) (CStarMatrix m n A) (CStarMatrix l n A) where
@@ -408,16 +410,17 @@ lemma toCLM_injective [DecidableEq n] : Function.Injective (toCLM (A := A) (m :=
   simp [h]
 
 open WithCStarModule in
-lemma toCLM_inner_right_eq_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (m → A)}
-    {w : C⋆ᵐᵒᵈ (n → A)} : ⟪v, toCLM M w⟫_A = ⟪toCLM Mᴴ v, w⟫_A := by
+lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (m → A)}
+    {w : C⋆ᵐᵒᵈ (n → A)} : ⟪toCLM Mᴴ v, w⟫_A = ⟪v, toCLM M w⟫_A := by
   simp only [toCLM_apply_eq_sum, pi_inner, equiv_symm_pi_apply, inner_def, Finset.mul_sum,
     Matrix.conjTranspose_apply, star_sum, star_mul, star_star, Finset.sum_mul]
   rw [Finset.sum_comm]
   simp_rw [mul_assoc]
 
-lemma toCLM_inner_conjTranspose_right_eq_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)}
+lemma inner_toCLM_conjTranspose_right {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)}
     {w : C⋆ᵐᵒᵈ (m → A)} : ⟪v, toCLM Mᴴ w⟫_A = ⟪toCLM M v, w⟫_A := by
-  simpa using toCLM_inner_right_eq_left (M := Mᴴ) (v := v) (w := w)
+  apply Eq.symm
+  simpa using inner_toCLM_conjTranspose_left (M := Mᴴ) (v := v) (w := w)
 
 /-- The operator norm on `CStarMatrix m n A`. -/
 noncomputable instance instNorm : Norm (CStarMatrix m n A) where
@@ -604,7 +607,7 @@ instance instCStarRing [DecidableEq n] : CStarRing (CStarMatrix n n A) where
       change ‖toCLM M‖ ≤ √‖star M * M‖
       rw [opNorm_le_iff (by positivity)]
       intro v
-      rw [norm_eq_sqrt_norm_inner_self, ← toCLM_inner_conjTranspose_right_eq_left]
+      rw [norm_eq_sqrt_norm_inner_self, ← inner_toCLM_conjTranspose_right]
       have h₁ : ‖⟪v, (toCLM Mᴴ) ((toCLM M) v)⟫_A‖ ≤ ‖star M * M‖ * ‖v‖ ^ 2 := calc
           _ ≤ ‖v‖ * ‖(toCLM Mᴴ) (toCLM M v)‖ := norm_inner_le (C⋆ᵐᵒᵈ (n → A))
           _ ≤ ‖v‖ * ‖(toCLM Mᴴ).comp (toCLM M)‖ * ‖v‖ := by
