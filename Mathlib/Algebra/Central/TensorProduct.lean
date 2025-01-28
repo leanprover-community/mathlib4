@@ -27,66 +27,30 @@ universe u v
 
 open TensorProduct
 
-variable (K : Type u) [Field K]
+variable (K B C : Type*) [CommSemiring K] [Semiring B] [Semiring C] [Algebra K B] [Algebra K C]
+
+lemma Algebra.TensorProduct.includeLeft_map_center_le :
+    (Subalgebra.center K B).map includeLeft ≤ Subalgebra.center K (B ⊗[K] C) := by
+  intro x hx
+  simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
+  obtain ⟨b, hb0, rfl⟩ := hx
+  intro bc
+  induction bc using TensorProduct.induction_on with
+  | zero => simp
+  | tmul b' c => simp [hb0]
+  | add _ _ _ _ => simp_all [add_mul, mul_add]
 
 namespace Algebra.IsCentral
 
-lemma left_of_tensor (B C : Type v)
-    [Ring B] [Ring C] [Nontrivial B] [Nontrivial C] [Algebra K C] [Algebra K B]
-    [FiniteDimensional K B] [hbc : Algebra.IsCentral K (B ⊗[K] C)] :
-    IsCentral K B := by
-  letI : Nontrivial (B ⊗[K] C) := Module.FaithfullyFlat.lTensor_nontrivial _ _ _
-  have : (Algebra.TensorProduct.includeLeft.comp (Subalgebra.center K B).val).range ≤
-    Subalgebra.center K (B ⊗[K] C) := fun x hx ↦ by
-    simp only [AlgHom.mem_range, AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply,
-      Algebra.TensorProduct.includeLeft_apply, Subtype.exists, exists_prop] at hx
-    obtain ⟨b, hb0, hb⟩ := hx
-    rw [Subalgebra.mem_center_iff] at hb0 ⊢
-    intro bc
-    induction bc using TensorProduct.induction_on with
-    | zero => simp
-    | tmul b' c =>
-      subst hb
-      simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-      congr 1
-      exact hb0 b'
-    | add _ _ _ _ => simp_all [add_mul, mul_add]
-  have eq: (Algebra.TensorProduct.includeLeft.comp (Subalgebra.center K B).val).range =
-      (⊥ : Subalgebra K (B ⊗[K] C)) := by
-    refine le_antisymm ?_ <| OrderBot.bot_le _
-    rw [← hbc.center_eq_bot]; exact this
-  let f : Subalgebra.center K B →ₐ[K] ((Algebra.TensorProduct.includeLeft (R := K) (B := C)).comp
-    (Subalgebra.center K B).val).range := {
-      toFun := fun ⟨b, hb⟩ ↦ ⟨b ⊗ₜ 1, ⟨⟨b, hb⟩, rfl⟩⟩
-      map_one' := by simp; rfl
-      map_mul' := fun _ _ ↦ by ext : 1; simp
-      map_zero' := by ext; simp
-      map_add' := fun _ _ ↦ by ext; simp [add_tmul]
-      commutes' := fun _ ↦ rfl}
-  have f_surj : Function.Surjective f := fun ⟨bc, ⟨⟨b, hb⟩, h⟩⟩ ↦ ⟨⟨b, hb⟩, by
-    simp [f]
-    change _ ⊗ₜ _ = _ at h
-    simp only [RingHom.coe_coe, Subalgebra.coe_val] at h⊢
-    exact h⟩
-  have e : ((Algebra.TensorProduct.includeLeft (R := K) (B := C)).comp
-    (Subalgebra.center K B).val).range ≃ₐ[K] (Subalgebra.center K B) :=
-    (AlgEquiv.ofBijective f
-    ⟨fun ⟨b1, hb1⟩ ⟨b2, hb2⟩ h12 ↦ by
-      simp only [AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-        Subtype.mk.injEq, f] at h12
-      ext ; simp only [f]
-      exact Algebra.TensorProduct.includeLeft_injective (R := K) (S := K)
-        (NoZeroSMulDivisors.algebraMap_injective K C) h12,
-    f_surj⟩).symm
-  have e2 := Subalgebra.equivOfEq _ _ eq |>.trans <| Algebra.botEquiv K _
-  have ee : Subalgebra.center K B ≃ₐ[K] K := e.symm.trans e2
-  exact ⟨le_of_eq <| Subalgebra.eq_of_le_of_finrank_eq (OrderBot.bot_le _)
-    (by rw [ee.toLinearEquiv.finrank_eq, Subalgebra.finrank_bot, Module.finrank_self])|>.symm⟩
+open Algebra.TensorProduct in
+lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K B]
+    [hbc : Algebra.IsCentral K (B ⊗[K] C)] : IsCentral K B where
+  out := (Subalgebra.map_le.mp ((includeLeft_map_center_le K B C).trans hbc.1)).trans
+    fun _ ⟨k, hk⟩ ↦ ⟨k, includeLeft_injective (S := K) inj hk⟩
 
-lemma right_of_tensor (B C : Type v) [Ring B] [Ring C] [Nontrivial B] [Nontrivial C]
-    [Algebra K C] [Algebra K B] [FiniteDimensional K C] [Algebra.IsCentral K (B ⊗[K] C)] :
-    IsCentral K C :=
+lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K C]
+    [Algebra.IsCentral K (B ⊗[K] C)] : IsCentral K C :=
   letI : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
-  left_of_tensor K C B
+  left_of_tensor K C B inj
 
 end Algebra.IsCentral
