@@ -30,9 +30,9 @@ def ofFullyFaithful : Preadditive C where
   comp_add P Q R f g g' := hF.map_injective (by simp [Equiv.add_def])
 
 instance additive_ofFullyFaithful :
-    let _ : Preadditive C := ofFullyFaithful hF
+    letI : Preadditive C := ofFullyFaithful hF
     F.Additive :=
-  let _ : Preadditive C := ofFullyFaithful hF
+  letI : Preadditive C := ofFullyFaithful hF
   { map_add := by simp [Equiv.add_def] }
 
 end CategoryTheory.Preadditive
