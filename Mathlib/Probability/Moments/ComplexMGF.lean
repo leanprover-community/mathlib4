@@ -58,8 +58,7 @@ open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
-  {z ε : ℂ}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ} {z ε : ℂ}
 
 /-- Complex extension of the moment generating function. -/
 noncomputable
@@ -242,44 +241,6 @@ lemma isBigO_abs_complexMGF_sub_sum (hz : z.re ∈ interior (integrableExpSet X 
     exact tendsto_integral_pow_abs_mul_exp hz n
   _ = fun ε ↦ (abs ε) ^ n := by simp
 
-/-- For all `z : ℂ` such that the real part `z.re` belongs to the interior
-  of the interval of definition of the mgf, `complexMGF X μ` is differentiable at `z`
-  with derivative `μ[X * exp (z * X)]`. -/
-theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
-    HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
-  rw [hasDerivAt_iff_isLittleO_nhds_zero]
-  simp only [smul_eq_mul]
-  calc (fun h ↦ complexMGF X μ (z + h) - complexMGF X μ z - h * ∫ ω, X ω * cexp (z * X ω) ∂μ)
-  _ =O[𝓝 0] fun h ↦ (abs h)^2 := by
-    convert isBigO_abs_complexMGF_sub_sum hz 2 using 2
-    simp [sum_range, sub_add_eq_sub_sub, complexMGF]
-  _ =o[𝓝 0] fun h ↦ h := Asymptotics.isLittleO_norm_pow_id one_lt_two
-
-/-- `complexMGF X μ` is holomorphic on the vertical strip
-`{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
-theorem differentiableOn_complexMGF :
-    DifferentiableOn ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} := by
-  intro z hz
-  have h := hasDerivAt_complexMGF hz
-  rw [hasDerivAt_iff_hasFDerivAt] at h
-  exact h.hasFDerivWithinAt.differentiableWithinAt
-
-/-- `complexMGF X μ` is analytic on the vertical strip
-  `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
-theorem analyticOnNhd_complexMGF :
-    AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
-  differentiableOn_complexMGF.analyticOnNhd (isOpen_interior.preimage Complex.continuous_re)
-
-/-- `complexMGF X μ` is analytic at any point `z` with `z.re ∈ interior (integrableExpSet X μ)`. -/
-lemma analyticAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
-    AnalyticAt ℂ (complexMGF X μ) z := analyticOnNhd_complexMGF z hz
-
-end Analytic
-
-section Deriv
-
-/-! ### Derivatives of `complexMGF` -/
-
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `z' ↦ μ[X ^ n * cexp (z' * X)]` at `z` is `μ[X ^ (n + 1) * cexp (z * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
@@ -325,6 +286,39 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
     convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
+
+/-- For all `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`,
+`complexMGF X μ` is differentiable at `z` with derivative `μ[X * exp (z * X)]`. -/
+theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
+    HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
+  convert hasDerivAt_integral_pow_mul_exp hz 0
+  · simp [complexMGF]
+  · simp
+
+/-- `complexMGF X μ` is holomorphic on the vertical strip
+`{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+theorem differentiableOn_complexMGF :
+    DifferentiableOn ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} := by
+  intro z hz
+  have h := hasDerivAt_complexMGF hz
+  rw [hasDerivAt_iff_hasFDerivAt] at h
+  exact h.hasFDerivWithinAt.differentiableWithinAt
+
+/-- `complexMGF X μ` is analytic on the vertical strip
+  `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+theorem analyticOnNhd_complexMGF :
+    AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
+  differentiableOn_complexMGF.analyticOnNhd (isOpen_interior.preimage Complex.continuous_re)
+
+/-- `complexMGF X μ` is analytic at any point `z` with `z.re ∈ interior (integrableExpSet X μ)`. -/
+lemma analyticAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
+    AnalyticAt ℂ (complexMGF X μ) z := analyticOnNhd_complexMGF z hz
+
+end Analytic
+
+section Deriv
+
+/-! ### Iterated derivatives of `complexMGF` -/
 
 /-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `x ↦ μ[X ^ n * rexp (x * X)]` at `t` is `μ[X ^ (n + 1) * rexp (t * X)]`. -/
@@ -385,15 +379,22 @@ lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 
   simp only [integrableExpSet, Set.mem_setOf_eq]
   by_cases hμ : μ = 0
   · simp [hμ, hμμ'.mp hμ]
-  have hμ' : μ' ≠ 0 := (not_iff_not.mpr hμμ').mp hμ
-  rw [← mgf_pos_iff' hμ, ← mgf_pos_iff' hμ', hXY]
+  have : NeZero μ := ⟨hμ⟩
+  have : NeZero μ' := ⟨(not_iff_not.mpr hμμ').mp hμ⟩
+  rw [← mgf_pos_iff, ← mgf_pos_iff, hXY]
 
 /-- If two random variables have the same moment generating function then they have
-the `integrableExpSet`. -/
-lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
+the same `integrableExpSet`. -/
+lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ]
     (hXY : mgf X μ = mgf Y μ') :
-    integrableExpSet X μ = integrableExpSet Y μ' :=
-  integrableExpSet_eq_of_mgf' hXY <| by simp [IsProbabilityMeasure.ne_zero]
+    integrableExpSet X μ = integrableExpSet Y μ' := by
+  refine integrableExpSet_eq_of_mgf' hXY ?_
+  simp only [IsProbabilityMeasure.ne_zero, false_iff]
+  suffices mgf Y μ' 0 ≠ 0 by
+    intro h_contra
+    simp [h_contra] at this
+  rw [← hXY]
+  exact (mgf_pos (by simp)).ne'
 
 /-- If two random variables have the same moment generating function then they have
 the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
@@ -426,10 +427,16 @@ lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ 
 
 /-- If two random variables have the same moment generating function then they have
 the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
-lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
+lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ]
     (hXY : mgf X μ = mgf Y μ') :
-    Set.EqOn (complexMGF X μ) (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet X μ)} :=
-  eqOn_complexMGF_of_mgf' hXY <| by simp [IsProbabilityMeasure.ne_zero]
+    Set.EqOn (complexMGF X μ) (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet X μ)} := by
+  refine eqOn_complexMGF_of_mgf' hXY ?_
+  simp only [IsProbabilityMeasure.ne_zero, false_iff]
+  suffices mgf Y μ' 0 ≠ 0 by
+    intro h_contra
+    simp [h_contra] at this
+  rw [← hXY]
+  exact (mgf_pos (by simp)).ne'
 
 end EqOfMGF
 
