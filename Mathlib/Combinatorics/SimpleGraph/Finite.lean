@@ -343,6 +343,13 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rw [hv]
   apply h
 
+/-- If there are no vertices then the minDegree is zero -/
+@[simp]
+lemma minDegree_eq_zero [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0:= by
+  rw [minDegree,WithTop.untop'_eq_self_iff]
+  right
+  simp
+
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
 and `maxDegree_le_of_forall_degree_le`. -/
