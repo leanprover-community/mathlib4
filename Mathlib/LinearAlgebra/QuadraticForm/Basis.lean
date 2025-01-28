@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.Data.Finsupp.Pointwise
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
@@ -36,18 +37,31 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
-    Q (linearCombination R g l) =
-      (l.sum fun i r => (r * r) • Q (g i)) +
+    Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
         p.lift
           ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
             simp only [polar_comm, mul_comm]⟩ := by
   simp_rw [linearCombination_apply, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
     mul_smul]
+  simp_all only [add_left_inj]
+  have e0 : l.support ∩ l.support = l.support := Finset.inter_eq_right.mpr fun _ a ↦ a
+  have e1 : (l * l).support ⊆ l.support := by
+    rw [← e0]
+    apply Finsupp.support_mul
+  rw [Finsupp.sum]
+  symm
+  rw [Finsupp.sum_of_support_subset (l * l) (e1) (fun i a => a • (⇑Q ∘ g) i) (by
+    intro i hi
+    simp only [Function.comp_apply, zero_smul]
+  )]
+  simp_all only [Finset.inter_self, mul_apply, Function.comp_apply]
+  simp_rw [← smul_eq_mul, smul_assoc]
 
 -- c.f. `LinerMap.sum_repr_mul_repr_mul`
+open Finsupp in
 theorem sum_repl_sq_add_sum_repl_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-      (bm.repr x).sum (fun i r => (r * r) • Q (bm i)) +
+    linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
         p.lift
           ⟨fun i j => (bm.repr x i * bm.repr x j) • polar Q (bm i) (bm j), fun i j => by
