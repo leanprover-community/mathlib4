@@ -266,8 +266,8 @@ theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.bir
   apply (birthday_add_le x _).trans_eq
   rw [birthday_neg]
 
-/- The bound `(x * y).birthday ≤ x.birthday ⨳ y.birthday` is currently an open problem. See
-  https://mathoverflow.net/a/476829/147705. -/
+/-- This bound is currently an open problem. See https://mathoverflow.net/a/476829/147705. -/
+proof_wanted birthday_mul_le (x y : PGame) : birthday ⟦x * y⟧ ≤ birthday ⟦x⟧ ⨳ birthday ⟦y⟧
 
 /-- Games with bounded birthday are a small set. -/
 theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
