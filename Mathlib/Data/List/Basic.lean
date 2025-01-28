@@ -29,10 +29,6 @@ open Nat hiding one_pos
 
 namespace List
 
--- Renamed in lean core; to be removed with the version bump.
-alias replicate_append_replicate := append_replicate_replicate
-alias append_eq_nil_iff := append_eq_nil
-
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
