@@ -112,7 +112,7 @@ theorem veblenWith_injective (o : Ordinal) : Function.Injective (veblenWith f o)
 theorem veblenWith_inj : veblenWith f o a = veblenWith f o b ↔ a = b :=
   (veblenWith_injective hf o).eq_iff
 
-theorem right_le_veblenWith (a b : Ordinal) : b ≤ veblenWith f a b :=
+theorem right_le_veblenWith (o a : Ordinal) : a ≤ veblenWith f o a :=
   (veblenWith_right_strictMono hf a).le_apply
 
 theorem veblenWith_left_monotone (o : Ordinal) : Monotone (veblenWith f · o) := by
@@ -121,7 +121,7 @@ theorem veblenWith_left_monotone (o : Ordinal) : Monotone (veblenWith f · o) :=
   rw [← veblenWith_veblenWith_of_lt hf h]
   exact (veblenWith_right_strictMono hf a).monotone (right_le_veblenWith hf b o)
 
-theorem veblenWith_pos (hp : 0 < f 0) (a b : Ordinal) : 0 < veblenWith f a b := by
+theorem veblenWith_pos (hp : 0 < f 0) (o a : Ordinal) : 0 < veblenWith f o a := by
   have H (b) : 0 < veblenWith f 0 b := by
     rw [veblenWith_zero]
     exact hp.trans_le (hf.monotone (Ordinal.zero_le _))
@@ -137,11 +137,11 @@ theorem veblenWith_zero_strictMono (hp : 0 < f 0) : StrictMono (veblenWith f · 
   exact veblenWith_pos hf hp b 0
 
 theorem veblenWith_zero_lt_veblenWith_zero (hp : 0 < f 0) :
-    veblenWith f a 0 < veblenWith f b 0 ↔ a < b :=
+    veblenWith f o₁ 0 < veblenWith f o₂ 0 ↔ o₁ < o₂ :=
   (veblenWith_zero_strictMono hf hp).lt_iff_lt
 
 theorem veblenWith_zero_le_veblenWith_zero (hp : 0 < f 0) :
-    veblenWith f a 0 ≤ veblenWith f b 0 ↔ a ≤ b :=
+    veblenWith f o₁ 0 ≤ veblenWith f o₂ 0 ↔ o₁ ≤ o₂ :=
   (veblenWith_zero_strictMono hf hp).le_iff_le
 
 theorem veblenWith_zero_inj (hp : 0 < f 0) : veblenWith f a 0 = veblenWith f b 0 ↔ a = b :=
