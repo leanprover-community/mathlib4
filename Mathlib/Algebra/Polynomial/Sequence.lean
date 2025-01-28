@@ -77,8 +77,12 @@ lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_
 lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp (by simp [S.degree_eq i])
 
 /-- No two elements in the sequence have the same degree. -/
-lemma degree_ne_degree {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
+lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
   simp [S.degree_eq i, S.degree_eq j, h]
+
+/-- No two elements in the sequence have the same natural degree. -/
+lemma natDegree_ne {i j : ℕ} (h : i ≠ j) : (S i).natDegree ≠ (S j).natDegree := by
+  simp [S.natDegree_eq i, S.natDegree_eq j, h]
 
 /-- No two elements in the sequence have the same degree. -/
 lemma degree_inj : Function.Injective <| degree ∘ S := fun _ _  ↦ by simp
@@ -95,11 +99,11 @@ lemma linearIndependent [NoZeroDivisors R] :
   by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
-  · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S i)) := by
+  · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
       intro x ⟨xmem, hx⟩ y ⟨ymem, hy⟩ xney
       have hgx := degree_smul_of_smul_regular (S x) (foo hx)
       have hgy := degree_smul_of_smul_regular (S y) (foo hy)
-      simpa [hgx, hgy] using S.degree_ne_degree xney
+      simpa [hgx, hgy] using S.degree_ne xney
 
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
     refine degree_ne_bot.mp ?_ eqzero |>.elim
