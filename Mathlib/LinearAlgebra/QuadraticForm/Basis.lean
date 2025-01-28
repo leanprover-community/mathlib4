@@ -24,6 +24,7 @@ variable {ι R M N}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [DecidableEq ι]
 
+-- c.f. `_root_.map_finsupp_sum`
 open Finsupp in
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
@@ -32,8 +33,9 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
         p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
   QuadraticMap.map_sum _ _ _
 
+-- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
-theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
+theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
       (l.sum fun i r => (r * r) • Q (g i)) +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
@@ -43,14 +45,14 @@ theorem map_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι �
   simp_rw [linearCombination_apply, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
     mul_smul]
 
-theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    Q x =
+-- c.f. `LinerMap.sum_repr_mul_repr_mul`
+theorem sum_repl_sq_add_sum_repl_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
       (bm.repr x).sum (fun i r => (r * r) • Q (bm i)) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
         p.lift
           ⟨fun i j => (bm.repr x i * bm.repr x j) • polar Q (bm i) (bm j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ := by
-  rw [← map_linearCombination, Basis.linearCombination_repr]
+            simp only [polar_comm, mul_comm]⟩ = Q x := by
+  rw [← apply_linearCombination, Basis.linearCombination_repr]
 
 end
 
