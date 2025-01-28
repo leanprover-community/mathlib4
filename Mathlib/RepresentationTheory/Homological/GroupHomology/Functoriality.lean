@@ -732,10 +732,10 @@ theorem δ₁_apply (z : G × G →₀ X.X₃) (hz : dOne X.X₃ z = 0) (y : G �
       rw [moduleCatCyclesIso_inv_apply]
       simp [δ₁, ← Category.assoc, (CommSq.vert_inv ⟨groupHomologyπ_comp_isoH2_hom X.X₃⟩).w,
         isoTwoCycles_inv_apply_eq_cyclesMk X.X₃ ⟨z, hz⟩, HomologicalComplex.cyclesMk]
-    · rw [moduleCatCyclesIso_inv_apply]
-      simp [(Iso.eq_inv_comp _).2 (groupHomologyπ_comp_isoH1_hom X.X₁).symm,
-        -groupHomologyπ_comp_isoH1_hom, isoOneCycles_inv_apply_eq_cyclesMk X.X₁ ⟨x, _⟩,
-        HomologicalComplex.cyclesMk]
+    · rw [(Iso.eq_inv_comp _).2 (groupHomologyπ_comp_isoH1_hom X.X₁).symm,
+        moduleCatCyclesIso_inv_apply]
+      simp only [ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, ChainComplex.of_x,
+        isoOneCycles_inv_apply_eq_cyclesMk X.X₁ ⟨x, _⟩, HomologicalComplex.cyclesMk]
 
 theorem epi_δ₁_of_isZero (h1 : IsZero (ModuleCat.of k <| H1 X.X₂)) :
     Epi (δ₁ hX) := by

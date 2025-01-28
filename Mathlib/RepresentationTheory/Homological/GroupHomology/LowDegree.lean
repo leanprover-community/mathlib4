@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.GroupTheory.Abelianization
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -675,27 +676,6 @@ theorem isTwoBoundary_of_mem_twoBoundaries [DecidableEq G]
 
 end ofDistribMulAction
 
-section Homology
-variable [DecidableEq G]
-
-/-- We define the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`, to be
-the coinvariants of the representation, `A_G`. -/
-abbrev H0 := A.ρ.coinvariants
-
-/-- We define the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`, to be
-1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo 1-boundaries
-(i.e. `B₁(G, A) := Im(d₁ : (G →₀ A) → A)`). -/
-abbrev H1 := oneCycles A ⧸ LinearMap.range
-  ((dOne A).codRestrict (oneCycles A) dOne_apply_mem_oneCycles)
-
-/-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
-2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
-(i.e. `B²(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
-abbrev H2 := twoCycles A ⧸ LinearMap.range
-  ((dTwo A).codRestrict (twoCycles A) dTwo_apply_mem_twoCycles)
-
-end Homology
-
 section groupHomologyIso
 
 open ShortComplex
@@ -726,6 +706,10 @@ end
 /-- The (exact) short complex `(G →₀ A) ⟶ A ⟶ A.ρ.coinvariants`. -/
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (mkQ_comp_dZero A)
+
+/-- We define the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`, to be
+the coinvariants of the representation, `A_G`. -/
+abbrev H0 := ModuleCat.of k A.ρ.coinvariants
 
 abbrev H0π : ModuleCat.of k A ⟶ ModuleCat.of k (H0 A) := (shortComplexH0 A).g
 
@@ -814,8 +798,13 @@ variable [DecidableEq G]
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dOne A) (dZero A) (dZero_comp_dOne A)
 
+/-- We define the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`, to be
+1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo 1-boundaries
+(i.e. `B₁(G, A) := Im(d₁ : (G →₀ A) → A)`). -/
+abbrev H1 := moduleCatHomology <| shortComplexH1 A
+
 /-- The quotient map `Z₁(G, A) → H₁(G, A).` -/
-def H1π : ModuleCat.of k (oneCycles A) ⟶ ModuleCat.of k (H1 A) :=
+abbrev H1π : ModuleCat.of k (oneCycles A) ⟶  H1 A :=
   moduleCatHomologyπ (shortComplexH1 A)
 
 variable {A} in
@@ -922,7 +911,7 @@ def H1LEquivOfIsTrivial :
         (oneCycles A).toAddSubgroup.subtype)
       fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
         simp [← hz, LinearMap.codRestrict, AddSubgroup.subtype, dOne, sum_sum_index, sum_add_index,
-        tmul_add, sum_sub_index, tmul_sub]).toIntLinearMap
+          tmul_add, sum_sub_index, tmul_sub, shortComplexH1, moduleCatToCycles]).toIntLinearMap
     (lift <| mkH1OfIsTrivial A)
     (ext <| LinearMap.toAddMonoidHom_injective <|
       AddMonoidHom.toMultiplicative'.bijective.1 <| Abelianization.hom_ext _ _ <| MonoidHom.ext
@@ -963,8 +952,13 @@ variable [DecidableEq G]
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dTwo A) (dOne A) (dOne_comp_dTwo A)
 
+/-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
+2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
+(i.e. `B²(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
+abbrev H2 := moduleCatHomology <| shortComplexH2 A
+
 /-- The quotient map `Z₂(G, A) → H₂(G, A).` -/
-def H2π : ModuleCat.of k (twoCycles A) ⟶ ModuleCat.of k (H2 A) :=
+abbrev H2π : ModuleCat.of k (twoCycles A) ⟶ H2 A :=
   moduleCatHomologyπ (shortComplexH2 A)
 
 variable {A} in
@@ -1016,7 +1010,7 @@ lemma isoTwoCycles_inv_apply_eq_cyclesMk (x : twoCycles A) :
     (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.cyclesMk, i_cyclesMk] using
     congr($(isoTwoCycles_inv_comp_iCycles A) x)
-#check isoZeroCycles
+
 @[reassoc (attr := simp)]
 lemma toCycles_comp_isoTwoCycles_hom :
     toCycles A 3 2 ≫ (isoTwoCycles A).hom =

@@ -274,6 +274,9 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 /-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
 noncomputable abbrev leftRegular := ofMulAction k G G
 
+/-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
+noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
+
 variable {k G H}
 
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
@@ -525,6 +528,10 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
 noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
   finsupp (leftRegular k G) α
+
+noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
+    AddCommGroup (free k G α).asModule :=
+  Finsupp.instAddCommGroup
 
 @[simp]
 lemma free_single_single (g h : G) (i : α) (r : k) :

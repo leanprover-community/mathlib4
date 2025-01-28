@@ -221,3 +221,8 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
+
+lemma isZero_groupCohomology_of_subsingleton
+    [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
+    Limits.IsZero (groupCohomology A (n + 1)) :=
+  (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _

@@ -673,35 +673,18 @@ theorem isMulTwoCoboundary_of_mem_twoCoboundaries
 
 end ofMulDistribMulAction
 
-section Cohomology
-
-/-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
-the invariants of the representation, `Aᴳ`. -/
-abbrev H0 := A.ρ.invariants
-
-/-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
-1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
-(i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
-abbrev H1 := oneCocycles A ⧸ LinearMap.range
-  ((dZero A).codRestrict (oneCocycles A) dZero_apply_mem_oneCocycles)
-
-/-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
-2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
-(i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
-abbrev H2 := twoCocycles A ⧸ LinearMap.range
-  ((dOne A).codRestrict (twoCocycles A) dOne_apply_mem_twoCocycles)
-
-
-end Cohomology
-
 section groupCohomologyIso
 
 open ShortComplex
 
 section H0
 
+/-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
+the invariants of the representation, `Aᴳ`. -/
+abbrev H0 := ModuleCat.of k A.ρ.invariants
+
 @[simp]
-lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
+lemma dZero_comp_H0_subtype : dZero A ∘ₗ A.ρ.invariants.subtype = 0 := by
   ext ⟨x, hx⟩ g
   replace hx := hx g
   rw [← sub_eq_zero] at hx
@@ -711,7 +694,10 @@ lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (dZero_comp_H0_subtype A)
 
-instance : Mono (shortComplexH0 A).f := by
+/-- The natural inclusion `Aᴳ ⟶ A`. -/
+abbrev H0ι : H0 A ⟶ ModuleCat.of k A := (shortComplexH0 A).f
+
+instance : Mono (H0ι A) := by
   rw [ModuleCat.mono_iff_injective]
   apply Submodule.injective_subtype
 
@@ -738,8 +724,8 @@ def isoZeroCocycles : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
       (dZeroArrowIso A)
 
 @[reassoc (attr := simp)]
-lemma isoZeroCocycles_hom_comp_subtype :
-    (isoZeroCocycles A).hom ≫ ModuleCat.ofHom A.ρ.invariants.subtype =
+lemma isoZeroCocycles_hom_comp_H0ι :
+    (isoZeroCocycles A).hom ≫ H0ι A =
       iCocycles A 0 ≫ (zeroCochainsLEquiv A).toModuleIso.hom := by
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
@@ -747,8 +733,8 @@ lemma isoZeroCocycles_hom_comp_subtype :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoZeroCocycles_inv_comp_iCocycles :
     (isoZeroCocycles A).inv ≫ iCocycles A 0 =
-      ModuleCat.ofHom A.ρ.invariants.subtype ≫ (zeroCochainsLEquiv A).toModuleIso.inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_subtype]
+      H0ι A ≫ (zeroCochainsLEquiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_H0ι]
 
 lemma isoZeroCocycles_inv_apply_eq_cyclesMk (x : A.ρ.invariants) :
     (isoZeroCocycles A).inv x =
@@ -795,8 +781,13 @@ section H1
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
 
+/-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
+1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
+(i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
+abbrev H1 := moduleCatHomology <| shortComplexH1 A
+
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-def H1π : ModuleCat.of k (oneCocycles A) ⟶ ModuleCat.of k (H1 A) :=
+abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A :=
   moduleCatHomologyπ (shortComplexH1 A)
 
 variable {A} in
@@ -866,9 +857,8 @@ group homs `G → A`. -/
 def H1LEquivOfIsTrivial [A.ρ.IsTrivial] :
     H1 A ≃ₗ[k] Additive G →+ A :=
   (Submodule.quotEquivOfEqBot _ (by
-    rw [LinearMap.range_codRestrict, Submodule.eq_bot_iff]
-    exact fun x hx => Subtype.ext <| (Submodule.eq_bot_iff _).1
-      (oneCoboundaries_eq_bot_of_isTrivial A) x.1 hx)).trans (oneCocyclesLEquivOfIsTrivial A)
+    simp [shortComplexH1, moduleCatToCycles, Submodule.eq_bot_iff])).trans
+  (oneCocyclesLEquivOfIsTrivial A)
 
 theorem H1LEquivOfIsTrivial_comp_H1π [A.ρ.IsTrivial] :
     (H1LEquivOfIsTrivial A).comp (H1π A).hom = (oneCocyclesLEquivOfIsTrivial A).toLinearMap := by
@@ -891,8 +881,13 @@ section H2
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
 
+/-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
+2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
+(i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
+abbrev H2 := moduleCatHomology <| shortComplexH2 A
+
 /-- The quotient map `Z²(G, A) → H²(G, A).` -/
-def H2π : ModuleCat.of k (twoCocycles A) ⟶ ModuleCat.of k (H2 A) :=
+abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A :=
   moduleCatHomologyπ (shortComplexH2 A)
 
 variable {A} in
