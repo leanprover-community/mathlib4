@@ -16,21 +16,18 @@ import Mathlib.Data.Set.Card
   from each quotient.
 -/
 
-universe u
+variable {α : Type*} {r : α → α → Prop}
 
-variable {V : Type u} {r : V → V → Prop}
-
-/-- Convert an equivalence class to a Set -/
+/-- Convert an equivalence class to a `Set`. -/
 def Quot.toSet (c : Quot r) : Set V := {v | Quot.mk r v = c}
 
 instance : SetLike (Quot r) V where
   coe := Quot.toSet
-  coe_injective' := by
-    intro x y h
+  coe_injective' x y h := by
     simp only [Quot.toSet] at h
-    simpa using show x.out ∈ {v | Quot.mk r v = y} from by
+    simpa using show x.out ∈ {v | Quot.mk r v = y} by
       rw [← h]
-      exact Quot.out_eq x
+      exact x.out_eq
 
 namespace Set
 
@@ -40,24 +37,20 @@ structure Represents (s : Set V) (C : Set (Quot r)) where
   exact {c : Quot r} (h : c ∉ C) : s ∩ c = ∅
 
 lemma represents_of_image_exists_rep_choose (C : Set (Quot r)) :
-    ((fun c ↦ c.out) '' C).Represents C where
+    (Quot.out '' C).Represents C where
   unique_rep {c} h := by
     use c.out
     simp only [Set.mem_inter_iff, and_imp]
-    refine ⟨⟨by aesop, Quot.out_eq _⟩, ?_⟩
-    intro y hy hyc
+    refine ⟨⟨by aesop, Quot.out_eq _⟩, fun y hy hyc ↦ ?_⟩
     obtain ⟨c', ⟨_, rfl⟩⟩ := hy
-    rw [← hyc, show Quot.mk r (Quot.out c') = c'
-      from Quot.out_eq c']
-  exact {c} {h} := by
+    rw [← hyc, c'.out_eq]
+  exact {c} h := by
     ext v
     simp only [Set.mem_inter_iff, Set.mem_image, Set.mem_empty_iff_false, iff_false,
       not_and, forall_exists_index, and_imp]
     intro c' hc' hv hvc
-    have : c = c' := by
-      rw [← hvc, ← hv]
-      exact (Quot.exists_rep c').choose_spec
-    exact h (this ▸ hc')
+    rw [← hvc, ← hv, c'.out_eq] at h
+    exact h hc'
 
 lemma ncard_represents_inter {C : Set (Quot r)} {s : Set V}
     {c : (Quot r)} (hrep : s.Represents C) (h : c ∈ C) : (s ∩ c).ncard = 1 := by
@@ -66,19 +59,17 @@ lemma ncard_represents_inter {C : Set (Quot r)} {s : Set V}
   aesop
 
 lemma disjoint_represents {C : Set (Quot r)} {s : Set V}
-    {c : (Quot r)} (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c := by
+    {c : Quot r} (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c := by
   rw [Set.disjoint_right]
   intro v hv hvr
   have := hrep.exact h
   rw [Set.eq_empty_iff_forall_not_mem] at this
   simp_all
 
-lemma disjoint_of_represents {c : Quot r}
-    {s : Set V} {p : (Quot r) → Prop}
-    (hrep : s.Represents {c | p c})
-    (h : ¬ p c) : Disjoint s c := by
+lemma disjoint_of_represents {c : Quot r} {s : Set V} {p : Quot r → Prop}
+    (hrep : s.Represents {c | p c}) (h : ¬ p c) : Disjoint s c := by
   apply disjoint_represents hrep
-  simp_all only [Set.mem_setOf_eq, not_false_eq_true]
+  simpa
 
 lemma ncard_sdiff_represents_of_mem [Fintype V] {c : Quot r}
     {s : Set V} {C : Set (Quot r)}
