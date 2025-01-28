@@ -479,6 +479,7 @@ theorem algebraMap_injective :
   rw [← Subtype.val_inj]
   rfl
 
+variable {R K} in
 open AdicCompletion in
 /-- Let `x` be a finite adele and let `r` be a non-zero integral divisor. If, for a
 set of primes `v ∈ S` containing the factors of `r`, the valuation of `xᵥ` is less than the
@@ -502,7 +503,8 @@ theorem dvd_of_valued_lt {x : FiniteAdeleRing R K} {r : nonZeroDivisors R}
     dvd_of_valued_le (this v) <| (map_ne_zero _).1 (valued_ne_zero K v r)
   exact ⟨a, FiniteAdeleRing.ext _ _ <| funext (fun v => ha v)⟩
 
-/-- The embedding of the integral adeles into the finite adele ring preserves neighbourhoods. -/
+/-- The embedding of the integral adeles into the finite adele ring sends neighbourhoods
+to neighbourhoods. -/
 theorem algebraMap_image_mem_nhds
     {U : Set (FiniteIntegralAdeles R K)} (h : U ∈ nhds 0) :
     algebraMap (R_hat R K) (FiniteAdeleRing R K) '' U ∈ nhds 0 := by
@@ -545,7 +547,7 @@ theorem mem_nhds_comap_algebraMap
     simp only [SetLike.coe_sort_coe, Set.preimage_setOf_eq, Set.setOf_subset_setOf]
     exact fun _ h => h
   · simp only [Submodule.coe_toAddSubgroup, SetLike.mem_coe, Submodule.mem_span_singleton]
-    exact dvd_of_valued_lt R K (fun _ hv => hv) hy (fun v _ => (y v).2)
+    exact dvd_of_valued_lt (fun _ hv => hv) hy (fun v _ => (y v).2)
 
 open Topology TopologicalRing in
 /-- The topologies of the integral adeles when viewed as a subspace of

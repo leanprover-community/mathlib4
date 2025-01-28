@@ -296,7 +296,7 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
 
-theorem intValuation_uniformizer_ne_zero (v : HeightOneSpectrum R) {π : R}
+theorem intValuation_uniformizer_ne_zero {v : HeightOneSpectrum R} {π : R}
     (hπ : v.intValuation π = Multiplicative.ofAdd (-1 : ℤ)) :
     π ≠ 0 := by
   contrapose! hπ
@@ -585,48 +585,53 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
 
 variable {R}
 
+theorem AdicCompletion.valued_eq_intValuationDef (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) = v.intValuationDef r := by
+  rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
+
 theorem AdicCompletion.valued_le_one (v : HeightOneSpectrum R) (r : R) :
-    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 := by
-  rw [v.valuedAdicCompletion_eq_valuation]
-  exact v.valuation_le_one r
+    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 :=
+  valued_eq_intValuationDef K _ r ▸ v.intValuation_le_one r
 
 theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivisors R) :
-    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 := by
-  rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
-  exact v.intValuation_ne_zero' _
+    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 :=
+  valued_eq_intValuationDef K _ r.1 ▸ v.intValuation_ne_zero' _
 
 open Filter WithZero Multiplicative in
-theorem AdicCompletion.tendsto_intValuation_uniformizer_pow (v : HeightOneSpectrum R) {π : R}
-    (hπ : v.intValuationDef π = ofAdd (-1 : ℤ)) :
-    Tendsto (fun (n : ℕ) => algebraMap _ (v.adicCompletion K) π ^ n) atTop (𝓝 0) := by
+/-- Powers of `x` tend to zero in `Kᵥ` if `x` has valuation `≤ -1`. -/
+theorem AdicCompletion.tendsto_zero_of_valued_le_neg_one (v : HeightOneSpectrum R)
+    {x : v.adicCompletion K} (hx : Valued.v x ≤ ofAdd (-1 : ℤ)) :
+    Tendsto (fun (n : ℕ) => x ^ n) atTop (𝓝 0) := by
   simp only [HasBasis.tendsto_right_iff (Valued.hasBasis_nhds_zero _ _), Set.mem_setOf_eq,
     map_pow, eventually_atTop]
+  have h_lt : ofAdd (-1 : ℤ) < (1 : ℤₘ₀) := by
+    rw [← coe_one, coe_lt_coe, ← ofAdd_zero, ofAdd_lt]; linarith
   intro γ _
   by_cases hγ : γ.val ≤ 1
   · let m := - toAdd (unitsWithZeroEquiv γ) + 1 |>.toNat
     refine ⟨m, fun b hb => lt_of_le_of_lt
-      (pow_le_pow_of_le_one zero_le' (valued_le_one K v π) hb) ?_⟩
+      (pow_le_pow_of_le_one zero_le' (le_trans hx <| le_of_lt h_lt) hb) ?_⟩
     replace hγ : 0 ≤ -toAdd (unitsWithZeroEquiv γ) + 1 := by
       rw [units_val_eq_coe_unitsWithZeroEquiv, ← coe_one, coe_le_coe, ← toAdd_le, toAdd_one] at hγ
       linarith
-    rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ,
-      units_val_eq_coe_unitsWithZeroEquiv, ← coe_pow, coe_lt_coe, ← ofAdd_nsmul,
+    apply lt_of_le_of_lt <| pow_le_pow_left₀ zero_le' hx m
+    rw [units_val_eq_coe_unitsWithZeroEquiv, ← coe_pow, coe_lt_coe, ← ofAdd_nsmul,
       nsmul_eq_mul, Int.toNat_of_nonneg hγ]
     simp
     rw [← ofAdd_zero, ofAdd_lt]
     exact zero_lt_one
   · refine ⟨1, fun b hb => lt_of_le_of_lt
-      (pow_le_pow_of_le_one zero_le' (valued_le_one K v π) hb) ?_⟩
+      (pow_le_pow_of_le_one zero_le' (le_trans hx <| le_of_lt h_lt) hb) ?_⟩
     apply lt_trans _ (lt_of_not_le hγ)
-    rw [v.valuedAdicCompletion_eq_valuation, v.valuation_eq_intValuationDef, hπ, ← coe_one, pow_one,
-      coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
-    exact neg_one_lt_zero
+    apply lt_of_le_of_lt (pow_one (Valued.v x) ▸ hx)
+    exact h_lt
 
 open Valued Filter in
+/-- There exists a non-zero integer of value `< γ` for a given `γ`. -/
 theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
     ∃ (r : nonZeroDivisors R), Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ := by
   let ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
-  have := tendsto_intValuation_uniformizer_pow K v hπ
+  have := tendsto_zero_of_valued_le_neg_one K v (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
   let ⟨a, ha⟩ := eventually_atTop.1 <|
     (HasBasis.tendsto_right_iff (hasBasis_nhds_zero _ _)).1 this γ trivial
   use ⟨algebraMap _ _ π ^ a,
@@ -635,8 +640,8 @@ theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R)
   simp
 
 open scoped Classical in
-/-- Given a finite set of primes `v` and an open ball in each, we can find a global integer that
-lies in each of the balls. -/
+/-- Given a collection of values `γ v` at primes `v `, we can find a global
+non-zero integer that has valuation less than `γ v` for a finite set of primes `v`. -/
 theorem AdicCompletion.exists_nonZeroDivisor_finset_valued_lt
     (S : Set (HeightOneSpectrum R))
     (hS : Set.Finite S)
