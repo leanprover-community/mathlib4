@@ -599,7 +599,7 @@ theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivi
 
 open Filter WithZero Multiplicative in
 /-- Powers of `x` tend to zero in `Kᵥ` if `x` has valuation `≤ -1`. -/
-theorem AdicCompletion.tendsto_zero_of_valued_le_neg_one (v : HeightOneSpectrum R)
+theorem AdicCompletion.tendsto_zero_pow_of_le_neg_one (v : HeightOneSpectrum R)
     {x : v.adicCompletion K} (hx : Valued.v x ≤ ofAdd (-1 : ℤ)) :
     Tendsto (fun (n : ℕ) => x ^ n) atTop (𝓝 0) := by
   simp only [HasBasis.tendsto_right_iff (Valued.hasBasis_nhds_zero _ _), Set.mem_setOf_eq,
@@ -631,7 +631,7 @@ open Valued Filter in
 theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
     ∃ (r : nonZeroDivisors R), Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ := by
   let ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
-  have := tendsto_zero_of_valued_le_neg_one K v (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
+  have := tendsto_zero_pow_of_le_neg_one K v (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
   let ⟨a, ha⟩ := eventually_atTop.1 <|
     (HasBasis.tendsto_right_iff (hasBasis_nhds_zero _ _)).1 this γ trivial
   use ⟨algebraMap _ _ π ^ a,
