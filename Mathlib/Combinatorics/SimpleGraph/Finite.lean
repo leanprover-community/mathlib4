@@ -249,6 +249,12 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   induction e
   simp [mk'_mem_incidenceSet_iff]
 
+variable {G v} {H: SimpleGraph V} [Fintype (H.neighborSet v)]
+/-- If G ≤ H then d_G(v) ≤ d_H(v) for any vertex v -/
+lemma degree_le_of_le (hle : G ≤ H) : G.degree v ≤ H.degree v:=by
+  simp only [← card_neighborSet_eq_degree]
+  apply Set.card_le_card fun v hv  => by exact hle hv
+
 end FiniteAt
 
 section LocallyFinite
