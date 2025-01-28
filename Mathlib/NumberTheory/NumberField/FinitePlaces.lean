@@ -25,7 +25,7 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 number field, places, finite places
 -/
 
-open Ideal IsDedekindDomain HeightOneSpectrum NumberField WithZeroMulInt
+open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
 namespace NumberField
 
