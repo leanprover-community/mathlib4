@@ -118,6 +118,7 @@ theorem AnalyticWithinAt.differentiableWithinAt (h : AnalyticWithinAt 𝕜 f s x
   obtain ⟨p, hp⟩ := h
   exact hp.differentiableWithinAt
 
+@[fun_prop]
 theorem AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt 𝕜 f x
   | ⟨_, hp⟩ => hp.differentiableAt
 
@@ -234,6 +235,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace
   exact this.symm
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
+@[fun_prop]
 protected theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (fderiv 𝕜 f) x := by
   rcases h with ⟨p, r, hp⟩
