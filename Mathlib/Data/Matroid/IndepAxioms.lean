@@ -102,7 +102,7 @@ The intended pattern for defining a `Matroid α` from a known independence predi
 `MyIndep : Set α → Prop` and ground set `E : Set α` is to write
 
 ```
-def MyMatroid : Matroid α := IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
+def myMatroid : Matroid α := IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
 ```
 
 where `IndepMatroid.ofFoo` is one of the several available constructors for `IndepMatroid`,
