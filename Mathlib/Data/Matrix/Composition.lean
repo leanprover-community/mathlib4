@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Yunzhou Xie
 -/
 
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basis
 
 /-!
 # Composition of matrices
@@ -34,6 +35,37 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   invFun n i j k l := n (i, k) (j, l)
   left_inv _ := rfl
   right_inv _ := rfl
+
+variable {R I J K L} in
+@[simp]
+theorem comp_stdBasisMatrix_stdBasisMatrix
+    [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
+    comp I J K L R (stdBasisMatrix i j (stdBasisMatrix k l r))
+      = stdBasisMatrix (i, k) (j, l) r := by
+  ext ⟨i', k'⟩ ⟨j', l'⟩
+  dsimp [comp_apply]
+  obtain hi | rfl := ne_or_eq i i'
+  · rw [StdBasisMatrix.apply_of_row_ne hi,
+      StdBasisMatrix.apply_of_row_ne (ne_of_apply_ne Prod.fst hi), Matrix.zero_apply]
+  obtain hj | rfl := ne_or_eq j j'
+  · rw [StdBasisMatrix.apply_of_col_ne _ _ hj,
+      StdBasisMatrix.apply_of_col_ne _ _ (ne_of_apply_ne Prod.fst hj), Matrix.zero_apply]
+  rw [StdBasisMatrix.apply_same]
+  obtain hk | rfl := ne_or_eq k k'
+  · rw [StdBasisMatrix.apply_of_row_ne hk,
+      StdBasisMatrix.apply_of_row_ne (ne_of_apply_ne Prod.snd hk)]
+  obtain hj | rfl := ne_or_eq l l'
+  · rw [StdBasisMatrix.apply_of_col_ne _ _ hj,
+      StdBasisMatrix.apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
+  rw [StdBasisMatrix.apply_same, StdBasisMatrix.apply_same]
+
+variable {R I J K L} in
+@[simp]
+theorem comp_symm_stdBasisMatrix
+    [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
+    (comp I J K L R).symm (stdBasisMatrix (i, k) (j, l) r)
+      = (stdBasisMatrix i j (stdBasisMatrix k l r)) :=
+  (comp _ _ _ _ _).symm_apply_eq.2 <| (comp_stdBasisMatrix_stdBasisMatrix _ _ _ _ _).symm
 
 section AddCommMonoid
 

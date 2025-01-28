@@ -4,21 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
+import Mathlib.Data.Matrix.Composition
 import Mathlib.RingTheory.TensorProduct.Basic
 
+
 /-!
+# Algebra isomorphisms between tensor products and matrices
+
 We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 
 suppress_compilation
 
-universe u v w
-
 open TensorProduct Algebra.TensorProduct Matrix
 
-variable {R : Type u} [CommSemiring R]
-variable {A : Type v} [Semiring A] [Algebra R A]
-variable {n : Type w}
+variable {R : Type*} [CommSemiring R]
+variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable {m n : Type*}
 variable (R A n)
 
 namespace MatrixEquivTensor
@@ -148,3 +150,30 @@ theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
     (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
   rfl
+
+variable (m) (B) [Fintype m] [DecidableEq m]
+
+def matrixTensorEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
+  Algebra.TensorProduct.congr (matrixEquivTensor R A m) (matrixEquivTensor R B n)
+    |>.trans <| (Algebra.TensorProduct.tensorTensorTensorComm R A _ B _)
+    |>.trans <|
+      Algebra.TensorProduct.congr .refl (
+        Algebra.TensorProduct.comm R _ _
+          |>.trans <| (matrixEquivTensor R _ m).symm
+          |>.trans <| Matrix.compAlgEquiv m n R R)
+      |>.trans <| (matrixEquivTensor ..).symm
+
+-- @[simp]
+-- theorem matrixTensorEquiv_stdBasisMatrix_tmul_stdBasisMatrix (a : Matrix m m A) (b : Matrix n n B) :
+--     matrixTensorEquiv R A B m n (a ⊗ₜ b) = sorry := sorry
+
+@[simp]
+theorem matrixTensorEquiv_stdBasisMatrix_tmul_stdBasisMatrix
+    (i₁ i₂ : m) (j₁ j₂ : n) (a : A) (b : B) :
+    matrixTensorEquiv R A B m n (stdBasisMatrix i₁ i₂ a ⊗ₜ stdBasisMatrix j₁ j₂ b) = sorry := by
+  ext i j
+  dsimp [matrixTensorEquiv, Matrix.compAlgEquiv]
+  simp only [← sum_tmul, ← tmul_sum]
+  dsimp
+  simp [comp_]
+  sorry
