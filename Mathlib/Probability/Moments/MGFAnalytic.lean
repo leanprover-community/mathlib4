@@ -16,7 +16,7 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 * `analyticOn_mgf`: the moment generating function is analytic on the interior of the interval
   on which it is defined.
-* `iteratedDeriv_mgf`: the nth derivative of the mgf at `t` is `μ[X ^ n * exp (t * X)]`.
+* `iteratedDeriv_mgf`: the n-th derivative of the mgf at `t` is `μ[X ^ n * exp (t * X)]`.
 
 -/
 
