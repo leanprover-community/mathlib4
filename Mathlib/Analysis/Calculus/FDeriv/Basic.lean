@@ -249,12 +249,25 @@ theorem hasStrictFDerivAt_iff_isLittleO :
 alias ⟨HasStrictFDerivAt.isLittleO, HasStrictFDerivAt.of_isLittleO⟩ :=
   hasStrictFDerivAt_iff_isLittleO
 
+end Normed
 section DerivativeUniqueness
+
+section TVS
+variable [NontriviallyNormedField 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {x : E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
+variable [ContinuousAdd E] [ContinuousAdd F] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F]
 
 /- In this section, we discuss the uniqueness of the derivative.
 We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
 uniqueness of the derivative. -/
-/-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
+/-- If a function f has a derivative
+f' at x, a rescaled version of f around x converges to f',
 i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
 and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
 this fact, for functions having a derivative within a set. Its specific formulation is useful for
@@ -269,16 +282,17 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
     constructor
     · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
     · rwa [tendsto_principal]
-  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
-  have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
-    this.comp_tendsto tendsto_arg
-  have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n => c n • d n :=
-    (isBigO_refl c l).smul_isLittleO this
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
-    this.trans_isBigO (cdlim.isBigO_one ℝ)
+  have := h.isLittleOTVS.comp_tendsto tendsto_arg
+  have : (fun n ↦ f (x + d n) - f x - f' (x + d n - x)) =o[𝕜;l] fun n ↦ x + d n - x :=
+     h.isLittleOTVS.comp_tendsto tendsto_arg
+  have : (fun n ↦ f (x + d n) - f x - f' (d n)) =o[𝕜;l] fun n => d n := by
+    simpa only [add_sub_cancel_left]
+  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[𝕜;l] fun n => c n • d n :=
+    this.smul_left _
+  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[𝕜;l] fun _ => (1 : 𝕜) := by
+    sorry --     this.trans_isBigO (cdlim.isBigO_one ℝ)
   have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
-    (isLittleO_one_iff ℝ).1 this
+    (isLittleOTVS_one).1 this
   have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
     Tendsto.comp f'.cont.continuousAt cdlim
   have L3 :
@@ -291,6 +305,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
     simp [smul_add, smul_sub]
   rwa [this, zero_add] at L3
 
+variable [T2Space F]
 /-- If `f'` and `f₁'` are two derivatives of `f` within `s` at `x`, then they are equal on the
 tangent cone to `s` at `x` -/
 theorem HasFDerivWithinAt.unique_on (hf : HasFDerivWithinAt f f' s x)
@@ -307,9 +322,9 @@ theorem UniqueDiffOn.eq (H : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : HasFDerivW
     (h₁ : HasFDerivWithinAt f f₁' s x) : f' = f₁' :=
   (H x hx).eq h h₁
 
-end DerivativeUniqueness
+end TVS
 
-end Normed
+end DerivativeUniqueness
 
 section FDerivProperties
 
