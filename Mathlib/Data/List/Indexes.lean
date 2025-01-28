@@ -23,17 +23,10 @@ variable {α : Type u} {β : Type v}
 
 section MapIdx
 
+@[deprecated reverseRecOn (since := "2025-01-28")]
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
-    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
-  let q := fun l ↦ p (reverse l)
-  have pq : ∀ l, p (reverse l) → q l := by simp only [q, reverse_reverse]; intro; exact id
-  have qp : ∀ l, q (reverse l) → p l := by simp only [q, reverse_reverse]; intro; exact id
-  intro l
-  apply qp
-  generalize (reverse l) = l
-  induction' l with head tail ih
-  · apply pq; simp only [reverse_nil, base]
-  · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
+    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) :=
+  fun l => l.reverseRecOn base ind
 
 @[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
 
