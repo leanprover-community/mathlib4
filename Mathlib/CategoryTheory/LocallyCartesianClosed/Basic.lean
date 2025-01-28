@@ -33,14 +33,48 @@ namespace CategoryTheory
 
 open CategoryTheory Category Limits Functor Adjunction Over
 
+universe v u
+
+variable {C : Type u} [Category.{v} C]
+
+/-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
+has right adjoint. -/
+class ExponentiableMorphism [HasPullbacks C] {I J : C} (f : I ⟶ J) where
+  /-- The pushforward functor -/
+  pushforward : Over I ⥤ Over J
+  /-- The pushforward functor is right adjoint to the pullback functor -/
+  adj : Over.pullback f ⊣ pushforward := by infer_instance
+
+namespace ExponentiableMorphism
+
+
+
+
+end ExponentiableMorphism
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 attribute [local instance] monoidalOfChosenFiniteProducts
 
-universe v u
+
 
 section
 
 variable (C : Type u) [Category.{v} C]
 
+attribute [local instance] hasFiniteWidePullbacks_of_hasFiniteLimits
 attribute [local instance] ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 
@@ -48,6 +82,9 @@ class LCC (C : Type u) [Category.{v} C] [HasFiniteWidePullbacks C] where
   over_cc : Π (I : C), CartesianClosed (Over I)
   pushforward {X Y : C} (f : X ⟶ Y) : Over X ⥤ Over Y
   adj {X Y : C} (f : X ⟶ Y) : Over.pullback f ⊣ pushforward f := by infer_instance
+
+
+
 
 end
 
