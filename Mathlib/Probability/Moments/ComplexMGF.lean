@@ -39,6 +39,9 @@ properties of the mgf from those of the characteristic function).
 * `eqOn_complexMGF_of_mgf`: if two random variables have the same moment generating function,
   then they have the same `complexMGF` on the vertical strip
   `{z | z.re ∈ interior (integrableExpSet X μ)}`.
+  Once we know that equal `mgf` implies equal distributions, we will be able to show that
+  the `complexMGF` are equal everywhere, not only on the strip.
+  This lemma will be used in the proof of the equality of distributions.
 
 ## TODO
 
@@ -262,7 +265,11 @@ lemma integrableExpSet_eq_of_mgf [IsProbabilityMeasure μ]
   exact (mgf_pos (by simp)).ne'
 
 /-- If two random variables have the same moment generating function then they have
-the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`. -/
+the same `complexMGF` on the vertical strip `{z | z.re ∈ interior (integrableExpSet X μ)}`.
+
+TODO: once we know that equal `mgf` implies equal distributions, we will be able to show that
+the `complexMGF` are equal everywhere, not only on the strip.
+This lemma will be used in the proof of the equality of distributions. -/
 lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     Set.EqOn (complexMGF X μ) (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet X μ)} := by
   by_cases h_empty : interior (integrableExpSet X μ) = ∅
