@@ -1733,6 +1733,12 @@ Q1765521:
 
 Q1766814:
   title: Smn theorem
+  decls:
+    - Nat.Partrec.Code.smn
+    - Nat.Partrec'.part_iff
+  authors: Mario Carneiro
+  date: 2018
+  comment: "This theorem is trivial when using Mathlib's computability definition, but this definition is equivalent to the usual one, as shown in `Nat.Partrec'.part_iff`."
 
 Q1785610:
   title: Poncelet's closure theorem
