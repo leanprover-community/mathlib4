@@ -1,3 +1,4 @@
+import Std
 import Batteries
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
@@ -1931,6 +1932,7 @@ import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 import Mathlib.CategoryTheory.Limits.Indization.Products
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
@@ -3084,7 +3086,6 @@ import Mathlib.Deprecated.Cardinal.Finite
 import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Combinator
 import Mathlib.Deprecated.Equiv
-import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.HashMap
 import Mathlib.Deprecated.LazyList
 import Mathlib.Deprecated.Logic
@@ -3092,11 +3093,6 @@ import Mathlib.Deprecated.MinMax
 import Mathlib.Deprecated.NatLemmas
 import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RelClasses
-import Mathlib.Deprecated.Ring
-import Mathlib.Deprecated.Subfield
-import Mathlib.Deprecated.Subgroup
-import Mathlib.Deprecated.Submonoid
-import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
@@ -4360,7 +4356,10 @@ import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition.Basic
+import Mathlib.Probability.Kernel.Composition.CompNotation
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+import Mathlib.Probability.Kernel.Composition.Lemmas
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.Composition.ParallelComp
 import Mathlib.Probability.Kernel.CondDistrib
@@ -4637,6 +4636,7 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.Localization.NumDen
+import Mathlib.RingTheory.Localization.Pi
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.Multiplicity

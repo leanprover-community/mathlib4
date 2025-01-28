@@ -28,7 +28,7 @@ theorem eLpNorm'_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
         (∫⁻ a, ((fun a => (‖f a‖₊ : ℝ≥0∞)) + fun a => (‖g a‖₊ : ℝ≥0∞)) a ^ q ∂μ) ^ (1 / q) := by
       gcongr with a
       simp only [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe, nnnorm_add_le]
-    _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.ennnorm hg.ennnorm hq1
+    _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.enorm hg.enorm hq1
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_add_le := eLpNorm'_add_le
@@ -41,7 +41,7 @@ theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ 
       gcongr with a
       simp only [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe, nnnorm_add_le]
     _ ≤ (2 : ℝ≥0∞) ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
-      ENNReal.lintegral_Lp_add_le_of_le_one hf.ennnorm hq0 hq1
+      ENNReal.lintegral_Lp_add_le_of_le_one hf.enorm hq0 hq1
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_add_le_of_le_one := eLpNorm'_add_le_of_le_one
