@@ -66,9 +66,9 @@ abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y�
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
 
-@[simp 1001, mfld_simps 1001]
+@[mfld_simps]
 theorem TotalSpace.mk_inj {b : B} {y y' : E b} : mk' F b y = mk' F b y' ↔ y = y' := by
-  simp [TotalSpace.ext_iff]
+  simp
 
 theorem TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F E) := fun _ _ ↦
   mk_inj.1

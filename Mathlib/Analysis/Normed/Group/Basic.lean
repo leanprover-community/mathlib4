@@ -588,11 +588,11 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
   simpa only [div_div_div_cancel_right] using norm_sub_norm_le' (u / w) (v / w)
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
--- Porting note: increase priority so the left-hand side doesn't reduce
+-- increased `simp` priority so this can fire before `mem_sphere`
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 
-@[to_additive] -- `simp` can prove this
-theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp [dist_eq_norm_div]
+@[to_additive]
+theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp
 
 @[to_additive (attr := simp) norm_eq_of_mem_sphere]
 theorem norm_eq_of_mem_sphere' (x : sphere (1 : E) r) : ‖(x : E)‖ = r :=
@@ -1150,14 +1150,12 @@ theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
 theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r := by
   rw [mem_closedBall_iff_norm'', mul_div_cancel_left]
 
-@[to_additive (attr := simp 1001)]
--- Porting note: increase priority so that the left-hand side doesn't simplify
+@[to_additive (attr := simp)]
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
 
-@[to_additive (attr := simp 1001)]
--- Porting note: increase priority so that the left-hand side doesn't simplify
+@[to_additive (attr := simp)]
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (b * ·) ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
@@ -1288,26 +1286,28 @@ theorem norm_of_nonpos (hr : r ≤ 0) : ‖r‖ = -r :=
 theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
   le_abs_self r
 
-@[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
-@[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
-@[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
+lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := by simp
+@[simp] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
+@[simp] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
 
 @[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
-@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℝ)‖ = ofNat(n) := norm_natCast n
+lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℝ)‖ = ofNat(n) := by simp
 
-@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℝ)‖₊ = ofNat(n) := nnnorm_natCast n
 
 lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
 lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
 
 @[simp 1100, norm_cast]
+-- Increased `simp` priority so that this can fire before `norm_eq_abs`.
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖ = q := norm_of_nonneg q.cast_nonneg
 
 @[simp 1100, norm_cast]
+-- Increased `simp` priority so that this can fire before `norm_eq_abs`.
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
@@ -1349,9 +1349,8 @@ instance : NNNorm ℝ≥0 where
 
 end NNReal
 
- -- Porting note: increase priority so that the LHS doesn't simplify
-@[to_additive (attr := simp 1001) norm_norm]
-lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)
+@[to_additive norm_norm]
+lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := by simp
 
 @[to_additive (attr := simp) nnnorm_norm]
 lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]

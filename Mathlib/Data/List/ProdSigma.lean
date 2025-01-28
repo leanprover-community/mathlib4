@@ -86,7 +86,7 @@ theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
 
 /-! ### Miscellaneous lemmas -/
 
-@[simp 1100]
+@[simp 1100] -- increase priority so this can fire before `mem_map`.
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih

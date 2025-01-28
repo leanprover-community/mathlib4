@@ -191,13 +191,11 @@ theorem dist_self_mul_right (a b : E) : dist a (a * b) = ‖b‖ := by
 theorem dist_self_mul_left (a b : E) : dist (a * b) a = ‖b‖ := by
   rw [dist_comm, dist_self_mul_right]
 
-@[to_additive (attr := simp 1001)] -- Increase priority because `simp` can prove this
-theorem dist_self_div_right (a b : E) : dist a (a / b) = ‖b‖ := by
-  rw [div_eq_mul_inv, dist_self_mul_right, norm_inv']
+@[to_additive]
+theorem dist_self_div_right (a b : E) : dist a (a / b) = ‖b‖ := by simp
 
-@[to_additive (attr := simp 1001)] -- Increase priority because `simp` can prove this
-theorem dist_self_div_left (a b : E) : dist (a / b) a = ‖b‖ := by
-  rw [dist_comm, dist_self_div_right]
+@[to_additive]
+theorem dist_self_div_left (a b : E) : dist (a / b) a = ‖b‖ := by simp
 
 @[to_additive]
 theorem dist_mul_mul_le (a₁ a₂ b₁ b₂ : E) : dist (a₁ * a₂) (b₁ * b₂) ≤ dist a₁ b₁ + dist a₂ b₂ := by

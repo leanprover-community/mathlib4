@@ -127,18 +127,21 @@ theorem smul_ball_one : x • ball (1 : E) δ = ball x δ := by
   rw [smul_ball, smul_eq_mul, mul_one]
 
 @[to_additive (attr := simp 1100)]
+-- Increased priority so this can fire before `singleton_mul`.
 theorem singleton_mul_closedBall : {x} * closedBall y δ = closedBall (x * y) δ := by
   simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_closedBall]
 
 @[to_additive (attr := simp 1100)]
+-- Increased priority so this can fire before `singleton_div`.
 theorem singleton_div_closedBall : {x} / closedBall y δ = closedBall (x / y) δ := by
   simp_rw [div_eq_mul_inv, inv_closedBall, singleton_mul_closedBall]
 
-@[to_additive (attr := simp 1100)]
+@[to_additive]
 theorem closedBall_mul_singleton : closedBall x δ * {y} = closedBall (x * y) δ := by
-  simp [mul_comm _ {y}, mul_comm y]
+  simp
 
 @[to_additive (attr := simp 1100)]
+-- Increased priority so this can fire before `div_singleton`.
 theorem closedBall_div_singleton : closedBall x δ / {y} = closedBall (x / y) δ := by
   simp [div_eq_mul_inv]
 
@@ -155,7 +158,7 @@ theorem closedBall_one_mul_singleton : closedBall 1 δ * {x} = closedBall x δ :
 @[to_additive]
 theorem closedBall_one_div_singleton : closedBall 1 δ / {x} = closedBall x⁻¹ δ := by simp
 
-@[to_additive (attr := simp 1100)]
+@[to_additive]
 theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := by simp
 
 @[to_additive]

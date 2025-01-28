@@ -536,8 +536,7 @@ theorem mem_basicOpen_top (f : Γ(X, ⊤)) (x : X) :
 theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
   RingedSpace.basicOpen_res _ i f
 
--- This should fire before `basicOpen_res`.
-@[simp 1100]
+@[simp 1100] -- Increases priority so this can fire before `basicOpen_res`.
 theorem basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
     X.basicOpen (X.presheaf.map i f) = X.basicOpen f :=
   RingedSpace.basicOpen_res_eq _ i f

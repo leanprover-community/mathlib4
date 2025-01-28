@@ -389,7 +389,7 @@ theorem isLittleO_const_left {c : E''} :
   · simp only [isLittleO_zero, eq_self_iff_true, true_or]
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
-@[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
+@[simp 1001] -- increase priority so that this triggers before `isLittleO_const_left`
 theorem isLittleO_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=

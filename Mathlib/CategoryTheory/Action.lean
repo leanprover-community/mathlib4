@@ -109,7 +109,7 @@ theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
     (stabilizerIsoEnd M x) f = f :=
   rfl
 
-@[simp 1100]
+@[simp]
 theorem stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).symm f = f :=
   rfl
 

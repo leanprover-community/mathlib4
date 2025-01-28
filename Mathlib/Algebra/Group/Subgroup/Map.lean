@@ -150,10 +150,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
     x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K := by
   erw [@Set.mem_image_equiv _ _ (↑K) f.toEquiv x]; rfl
 
--- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
--- However this is a higher priority lemma.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image

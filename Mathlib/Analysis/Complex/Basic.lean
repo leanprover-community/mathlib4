@@ -137,26 +137,29 @@ theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_c
 theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
   rw [nndist_comm, nndist_conj_self]
 
-@[simp 1100]
+@[simp]
 theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
   comap_norm_nhds_zero
 
-@[simp 1100, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
+@[norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := by simp
 @[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
 
-@[simp 1100, norm_cast] lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := abs_natCast _
-@[simp 1100, norm_cast] lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
-@[simp 1100, norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
+@[norm_cast] lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := by simp
+@[norm_cast] lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := by simp
+-- This does not need to be `@[simp]` as later `simp` will be able to prove it.
+@[norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
 
-@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
-@[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
+-- This does not need to be `@[simp]` as later `simp` will be able to prove it.
+@[norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+@[simp, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
-@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
+@[simp, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
 
-@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := by simp
 
-@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+-- This does not need to be `@[simp]` as later `simp` will be able to prove it.
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 @[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
@@ -165,11 +168,13 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
 @[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 
-@[simp 1100, norm_cast]
+-- This does not need to be `@[simp]` as later `simp` will be able to prove it.
+@[norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
 
-@[simp 1100, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
+-- This does not need to be `@[simp]` as later `simp` will be able to prove it.
+@[norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, norm_nnratCast, -norm_eq_abs]
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
   rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]

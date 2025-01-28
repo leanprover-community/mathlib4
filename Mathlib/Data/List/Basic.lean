@@ -73,9 +73,8 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-
 -- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
--- However this is a higher priority lemma.
+-- However this is a higher priority lemma, so the simpNF linter should not be complaining!
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
@@ -1621,8 +1620,8 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
 
 /-! ### filterMap -/
 
-attribute [simp 1100] filterMap_cons_none
-attribute [simp 1100] filterMap_cons_some
+attribute [simp] filterMap_cons_none
+attribute [simp] filterMap_cons_some
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
     l.filterMap f = l.flatMap fun a ↦ (f a).toList := by
