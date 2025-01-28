@@ -139,7 +139,8 @@ lemma Cotangent.exact :
       Subtype.exists, exists_and_right, exists_eq_right,
       toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
-    · simp [ker_eq_ker_aeval_val, RingHom.mem_ker, aeval_val_eq_zero hw]
+    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom,
+        aeval_val_eq_zero hw, map_zero]
     · rw [map_mk]
       rfl
 

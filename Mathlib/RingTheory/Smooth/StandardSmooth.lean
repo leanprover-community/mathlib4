@@ -254,6 +254,19 @@ noncomputable def comp : PreSubmersivePresentation R T where
     ((Sum.inr_injective).comp (P.map_inj)) <| by simp
   relations_finite := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
 
+/-- Let lean see through the `rels` field to enable the `MvPolynomial` API. -/
+unif_hint comp_rels_eq where
+  ⊢ (Q.comp P).rels ≟ Q.rels ⊕ P.rels
+
+/-- Let lean see through the `vars` field to enable the `MvPolynomial` API. -/
+unif_hint comp_vars_eq where
+  ⊢ (Q.comp P).vars ≟ Q.vars ⊕ P.vars
+
+@[simp]
+lemma comp_val : (Q.comp P).val = (Q.toPresentation.comp P.toPresentation).val := rfl
+
+lemma comp_rel : (Q.comp P).val = (Q.toPresentation.comp P.toPresentation).val := rfl
+
 /-- The dimension of the composition of two finite submersive presentations is
 the sum of the dimensions. -/
 lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
@@ -342,15 +355,13 @@ private lemma jacobiMatrix_comp_₂₂_det :
   simp only [Matrix.toBlocks₂₂, AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.of_apply,
     RingHom.mapMatrix_apply, Generators.algebraMap_apply, map_aeval, coe_eval₂Hom]
   rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
   generalize P.jacobiMatrix i j = p
   induction' p using MvPolynomial.induction_on with a p q hp hq p i hp
-  · simp only [algHom_C, algebraMap_eq, eval₂_C]
-    erw [MvPolynomial.eval₂_C]
-  · simp [hp, hq]
-  · simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
-    erw [Generators.comp_val]
-    simp
+  · simp
+  · simp only [map_add, hp, hq, eval₂_add]
+  · simp only [comp_val, Presentation.comp_val, Generators.comp_val, map_mul, rename_X,
+      aeval_rename, aeval_X, Sum.elim_inr, Function.comp_apply, eval₂_mul, eval₂_X]
+    simp [aeval, Function.comp_def]
 
 end P
 

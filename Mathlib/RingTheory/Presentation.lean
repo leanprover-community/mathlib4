@@ -443,6 +443,11 @@ unif_hint comp_vars_eq where
   ⊢ (Q.comp P).vars ≟ Q.vars ⊕ P.vars
 
 @[simp]
+lemma comp_val :
+    (Q.comp P).val = (Q.toGenerators.comp P.toGenerators).val :=
+  rfl
+
+@[simp]
 lemma comp_relation_inr (r : P.rels) :
     (Q.comp P).relation (Sum.inr r) = rename Sum.inr (P.relation r) :=
   rfl

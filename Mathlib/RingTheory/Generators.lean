@@ -216,7 +216,7 @@ variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
-@[simps val, simps (config := .lemmasOnly) vars σ]
+@[simps (config := .lemmasOnly) vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   vars := Q.vars ⊕ P.vars
@@ -238,6 +238,11 @@ unif_hint comp_vars_eq_sum (Q : Generators S T) (P : Generators R S) where
 example (Q : Generators S T) (P : Generators R S) :
     (Q.comp P).vars = (Q.vars ⊕ P.vars) := by
   with_reducible rfl
+
+@[simp]
+lemma comp_val (Q : Generators S T) (P : Generators R S) :
+    (Q.comp P).val = Sum.elim Q.val (algebraMap S T ∘ P.val) :=
+  rfl
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
