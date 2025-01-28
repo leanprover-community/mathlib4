@@ -860,7 +860,7 @@ end MvPolynomial
 
 end Prime
 
-/-- Hilbert basis theorem: a polynomial ring over a noetherian ring is a noetherian ring. -/
+/-- **Hilbert basis theorem**: a polynomial ring over a Noetherian ring is a Noetherian ring. -/
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
     ⟨fun I : Ideal R[X] =>
