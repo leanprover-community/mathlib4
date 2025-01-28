@@ -17,10 +17,23 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 
 * `Matroid.Circuit M C` means that `C` is minimally dependent in `M`.
 * For an `Indep`endent set `I` whose closure contains an element `e ∉ I`,
-  `Matroid.fundCircuit M e I` is the unique circuit contained in `{e} ∪ I`.
+  `Matroid.fundCircuit M e I` is the unique circuit contained in `insert e I`.
+* `Matroid.Indep.fundCircuit_circuit` states that `Matroid.fundCircuit M e I` is indeed a circuit.
+* `Circuit.eq_fundCircuit_of_subset` states that `Matroid.fundCircuit M e I` is the
+  unique circuit contained in `insert e I`.
 * `Matroid.dep_iff_superset_circuit` states that the dependent subsets of the ground set
   are precisely those that contain a circuit.
 * `Matroid.ext_circuit` : a matroid is determined by its collection of circuits.
+
+# Implementation Details
+
+Since `Matroid.fundCircuit M e I` is only sensible if `I` is independent and `e ∈ M.closure I \ I`,
+to avoid hypotheses being explicitly included in the definition,
+junk values need to be chosen if either hypothesis fails.
+The definition is chosen so that the junk values satisfy
+`M.fundCircuit e I = {e}` for `e ∈ I` and
+`M.fundCircuit e I = insert e I` if `e ∉ M.closure I`.
+These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true unconditionally.
 -/
 
 variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x y : α}
@@ -91,6 +104,10 @@ lemma Circuit.not_ssubset (hC : M.Circuit C) (hC' : M.Circuit C') : ¬C' ⊂ C :
 
 lemma Circuit.eq_of_subset_circuit (hC : M.Circuit C) (hC' : M.Circuit C') (h : C ⊆ C') : C = C' :=
   hC'.eq_of_dep_subset hC.dep h
+
+lemma Circuit.eq_of_superset_circuit (hC : M.Circuit C) (hC' : M.Circuit C') (h : C' ⊆ C) :
+    C = C' :=
+  (hC'.eq_of_subset_circuit hC h).symm
 
 lemma circuit_iff_dep_forall_diff_singleton_indep :
     M.Circuit C ↔ M.Dep C ∧ ∀ e ∈ C, M.Indep (C \ {e}) := by
@@ -173,9 +190,12 @@ lemma restrict_circuit_iff (hR : R ⊆ M.E := by aesop_mat) :
 
 /-! ### Fundamental Circuits -/
 
-/-- For an independent set `I` that spans some `e ∉ I`, the unique circuit contained in `I ∪ {e}`.
+/-- For an independent set `I` and some `e ∈ M.closure I \ I`,
+`M.fundCircuit e I` is the unique circuit contained in `insert e I`.
+For the fact that this is a circuit, see `Matroid.Indep.fundCircuit_circuit`,
+and the fact that it is unique, see `Matroid.Circuit.eq_fundCircuit_of_subset`.
 Has the junk value `{e}` if `e ∈ I` and `insert e I` if `e ∉ M.closure I`. -/
-def fundCircuit (M : Matroid α) (e : α) (I : Set α) :=
+def fundCircuit (M : Matroid α) (e : α) (I : Set α) : Set α :=
   insert e (I ∩ (⋂₀ {J | J ⊆ I ∧ e ∈ M.closure J}))
 
 lemma fundCircuit_eq_sInter (he : e ∈ M.closure I) :
@@ -192,7 +212,7 @@ lemma fundCircuit_subset_ground (he : e ∈ M.E) (hI : I ⊆ M.E := by aesop_mat
   (M.fundCircuit_subset_insert e I).trans (insert_subset he hI)
 
 lemma mem_fundCircuit (M : Matroid α) (e : α) (I : Set α) : e ∈ fundCircuit M e I :=
-  mem_insert _ _
+  mem_insert ..
 
 /-- The fundamental circuit of `e` and `X` has the junk value `{e}` if `e ∈ X` -/
 lemma fundCircuit_eq_of_mem (heX : e ∈ X) (heE : e ∈ M.E := by aesop_mat) :
@@ -210,8 +230,7 @@ lemma Indep.fundCircuit_circuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI
     M.Circuit (M.fundCircuit e I) := by
   apply (hI.inter_right _).insert_circuit_of_forall (by simp [heI])
   · rw [(hI.subset _).closure_inter_eq_inter_closure, mem_inter_iff, and_iff_right hecl,
-      hI.closure_sInter_eq_biInter_closure_of_forall_subset _
-      (by simp (config := {contextual := true}))]
+      hI.closure_sInter_eq_biInter_closure_of_forall_subset _ (by simp +contextual)]
     · simp
     · exact ⟨I, rfl.subset, hecl⟩
     exact union_subset rfl.subset (sInter_subset_of_mem ⟨rfl.subset, hecl⟩)
@@ -220,7 +239,7 @@ lemma Indep.fundCircuit_circuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI
 
 lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     x ∈ M.fundCircuit e I ↔ M.Indep (insert e I \ {x}) := by
-  obtain (rfl | hne) := eq_or_ne x e
+  obtain rfl | hne := eq_or_ne x e
   · simp [hI.diff, mem_fundCircuit]
   suffices (∀ t ⊆ I, e ∈ M.closure t → x ∈ t) ↔ e ∉ M.closure (I \ {x}) by
     simpa [fundCircuit_eq_sInter hecl, hne, ← insert_diff_singleton_comm hne.symm,
@@ -238,7 +257,7 @@ lemma Circuit.eq_fundCircuit_of_subset (hC : M.Circuit C) (hI : M.Indep I) (hCss
   obtain hCI | ⟨heC, hCeI⟩ := subset_insert_iff.1 hCss
   · exact (hC.not_indep (hI.subset hCI)).elim
   suffices hss : M.fundCircuit e I ⊆ C by
-    refine Eq.symm <| (hI.fundCircuit_circuit ?_ (fun heI ↦ ?_)).eq_of_subset_circuit hC hss
+    refine hC.eq_of_superset_circuit (hI.fundCircuit_circuit ?_ (fun heI ↦ ?_)) hss
     · rw [hI.mem_closure_iff]
       exact .inl (hC.dep.superset hCss (insert_subset (hC.subset_ground heC) hI.subset_ground))
     exact hC.not_indep (hI.subset (hCss.trans (by simp [heI])))
@@ -259,6 +278,8 @@ lemma dep_iff_superset_circuit (hX : X ⊆ M.E := by aesop_mat) :
     M.Dep X ↔ ∃ C, C ⊆ X ∧ M.Circuit C :=
   ⟨Dep.exists_circuit_subset, fun ⟨C, hCX, hC⟩ ↦ hC.dep.superset hCX⟩
 
+/-- A version of `Matroid.dep_iff_superset_circuit` that has the supportedness hypothesis
+as part of the equivalence, rather than a hypothesis. -/
 lemma dep_iff_superset_circuit' : M.Dep X ↔ (∃ C, C ⊆ X ∧ M.Circuit C) ∧ X ⊆ M.E :=
   ⟨fun h ↦ ⟨h.exists_circuit_subset, h.subset_ground⟩, fun ⟨⟨C, hCX, hC⟩, h⟩ ↦ hC.dep.superset hCX⟩
 
@@ -274,8 +295,8 @@ lemma indep_iff_forall_subset_not_circuit (hI : I ⊆ M.E := by aesop_mat) :
 
 lemma ext_circuit {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ ⦃C⦄, C ⊆ M₁.E → (M₁.Circuit C ↔ M₂.Circuit C)) : M₁ = M₂ := by
-  have h' : ∀ C, M₁.Circuit C ↔ M₂.Circuit C := by
-    exact fun C ↦ (em (C ⊆ M₁.E)).elim (h (C := C))
+  have h' : ∀ C, M₁.Circuit C ↔ M₂.Circuit C :=
+    fun C ↦ (em (C ⊆ M₁.E)).elim (h (C := C))
       (fun hC ↦ iff_of_false (mt Circuit.subset_ground hC)
         (mt Circuit.subset_ground (fun hss ↦ hC (hss.trans_eq hE.symm))))
   refine ext_indep hE fun I hI ↦ ?_
@@ -283,23 +304,18 @@ lemma ext_circuit {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     indep_iff_forall_subset_not_circuit (hI.trans_eq hE)]
 
 /-- A stronger version of `Matroid.ext_circuit`:
-two matroids on the same ground set are equal if no circuit of one is independent in another. -/
+two matroids on the same ground set are equal if no circuit of one is independent in the other. -/
 lemma ext_circuit_not_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
-    (h₁ : ∀ ⦃C⦄, M₁.Circuit C → ¬ M₂.Indep C) (h₂ : ∀ ⦃C⦄, M₂.Circuit C → ¬ M₁.Indep C) :
+    (h₁ : ∀ C, M₁.Circuit C → ¬ M₂.Indep C) (h₂ : ∀ C, M₂.Circuit C → ¬ M₁.Indep C) :
     M₁ = M₂ := by
-  refine ext_circuit hE fun C _ ↦ ⟨fun hC ↦ ?_, fun hC ↦ ?_⟩
-  · have hC₂ : C ⊆ M₂.E := by rwa [← hE]
-    specialize h₁ hC
-    rw [not_indep_iff] at h₁
-    obtain ⟨C', hC'C, hC'⟩ := h₁.exists_circuit_subset
-    rwa [← hC.eq_of_not_indep_subset (h₂ hC') hC'C]
-  specialize h₂ hC
-  rw [not_indep_iff] at h₂
-  obtain ⟨C', hC'C, hC'⟩ := h₂.exists_circuit_subset
-  rwa [← hC.eq_of_not_indep_subset (h₁ hC') hC'C]
+  refine ext_circuit hE fun C hCE ↦ ⟨fun hC ↦ ?_, fun hC ↦ ?_⟩
+  · obtain ⟨C', hC'C, hC'⟩ := ((not_indep_iff (by rwa [← hE])).1 (h₁ C hC)).exists_circuit_subset
+    rwa [← hC.eq_of_not_indep_subset (h₂ C' hC') hC'C]
+  obtain ⟨C', hC'C, hC'⟩ := ((not_indep_iff hCE).1 (h₂ C hC)).exists_circuit_subset
+  rwa [← hC.eq_of_not_indep_subset (h₁ C' hC') hC'C]
 
 lemma ext_iff_circuit {M₁ M₂ : Matroid α} :
-    M₁ = M₂ ↔ M₁.E = M₂.E ∧ ∀ ⦃C⦄, M₁.Circuit C ↔ M₂.Circuit C :=
+    M₁ = M₂ ↔ M₁.E = M₂.E ∧ ∀ C, M₁.Circuit C ↔ M₂.Circuit C :=
   ⟨fun h ↦ by simp [h], fun h ↦ ext_circuit h.1 fun C hC ↦ h.2 (C := C)⟩
 
 end Matroid
