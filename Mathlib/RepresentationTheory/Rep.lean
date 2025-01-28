@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
@@ -310,8 +311,8 @@ def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A where
   hom := ModuleCat.ofHom <| Finsupp.lift A k G fun g => A.ρ g x
   comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by simp
 
-theorem leftRegularHom_single {A : Rep k G} (g : G) (x : A) (r : k) :
-    (leftRegularHom A x).hom.hom (Finsupp.single g r) = r • A.ρ g x := by
+theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
+    (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by
   simp
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
@@ -326,7 +327,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) �
     LinearMap.ext_ring <| by simpa using (hom_comm_apply f x (Finsupp.single 1 1)).symm
   right_inv x := by simp
 
-theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
+theorem leftRegularHomEquiv_symm_hom_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
   simp
 
