@@ -634,7 +634,9 @@ Q656198:
 
 Q656645:
   title: Hilbert's basis theorem
-  # search mathlib or zulip; mathlib is close to this!
+  decl: Polynomial.isNoetherianRing
+  authors: Kenny Lau
+  date: 2019
 
 Q656772:
   title: Cayley–Hamilton theorem
