@@ -295,10 +295,9 @@ lemma indep_iff_forall_subset_not_circuit (hI : I ⊆ M.E := by aesop_mat) :
 
 lemma ext_circuit {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ ⦃C⦄, C ⊆ M₁.E → (M₁.Circuit C ↔ M₂.Circuit C)) : M₁ = M₂ := by
-  have h' : ∀ C, M₁.Circuit C ↔ M₂.Circuit C :=
-    fun C ↦ (em (C ⊆ M₁.E)).elim (h (C := C))
-      (fun hC ↦ iff_of_false (mt Circuit.subset_ground hC)
-        (mt Circuit.subset_ground (fun hss ↦ hC (hss.trans_eq hE.symm))))
+  have h' {C} : M₁.Circuit C ↔ M₂.Circuit C :=
+    (em (C ⊆ M₁.E)).elim (h (C := C)) (fun hC ↦ iff_of_false (mt Circuit.subset_ground hC)
+      (mt Circuit.subset_ground (fun hss ↦ hC (hss.trans_eq hE.symm))))
   refine ext_indep hE fun I hI ↦ ?_
   simp_rw [indep_iff_forall_subset_not_circuit hI, h',
     indep_iff_forall_subset_not_circuit (hI.trans_eq hE)]
