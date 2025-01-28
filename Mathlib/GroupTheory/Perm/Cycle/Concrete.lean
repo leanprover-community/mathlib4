@@ -485,7 +485,7 @@ unsafe instance instRepr [Repr α] : Repr (Perm α) where
     letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
       (Perm.cycleFactorsFinset f).val
       fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
-    -- And, intercalate `*`s.
+    -- And intercalate `*`s.
     match l with
     | []  => "1"
     | [f] => f
