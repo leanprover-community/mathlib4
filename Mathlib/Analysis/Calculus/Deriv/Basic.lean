@@ -839,6 +839,9 @@ theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
 
 end Normed
 
+@[simp]
+theorem derivWithin_zero : derivWithin (0 : 𝕜 → F) s = 0 := derivWithin_const _ _
+
 end Const
 
 section Continuous

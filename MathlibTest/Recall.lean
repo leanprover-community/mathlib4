@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Recall
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Trigonometric
 
 set_option linter.style.setOption false
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.
