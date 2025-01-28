@@ -36,8 +36,7 @@ structure Represents (s : Set α) (C : Set (Quot r)) where
   unique_rep {c : Quot r} (h : c ∈ C) : ∃! v, v ∈ s ∩ c
   exact {c : Quot r} (h : c ∉ C) : s ∩ c = ∅
 
-lemma out_image_represents (C : Set (Quot r)) :
-    (Quot.out '' C).Represents C where
+lemma out_image_represents (C : Set (Quot r)) : (Quot.out '' C).Represents C where
   unique_rep {c} h := by
     use c.out
     simp only [Set.mem_inter_iff, and_imp]
@@ -52,14 +51,14 @@ lemma out_image_represents (C : Set (Quot r)) :
     rw [← hvc, ← hv, c'.out_eq] at h
     exact h hc'
 
-lemma ncard_represents_inter {C : Set (Quot r)} {s : Set α}
-    {c : (Quot r)} (hrep : s.Represents C) (h : c ∈ C) : (s ∩ c).ncard = 1 := by
+lemma ncard_represents_inter {C : Set (Quot r)} {s : Set α} {c : (Quot r)} (hrep : s.Represents C)
+    (h : c ∈ C) : (s ∩ c).ncard = 1 := by
   rw [Set.ncard_eq_one]
   obtain ⟨a, ha⟩ := hrep.unique_rep h
   aesop
 
-lemma disjoint_represents {C : Set (Quot r)} {s : Set α}
-    {c : Quot r} (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c := by
+lemma disjoint_represents {C : Set (Quot r)} {s : Set α} {c : Quot r} (hrep : s.Represents C)
+    (h : c ∉ C) : Disjoint s c := by
   rw [Set.disjoint_right]
   intro v hv hvr
   have := hrep.exact h
@@ -71,14 +70,12 @@ lemma disjoint_of_represents {c : Quot r} {s : Set α} {p : Quot r → Prop}
   apply disjoint_represents hrep
   simpa
 
-lemma ncard_sdiff_represents_of_mem [Fintype α] {c : Quot r}
-    {s : Set α} {C : Set (Quot r)}
+lemma ncard_sdiff_represents_of_mem [Fintype α] {c : Quot r} {s : Set α} {C : Set (Quot r)}
     (hrep : s.Represents C) (h : c ∈ C) : ((c : Set α) \ s).ncard = (c : Set α).ncard - 1 := by
   simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c s (Set.toFinite _),
     Set.inter_comm, ncard_represents_inter hrep h]
 
-lemma ncard_sdiff_represents_of_not_mem [Fintype α] {c : Quot r}
-    {s : Set α} {C : Set (Quot r)}
+lemma ncard_sdiff_represents_of_not_mem [Fintype α] {c : Quot r} {s : Set α} {C : Set (Quot r)}
     (hrep : s.Represents C) (h : c ∉ C) : ((c : Set α) \ s).ncard = (c : Set α).ncard := by
   simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c s (Set.toFinite _),
     Set.inter_comm, hrep.exact h]
