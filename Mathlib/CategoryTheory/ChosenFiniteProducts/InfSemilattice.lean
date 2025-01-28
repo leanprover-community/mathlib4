@@ -19,7 +19,7 @@ instances `monoidalOfChosenFiniteProducts` and `ChosenFiniteProducts.instSymmetr
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory
+open Category MonoidalCategory
 
 universe u
 
@@ -32,16 +32,10 @@ noncomputable scoped instance chosenFiniteProducts : ChosenFiniteProducts C wher
   terminal := ⟨_, Preorder.isTerminalTop C⟩
   product X Y := ⟨_,  Preorder.isLimitBinaryFan X Y⟩
 
-namespace Monoidal
-
-open MonoidalCategory ChosenFiniteProducts
-
 lemma tensorObj {C : Type u} [SemilatticeInf C] [OrderTop C] {X Y : C} : X ⊗ Y = X ⊓ Y := rfl
 
 lemma tensorUnit {C : Type u} [SemilatticeInf C] [OrderTop C] :
     𝟙_ C = ⊤ := rfl
-
-end Monoidal
 
 end SemilatticeInf
 
