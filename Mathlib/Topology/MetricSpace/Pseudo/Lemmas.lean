@@ -91,7 +91,7 @@ lemma exists_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
 
 theorem biInter_gt_closedBall (x : α) (r : ℝ) : ⋂ r' > r, closedBall x r' = closedBall x r := by
   ext
-  simp [forall_gt_ge_iff]
+  simp [forall_gt_imp_ge_iff_le_of_dense]
 
 theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall x r := by
   ext
@@ -100,7 +100,7 @@ theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall 
 theorem biUnion_lt_ball (x : α) (r : ℝ) : ⋃ r' < r, ball x r' = ball x r := by
   ext
   rw [← not_iff_not]
-  simp [forall_lt_le_iff]
+  simp [forall_lt_imp_le_iff_le_of_dense]
 
 theorem biUnion_lt_closedBall (x : α) (r : ℝ) : ⋃ r' < r, closedBall x r' = ball x r := by
   ext
