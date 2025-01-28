@@ -89,16 +89,6 @@ lemma ρ_hom {X : Rep k G} (g : G) : (Action.ρ X g).hom = X.ρ g := rfl
 @[simp]
 lemma ofHom_ρ {X : Rep k G} (g : G) : ModuleCat.ofHom (X.ρ g) = Action.ρ X g := rfl
 
-@[simp]
-theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
-    A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, LinearMap.one_apply]
-
-@[simp]
-theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
-    A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
-
 theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
   LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (f.comm g)) x
@@ -106,13 +96,14 @@ theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
 variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
-def trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
-  Rep.of (@Representation.trivial k G V _ _ _ _)
+abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
+  Rep.of (Representation.trivial k G V)
 
 variable {k G}
 
-theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
-    (trivial k G V).ρ g v = v :=
+@[simp]
+theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
+    (trivial k G V).ρ g = LinearMap.id :=
   rfl
 
 /-- A predicate for representations that fix every element. -/
@@ -131,6 +122,16 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget.{u} _ _
 
+theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
+  ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
+  fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
+    ((forget₂ _ _).map f)).2 h)⟩
+
+theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
+  ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
+  fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
+    ((forget₂ _ _).map f)).2 h)⟩
+
 section
 
 open MonoidalCategory
@@ -142,7 +143,19 @@ theorem coe_tensor {A B : Rep k G} : (A ⊗ B : Rep k G) = TensorProduct k A B :
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 end
+section Res
 
+variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
+
+@[simp]
+lemma coe_res_obj : ((Action.res _ f).obj A : Type u) = A := rfl
+
+@[simp]
+lemma coe_res_obj_ρ (g : G) :
+    @DFunLike.coe (no_index G →* (A →ₗ[k] A)) _ _ _
+      (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
+
+end Res
 section Linearization
 
 variable (k G)
