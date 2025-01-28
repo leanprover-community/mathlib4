@@ -82,20 +82,20 @@ lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux :
     exact x.property
   obtain ⟨c, hc⟩ := Finsupp.mem_ideal_span_range_iff_exists_finsupp.mp this
   have heq (i : P.rels) :
-      (aeval P.val) (pderiv (P.map i) <| c.sum fun i a ↦ a * P.relation i) = 0 := by
+      aeval P.val (pderiv (P.map i) <| c.sum fun i a ↦ a * P.relation i) = 0 := by
     rw [hc]
     apply hx
   simp only [Finsupp.sum, map_sum, Derivation.leibniz, smul_eq_mul, map_add, map_mul,
     Presentation.aeval_val_relation, zero_mul, add_zero] at heq
   have heq2 : ∑ i ∈ c.support,
-      (aeval P.val) (c i) • (fun j ↦ (aeval P.val) (pderiv (P.map j) (P.relation i))) = 0 := by
+      aeval P.val (c i) • (fun j ↦ aeval P.val (pderiv (P.map j) (P.relation i))) = 0 := by
     ext j
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply]
     apply heq
-  have (i : P.rels) : (aeval P.val) (c i) = 0 := by
+  have (i : P.rels) : aeval P.val (c i) = 0 := by
     have := P.linearIndependent_aeval_val_pderiv_relation
     rw [linearIndependent_iff''] at this
-    have := this c.support (fun i ↦ (aeval P.val) (c i))
+    have := this c.support (fun i ↦ aeval P.val (c i))
       (by intro i; simp only [Finsupp.mem_support_iff, ne_eq, not_not]; intro h; simp [h]) heq2
     exact this i
   show _ ∈ P.ker ^ 2
