@@ -235,27 +235,18 @@ lemma order_of_locallyZero_mul_meromorphic {f g : 𝕜 → 𝕜} {x : 𝕜}
 theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     (hf.mul hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
-  by_cases h₂f : hf.order = ⊤
+  cases' h₂f : hf.order with m h₂f
   · simp [hf.order_of_locallyZero_mul_meromorphic hg, h₂f]
-  by_cases h₂g : hg.order = ⊤
+  cases' h₂g : hg.order with n h₂f
   · simp [mul_comm f g, hg.order_of_locallyZero_mul_meromorphic hf, h₂g]
   -- Non-trivial case: both functions do not vanish around z₀
-  have h₃f := (hf.order.coe_untop h₂f).symm
-  have h₃g := (hg.order.coe_untop h₂g).symm
-  rw [h₃f, h₃g, ← WithTop.coe_add, MeromorphicAt.order_eq_int_iff]
-  obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff (hf.order.untop h₂f)).1 h₃f
-  obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff (hg.order.untop h₂g)).1 h₃g
-  clear h₃f h₃g
-  use F * G, h₁F.mul h₁G, by simp; tauto
-  rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at *
-  obtain ⟨s, h₁s, h₂s, h₃s⟩ := h₃F
-  obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₃G
-  use s ∩ t
-  constructor
-  · intro y h₁y h₂y
-    simp [h₁s y h₁y.1 h₂y, h₁t y h₁y.2 h₂y, zpow_add' (by left; exact sub_ne_zero_of_ne h₂y)]
-    group
-  · exact ⟨IsOpen.inter h₂s h₂t, Set.mem_inter h₃s h₃t⟩
+  rw [← WithTop.coe_add, order_eq_int_iff]
+  obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff _).1 h₂f
+  obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff _).1 h₂g
+  use F * G, h₁F.mul h₁G, by simp [h₂F, h₂G]
+  filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
+  simp only [Pi.mul_apply, hfa, hga, zpow_add₀ (sub_ne_zero.mpr ha), smul_eq_mul]
+  ring
 
 lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : MeromorphicAt f x ↔
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
