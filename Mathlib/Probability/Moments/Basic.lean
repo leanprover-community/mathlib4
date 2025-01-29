@@ -737,7 +737,7 @@ theorem cgf_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
     apply MeasureTheory.Integrable.bdd_mul'
     · rw [(by ext ω; ring : (fun ω ↦ X ω ^ 2) = (fun ω ↦ X ω * X ω))]
       apply MeasureTheory.Integrable.bdd_mul'
-        (integrable_bounded a b hX h) (aestronglyMeasurable_iff_aemeasurable.mpr hX)
+        (.of_mem_Icc a b hX h) (aestronglyMeasurable_iff_aemeasurable.mpr hX)
       · filter_upwards [h] with x h
         exact (by simp only [norm_eq_abs];
                   exact le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs h.1 h.2) :
