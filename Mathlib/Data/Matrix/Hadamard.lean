@@ -117,9 +117,10 @@ theorem stdBasisMatrix_hadamard_stdBasisMatrix_eq (i : m) (j : n) (a b : α) :
     stdBasisMatrix i j a ⊙ stdBasisMatrix i j b = stdBasisMatrix i j (a * b) :=
   ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 
-theorem stdBasisMatrix_hadamard_stdBasisMatrix_of_ne_or_ne
-    {ia : m} {ja : n} {ib : m} {jb : n} (h : ia ≠ ib ∨ ja ≠ jb) (a b : α) :
+theorem stdBasisMatrix_hadamard_stdBasisMatrix_of_ne
+    {ia : m} {ja : n} {ib : m} {jb : n} (h : ¬(ia = ib ∧ ja = jb)) (a b : α) :
     stdBasisMatrix ia ja a ⊙ stdBasisMatrix ib jb b = 0 := by
+  rw [not_and_or] at h
   cases h <;> (simp only [stdBasisMatrix]; aesop)
 
 end stdBasisMatrix
