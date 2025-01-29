@@ -212,8 +212,7 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
       simp only [norm_one]
     _ = ∫⁻ _ in s, 1 ∂μ := by
-      rw [ofReal_integral_norm_eq_lintegral_nnnorm (integrableOn_const.2 (Or.inr hs.lt_top))]
-      simp only [nnnorm_one, ENNReal.coe_one]
+      simpa [ofReal_integral_norm_eq_lintegral_enorm (integrableOn_const.2 (.inr hs.lt_top))]
     _ = μ s := setLIntegral_one _
 
 @[deprecated (since := "2024-04-17")]
@@ -245,7 +244,7 @@ theorem tendsto_setIntegral_of_monotone
   have hSm : MeasurableSet S := MeasurableSet.iUnion_of_monotone h_mono hsm
   have hsub {i} : s i ⊆ S := subset_iUnion s i
   rw [← withDensity_apply _ hSm] at hfi'
-  set ν := μ.withDensity fun x => ‖f x‖₊ with hν
+  set ν := μ.withDensity (‖f ·‖ₑ) with hν
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.le
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
@@ -253,7 +252,7 @@ theorem tendsto_setIntegral_of_monotone
   filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← integral_diff (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe]
-  refine (ennnorm_integral_le_lintegral_ennnorm _).trans ?_
+  refine (enorm_integral_le_lintegral_enorm _).trans ?_
   rw [← withDensity_apply _ (hSm.diff (hsm _)), ← hν, measure_diff hsub (hsm _).nullMeasurableSet]
   exacts [tsub_le_iff_tsub_le.mp hi.1,
     (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
@@ -662,7 +661,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     (μ {x | ↑R < f x}).toReal * R < ∫ x in {x | ↑R < f x}, f x ∂μ := by
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
-    refine setLIntegral_mono_ae hfint.1.ennnorm <| ae_of_all _ fun x hx => ?_
+    refine setLIntegral_mono_ae hfint.1.enorm <| ae_of_all _ fun x hx => ?_
     simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR, enorm_eq_nnnorm,
       Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx), Subtype.mk_le_mk]
     exact le_of_lt hx
@@ -1334,6 +1333,8 @@ end ContinuousMap
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 
+theorem integral_complex_ofReal {f : X → ℝ} : ∫ x, (f x : ℂ) ∂μ = ∫ x, f x ∂μ := integral_ofReal
+
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ x, RCLike.re (f x) ∂μ = RCLike.re (∫ x, f x ∂μ) :=
   (@RCLike.reCLM 𝕜 _).integral_comp_comm hf
@@ -1417,10 +1418,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
     · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, ?_⟩
-      rw [withDensity_apply _ s_meas] at hs
-      rw [hasFiniteIntegral_iff_nnnorm]
-      convert hs with x
-      simp only [NNReal.nnnorm_eq]
+      simpa [withDensity_apply _ s_meas, hasFiniteIntegral_iff_enorm] using hs
   · intro u u' _ u_int u'_int h h'
     change
       (∫ x : X, u x + u' x ∂μ.withDensity fun x : X => ↑(f x)) = ∫ x : X, f x • (u x + u' x) ∂μ
