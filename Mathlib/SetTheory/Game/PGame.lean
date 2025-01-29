@@ -1013,12 +1013,6 @@ lemma Equiv.of_fn {x y : PGame}
     (hir : ∀ i, x.moveRight (ir i) ≈ y.moveRight i) : x ≈ y :=
   .ext ⟨fun i ↦ ⟨l i, hl i⟩, fun i ↦ ⟨il i, hil i⟩⟩ ⟨fun i ↦ ⟨r i, hr i⟩, fun i ↦ ⟨ir i, hir i⟩⟩
 
-lemma Equiv.of_equiv {x y : PGame}
-    (l : x.LeftMoves ≃ y.LeftMoves) (r : x.RightMoves ≃ y.RightMoves)
-    (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (l i)) (hr : ∀ i, x.moveRight i ≈ y.moveRight (r i)) :
-    x ≈ y :=
-  .of_fn l l.symm r r.symm hl (by simpa using hl <| l.symm ·) hr (by simpa using hr <| r.symm ·)
-
 theorem Equiv.ext' {x y : PGame}
     (hl : (∀ a ∈ₗ x, ∃ b ∈ₗ y, a ≈ b) ∧ (∀ b ∈ₗ y, ∃ a ∈ₗ x, a ≈ b))
     (hr : (∀ a ∈ᵣ x, ∃ b ∈ᵣ y, a ≈ b) ∧ (∀ b ∈ᵣ y, ∃ a ∈ᵣ x, a ≈ b)) :
@@ -1043,6 +1037,11 @@ theorem Equiv.of_exists {x y : PGame}
     exact Or.inl ⟨j, Equiv.ge hj⟩
   · obtain ⟨j, hj⟩ := hr₁ i
     exact Or.inr ⟨j, Equiv.ge hj⟩
+
+theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
+    (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
+    (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y :=
+  .of_fn L L.symm R R.symm hl (by simpa using hl <| L.symm ·) hr (by simpa using hr <| R.symm ·)
 
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
