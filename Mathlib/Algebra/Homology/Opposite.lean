@@ -254,6 +254,7 @@ lemma quasiIso_opFunctor_map_iff
     QuasiIso ((opFunctor _ _).map φ.op) ↔ QuasiIso φ := by
   simp only [quasiIso_iff, quasiIsoAt_opFunctor_map_iff]
 
+@[simp]
 lemma quasiIso_unopFunctor_map_iff
     {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
