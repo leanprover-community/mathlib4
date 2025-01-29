@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
@@ -603,7 +602,7 @@ def floor : α → ℤ :=
 def ceil : α → ℤ :=
   FloorRing.ceil
 
-/-- `Int.fract a`, the fractional part of `a`, is `a` minus its floor. -/
+/-- `Int.fract a` the fractional part of `a`, is `a` minus its floor. -/
 def fract (a : α) : α :=
   a - floor a
 
