@@ -25,11 +25,23 @@ See other files in this directory for many more plugins.
 
 universe u
 
+<<<<<<< HEAD
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 the unused variable linter can not see usages of variables in
 `haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives. -/
 set_option linter.unusedVariables false
 
+||||||| 49af109022
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
+
+=======
+>>>>>>> @{-1}
 namespace Mathlib
 open Lean
 open Meta

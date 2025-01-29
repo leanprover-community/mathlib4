@@ -122,9 +122,20 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
+<<<<<<< HEAD
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 The new unused variable linter flags `{ z : F.obj (U.obj X) ⟶ R.obj Y // _ }`. -/
 set_option linter.unusedVariables false in
+||||||| 49af109022
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ z : F.obj (U.obj X) ⟶ R.obj Y // _ }`.
+-/
+set_option linter.unusedVariables false in
+=======
+>>>>>>> @{-1}
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!]
 noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.counit.app X)] (Y : A)

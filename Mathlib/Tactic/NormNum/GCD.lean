@@ -16,11 +16,23 @@ Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `
 also indirectly provides a `Nat.coprime` extension.
 -/
 
+<<<<<<< HEAD
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 the unused variable linter can not see usages of variables in
 `haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives. -/
 set_option linter.unusedVariables false
 
+||||||| 49af109022
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
+
+=======
+>>>>>>> @{-1}
 namespace Tactic
 
 namespace NormNum

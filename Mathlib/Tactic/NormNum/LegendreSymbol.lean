@@ -356,11 +356,23 @@ namespace NormNum
 
 open Lean Elab Tactic Qq Mathlib.Meta.NormNum
 
+<<<<<<< HEAD
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 the unused variable linter can not see usages of variables in
 `haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives. -/
 set_option linter.unusedVariables false
 
+||||||| 49af109022
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
+
+=======
+>>>>>>> @{-1}
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols. -/
 @[norm_num jacobiSym _ _]
 def evalJacobiSym : NormNumExt where eval {u α} e := do
