@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.Variance
 
 /-!
@@ -22,7 +23,7 @@ open MeasureTheory Filter
 open scoped ENNReal
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m₀ m : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
+variable {Ω : Type*} {m₀ m m' : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
   {s : Set Ω}
 
 variable (m X μ) in
@@ -98,7 +99,7 @@ lemma stronglyMeasurable_condVar : StronglyMeasurable[m] (Var[X ; μ | m]) :=
 lemma condVar_congr_ae (h : X =ᵐ[μ] Y) : Var[X ; μ | m] =ᵐ[μ] Var[Y ; μ | m] :=
   condExp_congr_ae <| by filter_upwards [h, condExp_congr_ae h] with ω hω hω'; dsimp; rw [hω, hω']
 
-lemma condVar_of_aestronglyMeasurable' [hμm : SigmaFinite (μ.trim hm)]
+lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
     (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
     Var[X ; μ | m] =ᵐ[μ] (X - μ[X | m]) ^ 2 :=
   condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
