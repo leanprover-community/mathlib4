@@ -169,8 +169,7 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
     dsimp [polar] at this
     calc
     Q₁ (x + y) = (Q₁ (x + y) - Q₁ x - Q₁ y) + Q₁ x + Q₁ y := by abel
-    _ = (Q₂ (x + y) - Q₂ x - Q₂ y) + Q₁ x + Q₁ y := by rw [this]
-    _ = (Q₂ (x + y) - Q₂ x - Q₂ y) + Q₂ x + Q₂ y := by rw [hx, hy]
+    _ = (Q₂ (x + y) - Q₂ x - Q₂ y) + Q₂ x + Q₂ y := by rw [this, hx, hy]
     _ = Q₂ (x + y) := by abel
 
 end CommRing
