@@ -234,4 +234,42 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+/-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
+`⋀[R]^n M` to `N`-/
+def liftAlternating : (M [⋀^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N :=
+  (ExteriorAlgebra.liftAlternating ∘ₗ LinearMap.single _ _ n).domRestrict₂ (⋀[R]^n M)
+
+@[simp] lemma liftAlternating_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
+    (liftAlternating f).compAlternatingMap (ιMulti R n) = f :=
+  (ExteriorAlgebra.liftAlternating_comp_ιMulti _).trans <| Pi.single_eq_same _ _
+
+@[simp] lemma liftAlternating_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
+    liftAlternating f (ιMulti R n a) = f a :=
+  DFunLike.congr_fun (liftAlternating_comp_ιMulti _) a
+
+/-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
+family of `n`fold exterior products of elements of `v`, seen as members of the
+`n`th exterior power. -/
+noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
+    {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
+  fun ⟨s, hs⟩ => ιMulti R n (fun i => v (Finset.orderIsoOfFin s hs i))
+
+@[simp] lemma ιMulti_apply (a : Fin n → M) : ιMulti R n a = ExteriorAlgebra.ιMulti R n a := rfl
+
+@[simp]
+lemma ιMulti_family_coe {I : Type*} [LinearOrder I] (v : I → M) :
+    ExteriorAlgebra.ιMulti_family R n v = (Submodule.subtype _) ∘ (ιMulti_family v) := by
+  ext s
+  unfold ιMulti_family
+  simp only [Submodule.coe_subtype, Finset.coe_orderIsoOfFin_apply, Function.comp_apply,
+    ιMulti_apply]
+  rfl
+
+lemma map_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N) :
+    (map n f) ∘ (ιMulti_family v) = ιMulti_family (f ∘ v) := by
+  ext ⟨s, hs⟩
+  unfold ιMulti_family
+  simp only [Finset.coe_orderIsoOfFin_apply, Function.comp_apply, map_apply_ιMulti, ιMulti_apply]
+  congr
+
 end exteriorPower

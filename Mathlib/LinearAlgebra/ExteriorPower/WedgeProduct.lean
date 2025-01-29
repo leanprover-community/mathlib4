@@ -40,7 +40,7 @@ theorem mul_degreeAux {k l : ℕ} (v : Fin k → M) (β : ⋀[R]^l M) [Module.Fi
   obtain ⟨n, s, h⟩ := Module.Finite.exists_fin (R := R) (M := M)
   apply Submodule.span_induction (R := R) (M := ⋀[R]^l M) (p := fun b _ ↦
     ((ιMulti R k v) : ExteriorAlgebra R M) * b ∈ ⋀[R]^(k+l) M)
-    (s := Set.range (ιMulti_family R l s))
+    (s := Set.range (ιMulti_family s))
   · intro x hx
     obtain ⟨s, rfl⟩ := Set.mem_range.mp hx
     unfold ιMulti_family
@@ -57,7 +57,7 @@ theorem mul_degree {k l : ℕ} (α : ⋀[R]^k M) (β : ⋀[R]^l M) [Module.Finit
   obtain ⟨n, s, h⟩ := Module.Finite.exists_fin (R := R) (M := M)
   apply Submodule.span_induction (R := R) (M := ⋀[R]^k M) (p := fun a _ ↦
     (a : ExteriorAlgebra R M) * β ∈ ⋀[R]^(k+l) M)
-    (s := Set.range (ιMulti_family R k s))
+    (s := Set.range (ιMulti_family s))
   · intro x hx
     obtain ⟨s, rfl⟩ := Set.mem_range.mp hx
     unfold ιMulti_family
