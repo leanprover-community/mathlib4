@@ -96,7 +96,7 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 /-- The antisymmetrization relation as an equivalence relation. -/
 @[simps]
 def AntisymmRel.setoid : Setoid α :=
-  ⟨AntisymmRel r, AntisymmRel.refl, AntisymmRel.symm, AntisymmRel.trans⟩
+  ⟨AntisymmRel r, AntisymmRel.refl r, AntisymmRel.symm, AntisymmRel.trans⟩
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
