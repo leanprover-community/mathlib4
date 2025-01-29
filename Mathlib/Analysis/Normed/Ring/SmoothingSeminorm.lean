@@ -77,12 +77,16 @@ private theorem smoothingSeminormSeq_tendsto_aux {L : ℝ} (hL : 0 ≤ L) {ε : 
       ← rpow_zero (μ x)]
     exact Tendsto.rpow tendsto_const_nhds h_exp (Or.inl hx)
 
-/-- `smoothingSeminormSeq` is bounded below (by zero). -/
-theorem smoothingSeminormSeq_bddBelow (x : R) :
-    BddBelow (Set.range fun n : ℕ+ => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))) := by
-  use 0
+/-- `0` is a lower bound of `smoothingSeminormSeq`. -/
+theorem zero_mem_lowerBounds_smoothingSeminormSeq_range (x : R) :
+    0 ∈ lowerBounds (Set.range fun n : ℕ+ => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))) := by
   rintro y ⟨n, rfl⟩
   exact rpow_nonneg (apply_nonneg μ _) _
+
+/-- `smoothingSeminormSeq` is bounded below (by zero). -/
+theorem smoothingSeminormSeq_bddBelow (x : R) :
+    BddBelow (Set.range fun n : ℕ+ => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))) :=
+  ⟨0, zero_mem_lowerBounds_smoothingSeminormSeq_range μ x⟩
 
 /-- The iInf of the sequence `n ↦ μ(x ^ (n : ℕ)))^(1 / (n : ℝ)`. -/
 abbrev smoothingFun (x : R) : ℝ :=
@@ -209,8 +213,8 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     have h4 : 0 < μ (x ^ (n % ↑m1)) ^ (1 / (n : ℝ)) := rpow_pos_of_pos hxn' _
     have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) :=
       mul_pos hL0' (rpow_pos_of_pos hL0' _)
-    -- We combine the previous steps to deduce that
-    -- `μ (x ^ (↑m1 * (n / ↑m1) + n % ↑m1)) ^ (1 / ↑n) < L + ε`.
+    /- We combine the previous steps to deduce that
+     `μ (x ^ (↑m1 * (n / ↑m1) + n % ↑m1)) ^ (1 / ↑n) < L + ε`. -/
     calc μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)) + n % m1)) ^ (1 / (n : ℝ)) =
           μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ))) * x ^ (n % m1)) ^ (1 / (n : ℝ)) := by rw [pow_add]
       _ ≤ (μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) * μ (x ^ (n % m1))) ^ (1 / (n : ℝ)) :=
