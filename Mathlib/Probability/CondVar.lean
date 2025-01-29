@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.Variance
 
 /-!
