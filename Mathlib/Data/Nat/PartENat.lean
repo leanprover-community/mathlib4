@@ -19,7 +19,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddCommMonoid PartENat`
+* `CanonicallyOrderedAdd PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -407,10 +407,8 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
-  { PartENat.semilatticeSup, PartENat.orderBot,
-    PartENat.orderedAddCommMonoid with
-    le_self_add := fun a b =>
+instance : CanonicallyOrderedAdd PartENat :=
+  { le_self_add := fun a b =>
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
         PartENat.casesOn a (top_add _).ge fun _ =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
@@ -642,8 +640,7 @@ theorem ofENat_lt {x y : ℕ∞} : ofENat x < ofENat y ↔ x < y := by
 
 section WithTopEquiv
 
-open scoped Classical
-
+open scoped Classical in
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
@@ -653,6 +650,7 @@ theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWit
   · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
   · simp_rw [toWithTop_natCast', ← Nat.cast_add, toWithTop_natCast', forall_const]
 
+open scoped Classical in
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
 `withTopOrderIso`). -/
 @[simps]

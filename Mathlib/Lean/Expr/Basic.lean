@@ -359,6 +359,7 @@ def renameBVar (e : Expr) (old new : Name) : Expr :=
     lam (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
   | forallE n ty bd bi =>
     forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
+  | mdata d e' => mdata d (e'.renameBVar old new)
   | e => e
 
 open Lean.Meta in

@@ -282,12 +282,11 @@ def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_zero' := by ext; exact (algebraMap 𝕜 A).map_zero
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
-instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ :=
-  { --ContMDiffMap.semiring with -- Porting note: Commented this out.
-    smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
-    toRingHom := ContMDiffMap.C
-    commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
-    smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _ }
+instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
+  smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
+  algebraMap := ContMDiffMap.C
+  commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
+  smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _
 
 /-- Coercion to a function as an `AlgHom`. -/
 @[simps]
