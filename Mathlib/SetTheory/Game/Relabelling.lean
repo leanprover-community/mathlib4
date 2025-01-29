@@ -8,9 +8,9 @@ import Mathlib.SetTheory.Game.Basic
 /-!
 # Relabelling
 
-`PGame.Relabelling` is more of a technical detail of computable constructions in Lean than
-combinatorial game theory itself. It is better to import this file only when you care about
-computation.
+`PGame.Relabelling` is an equivalence relation that focuses on the type-theoretic
+nature of games as defined in Lean. This isn't used in the literature, and is thus
+scheduled for deprecation.
 -/
 
 noncomputable section
