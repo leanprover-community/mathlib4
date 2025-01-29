@@ -22,6 +22,8 @@ consisting of the even permutations.
 * `alternatingGroup α` is the alternating group on `α`, defined as a `Subgroup (Perm α)`.
 
 ## Main results
+* `alternatingGroup_index` shows that the index of the alternating group is two.
+
 * `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
   the permutation group it is a subgroup of.
 
@@ -37,6 +39,8 @@ consisting of the even permutations.
 
 * `EquivPerm.alternatingGroup_le_of_index_le_two` shows that a subgroup of index at most 2
   of `Equiv.Perm α` contains the alternating group.
+
+* `alternatingGroup.isCharacteristic` shows that the alternating group is characteristic.
 
 ## Tags
 alternating group permutation
@@ -93,12 +97,15 @@ theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
 
 end Equiv.Perm
 
+theorem alternatingGroup_index [Nontrivial α] :
+    (alternatingGroup α).index = 2 := by
+  simp only [alternatingGroup, index, Nat.card_eq_fintype_card, ← Fintype.card_units_int]
+  exact Fintype.card_congr
+    (QuotientGroup.quotientKerEquivOfSurjective _ (sign_surjective α)).toEquiv
+
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
-  let this := (QuotientGroup.quotientKerEquivOfSurjective _ (sign_surjective α)).toEquiv
-  rw [← Fintype.card_units_int, ← Fintype.card_congr this]
-  simp only [← Nat.card_eq_fintype_card]
-  apply (Subgroup.card_eq_card_quotient_mul_card_subgroup _).symm
+  simp only [← Nat.card_eq_fintype_card, ← alternatingGroup_index (α := α), index_mul_card]
 
 namespace alternatingGroup
 
@@ -430,3 +437,16 @@ theorem alternatingGroup_le_of_index_le_two
   apply Nat.mul_le_mul_right _ hG
 
 end Equiv.Perm
+
+theorem alternatingGroup.isCharacteristic :
+    (alternatingGroup α).Characteristic := by
+  cases' subsingleton_or_nontrivial α with hα hα
+  -- hα : subsingleton α
+  · convert Subgroup.botCharacteristic
+    apply eq_bot_of_subsingleton
+  · apply Characteristic.mk
+    intro Φ
+    apply is_alternatingGroup_of_index_eq_two
+    rw [Subgroup.index_comap, MulEquiv.toMonoidHom_eq_coe]
+    sorry
+
