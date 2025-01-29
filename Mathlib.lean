@@ -2149,6 +2149,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.CategoryTheory.Preadditive.SingleObj
+import Mathlib.CategoryTheory.Preadditive.Transfer
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
