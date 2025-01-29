@@ -266,8 +266,8 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
 
-theorem units_val_eq_coe_unitsWithZeroEquiv (γ : (WithZero α)ˣ) :
-    γ.val = ↑(unitsWithZeroEquiv γ) := by
+theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
+    ↑(unitsWithZeroEquiv γ) = γ.val := by
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/

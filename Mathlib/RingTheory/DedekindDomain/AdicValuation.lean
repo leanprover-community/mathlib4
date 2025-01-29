@@ -410,6 +410,9 @@ def adicCompletion :=
 instance : Field (v.adicCompletion K) := inferInstanceAs <|
   Field (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
+instance : Algebra K (v.adicCompletion K) :=
+  RingHom.toAlgebra (@UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _)
+
 instance : Inhabited (v.adicCompletion K) :=
   ⟨0⟩
 
