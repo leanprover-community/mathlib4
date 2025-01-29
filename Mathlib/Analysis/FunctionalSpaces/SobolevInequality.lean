@@ -680,8 +680,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]
     · simp
-    · #adaptation_note
-      /-- This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
+    · #adaptation_note /-- nightly-2024-11-20
+      This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
       Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
       exact inv_anti₀ (by positivity) h2p.le
   have : (q : ℝ≥0∞) ≤ p' := by
@@ -691,8 +691,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     · dsimp
       have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]
-        #adaptation_note
-        /-- This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
+        #adaptation_note /-- nightly-2024-11-20
+        This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
         Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
         exact inv_strictAnti₀ (by positivity) h2p
       positivity
