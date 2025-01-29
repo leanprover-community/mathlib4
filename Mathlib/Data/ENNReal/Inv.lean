@@ -44,7 +44,8 @@ protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, 
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
 @[simp] theorem inv_top : ∞⁻¹ = 0 :=
-  bot_unique <| le_of_forall_le_of_dense fun a (h : 0 < a) => sInf_le <| by simp [*, h.ne', top_mul]
+  bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by
+    simp [*, h.ne', top_mul]
 
 theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
   le_sInf fun b (hb : 1 ≤ ↑r * b) =>
@@ -91,11 +92,81 @@ protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 
 protected theorem inv_mul_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a⁻¹ * a = 1 :=
   mul_comm a a⁻¹ ▸ ENNReal.mul_inv_cancel h0 ht
 
-protected theorem div_mul_cancel (h0 : a ≠ 0) (hI : a ≠ ∞) : b / a * a = b := by
-  rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0 hI, mul_one]
+/-- See `ENNReal.inv_mul_cancel_left` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma inv_mul_cancel_left' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
+    a⁻¹ * (a * b) = b := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp_all
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp_all
+  · simp [← mul_assoc, ENNReal.inv_mul_cancel, *]
 
-protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) = b := by
-  rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
+/-- See `ENNReal.inv_mul_cancel_left'` for a stronger version. -/
+protected lemma inv_mul_cancel_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a⁻¹ * (a * b) = b :=
+  ENNReal.inv_mul_cancel_left' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.mul_inv_cancel_left` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma mul_inv_cancel_left' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
+    a * (a⁻¹ * b) = b := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp_all
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp_all
+  · simp [← mul_assoc, ENNReal.mul_inv_cancel, *]
+
+/-- See `ENNReal.mul_inv_cancel_left'` for a stronger version. -/
+protected lemma mul_inv_cancel_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (a⁻¹ * b) = b :=
+  ENNReal.mul_inv_cancel_left' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.mul_inv_cancel_right` for a simpler version assuming `b ≠ 0`, `b ≠ ∞`. -/
+protected lemma mul_inv_cancel_right' (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b * b⁻¹ = a := by
+  obtain rfl | hb₀ := eq_or_ne b 0
+  · simp_all
+  obtain rfl | hb := eq_or_ne b ⊤
+  · simp_all
+  · simp [mul_assoc, ENNReal.mul_inv_cancel, *]
+
+/-- See `ENNReal.mul_inv_cancel_right'` for a stronger version. -/
+protected lemma mul_inv_cancel_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b * b⁻¹ = a :=
+  ENNReal.mul_inv_cancel_right' (by simp [hb₀]) (by simp [hb])
+
+/-- See `ENNReal.inv_mul_cancel_right` for a simpler version assuming `b ≠ 0`, `b ≠ ∞`. -/
+protected lemma inv_mul_cancel_right' (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b⁻¹ * b = a := by
+  obtain rfl | hb₀ := eq_or_ne b 0
+  · simp_all
+  obtain rfl | hb := eq_or_ne b ⊤
+  · simp_all
+  · simp [mul_assoc, ENNReal.inv_mul_cancel, *]
+
+/-- See `ENNReal.inv_mul_cancel_right'` for a stronger version. -/
+protected lemma inv_mul_cancel_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b⁻¹ * b = a :=
+  ENNReal.inv_mul_cancel_right' (by simp [hb₀]) (by simp [hb])
+
+/-- See `ENNReal.mul_div_cancel_right` for a simpler version assuming `b ≠ 0`, `b ≠ ∞`. -/
+protected lemma mul_div_cancel_right' (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b / b = a := ENNReal.mul_inv_cancel_right' hb₀ hb
+
+/-- See `ENNReal.mul_div_cancel_right'` for a stronger version. -/
+protected lemma mul_div_cancel_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b / b = a :=
+  ENNReal.mul_div_cancel_right' (by simp [hb₀]) (by simp [hb])
+
+/-- See `ENNReal.div_mul_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma div_mul_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) : b / a * a = b :=
+  ENNReal.inv_mul_cancel_right' ha₀ ha
+
+/-- See `ENNReal.div_mul_cancel'` for a stronger version. -/
+protected lemma div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
+  ENNReal.div_mul_cancel' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.mul_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma mul_div_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) : a * (b / a) = b := by
+  rw [mul_comm, ENNReal.div_mul_cancel' ha₀ ha]
+
+/-- See `ENNReal.mul_div_cancel'` for a stronger version. -/
+protected lemma mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) = b :=
+  ENNReal.mul_div_cancel' (by simp [ha₀]) (by simp [ha])
 
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
@@ -374,7 +445,7 @@ instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   elim _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
-  refine le_of_forall_ge_of_dense fun r hr => ?_
+  refine le_of_forall_lt_imp_le_of_dense fun r hr => ?_
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
@@ -398,8 +469,8 @@ theorem mul_div_le : a * (b / a) ≤ b :=
   mul_le_of_le_div' le_rfl
 
 theorem eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) : b = c / a ↔ a * b = c :=
-  ⟨fun h => by rw [h, ENNReal.mul_div_cancel' ha ha'], fun h => by
-    rw [← h, mul_div_assoc, ENNReal.mul_div_cancel' ha ha']⟩
+  ⟨fun h => by rw [h, ENNReal.mul_div_cancel ha ha'], fun h => by
+    rw [← h, mul_div_assoc, ENNReal.mul_div_cancel ha ha']⟩
 
 protected theorem div_eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) (hb : b ≠ 0) (hb' : b ≠ ∞) :
     c / b = d / a ↔ a * c = b * d := by
@@ -463,7 +534,7 @@ private lemma exists_lt_mul_right {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ b'
   simp_rw [mul_comm a] at hc ⊢; exact exists_lt_mul_left hc
 
 lemma mul_le_of_forall_lt {a b c : ℝ≥0∞} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) : a * b ≤ c := by
-  refine le_of_forall_ge_of_dense fun d hd ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_lt_mul_left hd
   obtain ⟨b', hb', hd⟩ := exists_lt_mul_right hd
   exact le_trans hd.le <| h _ ha' _ hb'
@@ -886,7 +957,7 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ∞) : a - ⨆ i, f i = ⨅ i, a - f i 
 -- TODO: Prove the two one-side versions
 lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0) (hz : z ≠ 0) :
     ∃ y' < y, ∃ z' < z, x < y' + z' := by
-  contrapose! h;
+  contrapose! h
   simpa using biSup_add_biSup_le' (by exact ⟨0, hy.bot_lt⟩) (by exact ⟨0, hz.bot_lt⟩) h
 
 end Inv

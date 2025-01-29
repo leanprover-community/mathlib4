@@ -12,7 +12,7 @@ Defines a command wrapper that prints the number of heartbeats used in the enclo
 
 For example
 ```
-count_heartbeats in
+#count_heartbeats in
 theorem foo : 42 = 6 * 7 := rfl
 ```
 will produce an info message containing a number around 51.
@@ -23,8 +23,6 @@ If this number is above the current `maxHeartbeats`, we also print a `Try this:`
 open Lean Elab Command Meta
 
 namespace Mathlib.CountHeartbeats
-
-
 
 open Tactic
 
@@ -62,15 +60,15 @@ def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions 
   -- convert `[min, max, stddev]` to user-facing heartbeats
   logInfo s!"Min: {min / 1000} Max: {max / 1000} StdDev: {stddev / 10}%"
 
-/-- Count the heartbeats used by a tactic, e.g.: `count_heartbeats simp`. -/
-elab "count_heartbeats " tac:tacticSeq : tactic => do
+/-- Count the heartbeats used by a tactic, e.g.: `#count_heartbeats simp`. -/
+elab "#count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
 /--
-`count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
-and standard deviation. The tactic `count_heartbeats! n in tac` runs it `n` times instead.
+`#count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
+and standard deviation. The tactic `#count_heartbeats! n in tac` runs it `n` times instead.
 -/
-elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
+elab "#count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
            | some j => j.getNat
            | none => 10
@@ -81,7 +79,8 @@ elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   logVariation counts
 
 /--
-Count the heartbeats used in the enclosed command.
+`#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
+Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
 for long running declarations.
@@ -97,7 +96,7 @@ Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
 has granularity 1000 times finer that the limits set by `set_option maxHeartbeats`.
 As this is intended as a user command, we divide by 1000.
 -/
-elab "count_heartbeats " "in" ppLine cmd:command : command => do
+elab "#count_heartbeats " "in" ppLine cmd:command : command => do
   let start ← IO.getNumHeartbeats
   try
     elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
@@ -116,6 +115,14 @@ elab "count_heartbeats " "in" ppLine cmd:command : command => do
       Command.liftCoreM <| MetaM.run' do
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
+
+/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
+elab "count_heartbeats" : tactic =>
+  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
+
+/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
+elab "count_heartbeats" : command =>
+  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
 
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
@@ -153,17 +160,17 @@ def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : Command
   return (← IO.getNumHeartbeats) - start
 
 /--
-`count_heartbeats! in cmd` runs a command `10` times, reporting the range in heartbeats, and the
-standard deviation. The command `count_heartbeats! n in cmd` runs it `n` times instead.
+`#count_heartbeats! in cmd` runs a command `10` times, reporting the range in heartbeats, and the
+standard deviation. The command `#count_heartbeats! n in cmd` runs it `n` times instead.
 
 Example usage:
 ```
-count_heartbeats! in
+#count_heartbeats! in
 def f := 37
 ```
 displays the info message `Min: 7 Max: 8 StdDev: 14%`.
 -/
-elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
+elab "#count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
   let n := match n with
            | some j => j.getNat
            | none => 10
@@ -176,3 +183,59 @@ elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
 end CountHeartbeats
 
 end Mathlib
+
+/-!
+#  The "countHeartbeats" linter
+
+The "countHeartbeats" linter counts the hearbeats of every declaration.
+-/
+
+open Lean Elab Command
+
+namespace Mathlib.Linter
+
+/--
+The "countHeartbeats" linter counts the heartbeats of every declaration.
+
+The effect of the linter is similar to `#count_heartbeats in xxx`, except that it applies
+to all declarations.
+
+Note that the linter only counts heartbeats in "top-level" declarations:
+it looks inside `set_option ... in`, but not, for instance, inside `mutual` blocks.
+
+There is a convenience notation `#count_heartbeats` that simply sets the linter option to true.
+-/
+register_option linter.countHeartbeats : Bool := {
+  defValue := false
+  descr := "enable the countHeartbeats linter"
+}
+
+namespace CountHeartbeats
+
+@[inherit_doc Mathlib.Linter.linter.countHeartbeats]
+def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  let mut msgs := #[]
+  if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
+    let s ← get
+    elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
+    msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
+    set s
+  match stx.find? (·.isOfKind ``Parser.Command.declId) with
+    | some decl =>
+      for msg in msgs do logInfoAt decl m!"'{decl[0].getId}' {(← msg.toString).decapitalize}"
+    | none =>
+      for msg in msgs do logInfoAt stx m!"{← msg.toString}"
+
+initialize addLinter countHeartbeatsLinter
+
+@[inherit_doc Mathlib.Linter.linter.countHeartbeats]
+macro "#count_heartbeats" : command =>
+  `(command| set_option linter.countHeartbeats true)
+
+end CountHeartbeats
+
+end Mathlib.Linter

@@ -30,16 +30,17 @@ with a formula).
  * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
     `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
     of `S` over `R`.
+  * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
+    factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
+    `mod I`. Then (the reduction of) `Q` corresponds via
+    `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
+    `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.
 
 ## TODO
 
  * Prove the Kummer-Dedekind theorem in full generality.
 
  * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
-
- * Prove that `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` can be expressed as
-    `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk g = ⟨I, G(α)⟩` for `g` a prime
-    factor of `f mod I` and `G` a lift of `g` to `R[X]`.
 
 ## References
 
@@ -229,6 +230,28 @@ variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
 
+private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+    (hx' : IsIntegral R x) :
+    S ⧸ I.map (algebraMap R S) ≃+* (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
+  (quotAdjoinEquivQuotMap hx (NoZeroSMulDivisors.algebraMap_injective
+    (Algebra.adjoin R {x}) S)).symm.trans <|
+    ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
+    quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
+
+private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+    (hx' : IsIntegral R x) (Q : R[X]) :
+    (f hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
+  apply (f hx hx').injective
+  rw [f, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
+    RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
+    RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
+  congr
+  convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
+  apply (quotAdjoinEquivQuotMap hx
+    (NoZeroSMulDivisors.algebraMap_injective ((adjoin R {x})) S)).injective
+  simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
+    coe_aeval_mk_apply]
+
 open Classical in
 /-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
@@ -238,16 +261,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
       {d : (R ⧸ I)[X] |
         d ∈ normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))} := by
-  -- Porting note: Lean needs to be reminded about this so it does not time out
-  have : IsPrincipalIdealRing (R ⧸ I)[X] := inferInstance
-  let f : S ⧸ map (algebraMap R S) I ≃+*
-    (R ⧸ I)[X] ⧸ span {Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)} := by
-    refine (quotAdjoinEquivQuotMap hx ?_).symm.trans
-      (((Algebra.adjoin.powerBasis'
-        hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans (quotEquivOfEq ?_))
-    · exact NoZeroSMulDivisors.algebraMap_injective (Algebra.adjoin R {x}) S
-    · rw [Algebra.adjoin.powerBasis'_minpoly_gen hx']
-  refine (normalizedFactorsEquivOfQuotEquiv f ?_ ?_).trans ?_
+  refine (normalizedFactorsEquivOfQuotEquiv (f hx hx') ?_ ?_).trans ?_
   · rwa [Ne, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
@@ -342,5 +356,30 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   apply Multiset.map_injective Subtype.coe_injective
   rw [Multiset.attach_map_val, Multiset.map_singleton, Subtype.coe_mk]
   exact normalizedFactors_irreducible hf
+
+open Set Classical in
+/-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
+`mod I`. Then (the reduction of) `Q` corresponds via
+`normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
+`span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
+theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
+    (hI : I.IsMaximal) {Q : R[X]}
+    (hQ : Q.map (Ideal.Quotient.mk I) ∈ normalizedFactors ((minpoly R x).map (Ideal.Quotient.mk I)))
+    (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
+    ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm ⟨_, hQ⟩).val =
+    span (I.map (algebraMap R S) ∪ {Q.aeval x}) := by
+  dsimp [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk,
+    normalizedFactorsEquivSpanNormalizedFactors]
+  rw [normalizedFactorsEquivOfQuotEquiv_symm]
+  dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
+  simp only [map_span, image_singleton, coe_coe,f_symm_aux hx hx' Q]
+  refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
+    ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
+  rw [mem_comap, Ideal.mem_span_singleton] at ha
+  obtain ⟨a', ha'⟩ := ha
+  obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'
+  rw [← hb, ← _root_.map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
+  rw [union_comm, span_union, span_eq, mem_span_singleton_sup]
+  exact ⟨b, a - Q.aeval x * b, ha', by ring⟩
 
 end KummerDedekind

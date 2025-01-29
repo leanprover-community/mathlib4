@@ -7,6 +7,7 @@ import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros
@@ -24,9 +25,6 @@ useful in this setup.
   functions: if a function `f` is analytic on a connected set `U` and is zero on a set with an
   accumulation point in `U` then `f` is identically `0` on `U`.
 -/
-
-
-open scoped Classical
 
 open Filter Function Nat FormalMultilinearSeries EMetric Set
 
@@ -192,6 +190,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
       hp.eq_pow_order_mul_iterate_dslope⟩
 
+open scoped Classical in
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
@@ -218,6 +217,67 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+
+/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
+  like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
+  `z₀`. -/
+lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
+      ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
+  simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
+
+/- An analytic function has order zero at a point iff it does not vanish there. -/
+lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order = 0 ↔ f z₀ ≠ 0 := by
+  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
+  constructor
+  · intro ⟨g, _, _, hg⟩
+    simpa [hg.self_of_nhds]
+  · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
+
+/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
+lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order.toNat ≠ 0 → f z₀ = 0 := by
+  simp [hf.order_eq_zero_iff]
+  tauto
+
+/- Helper lemma for `AnalyticAt.order_mul` -/
+lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
+    (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
+    (hf.mul hg).order = ⊤ := by
+  rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at *
+  obtain ⟨t, h₁t, h₂t, h₃t⟩ := h'f
+  exact ⟨t, fun y hy ↦ (by simp [h₁t y hy]), h₂t, h₃t⟩
+
+/-- The order is additive when multiplying analytic functions. -/
+theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+    (hf.mul hg).order = hf.order + hg.order := by
+  -- Trivial cases: one of the functions vanishes around z₀
+  by_cases h₂f : hf.order = ⊤
+  · simp [hf.order_mul_of_order_eq_top hg h₂f, h₂f]
+  by_cases h₂g : hg.order = ⊤
+  · simp [mul_comm f g, hg.order_mul_of_order_eq_top hf h₂g, h₂g]
+  -- Non-trivial case: both functions do not vanish around z₀
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_neq_top_iff.1 h₂f
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_neq_top_iff.1 h₂g
+  rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.mul hg).order_eq_nat_iff]
+  use g₁ * g₂, by exact h₁g₁.mul h₁g₂
+  constructor
+  · simp
+    tauto
+  · obtain ⟨t, h₁t, h₂t, h₃t⟩ := eventually_nhds_iff.1 h₃g₁
+    obtain ⟨s, h₁s, h₂s, h₃s⟩ := eventually_nhds_iff.1 h₃g₂
+    exact eventually_nhds_iff.2
+      ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; ring), h₂t.inter h₂s, h₃t, h₃s⟩
+
+/-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
+theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
+    (hf.pow n).order = n • hf.order := by
+  induction n
+  case zero =>
+    simp [AnalyticAt.order_eq_zero_iff]
+  case succ n hn =>
+    simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
 
 end AnalyticAt
 
@@ -284,5 +344,47 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 @[deprecated (since := "2024-09-26")]
 alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
+
+section Mul
+/-!
+### Vanishing of products of analytic functions
+-/
+
+variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+  {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
+
+/-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
+on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
+lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
+    {f : 𝕜 → A} {g : 𝕜 → B} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hfg : ∀ z ∈ U, f z • g z = 0) (hU : IsPreconnected U) :
+    (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) := by
+  -- We want to apply `IsPreconnected.preperfect_of_nontrivial` which requires `U` to have at least
+  -- two elements. So we need to dispose of the cases `#U = 0` and `#U = 1` first.
+  by_cases hU' : U = ∅
+  · simp [hU']
+  obtain ⟨z, hz⟩ : ∃ z, z ∈ U := nonempty_iff_ne_empty.mpr hU'
+  by_cases hU'' : U = {z}
+  · simpa [hU''] using hfg z hz
+  apply (nontrivial_iff_ne_singleton hz).mpr at hU''
+  -- Now connectedness implies that `z` is an accumulation point of `U`, so at least one of
+  -- `f` and `g` must vanish frequently in a neighbourhood of `z`.
+  have : ∃ᶠ w in 𝓝[≠] z, w ∈ U :=
+    frequently_mem_iff_neBot.mpr <| hU.preperfect_of_nontrivial hU'' z hz
+  have : ∃ᶠ w in 𝓝[≠] z, f w = 0 ∨ g w = 0 :=
+    this.mp <| by filter_upwards with w hw using smul_eq_zero.mp (hfg w hw)
+  cases frequently_or_distrib.mp this with
+  | inl h => exact Or.inl <| hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hz h
+  | inr h => exact Or.inr <| hg.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hz h
+
+/-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f * g = 0`
+on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
+lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
+    {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
+    (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) :=
+  eq_zero_or_eq_zero_of_smul_eq_zero hf hg hfg hU
+
+end Mul
 
 end AnalyticOnNhd

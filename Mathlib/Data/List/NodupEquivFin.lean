@@ -50,7 +50,7 @@ the set of elements of `l`. -/
 @[simps]
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
-  invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
+  invFun x := ⟨indexOf (↑x) l, indexOf_lt_length_iff.2 x.2⟩
   left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
   right_inv x := by simp
 
@@ -63,7 +63,7 @@ decidable equality. -/
 def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     Fin l.length ≃ α where
   toFun i := l.get i
-  invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
+  invFun a := ⟨_, indexOf_lt_length_iff.2 (h a)⟩
   left_inv i := by simp [List.indexOf_getElem, nd]
   right_inv a := by simp
 
@@ -185,8 +185,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · have := (f ⟨i, hi⟩).is_lt
-        omega
+      · omega
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i

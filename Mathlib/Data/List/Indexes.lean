@@ -23,17 +23,10 @@ variable {α : Type u} {β : Type v}
 
 section MapIdx
 
+@[deprecated reverseRecOn (since := "2025-01-28")]
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
-    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
-  let q := fun l ↦ p (reverse l)
-  have pq : ∀ l, p (reverse l) → q l := by simp only [q, reverse_reverse]; intro; exact id
-  have qp : ∀ l, q (reverse l) → p l := by simp only [q, reverse_reverse]; intro; exact id
-  intro l
-  apply qp
-  generalize (reverse l) = l
-  induction' l with head tail ih
-  · apply pq; simp only [reverse_nil, base]
-  · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
+    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) :=
+  fun l => l.reverseRecOn base ind
 
 @[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
 
@@ -55,8 +48,8 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     rw [this]; rfl
   · cases' l with head tail
     · contradiction
-    · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, Nat.zero_add,
-        zipWith_map_left]
+    · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
+        Nat.zero_add, zipWith_map_left, true_and]
       rw [ih]
       · suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
           rw [this]
@@ -253,7 +246,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       cases as
       · rfl
       · contradiction
-    simp only [this, mapIdxM.go, mapIdxMAuxSpec, List.traverse, map_pure, append_nil]
+    simp only [this, mapIdxM.go, mapIdxMAuxSpec, enumFrom_nil, List.traverse, map_pure, append_nil]
   · match as with
     | nil => contradiction
     | cons head tail =>
