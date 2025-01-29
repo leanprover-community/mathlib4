@@ -21,9 +21,9 @@ variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
 theorem pow_mul_meas_ge_le_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
     (ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal }) ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  rw [eLpNorm_eq_lintegral_rpow_nnnorm hp_ne_zero hp_ne_top]
+  rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top]
   gcongr
-  exact mul_meas_ge_le_lintegral₀ (hf.ennnorm.pow_const _) ε
+  exact mul_meas_ge_le_lintegral₀ (hf.enorm.pow_const _) ε
 
 @[deprecated (since := "2024-07-27")]
 alias pow_mul_meas_ge_le_snorm := pow_mul_meas_ge_le_eLpNorm

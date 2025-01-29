@@ -3,6 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.MeasureTheory.PiSystem
 
@@ -303,9 +305,10 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋃ i ∈ S, s i ∈ C := by
   classical
-  induction' S using Finset.induction with i S _ h hs
-  · simp [hC.empty_mem]
-  · simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
+  induction S using Finset.induction with
+  | empty => simp [hC.empty_mem]
+  | @insert i S _ h =>
+    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
     exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
 
@@ -321,16 +324,43 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     refine hC.inter_mem hs.1 ?_
     exact h (fun n hnS ↦ hs.2 n hnS)
 
-lemma partialSups_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    partialSups s n ∈ C := by
-  rw [partialSups_eq_biUnion_range]
-  exact hC.biUnion_mem _ (fun n _ ↦ hs n)
+lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
+    (hs : ∀ i ∈ t, s i ∈ C) :
+    t.sup s ∈ C := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => exact hC.empty_mem
+  | @insert m t hm ih =>
+    simpa only [sup_insert] using
+      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
 
-lemma disjointed_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    disjointed s n ∈ C := by
-  cases n with
-  | zero => exact hs 0
-  | succ n => exact hC.diff_mem (hs n.succ) (hC.partialSups_mem hs n)
+lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
+    partialSups s n ∈ C := by
+  simpa only [partialSups_apply, sup'_eq_sup] using hC.finsetSup_mem (fun i hi ↦ hs i)
+
+lemma disjointed_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ j, s j ∈ C) (i : ι) :
+    disjointed s i ∈ C :=
+  disjointedRec (fun _ j ht ↦ hC.diff_mem ht <| hs j) (hs i)
+
+theorem iUnion_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    (⋃ i ≤ n, s i) ∈ C := by
+  induction n with
+  | zero => simp [hs 0]
+  | succ n hn => rw [biUnion_le_succ]; exact hC.union_mem hn (hs _)
+
+theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    (⋂ i ≤ n, s i) ∈ C := by
+  induction n with
+  | zero => simp [hs 0]
+  | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
+
+theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
+    Accumulate s n ∈ C := by
+  induction n with
+  | zero => simp [hs 0]
+  | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)
 
 end IsSetRing
 

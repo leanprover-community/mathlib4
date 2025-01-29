@@ -48,6 +48,15 @@ theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ 
     (a : R) (i : I) : algebraMap R (∀ i, f i) a i = algebraMap R (f i) a :=
   rfl
 
+variable {I} in
+instance (g : I → Type*) [∀ i, CommSemiring (f i)] [∀ i, Semiring (g i)]
+    [∀ i, Algebra (f i) (g i)] : Algebra (∀ i, f i) (∀ i, g i) where
+  algebraMap := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom f _)
+  commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
+  smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
+
+example [∀ i, CommSemiring (f i)] : Pi.instAlgebraForall f f = Algebra.id _ := rfl
+
 -- One could also build a `∀ i, R i`-algebra structure on `∀ i, A i`,
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.
 variable {I} (R)
@@ -69,6 +78,16 @@ def evalAlgHom {_ : CommSemiring R} [∀ i, Semiring (f i)] [∀ i, Algebra R (f
   { Pi.evalRingHom f i with
     toFun := fun f => f i
     commutes' := fun _ => rfl }
+
+@[simp]
+theorem algHom_evalAlgHom [CommSemiring R] [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
+    algHom R f (evalAlgHom R f) = AlgHom.id R (Π i, f i) := rfl
+
+/-- `Pi.algHom` commutes with composition. -/
+theorem algHom_comp [CommSemiring R] [∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
+    {A B : Type*} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+    (g : ∀ i, B →ₐ[R] f i) (h : A →ₐ[R] B) :
+    (algHom R f g).comp h = algHom R f (fun i ↦ (g i).comp h) := rfl
 
 variable (A B : Type*) [CommSemiring R] [Semiring B] [Algebra R B]
 

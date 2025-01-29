@@ -189,6 +189,8 @@ open WalkingReflexivePair
 
 namespace WalkingReflexivePair
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type of morphisms for the diagram indexing reflexive (co)equalizers -/
 inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
   | left : Hom one zero
@@ -198,10 +200,6 @@ inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
   | rightCompReflexion : Hom one one
   | id (X : WalkingReflexivePair) : Hom X X
   deriving DecidableEq
-
-attribute [-simp, nolint simpNF] Hom.id.sizeOf_spec
-attribute [-simp, nolint simpNF] Hom.leftCompReflexion.sizeOf_spec
-attribute [-simp, nolint simpNF] Hom.rightCompReflexion.sizeOf_spec
 
 /-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
 def Hom.comp :

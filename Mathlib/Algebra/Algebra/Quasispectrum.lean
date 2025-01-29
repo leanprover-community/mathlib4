@@ -586,11 +586,4 @@ lemma quasispectrumRestricts_iff_spectrumRestricts_inr'
 
 theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield R] [Semifield S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R} :
-    QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
-  rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
-  refine and_congr_left fun h ↦ ?_
-  refine ⟨(Set.RightInvOn.mono · Set.subset_union_left), fun h' x hx ↦ ?_⟩
-  simp only [Set.union_singleton, Set.mem_insert_iff] at hx
-  obtain (rfl | hx) := hx
-  · simpa using h 0
-  · exact h' hx
+    QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by rfl

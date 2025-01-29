@@ -174,7 +174,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top ð’
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
 structure presheaf. -/
-@[simps]
+@[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top ð’œ) where
   obj U := CommRingCat.of ((structureSheafInType ð’œ).1.obj U)
   map i := CommRingCat.ofHom
@@ -183,10 +183,6 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top ð
       map_add' := fun _ _ => rfl
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF]
-  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_hom_apply
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/

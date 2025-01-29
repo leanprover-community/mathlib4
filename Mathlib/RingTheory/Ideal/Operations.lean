@@ -356,22 +356,18 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
 theorem mul_le_right : I * J ≤ I :=
   Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
 
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
+#adaptation_note /-- nightly-2024-11-12
+we had to add `nolint simpNF` to the following lemma,
 as otherwise we get a deterministic timeout in typeclass inference.
-This should be investigated.
--/
+This should be investigated. -/
 @[simp, nolint simpNF]
 theorem sup_mul_right_self : I ⊔ I * J = I :=
   sup_eq_left.2 Ideal.mul_le_right
 
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
+#adaptation_note /-- nightly-2024-11-12
+we had to add `nolint simpNF` to the following lemma,
 as otherwise we get a deterministic timeout in typeclass inference.
-This should be investigated.
--/
+This should be investigated. -/
 @[simp, nolint simpNF]
 theorem mul_right_self_sup : I * J ⊔ I = I :=
   sup_eq_right.2 Ideal.mul_le_right
@@ -1035,7 +1031,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       exact hs <| Or.inr <| Set.mem_biUnion hjt <|
         add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
 
-/-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/
+/-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
+@[stacks 00DS]
 theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=

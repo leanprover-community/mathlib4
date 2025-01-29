@@ -296,6 +296,11 @@ theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalizatio
   ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
     fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
 
+theorem iff_of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization M S ↔ IsLocalization N S :=
+  have : IsLocalization N (Localization M) := of_le_of_exists_dvd _ _ h₁ h₂
+  isLocalization_iff_of_isLocalization _ _ (Localization M)
+
 end
 
 variable (M)

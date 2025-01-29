@@ -246,14 +246,11 @@ namespace CategoryTheory.Functor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6053
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
 we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
 `map_id` and `map_comp`.
 
-This may indicate a configuration problem in Aesop.
--/
+This may indicate a configuration problem in Aesop. -/
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 

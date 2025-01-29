@@ -192,10 +192,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J (Type u) where
 /--
 The category of types has all limits.
 
-More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits.
-
-See <https://stacks.math.columbia.edu/tag/002U>.
--/
+More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits. -/
+@[stacks 002U]
 instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} (Type u) where
   has_limits_of_shape _ := { }
 
@@ -484,10 +482,8 @@ instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
 
 instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J (Type u) where
 
-/-- The category of types has all colimits.
-
-See <https://stacks.math.columbia.edu/tag/002U>.
--/
+/-- The category of types has all colimits. -/
+@[stacks 002U]
 instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] :
     HasColimitsOfSize.{w, v} (Type u) where
 

@@ -6,7 +6,7 @@ Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Order.Filter.Ring
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultraproducts

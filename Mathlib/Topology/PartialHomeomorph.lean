@@ -690,7 +690,8 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph X Z where
   continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 
 /-- Composing two partial homeomorphisms, by restricting to the maximal domain where their
-composition is well defined. -/
+composition is well defined.
+Within the `Manifold` namespace, there is the notation `e ≫ₕ f` for this. -/
 @[trans]
 protected def trans : PartialHomeomorph X Z :=
   PartialHomeomorph.trans' (e.symm.restrOpen e'.source e'.open_source).symm
@@ -1325,15 +1326,14 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 end subtypeRestr
 
 variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
-    [Nonempty X] [Nonempty Z] {f : X → X'}
+  [Nonempty Z] {f : X → X'}
 
 /-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding `ι : X → X'`.
 On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary (and uninteresting).
 -/
-noncomputable def lift_openEmbedding
-    (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+noncomputable def lift_openEmbedding (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     PartialHomeomorph X' Z where
-  toFun := extend f e (Classical.arbitrary (α := X' → Z))
+  toFun := extend f e (fun _ ↦ (Classical.arbitrary Z))
   invFun := f ∘ e.invFun
   source := f '' e.source
   target := e.target
@@ -1351,7 +1351,9 @@ noncomputable def lift_openEmbedding
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by
-    set F := (extend f (↑e) (Classical.arbitrary (X' → Z))) with F_eq
+    by_cases Nonempty X; swap
+    · intro x hx; simp_all
+    set F := (extend f e (fun _ ↦ (Classical.arbitrary Z))) with F_eq
     have heq : EqOn F (e ∘ (hf.toPartialHomeomorph).symm) (f '' e.source) := by
       intro x ⟨x₀, hx₀, hxx₀⟩
       rw [← hxx₀, F_eq, hf.injective.extend_apply e, comp_apply, hf.toPartialHomeomorph_left_inv]
@@ -1359,15 +1361,15 @@ noncomputable def lift_openEmbedding
       apply e.continuousOn_toFun.comp; swap
       · intro x' ⟨x, hx, hx'x⟩
         rw [← hx'x, hf.toPartialHomeomorph_left_inv]; exact hx
-      have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) := by
-        apply (hf.toPartialHomeomorph).continuousOn_invFun
+      have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) :=
+        (hf.toPartialHomeomorph).continuousOn_invFun
       apply this.mono; gcongr; exact fun ⦃a⦄ a ↦ trivial
-    apply ContinuousOn.congr this heq
+    exact ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
 @[simp]
 lemma lift_openEmbedding_toFun (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
-    (e.lift_openEmbedding hf) = extend f e (Classical.arbitrary (α := (X' → Z))) := rfl
+    (e.lift_openEmbedding hf) = extend f e (fun _ ↦ (Classical.arbitrary Z)) := rfl
 
 lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) {x : X} :
     (lift_openEmbedding e hf) (f x) = e x := by
@@ -1403,8 +1405,8 @@ lemma lift_openEmbedding_trans_apply
 @[simp]
 lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) = e.symm.trans e' := by
-  ext x
-  · exact e.lift_openEmbedding_trans_apply e' hf x
+  ext z
+  · exact e.lift_openEmbedding_trans_apply e' hf z
   · simp [hf.injective.extend_apply e]
   · simp_rw [PartialHomeomorph.trans_source, e.lift_openEmbedding_symm_source, e.symm_source,
       e.lift_openEmbedding_symm, e'.lift_openEmbedding_source]

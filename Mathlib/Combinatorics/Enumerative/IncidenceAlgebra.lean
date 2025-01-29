@@ -402,6 +402,10 @@ lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a 
 lemma mu_eq_neg_sum_Ico_of_ne (hab : a ≠ b) :
     mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, if_neg hab]
 
+variable (𝕜 α)
+/-- The Euler characteristic of a finite bounded order. -/
+def eulerChar [BoundedOrder α] : 𝕜 := mu 𝕜 (⊥ : α) ⊤
+
 end Mu
 
 section MuSpec
@@ -537,6 +541,10 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
 
 @[simp] lemma mu_ofDual (a b : αᵒᵈ) : mu 𝕜 (ofDual a) (ofDual b) = mu 𝕜 b a := (mu_toDual ..).symm
 
+@[simp]
+lemma eulerChar_orderDual [BoundedOrder α] : eulerChar 𝕜 αᵒᵈ = eulerChar 𝕜 α := by
+  simp [eulerChar, ← mu_toDual 𝕜 (α := α)]
+
 end OrderDual
 
 section InversionTop
@@ -656,6 +664,10 @@ lemma mu_prod_mu : (mu 𝕜).prod (mu 𝕜) = (mu 𝕜 : IncidenceAlgebra 𝕜 (
   refine left_inv_eq_right_inv ?_ zeta_mul_mu
   rw [← zeta_prod_zeta, prod_mul_prod', mu_mul_zeta, mu_mul_zeta, one_prod_one]
   exact fun _ _ _ _ _ _ ↦ Commute.mul_mul_mul_comm (by simp : _ = _) _ _
+
+@[simp]
+lemma eulerChar_prod [BoundedOrder α] [BoundedOrder β] :
+    eulerChar 𝕜 (α × β) = eulerChar 𝕜 α * eulerChar 𝕜 β := by simp [eulerChar, ← mu_prod_mu]
 
 end PartialOrder
 end Prod

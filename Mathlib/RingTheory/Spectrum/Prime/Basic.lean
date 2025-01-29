@@ -73,6 +73,11 @@ def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
   left_inv _ := rfl
   right_inv _ := rfl
 
+theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
 def primeSpectrumProdOfSum : PrimeSpectrum R ⊕ PrimeSpectrum S → PrimeSpectrum (R × S)
@@ -197,6 +202,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
   Ideal.ext fun f => by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
+
+theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
+  apply range_asIdeal R ▸ nilradical_eq_sInf R
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=

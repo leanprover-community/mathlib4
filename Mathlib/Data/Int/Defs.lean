@@ -228,8 +228,7 @@ where
   | 0 => Hp _ Int.le_rfl H0
   | n+1 => by
     refine cast (by rw [Int.add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
-    conv => rhs; exact b.add_zero.symm
-    rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
+    omega
 
 variable {z b H0 Hs Hp}
 

@@ -697,6 +697,12 @@ theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
 
 lemma himp_ne_right : x ⇨ y ≠ x ↔ x ≠ ⊤ ∨ y ≠ ⊤ := himp_eq_left.not.trans not_and_or
 
+lemma codisjoint_iff_compl_le_left : Codisjoint x y ↔ yᶜ ≤ x :=
+  hnot_le_iff_codisjoint_left.symm
+
+lemma codisjoint_iff_compl_le_right : Codisjoint x y ↔ xᶜ ≤ y :=
+  hnot_le_iff_codisjoint_right.symm
+
 end BooleanAlgebra
 
 instance Prop.instBooleanAlgebra : BooleanAlgebra Prop where

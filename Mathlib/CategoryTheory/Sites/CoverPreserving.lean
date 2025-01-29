@@ -154,11 +154,8 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
 
 variable {F J K}
 
-/-- If `F` is cover-preserving and compatible-preserving,
-then `F` is a continuous functor.
-
-This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
--/
+/-- If `F` is cover-preserving and compatible-preserving, then `F` is a continuous functor. -/
+@[stacks 00WW "This is basically this Stacks entry."]
 lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
   op_comp_isSheaf_of_types G X S hS x hx := by

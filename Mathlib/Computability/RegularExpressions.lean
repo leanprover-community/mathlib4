@@ -92,7 +92,7 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 
 -- This was renamed to `matches'` during the port of Lean 4 as `matches` is a reserved word.
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
 -- Porting note: was '@[simp] but removed based on
@@ -136,7 +136,7 @@ theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' 
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
 
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `matchEpsilon P` is true if and only if `P` matches the empty string -/
 def matchEpsilon : RegularExpression α → Bool
@@ -150,7 +150,7 @@ def matchEpsilon : RegularExpression α → Bool
 section DecidableEq
 variable [DecidableEq α]
 
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
   to `a` -/
@@ -231,7 +231,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       rw [rmatch, rmatch]
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
-      cases' List.append_eq_nil.1 h₁.symm with ht hu
+      cases' List.append_eq_nil_iff.1 h₁.symm with ht hu
       subst ht
       subst hu
       repeat rw [rmatch] at h₂
@@ -343,7 +343,7 @@ instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _
 
 end DecidableEq
 
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- Map the alphabet of a regular expression. -/
 @[simp]
@@ -361,7 +361,7 @@ protected theorem map_pow (f : α → β) (P : RegularExpression α) :
   | 0 => by unfold map; rfl
   | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) :)
 
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 @[simp]
 theorem map_id : ∀ P : RegularExpression α, P.map id = P
@@ -372,7 +372,7 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | comp R S => by simp_rw [map, map_id]; rfl
   | star R => by simp_rw [map, map_id]
 
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, (P.map f).map g = P.map (g ∘ f)
@@ -383,7 +383,7 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | comp R S => by simp only [map, Function.comp_apply, map_map]
   | star R => by simp only [map, Function.comp_apply, map_map]
 
-#adaptation_note /-- around nightly-2024-02-25,
+#adaptation_note /-- nightly-2024-02-25
   we need to write `comp x y` in the pattern `comp R S`,
   instead of `x * y` (and the `erw` was just `rw`). -/
 /-- The language of the map is the map of the language. -/

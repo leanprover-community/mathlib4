@@ -39,10 +39,8 @@ The category structure coming from a preorder. There is a morphism `X ⟶ Y` if 
 
 Because we don't allow morphisms to live in `Prop`,
 we have to define `X ⟶ Y` as `ULift (PLift (X ≤ Y))`.
-See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`.
-
-See <https://stacks.math.columbia.edu/tag/00D3>.
--/
+See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`. -/
+@[stacks 00D3]
 instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩

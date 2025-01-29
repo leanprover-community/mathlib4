@@ -23,7 +23,7 @@ the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
 
 
-universe w v v' u u'
+universe w w' v v' u u'
 
 open CategoryTheory
 
@@ -189,6 +189,10 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
   (Equivalence.induced _).symm
+
+instance [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) :=
+  locallySmall_of_faithful.{w} (equivalence.{w'} C).inverse
 
 end Shrink
 

@@ -140,7 +140,7 @@ variable {G : Type*}
 /-- Class of types that have an inversion operation. -/
 @[to_additive, notation_class]
 class Inv (α : Type u) where
-  /-- Invert an element of α. -/
+  /-- Invert an element of α, denoted by `a⁻¹`. -/
   inv : α → α
 
 @[inherit_doc]

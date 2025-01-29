@@ -117,8 +117,6 @@ private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.c
 
 end SchurZassenhausAbelian
 
-open scoped Classical
-
 universe u
 
 namespace SchurZassenhausInduction

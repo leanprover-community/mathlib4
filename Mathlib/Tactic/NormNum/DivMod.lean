@@ -13,14 +13,6 @@ This file adds support for the `%`, `/`, and `∣` (divisibility) operators on `
 to the `norm_num` tactic.
 -/
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Mathlib
 open Lean
 open Meta

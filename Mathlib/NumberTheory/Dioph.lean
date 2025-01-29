@@ -26,7 +26,7 @@ there exists `t : ℕ^β` with `p (v, t) = 0`.
 * `Dioph`: a predicate stating that a set is Diophantine, i.e. a set `S ⊆ ℕ^α` is
   Diophantine if there exists a polynomial on `α ⊕ β` such that `v ∈ S` iff there
   exists `t : ℕ^β` with `p (v, t) = 0`.
-* `dioph_fn`: a predicate on a function stating that it is Diophantine in the sense that its graph
+* `DiophFn`: a predicate on a function stating that it is Diophantine in the sense that its graph
   is Diophantine as a set.
 
 ## Main statements

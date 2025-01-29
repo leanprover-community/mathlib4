@@ -44,6 +44,10 @@ instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
 theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
   simp [nnnorm]
 
+@[simp]
+lemma enorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
+
 end Completion
 
 end UniformSpace

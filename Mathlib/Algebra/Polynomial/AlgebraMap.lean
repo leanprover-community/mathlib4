@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
@@ -367,6 +368,38 @@ theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ
 theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
     aeval (algebraMap R A x) p = algebraMap R A (p.eval x) :=
   aeval_algHom_apply (Algebra.ofId R A) x p
+
+/-- Polynomial evaluation on a pair is a product of the evaluations on the components. -/
+theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2) :=
+  aeval_algHom (.fst R A B) x ▸ aeval_algHom (.snd R A B) x ▸
+    (aeval x).prod_comp (.fst R A B) (.snd R A B)
+
+/-- Polynomial evaluation on a pair is a pair of evaluations. -/
+theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
+    p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
+
+section Pi
+
+variable {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable (x : Π i, A i) (p : R[X])
+
+/-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod` to indexed products. -/
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+  (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
+    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+
+theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
+  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+
+/-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod_apply` to indexed products. -/
+theorem aeval_pi_apply : p.aeval x = fun j ↦ p.aeval (x j) :=
+  funext fun j ↦ aeval_pi_apply₂ x p j
+
+end Pi
 
 @[simp]
 theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=

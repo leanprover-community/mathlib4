@@ -24,4 +24,13 @@ theorem sum_left (β) [Finite (α ⊕ β)] : Finite α :=
 theorem sum_right (α) [Finite (α ⊕ β)] : Finite β :=
   of_injective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
+instance {α β : Sort*} [Finite α] [Finite β] : Finite (α ⊕' β) :=
+  of_equiv _ ((Equiv.psumEquivSum _ _).symm.trans (Equiv.plift.psumCongr Equiv.plift))
+
+theorem psum_left {α β : Sort*} [Finite (α ⊕' β)] : Finite α :=
+  of_injective (PSum.inl : α → α ⊕' β) PSum.inl_injective
+
+theorem psum_right {α β : Sort*} [Finite (α ⊕' β)] : Finite β :=
+  of_injective (PSum.inr : β → α ⊕' β) PSum.inr_injective
+
 end Finite

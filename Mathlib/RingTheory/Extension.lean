@@ -416,6 +416,13 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
   simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
 
+lemma Cotangent.finite (hP : P.ker.FG) :
+    Module.Finite S P.Cotangent := by
+  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
+    ← Submodule.map_top]
+  exact (P.ker.fg_top.mpr hP).map _
+
 end Cotangent
 
 end Algebra.Extension

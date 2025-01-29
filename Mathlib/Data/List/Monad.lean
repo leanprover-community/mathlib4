@@ -16,9 +16,9 @@ namespace List
 variable {α : Type u}
 
 instance instMonad : Monad List.{u} where
-  pure := @List.singleton
-  bind := @List.flatMap
-  map := @List.map
+  pure x := [x]
+  bind l f := l.flatMap f
+  map f l := l.map f
 
 @[simp] theorem pure_def (a : α) : pure a = [a] := rfl
 

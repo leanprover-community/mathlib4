@@ -110,7 +110,6 @@ variable (f g)
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 
--- Porting note: removed `simp` because `simpNF` complains the LHS doesn't simplify.
 theorem coe_mk (f) (h₁) (h₂) (h₃) : ⇑(⟨f, h₁, h₂, h₃⟩ : NormedAddGroupHom V₁ V₂) = f :=
   rfl
 

@@ -74,7 +74,7 @@ lemma colimit_no_zero_smul_divisor
   rw [← this, ← map_smul (colimit.ι F j).hom] at hx
   obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
   obtain ⟨j'', H⟩ := H
-  simpa [elementwise_of% (colimit.w F), this, map_zero] using congr(colimit.ι F _
+  simpa [elementwise_of% (colimit.w F), ← this, map_zero] using congr(colimit.ι F _
     $(H (IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ })
       (IsFiltered.toSup _ _ <| by simp)
       (F.map (IsFiltered.toSup _ _ <| by simp) x)

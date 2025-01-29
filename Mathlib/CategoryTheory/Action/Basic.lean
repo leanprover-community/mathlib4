@@ -42,7 +42,7 @@ namespace Action
 
 variable {V}
 
-@[simp 1100]
+@[simp]
 theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/

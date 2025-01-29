@@ -17,7 +17,7 @@ for any sets `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then for `μ`-almost eve
 `κ a (⋂ i in s, f i) = ∏ i ∈ s, κ a (f i)`.
 
 This notion of independence is a generalization of both independence and conditional independence.
-For conditional independence, `κ` is the conditional kernel `ProbabilityTheory.condexpKernel` and
+For conditional independence, `κ` is the conditional kernel `ProbabilityTheory.condExpKernel` and
 `μ` is the ambient measure. For (non-conditional) independence, `κ = Kernel.const Unit μ` and the
 measure is the Dirac measure on `Unit`.
 

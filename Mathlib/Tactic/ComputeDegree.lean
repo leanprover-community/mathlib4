@@ -440,14 +440,14 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 *  `degree f ≤ d`,
 *  `coeff f d = r`, if `d` is the degree of `f`.
 
-The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
+The tactic may leave goals of the form `d' = d`, `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
 `compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to close them.
 
 The variant `compute_degree!` first applies `compute_degree`.
-Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.
+Then it uses `norm_num` on all the remaining goals and tries `assumption`.
 -/
 syntax (name := computeDegree) "compute_degree" "!"? : tactic
 

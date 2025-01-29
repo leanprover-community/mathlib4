@@ -591,3 +591,39 @@ lemma MonotoneOn.nnnorm_cfcₙ (f : ℝ≥0 → ℝ≥0) (a : A)
 end NonUnital
 
 end NNReal
+
+/-! ### Non-unital instance for unital algebras -/
+
+namespace IsometricContinuousFunctionalCalculus
+
+variable {𝕜 A : Type*} {p : outParam (A → Prop)}
+variable [RCLike 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
+variable [IsometricContinuousFunctionalCalculus 𝕜 A p]
+
+open scoped ContinuousFunctionalCalculus in
+/-- An isometric continuous functional calculus on a unital algebra yields to a non-unital one. -/
+instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p where
+  isometric a ha := by
+    have : CompactSpace (σₙ 𝕜 a) := by
+      have h_cpct : CompactSpace (spectrum 𝕜 a) := inferInstance
+      simp only [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
+      exact h_cpct |>.union isCompact_singleton
+    rw [cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
+    refine isometry_cfcHom a |>.comp ?_
+    simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom,
+      NonUnitalStarAlgHom.coe_coe]
+    refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
+    let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
+    show ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
+    apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
+      (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
+    · rintro ⟨x, hx⟩
+      exact (f : C(σₙ 𝕜 a, 𝕜)).norm_coe_le_norm ⟨x, spectrum_subset_quasispectrum 𝕜 a hx⟩
+    · rintro ⟨x, hx⟩
+      obtain (rfl | hx') : x = 0 ∨ x ∈ σ 𝕜 a := by
+        simpa [quasispectrum_eq_spectrum_union_zero] using hx
+      · show ‖f 0‖ ≤ _
+        simp
+      · exact (f : C(σₙ 𝕜 a, 𝕜)).comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
+
+end IsometricContinuousFunctionalCalculus
