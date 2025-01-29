@@ -296,7 +296,7 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
 theorem leftRegularHom_apply {A : Rep k G} (x : A) :
     (leftRegularHom A x).hom (Finsupp.single 1 1) = x := by
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [leftRegularHom_hom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
+  erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
   rw [zero_smul]
 
@@ -314,9 +314,10 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
       LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (f.comm x)) (Finsupp.single 1 1)
-    simp only [leftRegularHom_hom_hom, LinearMap.comp_apply, Finsupp.lsingle_apply,
+    simp only [leftRegularHom_hom, LinearMap.comp_apply, Finsupp.lsingle_apply,
       Finsupp.lift_apply, ← this, coe_of, of_ρ, Representation.ofMulAction_single x (1 : G) (1 : k),
-      smul_eq_mul, mul_one, zero_smul, Finsupp.sum_single_index, one_smul]
+      smul_eq_mul, mul_one, zero_smul, Finsupp.sum_single_index, one_smul,
+      ConcreteCategory.hom_ofHom]
     -- Mismatched `Zero k` instances
     rfl
   right_inv x := leftRegularHom_apply x
@@ -324,7 +325,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom_hom, Finsupp.lift_apply,
+  erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
   rw [zero_smul]
 
