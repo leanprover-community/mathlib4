@@ -14,10 +14,14 @@ half-space (to get manifolds with boundaries) for which changes of coordinates a
 everywhere.  The definition mirrors `IsManifold`, but using an `analyticGroupoid` in
 place of `contDiffGroupoid`.  All analytic manifolds are smooth manifolds.
 
-TODO: deprecate the whole file: one should use `IsManifold I ω M` instead
+This file is deprecated: one should use `IsManifold I ω M` instead
 -/
 
 noncomputable section
+
+/- Desactivate the linter as we don't want to change the statements inside the file, only warn
+the user that the definitions they are using are deprecated. -/
+set_option linter.deprecated false
 
 open Set Filter Function
 
@@ -42,6 +46,7 @@ variable (I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
+@[deprecated "use instead `contDiffPregroupoid ω`" (since := "2025-01-23")]
 def analyticPregroupoid : Pregroupoid H where
   property f s := AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
   comp {f g u v} hf hg _ _ _ := by
@@ -76,6 +81,7 @@ variable (I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
+@[deprecated "use instead `contDiffGroupoid ω`" (since := "2025-01-23")]
 def analyticGroupoid : StructureGroupoid H :=
   (analyticPregroupoid I).groupoid
 
@@ -143,6 +149,7 @@ section AnalyticManifold
 
 /-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
 s.t. all extended chart conversion maps are analytic. -/
+@[deprecated "use instead `IsManifold ω`" (since := "2025-01-23")]
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
   [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
 
