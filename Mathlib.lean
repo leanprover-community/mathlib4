@@ -3655,6 +3655,7 @@ import Mathlib.LinearAlgebra.TensorPower.Basic
 import Mathlib.LinearAlgebra.TensorPower.Pairing
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.LinearAlgebra.TensorProduct.Defs
 import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
