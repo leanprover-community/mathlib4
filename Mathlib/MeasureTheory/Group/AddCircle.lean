@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.MeasureTheory.Integral.Periodic
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!

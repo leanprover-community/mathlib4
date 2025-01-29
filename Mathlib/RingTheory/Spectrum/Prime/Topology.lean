@@ -9,8 +9,10 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
@@ -40,7 +42,7 @@ variable (R : Type u) (S : Type v)
 
 namespace PrimeSpectrum
 
-section CommSemiRing
+section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
@@ -257,6 +259,10 @@ def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
     rintro _ ⟨s, rfl⟩
     exact ⟨_, preimage_specComap_zeroLocus_aux f s⟩
 
+lemma coe_comap (f : R →+* S) : comap f = f.specComap := rfl
+
+lemma comap_apply (f : R →+* S) (x) : comap f x = f.specComap x := rfl
+
 variable (f : R →+* S)
 
 @[simp]
@@ -284,6 +290,27 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
     Function.Injective (comap f) := fun _ _ h => specComap_injective_of_surjective _ hf h
 
 variable (S)
+
+theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Function.Injective (algebraMap R S).specComap := by
+  intro p q h
+  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
+  dsimp only [RingHom.specComap] at h
+  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
+  ext1
+  exact h
+
+theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
+  ext x
+  constructor
+  · simp_rw [disjoint_iff_inf_le]
+    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
+    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
+  · intro h
+    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
+    ext1
+    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 
 theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsInducing (comap (algebraMap R S)) := by
@@ -332,9 +359,8 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 @[deprecated (since := "2024-10-28")]
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
-
 end Comap
-end CommSemiRing
+end CommSemiring
 
 section SpecOfSurjective
 
@@ -410,7 +436,7 @@ def primeSpectrumProdHomeo :
 
 end SpecProd
 
-section CommSemiRing
+section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
@@ -548,6 +574,20 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     rw [← this]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
+
+open Localization Polynomial Set in
+lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
+    {R : Type*} [CommRing R] (c : R) :
+    letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+    (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
+      = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
+  letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+  have := Polynomial.isLocalization (.powers c) (Away c)
+  rw [Submonoid.map_powers] at this
+  have surj : Function.Surjective (mapRingHom (Ideal.Quotient.mk (.span {c}))) :=
+    Polynomial.map_surjective _ Ideal.Quotient.mk_surjective
+  rw [range_comap_of_surjective _ _ surj, localization_away_comap_range _ (C c)]
+  simp [Polynomial.ker_mapRingHom, Ideal.map_span]
 
 end BasicOpen
 
@@ -928,7 +968,7 @@ def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) 
 
 end LocalizationAtMinimal
 
-end CommSemiRing
+end CommSemiring
 
 end PrimeSpectrum
 
@@ -936,11 +976,9 @@ section CommSemiring
 variable [CommSemiring R]
 
 open PrimeSpectrum in
-/--
-[Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
-Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
-irreducible component is a zero locus of some minimal prime ideal.
--/
+/-- Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
+irreducible component is a zero locus of some minimal prime ideal. -/
+@[stacks 00ES]
 protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
