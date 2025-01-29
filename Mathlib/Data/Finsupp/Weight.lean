@@ -227,14 +227,8 @@ theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
 @[simp]
-theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r := by
-  rw [degree, Finset.sum_eq_single a]
-  · simp only [single_eq_same]
-  · intro b _ hba
-    exact single_eq_of_ne hba.symm
-  · intro ha
-    simp only [mem_support_iff, single_eq_same, ne_eq, Classical.not_not] at ha
-    rw [single_eq_same, ha]
+theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
+  Finsupp.sum_single_index (h := fun _ => id) rfl
 
 @[simp]
 theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
@@ -248,11 +242,9 @@ lemma degree_eq_zero_iff {R : Type*} [CanonicallyOrderedAddCommMonoid R] (d : σ
 alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
 
 theorem le_degree {R : Type*} [CanonicallyOrderedAddCommMonoid R] (s : σ) (f : σ →₀ R) :
-    f s ≤ degree f  := by
-  classical
-  simp only [degree]
+    f s ≤ degree f := by
   by_cases h : s ∈ f.support
-  · simp only [Finset.sum_eq_add_sum_diff_singleton h, self_le_add_right]
+  · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
   · simp only [not_mem_support_iff] at h
     simp only [h, zero_le]
 
