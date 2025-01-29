@@ -56,7 +56,7 @@ lemma affineAnd_respectsIso (hP : RingHom.RespectsIso Q) :
     simpa [AffineTargetMorphismProperty.toProperty, isAffine_of_isIso e.inv, hP.cancel_left_isIso]
 
 /-- `affineAnd P` is local if `P` is local on the (algebraic) source. -/
-lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.LocalizationPreserves Q)
+lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.LocalizationAwayPreserves Q)
     (hQs : RingHom.OfLocalizationSpan Q) : (affineAnd Q).IsLocal where
   respectsIso := affineAnd_respectsIso hPi
   to_basicOpen {X Y _} f r := fun ⟨hX, hf⟩ ↦ by
@@ -95,6 +95,10 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       rw [Scheme.Opens.ι_image_top] at hf
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map _ (isAffineOpen_top X)] at hf
       rwa [CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf
+
+lemma affineAnd_isLocal_of_propertyIsLocal
+    (hPi : RingHom.PropertyIsLocal Q) : (affineAnd Q).IsLocal :=
+  affineAnd_isLocal hPi.respectsIso hPi.localizationAwayPreserves hPi.ofLocalizationSpan
 
 /-- If `P` is stable under base change, so is `affineAnd P`. -/
 lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
@@ -219,7 +223,7 @@ lemma HasAffineProperty.affineAnd_containsIdentities {P : MorphismProperty Schem
 /-- A convenience constructor for `HasAffineProperty P (affineAnd Q)`. The `IsAffineHom` is bundled,
 since this goes well with defining morphism properties via `extends IsAffineHom`. -/
 lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
-    (hQi : RingHom.RespectsIso Q) (hQl : RingHom.LocalizationPreserves Q)
+    (hQi : RingHom.RespectsIso Q) (hQl : RingHom.LocalizationAwayPreserves Q)
     (hQs : RingHom.OfLocalizationSpan Q) :
     HasAffineProperty P (affineAnd Q) ↔
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y), P f ↔

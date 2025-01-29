@@ -235,9 +235,7 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
     IsRat (a^b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-#adaptation_note
-/--
-Prior to https://github.com/leanprover/lean4/pull/4096,
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
 the repeated
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩

@@ -20,6 +20,50 @@ notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) =>
 /-- info: ∀ᶠ (x : ℕ) in Filter.atTop, x < 3 : Prop -/
 #guard_msgs in #check ∀ᶠ x in Filter.atTop, x < 3
 
+/-!
+Test that `pp.tagAppFns` causes tokens to be tagged with head constant.
+-/
+
+open Lean in
+def findWithTag (tag : Nat) (f : Format) : List Format :=
+  match f with
+  | .nil => []
+  | .line => []
+  | .align _ => []
+  | .text _ => []
+  | .nest _ f' => findWithTag tag f'
+  | .append f' f'' => findWithTag tag f' ++ findWithTag tag f''
+  | .group f' _ => findWithTag tag f'
+  | .tag t f' => (if t = tag then [f'] else []) ++ findWithTag tag f'
+
+open Lean Elab Term in
+def testTagAppFns (n : Name) : TermElabM Unit := do
+  let stx ← `(∀ᶠ x in Filter.atTop, x < 3)
+  let e ← elabTermAndSynthesize stx none
+  let f ← Meta.ppExprWithInfos e
+  -- Find tags for the constant `n`
+  let tags : Array Nat := f.infos.fold (init := #[]) fun tags tag info =>
+    match info with
+    | .ofTermInfo info | .ofDelabTermInfo info =>
+      if info.expr.isConstOf n then
+        tags.push tag
+      else
+        tags
+    | _ => tags
+  let fmts := tags.map (findWithTag · f.fmt)
+  unless fmts.all (!·.isEmpty) do throwError "missing tag"
+  let fmts := fmts.toList.flatten
+  logInfo m!"{repr <| fmts.map (·.pretty.trim)}"
+
+section
+/-- info: [] -/
+#guard_msgs in #eval testTagAppFns ``Filter.eventually
+set_option pp.tagAppFns true
+/-- info: ["∀ᶠ", "in", ","] -/
+#guard_msgs in #eval testTagAppFns ``Filter.eventually
+end
+
+
 -- Testing lambda expressions:
 notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
 /-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/

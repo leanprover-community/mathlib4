@@ -227,6 +227,15 @@ lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
 lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
   ext; simp [Hom.id, aeval_X_left]
 
+/-- A map between extensions induce a map between kernels. -/
+@[simps]
+def Hom.mapKer (f : P.Hom P')
+    [alg : Algebra P.Ring P'.Ring] (halg : algebraMap P.Ring P'.Ring = f.toRingHom) :
+    P.ker →ₗ[P.Ring] P'.ker where
+  toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.2]⟩
+  map_add' _ _ := Subtype.ext (map_add _ _ _)
+  map_smul' := by simp [Algebra.smul_def, ← halg]
+
 end
 
 end Hom
@@ -406,6 +415,13 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
+
+lemma Cotangent.finite (hP : P.ker.FG) :
+    Module.Finite S P.Cotangent := by
+  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
+    ← Submodule.map_top]
+  exact (P.ker.fg_top.mpr hP).map _
 
 end Cotangent
 

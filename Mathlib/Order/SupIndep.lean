@@ -63,6 +63,17 @@ theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
   ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs _ ht i hi hit =>
     (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
 
+/-- If both the index type and the lattice have decidable equality,
+then the `SupIndep` predicate is decidable.
+
+TODO: speedup the definition and drop the `[DecidableEq ι]` assumption
+by iterating over the pairs `(a, t)` such that `s = Finset.cons a t _`
+using something like `List.eraseIdx`
+or by generating both `f i` and `(s.erase i).sup f` in one loop over `s`.
+Yet another possible optimization is to precompute partial suprema of `f`
+over the inits and tails of the list representing `s`,
+store them in 2 `Array`s,
+then compute each `sup` in 1 operation. -/
 instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) :=
   have : ∀ i, Decidable (Disjoint (f i) ((s.erase i).sup f)) := fun _ ↦
     decidable_of_iff _ disjoint_iff.symm

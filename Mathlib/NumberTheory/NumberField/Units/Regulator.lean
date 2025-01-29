@@ -44,9 +44,7 @@ theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unit
 
 theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4119
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
 the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
 unless we use `set_option maxSynthPendingDepth 2`, or add
 explicit instances:

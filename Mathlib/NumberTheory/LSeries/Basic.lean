@@ -68,6 +68,12 @@ lemma term_def (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term f s n = if n = 0 then 0 else f n / n ^ s :=
   rfl
 
+/-- An alternate spelling of `term_def` for the case `f 0 = 0`. -/
+lemma term_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) (n : ℕ) :
+    LSeries.term f s n = f n * (n : ℂ) ^ (- s) := by
+  rw [LSeries.term]
+  split_ifs with h <;> simp [h, hf, cpow_neg, div_eq_inv_mul, mul_comm]
+
 @[simp]
 lemma term_zero (f : ℕ → ℂ) (s : ℂ) : term f s 0 = 0 := rfl
 
