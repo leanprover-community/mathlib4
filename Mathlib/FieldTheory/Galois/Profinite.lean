@@ -12,9 +12,9 @@ import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 # Galois Group as a profinite group
 
-In this file, we prove that in a field extension `K/k`, there is a continuous isomorphism between
-`Gal(K/k)` and the limit of `Gal(L/k)`, where `L` is a finite galois intermediate field ordered by
-inverse inclusion, thus making `Gal(K/k)` profinite because the limit is profinite.
+In this file, we prove that given a field extension `K/k`, there is a continuous isomorphism between
+`Gal(K/k)` and the limit of `Gal(L/k)`, where `L` is a finite Galois intermediate field ordered by
+inverse inclusion, thus making `Gal(K/k)` profinite as a limit of finite groups.
 
 # Main definitions and results
 
@@ -30,12 +30,12 @@ In a field extension `K/k`
   (ordered by reverse inclusion) to `FiniteGrp`, mapping each `FiniteGaloisIntermediateField` `L`
   to `Gal (L/k)`.
 
-* `InfiniteGalois.homToLimit` : The homomorphism from `K ≃ₐ[k] K` to
-  `limit (profinGaloisGroupFunctor k K)`, given by the projections from `Gal(K/k)` to
+* `InfiniteGalois.algEquivToLimit` : The homomorphism from `K ≃ₐ[k] K` to
+  `limit (profinGaloisGroupFunctor k K)`, induced by the projections from `Gal(K/k)` to
   any `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`.
 
-* `InfiniteGalois.toAlgEquiv` : The inverse of `InfiniteGalois.homToLimit`, in which the elements of
-  `K ≃ₐ[k] K` is constructed pointwise using `proj_lift`.
+* `InfiniteGalois.limitToAlgEquiv` : The inverse of `InfiniteGalois.algEquivToLimit`, in which
+  the elements of `K ≃ₐ[k] K` is constructed pointwise using `proj_lift`.
 
 * `InfiniteGalois.mulEquivToLimit` : The mulEquiv obtained from combining the above two.
 
@@ -130,7 +130,7 @@ variable (k K) in
   canonical projection from `Gal(K/k)` to `Gal(L/k)` viewing the limit as a
   subgroup of the product space. -/
 @[simps]
-noncomputable def homToLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGroupFunctor k K) where
+noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGroupFunctor k K) where
   toFun σ := {
     val := fun L => (AlgEquiv.restrictNormalHom L.unop) σ
     property := fun {L₁ L₂} π ↦ by
@@ -207,7 +207,7 @@ instance instSMulMemClass : SMulMemClass (IntermediateField k K) k K where
 /--Turn `toAlgEquivAux` into an `AlgEquiv`.
 It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]
-noncomputable def toAlgEquiv [IsGalois k K]
+noncomputable def limitToAlgEquiv [IsGalois k K]
     (g : limit (profinGaloisGroupFunctor k K)) : K ≃ₐ[k] K where
   toFun := toAlgEquivAux g
   invFun := toAlgEquivAux g⁻¹
@@ -240,25 +240,25 @@ noncomputable def toAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
 variable (k K) in
-/--Turn `homToLimit` into a mulEquiv-/
+/--Turn `algEquivToLimit` into a mulEquiv-/
 noncomputable def mulEquivToLimit [IsGalois k K] :
     (K ≃ₐ[k] K) ≃* limit (profinGaloisGroupFunctor k K) where
-  toFun := homToLimit k K
+  toFun := algEquivToLimit k K
   map_mul' := map_mul _
-  invFun := toAlgEquiv
+  invFun := limitToAlgEquiv
   left_inv := fun f ↦ AlgEquiv.ext fun x =>
     AlgEquiv.restrictNormal_commutes f (adjoin k {x}).1 ⟨x, _⟩
   right_inv := fun g ↦ by
     apply Subtype.val_injective
     ext L
-    show (toAlgEquiv g).restrictNormal _ = _
+    show (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((toAlgEquiv g).restrictNormal L.unop) x = (toAlgEquiv g) x.1 := by
-      exact AlgEquiv.restrictNormal_commutes (toAlgEquiv g) L.unop x
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
+      exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
     exact proj_lift_adjoin_simple _ _ _ _ x.2
 
-lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
+lemma limitToAlgEquiv_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
   simp only [map_one, krullTopology_mem_nhds_one]
   intro H ⟨L, _, hO2⟩
@@ -294,7 +294,7 @@ lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivToLimit k 
       ext x
       constructor
       · rintro ⟨α, hα1, hα2⟩
-        simp only [Set.mem_preimage,← hα2, fix1, Set.mem_setOf_eq, mulEquivToLimit, homToLimit,
+        simp only [Set.mem_preimage,← hα2, fix1, Set.mem_setOf_eq, mulEquivToLimit, algEquivToLimit,
           MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk]
         apply AlgEquiv.ext
         intro x
@@ -311,7 +311,7 @@ lemma mulEquivToLimit_continuous [IsGalois k K] : Continuous (mulEquivToLimit k 
         have fix := h.out
         set Aut := (mulEquivToLimit _ _).symm x
         have : mulEquivToLimit _ _ Aut = x := by simp only [Aut, MulEquiv.apply_symm_apply]
-        simp only [← this, mulEquivToLimit, homToLimit, MonoidHom.coe_mk, OneHom.coe_mk,
+        simp only [← this, mulEquivToLimit, algEquivToLimit, MonoidHom.coe_mk, OneHom.coe_mk,
           MulEquiv.coe_mk, Equiv.coe_fn_mk] at fix
         have fix_y : AlgEquiv.restrictNormalHom L' Aut ⟨y, hy⟩ = ⟨y, hy⟩ := by
           simp only [fix, AlgEquiv.one_apply]
@@ -328,7 +328,7 @@ variable (k K)
 turning `mulEquivToLimit`, viewed as a bijection, into a homeomorphism. -/
 noncomputable def homeoToLimit [IsGalois k K] :
     (limit (profinGaloisGroupFunctor k K)) ≃ₜ (K ≃ₐ[k] K) :=
-  Continuous.homeoOfEquivCompactToT2 mulEquivToLimit_continuous
+  Continuous.homeoOfEquivCompactToT2 limitToAlgEquiv_continuous
 
 instance [IsGalois k K] : CompactSpace (K ≃ₐ[k] K) :=
   (homeoToLimit k K).compactSpace
@@ -345,7 +345,7 @@ noncomputable def continuousMulEquivToLimit [IsGalois k K] :
 
 /--`InfiniteGalois.ProfiniteGalGrp` : Turn `Gal(K/k)` into a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above. -/
-noncomputable def ProfiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
+noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
   ProfiniteGrp.ofContinuousMulEquiv (continuousMulEquivToLimit k K).symm
 
 variable {k K} in
