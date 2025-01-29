@@ -188,23 +188,6 @@ section Deriv
 
 /-! ### Iterated derivatives of `complexMGF` -/
 
-/-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
-`x ↦ μ[X ^ n * rexp (x * X)]` at `t` is `μ[X ^ (n + 1) * rexp (t * X)]`. -/
-lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    HasDerivAt (fun t ↦ μ[fun ω ↦ X ω ^ n * rexp (t * X ω)])
-      μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] t := by
-  have h_re_of_mem n t (ht' : t ∈ interior (integrableExpSet X μ)) :
-      (∫ ω, X ω ^ n * cexp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
-    rw [← RCLike.re_eq_complex_re, ← integral_re]
-    · norm_cast
-    · refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet ?_ n
-      simpa using ht'
-  have h_re n : ∀ᶠ t' : ℝ in 𝓝 t, (∫ ω, X ω ^ n * cexp (t' * X ω) ∂μ).re
-      = ∫ ω, X ω ^ n * rexp (t' * X ω) ∂μ := by
-    filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'
-  rw [← EventuallyEq.hasDerivAt_iff (h_re _), ← h_re_of_mem _ t ht]
-  exact (hasDerivAt_integral_pow_mul_exp (by simp [ht]) n).real_of_complex
-
 lemma hasDerivAt_iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     HasDerivAt (iteratedDeriv n (complexMGF X μ)) μ[fun ω ↦ X ω ^ (n + 1) * cexp (z * X ω)] z := by
   induction n generalizing z with
