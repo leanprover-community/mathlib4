@@ -1046,8 +1046,8 @@ theorem Equiv.of_exists {x y : PGame}
 
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
-theorem Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 :=
-  Equiv.of_exists isEmptyElim isEmptyElim isEmptyElim isEmptyElim
+theorem Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 := by
+  apply Equiv.of_exists <;> exact isEmptyElim
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
