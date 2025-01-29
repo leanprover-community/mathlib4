@@ -135,7 +135,7 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 -/
 partial def M.run
     {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
-  let ctx ← Simp.mkContext { singlePass := cfg.mode matches .raw }
+  let ctx ← Simp.mkContext { singlePass := cfg.mode matches .raw, zetaDelta := cfg.zetaDelta }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with

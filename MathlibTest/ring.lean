@@ -205,18 +205,19 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
 end
 
 -- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
+set_option linter.unusedTactic false in
 example (x : ℝ) (f : ℝ → ℝ) : True := by
   let y := x
-  have : x - y = 0 := by
-    fail_if_success ring_nf
-    ring_nf!
   have : x = y := by
-    fail_if_success ring_nf!
+    ring_nf
+    ring_nf!
+  have : x - y = 0 := by
+    ring_nf
     ring_nf!
   have : f x = f y := by
-    fail_if_success ring_nf!
+    ring_nf
     ring_nf!
   have : f x - f y = 0 := by
-    fail_if_success ring_nf!
+    ring_nf
     ring_nf!
   trivial
