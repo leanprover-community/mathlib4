@@ -31,8 +31,8 @@ Since `Matroid.fundCircuit M e I` is only sensible if `I` is independent and `e 
 to avoid hypotheses being explicitly included in the definition,
 junk values need to be chosen if either hypothesis fails.
 The definition is chosen so that the junk values satisfy
-`M.fundCircuit e I = {e}` for `e ∈ I` and
-`M.fundCircuit e I = insert e I` if `e ∉ M.closure I`.
+`M.fundCircuit e I = {e}` for `e ∈ I` or `e ∉ M.E` and
+`M.fundCircuit e I = insert e I` if `e ∈ M.E \ M.closure I`.
 These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true unconditionally.
 -/
 
@@ -195,12 +195,14 @@ For the fact that this is a circuit, see `Matroid.Indep.fundCircuit_circuit`,
 and the fact that it is unique, see `Matroid.Circuit.eq_fundCircuit_of_subset`.
 Has the junk value `{e}` if `e ∈ I` and `insert e I` if `e ∉ M.closure I`. -/
 def fundCircuit (M : Matroid α) (e : α) (I : Set α) : Set α :=
-  insert e (I ∩ (⋂₀ {J | J ⊆ I ∧ e ∈ M.closure J}))
+  insert e (I ∩ ⋂₀ {J | J ⊆ I ∧ M.closure {e} ⊆ M.closure J})
 
 lemma fundCircuit_eq_sInter (he : e ∈ M.closure I) :
     M.fundCircuit e I = insert e (⋂₀ {J | J ⊆ I ∧ e ∈ M.closure J}) := by
-  rw [fundCircuit, inter_eq_self_of_subset_right]
-  exact sInter_subset_of_mem ⟨Subset.rfl, he⟩
+  rw [fundCircuit]
+  simp_rw [closure_subset_closure_iff_subset_closure
+    (show {e} ⊆ M.E by simpa using mem_ground_of_mem_closure he), singleton_subset_iff]
+  rw [inter_eq_self_of_subset_right (sInter_subset_of_mem (by simpa))]
 
 lemma fundCircuit_subset_insert (M : Matroid α) (e : α) (I : Set α) :
     M.fundCircuit e I ⊆ insert e I :=
@@ -214,27 +216,27 @@ lemma mem_fundCircuit (M : Matroid α) (e : α) (I : Set α) : e ∈ fundCircuit
   mem_insert ..
 
 /-- The fundamental circuit of `e` and `X` has the junk value `{e}` if `e ∈ X` -/
-lemma fundCircuit_eq_of_mem (heX : e ∈ X) (heE : e ∈ M.E := by aesop_mat) :
-    M.fundCircuit e X = {e} := by
-  suffices h : ∀ a ∈ X, (∀ I ⊆ X, e ∈ M.closure I → a ∈ I) → a = e by
+lemma fundCircuit_eq_of_mem (heX : e ∈ X) : M.fundCircuit e X = {e} := by
+  suffices h : ∀ a ∈ X, (∀ t ⊆ X, M.closure {e} ⊆ M.closure t → a ∈ t) → a = e by
     simpa [subset_antisymm_iff, fundCircuit]
-  exact fun f hfX h ↦ h {e} (by simpa) (mem_closure_of_mem' _ rfl)
+  exact fun b hbX h ↦ h _ (singleton_subset_iff.2 heX) Subset.rfl
 
-/-- A version of `Matroid.fundCircuit_eq_of_mem` that applies when `X ⊆ M.E` instead of `e ∈ X`.-/
-lemma fundCircuit_eq_of_mem' (heX : e ∈ X) (hX : X ⊆ M.E := by aesop_mat) :
-    M.fundCircuit e X = {e} := by
-  rwa [fundCircuit_eq_of_mem]
+lemma fundCircuit_eq_of_not_mem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e} := by
+  suffices h : ∀ a ∈ X, (∀ t ⊆ X, M.closure {e} ⊆ M.closure t → a ∈ t) → a = e by
+    simpa [subset_antisymm_iff, fundCircuit]
+  simp_rw [← M.closure_inter_ground {e}, singleton_inter_eq_empty.2 heX]
+  exact fun a haX h ↦ by simpa using h ∅ (empty_subset X) rfl.subset
 
 lemma Indep.fundCircuit_circuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     M.Circuit (M.fundCircuit e I) := by
-  apply (hI.inter_right _).insert_circuit_of_forall (by simp [heI])
-  · rw [(hI.subset _).closure_inter_eq_inter_closure, mem_inter_iff, and_iff_right hecl,
-      hI.closure_sInter_eq_biInter_closure_of_forall_subset _ (by simp +contextual)]
-    · simp
-    · exact ⟨I, rfl.subset, hecl⟩
-    exact union_subset rfl.subset (sInter_subset_of_mem ⟨rfl.subset, hecl⟩)
-  simp only [mem_inter_iff, mem_sInter, mem_setOf_eq, and_imp]
-  exact fun f hfI hf hecl ↦ (hf _ (diff_subset.trans inter_subset_left) hecl).2 rfl
+  have aux : ⋂₀ {J | J ⊆ I ∧ e ∈ M.closure J} ⊆ I := sInter_subset_of_mem (by simpa)
+  rw [fundCircuit_eq_sInter hecl]
+  refine (hI.subset aux).insert_circuit_of_forall ?_ ?_ ?_
+  · simp [show ∃ x ⊆ I, e ∈ M.closure x ∧ e ∉ x from ⟨I, by simp [hecl, heI]⟩]
+  · rw [hI.closure_sInter_eq_biInter_closure_of_forall_subset ⟨I, by simpa⟩ (by simp +contextual)]
+    simp
+  simp only [mem_sInter, mem_setOf_eq, and_imp]
+  exact fun f hf hecl ↦ (hf _ (diff_subset.trans aux) hecl).2 rfl
 
 lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     x ∈ M.fundCircuit e I ↔ M.Indep (insert e I \ {x}) := by
@@ -260,9 +262,25 @@ lemma Circuit.eq_fundCircuit_of_subset (hC : M.Circuit C) (hI : M.Indep I) (hCss
     · rw [hI.mem_closure_iff]
       exact .inl (hC.dep.superset hCss (insert_subset (hC.subset_ground heC) hI.subset_ground))
     exact hC.not_indep (hI.subset (hCss.trans (by simp [heI])))
-  refine insert_subset heC (inter_subset_right.trans ?_)
-  refine (sInter_subset_of_mem (t := C \ {e}) ?_).trans diff_subset
+  rw [fundCircuit_eq_sInter
+    (M.closure_subset_closure hCeI <| hC.mem_closure_diff_singleton_of_mem heC)]
+  refine insert_subset heC <| (sInter_subset_of_mem (t := C \ {e}) ?_).trans diff_subset
   simp [hCss, hC.mem_closure_diff_singleton_of_mem heC]
+
+lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R ⊆ M.E) :
+    (M ↾ R).fundCircuit e I = M.fundCircuit e I := by
+  simp_rw [fundCircuit, M.restrict_closure_eq (R := R) (X := {e}) (by simpa)]
+  refine subset_antisymm (insert_subset_insert (inter_subset_inter_right _ ?_))
+    (insert_subset_insert (inter_subset_inter_right _ ?_))
+  · refine subset_sInter fun J ⟨hJI, heJ⟩ ↦ sInter_subset_of_mem ⟨hJI, ?_⟩
+    simp only [restrict_closure_eq', union_subset_iff, subset_union_right, and_true]
+    refine (inter_subset_inter_left _ ?_).trans subset_union_left
+    rwa [inter_eq_self_of_subset_left (hJI.trans hIR)]
+  refine subset_sInter fun J ⟨hJI, heJ⟩ ↦ sInter_subset_of_mem
+    ⟨hJI, M.closure_subset_closure_of_subset_closure ?_⟩
+  rw [restrict_closure_eq _ (hJI.trans hIR) hR] at heJ
+  simp only [subset_inter_iff, inter_subset_right, and_true] at heJ
+  exact subset_trans (by simpa [M.mem_closure_of_mem' (mem_singleton e) (hR heR)]) heJ
 
 /-! ### Dependence -/
 
