@@ -8,11 +8,9 @@ open CategoryTheory Limits
 namespace Alexandrov
 
 variable
-  {X : TopCat.{v}}
-  [Preorder X] [Topology.IsUpperSet X]
+  {X : Type v} [TopologicalSpace X] [Preorder X] [Topology.IsUpperSet X]
   {C : Type u} [Category.{v} C] [HasLimits C]
   (F : X ⥤ C)
-
 
 open TopologicalSpace Topology
 
@@ -46,7 +44,9 @@ def principals : X ⥤ (Opens X)ᵒᵖ where
   obj x := .op <| principalOpen x
   map {x y} f := .op <| principalOpen_le f.le |>.hom
 
-lemma exists_le_of_le_sup {ι : Type v} {x : X}
+lemma exists_le_of_le_sup
+    {ι : Type v}
+    {x : X}
     (Us : ι → Opens X)
     (h : principalOpen x ≤ iSup Us) :
     ∃ i : ι, principalOpen x ≤ Us i := by
@@ -105,8 +105,10 @@ def lowerCone {α : Type v} (Us : α → Opens X)
   }
 
 open Presheaf Functor SheafCondition
-def isLimit (α : Type v) (Us : α → Opens X) :
-    IsLimit (mapCone (ιι F) (SheafCondition.opensLeCoverCocone Us).op) where
+def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
+    (F : X ⥤ C)
+    (α : Type v) (Us : α → Opens X) :
+    IsLimit (mapCone (ιι F) (opensLeCoverCocone Us).op) where
   lift S := limit.lift _ (lowerCone Us S)
   fac := by
     rintro S ⟨V, i, hV⟩
@@ -141,7 +143,8 @@ def isLimit (α : Type v) (Us : α → Opens X) :
         NatTrans.op_app, pointwiseRightKanExtension_map, Category.assoc, limit.lift_π]
       congr
 
-theorem is_sheaf_ιι : Presheaf.IsSheaf (ιι F) := by
+theorem is_sheaf_ιι {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X] (F : X ⥤ C) :
+    Presheaf.IsSheaf (ιι F) := by
   rw [isSheaf_iff_isSheafOpensLeCover]
   intro ι Us
   constructor
@@ -151,11 +154,13 @@ theorem is_sheaf_of_is_Kan_extension
     (P : (Opens X)ᵒᵖ ⥤ C)
     (η : principals X ⋙ P ⟶ F)
     [P.IsRightKanExtension η] :
-    IsSheaf P := by
+    IsSheaf (X := TopCat.of X) P := by
   let γ : principals X ⋙ ιι F ⟶ F := (principals X).pointwiseRightKanExtensionCounit F
   let h2 : (ιι F).IsRightKanExtension γ := inferInstance
   have : P ≅ ιι F := @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ h2
   rw [isSheaf_iso_iff this]
-  exact is_sheaf_ιι F
+  let _ : Preorder (TopCat.of X) := inferInstanceAs <| Preorder X
+  have _ : Topology.IsUpperSet (TopCat.of X) := inferInstanceAs <| Topology.IsUpperSet X
+  exact is_sheaf_ιι (X := TopCat.of X) F
 
 end Alexandrov
