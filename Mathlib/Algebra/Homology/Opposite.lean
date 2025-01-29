@@ -222,6 +222,7 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
 
 variable {V c}
 
+@[simp]
 lemma quasiIsoAt_opFunctor_map_iff
     {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
