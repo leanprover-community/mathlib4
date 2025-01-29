@@ -177,7 +177,7 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  (one_le _).trans_lt h
+  h.bot_lt
 
 alias LT.lt.one_lt := one_lt_of_gt
 alias LT.lt.pos := pos_of_gt
@@ -187,31 +187,15 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
-@[to_additive]
-theorem bot_eq_one : (⊥ : α) = 1 :=
-  le_antisymm bot_le (one_le ⊥)
-
-@[to_additive (attr := simp)]
-theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
-
-@[to_additive]
-theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
-  (one_le a).lt_iff_ne.trans ne_comm
-
-@[to_additive]
-theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
-  one_lt_iff_ne_one.2 h
+@[to_additive] theorem bot_eq_one : (⊥ : α) = 1 := bot_unique <| one_le _
+@[to_additive (attr := simp)] theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 := le_bot_iff
+@[to_additive] theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 := bot_lt_iff_ne_bot
+@[to_additive] theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a := h.bot_lt
+@[to_additive] theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := eq_bot_or_bot_lt a
+@[to_additive] lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := bot_not_mem_iff
 
 alias NE.ne.one_lt := one_lt_of_ne_one
 alias NE.ne.pos := pos_of_ne_zero
-
-@[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
-
-@[to_additive]
-lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  bot_eq_one (α := α) ▸ bot_not_mem_iff
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
