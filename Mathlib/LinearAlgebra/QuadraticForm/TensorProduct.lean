@@ -155,8 +155,7 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
     Q₁ = Q₂ := by
   replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
     rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', QuadraticMap.map_smul, QuadraticMap.map_smul, h]
-  apply QuadraticMap.ext
-  intro x
+  ext x
   induction x with
   | tmul => simp [h]
   | zero => simp
@@ -167,9 +166,6 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
       rw [← TensorProduct.tmul_add, h, h, h]
     replace := congr($this x y)
     dsimp [polar] at this
-    calc
-    Q₁ (x + y) = (Q₁ (x + y) - Q₁ x - Q₁ y) + Q₁ x + Q₁ y := by abel
-    _ = (Q₂ (x + y) - Q₂ x - Q₂ y) + Q₂ x + Q₂ y := by rw [this, hx, hy]
-    _ = Q₂ (x + y) := by abel
+    linear_combination (norm := module) this + hx + hy
 
 end CommRing
