@@ -814,8 +814,7 @@ lemma isCompact_isOpen_iff_ideal {s : Set (PrimeSpectrum R)} :
   exact ⟨fun ⟨s, e⟩ ↦ ⟨.span s, ⟨s, rfl⟩, by simpa using e⟩,
     fun ⟨I, ⟨s, hs⟩, e⟩ ↦ ⟨s, by simpa [hs.symm] using e⟩⟩
 
-lemma basicOpen_eq_zeroLocus_of_mul_add
-    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+lemma basicOpen_eq_zeroLocus_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f = 1) :
     basicOpen e = zeroLocus {f} := by
   ext p
   suffices e ∉ p.asIdeal ↔ f ∈ p.asIdeal by simpa
@@ -823,10 +822,13 @@ lemma basicOpen_eq_zeroLocus_of_mul_add
   rw [Ideal.eq_top_iff_one, ← add]
   exact add_mem h₂ h₁
 
-lemma zeroLocus_eq_basicOpen_of_mul_add
-    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+lemma zeroLocus_eq_basicOpen_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f = 1) :
     zeroLocus {e} = basicOpen f := by
   rw [basicOpen_eq_zeroLocus_of_mul_add f e] <;> simp only [mul, add, mul_comm, add_comm]
+
+lemma isClopen_basicOpen_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+    IsClopen (basicOpen e : Set (PrimeSpectrum R)) :=
+  ⟨basicOpen_eq_zeroLocus_of_mul_add e f mul add ▸ isClosed_zeroLocus _, (basicOpen e).2⟩
 
 lemma basicOpen_injOn_isIdempotentElem :
     {e : R | IsIdempotentElem e}.InjOn basicOpen := fun x hx y hy eq ↦ by
@@ -898,9 +900,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
   · have ⟨e, f, h⟩ := exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen h
     exact ⟨e, f, by simp only [h, and_self]⟩
   rintro ⟨e, f, mul, add, rfl⟩
-  refine ⟨?_, (basicOpen e).2⟩
-  rw [basicOpen_eq_zeroLocus_of_mul_add e f mul add]
-  exact isClosed_zeroLocus _
+  exact isClopen_basicOpen_of_mul_add e f mul add
 
 lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
