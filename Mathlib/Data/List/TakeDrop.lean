@@ -29,6 +29,11 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 
 /-! ### take, drop -/
 
+theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
+    (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
+  rw [drop_eq_getElem_cons h, take, take]
+  simp
+
 @[simp] lemma take_eq_self_iff (x : List α) {n : ℕ} : x.take n = x ↔ x.length ≤ n :=
   ⟨fun h ↦ by rw [← h]; simp; omega, take_of_length_le⟩
 
