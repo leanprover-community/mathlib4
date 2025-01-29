@@ -379,8 +379,6 @@ theorem smulRight_apply (f : MultilinearMap R M₁ R) (z : M₂) (m : ∀ i, M�
     f.smulRight z m = f m • z :=
   rfl
 
-variable (R ι)
-
 theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
     MultilinearMap.mkPiRing R ι z₁ = MultilinearMap.mkPiRing R ι z₂ ↔ z₁ = z₂ := by
   simp_rw [MultilinearMap.ext_iff, mkPiRing_apply]
