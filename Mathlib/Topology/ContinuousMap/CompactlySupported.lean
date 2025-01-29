@@ -124,15 +124,6 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- Composition of a continuous function `f` with compact support with another continuous function
-`g` from the left yields another continuous function `g ∘ f` with compact support. -/
-def comp_left {γ : Type*} [TopologicalSpace γ] [Zero γ] {g : C(β, γ)} (f : C_c(α, β))
-    (hg : g 0 = 0) : C_c(α, γ) where
-  toContinuousMap := g.comp f
-  hasCompactSupport' := by
-    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
-    exact HasCompactSupport.comp_left f.hasCompactSupport' hg
-
 end Basics
 
 /-! ### Algebraic structure
