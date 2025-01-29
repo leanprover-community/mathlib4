@@ -47,7 +47,7 @@ theorem incompRel_swap : IncompRel (swap r) = IncompRel r :=
 
 @[refl]
 theorem IncompRel.refl [IsIrrefl α r] (a : α) : IncompRel r a a :=
-  antisymmRel_refl _ _
+  AntisymmRel.rfl
 
 variable {r} in
 theorem IncompRel.rfl [IsIrrefl α r] {a : α} : IncompRel r a a := .refl ..
