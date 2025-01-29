@@ -320,6 +320,13 @@ theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) := by
   simpa only [neg_sub, ← sub_eq_add_neg] using iff_comp_neg.mp (hf.comp_add_left c)
 
+/-- A real-valued function is interval integrable iff the complex-valued analog is. -/
+lemma iff_ofReal {f : ℝ → ℝ} (hab: a ≤ b) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable (fun x ↦ (f x : ℂ)) μ a b := by
+  repeat rw [intervalIntegrable_iff_integrableOn_Ioc_of_le]
+  apply IntegrableOn.iff_ofReal
+  all_goals exact hab
+
 end IntervalIntegrable
 
 /-!
@@ -663,6 +670,14 @@ alias RCLike.interval_integral_ofReal := RCLike.intervalIntegral_ofReal
 nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=
   RCLike.intervalIntegral_ofReal
+
+theorem intervalIntegral_re {μ : Measure ℝ} {a b : ℝ} {f : ℝ → ℂ} (hab: a ≤ b)
+    (hf: IntervalIntegrable f μ a b) :
+    (∫ x in (a)..b, (f x).re ∂μ) = (∫ x in (a)..b, f x ∂μ).re := by
+  repeat rw [intervalIntegral.integral_of_le hab]
+  apply setIntegral_re
+  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le hab]
+  exact hf
 
 section ContinuousLinearMap
 

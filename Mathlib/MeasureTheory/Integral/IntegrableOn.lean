@@ -345,6 +345,31 @@ theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : Int
 @[deprecated (since := "2024-06-29")]
 alias IntegrableOn.set_lintegral_lt_top := IntegrableOn.setLIntegral_lt_top
 
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜]
+
+theorem IntegrableOn.iff_ofReal {f : α → ℝ} :
+    IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
+  MeasureTheory.Integrable.iff_ofReal
+
+theorem IntegrableOn.ofReal {f : α → ℝ} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => (f x : 𝕜)) s μ := by
+  rw [IntegrableOn, ← memℒp_one_iff_integrable] at hf ⊢
+  exact hf.ofReal
+
+theorem IntegrableOn.re_im_iff {f : α → 𝕜} :
+    IntegrableOn (fun x => RCLike.re (f x)) s μ ∧ IntegrableOn (fun x => RCLike.im (f x)) s μ ↔
+    IntegrableOn f s μ := Integrable.re_im_iff (f := f)
+
+theorem IntegrableOn.re {f : α → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => RCLike.re (f x)) s μ := (IntegrableOn.re_im_iff.2 hf).left
+
+theorem IntegrableOn.im {f : α → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => RCLike.im (f x)) s μ := (IntegrableOn.re_im_iff.2 hf).right
+
+end RCLike
+
 /-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
 set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/
 def IntegrableAtFilter (f : α → ε) (l : Filter α) (μ : Measure α := by volume_tac) :=
