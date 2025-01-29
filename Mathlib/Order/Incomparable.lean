@@ -53,7 +53,7 @@ variable {r} in
 theorem IncompRel.rfl [IsIrrefl α r] {a : α} : IncompRel r a a := .refl ..
 
 instance [IsIrrefl α r] : IsRefl α (IncompRel r) where
-  refl := IncompRel.rfl
+  refl := .refl r
 
 variable {r}
 
@@ -125,11 +125,11 @@ theorem AntisymmRel.incompRel_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ :
 
 theorem AntisymmRel.incompRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
     IncompRel (· ≤ ·) a c ↔ IncompRel (· ≤ ·) b c :=
-  h.incompRel_congr (antisymmRel_refl _ c)
+  h.incompRel_congr AntisymmRel.rfl
 
 theorem AntisymmRel.incompRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
     IncompRel (· ≤ ·) a b ↔ IncompRel (· ≤ ·) a c :=
-  (antisymmRel_refl _ a).incompRel_congr h
+  AntisymmRel.rfl.incompRel_congr h
 
 end Preorder
 
