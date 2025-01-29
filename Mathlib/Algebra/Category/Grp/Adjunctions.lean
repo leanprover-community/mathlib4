@@ -69,7 +69,7 @@ def adj : free ⊣ forget AddCommGrp.{u} :=
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp only [Equiv.symm_symm]
+        simp
         apply FreeAbelianGroup.lift_comp }
 
 instance : free.{u}.IsLeftAdjoint :=
@@ -117,15 +117,13 @@ def free : Type u ⥤ Grp where
 def adj : free ⊣ forget Grp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeGroup.lift.symm
-      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
-        ext
-        simp only [Equiv.symm_symm]
-        apply Eq.symm
-        apply FreeGroup.lift.unique
+        ext : 1
+        -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): `ext` doesn't apply this theorem anymore
+        apply FreeGroup.ext_hom
         intros
-        apply FreeGroup.lift.of }
+        rfl }
 
 instance : (forget Grp.{u}).IsRightAdjoint  :=
   ⟨_, ⟨adj⟩⟩
@@ -211,12 +209,8 @@ def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.un
         invFun := fun f => (Units.coeHom Y).comp f.hom
         left_inv := fun _ => MonoidHom.ext fun _ => rfl
         right_inv := fun _ => CommGrp.ext fun _ => Units.ext rfl }
-    unit :=
-      { app := fun X => ofHom { (@toUnits X _).toMonoidHom with }
-        naturality := fun _ _ _ => CommGrp.ext fun _ => Units.ext rfl }
-    counit :=
-      { app := fun X => Units.coeHom X
-        naturality := by intros; exact MonoidHom.ext fun x => rfl } }
+    unit := { app := fun X => ofHom { (@toUnits X _).toMonoidHom with } }
+    counit := { app := fun X => Units.coeHom X } }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

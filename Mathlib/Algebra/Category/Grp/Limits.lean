@@ -19,7 +19,6 @@ the underlying types are just the limits in the category of types.
 
 -/
 
-
 open CategoryTheory CategoryTheory.Limits
 
 universe v u w
@@ -457,7 +456,7 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simp [(AddSubgroup.coe_zero _).symm]
+        simp only [Functor.comp_obj, map_zero, ZeroMemClass.coe_zero]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         simp }
@@ -466,11 +465,10 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
     refine equalizer.hom_ext ?_
-    ext x
-    apply ConcreteCategory.congr_hom (kernel.lift_ι f _ _)
+    ext
+    simp
   inv_hom_id := by
     apply AddCommGrp.ext
-    simp only [AddMonoidHom.coe_mk, coe_id, coe_comp]
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     apply ConcreteCategory.congr_hom (kernel.lift_ι f _ _)
