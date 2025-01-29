@@ -56,8 +56,6 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine List.Forall₂.flip ?_
       replace hv := hv.flip
-      #adaptation_note /-- nightly-2024-03-16: simp was
-      simp only [List.forall₂_and_left, flip] at hv ⊢ -/
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
     refine mem_of_superset ?_ hvs
@@ -212,7 +210,7 @@ theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
 
 theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → List.Vector α n}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
-  continuous_insertIdx'.comp (hf.prod_mk hg : _)
+  continuous_insertIdx'.comp (hf.prod_mk hg)
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx
 

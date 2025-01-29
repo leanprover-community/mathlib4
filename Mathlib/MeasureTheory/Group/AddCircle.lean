@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.MeasureTheory.Integral.Periodic
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!
@@ -95,7 +95,7 @@ theorem volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
   let G := AddSubgroup.zmultiples u
   haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
   have hsG : ∀ g : G, (g +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s := by
-    rintro ⟨y, hy⟩; exact (vadd_ae_eq_self_of_mem_zmultiples hs hy : _)
+    rintro ⟨y, hy⟩; exact (vadd_ae_eq_self_of_mem_zmultiples hs hy :)
   rw [(isAddFundamentalDomain_of_ae_ball I u x hu hI).measure_eq_card_smul_of_vadd_ae_eq_self s hsG,
     ← Nat.card_zmultiples u]
 

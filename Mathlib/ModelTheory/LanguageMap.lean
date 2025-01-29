@@ -363,7 +363,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   letI := constantsOn.structure fα
   letI := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 
 end ConstantsOn
@@ -389,7 +389,7 @@ theorem card_withConstants :
   rw [withConstants, card_sum, card_constantsOn]
 
 /-- The language map adding constants. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 

@@ -77,10 +77,9 @@ titlesPathsAndRegexes=(
   "porting notes"                  "*"      "Porting note"
   "backwards compatibility flags"  "*"      "set_option.*backward"
   "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
-  "adaptation notes"               "*"      "adaptation_note"
+  "adaptation notes"               ":^Mathlib/Tactic/AdaptationNote.lean" "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
-  "ofNat"                          "*"      "See note \[no_index around OfNat.ofNat\]"
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
 )
 
@@ -94,7 +93,7 @@ for i in ${!titlesPathsAndRegexes[@]}; do
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- "${pathspec}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- ":^scripts" "${pathspec}" | wc -l)" "${title}"
   fi
 done
 
@@ -160,12 +159,14 @@ then
   then
     printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '%s\n' "${rep}" |
+    printf '%s\n' "${rep}" |  # outputs lines containing `|Current number|Change|Type|`, so
+                              # `$2` refers to `Current number` and `$3` to `Change`.
       awk -F '|' -v rep="${rep}" '
-        BEGIN{total=0; weight=0}
+        BEGIN{total=0; weight=0; absWeight=0}
+        {absWeight+=$3+0}
         (($3+0 == $3) && (!($2+0 == 0))) {total+=1 / $2; weight+=$3 / $2}
         END{
-          average=weight/total
+          if (total == 0) {average=absWeight} else {average=weight/total}
           if(average < 0) {change= "Decrease"; average=-average; weight=-weight} else {change= "Increase"}
           printf("<details><summary>%s in tech debt: (relative, absolute) = (%4.2f, %4.2f)</summary>\n\n%s\n", change, average, weight, rep) }'
   fi

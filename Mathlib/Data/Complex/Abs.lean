@@ -198,9 +198,6 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
 
 @[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
 
-@[deprecated "No deprecation message was provided." (since := "2024-02-14")]
-lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
-
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
 
@@ -294,10 +291,16 @@ theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (
     let ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 
+lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
+  fun h ↦ (zero_re ▸ h ▸ hs).false
+
 lemma ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : s ≠ 0 :=
-  fun h ↦ ((zero_re ▸ h ▸ hs).trans zero_lt_one).false
+  ne_zero_of_re_pos <| zero_lt_one.trans hs
+
+lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
+  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ (neg_lt_zero.mpr hs)
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
-  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ by linarith
+  re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs
 
 end Complex

@@ -813,10 +813,11 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
 
 @[to_additive]
 lemma TopologicalGroup.isInducing_iff_nhds_one
-    {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] {f : G →* H} :
+    {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] {F : Type*}
+    [FunLike F G H] [MonoidHomClass F G H] {f : F} :
     Topology.IsInducing f ↔ 𝓝 (1 : G) = (𝓝 (1 : H)).comap f := by
   rw [Topology.isInducing_iff_nhds]
-  refine ⟨(f.map_one ▸ · 1), fun hf x ↦ ?_⟩
+  refine ⟨(map_one f ▸ · 1), fun hf x ↦ ?_⟩
   rw [← nhds_translation_mul_inv, ← nhds_translation_mul_inv (f x), Filter.comap_comap, hf,
     Filter.comap_comap]
   congr 1
@@ -1008,7 +1009,7 @@ variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity, fun_prop) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
-  continuous_div'.comp (hf.prod_mk hg : _)
+  continuous_div'.comp (hf.prod_mk hg :)
 
 @[to_additive (attr := continuity) continuous_sub_left]
 lemma continuous_div_left' (a : G) : Continuous (a / ·) := continuous_const.div' continuous_id
