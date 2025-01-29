@@ -132,15 +132,15 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
     ‖condExpIndL1Fin hm hs hμs x‖ ≤ (μ s).toReal * ‖x‖ := by
   rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul,
     ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
-    ofReal_integral_norm_eq_lintegral_nnnorm]
+    ofReal_integral_norm_eq_lintegral_enorm]
   swap; · rw [← memℒp_one_iff_integrable]; exact Lp.memℒp _
   have h_eq :
-    ∫⁻ a, ‖condExpIndL1Fin hm hs hμs x a‖₊ ∂μ = ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ := by
+    ∫⁻ a, ‖condExpIndL1Fin hm hs hμs x a‖ₑ ∂μ = ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖ₑ ∂μ := by
     refine lintegral_congr_ae ?_
     refine (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x).mono fun z hz => ?_
     dsimp only
     rw [hz]
-  rw [h_eq, ofReal_norm_eq_coe_nnnorm]
+  rw [h_eq, ofReal_norm_eq_enorm]
   exact lintegral_nnnorm_condExpIndSMul_le hm hs hμs x
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpIndL1Fin_le := norm_condExpIndL1Fin_le
