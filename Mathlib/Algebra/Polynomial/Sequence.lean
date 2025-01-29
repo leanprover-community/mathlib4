@@ -33,13 +33,27 @@ open scoped Function
 
 universe u
 
-theorem foo {R M : Type u} [Ring R] [Zero M] [SMulWithZero R M] [NoZeroDivisors R]
+theorem IsSMulRegular.of_ne_zero {R M : Type u} [Ring R] [Zero M] [SMulWithZero R M]
+  [NoZeroDivisors R]
   {a : R} {b : M} (hx : a • b ≠ 0) : IsSMulRegular R a := by
   intro w v hwv
   have hgwv : a • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
-  cases' smul_eq_zero.mp hgwv with hgx hwv'
-  · exact hx (smul_eq_zero_of_left hgx _) |>.elim
-  · exact sub_eq_zero.mp hwv'
+  cases' smul_eq_zero.mp hgwv with ha hsub
+  · exact hx (smul_eq_zero_of_left ha _) |>.elim
+  · exact sub_eq_zero.mp hsub
+
+open Polynomial in
+theorem degree_smul_of_ne_zero
+    {R : Type*} [Semiring R] {k : R} [NoZeroDivisors R] {p : R[X]} (hkp : k • p ≠ 0) :
+    (k • p).degree = p.degree := by
+  refine le_antisymm (degree_smul_le k p) ?_
+  by_cases nezero : p = 0
+  · simp [nezero]
+  · by_contra! hdeg
+    suffices hk : k = 0 by simp_all
+    have h := coeff_eq_zero_of_natDegree_lt <| natDegree_lt_natDegree hkp hdeg
+    simp only [coeff_smul, coeff_natDegree, smul_eq_mul, mul_eq_zero, leadingCoeff_eq_zero] at h
+    exact h.resolve_right <| right_ne_zero_of_smul hkp
 
 variable (R : Type u)
 
@@ -100,11 +114,8 @@ lemma linearIndependent [NoZeroDivisors R] :
   · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
   · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
-      intro x ⟨xmem, hx⟩ y ⟨ymem, hy⟩ xney
-      have hgx := degree_smul_of_smul_regular (S x) (foo hx)
-      have hgy := degree_smul_of_smul_regular (S y) (foo hy)
-      simpa [hgx, hgy] using S.degree_ne xney
-
+      intro _ ⟨_, hx⟩ _ ⟨_, hy⟩ xney
+      simpa [degree_smul_of_ne_zero hx, degree_smul_of_ne_zero hy] using S.degree_ne xney
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
     refine degree_ne_bot.mp ?_ eqzero |>.elim
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
