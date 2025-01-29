@@ -184,6 +184,12 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
+lemma mgf_pos_iff [hμ : NeZero μ] :
+    0 < mgf X μ t ↔ Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ mgf_pos' hμ.out h⟩
+  contrapose! h with h
+  simp [mgf_undef h]
+
 lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
@@ -195,6 +201,11 @@ lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   rw [mgf, integral_map hX]
   · rfl
   · exact (measurable_const_mul _).exp.aestronglyMeasurable
+
+lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
+    mgf X μ = mgf Y μ' := by
+  rw [← mgf_id_map h.aemeasurable_fst, ← mgf_id_map h.aemeasurable_snd, h.map_eq]
 
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 
