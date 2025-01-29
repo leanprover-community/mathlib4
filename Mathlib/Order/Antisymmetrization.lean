@@ -43,14 +43,17 @@ theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 
 @[refl]
-theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
+theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
 
+@[deprecated (since := "2025-01-28")]
+alias antisymmRel_refl := AntisymmRel.refl
+
 variable {r} in
-lemma AntisymmRel.rfl [IsRefl α r] (a : α) : AntisymmRel r a a := antisymmRel_refl ..
+lemma AntisymmRel.rfl [IsRefl α r] {a : α} : AntisymmRel r a a := .refl ..
 
 instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
-  refl := antisymmRel_refl r
+  refl := .refl r
 
 variable {r}
 
