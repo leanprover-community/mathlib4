@@ -383,7 +383,8 @@ theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.ge
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
 
-#adaptation_note /-- 2024-07-10: removed `@[simp]` since the LHS simplifies using the simp set. -/
+#adaptation_note /-- 2024-07-10
+removed `@[simp]` since the LHS simplifies using the simp set. -/
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -1677,11 +1678,9 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note
-/--
+#adaptation_note /-- nightly-2024-07-27
 This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27.
--/
+The prime should be removed at nightly-2024-07-27. -/
 @[simp]
 theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset
