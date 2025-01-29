@@ -50,7 +50,7 @@ theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   isEmbedding_coe.continuous
 
-lemma tendsto_coe_id {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (fun (x : ℝ≥0) => (x : ℝ≥0∞))
+lemma tendsto_coe_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (fun (x : ℝ≥0) => (x : ℝ≥0∞))
     (nhds a.toNNReal) (nhds a) := by
   nth_rewrite 2 [← coe_toNNReal ha]
   exact ContinuousAt.tendsto (Continuous.continuousAt continuous_coe)
@@ -85,16 +85,13 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
 
 theorem tendsto_toNNReal_iff {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0∞}
     (ha : a ≠ ∞) (hf : ∀ x, f x ≠ ∞) : Tendsto f u (𝓝 a) ↔
-    Tendsto (ENNReal.toNNReal ∘ f ) u (𝓝 (a.toNNReal)) := by
-  constructor
-  · exact fun h =>  Filter.Tendsto.comp (ENNReal.tendsto_toNNReal ha) h
-  · intro h
-    have h2 := Filter.Tendsto.comp (tendsto_coe_id ha) h
-    rw [coe_of_fun_toNNReal hf] at h2
-    exact h2
+    Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 (a.toNNReal)) := by
+  refine ⟨fun h =>  Filter.Tendsto.comp (ENNReal.tendsto_toNNReal ha) h, fun h => ?_ ⟩
+  rw [← coe_comp_toNNReal_comp hf]
+  exact Filter.Tendsto.comp (tendsto_coe_toNNReal ha) h
 
 theorem tendsto_toNNReal_iff' {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0}
-    (hf : ∀ x, f x ≠ ∞): Tendsto f u (𝓝 a) ↔ Tendsto (ENNReal.toNNReal ∘ f ) u (𝓝 a) := by
+    (hf : ∀ x, f x ≠ ∞) : Tendsto f u (𝓝 a) ↔ Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 a) := by
   rw [← @toNNReal_coe a]
   exact tendsto_toNNReal_iff coe_ne_top hf
 
