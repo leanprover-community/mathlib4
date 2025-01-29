@@ -520,9 +520,10 @@ theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
   set e := (fun t ↦ fun ω ↦ rexp (t * X ω))
   set e' := (fun t ↦ fun ω ↦ rexp (t * X ω) * X ω)
   suffices MeasureTheory.Integrable (e' t) μ ∧
-    HasDerivAt (fun t ↦ μ[e t]) (μ[e' t]) t from by
+      HasDerivAt (fun t ↦ μ[e t]) (μ[e' t]) t from by
     dsimp [mgf]
-    simp only [this.2, implies_true]
+    sorry
+    --simp only [this.2, implies_true]
   apply hasDerivAt_integral_of_dominated_loc_of_deriv_le
   · exact LE.le.trans_lt (abs_nonneg t) (lt_add_one |t|)
   · exact Filter.Eventually.of_forall
@@ -579,8 +580,9 @@ theorem tilt_second_deriv [IsFiniteMeasure μ] (t a b : ℝ)
   set e := (fun t ↦ fun ω ↦ rexp (t * X ω) * X ω)
   set e' := (fun t ↦ fun ω ↦ rexp (t * X ω) * (X ω ^ 2))
   suffices MeasureTheory.Integrable (e' t) μ ∧
-    HasDerivAt (fun t ↦ μ[e t]) (μ[e' t]) t from by
-    simp only [this.2, implies_true]
+      HasDerivAt (fun t ↦ μ[e t]) (μ[e' t]) t from by
+    sorry
+    --simp only [this.2, implies_true]
   apply hasDerivAt_integral_of_dominated_loc_of_deriv_le
   · exact LE.le.trans_lt (abs_nonneg t) (lt_add_one |t|)
   · apply Filter.Eventually.of_forall

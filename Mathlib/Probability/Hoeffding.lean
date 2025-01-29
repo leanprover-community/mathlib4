@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kei Tsukamoto, Kazumi Kasaura, Naoto Onda, Sho sonoda, Yuma Mizuno
 -/
 
-import Mathlib.Probability.Moments
+import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
 # Hoeffding's lemma
