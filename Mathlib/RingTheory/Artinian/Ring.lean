@@ -5,7 +5,6 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
@@ -109,23 +108,6 @@ theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
 
 theorem isUnit_submonoid_eq : IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
-
-/-- In an `R`-algebra over an artinian ring `R`, if an element is integral and
-is not a zero divisor, then it is a unit. -/
-theorem _root_.IsIntegral.isUnit_of_nonzerodivisor {A} [CommRing A] [Algebra R A] {a : A}
-    (hi : IsIntegral R a) (ha : a ∈ A⁰) : IsUnit a :=
-  let B := Algebra.adjoin R {a}
-  let b : B := ⟨a, Algebra.self_mem_adjoin_singleton R a⟩
-  haveI : Module.Finite R B := Algebra.finite_adjoin_simple_of_isIntegral hi
-  haveI : IsArtinianRing B := isArtinian_of_tower R inferInstance
-  have hinj : Function.Injective (B.subtype) := Subtype.val_injective
-  have hb : b ∈ B⁰ := comap_nonZeroDivisor_le_of_injective hinj ha
-  (isUnit_of_mem_nonZeroDivisors hb).map B.subtype
-
-/-- Integral element of an algebra over artinian ring `R` is either a zero divisor or a unit. -/
-theorem _root_.IsIntegral.isUnit_iff_nonzerodivisor {A} [CommRing A] [Algebra R A] {a : A}
-    (hi : IsIntegral R a) : IsUnit a ↔ a ∈ A⁰ :=
-  ⟨IsUnit.mem_nonZeroDivisors, IsIntegral.isUnit_of_nonzerodivisor hi⟩
 
 end IsUnit
 
