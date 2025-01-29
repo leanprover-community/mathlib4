@@ -26,41 +26,65 @@ variable {α β ι : Type*}
 
 /--There is likely a way more general proof of this, what should it be? -/
 lemma le_of_TendstoUniformlyOn_le_right (f : ι → α → ℝ) {p : Filter ι}
-    {g : α → ℝ} {K : Set α} {T : ℝ} (hf : TendstoUniformlyOn f g p K) (hg : ∀ x : K, g x ≤ T) :
-    ∀ᶠ (n : ι) in p, ∀ x : K, f n x ≤ (T + 1) := by
+    {g : α → ℝ} {K : Set α} {T : ℝ} (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
+    ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ (T + 1) := by
   rw [Metric.tendstoUniformlyOn_iff] at hf
   have hf2 := hf 1 (Real.zero_lt_one)
   simp_rw [Filter.eventually_iff_exists_mem, dist_comm ] at *
   obtain ⟨N, hN, hN2⟩ := hf2
-  refine ⟨N, hN, fun n hn x => ?_⟩
-  apply le_trans (tsub_le_iff_right.mp (le_trans (Real.le_norm_self _) (hN2 n hn x x.2).le))
-  linarith [hg x]
+  refine ⟨N, hN, fun n hn x hx => ?_⟩
+  apply le_trans (tsub_le_iff_right.mp (le_trans (Real.le_norm_self _) (hN2 n hn x hx).le))
+  linarith [hg x hx]
 
-lemma tendstoUniformlyOn_comp_cexp [Preorder ι] {f : ι → α → ℂ} {g : α → ℂ} {K : Set α}
-    (hf : TendstoUniformlyOn f g atTop K) (hg : ∃ T : ℝ, ∀ x : K, (g x).re ≤ T) :
-    TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) atTop K := by
+/- /--There is likely a way more general proof of this, what should it be? -/
+lemma le_of_TendstoUniformlyOn_le_righto (f : ι → α → β) [ UniformSpace β] [LinearOrder β] [ClosedIciTopology β]{p : Filter ι} [p.NeBot]
+    {g : α → β} {K : Set α} {T V : β} (htv : T < V) (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
+    ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ V := by
+  rw [@eventually_iff_exists_mem]
+  use ⊤
+  simp
+  intro i a ha
+  have hf2 := hf.tendsto_at ha
+  have hga : g a < V := by sorry
+  rw [ tendstoUniformlyOn_iff_tendstoUniformlyOnFilter ] at hf
+  have := TendstoUniformlyOnFilter.tendsto_of_eventually_tendsto hf (ℓ := T)
+  have := Filter.Tendsto.eventually_le_const hga hf2
+  rw [Metric.tendstoUniformlyOn_iff] at hf
+  have hf2 := hf 1 (Real.zero_lt_one)
+  simp_rw [Filter.eventually_iff_exists_mem, dist_comm ] at *
+  obtain ⟨N, hN, hN2⟩ := hf2
+  refine ⟨N, hN, fun n hn x hx => ?_⟩
+  apply le_trans (tsub_le_iff_right.mp (le_trans (Real.le_norm_self _) (hN2 n hn x hx).le))
+  linarith [hg x hx] -/
+
+  /- simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, ←
+    tendstoUniformlyOn_univ, Set.mem_univ, Set.restrict_apply, true_implies, Subtype.forall] at *
+ -/
+lemma tendstoUniformlyOn_comp_cexp [Preorder ι] {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ} {K : Set α}
+    (hf : TendstoUniformlyOn f g p K) (hg : ∃ T : ℝ, ∀ x, x ∈ K → (g x).re ≤ T) :
+    TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) p K := by
   obtain ⟨T, hT⟩ := hg
   have h2 := le_of_TendstoUniformlyOn_le_right (fun n x => (f n x).re) hf.re hT
   have w2 := tendstoUniformlyOn_univ.mpr <| UniformContinuousOn.comp_tendstoUniformly_eventually
     {x : ℂ | x.re ≤ T + 1} (fun a => K.restrict (f (a))) (fun b => g b) (by simpa using h2) ?_
-      (UniformlyContinuousOn.cexp (T + 1)) ((Metric.tendstouniformlyOn_iff_restrict K).mp hf)
-  · rw [Metric.tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ]
+      (UniformlyContinuousOn.cexp (T + 1)) ((tendstouniformlyOn_iff_restrict).mp hf)
+  · rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ]
     exact w2
   · simp only [Set.mem_setOf_eq, Subtype.forall]
-    apply fun a ha => le_trans (hT ⟨a,ha⟩) (by aesop)
+    apply fun a ha => le_trans (hT a ha) (by aesop)
 
 lemma tendstoUniformlyOn_tprod {f : ℕ → α → ℂ} {K : Set α}
-    (h : ∀ x : K, Summable fun n => log (f n x))
+    (h : ∀ x, x ∈ K → Summable fun n => log (f n x))
     (hf : TendstoUniformlyOn (fun n : ℕ => fun a : α => ∑ i in Finset.range n, log (f i a))
     (fun a : α => ∑' n : ℕ, log (f n a)) atTop K) (hfn : ∀ x : K, ∀ n : ℕ, f n x ≠ 0)
-    (hg : ∃ T : ℝ, ∀ x : K, (∑' n : ℕ, log (f n x)).re ≤ T) :
+    (hg : ∃ T : ℝ, ∀ x, x ∈ K → (∑' n : ℕ, log (f n x)).re ≤ T) :
     TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i in Finset.range n, (f i a))
     (fun a => ∏' i, (f i a)) atTop K := by
   suffices HU : TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i in Finset.range n, (f i a))
        (cexp ∘ fun a ↦ ∑' (n : ℕ), log (f n a)) atTop K by
         apply TendstoUniformlyOn.congr_right HU
         intro x hx
-        simpa using (Complex.cexp_tsum_eq_tprod _ (hfn ⟨x, hx⟩) (h ⟨x, hx⟩))
+        simpa using (Complex.cexp_tsum_eq_tprod _ (hfn ⟨x, hx⟩) (h x hx))
   apply TendstoUniformlyOn.congr (tendstoUniformlyOn_comp_cexp hf hg)
   simp only [eventually_atTop, ge_iff_le]
   refine ⟨0, fun b _ x hx => ?_⟩
@@ -98,7 +122,7 @@ lemma tendstoUniformlyOn_tprod' [TopologicalSpace α] {f : ℕ → α → ℂ} {
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at *
     obtain ⟨T, hT⟩ := this
     refine ⟨T, fun x hx => by aesop⟩
-  · intro x
+  · intro x hx
     apply Complex.summable_log_one_add_of_summable
     rw [← summable_norm_iff]
-    apply Summable.of_nonneg_of_le (fun b ↦ norm_nonneg (f b ↑x)) (fun _ => h _ _ x.2) hu
+    apply Summable.of_nonneg_of_le (fun b ↦ norm_nonneg (f b ↑x)) (fun _ => h _ _ hx) hu
