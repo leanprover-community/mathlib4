@@ -83,6 +83,18 @@ instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
   exact ⟨y, congr(($hy).1)⟩
 
+@[simp]
+lemma range_eq_univ [Surjective f] : Set.range f.base = Set.univ := by
+  simpa [Set.range_eq_univ] using f.surjective
+
+lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) : Set.range f.base = Set.range g.base := by
+  rw [← hge]
+  simp [Set.range_comp]
+
+lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
+  rw [range_eq_range_of_surjective f g e hge]
 end Surjective
 
 section Injective
@@ -222,7 +234,7 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
   · introv hU _ hsp
     simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
     intro x y hy
-    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
     have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi

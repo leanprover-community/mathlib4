@@ -107,7 +107,7 @@ instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_me
 variable (S)
 
 /-- A subfield inherits a division ring structure -/
-instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
+instance (priority := 75) toDivisionRing (s : S) : DivisionRing s := fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K)
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -117,7 +117,7 @@ instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
-    Field s :=
+    Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K)
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -276,14 +276,14 @@ instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
 -- TODO: Those are just special cases of `SubfieldClass.toDivisionRing`/`SubfieldClass.toField`
-instance toDivisionRing (s : Subfield K) : DivisionRing s :=
+instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
-instance toField {K} [Field K] (s : Subfield K) : Field s :=
+instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)

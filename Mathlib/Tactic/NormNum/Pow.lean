@@ -19,7 +19,7 @@ the unused variable linter can not see usages of variables in
 set_option linter.unusedVariables false
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -235,9 +235,7 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
     IsRat (a^b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-#adaptation_note
-/--
-Prior to https://github.com/leanprover/lean4/pull/4096,
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
 the repeated
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩

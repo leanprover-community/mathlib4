@@ -38,7 +38,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
 
-open HurwitzZeta Complex Finset Classical ZMod Filter
+open HurwitzZeta Complex Finset ZMod Filter
 
 open scoped Real Topology
 
@@ -198,6 +198,7 @@ section gammaFactor
 
 omit [NeZero N] -- not required for these declarations
 
+open scoped Classical in
 /-- The Archimedean Gamma factor: `Gammaℝ s` if `χ` is even, and `Gammaℝ (s + 1)` otherwise. -/
 noncomputable def gammaFactor (χ : DirichletCharacter ℂ N) (s : ℂ) :=
   if χ.Even then Gammaℝ s else Gammaℝ (s + 1)
@@ -258,6 +259,7 @@ lemma LFunction_eq_completed_div_gammaFactor (χ : DirichletCharacter ℂ N) (s 
   · exact LFunction_eq_completed_div_gammaFactor_even hχ.to_fun _ (h.imp_right χ.map_zero')
   · apply LFunction_eq_completed_div_gammaFactor_odd hχ.to_fun
 
+open scoped Classical in
 /--
 Global root number of `χ` (for `χ` primitive; junk otherwise). Defined as
 `gaussSum χ stdAddChar / I ^ a / N ^ (1 / 2)`, where `a = 0` if even, `a = 1` if odd. (The factor
@@ -277,6 +279,7 @@ namespace IsPrimitive
 /-- **Functional equation** for primitive Dirichlet L-functions. -/
 theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrimitive χ) (s : ℂ) :
     completedLFunction χ (1 - s) = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s := by
+  classical
   -- First handle special case of Riemann zeta
   rcases eq_or_ne N 1 with rfl | hN
   · simp only [completedLFunction_modOne_eq, completedRiemannZeta_one_sub, Nat.cast_one, one_cpow,
@@ -334,7 +337,7 @@ noncomputable abbrev LFunctionTrivChar₁ : ℂ → ℂ :=
     (∏ p ∈ n.primeFactors, (1 - (p : ℂ)⁻¹))
 
 lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 := by
-  simp only [Function.update_same]
+  simp only [Function.update_self]
   refine Finset.prod_ne_zero_iff.mpr fun p hp ↦ ?_
   simpa only [ne_eq, sub_ne_zero, one_eq_inv, Nat.cast_eq_one]
     using (Nat.prime_of_mem_primeFactors hp).ne_one
@@ -345,7 +348,7 @@ lemma differentiable_LFunctionTrivChar₁ : Differentiable ℂ (LFunctionTrivCha
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all [hs]))
-   fun _ hs ↦ Function.update_noteq (Set.mem_diff_singleton.mp hs).2 ..,
+   fun _ hs ↦ Function.update_of_ne (Set.mem_diff_singleton.mp hs).2 ..,
     continuousWithinAt_compl_self.mp ?_⟩
   simpa only [continuousWithinAt_compl_self, continuousAt_update_same]
     using LFunctionTrivChar_residue_one
@@ -356,7 +359,7 @@ lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
   have H : deriv (LFunctionTrivChar₁ n) s =
       deriv (fun w ↦ (w - 1) * LFunctionTrivChar n w) s := by
     refine eventuallyEq_iff_exists_mem.mpr ?_ |>.deriv_eq
-    exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_noteq (Set.mem_setOf.mp hw) ..⟩
+    exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_of_ne (Set.mem_setOf.mp hw) ..⟩
   rw [H, deriv_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
     deriv_id'', one_mul, add_comm]
 
@@ -371,7 +374,7 @@ lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
     h.continuous.continuousOn fun w hw ↦ ?_).neg
   rcases eq_or_ne w 1 with rfl | hw'
   · exact LFunctionTrivChar₁_apply_one_ne_zero _
-  · rw [LFunctionTrivChar₁, Function.update_noteq hw', mul_ne_zero_iff]
+  · rw [LFunctionTrivChar₁, Function.update_of_ne hw', mul_ne_zero_iff]
     exact ⟨sub_ne_zero_of_ne hw', (Set.mem_setOf.mp hw).resolve_left hw'⟩
 
 end trivial

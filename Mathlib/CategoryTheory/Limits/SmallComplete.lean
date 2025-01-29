@@ -61,10 +61,10 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
         refine ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, ?_, ?_⟩⟩
         · intro f
           ext k
-          simp
+          simp [yp]
         · intro f
           ext ⟨j⟩
-          simp
+          simp [yp]
       · apply Cardinal.mk_le_of_injective _
         · intro f
           exact ⟨_, _, f⟩
