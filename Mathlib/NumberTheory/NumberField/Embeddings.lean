@@ -895,7 +895,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype (K ≃ₐ[k] K)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert even_zero
+  · convert Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -908,7 +908,7 @@ lemma even_finrank_of_not_isUnramified [IsGalois k K]
     (hw : ¬ IsUnramified k w) : Even (finrank k K) := by
   by_cases FiniteDimensional k K
   · exact IsGalois.card_aut_eq_finrank k K ▸ even_card_aut_of_not_isUnramified hw
-  · exact finrank_of_not_finite ‹_› ▸ even_zero
+  · exact finrank_of_not_finite ‹_› ▸ Even.zero
 
 lemma isUnramified_smul_iff :
     IsUnramified k (σ • w) ↔ IsUnramified k w := by
