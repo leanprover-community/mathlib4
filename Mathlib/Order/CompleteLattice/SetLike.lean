@@ -51,6 +51,7 @@ lemma mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 @[simp] lemma mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
 @[simp] lemma not_mem_bot : ¬ x ∈ (⊥ : L) := by simp [← mem_subtype]
 
-@[simp] lemma mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := Iff.rfl
+@[deprecated SetLike.mem_mk_set (since := "2025-01-29")]
+lemma mem_mk (U : Set X) (h : U ∈ L) : x ∈ (⟨U, h⟩ : L) ↔ x ∈ U := by simp
 
 end CompleteSublattice
