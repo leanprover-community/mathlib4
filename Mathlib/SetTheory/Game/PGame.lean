@@ -528,7 +528,7 @@ theorem not_lf {x y : PGame} : ¬x ⧏ y ↔ y ≤ x :=
   Classical.not_not
 
 theorem _root_.LE.le.not_gf {x y : PGame} : x ≤ y → ¬y ⧏ x :=
-  absurd
+  not_lf.2
 
 theorem LF.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
   id
