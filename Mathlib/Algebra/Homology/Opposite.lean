@@ -229,6 +229,7 @@ lemma quasiIsoAt_opFunctor_map_iff
   simp only [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor V c i).map φ)
 
+@[simp]
 lemma quasiIsoAt_unopFunctor_map_iff
     {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
