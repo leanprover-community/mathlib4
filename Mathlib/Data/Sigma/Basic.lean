@@ -50,12 +50,8 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
       | _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
     | _, _, _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun e₁ _ ↦ n e₁
 
--- sometimes the built-in injectivity support does not work
-@[simp]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
-    Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
-  ⟨fun h ↦ by cases h; simp,
-   fun ⟨h₁, h₂⟩ ↦ by subst h₁; rw [eq_of_heq h₂]⟩
+    Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ := by simp
 
 @[simp]
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
