@@ -73,3 +73,47 @@ theorem AnalyticOn.cpow (fs : AnalyticOn ℂ f s) (gs : AnalyticOn ℂ g s)
 theorem AnalyticOnNhd.cpow (fs : AnalyticOnNhd ℂ f s) (gs : AnalyticOnNhd ℂ g s)
     (m : ∀ z ∈ s, f z ∈ slitPlane) : AnalyticOnNhd ℂ (fun z ↦ f z ^ g z) s :=
   fun z n ↦ (fs z n).cpow (gs z n) (m z n)
+
+section ReOfReal
+
+variable {f : ℂ → ℂ} {s : Set ℝ} {x : ℝ}
+
+lemma AnalyticAt.re_ofReal (hf : AnalyticAt ℂ f x) :
+    AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
+  (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
+
+lemma AnalyticAt.im_ofReal (hf : AnalyticAt ℂ f x) :
+    AnalyticAt ℝ (fun x : ℝ ↦ (f x).im) x :=
+  (Complex.imCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
+
+lemma AnalyticWithinAt.re_ofReal (hf : AnalyticWithinAt ℂ f (ofReal '' s) x) :
+    AnalyticWithinAt ℝ (fun x : ℝ ↦ (f x).re) s x :=
+  ((Complex.reCLM.analyticWithinAt _ _).comp hf.restrictScalars (mapsTo_image f _)).comp
+    (Complex.ofRealCLM.analyticWithinAt _ _) (mapsTo_image ofReal s)
+
+lemma AnalyticWithinAt.im_ofReal (hf : AnalyticWithinAt ℂ f (ofReal '' s) x) :
+    AnalyticWithinAt ℝ (fun x : ℝ ↦ (f x).im) s x :=
+  ((Complex.imCLM.analyticWithinAt _ _).comp hf.restrictScalars (mapsTo_image f _)).comp
+    (Complex.ofRealCLM.analyticWithinAt _ _) (mapsTo_image ofReal s)
+
+lemma AnalyticOn.re_ofReal (hf : AnalyticOn ℂ f (ofReal '' s)) :
+    AnalyticOn ℝ (fun x : ℝ ↦ (f x).re) s :=
+  ((Complex.reCLM.analyticOn _).comp hf.restrictScalars (mapsTo_image f _)).comp
+    (Complex.ofRealCLM.analyticOn _) (mapsTo_image ofReal s)
+
+lemma AnalyticOn.im_ofReal (hf : AnalyticOn ℂ f (ofReal '' s)) :
+    AnalyticOn ℝ (fun x : ℝ ↦ (f x).im) s :=
+  ((Complex.imCLM.analyticOn _).comp hf.restrictScalars (mapsTo_image f _)).comp
+    (Complex.ofRealCLM.analyticOn _) (mapsTo_image ofReal s)
+
+lemma AnalyticOnNhd.re_ofReal (hf : AnalyticOnNhd ℂ f (ofReal '' s)) :
+    AnalyticOnNhd ℝ (fun x : ℝ ↦ (f x).re) s :=
+  ((Complex.reCLM.analyticOnNhd _).comp hf.restrictScalars (mapsTo_image f _)).comp
+    (Complex.ofRealCLM.analyticOnNhd _) (mapsTo_image ofReal s)
+
+lemma AnalyticOnNhd.im_ofReal (hf : AnalyticOnNhd ℂ f (ofReal '' s)) :
+    AnalyticOnNhd ℝ (fun x : ℝ ↦ (f x).im) s :=
+  ((Complex.imCLM.analyticOnNhd _).comp hf.restrictScalars (mapsTo_image f _)).comp
+    (Complex.ofRealCLM.analyticOnNhd _) (mapsTo_image ofReal s)
+
+end ReOfReal
