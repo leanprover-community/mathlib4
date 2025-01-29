@@ -141,7 +141,7 @@ theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
 
 /-- The bundled monoid giving the colimit of a diagram. -/
 def colimit : MonCat :=
-  ⟨ColimitType F, by infer_instance⟩
+  of (ColimitType F)
 
 /-- The function from a given monoid in the diagram to the colimit monoid. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=

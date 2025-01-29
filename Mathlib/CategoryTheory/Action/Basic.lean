@@ -52,10 +52,10 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) :=
   { toFun g :=
       { hom := A.ρ g
         inv := A.ρ (g⁻¹ : G)
-        hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
-        inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
-    map_one' := Aut.ext A.ρ.map_one
-    map_mul' x y := Aut.ext (A.ρ.map_mul x y) }
+        hom_inv_id := (A.ρ.hom.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
+        inv_hom_id := (A.ρ.hom.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
+    map_one' := Aut.ext A.ρ.hom.map_one
+    map_mul' x y := Aut.ext (A.ρ.hom.map_mul x y) }
 
 -- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
 -- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
@@ -106,6 +106,8 @@ instance (M : Action V G) : Inhabited (Action.Hom M M) :=
 @[simps]
 def comp {M N K : Action V G} (p : Action.Hom M N) (q : Action.Hom N K) : Action.Hom M K where
   hom := p.hom ≫ q.hom
+  -- TODO: `simp` doesn't pick up `comm` unless we elaborate it manually:
+  comm := by intros g; simp [(comm)]
 
 end Hom
 
@@ -171,8 +173,8 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
     { obj := fun _ => M.V
       map := fun g => M.ρ g
-      map_id := fun _ => M.ρ.map_one
-      map_comp := fun g h => M.ρ.map_mul h g }
+      map_id := fun _ => M.ρ.hom.map_one
+      map_comp := fun g h => M.ρ.hom.map_mul h g }
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ g => f.comm g }
@@ -182,7 +184,7 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
 def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
     { V := F.obj PUnit.unit
-      ρ :=
+      ρ := MonCat.ofHom
         { toFun := fun g => F.map g
           map_one' := F.map_id PUnit.unit
           map_mul' := fun g h => F.map_comp h g } }
@@ -276,8 +278,8 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
-        forget_obj, Iso.refl_hom, Category.comp_id]
+      simp only [MonCat.hom_one, MonoidHom.one_apply, MonCat.one_of, End.one_def,
+        Functor.comp_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
@@ -326,12 +328,12 @@ the categories of `G`-actions within those categories. -/
 def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
-      ρ :=
+      ρ := MonCat.ofHom
         { toFun := fun g => F.map (M.ρ g)
-          map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id, MonCat.one_of]
+          map_one' := by simp
           map_mul' := fun g h => by
             dsimp
-            rw [map_mul, MonCat.mul_of, End.mul_def, End.mul_def, F.map_comp] } }
+            rw [map_mul, MonCat.mul_of, End.mul_def, F.map_comp] } }
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }

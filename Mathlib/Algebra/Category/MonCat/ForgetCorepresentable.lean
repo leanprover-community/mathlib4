@@ -58,26 +58,26 @@ end AddMonoidHom
 def MonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget MonCat.{u} :=
   (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
-    (MonoidHom.fromULiftMultiplicativeNatEquiv M.α)).toIso))
+    (MonoidHom.fromULiftMultiplicativeNatEquiv M.carrier)).toIso))
 
 
 /-- The forgetful functor `CommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def CommMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget CommMonCat.{u} :=
   (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
-    (MonoidHom.fromULiftMultiplicativeNatEquiv M.α)).toIso))
+    (MonoidHom.fromULiftMultiplicativeNatEquiv M.carrier)).toIso))
 
 /-- The forgetful functor `AddMonCat.{u} ⥤ Type u` is corepresentable. -/
 def AddMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddMonCat.{u} :=
   (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
-    (AddMonoidHom.fromULiftNatEquiv M.α)).toIso))
+    (AddMonoidHom.fromULiftNatEquiv M.carrier)).toIso))
 
 /-- The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def AddCommMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddCommMonCat.{u} :=
   (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
-    (AddMonoidHom.fromULiftNatEquiv M.α)).toIso))
+    (AddMonoidHom.fromULiftNatEquiv M.carrier)).toIso))
 
 instance MonCat.forget_isCorepresentable :
     (forget MonCat.{u}).IsCorepresentable :=
