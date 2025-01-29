@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Extension.Basic
+--import Mathlib.Algebra.Lie.InvariantForm
+--import Mathlib.Algebra.Lie.Extension.Basic
 import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
