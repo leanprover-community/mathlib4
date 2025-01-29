@@ -947,9 +947,8 @@ theorem localizationToStalk_stalkSpecializes {R : Type*} [CommRing R] {x y : Pri
         StructureSheaf.localizationToStalk R x := by
   ext : 1
   apply IsLocalization.ringHom_ext (S := Localization.AtPrime y.asIdeal) y.asIdeal.primeCompl
-  erw [RingHom.comp_assoc]
-  conv_rhs => erw [RingHom.comp_assoc]
-  dsimp [CommRingCat.ofHom, localizationToStalk, PrimeSpectrum.localizationMapOfSpecializes]
+  rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_comp, RingHom.comp_assoc]
+  dsimp [localizationToStalk, PrimeSpectrum.localizationMapOfSpecializes]
   rw [IsLocalization.lift_comp, IsLocalization.lift_comp, IsLocalization.lift_comp]
   exact CommRingCat.hom_ext_iff.mp (toStalk_stalkSpecializes h)
 
