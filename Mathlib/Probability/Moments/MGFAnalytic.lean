@@ -18,6 +18,9 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
   on which it is defined.
 * `iteratedDeriv_mgf`: the n-th derivative of the mgf at `t` is `μ[X ^ n * exp (t * X)]`.
 
+* `analyticOn_cgf`: the cumulant generating function is analytic on the interior of the interval
+  `integrableExpSet X μ`.
+
 -/
 
 
@@ -28,8 +31,6 @@ open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology Nat
 namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
-
-section Deriv
 
 /-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `x ↦ μ[X ^ n * rexp (x * X)]` at `t` is `μ[X ^ (n + 1) * rexp (t * X)]`. -/
@@ -47,6 +48,8 @@ lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSe
     filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'
   rw [← EventuallyEq.hasDerivAt_iff (h_re _), ← h_re_of_mem _ t ht]
   exact (hasDerivAt_integral_pow_mul_exp (by simp [ht]) n).real_of_complex
+
+section DerivMGF
 
 /-- For `t ∈ interior (integrableExpSet X μ)`, the derivative of `mgf X μ` at `t` is
 `μ[X * exp (t * X)]`. -/
@@ -94,9 +97,9 @@ lemma deriv_mgf (h : t ∈ interior (integrableExpSet X μ)) :
 lemma deriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) : deriv (mgf X μ) 0 = μ[X] := by
   simp [deriv_mgf h]
 
-end Deriv
+end DerivMGF
 
-section Analytic
+section AnalyticMGF
 
 /-- The moment generating function is analytic at every `t ∈ interior (integrableExpSet X μ)`. -/
 lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
@@ -138,9 +141,9 @@ lemma differentiableAt_iterated_deriv_mgf (hv : v ∈ interior (integrableExpSet
     DifferentiableAt ℝ (deriv^[n] (mgf X μ)) v :=
   (analyticAt_iterated_deriv_mgf hv n).differentiableAt
 
-end Analytic
+end AnalyticMGF
 
-section CGFDeriv
+section AnalyticCGF
 
 lemma analyticAt_cgf (h : v ∈ interior (integrableExpSet X μ)) : AnalyticAt ℝ (cgf X μ) v := by
   by_cases hμ : μ = 0
@@ -151,8 +154,14 @@ lemma analyticAt_cgf (h : v ∈ interior (integrableExpSet X μ)) : AnalyticAt �
 lemma analyticOnNhd_cgf : AnalyticOnNhd ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   fun _ hx ↦ analyticAt_cgf hx
 
+/-- The cumulant generating function is analytic on the interior of the interval
+  `integrableExpSet X μ`. -/
 lemma analyticOn_cgf : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   analyticOnNhd_cgf.analyticOn
+
+end AnalyticCGF
+
+section DerivCGF
 
 lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     deriv (cgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by
@@ -174,7 +183,7 @@ lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
 lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
     deriv (cgf X μ) 0 = μ[X] / (μ Set.univ).toReal := by simp [deriv_cgf h]
 
-lemma iteratedDeriv_two_cgf' (h : v ∈ interior (integrableExpSet X μ)) :
+lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω)^2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
@@ -211,13 +220,13 @@ lemma iteratedDeriv_two_cgf' (h : v ∈ interior (integrableExpSet X μ)) :
     convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
     simp
 
-lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
+lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
   · have : deriv (0 : ℝ → ℝ) = 0 := by ext; exact deriv_const _ 0
     simp [hμ, this, iteratedDeriv_succ]
-  rw [iteratedDeriv_two_cgf' h]
+  rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * rexp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * rexp (v * X ω) ∂μ - 2 * (∫ ω, X ω * rexp (v * X ω) ∂μ) * deriv (cgf X μ) v
       + deriv (cgf X μ) v ^ 2 * mgf X μ v) / mgf X μ v := by
@@ -251,6 +260,6 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     congr with ω
     ring
 
-end CGFDeriv
+end DerivCGF
 
 end ProbabilityTheory
