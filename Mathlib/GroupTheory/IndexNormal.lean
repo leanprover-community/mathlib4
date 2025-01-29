@@ -39,17 +39,8 @@ theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
   infer_instance
 
 /-- A subgroup of index 2 is normal (does not require finiteness of G) -/
-theorem normal_of_index_eq_two (hH : H.index = 2) :
-    H.Normal := by
-  obtain ⟨a, ha⟩ := index_eq_two_iff.mp hH
-  have ha1 : ∀ b, b * a ∈ H ↔ ¬ b ∈ H := by simpa only [xor_iff_iff_not] using ha
-  have ha2 : ∀ b, ¬ b * a ∈ H ↔ b ∈ H := by simpa only [xor_iff_not_iff'] using ha
-  refine ⟨fun b hb c ↦ ?_⟩
-  by_cases hc : c ∈ H
-  · exact H.mul_mem (H.mul_mem hc hb) (H.inv_mem hc)
-  rw [← ha1, ← H.inv_mem_iff] at hc
-  rw [← H.inv_mem_iff, ← ha2, ← H.inv_mem_iff, ← ha1] at hb
-  simpa [mul_assoc] using H.mul_mem (H.inv_mem hc) (H.mul_mem hb hc)
+theorem normal_of_index_eq_two (hH : H.index = 2) : H.Normal where
+  conj_mem x hxH g := by simp_rw [mul_mem_iff_of_index_two hH, hxH, iff_true, inv_mem_iff]
 
 /-- A subgroup of a finite group whose index is the smallest prime factor is normal
 
