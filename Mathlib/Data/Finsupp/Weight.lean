@@ -99,8 +99,8 @@ theorem weight_single_one_apply (s : σ) (f : σ →₀ R) :
   rw [weight_single_index, smul_eq_mul, mul_one]
 
 theorem weight_single (s : σ) (r : R) :
-    weight w (Finsupp.single s r) = r • w s := by
-  simp only [weight_apply, zero_smul, sum_single_index]
+    weight w (Finsupp.single s r) = r • w s :=
+  Finsupp.linearCombination_single _ _ _
 
 variable (R) in
 /-- A weight function is nontorsion if its values are not torsion. -/
