@@ -99,7 +99,7 @@ structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
   hom : ContinuousAddMonoidHom A B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
-@[ext, to_additive]
+@[to_additive (attr := ext) existing]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   private mk ::
   /-- The underlying `ContinuousMonoidHom`. -/
@@ -118,13 +118,13 @@ instance : Category ProfiniteGrp where
   id A := ⟨ContinuousMonoidHom.id A⟩
   comp f g := ⟨g.hom.comp f.hom⟩
 
-/-- Typecheck an `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
-abbrev ProfiniteAddGrp.ofHom {X Y: Type u} [AddGroup X] [TopologicalSpace X] [TopologicalAddGroup X]
-    [CompactSpace X] [TotallyDisconnectedSpace X] [AddGroup Y] [TopologicalSpace Y]
-    [TopologicalAddGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]
+/-- Typecheck a `ContinuousAddMonoidHom` as a morphism in `ProfiniteAddGrp`. -/
+abbrev ProfiniteAddGrp.ofHom {X Y : Type u} [AddGroup X] [TopologicalSpace X]
+    [TopologicalAddGroup X] [CompactSpace X] [TotallyDisconnectedSpace X] [AddGroup Y]
+    [TopologicalSpace Y] [TopologicalAddGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]
     (f : ContinuousAddMonoidHom X Y) : ProfiniteAddGrp.of X ⟶ ProfiniteAddGrp.of Y := ⟨f⟩
 
-/-- Typecheck an `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
+/-- Typecheck a `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
 @[to_additive existing]
 abbrev ProfiniteGrp.ofHom {X Y: Type u} [Group X] [TopologicalSpace X] [TopologicalGroup X]
     [CompactSpace X] [TotallyDisconnectedSpace X] [Group Y] [TopologicalSpace Y]
