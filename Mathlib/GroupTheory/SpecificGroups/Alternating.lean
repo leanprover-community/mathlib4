@@ -32,8 +32,6 @@ consisting of the even permutations.
   The proof shows that the normal closure of any non-identity element of this group contains a
   3-cycle.
 
-* `alternatingGroup.isCharacteristic` shows that the alternating group is characteristic
-
 * `EquivPerm.is_alternatingGroup_of_index_eq_two` shows that a subgroup of index 2
   of `Equiv.Perm α` is the alternating group.
 
@@ -355,47 +353,6 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
 
-/-- The alternating group is a characteristic subgroup -/
-theorem isCharacteristic : (alternatingGroup α).Characteristic := by
-  cases' subsingleton_or_nontrivial α with hα hα
-  -- hα : subsingleton α
-  · convert Subgroup.botCharacteristic
-    apply eq_bot_of_subsingleton
-  -- hα : nontrivial α
-  apply Subgroup.Characteristic.mk
-  intro e
-  rw [alternatingGroup_eq_sign_ker, MonoidHom.comap_ker]
-  set s := sign.comp e.toMonoidHom with s_def
-  have hs : Function.Surjective s :=  by
-    simp only [s_def, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
-      EquivLike.surjective_comp]
-    exact Equiv.Perm.sign_surjective α
-  obtain ⟨g', hg'⟩ := hs (-1)
-  have hg' : s g' ≠ 1 := by
-    rw [hg', ← bne_iff_ne]
-    rfl
-  apply congr_arg
-  ext g
-  simp only [s_def, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom, Function.comp_apply]
-  apply congr_arg
-  refine swap_induction_on g ?_ ?_
-  · rw [map_one, sign.map_one]
-  · intro f x y hxy hf
-    simp only [map_mul, hf]
-    apply congr_arg₂ _ _ rfl
-    revert x y hxy
-    by_contra h
-    push_neg at h
-    obtain ⟨a, b, hab, hk⟩ := h
-    rw [sign_swap hab] at hk
-    let hk := Or.resolve_right (Int.units_eq_one_or (s _)) hk
-    apply hg'
-    refine swap_induction_on g' s.map_one ?_
-    intro f x y hxy hf
-    rw [s.map_mul, hf, mul_one]
-    obtain ⟨u, hu⟩ := isConj_swap hxy hab
-    apply mul_left_cancel (a := s u)
-    rw [← s.map_mul, SemiconjBy.eq hu, s.map_mul, hk, mul_one, one_mul]
 
 end alternatingGroup
 
