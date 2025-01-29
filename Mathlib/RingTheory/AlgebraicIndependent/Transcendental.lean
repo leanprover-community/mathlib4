@@ -97,9 +97,9 @@ theorem algebraicIndependent_of_finite_type'
 /-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite' (s : Set A)
     (hinj : Injective (algebraMap R A))
-    (H : ∀ t ⊆ s, t.Finite → AlgebraicIndependent R ((↑) : t → A) →
+    (H : ∀ t ⊆ s, t.Finite → t.AlgebraicIndependent R →
       ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
-    AlgebraicIndependent R ((↑) : s → A) :=
+    s.AlgebraicIndependent R :=
   algebraicIndependent_of_finite_type' hinj fun t hfin h i hi ↦ H _
     (by rintro _ ⟨x, _, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
     (mt Subtype.val_injective.mem_set_image.mp hi)
