@@ -6,6 +6,15 @@ Authors: Arthur Paulino
 
 import Cache.Requests
 
+/-!
+
+## Technical notes
+
+It looks like the Lean search-path `addSearchPathFromEnv {}` cannot be used
+because we might call `lake exe cache` before files are built.
+-/
+
+
 def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
@@ -35,14 +44,13 @@ Commands:
 
 # The arguments for 'get', 'get!' and 'get-'
 
-'get', 'get!' and 'get-' can process a list of paths, allowing the user to be more
-specific about what should be downloaded. For example, with automatic glob
-expansion in shell, one can call:
+'get', 'get!' and 'get-' can process a list of module names, allowing the user to be more
+specific about what should be downloaded. For example, one can call:
 
-$ lake exe cache get Mathlib/Algebra/Field/*.lean Mathlib/Data/*.lean
+$ lake exe cache get Mathlib.Algebra.Field.Basic Mathlib.Data
 
 Which will download the cache for:
-* Every Lean file inside 'Mathlib/Algebra/Field/'
+* The file 'Mathlib/Algebra/Field/Basic.lean'
 * Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
@@ -65,36 +73,45 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
+open Lean System in
+
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
     println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
     Process.exit 1
+  CacheM.run do
   -- We pass any following arguments to `getHashMemo`,
   -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots := match args with
-  | [] => #[]
-  | _ :: t => t.toArray.map FilePath.mk
+  let mut extraRoots : Std.HashMap Lean.Name FilePath ← parseArgs args
+  if extraRoots.isEmpty then do
+    -- No arguments means to start from `Mathlib.lean`
+    -- TODO: change this to the default-target of a downstream project
+    let mod := `Mathlib
+    let sp := (← read).searchPath
+    let sourceFile ← Lean.findLean sp mod
+    extraRoots := Std.HashMap.empty.insert mod sourceFile
+  dbg_trace extraRoots.keys
+
   if args.isEmpty then
     println help
     Process.exit 0
-  CacheM.run do
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
+  let pathMap := hashMemo.pathMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
-  let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
+  let get (force := false) (decompress := true) := do
     getFiles hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
-    packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
+    packCache hashMap pathMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
-  | "get"  :: args => get args
-  | "get!" :: args => get args (force := true)
-  | "get-" :: args => get args (decompress := false)
+  | "get"  :: _ => get
+  | "get!" :: _ => get (force := true)
+  | "get-" :: _ => get (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
@@ -113,5 +130,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (toPaths args)
+  | "lookup" :: args => lookup hashMap (args.map String.toName) -- TODO: check lookup features are kept
   | _ => println help
