@@ -5,9 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Order.Disjoint
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Order.Disjoint
 
 /-!
 # Canonical homomorphism from a pair of monoids
