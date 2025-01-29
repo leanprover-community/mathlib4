@@ -163,12 +163,10 @@ theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp
 theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 
 /-- `nim 1` has exactly the same moves as `star`. -/
-lemma nim_one : nim.{u} 1 ≡ star.{u} := by
+lemma nim_one : nim 1 ≡ star := by
   refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
-  · simp_rw [memₗ_def, nim_one_moveLeft, Unique.exists_iff, star_moveLeft]
-    exact Identical.congr_right nim_zero
-  · simp_rw [memᵣ_def, nim_one_moveRight, Unique.exists_iff, star_moveRight]
-    exact Identical.congr_right nim_zero
+  · simpa [memₗ_def, Unique.exists_iff] using nim_zero.congr_right
+  · simpa [memᵣ_def, Unique.exists_iff] using nim_zero.congr_right
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nim_one.equiv

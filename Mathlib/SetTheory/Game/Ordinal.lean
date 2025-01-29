@@ -101,10 +101,9 @@ theorem to_leftMoves_one_toPGame_symm (i) :
 theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 
 /-- `1.toPGame` has the same moves as `1`. -/
-lemma one_toPGame : toPGame.{u} 1 ≡ (1 : PGame.{u}) := by
+lemma one_toPGame : toPGame 1 ≡ (1 : PGame) := by
   refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
-  · simp_rw [memₗ_def, one_toPGame_moveLeft, Unique.exists_iff]
-    exact Identical.congr_right zero_toPGame
+  · simpa [memₗ_def, Unique.exists_iff] using zero_toPGame.congr_right
   · simp [memᵣ_def]
 
 theorem toPGame_one : toPGame 1 ≈ 1 :=
