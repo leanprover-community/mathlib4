@@ -438,15 +438,12 @@ theorem alternatingGroup_le_of_index_le_two
 
 end Equiv.Perm
 
-theorem alternatingGroup.isCharacteristic :
-    (alternatingGroup α).Characteristic := by
+theorem alternatingGroup.isCharacteristic : (alternatingGroup α).Characteristic := by
   cases' subsingleton_or_nontrivial α with hα hα
-  -- hα : subsingleton α
   · convert Subgroup.botCharacteristic
     apply eq_bot_of_subsingleton
   · apply Characteristic.mk
     intro Φ
     apply is_alternatingGroup_of_index_eq_two
-    rw [Subgroup.index_comap, MulEquiv.toMonoidHom_eq_coe]
-    sorry
-
+    rw [index_comap, MonoidHom.range_eq_top.mpr Φ.surjective, relindex_top_right,
+      alternatingGroup_index]
