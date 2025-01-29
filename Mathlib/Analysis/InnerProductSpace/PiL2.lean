@@ -118,7 +118,6 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
   let n := e.getElems.size
   `((WithLp.equiv $p <| ∀ _ : Fin $(quote n), _).symm ![$e,*])
 
-set_option trace.debug true in
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
 @[app_delab DFunLike.coe]
 def EuclideanSpace.delabVecNotation : Delab :=
