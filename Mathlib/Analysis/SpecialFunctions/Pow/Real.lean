@@ -1103,12 +1103,9 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives. -/
 set_option linter.unusedVariables false
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/

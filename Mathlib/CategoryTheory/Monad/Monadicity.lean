@@ -79,12 +79,8 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{ f : F.obj A.A ⟶ B // _ }`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+The new unused variable linter flags `{ f : F.obj A.A ⟶ B // _ }`. -/
 set_option linter.unusedVariables false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison

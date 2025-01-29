@@ -1669,11 +1669,9 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note
-/--
+#adaptation_note /-- nightly-2024-07-27
 This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27.
--/
+The prime should be removed at nightly-2024-07-27. -/
 @[simp]
 theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset

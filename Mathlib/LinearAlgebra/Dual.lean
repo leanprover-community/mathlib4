@@ -1712,9 +1712,7 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
     fun _ ↦ by
-      #adaptation_note
-      /--
-      After https://github.com/leanprover/lean4/pull/4119
+      #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
       the `Free K W` instance isn't found unless we use `set_option maxSynthPendingDepth 2`, or add
       explicit instances:
       ```
