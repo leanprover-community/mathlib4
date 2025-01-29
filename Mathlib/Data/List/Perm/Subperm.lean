@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Batteries.Data.List.Pairwise
 import Batteries.Data.List.Perm
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 
 /-!
 # List Sub-permutations
