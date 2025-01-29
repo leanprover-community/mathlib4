@@ -410,7 +410,7 @@ When `β` is equipped with a partial order, `C_c(α, β)` is given the pointwise
 variable {β : Type*} [TopologicalSpace β] [Zero β]
 
 instance partialOrder [PartialOrder β] : PartialOrder C_c(α, β) :=
-  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
+  PartialOrder.lift (fun f => \u=f) (fun f g _ => by aesop)
 
 theorem le_def [PartialOrder β] {f g : C_c(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
   Pi.le_def
