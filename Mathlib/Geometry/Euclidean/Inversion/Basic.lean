@@ -40,7 +40,6 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl
@@ -194,7 +193,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   rw [dist_inversion_inversion hb hd, dist_inversion_inversion hb hc,
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
-  rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
+  rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
   convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
 
 end EuclideanGeometry
