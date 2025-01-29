@@ -12,7 +12,7 @@ import Mathlib.Algebra.Equiv.TransferInstance
 A preadditive structure on a category `D` transfers to a preadditive structure on `C` for a given
 fully faithful functor `F : C ⥤ D`.
 -/
-namespace CategoryTheory.Preadditive
+namespace CategoryTheory
 
 open Limits
 
@@ -22,6 +22,9 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D] [Preadditive D]
 variable {F : C ⥤ D} (hF : F.FullyFaithful)
 
+namespace Preadditive
+
+
 /-- If `D` is a preadditive category, any fully faithful functor `F : C ⥤ D` induces a preadditive
 structure on `C`. -/
 def ofFullyFaithful : Preadditive C where
@@ -29,10 +32,32 @@ def ofFullyFaithful : Preadditive C where
   add_comp P Q R f f' g := hF.map_injective (by simp [Equiv.add_def])
   comp_add P Q R f g g' := hF.map_injective (by simp [Equiv.add_def])
 
-instance additive_ofFullyFaithful :
-    letI : Preadditive C := ofFullyFaithful hF
+end Preadditive
+
+open Preadditive
+namespace Functor.FullyFaithful
+
+/-- The preadditive structure on `C` induced by a fully faithful functor `F : C ⥤ D` makes `F` an
+additive functor. -/
+lemma additive_ofFullyFaithful :
+    letI : Preadditive C := Preadditive.ofFullyFaithful hF
     F.Additive :=
-  letI : Preadditive C := ofFullyFaithful hF
+  letI : Preadditive C := Preadditive.ofFullyFaithful hF
   { map_add := by simp [Equiv.add_def] }
 
-end CategoryTheory.Preadditive
+end Functor.FullyFaithful
+
+namespace Equivalence
+
+/-- The preadditive structure on `C` induced by an equivalence `e : C ≌ D` makes `e.inverse` an
+additive functor. -/
+lemma additive_inverse_of_FullyFaithful (e : C ≌ D) :
+    letI : Preadditive C := ofFullyFaithful e.fullyFaithfulFunctor
+    e.inverse.Additive :=
+  letI : Preadditive C := ofFullyFaithful e.fullyFaithfulFunctor
+  letI : e.functor.Additive := e.fullyFaithfulFunctor.additive_ofFullyFaithful
+  e.inverse_additive
+
+end Equivalence
+
+end CategoryTheory

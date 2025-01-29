@@ -203,11 +203,14 @@ lemma inverse_map_add {P Q : ShrinkHoms C} (f g : P ⟶ Q) :
 
 variable (C)
 
-noncomputable instance preadditive : Preadditive.{w} (ShrinkHoms C) :=
+instance preadditive : Preadditive.{w} (ShrinkHoms C) :=
   .ofFullyFaithful (equivalence C).fullyFaithfulInverse
 
+instance : (inverse C).Additive :=
+  (equivalence C).symm.fullyFaithfulFunctor.additive_ofFullyFaithful
+
 instance : (functor C).Additive :=
-  inferInstanceAs (equivalence C).symm.inverse.Additive
+  (equivalence C).symm.additive_inverse_of_FullyFaithful
 
 instance hasLimitsOfShape (J : Type*) [Category J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
