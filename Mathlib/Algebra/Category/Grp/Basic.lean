@@ -26,12 +26,14 @@ open CategoryTheory
 
 /-- The category of additive groups and group morphisms. -/
 structure AddGrp : Type (u + 1) where
+  /-- The underlying type. -/
   (carrier : Type u)
   [str : AddGroup carrier]
 
 /-- The category of groups and group morphisms. -/
 @[to_additive]
 structure Grp : Type (u + 1) where
+  /-- The underlying type. -/
   (carrier : Type u)
   [str : Group carrier]
 
@@ -50,11 +52,8 @@ instance : CoeSort Grp (Type u) :=
 attribute [coe] AddGrp.carrier Grp.carrier
 
 /-- Construct a bundled `Grp` from the underlying type and typeclass. -/
-@[to_additive]
+@[to_additive "Construct a bundled `AddGrp` from the underlying type and typeclass."]
 abbrev of (M : Type u) [Group M] : Grp := ⟨M⟩
-
-/-- Construct a bundled `AddGrp` from the underlying type and typeclass. -/
-add_decl_doc AddGrp.of
 
 end Grp
 
@@ -88,20 +87,14 @@ instance : ConcreteCategory Grp (· →* ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `Grp` back into a `MonoidHom`. -/
-@[to_additive]
+@[to_additive "Turn a morphism in `AddGrp` back into an `AddMonoidHom`."]
 abbrev Hom.hom {X Y : Grp.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Grp) f
 
-/-- Turn a morphism in `AddGrp` back into an `AddMonoidHom`. -/
-add_decl_doc AddGrp.Hom.hom
-
 /-- Typecheck a `MonoidHom` as a morphism in `Grp`. -/
-@[to_additive]
+@[to_additive "Typecheck an `AddMonoidHom` as a morphism in `AddGrp`. "]
 abbrev ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Grp) f
-
-/-- Typecheck an `AddMonoidHom` as a morphism in `AddGrp`. -/
-add_decl_doc AddGrp.ofHom
 
 variable {R} in
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -244,12 +237,14 @@ end Grp
 
 /-- The category of additive groups and group morphisms. -/
 structure AddCommGrp : Type (u + 1) where
+  /-- The underlying type. -/
   (carrier : Type u)
   [str : AddCommGroup carrier]
 
 /-- The category of groups and group morphisms. -/
 @[to_additive]
 structure CommGrp : Type (u + 1) where
+  /-- The underlying type. -/
   (carrier : Type u)
   [str : CommGroup carrier]
 
@@ -271,11 +266,8 @@ instance : CoeSort CommGrp (Type u) :=
 attribute [coe] AddCommGrp.carrier CommGrp.carrier
 
 /-- Construct a bundled `CommGrp` from the underlying type and typeclass. -/
-@[to_additive]
+@[to_additive "Construct a bundled `AddCommGrp` from the underlying type and typeclass."]
 abbrev of (M : Type u) [CommGroup M] : CommGrp := ⟨M⟩
-
-/-- Construct a bundled `AddCommGrp` from the underlying type and typeclass. -/
-add_decl_doc AddCommGrp.of
 
 end CommGrp
 
@@ -309,23 +301,17 @@ instance : ConcreteCategory CommGrp (· →* ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `CommGrp` back into a `MonoidHom`. -/
-@[to_additive]
+@[to_additive "Turn a morphism in `AddCommGrp` back into an `AddMonoidHom`."]
 abbrev Hom.hom {X Y : CommGrp.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := CommGrp) f
 
-/-- Turn a morphism in `AddCommGrp` back into an `AddMonoidHom`. -/
-add_decl_doc AddCommGrp.Hom.hom
-
 /-- Typecheck a `MonoidHom` as a morphism in `CommGrp`. -/
-@[to_additive]
+@[to_additive "Typecheck an `AddMonoidHom` as a morphism in `AddCommGrp`. "]
 abbrev ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommGrp) f
 
-/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrp`. -/
-add_decl_doc AddCommGrp.ofHom
-
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-@[to_additive]
+@[to_additive "Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas."]
 def Hom.Simps.hom (X Y : CommGrp.{u}) (f : Hom X Y) :=
   f.hom
 
