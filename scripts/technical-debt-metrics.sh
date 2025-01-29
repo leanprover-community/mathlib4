@@ -90,7 +90,8 @@ for i in ${!titlesPathsAndRegexes[@]}; do
   # loop on every 3rd entry and name that entry and the following two
   if (( i % 3 == 0 )); then
     title="${titlesPathsAndRegexes[$i]}"
-    # Here we perform word-splitting on the array entries.
+    # Here we perform word-splitting: `pathspec` is an array whose entries are the "words" in
+    # the string `"${titlesPathsAndRegexes[$(( i + 1 ))]}"`.
     read -r -a pathspec <<< "${titlesPathsAndRegexes[$(( i + 1 ))]}"
     regex="${titlesPathsAndRegexes[$(( i + 2 ))]}"
     if [ "${title}" == "porting notes" ]
