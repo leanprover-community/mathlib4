@@ -121,4 +121,126 @@ lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
 
 end Analytic
 
+section GeneratingFunctionDerivatives
+
+variable {X : Ω → ℝ}
+
+lemma integrable_expt_bound [IsFiniteMeasure μ] {t a b : ℝ} (hX : AEMeasurable X μ)
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    Integrable (fun ω ↦ exp (t * (X ω))) μ := by
+  cases lt_trichotomy t 0 with
+  | inr ht => cases ht with
+    | inr ht => exact integrable_exp_mul_of_le t b ht.le hX (h.mono fun ω h ↦ h.2)
+    | inl ht => rw [ht]; simp only [zero_mul, exp_zero, integrable_const]
+  | inl ht =>
+    rw [(by ext ω; rw [(by ring : - t * (- X ω) = t * X ω)] :
+      (fun ω ↦ rexp (t * X ω)) = (fun ω ↦ rexp (- t * (- X ω))))]
+    apply integrable_exp_mul_of_le (-t) _ _ hX.neg
+    · filter_upwards [h] with ω h using neg_le_neg h.1
+    · linarith
+
+lemma tilt_var_bound [IsProbabilityMeasure μ] (a b t : ℝ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b)
+    (hX : AEMeasurable X μ) :
+    variance X (μ.tilted (fun ω ↦ t * X ω)) ≤ ((b - a) / 2) ^ 2 := by
+  have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
+    isProbabilityMeasure_tilted (integrable_expt_bound hX h)
+  exact variance_le_sq_of_bounded
+    ((tilted_absolutelyContinuous μ fun ω ↦ t * X ω) h)
+    (hX.mono_ac (tilted_absolutelyContinuous μ fun ω ↦ t * X ω))
+
+lemma integrableExpSet_eq_univ_of_mem_Icc [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
+    (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    integrableExpSet X μ = Set.univ := by
+  ext t
+  simp only [Set.mem_univ, iff_true]
+  exact integrable_expt_bound hX h
+
+theorem integral_tilted' [IsFiniteMeasure μ] (t : ℝ) (f : ℝ → ℝ) :
+    (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ f (X ω)] =
+    (μ[fun ω ↦ rexp (t * X ω) * f (X ω)]) / mgf X μ t := by
+  rw [MeasureTheory.integral_tilted, ← integral_div]
+  simp only [smul_eq_mul, mgf]
+  congr with ω
+  ring
+
+/-! ### Derivatives of cumulant-/
+
+/-- First derivative of cumulant `cgf X μ f`.
+It can be described by exponential tilting.-/
+theorem cgf_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
+    {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (t : ℝ) :
+    HasDerivAt (cgf X μ) ((μ.tilted (fun ω ↦ t * X ω))[X]) t := by
+  have r0 : ((μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ id (X ω)]) =
+      μ[fun ω ↦ rexp (t * X ω) * id (X ω)] / μ[fun ω ↦ rexp (t * X ω)] :=
+    integral_tilted' t id
+  simp only [id_eq] at r0
+  rw [r0]
+  apply HasDerivAt.log ?_ (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
+  convert hasDerivAt_mgf _ using 1
+  · simp_rw [mul_comm]
+  · simp [integrableExpSet_eq_univ_of_mem_Icc _ _ hX h]
+
+/-- Second derivative of cumulant `cgf X μ f`-/
+theorem cgf_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
+    {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    let g' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X];
+    let g'' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X ^ 2] - (μ.tilted (fun ω ↦ t * X ω))[X] ^ 2;
+    ∀ x : ℝ, HasDerivAt g' (g'' x) x := by
+  intro g' g'' t
+  have r0 : (fun t ↦ ((μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ id (X ω)])) =
+    fun t ↦ μ[fun ω ↦ rexp (t * X ω) * id (X ω)] / μ[fun ω ↦ rexp (t * X ω)] := by
+    ext t
+    exact integral_tilted' t id
+  have r01 : (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ id (X ω)]  =
+    μ[fun ω ↦ rexp (t * X ω) * id (X ω)] / μ[fun ω ↦ rexp (t * X ω)] :=
+    integral_tilted' t id
+  have r0' : (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ (fun s ↦ s ^ 2) (X ω)] =
+    μ[fun ω ↦ rexp (t * X ω) * (fun s ↦ s ^ 2) (X ω)] / μ[fun ω ↦ rexp (t * X ω)] :=
+    integral_tilted' t (fun x ↦ x ^ 2)
+  simp only [id_eq] at r0 r0' r01
+  dsimp [g', g'']
+  rw [r0, r0', r01]
+  field_simp
+  have p : ((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) / μ[fun ω ↦ rexp (t * X ω)]) =
+  ((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) * (μ[fun ω ↦ rexp (t * X ω)])) /
+  ((μ[fun ω ↦ rexp (t * X ω)]) * (μ[fun ω ↦ rexp (t * X ω)])) := by
+    apply Eq.symm (mul_div_mul_right (∫ ω, rexp (t * X ω) * X ω ^ 2 ∂μ)
+    (μ[fun ω ↦ rexp (t * X ω)]) _)
+    exact (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
+  rw [p, Eq.symm (pow_two (∫ ω, rexp (t * X ω) ∂μ))]
+  have p'' : (((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) *
+    (μ[fun ω ↦ rexp (t * X ω)])) / (μ[fun ω ↦ rexp (t * X ω)]) ^ 2 -
+  (μ[fun ω ↦ rexp (t * X ω) * X ω]) ^ 2 / (μ[fun ω ↦ rexp (t * X ω)]) ^ 2) =
+  ((μ[fun ω ↦ exp (t * (X ω)) * (X ω) ^ 2] *
+    mgf X μ t) -
+    (μ[fun ω ↦ exp (t * (X ω)) * X ω] * μ[fun ω ↦ exp (t * (X ω)) * X ω])) /
+    (mgf X μ t ^ 2) := by
+    rw [Eq.symm (pow_two (∫ ω, (fun ω ↦ rexp (t * X ω) * X ω) ω ∂μ))]
+    exact
+      div_sub_div_same ((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) * μ[fun ω ↦ rexp (t * X ω)])
+        ((μ[fun ω ↦ rexp (t * X ω) * X ω]) ^ 2) ((μ[fun ω ↦ rexp (t * X ω)]) ^ 2)
+  rw [p'']
+  apply HasDerivAt.div
+  · set c := max ‖a‖ ‖b‖
+    convert hasDerivAt_integral_pow_mul_exp_real (X := X) (μ := μ) ?_ 1 using 1
+    · simp only [pow_one, g'', g']
+      simp_rw [mul_comm]
+    · simp only [Nat.reduceAdd, g'', g']
+      simp_rw [mul_comm]
+    · simp [integrableExpSet_eq_univ_of_mem_Icc _ _ hX h]
+  · convert hasDerivAt_integral_pow_mul_exp_real (X := X) (μ := μ) ?_ 0 using 1
+    · simp
+    · simp only [zero_add, pow_one, g'', g']
+      simp_rw [mul_comm]
+    · simp [integrableExpSet_eq_univ_of_mem_Icc _ _ hX h]
+  · exact (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
+
+theorem cgf_zero_deriv [IsProbabilityMeasure μ] {X : Ω → ℝ} (h0 : μ[X] = 0) :
+    let f' := fun t ↦ ∫ (x : Ω), X x ∂Measure.tilted μ fun ω ↦ t * X ω;
+  f' 0 = 0 := by
+  simp only [zero_mul, tilted_const', measure_univ, inv_one, one_smul]
+  exact h0
+
+end GeneratingFunctionDerivatives
+
 end ProbabilityTheory

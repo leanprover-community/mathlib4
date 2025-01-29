@@ -30,7 +30,7 @@ universe u
 
 variable {Ω : Type u} [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac)
 
-theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
+theorem extracted_1 [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 ≤ t) (hX : AEMeasurable X μ)
     (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b) (h0 : ∫ (x : Ω), X x ∂μ = 0) (w : ¬t = 0) :
   cgf X μ t ≤ t ^ 2 * (b - a) ^ 2 / 8 := by
