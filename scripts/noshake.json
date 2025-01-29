@@ -303,8 +303,10 @@
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
+  "Mathlib.Tactic.CC.Datatypes":
+  ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.CC.MkProof":
-  ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
+  ["Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
@@ -340,6 +342,8 @@
   "Mathlib.Probability.Notation":
   ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
+  "Mathlib.Probability.Kernel.Proper":
+  ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
