@@ -73,11 +73,10 @@ open scoped Classical ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
   -- 𝕜 for ℝ or ℂ
-
   -- E for integrals on a Lp submodule
 variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ : Measure α} {f g : α → E}
   {s : Set α}
-
+  
 section NormedAddCommGroup
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 

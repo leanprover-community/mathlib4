@@ -110,7 +110,6 @@ private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
   rw [findExistsOneDivLT, dif_pos hi]
   convert Nat.find_spec (existsNatOneDivLTMeasure_of_not_negative hi)
 
-
 private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
   classical
