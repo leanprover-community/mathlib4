@@ -130,9 +130,7 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
 def comp_left {γ : Type*} [TopologicalSpace γ] [Zero γ] {g : C(β, γ)} (f : C_c(α, β))
     (hg : g 0 = 0) : C_c(α, γ) where
   toContinuousMap := g.comp f
-  hasCompactSupport' := by
-    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
-    exact HasCompactSupport.comp_left f.hasCompactSupport' hg
+  hasCompactSupport' := f.hasCompactSupport'.comp_left hg
 
 end Basics
 
