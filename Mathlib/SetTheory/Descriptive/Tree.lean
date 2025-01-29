@@ -68,6 +68,7 @@ def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa 
 @[gcongr] lemma subAt_mono {S T : tree A} (h : S ≤ T) : subAt S x ≤ subAt T x :=
   Set.preimage_mono h
 
+/-- A variant of `List.drop` that takes values in `subAt` -/
 @[simps] def drop {T : tree A} (n : ℕ) (x : T) : subAt T (Tree.take n x).val :=
   ⟨x.val.drop n, by simp⟩
 
