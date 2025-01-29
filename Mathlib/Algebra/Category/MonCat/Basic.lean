@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Group.ULift
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Algebra.Ring.Action.Group
 
