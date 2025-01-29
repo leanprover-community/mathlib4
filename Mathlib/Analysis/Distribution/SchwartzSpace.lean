@@ -1390,6 +1390,8 @@ section LpSchwartzMap
 
 variable [BorelSpace E] [SecondCountableTopologyEither E F]
 
+variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
 variable (F) in
 /-- An additive subgroup of `Lp F p μ`, consisting of the equivalence classes which contain a
 Schwartz function representative. -/
@@ -1403,13 +1405,13 @@ def MeasureTheory.Lp.LpSchwartzMap
 
 theorem MeasureTheory.Lp.LpSchwartzMap.mem_iff
     {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} {f : Lp F p μ} :
-    f ∈ Lp.LpSchwartzMap F p μ ↔
+    f ∈ LpSchwartzMap F p μ ↔
       ∃ g : 𝓢(E, F), g.toBoundedContinuousFunction.toContinuousMap.toAEEqFun μ = f :=
   AddSubgroup.mem_addSubgroupOf
 
 theorem MeasureTheory.Lp.LpSchwartzMap.mem_iff_ae
     {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} {f : Lp F p μ} :
-    f ∈ Lp.LpSchwartzMap F p μ ↔ ∃ g : 𝓢(E, F), g =ᵐ[μ] f := by
+    f ∈ LpSchwartzMap F p μ ↔ ∃ g : 𝓢(E, F), f =ᵐ[μ] g := by
   rw [mem_iff]
   refine exists_congr fun g ↦ ?_
   -- TODO: Easier way to show this?
@@ -1421,31 +1423,76 @@ theorem MeasureTheory.Lp.LpSchwartzMap.mem_iff_ae
     filter_upwards [g.toBoundedContinuousFunction.toContinuousMap.coeFn_toAEEqFun μ, h] with x h₁ h₂
     simp [h₁, h₂]
 
+variable (𝕜 F) in
+/-- Used to provide `instModule`, `coe_smul`. -/
+def MeasureTheory.Lp.LpSchwartzMapSubmodule' (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E) :
+    Submodule 𝕜 (LpSubmodule F p μ 𝕜) :=
+  { LpSchwartzMap F p μ with
+    smul_mem' c f := by
+      simp only [AddSubgroup.mem_carrier, @LpSchwartzMap.mem_iff_ae _]
+      refine Exists.imp' (c • ·) fun g hg ↦ ?_
+      filter_upwards [hg, Lp.coeFn_smul c f] with x h₁ h₂
+      simp only [Pi.smul_apply, h₁, h₂]
+      simp }
+
+variable (𝕜 F) in
+/-- Used to provide `instModule`, `coe_smul`. -/
+def MeasureTheory.Lp.LpSchwartzMapSubmodule (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E) :
+    Submodule 𝕜 (Lp F p μ) :=
+  { LpSchwartzMap F p μ with
+    smul_mem' c f := by
+      simp only [AddSubgroup.mem_carrier, @LpSchwartzMap.mem_iff_ae _]
+      refine Exists.imp' (c • ·) fun g hg ↦ ?_
+      filter_upwards [hg, Lp.coeFn_smul c f] with x h₁ h₂
+      simp [h₁, h₂]
+  }
+
+-- TODO: Why not use `Submodule` instead of `AddSubgroup`?
+-- Just because `Lp` is used over `LpSubmodule`?
+instance MeasureTheory.Lp.LpSchwartzMap.instModule {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} :
+    Module 𝕜 (LpSchwartzMap F p μ) :=
+  (LpSchwartzMapSubmodule 𝕜 F p μ).module
+
+noncomputable instance MeasureTheory.Lp.LpSchwartzMap.instNormedSpace
+    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} :
+    NormedSpace 𝕜 (Lp.LpSchwartzMap F p μ) :=
+  (Lp.LpSchwartzMapSubmodule 𝕜 F p μ).normedSpace
+
+-- TODO: simp?
+theorem MeasureTheory.Lp.LpSchwartzMap.coe_smul {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E}
+    (c : 𝕜) (f : LpSchwartzMap F p μ) :
+    ↑(c • f) = c • (f : Lp F p μ) := (LpSchwartzMapSubmodule 𝕜 F p μ).coe_smul c f
+
 theorem SchwartzMap.toLp_mem_LpSchwartzMap
     (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
     (f : 𝓢(E, F)) : f.toLp p μ ∈ Lp.LpSchwartzMap F p μ := ⟨f, rfl⟩
 
 -- TODO: Is it bad to use `Exists.choose`? Can we avoid using it?
 def MeasureTheory.Lp.LpSchwartzMap.choose
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} (f : Lp.LpSchwartzMap F p μ) : 𝓢(E, F) :=
+    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} (f : LpSchwartzMap F p μ) : 𝓢(E, F) :=
   (mem_iff.mp f.2).choose
 
+/-- Obtain a proof of `p ⇑f` with `f : LpSchwartzMap F q μ` by showing that (1) `p ⇑g` holds for
+all `g : 𝓢(E, F)` Schwartz functions and (2) ae-equality `⇑f =ᵐ[μ] ⇑g` is sufficient to have
+`p ⇑g → p ⇑f`. -/
 theorem MeasureTheory.Lp.LpSchwartzMap.induction_on
-    {q : ℝ≥0∞} [Fact (1 ≤ q)] {μ : Measure E} (f : Lp.LpSchwartzMap F q μ) (p : (E → F) → Prop)
-    (h : ∀ ⦃g : 𝓢(E, F)⦄, f =ᵐ[μ] g → p f) : p f := by
+    {q : ℝ≥0∞} [Fact (1 ≤ q)] {μ : Measure E} (f : LpSchwartzMap F q μ) (p : (E → F) → Prop)
+    (h_congr : ∀ ⦃g : 𝓢(E, F)⦄, f =ᵐ[μ] g → p g → p f) (h : ∀ g : 𝓢(E, F), p g) : p f := by
   obtain ⟨f, hf⟩ := f
   obtain ⟨g, hg⟩ := mem_iff_ae.mp hf
-  exact h hg.symm  -- TODO: Should `mem_iff_ae` be defined the other way around?
+  exact h_congr hg (h g)
 
 theorem MeasureTheory.Lp.LpSchwartzMap.induction_on₂
-    {q : ℝ≥0∞} [Fact (1 ≤ q)] {μ : Measure E} (f g : Lp.LpSchwartzMap F q μ)
-    (p : (E → F) → (E → F) → Prop) (h : ∀ ⦃f₀ g₀ : 𝓢(E, F)⦄, f =ᵐ[μ] f₀ → g =ᵐ[μ] g₀ → p f g) :
+    {q : ℝ≥0∞} [Fact (1 ≤ q)] {μ : Measure E} (f g : LpSchwartzMap F q μ)
+    (p : (E → F) → (E → F) → Prop)
+    (h_congr : ∀ ⦃f₀ g₀ : 𝓢(E, F)⦄, f =ᵐ[μ] f₀ → g =ᵐ[μ] g₀ → p f₀ g₀ → p f g)
+    (h : ∀ f₀ g₀ : 𝓢(E, F), p f₀ g₀) :
     p f g := by
   obtain ⟨f, hf⟩ := f
   obtain ⟨g, hg⟩ := g
   obtain ⟨f₀, hf₀⟩ := mem_iff_ae.mp hf
   obtain ⟨g₀, hg₀⟩ := mem_iff_ae.mp hg
-  exact h hf₀.symm hg₀.symm
+  exact h_congr hf₀ hg₀ (h f₀ g₀)
 
 end LpSchwartzMap
 
@@ -1477,7 +1524,7 @@ variable (F) in
 theorem MeasureTheory.Lp.LpSchwartzMap.dense (hp_top : p ≠ ⊤)
     (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
-    Dense (Lp.LpSchwartzMap F p μ : Set (Lp F p μ)) := by
+    Dense (LpSchwartzMap F p μ : Set (Lp F p μ)) := by
   intro f
   refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
   obtain ⟨g, hg⟩ := (Lp.memℒp f).exists_LpSchwartzMap_eLpNorm_sub_le hp_top hε.ne'
@@ -1492,11 +1539,11 @@ variable (F) in
 def MeasureTheory.Lp.LpSchwartzMap.isDenseInducing_val (hp_top : p ≠ ⊤)
     (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
-    IsDenseInducing (fun f ↦ f : Lp.LpSchwartzMap F p μ → Lp F p μ) where
+    IsDenseInducing (fun f ↦ f : LpSchwartzMap F p μ → Lp F p μ) where
   eq_induced := rfl
   dense := by
     rw [denseRange_subtype_val, SetLike.setOf_mem_eq]
-    exact MeasureTheory.Lp.LpSchwartzMap.dense F hp_top μ
+    exact dense F hp_top μ
 
 end Dense
 
