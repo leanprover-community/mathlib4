@@ -34,15 +34,11 @@ open MulAction MonoidHom Nat
 
 private theorem dvd_prime {r p : ℕ} (hp : p.Prime) (h : r ∣ p !)
     (hr : ∀ {l : ℕ} (_ : l.Prime) (_ : l ∣ r), p ≤ l) : r ∣ p := by
-  rw [← Coprime.dvd_mul_right (n := (p-1)!) _]
-  · rw [mul_factorial_pred hp.pos]; exact h
-  · rw [coprime_iff_gcd_eq_one]
-    by_contra h
-    obtain ⟨l, hl, hl'⟩ := exists_prime_and_dvd h
-    rw [dvd_gcd_iff, hl.dvd_factorial] at hl'
-    apply (lt_iff_not_ge p.pred p).mp (Nat.pred_lt hp.ne_zero)
-    rw [pred_eq_sub_one, ge_iff_le]
-    exact le_trans (hr hl hl'.left) hl'.right
+  rwa [← Coprime.dvd_mul_right, mul_factorial_pred hp.pos]
+  contrapose! hr
+  obtain ⟨l, hl, hl'⟩ := exists_prime_and_dvd hr
+  rw [dvd_gcd_iff, hl.dvd_factorial, Nat.le_sub_one_iff_lt hp.pos] at hl'
+  exact ⟨l, hl, hl'⟩
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
