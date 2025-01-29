@@ -142,24 +142,17 @@ end Analytic
 
 section CGFDeriv
 
-lemma Real.analyticAt_log {x : ℝ} (hx : 0 < x) : AnalyticAt ℝ log x := by
-  have : log = fun x : ℝ ↦ (Complex.log x).re := by ext x; exact (Complex.log_ofReal_re x).symm
-  rw [this]
-  refine AnalyticAt.re_ofReal <| analyticAt_clog ?_
-  simp [hx]
-
-lemma Real.analyticOnNhd_log : AnalyticOnNhd ℝ log (Set.Ioi 0) := fun _ hx ↦ analyticAt_log hx
-
-lemma Real.analyticOn_log : AnalyticOn ℝ log (Set.Ioi 0) := analyticOnNhd_log.analyticOn
-
-lemma analyticOn_cgf : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := by
+lemma analyticAt_cgf (h : v ∈ interior (integrableExpSet X μ)) : AnalyticAt ℝ (cgf X μ) v := by
   by_cases hμ : μ = 0
   · simp only [hμ, cgf_zero_measure]
-    exact analyticOn_const
-  refine AnalyticOn.comp ?_ (f := log) analyticOn_mgf (Set.mapsTo_image (mgf X μ) _)
-  refine Real.analyticOn_log.mono fun t ⟨u, ⟨hu, hu_eq⟩⟩ ↦ ?_
-  rw [← hu_eq]
-  exact mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) hu)
+    exact analyticAt_const
+  · exact (analyticAt_mgf h).log <| mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)
+
+lemma analyticOnNhd_cgf : AnalyticOnNhd ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
+  fun _ hx ↦ analyticAt_cgf hx
+
+lemma analyticOn_cgf : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
+  analyticOnNhd_cgf.analyticOn
 
 lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     deriv (cgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by
@@ -257,11 +250,6 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * rexp (v * X ω) ∂μ) / mgf X μ v := by
     congr with ω
     ring
-
-lemma iteratedDeriv_three_cgf (h : v ∈ interior (integrableExpSet X μ)) :
-    iteratedDeriv 3 (cgf X μ) v
-      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^3 * exp (v * X ω)] / mgf X μ v := by
-  sorry
 
 end CGFDeriv
 
