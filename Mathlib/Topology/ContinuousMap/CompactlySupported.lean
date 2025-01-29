@@ -46,7 +46,7 @@ scoped[CompactlySupported] notation (priority := 2000)
 @[inherit_doc]
 scoped[CompactlySupported] notation α " →C_c " β => CompactlySupportedContinuousMap α β
 
-open CompactlySupported
+open CompactlySupported Classical
 
 section
 
@@ -126,11 +126,17 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
 
 /-- Composition of a continuous function `f` with compact support with another continuous function
 `g` from the left yields another continuous function `g ∘ f` with compact support. -/
-@[simps]
-def comp_left {γ : Type*} [TopologicalSpace γ] [Zero γ] {g : C(β, γ)} (f : C_c(α, β))
-    (hg : g 0 = 0) : C_c(α, γ) where
-  toContinuousMap := g.comp f
-  hasCompactSupport' := f.hasCompactSupport'.comp_left hg
+noncomputable def comp_left {γ : Type*} [TopologicalSpace γ] [Zero γ] {g : C(β, γ)}
+    (f : C_c(α, β)) : C_c(α, γ) where
+  toContinuousMap := if g 0 = 0 then g.comp f else 0
+  hasCompactSupport' := by
+    by_cases hg : g 0 = 0
+    · rw [if_pos hg]
+      simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
+      exact HasCompactSupport.comp_left f.hasCompactSupport' hg
+    · rw [if_neg hg]
+      simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
+      exact HasCompactSupport.zero
 
 end Basics
 
