@@ -591,9 +591,10 @@ theorem continuous_mul_of_finite : Continuous (fun ab ↦ ab.1 * ab.2 : D × D �
   -- Proof: multiplication is bilinear so this follows from previous results.
   continuous_bilinear_of_finite_left (LinearMap.mul R D)
 
+include R in
 /-- If `R` is a topological ring and `D` is an `R`-algebra, finite as an `R`-module,
 and if `D` is given the module topology, then `D` is a topological ring. -/
-def topologicalRing : TopologicalRing D where
+theorem topologicalRing : TopologicalRing D where
   -- Proof: we have already checked that
   continuous_add := (toContinuousAdd R D).1
   continuous_mul := continuous_mul_of_finite R D
