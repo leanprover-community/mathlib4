@@ -922,6 +922,9 @@ theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
 theorem isRegular_aleph0 : IsRegular ℵ₀ :=
   ⟨le_rfl, by simp⟩
 
+lemma fact_isRegular_aleph0 : Fact Cardinal.aleph0.IsRegular where
+  out := Cardinal.isRegular_aleph0
+
 theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) :=
   ⟨h.trans (le_succ c),
     succ_le_of_lt
