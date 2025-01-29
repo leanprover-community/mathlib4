@@ -113,7 +113,7 @@ lemma equalizer.fork_ι :
     (equalizer.fork f g).ι = equalizer.ι f g := rfl
 
 /-- `(Subpresheaf.equalizer f g).toPresheaf` is the equalizer of `f` and `g`. -/
-def equalizerIsLimit : Limits.IsLimit (equalizer.fork f g) :=
+def equalizer.forkIsLimit : Limits.IsLimit (equalizer.fork f g) :=
   Limits.Fork.IsLimit.mk _
     (fun s ↦ equalizer.lift _ _ s.ι s.condition)
     (fun s ↦ by dsimp)
