@@ -525,6 +525,8 @@ theorem E₁_isBigO_one {t : ℝ} (ht : 1 < t) : E₁ =O[𝓟 <| Set.Ici t] (fun
   · intro x
     ring
 
+section MertensSecond
+
 theorem Icc_filter_prime (n : ℕ) : filter (fun a ↦ Nat.Prime a) (Icc 0 n) = Nat.primesBelow (n+1) := by
   ext p
   simp only [mem_filter, mem_Icc, _root_.zero_le, true_and, mem_primesBelow, and_congr_left_iff]
@@ -885,5 +887,104 @@ theorem mertens_second (a : ℝ) (ha : 1 < a) (ha' : a < 2)
     ring
   · exact fun ⦃a_1⦄ ↦ congrFun rfl
 
+end MertensSecond
 
-#print axioms mertens_second
+-- #print axioms mertens_second
+
+
+
+section MertensThird
+
+theorem hasSum_pow_div_add_two {x : ℝ} (hx : |x| < 1) : HasSum (fun n : ℕ ↦ x ^ (n+2) / (n+2)) (-Real.log (1-x) - x) := by
+  norm_cast
+  erw [hasSum_nat_add_iff (f := fun n ↦ x ^ (n+1) / ↑(n+1)) 1]
+  simp only [cast_add, cast_one, range_one, sum_singleton, zero_add, pow_one, CharP.cast_eq_zero,
+    div_one]
+  convert Real.hasSum_pow_div_log_of_abs_lt_one hx using 1
+  ring
+
+theorem sum_inv_sub_sum_log (n : ℕ)  :
+  ∑ p in primesBelow (n+1), -Real.log (1 - (p:ℝ)⁻¹) - ∑ p in primesBelow (n + 1), (p:ℝ)⁻¹ =
+    ∑ p in primesBelow (n+1), ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)  := by
+  rw [← sum_sub_distrib]
+  apply sum_congr rfl
+  intro p hp
+  simp only [mem_primesBelow] at hp
+  rw [(hasSum_pow_div_add_two _).tsum_eq]
+  rw [abs_inv, inv_lt_one_iff₀]
+  simp only [abs_cast, cast_nonpos, one_lt_cast, hp.2.one_lt, or_true]
+
+
+theorem tsum_inv_pow_div_id_le (p : ℕ) (hp : 1 < p)  :
+  ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) ≤ (p * (p-1):ℝ)⁻¹ :=
+  have geom : HasSum (fun n : ℕ ↦ (p : ℝ)⁻¹ ^ n) ((1 - (p:ℝ)⁻¹)⁻¹) := by
+    apply hasSum_geometric_of_abs_lt_one
+    rw [abs_inv, inv_lt_one_iff₀]
+    simp [hp]
+  have summable : Summable fun i ↦ (p:ℝ)⁻¹ ^ (i + 2) := by
+    rw [summable_nat_add_iff]
+    exact geom.summable
+  calc
+  _ ≤ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) := by
+    apply tsum_le_tsum
+    · intro n
+      apply _root_.div_le_self
+      · positivity
+      · norm_cast
+        omega
+    · apply (hasSum_pow_div_add_two _).summable
+      · simp [abs_inv, hp]
+        simp [inv_lt_one_iff₀, hp]
+    · apply summable
+  _ = (p * (p - 1):ℝ)⁻¹  := by
+    have : HasSum (fun n : ℕ ↦ (p : ℝ)⁻¹^(n+2)) ((1-(p:ℝ)⁻¹)⁻¹*(p:ℝ)⁻¹^2) := by
+      simp_rw [pow_add, ]
+      rw [hasSum_mul_right_iff (by positivity)]
+      · exact geom
+    convert this.tsum_eq using 1
+    rw [inv_pow, ← mul_inv]
+    congr 1
+    field_simp [show (p : ℝ) ≠ 0 by positivity]
+    ring
+
+theorem hassum_aux :
+    HasSum (fun n : ℕ ↦ (n * (n-1):ℝ)⁻¹) sorry := by
+  sorry
+
+theorem summable_thing :
+  Summable (fun p : ℕ ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
+
+  sorry
+
+theorem summable_thing' :
+  Summable (fun p : Primes ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
+  sorry
+
+example (k : ℕ):
+    ∑ p in primesBelow (k+1), ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) =
+      ∑' p : Primes, ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)
+      - ∑' p : Primes, if p ≤ k then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0:= by
+  rw [← tsum_sub]
+  · sorry
+  · sorry
+  sorry
+
+def mertens₃Const : ℝ := sorry
+
+theorem mertens_third_log_aux (a : ℝ) (ha : 1 < a):
+  (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), -Real.log (1 - (p:ℝ)⁻¹) -
+    (Real.log (Real.log x) - mertens₃Const))
+    =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
+  sorry
+
+theorem mertens_third_log (a : ℝ) (ha : 1 < a):
+  (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), Real.log (1 - (p:ℝ)⁻¹) -
+    (-Real.log (Real.log x) + mertens₃Const))
+    =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
+  convert (mertens_third_log_aux a ha).neg_left using 2 with x
+  simp only [sum_neg_distrib, neg_sub, sub_neg_eq_add]
+  ring
+
+
+
+end MertensThird
