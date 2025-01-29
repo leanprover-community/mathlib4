@@ -20,7 +20,8 @@ short games, although unfortunately in practice `decide` doesn't seem to be able
 prove anything using these instances.
 
 TODO: This is not the real "short game". It is only defined for `PGame`.
-  Maybe it needs to be renamed or refactored in the future.
+The real "short game" will be defined once `IGame` (`Game` over the `Identical` setoid)
+is added.
 -/
 
 -- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
