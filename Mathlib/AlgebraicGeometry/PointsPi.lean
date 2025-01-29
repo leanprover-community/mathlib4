@@ -65,7 +65,7 @@ lemma eq_bot_of_comp_quotientMk_eq_sigmaSpec (I : Ideal (Π i, R i))
   refine le_bot_iff.mp fun x hx ↦ ?_
   ext i
   simpa [← Category.assoc, Ideal.Quotient.eq_zero_iff_mem.mpr hx] using
-    congr((Spec.preimage (Sigma.ι (Spec <| R ·) i ≫ $hf)).1 x).symm
+    congr((Spec.preimage (Sigma.ι (Spec <| R ·) i ≫ $hf)).hom x).symm
 
 /-- If `V` is a locally closed subscheme of `Spec (Π Rᵢ)` containing `∐ Spec Rᵢ`, then
 `V = Spec (Π Rᵢ)`. -/
