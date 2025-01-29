@@ -400,8 +400,8 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V
   · subst hvw
     use .nil
   have hpn : ¬p.Nil := Walk.not_nil_of_ne hvw
-  obtain ⟨w', ⟨⟨hw'1, hw'2⟩, hwu⟩⟩ := hcyc.existsUnique_ne_adj
-    ((Walk.toSubgraph_adj_snd p hpn).adj_sub)
+  obtain ⟨w', ⟨hw'1, hw'2⟩, hwu⟩ := hcyc.existsUnique_ne_adj
+    (p.toSubgraph_adj_snd hpn).adj_sub
   -- The edge (v, w) can't be in p, because then it would be the second node
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
@@ -457,9 +457,9 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Fintype 
       refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype).mpr hadj
       have : (G.neighborSet v).Nonempty := by
         rw [Walk.mem_verts_toSubgraph] at hv
-        exact (Set.nonempty_of_ncard_ne_zero
-          (by rw [hp.1.ncard_neighborSet_toSubgraph_eq_two hv]; omega)).mono
-            (p.toSubgraph.neighborSet_subset v)
+        refine (Set.nonempty_of_ncard_ne_zero ?_).mono (p.toSubgraph.neighborSet_subset v)
+        rw [hp.1.ncard_neighborSet_toSubgraph_eq_two hv]
+        omega
       refine @Classical.ofNonempty _ ?_
       rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         h this, hp.1.ncard_neighborSet_toSubgraph_eq_two (p.mem_verts_toSubgraph.mp hv)])
