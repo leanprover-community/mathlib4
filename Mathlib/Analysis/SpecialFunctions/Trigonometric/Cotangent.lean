@@ -81,7 +81,7 @@ lemma sinTerm_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) : sinTerm x n ≠
 
 theorem tendsto_euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
     Tendsto (fun n : ℕ => ∏ i : ℕ in Finset.range n, sinTerm x i) atTop
-      (𝓝 (sin (π * x) / (π * x))) := by
+    (𝓝 (sin (π * x) / (π * x))) := by
   rw [show (sin (π * x) / (π * x)) = sin (↑π * x) * (1 / (↑π * x)) by ring]
   apply (Filter.Tendsto.mul_const (b := 1 / (π * x)) (tendsto_euler_sin_prod x)).congr
   intro n
@@ -248,36 +248,26 @@ theorem tendsto_logDeriv_euler_cot_sub (x : ℂ) (hx : x ∈ ℂ_ℤ) :
   simp_rw [← logDeriv_sin_div x hx, ← logDeriv_of_prod hx]
   simpa using tendsto_logDeriv_euler_sin_div x hx
 
-lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤ |a - 1| := by
-  rw [← neg_lt_neg_iff] at ha
-  have hb := (Real.add_lt_add_iff_left 1).mpr ha
-  rw [abs_sub_comm]
-  have : (1 : ℝ) + -(1/2) = 1/2 := by
-    ring
-  rw [this, Mathlib.Tactic.RingNF.add_neg] at hb
-  have : |1 - a| = 1 - a := by
-    rw [abs_eq_self]
-    linarith
-  rw [this]
-  apply hb.le
+lemma cotTerm_identity (z : ℂ) (hz : z ∈ ℂ_ℤ) (n : ℕ) :
+    cotTerm z n = 2 * z * (1 / (z ^ 2 - (n + 1) ^ 2)) := by
+  simp only [cotTerm]
+  rw [one_div_add_one_div]
+  · ring
+  · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
+  · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
 
 theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ => cotTerm z n := by
-  have h : (fun (n : ℕ) => 1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) =
-    fun (n : ℕ) => 2 * z * (1 / (z ^ 2 - (n + 1) ^ 2)):= by
-      ext1 n
-      rw [one_div_add_one_div]
-      ring
-      · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
-      · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
-  simp only [one_div, cotTerm] at *
-  rw [h]
+  rw [funext fun n ↦ cotTerm_identity z hz n]
   apply Summable.mul_left
   apply summable_norm_iff.mp
   have := (tendsto_const_div_pow (‖z^2‖) 2 (by omega))
   simp only [Metric.tendsto_atTop, gt_iff_lt, ge_iff_le, dist_zero_right, norm_div, norm_pow,
     Real.norm_eq_abs, _root_.sq_abs, RCLike.norm_natCast] at this
   obtain ⟨B, hB⟩ := this (1/2) (one_half_pos)
-  have hB2 : ∀ (n : ℕ), B ≤ n → 1/2 ≤ |‖z‖^2 / n^2 -1| := fun n hn => half_le _ (hB n hn)
+  have hB2 : ∀ (n : ℕ), B ≤ n → 1/2 ≤ |‖z‖^2 / n^2 -1| := fun n hn => by
+    rw [le_abs']
+    left
+    linarith [hB n hn]
   apply Summable.comp_nat_add (k := B)
   have hs : Summable fun n : ℕ => (1 / (2 : ℝ) * (n + B + 1) ^ 2)⁻¹ := by
     simp_rw [mul_inv, inv_eq_one_div, add_assoc]
