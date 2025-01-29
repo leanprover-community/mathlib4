@@ -282,12 +282,9 @@ section
 variable (R : Type*) [CommRing R]
 variable (A : Type*) [CommRing A] [Algebra R A]
 
-/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
-
-Note that the Stacks project has a different definition of unramified, and tag
-<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the
-same as this one.
--/
+/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type. -/
+@[stacks 00UT "Note that the Stacks project has a different definition of unramified, and tag
+<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the same as this one."]
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
   finiteType : FiniteType R A := by infer_instance

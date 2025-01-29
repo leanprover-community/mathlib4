@@ -458,7 +458,7 @@ theorem exists_glb_Ioi (i : γ) : ∃ j, IsGLB (Ioi i) j :=
 variable [DenselyOrdered γ]
 
 theorem isLUB_Iio {a : γ} : IsLUB (Iio a) a :=
-  ⟨fun _ hx => le_of_lt hx, fun _ hy => le_of_forall_ge_of_dense hy⟩
+  ⟨fun _ hx => le_of_lt hx, fun _ hy => le_of_forall_lt_imp_le_of_dense hy⟩
 
 theorem isGLB_Ioi {a : γ} : IsGLB (Ioi a) a :=
   @isLUB_Iio γᵒᵈ _ _ a
