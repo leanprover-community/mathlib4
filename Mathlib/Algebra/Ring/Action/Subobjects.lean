@@ -22,7 +22,7 @@ for those subobjects.
 variable {M G R : Type*}
 variable [Monoid M] [Group G] [Semiring R]
 
-instance [MulSemiringAction M R] {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S M] :
+instance (priority := low) [MulSemiringAction M R] {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S M] :
     MulSemiringAction s R :=
   { inferInstanceAs (DistribMulAction s R), inferInstanceAs (MulDistribMulAction s R) with }
 

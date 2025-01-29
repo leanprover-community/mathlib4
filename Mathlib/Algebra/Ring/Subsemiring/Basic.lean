@@ -868,14 +868,14 @@ instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' 
     IsScalarTower S α β :=
   inferInstance
 
-instance {M' α : Type*} [SMul M' α] {S' : Type*}
+instance (priority := low) {M' α : Type*} [SMul M' α] {S' : Type*}
     [SetLike S' M'] (s : S') [FaithfulSMul M' α] : FaithfulSMul s α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
 instance faithfulSMul [SMul R' α] [FaithfulSMul R' α] (S : Subsemiring R') : FaithfulSMul S α :=
   inferInstance
 
-instance {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R'] (s : S')
+instance (priority := low) {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R'] (s : S')
     [Zero α] [SMulWithZero R' α] : SMulWithZero s α where
   smul_zero r := smul_zero (r : R')
   zero_smul := zero_smul R'
@@ -897,7 +897,7 @@ instance distribMulAction [AddMonoid α] [DistribMulAction R' α] (S : Subsemiri
     DistribMulAction S α :=
   inferInstance
 
-instance [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R']
+instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R']
     (s : S') : Module s α where
   add_smul r₁ r₂ := add_smul (r₁ : R') r₂
   zero_smul := zero_smul R'
@@ -907,7 +907,7 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction R' α] (S : Subsem
     MulDistribMulAction S α :=
   inferInstance
 
-instance {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R'] (s : S')
+instance (priority := low) {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R'] (s : S')
     [Zero α] [MulActionWithZero R' α] : MulActionWithZero s α where
   smul_zero r := smul_zero (r : R')
   zero_smul := zero_smul R'
@@ -917,7 +917,7 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
     MulActionWithZero S α :=
   inferInstance
 
-instance [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R']
+instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R']
     (s : S') : Module s α where
   toDistribMulAction := inferInstance
   add_smul r₁ r₂ := add_smul (r₁ : R') r₂

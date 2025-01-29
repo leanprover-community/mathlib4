@@ -25,7 +25,7 @@ section SetLike
 variable {S' : Type*} [SetLike S' M'] (s : S')
 
 @[to_additive]
-instance [SMul M' α]  : SMul s α where
+instance (priority := low) [SMul M' α]  : SMul s α where
   smul m a := (m : M') • a
 
 section MulOneClass
@@ -33,14 +33,14 @@ section MulOneClass
 variable [MulOneClass M']
 
 @[to_additive]
-instance [SMul M' β] [SMul α β] [SMulCommClass M' α β] : SMulCommClass s α β :=
+instance (priority := low) [SMul M' β] [SMul α β] [SMulCommClass M' α β] : SMulCommClass s α β :=
   ⟨fun a _ _ => smul_comm (a : M') _ _⟩
 
 @[to_additive]
-instance [SMul α β] [SMul M' β] [SMulCommClass α M' β] : SMulCommClass α s β :=
+instance (priority := low) [SMul α β] [SMul M' β] [SMulCommClass α M' β] : SMulCommClass α s β :=
   ⟨fun a s => smul_comm a (s : M')⟩
 
-instance [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] :
+instance (priority := low) [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] :
     IsScalarTower s α β :=
   ⟨fun a => smul_assoc (a : M')⟩
 
@@ -49,7 +49,7 @@ end MulOneClass
 variable [Monoid M'] [SubmonoidClass S' M']
 
 @[to_additive]
-instance [MulAction M' α] : MulAction s α where
+instance (priority := low) [MulAction M' α] : MulAction s α where
   one_smul := one_smul M'
   mul_smul m₁ m₂ := mul_smul (m₁ : M') m₂
 
