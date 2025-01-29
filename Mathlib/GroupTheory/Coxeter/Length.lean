@@ -72,8 +72,8 @@ noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 
 local prefix:100 "ℓ" => cs.length
 
-open scoped Classical in
 theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω := by
+  classical
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
