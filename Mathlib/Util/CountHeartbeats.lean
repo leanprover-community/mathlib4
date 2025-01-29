@@ -242,7 +242,10 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     set s
   match stx.find? (·.isOfKind ``Parser.Command.declId) with
     | some decl =>
-      for msg in msgs do logInfoAt decl m!"'{decl[0].getId}' {(← msg.toString).decapitalize}"
+      for msg in msgs do
+        let plain ← msg.toString
+        unless "Try this".isPrefixOf plain do
+          logInfoAt decl m!"'{decl[0].getId}' {plain.decapitalize}"
     | none =>
       for msg in msgs do logInfoAt stx m!"{← msg.toString}"
 

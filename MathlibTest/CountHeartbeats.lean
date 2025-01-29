@@ -113,6 +113,17 @@ theorem YX' : True := trivial
 theorem XX : 3 + 4 + 5 = 12 := by
   decide
 
+
+-- Don't want the try-this blocks of `#count_heartbeats in`
+/--
+info: 'too_slow' used 93 heartbeats, which is greater than the current maximum of 89.
+ -/
+#guard_msgs in
+set_option maxHeartbeats 89 in
+theorem too_slow : 3 + 4 + 5 = 12 := by
+  decide
+
+
 end using_linter_option
 
 
