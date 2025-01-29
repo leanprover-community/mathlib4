@@ -47,7 +47,7 @@ open AlgebraicIndependent
 
 variable {R} in
 theorem exists_isTranscendenceBasis_superset {s : Set A}
-    (hs : AlgebraicIndependent R ((↑) : s → A)) :
+    (hs : s.AlgebraicIndependent R) :
     ∃ t, s ⊆ t ∧ IsTranscendenceBasis R ((↑) : t → A) := by
   simpa only [subset_univ, and_true, ← isTranscendenceBasis_iff_maximal]
     using exists_maximal_algebraicIndependent s _ (subset_univ _) hs
@@ -169,7 +169,7 @@ transitivity of algebraicity: there may exist `a : A` such that `S := R[a]` is a
 The only `R`-algebraically independent subset of `{a}` is `∅`, which is not a transcendence basis.
 See the docstring of `IsAlgebraic.restrictScalars_of_isIntegral` for an example. -/
 theorem exists_isTranscendenceBasis_between [NoZeroDivisors A] (s t : Set A) (hst : s ⊆ t)
-    (hs : AlgebraicIndependent R ((↑) : s → A)) [ht : Algebra.IsAlgebraic (adjoin R t) A] :
+    (hs : s.AlgebraicIndependent R) [ht : Algebra.IsAlgebraic (adjoin R t) A] :
     ∃ u, s ⊆ u ∧ u ⊆ t ∧ IsTranscendenceBasis R ((↑) : u → A) := by
   have ⟨u, hu⟩ := exists_maximal_algebraicIndependent s t hst hs
   refine ⟨u, hu.1, hu.2.1.2, ?_⟩
@@ -240,7 +240,7 @@ variable [NoZeroDivisors A] (inj : Injective (algebraMap R A))
 
 private def indepMatroid : IndepMatroid A where
   E := univ
-  Indep s := AlgebraicIndependent R ((↑) : s → A)
+  Indep := Set.AlgebraicIndependent R
   indep_empty := (algebraicIndependent_empty_iff ..).mpr inj
   indep_subset _ _ := (·.mono)
   indep_aug I B I_ind h B_base := by
@@ -283,7 +283,7 @@ instance : (matroid inj).Finitary where
   indep_of_forall_finite := algebraicIndependent_of_finite
 
 theorem matroid_indep_iff {s : Set A} :
-    (matroid inj).Indep s ↔ AlgebraicIndependent R ((↑) : s → A) := Iff.rfl
+    (matroid inj).Indep s ↔ s.AlgebraicIndependent R := Iff.rfl
 
 theorem matroid_base_iff {s : Set A} :
     (matroid inj).Base s ↔ IsTranscendenceBasis R ((↑) : s → A) := by
