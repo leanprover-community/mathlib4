@@ -97,7 +97,7 @@ lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 instance : Unique (AddUnits DyckWord) where
   uniq p := by
     obtain ⟨a, b, h, -⟩ := p
-    obtain ⟨ha, hb⟩ := append_eq_nil.mp (toList_eq_nil.mpr h)
+    obtain ⟨ha, hb⟩ := append_eq_nil_iff.mp (toList_eq_nil.mpr h)
     congr
     · exact toList_eq_nil.mp ha
     · exact toList_eq_nil.mp hb

@@ -494,7 +494,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
 /- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
 so using Finset.sum_congr to get rid of the binder -/
   refine Finset.sum_congr rfl fun _ _ => ?_
-  simp only [ModuleCat.hom_smul, SimplexCategory.len_mk]
+  simp only [ModuleCat.hom_smul, SimplexCategory.len_mk, ModuleCat.hom_ofHom]
   erw [LinearMap.smul_apply]
   rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
   rfl
@@ -560,7 +560,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
         LinearMap.id fun i => rfl,
       LinearMap.id_comp]
     rfl
-  · congr
+  · rw [ModuleCat.hom_comp]
+    congr
     · ext x
       dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
         Finsupp.LinearEquiv.finsuppUnique]

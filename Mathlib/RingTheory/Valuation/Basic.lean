@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
+import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
@@ -67,7 +68,6 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -253,24 +253,12 @@ lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
   ∀ r s, v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s
 
-end Monoid
-
-section Group
-
-variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y : R}
-
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
   v.toMonoidWithZeroHom.toMonoidHom.map_neg x
 
 theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   v.toMonoidWithZeroHom.toMonoidHom.map_sub_swap x y
-
-theorem map_inv {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x, v x⁻¹ = (v x)⁻¹ :=
-  map_inv₀ _
-
-theorem map_div {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x y, v (x / y) = v x / v y :=
-  map_div₀ _
 
 theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
   calc
@@ -281,6 +269,8 @@ theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
 theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g := by
   rw [sub_eq_add_neg]
   exact v.map_add_le hx (le_trans (le_of_eq (v.map_neg y)) hy)
+
+variable {x y : R}
 
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
   suffices ¬v (x + y) < max (v x) (v y) from
@@ -330,6 +320,26 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   rw [← v.map_one, ← v.map_neg] at h
   rw [sub_eq_add_neg 1 x]
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
+
+/-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
+`Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
+def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
+  toFun := map f f.toOrderIso.monotone
+  invFun := map f.symm f.toOrderIso.symm.monotone
+  left_inv ν := by ext; simp
+  right_inv ν := by ext; simp
+
+end Monoid
+
+section Group
+
+variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y : R}
+
+theorem map_inv {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x, v x⁻¹ = (v x)⁻¹ :=
+  map_inv₀ _
+
+theorem map_div {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x y, v (x / y) = v x / v y :=
+  map_div₀ _
 
 theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
   simp [inv_lt_one₀ (v.pos_iff.2 h)]
@@ -594,7 +604,6 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 
@@ -775,20 +784,6 @@ lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v 
 def IsEquiv (v₁ : AddValuation R Γ₀) (v₂ : AddValuation R Γ'₀) : Prop :=
   Valuation.IsEquiv v₁ v₂
 
-end Monoid
-
-section Group
-
-variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
-
-@[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
-  map_inv₀ (toValuation v) x
-
-@[simp]
-theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
-  map_div₀ (toValuation v) x y
-
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
   Valuation.map_neg v x
@@ -801,6 +796,8 @@ theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
 
 theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
   Valuation.map_sub_le v hx hy
+
+variable {x y : R}
 
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
   Valuation.map_add_of_distinct_val v h
@@ -823,6 +820,20 @@ theorem map_sub_eq_of_lt_right {x y : R} (hx : v y < v x) :
 
 theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
   Valuation.map_eq_of_sub_lt v h
+
+end Monoid
+
+section Group
+
+variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
+
+@[simp]
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
+  map_inv₀ (toValuation v) x
+
+@[simp]
+theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
+  map_div₀ (toValuation v) x y
 
 end Group
 
@@ -898,12 +909,24 @@ variable {K Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 /-- The `AddValuation` associated to a `Valuation`. -/
 def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ :=
-  AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ)
+  .trans (congr
+    { toFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
+      invFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
+      left_inv := fun _x ↦ rfl
+      right_inv := fun _x ↦ rfl
+      map_mul' := fun _x _y ↦ rfl
+      map_le_map_iff' := .rfl }) (AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ))
 
 /-- The `Valuation` associated to a `AddValuation`.
 -/
 def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
-  AddValuation.toValuation
+  AddValuation.toValuation.trans <| congr <|
+    { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
+      invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
+      left_inv := fun _x ↦ rfl
+      right_inv := fun _x ↦ rfl
+      map_mul' := fun _x _y ↦ rfl
+      map_le_map_iff' := .rfl }
 
 @[simp]
 lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ₀ := Γ₀) := rfl
