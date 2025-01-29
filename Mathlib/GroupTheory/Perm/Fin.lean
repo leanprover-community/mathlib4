@@ -210,6 +210,13 @@ theorem cycleRange_last (n : ℕ) : cycleRange (last n) = finRotate (n + 1) := b
   ext i
   rw [coe_cycleRange_of_le (le_last _), coe_finRotate]
 
+theorem cycleRange_mk_zero {n : ℕ} (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
+  have : NeZero n := .of_pos h
+  cycleRange_zero n
+
+@[deprecated (since := "2025-01-28")]
+alias cycleRange_zero' := cycleRange_mk_zero
+
 @[simp]
 theorem sign_cycleRange {n : ℕ} (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
   simp [cycleRange]
