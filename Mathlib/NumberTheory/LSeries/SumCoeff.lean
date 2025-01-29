@@ -167,20 +167,24 @@ variable {f : ℕ → ℂ} {l : ℂ} (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈
 
 section newlemmas
 
-private theorem toto0 {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜} {a : 𝕜}
-    (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, g k) / n) atTop (𝓝 a)) :
-    (fun n : ℕ ↦ ∑ k ∈ Icc 1 n, g k) =O[atTop] fun n ↦ (n : ℝ) ^ (1 : ℝ) := by
-  simp_rw [Real.rpow_one]
+private theorem toto0 {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜} {a : 𝕜} {r : ℝ}
+    (hlim : Tendsto (fun n ↦ g n / (n ^ r : ℝ)) atTop (𝓝 a)) :
+    g =O[atTop] fun n ↦ (n : ℝ) ^ r := by
   refine isBigO_norm_left.mp <| isBigO_of_div_tendsto_nhds ?_ ‖a‖ ?_
-  · filter_upwards [eventually_ne_atTop 0] with _ h using by simp [h]
-  · simpa [Function.comp_def] using (tendsto_norm.comp hlim)
+  · filter_upwards [eventually_ne_atTop 0] with _ h using
+      by simp [Real.rpow_eq_zero_iff_of_nonneg, h]
+  · have := Function.comp_def _ _ ▸ tendsto_norm.comp hlim
+    simp_rw [norm_div, RCLike.norm_ofReal, _root_.abs_of_nonneg
+      (Real.rpow_nonneg (Nat.cast_nonneg _) _)] at this
+    exact this
 
 private theorem toto0' (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l)) :
     (fun t : ℝ ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k) =O[atTop] fun t ↦ t ^ (1 : ℝ) := by
   simp_rw [Real.rpow_one]
   refine IsBigO.trans_isEquivalent ?_ isEquivalent_nat_floor
-  convert ((toto0 hlim).comp_tendsto (tendsto_nat_floor_atTop (α := ℝ)))
-  rw [Function.comp_apply, Real.rpow_one]
+  suffices Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / ((n : ℝ) ^ (1 : ℝ) : ℝ)) atTop (𝓝 l) by
+    simpa using (toto0 this).comp_tendsto tendsto_nat_floor_atTop
+  simpa using hlim
 
 include hlim in
 theorem toto1 {s : ℝ} (hs : 1 < s) :
@@ -228,7 +232,7 @@ end newlemmas
 section proof
 
 include hlim in
-private theorem aux₁ {ε : ℝ} (hε : ε > 0) :
+private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁ {ε : ℝ} (hε : ε > 0) :
     ∀ᶠ t : ℝ in atTop, ‖(∑ k ∈ Icc 1 ⌊t⌋₊, f k) - l * t‖ < ε * t := by
   have h_lim' : Tendsto (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k : ℂ) / t) atTop (𝓝 l) := by
     refine (mul_one l ▸ ofReal_one ▸ ((hlim.comp tendsto_nat_floor_atTop).mul <|
@@ -241,7 +245,7 @@ private theorem aux₁ {ε : ℝ} (hε : ε > 0) :
   rwa [dist_eq_norm, div_sub' _ _ _ (ne_zero_of_re_pos ht₁), norm_div, norm_real,
     Real.norm_of_nonneg ht₁.le, mul_comm, div_lt_iff₀ ht₁] at ht₂
 
-private theorem aux₂ {s T ε : ℝ} {S : ℝ → ℂ}
+private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T ε : ℝ} {S : ℝ → ℂ}
     (hS' : LocallyIntegrableOn (fun t ↦ S t - l * t) (Set.Ici 1))
     (hε : 0 < ε) (hs : 1 < s)
     (hT₁ : 1 ≤ T) (hT : ∀ t ≥ T, ‖S t - l * t‖ ≤ ε * t) :
@@ -281,10 +285,11 @@ private theorem aux₂ {s T ε : ℝ} {S : ℝ → ℂ}
 variable (hfS : ∀ s : ℝ, 1 < s → LSeriesSummable f s)
 
 include hlim hfS in
-private theorem aux₃ {ε : ℝ} (hε : ε > 0) :
+private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ {ε : ℝ} (hε : ε > 0) :
     ∃ C ≥ 0, ∀ s : ℝ, 1 < s → ‖(s - 1) * LSeries f s - l * s‖ ≤ (s - 1) * s * C + s * ε := by
-  obtain ⟨T, hT₁, hT⟩ :=
-    (eventually_forall_ge_atTop.mpr (aux₁ hlim hε)).frequently.forall_exists_of_atTop 1
+  obtain ⟨T, hT₁, hT⟩ := (eventually_forall_ge_atTop.mpr
+    (LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
+      hlim hε)).frequently.forall_exists_of_atTop 1
   set S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
   let C := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-1 - 1 : ℝ)
   have hC : 0 ≤ C := by
@@ -324,7 +329,7 @@ private theorem aux₃ {ε : ℝ} (hε : ε > 0) :
     _ ≤ (s - 1) * s * C + s * ε := ?_
   · rw [h₂, mul_one, mul_comm l, LSeries_eq_mul_integral _ zero_le_one (by rwa [ofReal_re])
       (hfS _ hs), neg_add', mul_assoc]
-    exact toto0 hlim
+    exact toto0 (a := l) (by simpa using hlim)
   · rw [integral_sub, integral_mul_left]
     · congr; ring
     · exact (toto1 hlim hs).mono_set Set.Ioi_subset_Ici_self
@@ -351,7 +356,7 @@ private theorem aux₃ {ε : ℝ} (hε : ε > 0) :
     refine add_le_add_right (mul_le_mul_of_nonneg_left h₃ ?_) _
     exact hs'
   · gcongr
-    refine aux₂ ?_ hε hs hT₁ ?_
+    refine LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ ?_ hε hs hT₁ ?_
     · exact h₀
     · intro t ht
       exact (hT t ht.le).le
@@ -362,7 +367,7 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div :
   refine Metric.tendsto_nhdsWithin_nhds.mpr fun ε hε ↦ ?_
   have hε6 : 0 < ε / 6 := by positivity
   have hε3 : 0 < ε / 3 := by positivity
-  obtain ⟨C, hC₁, hC₂⟩ := aux₃ hlim hfS hε6
+  obtain ⟨C, hC₁, hC₂⟩ := LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ hlim hfS hε6
   have lim1 : Tendsto (fun s ↦ (s - 1) * s * C) (𝓝[>] 1) (𝓝 0) := by
     have : ContinuousAt (fun s ↦ (s - 1) * s * C) 1 := by fun_prop
     convert tendsto_nhdsWithin_of_tendsto_nhds this.tendsto
@@ -401,7 +406,7 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg (f : ℕ 
     (hf.ofReal.congr fun _ ↦ ?_) fun s hs ↦ ?_
   · simp_rw [ofReal_div, ofReal_sum, ofReal_natCast]
   · refine LSeriesSummable_of_sum_norm_bigO_and_nonneg ?_ hf' zero_le_one (by rwa [ofReal_re])
-    exact toto0 hf
+    exact toto0 (a := l) (by simpa using hf)
 
 end proof
 
