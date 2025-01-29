@@ -149,6 +149,8 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 -- This does not need to be `@[simp]` as later `simp` will be able to prove it.
 @[norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
 
+@[simp, norm_cast] lemma abs_ratCast (q : ℚ) : abs (q : ℂ) = |(q : ℝ)| := norm_real _
+
 -- This does not need to be `@[simp]` as later `simp` will be able to prove it.
 @[norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
 @[simp, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
