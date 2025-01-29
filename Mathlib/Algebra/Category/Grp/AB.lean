@@ -32,14 +32,15 @@ noncomputable instance :
     intro x (hx : _ = _)
     dsimp at hx
     rcases Concrete.colimit_exists_rep S.X₂ x with ⟨j, y, rfl⟩
-    rw [← comp_apply, colimMap_eq, colimit.ι_map, comp_apply,
+    rw [← CategoryTheory.comp_apply, colimMap_eq, colimit.ι_map, CategoryTheory.comp_apply,
       ← map_zero (by exact colimit.ι S.X₃ j : (S.X₃).obj j →+ ↑(colimit S.X₃))] at hx
     rcases Concrete.colimit_exists_of_rep_eq.{u, u, u} S.X₃ _ _ hx
       with ⟨k, e₁, e₂, hk : _ = S.X₃.map e₂ 0⟩
-    rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
+    rw [map_zero, ← CategoryTheory.comp_apply, ← NatTrans.naturality, CategoryTheory.comp_apply]
+      at hk
     rcases hS k hk with ⟨t, ht⟩
     use colimit.ι S.X₁ k t
-    erw [← comp_apply, colimit.ι_map, comp_apply, ht]
+    erw [← CategoryTheory.comp_apply, colimit.ι_map, CategoryTheory.comp_apply, ht]
     exact colimit.w_apply S.X₂ e₁ y)
 
 noncomputable instance :
