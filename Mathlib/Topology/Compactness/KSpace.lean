@@ -35,7 +35,7 @@ They are both referred to as compactly generated spaces in the literature.
   `kification Y`.
 
 ## References
-* [J. Munkres, *Topology*]
+* [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
 
