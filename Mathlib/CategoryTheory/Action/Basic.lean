@@ -42,7 +42,7 @@ namespace Action
 
 variable {V}
 
-@[simp 1100]
+@[simp]
 theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
@@ -231,7 +231,7 @@ variable (V G)
 
 /-- (implementation) The forgetful functor from bundled actions to the underlying objects.
 
-Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
+Use the `CategoryTheory.forget` API provided by the `HasForget` instance below,
 rather than using this directly.
 -/
 @[simps]
@@ -241,10 +241,10 @@ def forget : Action V G ⥤ V where
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
-instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
-  forget := forget V G ⋙ ConcreteCategory.forget
+instance [HasForget V] : HasForget (Action V G) where
+  forget := forget V G ⋙ HasForget.forget
 
-instance hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV [HasForget V] : HasForget₂ (Action V G) V where forget₂ := forget V G
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/

@@ -250,7 +250,7 @@ axiom C : (a : A) → B a → Type
 axiom D : (a : A) → (ba : B a) → C a ba → Type
 axiom E : (a : A) → (ba : B a) → (cba : C a ba) → D a ba cba → Type
 axiom F : (a : A) → (ba : B a) → (cba : C a ba) → (dcba : D a ba cba) → E a ba cba dcba → Type
-axiom C_ss : ∀ a ba, Subsingleton (C a ba)
+axiom C_ss : ∀ a ba, Lean.Meta.FastSubsingleton (C a ba)
 axiom a1 : A
 axiom a2 : A
 axiom a3 : A

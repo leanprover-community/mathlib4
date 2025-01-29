@@ -502,10 +502,8 @@ end PushoutSymmetry
 
 variable (C)
 
-/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms
-
-See <https://stacks.math.columbia.edu/tag/001W>
--/
+/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms. -/
+@[stacks 001W]
 abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 
