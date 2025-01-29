@@ -230,4 +230,8 @@ theorem IsIntegral.pair {x : A × B} (hx₁ : IsIntegral R x.1) (hx₂ : IsInteg
   rw [aeval_prod_apply, aeval_mul, hp₁Eval, zero_mul, aeval_mul, hp₂Eval, mul_zero,
     Prod.zero_eq_mk]
 
+/-- An element of a product algebra is integral iff each component is integral. -/
+theorem IsIntegral.pair_iff {x : A × B} : IsIntegral R x ↔ IsIntegral R x.1 ∧ IsIntegral R x.2 :=
+  ⟨fun h ↦ ⟨h.map (AlgHom.fst R A B), h.map (AlgHom.snd R A B)⟩, fun h ↦ h.1.pair h.2⟩
+
 end Prod
