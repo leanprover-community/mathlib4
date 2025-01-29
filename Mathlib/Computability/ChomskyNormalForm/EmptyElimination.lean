@@ -20,7 +20,7 @@ the empty string, while preserving the language of the grammar (except the empty
 ## Main theorems
 * `ContextFreeGrammar.computeNullables_iff`: All and only nullable symbols are computed.
 * `ContextFreeGrammar.eliminateEmpty_correct`: The transformed grammar's language coincides with the
-original up to omission of the empty word.
+  original up to omission of the empty word.
 
 ## References
 * [John E. Hopcroft, Rajeev Motwani, and Jeffrey D. Ullman. 2006. Introduction to Automata Theory,
@@ -242,15 +242,15 @@ lemma NullableWord.nullableNonTerminal {u : List (Symbol T g.NT)} {s : Symbol T 
 
 end NullableDerivations
 
-/-! Definition and properties of `ContextFreeGrammar.NullableRelated u v` which relates strings,
+/-! ### Definition and properties of `ContextFreeGrammar.NullableRelated u v` which relates strings,
 which are equal up to nullable symbols. -/
 section NullableRelated
 
 variable {g : ContextFreeGrammar.{uN, uT} T}
 
 /-- `NullableRelated u v` means that `v` and `u` are equal up to interspersed nonterminals, each of
- which can be transformed to the empty string (i.e. for each additional nonterminal `nt`,
- `NullableNonterminal nt` holds) -/
+which can be transformed to the empty string (i.e. for each additional nonterminal `nt`,
+`NullableNonterminal nt` holds) -/
 inductive NullableRelated : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop where
   /-- The empty string is `NullableRelated` to any `w`, s.t., `NullableWord w` -/
   | empty_left (u : List (Symbol T g.NT)) (hu : NullableWord u) : NullableRelated [] u
@@ -359,14 +359,14 @@ lemma NullableRelated.append_split_three {u v w x : List (Symbol T g.NT)}
 
 end NullableRelated
 
-/-! Definition an properties of `ContextFreeGrammar.ComputeNullables` computing the nullable
+/-! ### Definition an properties of `ContextFreeGrammar.ComputeNullables` computing the nullable
 nonterminals of a grammar `g`, i.e., those symbols which can be transformed to the empty string. -/
 section ComputeNullables
 
 variable {N : Type uN} [DecidableEq N]
 
 /-- Check if a symbol is nullable (w.r.t. to set of nullable symbols `p`), i.e.,
- `symbol_is_nullable p s` only holds if `s` is a nonterminal and it is in `p` -/
+`symbol_is_nullable p s` only holds if `s` is a nonterminal and it is in `p` -/
 def symbolIsNullable (p : Finset N) (s : Symbol T N) : Bool :=
   match s with
   | Symbol.terminal _ => False
@@ -402,8 +402,8 @@ lemma input_mem_generators {r : ContextFreeRule T g.NT} (hrg : r ∈ g.rules) :
     simp only [List.mem_toFinset, List.mem_map, List.mem_cons, List.map_cons, List.toFinset_cons,
       Finset.mem_insert] at ih ⊢
     rintro (c1 | c2)
-    · exact Or.inl (c1 ▸ rfl)
-    · exact Or.inr (ih c2)
+    · exact .inl (c1 ▸ rfl)
+    · exact .inr (ih c2)
 
 lemma addIfNullable_subset_generators {r : ContextFreeRule T g.NT} {p : Finset g.NT}
     (hpg : p ⊆ g.generators) (hrg : r ∈ g.rules) :
@@ -614,8 +614,8 @@ lemma computeNullables_iff (n : g.NT) : n ∈ computeNullables g ↔ NullableNon
 
 end ComputeNullables
 
-/-! Definition and properties of `ContextFreeGrammar.eliminateEmpty`, the algorithm to remove all
-rules with an empty right-hand side from a grammar. -/
+/-! ### Definition and properties of `ContextFreeGrammar.eliminateEmpty`, the algorithm to remove
+all rules with an empty right-hand side from a grammar. -/
 section EliminateEmpty
 
 variable {N : Type uN} [DecidableEq N]
@@ -782,12 +782,12 @@ lemma nullableRelated_mem_removeNullable {p : Finset g.NT} {u v : List (Symbol T
       | empty_left _ hu =>
         rw [← List.singleton_append] at hu
         rw [hn]
-        exact Or.inl ⟨hu.empty_of_append_left, ih
+        exact .inl ⟨hu.empty_of_append_left, ih
           (NullableRelated.empty_left l hu.empty_of_append_right)⟩
-      | cons_nterm_match hu'u => exact Or.inr ⟨_, ih hu'u, rfl⟩
+      | cons_nterm_match hu'u => exact .inr ⟨_, ih hu'u, rfl⟩
       | cons_nterm_nullable hvu hnn =>
         rw [hn]
-        exact Or.inl ⟨hnn, ih hvu⟩
+        exact .inl ⟨hnn, ih hvu⟩
 
 variable [DecidableEq T]
 

@@ -14,21 +14,21 @@ import Mathlib.Computability.ChomskyNormalForm.LengthRestriction
 /-!
 # Chomsky Normal Form Translation
 
-This file contains the algorithm to translate a `ContextFreeGrammar.` to a
-`ChomskyNormalFormGrammar` by using the algorithms
-`ContextFreeGrammar.eliminateEmpty` removing rules with an empty right-hand side,
-`ContextFreeGrammar.eliminateUnitRules` removing rules with a single nonterminal right-hand side,
-`ContextFreeGrammar.restrictTerminals` restricting all terminals to only occur as the single
-symbol of a rule's right-hand side, and
-`ContextFreeGrammar.restrictLength` translating `ContextFreeRule`s with multiple nonterminals to
-`ChomskyNormalFormRule`s with only two nonterminals on the right-hand side.
+This file contains the algorithm to translate a `ContextFreeGrammar` to a `ChomskyNormalFormGrammar`
+by using the algorithms:
+* `ContextFreeGrammar.eliminateEmpty` removing rules with an empty right-hand side,
+* `ContextFreeGrammar.eliminateUnitRules` removing rules with a single nonterminal right-hand side,
+* `ContextFreeGrammar.restrictTerminals` restricting all terminals to only occur as the single
+  symbol of a rule's right-hand side, and
+* `ContextFreeGrammar.restrictLength` translating `ContextFreeRule`s with multiple nonterminals to
+  `ChomskyNormalFormRule`s with only two nonterminals on the right-hand side.
 
 ## Main definitions
 * `ContextFreeGrammar.toCNF`: Transforms a context-free grammar to a chomsky normal form grammar
 
 ## Main theorems
 * `ContextFreeGrammar.toCNF_correct`: The transformed grammar's language coincides with the
-original language (except for the empty string)
+  original language (except for the empty string)
 
 ## References
 * [John E. Hopcroft, Rajeev Motwani, and Jeffrey D. Ullman. 2006. Introduction to Automata Theory,
@@ -100,7 +100,7 @@ lemma restrictTerminals_terminal_or_nonterminals :
   split <;> intro h
   · cases h with
     | inl hr => simp [hr]
-    | inr hr => exact Or.inl (newTerminalRules_terminal_output r' hr)
+    | inr hr => exact .inl (newTerminalRules_terminal_output r' hr)
   · cases h with
     | inl hr =>
       right
@@ -108,7 +108,7 @@ lemma restrictTerminals_terminal_or_nonterminals :
       simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s hs
       cases s <;> tauto
-    | inr hr => exact Or.inl (newTerminalRules_terminal_output r' hr)
+    | inr hr => exact .inl (newTerminalRules_terminal_output r' hr)
 
 lemma eliminateUnitRules_not_empty_output (hne : ∀ r ∈ g.rules, r.output ≠ []) :
     ∀ r' ∈ g.eliminateUnitRules.rules, r'.output ≠ [] := by

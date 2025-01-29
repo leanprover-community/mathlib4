@@ -17,11 +17,11 @@ nonterminals.
 
 ## Main definitions
 * `ContextFreeGrammar.restrictLength`: Transforms a context-free grammar to a chomsky normal form
-grammar by replacing rules that rewrite to multiple nonterminals to a set of cascading rules.
+  grammar by replacing rules that rewrite to multiple nonterminals to a set of cascading rules.
 
 ## Main theorems
 * `ContextFreeGrammar.restrictLength_correct`: The transformed grammar's language coincides with
-the original
+  the original
 
 ## References
 * [John E. Hopcroft, Rajeev Motwani, and Jeffrey D. Ullman. 2006. Introduction to Automata Theory,
@@ -36,7 +36,7 @@ namespace ContextFreeRule
 variable {N : Type*}
 
 /-- `Wellformed r` holds if the rule's output is not a single nonterminal (`UnitRule`), not empty,
- or if the output is more than one symbol, it is only nonterminals -/
+or if the output is more than one symbol, it is only nonterminals -/
 inductive Wellformed : (ContextFreeRule T N) → Prop where
   /-- Rule rewriting to a single terminal is wellformed -/
   | terminal {n : N} (t : T) : Wellformed ⟨n, [Symbol.terminal t]⟩
@@ -85,64 +85,15 @@ lemma Wellformed.cases {r : ContextFreeRule T N} (hr : r.Wellformed) :
     | .nonterminal n₁ :: .nonterminal n₂ :: u =>
       simp only [List.mem_cons, forall_eq_or_imp, true_and] at hu
       obtain ⟨u', huu⟩ := only_nonterminals hu
-      exact Or.inr ⟨n₁, n₂, u', huu ▸ rfl⟩
+      exact .inr ⟨n₁, n₂, u', huu ▸ rfl⟩
 
 end ContextFreeRule
 
 namespace ContextFreeGrammar
 
-/-! Definition of `ContextFreeGrammar.restrictLength`, the algorithm to translate a wellformed
-context-free grammar to a chomsky normal form grammar -/
-section RestrictLength
-
-variable {g : ContextFreeGrammar.{uN, uT} T}
-
 /-- Shorthand for the new type of nonterminals. -/
-abbrev NT' := g.NT ⊕ Σ r : ContextFreeRule T g.NT, Fin (r.output.length - 2)
-
-/-- Computes a cascade of rules generating `r.output` if it only contains nonterminals. For a rule
- r : n -> n₁n₂n₃n₄, generates rules n -> n₁m₂, m₂ -> n₂m₃, and m₃ -> n₃n₄. The type of of NT',
- encodes the correspondence between rules and the new nonterminals. -/
-def computeRulesRec (r : ContextFreeRule T g.NT) (i : Fin (r.output.length - 2)) :
-    List (ChomskyNormalFormRule T g.NT') :=
-  match i with
-  | ⟨0, p⟩ => match r.output.get ⟨r.output.length - 2, by omega⟩,
-                r.output.get ⟨r.output.length - 1, by omega⟩ with
-             | Symbol.nonterminal n₁, Symbol.nonterminal n₂ =>
-               [(ChomskyNormalFormRule.node (Sum.inr ⟨r, ⟨0, p⟩⟩) (Sum.inl n₁) (Sum.inl n₂))]
-             | _, _ => []
-  | ⟨n + 1, p⟩ => match r.output.get ⟨r.output.length - 2 - i.val, by omega⟩ with
-                 | Symbol.nonterminal n' =>
-                   (ChomskyNormalFormRule.node (Sum.inr ⟨r, ⟨i.val, by omega⟩⟩) (Sum.inl n')
-                     (Sum.inr ⟨r, ⟨n, by omega⟩⟩))
-                   :: computeRulesRec r ⟨n, by omega⟩
-                 | _ => []
-
-/-- We assume all rules' output is either a pair of nonterminals, a single terminal or a string of
- at least 3 nonterminals. In the first two cases we can directly translate them, otherwise we
- generate new rules using `compute_rules_rec`. -/
-def computeRules (r : ContextFreeRule T g.NT) : List (ChomskyNormalFormRule T g.NT') :=
-  match hr : r.output with
-  | [Symbol.nonterminal n₁, Symbol.nonterminal n₂] =>
-      [ChomskyNormalFormRule.node (Sum.inl r.input) (Sum.inl n₁) (Sum.inl n₂)]
-  | [Symbol.terminal t] =>
-      [ChomskyNormalFormRule.leaf (Sum.inl r.input) t]
-  | Symbol.nonterminal n :: _ :: _ :: _ =>
-      ChomskyNormalFormRule.node (Sum.inl r.input) (Sum.inl n)
-        (Sum.inr ⟨r, ⟨r.output.length - 3, by simp [hr]⟩⟩)
-      :: computeRulesRec r ⟨r.output.length - 3, by simp [hr]⟩
-  | _ => []
-
-/-- Compute all `ChomskyNormalFormRule`s corresponding to the original `ContextFreeRule`s -/
-def restrictLengthRules [DecidableEq T] [DecidableEq g.NT] (l : List (ContextFreeRule T g.NT)) :=
-  (l.map computeRules).flatten.toFinset
-
-end RestrictLength
-
-/-- Construct a `ChomskyNormalGrammar` corresponding to the original `ContextFreeGrammar` -/
-noncomputable def restrictLength [DecidableEq T] (g : ContextFreeGrammar.{uN,uT} T)
-    [e : DecidableEq g.NT] :=
-  ChomskyNormalFormGrammar.mk g.NT' (Sum.inl g.initial) (restrictLengthRules g.rules.toList)
+abbrev NT' (g : ContextFreeGrammar T) :=
+  g.NT ⊕ Σ r : ContextFreeRule T g.NT, Fin (r.output.length - 2)
 
 /-- A grammar is `Wellformed` if all rules are `ContextFreeRule.Wellformed` -/
 def Wellformed (g : ContextFreeGrammar T) : Prop := ∀ r ∈ g.rules, r.Wellformed
@@ -153,16 +104,15 @@ section EmbedProject
 variable {g : ContextFreeGrammar.{uN, uT} T}
 
 /-- Intuitive embedding of symbols of the original grammar into symbols of the new grammar's type -/
-def embedSymbol (s : Symbol T g.NT) : Symbol T g.NT' :=
-  match s with
-  | Symbol.terminal t => Symbol.terminal t
-  | Symbol.nonterminal n => Symbol.nonterminal (Sum.inl n)
+def embedSymbol : Symbol T g.NT → Symbol T g.NT'
+  | .terminal t => Symbol.terminal t
+  | .nonterminal n => Symbol.nonterminal (Sum.inl n)
 
 lemma embedSymbol_nonterminal {n : g.NT} :
     embedSymbol (Symbol.nonterminal n) = Symbol.nonterminal (Sum.inl n) := by rfl
 
 lemma embedSymbol_terminal {t : T} :
-    embedSymbol (Symbol.terminal t) = (@Symbol.terminal T g.NT') t := by rfl
+    embedSymbol (Symbol.terminal t) = (.terminal t : Symbol T g.NT') := by rfl
 
 /-- Intuitive embedding of strings of the original grammar into strings of the new grammar's type -/
 abbrev embedString (u : List (Symbol T g.NT)) : List (Symbol T g.NT') := u.map embedSymbol
@@ -172,7 +122,7 @@ lemma embedString_nonterminal {n : g.NT} :
   rfl
 
 lemma embedString_terminals {u : List T} :
-    embedString (u.map Symbol.terminal) = u.map (@Symbol.terminal T g.NT') := by
+    embedString (u.map Symbol.terminal) = (u.map .terminal : List (Symbol T g.NT')) := by
   induction u with
   | nil => rfl
   | cons _ _ ih =>
@@ -184,11 +134,10 @@ lemma embedString_append {u v : List (Symbol T g.NT)} :
   embedString (u ++ v) = embedString u ++ embedString v := List.map_append embedSymbol u v
 
 /-- Projection from symbols of the new grammars type into symbols of the original grammar -/
-def projectSymbol (s : Symbol T g.NT') : List (Symbol T g.NT) :=
-  match s with
-  | Symbol.terminal t => [Symbol.terminal t]
-  | Symbol.nonterminal (Sum.inl n) => [Symbol.nonterminal n]
-  | Symbol.nonterminal (Sum.inr ⟨r, ⟨i, _⟩⟩) => List.drop (r.output.length - 2 - i) r.output
+def projectSymbol : Symbol T g.NT' → List (Symbol T g.NT)
+  | .terminal t => [Symbol.terminal t]
+  | .nonterminal (Sum.inl n) => [Symbol.nonterminal n]
+  | .nonterminal (Sum.inr ⟨r, ⟨i, _⟩⟩) => List.drop (r.output.length - 2 - i) r.output
 
 /-- Projection from strings of the new grammars type into strings of the original grammar -/
 abbrev projectString (u : List (Symbol T g.NT')) : List (Symbol T g.NT) :=
@@ -216,11 +165,11 @@ lemma projectString_nonterminal {n : g.NT} :
 
 @[simp]
 lemma projectSymbol_terminal {t : T} :
-    projectSymbol (@Symbol.terminal T g.NT' t) = [Symbol.terminal t] := by
+    projectSymbol (.terminal t : Symbol T g.NT') = [Symbol.terminal t] := by
   simp [projectSymbol]
 
 lemma projectString_terminals {u : List T} :
-    projectString (u.map (@Symbol.terminal T g.NT')) = u.map Symbol.terminal := by
+    projectString (u.map .terminal : List (Symbol T g.NT')) = u.map Symbol.terminal := by
   induction u with
   | nil => rfl
   | cons =>
@@ -228,6 +177,57 @@ lemma projectString_terminals {u : List T} :
     congr
 
 end EmbedProject
+
+/-! ### Definition of `ContextFreeGrammar.restrictLength`, the algorithm to translate a wellformed
+context-free grammar to a chomsky normal form grammar -/
+section RestrictLength
+
+variable {g : ContextFreeGrammar.{uN, uT} T}
+
+
+/-- Computes a cascade of rules generating `r.output` if it only contains nonterminals. For a rule
+r : n -> n₁n₂n₃n₄, generates rules n -> n₁m₂, m₂ -> n₂m₃, and m₃ -> n₃n₄. The type of of NT',
+encodes the correspondence between rules and the new nonterminals. -/
+def computeRulesRec (r : ContextFreeRule T g.NT) (i : Fin (r.output.length - 2)) :
+    List (ChomskyNormalFormRule T g.NT') :=
+  match i with
+  | ⟨0, p⟩ => match r.output.get ⟨r.output.length - 2, by omega⟩,
+                r.output.get ⟨r.output.length - 1, by omega⟩ with
+             | Symbol.nonterminal n₁, Symbol.nonterminal n₂ =>
+               [(ChomskyNormalFormRule.node (Sum.inr ⟨r, ⟨0, p⟩⟩) (Sum.inl n₁) (Sum.inl n₂))]
+             | _, _ => []
+  | ⟨n + 1, p⟩ => match r.output.get ⟨r.output.length - 2 - i.val, by omega⟩ with
+                 | Symbol.nonterminal n' =>
+                   (ChomskyNormalFormRule.node (Sum.inr ⟨r, ⟨i.val, by omega⟩⟩) (Sum.inl n')
+                     (Sum.inr ⟨r, ⟨n, by omega⟩⟩))
+                   :: computeRulesRec r ⟨n, by omega⟩
+                 | _ => []
+
+/-- We assume all rules' output is either a pair of nonterminals, a single terminal or a string of
+at least 3 nonterminals. In the first two cases we can directly translate them, otherwise we
+generate new rules using `compute_rules_rec`. -/
+def computeRules (r : ContextFreeRule T g.NT) : List (ChomskyNormalFormRule T g.NT') :=
+  match hr : r.output with
+  | [Symbol.nonterminal n₁, Symbol.nonterminal n₂] =>
+      [ChomskyNormalFormRule.node (Sum.inl r.input) (Sum.inl n₁) (Sum.inl n₂)]
+  | [Symbol.terminal t] =>
+      [ChomskyNormalFormRule.leaf (Sum.inl r.input) t]
+  | Symbol.nonterminal n :: _ :: _ :: _ =>
+      ChomskyNormalFormRule.node (Sum.inl r.input) (Sum.inl n)
+        (Sum.inr ⟨r, ⟨r.output.length - 3, by simp [hr]⟩⟩)
+      :: computeRulesRec r ⟨r.output.length - 3, by simp [hr]⟩
+  | _ => []
+
+/-- Compute all `ChomskyNormalFormRule`s corresponding to the original `ContextFreeRule`s -/
+def restrictLengthRules [DecidableEq T] [DecidableEq g.NT] (l : List (ContextFreeRule T g.NT)) :=
+  (l.map computeRules).flatten.toFinset
+
+end RestrictLength
+
+/-- Construct a `ChomskyNormalGrammar` corresponding to the original `ContextFreeGrammar` -/
+noncomputable def restrictLength [DecidableEq T] (g : ContextFreeGrammar.{uN,uT} T)
+    [e : DecidableEq g.NT] :=
+  ChomskyNormalFormGrammar.mk g.NT' (Sum.inl g.initial) (restrictLengthRules g.rules.toList)
 
 variable {g : ContextFreeGrammar.{uN, uT} T}
 
@@ -363,7 +363,7 @@ lemma restrictLength_produces_derives_projectString {u v : List (Symbol T g.NT')
   simp only [restrictLength] at r hrg
   rw [hu, hv]
   repeat rw [projectString_append]
-  refine Derives.append_right (Derives.append_left ?_ _) _
+  refine .append_right (.append_left ?_ _) _
   simp only [restrictLengthRules, List.mem_toFinset, List.mem_flatten, List.mem_map,
     Finset.mem_toList, exists_exists_and_eq_and] at hrg
   obtain ⟨r', hrg', hrr⟩ := hrg
@@ -439,7 +439,7 @@ lemma computeRulesRec_derives [DecidableEq T] [DecidableEq g.NT] {r : ContextFre
         rw [← List.singleton_append, ← List.singleton_append, embedSymbol_nonterminal,
           ← List.map_drop]
         have hrₒ : r.output.length - 2 - (n + 1) + 1 = r.output.length - 2 - n := by omega
-        exact ChomskyNormalFormGrammar.Derives.append_left (hrₒ ▸ ih _ hx₂) _
+        exact (hrₒ ▸ ih _ hx₂).append_left
     · rename_i hn
       obtain ⟨n₁, hn₁⟩ := hr.mem_nonterminal ⟨r.output.length - 2 - (n + 1), by omega⟩ (by omega)
       simp only [Fin.getElem_fin, List.map_drop] at hn₁

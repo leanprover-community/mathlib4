@@ -15,11 +15,11 @@ nonterminals.
 
 ## Main definitions
 * `ContextFreeGrammar.restrictTerminals`: Removes all rules which do not rewrite to a single
-terminal or nonterminals only. Adds corresponding rules to preserve the language.
+  terminal or nonterminals only. Adds corresponding rules to preserve the language.
 
 ## Main theorems
 * `ContextFreeGrammar.restrictTerminals_correct`: The transformed grammar's language coincides with
-the original
+  the original
 
 ## References
 * [John E. Hopcroft, Rajeev Motwani, and Jeffrey D. Ullman. 2006. Introduction to Automata Theory,
@@ -36,36 +36,34 @@ section EmbedProject
 variable {N : Type uN}
 
 /-- Intuitive embedding of symbols of the original grammar into symbols of the new grammar's type -/
-def embedSymbol (s : Symbol T N) : Symbol T (N ⊕ T) :=
-  match s with
-  | Symbol.terminal t => Symbol.terminal t
-  | Symbol.nonterminal n => Symbol.nonterminal (Sum.inl n)
+def embedSymbol : Symbol T N → Symbol T (N ⊕ T)
+  | .terminal t => Symbol.terminal t
+  | .nonterminal n => Symbol.nonterminal (Sum.inl n)
 
 /-- Intuitive embedding of strings of the original grammar into strings of the new grammar's type -/
 abbrev embedString (u : List (Symbol T N)) : List (Symbol T (N ⊕ T)) := u.map embedSymbol
 
 /-- Embedding of symbols of the original grammar into nonterminals of the new grammar -/
-def rightEmbedSymbol (s : Symbol T N) : Symbol T (N ⊕ T) :=
-  match s with
-  | Symbol.terminal t => Symbol.nonterminal (Sum.inr t)
-  | Symbol.nonterminal n => Symbol.nonterminal (Sum.inl n)
+def rightEmbedSymbol : Symbol T N → Symbol T (N ⊕ T)
+  | .terminal t => Symbol.nonterminal (Sum.inr t)
+  | .nonterminal n => Symbol.nonterminal (Sum.inl n)
 
 /-- Embedding of strings of the original grammar into nonterminal (symbol) strings of the new
 grammar -/
 abbrev rightEmbedString (w : List (Symbol T N)) := w.map rightEmbedSymbol
 
 /-- Projection from symbols of the new grammars type into symbols of the original grammar -/
-def projectSymbol (s : Symbol T (N ⊕ T)) : Symbol T N :=
-  match s with
-  | Symbol.terminal t => Symbol.terminal t
-  | Symbol.nonterminal (Sum.inl nt) => Symbol.nonterminal nt
-  | Symbol.nonterminal (Sum.inr t) => Symbol.terminal t
+def projectSymbol : Symbol T (N ⊕ T) → Symbol T N
+  | .terminal t => Symbol.terminal t
+  | .nonterminal (Sum.inl nt) => Symbol.nonterminal nt
+  | .nonterminal (Sum.inr t) => Symbol.terminal t
 
 /-- Projection from strings of the new grammars type into strings of the original grammar -/
 def projectString (u : List (Symbol T (N ⊕ T))) : List (Symbol T N) := u.map projectSymbol
 
+@[simp]
 lemma embedSymbol_nonterminal_eq {nt : N} :
-    embedSymbol (Symbol.nonterminal nt) = (@Symbol.nonterminal T (N ⊕ T)) (Sum.inl nt) := by
+    embedSymbol (Symbol.nonterminal nt) = (.nonterminal (Sum.inl nt) : Symbol T (N ⊕ T)):= by
   rfl
 
 lemma projectString_rightEmbedString_id {u : List (Symbol T N)} :
@@ -78,8 +76,8 @@ lemma projectString_rightEmbedString_id {u : List (Symbol T N)} :
     · cases a <;> rfl
     · rwa [← List.map_map]
 
-lemma projectString_terminals {u : List T} :
-    projectString (u.map (@Symbol.terminal T (N ⊕ T))) = u.map Symbol.terminal := by
+lemma projectString_terminal_list {u : List T} :
+    projectString (u.map .terminal : List (Symbol T (N ⊕ T))) = u.map Symbol.terminal := by
   induction u with
   | nil => rfl
   | cons _ _ ih =>
@@ -88,15 +86,15 @@ lemma projectString_terminals {u : List T} :
     exact ⟨rfl, ih⟩
 
 lemma projectSymbol_nonterminal {n : N} :
-    projectSymbol (@Symbol.nonterminal T (N ⊕ T) (Sum.inl n)) = Symbol.nonterminal n :=
+    projectSymbol (.nonterminal (Sum.inl n) : Symbol T (N ⊕ T) ) = Symbol.nonterminal n :=
   rfl
 
 lemma embedString_preserves_nonempty {u : List (Symbol T N)} (hu: u ≠ []) :
     embedString u ≠ [] := by
   aesop
 
-lemma embedString_terminals {u : List T} :
-    embedString (u.map (@Symbol.terminal T N)) = u.map Symbol.terminal := by
+lemma embedString_terminal_list {u : List T} :
+    embedString (u.map .terminal : List (Symbol T N)) = u.map Symbol.terminal := by
   cases u with
   | nil => rfl
   | cons => simp [embedString, embedSymbol]
@@ -118,7 +116,7 @@ end EmbedProject
 
 namespace ContextFreeGrammar
 
-/-! Definition of `ContextFreeGrammar.restrictTerminals`, the algorithm to restrict rules s.t.
+/-! ### Definition of `ContextFreeGrammar.restrictTerminals`, the algorithm to restrict rules s.t.
 terminals occur only as the single symbol at the right-hand side of a rule. -/
 section RestrictTerminals
 
@@ -131,8 +129,8 @@ def newTerminalRules {N : Type*} (r : ContextFreeRule T N) : List (ContextFreeRu
   r.output.filterMap terminal_rule
 
 /-- If `r.output` is a single terminal, we lift the rule to the new grammar, otherwise add new rules
- for each terminal symbol in `r.output` and right-lift the rule, i.e., replace all terminals with
- nonterminals -/
+for each terminal symbol in `r.output` and right-lift the rule, i.e., replace all terminals with
+nonterminals -/
 def restrictTerminalRule {N : Type*} (r : ContextFreeRule T N) : List (ContextFreeRule T (N ⊕ T)) :=
   (match r.output with
   | [Symbol.terminal t] => ⟨Sum.inl r.input, [Symbol.terminal t]⟩
@@ -145,7 +143,7 @@ noncomputable def restrictTerminalRules {N : Type*} [DecidableEq T] [DecidableEq
   (l.map restrictTerminalRule).flatten.toFinset
 
 /-- Construct new grammar, using the lifted rules. Each rule's output is either a single terminal
- or only nonterminals -/
+or only nonterminals -/
 noncomputable def restrictTerminals [DecidableEq T] (g : ContextFreeGrammar.{uN, uT} T)
     [DecidableEq g.NT] :=
   ContextFreeGrammar.mk (g.NT ⊕ T) (Sum.inl g.initial) (restrictTerminalRules g.rules.toList)
@@ -246,7 +244,7 @@ lemma restrictTerminals_derives_rightEmbedString_embedString {u : List (Symbol T
     apply Derives.append_left_trans
     · apply ih
       intro t ht
-      exact hu t (Or.inr ht)
+      exact hu t (.inr ht)
     · cases a with
       | nonterminal => rfl
       | terminal t =>
@@ -311,9 +309,9 @@ theorem restrictTerminals_correct : g.language = g.restrictTerminals.language :=
     intro w hw <;>
       rw [mem_language_iff] at hw ⊢
   · apply derives_restrictTerminals_derives_embedString at hw
-    rwa [embedString_terminals] at hw
+    rwa [embedString_terminal_list] at hw
   · apply restrictTerminals_derives_derives_projectString at hw
-    rw [projectString_terminals] at hw
+    rw [projectString_terminal_list] at hw
     unfold restrictTerminals projectString at hw
     rwa [List.map_cons, List.map_nil, projectSymbol_nonterminal] at hw
 

@@ -15,8 +15,8 @@ single nonterminal symbol, while preserving the language of the grammar.
 
 ## Main definitions
 * `ContextFreeGrammar.computeUnitPairs`: Fixpoint iteration to compute all `UnitPair`s, i.e., all
-pairs of two nonterminal symbols for which the second can be derived from the first by a chain of
-rule applications which rewrite to a single nonterminal.
+  pairs of two nonterminal symbols for which the second can be derived from the first by a chain of
+  rule applications which rewrite to a single nonterminal.
 * `ContextFreeGrammar.eliminateUnitRules`: Eliminates all rules rewriting to a single nonterminal.
 
 ## Main theorems
@@ -35,7 +35,7 @@ namespace ContextFreeGrammar
 
 variable {T : Type uT}
 
-/- Definition of `ContextFreeGrammar.UnitPair n₁ n₂` relating two nonterminals `n₁` and `n₂`, if
+/- ### Definition of `ContextFreeGrammar.UnitPair n₁ n₂` relating two nonterminals `n₁` and `n₂`, if
 `n₁` can be transformed to `n₂` using only rules rewriting to a single nonterminal. -/
 section UnitPairs
 
@@ -88,17 +88,17 @@ lemma DerivesIn.unitPair_prefix {u : List T} {v : List (Symbol T g.NT)} {n : g.N
           | zero => cases u <;> cases hwu
           | succ =>
             obtain ⟨w', hgw', _⟩ := hwu.head_of_succ
-            exact input_mem_generators hgw'.rule
+            exact input_mem_generators hgw'.mem_rule
         obtain ⟨v'', w', m, hnv'', hgv'', hw', hm, hgw'⟩ := ih hn' rfl
-        exact ⟨v'', w', m, UnitPair.trans (hv ▸ hvw).rule hnv'', hgv'', hw', Nat.le_succ_of_le hm,
-          hgw'⟩
+        exact ⟨v'', w', m, UnitPair.trans (hv ▸ hvw).mem_rule hnv'', hgv'', hw',
+          Nat.le_succ_of_le hm, hgw'⟩
       | [Symbol.terminal _] => simp at hw
       | [] => simp at hw
       | _ :: _ :: _ => simp [NonUnit] at hw
 
 end UnitPairs
 
-/-! Fixpoint iteration to compute all `UnitPair`s.
+/-! ### Fixpoint iteration to compute all `UnitPair`s.
 A unit pair is a pair `(n₁, n₂)` of nonterminals s.t. `g` can transform `n₁` to `n₂` only using
 `unitRule`s, i.e., a chain of productions rewriting nonterminals to nonterminals -/
 section ComputeUnitPairs
@@ -124,7 +124,7 @@ lemma generatorsProdDiag_subset_generators_prod :
     | inr hlp =>
       obtain ⟨p', hp', rfl⟩ := hlp
       simp only [Finset.mem_product, Finset.mem_insert, List.mem_toFinset, List.mem_map, and_self]
-      exact Or.inr ⟨p', ⟨hp', rfl⟩⟩
+      exact .inr ⟨p', ⟨hp', rfl⟩⟩
 
 lemma generatorsProdDiag_unitPairs {p : g.NT × g.NT} (hp : p ∈ g.generatorsProdDiag) :
     UnitPair p.1 p.2 := by
@@ -168,26 +168,26 @@ lemma collectUnitPairs_unitPair_rec {nᵢ nₒ : g.NT} {p : g.NT × g.NT} {l : L
     {x : Finset (g.NT × g.NT)} (hp : p ∈ l.foldr (addUnitPair nᵢ nₒ) x) :
     p ∈ x ∨ ∃ v, (nₒ, v) ∈ l ∧ p = (nᵢ, v) := by
   induction l generalizing x with
-  | nil => exact Or.inl hp
+  | nil => exact .inl hp
   | cons a l ih =>
     simp only [addUnitPair, List.foldr_cons, List.mem_cons] at hp
     split at hp <;> rename_i ha
     · simp only [Finset.mem_insert] at hp
       cases hp with
-      | inl hpd => exact Or.inr ⟨a.2, ha ▸ l.mem_cons_self a, hpd⟩
+      | inl hpd => exact .inr ⟨a.2, ha ▸ l.mem_cons_self a, hpd⟩
       | inr hpl =>
         specialize ih hpl
         cases ih with
         | inl => left; assumption
         | inr hlp =>
           obtain ⟨v, hvl, hpv⟩ := hlp
-          exact Or.inr ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
+          exact .inr ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
     · specialize ih hp
       cases ih with
       | inl => left; assumption
       | inr hlp =>
         obtain ⟨v, hvl, hpv⟩ := hlp
-        exact Or.inr ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
+        exact .inr ⟨v, List.mem_cons_of_mem a hvl, hpv ▸ rfl⟩
 
 lemma collectUnitPairs_unitPair {r : ContextFreeRule T g.NT} {l : List (g.NT × g.NT)}
     (hrg : r ∈ g.rules) (hp : ∀ p ∈ l, UnitPair p.1 p.2) :
@@ -387,7 +387,7 @@ lemma mem_addUnitPairs {l : Finset (g.NT × g.NT)} {n₁ n₂ n₃ : g.NT} (hl :
       simp only [List.pure_def, List.bind_eq_flatMap, Finset.mem_toList, List.flatMap_subtype,
         List.flatMap_singleton', List.flatMap_cons, List.singleton_append, List.foldr_cons,
         Finset.mem_union] at ih ⊢
-      exact Or.inr (ih hl hg ht)
+      exact .inr (ih hl hg ht)
 
 lemma unitPair_mem_addUnitPairsIter {l : Finset (g.NT × g.NT)} {n₁ n₂ : g.NT}
     (hlg : l ⊆ g.generators ×ˢ g.generators) (hgl : generatorsProdDiag ⊆ l) (hp : UnitPair n₁ n₂) :
@@ -418,8 +418,8 @@ lemma computeUnitPairs_iff {n₁ n₂ : g.NT} :
 
 end ComputeUnitPairs
 
-/-! Definition and properties of `ContextFreeGrammar.eliminateUnitRules`, the algorithm to remove
-all rules with a single nonterminal on the right-hand side. -/
+/-! ### Definition and properties of `ContextFreeGrammar.eliminateUnitRules`, the algorithm to
+remove all rules with a single nonterminal on the right-hand side. -/
 section EliminateUnitRules
 
 variable {g : ContextFreeGrammar T} [DecidableEq g.NT]
@@ -515,7 +515,7 @@ lemma produces_nonUnit_eliminateUnitRules_produces [DecidableEq T] {n₁ n₂ : 
     {u : List (Symbol T g.NT)} (hu : NonUnit u)
     (hnn : UnitPair n₁ n₂) (hgu : g.Produces [Symbol.nonterminal n₂] u) :
     g.eliminateUnitRules.Produces [Symbol.nonterminal n₁] u := by
-  refine ⟨_, nonUnit_mem_removeUnitRules hgu.rule hu ((computeUnitPairs_iff).2 hnn), ?_⟩
+  refine ⟨_, nonUnit_mem_removeUnitRules hgu.mem_rule hu ((computeUnitPairs_iff).2 hnn), ?_⟩
   nth_rewrite 2 [← u.append_nil]
   exact ContextFreeRule.Rewrites.head []
 
@@ -563,7 +563,7 @@ lemma derives_to_eliminateUnitRules_derives {u : List (Symbol T g.NT)} {v : List
             | zero => cases s <;> cases hd₂
             | succ =>
               obtain ⟨w', hp, _⟩ := hd₂.head_of_succ
-              exact input_mem_generators hp.rule
+              exact input_mem_generators hp.mem_rule
           obtain ⟨_, _, _, hvu, hp, hw', _, hd₂'⟩ := hd₂.unitPair_prefix hvg rfl
           apply Produces.trans_derives _ (derives_to_eliminateUnitRules_derives hd₂')
           · refine produces_nonUnit_eliminateUnitRules_produces hw' (UnitPair.trans ?_ hvu) hp

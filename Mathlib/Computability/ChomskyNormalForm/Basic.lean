@@ -46,17 +46,15 @@ variable {N : Type uN} {r : ChomskyNormalFormRule T N} {u v : List (Symbol T N)}
 
 /-- The input of a CNF rule, similar to `ContextFreeRule.input` -/
 @[simp]
-def input (r : ChomskyNormalFormRule T N) :=
-  match r with
+def input : ChomskyNormalFormRule T N → N
   | leaf n _ => n
   | node n _ _ => n
 
 /-- The output of a CNF rule, similar to `ContextFreeRule.output` -/
 @[simp]
-def output (r : ChomskyNormalFormRule T N) :=
-  match r with
-  | leaf _ t => [Symbol.terminal t]
-  | node _ n₁ n₂ => [Symbol.nonterminal n₁, Symbol.nonterminal n₂]
+def output : ChomskyNormalFormRule T N → List (Symbol T N)
+  | leaf _ t => [.terminal t]
+  | node _ n₁ n₂ => [.nonterminal n₁, .nonterminal n₂]
 
 /-- Inductive definition of a single application of a given CNF rule `r` to a string `u`;
 `r.Rewrites u v` means that the `r` sends `u` to `v` (there may be multiple such strings `v`). -/
@@ -116,8 +114,7 @@ lemma Rewrites.append_right {r : ChomskyNormalFormRule T N} {u v : List (Symbol 
   induction huv <;> tauto
 
 /-- Translation of `ChomskyNormalFormRule` to `ContextFreeRule` -/
-def toCFGRule (r : ChomskyNormalFormRule T N) : ContextFreeRule T N :=
-  match r with
+def toCFGRule : ChomskyNormalFormRule T N → ContextFreeRule T N
   | leaf n t => ⟨n, [Symbol.terminal t]⟩
   | node nᵢ n₁ n₂ => ⟨nᵢ, [Symbol.nonterminal n₁, Symbol.nonterminal n₂]⟩
 
@@ -197,35 +194,31 @@ lemma Derives.eq_or_head {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
 
 lemma Derives.eq_or_tail {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
     u = w ∨ ∃ v : List (Symbol T g.NT), g.Derives u v ∧ g.Produces v w :=
-  (Relation.ReflTransGen.cases_tail huw).casesOn (Or.inl ∘ Eq.symm) Or.inr
+  (Relation.ReflTransGen.cases_tail huw).casesOn (.inl ∘ Eq.symm) .inr
 
 /-- Add extra prefix to CNF producing. -/
-lemma Produces.append_left {u v : List (Symbol T g.NT)}
-    (huv : g.Produces u v) (p : List (Symbol T g.NT)) :
+lemma Produces.append_left {u v p : List (Symbol T g.NT)} (huv : g.Produces u v) :
     g.Produces (p ++ u) (p ++ v) :=
   match huv with | ⟨r, hrmem, hrvw⟩ => ⟨r, hrmem, hrvw.append_left p⟩
 
 /-- Add extra postfix to CNF producing. -/
-lemma Produces.append_right {u v : List (Symbol T g.NT)}
-    (huv : g.Produces u v) (p : List (Symbol T g.NT)) :
+lemma Produces.append_right {u v p : List (Symbol T g.NT)} (huv : g.Produces u v) :
     g.Produces (u ++ p) (v ++ p) :=
   match huv with | ⟨r, hrmem, hrvw⟩ => ⟨r, hrmem, hrvw.append_right p⟩
 
 /-- Add extra prefix to CNF deriving. -/
-lemma Derives.append_left {u v : List (Symbol T g.NT)}
-    (huv : g.Derives u v) (p : List (Symbol T g.NT)) :
+lemma Derives.append_left {u v p : List (Symbol T g.NT)} (huv : g.Derives u v) :
     g.Derives (p ++ u) (p ++ v) := by
   induction huv with
   | refl => rfl
-  | tail _ last ih => exact ih.trans_produces <| last.append_left p
+  | tail _ last ih => exact ih.trans_produces <| last.append_left
 
 /-- Add extra postfix to CNF deriving. -/
-lemma Derives.append_right {u v : List (Symbol T g.NT)}
-    (huv : g.Derives u v) (p : List (Symbol T g.NT)) :
+lemma Derives.append_right {u v p : List (Symbol T g.NT)} (huv : g.Derives u v) :
     g.Derives (u ++ p) (v ++ p) := by
   induction huv with
   | refl => rfl
-  | tail _ last ih => exact ih.trans_produces <| last.append_right p
+  | tail _ last ih => exact ih.trans_produces <| last.append_right
 
 theorem Derives.head_induction_on {v : List (Symbol T g.NT)} {P : ∀ u, g.Derives u v → Prop}
     {u : List (Symbol T g.NT)} (huv : g.Derives u v)
@@ -234,7 +227,7 @@ theorem Derives.head_induction_on {v : List (Symbol T g.NT)} {P : ∀ u, g.Deriv
     P u huv :=
   Relation.ReflTransGen.head_induction_on huv refl head
 
-/-! `ChomskyNormalFormGrammar` to `ContextFreeGrammar` translation and related properties -/
+/-! ### `ChomskyNormalFormGrammar` to `ContextFreeGrammar` translation and related properties -/
 section toCFG
 
 variable [DecidableEq T]
@@ -286,8 +279,9 @@ theorem toCFG_correct {u : List (Symbol T g.NT)} : g.Generates u ↔ g.toCFG.Gen
 
 end toCFG
 
-/-! Alternative definition of `ChomskyNormalFormGrammar.Derives` which allows to use well-founded
-induction on derivations, by explicitely counting the number of steps of the transformation -/
+/-! ### Alternative definition of `ChomskyNormalFormGrammar.Derives` which allows to use
+well-founded induction on derivations, by explicitely counting the number of steps of the
+transformation -/
 section derivesIn
 
 /-- Given a context-free grammar `g`, strings `u` and `v`, and number `n`
@@ -377,7 +371,7 @@ lemma DerivesIn.append_left {v w : List (Symbol T g.NT)}
     g.DerivesIn (p ++ v) (p ++ w) n := by
   induction hvw with
   | refl => left
-  | tail _ _ _ _ last ih => exact ih.trans_produces <| last.append_left p
+  | tail _ _ _ _ last ih => exact ih.trans_produces <| last.append_left
 
 /-- Add extra postfix to context-free deriving (number of steps unchanged). -/
 lemma DerivesIn.append_right {v w : List (Symbol T g.NT)}
@@ -385,7 +379,7 @@ lemma DerivesIn.append_right {v w : List (Symbol T g.NT)}
     g.DerivesIn (v ++ p) (w ++ p) n := by
   induction hvw with
   | refl => left
-  | tail _ _ _ _ last ih => exact ih.trans_produces <| last.append_right p
+  | tail _ _ _ _ last ih => exact ih.trans_produces <| last.append_right
 
 lemma DerivesIn.append_split {p q w : List (Symbol T g.NT)} {n : ℕ}
     (hpqw : g.DerivesIn (p ++ q) w n) :
@@ -406,15 +400,15 @@ lemma DerivesIn.append_split {p q w : List (Symbol T g.NT)} {n : ℕ}
       cases hpqxvy with
       | inl hxq =>
         obtain ⟨a, hx, hq⟩ := hxq
-        exact (Or.inr ⟨a, ⟨hx, hq⟩⟩)
+        exact (.inr ⟨a, ⟨hx, hq⟩⟩)
       | inr hpy =>
         obtain ⟨a, rfl, hq⟩ := hpy
         cases a with
         | nil =>
-          exact (Or.inr ⟨[], ⟨x.append_nil.symm ▸ x.append_nil.symm ▸ rfl, hq.symm⟩⟩)
+          exact (.inr ⟨[], ⟨x.append_nil.symm ▸ x.append_nil.symm ▸ rfl, hq.symm⟩⟩)
         | cons d l =>
           rw [List.cons_append, List.cons.injEq] at hq
-          exact (Or.inl ⟨l, ⟨hq.2, hq.1 ▸ rfl⟩⟩)
+          exact (.inl ⟨l, ⟨hq.2, hq.1 ▸ rfl⟩⟩)
     rcases append_eq_append_cons heq with ⟨a, hq', hp⟩ | ⟨a, hp', hq⟩
     · rw [hv, hq', ← List.append_assoc] at hd
       obtain ⟨x, y, m₁, m₂, hw, hd₁, hd₂, hn⟩ := hd.append_split
