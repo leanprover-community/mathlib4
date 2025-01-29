@@ -296,7 +296,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
         (ℑ c).2.sq_spectrumRestricts |>.smul_of_nonneg <| by norm_num
   -- therefore `- (star c * c) = 0` and so `a⁻ ^ 3 = 0`. By properties of the continuous functional
   -- calculus, `fun x ↦ x⁻ ^ 3` is zero on the spectrum of `a`, `0 ≤ x` for `x ∈ spectrum ℝ a`.
-  rw [h_c_spec₁.swap_mul.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero, CFC.negPart_def,
+  rw [h_c_spec₁.mul_comm.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero, CFC.negPart_def,
     cfcₙ_eq_cfc (hf0 := by simp), ← cfc_pow _ _ (ha := ha), ← cfc_zero a (R := ℝ)] at h_eq_negPart_a
   have h_eqOn := eqOn_of_cfc_eq_cfc (ha := ha) h_eq_negPart_a
   exact fun x hx ↦ negPart_eq_zero.mp <| pow_eq_zero (h_eqOn hx).symm

@@ -471,11 +471,11 @@ lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a
 
 variable [IsScalarTower S A A] [SMulCommClass S A A]
 
-lemma swap_mul_iff {f : S → R} {a b : A} :
+lemma mul_comm_iff {f : S → R} {a b : A} :
     QuasispectrumRestricts (a * b) f ↔ QuasispectrumRestricts (b * a) f := by
   simp only [quasispectrumRestricts_iff, quasispectrum.mul_comm]
 
-alias ⟨swap_mul, _⟩ := swap_mul_iff
+alias ⟨mul_comm, _⟩ := mul_comm_iff
 
 variable [IsScalarTower R S A]
 
@@ -563,12 +563,12 @@ lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv
 
-lemma swap_mul_iff {R S A : Type*} [Semifield R] [Field S] [Ring A]
+lemma mul_comm_iff {R S A : Type*} [Semifield R] [Field S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] {a b : A} {f : S → R} :
     SpectrumRestricts (a * b) f ↔ SpectrumRestricts (b * a) f :=
-  QuasispectrumRestricts.swap_mul_iff
+  QuasispectrumRestricts.mul_comm_iff
 
-alias ⟨swap_mul, _⟩ := swap_mul_iff
+alias ⟨mul_comm, _⟩ := mul_comm_iff
 
 variable [IsScalarTower R S A]
 
