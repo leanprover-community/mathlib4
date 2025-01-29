@@ -366,7 +366,7 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   · simp [ChartedSpace.sum_chartAt_inl]
     congr
     apply Sum.inl_injective.extend_apply (chartAt _ x)
-  -- key step: fns are eventually equal
+  -- key step: functions are eventually equal
   set C := chartAt H x
   have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
       (((C.lift_openEmbedding (IsOpenEmbedding.inl (Y := M'))).extend I)
@@ -375,17 +375,11 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
     simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
   -- can be cleaned up, but works
   have : (extChartAt I x) x ∈ I.symm ⁻¹' C.target ∩ range I := by
-      simp only [extChartAt, C]
-      dsimp
-      constructor--; swap
-      swap; · exact mem_range_self _
-      rw [mem_preimage]
-      set C := chartAt H x
-      have : C x ∈ C.target := by exact mem_chart_target H x
-      convert this
-      set y := C x
-      apply I.left_inv'
-      rw [I.source_eq]; exact trivial
+    refine ⟨?_, mem_range_self _⟩
+    rw [mem_preimage]
+    convert mem_chart_target H x
+    apply I.left_inv'
+    rw [I.source_eq]; exact trivial
 
   have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
     rw [extChartAt]
