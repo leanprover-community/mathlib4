@@ -248,4 +248,19 @@ notation3 "δNat" => (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
 
+notation3 "Énoncé" => Prop
+/-- info: Nat : Type -/
+#guard_msgs in #check Nat
+/-- info: Énoncé : Type -/
+#guard_msgs in #check Prop
+
+notation3 "Objet " "mathématique" => Type
+/-- info: Nat : Objet mathématique -/
+#guard_msgs in #check Nat
+/-- info: Énoncé : Objet mathématique -/
+#guard_msgs in #check Prop
+-- TODO: make sure it is specific for `Type`
+/-- info: Objet mathématique : Objet mathématique -/
+#guard_msgs in #check Type
+
 end Test
