@@ -148,7 +148,7 @@ attribute [instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
-#adaptation_note /--https://github.com/leanprover/lean4/pull/4596 
+#adaptation_note /--https://github.com/leanprover/lean4/pull/4596
 The overlapping notation for `leftDual` and `leftAdjointMate` become more problematic in
 after https://github.com/leanprover/lean4/pull/4596, and we sometimes have to disambiguate with
 e.g. `(ᘁX : C)` where previously just `ᘁX` was enough. -/
