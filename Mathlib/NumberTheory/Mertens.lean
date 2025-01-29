@@ -294,29 +294,39 @@ theorem pow_prime_iff (n k : ℕ) : Nat.Prime (n ^ k) ↔ n.Prime ∧ k = 1 := b
 @[simp]
 theorem Nat.Primes.prime (p : Nat.Primes) : Nat.Prime p := p.2
 
+theorem sq_isBigO_id_mul_sub_one : (fun x ↦ x^2) =O[atTop] fun x:ℝ ↦ x * (x - 1) := by
+  let P : Polynomial ℝ := .X^2
+  let Q : Polynomial ℝ := .X * (.X - 1)
+  convert Polynomial.isBigO_of_degree_le P Q ?_ with x x <;> simp only [P, Q]
+  · simp
+  · simp
+  convert_to (Polynomial.X^2).degree ≤ 2 using 1
+  · compute_degree
+    · norm_num
+    · decide
+  compute_degree
+
+theorem mul_sub_one_inv_isBigO_neg_two :
+    (fun x:ℝ ↦ (x * (x - 1))⁻¹) =O[atTop] fun x ↦ x^(-2:ℝ) := by
+  apply (sq_isBigO_id_mul_sub_one.inv_rev _).congr'
+  · rfl
+  · filter_upwards [eventually_ge_atTop 0]
+    intro x hx
+    rw [rpow_neg hx]
+    norm_num
+  filter_upwards [eventually_ne_atTop 0] with a ha ha'
+  simp_all
+
 theorem isBigO_fun : (fun x ↦ Real.log x / (x * (x - 1)))
     =O[atTop] fun x ↦ x ^ (-3 / 2:ℝ) := by
   have hlog := isLittleO_log_rpow_atTop (show 0 < (1/2:ℝ) by norm_num)
-  have hpoly : (fun x ↦ x^2) =O[atTop] fun x:ℝ ↦ x * (x - 1) := by
-    let P : Polynomial ℝ := .X^2
-    let Q : Polynomial ℝ := .X * (.X - 1)
-    convert Polynomial.isBigO_of_degree_le P Q ?_ with x x <;> simp only [P, Q]
-    · simp
-    · simp
-    convert_to (Polynomial.X^2).degree ≤ 2 using 1
-    · compute_degree
-      · norm_num
-      · decide
-    compute_degree
-  have := hpoly.inv_rev ?inv
-  case inv =>
-    filter_upwards [eventually_ne_atTop 0] with a ha ha'
-    simp_all
+  have hpoly : (fun x ↦ x^2) =O[atTop] fun x:ℝ ↦ x * (x - 1) := sq_isBigO_id_mul_sub_one
+  have := mul_sub_one_inv_isBigO_neg_two
   apply (hlog.isBigO.mul this).congr'
   · simp_rw [div_eq_mul_inv]
     rfl
   · filter_upwards [eventually_gt_atTop 0] with x hx
-    simp_rw [← rpow_natCast, ← rpow_neg hx.le, ← rpow_add hx]
+    simp_rw [← rpow_add hx]
     norm_num
 
 theorem sum_strictPow_convergent : Summable (fun (n:ℕ) ↦
@@ -948,13 +958,22 @@ theorem tsum_inv_pow_div_id_le (p : ℕ) (hp : 1 < p)  :
     ring
 
 theorem hassum_aux :
-    HasSum (fun n : ℕ ↦ (n * (n-1):ℝ)⁻¹) sorry := by
-  sorry
+    Summable (fun n : ℕ ↦ (n * (n-1):ℝ)⁻¹) := by
+  apply summable_of_isBigO_nat (g := fun n:ℕ ↦ n ^ (-2:ℝ))
+  · simp only [summable_nat_rpow, neg_lt_neg_iff, one_lt_ofNat]
+  apply mul_sub_one_inv_isBigO_neg_two.comp_tendsto tendsto_natCast_atTop_atTop
 
 theorem summable_thing :
   Summable (fun p : ℕ ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
+  apply Summable.of_norm_bounded_eventually_nat _ hassum_aux
+  filter_upwards [eventually_gt_atTop 1] with p hp
+  rw [norm_eq_abs, abs_of_nonneg]
+  · exact tsum_inv_pow_div_id_le p hp
+  · apply tsum_nonneg
+    intro n
+    positivity
 
-  sorry
+
 
 theorem summable_thing' :
   Summable (fun p : Primes ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
@@ -968,6 +987,8 @@ example (k : ℕ):
   · sorry
   · sorry
   sorry
+
+
 
 def mertens₃Const : ℝ := sorry
 
