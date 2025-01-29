@@ -55,7 +55,9 @@ example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
-@[simp]
+-- The increased `@[simp]` priority here results in a minor speed up in
+-- `Mathlib.CategoryTheory.Sites.EqualizerSheafCondition`.
+@[simp 1001]
 theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
