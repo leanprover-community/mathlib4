@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.Products
 
@@ -30,7 +31,8 @@ Adopting the theorem numbering of [Kashiwara2006], we show that
 * if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)),
 * if `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
   `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17)
-* the functor `C ⥤ Ind C` preserves small limits.
+* the functor `C ⥤ Ind C` preserves small limits,
+* if `C` has coequalizers, then `Ind C` has coequalizers (6.1.18(i)).
 
 More limit-colimit properties will follow.
 
@@ -43,7 +45,7 @@ Note that:
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
-universe v u
+universe w v u
 
 namespace CategoryTheory
 
@@ -180,14 +182,14 @@ noncomputable def Ind.limCompInclusion {I : Type v} [SmallCategory I] [IsFiltere
   _ ≅ (whiskeringRight _ _ _).obj yoneda ⋙ colim :=
     isoWhiskerRight ((whiskeringRight _ _ _).mapIso (Ind.yonedaCompInclusion)) colim
 
-instance {α : Type v} [SmallCategory α] [FinCategory α] [HasLimitsOfShape α C] {I : Type v}
+instance {α : Type w} [SmallCategory α] [FinCategory α] [HasLimitsOfShape α C] {I : Type v}
     [SmallCategory I] [IsFiltered I] :
     PreservesLimitsOfShape α (Ind.lim I : (I ⥤ C) ⥤ _) :=
   haveI : PreservesLimitsOfShape α (Ind.lim I ⋙ Ind.inclusion C) :=
     preservesLimitsOfShape_of_natIso Ind.limCompInclusion.symm
   preservesLimitsOfShape_of_reflects_of_preserves _ (Ind.inclusion C)
 
-instance {α : Type v} [SmallCategory α] [FinCategory α] [HasColimitsOfShape α C] {I : Type v}
+instance {α : Type w} [SmallCategory α] [FinCategory α] [HasColimitsOfShape α C] {I : Type v}
     [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape α (Ind.lim I : (I ⥤ C) ⥤ _) :=
   inferInstanceAs (PreservesColimitsOfShape α (_ ⋙ colim))
@@ -209,11 +211,43 @@ instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
   -- ```
   -- from the fact that finite limits commute with filtered colimits and from the fact that
   -- `Ind.yoneda` preserves finite colimits.
-  apply hasColimitOfIso iso.symm
+  exact hasColimitOfIso iso.symm
 
 instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
     ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift)⟩
   hasCoproducts_of_finite_and_filtered
+
+/-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)` as
+the colimit of `(P.φ, P.ψ)` in `Ind C`. -/
+noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompIndYoneda
+    {A B : Ind C} {f g : A ⟶ B}
+    (P : IndParallelPairPresentation ((Ind.inclusion _).map f) ((Ind.inclusion _).map g)) :
+    parallelPair f g ≅ parallelPair P.φ P.ψ ⋙ Ind.lim P.I :=
+  ((whiskeringRight WalkingParallelPair _ _).obj (Ind.inclusion C)).preimageIso <|
+    diagramIsoParallelPair _ ≪≫
+      P.parallelPairIsoParallelPairCompYoneda ≪≫
+      isoWhiskerLeft (parallelPair _ _) Ind.limCompInclusion.symm
+
+instance [HasColimitsOfShape WalkingParallelPair C] :
+    HasColimitsOfShape WalkingParallelPair (Ind C) := by
+  refine ⟨fun F => ?_⟩
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
+    (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
+    (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
+  exact hasColimitOfIso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
+
+/-- A way to understand morphisms in `Ind C`: every morphism is induced by a natural transformation
+of diagrams. -/
+theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
+    ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I) (F G : I ⥤ C) (φ : F ⟶ G),
+      Nonempty (Arrow.mk f ≅ Arrow.mk ((Ind.lim _).map φ)) := by
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.2 B.2
+    (Ind.inclusion _ |>.map f) (Ind.inclusion _ |>.map f)
+  refine ⟨P.I, inferInstance, inferInstance, P.F₁, P.F₂, P.φ, ⟨Arrow.isoMk ?_ ?_ ?_⟩⟩
+  · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.zero
+  · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
+  · simpa using
+      (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
 
 end CategoryTheory
