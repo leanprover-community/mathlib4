@@ -79,6 +79,16 @@ def evalAlgHom {_ : CommSemiring R} [∀ i, Semiring (f i)] [∀ i, Algebra R (f
     toFun := fun f => f i
     commutes' := fun _ => rfl }
 
+@[simp]
+theorem algHom_evalAlgHom [CommSemiring R] [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
+    algHom R f (evalAlgHom R f) = AlgHom.id R (Π i, f i) := rfl
+
+/-- `Pi.algHom` commutes with composition. -/
+theorem algHom_comp [CommSemiring R] [∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
+    {A B : Type*} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+    (g : ∀ i, B →ₐ[R] f i) (h : A →ₐ[R] B) :
+    (algHom R f g).comp h = algHom R f (fun i ↦ (g i).comp h) := rfl
+
 variable (A B : Type*) [CommSemiring R] [Semiring B] [Algebra R B]
 
 /-- `Function.const` as an `AlgHom`. The name matches `Pi.constRingHom`, `Pi.constMonoidHom`,
