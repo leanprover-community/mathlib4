@@ -340,7 +340,6 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
-
 lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃! w', w ≠ w' ∧ G.Adj v w' := by
   obtain ⟨w', ⟨hww, hww'⟩⟩ := h.other_adj_of_adj hadj
@@ -359,7 +358,6 @@ lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
   congr
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
-
 
 open scoped symmDiff
 
