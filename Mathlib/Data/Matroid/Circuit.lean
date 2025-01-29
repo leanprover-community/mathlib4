@@ -282,7 +282,7 @@ lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R 
   simp only [subset_inter_iff, inter_subset_right, and_true] at heJ
   exact subset_trans (by simpa [M.mem_closure_of_mem' (mem_singleton e) (hR heR)]) heJ
 
-lemma fundCircuit_restrict_univ (M : Matroid α) :
+@[simp] lemma fundCircuit_restrict_univ (M : Matroid α) :
     (M ↾ univ).fundCircuit e I = M.fundCircuit e I := by
   have aux (A B) : M.closure A ⊆ B ∪ univ \ M.E ↔ M.closure A ⊆ B := by
     refine ⟨fun h ↦ ?_, fun h ↦ h.trans subset_union_left⟩
