@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.Perm.Finite
 
 /-! # Subgroups of small index are normal
 
@@ -16,15 +17,6 @@ a subgroup of index equal to the smallest prime factor of `Nat.card G` is normal
 (This does not require `G` to be finite.)
 
 -/
-
-namespace Nat
-
-theorem card_perm {α : Type*} [Finite α] : Nat.card (Equiv.Perm α) = (Nat.card α)! := by
-  classical
-  have := Fintype.ofFinite α
-  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_perm]
-
-end Nat
 
 variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
 
