@@ -16,9 +16,6 @@ In this PR, we introduce the notions of `coeff`, `single`, `one` and `sum` for s
 
 TODO : Define the skewed convolution product
 
-The associativity of the skewed multiplication depends on the `[MulSemiringAction G k]` instance.
-In particular, this means that unlike in `Mathlib.Algebra.MonoidAlgebra.Basic`, `G` will
-need to be a monoid for most of our uses.
 -/
 
 noncomputable section
@@ -320,6 +317,10 @@ def sum {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k �
   f.toFinsupp.sum g
 
 theorem sum_def {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) :
+    sum f g = f.toFinsupp.sum g := rfl
+
+/-- Unfolded version of `sum_def` in terms of `Finset.sum`. -/
+theorem sum_def' {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) :
     sum f g = ∑ a ∈ f.support, g a (f.coeff a) := rfl
 
 @[simp]
@@ -331,9 +332,6 @@ theorem map_sum {N P : Type*} [AddCommMonoid N] [AddCommMonoid P] {H : Type*} [F
     [AddMonoidHomClass H N P] (h : H) (f : SkewMonoidAlgebra k G) (g : G → k → N) :
     h (sum f g) = sum f fun a b ↦ h (g a b) :=
   _root_.map_sum h _ _
-
-theorem toFinsupp_sum {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) :
-    sum f g = Finsupp.sum f.toFinsupp g := rfl
 
 /-- Variant where the image of `g` is a `SkewMonoidAlgebra`. -/
 theorem toFinsupp_sum' {k' G' : Type*} [AddCommMonoid k'] (f : SkewMonoidAlgebra k G)
@@ -384,13 +382,13 @@ theorem sum_sum_index {α β M N P : Type*} [AddCommMonoid M] [AddCommMonoid N] 
     (h_zero : ∀ (a : β), h a 0 = 0)
     (h_add : ∀ (a : β) (b₁ b₂ : N), h a (b₁ + b₂) = h a b₁ + h a b₂) :
     sum (sum f g) h = sum f fun a b ↦ sum (g a b) h := by
-  rw [toFinsupp_sum, toFinsupp_sum' f g, Finsupp.sum_sum_index h_zero h_add]; rfl
+  rw [sum_def, toFinsupp_sum' f g, Finsupp.sum_sum_index h_zero h_add]; rfl
 
 @[simp]
 theorem coeff_sum {k' G' : Type*} [AddCommMonoid k'] {f : SkewMonoidAlgebra k G}
     {g : G → k → SkewMonoidAlgebra k' G'} {a₂ : G'} :
     (f.sum g).coeff a₂ = f.sum fun a₁ b ↦ (g a₁ b).coeff a₂ := by
-  simp_rw [coeff, toFinsupp_sum', toFinsupp_sum, Finsupp.sum_apply]
+  simp_rw [coeff, toFinsupp_sum', sum_def, Finsupp.sum_apply]
 
 theorem sum_mul {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoidAlgebra k G)
     {f : G → k → S} : s.sum f * b = s.sum fun a c ↦ f a c * b := by
@@ -405,7 +403,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
     (a : G) (b : G → k → N) : (f.sum fun (x : G) (v : k) ↦ if x = a then b x v else 0) =
       if a ∈ f.support then b a (f.coeff a) else 0 := by
-  simp only [sum_def, Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
+  simp only [sum_def', Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
 
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :
