@@ -60,8 +60,8 @@ lemma le_of_TendstoUniformlyOn_le_righto (f : ι → α → β) [ UniformSpace �
   /- simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, ←
     tendstoUniformlyOn_univ, Set.mem_univ, Set.restrict_apply, true_implies, Subtype.forall] at *
  -/
-lemma tendstoUniformlyOn_comp_cexp [Preorder ι] {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ} {K : Set α}
-    (hf : TendstoUniformlyOn f g p K) (hg : ∃ T : ℝ, ∀ x, x ∈ K → (g x).re ≤ T) :
+lemma tendstoUniformlyOn_comp_cexp [Preorder ι] {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
+    {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : ∃ T : ℝ, ∀ x, x ∈ K → (g x).re ≤ T) :
     TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) p K := by
   obtain ⟨T, hT⟩ := hg
   have h2 := le_of_TendstoUniformlyOn_le_right (fun n x => (f n x).re) hf.re hT
