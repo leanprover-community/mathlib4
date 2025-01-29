@@ -7,7 +7,7 @@ noncomputable section
 universe v u
 open CategoryTheory Limits
 
-variable {X : Type v} [PartialOrder X] {C : Type u}
+variable {X : Type v} [Preorder X] {C : Type u}
   [Category.{v} C] [HasLimits C]
 
 variable (F : X ⥤ C)
