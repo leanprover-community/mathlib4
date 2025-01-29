@@ -170,14 +170,9 @@ lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
       Pi.zero_apply]
     exact deriv_const v 0
   have hv : Integrable (fun ω ↦ exp (v * X ω)) μ := interior_subset (s := integrableExpSet X μ) h
-  calc deriv (log ∘ (mgf X μ)) v
+  calc deriv (fun x ↦ log (mgf X μ x)) v
   _ = deriv (mgf X μ) v / mgf X μ v := by
-    rw [deriv_comp, deriv.log]
-    · field_simp
-    · exact differentiableAt_id'
-    · exact (mgf_pos' hμ hv).ne'
-    · exact differentiableAt_log (mgf_pos' hμ hv).ne'
-    · exact differentiableAt_mgf h
+    rw [deriv.log (differentiableAt_mgf h) ((mgf_pos' hμ hv).ne')]
   _ = μ[fun ω ↦ X ω * rexp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
 
 lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
