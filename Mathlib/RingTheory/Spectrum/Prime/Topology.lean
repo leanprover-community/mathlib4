@@ -505,6 +505,10 @@ theorem isTopologicalBasis_basic_opens :
     rw [← Set.compl_subset_compl, ← hs, basicOpen_eq_zeroLocus_compl, compl_compl]
     exact zeroLocus_anti_mono (Set.singleton_subset_iff.mpr hfs)
 
+theorem eq_biUnion_of_isOpen {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
+    s = ⋃ (r : R) (_ : ↑(basicOpen r) ⊆ s), basicOpen r :=
+  (isTopologicalBasis_basic_opens.open_eq_sUnion' hs).trans <| by aesop
+
 theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicOpen R _)) := by
   unfold TopologicalSpace.Opens.IsBasis
   convert isTopologicalBasis_basic_opens (R := R)
@@ -836,10 +840,6 @@ lemma basicOpen_injOn_isIdempotentElem :
   have ⟨p, prime, le, nmem⟩ := Ideal.exists_le_prime_nmem_of_isIdempotentElem _ x hx this
   exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) nmem
     (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
-
-lemma eq_biUnion_of_isOpen {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
-    s = ⋃ (r : R) (_ : ↑(basicOpen r) ⊆ s), basicOpen r :=
-  (isTopologicalBasis_basic_opens.open_eq_sUnion' hs).trans <| by aesop
 
 lemma exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
     (hs : IsClopen s) : ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = basicOpen e ∧ sᶜ = basicOpen f := by
