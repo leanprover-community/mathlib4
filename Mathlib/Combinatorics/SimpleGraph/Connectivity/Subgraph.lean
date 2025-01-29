@@ -238,7 +238,7 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
 
-lemma toSubgraph_adj_mem_support {u v u' v' : V} (p : G.Walk u v) (hp : p.toSubgraph.Adj u' v') :
+lemma mem_support_of_adj_toSubgraph {u v u' v' : V} (p : G.Walk u v) (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := by
   rw [@mem_support_iff_exists_getVert]
   obtain ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hp
@@ -248,8 +248,8 @@ lemma toSubgraph_adj_mem_support {u v u' v' : V} (p : G.Walk u v) (hp : p.toSubg
     exact ⟨hl.1, by omega⟩
   · aesop
 
-lemma toSubgraph_adj_mem_support' {u v u' v' : V} (p : G.Walk u v)
-    (hp : p.toSubgraph.Adj u' v') : v' ∈ p.support := p.toSubgraph_adj_mem_support hp.symm
+lemma mem_support_of_adj_toSubgraph' {u v u' v' : V} (p : G.Walk u v)
+    (hp : p.toSubgraph.Adj u' v') : v' ∈ p.support := p.mem_support_of_adj_toSubgraph hp.symm
 
 namespace IsCycle
 
@@ -300,15 +300,16 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
   exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
 
-lemma not_adj_cycle_takeUntil_takeUntil [DecidableEq V] {u w x : V} (p : G.Walk u u)
+lemma not_adj_takeUntil_takeUntil [DecidableEq V] {u w x : V} (p : G.Walk u u)
     (hp : p.IsCycle) (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
     ¬((p.takeUntil w hw).takeUntil x hx).toSubgraph.Adj x w := by
   intro h
-  obtain ⟨n, ⟨hn, hnl⟩⟩ := Walk.mem_support_iff_exists_getVert.mp (toSubgraph_adj_mem_support' _ h)
-  rw [(p.takeUntil w hw).takeUntil_getVert hx (by omega)] at hn
+  obtain ⟨n, ⟨hn, hnl⟩⟩ := Walk.mem_support_iff_exists_getVert.mp
+    (mem_support_of_adj_toSubgraph' _ h)
+  rw [(p.takeUntil w hw).getVert_takeUntil hx (by omega)] at hn
   have := length_takeUntil_lt (p.takeUntil w hw) hx h.ne
   have : n = (p.takeUntil w hw).length := by
-    apply (hp.takeUntil hw).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+    apply (hp.IsPath_of_takeUntil hw).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     simp_all
   omega
 

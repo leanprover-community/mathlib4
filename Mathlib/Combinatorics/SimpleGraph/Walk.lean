@@ -1118,7 +1118,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 
-lemma takeUntil_getVert {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.support)
+lemma getVert_takeUntil {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
   cases p with
   | nil =>
@@ -1135,13 +1135,13 @@ lemma takeUntil_getVert {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.suppo
     by_cases hn0 : n = 0
     · aesop
     rw [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hn0]
-    apply q.takeUntil_getVert hw
-    rw [@Walk.length_cons] at hn
+    apply q.getVert_takeUntil hw
+    rw [Walk.length_cons] at hn
     omega
 
 lemma takeUntil_snd (p : G.Walk u v) (hsu : w ≠ u) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
-  apply p.takeUntil_getVert h
+  apply p.getVert_takeUntil h
   by_contra! hc
   simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil_iff] at hc
   exact hsu hc.symm
@@ -1151,7 +1151,7 @@ lemma length_takeUntil_lt {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (hu
   rw [(p.length_takeUntil_le h).lt_iff_ne]
   intro hl
   apply huw
-  simpa using ( hl ▸ takeUntil_getVert p h (by rfl) :
+  simpa using ( hl ▸ getVert_takeUntil p h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
