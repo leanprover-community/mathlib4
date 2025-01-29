@@ -14,7 +14,7 @@ classes of integrable functions, already defined as a special case of `L^p` spac
 ## Notation
 
 * `α →₁[μ] β` is the type of `L¹` space, where `α` is a `MeasureSpace` and `β` is a
-  `NormedAddCommGroup` with a `SecondCountableTopology`. `f : α →ₘ β` is a "function" in `L¹`.
+  `NormedAddCommGroup`. `f : α →ₘ β` is a "function" in `L¹`.
   In comments, `[f]` is also used to denote an `L¹` function.
 
   `₁` can be typed as `\1`.
@@ -155,7 +155,7 @@ namespace Integrable
 
 
 /-- Construct the equivalence class `[f]` of an integrable function `f`, as a member of the
-space `L1 β 1 μ`. -/
+space `Lp β 1 μ`. -/
 def toL1 (f : α → β) (hf : Integrable f μ) : α →₁[μ] β :=
   (memℒp_one_iff_integrable.2 hf).toLp f
 
