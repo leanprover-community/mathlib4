@@ -77,7 +77,7 @@ titlesPathsAndRegexes=(
   "porting notes"                  "*"      "Porting note"
   "backwards compatibility flags"  "*"      "set_option.*backward"
   "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
-  "adaptation notes"               "*"      "adaptation_note"
+  "adaptation notes"               ":^Mathlib/Tactic/AdaptationNote.lean" "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
@@ -93,7 +93,7 @@ for i in ${!titlesPathsAndRegexes[@]}; do
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- "${pathspec}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- ":^scripts" "${pathspec}" | wc -l)" "${title}"
   fi
 done
 
