@@ -32,7 +32,6 @@ lemma Complex.summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
   exact norm_log_one_add_half_le_self hi
 
-
 lemma Real.summable_log_one_add_of_summable {f : ι → ℝ} (hf : Summable f) :
      Summable (fun i : ι => log (1 + |f i|)) := by
   have : Summable (fun n ↦ Complex.ofRealCLM (log (1 + |f n|))) := by
