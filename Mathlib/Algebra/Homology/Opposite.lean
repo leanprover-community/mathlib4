@@ -248,6 +248,7 @@ instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
   rw [quasiIsoAt_unopFunctor_map_iff]
   infer_instance
 
+@[simp]
 lemma quasiIso_opFunctor_map_iff
     {K L : HomologicalComplex V c} (φ : K ⟶ L)
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
