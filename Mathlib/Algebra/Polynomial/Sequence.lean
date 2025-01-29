@@ -88,7 +88,8 @@ lemma degree_eq (i : ℕ) : (S i).degree = i := S.degree_eq' i
 lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_some <| S.degree_eq i
 
 /-- No polynomial in the sequence is zero. -/
-lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp (by simp [S.degree_eq i])
+@[simp]
+lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp <| by simp [S.degree_eq i]
 
 /-- No two elements in the sequence have the same degree. -/
 lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
