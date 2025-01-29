@@ -15,7 +15,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
-variable {R α : Type*}
+variable {R α β : Type*}
 
 namespace Matrix
 
@@ -133,11 +133,10 @@ def stdBasisMatrixAddMonoidHom [AddCommMonoid α] (i : m) (j : n) : α →+ Matr
 
 variable (R)
 /-- `Matrix.stdBasisMatrix` as a bundled linear map. -/
-@[simps]
+@[simps!]
 def stdBasisMatrixLinearMap [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) :
     α →ₗ[R] Matrix m n α where
-  toFun := stdBasisMatrix i j
-  map_add' _ _ := stdBasisMatrix_add _ _ _ _
+  __ := stdBasisMatrixAddMonoidHom i j
   map_smul' _ _:= smul_stdBasisMatrix _ _ _ _ |>.symm
 
 section ext
@@ -163,7 +162,8 @@ theorem ext_addMonoidHom
 See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_linearMap
-    [Finite m] [Finite n][Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β] ⦃f g : Matrix m n α →ₗ[R] β⦄
+    [Finite m] [Finite n][Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    ⦃f g : Matrix m n α →ₗ[R] β⦄
     (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap R i j = g ∘ₗ stdBasisMatrixLinearMap R i j) :
     f = g :=
   LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
