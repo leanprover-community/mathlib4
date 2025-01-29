@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.List.TakeDrop
 
 /-!
 # Lists with no duplicates

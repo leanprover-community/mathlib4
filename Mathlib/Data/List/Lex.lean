@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelClasses
-import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Basic
 
 /-!
 # Lexicographic ordering of lists.

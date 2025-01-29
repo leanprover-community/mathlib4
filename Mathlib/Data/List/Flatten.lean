@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Basic
 
 /-!
 # Join of a list of lists

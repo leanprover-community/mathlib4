@@ -3,7 +3,7 @@ Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 
