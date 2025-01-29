@@ -337,8 +337,8 @@ instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
   fun _ => CreatesColimitOfIsSplitPair.out _ _
 
 /--
-Beck's monadicity theorem. If `G` has a left adjoint and creates coequalizers of `G`-split pairs,
-then it is monadic.
+**Beck's monadicity theorem**: if `G` has a left adjoint and creates coequalizers of `G`-split
+pairs, then it is monadic.
 This is the converse of `createsGSplitCoequalizersOfMonadic`.
 -/
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
@@ -351,7 +351,7 @@ def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
   have : ReflectsColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
   exact monadicOfHasPreservesReflectsGSplitCoequalizers adj
 
-/-- An alternate version of Beck's monadicity theorem. If `G` reflects isomorphisms, preserves
+/-- An alternate version of **Beck's monadicity theorem**: if `G` reflects isomorphisms, preserves
 coequalizers of `G`-split pairs and `C` has coequalizers of `G`-split pairs, then it is monadic.
 -/
 def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIsomorphisms]
