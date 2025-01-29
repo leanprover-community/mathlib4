@@ -287,16 +287,15 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
   obtain h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
     MeasureTheory.tendstoInMeasure_of_tendsto_ae (f := f ∘ ns ∘ ns') (fun n ↦
     (hf ((ns ∘ ns') n))) h6
-  have h (f : ℕ → ℝ≥0) (hf1 : Tendsto f atTop (𝓝 0)) (hf2 : ∀ n, δ ≤ (f n) ) : False := by
-    revert hf2
+  have h (f : ℕ → ℝ≥0) (hf1 : Tendsto f atTop (𝓝 0)) : ¬(∀ (n : ℕ), δ ≤ f n) := by
     simp only [imp_false, not_forall, not_le]
-    obtain h1 : Metric.ball 0 δ ∈ map f atTop := by
-      apply hf1 (Metric.ball_mem_nhds 0 hδ)
-    simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Metric.mem_ball] at h1
-    obtain ⟨x, h2⟩ := h1
+    obtain ⟨x, h2⟩ : ∃ a, ∀ (b : ℕ), a ≤ b → dist (f b) 0 < ↑δ := by
+      simp_rw [← Metric.mem_ball, ← Set.mem_preimage, ← mem_atTop_sets, ← mem_map]
+      exact hf1 (Metric.ball_mem_nhds 0 hδ)
     use x
     obtain h3 := h2 x (by rfl)
-    simp [dist] at h3
+    simp only [dist, NNReal.val_eq_coe, NNReal.coe_zero, sub_zero, NNReal.abs_eq,
+      NNReal.coe_lt_coe] at h3
     exact h3
   exact h (fun n => (μ {x | ε ≤ dist (f (ns (ns' n)) x) (g x)}).toNNReal)
       (h7 ε hε) <| fun m ↦ h3 (ns' m)
