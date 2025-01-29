@@ -1,71 +1,56 @@
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+import Mathlib
 
 noncomputable section
 
 universe v u
 open CategoryTheory Limits
 
-variable {X : Type v} [Preorder X] {C : Type u}
-  [Category.{v} C] [HasLimits C]
-
-variable (F : X ⥤ C)
-
-open TopologicalSpace
-
-variable (X)
-
-def alexandrov : TopologicalSpace X where
-  IsOpen S := ∀ ⦃x y : X⦄, x ∈ S → x ≤ y → y ∈ S
-  isOpen_univ := fun _ _ _ _ => trivial
-  isOpen_inter A B hA hB x y hx h :=
-    ⟨hA hx.left h, hB hx.right h⟩
-  isOpen_sUnion S hS x y hx h := by
-    obtain ⟨T, hT, hx⟩ := hx
-    refine ⟨T, hT, hS T hT hx h⟩
-
-def Alexandrov : TopCat where
-  α := X
-  str := alexandrov X
-
 namespace Alexandrov
 
-variable {X}
+variable
+  {X : TopCat.{v}}
+  [Preorder X] [Topology.IsUpperSet X]
+  {C : Type u} [Category.{v} C] [HasLimits C]
+  (F : X ⥤ C)
 
-lemma mem_of_le {U : Opens (Alexandrov X)}
-    (x y : X) (h : x ≤ y) (hx : x ∈ U) :
-    y ∈ U :=
-  U.2 hx h
 
-def principalOpen (x : X) : Opens (Alexandrov X) :=
-  .mk { y | x ≤ y } <| fun _ _ h h' => le_trans h h'
+open TopologicalSpace Topology
 
-lemma principalOpen_le {x y : X} (h : x ≤ y) : principalOpen y ≤ principalOpen x :=
+def principalOpen (x : X) : Opens X :=
+  .mk { y | x ≤ y } <| by
+    rw [IsUpperSet.isOpen_iff_isUpperSet]
+    intro y z h1 h2
+    exact le_trans h2 h1
+
+lemma principalOpen_le {x y : X} (h : x ≤ y) :
+    principalOpen y ≤ principalOpen x :=
   fun _ hc => le_trans h hc
 
-lemma mem_principalOpen (x : X) : x ∈ principalOpen x := le_refl _
+lemma self_mem_principalOpen (x : X) : x ∈ principalOpen x := le_refl _
 
 @[simp]
-lemma principalOpen_le_iff {x : X} (U : Opens (Alexandrov X)) :
+lemma principalOpen_le_iff {x : X} (U : Opens X) :
     principalOpen x ≤ U ↔ x ∈ U := by
   refine ⟨?_, ?_⟩
   · intro h
     apply h
-    exact mem_principalOpen _
+    exact self_mem_principalOpen _
   · intro hx y hy
-    exact mem_of_le _ _ hy hx
+    have := U.2
+    rw [IsUpperSet.isOpen_iff_isUpperSet] at this
+    apply this hy hx
 
+variable (X) in
 @[simps]
-def principals : X ⥤ (Opens (Alexandrov X))ᵒᵖ where
+def principals : X ⥤ (Opens X)ᵒᵖ where
   obj x := .op <| principalOpen x
   map {x y} f := .op <| principalOpen_le f.le |>.hom
 
 lemma exists_le_of_le_sup {ι : Type v} {x : X}
-    (Us : ι → Opens (Alexandrov X))
+    (Us : ι → Opens X)
     (h : principalOpen x ≤ iSup Us) :
     ∃ i : ι, principalOpen x ≤ Us i := by
-  have : x ∈ iSup Us := h <| mem_principalOpen x
+  have : x ∈ iSup Us := h <| self_mem_principalOpen x
   simp only [Opens.mem_iSup] at this
   obtain ⟨i, hi⟩ := this
   refine ⟨i, ?_⟩
@@ -73,30 +58,30 @@ lemma exists_le_of_le_sup {ι : Type v} {x : X}
 
 open TopCat
 
+abbrev ιι : (Opens X)ᵒᵖ ⥤ C :=
+  (principals X).pointwiseRightKanExtension F
 
-abbrev ιι : Presheaf C (Alexandrov X) :=
-  principals.pointwiseRightKanExtension F
-
-def forget (U : Opens (Alexandrov X)) :
-    StructuredArrow (.op U) principals ⥤ X :=
-  StructuredArrow.proj (.op U) principals
+def forget (U : Opens X) :
+    StructuredArrow (.op U) (principals X) ⥤ X :=
+  StructuredArrow.proj (.op U) (principals X)
 
 @[simps]
-def forgetiSup {ι : Type v} (Us : ι → Opens (Alexandrov X)) :
-    StructuredArrow (.op <| iSup Us) principals ⥤ (FullSubcategory fun V => ∃ i, V ≤ Us i)ᵒᵖ where
+def forgetiSup {ι : Type v} (Us : ι → Opens X) :
+    StructuredArrow (.op <| iSup Us) (principals X) ⥤
+      (FullSubcategory fun V => ∃ i, V ≤ Us i)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := .op <| LE.le.hom <| principalOpen_le <| e.right.le
 
 variable {F} in
 @[simps]
-def lowerCone {α : Type v} (Us : α → Opens (Alexandrov X))
+def lowerCone {α : Type v} (Us : α → Opens X)
   (S : Cone ((fullSubcategoryInclusion fun V => ∃ i, V ≤ Us i).op ⋙ ιι F)) :
     Cone (forget (iSup Us) ⋙ F) where
   pt := S.pt
   π := {
     app := fun f =>
       S.π.app ((forgetiSup Us).obj f) ≫
-      limit.π (StructuredArrow.proj (Opposite.op <| principalOpen f.right) principals ⋙ F)
+      limit.π (StructuredArrow.proj (Opposite.op <| principalOpen f.right) (principals X) ⋙ F)
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by
       rintro x y e
@@ -109,17 +94,18 @@ def lowerCone {α : Type v} (Us : α → Opens (Alexandrov X))
         Functor.pointwiseRightKanExtension_obj, forgetiSup_map, homOfLE_leOfHom, Functor.comp_map,
         Functor.op_map, Quiver.Hom.unop_op, fullSubcategoryInclusion.map,
         Functor.pointwiseRightKanExtension_map, limit.lift_π]
-      let xx : StructuredArrow (Opposite.op (principalOpen x.right)) principals :=
+      let xx : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=
         ⟨.mk .unit, x.right, 𝟙 _⟩
-      let yy : StructuredArrow (Opposite.op (principalOpen x.right)) principals :=
+      let yy : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=
         ⟨.mk .unit, y.right, .op <| LE.le.hom <| principalOpen_le e.right.le⟩
       let ee : xx ⟶ yy := { left := 𝟙 _, right := e.right }
       exact limit.w
-        (StructuredArrow.proj (Opposite.op (principalOpen x.right)) principals ⋙ F) ee |>.symm
+        (StructuredArrow.proj (Opposite.op (principalOpen x.right)) (principals X) ⋙ F) ee
+        |>.symm
   }
 
 open Presheaf Functor SheafCondition
-def isLimit (α : Type v) (Us : α → Opens (Alexandrov X)) :
+def isLimit (α : Type v) (Us : α → Opens X) :
     IsLimit (mapCone (ιι F) (SheafCondition.opensLeCoverCocone Us).op) where
   lift S := limit.lift _ (lowerCone Us S)
   fac := by
@@ -155,18 +141,18 @@ def isLimit (α : Type v) (Us : α → Opens (Alexandrov X)) :
         NatTrans.op_app, pointwiseRightKanExtension_map, Category.assoc, limit.lift_π]
       congr
 
-theorem is_sheaf_ιι : (ιι F).IsSheaf := by
+theorem is_sheaf_ιι : Presheaf.IsSheaf (ιι F) := by
   rw [isSheaf_iff_isSheafOpensLeCover]
   intro ι Us
   constructor
   apply isLimit
 
 theorem is_sheaf_of_is_Kan_extension
-    (P : (Opens (Alexandrov X))ᵒᵖ ⥤ C)
-    (η : principals ⋙ P ⟶ F)
+    (P : (Opens X)ᵒᵖ ⥤ C)
+    (η : principals X ⋙ P ⟶ F)
     [P.IsRightKanExtension η] :
     IsSheaf P := by
-  let γ : principals ⋙ ιι F ⟶ F := principals.pointwiseRightKanExtensionCounit F
+  let γ : principals X ⋙ ιι F ⟶ F := (principals X).pointwiseRightKanExtensionCounit F
   let h2 : (ιι F).IsRightKanExtension γ := inferInstance
   have : P ≅ ιι F := @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ h2
   rw [isSheaf_iso_iff this]
