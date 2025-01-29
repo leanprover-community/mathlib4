@@ -41,11 +41,6 @@ def boundary (n : ℕ) : SSet.{u} where
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
-<<<<<<< HEAD
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{ α : Δ[n].obj m // _ }`. -/
-set_option linter.unusedVariables false in
-||||||| 49af109022
 #adaptation_note
 /--
 The new unused variable linter in
@@ -53,8 +48,6 @@ https://github.com/leanprover/lean4/pull/5338
 flags `{ α : Δ[n].obj m // _ }`.
 -/
 set_option linter.unusedVariables false in
-=======
->>>>>>> @{-1}
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
 

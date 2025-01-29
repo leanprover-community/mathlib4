@@ -24,14 +24,6 @@ assert_not_exists OrderTop
 
 namespace Nat
 
-<<<<<<< HEAD
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-we just unused argument warnings,
-but these are used in the decreasing by blocks.
-If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers. -/
-set_option linter.unusedVariables false
-
-||||||| 49af109022
 #adaptation_note
 /--
 After https://github.com/leanprover/lean4/pull/5338 we just unused argument warnings,
@@ -40,8 +32,6 @@ If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers.
 -/
 set_option linter.unusedVariables false
 
-=======
->>>>>>> @{-1}
 /-! ### Floor logarithm -/
 
 

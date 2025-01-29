@@ -35,11 +35,6 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
-<<<<<<< HEAD
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{ α : Δ[n].obj m // _ }`. -/
-set_option linter.unusedVariables false in
-||||||| 49af109022
 #adaptation_note
 /--
 The new unused variable linter in
@@ -47,8 +42,6 @@ https://github.com/leanprover/lean4/pull/5338
 flags `{ α : Δ[n].obj m // _ }`.
 -/
 set_option linter.unusedVariables false in
-=======
->>>>>>> @{-1}
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
