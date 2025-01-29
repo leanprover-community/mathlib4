@@ -7,8 +7,8 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
@@ -532,7 +532,7 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       exists_const _ _ s x hxU
     rw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
     refine (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU ?_
-    -- Replace the `ConcreteCategory.instFunLike` instance with `CommRingCat.hom`:
+    -- Replace the `HasForget.instFunLike` instance with `CommRingCat.hom`:
     show (structureSheaf R).presheaf.map (homOfLE hg).op _ =
       (structureSheaf R).presheaf.map iVU.op s
     rw [← hs, res_const']
@@ -929,7 +929,6 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
   infer_instance
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
--- Porting note: was @[simps (config := { rhsMd := Tactic.Transparency.semireducible })]
 @[simps!]
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)

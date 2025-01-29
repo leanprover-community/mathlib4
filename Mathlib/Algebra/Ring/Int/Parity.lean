@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
@@ -12,8 +13,7 @@ import Mathlib.Algebra.Ring.Int.Defs
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists Set.Subsingleton
+assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 

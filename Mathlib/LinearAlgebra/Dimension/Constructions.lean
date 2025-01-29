@@ -153,10 +153,8 @@ theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module
   simp [rank_finsupp]
 
 /-- The rank of `(ι →₀ R)` is `(#ι).lift`. -/
--- Porting note, this should not be `@[simp]`, as simp can prove it.
--- @[simp]
 theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal.lift.{u} #ι := by
-  simp [rank_finsupp]
+  simp
 
 /-- If `R` and `ι` lie in the same universe, the rank of `(ι →₀ R)` is `# ι`. -/
 theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := by simp

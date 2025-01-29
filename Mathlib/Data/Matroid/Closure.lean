@@ -76,6 +76,8 @@ In lemma names, the words `spanning` and `flat` are used as suffixes,
 for instance we have `ground_spanning` rather than `spanning_ground`.
 -/
 
+assert_not_exists Field
+
 open Set
 namespace Matroid
 

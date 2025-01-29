@@ -998,22 +998,6 @@ theorem subtypeDomain_sub : (v - v').subtypeDomain p = v.subtypeDomain p - v'.su
   ext fun _ => rfl
 
 @[simp]
-theorem single_neg (a : α) (b : G) : single a (-b) = -single a b :=
-  (singleAddHom a : G →+ _).map_neg b
-
-@[simp]
-theorem single_sub (a : α) (b₁ b₂ : G) : single a (b₁ - b₂) = single a b₁ - single a b₂ :=
-  (singleAddHom a : G →+ _).map_sub b₁ b₂
-
-@[simp]
-theorem erase_neg (a : α) (f : α →₀ G) : erase a (-f) = -erase a f :=
-  (eraseAddHom a : (_ →₀ G) →+ _).map_neg f
-
-@[simp]
-theorem erase_sub (a : α) (f₁ f₂ : α →₀ G) : erase a (f₁ - f₂) = erase a f₁ - erase a f₂ :=
-  (eraseAddHom a : (_ →₀ G) →+ _).map_sub f₁ f₂
-
-@[simp]
 theorem filter_neg (p : α → Prop) [DecidablePred p] (f : α →₀ G) : filter p (-f) = -filter p f :=
   (filterAddHom p : (_ →₀ G) →+ _).map_neg f
 
@@ -1344,10 +1328,8 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
--- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
-    c • Finsupp.single a b = Finsupp.single a (c * b) :=
-  smul_single _ _ _
+    c • Finsupp.single a b = Finsupp.single a (c * b) := by simp
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]

@@ -46,8 +46,7 @@ instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
   rw [RingHom.toMorphismProperty_respectsIso_iff]
   convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
   ext
-  -- Regression in https://github.com/leanprover-community/mathlib4/pull/17583: have to specify C explicitly below.
-  exact (ConcreteCategory.isIso_iff_bijective (C := CommRingCat) _).symm
+  exact (ConcreteCategory.isIso_iff_bijective _).symm
 
 instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance

@@ -28,6 +28,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
   base `B` of `M`.
 -/
 
+assert_not_exists Field
+
 open Set
 
 namespace Matroid

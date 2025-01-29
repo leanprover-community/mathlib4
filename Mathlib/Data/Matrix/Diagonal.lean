@@ -19,8 +19,7 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
  * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 

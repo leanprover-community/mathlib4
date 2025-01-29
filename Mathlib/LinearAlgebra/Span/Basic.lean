@@ -9,7 +9,6 @@ import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Order.CompactlyGenerated.Basic
@@ -146,26 +145,72 @@ theorem coe_scott_continuous :
   OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
     ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
 
-variable (R S s)
+section IsScalarTower
+
+variable (S)
+
+variable [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] (p : Submodule R M)
+
+/-- The inclusion of an `R`-submodule into its `S`-span, as an `R`-linear map. -/
+@[simps] def inclusionSpan :
+    p →ₗ[R] span S (p : Set M) where
+  toFun x := ⟨x, subset_span x.property⟩
+  map_add' x y := by simp
+  map_smul' t x := by simp
+
+lemma injective_inclusionSpan :
+    Injective (p.inclusionSpan S) := by
+  intro x y hxy
+  rw [Subtype.ext_iff] at hxy
+  simpa using hxy
+
+lemma span_range_inclusionSpan :
+    span S (range <| p.inclusionSpan S) = ⊤ := by
+  have : (span S (p : Set M)).subtype '' range (inclusionSpan S p) = p := by
+    ext; simpa [Subtype.ext_iff] using fun h ↦ subset_span h
+  apply map_injective_of_injective (span S (p : Set M)).injective_subtype
+  rw [map_subtype_top, map_span, this]
+
+variable (R s)
 
 /-- If `R` is "smaller" ring than `S` then the span by `R` is smaller than the span by `S`. -/
-theorem span_le_restrictScalars [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+theorem span_le_restrictScalars :
     span R s ≤ (span S s).restrictScalars R :=
   Submodule.span_le.2 Submodule.subset_span
 
 /-- A version of `Submodule.span_le_restrictScalars` with coercions. -/
 @[simp]
-theorem span_subset_span [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+theorem span_subset_span :
     ↑(span R s) ⊆ (span S s : Set M) :=
   span_le_restrictScalars R S s
 
 /-- Taking the span by a large ring of the span by the small ring is the same as taking the span
 by just the large ring. -/
-theorem span_span_of_tower [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+@[simp]
+theorem span_span_of_tower :
     span S (span R s : Set M) = span S s :=
   le_antisymm (span_le.2 <| span_subset_span R S s) (span_mono subset_span)
 
-variable {R S s}
+variable {R S} in
+lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
+    (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
+    span S (range (inclusion h₁)) = ⊤ := by
+  suffices (span S (range (inclusion h₁))).map q.subtype = q by
+    apply map_injective_of_injective q.injective_subtype
+    rw [this, q.map_subtype_top]
+  rw [map_span]
+  suffices q.subtype '' ((LinearMap.range (inclusion h₁)) : Set <| q.restrictScalars R) = p by
+    refine this ▸ le_antisymm ?_ h₂
+    simpa using span_mono (R := S) h₁
+  ext x
+  simpa [range_inclusion] using fun hx ↦ h₁ hx
+
+@[simp]
+theorem span_range_inclusion_restrictScalars_eq_top :
+    span S (range (inclusion <| span_le_restrictScalars R S s)) = ⊤ :=
+  span_range_inclusion_eq_top _ _ _ <| by simp
+
+end IsScalarTower
 
 theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] {x y : M} : ((R ∙ x) = R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
@@ -327,6 +372,23 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
+
+/-- If a bilinear map takes values in a submodule along two sets, then the same is true along
+the span of these sets. -/
+lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [CommSemiring R]
+    [AddCommGroup M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
+    (P' : Submodule R P) (s : Set M) (t : Set N)
+    (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
+    (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :
+    B x y ∈ P' := by
+  induction hx, hy using span_induction₂ with
+  | mem_mem u v hu hv => exact hB u hu v hv
+  | zero_left v hv => simp
+  | zero_right u hu => simp
+  | add_left u₁ u₂ v hu₁ hu₂ hv huv₁ huv₂ => simpa using add_mem huv₁ huv₂
+  | add_right u v₁ v₂ hu hv₁ hv₂ huv₁ huv₂ => simpa using add_mem huv₁ huv₂
+  | smul_left t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
+  | smul_right t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
 
 end AddCommMonoid
 

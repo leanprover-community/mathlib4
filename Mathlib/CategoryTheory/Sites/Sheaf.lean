@@ -75,10 +75,10 @@ https://stacks.math.columbia.edu/tag/00VR
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike in
 /-- Condition that a presheaf with values in a concrete category is separated for
 a Grothendieck topology. -/
-def IsSeparated (P : Cᵒᵖ ⥤ A) [ConcreteCategory A] : Prop :=
+def IsSeparated (P : Cᵒᵖ ⥤ A) [HasForget A] : Prop :=
   ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 

@@ -8,7 +8,6 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
-import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
@@ -18,10 +17,11 @@ import Mathlib.Tactic.Common
 # Basic properties of lists
 -/
 
-assert_not_exists Set.range
 assert_not_exists GroupWithZero
-assert_not_exists Ring
 assert_not_exists Lattice
+assert_not_exists Prod.swap_eq_iff_eq_swap
+assert_not_exists Ring
+assert_not_exists Set.range
 
 open Function
 
@@ -2220,14 +2220,6 @@ end Forall
 
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
-
-@[simp 1100]
-theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
-    (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
-  induction' xs with x xs xs_ih
-  · simp only [not_mem_nil, map_nil]
-  · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs

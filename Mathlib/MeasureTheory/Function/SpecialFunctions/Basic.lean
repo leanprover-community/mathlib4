@@ -18,9 +18,7 @@ See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
 -/
 
 -- Guard against import creep:
-assert_not_exists InnerProductSpace
-assert_not_exists Real.arctan
-assert_not_exists FiniteDimensional.proper
+assert_not_exists InnerProductSpace Real.arctan FiniteDimensional.proper
 
 noncomputable section
 

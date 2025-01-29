@@ -31,11 +31,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 Move the material about `Finset.range` so that the `Mathlib.Algebra.Group.Embedding` import can be
 removed.
 -/
-
--- TODO
--- assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists OrderedCommMonoid MonoidWithZero MulAction
 
 variable {α β γ : Type*}
 
@@ -492,7 +488,6 @@ theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : 
     (s ∆ t).image f = s.image f ∆ t.image f :=
   mod_cast Set.image_symmDiff hf s t
 
-@[simp]
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
   disjoint_iff_ne.2 fun _ ha _ hb =>

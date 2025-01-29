@@ -166,6 +166,8 @@ There are a few design decisions worth discussing.
   Proc. Amer. Math. Soc. 144 (2016), 459-471]
 -/
 
+assert_not_exists Field
+
 open Set
 
 /-- A predicate `P` on sets satisfies the **exchange property** if,

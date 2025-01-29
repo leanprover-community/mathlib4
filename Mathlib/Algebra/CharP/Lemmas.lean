@@ -12,9 +12,7 @@ import Mathlib.Data.Nat.Choose.Sum
 # Characteristic of semirings
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
-assert_not_exists orderOf
+assert_not_exists Algebra LinearMap orderOf
 
 open Finset
 
