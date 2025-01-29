@@ -153,7 +153,7 @@ lemma isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
   have := h.2 {0} algebraicIndependent_of_subsingleton
   simp [range_eq_empty, eq_comm (a := ∅)] at this
 
-theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
+@[nontriviality] theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
   have := Module.subsingleton R A
   (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
     (Cardinal.bddAbove_range _) ⟨{0}, algebraicIndependent_of_subsingleton⟩ (by simp)
@@ -265,7 +265,7 @@ theorem algebraicIndependent_empty_iff :
 
 end Subtype
 
-theorem AlgebraicIndependent.to_subtype_range (hf : AlgebraicIndependent R x) :
+theorem AlgebraicIndependent.to_subtype_range (hx : AlgebraicIndependent R x) :
     (range x).AlgebraicIndependent R := by
   nontriviality R
   rwa [algebraicIndependent_subtype_range hx.injective]

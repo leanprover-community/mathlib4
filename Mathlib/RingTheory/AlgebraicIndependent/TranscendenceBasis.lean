@@ -3,8 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matroid.Finitary
 import Mathlib.Data.Matroid.IndepAxioms
+import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
@@ -58,9 +58,8 @@ theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
     exists_isTranscendenceBasis_superset ((algebraicIndependent_empty_iff R A).mpr h)
 
 /-- `Type` version of `exists_isTranscendenceBasis`. -/
-theorem exists_isTranscendenceBasis' (R : Type u) {A : Type v} [CommRing R] [CommRing A]
-    [Algebra R A] (h : Injective (algebraMap R A)) :
-    ∃ (ι : Type v) (x : ι → A), IsTranscendenceBasis R x :=
+theorem exists_isTranscendenceBasis' (h : Injective (algebraMap R A)) :
+    ∃ (ι : Type w) (x : ι → A), IsTranscendenceBasis R x :=
   have ⟨s, h⟩ := exists_isTranscendenceBasis R h
   ⟨s, Subtype.val, h⟩
 
@@ -74,11 +73,10 @@ theorem trdeg_eq_iSup_cardinalMk_isTranscendenceBasis :
 
 variable {R}
 
-theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u} [CommRing R]
-    [Nontrivial R] {A : Type v} [CommRing A] [Algebra R A] {x : ι → A}
+theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
     (i : AlgebraicIndependent R x) :
     IsTranscendenceBasis R x ↔
-      ∀ (κ : Type v) (w : κ → A) (_ : AlgebraicIndependent R w) (j : ι → κ) (_ : w ∘ j = x),
+      ∀ (κ : Type w) (w : κ → A) (_ : AlgebraicIndependent R w) (j : ι → κ) (_ : w ∘ j = x),
         Surjective j := by
   fconstructor
   · rintro p κ w i' j rfl
@@ -98,7 +96,7 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
     Algebra.IsAlgebraic (adjoin R (range x)) A := by
   constructor
   intro a
-  rw [← not_iff_comm.1 (hx.1.option_iff _).symm]
+  rw [← not_iff_comm.1 (hx.1.option_iff_transcendental _).symm]
   intro ai
   have h₁ : range x ⊆ range fun o : Option ι => o.elim a x := by
     rintro x ⟨y, rfl⟩
@@ -277,7 +275,9 @@ private def indepMatroid : IndepMatroid A where
 
 /-- If `R` is a commutative ring and `A` is a commutative `R`-algebra with injective algebra map
 and no zero-divisors, then the `R`-algebraic independent subsets of `A` form a matroid. -/
-def matroid : Matroid A := (indepMatroid inj).matroid
+def matroid : Matroid A := (indepMatroid inj).matroid.copyBase univ
+  (fun s ↦ IsTranscendenceBasis R ((↑) : s → A)) rfl
+  (fun B ↦ by simp_rw [Matroid.base_iff_maximal_indep, isTranscendenceBasis_iff_maximal]; rfl)
 
 instance : (matroid inj).Finitary where
   indep_of_forall_finite := algebraicIndependent_of_finite
@@ -286,8 +286,10 @@ theorem matroid_indep_iff {s : Set A} :
     (matroid inj).Indep s ↔ s.AlgebraicIndependent R := Iff.rfl
 
 theorem matroid_base_iff {s : Set A} :
-    (matroid inj).Base s ↔ IsTranscendenceBasis R ((↑) : s → A) := by
-  rw [Matroid.base_iff_maximal_indep, isTranscendenceBasis_iff_maximal]; rfl
+    (matroid inj).Base s ↔ IsTranscendenceBasis R ((↑) : s → A) := Iff.rfl
+
+theorem matroid_cRank_eq : (matroid inj).cRank = trdeg R A :=
+  (trdeg_eq_iSup_cardinalMk_isTranscendenceBasis _).symm
 
 end AlgebraicIndependent
 
@@ -297,36 +299,27 @@ namespace IsTranscendenceBasis
 
 variable [Nontrivial R] [NoZeroDivisors A]
 
+theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
+    lift.{w} #ι = lift.{u} (trdeg R A) := by
+  rw [← matroid_cRank_eq, ← (matroid_base_iff hx.1.algebraMap_injective).mpr hx.to_subtype_range
+    |>.cardinalMk_eq_cRank, lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
+
+theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :
+    #ι = trdeg R A := by
+  rw [← lift_id #ι, lift_cardinalMk_eq_trdeg hx, lift_id]
+
 /-- Any two transcendence bases of a domain `A` have the same cardinality.
 May fail if `A` is not a domain; see https://mathoverflow.net/a/144580. -/
 @[stacks 030F]
 theorem lift_cardinalMk_eq (hx : IsTranscendenceBasis R x) (hy : IsTranscendenceBasis R y) :
     lift.{u'} #ι = lift.{u} #ι' := by
-  have inj := hx.1.algebraMap_injective
-  replace hx' := hx.to_subtype_range
-  replace hy' := hy.to_subtype_range
-  rw [← matroid_base_iff inj] at hx' hy'
-  have := hx'.cardinalMk_eq_of_finitary hy'
-  rwa [← lift_inj.{_, max u u'}, ← lift_lift.{u, u'}, ← lift_lift.{u', u},
-    ← lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩, lift_lift,
-    ← lift_mk_eq'.mpr ⟨.ofInjective _ hy.1.injective⟩, lift_lift,
-    ← lift_lift.{u', w}, ← lift_lift.{u, w}, lift_inj] at this
-
-theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
-    lift.{w} #ι = lift.{u} (trdeg R A) := by
-  rw [trdeg_eq_iSup_cardinalMk_isTranscendenceBasis, lift_iSup (bddAbove_range _)]
-  exact (le_ciSup_of_le (bddAbove_range _) ⟨_, hx.to_subtype_range⟩
-      (lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩).le).antisymm
-    (ciSup_le' fun s ↦ (lift_cardinalMk_eq s.2 hx).le)
+  rw [← lift_inj.{_, w}, lift_lift, lift_lift, ← lift_lift.{w, u'}, hx.lift_cardinalMk_eq_trdeg,
+    ← lift_lift.{w, u}, hy.lift_cardinalMk_eq_trdeg, lift_lift, lift_lift]
 
 @[stacks 030F] theorem cardinalMk_eq {ι' : Type u} {y : ι' → A}
     (hx : IsTranscendenceBasis R x) (hy : IsTranscendenceBasis R y) :
     #ι = #ι' := by
   rw [← lift_id #ι, lift_cardinalMk_eq hx hy, lift_id]
-
-theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :
-    #ι = trdeg R A := by
-  rw [← lift_id #ι, lift_cardinalMk_eq_trdeg hx, lift_id]
 
 end IsTranscendenceBasis
 

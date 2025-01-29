@@ -78,7 +78,7 @@ theorem trdeg_eq_zero_of_isAlgebraic [Algebra.IsAlgebraic R A] : trdeg R A = 0 :
 
 open AlgebraicIndependent
 
-theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) :
+theorem AlgebraicIndependent.option_iff_transcendental (hx : AlgebraicIndependent R x) (a : A) :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       Transcendental (adjoin R (range x)) a := by
   rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
@@ -87,17 +87,17 @@ theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) 
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
 
-theorem AlgebraicIndependent.optionElim_iff {a : A} :
+theorem AlgebraicIndependent.option_iff {a : A} :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       AlgebraicIndependent R x ∧ Transcendental (adjoin R (range x)) a :=
-  ⟨fun h ↦ have := h.comp _ (Option.some_injective _); ⟨this, (this.option_iff _).mp h⟩,
-    fun h ↦ (h.1.option_iff _).mpr h.2⟩
+  ⟨fun h ↦ have := h.comp _ (Option.some_injective _); ⟨this,
+    (this.option_iff_transcendental _).mp h⟩, fun h ↦ (h.1.option_iff_transcendental _).mpr h.2⟩
 
 theorem AlgebraicIndependent.insert_iff {s : Set A} {a : A} (h : a ∉ s) :
     (insert a s).AlgebraicIndependent R ↔
       s.AlgebraicIndependent R ∧ Transcendental (adjoin R s) a := by
-  classical rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm]
-  convert optionElim_iff (a := a) using 2
+  classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm]
+  convert option_iff (a := a) using 2
   · ext (_|_) <;> rfl
   · rw [Subtype.range_val]
 
@@ -113,9 +113,10 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
   refine hfin.diff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
     fun {a u} ha hu ha' h ↦ ?_
   have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
-  convert (((image_eq_range _ _ ▸ h.option_iff <| x a).2 <| H _ (hfin.subset (union_subset
-    inter_subset_left <| hu.trans diff_subset)) h a ha.2 this).comp _ (subtypeInsertEquivOption
-    this).injective).comp (Equiv.Set.ofEq union_insert) (Equiv.injective _) with x
+  convert (((image_eq_range .. ▸ h.option_iff_transcendental <| x a).2 <| H _ (hfin.subset
+      (union_subset inter_subset_left <| hu.trans diff_subset)) h a ha.2 this).comp _
+      (subtypeInsertEquivOption this).injective).comp
+    (Equiv.Set.ofEq union_insert) (Equiv.injective _) with x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 
 /-- Variant of `algebraicIndependent_of_finite_type` using `Transcendental`. -/
