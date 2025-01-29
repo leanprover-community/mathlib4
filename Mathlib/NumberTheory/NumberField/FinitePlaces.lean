@@ -46,7 +46,8 @@ lemma one_lt_norm : 1 < absNorm v.asIdeal := by
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1`  -/
 lemma one_lt_norm_nnreal : 1 < (absNorm v.asIdeal : NNReal) := mod_cast one_lt_norm v
 
-private lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0`  -/
+lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
   ne_zero_of_lt (one_lt_norm_nnreal v)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
