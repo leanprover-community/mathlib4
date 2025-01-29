@@ -964,6 +964,38 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
+-- Question: Is this a useful lemma at all?
+@[simp]
+lemma nil_takeUntil (h : v ∈ (nil : G.Walk v v).support := Walk.nil.start_mem_support) :
+    Walk.nil.takeUntil v h = Walk.nil := rfl
+
+-- Question: Is this a useful simp lemma?
+@[simp]
+lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
+    (hadj : G.Adj u v') (hwp' : w ∈ (p.cons hadj).support := List.mem_of_mem_tail hwp) :
+    (p.cons hadj).takeUntil w hwp' = (p.takeUntil w hwp).cons hadj := by
+  simp [Walk.takeUntil, h]
+
+@[simp]
+lemma takeUntil_first (p : G.Walk u v) (hup : u ∈ p.support) :
+    p.takeUntil u hup = Walk.nil := by cases p <;> simp [Walk.takeUntil]
+
+@[simp]
+lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
+    (p.takeUntil w hwp).Nil ↔ u = w := by
+  refine ⟨?_, fun h => by subst h; simp⟩
+  intro hnil
+  cases p with
+  | nil =>
+    simp only [takeUntil, eq_mpr_eq_cast] at hnil
+    exact hnil.eq
+  | cons h q =>
+    simp only [Walk.support_cons, List.mem_cons, false_or] at hwp
+    cases' hwp with hl hr
+    · exact hl.symm
+    · by_contra! hc
+      simp [cons_takeUntil hr hc] at hnil
+
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
@@ -1085,6 +1117,42 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   have := congr_arg Walk.length (p.take_spec h)
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
+
+lemma takeUntil_getVert {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.support)
+    (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
+  cases p with
+  | nil =>
+    simp only [Walk.support_nil, List.mem_singleton] at hw
+    aesop
+  | cons h q =>
+    simp at hw
+    by_cases huw : w = u
+    · subst huw
+      simp_all
+    simp only [huw, false_or] at hw
+    push_neg at huw
+    rw [cons_takeUntil hw huw.symm] at hn ⊢
+    by_cases hn0 : n = 0
+    · aesop
+    rw [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hn0]
+    apply q.takeUntil_getVert hw
+    rw [@Walk.length_cons] at hn
+    omega
+
+lemma takeUntil_snd (p : G.Walk u v) (hsu : w ≠ u) (h : w ∈ p.support) :
+    (p.takeUntil w h).snd = p.snd := by
+  apply p.takeUntil_getVert h
+  by_contra! hc
+  simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil_iff] at hc
+  exact hsu hc.symm
+
+lemma length_takeUntil_lt {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (huw : u ≠ w) :
+    (p.takeUntil u h).length < p.length := by
+  rw [(p.length_takeUntil_le h).lt_iff_ne]
+  intro hl
+  apply huw
+  simpa using ( hl ▸ takeUntil_getVert p h (by rfl) :
+    (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
