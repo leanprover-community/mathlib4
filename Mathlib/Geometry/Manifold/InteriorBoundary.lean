@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold
 
 /-!
 # Interior and boundary of a manifold
@@ -28,6 +28,13 @@ of `M` and `N`.
 - `ModelWithCorners.boundary_prod`: the boundary of `M × N` is `∂M × N ∪ (M × ∂N)`.
 - `ModelWithCorners.BoundarylessManifold.prod`: if `M` and `N` are boundaryless, so is `M × N`
 
+- `ModelWithCorners.interior_disjointUnion`: the interior of a disjoint union `M ⊔ M'`
+  is the union of the interior of `M` and `M'`
+- `ModelWithCorners.boundary_disjointUnion`: the boundary of a disjoint union `M ⊔ M'`
+  is the union of the boundaries of `M` and `M'`
+- `ModelWithCorners.boundaryless_disjointUnion`: if `M` and `M'` are boundaryless,
+  so is their disjoint union `M ⊔ M'`
+
 ## Tags
 manifold, interior, boundary
 
@@ -36,8 +43,8 @@ manifold, interior, boundary
 similarly for the boundary.
 - the interior of `M` is open, hence the boundary is closed (and nowhere dense)
   In finite dimensions, this requires e.g. the homology of spheres.
-- the interior of `M` is a smooth manifold without boundary
-- `boundary M` is a smooth submanifold (possibly with boundary and corners):
+- the interior of `M` is a manifold without boundary
+- `boundary M` is a submanifold (possibly with boundary and corners):
 follows from the corresponding statement for the model with corners `I`;
 this requires a definition of submanifolds
 - if `M` is finite-dimensional, its boundary has measure zero
@@ -50,14 +57,17 @@ open scoped Topology
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 namespace ModelWithCorners
+
+variable (I) in
 /-- `p ∈ M` is an interior point of a manifold `M` iff its image in the extended chart
 lies in the interior of the model space. -/
 def IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
 
+variable (I) in
 /-- `p ∈ M` is a boundary point of a manifold `M` iff its image in the extended chart
 lies on the boundary of the model space. -/
 def IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range I)
@@ -68,8 +78,8 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 
 lemma isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
-  ⟨fun h ↦ (chartAt H x).mem_interior_extend_target _ (mem_chart_target H x) h,
-    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
+  ⟨fun h ↦ (chartAt H x).mem_interior_extend_target (mem_chart_target H x) h,
+    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
 
 variable (M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
@@ -82,7 +92,7 @@ lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
   rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_diff_interior,
     I.isClosed_range.closure_eq, mem_diff]
-  exact fun h => ⟨mem_range_self _, h⟩
+  exact fun h ↦ ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma interior_union_boundary_eq_univ : (I.interior M) ∪ (I.boundary M) = (univ : Set M) :=
@@ -94,19 +104,27 @@ lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
   -- Choose some x in the intersection of interior and boundary.
   obtain ⟨x, h1, h2⟩ := not_disjoint_iff.mp h
   rw [← mem_empty_iff_false (extChartAt I x x),
-    ← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I)), mem_inter_iff]
+    ← disjoint_iff_inter_eq_empty.mp disjoint_interior_frontier, mem_inter_iff]
   exact ⟨h1, h2⟩
+
+lemma isInteriorPoint_iff_not_isBoundaryPoint (x : M) :
+    I.IsInteriorPoint x ↔ ¬I.IsBoundaryPoint x := by
+  refine ⟨?_,
+    by simpa only [or_iff_not_imp_right] using isInteriorPoint_or_isBoundaryPoint x (I := I)⟩
+  by_contra! h
+  rw [← mem_empty_iff_false (extChartAt I x x),
+    ← disjoint_iff_inter_eq_empty.mp disjoint_interior_frontier, mem_inter_iff]
+  exact h
 
 /-- The boundary is the complement of the interior. -/
 lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
   apply compl_unique ?_ I.interior_union_boundary_eq_univ
-  exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
+  exact disjoint_iff_inter_eq_empty.mp I.disjoint_interior_boundary
 
 /-- The interior is the complement of the boundary. -/
 lemma compl_boundary : (I.boundary M)ᶜ = I.interior M:= by
   rw [← compl_interior, compl_compl]
 
-variable {I} in
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ 𝓝 (extChartAt I x x) := by
   rw [mem_nhds_iff]
@@ -126,11 +144,11 @@ variable [I.Boundaryless]
 /-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
 instance : BoundarylessManifold I M where
   isInteriorPoint' x := by
-    let r := ((chartAt H x).isOpen_extend_target I).interior_eq
+    let r := ((chartAt H x).isOpen_extend_target (I := I)).interior_eq
     have : extChartAt I x = (chartAt H x).extend I := rfl
     rw [← this] at r
     rw [isInteriorPoint_iff, r]
-    exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
+    exact PartialEquiv.map_source _ (mem_extChartAt_source _)
 
 end Boundaryless
 
@@ -145,18 +163,18 @@ lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} [BoundarylessManifold 
 
 /-- If `I` is boundaryless, `M` has full interior. -/
 lemma interior_eq_univ [BoundarylessManifold I M] : I.interior M = univ :=
-  eq_univ_of_forall fun _ => BoundarylessManifold.isInteriorPoint I
+  eq_univ_of_forall fun _ => BoundarylessManifold.isInteriorPoint
 
 /-- Boundaryless manifolds have empty boundary. -/
 lemma Boundaryless.boundary_eq_empty [BoundarylessManifold I M] : I.boundary M = ∅ := by
   rw [← I.compl_interior, I.interior_eq_univ, compl_empty_iff]
 
 instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
-  isEmpty_coe_sort.mpr (Boundaryless.boundary_eq_empty I)
+  isEmpty_coe_sort.mpr Boundaryless.boundary_eq_empty
 
 /-- `M` is boundaryless iff its boundary is empty. -/
 lemma Boundaryless.iff_boundary_eq_empty : I.boundary M = ∅ ↔ BoundarylessManifold I M := by
-  refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty I⟩
+  refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty⟩
   intro x
   show x ∈ I.interior M
   rw [← compl_interior, compl_empty_iff] at h
@@ -172,11 +190,11 @@ end BoundarylessManifold
 /-! Interior and boundary of the product of two manifolds. -/
 section prod
 
-variable {I}
+variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  (J : ModelWithCorners 𝕜 E' H') {x : M} {y : N}
+  {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
@@ -198,7 +216,7 @@ lemma interior_prod :
 lemma boundary_prod :
     (I.prod J).boundary (M × N) = Set.prod univ (J.boundary N) ∪ Set.prod (I.boundary M) univ := by
   let h := calc (I.prod J).boundary (M × N)
-    _ = ((I.prod J).interior (M × N))ᶜ := (I.prod J).compl_interior.symm
+    _ = ((I.prod J).interior (M × N))ᶜ := compl_interior.symm
     _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [interior_prod]
     _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
   rw [h, I.compl_interior, J.compl_interior, union_comm]
@@ -207,14 +225,14 @@ lemma boundary_prod :
 /-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
 lemma boundary_of_boundaryless_left [BoundarylessManifold I M] :
     (I.prod J).boundary (M × N) = Set.prod (univ : Set M) (J.boundary N) := by
-  rw [boundary_prod, Boundaryless.boundary_eq_empty I]
+  rw [boundary_prod, Boundaryless.boundary_eq_empty (I := I)]
   have : Set.prod (∅ : Set M) (univ : Set N) = ∅ := Set.empty_prod
   rw [this, union_empty]
 
 /-- If `N` is boundaryless, `∂(M×N) = ∂M × N`. -/
 lemma boundary_of_boundaryless_right [BoundarylessManifold J N] :
     (I.prod J).boundary (M × N) = Set.prod (I.boundary M) (univ : Set N) := by
-  rw [boundary_prod, Boundaryless.boundary_eq_empty J]
+  rw [boundary_prod, Boundaryless.boundary_eq_empty (I := J)]
   have : Set.prod (univ : Set M) (∅ : Set N) = ∅ := Set.prod_empty
   rw [this, empty_union]
 
@@ -228,5 +246,115 @@ instance BoundarylessManifold.prod [BoundarylessManifold I M] [BoundarylessManif
   exact ⟨Set.prod_empty, Set.empty_prod⟩
 
 end prod
+
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+  [hM : IsManifold I n M] [hM' : IsManifold I n M'] [Nonempty H]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
+  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
+  [IsManifold J n N] [IsManifold J n N'] [Nonempty H']
+
+open Topology
+
+lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
+    I.IsInteriorPoint (.inl x: M ⊕ M') := by
+  rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
+    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  rw [Sum.inl_injective.extend_apply (chartAt H x)]
+  simpa [I.isInteriorPoint_iff, extChartAt] using hx
+
+lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
+    I.IsBoundaryPoint (.inl x: M ⊕ M') := by
+  rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
+  dsimp
+  rw [Sum.inl_injective.extend_apply (chartAt H x)]
+  simpa [I.isBoundaryPoint_iff, extChartAt] using hx
+
+lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
+    I.IsInteriorPoint (.inr x : M ⊕ M') := by
+  rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
+  dsimp
+  rw [Sum.inr_injective.extend_apply (chartAt H x)]
+  simpa [I.isInteriorPoint_iff, extChartAt] using hx
+
+lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
+    I.IsBoundaryPoint (.inr x : M ⊕ M') := by
+  rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
+  dsimp
+  rw [Sum.inr_injective.extend_apply (chartAt H x)]
+  simpa [I.isBoundaryPoint_iff, extChartAt] using hx
+
+-- Converse to the previous direction: if `x` were not an interior point,
+-- it had to be a boundary point, hence `p` were a boundary point also, contradiction.
+lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
+    (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
+  by_contra h
+  set x := Sum.getLeft p hleft
+  rw [isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
+  rw [isInteriorPoint_iff_not_isBoundaryPoint p] at hp
+  have := boundaryPoint_inl (M' := M') x (by tauto)
+  rw [← Sum.eq_left_getLeft_of_isLeft hleft] at this
+  exact hp this
+
+lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
+    (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := by
+  by_contra h
+  set x := Sum.getRight p hright
+  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I)).inter_eq]
+  constructor
+  · rw [ModelWithCorners.interior, mem_setOf]; exact hp
+  · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_right_getRight_of_isRight hright]
+    have := isInteriorPoint_or_isBoundaryPoint (I := I) x
+    exact boundaryPoint_inr (M' := M') x (by tauto)
+
+lemma interior_disjointUnion :
+    ModelWithCorners.interior (I := I) (M ⊕ M') =
+      Sum.inl '' (ModelWithCorners.interior (I := I) M)
+      ∪ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
+  ext p
+  constructor
+  · intro hp
+    by_cases h : Sum.isLeft p
+    · left
+      exact ⟨Sum.getLeft p h, isInteriorPoint_disjointUnion_left hp h, Sum.inl_getLeft p h⟩
+    · replace h := Sum.not_isLeft.mp h
+      right
+      exact ⟨Sum.getRight p h, isInteriorPoint_disjointUnion_right hp h, Sum.inr_getRight p h⟩
+  · intro hp
+    by_cases h : Sum.isLeft p
+    · set x := Sum.getLeft p h with x_eq
+      rw [Sum.eq_left_getLeft_of_isLeft h]
+      apply interiorPoint_inl x
+      have hp : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
+        obtain (good | ⟨y, hy, hxy⟩) := hp
+        exacts [good, (not_isLeft_and_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
+      obtain ⟨x', hx', hx'p⟩ := hp
+      simpa [x_eq, ← hx'p, Sum.getLeft_inl]
+    · set x := Sum.getRight p (Sum.not_isLeft.mp h) with x_eq
+      rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
+      apply interiorPoint_inr x
+      have hp : p ∈ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
+        obtain (⟨y, hy, hxy⟩ | good) := hp
+        exacts [(not_isLeft_and_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
+      obtain ⟨x', hx', hx'p⟩ := hp
+      simpa [x_eq, ← hx'p, Sum.getRight_inr]
+
+lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
+      Sum.inl '' (ModelWithCorners.boundary (I := I) M)
+      ∪ Sum.inr '' (ModelWithCorners.boundary (I := I) M') := by
+  simp only [← ModelWithCorners.compl_interior, interior_disjointUnion, inl_compl_union_inr_compl]
+
+/-- If `M` and `M'` are boundaryless, so is their disjoint union `M ⊔ M'`. -/
+instance boundaryless_disjointUnion
+    [hM: BoundarylessManifold I M] [hM': BoundarylessManifold I M'] :
+    BoundarylessManifold I (M ⊕ M') := by
+  rw [← Boundaryless.iff_boundary_eq_empty] at hM hM' ⊢
+  simp [boundary_disjointUnion, hM, hM']
+
+end disjointUnion
 
 end ModelWithCorners

@@ -153,8 +153,8 @@ end general
 
 section norm
 
-variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [PartialOrder A]
-  [AddCommGroup E] [NormedSpace ℂ A] [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E] [CStarModule A E]
+variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
+  [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
@@ -177,8 +177,6 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   rw [inner_self] at H
   exact hx H
 
-variable [StarModule ℂ A]
-
 protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self]
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
@@ -187,12 +185,11 @@ lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
 
 end
 
-variable [CStarRing A] [StarOrderedRing A] [StarModule ℂ A]
-  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+variable [StarOrderedRing A]
 
 open scoped InnerProductSpace in
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
-lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
+lemma inner_mul_inner_swap_le {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with h|h
   · simp [h, CStarModule.norm_zero (E := E)]
   · have h₁ : ∀ (a : A),
@@ -222,7 +219,7 @@ lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y
 open scoped InnerProductSpace in
 variable (E) in
 /-- The Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
-lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
+lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪y, x⟫ * ⟪x, y⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_star_mul_self, pow_two]
     _ ≤ ‖‖x‖^ 2 • ⟪y, y⟫‖ := by
@@ -233,10 +230,11 @@ lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ *
     _ = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
                 simp only [norm_eq_sqrt_norm_inner_self, norm_nonneg, Real.sq_sqrt]
     _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
-  refine (pow_le_pow_iff_left (R := ℝ) (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
+  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
   exact mul_nonneg CStarModule.norm_nonneg CStarModule.norm_nonneg
 
-protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
+include A in
+protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x + y‖ ^ 2 ≤ (‖x‖ + ‖y‖) ^ 2 := by
     calc _ ≤ ‖⟪x, x⟫ + ⟪y, x⟫‖ + ‖⟪x, y⟫‖ + ‖⟪y, y⟫‖ := by
           simp only [norm_eq_sqrt_norm_inner_self, inner_add_right, inner_add_left, ← add_assoc,
@@ -247,12 +245,13 @@ protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x
       _ = ‖x‖ ^ 2 + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖y‖ ^ 2 := by
           simp [norm_eq_sqrt_norm_inner_self]
       _ = (‖x‖ + ‖y‖) ^ 2 := by simp only [add_pow_two, add_left_inj]; ring
-  refine (pow_le_pow_iff_left CStarModule.norm_nonneg ?_ (by norm_num)).mp h
+  refine (pow_le_pow_iff_left₀ CStarModule.norm_nonneg ?_ (by norm_num)).mp h
   exact add_nonneg CStarModule.norm_nonneg CStarModule.norm_nonneg
 
+include A in
 /-- This allows us to get `NormedAddCommGroup` and `NormedSpace` instances on `E` via
 `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore`. -/
-lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
+lemma normedSpaceCore : NormedSpace.Core ℂ E where
   norm_nonneg _ := CStarModule.norm_nonneg
   norm_eq_zero_iff x := norm_zero_iff x
   norm_smul c x := by simp [norm_eq_sqrt_norm_inner_self, norm_smul, ← mul_assoc]
@@ -260,11 +259,11 @@ lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
 
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup [CompleteSpace A] : NormedAddCommGroup E :=
+abbrev normedAddCommGroup : NormedAddCommGroup E :=
   NormedAddCommGroup.ofCore CStarModule.normedSpaceCore
 
 open scoped InnerProductSpace in
-lemma norm_eq_csSup [CompleteSpace A] (v : E) :
+lemma norm_eq_csSup (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
   let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
@@ -286,10 +285,8 @@ open scoped InnerProductSpace
 `NormedAddCommGroup` and `NormedSpace` instances via `CStarModule.normedSpaceCore`, especially by
 using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
 `Analysis.CStarAlgebra.Module.Constructions` for examples. -/
-variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
-  [StarOrderedRing A] [NormedSpace ℂ A] [SMul Aᵐᵒᵖ E] [CompleteSpace A]
-  [NormedAddCommGroup E] [NormedSpace ℂ E] [StarModule ℂ A] [CStarModule A E] [IsScalarTower ℂ A A]
-  [SMulCommClass ℂ A A]
+variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul Aᵐᵒᵖ E]
+  [NormedAddCommGroup E] [NormedSpace ℂ E] [CStarModule A E]
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
 noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=

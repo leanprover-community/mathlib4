@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -13,9 +14,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 -/
 
 
-assert_not_exists Submonoid
-assert_not_exists Finset
-assert_not_exists Star
+assert_not_exists Submonoid Finset Star
 
 open Function
 

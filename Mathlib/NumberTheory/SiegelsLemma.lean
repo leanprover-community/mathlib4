@@ -38,8 +38,7 @@ open Matrix Finset
 
 namespace Int.Matrix
 
-variable {α β : Type*} [Fintype α] [Fintype β]
-  (A : Matrix α β ℤ) (v : β → ℤ)
+variable {α β : Type*} [Fintype α] [Fintype β] (A : Matrix α β ℤ)
 
 -- Some definitions and relative properties
 

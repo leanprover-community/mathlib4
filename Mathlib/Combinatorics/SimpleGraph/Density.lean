@@ -235,7 +235,7 @@ end Asymmetric
 
 section Symmetric
 
-variable {r : α → α → Prop} [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
+variable {r : α → α → Prop} [DecidableRel r] {s t : Finset α} {a b : α}
 
 @[simp]
 theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
@@ -338,8 +338,7 @@ theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h
     G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 := by
   rw [edgeDensity_def, edgeDensity_def, div_add_div_same, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl _ h
-  -- Porting note: Wrote a workaround for `positivity` tactic.
-  · apply mul_ne_zero <;> exact mod_cast Nat.pos_iff_ne_zero.1 (Nonempty.card_pos ‹_›)
+  · positivity
 
 end DecidableEq
 

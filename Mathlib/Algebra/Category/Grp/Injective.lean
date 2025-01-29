@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
 
@@ -40,7 +42,6 @@ universe u
 
 variable (A : Type u) [AddCommGroup A]
 
-
 theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
   obtain rfl | h0 := eq_or_ne m 0
@@ -56,9 +57,9 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
 
 namespace AddCommGrp
 
-theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
+theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
     Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff ⟨A⟩).symm
+  ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (⟨A,inferInstance⟩ : AddCommGrp) :=

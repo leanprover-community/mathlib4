@@ -3,8 +3,8 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Hom.Basic
 /-!
@@ -24,11 +24,11 @@ theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : 
   exact hf le_tsub_add
 
 theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
-    [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
+    [MulLeftMono R] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
   (AddHom.mulLeft a).le_map_tsub (monotone_id.const_mul' a) _ _
 
 theorem le_tsub_mul {R : Type*} [CommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
-    [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
+    [MulLeftMono R] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
   simpa only [mul_comm _ c] using le_mul_tsub
 
 end Add
