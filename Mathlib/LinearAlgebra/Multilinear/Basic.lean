@@ -374,6 +374,11 @@ theorem mkPiAlgebraFin_apply_const (a : A) :
 
 end
 
+@[simp]
+theorem smulRight_apply (f : MultilinearMap R M₁ R) (z : M₂) (m : ∀ i, M₁ i) :
+    f.smulRight z m = f m • z :=
+  rfl
+
 variable (R ι)
 
 theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
@@ -397,36 +402,13 @@ section RangeAddCommGroup
 variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] (f g : MultilinearMap R M₁ M₂)
 
-instance : Neg (MultilinearMap R M₁ M₂) :=
-  ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
-
 @[simp]
 theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
   rfl
 
-instance : Sub (MultilinearMap R M₁ M₂) :=
-  ⟨fun f g =>
-    ⟨fun m => f m - g m, fun m i x y => by
-      simp only [MultilinearMap.map_update_add, sub_eq_add_neg, neg_add]
-      abel,
-      fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
-
 @[simp]
 theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
   rfl
-
-instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
-  { MultilinearMap.addCommMonoid with
-    neg_add_cancel := fun _ => MultilinearMap.ext fun _ => neg_add_cancel _
-    sub_eq_add_neg := fun _ _ => MultilinearMap.ext fun _ => sub_eq_add_neg _ _
-    zsmul := fun n f =>
-      { toFun := fun m => n • f m
-        map_update_add' := fun m i x y => by simp [smul_add]
-        map_update_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
-    -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
-    zsmul_zero' := fun _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_zero' _
-    zsmul_succ' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_succ' _ _
-    zsmul_neg' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_neg' _ _ }
 
 end RangeAddCommGroup
 
