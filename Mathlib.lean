@@ -3233,8 +3233,8 @@ import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
-import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
