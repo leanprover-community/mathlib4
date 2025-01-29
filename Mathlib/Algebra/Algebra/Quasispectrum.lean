@@ -370,20 +370,16 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
 
 end Unitization
 
-lemma quasispectrum.swap_mul_eq {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
+lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] (a b : A) :
     quasispectrum R (a * b) = quasispectrum R (b * a) := by
-  have (c : A) : ((↑) : Rˣ → R) '' ((↑) ⁻¹' spectrum R (c : Unitization R A)) ∪ {r | ¬ IsUnit r} =
-      spectrum R (c : Unitization R A) := by
-    refine Set.Subset.antisymm (Set.union_subset (by simp) fun r hr ↦ ?_) fun r hr ↦ ?_
-    · simpa [← Unitization.quasispectrum_eq_spectrum_inr] using fun h _ ↦ hr h
-    · by_cases hr' : IsUnit r
-      · lift r to Rˣ using hr'
-        simpa using ⟨r, hr, rfl⟩
-      · exact Or.inr hr'
-  simp only [Unitization.quasispectrum_eq_spectrum_inr]
-  rw [← this (a * b), ← this (b * a), Unitization.inr_mul, Unitization.inr_mul,
-    spectrum.preimage_units_mul_eq_swap_mul]
+  rw [← Set.inter_union_compl (quasispectrum R (a * b)) {r | IsUnit r},
+    ← Set.inter_union_compl (quasispectrum R (b * a)) {r | IsUnit r}]
+  congr! 1
+  · simpa [Set.inter_comm _ {r | IsUnit r}, Unitization.quasispectrum_eq_spectrum_inr,
+      Unitization.inr_mul] using spectrum.setOf_isUnit_inter_mul_comm _ _
+  · rw [Set.inter_eq_right.mpr, Set.inter_eq_right.mpr]
+    all_goals exact fun _ ↦ quasispectrum.not_isUnit_mem _
 
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
@@ -477,7 +473,7 @@ variable [IsScalarTower S A A] [SMulCommClass S A A]
 
 lemma swap_mul_iff {f : S → R} {a b : A} :
     QuasispectrumRestricts (a * b) f ↔ QuasispectrumRestricts (b * a) f := by
-  simp only [quasispectrumRestricts_iff, quasispectrum.swap_mul_eq]
+  simp only [quasispectrumRestricts_iff, quasispectrum.mul_comm]
 
 alias ⟨swap_mul, _⟩ := swap_mul_iff
 
