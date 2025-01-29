@@ -145,8 +145,6 @@ theorem setIntegral_abs_condExp_le {s : Set Î±} (hs : MeasurableSet[m] s) (f : Î
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_abs_condexp_le := setIntegral_abs_condExp_le
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_abs_condExp_le := setIntegral_abs_condExp_le
 
 @[deprecated (since := "2025-01-21")]
 alias set_integral_abs_condexp_le := set_integral_abs_condExp_le

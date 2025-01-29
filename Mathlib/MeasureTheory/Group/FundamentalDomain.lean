@@ -400,8 +400,6 @@ theorem setIntegral_eq_tsum (h : IsFundamentalDomain G s μ) {f : α → E} {t :
     _ = ∑' g : G, ∫ x in t ∩ g • s, f x ∂μ := by
       simp only [h.restrict_restrict, measure_smul, inter_comm]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_eq_tsum := setIntegral_eq_tsum
 
 @[to_additive]
 theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t : Set α}
@@ -414,8 +412,6 @@ theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t 
       tsum_congr fun g =>
         (measurePreserving_smul g⁻¹ μ).setIntegral_image_emb (measurableEmbedding_const_smul _) _ _
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_eq_tsum' := setIntegral_eq_tsum'
 
 @[to_additive]
 protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
@@ -429,8 +425,6 @@ protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFunda
   · rw [integral_undef hfs, integral_undef]
     rwa [hs.integrableOn_iff ht hf] at hfs
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_eq := MeasureTheory.IsFundamentalDomain.setIntegral_eq
 
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise a.e.-disjoint

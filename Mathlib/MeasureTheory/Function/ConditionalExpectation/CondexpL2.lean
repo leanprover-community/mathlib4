@@ -544,8 +544,6 @@ theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : Measurab
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL2_indicator := setIntegral_condExpL2_indicator
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL2_indicator := setIntegral_condExpL2_indicator
 
 @[deprecated (since := "2025-01-21")]
 alias set_integral_condexpL2_indicator := set_integral_condExpL2_indicator
@@ -564,8 +562,6 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpIndSMul := setIntegral_condExpIndSMul
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpIndSMul := setIntegral_condExpIndSMul
 
 @[deprecated (since := "2025-01-21")]
 alias set_integral_condexpIndSMul := set_integral_condExpIndSMul

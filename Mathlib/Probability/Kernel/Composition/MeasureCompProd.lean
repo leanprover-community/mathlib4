@@ -189,8 +189,6 @@ lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
   rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd := setIntegral_compProd
 
 end Integral
 

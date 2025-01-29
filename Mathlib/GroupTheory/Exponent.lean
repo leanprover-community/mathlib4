@@ -496,11 +496,6 @@ section Group
 
 variable [Group G] {n m : ℤ}
 
-@[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
-  AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
-  Monoid.one_lt_exponent
-
 @[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
   Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
@@ -641,14 +636,6 @@ lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
 lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
-
--- TODO: delete
-/-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible,
-  deprecated "No deprecation message was provided." (since := "2024-02-17"))
-  "Any additive group of exponent two is abelian."]
-def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
-  mul_comm := mul_comm_of_exponent_two hG
 
 @[to_additive]
 lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)

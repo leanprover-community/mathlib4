@@ -225,7 +225,6 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
 -- matching. These lemmas package them back up as typeclass mediated operations.
-@[deprecated (since := "2024-04-05")] alias add_def := add_eq
 
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega

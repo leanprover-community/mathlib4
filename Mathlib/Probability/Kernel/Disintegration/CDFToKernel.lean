@@ -99,8 +99,6 @@ lemma setIntegral_stieltjesOfMeasurableRat_rat (hf : IsRatCondKernelCDF f κ ν)
   rw [setIntegral_congr_ae hs (g := fun b ↦ f (a, b) q) ?_, hf.setIntegral a hs]
   filter_upwards [stieltjesOfMeasurableRat_ae_eq hf a q] with b hb using fun _ ↦ hb
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_stieltjesOfMeasurableRat_rat := setIntegral_stieltjesOfMeasurableRat_rat
 
 lemma setLIntegral_stieltjesOfMeasurableRat_rat [IsFiniteKernel κ] (hf : IsRatCondKernelCDF f κ ν)
     (a : α) (q : ℚ) {s : Set β} (hs : MeasurableSet s) :
@@ -213,8 +211,6 @@ lemma setIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKe
   · exact (integrable_stieltjesOfMeasurableRat hf _ _).restrict
   · exact ae_of_all _ (fun _ ↦ stieltjesOfMeasurableRat_nonneg _ _ _)
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_stieltjesOfMeasurableRat := setIntegral_stieltjesOfMeasurableRat
 
 lemma integral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKernelCDF f κ ν)
     (a : α) (x : ℝ) :
@@ -380,8 +376,6 @@ lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux 
     · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
     · filter_upwards [hf.mono a] with c h_mono using le_ciInf (fun r ↦ h_mono (le_of_lt r.prop))
 
-@[deprecated (since := "2024-04-17")]
-alias IsRatCondKernelCDFAux.set_integral_iInf_rat_gt :=
   IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt
 
 lemma IsRatCondKernelCDFAux.iInf_rat_gt_eq (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel κ]

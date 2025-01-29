@@ -1298,8 +1298,6 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 @[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 @[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
 
-@[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
-@[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℝ)‖ = ofNat(n) := norm_natCast n

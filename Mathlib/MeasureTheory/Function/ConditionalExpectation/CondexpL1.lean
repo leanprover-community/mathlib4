@@ -376,8 +376,6 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpInd := setIntegral_condExpInd
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpInd := setIntegral_condExpInd
 
 @[deprecated (since := "2025-01-21")] alias set_integral_condexpInd := set_integral_condExpInd
 
@@ -471,8 +469,6 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL1CLM_of_measure_ne_top := setIntegral_condExpL1CLM_of_measure_ne_top
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condexpL1CLM_of_measure_ne_top :=
   setIntegral_condExpL1CLM_of_measure_ne_top
 
 @[deprecated (since := "2025-01-21")]
@@ -515,8 +511,6 @@ theorem setIntegral_condExpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL1CLM := setIntegral_condExpL1CLM
 
 @[deprecated (since := "2025-01-21")] alias set_integral_condexpL1CLM := set_integral_condExpL1CLM
 
@@ -645,8 +639,6 @@ theorem setIntegral_condExpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpL1 := setIntegral_condExpL1
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL1 := setIntegral_condExpL1
 
 @[deprecated (since := "2025-01-21")] alias set_integral_condexpL1 := set_integral_condExpL1
 

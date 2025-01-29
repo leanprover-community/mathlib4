@@ -774,8 +774,6 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 
-@[deprecated (since := "2024-04-06")] alias ball_congr := forall₂_congr
-@[deprecated (since := "2024-04-06")] alias bex_congr := exists₂_congr
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
