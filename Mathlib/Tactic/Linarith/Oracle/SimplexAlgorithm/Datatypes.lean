@@ -72,7 +72,7 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
   swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData : Array (Array Rat) := mat.data.modify j fun row =>
-      row.zipWith mat.data[i]! fun x y => x - coef * y
+      Array.zipWith (fun x y => x - coef * y) row mat.data[i]!
     ⟨newData⟩
   divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
 
