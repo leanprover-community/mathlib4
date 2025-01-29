@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Junyan Xu
 -/
 import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
