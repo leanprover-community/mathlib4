@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sina Hazratpour and Emily Riehl
+Authors: Sina Hazratpour, Emily Riehl
 -/
 
 import Mathlib.CategoryTheory.Closed.Cartesian
@@ -38,31 +38,58 @@ universe v u
 variable {C : Type u} [Category.{v} C]
 
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
-has right adjoint. -/
+has a right adjoint. -/
 class ExponentiableMorphism [HasPullbacks C] {I J : C} (f : I ⟶ J) where
   /-- The pushforward functor -/
   pushforward : Over I ⥤ Over J
   /-- The pushforward functor is right adjoint to the pullback functor -/
-  adj : Over.pullback f ⊣ pushforward := by infer_instance
+  adj : pullback f ⊣ pushforward := by infer_instance
 
 namespace ExponentiableMorphism
+
+variable [HasPullbacks C]
+
+#check Over.pullback
+
+/-- The identity morphisms `𝟙` are exponentiable. -/
+def id {I : C} : ExponentiableMorphism (𝟙 I) where
+  pushforward := 𝟭 (Over I)
+  adj := ofNatIsoLeft (F:= 𝟭 _) Adjunction.id (pullbackId).symm
+
+/-- The composition of exponentiable morphisms is exponentiable. -/
+def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
+  [fexp : ExponentiableMorphism f] [gexp : ExponentiableMorphism g] :
+  ExponentiableMorphism (f ≫ g) where
+  pushforward := (pushforward f) ⋙ (pushforward g)
+  adj := ofNatIsoLeft (gexp.adj.comp fexp.adj) (pullbackComp f g).symm
+
+/-- The conjugate isomorphism between pushforward functor the composition and the composition of
+pushforward functors. -/
+def pushforwardCompIso {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
+  [fexp : ExponentiableMorphism f] [gexp : ExponentiableMorphism g] :
+  (comp f g).pushforward ≅ fexp.pushforward ⋙ gexp.pushforward  :=
+  conjugateIsoEquiv (gexp.adj.comp fexp.adj) ((comp f g).adj) (pullbackComp f g)
+
+attribute [local instance] monoidalOfChosenFiniteProducts
+attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
+attribute [local instance] ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
+-- attribute [local instance] hasFiniteWidePullbacks_of_hasFiniteLimits
+
+
+/-- An arrow with a pushforward is exponentiable in the slice category. -/
+instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
+    [ExponentiableMorphism f] : Exponentiable (Over.mk f) where
+  rightAdj := pullback f ⋙ pushforward f
+  adj := by
+    apply ofNatIsoLeft _ _
+    · exact Over.pullback f ⋙ Over.map f
+    · exact Adjunction.comp ExponentiableMorphism.adj (Over.mapPullbackAdj _)
+    · sorry --exact natIsoTensorLeftOverMk f
 
 
 
 
 end ExponentiableMorphism
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

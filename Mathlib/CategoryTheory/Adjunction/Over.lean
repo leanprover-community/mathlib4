@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Andrew Yang
+Authors: Bhavik Mehta, Andrew Yang, Sina Hazratpour
 -/
 
 import Mathlib.CategoryTheory.Adjunction.Mates
@@ -120,6 +120,43 @@ end Over
 @[deprecated (since := "2024-05-18")] noncomputable alias star := Over.star
 
 @[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
+
+namespace forgetAdjStar
+
+variable [HasBinaryProducts C]
+
+@[simp]
+theorem unit_app_left {I : C} (X : Over I):
+    ((Over.forgetAdjStar I).unit.app X).left = prod.lift X.hom (𝟙 X.left) := by
+  simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
+
+@[simp]
+theorem unit_app {I : C} (X : Over I): (Over.forgetAdjStar I).unit.app X =
+    Over.homMk (prod.lift X.hom (𝟙 X.left)) := by
+  ext
+  simp
+
+@[simp]
+theorem counit_app {I : C} (X : C) :
+    ((Over.forgetAdjStar I).counit.app X) = prod.snd := by
+  simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
+
+@[simp]
+theorem homEquiv {I : C} (X : Over I) (A : C) (f : X.left ⟶ A) :
+    (Over.forgetAdjStar I).homEquiv X A f =
+    Over.homMk (prod.lift X.hom f) := by
+  rw [Adjunction.homEquiv_unit, unit_app]
+  ext
+  simp
+
+@[simp]
+theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (Over.star I).obj A) :
+     ((Over.forgetAdjStar I).homEquiv X A).symm f = f.left ≫ prod.snd := by
+   rw [Adjunction.homEquiv_counit, counit_app]
+   simp
+
+end forgetAdjStar
+
 
 namespace Under
 
