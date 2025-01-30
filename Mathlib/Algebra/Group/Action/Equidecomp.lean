@@ -88,7 +88,7 @@ instance : CoeFun (Equidecomp X G) fun _ => X → X := ⟨fun f => f.toFun⟩
 
 /-- A finite set of group elements witnessing that `f` is an equidecomposition. -/
 noncomputable
-def elements (f : Equidecomp X G) := f.decomp'.choose
+def elements (f : Equidecomp X G) : Finset G := f.decomp'.choose
 
 theorem decomp (f : Equidecomp X G) : IsDecompOn f f.source f.elements := f.decomp'.choose_spec
 
@@ -123,11 +123,11 @@ theorem source_restr (f : Equidecomp X G) {A : Set X} (hA : A ⊆ f.source) :
 theorem restr_of_source_subset {f : Equidecomp X G} {A : Set X} (hA : f.source ⊆ A) :
     f.restr A = f := by
   apply toPartialEquiv_injective
-  rw [restr_toPartialEquiv, PartialEquiv.restr_eq_of_source_subset hA]
+  rw [toPartialEquiv_restr, PartialEquiv.restr_eq_of_source_subset hA]
 
 @[simp]
 theorem restr_univ (f : Equidecomp X G) : f.restr univ = f :=
-  restr_eq_of_source_subset <| subset_univ _
+  restr_of_source_subset <| subset_univ _
 
 end SMul
 
@@ -140,12 +140,13 @@ variable [Monoid G] [MulAction G X]
 variable (X G)
 
 /-- The identity function is an equidecomposition of the space with itself. -/
+@[simps toPartialEquiv]
 def refl : Equidecomp X G where
   toPartialEquiv := .refl _
   decomp' := ⟨{1}, by simp [IsDecompOn]⟩
 
-@[simp]
-theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = .refl X := rfl
+/-@[simp]
+theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = .refl X := rfl-/
 
 variable {X} {G}
 
@@ -165,17 +166,13 @@ theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
   exact hg.comp' hf
 
 /-- The composition of two equidecompositions as an equidecomposition. -/
-@[simps, trans]
+@[simps toPartialEquiv, trans]
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
   decomp' := ⟨g.elements * f.elements, g.decomp.comp' f.decomp⟩
 
-@[simp] theorem trans_toPartialEquiv (f g : Equidecomp X G) :
-    (f.trans g).toPartialEquiv = f.toPartialEquiv.trans g.toPartialEquiv := rfl
-
-@[simp] theorem coe_trans (f g : Equidecomp X G) : ↑(f.trans g) = g ∘ f := rfl
-
-theorem trans_apply (f g : Equidecomp X G) (x : X) : (f.trans g) x = g (f x) := rfl
+/-@[simp] theorem trans_toPartialEquiv (f g : Equidecomp X G) :
+    (f.trans g).toPartialEquiv = f.toPartialEquiv.trans g.toPartialEquiv := rfl -/
 
 end Monoid
 
@@ -197,13 +194,6 @@ noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   decomp' := ⟨f.elements⁻¹, by
     convert f.decomp.of_leftInvOn f.leftInvOn
     rw [image_source_eq_target, symm_source]⟩
-
-@[simp]
-theorem invFun_eq_symm (f : Equidecomp X G) : f.invFun = f.symm := rfl
-
-@[simp]
-theorem symm_toPartialEquiv (f : Equidecomp X G) :
-    f.symm.toPartialEquiv = f.toPartialEquiv.symm := rfl
 
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
     f.symm x ∈ f.source := f.toPartialEquiv.map_target h
