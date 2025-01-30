@@ -386,6 +386,7 @@ The following arguments are of one of the three forms:
 2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder
 3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
 4. `Mathlib/Algebra/Fields/Basic.lean`: the file does not exist, it's actually somewhere in `.lake`
+   (not supported currently)
  -/
 def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
   match args with
@@ -423,13 +424,13 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
                 | some s =>
                   -- Find '.lean' files while skipping hidden folders
                   pure <| ! (s.startsWith ".")) |>.filter (·.extension == some "lean")
-            -- for a in newArgs do
-            --   -- TODO
-            --   dbg_trace a
-            --   pure ()
-            -- pure <| acc.insertMany <| newArgs.map (fun p => (.anonymous, p)) --TODO: get name
-            IO.println <| s!"recursive inclusion of files in folder {mod} is not implemented yet! Ignoring it."
-            pure acc
+            let mut newArgs' : Array (Name × FilePath) := #[]
+            for sourceFile in newArgs do
+              let pkgDir ← getPackageDir sourceFile
+              let path := sourceFile.withoutParent pkgDir
+              let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
+              newArgs' := newArgs'.push (mod, sourceFile)
+            pure <| acc.insertMany <| newArgs'
           else
             -- case 4 goes here currently.
             IO.println <| s!"Warning: Could not find {arg}, ignoring it. " ++
