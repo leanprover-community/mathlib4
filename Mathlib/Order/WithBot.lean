@@ -243,7 +243,7 @@ theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_co
 @[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, b = y ∧ x < b := by cases y <;> simp
+lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
 lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
 
@@ -714,7 +714,7 @@ theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := co
 @[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, a = x ∧ a < y := by cases x <;> simp
+lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
 
 lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
 
