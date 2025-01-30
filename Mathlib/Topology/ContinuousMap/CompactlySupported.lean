@@ -407,16 +407,74 @@ When `β` is equipped with a partial order, `C_c(α, β)` is given the pointwise
 
 variable {β : Type*} [TopologicalSpace β] [Zero β] [PartialOrder β]
 
-instance partialOrder [PartialOrder β] : PartialOrder C_c(α, β) :=
-  PartialOrder.lift (⇑) DFunLike.coe_injective
+instance partialOrder : PartialOrder C_c(α, β) := PartialOrder.lift (⇑) DFunLike.coe_injective
 
-theorem le_def [PartialOrder β] {f g : C_c(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
-  Pi.le_def
+theorem le_def {f g : C_c(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a := Pi.le_def
 
-theorem lt_def [PartialOrder β] {f g : C_c(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
-  Pi.lt_def
+theorem lt_def {f g : C_c(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a := Pi.lt_def
 
 end PartialOrder
+
+section SemilatticeSup
+
+variable [SemilatticeSup β] [TopologicalSpace β] [ContinuousSup β] [Zero β]
+
+instance sup : Max C_c(α, β) where max f g :=
+  { toFun := fun a ↦ f a ⊔ g a
+    hasCompactSupport' := HasCompactSupport.sup f.hasCompactSupport g.hasCompactSupport}
+
+@[simp, norm_cast] lemma coe_sup (f g : C_c(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
+
+@[simp] lemma sup_apply (f g : C_c(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
+
+instance semilatticeSup : SemilatticeSup C_c(α, β) :=
+  DFunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
+
+lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
+    s.sup' H f a = s.sup' H fun i ↦ f i a :=
+  Finset.comp_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+
+@[simp, norm_cast]
+lemma coe_sup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
+    ⇑(s.sup' H f) = s.sup' H fun i ↦ ⇑(f i) := by ext; simp [sup'_apply]
+
+end SemilatticeSup
+
+section SemilatticeInf
+
+variable [SemilatticeInf β] [TopologicalSpace β] [ContinuousInf β] [Zero β]
+
+instance inf : Min C_c(α, β) where min f g :=
+  { toFun := fun a ↦ f a ⊓ g a
+    hasCompactSupport' := HasCompactSupport.inf f.hasCompactSupport g.hasCompactSupport}
+
+
+@[simp, norm_cast] lemma coe_inf (f g : C_c(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
+
+@[simp] lemma inf_apply (f g : C_c(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
+
+instance semilatticeInf : SemilatticeInf C_c(α, β) :=
+  DFunLike.coe_injective.semilatticeInf _ fun _ _ ↦ rfl
+
+lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
+    s.inf' H f a = s.inf' H fun i ↦ f i a :=
+  Finset.comp_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+
+@[simp, norm_cast]
+lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
+    ⇑(s.inf' H f) = s.inf' H fun i ↦ ⇑(f i) := by ext; simp [inf'_apply]
+
+end SemilatticeInf
+
+section Lattice
+
+instance [Lattice β] [TopologicalSpace β] [TopologicalLattice β] [Zero β] :
+    Lattice C_c(α, β) :=
+  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+-- TODO transfer this lattice structure to `BoundedContinuousFunction`
+
+end Lattice
 
 /-! ### `C_c` as a functor
 

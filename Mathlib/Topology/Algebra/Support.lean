@@ -5,8 +5,10 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Order.Lattice
 
 /-!
 # The topological support of a function
@@ -369,6 +371,36 @@ protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport 
   hf.comp_left (g := abs) abs_zero
 
 end OrderedAddGroup
+
+section SemiLatticeSup
+
+variable [TopologicalSpace α] [SemilatticeSup β] [Zero β]
+
+variable {f g : α → β}
+
+theorem HasCompactSupport.sup (hf : HasCompactSupport f) (hg : HasCompactSupport g) :
+    HasCompactSupport (f ⊔ g) := by
+  apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_tsupport _)
+  rw [tsupport, tsupport, tsupport, ← closure_union]
+  apply closure_mono
+  exact Function.support_sup f g
+
+end SemiLatticeSup
+
+section SemiLatticeSup
+
+variable [TopologicalSpace α] [SemilatticeInf β] [Zero β]
+
+variable {f g : α → β}
+
+theorem HasCompactSupport.inf (hf : HasCompactSupport f) (hg : HasCompactSupport g) :
+    HasCompactSupport (f ⊓ g) := by
+  apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_tsupport _)
+  rw [tsupport, tsupport, tsupport, ← closure_union]
+  apply closure_mono
+  exact Function.support_inf f g
+
+end SemiLatticeSup
 
 end CompactSupport2
 
