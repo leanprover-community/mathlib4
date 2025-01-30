@@ -303,6 +303,11 @@ instance category : Category (∫ F) where
     simp only [assoc]
     simp only [assoc_cast, cast_trans]
 
+def forget : (∫ F) ⥤ C where
+  obj X := X.1
+  map {X Y} f := f.1
+
+
 end Total
 
 end Display
