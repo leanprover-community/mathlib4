@@ -303,7 +303,7 @@ lemma not_adj_toSubgraph_takeUntil_takeUntil [DecidableEq V] {u v w : V} {p : G.
     (hp : p.IsCycle) (hv : v ∈ p.support) (hw : w ∈ (p.takeUntil v hv).support) :
     ¬((p.takeUntil v hv).takeUntil w hw).toSubgraph.Adj w v := by
   intro h
-  obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp (mem_support_of_adj_toSubgraph' _ h)
+  obtain ⟨n, hn, hnl⟩ := mem_support_iff_exists_getVert.mp (mem_support_of_adj_toSubgraph' _ h)
   rw [(p.takeUntil v hv).getVert_takeUntil hw (by omega)] at hn
   have := length_takeUntil_lt (p.takeUntil v hv) hw h.ne
   have : n = (p.takeUntil v hv).length := by
