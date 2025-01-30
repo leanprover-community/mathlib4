@@ -48,14 +48,8 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans WithOne.lift.symm
       homEquiv_naturality_left_symm := by
-        intro S T M f g
-        ext x
-        simp only [Equiv.symm_symm, adjoinOne_map, coe_comp]
-        simp_rw [WithOne.map]
-        cases x
-        · rfl
-        · simp
-          rfl }
+        intros
+        ext ⟨_|_⟩ <;> simp <;> rfl }
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
 def free : Type u ⥤ MonCat.{u} where
