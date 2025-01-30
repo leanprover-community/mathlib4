@@ -107,7 +107,11 @@ namespace Equiv
 variable {S}
 variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 
-@[to_additive]
+/-- An equivalence of group extensions from a homomorphism making a commuting diagram. Such a
+    homomorphism is necessarily an isomorphism. -/
+@[to_additive
+      "An equivalence of additive group extensions from a homomorphism making a commuting diagram.
+      Such a homomorphism is necessarily an isomorphism."]
 noncomputable def ofMonoidHom (f : E →* E') (comp_inl : f.comp S.inl = S'.inl)
     (rightHom_comp : S'.rightHom.comp f = S.rightHom) : S.Equiv S' where
   __ := f
