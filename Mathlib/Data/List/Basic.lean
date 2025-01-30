@@ -29,6 +29,10 @@ open Nat hiding one_pos
 
 namespace List
 
+-- Renamed in lean core; to be removed with the version bump.
+alias replicate_append_replicate := append_replicate_replicate
+alias append_eq_nil_iff := append_eq_nil
+
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
@@ -379,7 +383,8 @@ theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.ge
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
 
-#adaptation_note /-- 2024-07-10: removed `@[simp]` since the LHS simplifies using the simp set. -/
+#adaptation_note /-- 2024-07-10
+removed `@[simp]` since the LHS simplifies using the simp set. -/
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -688,6 +693,9 @@ theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l �
   · simp only [Ne.symm h, false_or]
     rw [← ih]
     exact succ_inj'
+
+@[deprecated (since := "2025-01-28")]
+alias indexOf_eq_length := indexOf_eq_length_iff
 
 @[simp]
 theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = length l :=
@@ -1664,11 +1672,9 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note
-/--
+#adaptation_note /-- nightly-2024-07-27
 This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27.
--/
+The prime should be removed at nightly-2024-07-27. -/
 @[simp]
 theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset
