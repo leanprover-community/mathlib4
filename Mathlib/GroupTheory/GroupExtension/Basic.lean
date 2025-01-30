@@ -92,13 +92,13 @@ theorem exists_section_mul_eq_mul_inl : ∃ n : N, σ (g₁ * g₂) = σ g₁ * 
 @[to_additive
       "The composition of an isomorphism between equivalent additive group extensions and a
       section"]
-def ofEquiv : S'.Section where
+def equivComp : S'.Section where
   toFun := equiv ∘ σ
   rightInverse_rightHom g := by
     rw [Function.comp_apply, equiv.rightHom_map, rightHom_section]
 
 @[to_additive]
-theorem ofEquiv_def (g : G) : σ.ofEquiv equiv g = equiv (σ g) := rfl
+theorem equivComp_apply (g : G) : σ.equivComp equiv g = equiv (σ g) := rfl
 
 end Section
 
