@@ -600,11 +600,10 @@ protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFounde
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps (config := .asFn)]
-protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
-  { f.toEmbedding.optionMap with
-    toFun := WithBot.map f,
-    map_rel_iff' := @fun a b => WithBot.map_le_iff f f.map_rel_iff a b }
+@[simps! (config := .asFn)]
+protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
+  __ := f.toEmbedding.optionMap
+  map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
 @[simps (config := .asFn)]
