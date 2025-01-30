@@ -30,8 +30,6 @@ variable {α β γ : Type*}
 
 namespace SimpleGraph
 
--- Porting note: pruned variables to keep things out of local contexts, which
--- can impact how generalization works, or what aesop does.
 variable {G : SimpleGraph α} {H : SimpleGraph β}
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,

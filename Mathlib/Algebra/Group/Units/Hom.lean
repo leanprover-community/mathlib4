@@ -31,8 +31,7 @@ used to golf the basic `Group` lemmas.
 Add a `@[to_additive]` version of `IsLocalHom`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
