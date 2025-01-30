@@ -67,13 +67,12 @@ lemma ncard_inter (hrep : s.Represents C) (h : c ∈ C) : (s ∩ c).ncard = 1 :=
 
 lemma ncard_sdiff_of_mem [Fintype α] (hrep : s.Represents C) (h : c ∈ C) :
     ((c : Set α) \ s).ncard = (c : Set α).ncard - 1 := by
-  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _),
-    inter_comm, ncard_inter hrep h]
+  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _), inter_comm, ncard_inter hrep h]
 
 lemma ncard_sdiff_of_not_mem [Fintype α] (hrep : s.Represents C) (h : c ∉ C) :
     ((c : Set α) \ s).ncard = (c : Set α).ncard := by
-  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _),
-    inter_comm, disjoint_iff_inter_eq_empty.mp (hrep.exact h)]
+  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _), inter_comm,
+    disjoint_iff_inter_eq_empty.mp (hrep.exact h)]
 
 end Represents
 
