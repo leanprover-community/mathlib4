@@ -3,8 +3,9 @@ Copyright (c) 2024 Charlie Conneen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Charlie Conneen
 -/
-import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Topos.Power
+
 
 /-!
 # Topoi
