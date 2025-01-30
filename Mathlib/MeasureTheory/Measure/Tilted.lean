@@ -302,6 +302,14 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
 
+lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (f : α → ℝ) (g : α → E) :
+    Integrable g (μ.tilted f) ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
+  rw [Measure.tilted, integrable_withDensity_iff_integrable_smul']
+  · sorry
+  · sorry
+  · simp
+
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     μ.rnDeriv (ν.tilted f)
