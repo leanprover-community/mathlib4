@@ -541,22 +541,27 @@ instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance
 
 omit [Projective K V] in
+/- May fail if `V` is only a projective `R`-module;
+see https://stacks.math.columbia.edu/tag/05WG#comment-9913. -/
 theorem finite_dual_iff [Free K V] : Module.Finite K (Dual K V) ↔ Module.Finite K V := by
   refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
   have ⟨⟨ι, b⟩⟩ := Free.exists_basis (R := K) (M := V)
+  cases finite_or_infinite ι
+  · exact .of_basis b
+  have ⟨n, f, surj⟩ := Finite.exists_fin' K (Dual K V)
+  let g := Finsupp.llift K K K ι ≪≫ₗ b.repr.dualMap
+  let l := LinearMap.funLeft K K ((Fin.valEmbedding (n := n + 1)).trans (Infinite.natEmbedding ι))
+  have : Function.Surjective l := (Function.Embedding.injective _).surjective_comp_right
   nontriviality K
-  have ⟨⟨s, span_s⟩⟩ := h
-  classical
-  --haveI := (b.linearIndependent.map_injOn _ b.toDual_injective.injOn).finite_of_le_span_finite _ s ?_
-  · exact Finite.of_basis b
-  · rw [span_s]; apply le_top
+  simpa using le_of_fin_surjective K (l ∘ₗ g.symm ∘ₗ f) (this.comp (g.symm.surjective.comp surj))
 
 end
 
+
 omit [Projective K V] in
 theorem dual_rank_eq [Free K V] [Module.Finite K V] :
-    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
-  rw [lift_rank_eq]
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) :=
+  (Free.chooseBasis ..).dual_rank_eq
 
 section IsReflexive
 
@@ -1883,4 +1888,4 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 
 end TensorProduct
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2000
