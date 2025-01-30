@@ -793,16 +793,14 @@ theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSepar
 /-- If `F` is a field of exponential characteristic `q`, `a : E` is separable over `F`, then
 `F⟮a⟯ = F⟮a ^ q⟯`. -/
 theorem adjoin_simple_eq_adjoin_pow_expChar_of_isSeparable {a : E} (ha : IsSeparable F a)
-    (q : ℕ) [ExpChar F q] : F⟮a⟯ = F⟮a ^ q⟯ := by
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).mpr ha
-  simpa using adjoin_eq_adjoin_pow_expChar_of_isSeparable F E {a} q
+    (q : ℕ) [ExpChar F q] : F⟮a⟯ = F⟮a ^ q⟯ :=
+  pow_one q ▸ adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable F E ha q 1
 
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
 `F⟮a⟯ = F⟮a ^ q⟯` for any `a : E`. -/
 theorem adjoin_simple_eq_adjoin_pow_expChar_of_isSeparable' [Algebra.IsSeparable F E] (a : E)
-    (q : ℕ) [ExpChar F q] : F⟮a⟯ = F⟮a ^ q⟯ := by
-  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F F⟮a⟯ E
-  simpa using adjoin_eq_adjoin_pow_expChar_of_isSeparable' F E {a} q
+    (q : ℕ) [ExpChar F q] : F⟮a⟯ = F⟮a ^ q⟯ :=
+  pow_one q ▸ adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable' F E a q 1
 
 end IntermediateField
 
