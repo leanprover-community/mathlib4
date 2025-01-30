@@ -234,6 +234,7 @@ lemma IsNClique.insert_erase (hs : G.IsNClique n s) (ha : ∀ w ∈ s, w ≠ b �
     apply (hs.erase_of_mem hb).insert
     intro w h; rw [mem_erase] at h
     exact ha w h.2 h.1
+    
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
