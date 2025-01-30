@@ -318,6 +318,12 @@ theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : r
     abs (x ^ y) = x ^ re y := by
   rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
 
+open Filter in
+lemma norm_ofReal_cpow_eventually_eq_atTop (c : ℂ) :
+    (fun t : ℝ ↦ ‖(t : ℂ) ^ c‖) =ᶠ[atTop] fun t ↦ t ^ c.re := by
+  filter_upwards [eventually_gt_atTop 0] with t ht
+  rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
+
 lemma norm_natCast_cpow_of_re_ne_zero (n : ℕ) {s : ℂ} (hs : s.re ≠ 0) :
     ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
   rw [norm_eq_abs, ← ofReal_natCast, abs_cpow_eq_rpow_re_of_nonneg n.cast_nonneg hs]
@@ -962,6 +968,35 @@ lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log 
 
 end Complex
 
+namespace  Asymptotics
+
+open Filter
+
+variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
+
+theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
+    (hf : f =O[atTop] fun t ↦ (t : ℝ) ^ a) (hg : g =O[atTop] fun t ↦ (t : ℝ) ^ b)
+    (h : a + b ≤ c) :
+    (f * g) =O[atTop] fun t ↦ (t : ℝ) ^ c := by
+  refine (hf.mul hg).trans (Eventually.isBigO ?_)
+  filter_upwards [eventually_ge_atTop 1] with t ht
+  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
+    (zero_le_one.trans ht) (a + b))]
+  exact Real.rpow_le_rpow_of_exponent_le ht h
+
+theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
+    (hf : f =O[atTop] fun n ↦ (n : ℝ) ^ a) (hg : g =O[atTop] fun n ↦ (n : ℝ) ^ b)
+    (h : a + b ≤ c) :
+    (f * g) =O[atTop] fun n ↦ (n : ℝ) ^ c := by
+  refine (hf.mul hg).trans (Eventually.isBigO ?_)
+  filter_upwards [eventually_ge_atTop 1] with t ht
+  replace ht : 1 ≤ (t : ℝ) := Nat.one_le_cast.mpr ht
+  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
+    (zero_le_one.trans ht) (a + b))]
+  exact Real.rpow_le_rpow_of_exponent_le ht h
+
+end Asymptotics
+
 /-!
 ## Square roots of reals
 -/
@@ -1067,14 +1102,6 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
-
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
