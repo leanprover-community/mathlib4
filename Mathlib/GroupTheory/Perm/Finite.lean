@@ -251,5 +251,3 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
 end Fintype
 
 end Equiv.Perm
-
-
