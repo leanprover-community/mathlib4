@@ -214,7 +214,7 @@ theorem mulRowElemMat_eq_mulRow [Fintype m] [Monoid R] [NonAssocSemiring α]
     simp
   · rw [mulRow_other_rows_same, mul_apply, mulRow_other_rows_same]
     simp_rw [one_apply]
-    [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
     repeat exact h
 
 /-! ### mulRow elementary matrix has a left inverse -/
@@ -303,7 +303,7 @@ theorem addMulRowElemMat_eq_addMulRow [Fintype m] [NonAssocSemiring α] [SMulZer
   · rw [addMulRow_other_rows_same]
     rw [mul_apply, addMulRow_other_rows_same]
     simp_rw [one_apply]
-    [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
     repeat assumption
 
 /-! ### addMulRow elementary matrix has a left inverse -/
