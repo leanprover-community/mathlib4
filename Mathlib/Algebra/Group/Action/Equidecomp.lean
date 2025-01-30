@@ -88,9 +88,9 @@ instance : CoeFun (Equidecomp X G) fun _ => X → X := ⟨fun f => f.toFun⟩
 
 /-- A finite set of group elements witnessing that `f` is an equidecomposition. -/
 noncomputable
-def elements (f : Equidecomp X G) : Finset G := f.decomp'.choose
+def witness (f : Equidecomp X G) : Finset G := f.decomp'.choose
 
-theorem decomp (f : Equidecomp X G) : IsDecompOn f f.source f.elements := f.decomp'.choose_spec
+theorem decomp (f : Equidecomp X G) : IsDecompOn f f.source f.witness := f.decomp'.choose_spec
 
 @[simp]
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
@@ -110,7 +110,7 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
 @[simps!]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
-  decomp' := ⟨f.elements,
+  decomp' := ⟨f.witness,
     f.decomp.mono (source_restr_subset_source _ _) fun _ ↦ congrFun rfl⟩
 
 @[simp]
@@ -166,7 +166,7 @@ theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
 @[simps toPartialEquiv, trans]
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
-  decomp' := ⟨g.elements * f.elements, g.decomp.comp' f.decomp⟩
+  decomp' := ⟨g.witness * f.witness, g.decomp.comp' f.decomp⟩
 
 end Monoid
 
@@ -185,7 +185,7 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
 @[symm, simps toPartialEquiv]
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
-  decomp' := ⟨f.elements⁻¹, by
+  decomp' := ⟨f.witness⁻¹, by
     convert f.decomp.of_leftInvOn f.leftInvOn
     rw [image_source_eq_target, symm_source]⟩
 
