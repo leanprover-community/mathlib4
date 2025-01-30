@@ -262,10 +262,10 @@ If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
 def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
-  hashMap.foldM (init := default) fun acc path hash => do
+  hashMap.foldM (init := default) fun acc mod hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
-    if add then return acc.insert path hash else return acc
+    if add then return acc.insert mod hash else return acc
 
 def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
   hashMap.fold (init := default) fun acc _ hash => acc.insert hash

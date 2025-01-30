@@ -66,7 +66,7 @@ will return `False` as the real system path is unknown to the function.
 
 For example, `contains (".." / "myFolder") ("myFolder" / "..")` will always return `false`
 even though it might be true depending on which local working directory on is in
-(which `contains` does'nt know about since it's not in `IO`.)
+(which `contains` doesn't know about since it's not in `IO`)
 -/
 def contains (path target : FilePath) : Bool :=
   go path.components target.components
@@ -77,7 +77,7 @@ where
     | path, "." :: target => go path target
     | "" :: path, target => go path target
     | path, "" :: target => go path target
-    -- must not start with ".."
+    -- must not start with unequal quantity of ".."
     | ".." :: path, ".." :: target => go path target
     | ".." :: _, _ => false
     | _, ".." :: _ => false
