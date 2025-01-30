@@ -1863,7 +1863,7 @@ lemma baseChange_negY (P : Fin 3 → A) :
     (W'.baseChange B).toProjective.negY (f ∘ P) = f ((W'.baseChange A).toProjective.negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-protected lemma baseChange_neg (P : Fin 3 → A) :
+lemma baseChange_neg (P : Fin 3 → A) :
     (W'.baseChange B).toProjective.neg (f ∘ P) = f ∘ (W'.baseChange A).toProjective.neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_neg, map_baseChange]
 
