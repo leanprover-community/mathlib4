@@ -4,16 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.GroupTheory.Perm.ConjAct
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
 import Mathlib.GroupTheory.Perm.Finite
-import Mathlib.GroupTheory.Perm.Cycle.Factors
-
 
 /-! # Centralizer of a permutation and cardinality of conjugacy classes
   # in the symmetric groups
@@ -430,21 +429,21 @@ theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n in g.cycleType.toFinset, (g.cycleType.count n)! := by
   classical
-  let sc (c : g.cycleFactorsFinset) : ℕ := (c : Perm α).support.card
+  set sc : (c : g.cycleFactorsFinset) → ℕ := fun c ↦ (c : Perm α).support.card with hsc
   suffices Fintype.card (toPermHom g).range =
     Fintype.card { k : Perm g.cycleFactorsFinset | sc ∘ k = sc } by
-    simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf,
-      DomMulAct.stabilizer_card', ← CycleType.count_def]
+    simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf, DomMulAct.stabilizer_card', hsc,
+      Finset.univ_eq_attach]
+    simp_rw [← CycleType.count_def]
     apply Finset.prod_congr _ (fun _ _ => rfl)
     ext n
     simp only [Finset.univ_eq_attach, Finset.mem_image, Finset.mem_attach,
-        sc, true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
+        hsc, true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
     simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
   simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
   congr
   ext
-  rw [SetLike.mem_coe, mem_range_toPermHom_iff']
-  simp
+  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq, ← beq_eq_beq]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -491,13 +490,17 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
 theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
   rw [kerParam, MonoidHom.noncommCoprod_injective]
   refine ⟨ofSubtype_injective, ?_, ?_⟩
-  · apply injective_noncommPiCoprod_of_independent
-    intro a
-    simp only [zpowers_eq_closure, ← closure_iUnion]
-    apply disjoint_closure_of_disjoint_support
-    rintro - ⟨-⟩ - ⟨-, ⟨b, rfl⟩, -, ⟨h, rfl⟩, ⟨-⟩⟩
-    rw [← disjoint_iff_disjoint_support]
-    exact cycleFactorsFinset_pairwise_disjoint g a.2 b.2 (mt Subtype.ext_iff.mpr h.symm)
+  · apply MonoidHom.injective_noncommPiCoprod_of_iSupIndep
+    · intro a
+      simp only [range_subtype, ne_eq]
+      simp only [zpowers_eq_closure, ← closure_iUnion]
+      apply disjoint_closure_of_disjoint_support
+      rintro - ⟨-⟩ - ⟨-, ⟨b, rfl⟩, -, ⟨h, rfl⟩, ⟨-⟩⟩
+      rw [← disjoint_iff_disjoint_support]
+      apply cycleFactorsFinset_pairwise_disjoint g a.2 b.2
+      simp only [ne_eq, ← Subtype.ext_iff]
+      exact ne_comm.mp h
+    · exact fun i ↦ subtype_injective _
   · rw [noncommPiCoprod_range, ← ofSubtype.range.closure_eq]
     simp only [zpowers_eq_closure, ← closure_iUnion]
     apply disjoint_closure_of_disjoint_support
