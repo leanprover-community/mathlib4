@@ -30,11 +30,11 @@ variable (A : ι → Type*)
 variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
-  algebraMap := (Pi.ringHom fun i => algebraMap R (A i) : R →+* Π i, A i)
-  commutes' := fun a f => by ext; simp [Algebra.commutes]
-  smul_def' := fun a f => by ext; simp [Algebra.smul_def]
+  algebraMap := Pi.ringHom fun i ↦ algebraMap R (A i)
+  commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
+  smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
-theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i => algebraMap R (A i) a :=
+theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraMap R (A i) a :=
   rfl
 
 @[simp]
@@ -46,8 +46,7 @@ variable {ι} (R)
 /-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines a ring homomorphism
 `Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
 @[simps!]
-def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) :
-    B →ₐ[R] Π i, A i where
+def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
   __ := Pi.ringHom fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
@@ -56,8 +55,8 @@ etc. -/
 @[simps]
 def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
   { Pi.evalRingHom A i with
-    toFun := fun f => f i
-    commutes' := fun _ => rfl }
+    toFun := fun f ↦ f i
+    commutes' := fun _ ↦ rfl }
 
 @[simp]
 theorem algHom_evalAlgHom : algHom R A (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
@@ -84,7 +83,7 @@ etc. -/
 def constAlgHom : B →ₐ[R] A → B :=
   { Pi.constRingHom A B with
     toFun := Function.const _
-    commutes' := fun _ => rfl }
+    commutes' := fun _ ↦ rfl }
 
 /-- When `R` is commutative and permits an `algebraMap`, `Pi.constRingHom` is equal to that
 map. -/
@@ -115,8 +114,8 @@ variable [Algebra R A] [Algebra R B]
 @[simps]
 protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] ι → B :=
   { f.toRingHom.compLeft ι with
-    toFun := fun h => f ∘ h
-    commutes' := fun c => by
+    toFun := fun h ↦ f ∘ h
+    commutes' := fun c ↦ by
       ext
       exact f.commutes' c }
 
@@ -136,26 +135,26 @@ This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 -/
 @[simps apply]
 def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
-  { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i => (e i).toRingEquiv with
-    toFun := fun x j => e j (x j)
-    invFun := fun x j => (e j).symm (x j)
-    commutes' := fun r => by
+  { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
+    toFun := fun x j ↦ e j (x j)
+    invFun := fun x j ↦ (e j).symm (x j)
+    commutes' := fun r ↦ by
       ext i
       simp }
 
 @[simp]
 theorem piCongrRight_refl :
-    (piCongrRight fun i => (AlgEquiv.refl : A₁ i ≃ₐ[R] A₁ i)) = AlgEquiv.refl :=
+    (piCongrRight fun i ↦ (AlgEquiv.refl : A₁ i ≃ₐ[R] A₁ i)) = AlgEquiv.refl :=
   rfl
 
 @[simp]
 theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
-    (piCongrRight e).symm = piCongrRight fun i => (e i).symm :=
+    (piCongrRight e).symm = piCongrRight fun i ↦ (e i).symm :=
   rfl
 
 @[simp]
 theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
-    (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i => (e₁ i).trans (e₂ i) :=
+    (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
   rfl
 
 end AlgEquiv
