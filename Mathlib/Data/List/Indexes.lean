@@ -42,6 +42,7 @@ theorem mapIdx_append_one : ∀ {f : ℕ → α → β} {l : List α} {e : α},
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] :=
   mapIdx_concat
 
+set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29"), local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
     map (uncurry f) (enumFrom n l) = zipWith (fun i ↦ f (i + n)) (range (length l)) l := by
@@ -68,11 +69,12 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
 
 @[deprecated (since := "2024-10-15")] alias mapIdx_eq_nil := mapIdx_eq_nil_iff
 
+set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le length_mapIdx.ge) :
     (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
-  simp [mapIdx_eq_enum_map, enum_eq_zip_range]
+  simp [mapIdx_eq_zipIdx_map, enum_eq_zip_range]
 
 @[deprecated (since := "2024-08-19")] alias nthLe_mapIdx := get_mapIdx
 
@@ -160,6 +162,7 @@ end MapIdx
 section FoldrIdx
 
 -- Porting note: Changed argument order of `foldrIdxSpec` to align better with `foldrIdx`.
+set_option linter.deprecated false in
 /-- Specification of `foldrIdx`. -/
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start : ℕ) : β :=
@@ -205,6 +208,7 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
 section FoldlIdx
 
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
+set_option linter.deprecated false in
 /-- Specification of `foldlIdx`. -/
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
@@ -257,6 +261,7 @@ section MapIdxM
 -- Porting note: `[Applicative m]` replaced by `[Monad m] [LawfulMonad m]`
 variable {m : Type u → Type v} [Monad m]
 
+set_option linter.deprecated false in
 /-- Specification of `mapIdxMAux`. -/
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 def mapIdxMAuxSpec {β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
