@@ -237,7 +237,7 @@ theorem FG.countable_embedding (N : Type*) [L.Structure N] [Countable N] (_ : FG
     Countable (M ↪[L] N) :=
   Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
 
-instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
+instance FG.instCountable_embedding (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
   FG.countable_embedding N h
 
@@ -271,9 +271,17 @@ theorem FG.countable_Embedding_to_countable (N : Type*) [L.Structure N] [Countab
     Countable (M ↪[L] N) :=
   Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
 
-instance Fg.instCountable_Embedding_to_countable (N : Type*) [L.Structure N]
+instance FG.instCountable_Embedding_to_countable (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
   FG.countable_Embedding_to_countable N h
+
+theorem FG.countable_Equiv_to_countable (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
+    Countable (M ≃[L] N) :=
+  Function.Embedding.countable ⟨Equiv.toHom, Equiv.injective_toHom⟩
+
+instance FG.instCountable_Equiv_to_countable (N : Type*) [L.Structure N] [Countable N]
+    [h : FG L M] : Countable (M ≃[L] N) :=
+  FG.countable_Equiv_to_countable N h
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
