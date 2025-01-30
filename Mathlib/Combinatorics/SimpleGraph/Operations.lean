@@ -162,8 +162,8 @@ lemma edge_self_eq_bot : edge s s = ⊥ := by
 lemma sup_edge_self : G ⊔ edge s s = G := by
   rw [edge_self_eq_bot, sup_of_le_left bot_le]
 
-lemma lt_sup_edge (hne : s ≠ t) (hnadj : ¬G.Adj s t) : G < G ⊔ edge s t :=
-  left_lt_sup.2 fun h => hnadj <| h (by tauto)
+lemma lt_sup_edge (hne : s ≠ t) (hn : ¬G.Adj s t) : G < G ⊔ edge s t :=
+  left_lt_sup.2 fun h => hn <| h <| (edge_adj ..).mpr ⟨Or.inl ⟨rfl,rfl⟩, hne⟩
 
 variable {s t}
 
