@@ -19,7 +19,7 @@ import Mathlib.Data.Set.Card
 variable {α : Type*} {r : α → α → Prop}
 
 /-- Convert an equivalence class to a `Set`. -/
-def Quot.toSet (c : Quot r) : Set α := {v | Quot.mk r v = c}
+def Quot.toSet (c : Quot r) : Set α := {x | Quot.mk r x = c}
 
 instance : SetLike (Quot r) α where
   coe := Quot.toSet
@@ -28,6 +28,10 @@ instance : SetLike (Quot r) α where
     simpa using show x.out ∈ {v | Quot.mk r v = y} by
       rw [← h]
       exact x.out_eq
+
+@[simp] lemma Quot.mem_toSet {x : α} {c : Quot r} : x ∈ c.toSet ↔ Quot.mk r x = c := Iff.rfl
+
+@[ext] theorem Quot.ext (c d : Quot r) (h : ∀ x, x ∈ c ↔ x ∈ d) : c = d := SetLike.ext h
 
 namespace Set
 
