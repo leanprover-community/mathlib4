@@ -79,10 +79,8 @@ def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAd
   counit := functorialityCounit adj K
 
 include adj in
-/-- A left adjoint preserves colimits.
-
-See <https://stacks.math.columbia.edu/tag/0038>.
--/
+/-- A left adjoint preserves colimits. -/
+@[stacks 0038]
 lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
   preservesColimitsOfShape :=
     { preservesColimit :=
@@ -92,7 +90,7 @@ lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
                 ((adj.functorialityAdjunction _).homEquiv _ _)⟩ } }
 
 include adj in
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F :=
   adj.leftAdjoint_preservesColimits
 
@@ -117,7 +115,7 @@ noncomputable instance (priority := 100)
         { reflects := fun t =>
           ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
-@[deprecated (since := "2024-11-18")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-18")]
 lemma isEquivalenceReflectsColimits (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsColimitsOfSize.{v, u} E :=
   Functor.reflectsColimits_of_isEquivalence E
@@ -203,10 +201,8 @@ def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functori
   counit := functorialityCounit' adj K
 
 include adj in
-/-- A right adjoint preserves limits.
-
-See <https://stacks.math.columbia.edu/tag/0038>.
--/
+/-- A right adjoint preserves limits. -/
+@[stacks 0038]
 lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=
@@ -216,7 +212,7 @@ lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm⟩ } }
 
 include adj in
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G :=
   adj.rightAdjoint_preservesLimits
 
@@ -240,7 +236,7 @@ noncomputable instance (priority := 100)
         { reflects := fun t =>
             ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
-@[deprecated (since := "2024-11-18")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-18")]
 lemma isEquivalenceReflectsLimits (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsLimitsOfSize.{v, u} E :=
   Functor.reflectsLimits_of_isEquivalence E

@@ -54,7 +54,7 @@ assert_not_exists InnerProductSpace
 noncomputable section
 
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
-open scoped Classical ENNReal NNReal
+open scoped ENNReal NNReal
 
 variable {X Y E F : Type*}
 
@@ -141,6 +141,7 @@ theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i ∈ t, ∫ x in s i, f x ∂μ := by
+  classical
   induction' t using Finset.induction_on with a t hat IH hs h's
   · simp
   · simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
@@ -211,8 +212,7 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
       simp only [norm_one]
     _ = ∫⁻ _ in s, 1 ∂μ := by
-      rw [ofReal_integral_norm_eq_lintegral_nnnorm (integrableOn_const.2 (Or.inr hs.lt_top))]
-      simp only [nnnorm_one, ENNReal.coe_one]
+      simpa [ofReal_integral_norm_eq_lintegral_enorm (integrableOn_const.2 (.inr hs.lt_top))]
     _ = μ s := setLIntegral_one _
 
 @[deprecated (since := "2024-04-17")]
@@ -244,7 +244,7 @@ theorem tendsto_setIntegral_of_monotone
   have hSm : MeasurableSet S := MeasurableSet.iUnion_of_monotone h_mono hsm
   have hsub {i} : s i ⊆ S := subset_iUnion s i
   rw [← withDensity_apply _ hSm] at hfi'
-  set ν := μ.withDensity fun x => ‖f x‖₊ with hν
+  set ν := μ.withDensity (‖f ·‖ₑ) with hν
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.le
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
@@ -252,7 +252,7 @@ theorem tendsto_setIntegral_of_monotone
   filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← integral_diff (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe]
-  refine (ennnorm_integral_le_lintegral_ennnorm _).trans ?_
+  refine (enorm_integral_le_lintegral_enorm _).trans ?_
   rw [← withDensity_apply _ (hSm.diff (hsm _)), ← hν, measure_diff hsub (hsm _).nullMeasurableSet]
   exacts [tsub_le_iff_tsub_le.mp hi.1,
     (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
@@ -661,8 +661,8 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     (μ {x | ↑R < f x}).toReal * R < ∫ x in {x | ↑R < f x}, f x ∂μ := by
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
-    refine setLIntegral_mono_ae hfint.1.ennnorm <| ae_of_all _ fun x hx => ?_
-    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR,
+    refine setLIntegral_mono_ae hfint.1.enorm <| ae_of_all _ fun x hx => ?_
+    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR, enorm_eq_nnnorm,
       Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx), Subtype.mk_le_mk]
     exact le_of_lt hx
   rw [← sub_pos, ← smul_eq_mul, ← setIntegral_const, ← integral_sub hfint this,
@@ -941,7 +941,7 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
-  rw [tsum_congr B]
+  simp_rw [enorm_eq_nnnorm, tsum_congr B]
   have S' :
     Summable fun i : ι =>
       (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, setIntegral_nonneg (hs i) fun x _ => NNReal.coe_nonneg _⟩ :
@@ -1019,10 +1019,9 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _)
-    (Lp.eLpNorm_ne_top _)]
-  apply (le_of_eq _).trans (eLpNorm_mono_measure _ (Measure.restrict_le_self (s := s)))
-  exact eLpNorm_congr_ae (Memℒp.coeFn_toLp _)
+  rw [Lp.norm_def, Lp.norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp _)]
+  refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
+  exact eLpNorm_mono_measure _ Measure.restrict_le_self
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
@@ -1072,6 +1071,24 @@ theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMea
     f_nonneg f_x
 
 end OpenPos
+
+section Support
+
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
+  {ν : Measure X} {F : X → M}
+
+theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
+  nth_rw 2 [← setIntegral_univ]
+  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
+  exact fun _ hx => nmem_support.mp <| not_mem_of_mem_diff hx
+
+theorem MeasureTheory.setIntegral_tsupport [TopologicalSpace X] :
+    ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
+  nth_rw 2 [← setIntegral_univ]
+  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (tsupport F))]
+  exact fun _ hx => image_eq_zero_of_nmem_tsupport <| not_mem_of_mem_diff hx
+
+end Support
 
 /-! Fundamental theorem of calculus for set integrals -/
 section FTC
@@ -1316,6 +1333,8 @@ end ContinuousMap
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 
+theorem integral_complex_ofReal {f : X → ℝ} : ∫ x, (f x : ℂ) ∂μ = ∫ x, f x ∂μ := integral_ofReal
+
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ x, RCLike.re (f x) ∂μ = RCLike.re (∫ x, f x ∂μ) :=
   (@RCLike.reCLM 𝕜 _).integral_comp_comm hf
@@ -1399,10 +1418,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
     · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, ?_⟩
-      rw [withDensity_apply _ s_meas] at hs
-      rw [HasFiniteIntegral]
-      convert hs with x
-      simp only [NNReal.nnnorm_eq]
+      simpa [withDensity_apply _ s_meas, hasFiniteIntegral_iff_enorm] using hs
   · intro u u' _ u_int u'_int h h'
     change
       (∫ x : X, u x + u' x ∂μ.withDensity fun x : X => ↑(f x)) = ∫ x : X, f x • (u x + u' x) ∂μ
@@ -1493,7 +1509,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
 
 end thickenedIndicator
 
--- We declare a new `{X : Type*}` to discard the instance `[MeasureableSpace X]`
+-- We declare a new `{X : Type*}` to discard the instance `[MeasurableSpace X]`
 -- which has been in scope for the entire file up to this point.
 variable {X : Type*}
 

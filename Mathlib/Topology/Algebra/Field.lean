@@ -32,6 +32,14 @@ theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a 
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
+/-- Compact hausdorff topological fields are finite. -/
+instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
+    [TopologicalRing K] [CompactSpace K] [T2Space K] : Finite K := by
+  suffices DiscreteTopology K by
+    exact finite_of_compact_of_discrete
+  rw [discreteTopology_iff_isOpen_singleton_zero]
+  exact GroupWithZero.isOpen_singleton_zero
+
 variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
@@ -52,7 +60,7 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
       · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find InvMemClass instance
-        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
+        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv_eq_inv]
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 
 theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
@@ -170,3 +178,13 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
       (iff_of_eq (iff_false _)).2 (hg_ne _)] at hy' ⊢ <;> assumption
 
 end Preconnected
+
+section ContinuousSMul
+
+variable {F : Type*} [DivisionRing F] [TopologicalSpace F] [TopologicalRing F]
+    (X : Type*) [TopologicalSpace X] [MulAction F X] [ContinuousSMul F X]
+
+instance Subfield.continuousSMul (M : Subfield F) : ContinuousSMul M X :=
+  Subring.continuousSMul M.toSubring X
+
+end ContinuousSMul

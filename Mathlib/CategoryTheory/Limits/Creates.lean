@@ -332,7 +332,7 @@ instance (priority := 100) preservesLimit_of_createsLimit_and_hasLimit (K : J �
     ((liftedLimitMapsToOriginal (limit.isLimit _)).symm ≪≫
       (Cones.functoriality K F).mapIso ((liftedLimitIsLimit (limit.isLimit _)).uniqueUpToIso t))⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
     [CreatesLimit K F] [HasLimit (K ⋙ F)] : PreservesLimit K F :=
   preservesLimit_of_createsLimit_and_hasLimit _ _
@@ -342,7 +342,7 @@ lemma preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
 instance (priority := 100) preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] : PreservesLimitsOfShape J F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] :
     PreservesLimitsOfShape J F :=
@@ -354,7 +354,7 @@ instance (priority := 100) preservesLimits_of_createsLimits_and_hasLimits (F : C
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitsOfCreatesLimitsAndHasLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F :=
@@ -466,7 +466,7 @@ instance (priority := 100) preservesColimit_of_createsColimit_and_hasColimit (K 
         (Cocones.functoriality K F).mapIso
           ((liftedColimitIsColimit (colimit.isColimit _)).uniqueUpToIso t))⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitOfCreatesColimitAndHasColimit (K : J ⥤ C) (F : C ⥤ D)
     [CreatesColimit K F] [HasColimit (K ⋙ F)] : PreservesColimit K F :=
   preservesColimit_of_createsColimit_and_hasColimit _ _
@@ -477,7 +477,7 @@ instance (priority := 100) preservesColimitOfShape_of_createsColimitsOfShape_and
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F :=
@@ -489,7 +489,7 @@ instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits 
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitsOfCreatesColimitsAndHasColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F :=
@@ -500,7 +500,7 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
     CreatesLimit K₂ F :=
   { reflectsLimit_of_iso_diagram F h with
     lifts := fun c t =>
-      let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) c).symm t
+      let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCone := (Cones.postcompose h.hom).obj (liftLimit t')
         validLift :=
           Functor.mapConePostcompose F ≪≫
@@ -513,7 +513,7 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
 /-- If `F` creates the limit of `K` and `F ≅ G`, then `G` creates the limit of `K`. -/
 def createsLimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimit K F] : CreatesLimit K G where
   lifts c t :=
-    { liftedCone := liftLimit ((IsLimit.postcomposeInvEquiv (isoWhiskerLeft K h : _) c).symm t)
+    { liftedCone := liftLimit ((IsLimit.postcomposeInvEquiv (isoWhiskerLeft K h :) c).symm t)
       validLift := by
         refine (IsLimit.mapConeEquiv h ?_).uniqueUpToIso t
         apply IsLimit.ofIsoLimit _ (liftedLimitMapsToOriginal _).symm
@@ -534,7 +534,7 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
     CreatesColimit K₂ F :=
   { reflectsColimit_of_iso_diagram F h with
     lifts := fun c t =>
-      let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) c).symm t
+      let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCocone := (Cocones.precompose h.inv).obj (liftColimit t')
         validLift :=
           Functor.mapCoconePrecompose F ≪≫
@@ -548,7 +548,7 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
 /-- If `F` creates the colimit of `K` and `F ≅ G`, then `G` creates the colimit of `K`. -/
 def createsColimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimit K F] : CreatesColimit K G where
   lifts c t :=
-    { liftedCocone := liftColimit ((IsColimit.precomposeHomEquiv (isoWhiskerLeft K h : _) c).symm t)
+    { liftedCocone := liftColimit ((IsColimit.precomposeHomEquiv (isoWhiskerLeft K h :) c).symm t)
       validLift := by
         refine (IsColimit.mapCoconeEquiv h ?_).uniqueUpToIso t
         apply IsColimit.ofIsoColimit _ (liftedColimitMapsToOriginal _).symm

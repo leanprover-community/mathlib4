@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -14,10 +15,10 @@ In this file we prove the primitive element theorem.
 
 ## Main results
 
-- `exists_primitive_element`: a finite separable extension `E / F` has a primitive element, i.e.
-  there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
+- `Field.exists_primitive_element`: a finite separable extension `E / F` has a primitive element,
+  i.e. there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
 
-- `exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
+- `Field.exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
   primitive element if and only if there exist only finitely many intermediate fields between `E`
   and `F`.
 
@@ -286,9 +287,6 @@ theorem FiniteDimensional.of_finite_intermediateField
   rw [htop] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_finite_intermediateField := FiniteDimensional.of_finite_intermediateField
-
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
   haveI := FiniteDimensional.of_finite_intermediateField F E
@@ -306,9 +304,6 @@ theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
   have hfin := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) α)
   rw [hprim] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
-
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_exists_primitive_element := FiniteDimensional.of_exists_primitive_element
 
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebraic F E]

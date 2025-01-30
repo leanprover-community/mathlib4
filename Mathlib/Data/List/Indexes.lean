@@ -3,13 +3,20 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Basic
 
 /-!
 # Lemmas about List.*Idx functions.
 
 Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx` and `List.foldrIdx`.
+
+As of 2025-01-29, these are not used anywhere in Mathlib. Moreover, with
+`List.enum` and `List.enumFrom` being replaced by `List.zipIdx`
+in Lean's `nightly-2025-01-29` release, they now use deprecated functions and theorems.
+Rather than updating this unused material, we are deprecating it.
+Anyone wanting to restore this material is welcome to do so, but will need to update uses of
+`List.enum` and `List.enumFrom` to use `List.zipIdx` instead.
+However, note that this material will later be implemented in the Lean standard library.
 -/
 
 assert_not_exists MonoidWithZero
@@ -24,30 +31,18 @@ variable {α : Type u} {β : Type v}
 
 section MapIdx
 
+@[deprecated reverseRecOn (since := "2025-01-28")]
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
-    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
-  let q := fun l ↦ p (reverse l)
-  have pq : ∀ l, p (reverse l) → q l := by simp only [q, reverse_reverse]; intro; exact id
-  have qp : ∀ l, q (reverse l) → p l := by simp only [q, reverse_reverse]; intro; exact id
-  intro l
-  apply qp
-  generalize (reverse l) = l
-  induction' l with head tail ih
-  · apply pq; simp only [reverse_nil, base]
-  · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
+    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) :=
+  fun l => l.reverseRecOn base ind
 
-@[deprecated (since := "2024-10-15")] alias mapIdxGo_append := mapIdx_go_append
 @[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
 
-theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
-    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
-  intros f l e
-  unfold mapIdx
-  rw [mapIdx_go_append]
-  simp only [mapIdx.go, Array.size_toArray, mapIdx_go_length, length_nil, Nat.add_zero,
-    Array.push_toList, Array.toList_toArray]
+theorem mapIdx_append_one : ∀ {f : ℕ → α → β} {l : List α} {e : α},
+    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] :=
+  mapIdx_concat
 
-@[local simp]
+@[deprecated "Deprecated without replacement." (since := "2025-01-29"), local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
     map (uncurry f) (enumFrom n l) = zipWith (fun i ↦ f (i + n)) (range (length l)) l := by
   intro l
@@ -61,8 +56,8 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     rw [this]; rfl
   · cases' l with head tail
     · contradiction
-    · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, Nat.zero_add,
-        zipWith_map_left]
+    · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
+        Nat.zero_add, zipWith_map_left, true_and]
       rw [ih]
       · suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
           rw [this]
@@ -73,6 +68,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
 
 @[deprecated (since := "2024-10-15")] alias mapIdx_eq_nil := mapIdx_eq_nil_iff
 
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le length_mapIdx.ge) :
     (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
@@ -89,7 +85,7 @@ theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
 section deprecated
 
 /-- Lean3 `map_with_index` helper function -/
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected def oldMapIdxCore (f : ℕ → α → β) : ℕ → List α → List β
   | _, []      => []
   | k, a :: as => f k a :: List.oldMapIdxCore f (k + 1) as
@@ -97,12 +93,12 @@ protected def oldMapIdxCore (f : ℕ → α → β) : ℕ → List α → List �
 set_option linter.deprecated false in
 /-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected def oldMapIdx (f : ℕ → α → β) (as : List α) : List β :=
   List.oldMapIdxCore f 0 as
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
     l.oldMapIdxCore f n = l.oldMapIdx fun i a ↦ f (i + n) a := by
   induction' l with hd tl hl generalizing f n
@@ -111,7 +107,7 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
     simp only [List.oldMapIdxCore, hl, Nat.add_left_comm, Nat.add_comm, Nat.add_zero]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
     List.oldMapIdxCore f n (l₁ ++ l₂) =
     List.oldMapIdxCore f n l₁ ++ List.oldMapIdxCore f (n + l₁.length) l₂ := by
@@ -139,7 +135,7 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
       rw [Nat.add_assoc]; simp only [Nat.add_comm]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     List.oldMapIdx f (l ++ [e]) = List.oldMapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -148,7 +144,7 @@ protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (
   simp only [Nat.zero_add]; rfl
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem new_def_eq_old_def :
     ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = List.oldMapIdx f l := by
   intro f
@@ -165,30 +161,41 @@ section FoldrIdx
 
 -- Porting note: Changed argument order of `foldrIdxSpec` to align better with `foldrIdx`.
 /-- Specification of `foldrIdx`. -/
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start : ℕ) : β :=
   foldr (uncurry f) b <| enumFrom start as
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
     foldrIdxSpec f b (a :: as) start = f start a (foldrIdxSpec f b as (start + 1)) :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (b as start) :
     foldrIdx f b as start = foldrIdxSpec f b as start := by
   induction as generalizing start
   · rfl
   · simp only [foldrIdx, foldrIdxSpec_cons, *]
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldrIdx_eq_foldr_enum (f : ℕ → α → β → β) (b : β) (as : List α) :
     foldrIdx f b as = foldr (uncurry f) b (enum as) := by
   simp only [foldrIdx, foldrIdxSpec, foldrIdx_eq_foldrIdxSpec, enum]
 
 end FoldrIdx
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp (config := { unfoldPartialApp := true }) [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
     filter_eq_foldr, cond_eq_if]
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
   simp (config := { unfoldPartialApp := true }) only [indexesValues_eq_filter_enum,
@@ -199,19 +206,26 @@ section FoldlIdx
 
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
 /-- Specification of `foldlIdx`. -/
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
   foldl (fun a p ↦ f p.fst a p.snd) a <| enumFrom start bs
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldlIdxSpec_cons (f : ℕ → α → β → α) (a b bs start) :
     foldlIdxSpec f a (b :: bs) start = foldlIdxSpec f (f start a b) bs (start + 1) :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
     foldlIdx f a bs start = foldlIdxSpec f a bs start := by
   induction bs generalizing start a
   · rfl
   · simp [foldlIdxSpec, *]
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
     foldlIdx f a bs = foldl (fun a p ↦ f p.fst a p.snd) a (enum bs) := by
   simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
@@ -223,11 +237,15 @@ section FoldIdxM
 -- Porting note: `foldrM_eq_foldr` now depends on `[LawfulMonad m]`
 variable {m : Type u → Type v} [Monad m]
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldrIdxM_eq_foldrM_enum {β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m] :
     foldrIdxM f b as = foldrM (uncurry f) b (enum as) := by
   simp (config := { unfoldPartialApp := true }) only [foldrIdxM, foldrM_eq_foldr,
     foldrIdx_eq_foldr_enum, uncurry]
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldlIdxM_eq_foldlM_enum [LawfulMonad m] {β} (f : ℕ → β → α → m β) (b : β) (as : List α) :
     foldlIdxM f b as = List.foldlM (fun b p ↦ f p.fst b p.snd) b (enum as) := by
   rw [foldlIdxM, foldlM_eq_foldl, foldlIdx_eq_foldl_enum]
@@ -240,15 +258,20 @@ section MapIdxM
 variable {m : Type u → Type v} [Monad m]
 
 /-- Specification of `mapIdxMAux`. -/
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 def mapIdxMAuxSpec {β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
   List.traverse (uncurry f) <| enumFrom start as
 
 -- Note: `traverse` the class method would require a less universe-polymorphic
 -- `m : Type u → Type u`.
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem mapIdxMAuxSpec_cons {β} (f : ℕ → α → m β) (start : ℕ) (a : α) (as : List α) :
     mapIdxMAuxSpec f start (a :: as) = cons <$> f start a <*> mapIdxMAuxSpec f (start + 1) as :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem mapIdxMGo_eq_mapIdxMAuxSpec
     [LawfulMonad m] {β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
     mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
@@ -259,7 +282,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       cases as
       · rfl
       · contradiction
-    simp only [this, mapIdxM.go, mapIdxMAuxSpec, List.traverse, map_pure, append_nil]
+    simp only [this, mapIdxM.go, mapIdxMAuxSpec, enumFrom_nil, List.traverse, map_pure, append_nil]
   · match as with
     | nil => contradiction
     | cons head tail =>
@@ -272,6 +295,8 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       simp only [Array.push_toList, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem mapIdxM_eq_mmap_enum [LawfulMonad m] {β} (f : ℕ → α → m β) (as : List α) :
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
   simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_toArray,
@@ -292,9 +317,8 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
   · simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure]
     generalize (f (Array.size arr) head) = head
-    let arr_1 := arr.push ⟨⟩
-    have : arr_1.size = arr.size + 1 := Array.size_push arr ⟨⟩
-    rw [← this, ih arr_1]
+    have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push arr ⟨⟩
+    rw [← this, ih]
     simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :

@@ -63,10 +63,10 @@ local notation "absR" => abs
 -- FIXME this monolithic proof causes a deterministic timeout with `-T50000`
 -- It should be broken in a sequence of more manageable pieces,
 -- perhaps with individual statements for the three steps below.
-/-- Existence of minimizers
+/-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
+
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
-Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`.
- -/
+Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`. -/
 theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h₁ : IsComplete K)
     (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u => by
   let δ := ⨅ w : K, ‖u - w‖
@@ -1218,7 +1218,7 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (hc : IsComplete (↑(iSup V) : Set E)) : DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ := by
   haveI : CompleteSpace (↥(iSup V)) := hc.completeSpace_coe
-  simp only [DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top, hV.independent,
+  simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, Submodule.orthogonal_eq_bot_iff]
 
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
@@ -1288,7 +1288,7 @@ abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → 
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
-      exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
+      exact hV.sum_projection_of_mem_iSup _ ((h.ge :) Submodule.mem_top)
     · intro i
       exact map_zero _
   right_inv x := by
@@ -1314,7 +1314,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     rintro ⟨x, hx', hx⟩
     -- take a nonzero vector and normalize it
     let e := (‖x‖⁻¹ : 𝕜) • x
-    have he : ‖e‖ = 1 := by simp [norm_smul_inv_norm hx]
+    have he : ‖e‖ = 1 := by simp [e, norm_smul_inv_norm hx]
     have he' : e ∈ (span 𝕜 v)ᗮ := smul_mem' _ _ hx'
     have he'' : e ∉ v := by
       intro hev
