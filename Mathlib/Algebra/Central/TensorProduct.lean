@@ -10,13 +10,18 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 
+# Lemmas about tensor products of central algebras
+
+In this file we prove for algebras `B` and `C` over a field `K` that if `B ⊗[K] C` is a central
+algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
+
 ## Main Results
 
-- `Algebra.IsCentral.left_of_tensor`: If `B` and `C` are nontrivial finite dimensional
-  `K`-algebras, and `B ⊗[K] C` is a central algebra over `K`, then `B` is a
+- `Algebra.IsCentral.left_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
+  `C` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `B` is a
   central algebra over `K`.
-- `Algebra.IsCentral.right_of_tensor`: If `B` and `C` are nontrivial finite dimensional
-  `K`-algebras, and `B ⊗[K] C` is a central algebra over `K`, then `C` is a
+- `Algebra.IsCentral.right_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
+  `C` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `B` is a
   central algebra over `K`.
 
 ## Tags
@@ -40,7 +45,7 @@ lemma Algebra.TensorProduct.includeLeft_map_center_le :
   | tmul b' c => simp [hb0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 
-lemma Algebra.TensorProduct.includeRight_mep_center_le :
+lemma Algebra.TensorProduct.includeRight_map_center_le :
     (Subalgebra.center K C).map includeRight ≤ Subalgebra.center K (B ⊗[K] C) := fun x hx ↦ by
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨c, hc0, rfl⟩ := hx
@@ -63,17 +68,17 @@ lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K
   have : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
   left_of_tensor K C B inj
 
-/-- Let `A` and `B` be two algebras over a field `K`, if `A ⊗[K] B` is central and `B` is
-  non-trivial, then `A` is central. -/
-lemma left_of_tensor' (K A B : Type*) [Field K] [Ring A] [Ring B] [Nontrivial B]
-    [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K A :=
-  left_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K B
-
-/-- Let `A` and `B` be two algebras over a field `K`, if `A ⊗[K] B` is central and `A` is
+/-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `C` is
   non-trivial, then `B` is central. -/
-lemma right_of_tensor' (K A B : Type*) [Field K] [Ring A] [Ring B] [Nontrivial A]
-    [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K B :=
-  right_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K A
+lemma left_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial C]
+    [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K B :=
+  left_of_tensor K B C <| NoZeroSMulDivisors.algebraMap_injective K C
+
+/-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `A` is
+  non-trivial, then `B` is central. -/
+lemma right_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial B]
+    [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K C :=
+  right_of_tensor K B C <| NoZeroSMulDivisors.algebraMap_injective K B
 
 
 end Algebra.IsCentral
