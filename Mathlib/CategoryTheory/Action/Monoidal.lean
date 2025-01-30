@@ -223,8 +223,8 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        -- This used to be `rw`, but we need `erw` after the concrete `MonCat` refactor.
-        erw [tensor_ρ, tensor_ρ]
+        dsimp [leftRegular] -- Unfold `leftRegular` so `rw` can see through `(leftRegular V).V = V`
+        rw [tensor_ρ, tensor_ρ]
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [leftRegular_ρ_hom_apply]
