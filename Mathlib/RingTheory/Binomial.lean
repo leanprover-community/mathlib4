@@ -506,7 +506,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
   simp [mul_assoc, descPochhammer_eq_factorial_smul_choose]
 
 theorem choose_eq_sum_choose_smul [Ring R] [BinomialRing R] {r : R} {n k : ℕ} (h : k ≤ n) :
-    choose r n = ∑ m in range (k + 1), k.choose m • choose (r - k) (n - m) := by
+    choose r n = ∑ m ∈ range (k + 1), k.choose m • choose (r - k) (n - m) := by
   nth_rw 1 [← add_sub_cancel (k : R) r]
   rw [add_choose_eq _ (Nat.cast_commute k (r - ↑k)), Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   refine (sum_of_injOn id (Set.injOn_id (range (k + 1)).toSet) ?_ ?_ ?_).symm
@@ -522,7 +522,7 @@ theorem choose_eq_sum_choose_smul [Ring R] [BinomialRing R] {r : R} {n k : ℕ} 
     rw [choose_eq_nat_choose]
 
 theorem choose_mul_choose [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k ≤ n) :
-    choose r k * choose r n = ∑ m in range (k+1),
+    choose r k * choose r n = ∑ m ∈ range (k+1),
       k.choose m • (n + k - m).choose k • choose r (n + k - m) := by
   rw [choose_eq_sum_choose_smul h, mul_sum]
   refine sum_congr rfl fun i hi => ?_
@@ -531,7 +531,7 @@ theorem choose_mul_choose [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k �
     mul_assoc]
 
 theorem choose_mul_choose_multinomial [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k ≤ n) :
-    choose r k * choose r n = ∑ m in range (k+1),
+    choose r k * choose r n = ∑ m ∈ range (k+1),
       Nat.multinomial Finset.univ ![n - m, k - m, m] • choose r (n + k - m) := by
   rw [choose_mul_choose r h]
   refine sum_congr rfl fun i hi => ?_

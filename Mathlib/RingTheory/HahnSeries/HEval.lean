@@ -13,7 +13,6 @@ given by substitution of the generating variables to elements of strictly positi
 In the single variable case, we use this homomorphism to characterize invertible Hahn series whose
 coefficients are in a commutative domain.
 
--/
 ## Main Definitions
  * `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
    are non-negative powers of a fixed positive-order Hahn series multiplied by the coefficients of a
@@ -190,7 +189,7 @@ lemma supp_eq_univ_of_pos_fintype (σ : Type*) [Fintype σ] (y : σ →₀ HahnS
 variable [CommRing V] [Algebra R V] {x : HahnSeries Γ V} (hx : 0 < x.orderTop)
     (f : PowerSeries R)
 
-The scalar multiples are given by the coefficients of a power series. -/
+/-- The scalar multiples are given by the coefficients of a power series. -/
 abbrev powerSeriesFamily : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff R n) (powers x hx)
 
@@ -501,18 +500,18 @@ variable `X` to a positive order element `x`. -/
 def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   toFun f := (powerSeriesFamily hx f).hsum
   map_one' := by
-    simp only [hsum, powerSeriesFamily_toFun, PowerSeries.coeff_one, ite_smul, one_smul, zero_smul]
+    simp only [hsum, powerSeriesFamily_apply, PowerSeries.coeff_one, ite_smul, one_smul, zero_smul]
     ext g
     simp only
     rw [finsum_eq_single (fun i => (if i = 0 then x ^ i else 0).coeff g) (0 : ℕ)
       (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
   map_mul' a b := by
-    simp only [← hsum_mul, powerSeriesFamily_mul_eq_mul]
+    simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
   map_zero' := by
-    simp only [hsum, powerSeriesFamily_toFun, map_zero, zero_smul, zero_coeff, finsum_zero]
+    simp only [hsum, powerSeriesFamily_apply, map_zero, zero_smul, zero_coeff, finsum_zero]
     exact rfl
   map_add' a b := by
-    simp only [powerSeriesFamilyAdd, hsum_add]
+    simp only [powerSeriesFamily_add, hsum_add]
   commutes' r := by
     simp only [PowerSeries.algebraMap_apply, algebraMap_apply, Algebra.id.map_eq_id,
       RingHom.id_apply, C_apply]

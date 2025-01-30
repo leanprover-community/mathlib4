@@ -411,7 +411,7 @@ theorem coeff_one_sub_single_pow_of_add_eq_zero {g g' : Γ} (hg : 0 < g) (hgg' :
 theorem coeff_single_mul_of_no_add {x : HahnSeries Γ R} {a b : Γ} {r : R} (hab : ¬∃c, c + a = b) :
     (x * single a r).coeff b = 0 := by
   rw [mul_coeff]
-  trans ∑ ij : Γ × Γ in ∅, x.coeff ij.fst * (single a r).coeff ij.snd
+  trans Finset.sum ∅ fun (ij : Γ × Γ) => x.coeff ij.fst * (single a r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
     simp_all [mem_addAntidiagonal, single_coeff]

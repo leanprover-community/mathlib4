@@ -255,14 +255,14 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
 open BigOperators
 
 @[simp]
-theorem coeff_sum {x : α → HahnSeries Γ R} (g : Γ) :
+theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
   cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
 
 theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] {α : Type*} {x : α → HahnSeries Γ R}
     {s : Finset α} : (s.inf fun i => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
   refine le_orderTop_iff.mpr fun g hg => ?_
-  simp_all only [gt_iff_lt, WithTop.coe_lt_top, Finset.lt_inf_iff, sum_coeff]
+  simp_all only [gt_iff_lt, WithTop.coe_lt_top, Finset.lt_inf_iff, coeff_sum]
   exact Finset.sum_eq_zero fun i hi ↦ coeff_eq_zero_of_lt_orderTop (hg i hi)
 
 end AddCommMonoid
