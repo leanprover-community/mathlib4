@@ -170,14 +170,6 @@ theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
 
-@[simp]
-theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
-    compAlgEquiv I J R K M = comp I I J J R M := rfl
-
-@[simp]
-theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
-    (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
-
 end Algebra
 
 end Matrix
