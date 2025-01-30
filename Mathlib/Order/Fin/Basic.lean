@@ -95,6 +95,10 @@ theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
   eq_comm.trans zero_eq_top
 
+@[simp]
+theorem cast_top {m n : ℕ} [NeZero m] [NeZero n] (h : m = n) : (⊤ : Fin m).cast h = ⊤ := by
+  simp [← val_inj, h]
+
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
 
