@@ -671,15 +671,14 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
   cases p with
   | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
   | coe p =>
-    cases Decidable.eq_or_ne (p : ℝ≥0∞) 0 with
+    cases eq_or_ne (p : ℝ≥0∞) 0 with
     | inl hp => exact ⟨0, by simp [hp]⟩
     | inr hp =>
       have h_one_add (x : D) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
       have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
       rcases hμ.exists_integrable with ⟨l, hl⟩
-      have hlk : l ≤ ⌈(l / p : ℝ)⌉₊ * (p : ℝ) := by
-        simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
-      generalize ⌈(l / p : ℝ)⌉₊ = k at hlk
+      let k := ⌈(l / p : ℝ)⌉₊
+      have hlk : l ≤ k * (p : ℝ) := by simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
       use k
       suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
         rw [hasFiniteIntegral_iff_nnnorm] at this
@@ -1281,8 +1280,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     exact .rpow_const (.add continuous_const continuous_norm) fun x ↦ .inl (h_one_add x).ne'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
-    gcongr _ * ?_
-    rw [eLpNorm_exponent_top]
+    gcongr
     refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using
@@ -1342,14 +1340,14 @@ variable (𝕜 F) in
 /-- Continuous linear map from Schwartz functions to `L^p`. -/
 def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : 𝓢(E, F) →L[𝕜] Lp F p μ :=
-  mkCLMtoNormedSpace (fun f ↦ f.toLp p μ) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (by
-      rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩
-      exact ⟨Finset.Iic (k, 0), C, hC_pos, hC⟩)
+  mkCLMtoNormedSpace (fun f ↦ f.toLp p μ) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) <| by
+    rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩
+    exact ⟨Finset.Iic (k, 0), C, hC_pos, hC⟩
 
-theorem toLpCLM_apply {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+@[simp] theorem toLpCLM_apply {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
     {f : 𝓢(E, F)} : toLpCLM 𝕜 F p μ f = f.toLp p μ := rfl
 
+@[fun_prop]
 theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
