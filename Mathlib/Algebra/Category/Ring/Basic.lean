@@ -316,7 +316,7 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   forget₂ :=
     { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ f.hom.toAddMonoidHom }
+      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]

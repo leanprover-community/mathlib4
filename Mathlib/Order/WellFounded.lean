@@ -11,7 +11,7 @@ import Mathlib.Order.Bounds.Defs
 
 A relation is well-founded if it can be used for induction: for each `x`, `(∀ y, r y x → P y) → P x`
 implies `P x`. Well-founded relations can be used for induction and recursion, including
-construction of fixed points in the space of dependent functions `Π x : α , β x`.
+construction of fixed points in the space of dependent functions `Π x : α, β x`.
 
 The predicate `WellFounded` is defined in the core library. In this file we prove some extra lemmas
 and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
@@ -55,7 +55,7 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
 
 If you're working with a nonempty linear order, consider defining a
 `ConditionallyCompleteLinearOrderBot` instance via
-`WellFounded.conditionallyCompleteLinearOrderWithBot` and using `Inf` instead. -/
+`WellFoundedLT.conditionallyCompleteLinearOrderBot` and using `Inf` instead. -/
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 
@@ -121,14 +121,14 @@ protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
+@[deprecated "`WellFounded.succ` is deprecated" (since := "2024-10-25")]
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
+@[deprecated "`WellFounded.succ` is deprecated" (since := "2024-10-25")]
 protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
