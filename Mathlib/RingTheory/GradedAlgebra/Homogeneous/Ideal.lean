@@ -8,7 +8,6 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
