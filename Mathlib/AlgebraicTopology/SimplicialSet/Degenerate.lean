@@ -27,7 +27,7 @@ namespace SSet
 
 variable (X : SSet.{u})
 
-/-- A `n`-simplex of a simplicial `X` is degenerate if it is in the range
+/-- An `n`-simplex of a simplicial set `X` is degenerate if it is in the range
 of `X.map f.op` for some morphism `f : [n] ⟶ [m]` with `m < n`. -/
 def degenerate (n : ℕ) : Set (X _[n]) :=
   setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ([n] : SimplexCategory) ⟶ [m]),
