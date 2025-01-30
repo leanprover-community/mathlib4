@@ -6,6 +6,7 @@ Authors: Moritz Doll
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.Data.Finsupp.Pointwise
+--import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument
@@ -56,6 +57,31 @@ theorem BilinearMap.map_finsuppSum (B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ
   simp_rw [map_sum]
   rw [Finsupp.sum]
   simp_rw [Finsupp.sum]
+
+variable [DecidableEq ι]
+
+open Finsupp in
+theorem apply_linearCombination (B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ) {g₁ : ι → Mₗ} (l₁ : ι →₀ Rₗ)
+    {g₂ : ι → Nₗ} (l₂ : ι →₀ Rₗ) :
+    B (linearCombination Rₗ g₁ l₁) (linearCombination Rₗ g₂ l₂) =
+      linearCombination Rₗ (fun i => B (g₁ i) (g₂ i)) (l₂ * l₁) := by
+  simp_rw [linearCombination_apply]
+  simp_rw [BilinearMap.map_finsuppSum]
+  simp_rw [map_smul]
+  --rw [Finsupp.sum]
+  have hs : support (l₂ * l₁) ⊆ l₂.support ∩ l₁.support := support_mul
+  rw [Finsupp.sum_of_support_subset (l₂ * l₁) hs (fun i a => a • (B (g₁ i) (g₂ i)))
+    (fun _ _=> zero_smul Rₗ _)]
+  simp_all only [smul_apply, Finsupp.mul_apply]
+  simp only [←smul_eq_mul]
+  simp only [smul_assoc]
+
+
+  sorry
+
+  --, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
+--    mul_smul,
+
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
