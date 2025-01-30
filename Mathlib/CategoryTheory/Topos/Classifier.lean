@@ -134,7 +134,7 @@ commutes.
 lemma ClassifierComm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (ClassifierPb m).w
 
 /-- `ClassifierOf m` is the only map for which the associated square
-is a pullback square. 
+is a pullback square.
 -/
 lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m := by
   have h := ((Classifier_IsClassifier C).char m).uniq (Subtype.mk χ hχ)
@@ -184,7 +184,7 @@ lemma ClassifierCone_into_comm {Z : C} (g : Z ⟶ X) (comm' : g ≫ χ_ m = (ter
 
 end CategoryTheory.Classifier
 
--- note: linter error caused an issue with `[HasClassifier C]`, 
+-- note: linter error caused an issue with `[HasClassifier C]`,
 -- requiring namespace split.
 
 namespace CategoryTheory.Classifier
@@ -213,9 +213,9 @@ noncomputable instance Mono_is_RegularMono {A B : C} (m : A ⟶ B) [Mono m] : Re
 
 
 /-- A category with a subobject classifier satisfies the condition
-that a map which is both monic and epic is an isomorphism. 
+that a map which is both monic and epic is an isomorphism.
 -/
-lemma balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f := 
+lemma balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f :=
   isIso_of_epi_of_strongMono f
 
 /-- `C` is a balanced category.  -/

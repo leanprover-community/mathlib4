@@ -30,7 +30,7 @@ In this file, a "predicate" refers to any morphism into `Ω C`.
 
 ## Notation
 
-* If `φ` is a predicate `X ⟶ Ω C`, `⌈φ⌉` is shorthand for `Name φ`, 
+* If `φ` is a predicate `X ⟶ Ω C`, `⌈φ⌉` is shorthand for `Name φ`,
   which is the global element `⊤_ C ⟶ Pow X` associated to `φ`.
 
 ## References
@@ -60,7 +60,7 @@ class Topos where
   /-- A topos has power objects. -/
   [has_power_objects : HasPowers C]
 
-attribute [instance] Topos.has_terminal Topos.has_pullbacks 
+attribute [instance] Topos.has_terminal Topos.has_pullbacks
                      Topos.subobject_classifier Topos.has_power_objects
 
 variable [Topos C] {C}
@@ -96,17 +96,17 @@ def Predicate.eq (B : C) : B ⨯ B ⟶ Ω C := ClassifierOf (diag B)
 /-- The lift `X ⟶ B ⨯ B` of a morphism with itself, when composed
 with `predicate.eq B`, is true.
 -/
-lemma Predicate.lift_eq {X B : C} (b : X ⟶ B) : 
+lemma Predicate.lift_eq {X B : C} (b : X ⟶ B) :
     prod.lift b b ≫ Predicate.eq B = Predicate.true_ X := by
   dsimp only [eq, true_]
   rw [←prod.comp_diag b, assoc, (ClassifierComm (diag B)), ←assoc, terminal.comp_from]
 
-/-- Two maps in a topos are equal if their lift composed with 
+/-- Two maps in a topos are equal if their lift composed with
 the equality predicate on `B ⨯ B` is true.
 In other words, this combined with `Predicate.lift_eq` states that
 `Predicate.eq` is able to distinguish whether two morphisms are equal.
 -/
-lemma Predicate.eq_of_lift_eq {X B : C} {b b' : X ⟶ B} 
+lemma Predicate.eq_of_lift_eq {X B : C} {b b' : X ⟶ B}
   (comm' : prod.lift b b' ≫ Predicate.eq B = Predicate.true_ X) :
     b = b' := by
   dsimp only [eq, true_] at comm'
@@ -120,7 +120,7 @@ lemma Predicate.eq_of_lift_eq {X B : C} {b b' : X ⟶ B}
   exact t₁.symm.trans t₂
 
 /-- The "singleton" map `B ⟶ Pow B`.
-In Set, this map sends `b ∈ B` to the 
+In Set, this map sends `b ∈ B` to the
 singleton set containing just `b`.
 -/
 def singleton (B : C) : B ⟶ Pow B := (Predicate.eq B)^
@@ -130,13 +130,13 @@ instance singletonMono (B : C) : Mono (singleton B) where
   right_cancellation := by
     intro X b b' h
     rw [singleton] at h
-    have h₁ : prod.map (𝟙 _) (b ≫ (Predicate.eq B)^) ≫ in_ B 
+    have h₁ : prod.map (𝟙 _) (b ≫ (Predicate.eq B)^) ≫ in_ B
     = prod.map (𝟙 _) (b' ≫ (Predicate.eq B)^) ≫ in_ B :=
       congrFun (congrArg CategoryStruct.comp (congrArg (prod.map (𝟙 B)) h)) (in_ B)
     rw [prod.map_id_comp, assoc, Pow_powerizes, prod.map_id_comp, assoc, Pow_powerizes] at h₁
-    have comm : (b ≫ terminal.from _) ≫ t C 
+    have comm : (b ≫ terminal.from _) ≫ t C
     = prod.lift b (𝟙 _) ≫ prod.map (𝟙 _) b ≫ Predicate.eq _ := by
-      rw [terminal.comp_from, ←assoc, prod.lift_map, comp_id, 
+      rw [terminal.comp_from, ←assoc, prod.lift_map, comp_id,
           id_comp, Predicate.lift_eq, Predicate.true_]
     rw [terminal.comp_from, h₁, ←assoc, prod.lift_map, id_comp, comp_id] at comm
     exact Predicate.eq_of_lift_eq comm.symm
@@ -160,15 +160,15 @@ to the corresponding predicate on `B`.
 def Predicate.fromName {B} (φ' : ⊤_ C ⟶ Pow B) : B ⟶ Ω C :=
   (prod.lift (𝟙 B) (terminal.from B)) ≫ φ'^
 
-/-- The condition from the definition of `Name` 
-as the `P_transpose` of a morphism. 
+/-- The condition from the definition of `Name`
+as the `P_transpose` of a morphism.
 -/
 lemma Predicate.NameDef {B} (φ : B ⟶ Ω C) : (prod.map (𝟙 _) ⌈φ⌉) ≫ (in_ B) = (prod.fst) ≫ φ :=
   Pow_powerizes _ _
 
 /-- The equivalence between morphisms `B ⟶ Ω C` and morphisms `⊤_ C ⟶ Pow B`,
 which comes from the more general equivalence between morphisms `B ⨯ A ⟶ Ω C`
-and morphisms `A ⟶ Pow B`. 
+and morphisms `A ⟶ Pow B`.
 -/
 def Predicate.NameEquiv (B : C) : (B ⟶ Ω C) ≃ (⊤_ C ⟶ Pow B) where
   toFun := Name

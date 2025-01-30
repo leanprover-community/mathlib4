@@ -20,7 +20,7 @@ Defines power objects for a category C with a subobject classifier and pullbacks
 
 ## Notation
 
-* if `f : B ⨯ A ⟶ Ω C` is a morphism in a category with power objects, then 
+* if `f : B ⨯ A ⟶ Ω C` is a morphism in a category with power objects, then
   `f^` denotes the corresponding morphism `A ⟶ Pow B`.
 * If `g : A ⟶ Pow B` is a morphism in a category with power objects, then
   `g^` denotes the corresponding morphism `B ⨯ A ⟶ Ω C`.
@@ -49,7 +49,7 @@ namespace CategoryTheory.Power
 -/
 instance hasBinaryProducts : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
 
-/-- A category with a terminal object and binary products 
+/-- A category with a terminal object and binary products
 has all finite products.
 -/
 instance hasFiniteProducts : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
@@ -78,7 +78,7 @@ the following diagram commutes:
 ```
 -/
 class IsPower {B PB : C} (in_B : B ⨯ PB ⟶ Ω C) where
-  /-- For each `f`, there is exactly one 
+  /-- For each `f`, there is exactly one
   morphism `A ⟶ PB` making the above diagram commute.
   -/
   hat {A : C} (f : B ⨯ A ⟶ Ω C) : Unique { f' : A ⟶ PB // (prod.map (𝟙 _) f') ≫ in_B = f }
@@ -116,7 +116,7 @@ abbrev in_ (B : C) : B ⨯ (Pow B) ⟶ Ω C := (HasPowers.has_power_object B).in
 
 instance Pow_is_power (B : C) : IsPower (in_ B) := (HasPowers.has_power_object B).is_power
 
-/-- The map Hom(B⨯A,Ω) → Hom(A,P(B)). 
+/-- The map Hom(B⨯A,Ω) → Hom(A,P(B)).
 This is currying the left argument.
 -/
 def P_transpose {B A} (f : B ⨯ A ⟶ Ω C) : A ⟶ Pow B := ((Pow_is_power B).hat f).default
@@ -211,7 +211,7 @@ lemma P_transpose_symm_left_inv {B A} (f : B ⨯ A ⟶ Ω C) :
 of `P_transpose_symm`.
 -/
 @[simp]
-lemma P_transpose_symm_right_inv {B A : C} (f : B ⟶ Pow A) : 
+lemma P_transpose_symm_right_inv {B A : C} (f : B ⟶ Pow A) :
     (^(^f)) = f :=
   (transposeEquivSymm _ _).right_inv _
 
@@ -274,7 +274,7 @@ def PowFunctor : Cᵒᵖ ⥤ C where
     symm
     calc
       prod.map (g ≫ f)  (𝟙 (Pow X)) ≫ in_ X
-        = (prod.map g (𝟙 (Pow X))) ≫ (prod.map f  (𝟙 (Pow X))) ≫ in_ X  := by 
+        = (prod.map g (𝟙 (Pow X))) ≫ (prod.map f  (𝟙 (Pow X))) ≫ in_ X  := by
         rw [←assoc, ←prod.map_comp_id]
       _ = (prod.map g (𝟙 (Pow X))) ≫ (prod.map (𝟙 Y) (Pow_map f)) ≫ in_ Y := by
         rw [Pow_map_Powerizes]
@@ -321,7 +321,7 @@ def PowSelfAdj : PowFunctorOp C ⊣ PowFunctor C := by
     simp
     dsimp only [P_transpose_symm, P_transpose_inv, Pow_map]
     apply Pow_unique
-    rw [prod.map_id_comp _ (P_transpose _), assoc _ _ (in_ X'), Pow_powerizes, ←assoc _ _ (in_ X), 
+    rw [prod.map_id_comp _ (P_transpose _), assoc _ _ (in_ X'), Pow_powerizes, ←assoc _ _ (in_ X),
       prod.map_map, id_comp, comp_id, ←comp_id f, ←id_comp (P_transpose _), ←prod.map_map,
       assoc, Pow_powerizes]
     have h : prod.map f (𝟙 Y) ≫ (prod.braiding X Y).hom = (prod.braiding _ _).hom ≫ prod.map (𝟙 _) f := by simp

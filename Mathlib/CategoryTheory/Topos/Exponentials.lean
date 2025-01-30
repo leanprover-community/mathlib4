@@ -60,11 +60,11 @@ the graphs of morphisms `A ⟶ B` may be regarded as subobjects of `B ⨯ A`.
 instance Hom_toGraph_Mono {A B : C} : Mono (Hom_toGraph A B) := pullback.fst_of_mono
 
 /-- Convenience lemma used in `Hom_comm`. -/
-lemma ExpConeSnd_Terminal (A B : C) : 
+lemma ExpConeSnd_Terminal (A B : C) :
     pullback.snd _ _ = terminal.from (Hom A B) := Unique.eq_default _
 
 /-- Convenience lemma used in `EvalDef_comm`. -/
-lemma Hom_comm (A B : C) : 
+lemma Hom_comm (A B : C) :
     Hom_toGraph A B ≫ ((((prod.associator _ _ _).inv ≫ in_ (B ⨯ A))^ ≫ Predicate.isSingleton B)^)
     = terminal.from (Hom A B) ≫ ⌈Predicate.true_ A⌉ := by
   rw [←ExpConeSnd_Terminal]; exact pullback.condition
@@ -86,7 +86,7 @@ This is used to define the map `eval A B : A ⨯ Hom A B ⟶ B`
 as a `pullback.lift` where the object `B` serves as the pullback.
 -/
 lemma evalDef_comm (A B : C) :
-  (prod.map (𝟙 A) (Hom_toGraph A B) 
+  (prod.map (𝟙 A) (Hom_toGraph A B)
   ≫ ((prod.associator _ _ _).inv ≫ in_ (B ⨯ A))^) ≫ Predicate.isSingleton B
   = Predicate.true_ (A ⨯ Hom A B) := by
     let id_m : A ⨯ Hom A B ⟶ A ⨯ Pow (B ⨯ A) := prod.map (𝟙 _) (Hom_toGraph A B)
@@ -95,13 +95,13 @@ lemma evalDef_comm (A B : C) :
     let u := ((v ≫ Predicate.isSingleton B)^)
     let id_u := prod.map (𝟙 A) u
     have comm_middle : v ≫ σ_B = id_u ≫ (in_ A) := (Pow_powerizes A (v ≫ σ_B)).symm
-    have comm_left : 
-    id_m ≫ id_u 
+    have comm_left :
+    id_m ≫ id_u
     =  prod.map (𝟙 _) (terminal.from _) ≫ prod.map (𝟙 _) ⌈Predicate.true_ A⌉ := by
       rw [prod.map_map, prod.map_map]
       ext; simp
       rw [prod.map_snd, prod.map_snd, Hom_comm]
-    have h_terminal : 
+    have h_terminal :
     (prod.map (𝟙 A) (terminal.from (Hom A B)) ≫ prod.fst) ≫ terminal.from A = terminal.from _ :=
       Unique.eq_default _
     rw [assoc, comm_middle, ←assoc, comm_left, assoc, Predicate.NameDef]
@@ -112,12 +112,12 @@ lemma evalDef_comm (A B : C) :
 def eval (A B : C) : A ⨯ (Hom A B) ⟶ B :=
   ClassifierCone_into (comm' := evalDef_comm A B)
 
-/-- This states the commutativity of the square relating 
+/-- This states the commutativity of the square relating
 `eval A B` to `singleton B` and `Hom_toGraph A B`, which
 arises from its definition.
 -/
-lemma evalCondition (A B : C) : 
-    eval A B ≫ singleton B 
+lemma evalCondition (A B : C) :
+    eval A B ≫ singleton B
     = prod.map (𝟙 _) (Hom_toGraph A B) ≫ ((prod.associator _ _ _).inv ≫ in_ (B ⨯ A))^ :=
   ClassifierCone_into_comm _ _ _
 
@@ -198,10 +198,10 @@ variable {A B X : C} (f : A ⨯ X ⟶ B)
 This is the composition of `Hom_map f` with `Hom_toGraph A B`, as exhibited
 in `Hom_mapCondition` below.
 -/
-abbrev h_map : X ⟶ Pow (B ⨯ A) := 
+abbrev h_map : X ⟶ Pow (B ⨯ A) :=
   ((prod.associator _ _ _).hom ≫ prod.map (𝟙 _) f ≫ Predicate.eq _)^
 
-/-- Helper lemma which shows that the appropriate square commutes 
+/-- Helper lemma which shows that the appropriate square commutes
 in the definition of `Hom_map`.
 -/
 lemma HomMapSquareComm :
@@ -250,21 +250,21 @@ lemma HomMapSquareComm :
   apply Pow_unique
   dsimp only [Name, Predicate.true_, Predicate.isSingleton]
   have f_terminal : f ≫ terminal.from B = terminal.from _ := Unique.eq_default _
-  have rightUnitor_terminal : (Limits.prod.rightUnitor A).hom ≫ terminal.from A 
-  = terminal.from _ := 
+  have rightUnitor_terminal : (Limits.prod.rightUnitor A).hom ≫ terminal.from A
+  = terminal.from _ :=
     Unique.eq_default _
-  have A_X_terminal : prod.map (𝟙 A) (terminal.from X) ≫ terminal.from (A ⨯ ⊤_ C) 
-  = terminal.from _ := 
+  have A_X_terminal : prod.map (𝟙 A) (terminal.from X) ≫ terminal.from (A ⨯ ⊤_ C)
+  = terminal.from _ :=
     Unique.eq_default _
-  have obv : terminal.from (A ⨯ ⊤_ C) ≫ t C 
-  = prod.map (𝟙 A) (P_transpose (terminal.from (A ⨯ ⊤_ C) ≫ t C)) ≫ in_ A := 
+  have obv : terminal.from (A ⨯ ⊤_ C) ≫ t C
+  = prod.map (𝟙 A) (P_transpose (terminal.from (A ⨯ ⊤_ C) ≫ t C)) ≫ in_ A :=
     (Pow_powerizes _ _).symm
   have map_def : (Limits.prod.rightUnitor A).hom = prod.fst := rfl
   rw [ClassifierComm (singleton _), ←assoc, ←map_def, rightUnitor_terminal, ←assoc,
   f_terminal, prod.map_id_comp, assoc, ←obv, ←assoc, A_X_terminal]
 
-/-- Given a map `f : A ⨯ X ⟶ B`, `Hom_map f` 
-is the associated map `X ⟶ Hom A B`. 
+/-- Given a map `f : A ⨯ X ⟶ B`, `Hom_map f`
+is the associated map `X ⟶ Hom A B`.
 -/
 def Hom_map : X ⟶ Hom A B :=
   pullback.lift (h_map f) (terminal.from X) (HomMapSquareComm f)
@@ -298,7 +298,7 @@ theorem Hom_Exponentiates : Exponentiates (eval A B) f (Hom_map f) := by
   dsimp only [Exponentiates]
   rw [←cancel_mono (singleton B), assoc, evalCondition, ←assoc,
     prod.map_map, id_comp, Hom_mapCondition]
-  have h : P_transpose_inv (f ≫ singleton B) 
+  have h : P_transpose_inv (f ≫ singleton B)
   = P_transpose_inv (prod.map (𝟙 A) (h_map f) ≫ P_transpose ((prod.associator B A (Power.Pow (B ⨯ A))).inv ≫ in_ (B ⨯ A))) := by
     rw [P_transpose_inv, P_transpose_inv, prod.map_id_comp, assoc, singleton,
       Pow_powerizes, prod.map_id_comp, assoc, Pow_powerizes, ←assoc]
@@ -317,7 +317,7 @@ theorem Hom_Exponentiates : Exponentiates (eval A B) f (Hom_map f) := by
 `X ⟶ Hom A B` satisfying commutativity of the associated
 diagram. See `Hom_Exponentiates`.
 -/
-theorem Hom_Unique {exp' : X ⟶ Hom A B} (h : Exponentiates (eval A B) f exp') : 
+theorem Hom_Unique {exp' : X ⟶ Hom A B} (h : Exponentiates (eval A B) f exp') :
     Hom_map f = exp' := by
   dsimp only [Exponentiates] at h
   have h_singleton := congrArg (fun k ↦ k ≫ singleton B) h
@@ -332,12 +332,12 @@ theorem Hom_Unique {exp' : X ⟶ Hom A B} (h : Exponentiates (eval A B) f exp') 
     apply Pow_unique
     dsimp only [id_f'eq, singleton]
     rw [prod.map_id_comp, assoc, Pow_powerizes _ (Predicate.eq B)]
-  have h₂ : (prod.map (𝟙 _) (prod.map (𝟙 _) (exp' ≫ Hom_toGraph A B)) 
+  have h₂ : (prod.map (𝟙 _) (prod.map (𝟙 _) (exp' ≫ Hom_toGraph A B))
       ≫ (prod.associator _ _ _).inv ≫ in_ (B ⨯ A))^
       = prod.map (𝟙 _) (exp' ≫ Hom_toGraph A B) ≫ v := by
     apply Pow_unique
     rw [prod.map_id_comp, assoc, Pow_powerizes]
-  have h₃ := Pow_powerizes _ ((prod.map (𝟙 B) (prod.map (𝟙 A) (exp' ≫ Hom_toGraph A B)) 
+  have h₃ := Pow_powerizes _ ((prod.map (𝟙 B) (prod.map (𝟙 A) (exp' ≫ Hom_toGraph A B))
       ≫ (prod.associator B A (Power.Pow (B ⨯ A))).inv ≫ in_ (B ⨯ A)))
   rw [h₂, h_singleton, ←h₁, Pow_powerizes _ id_f'eq, ←assoc] at h₃
   have h' := Hom_Exponentiates f
@@ -345,19 +345,19 @@ theorem Hom_Unique {exp' : X ⟶ Hom A B} (h : Exponentiates (eval A B) f exp') 
   have h'_singleton := congrArg (fun k ↦ k ≫ singleton B) h'
   simp only at h'_singleton
   rw [assoc, rhs, ←assoc, ←prod.map_id_comp] at h'_singleton
-  have h₂' : (prod.map (𝟙 _) (prod.map (𝟙 _) (Hom_map f ≫ Hom_toGraph A B)) 
+  have h₂' : (prod.map (𝟙 _) (prod.map (𝟙 _) (Hom_map f ≫ Hom_toGraph A B))
       ≫ (prod.associator _ _ _).inv ≫ in_ (B ⨯ A))^
       = prod.map (𝟙 _) (Hom_map f ≫ Hom_toGraph A B) ≫ v := by
     apply Pow_unique
     rw [prod.map_id_comp, assoc, Pow_powerizes]
-  have h₃' := Pow_powerizes _ ((prod.map (𝟙 B) (prod.map (𝟙 A) (Hom_map f ≫ Hom_toGraph A B)) 
+  have h₃' := Pow_powerizes _ ((prod.map (𝟙 B) (prod.map (𝟙 A) (Hom_map f ≫ Hom_toGraph A B))
     ≫ (prod.associator B A (Power.Pow (B ⨯ A))).inv ≫ in_ (B ⨯ A)))
   rw [h₂', h'_singleton, ←h₁, Pow_powerizes _ id_f'eq, ←assoc] at h₃'
 
   have hx := h₃'.symm.trans h₃
   have c₀ : prod.map (𝟙 B) (prod.map (𝟙 A) (exp' ≫ Hom_toGraph A B)) ≫ (prod.associator _ _ _).inv
     = (prod.associator _ _ _).inv ≫ (prod.map (𝟙 _) (exp' ≫ Hom_toGraph A B)) := by simp
-  have c₁ : prod.map (𝟙 B) (prod.map (𝟙 A) (Hom_map f ≫ Hom_toGraph A B)) 
+  have c₁ : prod.map (𝟙 B) (prod.map (𝟙 A) (Hom_map f ≫ Hom_toGraph A B))
       ≫ (prod.associator _ _ _).inv
       = (prod.associator _ _ _).inv ≫ (prod.map (𝟙 _) (Hom_map f ≫ Hom_toGraph A B)) := by simp
   rw [c₀, c₁] at hx
@@ -419,7 +419,7 @@ This is how `ExpFunctor` acts on morphisms.
 -/
 def ExpHom {X Y : C} (A : C) (f : X ⟶ Y) : Hom A X ⟶ Hom A Y := Hom_map (eval A _ ≫ f)
 
-/-- The covariant functor `C ⥤ C` associated to an object `A : C` 
+/-- The covariant functor `C ⥤ C` associated to an object `A : C`
 sending an object `B` to the "internal hom" `Hom A B`.
 -/
 def ExpFunctor (A : C) : C ⥤ C where
