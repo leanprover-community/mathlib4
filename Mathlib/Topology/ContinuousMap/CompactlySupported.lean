@@ -3,8 +3,7 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
@@ -417,7 +416,16 @@ end PartialOrder
 
 section SemilatticeSup
 
-variable [SemilatticeSup β] [TopologicalSpace β] [ContinuousSup β] [Zero β]
+variable [SemilatticeSup β] [Zero β]
+
+theorem HasCompactSupport.sup {f g : α → β} (hf : HasCompactSupport f) (hg : HasCompactSupport g) :
+    HasCompactSupport (f ⊔ g) := by
+  apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_tsupport _)
+  rw [tsupport, tsupport, tsupport, ← closure_union]
+  apply closure_mono
+  exact Function.support_sup f g
+
+variable [TopologicalSpace β] [ContinuousSup β]
 
 instance sup : Max C_c(α, β) where max f g :=
   { toFun := fun a ↦ f a ⊔ g a
@@ -442,7 +450,16 @@ end SemilatticeSup
 
 section SemilatticeInf
 
-variable [SemilatticeInf β] [TopologicalSpace β] [ContinuousInf β] [Zero β]
+variable [SemilatticeInf β] [Zero β]
+
+theorem HasCompactSupport.inf {f g : α → β} (hf : HasCompactSupport f) (hg : HasCompactSupport g) :
+    HasCompactSupport (f ⊓ g) := by
+  apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_tsupport _)
+  rw [tsupport, tsupport, tsupport, ← closure_union]
+  apply closure_mono
+  exact Function.support_inf f g
+
+variable [TopologicalSpace β] [ContinuousInf β]
 
 instance inf : Min C_c(α, β) where min f g :=
   { toFun := fun a ↦ f a ⊓ g a
@@ -621,3 +638,5 @@ lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
 end CompactlySupportedContinuousMap
 
 end NonnegativePart
+
+#min_imports
