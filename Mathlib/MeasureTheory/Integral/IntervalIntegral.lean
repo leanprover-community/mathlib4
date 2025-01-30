@@ -49,10 +49,9 @@ integral
 
 noncomputable section
 
-open scoped Classical
 open MeasureTheory Set Filter Function
 
-open scoped Classical Topology Filter ENNReal Interval NNReal
+open scoped Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
 
@@ -372,6 +371,69 @@ theorem Antitone.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : Antitone u
   (hu.antitoneOn _).intervalIntegrable
 
 end
+
+/-!
+## Interval integrability of functions with even or odd parity
+-/
+section
+
+variable {f : ℝ → E}
+
+/-- An even function is interval integrable (with respect to the volume measure) on every interval
+of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
+interval of the form `0..x`, for positive `x`.
+
+See `intervalIntegrable_of_even` for a stronger result.-/
+lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+    IntervalIntegrable f volume 0 t := by
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [IntervalIntegrable.iff_comp_neg]
+    conv => arg 1; intro t; rw [← h₁f]
+    simp [h₂f (-t) (by norm_num [h])]
+  · rw [h]
+  · exact h₂f t h
+
+/-- An even function is interval integrable (with respect to the volume measure) on every interval
+if it is interval integrable (with respect to the volume measure) on every interval of the form
+`0..x`, for positive `x`. -/
+theorem intervalIntegrable_of_even
+  (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+  IntervalIntegrable f volume a b :=
+  -- Split integral and apply lemma
+  (intervalIntegrable_of_even₀ h₁f h₂f a).symm.trans (b := 0)
+    (intervalIntegrable_of_even₀ h₁f h₂f b)
+
+/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
+interval of the form `0..x`, for positive `x`.
+
+See `intervalIntegrable_of_odd` for a stronger result.-/
+lemma intervalIntegrable_of_odd₀
+  (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+  IntervalIntegrable f volume 0 t := by
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [IntervalIntegrable.iff_comp_neg]
+    conv => arg 1; intro t; rw [← h₁f]
+    apply IntervalIntegrable.neg
+    simp [h₂f (-t) (by norm_num [h])]
+  · rw [h]
+  · exact h₂f t h
+
+/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+iff it is interval integrable (with respect to the volume measure) on every interval of the form
+`0..x`, for positive `x`. -/
+theorem intervalIntegrable_of_odd
+  (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+  IntervalIntegrable f volume a b :=
+  -- Split integral and apply lemma
+  (intervalIntegrable_of_odd₀ h₁f h₂f a).symm.trans (b := 0) (intervalIntegrable_of_odd₀ h₁f h₂f b)
+
+end
+
+/-!
+## Limits of intervals
+-/
 
 /-- Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
 eventually includes `Ioc u v` as both `u` and `v` tend to `l`. Let `μ` be a measure finite at `l'`.

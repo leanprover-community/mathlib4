@@ -22,7 +22,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
+/-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
+is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
@@ -595,7 +596,7 @@ end OfLinearEquiv
 section OfRingEquiv
 
 /-- Promotes a linear `RingEquiv` to an `AlgEquiv`. -/
-@[simps apply symm_apply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
+@[simps apply symm_apply toEquiv]
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -757,7 +758,7 @@ variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/
-@[simps! apply symm_apply toEquiv] -- Porting note: don't want redundant simps lemma `toEquiv_symm`
+@[simps! apply symm_apply toEquiv]
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
 
