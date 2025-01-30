@@ -507,7 +507,7 @@ If `ι` is finite and `B`,`C` are `R`-modules with the module topology,
 then any bilinear map `Rᶥ × B → C` is automatically continuous.
 
 Note that whilst this result works for semirings, for rings this result is superceded
-by `IsModuleTopology.Module.continuous_bilinear_of_finite_left`
+by `IsModuleTopology.Module.continuous_bilinear_of_finite_left`.
 -/
 theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Fintype ι]
     (bil : (ι → R) →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : ((ι → R) × B → C)) := by
