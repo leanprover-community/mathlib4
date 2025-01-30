@@ -182,7 +182,14 @@ lemma ClassifierCone_into_comm {Z : C} (g : Z ⟶ X) (comm' : g ≫ χ_ m = (ter
     ClassifierCone_into (comm' := comm') ≫ m = g :=
   IsPullback.lift_fst (ClassifierPb m) _ _ comm'
 
-variable [HasClassifier C]
+end CategoryTheory.Classifier
+
+-- note: linter error caused an issue with `[HasClassifier C]`, 
+-- requiring namespace split.
+
+namespace CategoryTheory.Classifier
+
+variable (C) [HasClassifier C]
 
 /-- `t C` is a regular monomorphism (because it is split). -/
 noncomputable instance truth_is_RegularMono : RegularMono (t C) :=
@@ -204,15 +211,16 @@ is stable under base change, every monomorphism is regular.
 noncomputable instance Mono_is_RegularMono {A B : C} (m : A ⟶ B) [Mono m] : RegularMono m :=
   regularOfIsPullbackFstOfRegular (ClassifierPb m).w (ClassifierPb m).isLimit
 
+
 /-- A category with a subobject classifier satisfies the condition
 that a map which is both monic and epic is an isomorphism. 
 -/
-lemma balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f :=
-  @isIso_limit_cone_parallelPair_of_epi _ _ _ _ _ _ _ (Mono_is_RegularMono f).isLimit ef
+lemma balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f := 
+  isIso_of_epi_of_strongMono f
 
 /-- `C` is a balanced category.  -/
 instance : Balanced C where
-  isIso_of_mono_of_epi := fun f => balanced f
+  isIso_of_mono_of_epi := fun f => balanced _ f
 
 /-- Since `C` is balanced, so is `Cᵒᵖ`. -/
 instance : Balanced Cᵒᵖ := balanced_opposite
