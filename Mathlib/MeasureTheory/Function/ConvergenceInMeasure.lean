@@ -275,10 +275,6 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
   · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
     exact Or.inl (Real.rpow_pos_of_pos hε _)
 
-@[deprecated (since := "2024-07-27")]
-alias tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable :=
-  tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable
-
 /-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
@@ -291,9 +287,6 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top (hp_ne_zero : p ≠ 0) (hp
     ext1 n; refine eLpNorm_congr_ae (EventuallyEq.sub (hf n).ae_eq_mk.symm hg.ae_eq_mk.symm)
   rw [this]
   exact hfg
-
-@[deprecated (since := "2024-07-27")]
-alias tendstoInMeasure_of_tendsto_snorm_of_ne_top := tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top
 
 /-- See also `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` which work for general
 Lp-convergence for all `p ≠ 0`. -/
@@ -318,9 +311,6 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : 
     coe_nnnorm, Set.mem_setOf_eq, Set.mem_compl_iff]
   rw [← dist_eq_norm (f n x) (g x)]
 
-@[deprecated (since := "2024-07-27")]
-alias tendstoInMeasure_of_tendsto_snorm_top := tendstoInMeasure_of_tendsto_eLpNorm_top
-
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm {l : Filter ι} (hp_ne_zero : p ≠ 0)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
@@ -329,9 +319,6 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm {l : Filter ι} (hp_ne_zero : p ≠ 
   · subst hp_ne_top
     exact tendstoInMeasure_of_tendsto_eLpNorm_top hfg
   · exact tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top hp_ne_zero hp_ne_top hf hg hfg
-
-@[deprecated (since := "2024-07-27")]
-alias tendstoInMeasure_of_tendsto_snorm := tendstoInMeasure_of_tendsto_eLpNorm
 
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_Lp [hp : Fact (1 ≤ p)] {f : ι → Lp E p μ} {g : Lp E p μ}

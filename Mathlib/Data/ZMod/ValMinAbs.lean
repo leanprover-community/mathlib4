@@ -110,9 +110,6 @@ lemma natCast_natAbs_valMinAbs [NeZero n] (a : ZMod n) :
   · rw [← Int.cast_natCast, Int.ofNat_natAbs_of_nonpos this, Int.cast_neg, Int.cast_sub,
       Int.cast_natCast, Int.cast_natCast, natCast_self, sub_zero, natCast_zmod_val]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_natAbs_valMinAbs := natCast_natAbs_valMinAbs
-
 lemma valMinAbs_neg_of_ne_half (ha : 2 * a.val ≠ n) : (-a).valMinAbs = -a.valMinAbs := by
   cases' eq_zero_or_neZero n with h h
   · subst h

@@ -152,8 +152,6 @@ theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ)
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
 
-@[deprecated (since := "2024-05-25")] alias Int.coe_nat_pow_pred := Int.natCast_pow_pred
-
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   Int.natCast_pow_pred 2 p (by decide)
 
@@ -319,18 +317,11 @@ theorem fst_intCast (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
 theorem snd_intCast (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
   rfl
 
-@[deprecated (since := "2024-05-25")] alias nat_coe_fst := fst_natCast
-@[deprecated (since := "2024-05-25")] alias nat_coe_snd := snd_natCast
-@[deprecated (since := "2024-05-25")] alias int_coe_fst := fst_intCast
-@[deprecated (since := "2024-05-25")] alias int_coe_snd := snd_intCast
-
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

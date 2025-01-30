@@ -272,10 +272,6 @@ theorem WellFounded.psigma_skipLeft (α : Type u) {β : Type v} {s : β → β �
     (hb : WellFounded s) : WellFounded (SkipLeft α s) :=
   psigma_revLex emptyWf.wf hb
 
-@[deprecated (since := "2024-07-24")] alias PSigma.lex_wf := WellFounded.psigma_lex
-@[deprecated (since := "2024-07-24")] alias PSigma.revLex_wf := WellFounded.psigma_revLex
-@[deprecated (since := "2024-07-24")] alias PSigma.skipLeft_wf := WellFounded.psigma_skipLeft
-
 end PSigma
 
 namespace IsWellFounded

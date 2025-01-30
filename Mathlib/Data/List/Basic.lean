@@ -627,8 +627,6 @@ theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ 
 @[deprecated "No deprecation message was provided." (since := "2024-04-07")]
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
-@[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
-
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
 
@@ -851,8 +849,6 @@ alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
 
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
-@[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
-
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
 
 @[simp]
@@ -874,8 +870,6 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
 -- `simp` in Core
 -- TODO: Upstream the tagging to Core?
 attribute [simp] map_const'
-
-@[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
 theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ f) = map f l :=
   .symm <| map_eq_flatMap ..
@@ -1537,9 +1531,6 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
   · omega
   · specialize ih ‹_›
     omega
-
-@[deprecated attach_map_coe (since := "2024-07-29")] alias attach_map_coe' := attach_map_coe
-@[deprecated attach_map_val (since := "2024-07-29")] alias attach_map_val' := attach_map_val
 
 /-! ### find -/
 

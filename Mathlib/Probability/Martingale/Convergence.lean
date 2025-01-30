@@ -314,9 +314,6 @@ theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ
     (memℒp_limitProcess_of_eLpNorm_bdd hmeas hR) hunif.2.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 
-@[deprecated (since := "2024-07-27")]
-alias Submartingale.tendsto_snorm_one_limitProcess := Submartingale.tendsto_eLpNorm_one_limitProcess
-
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) :=
@@ -342,9 +339,6 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
 
 @[deprecated (since := "2025-01-21")]
 alias Martingale.eq_condexp_of_tendsto_eLpNorm := Martingale.eq_condExp_of_tendsto_eLpNorm
-
-@[deprecated (since := "2024-07-27")]
-alias Martingale.eq_condExp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_eLpNorm
 
 @[deprecated (since := "2025-01-21")]
 alias Martingale.eq_condexp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_snorm
@@ -437,9 +431,6 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
 @[deprecated (since := "2025-01-21")]
 alias Integrable.tendsto_eLpNorm_condexp := Integrable.tendsto_eLpNorm_condExp
 
-@[deprecated (since := "2024-07-27")]
-alias Integrable.tendsto_snorm_condExp := Integrable.tendsto_eLpNorm_condExp
-
 @[deprecated (since := "2025-01-21")]
 alias Integrable.tendsto_snorm_condexp := Integrable.tendsto_snorm_condExp
 
@@ -470,9 +461,6 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
   simp only [hxeq, Pi.sub_apply]
 
 @[deprecated (since := "2025-01-21")] alias tendsto_eLpNorm_condexp := tendsto_eLpNorm_condExp
-
-@[deprecated (since := "2024-07-27")]
-alias tendsto_snorm_condExp := tendsto_eLpNorm_condExp
 
 @[deprecated (since := "2025-01-21")] alias tendsto_snorm_condexp := tendsto_snorm_condExp
 

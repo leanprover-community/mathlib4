@@ -350,8 +350,6 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     · obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply hi
     · obtain ⟨a, ha, rfl⟩ := i_surj b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
 
-@[deprecated (since := "2024-05-04")] alias card_congr := card_bij
-
 /-- Reorder a finset.
 
 The difference with `Finset.card_bij` is that the bijection is specified with an inverse, rather
@@ -409,8 +407,6 @@ lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
     _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
-@[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
-
 lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
   · simp

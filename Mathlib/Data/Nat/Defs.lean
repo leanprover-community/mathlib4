@@ -225,8 +225,6 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
 -- matching. These lemmas package them back up as typeclass mediated operations.
-@[deprecated (since := "2024-04-05")] alias add_def := add_eq
-
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
 @[simp, nolint simpNF] protected lemma add_eq_right : a + b = b ↔ a = 0 := by omega
@@ -477,8 +475,6 @@ lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (
 
 protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * d) = a / b * (c / d) :=
   (div_mul_div_comm hba hdc).symm
-
-@[deprecated (since := "2024-05-29")] alias mul_div_mul_comm_of_dvd_dvd := Nat.mul_div_mul_comm
 
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
@@ -1226,8 +1222,6 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
 
 @[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
-
-@[deprecated (since := "2024-06-18")] alias dvd_div_iff := dvd_div_iff_mul_dvd
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   obtain ⟨e, rfl⟩ := hdiv
