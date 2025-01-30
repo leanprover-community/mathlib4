@@ -29,7 +29,7 @@ Assume `α` is a Fintype:
 -/
 
 
-open Equiv Finset
+open Equiv Finset Function
 
 namespace Equiv.Perm
 
