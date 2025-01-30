@@ -20,16 +20,16 @@ Usage: cache [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]  Download linked files missing on the local cache and decompress
-  get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do not decompress
-  pack         Compress non-compressed build files into the local cache
-  pack!        Compress build files into the local cache (no skipping)
-  unpack       Decompress linked already downloaded files
-  unpack!      Decompress linked already downloaded files (no skipping)
-  clean        Delete non-linked files
-  clean!       Delete everything on the local cache
-  lookup       Show information about cache files for the given lean files
+  get  [ARGS]   Download linked files missing on the local cache and decompress
+  get! [ARGS]   Download all linked files and decompress
+  get- [ARGS]   Download linked files missing to the local cache, but do not decompress
+  pack          Compress non-compressed build files into the local cache
+  pack!         Compress build files into the local cache (no skipping)
+  unpack        Decompress linked already downloaded files
+  unpack!       Decompress linked already downloaded files (no skipping)
+  clean         Delete non-linked files
+  clean!        Delete everything on the local cache
+  lookup [ARGS] Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server
@@ -87,12 +87,11 @@ def main (args : List String) : IO Unit := do
   let mut extraRoots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if extraRoots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
-    -- TODO: change this to the default-target of a downstream project
+    -- TODO: could change this to the default-target of a downstream project
     let mod := `Mathlib
     let sp := (← read).searchPath
     let sourceFile ← Lean.findLean sp mod
     extraRoots := Std.HashMap.empty.insert mod sourceFile
-  dbg_trace extraRoots.keys
 
   if args.isEmpty then
     println help
@@ -103,7 +102,7 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (force := false) (decompress := true) := do
-    getFiles hashMap force force goodCurl decompress
+    getFiles hashMap pathMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap pathMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
@@ -114,8 +113,8 @@ def main (args : List String) : IO Unit := do
   | "get-" :: _ => get (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap false
-  | ["unpack!"] => unpackCache hashMap true
+  | ["unpack"] => unpackCache hashMap pathMap false
+  | ["unpack!"] => unpackCache hashMap pathMap true
   | ["clean"] =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
@@ -130,5 +129,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (args.map String.toName) -- TODO: check lookup features are kept
+  | "lookup" :: args => lookup hashMap (args.map String.toName)
   | _ => println help

@@ -80,7 +80,6 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
-    IO.println hashMap.keys
     IO.println s!"Attempting to download {size} file(s)"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
@@ -140,9 +139,15 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
-Print and error and exit the process with error code 1 otherwise. -/
+Print and error and exit the process with error code 1 otherwise.
+
+Does nothing if the current project is mathlib.
+-/
 def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
+  if mathlibToolchainFile.normalize == ("lean-toolchain" : FilePath).normalize then
+    -- we are in mathlib, nothing to check
+    return ()
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then
@@ -185,14 +190,13 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
     throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
+def getFiles (hashMap : IO.HashMap) (pathMap : Std.HashMap Lean.Name FilePath) (forceDownload forceUnpack parallel decompress : Bool) :
     IO.CacheM Unit := do
-  let isMathlibRoot ← IO.isMathlibRoot
-  unless isMathlibRoot do checkForToolchainMismatch
+  checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
   downloadFiles hashMap forceDownload parallel
   if decompress then
-    IO.unpackCache hashMap forceUnpack
+    IO.unpackCache hashMap pathMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
 

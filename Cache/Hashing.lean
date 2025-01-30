@@ -127,12 +127,26 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
     let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
     let pathHash := hash c -- hash mod
     let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
-    modifyGet fun stt =>
-      (some fileHash, { stt with
-        hashMap := stt.hashMap.insert mod fileHash
-        pathMap := stt.pathMap.insert mod sourceFile
-        cache   := stt.cache.insert   mod (some fileHash)
-        depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
+    -- if a file is part of a cache then we need to add it to the `hashMap`, otherwise
+    -- we should add it as `none` to the hashMap
+    -- TODO: this is hacky
+    let head := mod.components.headD default
+    if #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph, `LeanSearchClient, `Plausible, `Qq,
+        `ProofWidgets].contains head then
+      modifyGet fun stt =>
+        (some fileHash, { stt with
+          hashMap := stt.hashMap.insert mod fileHash
+          pathMap := stt.pathMap.insert mod sourceFile
+          cache   := stt.cache.insert   mod (some fileHash)
+          depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
+    else
+      modifyGet fun stt =>
+        (none, { stt with
+          hashMap := stt.hashMap
+          pathMap := stt.pathMap.insert mod sourceFile
+          cache   := stt.cache.insert   mod none
+          depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
+
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo := do
