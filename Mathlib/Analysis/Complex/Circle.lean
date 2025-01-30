@@ -94,13 +94,6 @@ def coeHom : Circle →* ℂ where
   map_one' := coe_one
   map_mul' := coe_mul
 
-@[deprecated (since := "2024-07-24")] alias _root_.abs_coe_circle := abs_coe
-@[deprecated (since := "2024-07-24")] alias _root_.normSq_eq_of_mem_circle := normSq_coe
-@[deprecated (since := "2024-07-24")] alias _root_.ne_zero_of_mem_circle := coe_ne_zero
-@[deprecated (since := "2024-07-24")] alias _root_.coe_inv_circle := coe_inv
-@[deprecated (since := "2024-07-24")] alias _root_.coe_inv_circle_eq_conj := coe_inv_eq_conj
-@[deprecated (since := "2024-07-24")] alias _root_.coe_div_circle := coe_div
-
 /-- The elements of the circle embed into the units. -/
 def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 
@@ -178,12 +171,5 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
     (u : Circle) (v : E) :
     ‖u • v‖ = ‖v‖ := by
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
-
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle := exp
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_apply := coe_exp
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_zero := exp_zero
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_sub := exp_sub
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.norm_circle_smul :=
-  Circle.norm_smul
 
 end Circle

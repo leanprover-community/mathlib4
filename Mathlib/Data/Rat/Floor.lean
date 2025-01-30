@@ -87,8 +87,6 @@ theorem natFloor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋₊ 
   push_cast
   exact floor_intCast_div_natCast n d
 
-@[deprecated (since := "2024-07-23")] alias floor_int_div_nat_eq_div := floor_intCast_div_natCast
-
 @[simp, norm_cast]
 theorem floor_cast (x : ℚ) : ⌊(x : α)⌋ = ⌊x⌋ :=
   floor_eq_iff.2 (mod_cast floor_eq_iff.1 (Eq.refl ⌊x⌋))

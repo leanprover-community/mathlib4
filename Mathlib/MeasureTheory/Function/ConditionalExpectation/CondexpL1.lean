@@ -375,9 +375,6 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpInd := setIntegral_condExpInd
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpInd := setIntegral_condExpInd
-
 @[deprecated (since := "2025-01-21")] alias set_integral_condexpInd := set_integral_condExpInd
 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :

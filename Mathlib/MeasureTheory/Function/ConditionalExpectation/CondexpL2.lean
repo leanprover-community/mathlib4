@@ -495,9 +495,6 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
 @[deprecated (since := "2025-01-21")]
 alias setLIntegral_nnnorm_condexpIndSMul_le := setLIntegral_nnnorm_condExpIndSMul_le
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_nnnorm_condExpIndSMul_le := setLIntegral_nnnorm_condExpIndSMul_le
-
 @[deprecated (since := "2025-01-21")]
 alias set_lintegral_nnnorm_condexpIndSMul_le := set_lintegral_nnnorm_condExpIndSMul_le
 
@@ -563,9 +560,6 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     _ = (μ (t ∩ s)).toReal • x := by rw [setIntegral_condExpL2_indicator hs ht hμs hμt]
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpIndSMul := setIntegral_condExpIndSMul
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpIndSMul := setIntegral_condExpIndSMul
 
 @[deprecated (since := "2025-01-21")]
 alias set_integral_condexpIndSMul := set_integral_condExpIndSMul

@@ -367,9 +367,6 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_left]
 
-@[deprecated (since := "2024-04-17")]
-alias floor_logb_nat_cast := floor_logb_natCast
-
 theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -386,9 +383,6 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     cases hb
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
-
-@[deprecated (since := "2024-04-17")]
-alias ceil_logb_nat_cast := ceil_logb_natCast
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))

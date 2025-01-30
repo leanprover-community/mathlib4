@@ -464,26 +464,17 @@ theorem setLIntegral_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η : Ker
   simp_rw [← Kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← compProd_restrict hs ht,
     lintegral_compProd _ _ _ hf, Kernel.restrict_apply]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_compProd := setLIntegral_compProd
-
 theorem setLIntegral_compProd_univ_right (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f)
     {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ z in s ×ˢ Set.univ, f z ∂(κ ⊗ₖ η) a = ∫⁻ x in s, ∫⁻ y, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [setLIntegral_compProd κ η a hf hs MeasurableSet.univ, Measure.restrict_univ]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_compProd_univ_right := setLIntegral_compProd_univ_right
-
 theorem setLIntegral_compProd_univ_left (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f) {t : Set γ}
     (ht : MeasurableSet t) :
     ∫⁻ z in Set.univ ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫⁻ x, ∫⁻ y in t, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [setLIntegral_compProd κ η a hf MeasurableSet.univ ht, Measure.restrict_univ]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_compProd_univ_left := setLIntegral_compProd_univ_left
 
 end Lintegral
 

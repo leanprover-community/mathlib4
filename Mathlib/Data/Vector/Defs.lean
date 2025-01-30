@@ -142,8 +142,6 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
   | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
 
-@[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
-
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
   | 0, _ => nil

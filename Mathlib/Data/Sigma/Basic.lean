@@ -213,8 +213,6 @@ def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
 theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ = f a b :=
   rfl
 
-@[deprecated (since := "2024-07-27")] alias ex_of_psig := ex_of_PSigma
-
 instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
   ⟨⟨default, default⟩⟩
 

@@ -225,15 +225,9 @@ theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
 theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_toProd := natCast_toProd
-
 @[simp]
 theorem intCast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_toProd := intCast_toProd
 
 @[simp]
 theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
@@ -280,26 +274,14 @@ theorem mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
 theorem natCast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_fst := natCast_fst
-
 theorem natCast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_snd := natCast_snd
 
 theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_fst := intCast_fst
-
 theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_snd := intCast_snd
 
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl

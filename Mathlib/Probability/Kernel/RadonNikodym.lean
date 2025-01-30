@@ -147,9 +147,6 @@ lemma setLIntegral_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFini
     congr with x
     simp
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_rnDerivAux := setLIntegral_rnDerivAux
-
 lemma withDensity_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)) = κ := by
   ext a s hs

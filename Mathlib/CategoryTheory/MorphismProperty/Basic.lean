@@ -415,14 +415,6 @@ instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
       intro
       exact IsIso.comp_isIso
 
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_left_isIso :=
-  cancel_left_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_right_isIso :=
-  cancel_right_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_iso_iff := arrow_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_mk_iso_iff := arrow_mk_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.isoClosure_eq := isoClosure_eq_self
-
 /-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
 this is the induced morphism property on `C₁ × C₂`. -/
 def prod {C₁ C₂ : Type*} [Category C₁] [Category C₂]

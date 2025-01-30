@@ -59,8 +59,6 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   Do not use this lemma directly. Use `Kernel.measurable` instead. -/
   measurable' : Measurable toFun
 
-@[deprecated (since := "2024-07-22")] alias kernel := Kernel
-
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
 

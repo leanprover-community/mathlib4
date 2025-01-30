@@ -105,9 +105,6 @@ instance instFunLike : FunLike (AddChar A M) A M where
 /-- An additive character maps sums to products. -/
 lemma map_add_eq_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_eq_mul' x y
 
-@[deprecated (since := "2024-06-06")] alias map_zero_one := map_zero_eq_one
-@[deprecated (since := "2024-06-06")] alias map_add_mul := map_add_eq_mul
-
 /-- Interpret an additive character as a monoid homomorphism. -/
 def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
   toFun := φ.toFun
@@ -123,8 +120,6 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 /-- An additive character maps multiples by natural numbers to powers. -/
 lemma map_nsmul_eq_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
   ψ.toMonoidHom.map_pow x n
-
-@[deprecated (since := "2024-06-06")] alias map_nsmul_pow := map_nsmul_eq_pow
 
 /-- Additive characters `A → M` are the same thing as monoid homomorphisms from `Multiplicative A`
 to `M`. -/
@@ -400,9 +395,6 @@ lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
 /-- An additive character maps integer scalar multiples to integer powers. -/
 lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
   ψ.toMonoidHom.map_zpow a n
-
-@[deprecated (since := "2024-06-06")] alias map_neg_inv := map_neg_eq_inv
-@[deprecated (since := "2024-06-06")] alias map_zsmul_zpow := map_zsmul_eq_zpow
 
 end fromAddGrouptoDivisionMonoid
 

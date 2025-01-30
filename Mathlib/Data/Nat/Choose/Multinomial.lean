@@ -51,8 +51,6 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
 
 @[simp] lemma multinomial_empty : multinomial ∅ f = 1 := by simp [multinomial]
 
-@[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
-
 variable {s f}
 
 lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :

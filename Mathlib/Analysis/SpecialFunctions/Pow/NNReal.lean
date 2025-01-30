@@ -171,9 +171,6 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   push_cast
   exact Real.sqrt_eq_rpow x.1
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_nat_cast := rpow_natCast
-
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
@@ -630,9 +627,6 @@ theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   · cases n <;> simp [top_rpow_of_pos (Nat.cast_add_one_pos _), top_pow (Nat.succ_pos _)]
   · simp [← coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_nat_cast := rpow_natCast
-
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n) :=
@@ -642,9 +636,6 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
-
-@[deprecated (since := "2024-04-17")]
-alias rpow_int_cast := rpow_intCast
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 

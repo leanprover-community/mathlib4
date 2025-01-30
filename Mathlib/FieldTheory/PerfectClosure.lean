@@ -360,15 +360,9 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
     rwa [frobenius_natCast K p x] at this
   apply R.intro
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast := natCast
-
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast := intCast
 
 theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
@@ -376,9 +370,6 @@ theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = 
     cases' H with z H
     simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
   rw [natCast K p 0, natCast K p 0, H]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_eq_iff := natCast_eq_iff
 
 instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]

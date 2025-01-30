@@ -966,9 +966,6 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_succ := natCast_succ
-
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, zero_lt_one' Ordinal⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2

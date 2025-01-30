@@ -162,7 +162,4 @@ lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssS
 
 end Functor
 
-@[deprecated (since := "2024-04-06")] alias EssSurj := Functor.EssSurj
-@[deprecated (since := "2024-04-06")] alias Iso.map_essSurj := Functor.essSurj_of_iso
-
 end CategoryTheory

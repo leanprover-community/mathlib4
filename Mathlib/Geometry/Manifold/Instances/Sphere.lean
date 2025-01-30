@@ -575,6 +575,4 @@ instance : LieGroup (𝓡 1) ω Circle where
 theorem contMDiff_circleExp {m : WithTop ℕ∞} : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 
-@[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp
-
 end Circle

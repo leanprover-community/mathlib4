@@ -325,9 +325,6 @@ theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 
 instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 
-@[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
-@[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
-
 variable {f : X ⟶ Y} {h : Y ⟶ Z}
 
 instance inv_isIso [IsIso f] : IsIso (inv f) :=

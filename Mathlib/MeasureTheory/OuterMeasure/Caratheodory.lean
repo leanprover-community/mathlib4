@@ -142,9 +142,6 @@ theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCar
       refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i
 
-@[deprecated (since := "2024-07-29")]
-alias isCaratheodory_iUnion_nat := isCaratheodory_iUnion_of_disjoint
-
 lemma isCaratheodory_iUnion {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) :
     m.IsCaratheodory (⋃ i, s i) := by
   rw [← iUnion_disjointed]
