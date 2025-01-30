@@ -76,6 +76,13 @@ variable (α M)
 theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
   LinearMap.ext (linearCombination_zero_apply R)
 
+@[simp]
+theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) :
+    linearCombination R (single a c) f = f a • c := by
+  rw [linearCombination_apply, sum_eq_single a, single_eq_same]
+  · exact fun _ _ hi ↦ by rw [single_eq_of_ne hi.symm, smul_zero]
+  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
+
 @[deprecated (since := "2024-08-29")] alias total_zero := linearCombination_zero
 
 variable {α M}

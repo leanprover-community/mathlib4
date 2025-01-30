@@ -23,23 +23,23 @@ We fix a type `σ`, a semiring `R`, an `R`-module `M`,
 as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 - `Finsupp.weight` of a finitely supported function `f : σ →₀ R`
-with respect to `w`: it is the sum `∑ (f i) • (w i)`.
-It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
+  with respect to `w`: it is the sum `∑ (f i) • (w i)`.
+  It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
 
 - `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
 
 - `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
-for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
+  for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 
 - `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
 - `NonTorsionWeight`: all values `w s` are non torsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
-`f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
+  `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
 
 - For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
-there are finitely many `f : σ →₀ ℕ` of bounded weight.
+  there are finitely many `f : σ →₀ ℕ` of bounded weight.
 
 ## Degree
 
@@ -51,10 +51,10 @@ there are finitely many `f : σ →₀ ℕ` of bounded weight.
 - `Finsupp.le_degree` says that `f s ≤ f.degree`.
 
 - `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1` when `R` is a semiring.
-This is useful to access the additivity properties of `Finsupp.degree`
+  This is useful to access the additivity properties of `Finsupp.degree`
 
 - For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
-there are finitely many `f : σ →₀ ℕ` of bounded degree.
+  there are finitely many `f : σ →₀ ℕ` of bounded degree.
 
 
 ## TODO
@@ -86,13 +86,8 @@ theorem weight_apply (f : σ →₀ R) :
 alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
 theorem weight_single_index (s : σ) (c : M) (f : σ →₀ R) :
-    weight (single s c) f = f s • c := by
-  rw [weight_apply, sum_eq_single s]
-  · simp only [single_eq_same]
-  · intro i _ hi
-    rw [single_eq_of_ne hi.symm, smul_zero]
-  · intro _
-    simp only [single_eq_same, zero_smul]
+    weight (Finsupp.single s c) f = f s • c :=
+  linearCombination_single_index σ M R c s f
 
 theorem weight_single_one_apply (s : σ) (f : σ →₀ R) :
     weight (single s 1) f = f s := by
