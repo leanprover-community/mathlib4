@@ -694,8 +694,6 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
     rw [← ih]
     exact succ_inj'
 
-@[deprecated (since := "2025-01-30")] alias indexOf_eq_length_iff := idxOf_eq_length_iff
-
 @[simp]
 theorem idxOf_of_not_mem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
   idxOf_eq_length_iff.2
