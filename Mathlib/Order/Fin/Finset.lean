@@ -17,16 +17,21 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 
 namespace Fin
 
+-- move to Mathlib.Order.Hom.Basic
+@[simps!]
+noncomputable def OrderIso.ofUnique
+    (A B : Type*) [Unique A] [Unique B] [Preorder A] [Preorder B] :
+    A ≃o B where
+  __ := Equiv.ofUnique A B
+  map_rel_iff' {a b} := by simp
+
 variable {α : Type*} [Preorder α] [DecidableEq α]
 
 /-- This is the order isomorphisms from `Fin 1` to a finset `{a}`. -/
 @[simps! apply]
-noncomputable def orderIsoSingleton (a : α) :
+noncomputable def orderIsoSingleton' (a : α) :
     Fin 1 ≃o ({a} : Finset α) :=
-  StrictMono.orderIsoOfSurjective ![⟨a, by simp⟩] strictMono_vecEmpty (fun ⟨x, hx⟩ ↦ by
-      simp only [Finset.mem_singleton] at hx
-      subst hx
-      · exact ⟨0, rfl⟩)
+  .ofUnique _ _
 
 /-- This is the order isomorphisms from `Fin 2` to a finset `{a, b}` when `a < b`. -/
 @[simps! apply]
