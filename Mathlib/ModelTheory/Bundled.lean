@@ -197,6 +197,66 @@ instance ElementarySubstructure.toModel.instSmall {M : T.ModelType}
     (S : L.ElementarySubstructure M) [h : Small.{w, x} S] : Small.{w, x} (S.toModel T) :=
   h
 
+variable {M N P : CategoryTheory.Bundled.{w} L.Structure}
+
+namespace Embedding
+
+/-- Embedding between equal structures. -/
+def ofEq (h : M = N) : M ↪[L] N := by
+  cases h
+  exact refl L M
+
+@[simp]
+theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
+
+@[simp]
+theorem ofEq_comp (h : M = N) (h' : N = P) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
+  cases h
+  cases h'
+  rfl
+
+@[simp]
+theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
+  cases h
+  cases h'
+  rfl
+
+end Embedding
+
+namespace Equiv
+
+/-- Equivalence between equal structures. -/
+def ofEq (h : M = N) : M ≃[L] N := by
+  cases h
+  rfl
+
+@[simp]
+theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
+
+@[simp]
+theorem ofEq_comp (h : M = N) (h' : N = P) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
+  cases h
+  cases h'
+  rfl
+
+@[simp]
+theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
+  cases h
+  cases h'
+  rfl
+
+@[simp]
+theorem ofEq_toEmbedding (h : M = N) :
+    (ofEq h).toEmbedding = .ofEq h := by
+  cases h
+  rfl
+
+end Equiv
+
 end Language
 
 end FirstOrder
