@@ -24,7 +24,6 @@ This file proves some results regarding the conditional expectation of real-valu
 
 -/
 
-
 noncomputable section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
@@ -145,9 +144,8 @@ theorem setIntegral_abs_condExp_le {s : Set Î±} (hs : MeasurableSet[m] s) (f : Î
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_abs_condexp_le := setIntegral_abs_condExp_le
 
-
 @[deprecated (since := "2025-01-21")]
-alias set_integral_abs_condexp_le := set_integral_abs_condExp_le
+alias set_integral_abs_condexp_le := setIntegral_abs_condExp_le
 
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/

@@ -26,7 +26,6 @@ The conditional expectation of an `L²` function is defined in
 
 -/
 
-
 noncomputable section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
@@ -59,11 +58,9 @@ takes `x : G` to the conditional expectation of the indicator of the set `s` wit
 seen as an element of `α →₁[μ] G`.
 -/
 
-
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α} [NormedSpace ℝ G]
 
 section CondexpIndL1Fin
-
 
 /-- Conditional expectation of the indicator of a measurable set with finite measure,
 as a function in L1. -/
@@ -173,7 +170,6 @@ end CondexpIndL1Fin
 open scoped Classical
 
 section CondexpIndL1
-
 
 /-- Conditional expectation of the indicator of a set, as a function in L1. Its value for sets
 which are not both measurable and of finite measure is not used: we set it to 0. -/
@@ -376,8 +372,7 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpInd := setIntegral_condExpInd
 
-
-@[deprecated (since := "2025-01-21")] alias set_integral_condexpInd := set_integral_condExpInd
+@[deprecated (since := "2025-01-21")] alias set_integral_condexpInd := setIntegral_condExpInd
 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
@@ -404,7 +399,6 @@ theorem condExpInd_nonneg {E} [NormedLatticeAddCommGroup E] [NormedSpace ℝ E] 
 end CondexpInd
 
 section CondexpL1
-
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}
@@ -469,10 +463,8 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL1CLM_of_measure_ne_top := setIntegral_condExpL1CLM_of_measure_ne_top
 
-  setIntegral_condExpL1CLM_of_measure_ne_top
-
 @[deprecated (since := "2025-01-21")]
-alias setIntegral_condexpL1CLM := set_integral_condexpL1CLM_of_measure_ne_top
+alias setIntegral_condexpL1CLM := setIntegral_condexpL1CLM_of_measure_ne_top
 
 /-- The integral of the conditional expectation `condExpL1CLM` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `setIntegral_condExp`, the similar statement for
@@ -511,8 +503,7 @@ theorem setIntegral_condExpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
 
-
-@[deprecated (since := "2025-01-21")] alias set_integral_condexpL1CLM := set_integral_condExpL1CLM
+@[deprecated (since := "2025-01-21")] alias set_integral_condexpL1CLM := setIntegral_condExpL1CLM
 
 theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ := by
@@ -639,8 +630,7 @@ theorem setIntegral_condExpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpL1 := setIntegral_condExpL1
 
-
-@[deprecated (since := "2025-01-21")] alias set_integral_condexpL1 := set_integral_condExpL1
+@[deprecated (since := "2025-01-21")] alias set_integral_condexpL1 := setIntegral_condExpL1
 
 theorem condExpL1_add (hf : Integrable f μ) (hg : Integrable g μ) :
     condExpL1 hm μ (f + g) = condExpL1 hm μ f + condExpL1 hm μ g :=

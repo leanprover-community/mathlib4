@@ -31,7 +31,6 @@ However, some lemmas also use `𝕜 : RCLike`:
 
 -/
 
-
 open TopologicalSpace Filter ContinuousLinearMap
 
 open scoped ENNReal Topology MeasureTheory
@@ -544,9 +543,8 @@ theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : Measurab
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL2_indicator := setIntegral_condExpL2_indicator
 
-
 @[deprecated (since := "2025-01-21")]
-alias set_integral_condexpL2_indicator := set_integral_condExpL2_indicator
+alias set_integral_condexpL2_indicator := setIntegral_condExpL2_indicator
 
 theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (x : G') :
@@ -562,9 +560,8 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpIndSMul := setIntegral_condExpIndSMul
 
-
 @[deprecated (since := "2025-01-21")]
-alias set_integral_condexpIndSMul := set_integral_condExpIndSMul
+alias set_integral_condexpIndSMul := setIntegral_condExpIndSMul
 
 theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     [SigmaFinite (μ.trim hm)] : (0 : α → ℝ) ≤ᵐ[μ]
