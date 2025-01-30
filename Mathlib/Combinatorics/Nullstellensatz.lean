@@ -213,7 +213,7 @@ private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →�
   haveI : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () s.card by
-      simpa [lex_le_iff_of_unique] using this
+      simpa [MonomialOrder.lex_le_iff_of_unique] using this
     rw [← Alon.degP]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
