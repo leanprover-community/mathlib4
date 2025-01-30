@@ -11,9 +11,9 @@ import Lean.Data.Json.Printer
 import Lean.Data.Json.Parser
 import Cache.Lean
 
-open Lean
-
 variable {α : Type}
+
+open Lean
 
 namespace Cache.IO
 
@@ -248,6 +248,10 @@ partial def getFilesWithExtension
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
   else return if fp.extension == some extension then acc.push fp else acc
 
+/--
+The Hash map of the cache. Note that this shares a name with `Std.HashMap`
+and the deprecated `Lean.HashMap`. Do not confuse them.
+-/
 abbrev HashMap := Std.HashMap Name UInt64
 
 namespace HashMap

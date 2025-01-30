@@ -7,6 +7,7 @@ Authors: Jon Eugster
 import Lean.Data.Name
 import Lean.Util.Path
 import Init.System.FilePath
+import Std
 
 set_option autoImplicit false
 
