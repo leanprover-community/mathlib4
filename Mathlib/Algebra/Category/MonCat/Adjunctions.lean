@@ -61,8 +61,9 @@ def free : Type u ⥤ MonCat.{u} where
 /-- The free-forgetful adjunction for monoids. -/
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeMonoid.lift.symm
-      homEquiv_naturality_left_symm := fun _ _ => MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
+    -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.
+    { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans FreeMonoid.lift.symm
+      homEquiv_naturality_left_symm _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
