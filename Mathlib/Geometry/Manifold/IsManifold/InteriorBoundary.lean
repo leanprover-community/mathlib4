@@ -383,8 +383,19 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
 
   have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
     rw [extChartAt]
-    set C' := chartAt H x
+
     rw [← PartialHomeomorph.map_extend_nhds _ (ChartedSpace.mem_chart_source x)]
+    -- speculative
+    rw [Filter.mem_map]
+    rw [← I.image_eq C.target]
+    change (I ∘ (chartAt H x)) ⁻¹' (↑I '' C.target) ∈ 𝓝 x -- should be defeq
+    change (chartAt H x) ⁻¹' (I ⁻¹' (↑I '' C.target)) ∈ 𝓝 x -- some rw or so!
+    have : ↑I ⁻¹' (↑I '' C.target) = C.target := by exact preimage_image I C.target
+    rw [this]
+    -- easy now?
+
+    --set C' := chartAt H x
+
     sorry
     -- rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
     -- use I.symm ⁻¹' C.target
