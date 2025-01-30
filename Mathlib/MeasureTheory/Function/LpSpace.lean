@@ -308,7 +308,6 @@ theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ 
   -- Squeezed for performance reasons
   simp only [norm_def, eLpNorm_measure_zero, ENNReal.zero_toReal]
 
-
 @[simp] theorem norm_exponent_zero (f : Lp E 0 μ) : ‖f‖ = 0 := by
   -- Squeezed for performance reasons
   simp only [norm_def, eLpNorm_exponent_zero, ENNReal.zero_toReal]
