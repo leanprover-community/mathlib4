@@ -194,32 +194,34 @@ macro_rules (kind := bigprod)
     | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.prod $s (fun $x ↦ $v))
 
-section deprecated
-open Elab Term
+section deprecated -- since 2024-30-01
+open Elab Term Tactic TryThis
 
 /-- Deprecated, use `∑ x ∈ s, f x` instead. -/
-elab "∑ " x:ident " in " s:term ", " r:term:67 : term => do
-  logWarning m!"The '∑ x in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead."
-  elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
 
 /-- Deprecated, use `∏ x ∈ s, f x` instead. -/
-elab "∏ " x:ident " in " s:term ", " r:term:67 : term => do
-  logWarning m!"The '∏ x in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead."
-  Elab.Term.elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
 
-set_option linter.unusedVariables false in
-/-- Deprecated, use `∑ x ∈ s, f x` instead. -/
-elab "∑ " x:ident " : " ty:term " in " s:term ", " r:term:67 : term => do
-  logWarning
-    m!"The '∑ x : ty in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead."
-  Elab.Term.elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+elab_rules : term
+  | `(∑%$tk $x:ident in $s, $r) => do
+    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∑ x in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+  | `(∑%$tk $x:ident : $_t in $s, $r) => do
+    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∑ x : t in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
 
-set_option linter.unusedVariables false in
-/-- Deprecated, use `∏ x ∈ s, f x` instead. -/
-elab "∏ " x:ident " : " ty:term " in " s:term ", " r:term:67 : term => do
-  logWarning
-    m!"The '∏ x : ty in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead."
-  Elab.Term.elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+elab_rules : term
+  | `(∏%$tk $x:ident in $s, $r) => do
+    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∏ x in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+  | `(∏%$tk $x:ident : $_t in $s, $r) => do
+    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∏ x : t in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
 
 end deprecated
 
@@ -284,7 +286,7 @@ lemma prod_map_val [CommMonoid β] (s : Finset α) (f : α → β) : (s.1.map f)
   rfl
 
 @[simp]
-theorem sum_multiset_singleton (s : Finset α) : ∑ a in s, {a} = s.val := by
+theorem sum_multiset_singleton (s : Finset α) : ∑ a ∈ s, {a} = s.val := by
   simp only [sum_eq_multiset_sum, Multiset.sum_map_singleton]
 
 end Finset
