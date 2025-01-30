@@ -152,9 +152,9 @@ lemma condVar_bot_ae_eq (X : Ω → ℝ) :
     exact eventually_bot
   · exact .of_forall <| congr_fun (condVar_bot' X)
 
-lemma condVar_bot [IsProbabilityMeasure μ] (hX : Memℒp X 2 μ) :
+lemma condVar_bot [IsProbabilityMeasure μ] (hX : AEMeasurable X μ) :
     Var[X ; μ | ⊥] = fun _ω ↦ Var[X ; μ] := by
-  simp [condVar_bot', average_eq_integral, hX.variance_eq]
+  simp [condVar_bot', average_eq_integral, variance_eq_integral hX]
 
 lemma condVar_smul (c : ℝ) (X : Ω → ℝ) : Var[c • X ; μ | m] =ᵐ[μ] c ^ 2 • Var[X ; μ | m] := by
   calc
