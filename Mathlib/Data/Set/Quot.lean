@@ -18,14 +18,11 @@ import Mathlib.Data.Set.Card
 
 variable {α : Type*} {r : α → α → Prop}
 
-/-- Convert an equivalence class to a `Set`. -/
-def Quot.toSet (c : Quot r) : Set α := {x | Quot.mk r x = c}
-
 /-- A quotient element can be interpreted as the set of elements in the same equivalence class. -/
 instance : SetLike (Quot r) α where
-  coe := Quot.toSet
+  coe (c : Quot r) := {x | Quot.mk r x = c}
   coe_injective' x y h := by
-    simp only [Quot.toSet] at h
+    dsimp at h
     simpa using show x.out ∈ {v | Quot.mk r v = y} by
       rw [← h]
       exact x.out_eq
