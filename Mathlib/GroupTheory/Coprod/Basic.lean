@@ -118,7 +118,6 @@ There are several reasons to build an API from scratch.
 group, monoid, coproduct, free product
 -/
 
-
 open FreeMonoid Function List Set
 
 namespace Monoid
