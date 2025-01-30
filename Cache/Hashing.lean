@@ -129,10 +129,8 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
     let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     -- if a file is part of a cache then we need to add it to the `hashMap`, otherwise
     -- we should add it as `none` to the hashMap
-    -- TODO: this is hacky
-    let head := mod.components.headD default
     if #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph, `LeanSearchClient, `Plausible, `Qq,
-        `ProofWidgets].contains head then
+        `ProofWidgets].contains mod.getRoot then
       modifyGet fun stt =>
         (some fileHash, { stt with
           hashMap := stt.hashMap.insert mod fileHash

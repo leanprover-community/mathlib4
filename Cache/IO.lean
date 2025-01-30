@@ -136,19 +136,16 @@ def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
 
--- def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
-
-
 /-- Get the correct package directory for any file.
 -/
 def getPackageDir (sourceFile : FilePath) : CacheM FilePath := do
   let sp := (← read).searchPath
   -- Note: This seems to work since the path `.` is listed last, so it will not be found unless
   -- no other search-path applies. Could be more robust.
-  let packageDir? := sp.find? (·.normalize.toString.isPrefixOf sourceFile.normalize.toString)
+  let packageDir? := sp.find? (·.contains sourceFile)
   match packageDir? with
   | some dir => return dir
-  | none => throw <| IO.userError s!"Unknown package directory for {sourceFile}"
+  | none => throw <| IO.userError s!"Unknown package directory for {sourceFile}\n{sp.map (·.normalize.toString)}"
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)

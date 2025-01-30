@@ -55,6 +55,34 @@ end Lean
 
 namespace System.FilePath
 
+/--
+Returns true if `target` lives inside `path`.
+Does not check if the two actually exist.
+
+The paths can contain arbitrary amounts of "." and "..",
+but if one of them starts with ".." the function will always return `False`!
+-/
+def contains (path target : FilePath) : Bool :=
+  go path.components target.components
+where
+  go : List String → List String → Bool
+    -- must not start with ".."
+    | ".." :: _, _ => false
+    | _, ".." :: _ => false
+    -- ignore "." or ""
+    | "." :: path, target => go path target
+    | path, "." :: target => go path target
+    | "" :: path, target => go path target
+    | path, "" :: target => go path target
+    -- cancel entry with following ".."
+    | _ :: ".." :: path, target => go path target
+    | path, _ :: ".." :: target => go path target
+    -- base cases
+    | [], _ => true
+    | _ :: _, [] => false
+    -- recursion
+    | p :: ath, t :: arget => if p == t then go ath arget else false
+
 /-- Removes a parent path from the beginning of a path -/
 def withoutParent (path parent : FilePath) : FilePath :=
   mkFilePath <| aux path.components parent.components
