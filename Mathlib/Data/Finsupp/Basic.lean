@@ -1213,7 +1213,7 @@ section
 
 variable [Zero M] [MonoidWithZero R] [MulActionWithZero R M]
 
-@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
+@[simp]
 theorem single_smul (a b : α) (f : α → M) (r : R) : single a r b • f a = single a (r • f b) b := by
   by_cases h : a = b <;> simp [h]
 
@@ -1328,10 +1328,8 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
--- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
-    c • Finsupp.single a b = Finsupp.single a (c * b) :=
-  smul_single _ _ _
+    c • Finsupp.single a b = Finsupp.single a (c * b) := by simp
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
@@ -1468,8 +1466,8 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
   ext a
   by_cases h : P a
   · exact dif_pos h
-  · #adaptation_note
-    /-- Prior to nightly-2024-06-18, this `rw` was done by `dsimp`. -/
+  · #adaptation_note /-- nightly-2024-06-18
+    this `rw` was done by `dsimp`. -/
     rw [extendDomain_toFun]
     dsimp
     rw [if_neg h, eq_comm, ← not_mem_support_iff]
@@ -1480,8 +1478,8 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  #adaptation_note
-  /-- Prior to nightly-2024-06-18, this `rw` was instead `dsimp only`. -/
+  #adaptation_note /-- nightly-2024-06-18
+  this `rw` was instead `dsimp only`. -/
   rw [extendDomain_toFun]
   obtain rfl | ha := eq_or_ne a.val a'
   · simp_rw [single_eq_same, dif_pos a.prop]
