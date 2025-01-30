@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Module.Projective
 import Mathlib.FieldTheory.Finiteness
-import Mathlib.RingTheory.Finiteness.Subalgebra
 
 /-!
 # Finite dimensional vector spaces
