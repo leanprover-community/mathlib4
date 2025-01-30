@@ -34,8 +34,8 @@ noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
   (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
     S.quotientKerRightHomEquivRight
 
-/-- The inverse of the surjective `S.rightHom` -/
-@[to_additive surjInvRightHom "The inverse of the surjective `S.rightHom`." ]
+/-- An arbitrarily chosen section -/
+@[to_additive surjInvRightHom "An arbitrarily chosen section" ]
 noncomputable def surjInvRightHom : S.Section where
   toFun := Function.surjInv S.rightHom_surjective
   rightInverse_rightHom := Function.surjInv_eq S.rightHom_surjective
