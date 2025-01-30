@@ -60,21 +60,27 @@ namespace System.FilePath
 Returns true if `target` lives inside `path`.
 Does not check if the two actually exist.
 
-The paths can contain arbitrary amounts of "." and "..",
-but if one of them starts with ".." the function will always return `False`!
+The paths can contain arbitrary amounts of ".", "" or "..".
+However, if the paths do not contain the same amount of leading "..", it
+will return `False` as the real system path is unknown to the function.
+
+For example, `contains (".." / "myFolder") ("myFolder" / "..")` will always return `false`
+even though it might be true depending on which local working directory on is in
+(which `contains` does'nt know about since it's not in `IO`.)
 -/
 def contains (path target : FilePath) : Bool :=
   go path.components target.components
 where
   go : List String → List String → Bool
-    -- must not start with ".."
-    | ".." :: _, _ => false
-    | _, ".." :: _ => false
-    -- ignore "." or ""
+    -- ignore leading "." or ""
     | "." :: path, target => go path target
     | path, "." :: target => go path target
     | "" :: path, target => go path target
     | path, "" :: target => go path target
+    -- must not start with ".."
+    | ".." :: path, ".." :: target => go path target
+    | ".." :: _, _ => false
+    | _, ".." :: _ => false
     -- cancel entry with following ".."
     | _ :: ".." :: path, target => go path target
     | path, _ :: ".." :: target => go path target
