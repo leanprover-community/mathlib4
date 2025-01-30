@@ -1431,7 +1431,7 @@ def MeasureTheory.Lp.LpSchwartzMapSubmodule' (p : ℝ≥0∞) [Fact (1 ≤ p)] (
     smul_mem' c f := by
       simp only [AddSubgroup.mem_carrier, @LpSchwartzMap.mem_iff_ae _]
       refine Exists.imp' (c • ·) fun g hg ↦ ?_
-      filter_upwards [hg, Lp.coeFn_smul c f] with x h₁ h₂
+      filter_upwards [hg, coeFn_smul c f] with x h₁ h₂
       simp only [Pi.smul_apply, h₁, h₂]
       simp }
 
@@ -1443,7 +1443,7 @@ def MeasureTheory.Lp.LpSchwartzMapSubmodule (p : ℝ≥0∞) [Fact (1 ≤ p)] (�
     smul_mem' c f := by
       simp only [AddSubgroup.mem_carrier, @LpSchwartzMap.mem_iff_ae _]
       refine Exists.imp' (c • ·) fun g hg ↦ ?_
-      filter_upwards [hg, Lp.coeFn_smul c f] with x h₁ h₂
+      filter_upwards [hg, coeFn_smul c f] with x h₁ h₂
       simp [h₁, h₂]
   }
 
@@ -1455,8 +1455,8 @@ instance MeasureTheory.Lp.LpSchwartzMap.instModule {p : ℝ≥0∞} [Fact (1 ≤
 
 noncomputable instance MeasureTheory.Lp.LpSchwartzMap.instNormedSpace
     {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} :
-    NormedSpace 𝕜 (Lp.LpSchwartzMap F p μ) :=
-  (Lp.LpSchwartzMapSubmodule 𝕜 F p μ).normedSpace
+    NormedSpace 𝕜 (LpSchwartzMap F p μ) :=
+  (LpSchwartzMapSubmodule 𝕜 F p μ).normedSpace
 
 -- TODO: simp?
 theorem MeasureTheory.Lp.LpSchwartzMap.coe_smul {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E}

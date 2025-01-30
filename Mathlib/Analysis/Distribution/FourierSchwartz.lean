@@ -17,7 +17,7 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 -/
 
 open Real MeasureTheory MeasureTheory.Measure Filter
-open scoped FourierTransform ENNReal
+open scoped FourierTransform ENNReal InnerProductSpace
 
 namespace SchwartzMap
 
@@ -128,9 +128,9 @@ section Lp
 
 open scoped SchwartzMap
 
-variable {𝕜 𝕜' V E : Type*}
+variable {𝕜 𝕜' V E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup V]
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup V] [NormedSpace ℂ E]
+variable [NormedSpace ℂ E] [CompleteSpace F] [InnerProductSpace ℂ F]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
 
 -- TODO: Move to `Mathlib/Analysis/Fourier/FourierTransform.lean`?
@@ -151,125 +151,147 @@ theorem Real.fourierIntegral_congr_ae {f g : V → E} (h : f =ᵐ[volume] g) : �
 
 -- TODO: Move.
 -- TODO: Adjust typeclasses?
-theorem Real.star_fourierIntegral (f : V → ℂ) (ξ : V) :
+theorem Real.conj_fourierIntegral (f : V → ℂ) (ξ : V) :
     starRingEnd ℂ (𝓕 f ξ) = 𝓕 (fun x ↦ starRingEnd ℂ (f x)) (-ξ) := by
   simp only [fourierIntegral_eq]
   refine Eq.trans integral_conj.symm ?_
   simp [Circle.smul_def, conj_fourierChar]
 
-theorem Real.fourierIntegral_star (f : V → ℂ) (ξ : V) :
+theorem Real.fourierIntegral_conj (f : V → ℂ) (ξ : V) :
     𝓕 (fun x ↦ starRingEnd ℂ (f x)) ξ = starRingEnd ℂ (𝓕 f (-ξ)) := by
   simp only [fourierIntegral_eq]
   refine Eq.trans ?_ integral_conj
   simp [Circle.smul_def, conj_fourierChar]
 
 -- TODO: Move into `Mathlib/Analysis/Fourier/FourierTransform.lean`?
+-- TODO: Generalize to `InnerProductSpace 𝕜 F` and `⟪f w, 𝓕 g w⟫_𝕜`?
 -- TODO: Check type classes for `V`.
 -- TODO: Generalize to bilinear `L`?
-theorem Real.integral_fourierTransform_mul_eq_integral_mul_fourierTransform {f g : V → ℂ}
-    (hf_cont : Continuous f) (hf_int : Integrable f)
-    (hg_cont : Continuous g) (hg_int : Integrable g) :
-    ∫ w, 𝓕 f w * g w = ∫ w, f w * 𝓕 g w := by
-  calc ∫ w, 𝓕 f w * g w
-  _ = ∫ w, ∫ v, 𝐞 (-inner v w) • f v * g w := by simp [fourierIntegral_eq, integral_mul_right]
-  _ = ∫ w, ∫ v, 𝐞 (-inner v w) • (f v * g w) := by
-    simp only [Circle.smul_def, smul_eq_mul]
+/-- The L^2 inner product of a function with the Fourier transform of another is equal to the
+L^2 inner product of its inverse Fourier transform with the other function.
+
+This is useful for proving Plancherel's theorem.
+Note that, unlike Plancherel's theorem, it does not require `Continuous`. -/
+theorem Real.integral_inner_fourier_eq_integral_fourierInv_inner
+    {f g : V → F} (hf_int : Integrable f) (hg_int : Integrable g) :
+    ∫ w, ⟪f w, 𝓕 g w⟫_ℂ = ∫ w, ⟪𝓕⁻ f w, g w⟫_ℂ := by
+  calc ∫ w, ⟪f w, 𝓕 g w⟫_ℂ
+  _ = ∫ w, ∫ v, 𝐞 (-⟪w, v⟫_ℝ) • ⟪f w, g v⟫_ℂ := by
+    simp only [Real.fourierIntegral_eq]
     refine congrArg (integral _) (funext fun w ↦ ?_)
-    refine congrArg (integral _) (funext fun v ↦ ?_)
-    ring
-  _ = ∫ v, ∫ w, 𝐞 (-inner v w) • (f v * g w) := by
-    symm
+    calc ⟪f w, ∫ v, 𝐞 (-⟪v, w⟫_ℝ) • g v⟫_ℂ
+    _ = ∫ v, ⟪f w, 𝐞 (-⟪v, w⟫_ℝ) • g v⟫_ℂ := by
+      refine (integral_inner ?_ _).symm
+      exact (fourierIntegral_convergent_iff w).mpr hg_int
+    _ = ∫ v, 𝐞 (-⟪v, w⟫_ℝ) • ⟪f w, g v⟫_ℂ := by
+      refine congrArg (integral _) (funext fun v ↦ ?_)
+      simp only [Circle.smul_def]  -- TODO: Need `InnerProductSpace ℂ` for this?
+      exact inner_smul_right _ _ _
+    _ = ∫ v, 𝐞 (-⟪w, v⟫_ℝ) • ⟪f w, g v⟫_ℂ := by simp only [real_inner_comm w]
+  -- Change order of integration.
+  _ = ∫ v, ∫ w, 𝐞 (-⟪w, v⟫_ℝ) • ⟪f w, g v⟫_ℂ := by
     refine integral_integral_swap ?_
     simp only [Function.uncurry_def]
-    rw [← integrable_norm_iff]
-    swap
-    · refine Continuous.aestronglyMeasurable (.smul ?_ ?_)
-      · exact .comp continuous_fourierChar continuous_inner.neg
-      · exact .mul (hf_cont.comp continuous_fst) (hg_cont.comp continuous_snd)
-    simp only [Circle.norm_smul, norm_mul]
-    exact .prod_mul hf_int.norm hg_int.norm
-  _ = ∫ v, ∫ w, f v * (𝐞 (-inner v w)) • g w := by
-    simp only [Circle.smul_def, smul_eq_mul]
-    refine congrArg (integral _) (funext fun w ↦ ?_)
+    -- TODO: Clean up. `h_prod` below could come from `this`?
+    suffices Integrable (fun p : V × V ↦ ⟪f p.1, g p.2⟫_ℂ) (volume.prod volume) by
+      refine (integrable_norm_iff (.smul ?_ this.1)).mp ?_
+      · exact (continuous_fourierChar.comp continuous_inner.neg).aestronglyMeasurable
+      simp only [Circle.norm_smul]
+      exact (integrable_norm_iff this.1).mpr this
+    have h_prod : AEStronglyMeasurable (fun p : V × V ↦ ⟪f p.1, g p.2⟫_ℂ) (volume.prod volume) :=
+      hf_int.1.fst.inner hg_int.1.snd
+    refine (integrable_prod_iff h_prod).mpr ⟨?_, ?_⟩
+    · simp only  -- TODO: Some way to avoid this?
+      exact .of_forall fun _ ↦ .const_inner _ hg_int
+    · simp only
+      refine .mono' (g := fun w ↦ ∫ v, ‖f w‖ * ‖g v‖) ?_ ?_ (.of_forall fun w ↦ ?_)
+      · simp_rw [integral_mul_left]
+        exact hf_int.norm.mul_const _
+      · exact (h_prod).norm.integral_prod_right'
+      refine norm_integral_le_of_norm_le (hg_int.norm.const_mul _) (.of_forall fun v ↦ ?_)
+      rw [norm_norm]
+      exact norm_inner_le_norm _ _
+  _ = ∫ w, ⟪𝓕⁻ f w, g w⟫_ℂ := by
     refine congrArg (integral _) (funext fun v ↦ ?_)
-    ring
-  _ = ∫ v, f v * ∫ w, 𝐞 (-inner v w) • g w := by simp [integral_mul_left]
-  _ = ∫ (w : V), f w * 𝓕 g w := by simp [real_inner_comm, fourierIntegral_eq]
+    -- TODO: Are the nested calcs confusing?
+    calc ∫ w, 𝐞 (-⟪w, v⟫_ℝ) • ⟪f w, g v⟫_ℂ
+    -- Take conjugate to move `f w` to the right of the inner product.
+    _ = ∫ w, starRingEnd ℂ (𝐞 ⟪w, v⟫_ℝ • ⟪g v, f w⟫_ℂ) := by
+      simp [Circle.smul_def, conj_fourierChar]
+    _ = starRingEnd ℂ ⟪g v, ∫ w, 𝐞 ⟪w, v⟫_ℝ • f w⟫_ℂ := by
+      simp only [integral_conj]
+      refine congrArg (starRingEnd ℂ) ?_
+      calc ∫ w, 𝐞 ⟪w, v⟫_ℝ • ⟪g v, f w⟫_ℂ
+      _ = ∫ w, ⟪g v, 𝐞 ⟪w, v⟫_ℝ • f w⟫_ℂ := by simp [Circle.smul_def, inner_smul_right]
+      _ = ⟪g v, ∫ w, 𝐞 ⟪w, v⟫_ℝ • f w⟫_ℂ := by
+        refine integral_inner ?_ _
+        suffices Integrable (fun w ↦ 𝐞 (-⟪w, -v⟫_ℝ) • f w) volume by simpa using this
+        exact (Real.fourierIntegral_convergent_iff (-v)).mpr hf_int
+    _ = ⟪∫ w, 𝐞 ⟪w, v⟫_ℝ • f w, g v⟫_ℂ := by simp_rw [inner_conj_symm]
+    _ = ⟪𝓕⁻ f v, g v⟫_ℂ := by simp_rw [Real.fourierIntegralInv_eq]
 
--- TODO: Generalize to `RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜`?
--- TODO: Generalize beyond `ℂ`?
-/-- The Fourier transform preserves the L^2 norm. -/
-theorem Real.integral_conj_mul_fourierIntegral_eq_integral_conj_mul {f g : V → ℂ}
-    (hf_cont : Continuous f) (hf_int : Integrable f)
-    (hf_cont_fourier : Continuous (𝓕 f)) (hf_int_fourier : Integrable (𝓕 f))
-    (hg_cont : Continuous g) (hg_int : Integrable g) :
-    ∫ ξ, starRingEnd ℂ (𝓕 f ξ) * 𝓕 g ξ = ∫ x, starRingEnd ℂ (f x) * g x := by
-  -- Consider `∫ x, 𝓕 f x * g x` with `g x = starRingEnd ℂ (𝓕 f x)`.
-  rw [← integral_fourierTransform_mul_eq_integral_mul_fourierTransform _ _ hg_cont hg_int]
-  rotate_left
-  · exact Complex.continuous_conj.comp hf_cont_fourier
-  · exact (LinearIsometryEquiv.integrable_comp_iff Complex.conjLIE).mpr hf_int_fourier
-  refine congrArg (integral _) (funext fun x ↦ ?_)
-  rw [fourierIntegral_star]
-  rw [← fourierIntegralInv_eq_fourierIntegral_neg]
-  rw [Continuous.fourier_inversion hf_cont hf_int hf_int_fourier]
+/-- The more familiar specialization of `integral_inner_fourier_eq_integral_fourierInv_inner` to
+`ℂ` -/
+theorem Real.integral_fourierTransform_mul_eq_integral_mul_fourierTransform {f g : V → ℂ}
+    (hf_int : Integrable f) (hg_int : Integrable g) :
+    ∫ w, 𝓕 f w * g w = ∫ w, f w * 𝓕 g w := by
+  have := integral_inner_fourier_eq_integral_fourierInv_inner
+    (Complex.conjLIE.integrable_comp_iff.mpr hf_int) hg_int
+  simp only [fourierIntegralInv_eq_fourierIntegral_neg] at this
+  simp only [RCLike.inner_apply, conj_fourierIntegral] at this
+  simpa using this.symm
 
--- TODO: Is it useful to have this variant?
+-- TODO: Provide variant for `Continuous g`?
 /-- The Fourier transform preserves the L^2 inner product. -/
-theorem Real.integral_conj_mul_fourierIntegral_eq_integral_conj_mul' {f g : V → ℂ}
-    (hf_cont : Continuous f) (hf_int : Integrable f)
-    (hg_cont : Continuous g) (hg_int : Integrable g)
-    (hg_cont_fourier : Continuous (𝓕 g)) (hg_int_fourier : Integrable (𝓕 g)) :
-    ∫ ξ, starRingEnd ℂ (𝓕 f ξ) * 𝓕 g ξ = ∫ x, starRingEnd ℂ (f x) * g x := by
-  -- Take conjugate of both sides.
-  rw [← Complex.conjLIE.map_eq_iff]
-  simp only [Complex.conjLIE_apply, ← integral_conj, map_mul, Complex.conj_conj]
-  simp only [← mul_comm (starRingEnd ℂ _)]
-  exact integral_conj_mul_fourierIntegral_eq_integral_conj_mul hg_cont hg_int hg_cont_fourier
-    hg_int_fourier hf_cont hf_int
+theorem Real.integral_inner_fourier_eq_integral_inner {f g : V → F} (hf_cont : Continuous f)
+    (hf_int : Integrable f) (hf_int_fourier : Integrable (𝓕 f)) (hg_int : Integrable g) :
+    ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫_ℂ = ∫ x, ⟪f x, g x⟫_ℂ := by
+  have := integral_inner_fourier_eq_integral_fourierInv_inner
+    hf_int_fourier hg_int
+  simp only [Continuous.fourier_inversion hf_cont hf_int hf_int_fourier] at this
+  exact this
 
--- TODO: Possible to generalize beyond `ℂ`?
--- TODO: Provide eLpNorm version? Requires `Memℒp f 2`?
-/-- Parseval's theorem: The Fourier transform preserves the L^2 norm. -/
+/-- Plancherel's theorem: The Fourier transform preserves the L^2 norm.
+
+Requires that the norm of `F` is defined by an inner product. -/
+theorem Real.integral_norm_sq_fourier_eq_integral_norm_sq {f : V → F} (hf_cont : Continuous f)
+    (hf_int : Integrable f) (hf_int_fourier : Integrable (𝓕 f)) :
+    ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
+  have := integral_inner_fourier_eq_integral_inner hf_cont hf_int hf_int_fourier hf_int
+  simp only [inner_self_eq_norm_sq_to_K] at this
+  simp only [← RCLike.ofReal_pow] at this
+  simp only [integral_ofReal] at this
+  simpa using this
+
+/-- The Fourier transform preserves the L^2 norm, specialized to `ℂ`-valued functions. -/
 theorem Real.integral_normSq_fourierIntegral_eq_integral_normSq {f : V → ℂ}
-    (hf_cont : Continuous f) (hf_int : Integrable f)
-    (hf_cont_fourier : Continuous (𝓕 f)) (hf_int_fourier : Integrable (𝓕 f)) :
+    (hf_cont : Continuous f) (hf_int : Integrable f) (hf_int_fourier : Integrable (𝓕 f)) :
     ∫ ξ, Complex.normSq (𝓕 f ξ) = ∫ x, Complex.normSq (f x) := by
-  -- Switch to integral taking values in `ℂ`.
-  rw [← Complex.ofRealLI.map_eq_iff]
-  simp only [← LinearIsometry.integral_comp_comm]
-  change ∫ ξ, (Complex.normSq (𝓕 f ξ) : ℂ) = ∫ x, (Complex.normSq (f x) : ℂ)
-  simp only [Complex.normSq_eq_conj_mul_self]
-  exact integral_conj_mul_fourierIntegral_eq_integral_conj_mul' hf_cont hf_int hf_cont hf_int
-    hf_cont_fourier hf_int_fourier
+  have := integral_norm_sq_fourier_eq_integral_norm_sq hf_cont hf_int hf_int_fourier
+  simpa [Complex.normSq_eq_abs] using this
 
--- TODO: Provide version using `eLpNorm _ 2`. Requires `Memℒp f 2`? `Memℒp (𝓕 f) 2`?
--- Wait until we know what we need it for.
-
--- TODO: Make more general? Don't require Continuous?
-/-- Parseval's theorem for continuous functions in L^1 ∩ L^2. -/
-theorem Real.eLpNorm_fourier_two_eq_eLpNorm_two {f : V → ℂ}
-    (hf_cont : Continuous f) (hf_int : Integrable f) (hf_int2 : Memℒp f 2 volume)
-    (hf_cont_fourier : Continuous (𝓕 f)) (hf_int_fourier : Integrable (𝓕 f))
+-- TODO: Are the assumptions general enough to be useful?
+-- TODO: Is it necessary to assume `Memℒp (𝓕 f) 2 volume`?
+/-- Plancherel's theorem for continuous functions in L^1 ∩ L^2. -/
+theorem Real.eLpNorm_fourier_two_eq_eLpNorm_two {f : V → F} (hf_cont : Continuous f)
+    (hf_int : Integrable f) (hf_int2 : Memℒp f 2 volume) (hf_int_fourier : Integrable (𝓕 f))
     (hf_int2_fourier : Memℒp (𝓕 f) 2 volume) :
     eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume := by
-  rw [Memℒp.eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.two_ne_top hf_int2,
-    Memℒp.eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.two_ne_top hf_int2_fourier]
-  refine congrArg (fun x ↦ ENNReal.ofReal (x ^ _)) ?_
-  simp only [ENNReal.toReal_ofNat, rpow_two, ← Complex.normSq_eq_norm_sq]
-  exact integral_normSq_fourierIntegral_eq_integral_normSq hf_cont hf_int hf_cont_fourier
-      hf_int_fourier
+  rw [Memℒp.eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.two_ne_top hf_int2]
+  rw [Memℒp.eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.two_ne_top hf_int2_fourier]
+  congr 2
+  simpa using integral_norm_sq_fourier_eq_integral_norm_sq hf_cont hf_int hf_int_fourier
 
-theorem SchwartzMap.integral_normSq_fourierIntegral_eq_integral_normSq (f : 𝓢(V, ℂ)) :
-    ∫ ξ, Complex.normSq (𝓕 f ξ) = ∫ x, Complex.normSq (f x) :=
-  Real.integral_normSq_fourierIntegral_eq_integral_normSq f.continuous f.integrable
-    f.continuous_fourier f.integrable_fourier
+/-- Plancherel's theorem for Schwartz functions. -/
+theorem SchwartzMap.integral_norm_sq_fourier_eq_integral_norm_sq (f : 𝓢(V, F)) :
+    ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 :=
+  Real.integral_norm_sq_fourier_eq_integral_norm_sq f.continuous f.integrable f.integrable_fourier
 
-/-- Parseval's theorem for Schwartz functions. -/
-theorem SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two (f : 𝓢(V, ℂ)) :
+/-- Plancherel's theorem for Schwartz functions, `eLpNorm` version. -/
+theorem SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two (f : 𝓢(V, F)) :
     eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume :=
   Real.eLpNorm_fourier_two_eq_eLpNorm_two f.continuous f.integrable (f.memℒp 2 _)
-    f.continuous_fourier f.integrable_fourier (f.memℒp_fourier 2 _)
+    f.integrable_fourier (f.memℒp_fourier 2 _)
 
 
 -- TODO: Move.
@@ -277,9 +299,13 @@ noncomputable instance MeasureTheory.Lp.LpSchwartzMap.instCoeFun {p : ℝ≥0∞
     {μ : Measure V} : CoeFun (LpSchwartzMap E p μ) (fun _ ↦ V → E) where
   coe f := (((f : Lp E p μ) : V →ₘ[μ] E) : V → E)
 
+section Fourier
+
+variable [CompleteSpace E]
+
 /-- The Fourier transform of a function in `L^p` which has a representative in the Schwartz space is
 a function in `L^q`. -/
-theorem MeasureTheory.Lp.LpSchwartzMap.memℒp_fourierIntegral [CompleteSpace E]
+theorem MeasureTheory.Lp.LpSchwartzMap.memℒp_fourierIntegral
     {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)] (f : LpSchwartzMap (E := V) E p) :
     Memℒp (𝓕 f) q volume :=
   induction_on f (fun g ↦ Memℒp (𝓕 g) q volume)
@@ -288,10 +314,6 @@ theorem MeasureTheory.Lp.LpSchwartzMap.memℒp_fourierIntegral [CompleteSpace E]
       rw [Real.fourierIntegral_congr_ae hfg]  -- TODO: Check order.
       exact h)
     (fun g ↦ g.memℒp_fourier q volume)
-
-section Fourier
-
-variable [CompleteSpace E]
 
 noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransform
     {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
@@ -344,8 +366,9 @@ theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_add
   _ = (fourierTransform q f + fourierTransform q g) ξ := by simp [hfg', hf, hg]
 
 -- TODO: Eliminate `𝕜'`? `RCLike 𝕜'` comes from `SchwartzMap.fourierTransformCLM`.
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-  [RCLike 𝕜'] [NormedSpace 𝕜' E] [SMulCommClass ℂ 𝕜' E]
+variable [NormedField 𝕜] [RCLike 𝕜']
+  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedSpace 𝕜' E] [SMulCommClass ℂ 𝕜' E]
+  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedSpace 𝕜' F] [SMulCommClass ℂ 𝕜' F]
 
 theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul
     {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
@@ -443,7 +466,7 @@ theorem MeasureTheory.Lp.LpSchwartzMap.uniformContinuous_fourierTransform_one_to
   _ < ε := h
 
 theorem MeasureTheory.Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_two :
-    UniformContinuous (fun f : LpSchwartzMap (E := V) E 2 ↦ fourierTransform 2 f) := by
+    UniformContinuous (fun f : LpSchwartzMap (E := V) F 2 ↦ fourierTransform 2 f) := by
   refine EMetric.uniformContinuous_iff.mpr ?_
   simp only [Subtype.edist_eq, edist_def]
   intro ε hε
@@ -471,7 +494,7 @@ theorem MeasureTheory.Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_tw
   _ = eLpNorm (𝓕 (f - g)) 2 volume := by
     refine congrArg (eLpNorm · 2 volume) ?_
     refine Real.fourierIntegral_congr_ae ?_
-    filter_upwards [AEEqFun.coeFn_sub (α := V) (γ := E) f g] with x h
+    filter_upwards [coeFn_sub f.val g.val] with x h
     simpa using h.symm
   _ = eLpNorm (f - g) 2 volume := by
     refine induction_on (f - g) (fun r ↦ eLpNorm (𝓕 r) 2 volume = eLpNorm r 2 volume) ?_ ?_
@@ -479,13 +502,10 @@ theorem MeasureTheory.Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_tw
       rw [Real.fourierIntegral_congr_ae hr, eLpNorm_congr_ae hr]
       exact h
     -- TODO: Just need to generalize beyond `ℂ`?
-    sorry
-    -- exact SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
-    -- intro r
-    -- exact r.eLpNorm_fourier_two_eq_eLpNorm_two
+    exact SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
   _ = eLpNorm (⇑f - ⇑g) 2 volume := by
     refine eLpNorm_congr_ae ?_
-    filter_upwards [AEEqFun.coeFn_sub (α := V) (γ := E) f g] with x h
+    filter_upwards [coeFn_sub f.val g.val] with x h
     simpa using h
   _ < ε := h
 
@@ -497,8 +517,8 @@ noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformCLM_one_top :
   }
 
 noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformCLM_two_two :
-    LpSchwartzMap E 2 (volume : Measure V) →L[𝕜'] LpSchwartzMap E 2 (volume : Measure V) :=
-  { fourierTransformLM 𝕜' V E 2 2 with
+    LpSchwartzMap F 2 (volume : Measure V) →L[𝕜'] LpSchwartzMap F 2 (volume : Measure V) :=
+  { fourierTransformLM 𝕜' V F 2 2 with
     cont := by
       simpa [coeFn_fourierTransformLM] using uniformContinuous_fourierTransform_two_two.continuous
   }
@@ -508,8 +528,9 @@ end Fourier
 section Extend
 
 -- TODO: Eliminate `𝕜'`? `RCLike 𝕜'` comes from `SchwartzMap.fourierTransformCLM`.
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-  [RCLike 𝕜'] [NormedSpace 𝕜' E] [SMulCommClass ℂ 𝕜' E]
+variable [NormedField 𝕜] [RCLike 𝕜']
+  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedSpace 𝕜' E] [SMulCommClass ℂ 𝕜' E]
+  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedSpace 𝕜' F] [SMulCommClass ℂ 𝕜' F]
 
 variable (𝕜 E) in
 def MeasureTheory.Lp.LpSchwartzMap.subtypeL (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure V) :
@@ -537,14 +558,14 @@ noncomputable def MeasureTheory.Lp.fourierTransformCLM_one_top :
     ((isUniformInducing_iff Subtype.val).mpr rfl)
 
 noncomputable def MeasureTheory.Lp.fourierTransformCLM_two_two :
-    Lp E 2 (volume : Measure V) →L[𝕜'] Lp E 2 (volume : Measure V) :=
+    Lp F 2 (volume : Measure V) →L[𝕜'] Lp F 2 (volume : Measure V) :=
   .extend
-    (LpSchwartzMap.subtypeL 𝕜' E 2 volume ∘L
-      LpSchwartzMap.fourierTransformCLM_two_two (𝕜' := 𝕜') (V := V) (E := E))
-    (LpSchwartzMap.subtypeL 𝕜' E 2 volume)
+    (LpSchwartzMap.subtypeL 𝕜' F 2 volume ∘L
+      LpSchwartzMap.fourierTransformCLM_two_two (𝕜' := 𝕜') (V := V) (F := F))
+    (LpSchwartzMap.subtypeL 𝕜' F 2 volume)
     (by
       simp only [LpSchwartzMap.coeFn_subtypeL, denseRange_subtype_val, SetLike.setOf_mem_eq]
-      exact LpSchwartzMap.dense E ENNReal.two_ne_top volume)
+      exact LpSchwartzMap.dense F ENNReal.two_ne_top volume)
     ((isUniformInducing_iff Subtype.val).mpr rfl)
 
 end Extend
