@@ -172,7 +172,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
         NatTrans.op_app, pointwiseRightKanExtension_map, Category.assoc, limit.lift_π]
       congr
 
-theorem is_sheaf_principalsKanExtension
+theorem isSheaf_principalsKanExtension
     {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X] (F : X ⥤ C) :
     Presheaf.IsSheaf (principalsKanExtension F) := by
   rw [isSheaf_iff_isSheafOpensLeCover]
@@ -191,7 +191,7 @@ with the preorder, `F : X ⥤ C` is a functor into a complete category from the 
 and `G : (Opens X)ᵒᵖ ⥤ C` denotes the right Kan extension of `F` along the
 functor `X ⥤ (Open X)ᵒᵖ` which sends `x : X` to `{y | x ≤ y}`, then `G` is a sheaf.
 -/
-theorem Topology.IsUpperSet.is_sheaf_of_isRightKanExtension
+theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
     (P : (Opens X)ᵒᵖ ⥤ C)
     (η : Alexandrov.principals X ⋙ P ⟶ F)
     [P.IsRightKanExtension η] :
@@ -205,4 +205,4 @@ theorem Topology.IsUpperSet.is_sheaf_of_isRightKanExtension
   rw [isSheaf_iso_iff this]
   let _ : Preorder (TopCat.of X) := inferInstanceAs <| Preorder X
   have _ : Topology.IsUpperSet (TopCat.of X) := inferInstanceAs <| Topology.IsUpperSet X
-  exact is_sheaf_principalsKanExtension (X := TopCat.of X) F
+  exact isSheaf_principalsKanExtension (X := TopCat.of X) F
