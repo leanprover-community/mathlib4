@@ -217,7 +217,7 @@ theorem ofEq_comp (h : M = N) (h' : N = P) :
 
 @[simp]
 theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
-    (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
+    ofEq h' (ofEq h m) = ofEq (h.trans h') m := by
   cases h
   rfl
 
