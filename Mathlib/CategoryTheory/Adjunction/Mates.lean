@@ -101,8 +101,7 @@ def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) wher
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
-      α.app _ ≫ H.map (adj₁.counit.app d) := by
-  erw [Functor.map_comp]; simp
+      α.app _ ≫ H.map (adj₁.counit.app d) := by simp
 
 /-- A component of a transposed version of the inverse mates correspondence. -/
 theorem mateEquiv_counit_symm (α : R₁ ⋙ G ⟶ H ⋙ R₂) (d : D) :

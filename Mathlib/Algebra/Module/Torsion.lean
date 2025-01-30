@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.ZMod
 import Mathlib.GroupTheory.Torsion
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Torsion submodules
@@ -408,6 +409,8 @@ theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i �
 
 variable {q : ι → R}
 
+open scoped Function -- required for scoped `on` notation
+
 theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
     ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i ∈ S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
@@ -454,6 +457,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
       apply (iSup_torsionBySet_ideal_eq_torsionBySet_iInf hp).trans <|
         (Module.isTorsionBySet_iff_torsionBySet_eq_top _).mp hM)
 
+open scoped Function in -- required for scoped `on` notation
 /-- If the `q i` are pairwise coprime, a `∏ i, q i`-torsion module is the internal direct sum of
 its `q i`-torsion submodules. -/
 theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
@@ -501,7 +505,7 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
+    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
@@ -691,7 +695,7 @@ variable {R M}
 
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
-  obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
+  obtain ⟨S, hS⟩ := ‹Module.Finite R M›.fg_top
   refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
@@ -862,7 +866,7 @@ namespace AddSubgroup
 
 variable (A : Type*) [AddCommGroup A] (n : ℤ)
 
-/-- The additive `n`-torsion subgroup for an integer `n`. -/
+/-- The additive `n`-torsion subgroup for an integer `n`, denoted as `A[n]`. -/
 @[reducible]
 def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup

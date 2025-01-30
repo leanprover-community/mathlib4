@@ -338,4 +338,26 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
   subst h
   simp
 
+/-- If `T ≃ D` is a bijection and `D` is a category, then
+`InducedCategory D e` is equivalent to `D`. -/
+@[simps]
+def Equivalence.induced {T : Type*} (e : T ≃ D) :
+    InducedCategory D e ≌ D where
+  functor := inducedFunctor e
+  inverse :=
+    { obj := e.symm
+      map {X Y} f := show e (e.symm X) ⟶ e (e.symm Y) from
+        eqToHom (e.apply_symm_apply X) ≫ f ≫
+          eqToHom (e.apply_symm_apply Y).symm
+      map_comp {X Y Z} f g := by
+        dsimp
+        erw [Category.assoc, Category.assoc, Category.assoc]
+        rw [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
+  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
+    dsimp
+    erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]
+    rfl )
+  counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
+  functor_unitIso_comp X := eqToHom_trans (by simp) (by simp)
+
 end CategoryTheory

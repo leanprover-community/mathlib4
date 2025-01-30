@@ -3,7 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
@@ -178,6 +178,9 @@ lemma image_op_one [DecidableEq α] : (1 : Finset α).image op = 1 := rfl
 @[to_additive (attr := simp)]
 lemma map_op_one : (1 : Finset α).map opEquiv.toEmbedding = 1 := rfl
 
+@[to_additive (attr := simp)]
+lemma one_product_one [One β] : (1 ×ˢ 1 : Finset (α × β)) = 1 := by ext; simp [Prod.ext_iff]
+
 end One
 
 /-! ### Finset negation/inversion -/
@@ -294,6 +297,10 @@ lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
 
 @[to_additive (attr := simp)]
 lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
+
+@[to_additive (attr := simp)]
+lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
 
 end InvolutiveInv
 
@@ -599,6 +606,11 @@ theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f *
 @[to_additive]
 lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image op :=
   image_image₂_antidistrib op_mul
+
+@[to_additive (attr := simp)]
+lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
+    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
+  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
 
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
@@ -1068,6 +1080,11 @@ lemma map_op_pow (s : Finset α) :
     ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
+
+@[to_additive]
+lemma product_pow [Monoid β] (s : Finset α) (t : Finset β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
+  | 0 => by simp
+  | n + 1 => by simp [pow_succ, product_pow _ _ n]
 
 end Monoid
 
@@ -1672,13 +1689,13 @@ theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
 theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
   simp_rw [← coe_subset]
   push_cast
-  exact Set.set_smul_subset_iff
+  exact Set.smul_set_subset_iff_subset_inv_smul_set
 
 @[to_additive]
 theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
   simp_rw [← coe_subset]
   push_cast
-  exact Set.subset_set_smul_iff
+  exact Set.subset_smul_set_iff
 
 @[to_additive]
 theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
