@@ -127,11 +127,11 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
     let rootHash := (← get).rootHash
-    -- -- TODO: Ideally, we could hash the module name here, but since that
-    -- -- invalidates all existing cache, we recontruct this `c` which used to be
-    -- -- cached previously. Change this at an appropriate time!
-    -- let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
-    let pathHash := hash mod
+    -- TODO: Ideally, we could hash the module name here, but since that
+    -- invalidates all existing cache, we recontruct this `c` which used to be
+    -- cached previously. Change this at an appropriate time!
+    let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
+    let pathHash := hash c -- TODO: change to `hash mod`
     let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     -- if a file is part of a cache then we need to add it to the `hashMap`, otherwise
     -- we should add it as `none` to the hashMap
