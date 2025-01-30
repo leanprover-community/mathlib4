@@ -382,25 +382,12 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
     rw [I.source_eq]; exact trivial
 
   have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
-    rw [extChartAt]
-
-    rw [← PartialHomeomorph.map_extend_nhds _ (ChartedSpace.mem_chart_source x)]
-    -- speculative
-    rw [Filter.mem_map]
-    rw [← I.image_eq C.target]
-    change (I ∘ (chartAt H x)) ⁻¹' (↑I '' C.target) ∈ 𝓝 x -- should be defeq
-    change (chartAt H x) ⁻¹' (I ⁻¹' (↑I '' C.target)) ∈ 𝓝 x -- some rw or so!
-    have : ↑I ⁻¹' (↑I '' C.target) = C.target := by exact preimage_image I C.target
-    rw [this]
-    -- easy now?
-
-    --set C' := chartAt H x
-
-    sorry
-    -- rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
-    -- use I.symm ⁻¹' C.target
-    -- constructor; swap; · simp
-    -- sorry -- is I.symm ⁻¹' C.target a nbhd of (extChartAt I x) x? is it open enough?
+    rw [extChartAt, ← PartialHomeomorph.map_extend_nhds _ (mem_chart_source _ x),
+      Filter.mem_map, ← I.image_eq C.target,
+      PartialHomeomorph.extend_coe, Set.preimage_comp,
+      preimage_image I C.target]
+    exact ((chartAt H x).continuousAt (mem_chart_source _ x)).preimage_mem_nhds
+      (chart_target_mem_nhds H x)
   apply Filter.mem_of_superset aux₂ aux₁
 
 end disjointUnion
