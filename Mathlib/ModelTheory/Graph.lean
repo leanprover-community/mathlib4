@@ -131,9 +131,7 @@ variable (V) [S : Language.graph.Structure V]
 theorem substructure_adj_iff {S : Language.graph.Substructure V} (x y : S) :
     RelMap adj ![x, y] ↔ RelMap adj ![(x : V), y] := by
   simp only [RelMap, Substructure.inducedStructure]
-  constructor <;> intro h <;> convert h <;> rename_i n <;> match n with
-    | 0 => rfl
-    | 1 => rfl
+  constructor <;> intro h <;> convert h using 1 <;> rw [←List.ofFn_inj] <;> rfl
 
 variable [V ⊨ Theory.simpleGraph] {V}
 
@@ -203,15 +201,15 @@ theorem ExtensionProperty.extensionPair_Countable (ext_prop : ExtensionProperty 
     · assumption
     · by_contra
       exact v_not_adj_B (f x) (by assumption) (by assumption)
+  let S' := Substructure.closure Language.graph {m} ⊔ S
   cases Classical.em (m ∈ S)
   case inl m_in_S =>
-    have : Substructure.closure _ {m} ⊔ S = S := by
+    have : S' = S := by
       apply sup_eq_right.2
       exact Substructure.closure_le.2 (Set.singleton_subset_iff.2 m_in_S)
     use f.comp (Substructure.inclusion (le_of_eq this))
     rfl
   case inr m_not_in_S =>
-    let S' := Substructure.closure Language.graph {m} ⊔ S
     have mem_S'_iff : ∀ x, x ∈ S' ↔ x = m ∨ x ∈ S := by
       intro x
       unfold S'
@@ -223,22 +221,19 @@ theorem ExtensionProperty.extensionPair_Countable (ext_prop : ExtensionProperty 
       intro ⟨x, hx⟩ ⟨y, hy⟩
       unfold g
       cases (mem_S'_iff x).1 hx <;> cases (mem_S'_iff y).1 hy <;> rename_i h' h'' <;>
-        simp only [h', h'', m_not_in_S, ↓reduceDIte, v_not_in_image, substructure_adj_iff]
+        simp only [h', h'', m_not_in_S, ↓reduceDIte, substructure_adj_iff]
       · constructor <;> intro H <;> by_contra <;> exact adj_irrefl _ H
-      · rw [v_adj_iff_A]
-        simp only [Set.mem_image, Set.mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq, exists_eq_right,
-          A]
+      · simp only [v_adj_iff_A, Set.mem_image, Set.mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq,
+          exists_eq_right, A]
       · nth_rw 2 [adj_symm']
-        rw [adj_symm', v_adj_iff_A]
-        simp only [Set.mem_image, Set.mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq, exists_eq_right,
-          A]
+        rw [adj_symm']
+        simp only [v_adj_iff_A, Set.mem_image, Set.mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq,
+          exists_eq_right, A]
       · have H := f.map_rel adj ![⟨x, h'⟩, ⟨y, h''⟩]
         rw [substructure_adj_iff] at H
         convert H.symm
-        ext n
-        match n with
-        | 0 => rfl
-        | 1 => rfl
+        rw [←List.ofFn_inj]
+        rfl
     have g_inj : Function.Injective g := by
       intro ⟨x, hx⟩ ⟨y, hy⟩ h
       simp only [Subtype.mk.injEq]
@@ -256,14 +251,13 @@ theorem ExtensionProperty.extensionPair_Countable (ext_prop : ExtensionProperty 
         cases r
         intro x
         have h := (g_morphism (x 0) (x 1)).symm
-        have h' : ![g (x 0), g (x 1)] = g ∘ x := List.ofFn_inj.1 rfl
-        have h'' : ![x 0, x 1] = x := List.ofFn_inj.1 rfl
-        exact h' ▸ h'' ▸ h}
+        convert h <;> simp only [←List.ofFn_inj] <;> rfl
+        }
     ext x
     let ⟨x, x_in_S⟩ := x
-    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Set.inclusion_mk]
-    change _ = Function.Embedding.toFun _ _
-    simp only [x_in_S, ↓reduceDIte]
+    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Set.inclusion_mk,
+      Embedding.comp_apply]
+    simp only [DFunLike.coe, x_in_S, ↓reduceDIte]
 
 theorem ExtensionProperty.embedding_from_countable (ext_prop : ExtensionProperty V) [Countable W] :
     Nonempty (W ↪[Language.graph] V) :=
