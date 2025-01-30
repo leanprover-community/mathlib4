@@ -48,13 +48,13 @@ variable {C : Set (Quot r)} {s : Set α} {c : Quot r}
 lemma unique_rep (hrep : s.Represents C) (h : c ∈ C) : ∃! x, x ∈ s ∩ c := by
   obtain ⟨x, ⟨hx, rfl⟩⟩ := hrep.2.2 h
   use x
-  simp only [mem_inter_iff, hx, SetLike.mem_coe, Quot.mem_toSet, and_self, and_imp, true_and]
+  simp only [mem_inter_iff, hx, SetLike.mem_coe, Quot.mem_coe, and_self, and_imp, true_and]
   exact fun y hy hyx ↦ hrep.2.1 hy hx hyx
 
 lemma exact (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c := by
   rw [disjoint_left]
   intro a ha hc
-  simp only [SetLike.mem_coe, Quot.mem_toSet] at hc
+  simp only [SetLike.mem_coe, Quot.mem_coe] at hc
   subst hc
   exact h (hrep.1 ha)
 
