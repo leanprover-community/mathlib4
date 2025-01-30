@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -138,23 +138,6 @@ instance instMonoid [Monoid M] [ContinuousMul M] : Monoid (SeparationQuotient M)
 @[to_additive]
 instance instCommMonoid [CommMonoid M] [ContinuousMul M] : CommMonoid (SeparationQuotient M) :=
   surjective_mk.commMonoid mk mk_one mk_mul mk_pow
-
-variable {N : Type*} [TopologicalSpace N]
-
-/-- The lift of a `MonoidHom M N` to `MonoidHom (SeparationQuotient M) N`. -/
-@[to_additive "The lift of a `AddMonoidHom M N` to `AddMonoidHom (SeparationQuotient M) N`."]
-noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N]
-    (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
-    ContinuousMonoidHom (SeparationQuotient M) N where
-  toFun := SeparationQuotient.lift f hf
-  map_one' := map_one f
-  map_mul' := Quotient.ind₂ <| map_mul f
-  continuous_toFun := SeparationQuotient.continuous_lift.mpr f.2
-
-@[to_additive (attr := simp)]
-theorem liftContinuousCommMonoidHom_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N]
-    (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) (x : M) :
-    liftContinuousMonoidHom f hf (mk x) = f x := rfl
 
 end Monoid
 
