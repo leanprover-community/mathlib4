@@ -100,7 +100,7 @@ theorem HomogeneousSubmodule.ext' {I J : HomogeneousSubmodule 𝒜 ℳ}
   exact fun i ↦ h i _ (decompose ℳ _ i).2
 
 @[simp]
-theorem HomogeneousSubmodule.mem_iff {I : HomogeneousSubmodule 𝒜 ℳ} {x : M} :
+theorem HomogeneousSubmodule.mem_toSubmodule_iff {I : HomogeneousSubmodule 𝒜 ℳ} {x : M} :
     x ∈ I.toSubmodule (A := A) ↔ x ∈ I :=
   Iff.rfl
 
