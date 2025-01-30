@@ -551,8 +551,7 @@ theorem continuous_bilinear_of_finite_left [Module.Finite R A]
   -- The induced linear map `φ : Rⁿ × B → A × B` is surjective
   let bil' : (Fin m → R) →ₗ[R] B →ₗ[R] C := bil.comp f
   let φ := f.prodMap (LinearMap.id : B →ₗ[R] B)
-  have hφ : Function.Surjective φ := Function.Surjective.prodMap hf <|
-    Function.RightInverse.surjective (congrFun rfl)
+  have hφ : Function.Surjective φ := Function.Surjective.prodMap hf fun b ↦ ⟨b, rfl⟩
   -- ... and thus a quotient map, so it suffices to prove that the composite `Rⁿ × B → C` is
   -- continuous.
   rw [Topology.IsQuotientMap.continuous_iff (isQuotientMap_of_surjective hφ)]
