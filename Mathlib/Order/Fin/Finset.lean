@@ -15,27 +15,28 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 
 -/
 
+
 namespace Fin
 
--- move to Mathlib.Order.Hom.Basic
-@[simps!]
-noncomputable def OrderIso.ofUnique
-    (A B : Type*) [Unique A] [Unique B] [Preorder A] [Preorder B] :
-    A ≃o B where
-  __ := Equiv.ofUnique A B
-  map_rel_iff' {a b} := by simp
-
-variable {α : Type*} [Preorder α] [DecidableEq α]
+variable {α : Type*} [Preorder α]
 
 /-- This is the order isomorphisms from `Fin 1` to a finset `{a}`. -/
-@[simps! apply]
-noncomputable def orderIsoSingleton' (a : α) :
+noncomputable def orderIsoSingleton (a : α) :
     Fin 1 ≃o ({a} : Finset α) :=
-  .ofUnique _ _
+  OrderIso.ofUnique _ _
+
+@[simp]
+lemma orderIsoSingleton_apply (a : α) (i : Fin 1) :
+    orderIsoSingleton a i = a := rfl
+
+variable [DecidableEq α]
+
+section
+
+variable (a b : α) (hab : a < b)
 
 /-- This is the order isomorphisms from `Fin 2` to a finset `{a, b}` when `a < b`. -/
-@[simps! apply]
-noncomputable def orderIsoPair (a b : α) (hab : a < b) :
+noncomputable def orderIsoPair  :
     Fin 2 ≃o ({a, b} : Finset α) :=
   StrictMono.orderIsoOfSurjective ![⟨a, by simp⟩, ⟨b, by simp⟩]
     (strictMono_vecEmpty.vecCons hab) (fun ⟨x, hx⟩ ↦ by
@@ -44,10 +45,18 @@ noncomputable def orderIsoPair (a b : α) (hab : a < b) :
       · exact ⟨0, rfl⟩
       · exact ⟨1, rfl⟩)
 
+@[simp] lemma orderIsoPair_zero : orderIsoPair a b hab 0 = a := rfl
+@[simp] lemma orderIsoPair_one : orderIsoPair a b hab 1 = b := rfl
+
+end
+
+section
+
+variable (a b c : α) (hab : a < b) (hbc : b < c)
+
 /-- This is the order isomorphisms from `Fin 3`
 to a finset `{a, b, c}` when `a < b` and `b < c`. -/
-@[simps! apply]
-noncomputable def orderIsoTriple (a b c : α) (hab : a < b) (hbc : b < c) :
+noncomputable def orderIsoTriple :
     Fin 3 ≃o ({a, b, c} : Finset α) :=
   StrictMono.orderIsoOfSurjective ![⟨a, by simp⟩, ⟨b, by simp⟩, ⟨c, by simp⟩]
     (StrictMono.vecCons (strictMono_vecEmpty.vecCons hbc) hab) (fun ⟨x, hx⟩ ↦ by
@@ -56,5 +65,11 @@ noncomputable def orderIsoTriple (a b c : α) (hab : a < b) (hbc : b < c) :
       · exact ⟨0, rfl⟩
       · exact ⟨1, rfl⟩
       · exact ⟨2, rfl⟩)
+
+@[simp] lemma orderIsoTriple_zero : orderIsoTriple a b c hab hbc 0 = a := rfl
+@[simp] lemma orderIsoTriple_one : orderIsoTriple a b c hab hbc 1 = b := rfl
+@[simp] lemma orderIsoTriple_two : orderIsoTriple a b c hab hbc 2 = c := rfl
+
+end
 
 end Fin
