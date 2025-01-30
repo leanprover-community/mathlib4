@@ -19,10 +19,6 @@ real random variable by a real number: `μ.tiltedReal X t = μ.tilted (fun ω �
 
 * `fooBar_unique`
 
-## Implementation details
-
-TODO: explain (X, μ) vs μ. (μ.map X, (id, μ))
-
 -/
 
 open MeasureTheory Real Set Finset

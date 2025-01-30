@@ -7,11 +7,7 @@ import Mathlib.MeasureTheory.Measure.TiltedReal
 import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
-# TiltedReal
-
-## Main definitions
-
-* `FooBar`
+# Results relating `Measure.tiltedReal` to `mgf` and `cgf`
 
 ## Main statements
 
@@ -66,11 +62,9 @@ end Apply
 
 section Integral
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+/-! ### Integral of `tiltedReal` expressed with `mgf` or `cgf`. -/
 
-lemma integrable_tiltedReal_iff (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) (g : Ω → E) :
-    Integrable g (μ.tiltedReal X t) ↔ Integrable (fun ω ↦ exp (t * X ω) • g ω) μ := by
-  rw [Measure.tiltedReal, integrable_tilted_iff ht]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- For a version that does not assume that the set is measurable, but works only for s-finite
 measures, see `setIntegral_tiltedReal`. -/
@@ -82,15 +76,28 @@ lemma setIntegral_tiltedReal_mgf [SFinite μ] (g : Ω → E) (s : Set Ω) :
     ∫ x in s, g x ∂(μ.tiltedReal X t) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
   rw [setIntegral_tiltedReal, mgf]
 
+lemma setIntegral_tiltedReal_cgf [IsProbabilityMeasure μ] (g : Ω → E) (s : Set Ω)
+    (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    ∫ x in s, g x ∂(μ.tiltedReal X t) = ∫ x in s, exp (t * X x - cgf X μ t) • (g x) ∂μ := by
+  simp_rw [setIntegral_tiltedReal_mgf, exp_sub]
+  rw [exp_cgf]
+  exact ht
+
 lemma integral_tiltedReal_mgf (g : Ω → E) :
     ∫ ω, g ω ∂(μ.tiltedReal X t) = ∫ ω, (exp (t * X ω) / mgf X μ t) • (g ω) ∂μ := by
   rw [integral_tiltedReal, mgf]
 
+lemma integral_tiltedReal_cgf [IsProbabilityMeasure μ] (g : Ω → E)
+    (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    ∫ ω, g ω ∂(μ.tiltedReal X t) = ∫ ω, exp (t * X ω - cgf X μ t) • (g ω) ∂μ := by
+  simp_rw [integral_tiltedReal_mgf, exp_sub]
+  rw [exp_cgf]
+  exact ht
+
 lemma integral_tiltedReal_self (ht : t ∈ interior (integrableExpSet X μ)) :
     (μ.tiltedReal X t)[X] = deriv (cgf X μ) t := by
-  rw [integral_tiltedReal, deriv_cgf ht, ← integral_div, mgf]
+  simp_rw [integral_tiltedReal_mgf, deriv_cgf ht, ← integral_div, smul_eq_mul]
   congr with ω
-  rw [smul_eq_mul]
   ring
 
 end Integral
