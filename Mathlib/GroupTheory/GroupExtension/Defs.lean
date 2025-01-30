@@ -85,12 +85,12 @@ namespace AddGroupExtension
 
 variable [AddGroup N] [AddGroup E] [AddGroup G] (S : AddGroupExtension N E G)
 
-/-- `AddGroupExtension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
-structure Equiv {E' : Type*} [AddGroup E'] (S' : AddGroupExtension N E' G) extends E →+ E' where
+/-- `AddGroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram. -/
+structure Equiv {E' : Type*} [AddGroup E'] (S' : AddGroupExtension N E' G) extends E ≃+ E' where
   /-- The left-hand side of the diagram commutes. -/
-  inl_comm : toAddMonoidHom.comp S.inl = S'.inl
+  inl_comm : toAddEquiv ∘ S.inl = S'.inl
   /-- The right-hand side of the diagram commutes. -/
-  rightHom_comm : S'.rightHom.comp toAddMonoidHom = S.rightHom
+  rightHom_comm : S'.rightHom ∘ toAddEquiv = S.rightHom
 
 /-- `Section` of an additive group extension is a right inverse to `S.rightHom`. -/
 structure Section where
@@ -143,13 +143,49 @@ theorem inl_conjAct_comm {e : E} {n : N} : S.inl (S.conjAct e n) = e * S.inl n *
   simp only [conjAct, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.trans_apply,
     MonoidHom.apply_ofInjective_symm, MulAut.conjNormal_apply, MonoidHom.ofInjective_apply]
 
-/-- `GroupExtension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
+/-- `GroupExtension`s are equivalent iff there is a isomorphism making a commuting diagram. -/
 @[to_additive]
-structure Equiv {E' : Type*} [Group E'] (S' : GroupExtension N E' G) extends E →* E' where
+structure Equiv {E' : Type*} [Group E'] (S' : GroupExtension N E' G) extends E ≃* E' where
   /-- The left-hand side of the diagram commutes. -/
-  inl_comm : toMonoidHom.comp S.inl = S'.inl
+  inl_comm : toMulEquiv ∘ S.inl = S'.inl
   /-- The right-hand side of the diagram commutes. -/
-  rightHom_comm : S'.rightHom.comp toMonoidHom = S.rightHom
+  rightHom_comm : S'.rightHom ∘ toMulEquiv = S.rightHom
+
+namespace Equiv
+
+variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
+
+@[to_additive]
+instance : EquivLike (S.Equiv S') E E' where
+  coe equiv := equiv.toMulEquiv
+  inv equiv := equiv.toMulEquiv.symm
+  left_inv equiv := equiv.left_inv
+  right_inv equiv := equiv.right_inv
+  coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ h _ ↦ by
+    congr
+    rw [MulEquiv.ext_iff]
+    exact congrFun h
+
+@[to_additive]
+instance : MulEquivClass (S.Equiv S') E E' where
+  map_mul equiv := equiv.map_mul'
+
+variable (equiv : S.Equiv S')
+
+@[to_additive (attr := simp)]
+theorem toMulEquiv_eq_coe : equiv.toMulEquiv = equiv := rfl
+
+@[to_additive (attr := simp)]
+theorem coe_toMulEquiv : ⇑(equiv : E ≃* E') = equiv := rfl
+
+@[to_additive (attr := simp)]
+theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congrFun equiv.inl_comm n
+
+@[to_additive (attr := simp)]
+theorem rightHom_map (e : E) : S'.rightHom (equiv e) = S.rightHom e :=
+  congrFun equiv.rightHom_comm e
+
+end Equiv
 
 /-- `Section` of a group extension is a right inverse to `S.rightHom`. -/
 @[to_additive]
