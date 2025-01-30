@@ -93,7 +93,7 @@ structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
   hom : ContinuousAddMonoidHom A B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
-@[ext, to_additive]
+@[to_additive (attr := ext) existing]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   private mk ::
   /-- The underlying `ContinuousMonoidHom`. -/
@@ -112,13 +112,13 @@ instance : Category ProfiniteGrp where
   id A := ⟨ContinuousMonoidHom.id A⟩
   comp f g := ⟨g.hom.comp f.hom⟩
 
-/-- Typecheck an `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
-abbrev ProfiniteAddGrp.ofHom {X Y: Type u} [AddGroup X] [TopologicalSpace X] [TopologicalAddGroup X]
-    [CompactSpace X] [TotallyDisconnectedSpace X] [AddGroup Y] [TopologicalSpace Y]
-    [TopologicalAddGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]
+/-- Typecheck a `ContinuousAddMonoidHom` as a morphism in `ProfiniteAddGrp`. -/
+abbrev ProfiniteAddGrp.ofHom {X Y : Type u} [AddGroup X] [TopologicalSpace X]
+    [TopologicalAddGroup X] [CompactSpace X] [TotallyDisconnectedSpace X] [AddGroup Y]
+    [TopologicalSpace Y] [TopologicalAddGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]
     (f : ContinuousAddMonoidHom X Y) : ProfiniteAddGrp.of X ⟶ ProfiniteAddGrp.of Y := ⟨f⟩
 
-/-- Typecheck an `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
+/-- Typecheck a `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
 @[to_additive existing]
 abbrev ProfiniteGrp.ofHom {X Y: Type u} [Group X] [TopologicalSpace X] [TopologicalGroup X]
     [CompactSpace X] [TotallyDisconnectedSpace X] [Group Y] [TopologicalSpace Y]
@@ -228,23 +228,29 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalGroup G := {}
   of G
 
+end ProfiniteGrp
+
+namespace ProfiniteAddGrp
+
 instance : HasForget₂ FiniteAddGrp ProfiniteAddGrp where
   forget₂ :=
   { obj := ProfiniteAddGrp.ofFiniteAddGrp
-    map := fun f => ⟨f, by continuity⟩ }
+    map := fun f => ⟨f.hom, by continuity⟩ }
 
---to_additive failed here
+end ProfiniteAddGrp
+
+namespace ProfiniteGrp
+
+@[to_additive existing]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map := fun f => ⟨f, by continuity⟩ }
+    map := fun f => ⟨f.hom, by continuity⟩ }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
-  forget₂ := {
-    obj := fun P => ⟨P, P.group⟩
-    map := fun f => f.hom.toMonoidHom
-  }
+  forget₂.obj P := Grp.of P
+  forget₂.map f := Grp.ofHom f.hom.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
