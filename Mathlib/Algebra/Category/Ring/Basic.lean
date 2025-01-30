@@ -153,12 +153,12 @@ instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
     { obj := fun R ↦ MonCat.of R
-      map := fun f ↦ f.hom.toMonoidHom }
+      map := fun f ↦ MonCat.ofHom f.hom.toMonoidHom }
 
 instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
   forget₂ :=
     { obj := fun R ↦ AddCommMonCat.of R
-      map := fun f ↦ f.hom.toAddMonoidHom }
+      map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]
@@ -472,7 +472,7 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
   forget₂ :=
     { obj := fun R ↦ CommMonCat.of R
-      map := fun f ↦ f.hom.toMonoidHom }
+      map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]
