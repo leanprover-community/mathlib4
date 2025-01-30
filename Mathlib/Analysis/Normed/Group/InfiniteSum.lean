@@ -28,7 +28,6 @@ In a complete (semi)normed group,
 infinite series, absolute convergence, normed group
 -/
 
-
 open Topology NNReal
 
 open Finset Filter Metric

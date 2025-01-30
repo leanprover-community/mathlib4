@@ -42,12 +42,12 @@ structure PresheafOfModules where
   /-- the restriction maps of a presheaf of modules -/
   map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (obj Y)
   map_id (X : Cᵒᵖ) :
-    map (𝟙 X) =
-      (ModuleCat.restrictScalarsId' _ (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
+    map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)).hom
+      (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
         aesop_cat
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
-      (ModuleCat.restrictScalarsComp' _ _ _
+      (ModuleCat.restrictScalarsComp' (R.map f).hom (R.map g).hom (R.map (f ≫ g)).hom
         (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by aesop_cat
 
 namespace PresheafOfModules
