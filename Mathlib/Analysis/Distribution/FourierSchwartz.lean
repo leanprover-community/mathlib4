@@ -128,9 +128,9 @@ section Lp
 
 open scoped SchwartzMap
 
-variable {𝕜 𝕜' V E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup V]
-
-variable [NormedSpace ℂ E] [CompleteSpace F] [InnerProductSpace ℂ F]
+variable {𝕜 𝕜' V E F : Type*} [RCLike 𝕜] [NormedField 𝕜']
+  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup V]
+  [NormedSpace ℂ E] [InnerProductSpace ℂ F] [CompleteSpace F]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
 
 -- TODO: Move to `Mathlib/Analysis/Fourier/FourierTransform.lean`?
@@ -164,9 +164,15 @@ theorem Real.fourierIntegral_conj (f : V → ℂ) (ξ : V) :
   simp [Circle.smul_def, conj_fourierChar]
 
 -- TODO: Move into `Mathlib/Analysis/Fourier/FourierTransform.lean`?
--- TODO: Generalize to `InnerProductSpace 𝕜 F` and `⟪f w, 𝓕 g w⟫_𝕜`?
 -- TODO: Check type classes for `V`.
 -- TODO: Generalize to bilinear `L`?
+
+-- This cannot be generalized from `⟪·, ·⟫_ℂ` to `⟪·, ·⟫_𝕜` with e.g. `NormedField 𝕜`.
+-- Firstly, we need `RCLike 𝕜` for e.g. `InnerProductSpace 𝕜 F`.
+-- Then, we cannot use `𝕜 = ℝ` because we need e.g. `Algebra ℂ 𝕜` and `IsScalarTower ℂ 𝕜 F` for
+-- `⟪f w, 𝐞 (-⟪v, w⟫_ℝ) • g v⟫ = 𝐞 (-⟪v, w⟫_ℝ) • ⟪f w, g v⟫ = ⟪𝐞 ⟪w, v⟫_ℝ • f w, g v⟫`.
+-- Therefore, we may as well restrict ourselves to `𝕜 = ℂ`.
+
 /-- The L^2 inner product of a function with the Fourier transform of another is equal to the
 L^2 inner product of its inverse Fourier transform with the other function.
 
@@ -365,14 +371,13 @@ theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_add
         simp
   _ = (fourierTransform q f + fourierTransform q g) ξ := by simp [hfg', hf, hg]
 
--- TODO: Eliminate `𝕜'`? `RCLike 𝕜'` comes from `SchwartzMap.fourierTransformCLM`.
-variable [NormedField 𝕜] [RCLike 𝕜']
-  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedSpace 𝕜' E] [SMulCommClass ℂ 𝕜' E]
-  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedSpace 𝕜' F] [SMulCommClass ℂ 𝕜' F]
+section FourierSMul
+
+variable [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
 
 theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul
     {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
-    (c : 𝕜') (f : LpSchwartzMap E p (volume : Measure V)) :
+    (c : 𝕜) (f : LpSchwartzMap E p (volume : Measure V)) :
     fourierTransform q (c • f) = c • fourierTransform q f := by
   ext
   filter_upwards [coeFn_fourierTransform q (c • f), coeFn_fourierTransform q f,
@@ -395,23 +400,23 @@ theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul
         exact h
       · intro f₀
         change 𝓕 ⇑(c • f₀) = _
-        simp only [← SchwartzMap.fourierTransformCLM_apply 𝕜']
+        simp only [← SchwartzMap.fourierTransformCLM_apply 𝕜]
         ext ξ
         simp
   _ = (c • fourierTransform q f) ξ := by simp [coe_smul, hcf', hf]
 
-variable (𝕜' V E) in
+variable (𝕜 V E) in
 /-- Fourier transform as a linear map from Schwartz maps in `L^p` to Schwartz maps in `L^q`. -/
 noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformLM
     (p q : ℝ≥0∞) [Fact (1 ≤ p)] [Fact (1 ≤ q)] :
-    LpSchwartzMap E p (volume : Measure V) →ₗ[𝕜'] LpSchwartzMap E q (volume : Measure V) where
+    LpSchwartzMap E p (volume : Measure V) →ₗ[𝕜] LpSchwartzMap E q (volume : Measure V) where
   toFun := fourierTransform q
   map_add' f g := fourierTransform_add q f g
   map_smul' c f := fourierTransform_smul q c f
 
 theorem MeasureTheory.Lp.LpSchwartzMap.coeFn_fourierTransformLM
     (p q : ℝ≥0∞) [Fact (1 ≤ p)] [Fact (1 ≤ q)] :
-    ⇑(fourierTransformLM 𝕜' V E p q) = fourierTransform q := rfl
+    ⇑(fourierTransformLM 𝕜 V E p q) = fourierTransform q := rfl
 
 -- TODO: Generalize CLM to `L^p` and `L^q` with `1 ≤ p ≤ 2`.
 
@@ -510,31 +515,33 @@ theorem MeasureTheory.Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_tw
   _ < ε := h
 
 noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformCLM_one_top :
-    LpSchwartzMap E 1 (volume : Measure V) →L[𝕜'] LpSchwartzMap E ⊤ (volume : Measure V) :=
-  { fourierTransformLM 𝕜' V E 1 ⊤ with
+    LpSchwartzMap E 1 (volume : Measure V) →L[𝕜] LpSchwartzMap E ⊤ (volume : Measure V) :=
+  { fourierTransformLM 𝕜 V E 1 ⊤ with
     cont := by
       simpa [coeFn_fourierTransformLM] using uniformContinuous_fourierTransform_one_top.continuous
   }
 
 noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformCLM_two_two :
-    LpSchwartzMap F 2 (volume : Measure V) →L[𝕜'] LpSchwartzMap F 2 (volume : Measure V) :=
-  { fourierTransformLM 𝕜' V F 2 2 with
+    LpSchwartzMap F 2 (volume : Measure V) →L[𝕜] LpSchwartzMap F 2 (volume : Measure V) :=
+  { fourierTransformLM 𝕜 V F 2 2 with
     cont := by
       simpa [coeFn_fourierTransformLM] using uniformContinuous_fourierTransform_two_two.continuous
   }
+
+end FourierSMul
 
 end Fourier
 
 section Extend
 
--- TODO: Eliminate `𝕜'`? `RCLike 𝕜'` comes from `SchwartzMap.fourierTransformCLM`.
-variable [NormedField 𝕜] [RCLike 𝕜']
-  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedSpace 𝕜' E] [SMulCommClass ℂ 𝕜' E]
-  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedSpace 𝕜' F] [SMulCommClass ℂ 𝕜' F]
+variable [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+  [NormedSpace 𝕜' E] [SMulCommClass ℝ 𝕜' E]
 
-variable (𝕜 E) in
+-- TODO: Move.
+
+variable (𝕜' E) in
 def MeasureTheory.Lp.LpSchwartzMap.subtypeL (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure V) :
-    LpSchwartzMap E p μ →L[𝕜] Lp E p μ where
+    LpSchwartzMap E p μ →L[𝕜'] Lp E p μ where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -542,27 +549,27 @@ def MeasureTheory.Lp.LpSchwartzMap.subtypeL (p : ℝ≥0∞) [Fact (1 ≤ p)] (�
 
 @[simp]
 theorem MeasureTheory.Lp.LpSchwartzMap.coeFn_subtypeL (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure V) :
-    ⇑(subtypeL 𝕜 E p μ) = Subtype.val := rfl
+    ⇑(subtypeL 𝕜' E p μ) = Subtype.val := rfl
 
 variable [CompleteSpace E]
 
 noncomputable def MeasureTheory.Lp.fourierTransformCLM_one_top :
-    Lp E 1 (volume : Measure V) →L[𝕜'] Lp E ⊤ (volume : Measure V) :=
+    Lp E 1 (volume : Measure V) →L[𝕜] Lp E ⊤ (volume : Measure V) :=
   .extend
-    (LpSchwartzMap.subtypeL 𝕜' E ⊤ volume ∘L
-      LpSchwartzMap.fourierTransformCLM_one_top (𝕜' := 𝕜') (V := V) (E := E))
-    (LpSchwartzMap.subtypeL 𝕜' E 1 volume)
+    (LpSchwartzMap.subtypeL 𝕜 E ⊤ volume ∘L
+      LpSchwartzMap.fourierTransformCLM_one_top (𝕜 := 𝕜) (V := V) (E := E))
+    (LpSchwartzMap.subtypeL 𝕜 E 1 volume)
     (by
       simp only [LpSchwartzMap.coeFn_subtypeL, denseRange_subtype_val, SetLike.setOf_mem_eq]
       exact LpSchwartzMap.dense E ENNReal.one_ne_top volume)
     ((isUniformInducing_iff Subtype.val).mpr rfl)
 
 noncomputable def MeasureTheory.Lp.fourierTransformCLM_two_two :
-    Lp F 2 (volume : Measure V) →L[𝕜'] Lp F 2 (volume : Measure V) :=
+    Lp F 2 (volume : Measure V) →L[𝕜] Lp F 2 (volume : Measure V) :=
   .extend
-    (LpSchwartzMap.subtypeL 𝕜' F 2 volume ∘L
-      LpSchwartzMap.fourierTransformCLM_two_two (𝕜' := 𝕜') (V := V) (F := F))
-    (LpSchwartzMap.subtypeL 𝕜' F 2 volume)
+    (LpSchwartzMap.subtypeL 𝕜 F 2 volume ∘L
+      LpSchwartzMap.fourierTransformCLM_two_two (𝕜 := 𝕜) (V := V) (F := F))
+    (LpSchwartzMap.subtypeL 𝕜 F 2 volume)
     (by
       simp only [LpSchwartzMap.coeFn_subtypeL, denseRange_subtype_val, SetLike.setOf_mem_eq]
       exact LpSchwartzMap.dense F ENNReal.two_ne_top volume)
