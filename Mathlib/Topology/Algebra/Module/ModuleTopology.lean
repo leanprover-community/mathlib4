@@ -592,7 +592,7 @@ include R in
 /-- If `R` is a topological ring and `D` is an `R`-algebra, finite as an `R`-module,
 and if `D` is given the module topology, then `D` is a topological ring. -/
 theorem topologicalRing : TopologicalRing D where
-  -- Proof: we have already checked that
+  -- Proof: we have already checked all the axioms above.
   continuous_add := (toContinuousAdd R D).1
   continuous_mul := continuous_mul_of_finite R D
   continuous_neg := continuous_neg R D
