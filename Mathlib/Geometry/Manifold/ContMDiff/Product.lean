@@ -347,3 +347,76 @@ theorem contMDiff_pi_space :
 @[deprecated (since := "2024-11-20")] alias smooth_pi_space := contMDiff_pi_space
 
 end PiSpace
+
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞} [Nonempty H]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
+  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
+  [IsManifold J n N] [IsManifold J n N'] [Nonempty H']
+
+open Topology
+
+-- TODO: move the following results
+omit [ChartedSpace H M] [Nonempty H] in
+lemma _root_.PartialHomeomorph.extend_bar (e : PartialHomeomorph M H) {x : M} (hx : x ∈ e.source) :
+    (I.symm ⁻¹' e.target ∩ range I) ∈ 𝓝[range I] ((e.extend I) x) := by
+  rw [← e.map_extend_nhds hx, Filter.mem_map, ← I.image_eq e.target,
+    e.extend_coe, Set.preimage_comp, I.preimage_image e.target]
+  exact (e.continuousAt hx).preimage_mem_nhds (e.open_target.mem_nhds (e.map_source hx))
+
+omit [Nonempty H] in
+lemma _root_.PartialHomeomorph.bar (x : M) :
+    (I.symm ⁻¹' (chartAt H x).target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) :=
+  (chartAt H x).extend_bar (mem_chart_source _ x)
+
+lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨continuous_inl.continuousAt, ?_⟩
+  -- In extended charts, .inl equals the identity (on the chart sources).
+  apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
+  · simp [ChartedSpace.sum_chartAt_inl]
+    congr
+    apply Sum.inl_injective.extend_apply (chartAt _ x)
+  set C := chartAt H x
+  have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
+      (((C.lift_openEmbedding (IsOpenEmbedding.inl (Y := M'))).extend I)
+        ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
+    intro x ⟨hx1, hx2⟩
+    simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
+  exact Filter.mem_of_superset (PartialHomeomorph.bar x) aux₁
+
+lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨continuous_inr.continuousAt, ?_⟩
+  -- In extended charts, .inl equals the identity (on the chart sources).
+  apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
+  · simp [ChartedSpace.sum_chartAt_inr]
+    congr
+    apply Sum.inr_injective.extend_apply (chartAt _ x)
+  set C := chartAt H x
+  have aux₁ : ∀ e ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I,
+      (((C.lift_openEmbedding (IsOpenEmbedding.inr (X := M))).extend I)
+        ∘ Sum.inr ∘ (C.extend I).symm) e = e := by
+    intro x ⟨hx1, hx2⟩
+    simp [Sum.inr_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
+  apply Filter.mem_of_superset (PartialHomeomorph.bar x) aux₁
+
+lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
+  intro p
+  rw [contMDiffAt_iff]
+  refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
+  by_cases h: p.isLeft
+  · set x := Sum.getLeft p h
+    have : p = Sum.inl x := Sum.eq_left_getLeft_of_isLeft h
+    rw [this]
+    simp only [extChartAt, ChartedSpace.sum_chartAt_inl]
+    -- In charts around x : M, the map .elim f g looks like f.
+    sorry
+  · sorry -- should be analogous
+
+end disjointUnion
