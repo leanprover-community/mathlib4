@@ -57,7 +57,7 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
 -- for the conditional expectation (not in mathlib yet) .
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ ≤ eLpNorm f 1 μ := by
   by_cases hf : Integrable f μ
-  swap; · rw [condExp_undef hf, eLpNorm_zero]; exact zero_le _
+  swap; · rw [condExp_of_not_integrable hf, eLpNorm_zero]; exact zero_le _
   by_cases hm : m ≤ m0
   swap; · rw [condExp_of_not_le hm, eLpNorm_zero]; exact zero_le _
   by_cases hsig : SigmaFinite (μ.trim hm)
@@ -71,12 +71,12 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
           (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
-      rw [eLpNorm_one_eq_lintegral_nnnorm, eLpNorm_one_eq_lintegral_nnnorm,
-        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_nnnorm.mp integrable_condExp.2).ne
-          (hasFiniteIntegral_iff_nnnorm.mp hf.2).ne,
-        ← integral_norm_eq_lintegral_nnnorm
+      rw [eLpNorm_one_eq_lintegral_enorm, eLpNorm_one_eq_lintegral_enorm,
+        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
+          (hasFiniteIntegral_iff_enorm.mp hf.2).ne,
+        ← integral_norm_eq_lintegral_enorm
           (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
-        ← integral_norm_eq_lintegral_nnnorm hf.1]
+        ← integral_norm_eq_lintegral_enorm hf.1]
       simp_rw [Real.norm_eq_abs]
       rw (config := {occs := .pos [2]}) [← integral_condExp hm]
       refine integral_congr_ae ?_
@@ -102,13 +102,13 @@ theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
     positivity
   by_cases hfint : Integrable f μ
   swap
-  · simp only [condExp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      mul_zero]
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const,
+      Algebra.id.smul_eq_mul, mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
-  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
+  · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_enorm]
     · exact hfint.2.ne
-    · rw [← eLpNorm_one_eq_lintegral_nnnorm, ← eLpNorm_one_eq_lintegral_nnnorm]
+    · rw [← eLpNorm_one_eq_lintegral_enorm, ← eLpNorm_one_eq_lintegral_enorm]
       exact eLpNorm_one_condExp_le_eLpNorm _
   · filter_upwards with x using abs_nonneg _
   · simp_rw [← Real.norm_eq_abs]
@@ -127,8 +127,8 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
     positivity
   by_cases hfint : Integrable f μ
   swap
-  · simp only [condExp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      mul_zero]
+  · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const,
+      Algebra.id.smul_eq_mul, mul_zero]
     positivity
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator (hnm _ hs)]
@@ -161,7 +161,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     exact Eventually.of_forall fun _ => R.coe_nonneg
   by_cases hfint : Integrable f μ
   swap
-  · simp_rw [condExp_undef hfint]
+  · simp_rw [condExp_of_not_integrable hfint]
     filter_upwards [hbdd] with x hx
     rw [Pi.zero_apply, abs_zero]
     exact (abs_nonneg _).trans hx
@@ -237,7 +237,7 @@ alias Integrable.uniformIntegrable_condexp := Integrable.uniformIntegrable_condE
 section PullOut
 
 -- TODO: this section could be generalized beyond multiplication, to any bounded bilinear map.
-/-- Auxiliary lemma for `condexp_mul_of_stronglyMeasurable_left`. -/
+/-- Auxiliary lemma for `condExp_mul_of_stronglyMeasurable_left`. -/
 theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFunc α m ℝ) {g : α → ℝ}
     (hg : Integrable g μ) : μ[(f * g : α → ℝ)|m] =ᵐ[μ] f * μ[g|m] := by
   have : ∀ (s c) (f : α → ℝ), Set.indicator s (Function.const α c) * f = s.indicator (c • f) := by
