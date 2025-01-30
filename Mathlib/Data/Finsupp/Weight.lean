@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
