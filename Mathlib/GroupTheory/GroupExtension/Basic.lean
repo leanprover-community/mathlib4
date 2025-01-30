@@ -47,44 +47,44 @@ variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G} (σ σ' : S.Sectio
   (equiv : S.Equiv S')
 
 @[to_additive]
-theorem section_mul_inv_mem_range : σ g * (σ' g)⁻¹ ∈ S.inl.range := by
+theorem mul_inv_mem_range_inl : σ g * (σ' g)⁻¹ ∈ S.inl.range := by
   simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     mul_inv_cancel]
 
 @[to_additive]
-theorem section_inv_mul_mem_range : (σ g)⁻¹ * σ' g ∈ S.inl.range := by
+theorem inv_mul_mem_range_inl : (σ g)⁻¹ * σ' g ∈ S.inl.range := by
   simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     inv_mul_cancel]
 
 @[to_additive]
-theorem exists_inl_mul_section : ∃ n : N, σ g = S.inl n * σ' g := by
-  obtain ⟨n, hn⟩ := section_mul_inv_mem_range σ σ' g
+theorem exists_eq_inl_mul : ∃ n : N, σ g = S.inl n * σ' g := by
+  obtain ⟨n, hn⟩ := mul_inv_mem_range_inl σ σ' g
   exact ⟨n, by rw [hn, inv_mul_cancel_right]⟩
 
 @[to_additive]
-theorem exists_section_mul_inl : ∃ n : N, σ g = σ' g * S.inl n := by
-  obtain ⟨n, hn⟩ := section_inv_mul_mem_range σ' σ g
+theorem exists_eq_mul_inl : ∃ n : N, σ g = σ' g * S.inl n := by
+  obtain ⟨n, hn⟩ := inv_mul_mem_range_inl σ' σ g
   exact ⟨n, by rw [hn, mul_inv_cancel_left]⟩
 
 @[to_additive]
-theorem section_mul_mul_mul_inv_mem_range : σ g₁ * σ g₂ * (σ (g₁ * g₂))⁻¹ ∈ S.inl.range := by
+theorem mul_mul_mul_inv_mem_range_inl : σ g₁ * σ g₂ * (σ (g₁ * g₂))⁻¹ ∈ S.inl.range := by
   simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     mul_inv_cancel]
 
 @[to_additive]
-theorem section_mul_inv_mul_mul_mem_range : (σ (g₁ * g₂))⁻¹ * σ g₁ * σ g₂ ∈ S.inl.range := by
+theorem mul_inv_mul_mul_mem_range_inl : (σ (g₁ * g₂))⁻¹ * σ g₁ * σ g₂ ∈ S.inl.range := by
   simp only [S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv, rightHom_section,
     mul_assoc, inv_mul_cancel]
 
 @[to_additive]
-theorem exists_section_mul_eq_inl_mul : ∃ n : N, σ (g₁ * g₂) = S.inl n * σ g₁ * σ g₂ := by
-  obtain ⟨n, hn⟩ := section_mul_mul_mul_inv_mem_range σ g₁ g₂
+theorem exists_mul_eq_inl_mul_mul : ∃ n : N, σ (g₁ * g₂) = S.inl n * σ g₁ * σ g₂ := by
+  obtain ⟨n, hn⟩ := mul_mul_mul_inv_mem_range_inl σ g₁ g₂
   use n⁻¹
   rw [mul_assoc, map_inv, eq_inv_mul_iff_mul_eq, ← eq_mul_inv_iff_mul_eq, hn]
 
 @[to_additive]
-theorem exists_section_mul_eq_mul_inl : ∃ n : N, σ (g₁ * g₂) = σ g₁ * σ g₂ * S.inl n := by
-  obtain ⟨n, hn⟩ := section_mul_inv_mul_mul_mem_range σ g₁ g₂
+theorem exists_mul_eq_mul_mul_inl : ∃ n : N, σ (g₁ * g₂) = σ g₁ * σ g₂ * S.inl n := by
+  obtain ⟨n, hn⟩ := mul_inv_mul_mul_mem_range_inl σ g₁ g₂
   use n⁻¹
   rw [map_inv, eq_mul_inv_iff_mul_eq, ← eq_inv_mul_iff_mul_eq, ← mul_assoc, hn]
 
