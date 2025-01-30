@@ -405,7 +405,7 @@ section PartialOrder
 When `β` is equipped with a partial order, `C_c(α, β)` is given the pointwise partial order.
 -/
 
-variable {β : Type*} [TopologicalSpace β] [Zero β]
+variable {β : Type*} [TopologicalSpace β] [Zero β] [PartialOrder β]
 
 instance partialOrder [PartialOrder β] : PartialOrder C_c(α, β) :=
   PartialOrder.lift (⇑) DFunLike.coe_injective
