@@ -85,12 +85,12 @@ theorem weight_apply (f : σ →₀ R) :
 @[deprecated weight_apply (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
-theorem weight_single_index (s : σ) (c : M) (f : σ →₀ R) :
-    weight (Finsupp.single s c) f = f s • c :=
+theorem weight_single_index [DecidableEq σ] (s : σ) (c : M) (f : σ →₀ R) :
+    weight (Pi.single s c) f = f s • c :=
   linearCombination_single_index σ M R c s f
 
-theorem weight_single_one_apply (s : σ) (f : σ →₀ R) :
-    weight (single s 1) f = f s := by
+theorem weight_single_one_apply [DecidableEq σ] (s : σ) (f : σ →₀ R) :
+    weight (Pi.single s 1) f = f s := by
   rw [weight_single_index, smul_eq_mul, mul_one]
 
 theorem weight_single (s : σ) (r : R) :
@@ -142,7 +142,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     apply zero_le
 
 variable [OrderedAddCommMonoid M] (w : σ → M)
-  {R : Type*} [CanonicallyOrderedCommSemiring R] [Module R M]
+  {R : Type*} [OrderedCommSemiring R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
 instance : SMulPosMono ℕ M :=
   ⟨fun b hb m m' h ↦ by
@@ -228,7 +228,8 @@ theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
 @[simp]
 theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
 
-lemma degree_eq_zero_iff {R : Type*} [CanonicallyOrderedAddCommMonoid R] (d : σ →₀ R) :
+lemma degree_eq_zero_iff {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
+    (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
@@ -236,7 +237,8 @@ lemma degree_eq_zero_iff {R : Type*} [CanonicallyOrderedAddCommMonoid R] (d : σ
 @[deprecated degree_eq_zero_iff (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
 
-theorem le_degree {R : Type*} [CanonicallyOrderedAddCommMonoid R] (s : σ) (f : σ →₀ R) :
+theorem le_degree {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
+    (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
   · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
