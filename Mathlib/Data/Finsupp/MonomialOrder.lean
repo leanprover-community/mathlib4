@@ -153,23 +153,14 @@ theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ toLex c < toLex d := Iff.rfl
 
-theorem MonomialOrder.lex_unit_lt_iff {c d : Unit →₀ ℕ} :
-    c ≺[lex] d ↔ c () < d () := by
-  simp [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff]
-  rcases lt_trichotomy (c ()) (d ()) with (h | h)
-  · simp [h]
-  rcases h with (h | h)
-  · simp [h]
-  · rw [← not_iff_not, not_lt]
-    simp [le_of_lt h]
+theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
+    c ≺[lex] d ↔ c default < d default := by
+  simp [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff, Unique.exists_iff]
 
-theorem MonomialOrder.lex_unit_le_iff {c d : Unit →₀ ℕ} :
-    c ≼[lex] d ↔ c () ≤ d () := by
-  simp [MonomialOrder.lex_le_iff, Finsupp.lex_le_iff, le_iff_eq_or_lt]
-  apply or_congr _ MonomialOrder.lex_unit_lt_iff
-  simp only [Finsupp.ext_iff]
-  by_cases h : c () = d ()
-  · simp [h]
-  · simp [← not_iff_not, h]
+theorem MonomialOrder.lex_le_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
+    c ≼[lex] d ↔ c default ≤ d default := by
+  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  apply or_congr _ MonomialOrder.lex_lt_iff_of_unique
+  simp only [Finsupp.ext_iff, Unique.forall_iff]
 
 end Lex

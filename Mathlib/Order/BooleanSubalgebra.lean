@@ -160,10 +160,10 @@ instance instTop : Top (BooleanSubalgebra α) where
 /-- The trivial boolean subalgebra of a lattice. -/
 instance instBot : Bot (BooleanSubalgebra α) where
   bot.carrier := {⊥, ⊤}
-  bot.bot_mem' := by aesop
-  bot.compl_mem' := by aesop
-  bot.supClosed' _ := by aesop
-  bot.infClosed' _ := by aesop
+  bot.bot_mem' := by simp
+  bot.compl_mem' := by simp
+  bot.supClosed' _ := by simp
+  bot.infClosed' _ := by simp
 
 /-- The inf of two boolean subalgebras is their intersection. -/
 instance instInf : Min (BooleanSubalgebra α) where

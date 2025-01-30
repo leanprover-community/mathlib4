@@ -57,7 +57,7 @@ instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
 instance : Top (Subpresheaf F) :=
-  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by aesop_cat⟩⟩
+  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by simp⟩⟩
 
 instance : Nonempty (Subpresheaf F) :=
   inferInstance

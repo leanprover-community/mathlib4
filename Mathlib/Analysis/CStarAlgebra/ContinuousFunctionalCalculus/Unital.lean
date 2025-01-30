@@ -724,7 +724,7 @@ variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 lemma isUnit_cfc_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : IsUnit (cfc f a) ↔ ∀ x ∈ spectrum R a, f x ≠ 0 := by
   rw [← spectrum.zero_not_mem_iff R, cfc_map_spectrum ..]
-  aesop
+  simp
 
 alias ⟨_, isUnit_cfc⟩ := isUnit_cfc_iff
 

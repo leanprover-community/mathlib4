@@ -215,7 +215,7 @@ theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
     {L : Set α} (hL : L ∈ nhdsWithin b I₁)
     {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
   rw [← nhdsWithin_univ b, h, nhdsWithin_union]
-  exact ⟨mem_of_superset hL (by aesop), mem_of_superset hR (by aesop)⟩
+  exact ⟨mem_of_superset hL (by simp), mem_of_superset hR (by simp)⟩
 
 
 /-- Writing a punctured neighborhood filter as a sup of left and right filters. -/

@@ -236,7 +236,7 @@ noncomputable def braidedCategoryOfFullyFaithful {C D : Type*} [Category C] [Cat
   braidedCategoryOfFaithful F
     (fun X Y => F.preimageIso
       ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ (μIso F _ _)))
-    (by aesop_cat)
+    (by simp)
 
 section
 

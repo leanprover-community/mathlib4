@@ -201,7 +201,7 @@ noncomputable def triangleRotateIsoTriangleOfDegreewiseSplit :
     (triangle φ).rotate ≅
       triangleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by ext; dsimp; simp)
+    (by simp) (by simp) (by ext; dsimp; simp)
 
 /-- The triangle `(triangleh φ).rotate` is isomorphic to a triangle attached to a
 degreewise split short exact sequence of cochain complexes. -/

@@ -50,7 +50,7 @@ variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.lef
 def cechNerve : SimplicialObject C where
   obj n := widePullback.{0} f.right (fun _ : Fin (n.unop.len + 1) => f.left) fun _ => f.hom
   map g := WidePullback.lift (WidePullback.base _)
-    (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by aesop_cat)
+    (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by simp)
 
 /-- The morphism between Čech nerves associated to a morphism of arrows. -/
 @[simps]

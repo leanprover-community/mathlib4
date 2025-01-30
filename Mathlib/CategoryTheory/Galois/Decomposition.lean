@@ -66,7 +66,7 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
-  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
+  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
 

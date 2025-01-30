@@ -59,7 +59,7 @@ lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst =
  -/
 instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
-  id p := ⟨𝟙 p.1, by aesop_cat⟩
+  id p := ⟨𝟙 p.1, by simp⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
 /-- Natural transformations are mapped to functors between category of elements -/

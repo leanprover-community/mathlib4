@@ -128,7 +128,7 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
 def map (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
   toFun := adicCompletionAux I f
-  map_add' := by aesop
+  map_add' := by simp
   map_smul' r x := by
     ext n
     simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
