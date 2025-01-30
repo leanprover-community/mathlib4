@@ -106,15 +106,15 @@ theorem sylvester_coprime {m n : ℕ} (h : m ≠ n) :
 
 -- These two auxiliary sequences converge (from below and from above, respectively) to the constant
 -- that appears in the explicit formula for the Sylvester's sequence.
--- The strategy of the proof of `sylvester n = ⌊ E ^ (2 ^ (n + 1)) + 1 / 2 ⌋₀` is proving that
--- `sylvesterBelow n < sylvesterAbove m` for any `n`, and `m`, and then defining the constant `E`
--- as the limit of `sylvesterBelow n`.
+-- The strategy of the proof of `sylvesterSequence n = ⌊ E ^ (2 ^ (n + 1)) + 1 / 2 ⌋₀` is proving
+-- that `sylvesterBelow n < sylvesterAbove m` for any `n`, and `m`, and then defining the constant
+-- `E` as the limit of `sylvesterBelow n`.
 private noncomputable def sylvesterBelow (n : ℕ) : ℝ :=
-  (sylvester n - 2⁻¹) ^ (((2 : ℝ) ^ (n + 1))⁻¹)
+  (sylvesterSequence n - 2⁻¹) ^ (((2 : ℝ) ^ (n + 1))⁻¹)
 private noncomputable def sylvesterAbove (n : ℕ) : ℝ :=
-  (sylvester n + 2⁻¹) ^ (((2 : ℝ) ^ (n + 1))⁻¹)
+  (sylvesterSequence n + 2⁻¹) ^ (((2 : ℝ) ^ (n + 1))⁻¹)
 
-private theorem cast_one_lt_sylvester (n : ℕ) : (1 : ℝ) < sylvester n :=
+private theorem cast_one_lt_sylvester (n : ℕ) : (1 : ℝ) < sylvesterSequence n :=
   Nat.one_lt_cast.mpr <| two_le_sylvester n
 
 private theorem sylvesterBelow_pos (n : ℕ) : 0 < sylvesterBelow n :=
@@ -128,7 +128,7 @@ private theorem sylvesterBelow_monotone : Monotone sylvesterBelow := by
   refine (Real.rpow_le_rpow_iff ?_ ?_ ((by positivity) : 0 < (2 : ℝ) ^ (m + 2))).mp ?_
   any_goals exact Real.rpow_nonneg (by linarith) _
   rw [← Real.rpow_mul, ← Real.rpow_mul, inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀,
-    ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvester, cast_add, cast_mul,
+    ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvesterSequence, cast_add, cast_mul,
     cast_pred (by linarith [two_le_sylvester m]), Real.rpow_two] <;> linarith
 
 private theorem sylvesterAbove_strictAnti : StrictAnti sylvesterAbove := by
@@ -139,7 +139,7 @@ private theorem sylvesterAbove_strictAnti : StrictAnti sylvesterAbove := by
   refine (Real.rpow_lt_rpow_iff ?_ ?_ ((by positivity) : 0 < (2 : ℝ) ^ (m + 2))).mp ?_
   any_goals exact Real.rpow_nonneg (by linarith) _
   rw [← Real.rpow_mul, ← Real.rpow_mul, inv_mul_cancel_of_invertible, mul_comm, ← pow_sub₀,
-    ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvester, cast_add, cast_mul,
+    ← Nat.eq_sub_of_add_eq' (c := 1), pow_one, Real.rpow_one, sylvesterSequence, cast_add, cast_mul,
     cast_pred (by linarith [two_le_sylvester m]), Real.rpow_two] <;> linarith
 
 private theorem sylvesterBelow_le_sylvesterAbove (n m : ℕ) :
@@ -171,13 +171,13 @@ theorem sylvesterConstant_pos : 0 < sylvesterConstant := by
   exact le_ciSup sylvesterBelow_bddAbove 0
 
 private theorem sylvester_le_const_pow {n : ℕ} :
-    sylvester n ≤ sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 := by
+    sylvesterSequence n ≤ sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 := by
   rw [← tsub_le_iff_right, one_div]
   exact_mod_cast (Real.rpow_inv_le_iff_of_pos (by linarith [cast_one_lt_sylvester n])
     (by linarith! [sylvesterConstant_pos]) (by positivity)).mp <| le_ciSup sylvesterBelow_bddAbove _
 
 private theorem const_pow_lt_sylvester_add_one {n : ℕ} :
-    sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 < sylvester n + 1 := by
+    sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2 < sylvesterSequence n + 1 := by
   rw [← lt_tsub_iff_right, add_sub_assoc, sub_self_div_two, one_div]
   exact_mod_cast (Real.lt_rpow_inv_iff_of_pos
     (by linarith! [sylvesterConstant_pos]) (by positivity) (by positivity)).mp
@@ -193,7 +193,7 @@ $$
 for all natural $n$.
 -/
 theorem sylvester_eq_floor_constant_pow {n : ℕ} :
-    sylvester n = ⌊sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2⌋₊ := by
+    sylvesterSequence n = ⌊sylvesterConstant ^ (2 ^ (n + 1)) + 1 / 2⌋₊ := by
   refine ((Nat.floor_eq_iff ?_).mpr ?_).symm
   · linarith [pow_pos sylvesterConstant_pos (2 ^ (n + 1))]
   · exact ⟨sylvester_le_const_pow, const_pow_lt_sylvester_add_one⟩
