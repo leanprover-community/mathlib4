@@ -89,9 +89,7 @@ notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
 
 def func (x : α) : α := x
 notation3 "func! " (...) ", " r:(scoped p => func p) => r
--- Make sure it handles additional arguments. Should not consume `(· * 2)`.
--- Note: right now this causes the notation to not pretty print at all.
-/-- info: func (fun x ↦ x) fun x ↦ x * 2 : ℕ → ℕ -/
+/-- info: (func! (x : ℕ → ℕ), x) fun x ↦ x * 2 : ℕ → ℕ -/
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
@@ -236,8 +234,8 @@ info: [notation3] syntax declaration has name Test.termδNat
 (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
-[notation3] Defined delaborator Test.termδNat.delab
-[notation3] Adding `delab` attribute for keys [app.Inhabited.default]
+[notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
+[notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
 -/
 #guard_msgs in
 set_option trace.notation3 true in

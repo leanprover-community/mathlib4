@@ -162,14 +162,12 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map := fun f => ⟨f, by continuity⟩ }
+    map := fun f => ⟨f.hom, by continuity⟩ }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
-  forget₂ := {
-    obj := fun P => ⟨P, P.group⟩
-    map := fun f => f.toMonoidHom
-  }
+  forget₂.obj P := Grp.of P
+  forget₂.map f := Grp.ofHom f.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
