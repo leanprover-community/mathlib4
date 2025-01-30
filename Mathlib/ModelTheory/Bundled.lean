@@ -213,14 +213,12 @@ theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
 theorem ofEq_comp (h : M = N) (h' : N = P) :
     (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
   cases h
-  cases h'
   rfl
 
 @[simp]
 theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
     (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
   cases h
-  cases h'
   rfl
 
 end Embedding
@@ -239,14 +237,12 @@ theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
 theorem ofEq_comp (h : M = N) (h' : N = P) :
     (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
   cases h
-  cases h'
   rfl
 
 @[simp]
 theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
     (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
   cases h
-  cases h'
   rfl
 
 @[simp]
