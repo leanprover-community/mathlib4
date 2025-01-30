@@ -358,29 +358,30 @@ instance boundaryless_disjointUnion
   simp [boundary_disjointUnion, hM, hM']
 
 -- TODO: move the following results
+omit hM hM' in
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
   rw [contMDiffAt_iff]
   refine ⟨continuous_inl.continuousAt, ?_⟩
+  -- In extended charts, .inl equals the identity (on the chart sources).
   apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
   · simp [ChartedSpace.sum_chartAt_inl]
     congr
     apply Sum.inl_injective.extend_apply (chartAt _ x)
-  -- key step: functions are eventually equal
   set C := chartAt H x
   have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
       (((C.lift_openEmbedding (IsOpenEmbedding.inl (Y := M'))).extend I)
         ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  -- can be cleaned up, but works
+  -- extract as helper lemma?
   have : (extChartAt I x) x ∈ I.symm ⁻¹' C.target ∩ range I := by
     refine ⟨?_, mem_range_self _⟩
     rw [mem_preimage]
     convert mem_chart_target H x
     apply I.left_inv'
     rw [I.source_eq]; exact trivial
-
+  -- extract as helper lemma?
   have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
     rw [extChartAt, ← PartialHomeomorph.map_extend_nhds _ (mem_chart_source _ x),
       Filter.mem_map, ← I.image_eq C.target,
@@ -389,6 +390,40 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
     exact ((chartAt H x).continuousAt (mem_chart_source _ x)).preimage_mem_nhds
       (chart_target_mem_nhds H x)
   apply Filter.mem_of_superset aux₂ aux₁
+
+omit hM hM' in
+lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨continuous_inr.continuousAt, ?_⟩
+  -- In extended charts, .inl equals the identity (on the chart sources).
+  apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
+  · simp [ChartedSpace.sum_chartAt_inr]
+    congr
+    apply Sum.inr_injective.extend_apply (chartAt _ x)
+  set C := chartAt H x
+  -- only new lemma compared to inl proof
+  have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
+      (((C.lift_openEmbedding (IsOpenEmbedding.inr (X := M))).extend I)
+        ∘ Sum.inr ∘ (C.extend I).symm) x = x := by
+    intro x ⟨hx1, hx2⟩
+    simp [Sum.inr_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
+  -- extract as helper lemma?
+  have : (extChartAt I x) x ∈ I.symm ⁻¹' C.target ∩ range I := by
+    refine ⟨?_, mem_range_self _⟩
+    rw [mem_preimage]
+    convert mem_chart_target H x
+    apply I.left_inv'
+    rw [I.source_eq]; exact trivial
+  -- extract as helper lemma?
+  have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
+    rw [extChartAt, ← PartialHomeomorph.map_extend_nhds _ (mem_chart_source _ x),
+      Filter.mem_map, ← I.image_eq C.target,
+      PartialHomeomorph.extend_coe, Set.preimage_comp,
+      preimage_image I C.target]
+    exact ((chartAt H x).continuousAt (mem_chart_source _ x)).preimage_mem_nhds
+      (chart_target_mem_nhds H x)
+  exact Filter.mem_of_superset aux₂ aux₁
 
 end disjointUnion
 
