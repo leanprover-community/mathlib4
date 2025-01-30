@@ -142,7 +142,7 @@ theorem swapRowElemMat_eq_swapRow [Fintype m] [NonAssocSemiring α] (M : Matrix 
       simp
     · rw [swapRow_other_rows_same, mul_apply, swapRow_other_rows_same]
       simp_rw [one_apply]
-      simp
+      simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
       repeat assumption
 
 /-! ### swapRow elementary matrix has a left inverse -/
