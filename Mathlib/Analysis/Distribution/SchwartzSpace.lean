@@ -1309,12 +1309,12 @@ theorem memℒp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_t
     [hμ : μ.HasTemperateGrowth] : Memℒp f p μ :=
   ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
 
-/-- Schwartz functions are in `L^p` for any `p`. -/
+/-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     Lp F p μ := (f.memℒp p μ).toLp
 
 theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (memℒp f p μ).coeFn_toLp
+    [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memℒp p μ).coeFn_toLp
 
 theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
