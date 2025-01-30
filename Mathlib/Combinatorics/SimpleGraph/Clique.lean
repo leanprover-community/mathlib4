@@ -229,7 +229,7 @@ lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
 lemma IsNClique.insert_erase (hs : G.IsNClique n s) (ha : ∀ w ∈ s, w ≠ b → G.Adj a w) (hb : b ∈ s) :
     G.IsNClique n (insert a (erase s b)) := by
   cases n with
-  | zero => simp_all
+  | zero =>  exact False.elim <| not_mem_empty _ (isNClique_zero.1 hs ▸ hb)
   | succ _ =>
     apply (hs.erase_of_mem hb).insert
     intro w h; rw [mem_erase] at h
