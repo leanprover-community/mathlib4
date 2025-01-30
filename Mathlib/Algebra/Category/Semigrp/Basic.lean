@@ -209,7 +209,8 @@ def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y wher
   inv := e.symm.toMulHom
   hom_inv_id := by
     ext
-    simp_rw [comp_apply, toMulHom_eq_coe, MagmaCat.mulEquiv_coe_eq, symm_apply_apply, id_apply]
+    simp_rw [CategoryTheory.comp_apply, toMulHom_eq_coe, MagmaCat.mulEquiv_coe_eq, symm_apply_apply,
+      CategoryTheory.id_apply]
 
 end
 
