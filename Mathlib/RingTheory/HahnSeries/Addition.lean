@@ -247,7 +247,7 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
 open BigOperators
 
 @[simp]
-theorem sum_coeff {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
+theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
   cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
 
