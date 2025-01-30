@@ -1071,6 +1071,22 @@ theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
     v ∈ C.supp ↔ G.connectedComponentMk v = C :=
   Iff.rfl
 
+lemma mem_supp_congr_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w) :
+    v ∈ c.supp ↔ w ∈ c.supp := by
+  simp only [ConnectedComponent.mem_supp_iff] at *
+  constructor <;> intro h <;> simp only [← h] <;> apply connectedComponentMk_eq_of_adj
+  · exact hadj.symm
+  · exact hadj
+
+lemma adj_spanningCoe_induce_supp {v w : V} (c : G.ConnectedComponent) :
+    (G.induce c.supp).spanningCoe.Adj v w ↔ v ∈ c.supp ∧ G.Adj v w := by
+  by_cases h : v ∈ c.supp
+  · refine ⟨by aesop, ?_⟩
+    intro h'
+    have : w ∈ c.supp := by rwa [c.mem_supp_congr_adj h'.2] at h
+    aesop
+  · aesop
+
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
 
