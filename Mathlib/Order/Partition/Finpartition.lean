@@ -349,7 +349,7 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
         (Q.disjoint.elim b.2 c.2 fun H ↦
           P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
 
-variable [DecidableEq α] {a b c d : α}
+variable [DecidableEq α] {a b c : α}
 
 section Bind
 
@@ -416,22 +416,6 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
 theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
     {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
   card_insert_of_not_mem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
-
-/-- Replace one part of `P` to make a finpartition of `a ⊔ c`. -/
-def extendPart (P : Finpartition a) (hb : b ∈ P.parts) (hc : Disjoint a c) (hd : a ⊔ c = d) :
-    Finpartition d where
-  parts := insert (b ⊔ c) (P.parts.erase b)
-  supIndep := by
-    simp only [supIndep_iff_pairwiseDisjoint, coe_insert, coe_erase, Set.pairwiseDisjoint_insert,
-      id, disjoint_sup_left, Set.mem_diff, Set.mem_singleton_iff, and_imp]
-    refine ⟨P.disjoint.subset Set.diff_subset, fun p hp hpb hbcp ↦ ?_⟩
-    exact ⟨P.disjoint hb hp (.symm hpb), hc.symm.mono_right <| P.le hp⟩
-  sup_parts := by
-    conv_rhs => rw [← hd, ← P.sup_parts, ← Finset.insert_erase hb]
-    simp_rw [sup_insert, id]
-    ac_rfl
-  not_bot_mem := by
-    simp [P.not_bot_mem, eq_comm.trans sup_eq_bot_iff, P.ne_bot hb]
 
 end DistribLattice
 
