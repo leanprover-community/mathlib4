@@ -193,6 +193,7 @@ noncomputable def basis : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
 /-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
+@[simp]
 lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
 /-- The `i`'th basis vector has degree `i`. -/
@@ -200,6 +201,14 @@ lemma basis_degree_eq (i : ℕ) : (S.basis hCoeff i).degree = i := by simp [basi
 
 /-- The `i`'th basis vector has natural degree `i`. -/
 lemma basis_natDegree_eq (i : ℕ) : (S.basis hCoeff i).natDegree = i := by simp [basis_eq_self]
+
+/-- The `i`'th basis vector does not have degree `j` for `i ≠ j`. -/
+lemma basis_degree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).degree ≠ j := by
+  simpa [basis_eq_self] using h
+
+/-- The `i`'th basis vector has natural degree `i`. -/
+lemma basis_natDegree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).natDegree ≠ j := by
+  simpa [basis_eq_self] using h
 
 end NoZeroDivisors
 
