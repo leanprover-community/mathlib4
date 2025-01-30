@@ -381,6 +381,10 @@ lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_m
   · simp
   · simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
 
+@[simp]
+lemma inv_measure_univ_smul_eq_self : (μ univ)⁻¹ • μ = μ := by
+  rcases eq_zero_or_isProbabilityMeasure μ with h | h <;> simp [h]
+
 end IsZeroOrProbabilityMeasure
 
 section NoAtoms
