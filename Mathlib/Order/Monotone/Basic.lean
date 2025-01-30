@@ -1069,17 +1069,16 @@ theorem Antitone.prod_map (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.m
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
 
 lemma monotone_prod_iff {h : α × β → γ} :
-    Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b)))  where
+    Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b))) where
   mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
     fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
   mpr h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
 
 lemma antitone_prod_iff {h : α × β → γ} :
-    Antitone h ↔ (∀ a, Antitone (fun b => h (a, b))) ∧ (∀ b, Antitone (fun a => h (a, b)))  where
+    Antitone h ↔ (∀ a, Antitone (fun b => h (a, b))) ∧ (∀ b, Antitone (fun a => h (a, b))) where
   mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
     fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
   mpr h _ _ hab:= le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
-
 
 end Preorder
 
