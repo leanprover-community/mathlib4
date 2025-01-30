@@ -32,6 +32,7 @@ jobs:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
         run: |
+          echo "PR author: ${{ github.event.issue.user.login }}"
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
 
           # we strip `\r` since line endings from GitHub contain this character
