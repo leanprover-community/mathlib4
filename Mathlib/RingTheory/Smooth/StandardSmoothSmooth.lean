@@ -193,8 +193,10 @@ lemma IsLocalizedModule.subsingleton_of_subsingleton [IsLocalizedModule S f] [Su
 lemma IsLocalizedModule.exists_subsingleton_away {R M M' : Type*} [CommRing R] [AddCommGroup M]
     [Module R M] [Module.Finite R M] [AddCommGroup M'] [Module R M'] (l : M →ₗ[R] M')
     (p : Ideal R) [p.IsPrime] [IsLocalizedModule p.primeCompl l] [Subsingleton M'] :
-    ∃ f ∉ p, Subsingleton (LocalizedModule (Submonoid.powers f) M) :=
-  sorry
+    ∃ f ∉ p, Subsingleton (LocalizedModule (Submonoid.powers f) M) := by
+  let e := IsLocalizedModule.iso p.primeCompl l
+  have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
+  apply LocalizedModule.exists_subsingleton_away
 
 section
 
@@ -462,47 +464,6 @@ lemma exists_of_surjective' [Module.Finite R N] (f : M →ₗ[R] N)
     ∃ g ∉ p, Function.Surjective (LocalizedModule.map (Submonoid.powers g) f) := by
   simp_rw [IsLocalizedModule.map_surjective_iff_localizedModule_map_surjective] at hf ⊢
   exact exists_of_surjective f p hf
-
-lemma exists_of_injective [Module.Finite R M] [Module.Finite R N] (f : M →ₗ[R] N)
-    (p : Ideal R) [p.IsPrime] {Rₚ Mₚ Nₚ : Type*}
-    [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
-    [AddCommGroup Mₚ] [AddCommGroup Nₚ] [Module R Mₚ] [Module R Nₚ]
-    (fM : M →ₗ[R] Mₚ) (fN : N →ₗ[R] Nₚ)
-    [IsLocalizedModule p.primeCompl fM]
-    [IsLocalizedModule p.primeCompl fN]
-    (hf : Function.Injective (IsLocalizedModule.map p.primeCompl fM fN f)) :
-    ∃ g ∉ p, Function.Injective (LocalizedModule.map (Submonoid.powers g) f) := by
-  have : LinearMap.ker (IsLocalizedModule.map p.primeCompl fM fN f) = ⊥ :=
-    LinearMap.ker_eq_bot.mpr hf
-  let fₚ := fM.toKerIsLocalized p.primeCompl fN f
-  have : IsLocalizedModule p.primeCompl fₚ := sorry
-    --LinearMap.toKerLocalized_isLocalizedModule
-    --(Localization.AtPrime p) p.primeCompl fM fN f
-  --obtain ⟨g, hg, _⟩ := IsLocalizedModule.exists_subsingleton_away fₚ
-  sorry
-
-lemma exists_of_injective' [Module.Finite R M] [Module.Finite R N] (f : M →ₗ[R] N)
-    (p : Ideal R) [p.IsPrime] {Rₚ Mₚ Nₚ : Type*}
-    [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
-    [AddCommGroup Mₚ] [AddCommGroup Nₚ] [Module R Mₚ] [Module R Nₚ]
-    (fM : M →ₗ[R] Mₚ) (fN : N →ₗ[R] Nₚ)
-    [IsLocalizedModule p.primeCompl fM]
-    [IsLocalizedModule p.primeCompl fN]
-    {Mₜ Nₜ : R → Type*}
-    [∀ r, AddCommGroup (Mₜ r)] [∀ r, Module R (Mₜ r)]
-    [∀ r, AddCommGroup (Nₜ r)] [∀ r, Module R (Nₜ r)]
-    (fₜ : ∀ r, M →ₗ[R] Mₜ r) [∀ r, IsLocalizedModule (Submonoid.powers r) (fₜ r)]
-    (gₜ : ∀ r, N →ₗ[R] Nₜ r) [∀ r, IsLocalizedModule (Submonoid.powers r) (gₜ r)]
-    (hf : Function.Injective (IsLocalizedModule.map p.primeCompl fM fN f)) :
-    ∃ (g : R), g ∉ p ∧
-      Function.Injective (IsLocalizedModule.map (Submonoid.powers g) (fₜ g) (gₜ g) f) := by
-  have : LinearMap.ker (IsLocalizedModule.map p.primeCompl fM fN f) = ⊥ :=
-    LinearMap.ker_eq_bot.mpr hf
-  let fₚ := fM.toKerIsLocalized p.primeCompl fN f
-  have : IsLocalizedModule p.primeCompl fₚ := sorry
-    --LinearMap.toKerLocalized_isLocalizedModule
-    --(Localization.AtPrime p) p.primeCompl fM fN f
-  sorry
 
 lemma exists_of_bijective' [Module.Finite R M] [Module.FinitePresentation R N] (f : M →ₗ[R] N)
     (p : Ideal R) [p.IsPrime] {Rₚ Mₚ Nₚ : Type*}
