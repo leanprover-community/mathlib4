@@ -16,7 +16,7 @@ This file develops the basic theory of equidecompositions.
 
 Let `G` be a group acting on a space `X`, and `A B : Set X`.
 
-An *Equidecomposition* of `A` and `B` is typically defined as a finite partition of `A` together
+An *equidecomposition* of `A` and `B` is typically defined as a finite partition of `A` together
 with a finite list of elements of `G` of the same size such that applying each element to the
 matching piece of the partition yields a partition of `B`.
 
@@ -43,7 +43,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 * Prove that if two sets embeddidecompose into eachother, they are equidecomposable
   (Schroeder-Bernstein type theorem)
-* Define embeddidecomposability as a Preorder on sets and prove that its induced equivalence
+* Define embeddidecomposability as a preorder on sets and prove that its induced equivalence
   relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
@@ -93,7 +93,7 @@ def elements (f : Equidecomp X G) := f.decomp'.choose
 theorem decomp (f : Equidecomp X G) : IsDecompOn f f.source f.elements := f.decomp'.choose_spec
 
 @[simp]
-theorem map_source {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
+theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := f.toPartialEquiv.map_source h
 
 theorem toPartialEquiv_injective : Injective <| toPartialEquiv (X := X) (G := G) := by
@@ -114,13 +114,13 @@ def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
     f.decomp.mono (source_restr_subset_source _ _) fun _ ↦ congrFun rfl⟩
 
 @[simp]
-theorem restr_toPartialEquiv (f : Equidecomp X G) (A : Set X) :
+theorem toPartialEquiv_restr (f : Equidecomp X G) (A : Set X) :
     (f.restr A).toPartialEquiv = f.toPartialEquiv.restr A := rfl
 
-theorem restr_source_of_subset (f : Equidecomp X G) {A : Set X} (hA : A ⊆ f.source) :
+theorem source_restr (f : Equidecomp X G) {A : Set X} (hA : A ⊆ f.source) :
     (f.restr A).source = A := by rw [restr_source, inter_eq_self_of_subset_right hA]
 
-theorem restr_eq_of_source_subset {f : Equidecomp X G} {A : Set X} (hA : f.source ⊆ A) :
+theorem restr_of_source_subset {f : Equidecomp X G} {A : Set X} (hA : f.source ⊆ A) :
     f.restr A = f := by
   apply toPartialEquiv_injective
   rw [restr_toPartialEquiv, PartialEquiv.restr_eq_of_source_subset hA]
@@ -141,11 +141,11 @@ variable (X G)
 
 /-- The identity function is an equidecomposition of the space with itself. -/
 def refl : Equidecomp X G where
-  toPartialEquiv := PartialEquiv.refl _
+  toPartialEquiv := .refl _
   decomp' := ⟨{1}, by simp [IsDecompOn]⟩
 
 @[simp]
-theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = PartialEquiv.refl X := rfl
+theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = .refl X := rfl
 
 variable {X} {G}
 
@@ -165,7 +165,7 @@ theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
   exact hg.comp' hf
 
 /-- The composition of two equidecompositions as an equidecomposition. -/
-@[trans]
+@[simps, trans]
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
   decomp' := ⟨g.elements * f.elements, g.decomp.comp' f.decomp⟩
@@ -190,8 +190,8 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
   use γ⁻¹, Finset.inv_mem_inv γ_mem
   rw [hγ, inv_smul_smul, ← hγ, h ha]
 
-/-- The inverse function of an equidecomposition as an equidecomposition.-/
-@[symm]
+/-- The inverse function of an equidecomposition as an equidecomposition. -/
+@[symm, simps toPartialEquiv]
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
   decomp' := ⟨f.elements⁻¹, by
@@ -199,7 +199,7 @@ noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
     rw [image_source_eq_target, symm_source]⟩
 
 @[simp]
-theorem invFun_eq_coe (f : Equidecomp X G) : f.invFun = f.symm := rfl
+theorem invFun_eq_symm (f : Equidecomp X G) : f.invFun = f.symm := rfl
 
 @[simp]
 theorem symm_toPartialEquiv (f : Equidecomp X G) :
