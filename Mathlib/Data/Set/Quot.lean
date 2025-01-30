@@ -21,6 +21,7 @@ variable {α : Type*} {r : α → α → Prop}
 /-- Convert an equivalence class to a `Set`. -/
 def Quot.toSet (c : Quot r) : Set α := {x | Quot.mk r x = c}
 
+/-- A quotient element can be interpreted as the set of elements in the same equivalence class. -/
 instance : SetLike (Quot r) α where
   coe := Quot.toSet
   coe_injective' x y h := by
@@ -29,7 +30,7 @@ instance : SetLike (Quot r) α where
       rw [← h]
       exact x.out_eq
 
-@[simp] lemma Quot.mem_toSet {x : α} {c : Quot r} : x ∈ c ↔ Quot.mk r x = c := Iff.rfl
+@[simp] lemma Quot.mem_coe {x : α} {c : Quot r} : x ∈ c ↔ Quot.mk r x = c := Iff.rfl
 
 @[ext] theorem Quot.ext (c d : Quot r) (h : ∀ x, x ∈ c ↔ x ∈ d) : c = d := SetLike.ext h
 
