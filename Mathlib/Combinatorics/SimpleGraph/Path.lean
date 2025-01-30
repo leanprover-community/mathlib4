@@ -264,7 +264,7 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
   mp h := by simpa using h.reverse
   mpr := .reverse
 
-lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : u ≠ v)
+lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.IsNil)
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
   have := hcyc.2
   rw [tail_support_append, List.nodup_append] at this
@@ -413,8 +413,8 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
 
-lemma IsCycle.isPath_of_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
-(c.takeUntil w h).IsPath := by
+lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
+    (c.takeUntil w h).IsPath := by
   by_cases hvw : v = w
   · subst hvw
     simp

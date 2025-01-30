@@ -970,8 +970,8 @@ lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u �
   simp [Walk.takeUntil, h]
 
 @[simp]
-lemma takeUntil_first (p : G.Walk u v) (hup : u ∈ p.support) :
-    p.takeUntil u hup = Walk.nil := by cases p <;> simp [Walk.takeUntil]
+lemma takeUntil_first (p : G.Walk u v) :
+    p.takeUntil u some_lemma_here = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
 lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
@@ -1109,7 +1109,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 
-lemma getVert_takeUntil {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.support)
+lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
   cases p with
   | nil => simp only [support_nil, List.mem_singleton] at hw; aesop
@@ -1125,14 +1125,14 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.suppo
     apply q.getVert_takeUntil hw
     omega
 
-lemma takeUntil_snd (p : G.Walk u v) (hsu : w ≠ u) (h : w ∈ p.support) :
+lemma snd_takeUntil {p : G.Walk u v} (hsu : w ≠ u) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
   apply p.getVert_takeUntil h
   by_contra! hc
   simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil_iff] at hc
   exact hsu hc.symm
 
-lemma length_takeUntil_lt {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (huw : u ≠ w) :
+lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
   rw [(p.length_takeUntil_le h).lt_iff_ne]
   intro hl
