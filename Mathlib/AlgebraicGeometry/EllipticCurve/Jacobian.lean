@@ -1747,6 +1747,8 @@ protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → 
 
 end Map
 
+@[deprecated (since := "2025-30-01")] alias comp_smul := map_smul
+
 section BaseChange
 
 /-! ### Base changes across algebra homomorphisms -/
