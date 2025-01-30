@@ -64,6 +64,11 @@ theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
     (fun p q hp hq => by simp only [hp, hq, map_add]) fun p n hp => by
     simp only [hp, rename_X, map_X, map_mul]
 
+lemma map_comp_rename (f : R →+* S) (g : σ → τ) :
+    (map f).comp (rename g).toRingHom = (rename g).toRingHom.comp (map f) := by
+  apply RingHom.ext
+  simp [map_rename]
+
 @[simp]
 theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     rename g (rename f p) = rename (g ∘ f) p :=
