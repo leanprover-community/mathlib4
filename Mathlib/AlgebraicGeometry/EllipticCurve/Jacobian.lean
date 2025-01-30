@@ -1788,7 +1788,7 @@ lemma baseChange_negY (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.negY (f ∘ P) = f ((W'.baseChange A).toJacobian.negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-protected lemma baseChange_neg (P : Fin 3 → A) :
+lemma baseChange_neg (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.neg (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
 
