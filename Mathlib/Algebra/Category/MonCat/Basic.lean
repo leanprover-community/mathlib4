@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Ring.Action.Group
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
