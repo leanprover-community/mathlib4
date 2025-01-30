@@ -1,4 +1,5 @@
-import Mathlib.Tactic.Ring
+import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.SleepHeartbeats
 
 set_option linter.style.header false
 
@@ -33,12 +34,14 @@ mutual -- mutual declarations get ignored
 theorem XY : True := trivial
 end
 
-/-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used approximately 1000 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 -- we use two nested `set_option ... in` to test that the `heartBeats` linter enters both.
 set_option linter.unusedTactic false in
 set_option linter.unusedTactic false in
-example : True := trivial
+example : True := by
+  sleep_heartbeats 1000 -- on top of these heartbeats, a few more are used by the rest of the proof
+  trivial
 
 /-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
