@@ -79,15 +79,15 @@ lemma binomialSeries_nat [CommRing A] (d : ℕ) :
 lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     rescale (-1 : A) (invOneSubPow A d) = binomialSeries A (-d : ℤ) := by
   ext n
-  rw [coeff_rescale, binomialSeries_coeff]
+  rw [coeff_rescale, binomialSeries_coeff, ← Int.cast_negOnePow_natCast, ← zsmul_eq_mul]
   cases d with
   | zero =>
     by_cases hn : n = 0 <;> simp [invOneSubPow, Ring.choose_zero_ite, hn]
   | succ d =>
     simp only [invOneSubPow, coeff_mk, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg,
       zsmul_eq_mul, mul_one]
-    rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add,
-      show (d : ℤ) + 1 + n - 1 = d + n by omega, ← Nat.cast_add, Ring.choose_natCast]
-    simp
+    rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add, Units.smul_def,
+      show (d : ℤ) + 1 + n - 1 = d + n by omega, ← Nat.cast_add, Ring.choose_eq_nat_choose]
+    norm_cast
 
 end PowerSeries
