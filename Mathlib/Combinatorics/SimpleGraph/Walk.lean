@@ -1121,22 +1121,17 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 lemma getVert_takeUntil {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
   cases p with
-  | nil =>
-    simp only [Walk.support_nil, List.mem_singleton] at hw
-    aesop
+  | nil => simp only [Walk.support_nil, List.mem_singleton] at hw; aesop
   | cons h q =>
-    simp at hw
     by_cases huw : w = u
     · subst huw
       simp_all
-    simp only [huw, false_or] at hw
-    push_neg at huw
-    rw [cons_takeUntil hw huw.symm] at hn ⊢
+    simp only [support_cons, List.mem_cons, huw, false_or] at hw
     by_cases hn0 : n = 0
     · aesop
-    rw [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hn0]
+    simp only [cons_takeUntil hw ((Ne.eq_def _ _).mpr huw).symm, Walk.length_cons,
+      Walk.getVert_cons _ _ hn0] at hn ⊢
     apply q.getVert_takeUntil hw
-    rw [Walk.length_cons] at hn
     omega
 
 lemma takeUntil_snd (p : G.Walk u v) (hsu : w ≠ u) (h : w ∈ p.support) :
