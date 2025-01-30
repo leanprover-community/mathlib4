@@ -638,5 +638,3 @@ lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
 end CompactlySupportedContinuousMap
 
 end NonnegativePart
-
-#min_imports
