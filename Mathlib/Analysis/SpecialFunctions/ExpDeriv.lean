@@ -43,12 +43,19 @@ theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
 theorem analyticOn_cexp : AnalyticOn ℂ exp univ := analyticOnNhd_cexp.analyticOn
 
 /-- `exp` is analytic at any point -/
+@[fun_prop]
 theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
   analyticOnNhd_cexp z (mem_univ _)
 
 /-- `exp ∘ f` is analytic -/
-theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
+@[fun_prop]
+theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (exp ∘ f) x :=
   analyticAt_cexp.comp fa
+
+/-- `exp ∘ f` is analytic -/
+@[fun_prop]
+theorem AnalyticAt.cexp' (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
+  fa.cexp
 
 theorem AnalyticWithinAt.cexp (fa : AnalyticWithinAt ℂ f s x) :
     AnalyticWithinAt ℂ (fun z ↦ exp (f z)) s x :=
@@ -204,12 +211,19 @@ theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
 theorem analyticOn_rexp : AnalyticOn ℝ exp univ := analyticOnNhd_rexp.analyticOn
 
 /-- `exp` is analytic at any point -/
+@[fun_prop]
 theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
   analyticOnNhd_rexp x (mem_univ _)
 
 /-- `exp ∘ f` is analytic -/
-theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun z ↦ exp (f z)) x :=
+@[fun_prop]
+theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (exp ∘ f) x :=
   analyticAt_rexp.comp fa
+
+/-- `exp ∘ f` is analytic -/
+@[fun_prop]
+theorem AnalyticAt.rexp' {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun z ↦ exp (f z)) x :=
+  fa.rexp
 
 theorem AnalyticWithinAt.rexp {x : E} (fa : AnalyticWithinAt ℝ f s x) :
     AnalyticWithinAt ℝ (fun z ↦ exp (f z)) s x :=

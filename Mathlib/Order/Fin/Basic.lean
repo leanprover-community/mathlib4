@@ -3,7 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Set
 
 /-!
@@ -96,8 +96,7 @@ theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
   eq_comm.trans zero_eq_top
 
 @[simp]
-theorem cast_top {m n : ℕ} [NeZero m] (h : m = n) :
-    (⊤ : Fin m).cast h = haveI : NeZero n := h ▸ ‹_›; ⊤ := by
+theorem cast_top {m n : ℕ} [NeZero m] [NeZero n] (h : m = n) : (⊤ : Fin m).cast h = ⊤ := by
   simp [← val_inj, h]
 
 section ToFin
@@ -137,6 +136,16 @@ lemma strictAnti_iff_succ_lt : StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (cas
 /-- A function `f` on `Fin (n + 1)` is antitone if and only if `f (i + 1) ≤ f i` for all `i`. -/
 lemma antitone_iff_succ_le : Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
+
+lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
+    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
+  constructor
+  · intro hf i hi
+    have := hf hi
+    simp [Fin.ext_iff] at this
+  · intro hf
+    refine (strictMono_iff_lt_succ (f := f).2 fun i ↦ ?_).injective
+    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
 
 end FromFin
 
