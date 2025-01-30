@@ -299,15 +299,15 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
   exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
 
-lemma not_adj_takeUntil_takeUntil [DecidableEq V] {u w x : V} (p : G.Walk u u) (hp : p.IsCycle)
-    (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
-    ¬((p.takeUntil w hw).takeUntil x hx).toSubgraph.Adj x w := by
+lemma not_adj_takeUntil_takeUntil [DecidableEq V] {u v w : V} (p : G.Walk u u) (hp : p.IsCycle)
+    (hv : v ∈ p.support) (hw : w ∈ (p.takeUntil v hv).support) :
+    ¬((p.takeUntil v hv).takeUntil w hw).toSubgraph.Adj w v := by
   intro h
   obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp (mem_support_of_adj_toSubgraph' _ h)
-  rw [(p.takeUntil w hw).getVert_takeUntil hx (by omega)] at hn
-  have := length_takeUntil_lt (p.takeUntil w hw) hx h.ne
-  have : n = (p.takeUntil w hw).length := by
-    apply (hp.isPath_of_takeUntil hw).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+  rw [(p.takeUntil v hv).getVert_takeUntil hw (by omega)] at hn
+  have := length_takeUntil_lt (p.takeUntil v hv) hw h.ne
+  have : n = (p.takeUntil v hv).length := by
+    apply (hp.isPath_of_takeUntil hv).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     simp_all
   omega
 
