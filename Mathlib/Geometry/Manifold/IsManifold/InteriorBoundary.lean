@@ -425,6 +425,20 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
       (chart_target_mem_nhds H x)
   exact Filter.mem_of_superset aux₂ aux₁
 
+lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
+  intro p
+  rw [contMDiffAt_iff]
+  refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
+  by_cases h: p.isLeft
+  · set x := Sum.getLeft p h
+    have : p = Sum.inl x := Sum.eq_left_getLeft_of_isLeft h
+    rw [this]
+    simp only [extChartAt, ChartedSpace.sum_chartAt_inl]
+    -- In charts around x : M, the map .elim f g looks like f.
+    sorry
+  · sorry -- should be analogous
+
 end disjointUnion
 
 end ModelWithCorners
