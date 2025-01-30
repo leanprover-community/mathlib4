@@ -220,18 +220,17 @@ protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Ad
     exact hs.1.insert fun b hb _ => h _ hb
   · rw [card_insert_of_not_mem fun ha => (h _ ha).ne rfl, hs.2]
 
-lemma IsNClique.erase_of_mem (hs : G.IsNClique (n + 1) s) (ha : a ∈ s) :
-    G.IsNClique n (s.erase a):= by
+lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
+    G.IsNClique (n - 1) (s.erase a):= by
   constructor
   · apply hs.1.subset; simp
   · rw [card_erase_of_mem ha, hs.2]
-    rfl
 
 lemma IsNClique.insert_erase (hs : G.IsNClique n s) (ha : ∀ w ∈ s, w ≠ b → G.Adj a w) (hb : b ∈ s) :
     G.IsNClique n (insert a (erase s b)) := by
   cases n with
   | zero => simp_all
-  | succ n =>
+  | succ _ =>
     apply (hs.erase_of_mem hb).insert
     intro w h; rw [mem_erase] at h
     exact ha w h.2 h.1
