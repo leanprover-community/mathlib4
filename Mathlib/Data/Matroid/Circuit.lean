@@ -255,10 +255,11 @@ lemma Circuit.eq_fundCircuit_of_subset (hC : M.Circuit C) (hI : M.Indep I) (hCs 
     · rw [hI.mem_closure_iff]
       exact .inl (hC.dep.superset hCs (insert_subset (hC.subset_ground heC) hI.subset_ground))
     exact hC.not_indep (hI.subset (hCs.trans (by simp [heI])))
-  rw [fundCircuit_eq_sInter <|
-    M.closure_subset_closure hCeI <| hC.mem_closure_diff_singleton_of_mem heC]
+  have heCcl := (hC.diff_singleton_basis heC).subset_closure heC
+  have heI : e ∈ M.closure I := M.closure_subset_closure hCeI heCcl
+  rw [fundCircuit_eq_sInter heI]
   refine insert_subset heC <| (sInter_subset_of_mem (t := C \ {e}) ?_).trans diff_subset
-  simp [hCs, (hC.diff_singleton_basis heC).closure_eq_closure, M.mem_closure_of_mem heC]
+  exact ⟨hCeI, heCcl⟩
 
 lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R ⊆ M.E) :
     (M ↾ R).fundCircuit e I = M.fundCircuit e I := by
@@ -336,7 +337,7 @@ lemma exists_circuit_of_mem_closure (he : e ∈ M.closure X) (heX : e ∉ X) :
     hI.indep.fundCircuit_circuit (by rwa [hI.closure_eq_closure]) (not_mem_subset
     hI.subset heX), M.mem_fundCircuit e I⟩
 
-lemma mem_closure_iff_exists_circuit_of_not_mem (he : e ∉ X) :
+lemma mem_closure_iff_exists_circuit (he : e ∉ X) :
     e ∈ M.closure X ↔ ∃ C ⊆ insert e X, M.Circuit C ∧ e ∈ C :=
   ⟨fun h ↦ exists_circuit_of_mem_closure h he, fun ⟨C, hCX, hC, heC⟩ ↦ mem_of_mem_of_subset
     (hC.mem_closure_diff_singleton_of_mem heC) (M.closure_subset_closure (by simpa))⟩
@@ -382,7 +383,7 @@ lemma strong_multi_elimination_insert (x : ι → α) (I : ι → Set α) (z : �
   obtain hι | hι := isEmpty_or_nonempty ι
   · exact ⟨J, by simp, by simpa [range_eq_empty] using hJx, hzJ⟩
   suffices hcl : z ∈ M.closure ((⋃ i, I i) ∪ (J \ {z})) by
-    rw [mem_closure_iff_exists_circuit_of_not_mem (by simp [hzI])] at hcl
+    rw [mem_closure_iff_exists_circuit (by simp [hzI])] at hcl
     obtain ⟨C', hC'ss, hC', hzC'⟩ := hcl
     refine ⟨C', ?_, hC', hzC'⟩
     rwa [union_comm, ← insert_union, insert_diff_singleton, insert_eq_of_mem hzJ] at hC'ss
