@@ -6,6 +6,8 @@ Authors: Christian Merten
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Smooth.StandardSmooth
+import Mathlib.RingTheory.Etale.Basic
+import Mathlib.RingTheory.Smooth.Kaehler
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -24,6 +26,8 @@ We also provide the corresponding instances for standard smooth algebras as coro
 
 We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 -/
+
+universe u
 
 namespace Algebra
 
@@ -258,6 +262,11 @@ instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
   obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.free_kaehlerDifferential
 
+instance IsStandardSmooth.subsingleton_h1Cotangent [IsStandardSmooth R S] :
+    Subsingleton (H1Cotangent R S) := by
+  obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact P.equivH1Cotangent.symm.toEquiv.subsingleton
+
 /-- If `S` is non-trivial and `R`-standard smooth of relative dimension, `Ω[S⁄R]` is a free
 `S`-module of rank `n`. -/
 theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial S] (n : ℕ)
@@ -266,7 +275,7 @@ theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial
   obtain ⟨⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
   rw [P.rank_kaehlerDifferential, hP]
 
-lemma IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
+instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton (Ω[S⁄R]) := by
   wlog h : Nontrivial S
   · rw [not_nontrivial_iff_subsingleton] at h
@@ -274,5 +283,20 @@ lemma IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
+
+variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+
+instance (priority := 900) [IsStandardSmooth R S] : Smooth R S where
+  formallySmooth := by
+    rw [Algebra.FormallySmooth.iff_subsingleton_and_projective]
+    exact ⟨inferInstance, inferInstance⟩
+
+/-- If `S` is `R`-standard smooth of relative dimension zero, it is étale. -/
+instance (priority := 900) [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R S where
+  finitePresentation := (IsStandardSmoothOfRelativeDimension.isStandardSmooth 0).finitePresentation
+  formallyEtale :=
+    have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
+    have : FormallyUnramified R S := ⟨inferInstance⟩
+    Algebra.FormallyEtale.of_unramified_and_smooth
 
 end Algebra
