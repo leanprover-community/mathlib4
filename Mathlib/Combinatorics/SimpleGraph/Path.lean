@@ -264,16 +264,16 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
   mp h := by simpa using h.reverse
   mpr := .reverse
 
-lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.IsNil)
+lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
   have := hcyc.2
   rw [tail_support_append, List.nodup_append] at this
   rw [isPath_def, support_eq_cons, List.nodup_cons]
-  exact ⟨this.2.2 (p.end_mem_tail_support_of_ne h), this.2.1⟩
+  exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
 
-lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : u ≠ v)
+lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.Nil)
     (hcyc : (p.append q).IsCycle) : p.IsPath :=
-  p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right h)
+  p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right (by simpa))
 
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   cases p with
@@ -419,7 +419,7 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   · subst hvw
     simp
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
-  exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right hvw)
+  exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
 end WalkDecomp
 

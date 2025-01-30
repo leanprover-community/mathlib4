@@ -305,9 +305,9 @@ lemma not_adj_toSubgraph_takeUntil_takeUntil [DecidableEq V] {u v w : V} {p : G.
   intro h
   obtain ⟨n, hn, hnl⟩ := mem_support_iff_exists_getVert.mp (mem_support_of_adj_toSubgraph' _ h)
   rw [(p.takeUntil v hv).getVert_takeUntil hw (by omega)] at hn
-  have := length_takeUntil_lt (p.takeUntil v hv) hw h.ne
+  have := length_takeUntil_lt hw h.ne
   have : n = (p.takeUntil v hv).length := by
-    apply (hp.isPath_of_takeUntil hv).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+    apply (hp.isPath_takeUntil hv).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     simp_all
   omega
 

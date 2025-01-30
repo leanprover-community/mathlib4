@@ -806,6 +806,14 @@ lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
+@[simp]
+lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
+  cases p <;> cases q <;> simp
+
+@[simp]
+lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
+  cases p <;> simp
+
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
@@ -825,6 +833,9 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+
+theorem end_mem_tail_support {u v : V} (p : G.Walk u v) (h : ¬ p.Nil) : v ∈ p.support.tail :=
+  p.notNilRec (by simp) h
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
@@ -971,7 +982,7 @@ lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u �
 
 @[simp]
 lemma takeUntil_first (p : G.Walk u v) :
-    p.takeUntil u some_lemma_here = .nil := by cases p <;> simp [Walk.takeUntil]
+    p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
 lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
@@ -1137,7 +1148,7 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   rw [(p.length_takeUntil_le h).lt_iff_ne]
   intro hl
   apply huw
-  simpa using (hl ▸ getVert_takeUntil p h (by rfl) :
+  simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
