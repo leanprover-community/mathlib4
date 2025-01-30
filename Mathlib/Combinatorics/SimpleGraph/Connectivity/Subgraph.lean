@@ -240,12 +240,11 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
 
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} (p : G.Walk u v) (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := by
-  rw [@mem_support_iff_exists_getVert]
   obtain ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hp
-  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
+  simp only [mem_support_iff_exists_getVert, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+    Prod.swap_prod_mk] at hi ⊢
   cases' hi.1 with hl hr
-  · use i
-    exact ⟨hl.1, by omega⟩
+  · exact ⟨i, ⟨hl.1, by omega⟩⟩
   · aesop
 
 lemma mem_support_of_adj_toSubgraph' {u v u' v' : V} (p : G.Walk u v)
@@ -300,16 +299,15 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
   exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
 
-lemma not_adj_takeUntil_takeUntil [DecidableEq V] {u w x : V} (p : G.Walk u u)
-    (hp : p.IsCycle) (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
+lemma not_adj_takeUntil_takeUntil [DecidableEq V] {u w x : V} (p : G.Walk u u) (hp : p.IsCycle)
+    (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
     ¬((p.takeUntil w hw).takeUntil x hx).toSubgraph.Adj x w := by
   intro h
-  obtain ⟨n, ⟨hn, hnl⟩⟩ := Walk.mem_support_iff_exists_getVert.mp
-    (mem_support_of_adj_toSubgraph' _ h)
+  obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp (mem_support_of_adj_toSubgraph' _ h)
   rw [(p.takeUntil w hw).getVert_takeUntil hx (by omega)] at hn
   have := length_takeUntil_lt (p.takeUntil w hw) hx h.ne
   have : n = (p.takeUntil w hw).length := by
-    apply (hp.IsPath_of_takeUntil hw).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+    apply (hp.isPath_of_takeUntil hw).getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     simp_all
   omega
 

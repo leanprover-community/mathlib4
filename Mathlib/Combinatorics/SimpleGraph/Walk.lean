@@ -964,13 +964,6 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
--- Question: Is this a useful lemma at all?
-@[simp]
-lemma nil_takeUntil (h : v ∈ (nil : G.Walk v v).support := Walk.nil.start_mem_support) :
-    Walk.nil.takeUntil v h = Walk.nil := rfl
-
--- Question: Is this a useful simp lemma?
-@[simp]
 lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
     (hadj : G.Adj u v') (hwp' : w ∈ (p.cons hadj).support := List.mem_of_mem_tail hwp) :
     (p.cons hadj).takeUntil w hwp' = (p.takeUntil w hwp).cons hadj := by
@@ -986,11 +979,9 @@ lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
   refine ⟨?_, fun h => by subst h; simp⟩
   intro hnil
   cases p with
-  | nil =>
-    simp only [takeUntil, eq_mpr_eq_cast] at hnil
-    exact hnil.eq
+  | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
   | cons h q =>
-    simp only [Walk.support_cons, List.mem_cons, false_or] at hwp
+    simp only [support_cons, List.mem_cons, false_or] at hwp
     cases' hwp with hl hr
     · exact hl.symm
     · by_contra! hc
@@ -1121,7 +1112,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 lemma getVert_takeUntil {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
   cases p with
-  | nil => simp only [Walk.support_nil, List.mem_singleton] at hw; aesop
+  | nil => simp only [support_nil, List.mem_singleton] at hw; aesop
   | cons h q =>
     by_cases huw : w = u
     · subst huw
@@ -1129,8 +1120,8 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} (p : G.Walk u v) (hw : w ∈ p.suppo
     simp only [support_cons, List.mem_cons, huw, false_or] at hw
     by_cases hn0 : n = 0
     · aesop
-    simp only [cons_takeUntil hw ((Ne.eq_def _ _).mpr huw).symm, Walk.length_cons,
-      Walk.getVert_cons _ _ hn0] at hn ⊢
+    simp only [cons_takeUntil hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
+      getVert_cons _ _ hn0] at hn ⊢
     apply q.getVert_takeUntil hw
     omega
 
@@ -1146,7 +1137,7 @@ lemma length_takeUntil_lt {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (hu
   rw [(p.length_takeUntil_le h).lt_iff_ne]
   intro hl
   apply huw
-  simpa using ( hl ▸ getVert_takeUntil p h (by rfl) :
+  simpa using (hl ▸ getVert_takeUntil p h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
