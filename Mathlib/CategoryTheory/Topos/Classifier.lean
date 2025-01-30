@@ -70,7 +70,8 @@ terminal.from U               χ
 class IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
   /-- For any monomorphism `U ⟶ X`, there is exactly one map `X ⟶ Ω`
   making the appropriate square a pullback square. -/
-  char {U X : C} (m : U ⟶ X) [Mono m] : Unique { χ : X ⟶ Ω // IsPullback m (terminal.from (U : C)) χ t }
+  char {U X : C} (m : U ⟶ X) [Mono m] :
+    Unique { χ : X ⟶ Ω // IsPullback m (terminal.from (U : C)) χ t }
 
 variable (C)
 
@@ -161,7 +162,8 @@ terminal.from U              χ_ m
 ```
 then this is shorthand for the lift of `g` to `U`.
 -/
-noncomputable def ClassifierCone_into {Z : C} (g : Z ⟶ X) (comm' : g ≫ (χ_ m) = (terminal.from Z ≫ t C)) :
+noncomputable def ClassifierCone_into {Z : C} (g : Z ⟶ X)
+(comm' : g ≫ (χ_ m) = (terminal.from Z ≫ t C)) :
     Z ⟶ U :=
   IsPullback.lift (ClassifierPb m) _ _ comm'
 

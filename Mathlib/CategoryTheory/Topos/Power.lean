@@ -131,7 +131,8 @@ lemma Pow_powerizes (B) {A} (f : B ⨯ A ⟶ Ω C) : prod.map (𝟙 _) (f^) ≫ 
 /-- `P_transpose` is the only map which satisfies the commutativity
 of the diagram from `IsPower`.
 -/
-lemma Pow_unique (B) {A} {f : B ⨯ A ⟶ Ω C} {hat' : A ⟶ Pow B} (hat'_powerizes : prod.map (𝟙 _) hat' ≫ in_ B = f ) :
+lemma Pow_unique (B) {A} {f : B ⨯ A ⟶ Ω C} {hat' : A ⟶ Pow B}
+(hat'_powerizes : prod.map (𝟙 _) hat' ≫ in_ B = f ) :
     f^ = hat' := by
   have h := ((Pow_is_power B).hat f).uniq ⟨hat', hat'_powerizes⟩
   apply_fun (fun x => x.val) at h
@@ -324,7 +325,8 @@ def PowSelfAdj : PowFunctorOp C ⊣ PowFunctor C := by
     rw [prod.map_id_comp _ (P_transpose _), assoc _ _ (in_ X'), Pow_powerizes, ←assoc _ _ (in_ X),
       prod.map_map, id_comp, comp_id, ←comp_id f, ←id_comp (P_transpose _), ←prod.map_map,
       assoc, Pow_powerizes]
-    have h : prod.map f (𝟙 Y) ≫ (prod.braiding X Y).hom = (prod.braiding _ _).hom ≫ prod.map (𝟙 _) f := by simp
+    have h : prod.map f (𝟙 Y) ≫ (prod.braiding X Y).hom
+    = (prod.braiding _ _).hom ≫ prod.map (𝟙 _) f := by simp
     rw [←assoc (prod.map f (𝟙 _)), h]
     simp
 
@@ -340,7 +342,8 @@ def PowSelfAdj : PowFunctorOp C ⊣ PowFunctor C := by
     apply Pow_unique
     rw [prod.map_id_comp (P_transpose _), assoc, Pow_powerizes, ←assoc _ _ (in_ Y),
       prod.map_map, id_comp, comp_id, ←comp_id g]
-    have h : prod.map g (𝟙 X) ≫ (prod.braiding X Y).inv = (prod.braiding _ _).inv ≫ prod.map (𝟙 _) g := by simp
+    have h : prod.map g (𝟙 X) ≫ (prod.braiding X Y).inv
+    = (prod.braiding _ _).inv ≫ prod.map (𝟙 _) g := by simp
     rw [←id_comp (P_transpose _), ←prod.map_map, assoc, Pow_powerizes, ←assoc (prod.map g _), h]
     simp only [prod.braiding_inv, prod.lift_map_assoc, comp_id, prod.lift_map, assoc]
 
