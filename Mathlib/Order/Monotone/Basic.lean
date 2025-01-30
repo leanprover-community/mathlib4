@@ -1068,7 +1068,7 @@ theorem Monotone.prod_map (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.m
 theorem Antitone.prod_map (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
 
-lemma monotone_separately_iff_jointly {h : α × β → γ} :
+lemma monotone_prod_iff {h : α × β → γ} :
     (∀ a, Monotone (h ∘ Prod.mk a)) ∧ (∀ b, Monotone (fun a => h (a, b))) ↔ Monotone h where
   mp h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
   mpr h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
