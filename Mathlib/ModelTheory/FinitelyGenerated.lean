@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.ModelTheory.Substructures
@@ -63,6 +63,8 @@ theorem fg_bot : (⊥ : L.Substructure M).FG :=
   ⟨∅, by rw [Finset.coe_empty, closure_empty]⟩
 
 instance instInhabited_fg : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
+
+instance instInhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
 
 theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
@@ -247,6 +249,31 @@ theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
 
 theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
   ⟨FG.finite, fun _ => FG.of_finite⟩
+
+theorem FG.countable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
+    Countable (M →[L] N) := by
+  let ⟨S, finite_S, closure_S⟩ := fg_iff.1 h
+  let g : (M →[L] N) → (S → N) :=
+    fun f ↦ f ∘ (↑)
+  have g_inj : Function.Injective g := by
+    intro f f' h
+    apply Hom.eq_of_eqOn_dense closure_S
+    intro x x_in_S
+    exact congr_fun h ⟨x, x_in_S⟩
+  have : Finite ↑S := (S.finite_coe_iff).2 finite_S
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+instance FG.instCountable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
+    Countable (M →[L] N) :=
+  FG.countable_Hom_to_countable N h
+
+theorem FG.countable_Embedding_to_countable (N : Type*) [L.Structure N] [Countable N] (_ : FG L M) :
+    Countable (M ↪[L] N) :=
+  Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
+
+instance Fg.instCountable_Embedding_to_countable (N : Type*) [L.Structure N]
+    [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
+  FG.countable_Embedding_to_countable N h
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
