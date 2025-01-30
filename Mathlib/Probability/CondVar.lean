@@ -14,7 +14,8 @@ This file defines the variance of a real-valued random variable conditional to a
 
 ## TODO
 
-Define the Lebesgue conditional variance (see GibbsMeasure for a definition of the Lebesgue
+Define the Lebesgue conditional variance. See
+[GibbsMeasure](https://github.com/james18lpc/GibbsMeasure) for a definition of the Lebesgue
 conditional expectation).
 -/
 
@@ -64,15 +65,7 @@ lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
 lemma condVar_of_not_integrable (hXint : ¬ Integrable (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) μ) :
     Var[X ; μ | m] = 0 := condExp_of_not_integrable hXint
 
-@[simp]
-lemma condVar_zero : Var[0 ; μ | m] = 0 := by
-  by_cases hm : m ≤ m₀
-  swap; · rw [condVar_of_not_le hm]
-  by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · rw [condVar_of_not_sigmaFinite hμm]
-  rw [condVar_of_stronglyMeasurable stronglyMeasurable_zero]
-  · simp [← Pi.zero_def]
-  · simpa [-integrable_zero] using integrable_zero ..
+@[simp] lemma condVar_zero : Var[0 ; μ | m] = 0 := by simp [condVar]
 
 @[simp]
 lemma condVar_const (hm : m ≤ m₀) (c : ℝ) : Var[fun _ ↦ c ; μ | m] = 0 := by
@@ -82,15 +75,6 @@ lemma condVar_const (hm : m ≤ m₀) (c : ℝ) : Var[fun _ ↦ c ; μ | m] = 0 
   · simp [condVar, hm, Pi.pow_def]
   · simp [condVar, condExp_of_not_integrable, integrable_const_iff_isFiniteMeasure hc,
       integrable_const_iff_isFiniteMeasure <| pow_ne_zero _ hc, hμm, Pi.pow_def]
-
-lemma condVar_ae_eq_condExpL1 [hμm : SigmaFinite (μ.trim hm)] (X : Ω → ℝ) :
-    Var[X ; μ | m] =ᵐ[μ] condExpL1 hm μ ((X - μ[X | m]) ^ 2) :=
-  condExp_ae_eq_condExpL1 ..
-
-lemma condVar_ae_eq_condExpL1CLM [SigmaFinite (μ.trim hm)]
-    (hX : Integrable ((X - μ[X | m]) ^ 2) μ) :
-    Var[X ; μ | m] =ᵐ[μ] condExpL1CLM _ hm μ (hX.toL1 <| (X - μ[X | m]) ^ 2) :=
-  condExp_ae_eq_condExpL1CLM ..
 
 lemma stronglyMeasurable_condVar : StronglyMeasurable[m] (Var[X ; μ | m]) :=
   stronglyMeasurable_condExp
@@ -104,33 +88,30 @@ lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
   condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
     (hX.sub stronglyMeasurable_condExp.aestronglyMeasurable)) hXint
 
-lemma integrable_condVar : Integrable Var[X ; μ | m] μ := by
-  by_cases hm : m ≤ m₀
-  swap; · rw [condVar_of_not_le hm]; exact integrable_zero _ _ _
-  by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · rw [condVar_of_not_sigmaFinite hμm]; exact integrable_zero _ _ _
-  haveI : SigmaFinite (μ.trim hm) := hμm
-  exact (integrable_condExpL1 _).congr (condVar_ae_eq_condExpL1 X).symm
+lemma integrable_condVar : Integrable Var[X ; μ | m] μ := integrable_condExp
 
-/-- The integral of the conditional expectation `μ[X | m]` over an `m`-measurable set is equal to
-the integral of `X` on that set. -/
+/-- The integral of the conditional variance `Var[X | m]` over an `m`-measurable set is equal to
+the integral of `(X - μ[X | m]) ^ 2` on that set. -/
 lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X | m]) ^ 2) μ)
     (hs : MeasurableSet[m] s) :
-    ∫ ω in s, (Var[X ; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X|m]) ω) ^ 2 ∂μ :=
+    ∫ ω in s, (Var[X ; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X | m]) ω) ^ 2 ∂μ :=
   setIntegral_condExp _ hX hs
 
-lemma condVar_ae_eq_condExp_sq_sub_condExp_sq (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
+-- `(· ^ 2)` is a postfix operator called `_sq` in lemma names, but
+-- `condVar_ae_eq_condExp_sq_sub_condExp_sq` is a bit ridiculous, so we exceptionally denote it by
+-- `sq_` as it were a prefix.
+lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
     Var[X ; μ | m] =ᵐ[μ] μ[X ^ 2 | m] - μ[X | m] ^ 2 := by
   calc
     Var[X ; μ | m]
-    _ = μ[X ^ 2 - 2 * X * μ[X|m] + μ[X|m] ^ 2 | m] := by rw [condVar, sub_sq]
+    _ = μ[X ^ 2 - 2 * X * μ[X | m] + μ[X | m] ^ 2 | m] := by rw [condVar, sub_sq]
     _ =ᵐ[μ] μ[X ^ 2 | m] - 2 * μ[X | m] ^ 2 + μ[X | m] ^ 2 := by
       have aux₀ : Integrable (X ^ 2) μ := hX.integrable_sq
-      have aux₁ : Integrable (2 * X * μ[X|m]) μ := by
+      have aux₁ : Integrable (2 * X * μ[X | m]) μ := by
         rw [mul_assoc]
         refine (memℒp_one_iff_integrable.1 <| hX.condExp.mul hX ?_).const_mul _
         simp [ENNReal.inv_two_add_inv_two]
-      have aux₂ : Integrable (μ[X|m] ^ 2) μ := hX.condExp.integrable_sq
+      have aux₂ : Integrable (μ[X | m] ^ 2) μ := hX.condExp.integrable_sq
       filter_upwards [condExp_add (m := m) (aux₀.sub aux₁) aux₂, condExp_sub (m := m) aux₀ aux₁,
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
@@ -142,7 +123,7 @@ lemma condVar_ae_eq_condExp_sq_sub_condExp_sq (hm : m ≤ m₀) [IsFiniteMeasure
 
 lemma condVar_ae_le_condExp_sq (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
     Var[X ; μ | m] ≤ᵐ[μ] μ[X ^ 2 | m] := by
-  filter_upwards [condVar_ae_eq_condExp_sq_sub_condExp_sq hm hX] with ω hω
+  filter_upwards [condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX] with ω hω
   dsimp at hω
   nlinarith
 
@@ -153,7 +134,7 @@ lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeas
     μ[Var[X ; μ | m]] + Var[μ[X | m] ; μ]
     _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
       congr 1
-      · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_condExp_sq hm hX
+      · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
       · exact variance_def' hX.condExp
     _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
