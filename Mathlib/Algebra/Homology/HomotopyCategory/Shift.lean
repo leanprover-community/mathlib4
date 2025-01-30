@@ -22,6 +22,8 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v v' u u'
 
 open CategoryTheory
@@ -82,7 +84,7 @@ def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
     (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
-    (fun _ _ _ => by simp [h])) (by aesop_cat)
+    (fun _ _ _ => by dsimp; simp [h])) (fun _ ↦ by ext; dsimp; simp)
 
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
 to the addition of integers. -/
@@ -96,7 +98,7 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
       dsimp
       simp only [add_comm n₁ n₂, Int.negOnePow_add, Linear.units_smul_comp,
         Linear.comp_units_smul, d_comp_XIsoOfEq_hom, smul_smul, XIsoOfEq_hom_comp_d]))
-    (by aesop_cat)
+    (by intros; ext; dsimp; simp)
 
 attribute [local simp] XIsoOfEq
 
@@ -207,6 +209,7 @@ def shiftEval (n i i' : ℤ) (hi : n + i = i') :
       HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
       HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
   NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
+    (by intros; dsimp; simp)
 
 end CochainComplex
 
@@ -228,7 +231,7 @@ def mapCochainComplexShiftIso (n : ℤ) :
     shiftFunctor _ n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
       F.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ shiftFunctor _ n :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
-    (by aesop_cat)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
+    (by dsimp; simp)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
 
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where

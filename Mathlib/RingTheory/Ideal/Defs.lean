@@ -66,7 +66,24 @@ theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ 
   have := I.mul_mem_left y' h
   rwa [← mul_assoc, hy', one_mul] at this
 
+theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
+  Nat.casesOn n (Not.elim (by decide))
+    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
+
+theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
+  rw [← Nat.add_sub_of_le h, add_comm, pow_add]
+  exact I.mul_mem_left _ ha
+
 end Ideal
+
+/-- For two elements `m` and `m'` in an `R`-module `M`, the set of elements `r : R` with
+equal scalar product with `m` and `m'` is an ideal of `R`. If `M` is a group, this coincides
+with the kernel of `LinearMap.toSpanSingleton R M (m - m')`. -/
+def Module.eqIdeal (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
+  carrier := {r : R | r • m = r • m'}
+  add_mem' h h' := by simpa [add_smul] using congr($h + $h')
+  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
+  smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
 
 end Semiring
 
@@ -93,14 +110,6 @@ variable {b}
 
 lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
-
-theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
-  Nat.casesOn n (Not.elim (by decide))
-    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
-
-theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
-  rw [← Nat.add_sub_of_le h, pow_add]
-  exact I.mul_mem_right _ ha
 
 end Ideal
 

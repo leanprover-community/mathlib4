@@ -15,7 +15,8 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
-open scoped Pointwise Topology
+open Topology
+open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G] [Group G]
 
@@ -75,7 +76,7 @@ instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
 
-@[to_additive (attr := deprecated (since := "2024-10-05"))]
+@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-10-05"))]
 theorem continuous_smul₁ (x : G ⧸ N) : Continuous fun g : G => g • x :=
   continuous_id.smul continuous_const
 
@@ -100,7 +101,7 @@ instance instSecondCountableTopology [SecondCountableTopology G] :
     SecondCountableTopology (G ⧸ N) :=
   ContinuousConstSMul.secondCountableTopology
 
-@[to_additive (attr := deprecated (since := "2024-08-05"))]
+@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-05"))]
 theorem nhds_one_isCountablyGenerated [FirstCountableTopology G] [N.Normal] :
     (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
   inferInstance
@@ -116,7 +117,7 @@ instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
     exact continuous_mk.comp continuous_mul
   continuous_inv := continuous_inv.quotient_map' _
 
-@[to_additive (attr := deprecated (since := "2024-08-05"))]
+@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-05"))]
 theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
   instTopologicalGroup N
 

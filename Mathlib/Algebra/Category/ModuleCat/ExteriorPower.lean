@@ -9,7 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 /-!
 # The exterior powers as functors on the category of modules
 
-In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exterior n : ModuleCat R`,
+In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower n : ModuleCat R`,
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
 
 -/
@@ -47,7 +47,8 @@ lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ'
 variable (φ : M.AlternatingMap N n) {N' : ModuleCat.{max u v} R} (g : N ⟶ N')
 
 /-- The postcomposition of an alternating map by a linear map. -/
-def postcomp : M.AlternatingMap N' n := g.compAlternatingMap φ
+def postcomp : M.AlternatingMap N' n :=
+  g.hom.compAlternatingMap φ
 
 @[simp]
 lemma postcomp_apply (x : Fin n → M) :
@@ -66,13 +67,14 @@ def mk {M : ModuleCat.{v} R} {n : ℕ} :
 @[ext]
 lemma hom_ext {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
     {f g : M.exteriorPower n ⟶ N}
-    (h : mk.postcomp f = mk.postcomp g) : f = g :=
-  exteriorPower.linearMap_ext h
+    (h : mk.postcomp f = mk.postcomp g) : f = g := by
+  ext : 1
+  exact exteriorPower.linearMap_ext h
 
 /-- The morphism `M.exteriorPower n ⟶ N` induced by an alternating map. -/
 noncomputable def desc {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
     (φ : M.AlternatingMap N n) : M.exteriorPower n ⟶ N :=
-  exteriorPower.alternatingMapLinearEquiv φ
+  ofHom (exteriorPower.alternatingMapLinearEquiv φ)
 
 @[simp]
 lemma desc_mk {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
@@ -84,20 +86,23 @@ lemma desc_mk {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
 in `ModuleCat R`. -/
 noncomputable def map {M N : ModuleCat.{v} R} (f : M ⟶ N) (n : ℕ) :
     M.exteriorPower n ⟶ N.exteriorPower n :=
-  _root_.exteriorPower.map n f
+  ofHom (_root_.exteriorPower.map n f.hom)
 
 @[simp]
 lemma map_mk {M N : ModuleCat.{v} R} (f : M ⟶ N) {n : ℕ} (x : Fin n → M) :
     map f n (mk x) = mk (f ∘ x) := by
   apply exteriorPower.map_apply_ιMulti
 
-variable (R) in
+variable (R)
+
 /-- The functor `ModuleCat R ⥤ ModuleCat R` which sends a module to its
 `n`th exterior power. -/
 @[simps]
 noncomputable def functor (n : ℕ) : ModuleCat.{v} R ⥤ ModuleCat.{max u v} R where
   obj M := M.exteriorPower n
   map f := map f n
+
+variable {R}
 
 /-- The isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
 noncomputable def iso₀ (M : ModuleCat.{u} R) : M.exteriorPower 0 ≅ ModuleCat.of R R :=
@@ -106,7 +111,7 @@ noncomputable def iso₀ (M : ModuleCat.{u} R) : M.exteriorPower 0 ≅ ModuleCat
 @[reassoc (attr := simp)]
 lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
-  exteriorPower.linearEquiv₀_naturality f
+  ModuleCat.hom_ext (exteriorPower.linearEquiv₀_naturality f.hom)
 
 /-- The isomorphism `M.exteriorPower 0 ≅ M`. -/
 noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
@@ -115,7 +120,7 @@ noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
 @[reassoc (attr := simp)]
 lemma iso₁_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 1 ≫ (iso₁ N).hom = (iso₁ M).hom ≫ f :=
-  exteriorPower.linearEquiv₁_naturality f
+  ModuleCat.hom_ext (exteriorPower.linearEquiv₁_naturality f.hom)
 
 variable (R)
 

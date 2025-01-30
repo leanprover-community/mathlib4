@@ -41,7 +41,7 @@ Currently, the string diagram widget provided in this file deals with equalities
 in monoidal categories. It displays string diagrams corresponding to the morphisms for the
 left-hand and right-hand sides of the equality.
 
-Some examples can be found in `test/StringDiagram.lean`.
+Some examples can be found in `MathlibTest/StringDiagram.lean`.
 
 When drawing string diagrams, it is common to ignore associators and unitors. We follow this
 convention. To do this, we need to extract non-structural morphisms that are not associators
@@ -50,7 +50,7 @@ function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
 file can also be used to display the string diagram for general bicategories (see the wip
-PR #12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
+PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
 categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
 Note that the relation between monoidal categories and bicategories is formalized in
 `Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
