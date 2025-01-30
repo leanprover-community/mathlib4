@@ -117,7 +117,7 @@ terminal.from U              χ_ m
 ```
 is a pullback square.
 -/
-def ClassifierPb : IsPullback m (terminal.from U) (χ_ m) (t C) :=
+lemma ClassifierPb : IsPullback m (terminal.from U) (χ_ m) (t C) :=
   ((Classifier_IsClassifier C).char m).default.prop
 
 /-- The diagram
@@ -136,7 +136,7 @@ lemma ClassifierComm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (ClassifierPb 
 /-- `ClassifierOf m` is the only map for which the associated square
 is a pullback square. 
 -/
-def unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m := by
+lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m := by
   have h := ((Classifier_IsClassifier C).char m).uniq (Subtype.mk χ hχ)
   apply_fun (fun x => x.val) at h
   assumption
@@ -178,10 +178,9 @@ then `ClassifierCone_into` is the lift of `g` to `U`;
 the following is a proof that it is indeed a lift, i.e.
 that lift composed with `m` is `g`.
 -/
-def ClassifierCone_into_comm {Z : C} (g : Z ⟶ X) (comm' : g ≫ χ_ m = (terminal.from Z ≫ t C)) :
+lemma ClassifierCone_into_comm {Z : C} (g : Z ⟶ X) (comm' : g ≫ χ_ m = (terminal.from Z ≫ t C)) :
     ClassifierCone_into (comm' := comm') ≫ m = g :=
   IsPullback.lift_fst (ClassifierPb m) _ _ comm'
-
 
 variable [HasClassifier C]
 
@@ -208,7 +207,7 @@ noncomputable instance Mono_is_RegularMono {A B : C} (m : A ⟶ B) [Mono m] : Re
 /-- A category with a subobject classifier satisfies the condition
 that a map which is both monic and epic is an isomorphism. 
 -/
-def balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f :=
+lemma balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f :=
   @isIso_limit_cone_parallelPair_of_epi _ _ _ _ _ _ _ (Mono_is_RegularMono f).isLimit ef
 
 /-- `C` is a balanced category.  -/
@@ -221,16 +220,15 @@ instance : Balanced Cᵒᵖ := balanced_opposite
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.
 -/
-def reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
+theorem reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
   the same holds -- the functor reflects isomorphisms.
 -/
-def reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ ⥤ D) [Functor.Faithful F] :
+theorem reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
-
 
 end CategoryTheory.Classifier
