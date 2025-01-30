@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Data.Finsupp.Pointwise
+import Mathlib.Data.Sym.Sym2
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
@@ -59,6 +60,39 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
         p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
   QuadraticMap.map_sum _ _ _
 
+#check Finset.diag_union_offDiag
+
+#check Finset.sum_union (Finset.disjoint_diag_offDiag _)
+
+section
+
+variable (l : ι →₀ R)
+
+variable (Q : QuadraticMap R M N) (p : Sym2 ι) (f : ι → M)
+
+#check ∑ ij ∈ l.support.sym2 with ij.IsDiag,
+        ij.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩
+/-
+
+variable [DecidablePred (fun (ij : Sym2 ι) ↦ ij.IsDiag)]
+-/
+protected theorem test   :
+      ∑ ij ∈ l.support.sym2,
+        ij.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ =
+      (∑ ij ∈ l.support.sym2 with ij.IsDiag,
+        ij.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩) +
+      (∑ ij ∈ l.support.sym2 with ¬ ij.IsDiag,
+        ij.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩) := by
+  rw [Finset.sum_filter_add_sum_filter_not l.support.sym2 Sym2.IsDiag]
+        /-
+        exact
+          Eq.symm
+            (Finset.sum_filter_add_sum_filter_not l.support.sym2 Sym2.IsDiag
+              (Sym2.lift
+                ⟨fun i j ↦ polar (⇑Q) (f i) (f j), fun x x_1 ↦ polar_comm (⇑Q) (f x) (f x_1)⟩))
+-/
+end
+
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
@@ -67,6 +101,19 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
         p.lift
           ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
             simp only [polar_comm, mul_comm]⟩ := by
+  rw [apply_linearCombination']
+  rw [← Finset.sum_filter_add_sum_filter_not l.support.sym2 Sym2.IsDiag]
+  sorry
+  /-
+  apply  (add_left_inj ( ∑ p ∈ Finset.filter (fun p ↦ ¬p.IsDiag) l.support.sym2,
+      Sym2.lift ⟨fun i j ↦ (l i * l j) • polar (⇑Q) (g i) (g j), fun i j => by
+            simp only [polar_comm, mul_comm]⟩ p)).mpr
+  sorry
+
+  have e1 : ∑ p ∈ l.support.sym2, Sym2.lift ⟨fun i j ↦ (l i * l j) • polar (⇑Q) (g i) (g j), ⋯⟩ p =
+    ∑ p ∈ l.support.sym2, Sym2.lift ⟨fun i j ↦ (l i * l j) • polar (⇑Q) (g i) (g j), ⋯⟩ p := sorry
+  rw [← Finset.diag_union_offDiag ]
+  rw [Finset.sum_union (Finset.disjoint_diag_offDiag _)]
   simp_rw [linearCombination_apply, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
     mul_smul, add_left_inj]
   rw [Finsupp.sum]
@@ -75,6 +122,7 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
+  -/
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
