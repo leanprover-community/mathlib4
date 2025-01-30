@@ -251,14 +251,12 @@ notation3 "(" "ignorez " "SVP" ")" => Sort _
 notation3 "Objet " "mathématique " "supérieur" => Type _
 notation3 "Énoncé" => Prop
 notation3 "Objet " "mathématique" => Type
-/-- info: Nat : Objet mathématique -/
-#guard_msgs in #check Nat
+/-- info: 1 = 1 : Énoncé -/
+#guard_msgs in #check 1 = 1
 /-- info: Énoncé : Objet mathématique -/
 #guard_msgs in #check Prop
 /-- info: Nat : Objet mathématique -/
 #guard_msgs in #check Nat
-/-- info: Énoncé : Objet mathématique -/
-#guard_msgs in #check Prop
 /-- info: Objet mathématique : Objet mathématique supérieur -/
 #guard_msgs in #check Type
 /-- info: PSum.{u, v} (α : (ignorez SVP)) (β : (ignorez SVP)) : (ignorez SVP) -/
