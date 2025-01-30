@@ -21,12 +21,12 @@ noncomputable section
 
 open Filter Finset Function Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
-variable {f g : β → α} {a b : α} {s : Finset β}
+variable {f g : β → α} {a b : α}
 
 /-- Constant one function has product `1` -/
 @[to_additive "Constant zero function has sum `0`"]
@@ -269,7 +269,6 @@ theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i)) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) := by
   classical
   exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
-    -- Porting note: with some help, `simp` used to be able to close the goal
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
@@ -355,7 +354,7 @@ end HasProd
 
 section tprod
 
-variable [CommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
+variable [CommMonoid α] [TopologicalSpace α] {f g : β → α}
 
 @[to_additive]
 theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
@@ -426,8 +425,7 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
   · simp
   · intro b' hb'; simp [hb']
 
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
@@ -436,8 +434,7 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
 
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
   rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
 
@@ -480,8 +477,7 @@ theorem tprod_subtype (s : Set β) (f : β → α) : ∏' x : s, f x = ∏' x, s
   rw [← tprod_subtype_eq_of_mulSupport_subset Set.mulSupport_mulIndicator_subset, tprod_congr]
   simp
 
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem tprod_univ (f : β → α) : ∏' x : (Set.univ : Set β), f x = ∏' x, f x :=
   tprod_subtype_eq_of_mulSupport_subset <| Set.subset_univ _
 

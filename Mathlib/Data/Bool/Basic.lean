@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Defs
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
@@ -48,8 +49,8 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 
-#adaptation_note /-- this is no longer a simp lemma,
-  as after nightly-2024-03-05 the LHS simplifies. -/
+#adaptation_note /-- nightly-2024-03-05
+this is no longer a simp lemma, as the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
@@ -102,9 +103,9 @@ theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
 
 end
 
-@[deprecated (since := "2024-06-07")] alias decide_True := decide_true_eq_true
+@[deprecated (since := "2024-06-07")] alias decide_True := decide_true
 
-@[deprecated (since := "2024-06-07")] alias decide_False := decide_false_eq_false
+@[deprecated (since := "2024-06-07")] alias decide_False := decide_false
 
 @[deprecated (since := "2024-06-07")] alias coe_decide := decide_eq_true_iff
 

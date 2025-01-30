@@ -30,7 +30,7 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 
 ### Equivalences between finsets
 
-* The `Mathlib/Logic/Equiv/Defs.lean` files describe a general type of equivalence, so look in there
+* The `Mathlib/Logic/Equiv/Defs.lean` file describes a general type of equivalence, so look in there
   for any lemmas. There is some API for rewriting sums and products from `s` to `t` given that
   `s ≃ t`.
   TODO: examples
@@ -43,12 +43,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
 open Multiset Subtype Function
 
@@ -92,9 +87,15 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
   rw [← not_disjoint_iff_nonempty_inter]
   exact em _
 
+omit [DecidableEq α] in
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
-    Disjoint s t ↔ s = ∅ := by
-  rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+    Disjoint s t ↔ s = ∅ :=
+  disjoint_of_le_iff_left_eq_bot h
+
+lemma pairwiseDisjoint_iff {ι : Type*} {s : Set ι} {f : ι → Finset α} :
+    s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+    not_disjoint_iff_nonempty_inter]
 
 end Lattice
 
@@ -437,8 +438,6 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
 
 section Classical
 
-open scoped Classical
-
 -- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
 -- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
 -- /-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
@@ -532,29 +531,6 @@ variable [DecidableEq α] {s t : Multiset α}
 @[simp]
 theorem toFinset_add (s t : Multiset α) : toFinset (s + t) = toFinset s ∪ toFinset t :=
   Finset.ext <| by simp
-
-@[simp]
-theorem toFinset_nsmul (s : Multiset α) : ∀ n ≠ 0, (n • s).toFinset = s.toFinset
-  | 0, h => by contradiction
-  | n + 1, _ => by
-    by_cases h : n = 0
-    · rw [h, zero_add, one_nsmul]
-    · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_idempotent]
-
-theorem toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
-    s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by
-  refine ⟨fun H ↦ ⟨fun h ↦ ?_, ext' fun x ↦ ?_⟩, fun H ↦ ?_⟩
-  · rw [card_eq_zero.1 h, toFinset_zero] at H
-    exact Finset.singleton_ne_empty _ H.symm
-  · rw [count_nsmul, count_singleton]
-    by_cases hx : x = a
-    · simp_rw [hx, ite_true, mul_one, count_eq_card]
-      intro y hy
-      rw [← mem_toFinset, H, Finset.mem_singleton] at hy
-      exact hy.symm
-    have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, Nat.mul_zero]
-  simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
 @[simp]
 theorem toFinset_inter (s t : Multiset α) : toFinset (s ∩ t) = toFinset s ∩ toFinset t :=

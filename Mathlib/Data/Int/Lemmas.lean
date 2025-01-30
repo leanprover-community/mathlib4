@@ -49,7 +49,7 @@ theorem natAbs_le_iff_sq_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a ^ 2 ≤ b 
   exact natAbs_le_iff_mul_self_le
 
 theorem natAbs_inj_of_nonneg_of_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    natAbs a = natAbs b ↔ a = b := by rw [← sq_eq_sq ha hb, ← natAbs_eq_iff_sq_eq]
+    natAbs a = natAbs b ↔ a = b := by rw [← sq_eq_sq₀ ha hb, ← natAbs_eq_iff_sq_eq]
 
 theorem natAbs_inj_of_nonpos_of_nonpos {a b : ℤ} (ha : a ≤ 0) (hb : b ≤ 0) :
     natAbs a = natAbs b ↔ a = b := by
@@ -112,9 +112,6 @@ theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
 This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from `Data.Int.Order`.
 -/
 
-
-attribute [local simp] Int.zero_div
-
 @[simp]
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
@@ -132,5 +129,17 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
 @[deprecated (since := "2024-04-02")] alias coe_nat_ne_zero_iff_pos := natCast_ne_zero_iff_pos
 @[deprecated (since := "2024-04-02")] alias abs_coe_nat := abs_natCast
 @[deprecated (since := "2024-04-02")] alias coe_nat_nonpos_iff := natCast_nonpos_iff
+
+/-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
+theorem ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
+    a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
+  constructor
+  · intro ⟨rfl, rfl⟩
+    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt _ h⟩
+  · intro ⟨rfl, hz, hb⟩
+    constructor
+    · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
+      simp [Int.zero_add]
+    · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
 
 end Int

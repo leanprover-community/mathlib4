@@ -34,20 +34,18 @@ variable {α m n R : Type*}
 
 namespace Matrix
 
-open Matrix
-
-/-- `Matrix.hadamard` defines the Hadamard product,
+/-- `Matrix.hadamard` (denoted as `⊙` within the Matrix namespace) defines the Hadamard product,
     which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 
--- TODO: set as an equation lemma for `hadamard`, see mathlib4#3024
+-- TODO: set as an equation lemma for `hadamard`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem hadamard_apply [Mul α] (A : Matrix m n α) (B : Matrix m n α) (i j) :
     hadamard A B i j = A i j * B i j :=
   rfl
 
-scoped infixl:100 " ⊙ " => Matrix.hadamard
+@[inherit_doc] scoped infixl:100 " ⊙ " => Matrix.hadamard
 
 section BasicProperties
 

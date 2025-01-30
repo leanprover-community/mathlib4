@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Bounded order homomorphisms
@@ -227,7 +227,7 @@ variable (α)
 protected def id : TopHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(TopHom.id α) = id :=
   rfl
 
@@ -400,7 +400,7 @@ variable (α)
 protected def id : BotHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BotHom.id α) = id :=
   rfl
 
@@ -527,7 +527,7 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
--- Porting note (#11215): TODO: remove this configuration and use the default configuration.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
@@ -578,7 +578,7 @@ protected def id : BoundedOrderHom α α :=
 instance : Inhabited (BoundedOrderHom α α) :=
   ⟨BoundedOrderHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BoundedOrderHom.id α) = id :=
   rfl
 
@@ -725,18 +725,18 @@ protected def dual :
     BoundedOrderHom α β ≃
       BoundedOrderHom αᵒᵈ
         βᵒᵈ where
-  toFun f := ⟨OrderHom.dual f.toOrderHom, f.map_bot', f.map_top'⟩
+  toFun f := ⟨f.toOrderHom.dual, f.map_bot', f.map_top'⟩
   invFun f := ⟨OrderHom.dual.symm f.toOrderHom, f.map_bot', f.map_top'⟩
   left_inv _ := ext fun _ => rfl
   right_inv _ := ext fun _ => rfl
 
 @[simp]
-theorem dual_id : BoundedOrderHom.dual (BoundedOrderHom.id α) = BoundedOrderHom.id _ :=
+theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ :=
   rfl
 
 @[simp]
 theorem dual_comp (g : BoundedOrderHom β γ) (f : BoundedOrderHom α β) :
-    BoundedOrderHom.dual (g.comp f) = g.dual.comp (BoundedOrderHom.dual f) :=
+    (g.comp f).dual = g.dual.comp f.dual :=
   rfl
 
 @[simp]
