@@ -60,13 +60,17 @@ lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K 
 
 lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K C]
     [Algebra.IsCentral K (B ⊗[K] C)] : IsCentral K C :=
-  letI : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
+  have : IsCentral K (C ⊗[K] B) := IsCentral.of_algEquiv K _ _ <| Algebra.TensorProduct.comm _ _ _
   left_of_tensor K C B inj
 
+/-- Let `A` and `B` be two algebras over a field `K`, if `A ⊗[K] B` is central and `B` is
+  non-trivial, then `A` is central. -/
 lemma left_of_tensor' (K A B : Type*) [Field K] [Ring A] [Ring B] [Nontrivial B]
     [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K A :=
   left_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K B
 
+/-- Let `A` and `B` be two algebras over a field `K`, if `A ⊗[K] B` is central and `A` is
+  non-trivial, then `B` is central. -/
 lemma right_of_tensor' (K A B : Type*) [Field K] [Ring A] [Ring B] [Nontrivial A]
     [Algebra K A] [Algebra K B] [IsCentral K (A ⊗[K] B)] : IsCentral K B :=
   right_of_tensor K A B <| NoZeroSMulDivisors.algebraMap_injective K A
