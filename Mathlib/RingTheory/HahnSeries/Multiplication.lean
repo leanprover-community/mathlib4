@@ -1020,9 +1020,9 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
   · obtain ⟨g, rfl⟩ := hg
     simp only [mul_coeff, embDomain_coeff]
     trans
-      ∑ ij in
+      ∑ ij ∈
         (addAntidiagonal x.isPWO_support y.isPWO_support g).map
-          (Function.Embedding.prodMap f.toEmbedding f.toEmbedding),
+          (f.toEmbedding.prodMap f.toEmbedding),
         (embDomain f x).coeff ij.1 * (embDomain f y).coeff ij.2
     · simp
     apply sum_subset

@@ -27,7 +27,7 @@ open Finset Function
 
 noncomputable section
 
-variable {Γ Γ' R S U V : Type*}
+variable {Γ Γ' R S U V α : Type*}
 
 namespace HahnSeries
 
@@ -244,7 +244,7 @@ end AddMonoid
 
 section AddCommMonoid
 
-variable [AddCommMonoid R] {α : Type*} {s : Finset α}
+variable [AddCommMonoid R]
 
 instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
@@ -255,7 +255,7 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
 open BigOperators
 
 @[simp]
-theorem sum_coeff {x : α → HahnSeries Γ R} (g : Γ) :
+theorem coeff_sum {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
   cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
 

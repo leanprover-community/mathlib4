@@ -686,8 +686,7 @@ alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
 
 @[to_additive (attr := simp)]
-theorem edist_one_right (a : E) : edist a 1 = ‖a‖₊ := by
-  rw [edist_nndist, nndist_one_right]
+lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, enorm]
 
 @[to_additive (attr := simp) nnnorm_zero]
 theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
@@ -800,22 +799,10 @@ lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y
 lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
 
-@[to_additive ofReal_norm_eq_coe_nnnorm]
-theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊ :=
-  ENNReal.ofReal_eq_coe_nnreal _
-
 /-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
 @[to_additive toReal_coe_nnnorm "The non negative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm."]
 theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
-
-@[to_additive]
-theorem edist_eq_coe_nnnorm_div (a b : E) : edist a b = ‖a / b‖₊ := by
-  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_coe_nnnorm']
-
-@[to_additive edist_eq_coe_nnnorm]
-theorem edist_eq_coe_nnnorm' (x : E) : edist x 1 = (‖x‖₊ : ℝ≥0∞) := by
-  rw [edist_eq_coe_nnnorm_div, div_one]
 
 open scoped symmDiff in
 @[to_additive]
@@ -823,20 +810,39 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [edist_nndist, nndist_mulIndicator]
 
-@[to_additive]
-theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r ↔ ↑‖a‖₊ < r := by
-  rw [EMetric.mem_ball, edist_eq_coe_nnnorm']
-
 end NNNorm
 
 section ENorm
 
 @[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
 
+@[to_additive ofReal_norm_eq_enorm]
+lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
+
+@[deprecated (since := "2025-01-17")] alias ofReal_norm_eq_coe_nnnorm := ofReal_norm_eq_enorm
+@[deprecated (since := "2025-01-17")] alias ofReal_norm_eq_coe_nnnorm' := ofReal_norm_eq_enorm'
+
 instance : ENorm ℝ≥0∞ where
   enorm x := x
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
+
+@[to_additive]
+theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
+
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm_sub := edist_eq_enorm_sub
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm_div := edist_eq_enorm_div
+
+@[to_additive]
+theorem edist_one_eq_enorm (x : E) : edist x 1 = ‖x‖ₑ := by rw [edist_eq_enorm_div, div_one]
+
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm := edist_zero_eq_enorm
+@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm' := edist_one_eq_enorm
+
+@[to_additive]
+theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by
+  rw [EMetric.mem_ball, edist_one_eq_enorm]
 
 end ENorm
 
@@ -1319,11 +1325,15 @@ lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
 @[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
 @[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]
 
-theorem ennnorm_eq_ofReal (hr : 0 ≤ r) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal r := by
-  rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg hr]
+theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
+  rw [← ofReal_norm_eq_enorm, norm_of_nonneg hr]
 
-theorem ennnorm_eq_ofReal_abs (r : ℝ) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal |r| := by
-  rw [← Real.nnnorm_abs r, Real.ennnorm_eq_ofReal (abs_nonneg _)]
+@[deprecated (since := "2025-01-17")] alias ennnorm_eq_ofReal := enorm_eq_ofReal
+
+theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
+  rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]
+
+@[deprecated (since := "2025-01-17")] alias ennnorm_eq_ofReal_abs := enorm_eq_ofReal_abs
 
 theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ := by
   rw [Real.toNNReal_of_nonneg hr]
@@ -1331,12 +1341,10 @@ theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
   rw [coe_mk, coe_nnnorm r, Real.norm_eq_abs r, abs_of_nonneg hr]
   -- Porting note: this is due to the change from `Subtype.val` to `NNReal.toReal` for the coercion
 
-theorem ofReal_le_ennnorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖₊ := by
-  obtain hr | hr := le_total 0 r
-  · exact (Real.ennnorm_eq_ofReal hr).ge
-  · rw [ENNReal.ofReal_eq_zero.2 hr]
-    exact bot_le
--- Porting note: should this be renamed to `Real.ofReal_le_nnnorm`?
+theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
+  rw [enorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
+
+@[deprecated (since := "2025-01-17")] alias ofReal_le_ennnorm := ofReal_le_enorm
 
 end Real
 
