@@ -15,7 +15,6 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 
 -/
 
-
 namespace Fin
 
 variable {α : Type*} [Preorder α]
