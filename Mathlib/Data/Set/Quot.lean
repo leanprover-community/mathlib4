@@ -51,27 +51,27 @@ lemma out_image_represents (C : Set (Quot r)) : (Quot.out '' C).Represents C whe
     rw [← hvc, ← hv, c'.out_eq] at h
     exact h hc'
 
-lemma ncard_represents_inter {C : Set (Quot r)} {s : Set α} {c : (Quot r)} (hrep : s.Represents C)
-    (h : c ∈ C) : (s ∩ c).ncard = 1 := by
+variable {C : Set (Quot r)} {s : Set α} {c : Quot r}
+
+lemma ncard_represents_inter (hrep : s.Represents C)(h : c ∈ C) : (s ∩ c).ncard = 1 := by
   rw [ncard_eq_one]
   obtain ⟨a, ha⟩ := hrep.unique_rep h
   aesop
 
-lemma disjoint_represents {C : Set (Quot r)} {s : Set α} {c : Quot r} (hrep : s.Represents C)
-    (h : c ∉ C) : Disjoint s c := by
+lemma disjoint_represents (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c := by
   rw [disjoint_right]
   intro v hv hvr
   have := hrep.exact h
   rw [eq_empty_iff_forall_not_mem] at this
   simp_all
 
-lemma ncard_sdiff_represents_of_mem [Fintype α] {c : Quot r} {s : Set α} {C : Set (Quot r)}
-    (hrep : s.Represents C) (h : c ∈ C) : ((c : Set α) \ s).ncard = (c : Set α).ncard - 1 := by
+lemma ncard_sdiff_represents_of_mem [Fintype α] (hrep : s.Represents C) (h : c ∈ C) :
+    ((c : Set α) \ s).ncard = (c : Set α).ncard - 1 := by
   simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _),
     inter_comm, ncard_represents_inter hrep h]
 
-lemma ncard_sdiff_represents_of_not_mem [Fintype α] {c : Quot r} {s : Set α} {C : Set (Quot r)}
-    (hrep : s.Represents C) (h : c ∉ C) : ((c : Set α) \ s).ncard = (c : Set α).ncard := by
+lemma ncard_sdiff_represents_of_not_mem [Fintype α] (hrep : s.Represents C) (h : c ∉ C) :
+    ((c : Set α) \ s).ncard = (c : Set α).ncard := by
   simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _),
     inter_comm, hrep.exact h]
 
