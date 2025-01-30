@@ -232,11 +232,10 @@ theorem trans {s₁ s₂ s₃ : S.Splitting} (h₁ : S.IsConj s₁ s₂) (h₂ :
 @[to_additive "The setoid of splittings with `N`-conjugacy"]
 def setoid : Setoid S.Splitting where
   r := S.IsConj
-  iseqv := {
-    refl := refl S
+  iseqv :=
+  { refl := refl S
     symm := symm S
-    trans := trans S
-  }
+    trans := trans S }
 
 end IsConj
 
