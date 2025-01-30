@@ -891,8 +891,6 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => enorm_integral_le_lintegral_enorm _
 
-  HasFiniteIntegral.tendsto_setIntegral_nhds_zero
-
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
 theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : α → G} (hf : Integrable f μ)
