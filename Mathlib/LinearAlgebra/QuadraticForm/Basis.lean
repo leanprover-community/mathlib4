@@ -23,7 +23,17 @@ section
 
 variable {ι R M N}
 
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [DecidableEq ι]
+variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+
+open Finsupp in
+theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) =
+      ∑ p in f.support.sym2,
+        p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ -
+        ∑ i ∈ f.support, Q (g i (f i)) :=
+  QuadraticMap.map_sum' Q _ (fun i => g i (f i))
+
+variable [DecidableEq ι]
 
 -- c.f. `_root_.map_finsupp_sum`
 open Finsupp in
@@ -33,6 +43,17 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
       ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
         p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
   QuadraticMap.map_sum _ _ _
+
+/-
+protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
+    Q (∑ i ∈ s, f i) =
+      ∑ ij in s.sym2,
+        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij
+      - ∑ i ∈ s, Q (f i) := by
+-/
+
+
+
 
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
