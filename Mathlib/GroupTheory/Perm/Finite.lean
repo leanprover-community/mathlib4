@@ -252,11 +252,4 @@ end Fintype
 
 end Equiv.Perm
 
-namespace Nat
 
-theorem card_perm {α : Type*} [Finite α] : Nat.card (Equiv.Perm α) = (Nat.card α)! := by
-  classical
-  have := Fintype.ofFinite α
-  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_perm]
-
-end Nat

@@ -6,15 +6,17 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.GroupTheory.Index
-import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.Data.Finite.Perm
+
+import Mathlib.Data.Nat.Prime.Basic
 
 /-! # Subgroups of small index are normal
 
 * `Subgroup.normal_of_index_eq_smallest_prime_factor`: in a finite group `G`,
-a subgroup of index equal to the smallest prime factor of `Nat.card G` is normal.
+  a subgroup of index equal to the smallest prime factor of `Nat.card G` is normal.
 
 * `Subgroup.normal_of_index_two`: in a group `G`, a subgroup of index 2 is normal
-(This does not require `G` to be finite.)
+  (This does not require `G` to be finite.)
 
 -/
 
@@ -23,14 +25,6 @@ variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
 namespace Subgroup
 
 open MulAction MonoidHom Nat
-
-private theorem dvd_prime {r p : ℕ} (hp : p.Prime) (h : r ∣ p !)
-    (hr : ∀ {l : ℕ} (_ : l.Prime) (_ : l ∣ r), p ≤ l) : r ∣ p := by
-  rwa [← Coprime.dvd_mul_right, mul_factorial_pred hp.pos]
-  contrapose! hr
-  obtain ⟨l, hl, hl'⟩ := exists_prime_and_dvd hr
-  rw [dvd_gcd_iff, hl.dvd_factorial, Nat.le_sub_one_iff_lt hp.pos] at hl'
-  exact ⟨l, hl, hl'⟩
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
@@ -60,11 +54,16 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
   have index_ne_zero : H.index ≠ 0 := index_ne_zero_of_finite
   rw [← mul_left_inj' index_ne_zero, one_mul, relindex_mul_index H.normalCore_le]
   have hp : Nat.Prime H.index := hHp ▸ minFac_prime hG1
-  have hp' {l : ℕ} (h1 : l.Prime) (h2 : l ∣ H.normalCore.index) : H.index ≤ l :=
-    hHp ▸ minFac_le_of_dvd h1.two_le (h2.trans H.normalCore.index_dvd_card)
   have h : H.normalCore.index ∣ H.index ! := by
     rw [normalCore_eq_ker, index_ker, index_eq_card, ← Nat.card_perm]
     exact card_subgroup_dvd_card (toPermHom G (G ⧸ H)).range
-  exact dvd_antisymm (dvd_prime hp h hp') (index_dvd_of_le H.normalCore_le)
+  apply dvd_antisymm _ (index_dvd_of_le H.normalCore_le)
+  rwa [← Coprime.dvd_mul_right, mul_factorial_pred hp.pos]
+  have hr1 : H.normalCore.index ≠ 1 := fun hr1 ↦ hp.ne_one <|
+    Nat.eq_one_of_dvd_one (hr1 ▸ H.normalCore.index_dvd_of_le H.normalCore_le)
+  rw [Nat.coprime_factorial_iff hr1]
+  exact lt_of_lt_of_le (Nat.sub_one_lt hp.ne_zero) <|
+    hHp ▸ minFac_le_of_dvd (Nat.minFac_prime hr1).two_le
+      (dvd_trans (minFac_dvd H.normalCore.index) (H.normalCore.index_dvd_card))
 
 end Subgroup
