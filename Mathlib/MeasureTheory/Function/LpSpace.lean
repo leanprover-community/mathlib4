@@ -305,12 +305,12 @@ theorem norm_zero : ‖(0 : Lp E p μ)‖ = 0 :=
 
 @[simp]
 theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ = 0 := by
-  -- Squeezed this simp for performance reasons: takes ~400ms otherwise.
+  -- Squeezed for performance reasons
   simp only [norm_def, eLpNorm_measure_zero, ENNReal.zero_toReal]
 
 
 @[simp] theorem norm_exponent_zero (f : Lp E 0 μ) : ‖f‖ = 0 := by
-  -- Squeezed this simp for performance reasons: takes ~600ms otherwise.
+  -- Squeezed for performance reasons
   simp only [norm_def, eLpNorm_exponent_zero, ENNReal.zero_toReal]
 
 theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f = 0 := by
@@ -405,11 +405,10 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
-        -- Squeezed for performance reasons, took 0.9s before.
-        neg' := by simp only [norm_neg, implies_true]
+        neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
         add_le' := fun f g => by
-          -- Squeezed for performance reasons, took 1.2s before.
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
+            -- Squeezed for performance reasons
             simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
@@ -468,7 +467,7 @@ instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
   -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
   BoundedSMul.of_norm_smul_le fun r f => by
     suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by
-      -- Squeezed for performance reasons; simpa took 0.9s before.
+      -- squeezed for performance reasons
       simpa only [ge_iff_le, enorm, ←ENNReal.coe_mul, ENNReal.coe_le_coe] using this
     simpa only [eLpNorm_congr_ae (coeFn_smul _ _), enorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
@@ -665,7 +664,7 @@ alias edist_indicatorConstLp_eq_nnnorm := edist_indicatorConstLp_eq_enorm
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
-  -- Squeezed for performance reasons: took 800ms before.
+  -- Squeezed for performance reasons
   simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
     Lp.coe_nnnorm]
 
@@ -960,12 +959,12 @@ theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E 
 
 theorem norm_compLp_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
     ‖hg.compLp g0 f‖ ≤ c * ‖f‖ := by
-  -- Squeezed for performance reasons: took 900ms before.
+  -- squeezed for performance reasons
   simpa only [compLp_zero, sub_zero] using hg.norm_compLp_sub_le g0 f 0
 
 theorem lipschitzWith_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     LipschitzWith c (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
-  -- Squeezed for performance reasons, took 850ms before.
+  -- squeezed for performance reasons
   LipschitzWith.of_dist_le_mul fun f g => by simp only [dist_eq_norm, norm_compLp_sub_le]
 
 theorem continuous_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
