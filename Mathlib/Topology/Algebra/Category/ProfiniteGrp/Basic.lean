@@ -234,12 +234,20 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalGroup G := {}
   of G
 
+end ProfiniteGrp
+
+namespace ProfiniteAddGrp
+
 instance : HasForget₂ FiniteAddGrp ProfiniteAddGrp where
   forget₂ :=
   { obj := ProfiniteAddGrp.ofFiniteAddGrp
-    map := fun f => ⟨f, by continuity⟩ }
+    map := fun f => ⟨f.hom, by continuity⟩ }
 
---to_additive failed here
+end ProfiniteAddGrp
+
+namespace ProfiniteGrp
+
+@[to_additive existing]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
@@ -248,7 +256,7 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
   forget₂.obj P := Grp.of P
-  forget₂.map f := Grp.ofHom f.toMonoidHom
+  forget₂.map f := Grp.ofHom f.hom.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
