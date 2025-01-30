@@ -218,6 +218,16 @@ register_option linter.countHeartbeats : Bool := {
   descr := "enable the countHeartbeats linter"
 }
 
+/--
+An option used by the `countHeartbeats` linter: if set to `true`, then the countHeartbeats linter
+rounds down to the nearest 1000 the heartbeat count.
+-/
+register_option linter.countHeartbeatsApprox : Bool := {
+  defValue := false
+  descr := "if set to `true`, then the countHeartbeats linter rounds down \
+            to the nearest 1000 the heartbeat count"
+}
+
 namespace CountHeartbeats
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
@@ -229,7 +239,10 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
     let s ← get
-    elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
+    if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
+      elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
+    else
+      elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
     msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
     set s
   match stx.find? (·.isOfKind ``Parser.Command.declId) with
@@ -241,8 +254,15 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter countHeartbeatsLinter
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
-macro "#count_heartbeats" : command =>
-  `(command| set_option linter.countHeartbeats true)
+macro "#count_heartbeats" approx:(&" approximately")? : command => do
+  let approx ←
+    if approx.isSome then
+      `(set_option linter.countHeartbeatsApprox true) else
+      `(set_option linter.countHeartbeatsApprox false)
+  return ⟨mkNullNode
+    #[← `(command| set_option linter.countHeartbeats true),
+      approx]⟩
+
 
 end CountHeartbeats
 

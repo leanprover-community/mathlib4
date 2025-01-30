@@ -26,8 +26,8 @@ example (a : Nat) : a = a := rfl
 
 section using_count_heartbeats
 
--- sets the `countHeartbeats` linter option to `true`
-#count_heartbeats
+-- sets the `countHeartbeats` both linter option and the `approximate` option to `true`
+#count_heartbeats approximately
 
 mutual -- mutual declarations get ignored
 theorem XY : True := trivial
@@ -55,6 +55,7 @@ end using_count_heartbeats
 section using_linter_option
 
 set_option linter.countHeartbeats true
+set_option linter.countHeartbeatsApprox true
 
 mutual -- mutual declarations get ignored
 theorem XY' : True := trivial
