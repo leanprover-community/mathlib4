@@ -123,10 +123,6 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
     ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
 
-@[deprecated ofFn_getElem_eq_map (since := "2024-06-12")]
-theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
-  simp
-
 -- not registered as a simp lemma, as otherwise it fires before `forall_mem_ofFn_iff` which
 -- is much more useful
 theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by

@@ -265,9 +265,6 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
 @[deprecated (since := "2025-01-21")]
 alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setIntegral_eq
 
-@[deprecated (since := "2025-01-21")]
-alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_set_integral_eq
-
 theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   by_cases hμ_finite : IsFiniteMeasure μ

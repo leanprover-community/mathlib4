@@ -363,5 +363,4 @@ theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
   rfl
 
 end Functor
-
 end CategoryTheory

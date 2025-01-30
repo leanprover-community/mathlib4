@@ -494,9 +494,6 @@ theorem _root_.Topology.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [
 @[deprecated (since := "2024-10-20")]
 alias _root_.ClosedEmbedding.setIntegral_map := IsClosedEmbedding.setIntegral_map
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.set_integral_map := IsClosedEmbedding.set_integral_map
-
 theorem MeasurePreserving.setIntegral_preimage_emb {Y} {_ : MeasurableSpace Y} {f : X → Y} {ν}
     (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :
     ∫ x in f ⁻¹' s, g (f x) ∂μ = ∫ y in s, g y ∂ν :=
@@ -1472,5 +1469,3 @@ lemma continuousOn_integral_of_compact_support
     hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 
 end ParametricIntegral
-
-set_option linter.style.longFile 1700

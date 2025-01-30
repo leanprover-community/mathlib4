@@ -340,9 +340,6 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
 @[deprecated (since := "2025-01-21")]
 alias Martingale.eq_condexp_of_tendsto_eLpNorm := Martingale.eq_condExp_of_tendsto_eLpNorm
 
-@[deprecated (since := "2025-01-21")]
-alias Martingale.eq_condexp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_snorm
-
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
 adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
 expectation of its limiting process wrt. `ℱ n`. -/
@@ -431,9 +428,6 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
 @[deprecated (since := "2025-01-21")]
 alias Integrable.tendsto_eLpNorm_condexp := Integrable.tendsto_eLpNorm_condExp
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.tendsto_snorm_condexp := Integrable.tendsto_snorm_condExp
-
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_ae_condExp (g : Ω → ℝ) :
@@ -461,8 +455,6 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
   simp only [hxeq, Pi.sub_apply]
 
 @[deprecated (since := "2025-01-21")] alias tendsto_eLpNorm_condexp := tendsto_eLpNorm_condExp
-
-@[deprecated (since := "2025-01-21")] alias tendsto_snorm_condexp := tendsto_snorm_condExp
 
 end L1Convergence
 

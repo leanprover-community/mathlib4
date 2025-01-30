@@ -585,18 +585,6 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
 lemma exists_subset_card_eq (hns : n ≤ #s) : ∃ t ⊆ s, #t = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
-/-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`
-inside it. -/
-@[deprecated exists_subsuperset_card_eq (since := "2024-06-23")]
-theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + #B ≤ #A) (h₂ : B ⊆ A) :
-    ∃ C : Finset α, B ⊆ C ∧ C ⊆ A ∧ #C = i + #B :=
-  exists_subsuperset_card_eq h₂ (Nat.le_add_left ..) h₁
-
-/-- We can shrink `A` to any smaller size. -/
-@[deprecated exists_subset_card_eq (since := "2024-06-23")]
-theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ #A) :
-    ∃ B : Finset α, B ⊆ A ∧ #B = i := exists_subset_card_eq h₁
-
 theorem le_card_iff_exists_subset_card : n ≤ #s ↔ ∃ t ⊆ s, #t = n := by
   refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
   exact exists_subset_card_eq h

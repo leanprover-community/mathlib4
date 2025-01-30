@@ -2369,11 +2369,6 @@ alias omega_le := omega0_le
 theorem iSup_natCast : iSup Nat.cast = ω :=
   (Ordinal.iSup_le fun n => (nat_lt_omega0 n).le).antisymm <| omega0_le.2 <| Ordinal.le_iSup _
 
-set_option linter.deprecated false in
-@[deprecated iSup_natCast (since := "2024-04-17")]
-theorem sup_natCast : sup Nat.cast = ω :=
-  iSup_natCast
-
 theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
   | 0 => h.pos
   | n + 1 => h.succ_lt (nat_lt_limit h n)

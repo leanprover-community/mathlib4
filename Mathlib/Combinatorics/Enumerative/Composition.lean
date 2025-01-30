@@ -647,27 +647,6 @@ theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
     (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
   getElem_splitWrtComposition' _ _ h
 
-@[deprecated getElem_splitWrtCompositionAux (since := "2024-06-12")]
-theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
-    (l.splitWrtCompositionAux ns).get ⟨i, hi⟩  =
-      (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
-  simp [getElem_splitWrtCompositionAux]
-
-/-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
-between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
-block of the composition. -/
-@[deprecated getElem_splitWrtComposition' (since := "2024-06-12")]
-theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
-    (hi : i < (l.splitWrtComposition c).length) :
-    (l.splitWrtComposition c).get ⟨i, hi⟩ = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
-  simp [getElem_splitWrtComposition']
-
-@[deprecated getElem_splitWrtComposition (since := "2024-06-12")]
-theorem get_splitWrtComposition (l : List α) (c : Composition n)
-    (i : Fin (l.splitWrtComposition c).length) :
-    get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
-  simp [getElem_splitWrtComposition]
-
 theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).flatten = l := by
   induction' ns with n ns IH <;> intro l h <;> simp at h

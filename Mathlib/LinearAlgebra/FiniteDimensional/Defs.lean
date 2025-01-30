@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Module.Projective
 import Mathlib.FieldTheory.Finiteness
-import Mathlib.RingTheory.Finiteness.Subalgebra
 
 /-!
 # Finite dimensional vector spaces
@@ -759,10 +758,6 @@ alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgeb
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
-
-@[deprecated Subalgebra.finite_bot (since := "2024-04-11")]
-theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
-  Subalgebra.finite_bot
 
 end SubalgebraRank
 

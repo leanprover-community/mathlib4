@@ -236,11 +236,6 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     match a₁, a₂, b₁, b₂, h₁, h₂ with
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
 
-@[deprecated PSigma.ext_iff (since := "2024-07-27")]
-protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
-    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
-  | ⟨_, _⟩, _, rfl, rfl => rfl
-
 -- This should not be a simp lemma, since its discrimination tree key would just be `→`.
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
   ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩

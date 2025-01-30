@@ -1013,13 +1013,6 @@ not a definitional equality. -/
 @[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
     insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
 
-/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
-Functional form of `Equiv.piFinSuccAbove`. -/
-@[deprecated removeNth (since := "2024-06-19")]
-def extractNth {α : Fin (n + 1) → Type*} (i : Fin (n + 1)) (f : (∀ j, α j)) :
-    α i × ∀ j, α (i.succAbove j) :=
-  (f i, removeNth i f)
-
 end InsertNth
 
 section Find

@@ -1612,9 +1612,6 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count 
   congr with a
   simpa using hms a
 
-@[deprecated sum_count_eq_card (since := "2024-07-21")]
-theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by simp
-
 @[simp]
 theorem toFinset_sum_count_nsmul_eq (s : Multiset α) :
     ∑ a ∈ s.toFinset, s.count a • {a} = s := by

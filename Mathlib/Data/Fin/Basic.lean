@@ -1034,10 +1034,6 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 
-@[deprecated "No deprecation message was provided." (since := "2024-05-30")]
-lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
-    castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
-
 /-- Embedding `i : Fin n` into `Fin (n + 1)` using a pivot `p` that is greater
 results in a value that is less than `p`. -/
 lemma succAbove_lt_iff_castSucc_lt (p : Fin (n + 1)) (i : Fin n) :

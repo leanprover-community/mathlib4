@@ -249,16 +249,6 @@ lemma eq_zero_iff : ψ = 0 ↔ ∀ x, ψ x = 1 := DFunLike.ext_iff
 lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 lemma ne_zero_iff : ψ ≠ 0 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 
-/-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-@[deprecated "No deprecation message was provided." (since := "2024-06-06")]
-def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
-
-set_option linter.deprecated false in
-/-- An additive character is nontrivial iff it is not the trivial character. -/
-@[deprecated ne_one_iff (since := "2024-06-06")]
-lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
-  not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
-
 noncomputable instance : DecidableEq (AddChar A M) := Classical.decEq _
 
 end Basic

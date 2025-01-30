@@ -545,11 +545,8 @@ theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [No
 
 end iInf
 
-section iSup
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
-
-end iSup
 
 end ENNReal
 

@@ -26,13 +26,9 @@ theorem get?_enumFrom (n) (l : List α) (m) :
     get? (enumFrom n l) m = (get? l m).map fun a => (n + m, a) := by
   simp
 
-@[deprecated (since := "2024-04-06")] alias enumFrom_get? := get?_enumFrom
-
 @[deprecated getElem?_enum (since := "2024-08-15")]
 theorem get?_enum (l : List α) (n) : get? (enum l) n = (get? l n).map fun a => (n, a) := by
   simp
-
-@[deprecated (since := "2024-04-06")] alias enum_get? := get?_enum
 
 @[deprecated getElem_enumFrom (since := "2024-08-15")]
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length) :
