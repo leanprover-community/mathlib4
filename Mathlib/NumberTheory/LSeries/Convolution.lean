@@ -129,7 +129,6 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
 
 end LSeries
 
--- NB: terminal `simpa` is quite slow if un-squeezed
 open Set in
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
@@ -137,6 +136,7 @@ lemma LSeriesHasSum.convolution {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesH
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f ⍟ g) s (a * b) := by
   have hsum := summable_mul_of_summable_norm hf.summable.norm hg.summable.norm
+  -- NB: this `simpa` is quite slow if un-squeezed
   simpa only [LSeriesHasSum, term_convolution'] using (hf.mul hg hsum).tsum_fiberwise _
 
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
