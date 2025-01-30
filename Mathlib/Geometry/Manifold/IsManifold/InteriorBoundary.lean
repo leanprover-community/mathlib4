@@ -357,6 +357,33 @@ instance boundaryless_disjointUnion
   rw [← Boundaryless.iff_boundary_eq_empty] at hM hM' ⊢
   simp [boundary_disjointUnion, hM, hM']
 
+-- unused, but perhaps useful?
+omit [ChartedSpace H M] [Nonempty H] in
+lemma _root_.PartialHomeomorph.extend_foo (e : PartialHomeomorph M H) {x : M} (hx : x ∈ e.source) :
+    (e.extend I) x ∈ I.symm ⁻¹' e.target ∩ range I := by
+    refine ⟨?_, mem_range_self _⟩
+    rw [mem_preimage, PartialHomeomorph.extend_coe]
+    dsimp
+    rw [I.left_inv]
+    exact PartialHomeomorph.map_source e hx
+
+omit [Nonempty H] in
+lemma _root_.PartialHomeomorph.foo (x : M) :
+    (extChartAt I x) x ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I :=
+  (chartAt H x).extend_foo (mem_chart_source _ x)
+
+omit [ChartedSpace H M] [Nonempty H] in
+lemma _root_.PartialHomeomorph.extend_bar (e : PartialHomeomorph M H) {x : M} (hx : x ∈ e.source) :
+    (I.symm ⁻¹' e.target ∩ range I) ∈ 𝓝[range I] ((e.extend I) x) := by
+  rw [← e.map_extend_nhds hx, Filter.mem_map, ← I.image_eq e.target,
+    e.extend_coe, Set.preimage_comp, preimage_image I e.target]
+  exact (e.continuousAt hx).preimage_mem_nhds (e.open_target.mem_nhds (e.map_source hx))
+
+omit [Nonempty H] in
+lemma _root_.PartialHomeomorph.bar (x : M) :
+    (I.symm ⁻¹' (chartAt H x).target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) :=
+  (chartAt H x).extend_bar (mem_chart_source _ x)
+
 -- TODO: move the following results
 omit hM hM' in
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
@@ -374,22 +401,7 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
         ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  -- extract as helper lemma?
-  have : (extChartAt I x) x ∈ I.symm ⁻¹' C.target ∩ range I := by
-    refine ⟨?_, mem_range_self _⟩
-    rw [mem_preimage]
-    convert mem_chart_target H x
-    apply I.left_inv'
-    rw [I.source_eq]; exact trivial
-  -- extract as helper lemma?
-  have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
-    rw [extChartAt, ← PartialHomeomorph.map_extend_nhds _ (mem_chart_source _ x),
-      Filter.mem_map, ← I.image_eq C.target,
-      PartialHomeomorph.extend_coe, Set.preimage_comp,
-      preimage_image I C.target]
-    exact ((chartAt H x).continuousAt (mem_chart_source _ x)).preimage_mem_nhds
-      (chart_target_mem_nhds H x)
-  apply Filter.mem_of_superset aux₂ aux₁
+  exact Filter.mem_of_superset (PartialHomeomorph.bar x) aux₁
 
 omit hM hM' in
 lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
@@ -403,27 +415,12 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
     apply Sum.inr_injective.extend_apply (chartAt _ x)
   set C := chartAt H x
   -- only new lemma compared to inl proof
-  have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
+  have aux₁ : ∀ e ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I,
       (((C.lift_openEmbedding (IsOpenEmbedding.inr (X := M))).extend I)
-        ∘ Sum.inr ∘ (C.extend I).symm) x = x := by
+        ∘ Sum.inr ∘ (C.extend I).symm) e = e := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inr_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  -- extract as helper lemma?
-  have : (extChartAt I x) x ∈ I.symm ⁻¹' C.target ∩ range I := by
-    refine ⟨?_, mem_range_self _⟩
-    rw [mem_preimage]
-    convert mem_chart_target H x
-    apply I.left_inv'
-    rw [I.source_eq]; exact trivial
-  -- extract as helper lemma?
-  have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
-    rw [extChartAt, ← PartialHomeomorph.map_extend_nhds _ (mem_chart_source _ x),
-      Filter.mem_map, ← I.image_eq C.target,
-      PartialHomeomorph.extend_coe, Set.preimage_comp,
-      preimage_image I C.target]
-    exact ((chartAt H x).continuousAt (mem_chart_source _ x)).preimage_mem_nhds
-      (chart_target_mem_nhds H x)
-  exact Filter.mem_of_superset aux₂ aux₁
+  exact Filter.mem_of_superset (PartialHomeomorph.bar x) aux₁
 
 lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
