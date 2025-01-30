@@ -681,13 +681,12 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
       have hlk : l ≤ k * (p : ℝ) := by simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
       use k
       suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
-        rw [hasFiniteIntegral_iff_nnnorm] at this
+        rw [hasFiniteIntegral_iff_enorm] at this
         rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp ENNReal.coe_ne_top]
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
-        rw [← neg_mul, Real.rpow_mul (h_one_add x).le,
-          Real.nnnorm_rpow_of_nonneg (Real.rpow_nonneg (h_one_add x).le _),
-          ENNReal.coe_rpow_of_nonneg _ hp_pos.le]
+        rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
+        exact Real.enorm_rpow_of_nonneg (Real.rpow_nonneg (h_one_add x).le _) NNReal.zero_le_coe
       refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
       rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
       gcongr
