@@ -213,7 +213,7 @@ private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →�
   haveI : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () s.card by
-      simpa [lex_unit_le_iff] using this
+      simpa [lex_le_iff_of_unique] using this
     rw [← Alon.degP]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
@@ -288,9 +288,9 @@ theorem Alon2 [IsDomain R]
   have : g.totalDegree ≤ f.totalDegree := by
     simp only [hg, mul_comm, hh i]
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
-  rw [hg, ← degLex_degree_degree,
+  rw [hg, ← degree_degLexDegree,
     degree_mul_of_isRegular_right hi (by simp only [Alon.lCoeffP, isRegular_one]),
-    Alon.degP, degree_add, degLex_degree_degree, degree_apply_single, ht'] at this
+    Alon.degP, degree_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
@@ -302,7 +302,7 @@ theorem Alon2 [IsDomain R]
   change (h i).totalDegree < p.degree
   apply lt_of_add_lt_add_right (a := (S i).card)
   apply lt_of_le_of_lt this
-  rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_apply_single]
+  rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_single]
   rw [← not_le]
   intro hq'
   apply not_le.mpr (htS i)
