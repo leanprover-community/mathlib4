@@ -19,7 +19,7 @@ the folllowing:
 
 ## Main definitions
 
-- `swapRow`: A row is swaped with another row.
+- `swapRow`: A row is swapped with another row.
 - `mulRow`: A row is multiplied by a non-zero constant, also known as scaling a row.
 - `addMulRow`: A multiple of another row is added to the row.
 - `swapRow_elem_mat`: Elementary matrix that comes from one operation `swapRow`.
