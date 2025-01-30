@@ -37,6 +37,18 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+@[simp]
+def projFst [HasPullbacks C] {I : C} (X Y : Over I) :
+  (mapPullbackAdj X.hom).counit.app Y =
+  Over.homMk (pullback.fst Y.hom X.hom) (by simp [pullback.condition]) := by simp only [const_obj_obj,
+    id_obj, comp_obj, mapPullbackAdj_counit_app]
+
+#check prodLeftIsoPullback
+
+open mapPullbackAdj
+variable (X Y : Over I)
+#check Σ_ X
+
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
 has a right adjoint. -/
 class ExponentiableMorphism [HasPullbacks C] {I J : C} (f : I ⟶ J) where
@@ -85,6 +97,8 @@ instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
     · exact Over.pullback f ⋙ Over.map f
     · exact Adjunction.comp ExponentiableMorphism.adj (Over.mapPullbackAdj _)
     · sorry --exact natIsoTensorLeftOverMk f
+
+
 
 
 
