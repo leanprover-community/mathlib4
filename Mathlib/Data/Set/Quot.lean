@@ -45,8 +45,8 @@ lemma out_image_represents (C : Set (Quot r)) : (Quot.out '' C).Represents C whe
     rw [← hyc, c'.out_eq]
   exact {c} h := by
     ext v
-    simp only [mem_inter_iff, mem_image, mem_empty_iff_false, iff_false,
-      not_and, forall_exists_index, and_imp]
+    simp only [mem_inter_iff, mem_image, mem_empty_iff_false, iff_false, not_and,
+      forall_exists_index, and_imp]
     intro c' hc' hv hvc
     rw [← hvc, ← hv, c'.out_eq] at h
     exact h hc'
@@ -67,12 +67,11 @@ lemma disjoint_represents (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c :
 
 lemma ncard_sdiff_represents_of_mem [Fintype α] (hrep : s.Represents C) (h : c ∈ C) :
     ((c : Set α) \ s).ncard = (c : Set α).ncard - 1 := by
-  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _),
-    inter_comm, ncard_represents_inter hrep h]
+  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _), inter_comm,
+    ncard_represents_inter hrep h]
 
 lemma ncard_sdiff_represents_of_not_mem [Fintype α] (hrep : s.Represents C) (h : c ∉ C) :
     ((c : Set α) \ s).ncard = (c : Set α).ncard := by
-  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _),
-    inter_comm, hrep.exact h]
+  simp [← ncard_inter_add_ncard_diff_eq_ncard c s (toFinite _), inter_comm, hrep.exact h]
 
 end Set
