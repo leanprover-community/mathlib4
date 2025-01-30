@@ -193,7 +193,7 @@ lemma restrict_circuit_iff (hR : R ⊆ M.E := by aesop_mat) :
 `M.fundCircuit e I` is the unique circuit contained in `insert e I`.
 For the fact that this is a circuit, see `Matroid.Indep.fundCircuit_circuit`,
 and the fact that it is unique, see `Matroid.Circuit.eq_fundCircuit_of_subset`.
-Has the junk value `{e}` if `e ∈ I` and `insert e I` if `e ∉ M.closure I`. -/
+Has the junk value `{e}` if `e ∈ I` or `e ∉ M.E`, and `insert e I` if `e ∈ M.E \ M.closure I`. -/
 def fundCircuit (M : Matroid α) (e : α) (I : Set α) : Set α :=
   insert e (I ∩ ⋂₀ {J | J ⊆ I ∧ M.closure {e} ⊆ M.closure J})
 
@@ -214,6 +214,11 @@ lemma fundCircuit_subset_ground (he : e ∈ M.E) (hI : I ⊆ M.E := by aesop_mat
 
 lemma mem_fundCircuit (M : Matroid α) (e : α) (I : Set α) : e ∈ fundCircuit M e I :=
   mem_insert ..
+
+lemma fundCircuit_diff_eq_inter (M : Matroid α) (heI : e ∉ I) :
+    (M.fundCircuit e I) \ {e} = (M.fundCircuit e I) ∩ I :=
+  (subset_inter diff_subset (by simp [fundCircuit_subset_insert])).antisymm
+    (subset_diff_singleton inter_subset_left (by simp [heI]))
 
 /-- The fundamental circuit of `e` and `X` has the junk value `{e}` if `e ∈ X` -/
 lemma fundCircuit_eq_of_mem (heX : e ∈ X) : M.fundCircuit e X = {e} := by
@@ -262,8 +267,8 @@ lemma Circuit.eq_fundCircuit_of_subset (hC : M.Circuit C) (hI : M.Indep I) (hCss
     · rw [hI.mem_closure_iff]
       exact .inl (hC.dep.superset hCss (insert_subset (hC.subset_ground heC) hI.subset_ground))
     exact hC.not_indep (hI.subset (hCss.trans (by simp [heI])))
-  rw [fundCircuit_eq_sInter
-    (M.closure_subset_closure hCeI <| hC.mem_closure_diff_singleton_of_mem heC)]
+  rw [fundCircuit_eq_sInter <|
+    M.closure_subset_closure hCeI <| hC.mem_closure_diff_singleton_of_mem heC]
   refine insert_subset heC <| (sInter_subset_of_mem (t := C \ {e}) ?_).trans diff_subset
   simp [hCss, hC.mem_closure_diff_singleton_of_mem heC]
 
