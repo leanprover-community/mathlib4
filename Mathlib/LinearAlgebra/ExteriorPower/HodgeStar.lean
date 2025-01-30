@@ -82,25 +82,47 @@ noncomputable def HodgePairing {k : ℕ} (hk : k ≤ finrank F V) :
 
 variable (hN : B.Nondegenerate)
 
+theorem hodge_pair_def {k : ℕ} (hk : k ≤ finrank F V) (α : ⋀[F]^k V)
+  (β : ⋀[F]^(finrank F V - k) V) :
+  HodgePairing B vol volNormOne hk α β = ⟪vol, WedgeProduct (Nat.add_sub_of_le hk) α β⟫ := by rfl
+
 noncomputable def HodgeStar {k : ℕ} (hk : k ≤ finrank F V) :
   ⋀[F]^k V →ₗ[F] ⋀[F]^(finrank F V - k) V where
   toFun α := (LinearMap.BilinForm.toDual (exteriorPower.BilinForm B _)
-    (bilin_nondegen B (finrank F V - k) hN)).symm <| TensorProduct.rid F
-    (Dual F (⋀[F]^(finrank F V - k) V)) <| (dualTensorHomEquiv F (⋀[F]^(finrank F V - k) V) F).symm
-    (HodgePairing B vol volNormOne hk α)
+    (bilin_nondegen B (finrank F V - k) hN)).symm (HodgePairing B vol volNormOne hk α)
   map_add' := by
-    intro x y
-    rw [← map_add, LinearEquiv.symm_apply_eq, LinearEquiv.apply_symm_apply, map_add, map_add]
-    rw [← LinearEquiv.eq_symm_apply, map_add]
-    rw [LinearEquiv.symm_apply_apply, LinearEquiv.symm_apply_apply]
+    simp only [map_add, implies_true]
   map_smul' := by
-    intro a x
-    dsimp
-    rw [← map_smul, EquivLike.apply_eq_iff_eq, ← LinearEquiv.eq_symm_apply]
-    rw [map_smul (TensorProduct.rid F (Dual F ↥(⋀[F]^(finrank F V - k) V))).symm a]
-    rw [LinearEquiv.symm_apply_apply, map_smul, map_smul]
+    simp only [map_smul, RingHom.id_apply, implies_true]
 
 variable {k : ℕ} (hk : k ≤ finrank F V)
-#check HodgeStar B vol volNormOne hN hk
+
+local notation "HStar"  => HodgeStar B vol volNormOne hN hk
+local notation "⟪" v ", " w "⟫" => exteriorPower.BilinForm B k v w
+
+theorem hodge_def (α : ⋀[F]^k V) :
+  exteriorPower.BilinForm B (finrank F V - k) (HStar α) =
+  HodgePairing B vol volNormOne hk α := by
+  unfold HodgeStar
+  dsimp
+  ext γ
+  simp only [LinearMap.compAlternatingMap_apply, LinearMap.BilinForm.apply_toDual_symm_apply]
+
+theorem hodge_invariant (α β : ⋀[F]^k V) : ⟪HStar α, HStar β⟫ =
+  exteriorPower.BilinForm B k α β := by
+  rw [hodge_def]
+
+  sorry
+
+theorem hodge_property (α β : ⋀[F]^k V) : WedgeProduct (Nat.add_sub_of_le hk) α (HStar β) =
+  exteriorPower.BilinForm B k α β • vol := by
+  apply LinearEquiv.injective (equivOfVol B vol volNormOne)
+  unfold equivOfVol
+  simp only [map_smul, smul_eq_mul]
+  dsimp
+  rw [volNormOne, mul_one]
+  rw [← hodge_pair_def B vol volNormOne hk]
+  rw [← hodge_def B vol volNormOne hN hk]
+  exact hodge_invariant B vol volNormOne hN hk α β
 
 end exteriorPower
