@@ -52,29 +52,20 @@ theorem iUnion_accumulate [Preorder α] : ⋃ x, Accumulate s x = ⋃ x, s x := 
     exact ⟨x', hz⟩
   · exact iUnion_mono fun i => subset_accumulate
 
-section Nat
-
 @[simp]
 lemma accumulate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : Set.Accumulate s ⊥ = s ⊥ := by
   simp [Set.accumulate_def]
 
 @[simp]
-lemma accumulate_zero (s : ℕ → Set β) : Set.Accumulate s 0 = s 0 := accumulate_bot s
+lemma accumulate_zero_nat (s : ℕ → Set β) : Set.Accumulate s 0 = s 0 := by
+  simp [accumulate_def]
 
-@[simp]
-theorem accumulate_succ (s : ℕ → Set α) (n : ℕ) :
-    Set.Accumulate s (n + 1) = Set.Accumulate s n ∪ s (n + 1) := Set.biUnion_le_succ s n
-
-theorem disjoint_accumulate {s : ℕ → Set α} (hs : Pairwise (Function.onFun Disjoint s)) {i j : ℕ}
-    (hij : i < j) : Disjoint (Set.Accumulate s i) (s j) := by
-  rw [Set.accumulate_def]
-  induction i with
-  | zero =>
-      simp only [Nat.le_zero_eq, iUnion_iUnion_eq_left, @hs 0 j hij.ne]
-  | succ i hi =>
-    rw [Set.biUnion_le_succ s i]
-    exact Disjoint.union_left (hi ((Nat.lt_succ_self i).trans hij)) (hs hij.ne)
-
-end Nat
+open Function in
+theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j : α} (hij : i < j) :
+    Disjoint (Accumulate s i) (s j) := by
+  apply disjoint_left.2 (fun x hx ↦ ?_)
+  simp only [Accumulate, mem_iUnion, exists_prop] at hx
+  rcases hx with ⟨k, hk, hx⟩
+  exact disjoint_left.1 (hs (hk.trans_lt hij).ne) hx
 
 end Set
