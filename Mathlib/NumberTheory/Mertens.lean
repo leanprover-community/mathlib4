@@ -973,20 +973,33 @@ theorem summable_thing :
     intro n
     positivity
 
-
-
 theorem summable_thing' :
   Summable (fun p : Primes ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
-  sorry
+  apply Summable.comp_injective summable_thing Primes.coe_nat_injective
 
 example (k : ℕ):
     ∑ p in primesBelow (k+1), ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) =
       ∑' p : Primes, ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)
-      - ∑' p : Primes, if p ≤ k then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0:= by
+      - ∑' p : Primes, if k < p then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0:= by
   rw [← tsum_sub]
-  · sorry
-  · sorry
-  sorry
+  · rw [tsum_eq_sum (f := fun b : Primes ↦  (∑' (n : ℕ), (↑b:ℝ)⁻¹ ^ (n + 2) / (↑n + 2) - if k < ↑b then ∑' (n : ℕ), (↑b:ℝ)⁻¹ ^ (n + 2) / (↑n + 2) else 0)) (s := (primesBelow (k+1)).preimage (↑(·)))]
+    · sorry
+
+    sorry
+  · exact summable_thing'
+  · apply summable_thing'.of_nonneg_of_le _ _
+    · intro
+      split_ifs
+      · apply tsum_nonneg
+        intro
+        positivity
+      · positivity
+    · intro p
+      split_ifs
+      · rfl
+      · apply tsum_nonneg
+        intro
+        positivity
 
 
 
