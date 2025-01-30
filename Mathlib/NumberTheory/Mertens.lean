@@ -974,41 +974,83 @@ theorem summable_thing :
     positivity
 
 theorem summable_thing' :
-  Summable (fun p : Primes ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
-  apply Summable.comp_injective summable_thing Primes.coe_nat_injective
+  Summable (fun p : ℕ ↦ if p.Prime then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0) := by
+  -- apply Summable.comp_injective summable_thing Primes.coe_nat_injective
+  sorry
+
+-- theorem hasSum_primes_iff (f : ℕ → ℝ) (x : ℝ):
+--   HasSum (fun p : Primes ↦ f p) x ↔ HasSum (({n | n.Prime}.indicator f)) x := by
+--   rw [← hasSum_subtype_iff_indicator]
+--   -- evil
+--   rfl
+
+-- theorem summable_primes_iff (f : ℕ → ℝ) :
+--   Summable (fun p : Primes ↦ f p) ↔ Summable (({n | n.Prime}.indicator f)) := by
+--   rw [← summable_subtype_iff_indicator]
+--   --evil
+--   rfl
+
+-- theorem tsum_primes (f : ℕ → ℝ) :
+--   ∑' p : Primes, f p = ∑' n, ({n | n.Prime}.indicator f n) := by
+--   rw [← _root_.tsum_subtype]
+--   --evil
+--   rfl
 
 example (k : ℕ):
     ∑ p in primesBelow (k+1), ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) =
-      ∑' p : Primes, ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)
-      - ∑' p : Primes, if k < p then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0:= by
-  rw [← tsum_sub]
-  · rw [tsum_eq_sum (f := fun b : Primes ↦  (∑' (n : ℕ), (↑b:ℝ)⁻¹ ^ (n + 2) / (↑n + 2) - if k < ↑b then ∑' (n : ℕ), (↑b:ℝ)⁻¹ ^ (n + 2) / (↑n + 2) else 0)) (s := (primesBelow (k+1)).preimage (↑(·)))]
-    · sorry
+      (∑' p : ℕ, if p.Prime then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0)
+      - (∑' p : ℕ, if (p + k + 1).Prime then ∑' n : ℕ, (↑(p+k+1):ℝ)⁻¹^(n+2) / (n+2) else 0) := by
+  rw [Nat.primesBelow, sum_filter, eq_sub_iff_add_eq]
+  apply sum_add_tsum_nat_add (k := k+1) (f := fun p ↦ if p.Prime then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0)
+  convert summable_thing' with p
 
-    sorry
-  · exact summable_thing'
-  · apply summable_thing'.of_nonneg_of_le _ _
-    · intro
-      split_ifs
-      · apply tsum_nonneg
-        intro
-        positivity
-      · positivity
-    · intro p
-      split_ifs
-      · rfl
-      · apply tsum_nonneg
-        intro
-        positivity
+theorem telescoping_series (f : ℕ → ℝ) (hf : Antitone f) (htends : Tendsto f atTop (nhds 0)) :
+    ∑' n, (f n - f (n + 1)) = f 0 := by
+  have (n : ℕ): ∑ i ∈ Finset.range n, (f i - f (i+1)) = f 0 - f n := by
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [sum_range_succ, ih]
+      ring
+  have : Tendsto (fun n ↦ ∑ i ∈ Finset.range n, (f i - f (i+1))) atTop (nhds (f 0)) := by
+    simp_rw [this]
+    convert tendsto_const_nhds.sub htends
+    ring
+  apply tendsto_nhds_unique (HasSum.Multipliable.tendsto_sum_tsum_nat ?_) this
+  rw [summable_iff_not_tendsto_nat_atTop_of_nonneg]
+  · exact not_tendsto_atTop_of_tendsto_nhds this
+  intro n
+  linarith [hf (le_succ n)]
+
+theorem tsum_mul_succ_inv (k : ℕ) (hk : 0 < k) : (∑' n : ℕ, (↑(n+k+1) * (↑(n+k+1)-1) : ℝ)⁻¹) = (k:ℝ)⁻¹  := by
+  let f (n : ℕ) := (↑(n + k):ℝ)⁻¹
+  have (n : ℕ) : f n - f (n+1) = (↑(n+k+1) * (↑(n+k+1)-1) : ℝ)⁻¹ := by
+    simp only [f]
+    field_simp
+    ring
+  simp_rw [← this]
+  convert telescoping_series f ?_ ?_
+  · ring
+  · simp only [f]
+    intro a b hab
+    simp only [cast_add, f]
+    gcongr
+  · simp only [f]
+    apply tendsto_inv_atTop_zero.comp
+    apply tendsto_natCast_atTop_atTop.comp
+    exact tendsto_add_atTop_nat k
+
+example (a : ℝ) : (fun k ↦ ∑' p : ℕ, if (p + k + 1).Prime then ∑' n : ℕ, (↑(p+k+1):ℝ)⁻¹^(n+2) / (n+2) else 0)
+    =O[atTop] fun t : ℕ ↦ (t:ℝ)⁻¹ := by
 
 
-
+  sorry
 def mertens₃Const : ℝ := sorry
 
 theorem mertens_third_log_aux (a : ℝ) (ha : 1 < a):
-  (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), -Real.log (1 - (p:ℝ)⁻¹) -
-    (Real.log (Real.log x) - mertens₃Const))
-    =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
+    (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), -Real.log (1 - (p:ℝ)⁻¹) -
+      (Real.log (Real.log x) - mertens₃Const))
+      =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
   sorry
 
 theorem mertens_third_log (a : ℝ) (ha : 1 < a):
