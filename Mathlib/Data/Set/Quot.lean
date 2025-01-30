@@ -53,7 +53,7 @@ lemma out_image_represents (C : Set (Quot r)) : (Quot.out '' C).Represents C whe
 
 variable {C : Set (Quot r)} {s : Set α} {c : Quot r}
 
-lemma ncard_represents_inter (hrep : s.Represents C)(h : c ∈ C) : (s ∩ c).ncard = 1 := by
+lemma ncard_represents_inter (hrep : s.Represents C) (h : c ∈ C) : (s ∩ c).ncard = 1 := by
   rw [ncard_eq_one]
   obtain ⟨a, ha⟩ := hrep.unique_rep h
   aesop
