@@ -376,8 +376,6 @@ theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux (hts : s ⊆ t)
       rw [setIntegral_eq_zero_of_forall_eq_zero this, zero_add]
     _ = ∫ x in s, f x ∂μ := by rw [integral_inter_add_diff hk (h'aux.mono hts le_rfl)]
 
-  setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux
-
 /-- If a function vanishes almost everywhere on `t \ s` with `s ⊆ t`, then its integrals on `s`
 and `t` coincide if `t` is null-measurable. -/
 theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero (ht : NullMeasurableSet t μ) (hts : s ⊆ t)
@@ -407,8 +405,6 @@ theorem setIntegral_eq_of_subset_of_forall_diff_eq_zero (ht : MeasurableSet t) (
   setIntegral_eq_of_subset_of_ae_diff_eq_zero ht.nullMeasurableSet hts
     (Eventually.of_forall fun x hx => h't x hx)
 
-  setIntegral_eq_of_subset_of_forall_diff_eq_zero
-
 /-- If a function vanishes almost everywhere on `sᶜ`, then its integral on `s`
 coincides with its integral on the whole space. -/
 theorem setIntegral_eq_integral_of_ae_compl_eq_zero (h : ∀ᵐ x ∂μ, x ∉ s → f x = 0) :
@@ -424,8 +420,6 @@ whole space. -/
 theorem setIntegral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s → f x = 0) :
     ∫ x in s, f x ∂μ = ∫ x, f x ∂μ :=
   setIntegral_eq_integral_of_ae_compl_eq_zero (Eventually.of_forall h)
-
-  setIntegral_eq_integral_of_forall_compl_eq_zero
 
 theorem setIntegral_neg_eq_setIntegral_nonpos [LinearOrder E] {f : X → E}
     (hf : AEStronglyMeasurable f μ) :
@@ -518,10 +512,8 @@ theorem _root_.Topology.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [
 @[deprecated (since := "2024-10-20")]
 alias _root_.ClosedEmbedding.setIntegral_map := IsClosedEmbedding.setIntegral_map
 
-  IsClosedEmbedding.setIntegral_map
-
 @[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.set_integral_map := IsClosedEmbedding.set_integral_map
+alias _root_.ClosedEmbedding.set_integral_map := IsClosedEmbedding.setIntegral_map
 
 theorem MeasurePreserving.setIntegral_preimage_emb {Y} {_ : MeasurableSpace Y} {f : X → Y} {ν}
     (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :
@@ -1362,8 +1354,6 @@ theorem setIntegral_withDensity_eq_setIntegral_smul₀' [SFinite μ] {f : X → 
     (hf : AEMeasurable f (μ.restrict s)) (g : X → E)  :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
-
-  setIntegral_withDensity_eq_setIntegral_smul₀'
 
 end
 
