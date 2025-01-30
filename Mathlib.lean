@@ -1169,6 +1169,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 import Mathlib.Analysis.BoxIntegral.UnitPartition
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
+import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
@@ -3772,7 +3773,9 @@ import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.Floor
 import Mathlib.MeasureTheory.Function.Intersectivity
 import Mathlib.MeasureTheory.Function.Jacobian
-import Mathlib.MeasureTheory.Function.L1Space
+import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
+import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Function.LpOrder
