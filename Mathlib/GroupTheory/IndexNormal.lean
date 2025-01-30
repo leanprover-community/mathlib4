@@ -42,10 +42,10 @@ theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
 theorem normal_of_index_eq_two (hH : H.index = 2) : H.Normal where
   conj_mem x hxH g := by simp_rw [mul_mem_iff_of_index_two hH, hxH, iff_true, inv_mem_iff]
 
-/-- A subgroup of a finite group whose index is the smallest prime factor is normal
+/-- A subgroup of a finite group whose index is the smallest prime factor is normal.
 
 Note : if `G` is infinite, then `Nat.card G = 0` and `(Nat.card G).minFac = 2` -/
-theorem normal_of_index_eq_smallest_prime_factor (hHp : H.index = (Nat.card G).minFac) :
+theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
     H.Normal := by
   by_cases hG0 : Nat.card G = 0
   · rw [hG0, minFac_zero] at hHp
@@ -66,6 +66,5 @@ theorem normal_of_index_eq_smallest_prime_factor (hHp : H.index = (Nat.card G).m
     rw [normalCore_eq_ker, index_ker, index_eq_card, ← Nat.card_perm]
     exact card_subgroup_dvd_card (toPermHom G (G ⧸ H)).range
   exact dvd_antisymm (dvd_prime hp h hp') (index_dvd_of_le H.normalCore_le)
-
 
 end Subgroup
