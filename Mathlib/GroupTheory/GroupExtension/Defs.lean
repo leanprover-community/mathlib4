@@ -143,7 +143,7 @@ theorem inl_conjAct_comm {e : E} {n : N} : S.inl (S.conjAct e n) = e * S.inl n *
   simp only [conjAct, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.trans_apply,
     MonoidHom.apply_ofInjective_symm, MulAut.conjNormal_apply, MonoidHom.ofInjective_apply]
 
-/-- `GroupExtension`s are equivalent iff there is a isomorphism making a commuting diagram. -/
+/-- `GroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram. -/
 @[to_additive]
 structure Equiv {E' : Type*} [Group E'] (S' : GroupExtension N E' G) extends E ≃* E' where
   /-- The left-hand side of the diagram commutes. -/
