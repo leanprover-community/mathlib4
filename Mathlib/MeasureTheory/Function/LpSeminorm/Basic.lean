@@ -1262,5 +1262,3 @@ end UnifTight
 end ℒp
 
 end MeasureTheory
-
-set_option linter.style.longFile 1700

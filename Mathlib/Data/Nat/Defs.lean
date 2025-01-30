@@ -222,10 +222,6 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected alias add_left_inj := Nat.add_right_cancel_iff
 @[simp, nolint simpNF] protected alias add_right_inj := Nat.add_left_cancel_iff
-
--- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
--- matching. These lemmas package them back up as typeclass mediated operations.
--- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
 @[simp, nolint simpNF] protected lemma add_eq_right : a + b = b ↔ a = 0 := by omega
 
@@ -741,14 +737,6 @@ lemma leRec_succ_left {motive : (m : ℕ) → n ≤ m → Sort*}
       leRec (motive := motive) refl le_succ_of_le h1 := by
   rw [leRec_trans _ _ (le_succ n) h2, leRec_succ']
 
-/-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
-there is a map from `C n` to each `C m`, `n ≤ m`.
-
-Prefer `Nat.leRec`, which can be used as `induction h using Nat.leRec`. -/
-@[elab_as_elim, deprecated Nat.leRec (since := "2024-07-05")]
-def leRecOn' {C : ℕ → Sort*} : ∀ {m}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m :=
-  fun h of_succ self => Nat.leRec self of_succ h
-
 /-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
 when `k ≥ n`, see `Nat.leRec`. -/
@@ -965,10 +953,6 @@ attribute [simp] Nat.dvd_zero
 
 lemma mod_two_ne_one : n % 2 ≠ 1 ↔ n % 2 = 0 := mod_two_not_eq_one
 lemma mod_two_ne_zero : n % 2 ≠ 0 ↔ n % 2 = 1 := mod_two_not_eq_zero
-
-@[deprecated mod_mul_right_div_self (since := "2024-05-29")]
-lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
-  (mod_mul_right_div_self a b c).symm
 
 /-- Variant of `Nat.lt_div_iff_mul_lt` that assumes `d ∣ n`. -/
 protected lemma lt_div_iff_mul_lt' (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by

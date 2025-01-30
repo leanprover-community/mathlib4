@@ -90,8 +90,6 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
 @[deprecated (since := "2025-01-21")]
 alias eLpNorm_one_condexp_le_eLpNorm := eLpNorm_one_condExp_le_eLpNorm
 
-@[deprecated (since := "2025-01-21")] alias snorm_one_condexp_le_snorm := snorm_one_condExp_le_snorm
-
 theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ ≤ ∫ x, |f x| ∂μ := by
   by_cases hm : m ≤ m0
   swap
@@ -141,9 +139,6 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_abs_condexp_le := setIntegral_abs_condExp_le
-
-@[deprecated (since := "2025-01-21")]
-alias set_integral_abs_condexp_le := set_integral_abs_condExp_le
 
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/

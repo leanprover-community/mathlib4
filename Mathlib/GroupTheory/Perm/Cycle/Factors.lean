@@ -263,11 +263,6 @@ theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
   rw [← two_le_card_support_cycleOf_iff, ← card_pos, ← Nat.succ_le_iff]
   exact ⟨fun h => Or.resolve_left h.eq_or_lt (card_support_ne_one _).symm, zero_lt_two.trans_le⟩
 
-@[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
-theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] :
-    0 < #(cycleOf f x).support ↔ f x ≠ x := by
-  rw [card_pos, support_cycleOf_nonempty]
-
 theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y ∧ x ∈ support f :=
   mem_support_cycleOf_iff_aux

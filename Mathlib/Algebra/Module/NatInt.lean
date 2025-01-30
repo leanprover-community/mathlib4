@@ -101,10 +101,6 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
     (ofNat(n) : R) • b = ofNat(n) • b := Nat.cast_smul_eq_nsmul ..
 
-/-- `nsmul` is equal to any other module structure via a cast. -/
-@[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]
-lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := (Nat.cast_smul_eq_nsmul ..).symm
-
 end
 
 /-- Convert back any exotic `ℕ`-smul to the canonical instance. This should not be needed since in

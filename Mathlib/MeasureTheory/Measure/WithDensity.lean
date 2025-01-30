@@ -617,18 +617,6 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
   rw [key]
   infer_instance
 
-@[deprecated Measure.withDensity.instSFinite (since := "2024-07-14"), nolint unusedArguments]
-lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaFinite μ]
-    {f : α → ℝ≥0∞} (_hf : Measurable f) :
-    SFinite (μ.withDensity f) :=
-  inferInstance
-
-@[deprecated Measure.withDensity.instSFinite (since := "2024-07-14"), nolint unusedArguments]
-lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
-    {f : α → ℝ≥0∞} (_hf : Measurable f) :
-    SFinite (μ.withDensity f) :=
-  inferInstance
-
 instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
   rw [← withDensity_const]
   infer_instance

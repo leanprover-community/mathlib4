@@ -594,11 +594,4 @@ theorem norm_zeta_pow_sub_one_two {k : ℕ} (hk : 2 ≤ k)
   norm_sub_one_two (zeta_spec ((2 : ℕ+) ^ k) K L) hk hirr
 
 end IsCyclotomicExtension
-
-@[deprecated (since := "2024-04-02")]
-  alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one :=
-    IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_pow_ne_two
-@[deprecated (since := "2024-04-02")]
-  alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one :=
-    IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_ne_two
 end Norm

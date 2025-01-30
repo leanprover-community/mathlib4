@@ -199,34 +199,6 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
 
 end coe
 
-section map
-
-@[deprecated map_add (since := "2024-06-20")]
-protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
-  map_add e
-
-@[deprecated map_zero (since := "2024-06-20")]
-protected theorem map_zero : e 0 = 0 :=
-  map_zero e
-
-@[deprecated map_mul (since := "2024-06-20")]
-protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
-  map_mul e
-
-@[deprecated map_one (since := "2024-06-20")]
-protected theorem map_one : e 1 = 1 :=
-  map_one e
-
-@[deprecated map_smul (since := "2024-06-20")]
-protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
-  map_smul _ _ _
-
-@[deprecated map_pow (since := "2024-06-20")]
-protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
-  map_pow _
-
-end map
-
 section bijective
 
 protected theorem bijective : Function.Bijective e :=
@@ -728,21 +700,6 @@ instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ �
   Finite.of_injective _ AlgEquiv.coe_algHom_injective
 
 end Semiring
-
-section Ring
-
-variable [CommSemiring R] [Ring A₁] [Ring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_neg (since := "2024-06-20")]
-protected theorem map_neg (x) : e (-x) = -e x :=
-  map_neg e x
-
-@[deprecated map_sub (since := "2024-06-20")]
-protected theorem map_sub (x y) : e (x - y) = e x - e y :=
-  map_sub e x y
-
-end Ring
 
 end AlgEquiv
 
