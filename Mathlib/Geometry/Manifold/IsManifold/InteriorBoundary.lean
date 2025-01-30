@@ -358,17 +358,3 @@ instance boundaryless_disjointUnion
 end disjointUnion
 
 end ModelWithCorners
-
--- unused, but perhaps useful?
-omit [ChartedSpace H M] in
-lemma PartialHomeomorph.extend_foo (e : PartialHomeomorph M H) {x : M} (hx : x ∈ e.source) :
-    (e.extend I) x ∈ I.symm ⁻¹' e.target ∩ range I := by
-    refine ⟨?_, mem_range_self _⟩
-    rw [mem_preimage, PartialHomeomorph.extend_coe]
-    dsimp
-    rw [I.left_inv]
-    exact PartialHomeomorph.map_source e hx
-
-lemma _root_.PartialHomeomorph.foo (x : M) :
-    (extChartAt I x) x ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I :=
-  (chartAt H x).extend_foo (mem_chart_source _ x)

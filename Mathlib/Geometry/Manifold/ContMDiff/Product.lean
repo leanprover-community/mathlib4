@@ -358,19 +358,6 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 
 open Topology
 
--- TODO: move the following results
-omit [ChartedSpace H M] [Nonempty H] in
-lemma _root_.PartialHomeomorph.extend_bar (e : PartialHomeomorph M H) {x : M} (hx : x ∈ e.source) :
-    (I.symm ⁻¹' e.target ∩ range I) ∈ 𝓝[range I] ((e.extend I) x) := by
-  rw [← e.map_extend_nhds hx, Filter.mem_map, ← I.image_eq e.target,
-    e.extend_coe, Set.preimage_comp, I.preimage_image e.target]
-  exact (e.continuousAt hx).preimage_mem_nhds (e.open_target.mem_nhds (e.map_source hx))
-
-omit [Nonempty H] in
-lemma _root_.PartialHomeomorph.bar (x : M) :
-    (I.symm ⁻¹' (chartAt H x).target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) :=
-  (chartAt H x).extend_bar (mem_chart_source _ x)
-
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
   rw [contMDiffAt_iff]
@@ -386,7 +373,9 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
         ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  exact Filter.mem_of_superset (PartialHomeomorph.bar x) aux₁
+  apply Filter.mem_of_superset ?_ aux₁
+  rw [← I.image_eq (chartAt H x).target]
+  exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
 lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   intro x
@@ -403,7 +392,9 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
         ∘ Sum.inr ∘ (C.extend I).symm) e = e := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inr_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  apply Filter.mem_of_superset (PartialHomeomorph.bar x) aux₁
+  apply Filter.mem_of_superset ?_ aux₁
+  rw [← I.image_eq (chartAt H x).target]
+  exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
 lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
