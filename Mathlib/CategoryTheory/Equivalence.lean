@@ -71,11 +71,8 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
   The triangle equation is written as a family of equalities between morphisms, it is more
   complicated if we write it as an equality of natural transformations, because then we would have
-  to insert natural transformations like `F ⟶ F1`.
-
-See <https://stacks.math.columbia.edu/tag/001J>
--/
-@[ext]
+  to insert natural transformations like `F ⟶ F1`. -/
+@[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
   /-- A functor in one direction -/
   functor : C ⥤ D
@@ -182,7 +179,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   slice_lhs 2 3 =>
     erw [← map_comp e.inverse, ← e.counitIso.inv.naturality, (e.counitIso.app _).hom_inv_id,
       map_id]
-  erw [id_comp, (e.unitIso.app _).hom_inv_id]; rfl
+  simp
 
 @[reassoc (attr := simp)]
 theorem inverse_counitInv_comp (e : C ≌ D) (Y : D) :
@@ -425,10 +422,8 @@ theorem pow_neg_one (e : C ≌ C) : e ^ (-1 : ℤ) = e.symm :=
 -- Note: the better formulation of this would involve `HasShift`.
 end
 
-/-- The functor of an equivalence of categories is essentially surjective.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is essentially surjective. -/
+@[stacks 02C3]
 instance essSurj_functor (e : C ≌ E) : e.functor.EssSurj :=
   ⟨fun Y => ⟨e.inverse.obj Y, ⟨e.counitIso.app Y⟩⟩⟩
 
@@ -443,20 +438,16 @@ def fullyFaithfulFunctor (e : C ≌ E) : e.functor.FullyFaithful where
 def fullyFaithfulInverse (e : C ≌ E) : e.inverse.FullyFaithful where
   preimage {X Y} f := e.counitIso.inv.app X ≫ e.functor.map f ≫ e.counitIso.hom.app Y
 
-/-- The functor of an equivalence of categories is faithful.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is faithful. -/
+@[stacks 02C3]
 instance faithful_functor (e : C ≌ E) : e.functor.Faithful :=
   e.fullyFaithfulFunctor.faithful
 
 instance faithful_inverse (e : C ≌ E) : e.inverse.Faithful :=
   e.fullyFaithfulInverse.faithful
 
-/-- The functor of an equivalence of categories is full.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is full. -/
+@[stacks 02C3]
 instance full_functor (e : C ≌ E) : e.functor.Full :=
   e.fullyFaithfulFunctor.full
 
@@ -527,10 +518,8 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
-/-- Interpret a functor that is an equivalence as an equivalence.
-
-See <https://stacks.math.columbia.edu/tag/02C3>. -/
-@[simps functor]
+/-- Interpret a functor that is an equivalence as an equivalence. -/
+@[simps functor, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv

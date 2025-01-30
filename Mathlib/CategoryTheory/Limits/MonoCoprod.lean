@@ -239,7 +239,7 @@ end Preservation
 
 section Concrete
 
-instance [ConcreteCategory C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
+instance [HasForget C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
     [ReflectsMonomorphisms (forget C)] : MonoCoprod C :=
   monoCoprod_of_preservesCoprod_of_reflectsMono (forget C)
 

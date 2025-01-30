@@ -270,7 +270,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
   · rw [← ENNReal.ofReal_rpow_of_pos hε]
     convert mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ((hf n).sub hg).aestronglyMeasurable
         (ENNReal.ofReal ε)
-    rw [dist_eq_norm, ← ENNReal.ofReal_le_ofReal_iff (norm_nonneg _), ofReal_norm_eq_coe_nnnorm]
+    rw [dist_eq_norm, ← ENNReal.ofReal_le_ofReal_iff (norm_nonneg _), ofReal_norm_eq_enorm]
     exact Iff.rfl
   · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
     exact Or.inl (Real.rpow_pos_of_pos hε _)

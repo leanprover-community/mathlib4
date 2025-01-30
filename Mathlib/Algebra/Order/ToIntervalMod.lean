@@ -29,6 +29,7 @@ interval.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 

@@ -20,6 +20,8 @@ in the proof of Tutte's Theorem.
 * `G.deleteUniversalVerts` is the subgraph of `G` with the universal vertices removed.
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace SimpleGraph
 variable {V : Type*} {G : SimpleGraph V}
 

@@ -165,12 +165,13 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
-  { Submodule.pointwiseAddCommMonoid,
-    Submodule.completeLattice with
-    add_le_add_left := fun _a _b => sup_le_sup_left
-    exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
-    le_self_add := fun _a _b => le_sup_left }
+instance : OrderedAddCommMonoid (Submodule R M) :=
+  { Submodule.pointwiseAddCommMonoid with
+    add_le_add_left := fun _a _b => sup_le_sup_left }
+
+instance : CanonicallyOrderedAdd (Submodule R M) where
+  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  le_self_add := fun _a _b => le_sup_left
 
 section
 
@@ -346,11 +347,6 @@ lemma set_smul_eq_of_le (p : Submodule R M)
 instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
-
-@[deprecated smul_mono_right (since := "2024-03-31")]
-theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
-    s • p ≤ s • q :=
-  smul_mono_right s le
 
 lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=

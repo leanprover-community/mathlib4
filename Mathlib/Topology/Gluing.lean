@@ -82,7 +82,6 @@ that the `U i`'s are open subspaces of the glued space.
 Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'` where the
 conditions are stated in a less categorical way.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData TopCat where
   f_open : ∀ i j, IsOpenEmbedding (f i j)
   f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.injective
@@ -101,11 +100,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
   rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
-  dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
-    parallelPair_obj_one]
-  constructor
-  · intro h j; exact h ⟨j⟩
-  · intro h j; cases j; apply h
+  tauto
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : _) (y : D.U i), 𝖣.ι i y = x :=
   𝖣.ι_jointly_surjective (forget TopCat) x
@@ -195,14 +190,15 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
+    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
     simp only [forget_map_eq_coe]
-    erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← comp_apply, ← comp_apply,
-      colimit.ι_desc_assoc, ← comp_apply, ← comp_apply, colimit.ι_desc_assoc]
+    erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← CategoryTheory.comp_apply,
+      ← CategoryTheory.comp_apply, colimit.ι_desc_assoc, ← CategoryTheory.comp_apply,
+      ← CategoryTheory.comp_apply, colimit.ι_desc_assoc]
       -- previous line now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
@@ -235,10 +231,7 @@ theorem image_inter (i j : D.J) :
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app, CategoryTheory.IsIso.inv_hom_id_apply, eq₁]⟩
-    · -- Porting note: was
-      -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
-      dsimp only at *
-      substs eq₁
+    · subst eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
@@ -307,7 +300,6 @@ such that
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure MkCore where
   {J : Type u}
   U : J → TopCat.{u}

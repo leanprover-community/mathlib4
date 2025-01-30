@@ -31,6 +31,8 @@ in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject

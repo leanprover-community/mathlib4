@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
@@ -83,9 +85,35 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   refine this (mul_mem_mul (mem_span_singleton_self x) ?_)
   rwa [← hn (n + 1) (Nat.le_succ _)]
 
+variable (R) in
+/-- Commutative artinian reduced local ring is a field. -/
+theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
+  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+    _ (Ideal.Quotient.field _).toIsField
+
+section IsUnit
+
+open nonZeroDivisors
+
+/-- If an element of an artinian ring is not a zero divisor then it is a unit. -/
+theorem isUnit_of_mem_nonZeroDivisors {a : R} (ha : a ∈ R⁰) : IsUnit a :=
+  IsUnit.isUnit_iff_mulLeft_bijective.mpr <|
+    IsArtinian.bijective_of_injective_endomorphism (LinearMap.mulLeft R a)
+      fun _ _ ↦ (mul_cancel_left_mem_nonZeroDivisors ha).mp
+
+/-- In an artinian ring, an element is a unit iff it is a non-zero-divisor.
+See also `isUnit_iff_mem_nonZeroDivisors_of_finite`.-/
+theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
+  ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_mem_nonZeroDivisors⟩
+
+theorem isUnit_submonoid_eq : IsUnit.submonoid R = R⁰ := by
+  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
+
+end IsUnit
+
 section Localization
 
-variable (S : Submonoid R) (L : Type*) [CommRing L] [Algebra R L] [IsLocalization S L]
+variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
 include S
 
 /-- Localizing an artinian ring can only reduce the amount of elements. -/

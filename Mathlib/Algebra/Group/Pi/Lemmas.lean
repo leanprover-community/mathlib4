@@ -15,8 +15,7 @@ This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` 
 imports.
 -/
 
-assert_not_exists AddMonoidWithOne
-assert_not_exists MonoidWithZero
+assert_not_exists AddMonoidWithOne MonoidWithZero
 
 universe u v w
 
@@ -69,7 +68,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
-  hg i ((funext_iff.mp h : _) i)
+  hg i ((funext_iff.mp h :) i)
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
@@ -339,7 +338,7 @@ theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
     SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := funext_iff
 
 @[to_additive]
-theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := SemiconjBy.pi h
 
 @[to_additive]
 theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff

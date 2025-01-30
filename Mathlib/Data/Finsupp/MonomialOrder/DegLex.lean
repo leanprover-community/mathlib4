@@ -70,6 +70,7 @@ theorem ofDegLex_add [AddCommMonoid α] (a b : DegLex α) :
 
 namespace Finsupp
 
+open scoped Function in -- required for scoped `on` notation
 /-- `Finsupp.DegLex r s` is the homogeneous lexicographic order on `α →₀ M`,
 where `α` is ordered by `r` and `M` is ordered by `s`.
 The type synonym `DegLex (α →₀ M)` has an order given by `Finsupp.DegLex (· < ·) (· < ·)`. -/
@@ -104,7 +105,7 @@ theorem lt_def [LT α] {a b : DegLex (α →₀ ℕ)} :
 theorem lt_iff [LT α] {a b : DegLex (α →₀ ℕ)} :
     a < b ↔ (ofDegLex a).degree < (ofDegLex b).degree ∨
     (((ofDegLex a).degree = (ofDegLex b).degree) ∧ toLex (ofDegLex a) < toLex (ofDegLex b)) := by
-  simp only [lt_def, Prod.Lex.lt_iff]
+  simp [lt_def, Prod.Lex.toLex_lt_toLex]
 
 variable [LinearOrder α]
 

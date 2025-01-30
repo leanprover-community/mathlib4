@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
 /-!
 # Root data and root systems
@@ -184,7 +185,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
 
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [Finite ι] [CharZero R] [NoZeroSMulDivisors R M]
+def mk' [CharZero R] [NoZeroSMulDivisors R M]
     (p : PerfectPairing R M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -232,7 +233,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
   apply P₁.bijectiveRight.injective
-  apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) P₁.span_eq_top
+  apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) P₁.span_root_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
   · exact P₁.coroot_root_two i
@@ -268,22 +269,28 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
   · rw [hk, hij]
     exact (hs i).comp <| (hs j).comp (hs i)
 
-/-- In characteristic zero if there is no torsion, to check that a finite family of roots form a
-root system, we do not need to check that the coroots are stable under reflections since this
-follows from the corresponding property for the roots. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M]
-    (p : PerfectPairing R M N)
+/-- Over a field of characteristic zero, to check that a finite family of roots form a
+crystallographic root system, we do not need to check that the coroots are stable under reflections
+since this follows from the corresponding property for the roots. Likewise, we do not need to
+check that the coroots span. -/
+def mk' {k : Type*} [Field k] [CharZero k] [Module k M] [Module k N]
+    (p : PerfectPairing k M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
     (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
     (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
-    (hsp : span R (range root) = ⊤) :
-    RootSystem ι R M N where
-  span_eq_top := hsp
-  toRootPairing := RootPairing.mk' p root coroot hp hs <| by
+    (hsp : span k (range root) = ⊤)
+    (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :
+    RootSystem ι k M N :=
+  let P := RootPairing.mk' p root coroot hp hs <| by
     rintro i - ⟨j, rfl⟩
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
+  have _i : P.IsCrystallographic := ⟨h_int⟩
+  have _i : Fintype ι := Fintype.ofFinite ι
+  { toRootPairing := P,
+    span_root_eq_top := hsp,
+    span_coroot_eq_top := P.rootSpan_eq_top_iff.mp hsp }
 
 end RootSystem
