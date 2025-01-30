@@ -64,12 +64,15 @@ message if the parsing fails.
 def getFileImports (content : String) (mod : Name := default) :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).searchPath
-  -- TODO: Lean.parseImports' fails on core files, is there a better way to exclude them?
-  let excluded : Array Name := #[`Init, `Lean, `Std, `Lake]
+  -- Core files cannot be modified and therefore we do not need to process imported core files
+  -- TODO: is there a better test to see if a module is part of Lean core?
+  let coreModuleRoots : Array Name := #[`Init, `Lean, `Std, `Lake]
   let fileImports ← Lean.parseImports' content mod.toString
-  let out ← fileImports.filter (fun imp => !excluded.any (·.isPrefixOf imp.module)) |>.mapM (fun imp => do
-    let impSourceFile ← Lean.findLean sp imp.module
-    pure (imp.module, impSourceFile))
+  let out ← fileImports
+    |>.filter (!coreModuleRoots.contains ·.module.getRoot)
+    |>.mapM fun imp => do
+      let impSourceFile ← Lean.findLean sp imp.module
+      pure (imp.module, impSourceFile)
   pure out
 
 /-- Computes a canonical hash of a file's contents. -/
