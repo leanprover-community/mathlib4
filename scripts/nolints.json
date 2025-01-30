@@ -235,8 +235,6 @@
  ["docBlame", "PowerBasis.gen"],
  ["docBlame", "Pretrivialization.baseSet"],
  ["docBlame", "PrimeSpectrum.asIdeal"],
- ["docBlame", "ProbabilityTheory.«termEVar[_]»"],
- ["docBlame", "ProbabilityTheory.«termVar[_]»"],
  ["docBlame", "ProbabilityTheory.«term_=ₐₛ_»"],
  ["docBlame", "ProbabilityTheory.«term_≤ₐₛ_»"],
  ["docBlame", "ProbabilityTheory.«term_⟦_|_⟧»"],

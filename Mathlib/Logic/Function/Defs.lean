@@ -48,7 +48,6 @@ scoped infixl:2 " on " => onFun
 
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
 -- Porting note: removed, it was never used
