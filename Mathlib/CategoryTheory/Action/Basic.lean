@@ -42,24 +42,25 @@ namespace Action
 
 variable {V}
 
-@[simp 1100]
+@[simp]
 theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
-@[simps]
-def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) where
-  toFun g :=
-    { hom := A.ρ g
-      inv := A.ρ (g⁻¹ : G)
-      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
-      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
-  map_one' := Aut.ext A.ρ.map_one
-  map_mul' x y := Aut.ext (A.ρ.map_mul x y)
+@[simps!]
+def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) :=
+  Grp.ofHom
+  { toFun g :=
+      { hom := A.ρ g
+        inv := A.ρ (g⁻¹ : G)
+        hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
+        inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
+    map_one' := Aut.ext A.ρ.map_one
+    map_mul' x y := Aut.ext (A.ρ.map_mul x y) }
 
 -- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
 -- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 -- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
-attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
+attribute [nolint simpNF] Action.ρAut_hom_apply_inv Action.ρAut_hom_apply_hom
 
 variable (G : MonCat.{u})
 

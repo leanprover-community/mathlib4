@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Yunzhou Xie
+Authors: Kevin Buzzard, Yunzhou Xie, Eric Wieser
 -/
 
 import Mathlib.Data.Matrix.Basic
@@ -36,10 +36,12 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   left_inv _ := rfl
   right_inv _ := rfl
 
+section Basic
+variable {R I J K L}
+
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
   comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
-variable {R I J K L} in
 @[simp]
 theorem comp_stdBasisMatrix_stdBasisMatrix
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
@@ -62,21 +64,42 @@ theorem comp_stdBasisMatrix_stdBasisMatrix
       StdBasisMatrix.apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
   rw [StdBasisMatrix.apply_same, StdBasisMatrix.apply_same]
 
-variable {R I J K L} in
 @[simp]
-theorem comp_symm_stdBasisMatrix_stdBasisMatrix
+theorem comp_symm_stdBasisMatrix
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (ii jj r) :
     (comp I J K L R).symm (stdBasisMatrix ii jj r) =
       (stdBasisMatrix ii.1 jj.1 (stdBasisMatrix ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ |>.symm
 
-variable {R I J K L} in
 @[simp]
-theorem comp_symm_stdBasisMatrix
-    [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
-    (comp I J K L R).symm (stdBasisMatrix (i, k) (j, l) r)
-      = (stdBasisMatrix i j (stdBasisMatrix k l r)) :=
-  (comp _ _ _ _ _).symm_apply_eq.2 <| (comp_stdBasisMatrix_stdBasisMatrix _ _ _ _ _).symm
+theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
+    comp I I J J R (diagonal fun i => diagonal fun j => d i j)
+      = diagonal fun ij => d ij.1 ij.2 := by
+  ext ⟨i₁, j₁⟩ ⟨i₂, j₂⟩
+  dsimp [comp_apply]
+  obtain hi | rfl := ne_or_eq i₁ i₂
+  · rw [diagonal_apply_ne _ hi, diagonal_apply_ne _ (ne_of_apply_ne Prod.fst hi),
+      Matrix.zero_apply]
+  rw [diagonal_apply_eq]
+  obtain hj | rfl := ne_or_eq j₁ j₂
+  · rw [diagonal_apply_ne _ hj, diagonal_apply_ne _ (ne_of_apply_ne Prod.snd hj)]
+  rw [diagonal_apply_eq, diagonal_apply_eq]
+
+@[simp]
+theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J → R) :
+    (comp I I J J R).symm (diagonal d) = diagonal fun i => diagonal fun j => d (i, j) :=
+  (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
+
+theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
+  comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl
+
+theorem comp_map_transpose (M : Matrix I J (Matrix K L R)) :
+  comp I J L K R (M.map (·ᵀ)) = (comp _ _ _ _ R Mᵀ)ᵀ := rfl
+
+theorem comp_symm_transpose (M : Matrix (I × K) (J × L) R) :
+  (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
+
+end Basic
 
 section AddCommMonoid
 
@@ -137,14 +160,15 @@ variable [DecidableEq I] [DecidableEq J]
 /-- `Matrix.comp` as `AlgEquiv` -/
 def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R where
   __ := Matrix.compRingEquiv I J R
-  commutes' c := by
-    ext _ _
-    simp only [compRingEquiv, compAddEquiv, comp, AddEquiv.toEquiv_eq_coe, RingEquiv.toEquiv_eq_coe,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, AddEquiv.coe_mk, Equiv.coe_fn_mk,
-      algebraMap_eq_diagonal]
-    rw [Pi.algebraMap_def, Pi.algebraMap_def, Algebra.algebraMap_eq_smul_one',
-      Algebra.algebraMap_eq_smul_one', ← diagonal_one, diagonal_apply, diagonal_apply]
-    aesop
+  commutes' _ := comp_diagonal_diagonal _
+
+@[simp]
+theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
+    compAlgEquiv I J R K M = comp I I J J R M := rfl
+
+@[simp]
+theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
+    (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
 
 @[simp]
 theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :

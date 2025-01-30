@@ -812,9 +812,11 @@ protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
   continuous_nnnorm.comp_stronglyMeasurable hf
 
 @[measurability]
-protected theorem ennnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
-    {f : α → β} (hf : StronglyMeasurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
+protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
+    {f : α → β} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (ENNReal.continuous_coe.comp_stronglyMeasurable hf.nnnorm).measurable
+
+@[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
 
 @[measurability]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
@@ -1438,9 +1440,11 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
   continuous_nnnorm.comp_aestronglyMeasurable hf
 
 @[measurability]
-protected theorem ennnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
-    (hf : AEStronglyMeasurable f μ) : AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
+protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+    (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (ENNReal.continuous_coe.comp_aestronglyMeasurable hf.nnnorm).aemeasurable
+
+@[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
 @[aesop safe 20 apply (rule_sets := [Measurable])]
 protected theorem edist {β : Type*} [SeminormedAddCommGroup β] {f g : α → β}
