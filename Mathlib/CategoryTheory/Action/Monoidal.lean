@@ -47,7 +47,10 @@ theorem tensorUnit_ρ' {g : G} :
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
-    ConcreteCategory.hom (Y := (MonCat.of (End (𝟙_ V)))) (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+    -- Have to hint `F` here, otherwise `simp` doesn't reduce `↑(MonCat.of (End _))` to `End _`.
+    DFunLike.coe (F := _ →* End _)
+      -- Have to hint `Y` here for `simpNF` reasons.
+      (ConcreteCategory.hom (Y := MonCat.of (End (𝟙_ V))) (𝟙_ (Action V G)).ρ) g = 𝟙 (𝟙_ V) :=
   rfl
 
 /- Adding this solves `simpNF` linter report at `tensor_ρ` -/
@@ -58,14 +61,17 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
 
 @[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    ConcreteCategory.hom (Y := MonCat.of (End (X.V ⊗ Y.V))) (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+    -- Have to hint `F` here, otherwise `simp` doesn't reduce `↑(MonCat.of (End _))` to `End _`.
+    DFunLike.coe (F := _ →* End _)
+      -- Have to hint `Y` here for `simpNF` reasons.
+      (ConcreteCategory.hom (Y := MonCat.of (End (tensorObj X.V Y.V))) (X ⊗ Y).ρ) g =
+    X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
-  -- `aesop` failed here because `simp` doesn't pick up `tensorUnit_ρ`...
-  Action.mkIso f (comm := by intros; simp [(tensorUnit_ρ)])
+  Action.mkIso f
 
 variable (V G)
 
@@ -92,7 +98,7 @@ variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp [FunctorCategoryEquivalence.inverse, (tensor_ρ)])) (by simp)
+    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
@@ -264,7 +270,7 @@ instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
     { hom := ε F
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [tensorUnit_ρ, Category.id_comp, tensorUnit_ρ, F.map_id, Category.comp_id] }
+        rw [Category.id_comp, F.map_id, Category.comp_id] }
   μ' X Y :=
     { hom := μ F X.V Y.V
       comm := fun g => μ_natural F (X.ρ g) (Y.ρ g) }
@@ -288,7 +294,7 @@ instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where
     { hom := η F
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [tensorUnit_ρ, map_id, Category.id_comp, tensorUnit_ρ, Category.comp_id] }
+        rw [map_id, Category.id_comp, Category.comp_id] }
   δ' X Y :=
     { hom := δ F X.V Y.V
       comm := fun g => (δ_natural F (X.ρ g) (Y.ρ g)).symm }

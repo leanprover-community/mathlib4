@@ -56,11 +56,6 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) :=
     map_one' := Aut.ext A.ρ.hom.map_one
     map_mul' x y := Aut.ext (A.ρ.hom.map_mul x y) }
 
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
--- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
--- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
-attribute [nolint simpNF] Action.ρAut_hom_apply_inv Action.ρAut_hom_apply_hom
-
 variable (G : MonCat.{u})
 
 section
@@ -86,7 +81,11 @@ commuting with the action of `G`.
 @[ext]
 structure Hom (M N : Action V G) where
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  -- Have to insert type hint for `F`, otherwise it ends up as:
+  -- `(fun α β => ↑α →* β) (MonCat.of (End _)) G`
+  -- which `simp` reduces to `↑(MonCat.of (End _)) →* β` instead of `End _ →* β`.
+  -- Strangely enough, the `@[reassoc]` version works fine.
+  comm : ∀ g : G, DFunLike.coe (F := _ →* End _) M.ρ.hom g ≫ hom = hom ≫ N.ρ g := by aesop_cat
 
 namespace Hom
 
@@ -105,8 +104,6 @@ instance (M : Action V G) : Inhabited (Action.Hom M M) :=
 @[simps]
 def comp {M N K : Action V G} (p : Action.Hom M N) (q : Action.Hom N K) : Action.Hom M K where
   hom := p.hom ≫ q.hom
-  -- TODO: `simp` doesn't pick up `comm` unless we elaborate it manually:
-  comm := by intros g; simp [(comm)]
 
 end Hom
 
