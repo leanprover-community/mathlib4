@@ -145,9 +145,6 @@ def refl : Equidecomp X G where
   toPartialEquiv := .refl _
   decomp' := ⟨{1}, by simp [IsDecompOn]⟩
 
-/-@[simp]
-theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = .refl X := rfl-/
-
 variable {X} {G}
 
 theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
@@ -170,9 +167,6 @@ theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
   decomp' := ⟨g.elements * f.elements, g.decomp.comp' f.decomp⟩
-
-/-@[simp] theorem trans_toPartialEquiv (f g : Equidecomp X G) :
-    (f.trans g).toPartialEquiv = f.toPartialEquiv.trans g.toPartialEquiv := rfl -/
 
 end Monoid
 
