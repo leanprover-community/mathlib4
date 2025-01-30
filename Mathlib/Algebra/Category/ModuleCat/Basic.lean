@@ -390,7 +390,7 @@ instance : AddCommGroup (M ⟶ N) :=
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
-    (∑ i in s, f i).hom = ∑ i in s, (f i).hom :=
+    (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
   map_sum ({ toFun := ModuleCat.Hom.hom, map_zero' := ModuleCat.hom_zero, map_add' := hom_add } :
     (M ⟶ N) →+ (M →ₗ[R] N)) _ _
 
