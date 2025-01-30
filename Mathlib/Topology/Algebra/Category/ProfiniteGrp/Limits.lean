@@ -43,9 +43,9 @@ instance (P : ProfiniteGrp) : SmallCategory (OpenNormalSubgroup P) :=
 where `P : ProfiniteGrp`. -/
 def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp := {
     obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
-    map := fun fHK => QuotientGroup.map _ _ (.id _) (leOfHom fHK)
-    map_id _ := QuotientGroup.map_id _
-    map_comp f g := (QuotientGroup.map_comp_map
+    map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
+    map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
+    map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
       _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm }
 
 /--The `MonoidHom` from a profinite group `P` to  the projective limit of its quotients by
