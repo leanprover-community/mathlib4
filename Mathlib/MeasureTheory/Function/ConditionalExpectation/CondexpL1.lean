@@ -167,10 +167,9 @@ alias condexpIndL1Fin_disjoint_union := condExpIndL1Fin_disjoint_union
 
 end CondexpIndL1Fin
 
-open scoped Classical
-
 section CondexpIndL1
 
+open scoped Classical in
 /-- Conditional expectation of the indicator of a set, as a function in L1. Its value for sets
 which are not both measurable and of finite measure is not used: we set it to 0. -/
 def condExpIndL1 {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) (s : Set α)

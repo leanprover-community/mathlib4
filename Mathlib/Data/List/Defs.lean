@@ -484,10 +484,6 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-/- #adaptation_note: this attribute should be removed after Mathlib moves to v4.15.0-rc1. -/
-set_option allowUnsafeReducibility true in
-attribute [semireducible] Fin.foldr.loop
-
 section Deprecated
 
 @[deprecated List.mem_cons (since := "2024-08-10")]

@@ -177,11 +177,11 @@ theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_abs : Continuous abs :=
   continuous_norm
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
   simpa [← normSq_eq_abs] using continuous_abs.pow 2
 

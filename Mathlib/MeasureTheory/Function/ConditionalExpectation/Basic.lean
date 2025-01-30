@@ -69,7 +69,7 @@ conditional expectation, conditional expected value
 -/
 
 open TopologicalSpace MeasureTheory.Lp Filter
-open scoped Classical ENNReal Topology MeasureTheory
+open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
   -- 𝕜 for ℝ or ℂ
@@ -80,6 +80,7 @@ variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ 
 section NormedAddCommGroup
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
+open scoped Classical in
 variable (m) in
 /-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
 is true:
@@ -108,6 +109,7 @@ theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (
 
 @[deprecated (since := "2025-01-21")] alias condexp_of_not_sigmaFinite := condExp_of_not_sigmaFinite
 
+open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
     μ[f|m] =
       if Integrable f μ then
@@ -315,6 +317,7 @@ theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : Measurabl
 theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
+  classical
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
   · rw [Finset.sum_insert his, Finset.sum_insert his]
