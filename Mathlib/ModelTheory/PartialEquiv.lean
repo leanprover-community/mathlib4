@@ -34,14 +34,14 @@ This file defines partial isomorphisms between first-order structures.
 
 -/
 
-universe u v w w'
+universe u v w w' w''
 
 namespace FirstOrder
 
 namespace Language
 
-variable (L : Language.{u, v}) (M : Type w) (N : Type w')
-variable [L.Structure M] [L.Structure N]
+variable (L : Language.{u, v}) (M : Type w) (N : Type w') (P : Type w'')
+variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Structure Substructure
 
@@ -58,7 +58,7 @@ structure PartialEquiv where
 scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N =>
   FirstOrder.Language.PartialEquiv L M N
 
-variable {L M N}
+variable {L M N P}
 
 namespace PartialEquiv
 
@@ -182,10 +182,23 @@ theorem ext_iff {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.dom = g.dom,
     subtype _ (f.toEquiv ⟨x, h⟩) = subtype _ (g.toEquiv ⟨x, (h_dom ▸ h)⟩) := by
   constructor
   · intro h_eq
-    rcases f with ⟨dom_f, cod_f, equiv_f⟩
     cases h_eq
     exact ⟨rfl, fun _ _ ↦ rfl⟩
   · rintro ⟨h, H⟩; exact ext h H
+
+/-- Extensionality lemma using EquivOfEq. -/
+theorem ext_iff' {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.dom = g.dom, ∃ h_cod : f.cod = g.cod,
+    (equivOfEq h_cod).comp f.toEquiv = g.toEquiv.comp (equivOfEq h_dom) := by
+  constructor
+  · intro h_eq
+    cases h_eq
+    exact ⟨rfl, rfl, rfl⟩
+  · rintro ⟨h_dom, h_cod, H⟩
+    rcases f with ⟨f, _, _⟩
+    cases h_dom
+    cases h_cod
+    simp only [equivOfEq_refl, Equiv.refl_comp, Equiv.comp_refl] at H
+    rw [H]
 
 theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.dom) := fun _ _ ↦ dom_le_dom
 
@@ -256,6 +269,134 @@ theorem toEquivOfEqTop_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
   cases h_dom
   cases h_cod
   rfl
+
+/-- Map of a self-PartialEquiv through an embedding. -/
+noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
+  dom := g.dom.map f.toHom
+  cod := g.cod.map f.toHom
+  toEquiv := (f.substructureEquivMap g.cod).comp <|
+    g.toEquiv.comp (f.substructureEquivMap g.dom).symm
+
+@[simp]
+theorem map_dom (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).dom = g.dom.map f.toHom := rfl
+
+@[simp]
+theorem map_cod (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).cod = g.cod.map f.toHom := rfl
+
+theorem map_toEquiv_comp_substructureEquivMap (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
+    (g.map f).toEquiv.comp (f.substructureEquivMap g.dom) =
+      (f.substructureEquivMap g.cod).comp g.toEquiv := by
+  ext
+  simp only [map, Equiv.comp_apply, Equiv.symm_apply_apply, Embedding.substructureEquivMap_apply]
+
+theorem map_toEquiv_comp_substructureEquivMap_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.dom) :
+    (g.map f).toEquiv ⟨f m, g.dom.apply_coe_mem_map _ _⟩ =
+      ⟨f (g.toEquiv m), g.cod.apply_coe_mem_map _ _⟩ := by
+  exact congr_fun (congr_arg DFunLike.coe (g.map_toEquiv_comp_substructureEquivMap f)) m
+
+@[simp]
+theorem map_refl (f : M ≃ₚ[L] M) : f.map (Embedding.refl L M) = f := by
+  rw [ext_iff']
+  simp only [map, Embedding.refl_toHom, substructureEquivMap_refl, equivOfEq_symm, map_id,
+    exists_true_left]
+  rw [← Equiv.comp_assoc, equivOfEq_comp, equivOfEq_refl, Equiv.refl_comp]
+
+theorem map_monotone (f : M ↪[L] N) : Monotone (map f) := by
+  intro g g' h
+  rw [le_iff]
+  use Substructure.monotone_map (dom_le_dom h)
+  use Substructure.monotone_map (cod_le_cod h)
+  rintro ⟨x, hx⟩
+  let ⟨u, u_mem, eq_u_x⟩ := mem_map.2 hx
+  cases eq_u_x
+  apply Subtype.coe_injective
+  simp only [map, Embedding.coe_toHom, Equiv.comp_apply, coe_inclusion, Set.coe_inclusion,
+    Embedding.substructureEquivMap_apply, Set.inclusion_mk, EmbeddingLike.apply_eq_iff_eq]
+  let ⟨_, _, eq⟩ := le_iff.1 h
+  have eq := congr_arg (Subtype.val) (eq ((Equiv.symm (Embedding.substructureEquivMap f g.dom))
+    { val := f u, property := (g.dom.mem_map).2 ⟨u, u_mem, rfl⟩}))
+  simp only [coe_inclusion, Set.coe_inclusion] at eq
+  rw [← coe_inclusion] at eq
+  rw [eq, Subtype.coe_inj]
+  apply congr_arg g'.toEquiv
+  apply Subtype.coe_injective
+  change subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g.dom))
+    (f.substructureEquivMap g.dom ⟨u, u_mem⟩)) =
+    subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g'.dom))
+      (f.substructureEquivMap g'.dom ⟨u, dom_le_dom h u_mem⟩))
+  simp only [Equiv.symm_apply_apply, coeSubtype]
+
+@[simp]
+theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
+    (h.map f).map g = h.map (g.comp f) := by
+  rw [ext_iff']
+  use Substructure.map_map ..
+  use Substructure.map_map ..
+  simp only [map, Embedding.comp_toHom, Equiv.comp_assoc]
+  rw [← Equiv.comp_assoc _ _ (g.substructureEquivMap (Substructure.map f.toHom h.cod)),
+    substructureEquivMap_comp_substructureEquivMap]
+  simp only [← Equiv.comp_assoc, equivOfEq_comp, equivOfEq_refl, Equiv.refl_comp]
+  simp only [Equiv.comp_assoc]
+  rw [← Equiv.comp_symm, substructureEquivMap_comp_substructureEquivMap]
+  simp only [Equiv.comp_symm, equivOfEq_symm]
+
+theorem map_fg (f : M ↪[L] N) {g : M ≃ₚ[L] M} (g_fg : g.dom.FG) : (g.map f).dom.FG :=
+  g_fg.map f.toHom
+
+theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
+    (∃ (g' : M ≃ₚ[L] M), g'.map f = g) ↔ g.dom ⊔ g.cod ≤ f.toHom.range := by
+  constructor
+  · intro ⟨g', g'_map⟩
+    have : g'.dom.map f.toHom ≤ f.toHom.range := Hom.map_le_range
+    have : g'.cod.map f.toHom ≤ f.toHom.range := Hom.map_le_range
+    apply sup_le <;> simpa [← g'_map, map_dom, map_cod]
+  · intro dom_cod_le_range
+    rw [sup_le_iff] at dom_cod_le_range
+    let ⟨dom_le_range, cod_le_range⟩ := dom_cod_le_range
+    let dom' := g.dom.comap f.toHom
+    let cod' := g.cod.comap f.toHom
+    have dom'_map : dom'.map f.toHom = g.dom := by
+      unfold dom'
+      rwa [Substructure.map_comap, inf_eq_left]
+    have cod'_map : cod'.map f.toHom = g.cod := by
+      rwa [Substructure.map_comap, inf_eq_left]
+    clear_value dom' cod'
+    rcases g with ⟨dom, cod, g⟩
+    simp only at *
+    cases cod'_map
+    cases dom'_map
+    let g' : M ≃ₚ[L] M := ⟨dom',
+      cod',
+      (f.substructureEquivMap cod').symm.comp (g.comp (f.substructureEquivMap dom'))⟩
+    use g'
+    simp only [map, mk.injEq, heq_eq_eq, true_and, g']
+    ext x
+    simp only [Equiv.comp_apply, Equiv.apply_symm_apply]
+
+/-- A partial equivalence `f` between substructures of `M` is fully extendable through an embedding
+`g` if there is a partial equivalence between substructures of the codomain of `g`
+which extends the map of `f` and whose domain contains the image of `M`.-/
+def is_fully_extendable_through (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
+  ∃ f', f.map g ≤ f' ∧ g.toHom.range ≤ f'.dom
+
+theorem is_fully_extendable_through_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+    (H : is_fully_extendable_through f g) : is_fully_extendable_through f (g'.comp g) := by
+  let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
+  use h.map g'
+  constructor
+  · rw [← map_map]
+    exact map_monotone _ le_h
+  · rw [map_dom, Embedding.comp_toHom, Hom.range_comp]
+    exact Substructure.monotone_map le_h_dom
+
+theorem comp_is_fully_extendable_through (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+    (H : is_fully_extendable_through (f.map g) g') : is_fully_extendable_through f (g'.comp g) := by
+  let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
+  use h
+  constructor
+  · rwa [← map_map]
+  · rw [Embedding.comp_toHom, Hom.range_comp]
+    exact Hom.map_le_range.trans le_h_dom
 
 theorem dom_fg_iff_cod_fg {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by
