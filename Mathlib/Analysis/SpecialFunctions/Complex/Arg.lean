@@ -176,8 +176,11 @@ theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
   rw [← ofReal_div, arg_real_mul]
   exact div_pos (abs.pos hy) (abs.pos hx)
 
-@[simp]
-theorem arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
+@[simp] lemma arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
+
+/-- This holds true for all `x : ℂ` because of the junk values `0 / 0 = 0` and `arg 0 = 0`. -/
+@[simp] lemma arg_div_self (x : ℂ) : arg (x / x) = 0 := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
 @[simp]
 theorem arg_neg_one : arg (-1) = π := by simp [arg, le_refl, not_le.2 (zero_lt_one' ℝ)]
@@ -201,7 +204,7 @@ lemma natCast_arg {n : ℕ} : arg n = 0 :=
   ofReal_natCast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
 
 @[simp]
-lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
+lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg ofNat(n) = 0 :=
   natCast_arg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by

@@ -135,6 +135,17 @@ noncomputable def differential : (P.rels → P.Ring) →ₗ[P.Ring] (P.rels → 
   Basis.constr P.basis P.Ring
     (fun j i : P.rels ↦ MvPolynomial.pderiv (P.map i) (P.relation j))
 
+/-- `PreSubmersivePresentation.differential` pushed forward to `S` via `aeval P.val`. -/
+noncomputable def aevalDifferential : (P.rels → S) →ₗ[S] (P.rels → S) :=
+  (Pi.basisFun S P.rels).constr S
+    (fun j i : P.rels ↦ aeval P.val <| pderiv (P.map i) (P.relation j))
+
+@[simp]
+lemma aevalDifferential_single [DecidableEq P.rels] (i j : P.rels) :
+    P.aevalDifferential (Pi.single i 1) j = aeval P.val (pderiv (P.map j) (P.relation i)) := by
+  dsimp only [aevalDifferential]
+  rw [← Pi.basisFun_apply, Basis.constr_basis]
+
 /-- The jacobian of a `P : PreSubmersivePresentation` is the determinant
 of `P.differential` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
@@ -157,6 +168,13 @@ lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMa
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
+
+lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
+    P.aevalDifferential.toMatrix' = (aeval P.val).mapMatrix P.jacobiMatrix := by
+  ext i j : 1
+  rw [← LinearMap.toMatrix_eq_toMatrix']
+  rw [LinearMap.toMatrix_apply]
+  simp [jacobiMatrix_apply]
 
 end Matrix
 
@@ -262,11 +280,12 @@ the lower-right block has determinant jacobian of `P`.
 
 -/
 
-variable [Fintype (Q.comp P).rels]
+variable [DecidableEq (Q.comp P).rels] [Fintype (Q.comp P).rels]
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
+  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
@@ -279,7 +298,7 @@ private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ 
 
 section Q
 
-variable [Fintype Q.rels]
+variable [DecidableEq Q.rels] [Fintype Q.rels]
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
@@ -303,7 +322,7 @@ end Q
 
 section P
 
-variable [Fintype P.rels]
+variable [Fintype P.rels] [DecidableEq P.rels]
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
@@ -470,6 +489,44 @@ noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
 end BaseChange
 
 end Constructions
+
+variable {R S}
+
+open Classical in
+/-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
+noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S) :
+    (P.rels → S) ≃ₗ[S] (P.rels → S) :=
+  haveI : Fintype P.rels := Fintype.ofFinite P.rels
+  have : IsUnit (LinearMap.toMatrix (Pi.basisFun S P.rels) (Pi.basisFun S P.rels)
+        P.aevalDifferential).det := by
+    convert P.jacobian_isUnit
+    rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
+      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
+    simp [RingHom.map_det]
+  LinearEquiv.ofIsUnitDet this
+
+variable (P : SubmersivePresentation R S)
+
+@[simp]
+lemma aevalDifferentialEquiv_apply (x : P.rels → S) :
+    P.aevalDifferentialEquiv x = P.aevalDifferential x :=
+  rfl
+
+/-- If `P` is a submersive presentation, the partial derivatives of `P.relation i` by
+`P.map j` form a basis of `P.rels → S`. -/
+noncomputable def basisDeriv (P : SubmersivePresentation R S) : Basis P.rels S (P.rels → S) :=
+  Basis.map (Pi.basisFun S P.rels) P.aevalDifferentialEquiv
+
+@[simp]
+lemma basisDeriv_apply (i j : P.rels) :
+    P.basisDeriv i j = (aeval P.val) (pderiv (P.map j) (P.relation i)) := by
+  classical
+  simp [basisDeriv]
+
+lemma linearIndependent_aeval_val_pderiv_relation :
+    LinearIndependent S (fun i j ↦ (aeval P.val) (pderiv (P.map j) (P.relation i))) := by
+  simp_rw [← SubmersivePresentation.basisDeriv_apply]
+  exact P.basisDeriv.linearIndependent
 
 end SubmersivePresentation
 

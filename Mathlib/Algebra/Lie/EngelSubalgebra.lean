@@ -143,8 +143,8 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
     (H : LieSubalgebra R L) (h : ∀ x ∈ H, H ≤ engel R x) :
-    LieAlgebra.IsNilpotent R H := by
-  rw [LieAlgebra.isNilpotent_iff_forall]
+    LieRing.IsNilpotent H := by
+  rw [LieAlgebra.isNilpotent_iff_forall (R := R)]
   intro x
   let K : ℕ →o Submodule R H :=
     ⟨fun n ↦ LinearMap.ker ((ad R H x) ^ n), fun m n hmn ↦ ?mono⟩

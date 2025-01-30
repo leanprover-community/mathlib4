@@ -156,7 +156,7 @@ variable (M)
 `genWeightSpaceOf M χ x` is the maximal generalized `χ`-eigenspace of the action of `x` on `M`.
 
 It is a Lie submodule because `L` is nilpotent. -/
-def genWeightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodule R L M :=
+def genWeightSpaceOf [LieRing.IsNilpotent L] (χ : R) (x : L) : LieSubmodule R L M :=
   { 𝕎(M, χ, x) with
     lie_mem := by
       intro y m hm
@@ -168,7 +168,7 @@ def genWeightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodul
 end notation_genWeightSpaceOf
 
 variable (M)
-variable [LieAlgebra.IsNilpotent R L]
+variable [LieRing.IsNilpotent L]
 
 theorem mem_genWeightSpaceOf (χ : R) (x : L) (m : M) :
     m ∈ genWeightSpaceOf M χ x ↔ ∃ k : ℕ, ((toEnd R L M x - χ • ↑1) ^ k) m = 0 := by
@@ -298,7 +298,7 @@ end Weight
 
 /-- See also the more useful form `LieModule.zero_genWeightSpace_eq_top_of_nilpotent`. -/
 @[simp]
-theorem zero_genWeightSpace_eq_top_of_nilpotent' [IsNilpotent R L M] :
+theorem zero_genWeightSpace_eq_top_of_nilpotent' [IsNilpotent L M] :
     genWeightSpace M (0 : L → R) = ⊤ := by
   ext
   simp [genWeightSpace, genWeightSpaceOf]
@@ -311,7 +311,7 @@ theorem coe_genWeightSpace_of_top (χ : L → R) :
   simp
 
 @[simp]
-theorem zero_genWeightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
+theorem zero_genWeightSpace_eq_top_of_nilpotent [IsNilpotent L M] :
     genWeightSpace M (0 : (⊤ : LieSubalgebra R L) → R) = ⊤ := by
   ext m
   simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero, Subtype.forall,
@@ -356,7 +356,7 @@ theorem isNilpotent_toEnd_genWeightSpace_zero [IsNoetherian R M] (x : L) :
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
 instance [IsNoetherian R M] :
-    IsNilpotent R L (genWeightSpace M (0 : L → R)) :=
+    IsNilpotent L (genWeightSpace M (0 : L → R)) :=
   isNilpotent_iff_forall'.mpr <| isNilpotent_toEnd_genWeightSpace_zero M
 
 variable (R L)
@@ -437,7 +437,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
     exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
-    [IsNilpotent R L M] (x : L) :
+    [IsNilpotent L M] (x : L) :
     posFittingCompOf R M x = ⊥ := by
   simp_rw [eq_bot_iff, ← iInf_lowerCentralSeries_eq_bot_of_isNilpotent, le_iInf_iff,
     posFittingCompOf_le_lowerCentralSeries, forall_const]
@@ -470,7 +470,7 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
     ⨅ k, lowerCentralSeries R L M k = posFittingComp R L M := by
   refine le_antisymm ?_ (posFittingComp_le_iInf_lowerCentralSeries R L M)
   apply iInf_lcs_le_of_isNilpotent_quot
-  rw [LieModule.isNilpotent_iff_forall']
+  rw [LieModule.isNilpotent_iff_forall' (R := R)]
   intro x
   obtain ⟨k, hk⟩ := Filter.eventually_atTop.mp (toEnd R L M x).eventually_iInf_range_pow_eq
   use k
@@ -488,7 +488,7 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
   simpa using this
 
 @[simp] lemma posFittingComp_eq_bot_of_isNilpotent
-    [IsNilpotent R L M] :
+    [IsNilpotent L M] :
     posFittingComp R L M = ⊥ := by
   simp [posFittingComp]
 
@@ -603,9 +603,9 @@ private lemma isCompl_genWeightSpace_zero_posFittingComp_aux
   set M₁ := posFittingComp R L M
   rcases forall_or_exists_not (fun (x : L) ↦ genWeightSpaceOf M (0 : R) x = ⊤)
     with h | ⟨x, hx : genWeightSpaceOf M (0 : R) x ≠ ⊤⟩
-  · suffices IsNilpotent R L M by simp [M₀, M₁, isCompl_top_bot]
+  · suffices IsNilpotent L M by simp [M₀, M₁, isCompl_top_bot]
     replace h : M₀ = ⊤ := by simpa [M₀, genWeightSpace]
-    rw [← LieModule.isNilpotent_of_top_iff', ← h]
+    rw [← LieModule.isNilpotent_of_top_iff' (R := R), ← h]
     infer_instance
   · set M₀ₓ := genWeightSpaceOf M (0 : R) x
     set M₁ₓ := posFittingCompOf R M x
@@ -750,8 +750,7 @@ section field
 open Module
 
 variable (K)
-variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.IsNilpotent K L]
-  [FiniteDimensional K M]
+variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
 instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
   ⟨fun _ ↦ Module.End.iSup_maxGenEigenspace_eq_top _⟩

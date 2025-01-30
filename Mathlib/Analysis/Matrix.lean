@@ -108,7 +108,7 @@ theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖
 
 @[simp]
 theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) : ‖A.map f‖ = ‖A‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_map_eq A f fun a => Subtype.ext <| hf a : _)
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_map_eq A f fun a => Subtype.ext <| hf a :)
 
 @[simp]
 theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
@@ -248,38 +248,26 @@ theorem linfty_opNorm_def (A : Matrix m n α) :
   change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_def := linfty_opNorm_def
-
 theorem linfty_opNNNorm_def (A : Matrix m n α) :
     ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
   Subtype.ext <| linfty_opNorm_def A
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_def := linfty_opNNNorm_def
 
 @[simp]
 theorem linfty_opNNNorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_col := linfty_opNNNorm_col
-
 @[simp]
 theorem linfty_opNorm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_col v
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_col := linfty_opNorm_col
 
 @[simp]
 theorem linfty_opNNNorm_row (v : n → α) : ‖row ι v‖₊ = ∑ i, ‖v i‖₊ := by
   simp [linfty_opNNNorm_def]
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_row := linfty_opNNNorm_row
-
 @[simp]
 theorem linfty_opNorm_row (v : n → α) : ‖row ι v‖ = ∑ i, ‖v i‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_row v).trans <| by simp [NNReal.coe_sum]
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_row := linfty_opNorm_row
 
 @[simp]
 theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
@@ -289,13 +277,9 @@ theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v�
   · rw [diagonal_apply_ne' _ hij, nnnorm_zero]
   · rw [diagonal_apply_eq]
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_diagonal := linfty_opNNNorm_diagonal
-
 @[simp]
 theorem linfty_opNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_diagonal v
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_diagonal := linfty_opNorm_diagonal
 
 end SeminormedAddCommGroup
 
@@ -320,23 +304,15 @@ theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
       simp_rw [← Finset.sum_mul, ← NNReal.finset_sup_mul]
       rfl
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_mul := linfty_opNNNorm_mul
-
 theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   linfty_opNNNorm_mul _ _
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_mul := linfty_opNorm_mul
 
 theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
   rw [← linfty_opNNNorm_col (ι := Fin 1) (A *ᵥ v), ← linfty_opNNNorm_col v (ι := Fin 1)]
   exact linfty_opNNNorm_mul A (col (Fin 1) v)
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_mulVec := linfty_opNNNorm_mulVec
-
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNNNorm_mulVec _ _
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_mulVec := linfty_opNorm_mulVec
 
 end NonUnitalSeminormedRing
 
@@ -435,14 +411,9 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     nnnorm_one, mul_one] at hN
   exact hN
 
-@[deprecated (since := "2024-02-02")]
-alias linfty_op_nnnorm_eq_op_nnnorm := linfty_opNNNorm_eq_opNNNorm
-
 lemma linfty_opNorm_eq_opNorm (A : Matrix m n α) :
     ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖ :=
   congr_arg NNReal.toReal (linfty_opNNNorm_eq_opNNNorm A)
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_eq_op_norm := linfty_opNorm_eq_opNorm
 
 variable [DecidableEq n]
 
@@ -451,13 +422,9 @@ variable [DecidableEq n]
   rw [linfty_opNNNorm_eq_opNNNorm]
   simp only [← toLin'_apply', toLin'_toMatrix']
 
-@[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_toMatrix := linfty_opNNNorm_toMatrix
-
 @[simp] lemma linfty_opNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖ = ‖f‖ :=
   congr_arg NNReal.toReal (linfty_opNNNorm_toMatrix f)
-
-@[deprecated (since := "2024-02-02")] alias linfty_op_norm_toMatrix := linfty_opNorm_toMatrix
 
 end
 
@@ -526,7 +493,7 @@ theorem frobenius_nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a,
 @[simp]
 theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) :
     ‖A.map f‖ = ‖A‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_map_eq A f fun a => Subtype.ext <| hf a : _)
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_map_eq A f fun a => Subtype.ext <| hf a :)
 
 @[simp]
 theorem frobenius_nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
@@ -586,7 +553,7 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
 @[simp]
 theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
     ‖diagonal v‖ = ‖(WithLp.equiv 2 _).symm v‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v : _).trans rfl
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v :).trans rfl
 
 end SeminormedAddCommGroup
 

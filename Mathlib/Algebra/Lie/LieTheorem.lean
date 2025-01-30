@@ -204,7 +204,7 @@ open LieAlgebra
 -- except that it additionally assumes a finiteness hypothesis.
 private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
     (L : Type*) [LieRing L] [LieAlgebra k L] [LieRingModule L V] [LieModule k L V]
-    [IsSolvable k L] [LieModule.IsTriangularizable k L V] [Module.Finite k L] :
+    [IsSolvable L] [LieModule.IsTriangularizable k L V] [Module.Finite k L] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   obtain H|⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
   · obtain _|_ := subsingleton_or_nontrivial L
@@ -231,7 +231,7 @@ have a common eigenvector for the action of all elements of the Lie algebra.
 See `LieModule.exists_nontrivial_weightSpace_of_isNilpotent` for the variant that
 assumes that `L` is nilpotent and drops the condition that `k` is of characteristic zero. -/
 theorem exists_nontrivial_weightSpace_of_isSolvable
-    [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
+    [IsSolvable L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   let imL := (toEnd k L V).range
   let toEndo : L →ₗ[k] imL := LinearMap.codRestrict imL.toSubmodule (toEnd k L V)

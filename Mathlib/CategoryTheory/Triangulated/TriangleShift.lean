@@ -20,6 +20,8 @@ Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v u
 
 namespace CategoryTheory
