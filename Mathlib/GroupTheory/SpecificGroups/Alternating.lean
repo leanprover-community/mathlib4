@@ -34,16 +34,18 @@ consisting of the even permutations.
   The proof shows that the normal closure of any non-identity element of this group contains a
   3-cycle.
 
-* `EquivPerm.is_alternatingGroup_of_index_eq_two` shows that a subgroup of index 2
+* `EquivPerm.eq_alternatingGroup_of_index_eq_two` shows that a subgroup of index 2
   of `Equiv.Perm α` is the alternating group.
 
 * `EquivPerm.alternatingGroup_le_of_index_le_two` shows that a subgroup of index at most 2
   of `Equiv.Perm α` contains the alternating group.
 
-* `alternatingGroup.isCharacteristic` shows that the alternating group is characteristic.
+## Instances
+
+* The alternating group is a characteristic subgroup of the permutaiton group.
 
 ## Tags
-alternating group permutation
+alternating group permutation simple characteristic index
 
 
 ## TODO
@@ -97,6 +99,7 @@ theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
 
 end Equiv.Perm
 
+@[simp]
 theorem alternatingGroup_index [Nontrivial α] :
     (alternatingGroup α).index = 2 := by
   simp only [alternatingGroup, index, Nat.card_eq_fintype_card, ← Fintype.card_units_int]
@@ -368,7 +371,7 @@ namespace Equiv.Perm
 open Subgroup Group
 
 /-- The alternating group is the only subgroup of index 2 of the permutation group -/
-theorem is_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
+theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
     G = alternatingGroup α := by
   have hG' : G.Normal := Subgroup.normal_of_index_eq_two hG
   rw [alternatingGroup_eq_sign_ker, ← QuotientGroup.ker_mk' G]
@@ -424,26 +427,21 @@ theorem is_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG :
 theorem alternatingGroup_le_of_index_le_two
     {G : Subgroup (Equiv.Perm α)} (hG : G.index ≤ 2) :
     alternatingGroup α ≤ G := by
-  cases' Nat.eq_zero_or_pos G.index with h h
-  · exfalso
-    exact Subgroup.index_ne_zero_of_finite h
-  cases' eq_or_gt_of_le (Nat.succ_le_iff.mpr h) with h h
-  · rw [Subgroup.index_eq_one] at h ; rw [h]; exact le_top
-  rw [← Nat.succ_le_iff] at h ; norm_num at h
-  rw [is_alternatingGroup_of_index_eq_two (le_antisymm _ h)]
-  refine Nat.le_of_mul_le_mul_left (c := Nat.card G) ?_ Nat.card_pos
-  rw [mul_comm, Subgroup.index_mul_card, mul_comm]
-  rw [← Subgroup.index_mul_card G]
-  apply Nat.mul_le_mul_right _ hG
+  cases' G.index.eq_zero_or_pos with h h
+  · exact (index_ne_zero_of_finite h).elim
+  cases' (Nat.succ_le_iff.mpr h).eq_or_gt with h h
+  · exact index_eq_one.mp h ▸ le_top
+  rw [eq_alternatingGroup_of_index_eq_two (hG.antisymm h)]
 
 end Equiv.Perm
 
-theorem alternatingGroup.isCharacteristic : (alternatingGroup α).Characteristic := by
+/-- The alternating group is a characteristic subgroup of the permutation group -/
+instance : (alternatingGroup α).Characteristic := by
   cases' subsingleton_or_nontrivial α with hα hα
   · convert Subgroup.botCharacteristic
     apply eq_bot_of_subsingleton
   · apply Characteristic.mk
     intro Φ
-    apply is_alternatingGroup_of_index_eq_two
+    apply eq_alternatingGroup_of_index_eq_two
     rw [index_comap, MonoidHom.range_eq_top.mpr Φ.surjective, relindex_top_right,
       alternatingGroup_index]
