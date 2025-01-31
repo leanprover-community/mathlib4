@@ -185,14 +185,14 @@ instance balancedOp : Balanced Cᵒᵖ := balanced_opposite
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.
 -/
-theorem reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
+instance reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
   the same holds -- the functor reflects isomorphisms.
 -/
-theorem reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
+instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
 (F : Cᵒᵖ ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
