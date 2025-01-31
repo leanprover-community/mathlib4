@@ -3,24 +3,16 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.Measure.AddContent
-import Mathlib.MeasureTheory.Measure.Trim
 
 /-!
 # Caratheodorys extension theorem
 
 ## Main declarations
 
-`Measure.ofAddContent`: Construct a measure from a sigma-subadditive content on a semiring,
-assuming the semiring
-generates a given measurable structure. The measure is defined on this measurable structure.
-
 ## Main results
-* `inducedOuterMeasure_addContent_of_subadditive`:
-A semiadditive content on a semiring induces an outer measure.
-* `isCaratheodory_inducedOuterMeasure`: The Caratheodory measurable sets are at least members of
-  the SetSemiring
+* `inducedOuterMeasure_addContent_of_subadditive`: The outer measure induced by a sigma-subadditive
+ `m : AddContent C` on a `SetSemiring C` equals `m` on `C`.
 
 -/
 
@@ -57,6 +49,8 @@ end OfFunction
 
 end OuterMeasure
 
+/-- The outer measure induced by a sigma-subadditive `m : AddContent C` on a `SetSemiring C`
+equals `m` on `C`. -/
 theorem inducedOuterMeasure_addContent_of_subadditive (hC : IsSetSemiring C) (m : AddContent C)
     (m_sigma_subadd : ∀ ⦃f : ℕ → Set α⦄ (_hf : ∀ i, f i ∈ C) (_hf_Union : (⋃ i, f i) ∈ C),
       m (⋃ i, f i) ≤ ∑' i, m (f i))
