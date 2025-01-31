@@ -165,61 +165,39 @@ noncomputable section residue
 
 variable {f : ℕ → ℂ} {l : ℂ} (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
 
-section newlemmas
-
-private theorem toto0 {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜} {a : 𝕜} {r : ℝ}
-    (hlim : Tendsto (fun n ↦ g n / (n ^ r : ℝ)) atTop (𝓝 a)) :
-    g =O[atTop] fun n ↦ (n : ℝ) ^ r := by
-  refine isBigO_norm_left.mp <| isBigO_of_div_tendsto_nhds ?_ ‖a‖ ?_
-  · filter_upwards [eventually_ne_atTop 0] with _ h using
-      by simp [Real.rpow_eq_zero_iff_of_nonneg, h]
-  · have := Function.comp_def _ _ ▸ tendsto_norm.comp hlim
-    simp_rw [norm_div, RCLike.norm_ofReal, _root_.abs_of_nonneg
-      (Real.rpow_nonneg (Nat.cast_nonneg _) _)] at this
-    exact this
-
-private theorem toto0' (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l)) :
-    (fun t : ℝ ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k) =O[atTop] fun t ↦ t ^ (1 : ℝ) := by
-  simp_rw [Real.rpow_one]
-  refine IsBigO.trans_isEquivalent ?_ isEquivalent_nat_floor
-  suffices Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / ((n : ℝ) ^ (1 : ℝ) : ℝ)) atTop (𝓝 l) by
-    simpa using (toto0 this).comp_tendsto tendsto_nat_floor_atTop
-  simpa using hlim
+section lemmas
 
 include hlim in
-theorem toto1 {s : ℝ} (hs : 1 < s) :
+private theorem lemma₁ {s : ℝ} (hs : 1 < s) :
     IntegrableOn (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * (t : ℂ) ^ (-(s : ℂ) - 1)) (Set.Ici 1) := by
-  have h : LocallyIntegrableOn (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * (t : ℂ) ^ (-(s : ℂ) - 1))
+  have h₁ : LocallyIntegrableOn (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * (t : ℂ) ^ (-(s : ℂ) - 1))
         (Set.Ici 1) := by
     simp_rw [mul_comm]
     refine locallyIntegrableOn_mul_sum_Icc f zero_le_one ?_
     refine ContinuousOn.locallyIntegrableOn (fun t ht ↦ ?_) measurableSet_Ici
-    exact (Complex.continuousAt_ofReal_cpow_const _ _ <|
+    exact (continuousAt_ofReal_cpow_const _ _ <|
       Or.inr (zero_lt_one.trans_le ht).ne').continuousWithinAt
-  refine h.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^(-s)) ?_ ?_
-  · refine IsBigO.mul_atTop_rpow_of_isBigO_rpow 1 (- s - 1) _ ?_ ?_ (by linarith)
-    · exact toto0' hlim
-    · exact (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.of_norm_left
+  have h₂ : (fun t : ℝ ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k) =O[atTop] fun t ↦ t ^ (1 : ℝ) := by
+    simp_rw [Real.rpow_one]
+    refine IsBigO.trans_isEquivalent ?_ isEquivalent_nat_floor
+    suffices Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / ((n : ℝ) ^ (1 : ℝ) : ℝ)) atTop (𝓝 l) by
+      simpa using (isBigO_atTop_natCast_rpow_of_tendsto_div_rpow this).comp_tendsto
+        tendsto_nat_floor_atTop
+    simpa using hlim
+  refine h₁.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^(-s)) ?_ ?_
+  · refine IsBigO.mul_atTop_rpow_of_isBigO_rpow 1 (-s - 1) _ h₂ ?_ (by linarith)
+    exact (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.of_norm_left
   · rwa [integrableAtFilter_rpow_atTop_iff, neg_lt_neg_iff]
 
-theorem toto2' {s : ℝ} {S : ℝ → ℂ} (hS₁ : LocallyIntegrableOn (fun t ↦ S t) (Set.Ici 1)) :
-    LocallyIntegrableOn (fun t : ℝ ↦ ‖S t‖ * (t ^ (-s - 1))) (Set.Ici 1) := by
-  refine hS₁.norm.mul_continuousOn ?_ isLocallyClosed_Ici
-  exact fun t ht ↦ (Real.continuousAt_rpow_const _ _
-      <| Or.inl (zero_lt_one.trans_le ht).ne').continuousWithinAt
-
-theorem toto2 {s T ε : ℝ} {S : ℝ → ℂ} (hs : 1 < s) (hT : 0 < T)
-    (hS₁ : LocallyIntegrableOn (fun t ↦ S t) (Set.Ici 1))
-    (hS₂ : ∀ t ≥ T, ‖S t‖ ≤ ε * t) :
+private theorem lemma₂ {s T ε : ℝ} {S : ℝ → ℂ} (hs : 1 < s) (hT : 0 < T)
+    (hS₁ : LocallyIntegrableOn (fun t ↦ S t) (Set.Ici 1)) (hS₂ : ∀ t ≥ T, ‖S t‖ ≤ ε * t) :
     IntegrableOn (fun t : ℝ ↦ ‖S t‖ * (t ^ (-s - 1))) (Set.Ici 1) := by
   have h : LocallyIntegrableOn (fun t : ℝ ↦ ‖S t‖ * (t ^ (-s - 1))) (Set.Ici 1) := by
     refine hS₁.norm.mul_continuousOn ?_ isLocallyClosed_Ici
     exact fun t ht ↦ (Real.continuousAt_rpow_const _ _
       <| Or.inl (zero_lt_one.trans_le ht).ne').continuousWithinAt
-  refine h.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^(-s)) ?_ ?_
-  · refine isBigO_iff.mpr ?_
-    refine ⟨ε, ?_⟩
-    filter_upwards [eventually_ge_atTop T] with t ht
+  refine h.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^(-s)) (isBigO_iff.mpr ⟨ε, ?_⟩) ?_
+  · filter_upwards [eventually_ge_atTop T] with t ht
     have ht' : 0 < t := hT.trans_le ht
     rw [norm_mul, norm_norm, show t ^ (-s) = t * t ^ (-s - 1) by
         rw [Real.rpow_sub ht', Real.rpow_one, mul_div_cancel₀ _ ht'.ne'],
@@ -227,7 +205,7 @@ theorem toto2 {s T ε : ℝ} {S : ℝ → ℂ} (hs : 1 < s) (hT : 0 < T)
     exact mul_le_mul_of_nonneg_right (hS₂ t ht) (norm_nonneg _)
   · exact integrableAtFilter_rpow_atTop_iff.mpr <| neg_lt_neg_iff.mpr hs
 
-end newlemmas
+end lemmas
 
 section proof
 
@@ -246,9 +224,8 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁ {ε :
     Real.norm_of_nonneg ht₁.le, mul_comm, div_lt_iff₀ ht₁] at ht₂
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T ε : ℝ} {S : ℝ → ℂ}
-    (hS' : LocallyIntegrableOn (fun t ↦ S t - l * t) (Set.Ici 1))
-    (hε : 0 < ε) (hs : 1 < s)
-    (hT₁ : 1 ≤ T) (hT : ∀ t ≥ T, ‖S t - l * t‖ ≤ ε * t) :
+    (hS : LocallyIntegrableOn (fun t ↦ S t - l * t) (Set.Ici 1)) (hε : 0 < ε)
+    (hs : 1 < s) (hT₁ : 1 ≤ T) (hT : ∀ t ≥ T, ‖S t - l * t‖ ≤ ε * t) :
     (s - 1) * ∫ (t : ℝ) in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1) ≤ ε := by
   have hT₀ : 0 < T := zero_lt_one.trans_le hT₁
   have h {t : ℝ} (ht : 0 < t) : t ^ (-s) = t * t ^ (-s - 1) := by
@@ -258,29 +235,21 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
     _ ≤ ε * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, t ^ (-s)) := ?_
     _ = ε := ?_
   · refine mul_le_mul_of_nonneg_left (setIntegral_mono_on ?_ ?_ measurableSet_Ioi fun t ht ↦ ?_) ?_
-    · refine (toto2 hs hT₀ ?_ hT).mono_set <| Set.Ioi_subset_Ici_iff.mpr hT₁
-      · exact hS'
+    · exact (lemma₂ hs hT₀ hS hT).mono_set <| Set.Ioi_subset_Ici_iff.mpr hT₁
     · exact (integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) hT₀).const_mul  _
     · have ht' : 0 < t := hT₀.trans ht
       rw [h ht', ← mul_assoc]
-      refine mul_le_mul_of_nonneg_right ?_ ?_
-      · exact hT t ht.le
-      · refine Real.rpow_nonneg ht'.le _
-    · exact (sub_pos_of_lt hs).le -- 0 ≤ s - 1
+      exact mul_le_mul_of_nonneg_right (hT t ht.le) (Real.rpow_nonneg ht'.le _)
+    · exact (sub_pos_of_lt hs).le
   · rw [integral_mul_left, ← mul_assoc, ← mul_assoc, mul_comm ε]
-    gcongr
-    · refine mul_nonneg ?_ hε.le
-      · exact (sub_pos_of_lt hs).le
-    · refine setIntegral_mono_set ?_ ?_ ?_
-      · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
-      · refine (ae_restrict_iff' measurableSet_Ioi).mpr ?_
-        filter_upwards with t ht
-        refine Real.rpow_nonneg ?_ _
-        exact zero_le_one.trans ht.le
-      · exact (Set.Ioi_subset_Ioi hT₁).eventuallyLE
+    refine mul_le_mul_of_nonneg_left (setIntegral_mono_set ?_ ?_
+      (Set.Ioi_subset_Ioi hT₁).eventuallyLE) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
+    · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
+    · exact (ae_restrict_iff' measurableSet_Ioi).mpr <| univ_mem' fun t ht ↦
+        Real.rpow_nonneg (zero_le_one.trans ht.le) _
   · rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow, neg_div,
-        ← one_div_neg_eq_neg_one_div, neg_add', neg_neg, mul_one_div,
-        div_self (sub_ne_zero.mpr hs.ne'), mul_one]
+      ← one_div_neg_eq_neg_one_div, neg_add', neg_neg, mul_one_div,
+      div_self (sub_ne_zero.mpr hs.ne'), mul_one]
 
 variable (hfS : ∀ s : ℝ, 1 < s → LSeriesSummable f s)
 
@@ -290,7 +259,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ {ε :
   obtain ⟨T, hT₁, hT⟩ := (eventually_forall_ge_atTop.mpr
     (LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
       hlim hε)).frequently.forall_exists_of_atTop 1
-  set S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
+  let S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
   let C := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-1 - 1 : ℝ)
   have hC : 0 ≤ C := by
     refine setIntegral_nonneg_ae measurableSet_Ioc (univ_mem' fun t ht ↦ ?_)
@@ -302,17 +271,20 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ {ε :
     convert locallyIntegrableOn_mul_sum_Icc f zero_le_one (locallyIntegrableOn_const 1)
     rw [one_mul]
   have h₁ : IntegrableOn (fun t ↦ ‖S t - l * t‖ * t ^ (-s - 1)) (Set.Ici 1) :=
-    toto2 hs (zero_lt_one.trans_le hT₁) h₀ fun t ht ↦ (hT t ht).le
-  have h₂ : (s - 1) * ∫ (t : ℝ) in Set.Ioi 1, (t : ℂ) ^ (-s : ℂ) = 1 := by
+    lemma₂ hs (zero_lt_one.trans_le hT₁) h₀ fun t ht ↦ (hT t ht).le
+  have h₂ : IntegrableOn (fun t : ℝ ↦ ‖S t - l * t‖ * (t ^ ((-1 : ℝ) - 1))) (Set.Ioc 1 T) := by
+    refine ((h₀.norm.mul_continuousOn ?_ isLocallyClosed_Ici).integrableOn_compact_subset
+      Set.Icc_subset_Ici_self isCompact_Icc).mono_set Set.Ioc_subset_Icc_self
+    exact fun t ht ↦ (Real.continuousAt_rpow_const _ _
+      <| Or.inl (zero_lt_one.trans_le ht).ne').continuousWithinAt
+  have h₃ : (s - 1) * ∫ (t : ℝ) in Set.Ioi 1, (t : ℂ) ^ (-s : ℂ) = 1 := by
     rw [integral_Ioi_cpow_of_lt (by rwa [neg_re, neg_lt_neg_iff]) zero_lt_one, ofReal_one,
       one_cpow, show -(s : ℂ) + 1 = -(s - 1) by ring, neg_div_neg_eq, mul_div_cancel₀]
     exact (sub_ne_zero.trans ofReal_ne_one).mpr hs.ne'
   let Cs := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-s - 1)
-  have h₃ : Cs ≤ C := by
-    refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc fun t ht ↦ ?_
+  have h₄ : Cs ≤ C := by
+    refine setIntegral_mono_on ?_ h₂ measurableSet_Ioc fun t ht ↦ ?_
     · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
-    · exact ((toto2' h₀).integrableOn_compact_subset
-        Set.Icc_subset_Ici_self isCompact_Icc).mono_set Set.Ioc_subset_Icc_self
     · gcongr
       exact ht.1.le
   calc
@@ -327,12 +299,12 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ {ε :
     _ ≤ (s - 1) * s * C +
           s * ((s - 1) * ∫ (t : ℝ) in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := ?_
     _ ≤ (s - 1) * s * C + s * ε := ?_
-  · rw [h₂, mul_one, mul_comm l, LSeries_eq_mul_integral _ zero_le_one (by rwa [ofReal_re])
+  · rw [h₃, mul_one, mul_comm l, LSeries_eq_mul_integral _ zero_le_one (by rwa [ofReal_re])
       (hfS _ hs), neg_add', mul_assoc]
-    exact toto0 (a := l) (by simpa using hlim)
+    exact isBigO_atTop_natCast_rpow_of_tendsto_div_rpow (a := l) (by simpa using hlim)
   · rw [integral_sub, integral_mul_left]
     · congr; ring
-    · exact (toto1 hlim hs).mono_set Set.Ioi_subset_Ici_self
+    · exact (lemma₁ hlim hs).mono_set Set.Ioi_subset_Ici_self
     · exact (integrableOn_Ioi_cpow_of_lt
         (by rwa [neg_re, ofReal_re, neg_lt_neg_iff]) zero_lt_one).const_mul  _
   · congr 2
@@ -341,8 +313,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ {ε :
     rw [sub_mul, cpow_sub _ _ ht, cpow_one, mul_assoc, mul_div_cancel₀ _ ht]
   · rw [norm_mul, show ((s : ℂ) - 1) * s = ((s - 1) * s : ℝ) by simp, norm_real,
       Real.norm_of_nonneg hs']
-    refine mul_le_mul_of_nonneg_left ?_ hs'
-    exact norm_integral_le_integral_norm _
+    exact mul_le_mul_of_nonneg_left (norm_integral_le_integral_norm _) hs'
   · congr 1
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
     replace ht : 0 ≤ t := zero_le_one.trans ht.le
@@ -353,13 +324,10 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ {ε :
     · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
     · exact h₁.mono_set <| Set.Ioi_subset_Ici_self.trans <| Set.Ici_subset_Ici.mpr hT₁
   · rw [mul_add, ← mul_assoc, mul_comm s]
-    refine add_le_add_right (mul_le_mul_of_nonneg_left h₃ ?_) _
-    exact hs'
+    exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _
   · gcongr
-    refine LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ ?_ hε hs hT₁ ?_
-    · exact h₀
-    · intro t ht
-      exact (hT t ht.le).le
+    exact LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ h₀ hε hs hT₁
+      fun t ht ↦ (hT t ht.le).le
 
 include hlim hfS in
 theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div :
@@ -406,7 +374,7 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg (f : ℕ 
     (hf.ofReal.congr fun _ ↦ ?_) fun s hs ↦ ?_
   · simp_rw [ofReal_div, ofReal_sum, ofReal_natCast]
   · refine LSeriesSummable_of_sum_norm_bigO_and_nonneg ?_ hf' zero_le_one (by rwa [ofReal_re])
-    exact toto0 (a := l) (by simpa using hf)
+    exact isBigO_atTop_natCast_rpow_of_tendsto_div_rpow (a := l) (by simpa using hf)
 
 end proof
 
