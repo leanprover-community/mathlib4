@@ -31,11 +31,12 @@ open KaehlerDifferential TensorProduct MvPolynomial
 
 namespace Algebra
 
-universe u₁ u₂ u₃ u₄ w' w u v uT
+universe d e f g h i a b c
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {P : Generators.{w} R S}
-variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+variable {R : Type a} {S : Type b} [CommRing R] [CommRing S] [Algebra R S]
+variable {T : Type c} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (Q : Generators.{h} S T) (P : Generators.{g} R S)
+variable (Q' : Generators.{f} S T) (P' : Generators.{e} R S) (W : Generators.{d} R T)
 
 attribute [local instance] SMulCommClass.of_commMonoid
 
@@ -156,8 +157,8 @@ lemma Cotangent.exact :
 /-- Given `R[X] → S` and `S[Y] → T`, the cotangent space of `R[X][Y] → T` is isomorphic
 to the direct product of the cotangent space of `S[Y] → T` and `R[X] → S` (base changed to `T`). -/
 noncomputable
-def CotangentSpace.compEquiv (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
-    (Q.comp P).toExtension.CotangentSpace ≃ₗ[T]
+def CotangentSpace.compEquiv :
+    Extension.CotangentSpace.{max a g h} (Q.comp P).toExtension ≃ₗ[T]
       Q.toExtension.CotangentSpace × (T ⊗[S] P.toExtension.CotangentSpace) :=
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
@@ -171,7 +172,8 @@ attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulAct
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
       LinearMap.inr T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) =
-        (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T := by
+        (Extension.CotangentSpace.map.{_, _, _, max a g h}
+          (Q.toComp P).toExtensionHom).liftBaseChange T := by
   classical
   apply (P.cotangentSpaceBasis.baseChange T).ext
   intro i
@@ -190,12 +192,14 @@ lemma CotangentSpace.compEquiv_symm_inr :
 
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =
-        (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T x :=
+      (Extension.CotangentSpace.map.{_, _, _, max a g h}
+        (Q.toComp P).toExtensionHom).liftBaseChange T x :=
   DFunLike.congr_fun (compEquiv_symm_inr Q P) x
 
 lemma CotangentSpace.fst_compEquiv :
     LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
-      (compEquiv Q P).toLinearMap = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom := by
+      (compEquiv Q P).toLinearMap =
+        Extension.CotangentSpace.map.{max a g h} (Q.ofComp P).toExtensionHom := by
   classical
   apply (Q.comp P).cotangentSpaceBasis.ext
   intro i
@@ -211,18 +215,18 @@ lemma CotangentSpace.fst_compEquiv :
       map_zero, Finsupp.coe_zero, Pi.zero_apply, derivation_C]
 
 lemma CotangentSpace.fst_compEquiv_apply (x) :
-    (compEquiv Q P x).1 = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom x :=
+    (compEquiv Q P x).1 = Extension.CotangentSpace.map.{max a g h} (Q.ofComp P).toExtensionHom x :=
   DFunLike.congr_fun (fst_compEquiv Q P) x
 
 lemma CotangentSpace.map_toComp_injective :
-    Function.Injective
-      ((Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T) := by
+    Function.Injective ((Extension.CotangentSpace.map.{_, _, _, max a g h}
+      (Q.toComp P).toExtensionHom).liftBaseChange T) := by
   rw [← compEquiv_symm_inr]
   apply (compEquiv Q P).symm.injective.comp
   exact Prod.mk.inj_left _
 
 lemma CotangentSpace.map_ofComp_surjective :
-    Function.Surjective (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by
+    Function.Surjective (Extension.CotangentSpace.map.{max a g h} (Q.ofComp P).toExtensionHom) := by
   rw [← fst_compEquiv]
   exact (Prod.fst_surjective).comp (compEquiv Q P).surjective
 
@@ -232,8 +236,9 @@ Given representations `R[X] → S` and `S[Y] → T`, the sequence
 is exact.
 -/
 lemma CotangentSpace.exact :
-    Function.Exact ((Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T)
-      (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by
+    Function.Exact ((Extension.CotangentSpace.map.{_, _, _, max a g h}
+        (Q.toComp P).toExtensionHom).liftBaseChange T)
+      (Extension.CotangentSpace.map.{max a g h} (Q.ofComp P).toExtensionHom) := by
   rw [← fst_compEquiv, ← compEquiv_symm_inr]
   conv_rhs => rw [← LinearEquiv.symm_symm (compEquiv Q P)]
   rw [LinearEquiv.conj_exact_iff_exact]
@@ -277,8 +282,8 @@ lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
 
-lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
-    {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
+variable {Q} {Q'} in
+lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
@@ -325,12 +330,24 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
         toKaehler_cotangentSpaceBasis, add_left_inj, LinearMap.coe_inl]
       rfl
 
+lemma δAux_ofComp' (x : (Q.comp P).Ring) :
+    letI x₁ : Extension.Ring.{max a g h, a, c} (Q.comp P).toExtension := x
+    letI x₂ : Extension.CotangentSpace.{max a g h} (Q.comp P).toExtension :=
+      1 ⊗ₜ[(Q.comp P).toExtension.Ring] D _ _ x₁
+    δAux R Q ((Q.ofComp P).toAlgHom x) =
+      P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P x₂).2 :=
+  δAux_ofComp Q P x
+
 lemma map_comp_cotangentComplex_baseChange :
-    (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T ∘ₗ
+    LinearMap.liftBaseChange T (Extension.CotangentSpace.map.{_, _, _, max a g h}
+        (Q.toComp P).toExtensionHom) ∘ₗ
       P.toExtension.cotangentComplex.baseChange T =
-    (Q.comp P).toExtension.cotangentComplex ∘ₗ
-      (Extension.Cotangent.map (Q.toComp P).toExtensionHom).liftBaseChange T := by
-  ext x; simp [Extension.CotangentSpace.map_cotangentComplex]
+    Extension.cotangentComplex.{max a g h} (Q.comp P).toExtension ∘ₗ
+      (Extension.Cotangent.map.{_, _, _, _, _, max a g h}
+        (Q.toComp P).toExtensionHom).liftBaseChange T := by
+  ext x
+  dsimp
+  simp only [one_smul, Extension.CotangentSpace.map_cotangentComplex.{_, _, _, max a g h}]
 
 open Generators in
 /--
@@ -355,16 +372,18 @@ def δ :
     Q.toExtension.H1Cotangent →ₗ[T] T ⊗[S] Ω[S⁄R] :=
   SnakeLemma.δ'
     (P.toExtension.cotangentComplex.baseChange T)
-    (Q.comp P).toExtension.cotangentComplex
+    (Extension.cotangentComplex.{max a g h} (Q.comp P).toExtension)
     Q.toExtension.cotangentComplex
     ((Extension.Cotangent.map (toComp Q P).toExtensionHom).liftBaseChange T)
     (Extension.Cotangent.map (ofComp Q P).toExtensionHom)
     (Cotangent.exact Q P)
-    ((Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T)
-    (Extension.CotangentSpace.map (ofComp Q P).toExtensionHom)
+    ((Extension.CotangentSpace.map.{_, _, _, max a g h}
+      (toComp Q P).toExtensionHom).liftBaseChange T)
+    (Extension.CotangentSpace.map.{max a g h} (ofComp Q P).toExtensionHom)
     (CotangentSpace.exact Q P)
     (map_comp_cotangentComplex_baseChange Q P)
-    (by ext; exact Extension.CotangentSpace.map_cotangentComplex (ofComp Q P).toExtensionHom _)
+    (by ext; exact Extension.CotangentSpace.map_cotangentComplex.{max a g h}
+          (ofComp Q P).toExtensionHom _)
     Q.toExtension.h1Cotangentι
     (LinearMap.exact_subtype_ker_map _)
     (N₁ := T ⊗[S] P.toExtension.CotangentSpace)
@@ -376,37 +395,39 @@ def δ :
 
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by
-  apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
-    (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
+  apply SnakeLemma.exact_δ_left (π₂ := Extension.toKaehler.{max a g h} (Q.comp P).toExtension)
+    (hπ₂ := Extension.exact_cotangentComplex_toKaehler.{max a g h})
   · apply (P.cotangentSpaceBasis.baseChange T).ext
     intro i
     simp only [Basis.baseChange_apply, LinearMap.coe_comp, Function.comp_apply,
       LinearMap.baseChange_tmul, toKaehler_cotangentSpaceBasis, mapBaseChange_tmul, map_D,
       one_smul, comp_vars, LinearMap.liftBaseChange_tmul]
     rw [cotangentSpaceBasis_apply]
-    conv_rhs => enter [2]; tactic => exact Extension.CotangentSpace.map_tmul ..
-    simp only [map_one, mapBaseChange_tmul, map_D, one_smul]
+    conv_rhs => enter [2]; tactic => exact Extension.CotangentSpace.map_tmul.{_, _, _, max a g h} ..
+    rw [map_one, mapBaseChange_tmul.{_, max a g h}, one_smul, map_D.{_, _, max a g h}]
     simp [Extension.Hom.toAlgHom]
   · exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
 
 lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
-    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.1) (z)
-    (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
-      (Q.comp P).toExtension.cotangentComplex y) :
+    (hy : Extension.Cotangent.map.{max a g h} (ofComp Q P).toExtensionHom y = x.1) (z)
+    (hz : (Extension.CotangentSpace.map.{_, _, _, max a g h}
+      (toComp Q P).toExtensionHom).liftBaseChange T z =
+      Extension.cotangentComplex.{max a g h} (Q.comp P).toExtension y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
 lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
-  let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
+  let y := Extension.Cotangent.mk.{max a g h} (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
     simp only [y, Extension.Cotangent.map_mk]
     congr
     exact ofComp_kerCompPreimage Q P x
-  let z := (CotangentSpace.compEquiv Q P ((Q.comp P).toExtension.cotangentComplex y)).2
+  let z := (CotangentSpace.compEquiv Q P
+    (Extension.cotangentComplex.{max a g h} (Q.comp P).toExtension y)).2
   rw [H1Cotangent.δ_eq (y := y) (z := z)]
-  · rw [← ofComp_kerCompPreimage Q P x, δAux_ofComp]
+  · rw [← ofComp_kerCompPreimage Q P x, δAux_ofComp']
     rfl
   · exact hy
   · rw [← CotangentSpace.compEquiv_symm_inr]
@@ -416,12 +437,12 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
     ext
     swap; · rfl
     show 0 = (LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
-      (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
-    rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
+      (CotangentSpace.compEquiv Q P).toLinearMap)
+      (Extension.cotangentComplex.{max a g h} (Q.comp P).toExtension y)
+    rw [CotangentSpace.fst_compEquiv,
+      Extension.CotangentSpace.map_cotangentComplex.{max a g h}, hy, hx]
 
-lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (P' : Generators.{u₃} R S) :
-    δ Q P = δ Q P' := by
+lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
   rw [δ_eq_δAux, δ_eq_δAux]
@@ -429,14 +450,12 @@ lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
 lemma exact_map_δ :
     Function.Exact (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom) (δ Q P) := by
   apply SnakeLemma.exact_δ_right
-    (ι₂ := (Q.comp P).toExtension.h1Cotangentι)
-    (hι₂ := LinearMap.exact_subtype_ker_map _)
+    (ι₂ := Extension.h1Cotangentι.{_, _, max a g h} (P := (Q.comp P).toExtension))
+  · exact LinearMap.exact_subtype_ker_map _
   · ext x; rfl
   · exact Subtype.val_injective
 
-lemma δ_map
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) (f : Hom Q' Q) (x) :
+lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
@@ -448,18 +467,15 @@ lemma δ_map
   refine (δAux_toAlgHom f _).trans ?_
   rw [hx, map_zero, map_zero, add_zero]
 
-lemma δ_comp_equiv
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) :
+lemma δ_comp_equiv :
     δ Q P ∘ₗ (H1Cotangent.equiv _ _).toLinearMap = δ Q' P' := by
   ext x
   exact δ_map Q P Q' P' _ _
 
 /-- A variant of `exact_map_δ` that takes in an arbitrary map between generators. -/
-lemma exact_map_δ'
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S) (P' : Generators.{u₃} R T) (f : Hom P' Q) :
+lemma exact_map_δ' (f : Hom W Q) :
     Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (δ Q P) := by
-  refine (H1Cotangent.equiv (Q.comp P) P').surjective.comp_exact_iff_exact.mp ?_
+  refine (H1Cotangent.equiv (Q.comp P) W).surjective.comp_exact_iff_exact.mp ?_
   show Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
     (Extension.H1Cotangent.map _)) (δ Q P)
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
@@ -471,7 +487,7 @@ end instanceProblem
 
 end Generators
 
-variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T : Type c} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable (R S T)
 
