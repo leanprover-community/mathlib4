@@ -665,6 +665,24 @@ def punitProd : PUnit × X ≃ₜ X :=
 
 @[simp] theorem coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
 
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! symm_apply_snd]
+def prodUnique [Unique Y] :
+    X × Y ≃ₜ X where
+  toEquiv := Equiv.prodUnique X Y
+  continuous_toFun := continuous_fst
+  continuous_invFun := continuous_id.prod_mk continuous_const
+
+@[simp] theorem coe_prodUnique [Unique Y] : ⇑(prodUnique X Y) = Prod.fst := rfl
+
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! symm_apply_snd]
+def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X] :
+    X × Y ≃ₜ Y :=
+  (prodComm _ _).trans (prodUnique Y X)
+
+@[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
+
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
