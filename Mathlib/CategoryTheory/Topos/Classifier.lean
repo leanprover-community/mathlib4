@@ -90,6 +90,7 @@ class Classifier where
 
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
 class HasClassifier : Prop where
+  /-- There is some classifier. -/
   exists_classifier : Nonempty (Classifier C)
 
 variable [Classifier C]
@@ -141,7 +142,7 @@ terminal.from U              χ_ m
 ```
 commutes.
 -/
-@[reassoc]
+--@[reassoc]
 lemma comm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (isPullback m).w
 
 /-- `characteristicMap m` is the only map for which the associated square
@@ -203,5 +204,5 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
 
 end CategoryTheory.MonoClassifier
 
--- #lint docBlameThm
+#lint docBlameThm
 -- is a docstring needed for the auto-generated `comm_assoc`?
