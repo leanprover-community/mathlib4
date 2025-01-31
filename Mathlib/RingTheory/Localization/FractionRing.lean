@@ -81,7 +81,7 @@ variable (R K)
 protected theorem injective : Function.Injective (algebraMap R K) :=
   IsLocalization.injective _ (le_of_eq rfl)
 
-instance (priority := 100) foo : FaithfulSMul R K :=
+instance (priority := 100) : FaithfulSMul R K :=
   (faithfulSMul_iff_algebraMap_injective R K).mpr <| IsFractionRing.injective R K
 
 variable {R K}

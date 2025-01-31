@@ -378,7 +378,7 @@ theorem ofAlgebraic [hKJ : Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
-noncomputable def equivOfAlgebraic' [FaithfulSMul R S]
+noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
   have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans R S L
   have : IsAlgClosure R L :=
