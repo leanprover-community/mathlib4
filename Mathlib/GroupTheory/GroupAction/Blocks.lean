@@ -14,7 +14,7 @@ import Mathlib.Tactic.IntervalCases
 
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
-- the predicate `IsBlock G B` states that `B : Set X` is a block,
+- the predicate `MulAction.IsBlock G B` states that `B : Set X` is a block,
   which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
   Under `Group G` and `MulAction G X`, this is equivalent to the classical
   definition `MulAction.IsBlock.def_one`
@@ -26,17 +26,19 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 ## Results for actions on finite sets
 
-- `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
+- `MulAction.IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
   multiplied by the number of its translates is the cardinal of the ambient type
 
-- `IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
+- `MulAction.IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
-- `IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
+- `MulAction.IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
-- `IsBlock.of_subset` : the intersections of the translates of a finite subset
+- `MulAction.IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
-- `Block.boundedOrderOfMem` : the type of blocks containing a given element is a bounded order.
+- `MulAction.BlockMem` : the type of blocks containing a given element
+
+## instance : the type of blocks containing a given element is a bounded order.
 
 ## References
 
@@ -113,7 +115,6 @@ variable {M α N β : Type*}
 section monoid
 
 variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
-
 
 @[to_additive]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
@@ -617,12 +618,18 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
       apply hB'.smul_eq_of_mem ha'
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
-/-- The set of blocks for a group action containing a given element is a bounder order -/
+/-- The type of blocks for a group action containing a given element -/
 @[to_additive
-"The set of blocks for an additive group action containing a given element is a bounded order"]
-instance Block.boundedOrderOfMem (a : X) :
-    BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
-  top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
+"The type of blocks for an additive group action containing a given element"]
+abbrev BlockMem (a : X) : Type _ := {B : Set X // a ∈ B ∧ IsBlock G B}
+
+namespace BlockMem
+
+/-- The type of blocks for a group action containing a given element is a bounder order -/
+@[to_additive
+"The type of blocks for an additive group action containing a given element is a bounded order"]
+instance (a : X) : BoundedOrder (BlockMem G a) where
+  top := ⟨⊤, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
@@ -632,29 +639,29 @@ instance Block.boundedOrderOfMem (a : X) :
     simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
     exact ha
 
-@[to_additive]
-theorem Block.boundedOrderOfMem.top_eq (a : X) :
-    ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_top (a : X) :
+    ((⊤ : BlockMem G a) : Set X) = ⊤ :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_bot (a : X) :
+    ((⊥ : BlockMem G a) : Set X) = {a} :=
   rfl
 
 @[to_additive]
-theorem Block.boundedOrderOfMem.bot_eq (a : X) :
-    ((Block.boundedOrderOfMem G a).bot : Set X) = {a} :=
-  rfl
-
-@[to_additive]
-instance [Nontrivial X] (a : X) :
-    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
+instance [Nontrivial X] (a : X) : Nontrivial (BlockMem G a) := by
   rw [nontrivial_iff]
-  use (Block.boundedOrderOfMem G a).bot
-  use (Block.boundedOrderOfMem G a).top
+  use ⊥, ⊤
   intro h
   rw [← Subtype.coe_inj] at h
-  simp only [Block.boundedOrderOfMem.top_eq, Block.boundedOrderOfMem.bot_eq] at h
+  simp only [coe_top, coe_bot] at h
   obtain ⟨b, hb⟩ := exists_ne a
   apply hb
   rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
   apply Set.mem_univ
+
+end BlockMem
 
 end Stabilizer
 
