@@ -583,14 +583,12 @@ instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
 instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
   isNoetherian_of_tower A inferInstance
 
-theorem algebraMap_injective_of_liesOver : Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
+instance : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
+  rw [faithfulSMul_iff_algebraMap_injective]
   rintro ⟨a⟩ ⟨b⟩ hab
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
   rw [RingHom.map_sub]
   exact Quotient.eq.mp hab
-
-instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap_injective_of_liesOver P p)
 
 variable {p} in
 theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
@@ -668,8 +666,7 @@ instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) 
 theorem exists_ideal_liesOver_maximal_of_isIntegral [p.IsMaximal] (B : Type*) [CommRing B]
     [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] :
     ∃ P : Ideal B, P.IsMaximal ∧ P.LiesOver p := by
-  rcases exists_ideal_over_maximal_of_isIntegral p <|
-    (NoZeroSMulDivisors.ker_algebraMap_eq_bot A B).trans_le bot_le with ⟨P, hm, hP⟩
+  obtain ⟨P, hm, hP⟩ := exists_ideal_over_maximal_of_isIntegral (S := B) p <| by simp
   exact ⟨P, hm, ⟨hP.symm⟩⟩
 
 end IsIntegral

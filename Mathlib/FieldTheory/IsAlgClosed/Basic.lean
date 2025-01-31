@@ -378,13 +378,10 @@ theorem ofAlgebraic [hKJ : Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
-noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
+noncomputable def equivOfAlgebraic' [FaithfulSMul R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
-  letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
-    rw [IsScalarTower.algebraMap_eq R S L]
-    exact (Function.Injective.comp (FaithfulSMul.algebraMap_injective S L)
-            (FaithfulSMul.algebraMap_injective R S) :)
-  letI : IsAlgClosure R L :=
+  have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans R S L
+  have : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }
   exact IsAlgClosure.equiv _ _ _
@@ -412,7 +409,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq fun _ => rfl
   haveI : IsScalarTower S R L :=
     IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
-  haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
+  have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hSR.symm.injective
   have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.extendScalars
     (show Function.Injective (algebraMap S R) from hSR.injective))
   refine

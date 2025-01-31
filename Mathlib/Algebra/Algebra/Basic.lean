@@ -388,8 +388,8 @@ lemma NoZeroSMulDivisors.of_algebraMap_injective' {R A M : Type*} [CommSemiring 
     · exact Or.inl <| (map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A).mp hc
     · exact Or.inr hx
 
-theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
-    [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
+theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M :=
   of_algebraMap_injective' (A := A)
 
