@@ -429,7 +429,8 @@ variable [TopologicalSpace β] [ContinuousSup β]
 
 instance sup : Max C_c(α, β) where max f g :=
   { toFun := f ⊔ g
-    hasCompactSupport' := f.hasCompactSupport.sup g.hasCompactSupport }
+    continuous_toFun := Continuous.sup f.continuous g.continuous
+    hasCompactSupport' := HasCompactSupport.sup f.hasCompactSupport g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_sup (f g : C_c(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
 
@@ -438,13 +439,13 @@ instance sup : Max C_c(α, β) where max f g :=
 instance semilatticeSup : SemilatticeSup C_c(α, β) :=
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
-lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
+lemma finsetSup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
   Finset.comp_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_sup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
-    ⇑(s.sup' H f) = s.sup' H fun i ↦ ⇑(f i) := by ext; simp [sup'_apply]
+    ⇑(s.sup' H f) = s.sup' H fun i ↦ ⇑(f i) := by ext; simp [finsetSup'_apply]
 
 end SemilatticeSup
 
@@ -463,7 +464,8 @@ variable [TopologicalSpace β] [ContinuousInf β]
 
 instance inf : Min C_c(α, β) where min f g :=
   { toFun := f ⊓ g
-    hasCompactSupport' := f.hasCompactSupport.inf g.hasCompactSupport }
+    continuous_toFun := Continuous.inf f.continuous g.continuous
+    hasCompactSupport' := HasCompactSupport.inf f.hasCompactSupport g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_inf (f g : C_c(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
 
@@ -478,7 +480,7 @@ lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι →
 
 @[simp, norm_cast]
 lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
-    ⇑(s.inf' H f) = s.inf' H fun i ↦ ⇑(f i) := by ext; simp [inf'_apply]
+    ⇑(s.inf' H f) = s.inf' H fun i ↦ ⇑(f i) := by ext; simp [finsetInf'_apply]
 
 end SemilatticeInf
 
