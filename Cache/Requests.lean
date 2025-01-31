@@ -145,7 +145,7 @@ Does nothing if the current project is mathlib.
 -/
 def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
-  if mathlibToolchainFile.normalize == ("lean-toolchain" : FilePath).normalize then
+  if mathlibToolchainFile.clean == ("lean-toolchain" : FilePath) then
     -- we are in mathlib, nothing to check
     return ()
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"

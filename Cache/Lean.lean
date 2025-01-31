@@ -54,6 +54,18 @@ end Lean
 
 namespace System.FilePath
 
+/-- Cleanup path with respect to components "", ".", and ".." -/
+def clean (path : FilePath) : FilePath :=
+  mkFilePath <| go path.components
+where
+  go : List String → List String
+  | [] => []
+  | "" :: path => go path
+  | "." :: path => go path
+  | ".." :: path => ".." :: go path
+  | _ :: ".." :: path => go path
+  | p :: ath => p :: go ath
+
 /--
 Test if the `target` path lies inside `parent`.
 
