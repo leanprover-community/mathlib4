@@ -12,6 +12,7 @@ import Mathlib.Data.Finset.Insert
 
 We define order isomorphisms like `Fin.orderIsoTriple` from `Fin 3`
 to the finset `{a, b, c}` when `a < b` and `b < c`.
+
 ## Future works
 
 * Do the same for `Set` without too much duplication of code (TODO)
