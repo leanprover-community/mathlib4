@@ -144,7 +144,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
   have : IsPretransitive G X := by
-    rw [IsPretransitive.mk_base_iff a]
+    rw [isPretransitive_iff_base a]
     cases' H (orbit G a) (mem_orbit_self a) (IsBlock.orbit a) with H H
     · exfalso; apply ha
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
@@ -202,7 +202,7 @@ theorem IsPreprimitive.iff_of_bijective
   constructor
   · apply IsPreprimitive.of_surjective hf.surjective
   · intro hN
-    haveI := (IsPretransitive.iff_of_bijective_map hφ hf).mpr hN.toIsPretransitive
+    haveI := (isPretransitive_congr hφ hf).mpr hN.toIsPretransitive
     apply IsPreprimitive.mk
     · intro B hB
       rw [← Set.preimage_image_eq B hf.injective]
@@ -286,7 +286,7 @@ theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) :
   intro N hN hNX
   rw [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at hNX
   obtain ⟨a, ha⟩ := hNX
-  rw [IsPretransitive.iff_orbit_eq_top a]
+  rw [isPretransitive_iff_orbit_eq_top a]
   apply Or.resolve_left (hGX.has_trivial_blocks (IsBlock.orbit_of_normal a))
   intro h
   apply ha
