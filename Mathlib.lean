@@ -2286,6 +2286,7 @@ import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
+import Mathlib.CategoryTheory.Topos.Classifier
 import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Triangulated.Functor
