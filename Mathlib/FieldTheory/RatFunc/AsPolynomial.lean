@@ -32,8 +32,6 @@ namespace RatFunc
 
 section Eval
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 open RatFunc

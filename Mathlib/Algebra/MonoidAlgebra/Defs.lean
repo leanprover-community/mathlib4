@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.LSum
 import Mathlib.Algebra.Module.Submodule.Basic
 

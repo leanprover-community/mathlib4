@@ -51,8 +51,8 @@ deriving BEq
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
-  /-- The bare string "Adaptation note" (or variants thereof): instead, the
-  #adaptation_note command should be used. -/
+  /-- The bare string "Adaptation note" (or variants thereof):
+  instead, the #adaptation_note command should be used. -/
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
