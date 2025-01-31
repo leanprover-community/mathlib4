@@ -148,7 +148,7 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   right_inv := fun ⟨_, _, _⟩ => rfl
 
 /-- The subtypes corresponding to equal sets are equivalent. -/
-@[simps! apply]
+@[simps! apply symm_apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
   subtypeEquivProp h
 
