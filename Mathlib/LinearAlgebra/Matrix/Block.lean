@@ -270,12 +270,19 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 
-theorem det_of_upperTriangular [LinearOrder m] (h : M.BlockTriangular id) :
+/-- The property of a matrix being upper triangular. See also `Matrix.det_of_upperTriangular`. -/
+abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop := M.BlockTriangular id
+
+/-- The subtype of upper triangular matrices. -/
+abbrev UpperTriangular (m R) [LT m] [CommRing R] : Type _ :=
+  { M : Matrix m m R // M.IsUpperTriangular }
+
+theorem det_of_upperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by
   haveI : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
-theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTriangular toDual) :
+theorem det_of_lowerTriangular [LinearOrder m] (h : M.BlockTriangular toDual) :
     M.det = ∏ i : m, M i i := by
   rw [← det_transpose]
   exact det_of_upperTriangular h.transpose
