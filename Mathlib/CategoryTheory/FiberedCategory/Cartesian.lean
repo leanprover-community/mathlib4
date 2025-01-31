@@ -116,7 +116,18 @@ lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
   apply map_uniq
   simp only [id_comp]
 
-/-- The canonical isomorphism between the domains of two cartesian morphisms
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
+    IsCartesian p f (φ ≫ φ'.hom) where
+  universal_property := by
+    intro c ψ hψ
+    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
+    refine ⟨⟨inferInstance, by simp only [fac_assoc, assoc, Iso.inv_hom_id, comp_id]⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    apply map_uniq
+    rw [Iso.eq_comp_inv]
+    simp only [assoc, hτ₂]
+
+/-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
 @[simps]
 noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
@@ -150,17 +161,6 @@ instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom]
     rw [Iso.eq_comp_inv]
     apply map_uniq
     simp only [assoc, hτ₂]
-
-/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
-instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
-    IsCartesian p f (φ ≫ φ'.hom) where
-  universal_property := by
-    intro c ψ hψ
-    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
-    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
-    rintro τ ⟨hτ₁, hτ₂⟩
-    apply map_uniq
-    simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
 end IsCartesian
 
