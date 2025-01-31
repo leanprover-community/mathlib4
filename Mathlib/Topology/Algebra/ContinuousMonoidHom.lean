@@ -391,6 +391,13 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 
+/-- For `f : F` where `F` is a class of continuous monoid hom, this yields an element
+`ContinuousMonoidHom A B`. -/
+@[to_additive "For `f : F` where `F` is a class of continuous additive monoid hom, this yields
+an element `ContinuousAddMonoidHom A B`."]
+def ofClass (F : Type*) [FunLike F A B] [ContinuousMapClass F A B]
+    [MonoidHomClass F A B] (f : F) : (ContinuousMonoidHom A B) := toContinuousMonoidHom f
+
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X]
