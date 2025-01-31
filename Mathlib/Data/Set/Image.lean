@@ -10,6 +10,8 @@ import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.SymmDiff
 
+
+
 /-!
 # Images and preimages of sets
 
@@ -200,8 +202,30 @@ lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s 
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
 
+theorem forall_mem_image_1 {f : α → β} {s : Set α} {p : β → Prop} :
+    (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) :=
+  Iff.intro
+    (fun h0 x hx => h0 (f x) (mem_image_of_mem f hx))
+    (fun h0 _y ⟨_x,hx0,hxy⟩ => hxy ▸ (h0 hx0))
+
 theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
+
+theorem exists_mem_image_1 {f : α → β} {s : Set α} {p : β → Prop} :
+    (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by
+  apply Iff.intro
+  · rintro ⟨y,⟨x,hx0,hxy⟩,h1⟩
+    apply Exists.intro x
+    apply And.intro hx0 (hxy ▸ h1)
+  · rintro ⟨x,⟨h0,h1⟩⟩
+    apply Exists.intro  (f x)
+    apply And.intro (mem_image_of_mem f h0) h1
+
+theorem exists_mem_image_2 {f : α → β} {s : Set α} {p : β → Prop} :
+    (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) :=
+  Iff.intro
+    (fun ⟨_y,⟨x,hx0,hxy⟩,h1⟩ => ⟨x,⟨hx0,(hxy ▸ h1)⟩⟩)
+    (fun ⟨x,⟨h0,h1⟩⟩  => ⟨f x, ⟨mem_image_of_mem f h0,h1⟩⟩)
 
 -- Porting note: used to be `safe`
 @[congr]
@@ -215,9 +239,41 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
 
 @[gcongr]
 lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by
-  rintro - ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
+  rintro _ ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
+
+lemma image_mono_1 (h : s ⊆ t) : f '' s ⊆ f '' t := by
+  intro y ⟨x,hx,hxy⟩
+  apply Exists.intro x
+  apply And.intro (h hx) hxy
+
+lemma image_mono_2 (h : s ⊆ t) : f '' s ⊆ f '' t :=
+  fun _y ⟨x,hx,hxy⟩ => ⟨x, ⟨(h hx),hxy⟩⟩
 
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by aesop
+
+theorem image_comp_1 (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by
+  apply Subset.antisymm
+  · intro z ⟨x,hx,hxy⟩
+    apply Exists.intro (g x)
+    apply And.intro (mem_image_of_mem g hx) hxy
+  · intro z ⟨y,⟨x,hx,hxy⟩,hyz⟩
+    apply Exists.intro x
+    apply And.intro hx
+    have h3 := hxy ▸ hyz
+    exact h3
+
+theorem image_comp_2 (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) :=
+  Subset.antisymm
+    (fun _z ⟨x,hx,hxy⟩ => ⟨g x, ⟨mem_image_of_mem g hx,hxy⟩ ⟩ )
+    (fun _z ⟨_y,⟨x,hx,hxy⟩,hyz⟩ =>
+      ⟨x,⟨hx,(@Function.comp_apply β γ α f g x ) ▸ (hxy ▸ hyz)⟩⟩ )
+
+theorem image_comp_3 (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) :=
+  Subset.antisymm
+    (fun _z ⟨x,hx,hxy⟩ => ⟨g x, ⟨mem_image_of_mem g hx,hxy⟩ ⟩ )
+    (fun _z ⟨_y,⟨x,hx,hxy⟩,hyz⟩ =>
+      ⟨x,⟨hx,(Function.comp_apply) ▸ (hxy ▸ hyz)⟩⟩ )
+
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by ext; simp
 
@@ -244,6 +300,9 @@ theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f
   simp only [subset_def, mem_image]
   exact fun x => fun ⟨w, h1, h2⟩ => ⟨w, h h1, h2⟩
 
+theorem image_subset_2 {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b :=
+  fun _y ⟨x,hx,hxy⟩ => ⟨x,⟨h hx,hxy⟩⟩
+
 /-- `Set.image` is monotone. See `Set.image_subset` for the statement in terms of `⊆`. -/
 lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
 
@@ -259,6 +318,12 @@ theorem image_empty (f : α → β) : f '' ∅ = ∅ := by
   ext
   simp
 
+@[simp]
+theorem image_empty_2 (f : α → β) : f '' ∅ = ∅ :=
+  Subset.antisymm
+  (fun _y ⟨_x,hx,_hxy⟩ => False.elim hx)
+  (empty_subset (f '' ∅) )
+
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
   subset_inter (image_subset _ inter_subset_left) (image_subset _ inter_subset_right)
 
@@ -269,16 +334,43 @@ theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y �
       have : a₂ = a₁ := h _ ha₂ _ ha₁ (by simp [*])
       ⟨a₁, ⟨ha₁, this ▸ ha₂⟩, h₁⟩
 
+theorem image_inter_on_1 {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
+    f '' (s ∩ t) = f '' s ∩ f '' t :=
+  (image_inter_subset _ _ _).antisymm
+    fun _b ⟨⟨a₁, ha₁, h₁⟩, ⟨a₂, ha₂, h₂⟩⟩ ↦
+      have : a₂ = a₁ := h _ ha₂ _ ha₁ (h₁ ▸ h₂)
+      ⟨a₁, ⟨ha₁, this ▸ ha₂⟩, h₁⟩
+
 theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' (s ∩ t) = f '' s ∩ f '' t :=
   image_inter_on fun _ _ _ _ h => H h
 
 theorem image_univ_of_surjective {ι : Type*} {f : ι → β} (H : Surjective f) : f '' univ = univ :=
   eq_univ_of_forall <| by simpa [image]
 
+theorem image_univ_of_surjective_1 {ι : Type*} {f : ι → β} (H : Surjective f) : f '' univ = univ := by
+  apply Subset.antisymm (subset_univ (f '' univ)) 
+  intro y hy
+  rcases H y with ⟨x,hx⟩
+  apply Exists.intro x
+  apply And.intro (mem_univ x) hx
+
+theorem image_univ_of_surjective_2 {ι : Type*} {f : ι → β} (H : Surjective f)
+    : f '' univ = univ :=
+  Subset.antisymm
+  (subset_univ (f '' univ))
+  (fun y _hy => Exists.casesOn (H y) fun x hx => ⟨x,⟨mem_univ x,hx⟩⟩ )
+
 @[simp]
 theorem image_singleton {f : α → β} {a : α} : f '' {a} = {f a} := by
   ext
-  simp [image, eq_comm]
+  simp [image]
+
+@[simp]
+theorem image_singleton_3 {f : α → β} {a : α} : f '' {a} = {f a} :=
+  Subset.antisymm
+    (fun _y ⟨_x,hx,hxy⟩ =>
+      mem_singleton_iff.mpr ((( mem_singleton_iff.mp hx) ▸ hxy).symm) )
+  fun _fa hfa => ⟨a,⟨mem_singleton a,(mem_singleton_iff.mp hfa).symm⟩ ⟩
 
 @[simp]
 theorem Nonempty.image_const {s : Set α} (hs : s.Nonempty) (a : β) : (fun _ => a) '' s = {a} :=
@@ -312,6 +404,16 @@ theorem image_id' (s : Set α) : (fun x => x) '' s = s := by
   simp
 
 theorem image_id (s : Set α) : id '' s = s := by simp
+
+theorem image_id_3 (s : Set α) : id '' s = s :=
+  Subset.antisymm
+    (fun _a ⟨aa,haa,haa2⟩ => ((id_eq aa)  ▸ haa2) ▸ haa)
+  fun a ha => ⟨a,⟨ha,id_eq a⟩⟩
+
+theorem image_id_5 (s : Set α) : id '' s = s :=
+  ext fun x => Iff.intro
+    (fun ⟨xx,hxx,hxxx⟩ => ((id_eq xx ) ▸ hxxx) ▸ hxx)
+  fun  hx => ⟨x, ⟨hx,id_eq x⟩ ⟩
 
 lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n] := by
   induction n with
@@ -1400,3 +1502,4 @@ lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s 
   simp [image]
 
 end Sigma
+
