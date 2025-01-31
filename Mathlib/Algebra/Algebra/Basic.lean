@@ -302,23 +302,39 @@ lemma faithfulSMul_iff_algebraMap_injective :
 
 variable [FaithfulSMul R A]
 
-lemma FaithfulSMul.algebraMap_injective :
+namespace FaithfulSMul
+
+lemma algebraMap_injective :
     Injective (algebraMap R A) :=
   (faithfulSMul_iff_algebraMap_injective R A).mp inferInstance
 
+@[deprecated (since := "2025-01-31")]
+alias _root_.NoZeroSMulDivisors.algebraMap_injective := algebraMap_injective
+
 @[simp]
-lemma FaithfulSMul.algebraMap_eq_zero_iff {r : R} :
+lemma algebraMap_eq_zero_iff {r : R} :
     algebraMap R A r = 0 ↔ r = 0 :=
   map_eq_zero_iff (algebraMap R A) <| algebraMap_injective R A
+
+@[deprecated (since := "2025-01-31")]
+alias _root_.NoZeroSMulDivisors.algebraMap_eq_zero_iff := algebraMap_eq_zero_iff
 
 @[simp]
 lemma algebraMap_eq_one_iff {r : R} :
     algebraMap R A r = 1 ↔ r = 1 :=
   map_eq_one_iff _ <| FaithfulSMul.algebraMap_injective R A
 
+@[deprecated (since := "2025-01-31")]
+alias _root_.NoZeroSMulDivisors.algebraMap_eq_one_iff := algebraMap_eq_one_iff
+
 theorem _root_.NeZero.of_faithfulSMul (n : ℕ) [NeZero (n : R)] :
     NeZero (n : A) :=
   NeZero.nat_of_injective <| FaithfulSMul.algebraMap_injective R A
+
+@[deprecated (since := "2025-01-31")]
+alias _root_.NeZero.of_noZeroSMulDivisors := NeZero.of_faithfulSMul
+
+end FaithfulSMul
 
 lemma Algebra.charZero_of_charZero [CharZero R] :
     CharZero A :=

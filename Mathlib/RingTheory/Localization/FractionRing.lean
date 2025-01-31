@@ -474,6 +474,9 @@ theorem FaithfulSMul.of_field_isFractionRing (K L : Type*) [Field K] [Semiring L
   (faithfulSMul_iff_algebraMap_injective R S).mpr <|
     algebraMap_injective_of_field_isFractionRing R S K L
 
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.of_field_isFractionRing := FaithfulSMul.of_field_isFractionRing
+
 end algebraMap_injective
 
 variable (A)
