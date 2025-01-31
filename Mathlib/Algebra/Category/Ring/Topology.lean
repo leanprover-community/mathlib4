@@ -160,7 +160,6 @@ lemma isEmbedding_pushout (A B S : CommRingCat.{u}) [TopologicalSpace R] [Topolo
       ← closure_range_union_range_eq_top_of_isPushout (.of_hasPushout _ _), Subring.closure_le]
     simp only [Set.union_subset_iff, RingHom.coe_range, Set.range_subset_iff, Set.mem_range]
     exact ⟨fun x ↦ ⟨.X (.inl x), by simp [fAB, PAB]⟩, fun x ↦ ⟨.X (.inr x), by simp [fAB, PAB]⟩⟩
-  have := isEmbedding_comp_right_of_surjective (T := R) fAB hfAB
   let F : ((S ⟶ R) × ((A ⊕ B) → R)) → ((S ⟶ R) × (A → R)) × ((S ⟶ R) × (B → R)) :=
     fun x ↦ ⟨⟨x.1, x.2 ∘ Sum.inl⟩, ⟨x.1, x.2 ∘ Sum.inr⟩⟩
   have hF : IsEmbedding F := (Homeomorph.prodProdProdComm _ _ _ _).isEmbedding.comp
