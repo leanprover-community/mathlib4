@@ -50,9 +50,6 @@ abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
--- Porting note: removed, it was never used
--- notation f " -[" op "]- " g => combine f op g
-
 @[simp, mfld_simps]
 theorem id_comp (f : α → β) : id ∘ f = f := rfl
 

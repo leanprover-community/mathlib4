@@ -34,8 +34,7 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
 
 initialize_simps_projections Embedding (toFun → apply)
 
--- Porting note: this needs `tactic.lift`.
---instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+instance {α β : Sort*} : CanLift (α → β) (α ↪ β) (↑) Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 theorem exists_surjective_iff {α β : Sort*} :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
@@ -196,9 +195,6 @@ lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decida
 @[simps (config := .asFn)]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
-
--- Porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
--- `Function.Embedding.coeOption`.
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
 @[simps (config := .asFn)]
