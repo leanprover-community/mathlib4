@@ -29,6 +29,10 @@ open Nat hiding one_pos
 
 namespace List
 
+-- Renamed in lean core; to be removed with the version bump.
+alias replicate_append_replicate := append_replicate_replicate
+alias append_eq_nil_iff := append_eq_nil
+
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
@@ -208,7 +212,7 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
   | (b :: l) => by simp [eq_replicate_length, replicate_succ]
 
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
-  rw [append_replicate_replicate]
+  rw [replicate_append_replicate]
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
@@ -379,7 +383,8 @@ theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.ge
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
 
-#adaptation_note /-- 2024-07-10: removed `@[simp]` since the LHS simplifies using the simp set. -/
+#adaptation_note /-- 2024-07-10
+removed `@[simp]` since the LHS simplifies using the simp set. -/
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -670,19 +675,19 @@ variable [DecidableEq α]
 
 -- indexOf_cons_eq _ rfl
 @[simp]
-theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
+theorem indexOf_cons_self {a : α} {l : List α} : indexOf a (a :: l) = 0 := by
   rw [indexOf, findIdx_cons, beq_self_eq_true, cond]
 
 -- fun e => if_pos e
 theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
-  | e => by rw [← e]; exact indexOf_cons_self b l
+  | e => by rw [← e]; exact indexOf_cons_self
 
 -- fun n => if_neg n
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 
-theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
+theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
   simp only [length, mem_cons, indexOf_cons, eq_comm]
@@ -693,9 +698,12 @@ theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a 
     rw [← ih]
     exact succ_inj'
 
+@[deprecated (since := "2025-01-28")]
+alias indexOf_eq_length := indexOf_eq_length_iff
+
 @[simp]
 theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = length l :=
-  indexOf_eq_length.2
+  indexOf_eq_length_iff.2
 
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
@@ -704,9 +712,11 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
 
-theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
-   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
+theorem indexOf_lt_length_iff {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
+  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length_iff.2 al,
+   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length_iff.1 h al⟩
+
+@[deprecated (since := "2025-01-22")] alias indexOf_lt_length := indexOf_lt_length_iff
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
@@ -799,7 +809,8 @@ theorem indexOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨index
 
 @[simp]
 theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    l[indexOf a l]? = some a := by rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length.2 h)]
+    l[indexOf a l]? = some a := by
+  rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length_iff.2 h)]
 
 -- This is incorrectly named and should be `get?_indexOf`;
 -- this already exists, so will require a deprecation dance.
@@ -810,8 +821,8 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
     indexOf x l = indexOf y l ↔ x = y :=
   ⟨fun h => by
     have x_eq_y :
-        get l ⟨indexOf x l, indexOf_lt_length.2 hx⟩ =
-        get l ⟨indexOf y l, indexOf_lt_length.2 hy⟩ := by
+        get l ⟨indexOf x l, indexOf_lt_length_iff.2 hx⟩ =
+        get l ⟨indexOf y l, indexOf_lt_length_iff.2 hy⟩ := by
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
@@ -872,7 +883,7 @@ theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ 
 @[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
-    List.flatMap l f = List.flatMap l g :=
+    l.flatMap f = l.flatMap g :=
   (congr_arg List.flatten <| map_congr_left h :)
 
 @[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
@@ -1618,12 +1629,7 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
 
 /-! ### filterMap -/
 
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_none
-
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
@@ -1672,11 +1678,9 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note
-/--
+#adaptation_note /-- nightly-2024-07-27
 This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27.
--/
+The prime should be removed at nightly-2024-07-27. -/
 @[simp]
 theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset

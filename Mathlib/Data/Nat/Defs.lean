@@ -493,16 +493,10 @@ lemma div_mul_div_le_div (a b c : ℕ) : a / c * b / a ≤ b / c := by
 lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div (Nat.le_refl _) h
 
 lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := by
-  rw [Nat.le_div_iff_mul_le Nat.two_pos]
-  rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.sub_mul, Nat.lt_sub_iff_add_lt,
-    Nat.mul_two a] at h
-  exact Nat.le_of_lt (Nat.lt_of_add_lt_add_left h)
+  omega
 
 lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := by
-  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.sub_mul, Nat.sub_le_iff_le_add,
-    Nat.mul_two, Nat.add_le_add_iff_left] at h
-  rw [← Nat.mul_div_left b Nat.two_pos]
-  exact Nat.div_le_div_right h
+  omega
 
 protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
   obtain rfl | hk := k.eq_zero_or_pos
