@@ -225,8 +225,6 @@ open scoped BigOperators Pointwise
 theorem isPreprimitive_iff_isSimpleOrder_blocks
     [htGX : IsPretransitive G X] [Nontrivial X] (a : X) :
     IsPreprimitive G X ↔ IsSimpleOrder { B : Set X // a ∈ B ∧ IsBlock G B } := by
-  haveI : Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } :=
-    Block.mem_is_nontrivial_order_of_nontrivial G a
   constructor
   · intro hGX'; apply IsSimpleOrder.mk
     rintro ⟨B, haB, hB⟩
