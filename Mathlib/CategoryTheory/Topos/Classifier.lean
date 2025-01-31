@@ -19,11 +19,11 @@ classifier as `CategoryTheory.Classifier.IsClassifier`.
 
 Let `C` refer to a category with a terminal object.
 
-* `CategoryTheory.Classifier.IsClassifier` describes what it means for a
+* `CategoryTheory.MonoClassifier.IsClassifier` describes what it means for a
   pair of an object `Ω : C` and a morphism `t : ⊤_ C ⟶ Ω` to be a subobject
   classifier for `C`.
 
-* `CategoryTheory.Classifier.HasClassifier C` is the data of `C` having a
+* `CategoryTheory.MonoClassifier.Classifier C` is the data of `C` having a
   subobject classifier.
 
 ## Main results
@@ -31,7 +31,7 @@ Let `C` refer to a category with a terminal object.
 * It is a theorem that the truth morphism `⊤_ C ⟶ Ω C` is a (split, and
   therefore regular) monomorphism.
 
-* `Classifier.balanced` shows that any category with a subobject classifier
+* `MonoClassifier.balanced` shows that any category with a subobject classifier
   is balanced. This follows from the fact that every monomorphism is the
   pullback of a regular monomorphism (the truth morphism).
 
@@ -53,7 +53,7 @@ open CategoryTheory Category Limits Functor
 
 variable {C : Type u} [Category.{v} C] [HasTerminal C]
 
-namespace CategoryTheory.SubobjectClassifier
+namespace CategoryTheory.MonoClassifier
 
 /-- A morphism `t : ⊤_ C ⟶ Ω` from the terminal object of a category `C`
 is a subobject classifier if, for every monomorphism `m : U ⟶ X` in `C`,
@@ -146,12 +146,12 @@ is a pullback square.
 lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m :=
   (classifierIsClassifier C).uniq m χ hχ
 
-end CategoryTheory.SubobjectClassifier
+end CategoryTheory.MonoClassifier
 
 -- note: linter error caused an issue with `[Classifier C]`,
 -- requiring namespace split.
 
-namespace CategoryTheory.SubobjectClassifier
+namespace CategoryTheory.MonoClassifier
 
 variable (C) [Classifier C]
 
@@ -197,7 +197,8 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
-end CategoryTheory.SubobjectClassifier
+end CategoryTheory.MonoClassifier
 
+#check IsPullback
 -- #lint docBlameThm
 -- is a docstring needed for the auto-generated `comm_assoc`?
