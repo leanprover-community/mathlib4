@@ -30,7 +30,7 @@ noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [Comm
   continuous_toFun := SeparationQuotient.continuous_lift.mpr f.2
 
 @[to_additive (attr := simp)]
-theorem liftContinuousCommMonoidHom_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N]
+theorem liftContinuousCommMonoidHom_mk [CommMonoid M] [ContinuousMul M] [CommMonoid N]
     (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) (x : M) :
     liftContinuousMonoidHom f hf (mk x) = f x := rfl
 
