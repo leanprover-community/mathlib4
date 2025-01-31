@@ -585,6 +585,9 @@ def toEmbedding : (M ≃[L] N) → M ↪[L] N :=
 def toHom : (M ≃[L] N) → M →[L] N :=
   HomClass.toHom
 
+theorem injective_toHom : Function.Injective (toHom : (M ≃[L] N) → M →[L] N) :=
+  fun _ _ h ↦ DFunLike.coe_injective (congr_arg (⇑) h)
+
 @[simp]
 theorem toEmbedding_toHom (f : M ≃[L] N) : f.toEmbedding.toHom = f.toHom :=
   rfl
