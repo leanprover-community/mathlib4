@@ -11,7 +11,7 @@ ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
 ZULIP_SITE = sys.argv[3]
 LABEL = sys.argv[4]
-PR_NUMBER = sys.argv[5]
+PR_NUMBER = 18679 #sys.argv[5]
 
 print(f"LABEL: '{LABEL}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
