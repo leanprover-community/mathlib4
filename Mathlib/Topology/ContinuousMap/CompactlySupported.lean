@@ -130,7 +130,8 @@ noncomputable def comp_left {γ : Type*} [TopologicalSpace γ] [Zero γ] {g : C(
     (f : C_c(α, β)) : C_c(α, γ) where
   toContinuousMap := if g 0 = 0 then g.comp f else 0
   hasCompactSupport' := by
-    by_cases hg : g 0 = 0
+    classical
+    split hg
     · rw [if_pos hg]
       simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
       exact HasCompactSupport.comp_left f.hasCompactSupport' hg
