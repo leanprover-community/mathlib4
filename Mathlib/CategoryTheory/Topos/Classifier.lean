@@ -53,7 +53,7 @@ open CategoryTheory Category Limits Functor
 
 variable {C : Type u} [Category.{v} C] [HasTerminal C]
 
-namespace CategoryTheory.Classifier
+namespace CategoryTheory.SubobjectClassifier
 
 /-- A morphism `t : ⊤_ C ⟶ Ω` from the terminal object of a category `C`
 is a subobject classifier if, for every monomorphism `m : U ⟶ X` in `C`,
@@ -68,16 +68,19 @@ terminal.from U               χ
 ```
 -/
 class IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
-  /-- For any monomorphism `U ⟶ X`, there is exactly one map `X ⟶ Ω`
-  making the appropriate square a pullback square. -/
-  char {U X : C} (m : U ⟶ X) [Mono m] :
-    Unique { χ : X ⟶ Ω // IsPullback m (terminal.from U) χ t }
+  /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω` -/
+  char {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
+  /-- The -/
+  isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (terminal.from U) (char m) t
+  /-- `char m` is the only -/
+  uniq {U X : C} (m : U ⟶ X) [Mono m] (χ : X ⟶ Ω) (hχ : IsPullback m (terminal.from U) χ t) :
+    χ = char m
 
 variable (C)
 
 /-- A category C has a subobject classifier if there is some object `Ω` such that
 a morphism `t : ⊤_ C ⟶ Ω` is a subobject classifier (`CategoryTheory.Classifier.IsClassifier`). -/
-class HasClassifier where
+class Classifier where
   /-- the target of the "truth arrow" in a subobject classifier -/
   obj : C
   /-- the "truth arrow" in a subobject classifier -/
@@ -85,26 +88,26 @@ class HasClassifier where
   /-- the pair `obj` and `t` form a subobject classifier -/
   isClassifier : IsClassifier t
 
-variable [HasClassifier C]
+variable [Classifier C]
 
 /-- Notation for the object in a subobject classifier -/
-abbrev Ω : C := HasClassifier.obj
+abbrev Ω : C := Classifier.obj
 
 /-- Notation for the "truth arrow" in a subobject classifier -/
-abbrev t : ⊤_ C ⟶ Ω C := HasClassifier.t
+abbrev t : ⊤_ C ⟶ Ω C := Classifier.t
 
 /-- The pair of `Ω C` and `t C` form a subobject classifier.
 helper def for destructuring `IsClassifier`.
 -/
 instance classifierIsClassifier : IsClassifier (t C) :=
-  HasClassifier.isClassifier
+  Classifier.isClassifier
 
 variable {C}
 variable {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
 def characteristicMap : X ⟶ Ω C :=
-  ((classifierIsClassifier C).char m).default
+  (classifierIsClassifier C).char m
 
 /-- shorthand for the characteristic morphism, `ClassifierOf m` -/
 abbrev χ_ := characteristicMap m
@@ -121,7 +124,7 @@ terminal.from U              χ_ m
 is a pullback square.
 -/
 lemma isPullback : IsPullback m (terminal.from U) (χ_ m) (t C) :=
-  ((classifierIsClassifier C).char m).default.prop
+  (classifierIsClassifier C).isPullback m
 
 /-- The diagram
 ```
@@ -134,66 +137,23 @@ terminal.from U              χ_ m
 ```
 commutes.
 -/
-lemma comm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (pullback m).w
+@[reassoc]
+lemma comm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (isPullback m).w
 
 /-- `characteristicMap m` is the only map for which the associated square
 is a pullback square.
 -/
-lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m := by
-  have h := ((classifierIsClassifier C).char m).uniq (Subtype.mk χ hχ)
-  apply_fun (fun x => x.val) at h
-  assumption
+lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m :=
+  (classifierIsClassifier C).uniq m χ hχ
 
-/-- The underlying `PullbackCone` from the pullback diagram. -/
-noncomputable def pullbackCone : PullbackCone (χ_ m) (t C) :=
-  PullbackCone.mk m (terminal.from _) (comm m)
+end CategoryTheory.SubobjectClassifier
 
-/-- The underlying `IsLimit` from `Classifier.pullback`. -/
-noncomputable def isLimit' :
-    IsLimit (PullbackCone.mk m (terminal.from _) (comm m)) :=
-  (pullback m).isLimit'.some
-
-/-- If a map `g : Z ⟶ X and the following diagram commutes:
-```
-      Z ---------g----------> X
-      |                       |
-terminal.from U              χ_ m
-      |                       |
-      v                       v
-    ⊤_ C -------t C---------> Ω
-```
-then this is shorthand for the lift of `g` to `U`.
--/
-noncomputable def lift {Z : C} (g : Z ⟶ X)
-(comm' : g ≫ (χ_ m) = (terminal.from Z ≫ t C)) :
-    Z ⟶ U :=
-  IsPullback.lift (pullback m) _ _ comm'
-
-/-- If a map `g : Z ⟶ X and the following diagram commutes:
-```
-      Z ---------g----------> X
-      |                       |
-terminal.from U              χ_ m
-      |                       |
-      v                       v
-    ⊤_ C -------t C---------> Ω
-```
-then `Classifier.lift` is the lift of `g` to `U`;
-the following is a proof that it is indeed a lift, i.e.
-that lift composed with `m` is `g`.
--/
-lemma lift_comm {Z : C} (g : Z ⟶ X) (comm' : g ≫ χ_ m = (terminal.from Z ≫ t C)) :
-    lift (comm' := comm') ≫ m = g :=
-  IsPullback.lift_fst (pullback m) _ _ comm'
-
-end CategoryTheory.Classifier
-
--- note: linter error caused an issue with `[HasClassifier C]`,
+-- note: linter error caused an issue with `[Classifier C]`,
 -- requiring namespace split.
 
-namespace CategoryTheory.Classifier
+namespace CategoryTheory.SubobjectClassifier
 
-variable (C) [HasClassifier C]
+variable (C) [Classifier C]
 
 /-- `t C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (t C) :=
@@ -213,35 +173,31 @@ in `C` is the pullback of a regular monomorphism; since regularity
 is stable under base change, every monomorphism is regular.
 -/
 noncomputable instance monoIsRegularMono {A B : C} (m : A ⟶ B) [Mono m] : RegularMono m :=
-  regularOfIsPullbackFstOfRegular (pullback m).w (pullback m).isLimit
-
-
-/-- A category with a subobject classifier satisfies the condition
-that a map which is both monic and epic is an isomorphism.
--/
-lemma balanced {A B : C} (f : A ⟶ B) [ef : Epi f] [Mono f] : IsIso f :=
-  isIso_of_epi_of_strongMono f
+  regularOfIsPullbackFstOfRegular (isPullback m).w (isPullback m).isLimit
 
 /-- `C` is a balanced category.  -/
-instance : Balanced C where
-  isIso_of_mono_of_epi := fun f => balanced _ f
+instance balanced : Balanced C where
+  isIso_of_mono_of_epi := fun f => isIso_of_epi_of_strongMono f
 
 /-- Since `C` is balanced, so is `Cᵒᵖ`. -/
-instance : Balanced Cᵒᵖ := balanced_opposite
+instance balancedOp : Balanced Cᵒᵖ := balanced_opposite
 
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.
 -/
-theorem reflects_isomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
+theorem reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
   the same holds -- the functor reflects isomorphisms.
 -/
-theorem reflects_isomorphisms_op (D : Type u₀) [Category.{v₀} D]
+theorem reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
 (F : Cᵒᵖ ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
-end CategoryTheory.Classifier
+end CategoryTheory.SubobjectClassifier
+
+-- #lint docBlameThm
+-- is a docstring needed for the auto-generated `comm_assoc`?
