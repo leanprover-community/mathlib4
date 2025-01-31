@@ -111,7 +111,6 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
   match (← get).cache[mod]? with
   | some hash? => return hash?
   | none =>
-    -- let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← sourceFile.pathExists) then
       IO.println s!"Warning: {sourceFile} not found. Skipping all files that depend on it."
       modify fun stt => { stt with cache := stt.cache.insert mod none }
