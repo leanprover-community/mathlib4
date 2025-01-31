@@ -229,6 +229,7 @@ def greedy_coloring : G.Coloring (Fin (Δ + 1)) :=by
     | inr heq => exfalso; apply G.loopless _ (heq ▸ hadj)
 
 end DeltaLT
+section bdddeg
 variable {G} {Δ : ℕ} [LocallyFinite G] (hdeg : ∀ n, G.degree n ≤ Δ)
 lemma degLT_le_degree (v : ℕ) : G.degreeLT v ≤ G.degree v := by
   rw [← card_neighborFinset_eq_degree, degreeLT]
@@ -237,7 +238,8 @@ lemma degLT_le_degree (v : ℕ) : G.degreeLT v ≤ G.degree v := by
   exact hm.2
 
 /-- If G is locally finite and all degrees are bounded above by Δ it is Δ + 1 colorable -/
-def greedy_coloring' : G.Coloring (Fin (Δ + 1)) :=
+def greedy_coloring_of_bdd_degree : G.Coloring (Fin (Δ + 1)) :=
   G.greedy_coloring (fun n ↦ (degLT_le_degree n).trans <| hdeg n)
 
+end bdddeg
 end SimpleGraph
