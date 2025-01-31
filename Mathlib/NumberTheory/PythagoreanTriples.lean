@@ -25,6 +25,7 @@ analyze the parity of `x`, `y`, `m` and `n` and eliminate all the impossible cas
 the bulk of the proof below.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 theorem sq_ne_two_fin_zmod_four (z : ZMod 4) : z * z ≠ 2 := by
   change Fin 4 at z

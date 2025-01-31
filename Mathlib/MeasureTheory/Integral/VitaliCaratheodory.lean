@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Semicontinuous
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Vitali-Carathéodory theorem

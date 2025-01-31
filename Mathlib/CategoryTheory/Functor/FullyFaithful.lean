@@ -36,17 +36,13 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Functor
 
-/-- A functor `F : C ⥤ D` is full if for each `X Y : C`, `F.map` is surjective.
-
-See <https://stacks.math.columbia.edu/tag/001C>.
--/
+/-- A functor `F : C ⥤ D` is full if for each `X Y : C`, `F.map` is surjective. -/
+@[stacks 001C]
 class Full (F : C ⥤ D) : Prop where
   map_surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
 
-/-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective.
-
-See <https://stacks.math.columbia.edu/tag/001C>.
--/
+/-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective. -/
+@[stacks 001C]
 class Faithful (F : C ⥤ D) : Prop where
   /-- `F.map` is injective for each `X Y : C`. -/
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
@@ -64,7 +60,7 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
-  Iso.ext (map_injective F (congr_arg Iso.hom h : _))
+  Iso.ext (map_injective F (congr_arg Iso.hom h :))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=

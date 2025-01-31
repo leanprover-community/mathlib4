@@ -34,9 +34,8 @@ We work in a category `C` equipped with a shift.
 variable (C : Type u) [Category.{v} C] [HasShift C ℤ]
 
 /-- A triangle in `C` is a sextuple `(X,Y,Z,f,g,h)` where `X,Y,Z` are objects of `C`,
-and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`.
-See <https://stacks.math.columbia.edu/tag/0144>.
--/
+and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`. -/
+@[stacks 0144]
 structure Triangle where mk' ::
   /-- the first object of a triangle -/
   obj₁ : C
@@ -95,9 +94,8 @@ In other words, we have a commutative diagram:
   X' ───> Y' ───> Z' ───> X'⟦1⟧
      f'     g'     h'
 ```
-See <https://stacks.math.columbia.edu/tag/0144>.
 -/
-@[ext]
+@[ext, stacks 0144]
 structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the first morphism in a triangle morphism -/
   hom₁ : T₁.obj₁ ⟶ T₂.obj₁
@@ -249,7 +247,7 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by simp) (by simp)
 
 section
 

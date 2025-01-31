@@ -39,18 +39,18 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
   · rw [← spine_arrow, spine_δ_arrow_lt _ hlt]
     dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
-    simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
+    simp only [horn, horn.spineId, stdSimplex, uliftFunctor, Functor.comp_obj,
       yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
-      standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
+      stdSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
       Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
     rw [mkOfSucc_δ_lt hlt]
     rfl
   · rw [← spine_arrow, spine_δ_arrow_gt _ hgt]
     dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
-    simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
+    simp only [horn, horn.spineId, stdSimplex, uliftFunctor, Functor.comp_obj,
       yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
-      standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
+      stdSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
       Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
     rw [mkOfSucc_δ_gt hgt]
     rfl
@@ -74,7 +74,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       dsimp [spine_arrow, Path.interval, Path.map]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
       apply congr_arg
-      simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+      simp only [horn, stdSimplex, uliftFunctor, Functor.comp_obj,
         whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, ne_eq,
         whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, len_mk,
         Nat.reduceAdd, Quiver.Hom.unop_op]
@@ -85,7 +85,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
     simp only [spineToDiagonal, diagonal, spineToSimplex_spine]
     rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
     apply congr_arg
-    simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+    simp only [horn, stdSimplex, uliftFunctor, Functor.comp_obj,
       whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
       uliftFunctor_map, whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe,
       len_mk, Nat.reduceAdd, Quiver.Hom.unop_op, Subtype.mk.injEq, ULift.up_inj]
@@ -94,7 +94,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
     | zero => contradiction
     | succ _ =>
       fin_cases z <;>
-      · simp only [standardSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
+      · simp only [stdSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
           Quiver.Hom.unop_op, Equiv.ulift_symm_down]
         rw [mkOfSucc_δ_eq heq]
         rfl

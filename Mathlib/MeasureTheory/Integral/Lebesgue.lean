@@ -323,22 +323,31 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_congr_fun := setLIntegral_congr_fun
 
-theorem lintegral_ofReal_le_lintegral_nnnorm (f : α → ℝ) :
-    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖₊ ∂μ := by
-  simp_rw [← ofReal_norm_eq_coe_nnnorm]
+theorem lintegral_ofReal_le_lintegral_enorm (f : α → ℝ) :
+    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖ₑ ∂μ := by
+  simp_rw [← ofReal_norm_eq_enorm]
   refine lintegral_mono fun x => ENNReal.ofReal_le_ofReal ?_
   rw [Real.norm_eq_abs]
   exact le_abs_self (f x)
 
-theorem lintegral_nnnorm_eq_of_ae_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ᵐ[μ] f) :
-    ∫⁻ x, ‖f x‖₊ ∂μ = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
+@[deprecated (since := "2025-01-17")]
+alias lintegral_ofReal_le_lintegral_nnnorm := lintegral_ofReal_le_lintegral_enorm
+
+theorem lintegral_enorm_of_ae_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ᵐ[μ] f) :
+    ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ := by
   apply lintegral_congr_ae
   filter_upwards [h_nonneg] with x hx
-  rw [Real.nnnorm_of_nonneg hx, ENNReal.ofReal_eq_coe_nnreal hx]
+  rw [Real.enorm_eq_ofReal hx]
 
-theorem lintegral_nnnorm_eq_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
-    ∫⁻ x, ‖f x‖₊ ∂μ = ∫⁻ x, ENNReal.ofReal (f x) ∂μ :=
-  lintegral_nnnorm_eq_of_ae_nonneg (Filter.Eventually.of_forall h_nonneg)
+@[deprecated (since := "2025-01-17")]
+alias lintegral_nnnorm_eq_of_ae_nonneg := lintegral_enorm_of_ae_nonneg
+
+theorem lintegral_enorm_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
+    ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ :=
+  lintegral_enorm_of_ae_nonneg <| .of_forall h_nonneg
+
+@[deprecated (since := "2025-01-17")]
+alias lintegral_nnnorm_eq_of_nonneg := lintegral_enorm_of_nonneg
 
 /-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
@@ -448,6 +457,17 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
         exact monotone_eapprox f h
     _ = ⨆ n, (eapprox f n).lintegral μ := by
       congr; ext n; rw [(eapprox f n).lintegral_eq_lintegral]
+
+lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (n : ℕ) :
+    (eapprox f n).lintegral μ ≤ ∫⁻ x, f x ∂μ := by
+  rw [lintegral_eq_iSup_eapprox_lintegral hf]
+  exact le_iSup (fun n ↦ (eapprox f n).lintegral μ) n
+
+lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurable f)
+    (hf : ∫⁻ x, f x ∂μ ≠ ∞) (n : ℕ) :
+    μ (support (eapprox f n)) < ∞ :=
+  measure_support_lt_top_of_lintegral_ne_top <|
+    ((lintegral_eapprox_le_lintegral hf_meas n).trans_lt hf.lt_top).ne
 
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. This lemma states this fact in terms of `ε` and `δ`. -/
@@ -1292,6 +1312,8 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
     · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_right
 
 open Measure
+
+open scoped Function -- required for scoped `on` notation
 
 theorem lintegral_iUnion₀ [Countable β] {s : β → Set α} (hm : ∀ i, NullMeasurableSet (s i) μ)
     (hd : Pairwise (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :

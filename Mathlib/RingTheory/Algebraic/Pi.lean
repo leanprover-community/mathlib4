@@ -11,10 +11,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 This file defines algebraic functions as the image of the `algebraMap R[X] (R → S)`.
 -/
 
-assert_not_exists IsIntegralClosure
-assert_not_exists LinearIndependent
-assert_not_exists LocalRing
-assert_not_exists MvPolynomial
+assert_not_exists IsIntegralClosure LinearIndependent LocalRing MvPolynomial
 
 open Polynomial
 
@@ -52,9 +49,10 @@ variable [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algeb
 -- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
-noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) :=
-  { Polynomial.hasSMulPi' R S T with
-    toFun := fun p z => algebraMap S T (aeval z p)
+noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) where
+  __ := Polynomial.hasSMulPi' R S T
+  algebraMap :=
+  { toFun := fun p z => algebraMap S T (aeval z p)
     map_one' := by
       funext z
       simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
@@ -66,14 +64,14 @@ noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) :=
       simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
     map_add' := fun f g => by
       funext z
-      simp only [Polynomial.aeval_add, Pi.add_apply, map_add]
-    commutes' := fun p f => by
-      funext z
-      exact mul_comm _ _
-    smul_def' := fun p f => by
-      funext z
-      simp only [polynomial_smul_apply', Algebra.algebraMap_eq_smul_one, RingHom.coe_mk,
-        MonoidHom.coe_mk, OneHom.coe_mk, Pi.mul_apply, Algebra.smul_mul_assoc, one_mul] }
+      simp only [Polynomial.aeval_add, Pi.add_apply, map_add] }
+  commutes' := fun p f => by
+    funext z
+    exact mul_comm _ _
+  smul_def' := fun p f => by
+    funext z
+    simp only [polynomial_smul_apply', Algebra.algebraMap_eq_smul_one, RingHom.coe_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, Pi.mul_apply, Algebra.smul_mul_assoc, one_mul]
 
 attribute [local instance] Polynomial.algebraPi
 
