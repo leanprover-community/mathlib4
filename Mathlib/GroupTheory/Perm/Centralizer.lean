@@ -245,7 +245,7 @@ theorem sameCycle {x : α} (hx : g.cycleOf x ∈ g.cycleFactorsFinset) :
 variable (τ : range_toPermHom' g)
 
 /-- The function that will provide a right inverse `toCentralizer` to `toPermHom` -/
-def ofPermHom_fun (x : α) : α :=
+def ofPermHomFun (x : α) : α :=
   if hx : g.cycleOf x ∈ g.cycleFactorsFinset
   then
     (g ^ (Nat.find (a.sameCycle hx).exists_nat_pow_eq))
@@ -263,9 +263,9 @@ theorem mem_fixedPoints_or_exists_zpow_eq (x : α) :
   rw [mem_support_cycleOf_iff, ← cycleOf_mem_cycleFactorsFinset_iff]
   simp [SameCycle.rfl, hx, and_self]
 
-theorem ofPermHom_fun_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
+theorem ofPermHomFun_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     (hx : x ∈ (c : Perm α).support) {m : ℤ} (hm : (g ^ m) (a c) = x) :
-    ofPermHom_fun a τ x = (g ^ m) (a ((τ : Perm g.cycleFactorsFinset) c)) := by
+    ofPermHomFun a τ x = (g ^ m) (a ((τ : Perm g.cycleFactorsFinset) c)) := by
   have hx' : c = g.cycleOf x := cycle_is_cycleOf hx (Subtype.prop c)
   have hx'' : g.cycleOf x ∈ g.cycleFactorsFinset := hx' ▸ c.prop
   set n := Nat.find (a.sameCycle hx'').exists_nat_pow_eq
@@ -273,7 +273,7 @@ theorem ofPermHom_fun_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     rw [← Nat.find_spec (a.sameCycle hx'').exists_nat_pow_eq, zpow_natCast]
     congr
     rw [← Subtype.coe_inj, hx']
-  suffices ofPermHom_fun a τ x = (g ^ (n : ℤ)) (a ((τ : Perm g.cycleFactorsFinset) c)) by
+  suffices ofPermHomFun a τ x = (g ^ (n : ℤ)) (a ((τ : Perm g.cycleFactorsFinset) c)) by
     rw [this, IsCycleOn.zpow_apply_eq_zpow_apply
       (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c).prop)
       (mem_support_self a ((τ : Perm g.cycleFactorsFinset) c))]
@@ -281,28 +281,28 @@ theorem ofPermHom_fun_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     rw [← IsCycleOn.zpow_apply_eq_zpow_apply
       (isCycleOn_support_of_mem_cycleFactorsFinset c.prop) (mem_support_self a c)]
     rw [hn, hm]
-  simp only [ofPermHom_fun, dif_pos hx'']
+  simp only [ofPermHomFun, dif_pos hx'']
   congr
   exact hx'.symm
 
-theorem ofPermHom_fun_apply_of_mem_fixedPoints {x : α} (hx : x ∈ Function.fixedPoints g) :
-    ofPermHom_fun a τ x = x := by
-  rw [ofPermHom_fun, dif_neg]
+theorem ofPermHomFun_apply_of_mem_fixedPoints {x : α} (hx : x ∈ Function.fixedPoints g) :
+    ofPermHomFun a τ x = x := by
+  rw [ofPermHomFun, dif_neg]
   rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support]
   exact hx
 
-theorem ofPermHom_fun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFinset} :
-    ofPermHom_fun a τ x ∈ ((τ : Perm g.cycleFactorsFinset) c : Perm α).support ↔
+theorem ofPermHomFun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFinset} :
+    ofPermHomFun a τ x ∈ ((τ : Perm g.cycleFactorsFinset) c : Perm α).support ↔
       x ∈ (c : Perm α).support := by
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨d, hd, m, hm⟩)
-  · simp only [ofPermHom_fun_apply_of_mem_fixedPoints a τ hx]
+  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a τ hx]
     suffices ∀ (d : g.cycleFactorsFinset), x ∉ (d : Perm α).support by
       simp only [this]
     intro d hx'
     rw [Function.mem_fixedPoints_iff, ← not_mem_support] at hx
     apply hx
     exact mem_cycleFactorsFinset_support_le d.prop hx'
-  · rw [ofPermHom_fun_apply_of_cycleOf_mem a τ hd hm] --
+  · rw [ofPermHomFun_apply_of_cycleOf_mem a τ hd hm] --
     rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
     by_cases h : c = d
     · simp only [h, hd, iff_true, mem_support_self]
@@ -317,52 +317,52 @@ theorem ofPermHom_fun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFi
       rw [disjoint_iff_disjoint_support, Finset.disjoint_right] at H H'
       simp only [H hd, H' (mem_support_self a _)]
 
-theorem ofPermHom_fun_commute_zpow_apply (x : α) (j : ℤ) :
-    ofPermHom_fun a τ ((g ^ j) x) = (g ^ j) (ofPermHom_fun a τ x) := by
+theorem ofPermHomFun_commute_zpow_apply (x : α) (j : ℤ) :
+    ofPermHomFun a τ ((g ^ j) x) = (g ^ j) (ofPermHomFun a τ x) := by
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | hx)
-  · rw [ofPermHom_fun_apply_of_mem_fixedPoints a τ hx, ofPermHom_fun_apply_of_mem_fixedPoints]
+  · rw [ofPermHomFun_apply_of_mem_fixedPoints a τ hx, ofPermHomFun_apply_of_mem_fixedPoints]
     rw [Function.mem_fixedPoints_iff]
     simp only [← mul_apply, ← zpow_one_add, add_comm]
     conv_rhs => rw [← hx, ← mul_apply, ← zpow_add_one]
   · obtain ⟨c, hc, m, hm⟩ := hx
     have hm' : (g ^ (j + m)) (a c) = (g ^ j) x := by rw [zpow_add, mul_apply, hm]
-    rw [ofPermHom_fun_apply_of_cycleOf_mem a τ hc hm, ofPermHom_fun_apply_of_cycleOf_mem a τ _ hm',
+    rw [ofPermHomFun_apply_of_cycleOf_mem a τ hc hm, ofPermHomFun_apply_of_cycleOf_mem a τ _ hm',
       ← mul_apply, ← zpow_add]
     exact zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff.mpr hc
 
-theorem ofPermHom_fun_mul (σ τ : range_toPermHom' g) (x) :
-    ofPermHom_fun a (σ * τ) x = (ofPermHom_fun a σ) (ofPermHom_fun a τ x) := by
+theorem ofPermHomFun_mul (σ τ : range_toPermHom' g) (x) :
+    ofPermHomFun a (σ * τ) x = (ofPermHomFun a σ) (ofPermHomFun a τ x) := by
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
-  · simp only [ofPermHom_fun_apply_of_mem_fixedPoints a _ hx]
-  · simp only [ofPermHom_fun_apply_of_cycleOf_mem a _ hc hm]
-    rw [ofPermHom_fun_apply_of_cycleOf_mem a _ _ rfl]
+  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
+  · simp only [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm]
+    rw [ofPermHomFun_apply_of_cycleOf_mem a _ _ rfl]
     · rfl
     · rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
       apply mem_support_self
 
-theorem ofPermHom_fun_one (x : α) : (ofPermHom_fun a 1) x = x := by
+theorem ofPermHomFun_one (x : α) : (ofPermHomFun a 1) x = x := by
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
-  · rw [ofPermHom_fun_apply_of_mem_fixedPoints a _ hx]
-  · rw [ofPermHom_fun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
+  · rw [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
+  · rw [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
 
 /-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
   preserve the lengths of the cycles, a permutation of `α` that
   moves the `Basis` and commutes with `g` -/
 noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   toFun τ := {
-    toFun := ofPermHom_fun a τ
-    invFun := ofPermHom_fun a τ⁻¹
-    left_inv := fun x ↦ by rw [← ofPermHom_fun_mul, inv_mul_cancel, ofPermHom_fun_one]
-    right_inv := fun x ↦ by rw [← ofPermHom_fun_mul, mul_inv_cancel, ofPermHom_fun_one] }
-  map_one' := ext fun x ↦ ofPermHom_fun_one a x
-  map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, ofPermHom_fun_mul a σ τ x]
+    toFun := ofPermHomFun a τ
+    invFun := ofPermHomFun a τ⁻¹
+    left_inv := fun x ↦ by rw [← ofPermHomFun_mul, inv_mul_cancel, ofPermHomFun_one]
+    right_inv := fun x ↦ by rw [← ofPermHomFun_mul, mul_inv_cancel, ofPermHomFun_one] }
+  map_one' := ext fun x ↦ ofPermHomFun_one a x
+  map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, ofPermHomFun_mul a σ τ x]
 
 theorem ofPermHom_mem_centralizer :
     a.ofPermHom τ ∈ centralizer {g} := by
   rw [mem_centralizer_singleton_iff]
   ext x
   simp only [mul_apply]
-  exact ofPermHom_fun_commute_zpow_apply a τ x 1
+  exact ofPermHomFun_commute_zpow_apply a τ x 1
 
 /-- Given `a : Equiv.Perm.Basis g`,
 we define a right inverse of `Equiv.Perm.OnCycleFactors.toPermHom`,
@@ -373,7 +373,7 @@ noncomputable def toCentralizer :
   map_one' := by simp only [map_one, mk_eq_one]
   map_mul' σ τ := by simp only [map_mul, MulMemClass.mk_mul_mk]
 
-theorem toCentralizer_apply (x) : (toCentralizer a τ : Perm α) x = ofPermHom_fun a τ x := rfl
+theorem toCentralizer_apply (x) : (toCentralizer a τ : Perm α) x = ofPermHomFun a τ x := rfl
 
 theorem toCentralizer_equivariant :
     (toCentralizer a τ) • c = (τ : Perm g.cycleFactorsFinset) c := by
@@ -382,13 +382,13 @@ theorem toCentralizer_equivariant :
   simp only [mul_apply, toCentralizer_apply]
   by_cases hx : x ∈ (c : Perm α).support
   · rw [(mem_cycleFactorsFinset_iff.mp c.prop).2 x hx]
-    have := ofPermHom_fun_commute_zpow_apply a τ x 1
+    have := ofPermHomFun_commute_zpow_apply a τ x 1
     simp only [zpow_one] at this
     rw [this, ← (mem_cycleFactorsFinset_iff.mp ((τ : Perm g.cycleFactorsFinset) c).prop).2]
-    rw [ofPermHom_fun_apply_mem_support_cycle_iff]
+    rw [ofPermHomFun_apply_mem_support_cycle_iff]
     exact hx
   · rw [not_mem_support.mp hx, eq_comm, ← not_mem_support,
-      ofPermHom_fun_apply_mem_support_cycle_iff]
+      ofPermHomFun_apply_mem_support_cycle_iff]
     exact hx
 
 theorem toPermHom_apply_toCentralizer :
