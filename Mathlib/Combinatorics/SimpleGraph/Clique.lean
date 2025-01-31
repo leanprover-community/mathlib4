@@ -148,6 +148,15 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
     (G.map f).IsClique (s.map f) := by
   simpa
 
+/-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
+ it's embedding is a clique in `G`. -/
+theorem induce_isClique {S : Subgraph G} {F : Set α} {A : Set F} (c : (S.induce F).coe.IsClique A) :
+    G.IsClique (Subtype.val '' A) := by
+  simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
+  have := c ainA binA (Subtype.coe_ne_coe.mp anb)
+  exact S.adj_sub this.2.2
+
 end Clique
 
 /-! ### `n`-cliques -/
@@ -243,6 +252,15 @@ theorem is3Clique_iff_exists_cycle_length_three :
   exact
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
+
+/-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
+ it's embedding is an `n`-clique in `G`. -/
+theorem induce_isNClique {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
+    (cc : (S.induce F).coe.IsNClique n ↑s) :
+  G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
+rw [isNClique_iff] at cc ⊢
+simp only [Subgraph.induce_verts, coe_map, card_map]
+exact ⟨induce_isClique cc.left, cc.right⟩
 
 end NClique
 
@@ -707,6 +725,12 @@ theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
+/-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
+ set in `G` and vice versa. -/
+theorem induce_isIndepSet_iff {F : Set α} {s : Set F} :
+    ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
+  simp_all [Set.Pairwise]
+
 end IndepSet
 
 /-! ### N-Independent sets -/
@@ -735,6 +759,14 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
 instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
+
+/-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
+`n`-independent set in `G` and vice versa. -/
+theorem induce_isNIndepSet_iff {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
+    ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
+    G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
+  simp only [isNIndepSet_iff, coe_map, card_map, and_congr_left_iff]
+  exact fun _ ↦ induce_isIndepSet_iff G
 
 end NIndepSet
 
