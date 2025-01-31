@@ -396,7 +396,7 @@ noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, In
   map_smul' {r} := Quotient.ind <| map_smulₛₗ f r
 
 @[simp]
-theorem liftCLM_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+theorem liftCLM_mk {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
     (x : M) : liftCLM f hf (mk x) = f x := rfl
 
 end Module
