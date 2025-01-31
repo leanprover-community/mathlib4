@@ -3344,10 +3344,7 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.GroupTheory.GroupExtension.Defs
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
-<<<<<<< HEAD
-=======
 import Mathlib.GroupTheory.IndexNormal
->>>>>>> ACL/IwPrimitive
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Cardinality
