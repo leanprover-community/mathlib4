@@ -139,11 +139,11 @@ lemma _root_.MonomialOrder.degree_binomial [Nontrivial R]
   rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
   simp
 
-lemma _root_.MonomialOrder.lCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
-    m.lCoeff (X i - C r) = 1 := by
+lemma _root_.MonomialOrder.leadingCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
+    m.leadingCoeff (X i - C r) = 1 := by
   classical
   by_cases H : Nontrivial R
-  · simp only [lCoeff, m.degree_binomial i r]
+  · simp only [leadingCoeff, m.degree_binomial i r]
     simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
     rw [if_neg]
     intro h
@@ -168,7 +168,7 @@ theorem _root_.MonomialOrder.prod_degree [Nontrivial R]
     simp only [Finset.sum_const, smul_single, smul_eq_mul, mul_one]
   · intro r hr
     convert isRegular_one
-    simp only [lCoeff, H r hr]
+    simp only [leadingCoeff, H r hr]
     simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
     rw [if_neg]
     intro h
@@ -188,18 +188,18 @@ private theorem Alon.degP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (
   rw [degree_prod_of_regular]
   · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_binomial i r)]
   · intro r _
-    simp only [lCoeff_binomial, isRegular_one]
+    simp only [leadingCoeff_binomial, isRegular_one]
 
-private theorem Alon.lCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
-    m.lCoeff (P S i) = 1 := by
+private theorem Alon.leadingCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+    m.leadingCoeff (P S i) = 1 := by
   simp only [P]
-  rw [lCoeff_prod_of_regular ?_]
+  rw [leadingCoeff_prod_of_regular ?_]
   · apply Finset.prod_eq_one
     intro r _
-    apply m.lCoeff_binomial
+    apply m.leadingCoeff_binomial
   · intro r _
     convert isRegular_one
-    apply lCoeff_binomial
+    apply leadingCoeff_binomial
 
 private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →₀ ℕ)
     (hm : m ∈ (Alon.P s i).support) :
@@ -234,7 +234,7 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
-      (fun i ↦ by simp only [Alon.lCoeffP, isUnit_one]) f
+      (fun i ↦ by simp only [Alon.leadingCoeffP, isUnit_one]) f
   use h
   suffices r = 0 by
     rw [this, add_zero] at hf
@@ -289,7 +289,7 @@ theorem Alon2 [IsDomain R]
     simp only [hg, mul_comm, hh i]
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degree_degLexDegree,
-    degree_mul_of_isRegular_right hi (by simp only [Alon.lCoeffP, isRegular_one]),
+    degree_mul_of_isRegular_right hi (by simp only [Alon.leadingCoeffP, isRegular_one]),
     Alon.degP, degree_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
