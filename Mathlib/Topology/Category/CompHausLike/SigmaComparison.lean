@@ -36,7 +36,7 @@ The comparison map from the value of a condensed set on a finite coproduct to th
 values on the components.
 -/
 def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
-  fun x a ↦ X.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
+  fun x a ↦ X.map (ofHom _ ⟨Sigma.mk a, continuous_sigmaMk⟩).op x
 
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'

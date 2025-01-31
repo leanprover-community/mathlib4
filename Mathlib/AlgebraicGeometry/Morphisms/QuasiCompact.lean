@@ -47,7 +47,7 @@ instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [I
     QuasiCompact f := by
   constructor
   intro U _ hU'
-  convert hU'.image (inv f.base).continuous_toFun using 1
+  convert hU'.image (inv f.base).hom.continuous_toFun using 1
   rw [Set.image_eq_preimage_of_inverse]
   · delta Function.LeftInverse
     exact IsIso.inv_hom_id_apply f.base

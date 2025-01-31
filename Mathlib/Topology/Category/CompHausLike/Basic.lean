@@ -89,8 +89,8 @@ instance : CoeSort (CompHausLike P) (Type u) :=
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
 
-instance hasForget : HasForget (CompHausLike P) :=
-  InducedCategory.hasForget _
+instance concreteCategory : ConcreteCategory (CompHausLike P) (C(·, ·)) :=
+  InducedCategory.concreteCategory toTop
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
   InducedCategory.hasForget₂ _
@@ -101,20 +101,20 @@ variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 class HasProp : Prop where
   hasProp : P (TopCat.of X)
 
+instance (X : CompHausLike P) : HasProp P X := ⟨X.4⟩
+
 variable [HasProp P X]
 
 /-- A constructor for objects of the category `CompHausLike P`,
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
-def of : CompHausLike P where
+abbrev of : CompHausLike P where
   toTop := TopCat.of X
   is_compact := ‹_›
   is_hausdorff := ‹_›
   prop := HasProp.hasProp
 
-@[simp]
-theorem coe_of : (CompHausLike.of P X : Type _) = X :=
-  rfl
+theorem coe_of : (CompHausLike.of P X : Type _) = X := rfl
 
 @[simp]
 theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
@@ -124,6 +124,23 @@ theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) =
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
+
+section
+
+variable {X} {Y : Type u} [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] [HasProp P Y]
+variable {Z : Type u} [TopologicalSpace Z] [CompactSpace Z] [T2Space Z] [HasProp P Z]
+
+/-- Typecheck a continous map as a morphism in the category `CompHausLike P`. -/
+abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
+
+@[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl
+
+@[simp] lemma ofHom_id : ofHom P (ContinuousMap.id X) = 𝟙 X := rfl
+
+@[simp] lemma ofHom_comp (f : C(X, Y)) (g : C(Y, Z)) :
+    ofHom P (g.comp f) = ofHom _ f ≫ ofHom _ g := rfl
+
+end
 
 -- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
@@ -140,7 +157,7 @@ instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
 variable {P}
 
 /-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
-@[simps]
+@[simps obj map]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
   obj X :=
@@ -200,16 +217,16 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
-    let g₁ : X ⟶ X := ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : X ⟶ X := ⟨fun _ => x₂, continuous_const⟩
+    let g₁ : X ⟶ X := ofHom _ ⟨fun _ => x₁, continuous_const⟩
+    let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
-    exact ContinuousMap.congr_fun ((cancel_mono _).mp this) x₁
+    exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
 theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
-  (hC.isCompact.image f.continuous).isClosed
+  (hC.isCompact.image f.hom.continuous).isClosed
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
 theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Function.Bijective f) :
@@ -220,7 +237,7 @@ theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Funct
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
-  refine ⟨⟨⟨E.symm, hE⟩, ?_, ?_⟩⟩
+  refine ⟨⟨ofHom _ ⟨E.symm, hE⟩, ?_, ?_⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x
@@ -258,7 +275,7 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
 /-- A constant map as a morphism in `CompHausLike` -/
 def const {P : TopCat.{u} → Prop}
     (T : CompHausLike.{u} P) {S : CompHausLike.{u} P} (s : S) : T ⟶ S :=
-  ContinuousMap.const _ s
+  ofHom _ (ContinuousMap.const _ s)
 
 lemma const_comp {P : TopCat.{u} → Prop} {S T U : CompHausLike.{u} P}
     (s : S) (g : S ⟶ U) : T.const s ≫ g = T.const (g s) :=

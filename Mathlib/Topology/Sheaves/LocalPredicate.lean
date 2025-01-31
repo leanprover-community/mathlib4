@@ -269,7 +269,7 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop (T : TopCat.{v}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X =>
-    { hom := by rintro ⟨f, c⟩; exact ⟨f, c⟩
+    { hom := by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
       inv := by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.

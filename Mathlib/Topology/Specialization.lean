@@ -87,4 +87,4 @@ def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [Alexan
 @[simps]
 def topToPreord : TopCat ⥤ Preord where
   obj X := Preord.of <| Specialization X
-  map := Specialization.map
+  map {X Y} f := Specialization.map (α := X) (β := Y) f.hom
