@@ -1,38 +1,28 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jon Eugster
 -/
 
-import Std.Data.HashMap
-import Lean.Data.RBMap
-import Lean.Data.RBTree
 import Lean.Data.Json.Printer
-import Lean.Data.Json.Parser
+import Cache.Lean
 
 variable {α : Type}
 
-/-- Removes a parent path from the beginning of a path -/
-def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
-  let rec aux : List String → List String → List String
-    | z@(x :: xs), y :: ys => if x == y then aux xs ys else z
-    | [], _ => []
-    | x, [] => x
-  mkFilePath <| aux path.components parent.components
-
-def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
-  | 0, s => s
-  | len+1, s =>
-    let b := UInt8.ofNat (n >>> (len * 8))
-    Nat.toHexDigits n len <|
-      s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
-
-def UInt64.asLTar (n : UInt64) : String :=
-  s!"{Nat.toHexDigits n.toNat 8}.ltar"
+open Lean
 
 namespace Cache.IO
 
 open System (FilePath)
+
+/--
+Read the search path from `LEAN_PATH` and drop all trailing `/.lake/build/lib/`
+as the `.lean`-files are located outside the `.lake/` folders.
+-/
+def getCleanSearchPath : IO SearchPath := do
+  let sp ← addSearchPathFromEnv {}
+  return sp.map fun path =>
+    System.mkFilePath (path.components |> fun p => p.take (p.length - 3))
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
@@ -41,6 +31,20 @@ def LIBDIR : FilePath :=
 /-- Target directory for IR files -/
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
+
+/--
+TODO: is there a better test to see if a module is part of Lean core?
+-/
+def isInLeanCore (mod : Name) :=
+  #[`Init, `Lean, `Std, `Lake].contains mod.getRoot
+
+/--
+TODO: write a better test which modules are part of the mathlib cache
+-/
+def isPartOfMathlibCache (mod : Name) :=
+  #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph,
+    `LeanSearchClient, `Plausible, `Qq, `ProofWidgets,
+    `Archive, `Counterexamples, `MathlibTest].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -87,77 +91,57 @@ def getCurl : IO String := do
 def getLeanTar : IO String := do
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
-abbrev PackageDirs := Lean.RBMap String FilePath compare
-
+/--
+`CacheM` stores the following information:
+* the root directory where `Mathlib.lean` lies
+* the Lean search path from the env variable `LEAN_PATH`. This contains
+  paths to the root directory of each imported package. The build files (e.g. `.olean`)
+  of a package should then be in a `.lake`-folder inside this root directory
+  (see `LIBDIR` and `IRDIR`).
+* the build directory for proofwidgets
+ -/
 structure CacheM.Context where
+  /-- root directory for mathlib files -/
   mathlibDepPath : FilePath
-  packageDirs : PackageDirs
+  /-- lean search path -/
+  searchPath : SearchPath
   proofWidgetsBuildDir : FilePath
 
+@[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
-
-/-- Whether this is running on Mathlib repo or not -/
-def isMathlibRoot : IO Bool :=
-  FilePath.mk "Mathlib" |>.pathExists
 
 section
 
-private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
-  let deps ← (← json.getObjVal? "packages").getArr?
-  for d in deps do
-    let n := ← (← d.getObjVal? "name").getStr?
-    if n != "mathlib" then
-      continue
-    let t := ← (← d.getObjVal? "type").getStr?
-    if t == "path" then
-      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
-    else
-      return LAKEPACKAGESDIR / "mathlib"
-  return none
-
-private def CacheM.mathlibDepPath : IO FilePath := do
-  let raw ← IO.FS.readFile "lake-manifest.json"
-  match (Lean.Json.parse raw >>= parseMathlibDepPath) with
-  | .ok (some p) => return p
-  | .ok none =>
-      if ← isMathlibRoot then
-        return ⟨"."⟩
-      else
-        throw <| IO.userError s!"Mathlib not found in dependencies"
-  | .error e => throw <| IO.userError s!"Cannot parse lake-manifest.json: {e}"
-
--- TODO this should be generated automatically from the information in `lakefile.lean`.
+@[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
-  let root ← CacheM.mathlibDepPath
-  return ⟨root, .ofList [
-    ("Mathlib", root),
-    ("Archive", root),
-    ("Counterexamples", root),
-    ("MathlibTest", root),
-    ("Aesop", LAKEPACKAGESDIR / "aesop"),
-    ("Batteries", LAKEPACKAGESDIR / "batteries"),
-    ("Cli", LAKEPACKAGESDIR / "Cli"),
-    ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-    ("Qq", LAKEPACKAGESDIR / "Qq"),
-    ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
-    ("Plausible", LAKEPACKAGESDIR / "plausible")
-  ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
+  let sp ← getCleanSearchPath
+  let mathlibRootFile ← Lean.findLean sp `Mathlib
+  let some mathlibRoot ← pure mathlibRootFile.parent
+    | throw <| IO.userError s!"Mathlib not found in dependencies"
+  return {
+    mathlibDepPath := mathlibRoot
+    searchPath := sp
+    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build" }
 
+@[inherit_doc CacheM.Context]
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
 
-def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
+/--
+Get the correct package directory the file `sourceFile`.
 
-def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
-
-def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+Basically, this is just a parent of `sourceFile`, but this function determines how
+many components of the path `sourceFile` make up the package directory.
+-/
+def getPackageDir (sourceFile : FilePath) : CacheM FilePath := do
+  let sp := (← read).searchPath
+  -- Note: This seems to work since the path `.` is listed last, so it will not be found unless
+  -- no other search-path applies. Could be more robust.
+  let packageDir? := sp.find? (·.contains sourceFile)
+  match packageDir? with
+  | some dir => return dir
+  | none => throw <| IO.userError s!"Unknown package directory for {sourceFile}\nsearch paths: {sp}"
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
@@ -260,35 +244,36 @@ partial def getFilesWithExtension
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
   else return if fp.extension == some extension then acc.push fp else acc
 
-abbrev HashMap := Std.HashMap FilePath UInt64
+/--
+The Hash map of the cache.
+-/
+abbrev NameHashMap := Std.HashMap Name UInt64
 
-namespace HashMap
+namespace NameHashMap
 
 /-- Filter the hashmap by whether the entries exist as files in the cache directory.
 
 If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
-def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
-  hashMap.foldM (init := default) fun acc path hash => do
+def filterExists (hashMap : NameHashMap) (keep : Bool) : IO NameHashMap :=
+  hashMap.foldM (init := ∅) fun acc mod hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
-    if add then return acc.insert path hash else return acc
+    if add then return acc.insert mod hash else return acc
 
-def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
-  hashMap.fold (init := default) fun acc _ hash => acc.insert hash
+def hashes (hashMap : NameHashMap) : Lean.RBTree UInt64 compare :=
+  hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
-end HashMap
-
-def mkDir (path : FilePath) : IO Unit := do
-  if !(← path.pathExists) then IO.FS.createDirAll path
+end NameHashMap
 
 /--
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir path
+def mkBuildPaths (mod : Name) (sourceFile : FilePath) : CacheM <| List (FilePath × Bool) := do
+  let packageDir ← getPackageDir sourceFile
+  let path := (System.mkFilePath <| mod.components.map toString)
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),
@@ -307,20 +292,21 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
-    (comment : Option String := none) :
+def packCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath)
+    (overwrite verbose unpackedOnly : Bool) (comment : Option String := none) :
     CacheM <| Array String := do
-  mkDir CACHEDIR
+  IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
   let mut tasks := #[]
-  for (path, hash) in hashMap.toList do
+  for (mod, hash) in hashMap.toList do
+    let sourceFile := pathMap.get! mod
     let zip := hash.asLTar
     let zipPath := CACHEDIR / zip
-    let buildPaths ← mkBuildPaths path
+    let buildPaths ← mkBuildPaths mod sourceFile
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
-        acc := acc.push (path, zip)
+        acc := acc.push (sourceFile, zip)
         tasks := tasks.push <| ← IO.asTask do
           -- Note here we require that the `.trace` file is first
           -- in the list generated by `mkBuildPaths`.
@@ -329,7 +315,7 @@ def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
           runCmd (← getLeanTar) <| #[zipPath.toString, trace] ++
             (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
       else if !unpackedOnly then
-        acc := acc.push (path, zip)
+        acc := acc.push (sourceFile, zip)
   for task in tasks do
     _ ← IO.ofExcept task.get
   acc := acc.qsort (·.1.1 < ·.1.1)
@@ -343,30 +329,33 @@ def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "ltar"
   return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
-def isPathFromMathlib (path : FilePath) : Bool :=
-  match path.components with
-  | "Mathlib" :: _ => true
-  | ["Mathlib.lean"] => true
-  | _ => false
-
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
+def unpackCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
-    let isMathlibRoot ← isMathlibRoot
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
-    let mathlibDepPath := (← mathlibDepPath).toString
-    let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
+    let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      if isMathlibRoot || !isPathFromMathlib path then
-        config.push <| .str pathStr
-      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
+      -- TODO: We could do this with `pkgDir` for all modules, not only ones in mathlib.
+      -- This would be more flexible and allow cached dependencies to live somewhere else (locally).
+      -- However, this change invalidates existing .ltar files, so it needs
+      -- to be accompanied with some hash change.
+      -- In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
+      -- (mathllib lakefile/manifest would need to reflect this) and therefore would
+      -- invalidate cache anyways, therefore we leave it as is.
+      -- see: https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+      if mod.getRoot == `Mathlib then
+        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
+        let sourceFile := pathMap[mod]!
+        let pkgDir := (← getPackageDir sourceFile).toString
+        pure <| config.push <| .mkObj [("file", pathStr), ("base", pkgDir)]
+      else
+        pure <| config.push <| .str pathStr
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
@@ -384,14 +373,83 @@ def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
 
 /-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
 file) regarding the files with specified paths. -/
-def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
+def lookup (hashMap : NameHashMap) (modules : List Name) : IO Unit := do
   let mut err := false
-  for path in paths do
-    let some hash := hashMap[path]? | err := true
+  for mod in modules do
+    let some hash := hashMap[mod]? | err := true
     let ltar := CACHEDIR / hash.asLTar
-    IO.println s!"{path}: {ltar}"
+    IO.println s!"{mod}: {ltar}"
     for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
+
+/--
+Parse command line arguments.
+Position `0`, the command like [`get`, `clean`, etc.] is ignored.
+The remaining arguments take one of the following forms:
+1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
+2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder
+3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
+4. `Mathlib/Algebra/Fields/`: the folder exists
+5. (`Aesop/Builder.lean`: the file does not exist, it's
+    actually somewhere in `.lake`. (not supported currently!))
+
+An argument like `Archive` is treated as module, not a path.
+-/
+def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
+  match args with
+  | [] => pure ∅
+  | _ :: args₀ =>
+    let sp := (← read).searchPath
+    args₀.foldlM (init := ∅) fun acc (arg : String) => do
+      let arg' : FilePath := arg
+      let mod : Name := arg'.withExtension "" |>.components.foldl .str .anonymous
+      if arg'.components.length > 1 || arg'.extension == "lean" then
+        -- provided file name of a Lean file
+        if !(← arg'.pathExists) then
+          IO.eprintln s!"Invalid argument: non-existing path {arg'}"
+          IO.Process.exit 1
+        if arg'.extension == "lean" then
+          -- provided existing `.lean` file
+          pure <| acc.insert mod arg
+        else
+          -- provided existing directory: walk it
+          let leanModulesInFolder ← walkDir arg'
+          pure <| acc.insertMany leanModulesInFolder
+      else
+        -- provided a module
+        let mod := arg.toName
+        let sourceFile ← Lean.findLean sp mod
+        if ← sourceFile.pathExists then
+          -- provided valid module
+          pure <| acc.insert mod sourceFile
+        else
+          -- provided "pseudo-module" like `Mathlib.Data` which
+          -- does not correspond to a Lean file, but to an existing folder
+          -- `Mathlib/Data/`
+          let folder := sourceFile.withExtension ""
+          if ← folder.pathExists then
+            -- case 2: "module name" of an existing folder: walk dir
+            let leanModulesInFolder ← walkDir folder
+            pure <| acc.insertMany leanModulesInFolder
+          else
+            IO.eprintln s!"Invalid argument: non-existing module {mod}"
+            IO.Process.exit 1
+where
+  /-- assumes the folder exists -/
+  walkDir (folder : FilePath) : CacheM <| Array (Name × FilePath) := do
+    -- find all Lean files in the folder, skipping hidden folders/files
+    let files ← folder.walkDir fun p => match p.fileName with
+      | some s => pure <| !(s.startsWith ".")
+      | none => pure false
+    let leanFiles := files.filter (·.extension == some "lean")
+
+    let mut leanModulesInFolder : Array (Name × FilePath) := #[]
+    for file in leanFiles do
+      let pkgDir ← getPackageDir file
+      let path := file.withoutParent pkgDir
+      let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
+      leanModulesInFolder := leanModulesInFolder.push (mod, file)
+    pure leanModulesInFolder
 
 end Cache.IO
