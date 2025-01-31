@@ -127,7 +127,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
       Polynomial.map_mul]
     refine IsCoprime.mul_dvd ?_ ?_ ?_
     · have aux := IsPrimitive.Int.irreducible_iff_irreducible_map_cast Pmonic.isPrimitive
-      refine (dvd_or_coprime _ _ (aux.1 Pirr)).resolve_left ?_
+      refine (dvd_or_isCoprime _ _ (aux.1 Pirr)).resolve_left ?_
       rw [map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic]
       intro hdiv
       refine hdiff (eq_of_monic_of_associated Pmonic Qmonic ?_)
