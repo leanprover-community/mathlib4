@@ -10,7 +10,6 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-import Mathlib.MeasureTheory.Function.CompactDense
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Tactic.MoveAdd
 
@@ -1149,6 +1148,13 @@ theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
     f.toBoundedContinuousFunction x = f x :=
   rfl
 
+variable (E F) in
+/-- The map to bounded continuous functions as an additive homomorphism. -/
+def toBoundedContinuousFunctionAddHom : 𝓢(E, F) →+ (E →ᵇ F) where
+  toFun := toBoundedContinuousFunction
+  map_add' _ _ := rfl
+  map_zero' := rfl
+
 /-- Schwartz functions as continuous functions -/
 def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
   f.toBoundedContinuousFunction.toContinuousMap
@@ -1354,199 +1360,3 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
 end Lp
 
 end SchwartzMap
-
-section Dense
-
-open MeasureTheory SchwartzMap
-open scoped ENNReal BoundedContinuousFunction
-
-variable [MeasurableSpace E]
-
-/-- Any infinitely-differentiable, compactly supported function is a Schwartz function. -/
-def SchwartzMap.ofHasCompactSupport (f : E → F) (hf_smooth : ContDiff ℝ ∞ f)
-    (hf_supp : HasCompactSupport f) : 𝓢(E, F) where
-  toFun x := f x
-  smooth' := hf_smooth
-  decay' := by
-    have (m : ℕ × ℕ) : ∃ C, ∀ x, ‖x‖ ^ m.1 * ‖iteratedFDeriv ℝ m.2 f x‖ ≤ C := by
-      suffices ∃ C, ∀ x, ‖‖x‖ ^ m.1 * ‖iteratedFDeriv ℝ m.2 f x‖‖ ≤ C by simpa using this
-      refine HasCompactSupport.exists_bound_of_continuous ?_ ?_
-      · exact (hf_supp.iteratedFDeriv m.2).norm.mul_left
-      · refine .mul (continuous_norm.pow m.1) (.norm ?_)
-        exact hf_smooth.continuous_iteratedFDeriv <| by simp [← WithTop.coe_natCast]
-    choose C hC using this
-    intro k n
-    use (Finset.Iic (k, n)).sup' Finset.nonempty_Iic C
-    exact fun x ↦ Finset.le_sup'_of_le _ (by simp) (hC (k, n) x)
-
-variable (E F) in
-def SchwartzMap.toBoundedContinuousFunctionAddHom : AddMonoidHom 𝓢(E, F) (E →ᵇ F) where
-  toFun f := BoundedContinuousFunction.ofNormedAddCommGroup f f.continuous (f.seminorm ℝ 0 0)
-    (norm_le_seminorm ℝ f)
-  map_add' _ _ := rfl
-  map_zero' := rfl
-
-section LpSchwartzMap
-
-variable [BorelSpace E] [SecondCountableTopologyEither E F]
-
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
-variable (F) in
-/-- An additive subgroup of `Lp F p μ`, consisting of the equivalence classes which contain a
-Schwartz function representative. -/
-def MeasureTheory.Lp.LpSchwartzMap
-    (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac) : AddSubgroup (Lp F p μ) :=
-  AddSubgroup.addSubgroupOf
-    (AddMonoidHom.range <| (ContinuousMap.toAEEqFunAddHom μ).comp <|
-      (BoundedContinuousFunction.toContinuousMapAddHom E F).comp <|
-      SchwartzMap.toBoundedContinuousFunctionAddHom E F)
-    (Lp F p μ)
-
-theorem MeasureTheory.Lp.LpSchwartzMap.mem_iff
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} {f : Lp F p μ} :
-    f ∈ LpSchwartzMap F p μ ↔
-      ∃ g : 𝓢(E, F), g.toBoundedContinuousFunction.toContinuousMap.toAEEqFun μ = f :=
-  AddSubgroup.mem_addSubgroupOf
-
-theorem MeasureTheory.Lp.LpSchwartzMap.mem_iff_ae
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} {f : Lp F p μ} :
-    f ∈ LpSchwartzMap F p μ ↔ ∃ g : 𝓢(E, F), f =ᵐ[μ] g := by
-  rw [mem_iff]
-  refine exists_congr fun g ↦ ?_
-  -- TODO: Easier way to show this?
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← h]
-    filter_upwards [g.toBoundedContinuousFunction.toContinuousMap.coeFn_toAEEqFun μ] with x h₁
-    simp [h₁]
-  · ext
-    filter_upwards [g.toBoundedContinuousFunction.toContinuousMap.coeFn_toAEEqFun μ, h] with x h₁ h₂
-    simp [h₁, h₂]
-
-variable (𝕜 F) in
-/-- Used to provide `instModule`, `coe_smul`. -/
-def MeasureTheory.Lp.LpSchwartzMapSubmodule' (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E) :
-    Submodule 𝕜 (LpSubmodule F p μ 𝕜) :=
-  { LpSchwartzMap F p μ with
-    smul_mem' c f := by
-      simp only [AddSubgroup.mem_carrier, @LpSchwartzMap.mem_iff_ae _]
-      refine Exists.imp' (c • ·) fun g hg ↦ ?_
-      filter_upwards [hg, coeFn_smul c f] with x h₁ h₂
-      simp only [Pi.smul_apply, h₁, h₂]
-      simp }
-
-variable (𝕜 F) in
-/-- Used to provide `instModule`, `coe_smul`. -/
-def MeasureTheory.Lp.LpSchwartzMapSubmodule (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E) :
-    Submodule 𝕜 (Lp F p μ) :=
-  { LpSchwartzMap F p μ with
-    smul_mem' c f := by
-      simp only [AddSubgroup.mem_carrier, @LpSchwartzMap.mem_iff_ae _]
-      refine Exists.imp' (c • ·) fun g hg ↦ ?_
-      filter_upwards [hg, coeFn_smul c f] with x h₁ h₂
-      simp [h₁, h₂]
-  }
-
--- TODO: Why not use `Submodule` instead of `AddSubgroup`?
--- Just because `Lp` is used over `LpSubmodule`?
-instance MeasureTheory.Lp.LpSchwartzMap.instModule {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} :
-    Module 𝕜 (LpSchwartzMap F p μ) :=
-  (LpSchwartzMapSubmodule 𝕜 F p μ).module
-
-noncomputable instance MeasureTheory.Lp.LpSchwartzMap.instNormedSpace
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} :
-    NormedSpace 𝕜 (LpSchwartzMap F p μ) :=
-  (LpSchwartzMapSubmodule 𝕜 F p μ).normedSpace
-
--- TODO: simp?
-theorem MeasureTheory.Lp.LpSchwartzMap.coe_smul {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E}
-    (c : 𝕜) (f : LpSchwartzMap F p μ) :
-    ↑(c • f) = c • (f : Lp F p μ) := (LpSchwartzMapSubmodule 𝕜 F p μ).coe_smul c f
-
-theorem SchwartzMap.toLp_mem_LpSchwartzMap
-    (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
-    (f : 𝓢(E, F)) : f.toLp p μ ∈ Lp.LpSchwartzMap F p μ := ⟨f, rfl⟩
-
--- TODO: Is it bad to use `Exists.choose`? Can we avoid using it?
-def MeasureTheory.Lp.LpSchwartzMap.choose
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} (f : LpSchwartzMap F p μ) : 𝓢(E, F) :=
-  (mem_iff.mp f.2).choose
-
-/-- Obtain a proof of `p ⇑f` with `f : LpSchwartzMap F q μ` by showing that (1) `p ⇑g` holds for
-all `g : 𝓢(E, F)` Schwartz functions and (2) ae-equality `⇑f =ᵐ[μ] ⇑g` is sufficient to have
-`p ⇑g → p ⇑f`. -/
-theorem MeasureTheory.Lp.LpSchwartzMap.induction_on
-    {q : ℝ≥0∞} [Fact (1 ≤ q)] {μ : Measure E} (f : LpSchwartzMap F q μ) (p : (E → F) → Prop)
-    (h_congr : ∀ ⦃g : 𝓢(E, F)⦄, f =ᵐ[μ] g → p g → p f) (h : ∀ g : 𝓢(E, F), p g) : p f := by
-  obtain ⟨f, hf⟩ := f
-  obtain ⟨g, hg⟩ := mem_iff_ae.mp hf
-  exact h_congr hg (h g)
-
-theorem MeasureTheory.Lp.LpSchwartzMap.induction_on₂
-    {q : ℝ≥0∞} [Fact (1 ≤ q)] {μ : Measure E} (f g : LpSchwartzMap F q μ)
-    (p : (E → F) → (E → F) → Prop)
-    (h_congr : ∀ ⦃f₀ g₀ : 𝓢(E, F)⦄, f =ᵐ[μ] f₀ → g =ᵐ[μ] g₀ → p f₀ g₀ → p f g)
-    (h : ∀ f₀ g₀ : 𝓢(E, F), p f₀ g₀) :
-    p f g := by
-  obtain ⟨f, hf⟩ := f
-  obtain ⟨g, hg⟩ := g
-  obtain ⟨f₀, hf₀⟩ := mem_iff_ae.mp hf
-  obtain ⟨g₀, hg₀⟩ := mem_iff_ae.mp hg
-  exact h_congr hf₀ hg₀ (h f₀ g₀)
-
-end LpSchwartzMap
-
-section Dense
-
-variable [BorelSpace E] [FiniteDimensional ℝ E] [HasContDiffBump E] [CompleteSpace F]
-  {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
-
-theorem MeasureTheory.Memℒp.exists_LpSchwartzMap_eLpNorm_sub_le (hp_top : p ≠ ⊤) {μ : Measure E}
-    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant]
-    {f : E → F} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ g : 𝓢(E, F), eLpNorm (f - (g : E → F)) p μ ≤ ε := by
-  obtain ⟨g, hg_smooth, hg_supp, hg_dist⟩ :=
-    exists_contDiff_hasCompactSupport_eLpNorm_sub_le hp_top hf hε
-  exact ⟨ofHasCompactSupport g hg_smooth hg_supp, hg_dist⟩
-
-variable (F) in
-/-- Schwartz functions are dense in `L^p`. -/
-theorem SchwartzMap.toLp_denseRange (hp_top : p ≠ ⊤)
-    (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
-    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
-    DenseRange (fun f : 𝓢(E, F) ↦ f.toLp p μ) := by
-  refine Dense.mono ?_ (ContDiff.toLp_denseRange hp_top μ)
-  exact Set.range_comp_subset_range
-    (fun f : { f // ContDiff ℝ ∞ f ∧ HasCompactSupport f } ↦ ofHasCompactSupport f.1 f.2.1 f.2.2)
-    (fun f ↦ f.toLp p μ)
-
-variable (F) in
-theorem MeasureTheory.Lp.LpSchwartzMap.dense (hp_top : p ≠ ⊤)
-    (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
-    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
-    Dense (LpSchwartzMap F p μ : Set (Lp F p μ)) := by
-  intro f
-  refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
-  obtain ⟨g, hg⟩ := (Lp.memℒp f).exists_LpSchwartzMap_eLpNorm_sub_le hp_top hε.ne'
-  use g.toLp p μ, toLp_mem_LpSchwartzMap p μ g
-  rw [EMetric.mem_closedBall, edist_comm, edist_def]
-  refine le_of_eq_of_le (eLpNorm_congr_ae ?_) hg
-  filter_upwards [coeFn_toLp g p μ] with x h₁
-  simp [h₁]
-
--- TODO: This is probably not useful?
-variable (F) in
-def MeasureTheory.Lp.LpSchwartzMap.isDenseInducing_val (hp_top : p ≠ ⊤)
-    (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
-    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] [μ.IsNegInvariant] [μ.IsAddLeftInvariant] :
-    IsDenseInducing (fun f ↦ f : LpSchwartzMap F p μ → Lp F p μ) where
-  eq_induced := rfl
-  dense := by
-    rw [denseRange_subtype_val, SetLike.setOf_mem_eq]
-    exact dense F hp_top μ
-
-end Dense
-
-end Dense
-
-end

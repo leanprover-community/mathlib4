@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-import Mathlib.Analysis.Distribution.SchwartzSpace
+import Mathlib.Analysis.Distribution.SchwartzDense
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Analysis.Fourier.Inversion
 
@@ -301,8 +301,8 @@ theorem SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two (f : 𝓢(V, F)) :
 
 
 -- TODO: Move.
-noncomputable instance MeasureTheory.Lp.LpSchwartzMap.instCoeFun {p : ℝ≥0∞} [Fact (1 ≤ p)]
-    {μ : Measure V} : CoeFun (LpSchwartzMap E p μ) (fun _ ↦ V → E) where
+noncomputable instance MeasureTheory.Lp.LpSchwartzMap.instCoeFun {p : ℝ≥0∞} {μ : Measure V} :
+    CoeFun (LpSchwartzMap E p μ) (fun _ ↦ V → E) where
   coe f := (((f : Lp E p μ) : V →ₘ[μ] E) : V → E)
 
 section Fourier
@@ -311,9 +311,8 @@ variable [CompleteSpace E]
 
 /-- The Fourier transform of a function in `L^p` which has a representative in the Schwartz space is
 a function in `L^q`. -/
-theorem MeasureTheory.Lp.LpSchwartzMap.memℒp_fourierIntegral
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)] (f : LpSchwartzMap (E := V) E p) :
-    Memℒp (𝓕 f) q volume :=
+theorem MeasureTheory.Lp.LpSchwartzMap.memℒp_fourierIntegral {p : ℝ≥0∞} (q : ℝ≥0∞)
+    (f : LpSchwartzMap (E := V) E p) : Memℒp (𝓕 f) q volume :=
   induction_on f (fun g ↦ Memℒp (𝓕 g) q volume)
     (fun g hfg h ↦ by
       simp only at h ⊢
@@ -321,8 +320,7 @@ theorem MeasureTheory.Lp.LpSchwartzMap.memℒp_fourierIntegral
       exact h)
     (fun g ↦ g.memℒp_fourier q volume)
 
-noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransform
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
+noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransform {p : ℝ≥0∞} (q : ℝ≥0∞)
     (f : LpSchwartzMap E p (volume : Measure V)) :
     LpSchwartzMap E q (volume : Measure V) where
   val := (memℒp_fourierIntegral q f).toLp
@@ -333,14 +331,12 @@ noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransform
     refine Exists.imp' (SchwartzMap.fourierTransformCLE ℂ) fun f₀ hf₀ ↦ ?_
     simpa [Real.fourierIntegral_congr_ae hf₀] using Memℒp.coeFn_toLp _
 
-theorem MeasureTheory.Lp.LpSchwartzMap.coeFn_fourierTransform
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
+theorem MeasureTheory.Lp.LpSchwartzMap.coeFn_fourierTransform {p : ℝ≥0∞} (q : ℝ≥0∞)
     (f : LpSchwartzMap E p (volume : Measure V)) :
     ⇑(fourierTransform q f) =ᵐ[volume] 𝓕 f := by
   simpa [fourierTransform] using Memℒp.coeFn_toLp _
 
-theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_add
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
+theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_add {p : ℝ≥0∞} (q : ℝ≥0∞)
     (f g : LpSchwartzMap E p (volume : Measure V)) :
     fourierTransform q (f + g) = fourierTransform q f + fourierTransform q g := by
   ext
@@ -375,9 +371,8 @@ section FourierSMul
 
 variable [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
 
-theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] (q : ℝ≥0∞) [Fact (1 ≤ q)]
-    (c : 𝕜) (f : LpSchwartzMap E p (volume : Measure V)) :
+theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul {p : ℝ≥0∞} (q : ℝ≥0∞) (c : 𝕜)
+    (f : LpSchwartzMap E p (volume : Measure V)) :
     fourierTransform q (c • f) = c • fourierTransform q f := by
   ext
   filter_upwards [coeFn_fourierTransform q (c • f), coeFn_fourierTransform q f,
@@ -391,7 +386,7 @@ theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul
     _ = 𝓕 (c • ⇑f) := by
       refine Real.fourierIntegral_congr_ae ?_
       filter_upwards [coeFn_smul c (f : Lp E p volume)] with x h
-      simpa [coe_smul] using h
+      simpa using h
     _ = c • 𝓕 f := by
       refine induction_on f (fun f ↦ 𝓕 (c • f) = c • 𝓕 f) ?_ ?_
       · intro f₀ hf₀ h
@@ -407,15 +402,13 @@ theorem MeasureTheory.Lp.LpSchwartzMap.fourierTransform_smul
 
 variable (𝕜 V E) in
 /-- Fourier transform as a linear map from Schwartz maps in `L^p` to Schwartz maps in `L^q`. -/
-noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformLM
-    (p q : ℝ≥0∞) [Fact (1 ≤ p)] [Fact (1 ≤ q)] :
+noncomputable def MeasureTheory.Lp.LpSchwartzMap.fourierTransformLM (p q : ℝ≥0∞) :
     LpSchwartzMap E p (volume : Measure V) →ₗ[𝕜] LpSchwartzMap E q (volume : Measure V) where
   toFun := fourierTransform q
   map_add' f g := fourierTransform_add q f g
   map_smul' c f := fourierTransform_smul q c f
 
-theorem MeasureTheory.Lp.LpSchwartzMap.coeFn_fourierTransformLM
-    (p q : ℝ≥0∞) [Fact (1 ≤ p)] [Fact (1 ≤ q)] :
+theorem MeasureTheory.Lp.LpSchwartzMap.coeFn_fourierTransformLM (p q : ℝ≥0∞) :
     ⇑(fourierTransformLM 𝕜 V E p q) = fourierTransform q := rfl
 
 -- TODO: Generalize CLM to `L^p` and `L^q` with `1 ≤ p ≤ 2`.
