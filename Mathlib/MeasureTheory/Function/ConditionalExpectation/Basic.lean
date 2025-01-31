@@ -98,7 +98,7 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
 @[deprecated (since := "2025-01-21")] alias condexp := condExp
 
 -- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
-scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
+@[inherit_doc] scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 

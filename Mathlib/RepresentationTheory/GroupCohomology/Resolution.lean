@@ -205,8 +205,9 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
   refine f.induction ?_ ?_
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x _ _ hx
+    -- `simp` doesn't pick up on `diagonalSucc_inv_single_single` unless it has parentheses.
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
-      diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
+      (diagonalSucc_inv_single_single), hx, Finsupp.sum_single_index, mul_comm b,
       zero_mul, single_zero]
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
@@ -215,7 +216,8 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   refine g.induction ?_ ?_
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
+    -- `simp` doesn't pick up on `diagonalSucc_inv_single_single` unless it has parentheses.
+    simp only [lift_apply, smul_single', map_add, hx, (diagonalSucc_inv_single_single),
       TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero]
 
 end Rep
