@@ -8,8 +8,13 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 /-!
 # The Positive Part of the Logarithm
 
-This file defines the function `log⁺ = r ↦ max 0 (log r)`, and establishes
-standard estimates.
+This file defines the function `Real.posLog = r ↦ max 0 (log r)`, introduces the notation `log⁺,
+For a finite length-`n` sequence `f i` of reals, it establishes the following standard estimates.
+
+- `theorem posLog_prod : log⁺ (∏ i, f i) ≤ ∑ i, log⁺ (f i)`
+
+- `theorem posLog_sum : log⁺ (∑ i, f i) ≤ log n + ∑ i, log⁺ (f i)`
+
 -/
 
 namespace Real
@@ -48,8 +53,7 @@ theorem half_mul_log_add_log_abs {r : ℝ} : 2⁻¹ * (log r + |log r|) = log⁺
 theorem posLog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [posLog]
 
 /-- The function `log⁺` is even. -/
-@[simp]
-theorem posLog_neg (x : ℝ) : log⁺ (-x) = log⁺ x := by simp [posLog]
+@[simp] theorem posLog_neg (x : ℝ) : log⁺ (-x) = log⁺ x := by simp [posLog]
 
 /-- The function `log⁺` is even. -/
 @[simp] theorem posLog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [posLog]
@@ -61,7 +65,7 @@ theorem posLog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
 
 /-- The function `log⁺` equals `log` outside of in the interval (-1,1). -/
 theorem posLog_eq_log {x : ℝ} (hx : 1 ≤ |x|) : log⁺ x = log x := by
-  simp [posLog]
+  simp only [posLog, sup_eq_right]
   rw [← log_abs]
   apply log_nonneg hx
 
@@ -74,12 +78,12 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
 /-- The function `log⁺` is monotone in the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
-  simp [posLog]
+  simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
   by_cases h : log x ≤ 0
   · tauto
   · right
     have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 (not_le.1 h))) hxy
-    simp [this]
+    simp only [this, and_true, ge_iff_le]
     linarith
 
 /-!
