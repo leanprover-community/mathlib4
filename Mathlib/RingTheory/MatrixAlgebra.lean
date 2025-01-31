@@ -4,21 +4,29 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
+import Mathlib.Data.Matrix.Composition
+import Mathlib.Data.Matrix.Kronecker
 import Mathlib.RingTheory.TensorProduct.Basic
 
+
 /-!
-We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
+# Algebra isomorphisms between tensor products and matrices
+
+## Main definitions
+
+* `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
+* `Matrix.kroneckerTMulAlgEquiv :
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B)`,
+  where the forward map is the (tensor-ified) kronecker product.
 -/
 
 suppress_compilation
 
-universe u v w
-
 open TensorProduct Algebra.TensorProduct Matrix
 
-variable {R : Type u} [CommSemiring R]
-variable {A : Type v} [Semiring A] [Algebra R A]
-variable {n : Type w}
+variable {R : Type*} [CommSemiring R]
+variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable {m n : Type*}
 variable (R A n)
 
 namespace MatrixEquivTensor
@@ -146,5 +154,59 @@ theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
-    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
+    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = a • M.map (algebraMap R A) :=
   rfl
+
+namespace Matrix
+open scoped Kronecker
+
+variable (m) (B) [Fintype m] [DecidableEq m]
+
+/--
+`Matrix.kroneckerTMul` as an algebra equivalence, when the two arguments are tensored.
+
+TODO:
+* Generalize this to rectangular matrices
+* Make `Matrix.kroneckerTMulAlgEquiv_tmul` true by `rfl`
+-/
+def kroneckerTMulAlgEquiv :
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
+  Algebra.TensorProduct.congr (matrixEquivTensor R A m) (matrixEquivTensor R B n)
+    |>.trans <| (Algebra.TensorProduct.tensorTensorTensorComm R A _ B _)
+    |>.trans <|
+      Algebra.TensorProduct.congr .refl (
+        Algebra.TensorProduct.comm R _ _
+          |>.trans <| (matrixEquivTensor R _ m).symm
+          |>.trans <| Matrix.compAlgEquiv m n R R)
+    |>.trans <| (matrixEquivTensor ..).symm
+
+variable {m n A B}
+
+@[simp]
+theorem kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul
+    (ia ja : m) (ib jb : n) (a : A) (b : B) :
+    (kroneckerTMulAlgEquiv R A B m n).symm (stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b)) =
+      stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b := by
+  simp [kroneckerTMulAlgEquiv]
+
+theorem kroneckerTMulAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix
+    (ia ja : m) (ib jb : n) (a : A) (b : B) :
+    kroneckerTMulAlgEquiv R A B m n (stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b) =
+      stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b) :=
+  (kroneckerTMulAlgEquiv R A B m n).apply_eq_iff_eq_symm_apply.2 <|
+    kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul _ _ _ _ _ _ _ |>.symm
+
+attribute [local ext] ext_stdBasisMatrix in
+@[simp]
+theorem kroneckerTMulAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
+    kroneckerTMulAlgEquiv R A B m n (a ⊗ₜ b) = a ⊗ₖₜ b := by
+  suffices
+      (TensorProduct.mk R _ _).compr₂ (kroneckerTMulAlgEquiv R A B m n).toLinearMap =
+        kroneckerTMulBilinear R from
+    DFunLike.congr_fun (DFunLike.congr_fun this a) b
+  ext ia ja a ib jb b : 4
+  dsimp
+  rw [kroneckerTMulAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix,
+    stdBasisMatrix_kroneckerTMul_stdBasisMatrix]
+
+end Matrix
