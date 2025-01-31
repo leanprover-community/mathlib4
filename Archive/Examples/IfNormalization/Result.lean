@@ -28,19 +28,26 @@ attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjo
 
 attribute [local simp] apply_ite ite_eq_iff'
 
+attribute [grind] Subtype
+grind_pattern Subtype.property => self.val
+
+attribute [grind] List.mem_cons List.not_mem_nil Option.elim_none
+
+attribute [local grind] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
+
 variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}
 
 /-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
 -/
-@[simp] theorem eval_lit : (lit b).eval f = b := rfl
-@[simp] theorem eval_var : (var i).eval f = f i := rfl
-@[simp] theorem eval_ite_lit :
+@[simp, grind] theorem eval_lit : (lit b).eval f = b := rfl
+@[simp, grind] theorem eval_var : (var i).eval f = f i := rfl
+@[simp, grind] theorem eval_ite_lit :
     (ite (.lit b) t e).eval f = bif b then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_var :
+@[simp, grind] theorem eval_ite_var :
     (ite (.var i) t e).eval f = bif f i then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_ite {a b c d e : IfExpr} :
+@[simp, grind] theorem eval_ite_ite {a b c d e : IfExpr} :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all [eval]
 
@@ -57,14 +64,14 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
-  | lit b => ⟨lit b, ◾⟩
+  | lit b => ⟨lit b, by grind⟩
   | var v =>
     match h : l.lookup v with
-    | none => ⟨var v, ◾⟩
+    | none => ⟨var v, by grind⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, ◾⟩
-  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, ◾⟩
-  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, ◾⟩
+  | .ite (lit true)   t e => ⟨(normalize l t).1, by grind⟩
+  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, by grind⟩
+  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, by grind⟩
   | .ite (var v)      t e =>
     match h : l.lookup v with
     | none =>
