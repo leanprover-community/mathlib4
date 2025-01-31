@@ -28,24 +28,23 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
 
+-- Allow seeing through the `vars` field of `Generators`.
+-- TODO: eliminate this by refactoring `Generators` and `Presentation`,
+-- either unbundling the `vars` field or making the field globally reducible in constructions.
+set_option allowUnsafeReducibility true in
+attribute [local reducible] Generators.localizationAway in
 lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :
     ((Generators.localizationAway g).comp P).ker =
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
         Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
-  set Q := Generators.localizationAway (S := T) g
-  have : Q.ker = Ideal.map (Q.ofComp P).toAlgHom
+  have : (localizationAway (S := T) g).ker = Ideal.map ((localizationAway g).ofComp P).toAlgHom
       (Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1}) := by
-    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway]
-    simp only [Hom.toAlgHom, MvPolynomial.aeval_X, ofComp_val, Sum.elim_inl, sub_left_inj,
-      Generators.comp, Generators.ofComp, Generators.localizationAway, Q]
-    rw [MvPolynomial.aeval_rename, Sum.elim_comp_inr]
-    simp_rw [← MvPolynomial.algebraMap_eq, ← IsScalarTower.coe_toAlgHom' R S (MvPolynomial Unit S)]
-    rw [Function.comp_def, ← MvPolynomial.comp_aeval_apply, ← Algebra.Generators.algebraMap_apply,
-      h]
+    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway,
+      Hom.toAlgHom_X, toAlgHom_ofComp_rename, h, ofComp_val, Sum.elim_inl]
   rw [ker_comp_eq_sup, Algebra.Generators.map_toComp_ker, this,
-    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective Q P), ← RingHom.ker_eq_comap_bot,
+    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective _ P), ← RingHom.ker_eq_comap_bot,
     ← sup_assoc]
-  simp [Q]
+  simp
 
 variable (T) in
 /-- If `R[X] → S` generates `S`, `T` is the localization of `S` away from `g` and

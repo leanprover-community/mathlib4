@@ -401,6 +401,13 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
   ext f (i₁ | i₂) <;>
     simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
+@[simp]
+lemma toAlgHom_ofComp_rename (Q : Generators S T) (P : Generators R S) (p : P.Ring) :
+    (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = C (algebraMap _ _ p) :=
+  have : (Q.ofComp P).toAlgHom.comp (rename Sum.inr) =
+    (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
+  DFunLike.congr_fun this p
+
 lemma toAlgHom_ofComp_surjective (Q : Generators S T) (P : Generators R S) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
   intro p
