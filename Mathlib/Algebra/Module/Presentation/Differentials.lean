@@ -103,13 +103,14 @@ lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
   simp only [LinearMap.mem_range]
   refine ⟨Finsupp.single r 1, ?_⟩
   simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]
-  rfl
 
 lemma comm₁₂_single (r : pres.rels) :
     pres.toExtension.cotangentComplex (hom₁ pres (Finsupp.single r 1)) =
       pres.cotangentSpaceBasis.repr.symm ((differentialsRelations pres).relation r) := by
   simp only [hom₁, Finsupp.linearCombination_single, one_smul, differentialsRelations,
     Basis.repr_symm_apply, Extension.cotangentComplex_mk]
+  -- this is needed after #21050
+  rw [Extension.cotangentComplex_mk]
   exact pres.cotangentSpaceBasis.repr.injective (by ext; simp)
 
 lemma comm₁₂ : pres.toExtension.cotangentComplex.comp (hom₁ pres) =
