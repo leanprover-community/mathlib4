@@ -194,7 +194,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [M, mem_image, mem_prod, Prod.exists]
-            exact ⟨x, y⁻¹ * x, ⟨H, hxy⟩, by group⟩
+            exact ⟨x, y⁻¹ * x, ⟨H, hxy⟩, by simp [mul_assoc]⟩
           simp [this]
         apply HasCompactSupport.intro' (K_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport f).prod isClosed_closure
@@ -226,7 +226,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [M, mem_image, mem_prod, Prod.exists]
-            exact ⟨y * x, x, ⟨hxy, H⟩, by group⟩
+            exact ⟨y * x, x, ⟨hxy, H⟩, by simp [mul_assoc]⟩
           simp [this]
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport g).prod isClosed_closure
@@ -728,7 +728,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         simpa [A, hms, hy, insert_subset_iff, pairwiseDisjoint_insert, hdj, not_disjoint_iff]
           using h'y
       have : y ∈ x • (k * k⁻¹) := by
-        rw [show y = x * ((x⁻¹ * z) * (y⁻¹ * z)⁻¹) by group]
+        rw [show y = x * ((x⁻¹ * z) * (y⁻¹ * z)⁻¹) by simp [mul_assoc]]
         have : (x⁻¹ * z) * (y⁻¹ * z)⁻¹ ∈ k * k⁻¹ := Set.mul_mem_mul ((mem_leftCoset_iff x).mp zx)
           (Set.inv_mem_inv.mpr ((mem_leftCoset_iff y).mp zy))
         exact mem_leftCoset x this
