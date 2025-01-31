@@ -14,10 +14,10 @@ open MonomialOrder Finsupp
 
 open scoped MonomialOrder
 
-variable {σ : Type*} [LinearOrder σ] {R : Type*} [CommSemiring R]
+variable {σ : Type*} [LinearOrder σ] {R : Type*} [CommSemiring R] [WellFoundedGT σ]
+  {f g : MvPolynomial σ R} :
 
-theorem degree_degLexDegree [WellFoundedGT σ] {f : MvPolynomial σ R} :
-    (degLex.degree f).degree = f.totalDegree := by
+theorem degree_degLexDegree (degLex.degree f).degree = f.totalDegree := by
   by_cases hf : f = 0
   · simp [hf]
   apply le_antisymm
@@ -31,8 +31,7 @@ theorem degree_degLexDegree [WellFoundedGT σ] {f : MvPolynomial σ R} :
     intro b hb
     exact DegLex.monotone_degree (degLex.le_degree hb)
 
-theorem degLex_totalDegree_monotone [WellFoundedGT σ] {f g : MvPolynomial σ R}
-    (h : degLex.degree f ≼[degLex] degLex.degree g) :
+theorem degLex_totalDegree_monotone (h : degLex.degree f ≼[degLex] degLex.degree g) :
     f.totalDegree ≤ g.totalDegree := by
   simp only [← MvPolynomial.degree_degLexDegree]
   exact DegLex.monotone_degree h
