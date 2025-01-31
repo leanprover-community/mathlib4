@@ -40,7 +40,7 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 ## instance
 
-- the type of blocks containing a given element is a bounded order.
+- The type of blocks containing a given element is a bounded order.
 
 ## References
 
