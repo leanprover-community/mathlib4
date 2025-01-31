@@ -51,7 +51,7 @@ its value on a countable disjoint union is the sum of the values
 
 open Set Finset Function Filter
 
-open scoped ENNReal Topology
+open scoped ENNReal Topology Function
 
 namespace MeasureTheory
 
@@ -151,14 +151,12 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
 
 /-- For an `m : addContent C` on a `SetSemiring C` and `s t : Set α` with `s ⊆ t`, we can write
 `m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`.-/
-theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C) (m : AddContent C)
-    (m_add : ∀ (I : Finset (Set α)) (_ : ↑I ⊆ C) (_ : PairwiseDisjoint (I : Set (Set α)) id)
-        (_h_mem : ⋃₀ ↑I ∈ C), m (⋃₀ I) = ∑ u in I, m u)
-    (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) [DecidableEq (Set α)] :
+theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
+    (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) :
     m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i := by
   classical
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
-  rw [← coe_insert, m_add]
+  rw [← coe_insert, addContent_sUnion]
   · rw [sum_insert]
     exact hC.nmem_disjointOfDiff ht hs
   · rw [coe_insert]
@@ -168,28 +166,21 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C) (m : AddContent C
   · rw [coe_insert]
     rwa [hC.sUnion_insert_disjointOfDiff ht hs hst]
 
-variable (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
-  (m_add : ∀ (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
-    (_h_mem : ⋃₀ ↑I ∈ C), m (⋃₀ I) = ∑ u in I, m u)
-
-example (s : Set (Set α)) (t : Set α) : (∀ a ∈ s, a ⊆ t) ↔ ⋃₀ s ⊆ t := by
-  exact Iff.symm sUnion_subset_iff
-
 /-- An `addContent C` on a `SetSemiring C` is sub-additive.-/
 lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
   classical
   have h1 : (disjiUnion J (hC.disjointOfUnion h_ss)
-      (hC.pairwiseDisjoint_disjointOfUnion h_ss)).toSet ⊆ C := by
+      (hC.pairwiseDisjoint_disjointOfUnion h_ss) : Set (Set α)) ⊆ C := by
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe, iUnion_subset_iff]
     exact fun _ x ↦ hC.disjointOfUnion_subset h_ss x
   have h2 : PairwiseDisjoint (disjiUnion J (hC.disjointOfUnion h_ss)
-      (hC.pairwiseDisjoint_disjointOfUnion h_ss)).toSet id := by
+      ((hC.pairwiseDisjoint_disjointOfUnion h_ss)) : Set (Set α)) id := by
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
     exact hC.pairwiseDisjoint_biUnion_disjointOfUnion h_ss
-  have h3 : (⋃₀ J.toSet) = ⋃₀ (disjiUnion J (hC.disjointOfUnion h_ss)
-      (hC.pairwiseDisjoint_disjointOfUnion h_ss)).toSet := by
+  have h3 : ⋃₀ J = ⋃₀ ((disjiUnion J (hC.disjointOfUnion h_ss)
+      (hC.pairwiseDisjoint_disjointOfUnion h_ss)) : Set (Set α)) := by
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
     exact (Exists.choose_spec (hC.disjointOfUnion_props h_ss)).2.2.2.2.2
   rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
@@ -202,7 +193,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     exact h3.symm ▸ h_mem
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
-    (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
+    {J : Finset (Set α)} (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
     m t ≤ ∑ u in J, m u := by
   -- we can't apply `addContent_mono` and `addContent_sUnion_le_sum` because `⋃₀ ↑J` might not
   -- be in `C`
@@ -225,9 +216,9 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring 
 theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddContent C}
     (hC : IsSetSemiring C)
     (m_subadd : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : ⋃ i, f i ∈ C)
-      (_hf_disj : Pairwise (Function.onFun Disjoint f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
+      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
-    (hf_disj : Pairwise (Function.onFun Disjoint f)) :
+    (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
   refine tsum_le_of_sum_le ENNReal.summable fun I ↦ ?_
@@ -284,6 +275,31 @@ theorem extendContent_eq_top (hC : IsSetSemiring C) (m_empty : m ∅ hC.empty_me
     (hs : s ∉ C) :
     extendContent hC m m_empty m_add s = ∞ := by
   rw [extendContent_eq_extend, extend_eq_top m hs]
+
+/-- An additive content obtained from another one on the same semiring of sets by setting the value
+of each set not in the semiring at `∞`. -/
+protected noncomputable
+def AddContent.extend (hC : IsSetSemiring C) (m : AddContent C) : AddContent C where
+  toFun := extend (fun x (_ : x ∈ C) ↦ m x)
+  empty' := by rw [extend_eq, addContent_empty]; exact hC.empty_mem
+  sUnion' I h_ss h_dis h_mem := by
+    rw [extend_eq]
+    swap; · exact h_mem
+    rw [addContent_sUnion h_ss h_dis h_mem]
+    refine Finset.sum_congr rfl (fun s hs ↦ ?_)
+    rw [extend_eq]
+    exact h_ss hs
+
+protected theorem AddContent.extend_eq_extend (hC : IsSetSemiring C) (m : AddContent C) :
+    m.extend hC = extend (fun x (_ : x ∈ C) ↦ m x) := rfl
+
+protected theorem AddContent.extend_eq (hC : IsSetSemiring C) (m : AddContent C) (hs : s ∈ C) :
+    m.extend hC s = m s := by
+  rwa [m.extend_eq_extend, extend_eq]
+
+protected theorem AddContent.extend_eq_top (hC : IsSetSemiring C) (m : AddContent C) (hs : s ∉ C) :
+    m.extend hC s = ∞ := by
+  rwa [m.extend_eq_extend, extend_eq_top]
 
 end ExtendContent
 
