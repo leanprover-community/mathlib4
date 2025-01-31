@@ -616,11 +616,15 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
       apply hB'.smul_eq_of_mem ha'
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
+/-- The type of blocks for a group action containing a given element -/
+@[to_additive
+"The type of blocks for an additive group action containing a given element"]
+abbrev BlockMem (a : X) : Type _ := {B : Set X // a ∈ B ∧ IsBlock G B}
+
 /-- The type of blocks for a group action containing a given element is a bounder order -/
 @[to_additive
 "The type of blocks for an additive group action containing a given element is a bounded order"]
-instance Block.boundedOrderOfMem (a : X) :
-    BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
+instance BlockMem.boundedOrder (a : X) : BoundedOrder (BlockMem G a) where
   top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
@@ -633,20 +637,18 @@ instance Block.boundedOrderOfMem (a : X) :
 
 @[to_additive]
 theorem Block.boundedOrderOfMem.top_eq (a : X) :
-    ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
+    ((BlockMem.boundedOrder G a).top : Set X) = ⊤ :=
   rfl
 
 @[to_additive]
 theorem Block.boundedOrderOfMem.bot_eq (a : X) :
-    ((Block.boundedOrderOfMem G a).bot : Set X) = {a} :=
+    ((BlockMem.boundedOrder G a).bot : Set X) = {a} :=
   rfl
 
 @[to_additive]
-instance [Nontrivial X] (a : X) :
-    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
+instance [Nontrivial X] (a : X) : Nontrivial (BlockMem G a) := by
   rw [nontrivial_iff]
-  use (Block.boundedOrderOfMem G a).bot
-  use (Block.boundedOrderOfMem G a).top
+  use ⊥, ⊤
   intro h
   rw [← Subtype.coe_inj] at h
   simp only [Block.boundedOrderOfMem.top_eq, Block.boundedOrderOfMem.bot_eq] at h
