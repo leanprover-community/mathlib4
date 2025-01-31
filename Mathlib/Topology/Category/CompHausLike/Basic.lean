@@ -128,11 +128,17 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
 section
 
 variable {X} {Y : Type u} [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] [HasProp P Y]
+variable {Z : Type u} [TopologicalSpace Z] [CompactSpace Z] [T2Space Z] [HasProp P Z]
 
 /-- Typecheck a continous map as a morphism in the category `CompHausLike P`. -/
 abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
-@[simp] lemma hom_ofHom {f : C(X, Y)} : ConcreteCategory.hom (ofHom P f) = f := rfl
+@[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl
+
+@[simp] lemma ofHom_id : ofHom P (ContinuousMap.id X) = 𝟙 X := rfl
+
+@[simp] lemma ofHom_comp (f : C(X, Y)) (g : C(Y, Z)) :
+    ofHom P (g.comp f) = ofHom _ f ≫ ofHom _ g := rfl
 
 end
 
@@ -151,7 +157,7 @@ instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
 variable {P}
 
 /-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
-@[simps]
+@[simps obj map]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
   obj X :=

@@ -229,9 +229,9 @@ lemma topologically_isLocalAtTarget
   apply IsLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
-    exact hP₂ f.base U.carrier f.base.2 U.2 hf
+    exact hP₂ f.base U.carrier f.base.hom.2 U.2 hf
   · intro X Y f ι U hU hf
-    apply hP₃ f.base U hU f.base.continuous fun i ↦ ?_
+    apply hP₃ f.base U hU f.base.hom.continuous fun i ↦ ?_
     rw [← morphismRestrict_base]
     exact hf i
 
