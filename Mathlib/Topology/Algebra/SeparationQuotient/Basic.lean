@@ -197,7 +197,7 @@ instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (Separatio
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 theorem nhds_mk (x : G) :
-    nhds (mk x) = Filter.map mk (nhds x) :=
+    𝒩 (mk x) = .map mk (𝒩 x) :=
   le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
 
 end Group
