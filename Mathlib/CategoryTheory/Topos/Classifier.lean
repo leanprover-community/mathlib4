@@ -67,7 +67,7 @@ terminal.from U               χ
     ⊤_ C --------t----------> Ω
 ```
 -/
-class IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
+structure IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω` -/
   char {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
   /-- The -/
@@ -79,7 +79,7 @@ class IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
 variable (C)
 
 /-- A category C has a subobject classifier if there is some object `Ω` such that
-a morphism `t : ⊤_ C ⟶ Ω` is a subobject classifier (`CategoryTheory.Classifier.IsClassifier`). -/
+a morphism `t : ⊤_ C ⟶ Ω` is a subobject classifier. -/
 class Classifier where
   /-- the target of the "truth arrow" in a subobject classifier -/
   obj : C
@@ -99,7 +99,7 @@ abbrev t : ⊤_ C ⟶ Ω C := Classifier.t
 /-- The pair of `Ω C` and `t C` form a subobject classifier.
 helper def for destructuring `IsClassifier`.
 -/
-instance classifierIsClassifier : IsClassifier (t C) :=
+def classifierIsClassifier : IsClassifier (t C) :=
   Classifier.isClassifier
 
 variable {C}
@@ -199,6 +199,5 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
 
 end CategoryTheory.MonoClassifier
 
-#check IsPullback
 -- #lint docBlameThm
 -- is a docstring needed for the auto-generated `comm_assoc`?
