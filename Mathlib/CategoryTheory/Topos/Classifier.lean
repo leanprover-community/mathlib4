@@ -70,9 +70,9 @@ terminal.from U               χ
 structure IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω` -/
   char {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
-  /-- The -/
+  /-- `char m` forms the appropriate pullback square. -/
   isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (terminal.from U) (char m) t
-  /-- `char m` is the only -/
+  /-- `char m` is the only map `X ⟶ Ω` which forms the appropriate pullback square. -/
   uniq {U X : C} (m : U ⟶ X) [Mono m] (χ : X ⟶ Ω) (hχ : IsPullback m (terminal.from U) χ t) :
     χ = char m
 
