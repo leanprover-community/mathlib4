@@ -751,6 +751,9 @@ open RingHom
 def inclusion {S T : Subsemiring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
 
+theorem inclusion_injective {S T : Subsemiring R} (h : S ≤ T) :
+    Function.Injective (inclusion h) := Set.inclusion_injective h
+
 @[simp]
 theorem rangeS_subtype (s : Subsemiring R) : s.subtype.rangeS = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
