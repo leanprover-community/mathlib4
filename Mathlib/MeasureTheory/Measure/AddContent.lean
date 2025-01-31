@@ -200,11 +200,11 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
   have h1 : (disjiUnion J (hC.disjointOfUnion h_ss)
       (hC.pairwiseDisjoint_disjointOfUnion h_ss)).toSet ⊆ C := by
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe, iUnion_subset_iff]
-    exact fun _ ↦ hC.subsets_disjointOfUnion h_ss
+    exact fun _ x ↦ hC.disjointOfUnion_subset h_ss x
   have h2 : PairwiseDisjoint (disjiUnion J (hC.disjointOfUnion h_ss)
       (hC.pairwiseDisjoint_disjointOfUnion h_ss)).toSet id := by
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
-    exact hC.pairwiseDisjoint_disjointOfUnion_self h_ss
+    exact hC.pairwiseDisjoint_biUnion_disjointOfUnion h_ss
   have h3 : (⋃₀ J.toSet) = ⋃₀ (disjiUnion J (hC.disjointOfUnion h_ss)
       (hC.pairwiseDisjoint_disjointOfUnion h_ss)).toSet := by
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
@@ -212,12 +212,11 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
   rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
   · apply sum_le_sum
     intro x hx
-    refine sum_addContent_le_of_subset hC (hC.subsets_disjointOfUnion h_ss hx)
-      (hC.disjointOfUnion_pairwiseDisjoints h_ss hx) (h_ss hx)
-      (fun s a ↦ hC.subsets_disjointOfUnion_self h_ss hx s a)
-  · simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
-    rw [← hC.sUnion_disjointOfUnion h_ss]
-    exact h_mem
+    refine sum_addContent_le_of_subset hC (hC.disjointOfUnion_subset h_ss hx)
+      (hC.pairwiseDisjoint_disjointOfUnion_of_mem h_ss hx) (h_ss hx)
+      (fun _ s ↦ hC.subset_of_mem_disjointOfUnion h_ss hx s)
+  · simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe] at *
+    exact h3.symm ▸ h_mem
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
