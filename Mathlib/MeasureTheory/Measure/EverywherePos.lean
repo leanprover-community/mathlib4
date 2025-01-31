@@ -244,7 +244,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
       ((mapClusterPt_iff.1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
-    refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
+    refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by simp [mul_assoc]⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
     have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
@@ -253,8 +253,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
     have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
-    group
-    simp
+    simp [mul_assoc]
   by_contra H
   have : k ∩ ((z * x⁻¹) • k)ᶜ ∈ 𝓝[k] z := by
     apply inter_mem_nhdsWithin k
