@@ -42,8 +42,7 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
   ext c
   rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, Finset.mem_map_equiv,
     ← mem_cycleFactorsFinset_conj g k]
-  simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
-  group
+  simp [mul_assoc]
 
 /-- A permutation `c` is a cycle of `g` iff `k • c` is a cycle of `k • g` -/
 @[simp]

@@ -612,10 +612,10 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
   simp_rw [orderOf_dvd_iff_pow_eq_one] at h
   rw [commute_iff_eq, ← mul_right_inj a, ← mul_left_inj b]
   calc
-    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp only [pow_two]; group
+    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp [pow_two, mul_assoc]
     _ = 1 := by rw [h, h, mul_one]
     _ = (a * b) ^ 2 := by rw [h]
-    _ = a * (b * a) * b := by simp only [pow_two]; group
+    _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
 
 /-- In a cancellative monoid of exponent two, all elements commute. -/
 @[to_additive]

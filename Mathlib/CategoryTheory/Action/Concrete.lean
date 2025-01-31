@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Action.Basic
 We construct `Action (Type u) G` from a `[MulAction G X]` instance and give some applications.
 -/
 
+assert_not_exists Field
+
 universe u v
 
 open CategoryTheory Limits
@@ -103,7 +105,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
       apply (QuotientGroup.leftRel_apply).mpr
       simp only [mul_inv_rev, inv_inv]
       convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
-      · group
+      · simp [mul_assoc]
       · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)

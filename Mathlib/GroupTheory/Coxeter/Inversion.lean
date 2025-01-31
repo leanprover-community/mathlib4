@@ -105,7 +105,7 @@ theorem length_mul_right_ne (w : W) : ℓ (t * w) ≠ ℓ w := by
 theorem conj (w : W) : cs.IsReflection (w * t * w⁻¹) := by
   obtain ⟨u, i, rfl⟩ := ht
   use w * u, i
-  group
+  simp [mul_assoc]
 
 end IsReflection
 
@@ -215,7 +215,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
       inv_simple, cons_append, cons.injEq, and_true]
-    group
+    simp [mul_assoc]
 
 private theorem leftInvSeq_eq_reverse_rightInvSeq_reverse (ω : List B) :
     lis ω = (ris ω.reverse).reverse := by
@@ -327,7 +327,7 @@ theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω
   · dsimp [rightInvSeq] at ht
     rcases ht with _ | ⟨_, mem⟩
     · use (π ω)⁻¹, i
-      group
+      simp [mul_assoc]
     · exact ih mem
 
 theorem isReflection_of_mem_leftInvSeq (ω : List B) {t : W} (ht : t ∈ lis ω) :
@@ -429,7 +429,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
   have h₅ := calc
-    π ω   = π ω * t * t'                              := by rw [mul_assoc, h₄]; group
+    π ω   = π ω * t * t'                              := by simp [h₄, mul_assoc]
     _     = (π (ω.eraseIdx j)) * t'                   :=
         congrArg (· * t') (cs.wordProd_mul_getD_rightInvSeq _ _)
     _     = π ((ω.eraseIdx j).eraseIdx (j' - 1))      :=
