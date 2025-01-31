@@ -106,8 +106,9 @@ theorem posLog_nat_mul {n : ℕ} {a : ℝ} :
 
 /-- Estimate for `log⁺` of a product. See `Real.posLog_mul` for a variant with
 only two factors. -/
-theorem posLog_prod {α : Type} [DecidableEq α] (s : Finset α) (f : α → ℝ) :
+theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
     log⁺ (∏ t ∈ s, f t) ≤ ∑ t ∈ s, log⁺ (f t) := by
+  classical
   apply Finset.induction (p := fun (S : Finset α) ↦ (log⁺ (∏ t ∈ S, f t) ≤ ∑ t ∈ S, log⁺ (f t)))
   · -- Empty set
     simp [posLog]
