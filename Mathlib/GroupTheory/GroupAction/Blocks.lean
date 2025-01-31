@@ -630,7 +630,7 @@ namespace BlockMem
 @[to_additive
 "The type of blocks for an additive group action containing a given element is a bounded order"]
 instance (a : X) : BoundedOrder (BlockMem G a) where
-  top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
+  top := ⟨⊤, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
