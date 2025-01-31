@@ -981,8 +981,8 @@ lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u �
   simp [Walk.takeUntil, h]
 
 @[simp]
-lemma takeUntil_first (p : G.Walk u v) :
-    p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
+lemma takeUntil_first (p : G.Walk u v) (h : u ∈ p.support := p.start_mem_support) :
+    p.takeUntil u h = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
 lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
@@ -1150,6 +1150,29 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   apply huw
   simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length)
+
+lemma takeUntil_takeUntil {p : G.Walk u v} (w x : V) (hw : w ∈ p.support)
+    (hx : x ∈ (p.takeUntil w hw).support) :
+    (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
+  induction p, w, hw using takeUntil.induct with
+  | case1 => aesop
+  | case2 _ _ q _ hadj hu' _ =>
+    simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
+    subst hx
+    simp
+  | case3 a w' v' hadj q u' hu' hau' _ ih =>
+    rw [← @Ne.eq_def] at hau'
+    simp [hau'.symm] at hu'
+    rw [cons_takeUntil hu' hau' hadj] at hx
+    simp at hx
+    by_cases hx' : x = a
+    · aesop
+    · simp [hx'] at hx
+      push_neg at hx'
+      conv_lhs =>
+        enter [1]
+        rw [cons_takeUntil hu' hau' hadj]
+      rw [cons_takeUntil hx hx'.symm hadj, ih _, cons_takeUntil _ hx'.symm]
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=

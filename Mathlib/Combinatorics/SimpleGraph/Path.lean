@@ -421,6 +421,17 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
+lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
+    (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
+  intro hv
+  rw [Walk.mem_support_iff_exists_getVert] at hv
+  obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
+  rw [getVert_takeUntil hw hnl] at hn
+  have := p.length_takeUntil_lt hw h.symm
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+    (hn.symm ▸ p.getVert_length.symm)
+  omega
+
 end WalkDecomp
 
 end Walk
