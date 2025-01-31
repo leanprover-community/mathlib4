@@ -94,8 +94,8 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f :
   have : IsScalarTower k L₃ L₁ := IsScalarTower.of_algebraMap_eq' rfl
   have : IsScalarTower k L₃ L₂ := IsScalarTower.of_algebraMap_eq' rfl
   have : IsScalarTower L₃ L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
-  ext x
-  apply congrFun (congrArg DFunLike.coe (IsScalarTower.AlgEquiv.restrictNormalHom_comp k L₃ L₂ L₁))
+  ext : 1
+  apply IsScalarTower.AlgEquiv.restrictNormalHom_comp k L₃ L₂ L₁
 
 end finGaloisGroupMap
 
