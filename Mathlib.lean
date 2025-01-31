@@ -4780,6 +4780,7 @@ import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.SimpleRing.Congr
 import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.SimpleRing.Field
 import Mathlib.RingTheory.SimpleRing.Matrix
