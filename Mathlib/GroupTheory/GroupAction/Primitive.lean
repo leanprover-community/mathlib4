@@ -60,11 +60,11 @@ variable (G : Type*) (X : Type*)
 
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and
-  the only blocks are the trivial ones -/
-class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransitive G X : Prop where
-/-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-  has_trivial_blocks' : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
+class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransitive G X : Prop where
+  /-- An action is preprimitive if it is pretransitive and
+  the only blocks are the trivial ones -/
+  isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
 
 /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
@@ -82,7 +82,7 @@ class _root_.AddAction.IsQuasipreprimitive
     ∀ {N : AddSubgroup G} (_ : N.Normal), AddAction.fixedPoints N X ≠ ⊤ →
       AddAction.IsPretransitive N X
 
-/-- A `mul_action` of a group is quasipreprimitive if any normal subgroup
+/-- A `MulAction` of a group is quasipreprimitive if any normal subgroup
   that has no fixed point acts pretransitively -/
 @[to_additive]
 class IsQuasipreprimitive [Group G] [MulAction G X] extends IsPretransitive G X : Prop where
@@ -94,8 +94,8 @@ variable {G X}
 namespace IsPreprimitive
 
 @[to_additive]
-theorem has_trivial_blocks [SMul G X] (h : IsPreprimitive G X) {B : Set X}
-    (hB : IsBlock G B) : B.Subsingleton ∨ B = ⊤ := by apply h.has_trivial_blocks'; exact hB
+theorem subsingleton_or_eq_univ_of_isBlock [SMul G X] (h : IsPreprimitive G X) {B : Set X}
+    (hB : IsBlock G B) : B.Subsingleton ∨ B = univ := by apply h.has_trivial_blocks'; exact hB
 
 @[to_additive]
 theorem on_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
@@ -218,13 +218,13 @@ variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 open scoped BigOperators Pointwise
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
-    the set of blocks containing a given element is a simple order -/
+the set of blocks containing a given element is a simple order -/
 @[to_additive
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
 theorem isPreprimitive_iff_isSimpleOrder_blocks
     [IsPretransitive G X] [Nontrivial X] (a : X) :
-    IsPreprimitive G X ↔ IsSimpleOrder { B : Set X // a ∈ B ∧ IsBlock G B } := by
+    IsPreprimitive G X ↔ IsSimpleOrder (BlockMem G a) := by
   constructor
   · intro hGX'; apply IsSimpleOrder.mk
     rintro ⟨B, haB, hB⟩

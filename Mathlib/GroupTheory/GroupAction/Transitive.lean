@@ -81,5 +81,3 @@ theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
     use g
     apply hf.injective
     simp only [hk, map_smulₛₗ]
-
-end MulAction
