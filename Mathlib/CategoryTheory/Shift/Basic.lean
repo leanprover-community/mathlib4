@@ -480,10 +480,6 @@ theorem shift_shiftFunctorCompIsoId_neg_add_cancel_inv_app (n : A) (X : C) :
     (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.app (X⟦-n⟧) := by
   apply shift_shiftFunctorCompIsoId_inv_app
 
-end
-
-section
-
 variable (A)
 
 lemma shiftFunctorCompIsoId_zero_zero_hom_app (X : C) :
