@@ -1161,10 +1161,10 @@ lemma takeUntil_takeUntil {p : G.Walk u v} (w x : V) (hw : w ∈ p.support)
     subst hx
     simp
   | case3 a w' v' hadj q u' hu' hau' _ ih =>
-    rw [← @Ne.eq_def] at hau'
-    simp [hau'.symm] at hu'
+    rw [← Ne.eq_def] at hau'
+    simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
     rw [cons_takeUntil hu' hau' hadj] at hx
-    simp at hx
+    simp only [support_cons, List.mem_cons] at hx
     by_cases hx' : x = a
     · aesop
     · simp [hx'] at hx
