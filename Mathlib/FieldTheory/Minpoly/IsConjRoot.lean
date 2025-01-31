@@ -231,6 +231,14 @@ theorem isConjRoot_iff_mem_minpoly_rootSet {x y : S}
 
 namespace IsConjRoot
 
+instance decidable [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (x y : L) :
+    Decidable (IsConjRoot K x y) :=
+  decidable_of_iff _ isConjRoot_iff_exists_algEquiv.symm
+
+instance : IsEquiv L (IsConjRoot K) :=
+  letI := IsConjRoot.setoid K L
+  inferInstanceAs <| IsEquiv L (· ≈ ·)
+
 /--
 If `y` is a conjugate root of an integral element `x` over `R`, then `y` is also integral
 over `R`.
