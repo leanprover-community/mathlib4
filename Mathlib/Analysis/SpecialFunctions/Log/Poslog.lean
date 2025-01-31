@@ -149,8 +149,8 @@ theorem Real.poslog_sum {α : Type} (s : Finset α) (f : α → ℝ) :
     rw [poslog_abs]
     apply Finset.single_le_sum (fun _ _ ↦ poslog_nonneg) ht_max.1
 
-/-- Estimate for `log⁺` of a sum. See `Real.poslog_add` for a variant with only
-two summands. -/
+/-- Estimate for `log⁺` of a sum. See `Real.poslog_sum` for a variant involving
+multiple summands. -/
 theorem Real.poslog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
   convert Real.poslog_sum (Finset.univ : Finset (Fin 2))
     (fun i => match i with | 0 => a | 1 => b : Fin 2 → ℝ) using 1
