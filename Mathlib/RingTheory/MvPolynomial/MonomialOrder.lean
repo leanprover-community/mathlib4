@@ -374,11 +374,6 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   rw [← zero_add (degree m f), ← degree_C r, coeff_mul_of_degree_add]
   simp [leadingCoeff, hr.left.mul_left_eq_zero_iff, hf]
 
-theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
-    f = C (m.leadingCoeff f) := by
-  ext d
-  simp only [leadingCoeff, hf]
-
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
     m.degree (∏ i ∈ s, P i) ≼[m] ∑ i ∈ s, m.degree (P i) := by
   classical
@@ -405,17 +400,18 @@ theorem coeff_prod_of_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s 
 theorem degree_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
     m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
-  by_cases hR : Nontrivial R
-  · apply m.toSyn.injective
-    · refine le_antisymm degree_prod_le (m.le_degree ?_)
-      rw [mem_support_iff, m.coeff_prod_of_sum_degree]
-      exact (IsRegular.prod H).ne_zero
-  · -- case : Trivial R
-    simp [degree_of_not_nontrivial hR]
+  cases subsingleton_or_nontrivial R with
+  | inr h =>
+    apply m.toSyn.injective
+    refine le_antisymm degree_prod_le (m.le_degree ?_)
+    rw [mem_support_iff, m.coeff_prod_of_sum_degree]
+    exact (IsRegular.prod H).ne_zero
+  | inl h => -- case : Trivial R
+    simp [Subsingleton.elim _ (0 : MvPolynomial σ R)]
 
 theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
     (H : ∀ i ∈ s, P i ≠ 0) :
-    m.degree (∏ i in s, P i) = ∑ i ∈ s, m.degree (P i) := by
+    m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
   apply degree_prod_of_regular
   intro i hi
   apply isRegular_of_ne_zero
