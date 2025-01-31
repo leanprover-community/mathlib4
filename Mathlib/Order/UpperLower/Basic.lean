@@ -7,6 +7,7 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrderIso
+import Mathlib.Order.InitialSeg
 
 /-!
 # Up-sets and down-sets
@@ -348,6 +349,14 @@ theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Io
 
 theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Iio a ⊆ s := by
   simp [isLowerSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
+
+theorem InitialSeg.image_Iio [PartialOrder β] (f : α ≤i β) (a : α) :
+    f '' Set.Iio a = Set.Iio (f a) :=
+  f.toOrderEmbedding.image_Iio f.isLowerSet_range a
+
+theorem PrincipalSeg.image_Iio [PartialOrder β] (f : α <i β) (a : α) :
+    f '' Set.Iio a = Set.Iio (f a) :=
+  (f : α ≤i β).image_Iio a
 
 end PartialOrder
 
