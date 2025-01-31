@@ -406,6 +406,21 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
 
+
+/-- The canonical coloring of a CompleteMultiPartiteGraph. -/
+def CompleteMultipartiteGraph.coloring {ι : Type*} (V : ι → Type*) :
+    (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v => v.1) (by simp)
+
+theorem CompleteMultipartiteGraph.chromaticNumber {ι : Type*} [Fintype ι] (V : ι → Type*)
+    [∀ i, Nonempty (V i)] : (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+  rw [chromaticNumber_eq_card_iff_forall_surjective
+      (CompleteMultipartiteGraph.coloring V).colorable]
+  intro c i
+  by_contra! h
+  
+  sorry
+
+
 /-! ### Cliques -/
 
 
