@@ -972,6 +972,16 @@ namespace  Asymptotics
 
 open Filter
 
+open Topology in
+theorem isBigO_atTop_natCast_rpow_of_tendsto_div_rpow {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜}
+    {a : 𝕜} {r : ℝ} (hlim : Tendsto (fun n ↦ g n / (n ^ r : ℝ)) atTop (𝓝 a)) :
+    g =O[atTop] fun n ↦ (n : ℝ) ^ r := by
+  refine isBigO_norm_left.mp <| isBigO_of_div_tendsto_nhds ?_ ‖a‖ ?_
+  · filter_upwards [eventually_ne_atTop 0] with _ h
+    simp [Real.rpow_eq_zero_iff_of_nonneg, h]
+  · have := Function.comp_def _ _ ▸ tendsto_norm.comp hlim
+    simpa [norm_div, _root_.abs_of_nonneg (Real.rpow_nonneg (Nat.cast_nonneg _) _)] using this
+
 variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
 
 theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
