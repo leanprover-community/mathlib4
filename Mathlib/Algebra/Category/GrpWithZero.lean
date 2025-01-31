@@ -16,7 +16,7 @@ This file defines `GrpWithZero`, the category of groups with zero.
 
 universe u
 
-open CategoryTheory Order
+open CategoryTheory
 
 /-- The category of groups with zero. -/
 def GrpWithZero :=

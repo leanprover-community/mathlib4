@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Nat.Hom
 
 /-!
