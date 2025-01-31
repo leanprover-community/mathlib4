@@ -516,31 +516,40 @@ lemma integrate_eq_of_hasDerivAt {t : ℝ}
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
 lemma contDiffOn_nat_integrate_Icc
-    (ht₀ : t₀ ∈ Icc tmin tmax) (hlt : tmin < tmax) {n : ℕ}
+    (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
     (heqon : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ x₀ α t) :
     ContDiffOn ℝ n (integrate f t₀ x₀ α) (Icc tmin tmax) := by
-  have {t} (ht : t ∈ Icc tmin tmax) :=
-    hasDerivWithinAt_integrate_Icc ht₀ hf.continuousOn hα hmem x₀ ht
-  induction n with
-  | zero =>
-    simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
-    exact fun _ ht ↦ this ht |>.continuousWithinAt
-  | succ n hn =>
-    simp only [Nat.cast_add, Nat.cast_one] at *
-    rw [contDiffOn_succ_iff_derivWithin <| uniqueDiffOn_Icc hlt]
-    refine ⟨fun _ ht ↦ HasDerivWithinAt.differentiableWithinAt (this ht), by simp, ?_⟩
-    have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
-    apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
+  by_cases hlt : tmin < tmax
+  · have {t} (ht : t ∈ Icc tmin tmax) :=
+      hasDerivWithinAt_integrate_Icc ht₀ hf.continuousOn hα hmem x₀ ht
+    induction n with
+    | zero =>
+      simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
+      exact fun _ ht ↦ this ht |>.continuousWithinAt
+    | succ n hn =>
+      simp only [Nat.cast_add, Nat.cast_one] at *
+      rw [contDiffOn_succ_iff_derivWithin <| uniqueDiffOn_Icc hlt]
+      refine ⟨fun _ ht ↦ HasDerivWithinAt.differentiableWithinAt (this ht), by simp, ?_⟩
+      have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
+      apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
+      intro t ht
+      apply HasDerivWithinAt.derivWithin (this ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
+  · have : Icc tmin tmax = {t₀} := by -- missing lemma!
+      rw [not_lt] at hlt
+      rw [Icc_eq_singleton_iff]
+      exact ⟨eq_of_le_of_le ht₀.1 (le_trans ht₀.2 hlt), eq_of_le_of_le (le_trans hlt ht₀.1) ht₀.2⟩
+    rw [this]
     intro t ht
-    apply HasDerivWithinAt.derivWithin (this ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
+    rw [eq_of_mem_singleton ht]
+    exact contDiffWithinAt_singleton
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`. -/
 lemma contDiffOn_enat_integrate_Icc
-    (ht₀ : t₀ ∈ Icc tmin tmax) (hlt : tmin < tmax) {n : ℕ∞}
+    (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
@@ -550,32 +559,45 @@ lemma contDiffOn_enat_integrate_Icc
   | top =>
     rw [contDiffOn_infty] at *
     intro k
-    exact contDiffOn_nat_integrate_Icc ht₀ hlt (hf k) hα hmem x₀ heqon
+    exact contDiffOn_nat_integrate_Icc ht₀ (hf k) hα hmem x₀ heqon
   | coe n =>
     simp only [WithTop.coe_natCast] at *
-    exact contDiffOn_nat_integrate_Icc ht₀ hlt hf hα hmem x₀ heqon
+    exact contDiffOn_nat_integrate_Icc ht₀ hf hα hmem x₀ heqon
 
 /-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
-theorem contDiffOn_enat_Ioo_of_hasDerivAt
-    (hlt : tmin < tmax) {n : ℕ∞}
+theorem contDiffOn_enat_Icc_of_hasDerivWithinAt
+    {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t)
     (hmem : MapsTo α (Icc tmin tmax) u) :
     ContDiffOn ℝ n α (Icc tmin tmax) := by
-  set t₀ := (tmin + tmax) / 2 with h
-  have ht₀ : t₀ ∈ Icc tmin tmax := ⟨by linarith, by linarith⟩
-  have : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ (α t₀) α t := by
-    intro t ht
-    have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
-    rw [integrate_eq_of_hasDerivAt (hf.continuousOn.mono _)]
-    · intro t' ht'
-      exact hα t' (this ht') |>.mono this
-    · apply hmem.mono_left this
-    · -- missing `left/right` lemmas for `prod_subset_prod_iff`
-      rw [prod_subset_prod_iff]
-      exact Or.inl ⟨this, subset_rfl⟩
-  exact contDiffOn_enat_integrate_Icc ht₀ hlt hf
-    (fun t ht ↦ hα t ht |>.continuousWithinAt) hmem (α t₀) this |>.congr this
+  by_cases hlt : tmin < tmax
+  · set t₀ := (tmin + tmax) / 2 with h
+    have ht₀ : t₀ ∈ Icc tmin tmax := ⟨by linarith, by linarith⟩
+    have : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ (α t₀) α t := by
+      intro t ht
+      have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
+      rw [integrate_eq_of_hasDerivAt (hf.continuousOn.mono _)]
+      · intro t' ht'
+        exact hα t' (this ht') |>.mono this
+      · apply hmem.mono_left this
+      · -- missing `left/right` lemmas for `prod_subset_prod_iff`
+        rw [prod_subset_prod_iff]
+        exact Or.inl ⟨this, subset_rfl⟩
+    exact contDiffOn_enat_integrate_Icc ht₀ hf
+      (fun t ht ↦ hα t ht |>.continuousWithinAt) hmem (α t₀) this |>.congr this
+  · rw [not_lt, le_iff_lt_or_eq] at hlt -- missing lemma?
+    cases hlt with
+    | inl h =>
+      intro _ ht
+      rw [Icc_eq_empty (not_le.mpr h)] at ht
+      exfalso
+      exact not_mem_empty _ ht
+    | inr h =>
+      rw [h, Icc_self]
+      intro _ ht
+      rw [eq_of_mem_singleton ht]
+      exact contDiffWithinAt_singleton
 
 end
 
