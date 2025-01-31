@@ -189,9 +189,8 @@ variable (r : R) [IsLocalization.Away r S]
 
 open IsLocalization.Away
 
-private lemma span_range_relation_eq_ker_localizationAway :
-    Ideal.span { C r * X () - 1 } =
-      RingHom.ker (aeval (S₁ := S) (Generators.localizationAway r).val) := by
+lemma _root_.Algebra.Generators.ker_localizationAway :
+    (Generators.localizationAway (S := S) r).ker = Ideal.span { C r * X () - 1 } := by
   have : aeval (S₁ := S) (Generators.localizationAway r).val =
       (mvPolynomialQuotientEquiv S r).toAlgHom.comp
         (Ideal.Quotient.mkₐ R (Ideal.span {C r * X () - 1})) := by
@@ -200,11 +199,11 @@ private lemma span_range_relation_eq_ker_localizationAway :
       AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Ideal.Quotient.mkₐ_eq_mk,
       Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
-  rw [this]
+  rw [Generators.ker_eq_ker_aeval_val, this]
   erw [← RingHom.comap_ker]
   simp only [Generators.localizationAway_vars, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
     AlgEquiv.toAlgHom_toRingHom]
-  show Ideal.span {C r * X () - 1} = Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r))
+  show Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r)) = Ideal.span {C r * X () - 1}
   simp [RingHom.ker_equiv, ← RingHom.ker_eq_comap_bot]
 
 variable (S) in
@@ -217,7 +216,7 @@ noncomputable def localizationAway : Presentation R S where
   relation _ := C r * X () - 1
   span_range_relation_eq_ker := by
     simp only [Generators.localizationAway_vars, Set.range_const]
-    apply span_range_relation_eq_ker_localizationAway r
+    exact (Generators.ker_localizationAway r).symm
 
 instance localizationAway_isFinite : (localizationAway S r).IsFinite where
   finite_vars := inferInstanceAs <| Finite Unit
