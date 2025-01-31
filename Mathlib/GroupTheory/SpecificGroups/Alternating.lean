@@ -102,9 +102,12 @@ end Equiv.Perm
 @[simp]
 theorem alternatingGroup.index_eq_two [Nontrivial α] :
     (alternatingGroup α).index = 2 := by
-  simp only [alternatingGroup, index, Nat.card_eq_fintype_card, ← Fintype.card_units_int]
-  exact Fintype.card_congr
-    (QuotientGroup.quotientKerEquivOfSurjective _ (sign_surjective α)).toEquiv
+  rw [alternatingGroup, index_ker, MonoidHom.range_eq_top.mpr (sign_surjective α)]
+  simp_rw [mem_top, Nat.card_eq_fintype_card]; rfl
+
+@[nontriviality]
+theorem index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
+  rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
