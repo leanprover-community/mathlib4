@@ -103,7 +103,7 @@ theorem Real.poslog_mul_nat {n : ℕ} {a : ℝ} :
   rw [poslog_eq_log_of_nat]
   exact poslog_mul
 
-/-- Estimate for `log⁺` of a product. See `Real.poslog_prod` for a variant with
+/-- Estimate for `log⁺` of a product. See `Real.poslog_mul` for a variant with
 only two factors. -/
 theorem Real.poslog_prod {α : Type} [DecidableEq α] (s : Finset α) (f : α → ℝ) :
     log⁺ (∏ t ∈ s, f t) ≤ ∑ t ∈ s, log⁺ (f t) := by
