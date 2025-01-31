@@ -50,9 +50,8 @@ instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
-@[stacks 00UW "(1)"]
-lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
-    (maximalIdeal R).map (algebraMap R S) = maximalIdeal S := by
+lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
+    IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
   have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp ‹_›
   letI : Algebra (ResidueField R) (S ⧸ mR) := inferInstanceAs (Algebra (R ⧸ _) _)
@@ -68,8 +67,14 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   have : maximalIdeal (S ⧸ mR) = ⊥ := by
     rw [← jacobson_eq_maximalIdeal _ bot_ne_top, IsArtinianRing.jacobson_eq_radical,
       ← Ideal.zero_eq_bot, ← nilradical, nilradical_eq_zero]
-  rw [← isField_iff_maximalIdeal_eq, ← Ideal.Quotient.maximal_ideal_iff_isField_quotient] at this
-  exact eq_maximalIdeal this
+  rwa [← isField_iff_maximalIdeal_eq] at this
+
+@[stacks 00UW "(1)"]
+lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
+    (maximalIdeal R).map (algebraMap R S) = maximalIdeal S := by
+  apply eq_maximalIdeal
+  rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
+  exact isField_quotient_map_maximalIdeal
 
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
