@@ -125,6 +125,7 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   right_inv _ := rfl
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
+
 /-- Composition of a continuous function `f` with compact support with another continuous function
 `g` sending `0` to `0` from the left yields another continuous function `g ∘ f` with compact
 support.
