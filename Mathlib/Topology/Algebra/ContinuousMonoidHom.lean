@@ -445,6 +445,10 @@ variable {A B C D : Type _} [CommGroup A] [TopologicalSpace A] [CommGroup B] [To
 variable {X : Type} [TopologicalSpace X] [TopologicalGroup A] [TopologicalGroup B]
   [TopologicalGroup C]
 
+/--
+The continuous homomorphism from a commutative topological group `A` to `C(X,A)`,
+taking an element `a : A` to the constant function `fun _ ↦ a`.
+-/
 @[to_additive] def constₜ  : A →ₜ* C(X,A) where
   toFun             := ContinuousMap.const X
   map_one'          := rfl
