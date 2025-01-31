@@ -195,6 +195,10 @@ theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i 
     @algebraMap R S _ _ i.toAlgebra = i :=
   rfl
 
+/-- Transfer `R`-algebra structure via a ring homomorphism. -/
+def Algebra.of_algebra_of_ringHom (R) {A B} [CommSemiring R] [Semiring A] [CommSemiring B]
+    [Algebra R A] (f : A →+* B) : Algebra R B := f.comp (algebraMap R A) |>.toAlgebra
+
 namespace Algebra
 
 variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
