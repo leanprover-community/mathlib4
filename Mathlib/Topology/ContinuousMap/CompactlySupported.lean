@@ -428,8 +428,8 @@ theorem HasCompactSupport.sup {f g : α → β} (hf : HasCompactSupport f) (hg :
 variable [TopologicalSpace β] [ContinuousSup β]
 
 instance sup : Max C_c(α, β) where max f g :=
-  { toFun := fun a ↦ f a ⊔ g a
-    hasCompactSupport' := HasCompactSupport.sup f.hasCompactSupport g.hasCompactSupport}
+  { toFun := f ⊔ g
+    hasCompactSupport' := f.hasCompactSupport.sup g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_sup (f g : C_c(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
 
