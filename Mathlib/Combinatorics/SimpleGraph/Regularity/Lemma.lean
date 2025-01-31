@@ -75,7 +75,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   obtain hα | hα := le_total (card α) (bound ε l)
   -- If `card α ≤ bound ε l`, then the partition into singletons is acceptable.
   · refine ⟨⊥, bot_isEquipartition _, ?_⟩
-    rw [card_bot, card_univ]
+    rw [card_bot, Finset.card_univ]
     exact ⟨hl, hα, bot_isUniform _ hε⟩
   -- Else, let's start from a dummy equipartition of size `initialBound ε l`.
   let t := initialBound ε l
