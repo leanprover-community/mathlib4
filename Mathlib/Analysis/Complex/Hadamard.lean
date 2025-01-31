@@ -545,7 +545,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
   to the strip ``re ⁻¹' (0, 1)``. -/
 lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
-    (hz : z ∈ verticalStrip 0 1) : l + z * (u - l)  ∈ verticalStrip l u := by
+    (hz : z ∈ verticalStrip 0 1) : l + z * (u - l) ∈ verticalStrip l u := by
   simp only [verticalStrip, mem_preimage, mem_Ioo] at hz
   simp only [verticalStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im, ofReal_im,
     sub_self, mul_zero, sub_zero, mem_Ioo, lt_add_iff_pos_right]
