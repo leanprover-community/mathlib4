@@ -51,7 +51,7 @@ universe u v u₀ v₀
 
 open CategoryTheory Category Limits Functor
 
-variable {C : Type u} [Category.{v} C] [HasTerminal C]
+variable (C : Type u) [Category.{v} C] [HasTerminal C]
 
 namespace CategoryTheory.MonoClassifier
 
@@ -67,7 +67,11 @@ terminal.from U               χ
     ⊤_ C --------t----------> Ω
 ```
 -/
-structure IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
+structure Classifier where
+  /-- The target of the truth morphism -/
+  {Ω : C}
+  /-- the truth morphism for a subobject classifier -/
+  t : ⊤_ C ⟶ Ω
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
   char {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
   /-- `char m` forms the appropriate pullback square. -/
@@ -76,45 +80,30 @@ structure IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
   uniq {U X : C} (m : U ⟶ X) [Mono m] (χ : X ⟶ Ω) (hχ : IsPullback m (terminal.from U) χ t) :
     χ = char m
 
-variable (C)
-
-/-- A category `C` has a subobject classifier if there is some object `Ω` such that
-a morphism `t : ⊤_ C ⟶ Ω` is a subobject classifier. -/
-class Classifier where
-  /-- the target of the "truth arrow" in a subobject classifier -/
-  obj : C
-  /-- the "truth arrow" in a subobject classifier -/
-  t : ⊤_ C ⟶ obj
-  /-- the pair `obj` and `t` form a subobject classifier -/
-  isClassifier : IsClassifier t
 
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
 class HasClassifier : Prop where
   /-- There is some classifier. -/
   exists_classifier : Nonempty (Classifier C)
 
-variable [Classifier C]
+variable [HasClassifier C]
+
+noncomputable section
 
 /-- Notation for the object in a subobject classifier -/
-abbrev Ω : C := Classifier.obj
+abbrev Ω : C := HasClassifier.exists_classifier.some.Ω
 
 /-- Notation for the "truth arrow" in a subobject classifier -/
-abbrev t : ⊤_ C ⟶ Ω C := Classifier.t
-
-/-- The pair of `Ω C` and `t C` form a subobject classifier.
-helper def for destructuring `IsClassifier`.
--/
-def classifierIsClassifier : IsClassifier (t C) :=
-  Classifier.isClassifier
+abbrev t : ⊤_ C ⟶ Ω C := HasClassifier.exists_classifier.some.t
 
 variable {C}
 variable {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
 def characteristicMap : X ⟶ Ω C :=
-  (classifierIsClassifier C).char m
+  HasClassifier.exists_classifier.some.char m
 
-/-- shorthand for the characteristic morphism, `ClassifierOf m` -/
+/-- shorthand for the characteristic morphism -/
 abbrev χ_ := characteristicMap m
 
 /-- The diagram
@@ -129,7 +118,7 @@ terminal.from U              χ_ m
 is a pullback square.
 -/
 lemma isPullback : IsPullback m (terminal.from U) (χ_ m) (t C) :=
-  (classifierIsClassifier C).isPullback m
+  HasClassifier.exists_classifier.some.isPullback m
 
 /-- The diagram
 ```
@@ -142,23 +131,15 @@ terminal.from U              χ_ m
 ```
 commutes.
 -/
---@[reassoc]
+@[reassoc]
 lemma comm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (isPullback m).w
 
 /-- `characteristicMap m` is the only map for which the associated square
 is a pullback square.
 -/
 lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m :=
-  (classifierIsClassifier C).uniq m χ hχ
+  HasClassifier.exists_classifier.some.uniq m χ hχ
 
-end CategoryTheory.MonoClassifier
-
--- note: linter error caused an issue with `[Classifier C]`,
--- requiring namespace split.
-
-namespace CategoryTheory.MonoClassifier
-
-variable (C) [Classifier C]
 
 /-- `t C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (t C) :=
@@ -202,7 +183,5 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
+end
 end CategoryTheory.MonoClassifier
-
--- #lint docBlameThm
--- is a docstring needed for the auto-generated `comm_assoc`?
