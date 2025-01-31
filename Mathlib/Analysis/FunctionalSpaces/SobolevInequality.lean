@@ -199,7 +199,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           ∏ j ∈ s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
-              · ring_nf
+              · ring
               · congr! 1
                 rw [← lmarginal_union μ f hf]
                 · congr
