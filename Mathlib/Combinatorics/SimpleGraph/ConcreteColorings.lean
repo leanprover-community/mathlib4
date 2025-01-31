@@ -156,4 +156,84 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
 
+--------- Greedy colorings
+section degreeLT
+variable {α : Type*} [LinearOrder α] (G : SimpleGraph α) (b : α)
+
+def neighborSetLT  : Set α := {a | a < b ∧ G.Adj b a  }
+
+variable [Fintype (G.neighborSetLT b)]
+
+def neighborFinsetLT : Finset α := (G.neighborSetLT b).toFinset
+
+def degreeLT : ℕ:= (G.neighborFinsetLT b).card
+
+lemma mem_neighborFinsetLT  (a : α) : a ∈ G.neighborFinsetLT b ↔ a < b ∧ G.Adj b a :=
+    Set.mem_toFinset
+
+end degreeLT
+
+variable (G : SimpleGraph ℕ) [DecidableRel G.Adj]
+
+instance instFintypeNeighborLT: ∀ n, Fintype (G.neighborSetLT n) := by
+  intro n
+  apply Fintype.ofFinset ((Finset.range n).filter (G.Adj n))
+  intro m; simp only [Finset.mem_filter, Finset.mem_range]
+  rfl
+
+open Finset
+section Delta
+variable (hdeglt : ∀ n, G.degreeLT n ≤ Δ)
+lemma exists_col_unused (c : ℕ → Fin (Δ + 1)) (n : ℕ) :
+    ((G.neighborFinsetLT n).image c)ᶜ.Nonempty := by
+  apply (card_compl_lt_iff_nonempty _).1
+  rw [compl_compl,Fintype.card_fin]
+  apply Nat.succ_le_succ <| card_image_le.trans <| hdeglt _
+/-- Given a Δ -/
+private def col_unused  (c : ℕ → Fin (Δ + 1)) (n : ℕ) : Fin (Δ + 1) :=
+  min' _ (G.exists_col_unused hdeglt c n)
+
+@[simp]
+lemma col_unused_eq (c : ℕ → Fin (Δ + 1)) (n : ℕ) :
+  G.col_unused hdeglt c n = min' _ (G.exists_col_unused hdeglt c n) := rfl
+
+abbrev greedy (n : ℕ) : Fin (Δ + 1) :=
+  G.col_unused hdeglt ((fun m ↦ ite (m < n) (greedy m) 0)) n
+
+lemma greedy_def : G.greedy hdeglt n = min' _ (G.exists_col_unused hdeglt (fun m ↦ ite (m < n) (G.greedy hdeglt m) 0) n) :=by
+  unfold greedy; simp
+
+lemma greedy_not_mem (n : ℕ): G.greedy hdeglt n ∉ ((G.neighborFinsetLT n).image (fun m ↦ ite (m < n) (G.greedy hdeglt m) 0)) :=by
+  rw [greedy_def, ← mem_compl]
+  exact min'_mem _ (G.exists_col_unused hdeglt (fun m ↦ ite (m < n) (G.greedy hdeglt m) 0) n)
+
+lemma greedy_valid (h : m < n) (hadj : G.Adj n m):  G.greedy hdeglt m ≠ G.greedy hdeglt n :=by
+  intro heq
+  apply G.greedy_not_mem hdeglt n
+  rw [mem_image]
+  use m; rw [neighborFinsetLT,Set.mem_toFinset]
+  use ⟨h,hadj⟩, if_pos h ▸ heq
+
+def greedy_coloring : G.Coloring (Fin (Δ + 1)) :=by
+  use (greedy G hdeglt)
+  intro m n hadj
+  by_cases h : m < n
+  · apply G.greedy_valid hdeglt h hadj.symm
+  · push_neg at h
+    cases h.lt_or_eq with
+    | inl hlt => rw [adj_comm]; apply G.greedy_valid hdeglt hlt hadj
+    | inr heq => exfalso; apply G.loopless _ (heq ▸ hadj)
+
+end Delta
+variable {G} [LocallyFinite G] (hdeg : ∀ n, G.degree n ≤ Δ)
+lemma degLT_le_degree (v : ℕ) : G.degreeLT v ≤ G.degree v := by
+  rw [← card_neighborFinset_eq_degree,degreeLT]
+  apply card_le_card
+  intro m hm; rw[mem_neighborFinsetLT,mem_neighborFinset] at *
+  exact hm.2
+
+/-- If G is locally finite and all degrees are bounded above by Δ it is Δ + 1 colorable -/
+def greedy_coloring' : G.Coloring (Fin (Δ + 1)) :=
+  G.greedy_coloring (fun n => (degLT_le_degree n).trans <| hdeg n)
+
 end SimpleGraph
