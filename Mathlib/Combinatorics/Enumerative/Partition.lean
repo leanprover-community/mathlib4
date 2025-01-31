@@ -50,16 +50,15 @@ namespace Nat
 structure Partition (n : ℕ) where
   /-- positive integers summing to `n`-/
   parts : Multiset ℕ
-  /-- proof that the `parts` are positive-/
+  /-- proof that the `parts` are positive -/
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n
-  -- Porting note: chokes on `parts_pos`
-  --deriving DecidableEq
+deriving DecidableEq
 
 namespace Partition
 
--- TODO: This should be automatically derived, see lean4#2914
+@[deprecated "Partition now derives an instance of DecidableEq." (since := "2024-12-28")]
 instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
   fun _ _ => decidable_of_iff' _ Partition.ext_iff
 

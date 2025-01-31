@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
@@ -57,7 +57,6 @@ instance : Category (Mod_ A) where
   id := id
   comp f g := comp f g
 
--- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
   Hom.ext h
@@ -89,6 +88,11 @@ def forget : Mod_ A ⥤ C where
 
 open CategoryTheory.MonoidalCategory
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
+we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
+`map_id` and `map_comp`.
+
+This may indicate a configuration problem in Aesop. -/
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/
@@ -118,6 +122,8 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 1 2 => rw [whisker_exchange]
         slice_rhs 2 3 => rw [← g.act_hom]
         rw [Category.assoc] }
+  map_id _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
+  map_comp _ _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.

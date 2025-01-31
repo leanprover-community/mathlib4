@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
+Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
@@ -39,10 +39,8 @@ The category structure coming from a preorder. There is a morphism `X ⟶ Y` if 
 
 Because we don't allow morphisms to live in `Prop`,
 we have to define `X ⟶ Y` as `ULift (PLift (X ≤ Y))`.
-See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`.
-
-See <https://stacks.math.columbia.edu/tag/00D3>.
--/
+See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`. -/
+@[stacks 00D3]
 instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩
@@ -85,14 +83,7 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 @[nolint defLemma, inherit_doc leOfHom]
 abbrev _root_.Quiver.Hom.le := @leOfHom
 
--- Porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
--- @[simp]
-theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
-  rfl
-
--- Porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
--- itself. This usually means that it will never apply." removing simp? It doesn't fire
--- @[simp]
+@[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 

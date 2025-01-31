@@ -54,8 +54,8 @@ theorem prod_pow_eq_one (hφ : FixedPointFree φ) {n : ℕ} (hn : φ^[n] = _root
 
 theorem coe_eq_inv_of_sq_eq_one (hφ : FixedPointFree φ) (h2 : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   ext g
-  have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one h2 g
-  rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
+  have key : g * φ g = 1 := by simpa [List.range_succ] using hφ.prod_pow_eq_one h2 g
+  rwa [← inv_eq_iff_mul_eq_one, eq_comm] at key
 
 section Involutive
 
@@ -84,7 +84,7 @@ theorem odd_card_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involuti
     Odd (Nat.card G) := by
   have := Fintype.ofFinite G
   by_contra h
-  rw [← Nat.even_iff_not_odd, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
+  rw [Nat.not_odd_iff_even, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
   obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card 2 h
   exact hφ.orderOf_ne_two_of_involutive h2 g hg
 

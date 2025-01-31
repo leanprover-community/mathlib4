@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Eric Wieser
+Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -14,13 +14,7 @@ suppress_compilation
 
 universe u v w
 
-open TensorProduct
-
-open TensorProduct
-
-open Algebra.TensorProduct
-
-open Matrix
+open TensorProduct Algebra.TensorProduct Matrix
 
 variable {R : Type u} [CommSemiring R]
 variable {A : Type v} [Semiring A] [Algebra R A]
@@ -96,16 +90,14 @@ theorem invFun_algebraMap (M : Matrix n n R) : invFun R A n (M.map (algebraMap R
   simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum, mul_boole]
   congr
   conv_rhs => rw [matrix_eq_sum_stdBasisMatrix M]
-  convert Finset.sum_product (β := Matrix n n R); simp
+  convert Finset.sum_product (β := Matrix n n R) ..; simp
 
 theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M := by
-  simp only [invFun, map_sum, stdBasisMatrix, apply_ite ↑(algebraMap R A), smul_eq_mul,
-    mul_boole, toFunAlgHom_apply, RingHom.map_zero, RingHom.map_one, Matrix.map_apply,
-    Pi.smul_def]
-  convert Finset.sum_product (β := Matrix n n A)
+  simp only [invFun, map_sum, toFunAlgHom_apply]
+  convert Finset.sum_product (β := Matrix n n A) ..
   conv_lhs => rw [matrix_eq_sum_stdBasisMatrix M]
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
-  simp only [stdBasisMatrix, smul_apply, Matrix.map_apply]
+  dsimp [stdBasisMatrix]
   split_ifs <;> aesop
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by

@@ -19,12 +19,12 @@ This file provides lemmas about the interaction between infinite sums and multip
 
 open Filter Finset Function
 
-variable {ι κ R α : Type*}
+variable {ι κ α : Type*}
 
 section NonUnitalNonAssocSemiring
 
-variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f g : ι → α}
-  {a a₁ a₂ : α}
+variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α}
+  {a₁ : α}
 
 theorem HasSum.mul_left (a₂) (h : HasSum f a₁) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) := by
   simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
@@ -50,9 +50,9 @@ theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' 
 
 theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
   classical
-  exact if hf : Summable f then
-    (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
-  else (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+  by_cases hf : Summable f
+  · exact (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
+  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
   (Commute.tsum_right _ fun i ↦ (h i).symm).symm
@@ -63,8 +63,7 @@ end NonUnitalNonAssocSemiring
 
 section DivisionSemiring
 
-variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f g : ι → α}
-  {a a₁ a₂ : α}
+variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α} {a a₁ a₂ : α}
 
 theorem HasSum.div_const (h : HasSum f a) (b : α) : HasSum (fun i ↦ f i / b) (a / b) := by
   simp only [div_eq_mul_inv, h.mul_right b⁻¹]
@@ -106,6 +105,22 @@ theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
 
 theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
+
+theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
+    HasSum (fun i ↦ b / f i) (b * a) := by
+  have := h.mul_left b
+  simpa only [div_eq_mul_inv, one_mul] using this
+
+theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x)) (b : α) :
+    Summable fun i ↦ b / f i :=
+  (h.hasSum.const_div b).summable
+
+theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
+    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) ↔ HasSum (1/ f) a₁ := by
+  simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
+
+theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
+  simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
 
 end DivisionSemiring
 

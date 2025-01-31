@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.GroupTheory.Coset.Card
 
 /-!
@@ -30,6 +31,7 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 period, periodic, periodicity, antiperiodic
 -/
 
+assert_not_exists TwoSidedIdeal
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
@@ -66,9 +68,10 @@ protected theorem Periodic.div [Add α] [Div β] (hf : Periodic f c) (hg : Perio
 @[to_additive]
 theorem _root_.List.periodic_prod [Add α] [Monoid β] (l : List (α → β))
     (hl : ∀ f ∈ l, Periodic f c) : Periodic l.prod c := by
-  induction' l with g l ih hl
-  · simp
-  · rw [List.forall_mem_cons] at hl
+  induction l with
+  | nil => simp
+  | cons g l ih =>
+    rw [List.forall_mem_cons] at hl
     simpa only [List.prod_cons] using hl.1.mul (ih hl.2)
 
 @[to_additive]
@@ -182,7 +185,7 @@ theorem Periodic.nat_mul_sub_eq [Ring α] (h : Periodic f c) (n : ℕ) : f (n * 
   simpa only [sub_eq_neg_add] using h.nat_mul n (-x)
 
 protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
-  cases' n with n n
+  rcases n with n | n
   · simpa only [Int.ofNat_eq_coe, natCast_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul (n + 1)).neg
 

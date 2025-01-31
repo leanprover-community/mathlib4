@@ -30,8 +30,6 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
   Type*
@@ -41,12 +39,9 @@ namespace PartialFun
 instance : CoeSort PartialFun Type* :=
   ⟨id⟩
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
   id
-
--- Porting note: removed this lemma which is useless because of the expansion of coercions
 
 instance : Inhabited PartialFun :=
   ⟨Type*⟩
@@ -82,14 +77,16 @@ def typeToPartialFun : Type u ⥤ PartialFun where
 instance : typeToPartialFun.Faithful where
   map_injective {_ _} := PFun.lift_injective
 
+-- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
-  map_id X :=
-    PFun.ext fun a b => PFun.mem_toSubtype_iff.trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
+  map_id _ :=
+    PFun.ext fun _ b =>
+      PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
   map_comp f g := by
     -- Porting note: the proof was changed because the original mathlib3 proof no longer works
     apply PFun.ext _
@@ -125,7 +122,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
-        left_inv := fun a => Option.get_some _ _
+        left_inv := fun _ => Option.get_some _ _
         right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
       fun f =>
         PFun.ext fun a b => by
@@ -166,7 +163,7 @@ adding a point. -/
 noncomputable def typeToPartialFunIsoPartialFunToPointed :
     typeToPartialFun ⋙ partialFunToPointed ≅ typeToPointed :=
   NatIso.ofComponents
-    (fun X =>
+    (fun _ =>
       { hom := ⟨id, rfl⟩
         inv := ⟨id, rfl⟩
         hom_inv_id := rfl

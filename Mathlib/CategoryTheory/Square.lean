@@ -26,7 +26,7 @@ We define the flip functor, and two equivalences with
 the category `Arrow (Arrow C)`, depending on whether
 we consider a commutative square as a horizontal
 morphism between two vertical maps (`arrowArrowEquivalence`)
-or a vertical morphism betwen two horizontal
+or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
 
 -/
@@ -172,9 +172,9 @@ commutative square `sq` to the obvious arrow from the left morphism of `sq`
 to the right morphism of `sq`. -/
 @[simps!]
 def toArrowArrowFunctor : Square C ⥤ Arrow (Arrow C) where
-  obj sq := Arrow.mk (Arrow.homMk sq.fac : Arrow.mk sq.f₁₃ ⟶ Arrow.mk sq.f₂₄)
-  map φ := Arrow.homMk (u := Arrow.homMk φ.comm₁₃.symm)
-    (v := Arrow.homMk φ.comm₂₄.symm) (by aesop_cat)
+  obj sq := Arrow.mk (Arrow.homMk _ _ sq.fac : Arrow.mk sq.f₁₃ ⟶ Arrow.mk sq.f₂₄)
+  map φ := Arrow.homMk (Arrow.homMk _ _ φ.comm₁₃.symm)
+    (Arrow.homMk _ _ φ.comm₂₄.symm)
 
 /-- The functor `Arrow (Arrow C) ⥤ Square C` which sends
 a morphism `Arrow.mk f ⟶ Arrow.mk g` to the commutative square
@@ -207,9 +207,9 @@ commutative square `sq` to the obvious arrow from the top morphism of `sq`
 to the bottom morphism of `sq`. -/
 @[simps!]
 def toArrowArrowFunctor' : Square C ⥤ Arrow (Arrow C) where
-  obj sq := Arrow.mk (Arrow.homMk sq.fac.symm : Arrow.mk sq.f₁₂ ⟶ Arrow.mk sq.f₃₄)
-  map φ := Arrow.homMk (u := Arrow.homMk φ.comm₁₂.symm)
-    (v := Arrow.homMk φ.comm₃₄.symm) (by aesop_cat)
+  obj sq := Arrow.mk (Arrow.homMk _ _ sq.fac.symm : Arrow.mk sq.f₁₂ ⟶ Arrow.mk sq.f₃₄)
+  map φ := Arrow.homMk (Arrow.homMk _ _ φ.comm₁₂.symm)
+    (Arrow.homMk _ _ φ.comm₃₄.symm)
 
 /-- The functor `Arrow (Arrow C) ⥤ Square C` which sends
 a morphism `Arrow.mk f ⟶ Arrow.mk g` to the commutative square
@@ -326,6 +326,8 @@ def map (sq : Square C) (F : C ⥤ D) : Square D where
 
 end Square
 
+variable {C}
+
 namespace Functor
 
 /-- The functor `Square C ⥤ Square D` induced by a functor `C ⥤ D`. -/
@@ -343,5 +345,22 @@ def mapSquare (F : C ⥤ D) : Square C ⥤ Square D where
       comm₃₄ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₃₄ }
 
 end Functor
+
+/-- The natural transformation `F.mapSquare ⟶ G.mapSquare` induces
+by a natural transformation `F ⟶ G`. -/
+@[simps]
+def NatTrans.mapSquare {F G : C ⥤ D} (τ : F ⟶ G) :
+    F.mapSquare ⟶ G.mapSquare where
+  app sq :=
+    { τ₁ := τ.app _
+      τ₂ := τ.app _
+      τ₃ := τ.app _
+      τ₄ := τ.app _ }
+
+/-- The functor `(C ⥤ D) ⥤ Square C ⥤ Square D`. -/
+@[simps]
+def Square.mapFunctor : (C ⥤ D) ⥤ Square C ⥤ Square D where
+  obj F := F.mapSquare
+  map τ := NatTrans.mapSquare τ
 
 end CategoryTheory

@@ -32,8 +32,6 @@ namespace RatFunc
 
 section Eval
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 open RatFunc
@@ -213,7 +211,7 @@ end Polynomial
 
 namespace RatFunc
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 open Polynomial
 

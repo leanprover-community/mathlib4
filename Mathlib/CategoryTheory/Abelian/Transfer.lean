@@ -1,11 +1,14 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Transfer
 
 /-!
 # Transferring "abelian-ness" across a functor
@@ -15,6 +18,9 @@ we have `F : C ⥤ D` `G : D ⥤ C` (both preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian.
+
+A particular example is the transfer of `Abelian` instances from a category `C` to `ShrinkHoms C`;
+see `ShrinkHoms.abelian`. In this case, we also transfer the `Preadditive` structure.
 
 See <https://stacks.math.columbia.edu/tag/03A3>
 
@@ -37,12 +43,12 @@ namespace CategoryTheory
 
 open Limits
 
-universe v u₁ u₂
+universe v₁ v₂ u₁ u₂
 
 namespace AbelianOfAdjunction
 
-variable {C : Type u₁} [Category.{v} C] [Preadditive C]
-variable {D : Type u₂} [Category.{v} D] [Abelian D]
+variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
+variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 variable (F : C ⥤ D)
 variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 
@@ -59,7 +65,7 @@ theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKerne
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :=
   { has_colimit := fun f => by
-      have : PreservesColimits G := adj.leftAdjointPreservesColimits
+      have : PreservesColimits G := adj.leftAdjoint_preservesColimits
       have := NatIso.naturality_1 i f
       simp? at this says
         simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
@@ -74,7 +80,7 @@ def cokernelIso (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y)
     G.obj (cokernel (F.map f)) ≅ cokernel f := by
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
-  have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  have : PreservesColimits G := adj.leftAdjoint_preservesColimits
   calc
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
@@ -87,7 +93,7 @@ variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 /-- Auxiliary construction for `coimageIsoImage` -/
 def coimageIsoImageAux (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
-  have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  have : PreservesColimits G := adj.leftAdjoint_preservesColimits
   calc
     kernel (G.map (cokernel.π (F.map f))) ≅
         kernel (cokernel.π (G.map (F.map f)) ≫ cokernelComparison (F.map f) G) :=
@@ -113,7 +119,7 @@ We still need to check that this agrees with the canonical morphism.
 -/
 def coimageIsoImage (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     Abelian.coimage f ≅ Abelian.image f := by
-  have : PreservesLimits F := adj.rightAdjointPreservesLimits
+  have : PreservesLimits F := adj.rightAdjoint_preservesLimits
   calc
     Abelian.coimage f ≅ cokernel (kernel.ι f) := Iso.refl _
     _ ≅ G.obj (cokernel (F.map (kernel.ι f))) := (cokernelIso _ _ i adj _).symm
@@ -128,7 +134,7 @@ def coimageIsoImage (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X �
     _ ≅ Abelian.image f := Iso.refl _
 
 -- The account of this proof in the Stacks project omits this calculation.
-theorem coimageIsoImage_hom  (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
+theorem coimageIsoImage_hom (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
   dsimp [coimageIsoImage, cokernelIso, cokernelEpiComp, cokernelCompIsIso_inv,
     coimageIsoImageAux, kernelCompMono]
@@ -149,12 +155,10 @@ open AbelianOfAdjunction
 we have `F : C ⥤ D` `G : D ⥤ C` (both preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
-then `C` is also abelian.
-
-See <https://stacks.math.columbia.edu/tag/03A3>
--/
-def abelianOfAdjunction {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFiniteProducts C]
-    {D : Type u₂} [Category.{v} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+then `C` is also abelian. -/
+@[stacks 03A3]
+def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
+    {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
     (adj : G ⊣ F) : Abelian C := by
   haveI := hasKernels F G i
@@ -169,9 +173,58 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFin
 via a functor that preserves zero morphisms,
 then `C` is also abelian.
 -/
-def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFiniteProducts C]
-    {D : Type u₂} [Category.{v} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
+    {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
     [F.IsEquivalence] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
+
+namespace ShrinkHoms
+
+universe w
+
+variable {C : Type*} [Category C] [LocallySmall.{w} C]
+
+section Preadditive
+
+variable [Preadditive C]
+
+noncomputable instance homGroup (P Q : ShrinkHoms C) : AddCommGroup (P ⟶ Q : Type w) :=
+  Equiv.addCommGroup (equivShrink _).symm
+
+lemma functor_map_add {P Q : C} (f g : P ⟶ Q) :
+    (functor C).map (f + g) =
+      (functor C).map f + (functor C).map g := by
+  exact map_add (equivShrink.{w} (P ⟶ Q)).symm.addEquiv.symm f g
+
+lemma inverse_map_add {P Q : ShrinkHoms C} (f g : P ⟶ Q) :
+    (inverse C).map (f + g) =
+      (inverse C).map f + (ShrinkHoms.inverse C).map g :=
+  map_add (equivShrink.{w} (P.fromShrinkHoms ⟶ Q.fromShrinkHoms)).symm.addEquiv f g
+
+variable (C)
+
+instance preadditive : Preadditive.{w} (ShrinkHoms C) :=
+  .ofFullyFaithful (equivalence C).fullyFaithfulInverse
+
+instance : (inverse C).Additive :=
+  (equivalence C).symm.fullyFaithfulFunctor.additive_ofFullyFaithful
+
+instance : (functor C).Additive :=
+  (equivalence C).symm.additive_inverse_of_FullyFaithful
+
+instance hasLimitsOfShape (J : Type*) [Category J]
+    [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
+  Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
+
+instance hasFiniteLimits [HasFiniteLimits C] :
+    HasFiniteLimits.{w} (ShrinkHoms C) := ⟨fun _ => inferInstance⟩
+
+end Preadditive
+
+variable (C) in
+noncomputable instance abelian [Abelian C] :
+    Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
+
+end ShrinkHoms
 
 end CategoryTheory

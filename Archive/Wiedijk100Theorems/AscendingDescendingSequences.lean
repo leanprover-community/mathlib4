@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 
 /-!
@@ -38,8 +39,8 @@ We then show the pair of labels must be unique. Now if there is no increasing se
 which is a contradiction if there are more than `r * s` elements.
 -/
 theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
-    (∃ t : Finset (Fin n), r < t.card ∧ StrictMonoOn f ↑t) ∨
-      ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t := by
+    (∃ t : Finset (Fin n), r < #t ∧ StrictMonoOn f ↑t) ∨
+      ∃ t : Finset (Fin n), s < #t ∧ StrictAntiOn f ↑t := by
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
@@ -71,10 +72,10 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   · refine Or.imp ?_ ?_ hi
     on_goal 1 =>
       have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
-        simp only [← hab]; exact max'_mem _ _
+        simp only [ab', ← hab]; exact max'_mem _ _
     on_goal 2 =>
       have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
-        simp only [← hab]; exact max'_mem _ _
+        simp only [ab', ← hab]; exact max'_mem _ _
     all_goals
       intro hi
       rw [mem_image] at this
@@ -93,10 +94,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
     on_goal 1 =>
       apply ne_of_lt _ q₁
-      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by
+        dsimp only [ab']; exact max'_mem _ _
     on_goal 2 =>
       apply ne_of_lt _ q₂
-      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by
+        dsimp only [ab']; exact max'_mem _ _
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]
@@ -147,7 +150,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
+    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i

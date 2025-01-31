@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # The integers as normed ring
@@ -29,6 +29,8 @@ theorem norm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖ = 1 := by
 @[simp]
 theorem nnnorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
   Real.nnnorm_natCast _
+
+@[simp] lemma enorm_natCast (n : ℕ) : ‖(n : ℤ)‖ₑ = n := Real.enorm_natCast _
 
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 

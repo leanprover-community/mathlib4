@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers
@@ -28,8 +30,6 @@ open Nat
 
 namespace Nat
 
-attribute [instance 0] instBEqNat
-
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
@@ -37,7 +37,7 @@ def primeFactorsList : ℕ → List ℕ
   | k + 2 =>
     let m := minFac (k + 2)
     m :: primeFactorsList ((k + 2) / m)
-decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
+decreasing_by exact factors_lemma
 
 @[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
 
@@ -79,7 +79,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
         Nat.mul_div_cancel' (minFac_dvd _)]
 
 theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList = [p] := by
-  have : p = p - 2 + 2 := (Nat.sub_add_cancel hp.two_le).symm
+  have : p = p - 2 + 2 := Nat.eq_add_of_sub_eq hp.two_le rfl
   rw [this, primeFactorsList]
   simp only [Eq.symm this]
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2
