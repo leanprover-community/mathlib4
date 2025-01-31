@@ -140,7 +140,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
     -- new `change` after https://github.com/leanprover-community/mathlib4/pull/13170
     -- should be removed when we redo limits for `ConcreteCategory` instead of `HasForget`
-    change (forget TopCat).map _ _ = _ 
+    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
     erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply, limit.lift_π] <;> -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
