@@ -96,9 +96,8 @@ section Profinite
 -- unhelpfully defines a function `CompHaus.{max u₁ u₂} → Profinite.{max u₁ u₂}`.
 /--
 (Implementation) The object part of the connected_components functor from compact Hausdorff spaces
-to Profinite spaces, given by quotienting a space by its connected components.
-See: https://stacks.math.columbia.edu/tag/0900
--/
+to Profinite spaces, given by quotienting a space by its connected components. -/
+@[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   toTop := TopCat.of (ConnectedComponents X)
   is_compact := Quotient.compactSpace
@@ -241,8 +240,8 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         apply ULift.ext
         dsimp [g, LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
+        erw [CategoryTheory.comp_apply, ContinuousMap.coe_mk, CategoryTheory.comp_apply,
+          ContinuousMap.coe_mk, Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
         simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
