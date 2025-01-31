@@ -151,7 +151,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
-  -- this was produced using `simp? [subcomplexHorn_eq_iSup] says`
+  -- this was produced using `simp? [subcomplexHorn_eq_iSup]`
   simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]

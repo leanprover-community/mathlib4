@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.Order.Fin.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Tactic.FinCases
 
 /-!
 # The order isomorphism `Fin (n + 1) ≃o {i}ᶜ`
@@ -29,22 +30,8 @@ noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :
         exact (Fin.succAboveOrderEmb i).injective (by simpa using h)
       · rintro ⟨j, hj⟩
         simp only [mem_compl, mem_singleton] at hj
-        by_cases h : j < i
-        · refine ⟨j.castPred ?_, ?_⟩
-          · rintro rfl
-            simp only [Fin.lt_iff_val_lt_val, Fin.val_last] at h
-            simp only [Fin.ext_iff, Fin.val_last] at hj
-            omega
-          · dsimp
-            rw [Subtype.mk.injEq, Fin.succAbove_of_castSucc_lt _ _ h,
-              Fin.castSucc_castPred]
-        · refine ⟨j.pred ?_, ?_⟩
-          · rintro rfl
-            obtain rfl : i = 0 := by simpa using h
-            simp at hj
-          · dsimp
-            rw [Subtype.mk.injEq, Fin.succAbove_of_le_castSucc, Fin.succ_pred]
-            rw [Fin.le_iff_val_le_val, Fin.coe_castSucc, Fin.coe_pred]
-            omega )
+        obtain rfl | ⟨i, rfl⟩ := Fin.eq_zero_or_eq_succ i
+        · exact ⟨j.pred hj, by simp⟩
+        · exact ⟨i.predAbove j, by aesop⟩)
   map_rel_iff' {a b} := by
     simp only [Equiv.ofBijective_apply, Subtype.mk_le_mk, OrderEmbedding.le_iff_le]
