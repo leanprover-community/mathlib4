@@ -30,7 +30,7 @@ for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over th
 number field, embeddings, places, infinite places
 -/
 
-open scoped Classical Finset
+open scoped Finset
 
 namespace NumberField.Embeddings
 
@@ -97,6 +97,7 @@ variable (K A)
 /-- Let `B` be a real number. The set of algebraic integers in `K` whose conjugates are all
 smaller in norm than `B` is finite. -/
 theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K →+* A, ‖φ x‖ ≤ B}.Finite := by
+  classical
   let C := Nat.ceil (max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2))
   have := bUnion_roots_finite (algebraMap ℤ K) (finrank ℚ K) (finite_Icc (-C : ℤ) C)
   refine this.subset fun x hx => ?_; simp_rw [mem_iUnion]
@@ -422,6 +423,7 @@ lemma isComplex_mk_iff {φ : K →+* ℂ} :
 theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
     ¬ ComplexEmbedding.IsReal φ := by rwa [← isComplex_mk_iff]
 
+open scoped Classical in
 /-- The multiplicity of an infinite place, that is the number of distinct complex embeddings that
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
@@ -437,6 +439,7 @@ theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
   rw [← Nat.cast_one, Nat.cast_le]
   exact mult_pos
 
+open scoped Classical in
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ = w} = mult w := by
   conv_lhs =>
     congr; congr; ext
@@ -450,11 +453,13 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
   · refine Finset.card_pair ?_
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
+open scoped Classical in
 noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
 
 theorem sum_mult_eq [NumberField K] :
     ∑ w : InfinitePlace K, mult w = Module.finrank ℚ K := by
+  classical
   rw [← Embeddings.card K ℂ, Fintype.card, Finset.card_eq_sum_ones, ← Finset.univ.sum_fiberwise
     (fun φ => InfinitePlace.mk φ)]
   exact Finset.sum_congr rfl
@@ -490,6 +495,7 @@ variable [NumberField K]
 `‖·‖_w` is the normalized absolute value for `w`. -/
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
+  classical
   convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
   · rw [map_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => Complex.abs (f x))
       (fun φ => Complex.abs (φ x)) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
@@ -555,25 +561,30 @@ section NumberField
 
 variable [NumberField K]
 
+open scoped Classical in
 /-- The number of infinite real places of the number field `K`. -/
 noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
 @[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
 
+open scoped Classical in
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
 
 @[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
 
+open scoped Classical in
 theorem card_real_embeddings :
     card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = nrRealPlaces K := Fintype.card_congr mkReal
 
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
     Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
+  classical
   convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
     (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
+open scoped Classical in
 theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w },
@@ -593,6 +604,7 @@ theorem card_complex_embeddings :
 
 theorem card_add_two_mul_card_eq_rank :
     nrRealPlaces K + 2 * nrComplexPlaces K = finrank ℚ K := by
+  classical
   rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
@@ -838,6 +850,7 @@ variable (k w)
 
 lemma nat_card_stabilizer_eq_one_or_two :
     Nat.card (Stab w) = 1 ∨ Nat.card (Stab w) = 2 := by
+  classical
   rw [← SetLike.coe_sort_coe, ← mk_embedding w]
   by_cases h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
   · obtain ⟨σ, hσ⟩ := h
@@ -869,6 +882,7 @@ lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
   rw [isUnramified_iff_card_stabilizer_eq_one]
   obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
 
+open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :
     Nat.card (Stab w) = if IsUnramified k w then 1 else 2 := by
   split
@@ -881,7 +895,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype (K ≃ₐ[k] K)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert even_zero
+  · convert Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -894,7 +908,7 @@ lemma even_finrank_of_not_isUnramified [IsGalois k K]
     (hw : ¬ IsUnramified k w) : Even (finrank k K) := by
   by_cases FiniteDimensional k K
   · exact IsGalois.card_aut_eq_finrank k K ▸ even_card_aut_of_not_isUnramified hw
-  · exact finrank_of_not_finite ‹_› ▸ even_zero
+  · exact finrank_of_not_finite ‹_› ▸ Even.zero
 
 lemma isUnramified_smul_iff :
     IsUnramified k (σ • w) ↔ IsUnramified k w := by
@@ -934,6 +948,7 @@ variable (k K)
 variable [NumberField K]
 
 open Finset in
+open scoped Classical in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
     #{w : InfinitePlace K | w.IsUnramified k} =
       #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K := by
@@ -956,6 +971,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
   · simp [isUnramifiedIn_comap]
 
 open Finset in
+open scoped Classical in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     #({w : InfinitePlace K | w.IsUnramified k} : Finset _)ᶜ =
       #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
@@ -977,6 +993,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
       rwa [← isUnramifiedIn_comap]
   · simp [isUnramifiedIn_comap]
 
+open scoped Classical in
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
     Fintype.card (InfinitePlace K) =
       #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K +
@@ -1038,6 +1055,7 @@ open Module in
 lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberField K]
     [IsGalois k K] [IsUnramifiedAtInfinitePlaces k K] :
     Fintype.card (InfinitePlace K) = Fintype.card (InfinitePlace k) * finrank k K := by
+  classical
   rw [InfinitePlace.card_eq_card_isUnramifiedIn (k := k) (K := K), Finset.filter_true_of_mem,
     Finset.card_univ, Finset.card_eq_zero.mpr, zero_mul, add_zero]
   · exact Finset.compl_univ

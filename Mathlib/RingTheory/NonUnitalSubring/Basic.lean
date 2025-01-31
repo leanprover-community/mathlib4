@@ -350,8 +350,8 @@ variable {R}
 
 /-- The center of a (not necessarily uintal or associative) ring
 is isomorphic to the center of its opposite. -/
-@[simps!] def centerMulOppositeEquiv : center Rᵐᵒᵖ ≃+* center R :=
-  NonUnitalSubsemiring.centerMulOppositeEquiv
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
 
 end NonUnitalNonAssocRing
 

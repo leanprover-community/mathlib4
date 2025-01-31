@@ -12,8 +12,7 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 -/
 
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists Multiset Ring
 
 variable {G : Type*} [Group G]
 
@@ -43,12 +42,13 @@ instance center.isCommutative : (center G).IsCommutative :=
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) "The center of isomorphic additive groups are isomorphic."]
 def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
 
 /-- The center of a group is isomorphic to the center of its opposite. -/
-@[to_additive (attr := simps!)]
-def centerMulOppositeEquiv : center Gᵐᵒᵖ ≃* center G := Submonoid.centerMulOppositeEquiv
+@[to_additive (attr := simps!)
+"The center of an additive group is isomorphic to the center of its opposite."]
+def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 @[simps! apply_val_coe symm_apply_coe_val]

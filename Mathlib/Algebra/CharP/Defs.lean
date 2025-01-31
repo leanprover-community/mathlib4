@@ -19,8 +19,7 @@ import Mathlib.Data.Nat.Prime.Defs
     prime characteristic `p`)
 -/
 
-assert_not_exists Field
-assert_not_exists Finset
+assert_not_exists Field Finset
 
 open Set
 

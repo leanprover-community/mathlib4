@@ -256,8 +256,8 @@ variable {R}
 
 /-- The center of a (not necessarily unital or associative) semiring
 is isomorphic to the center of its opposite. -/
-@[simps!] def centerMulOppositeEquiv : center Rᵐᵒᵖ ≃+* center R where
-  __ := Subsemigroup.centerMulOppositeEquiv
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ where
+  __ := Subsemigroup.centerToMulOpposite
   map_add' _ _ := rfl
 
 end NonUnitalNonAssocSemiring

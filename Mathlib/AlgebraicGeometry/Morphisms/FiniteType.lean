@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Morphisms of finite type
@@ -66,5 +67,41 @@ open scoped TensorProduct in
 instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
+
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
+  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+
+instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
+  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+
+nonrec lemma LocallyOfFiniteType.jacobsonSpace
+  (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
+  wlog hY : ∃ S, Y = Spec S
+  · rw [jacobsonSpace_iff_of_iSup_eq_top
+      (Scheme.OpenCover.iSup_opensRange (Y.affineCover.pullbackCover f))]
+    intro i
+    have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
+      MorphismProperty.pullback_snd _ _ inferInstance
+    have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+    have inst : JacobsonSpace (Y.affineCover.obj i) :=
+      .of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
+    let e := Homeomorph.ofIsEmbedding _
+      ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding
+    have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
+    exact .of_isClosedEmbedding e.symm.isClosedEmbedding
+  obtain ⟨R, rfl⟩ := hY
+  wlog hX : ∃ S, X = Spec S
+  · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+    rw [jacobsonSpace_iff_of_iSup_eq_top (Scheme.OpenCover.iSup_opensRange X.affineCover)]
+    intro i
+    have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
+    let e := Homeomorph.ofIsEmbedding _ (X.affineCover.map i).isOpenEmbedding.isEmbedding
+    exact .of_isClosedEmbedding e.symm.isClosedEmbedding
+  obtain ⟨S, rfl⟩ := hX
+  obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f
+  have : RingHom.FiniteType φ.hom := HasRingHomProperty.Spec_iff.mp ‹_›
+  algebraize [φ.hom]
+  have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
+  exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
 
 end AlgebraicGeometry
