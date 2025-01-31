@@ -209,30 +209,8 @@ argument to `simp`. -/
 theorem _root_.Membership.mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p x }) : p a :=
   h
 
-theorem nmem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
-  Iff.rfl
-
-@[simp]
-theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
-  rfl
-
-theorem setOf_set {s : Set α} : setOf s = s :=
-  rfl
-
-theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
-  Iff.rfl
-
-theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
-  Iff.rfl
-
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
   bijective_id
-
-theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
-  Iff.rfl
-
-theorem setOf_subset {p : α → Prop} {s : Set α} : setOf p ⊆ s ↔ ∀ x, p x → x ∈ s :=
-  Iff.rfl
 
 @[simp]
 theorem setOf_subset_setOf {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
@@ -279,10 +257,6 @@ instance : IsAsymm (Set α) (· ⊂ ·) :=
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
-
--- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
-theorem subset_def : (s ⊆ t) = ∀ x, x ∈ s → x ∈ t :=
-  rfl
 
 theorem ssubset_def : (s ⊂ t) = (s ⊆ t ∧ ¬t ⊆ s) :=
   rfl
