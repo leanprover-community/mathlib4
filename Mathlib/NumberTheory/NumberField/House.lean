@@ -133,7 +133,7 @@ private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp (config := { unfoldPartialApp := true }) only [asiegel, a']
   simp only [ne_eq]
   rw [funext_iff]; intros hs
-  simp only [Prod.forall] at hs;
+  simp only [Prod.forall] at hs
   apply ha
   rw [← Matrix.ext_iff]; intros k' l
   specialize hs k'
