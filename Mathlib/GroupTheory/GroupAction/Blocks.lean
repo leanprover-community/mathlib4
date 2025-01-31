@@ -36,6 +36,7 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
+- `Block.boundedOrderOfMem` : the set of blocks containing a given element is a bounded order.
 ## References
 
 We follow [Wielandt-1964].
