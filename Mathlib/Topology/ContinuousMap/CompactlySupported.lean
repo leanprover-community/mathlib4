@@ -5,6 +5,7 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
@@ -399,6 +400,26 @@ instance : StarRing C_c(α, β) :=
 
 end StarRing
 
+section PartialOrder
+
+/-! ### The partial order in `C_c`
+
+When `β` is equipped with a partial order, `C_c(α, β)` is given the pointwise partial order.
+-/
+
+variable {β : Type*} [TopologicalSpace β] [Zero β]
+
+instance partialOrder [PartialOrder β] : PartialOrder C_c(α, β) :=
+  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
+
+theorem le_def [PartialOrder β] {f g : C_c(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
+  Pi.le_def
+
+theorem lt_def [PartialOrder β] {f g : C_c(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
+  Pi.lt_def
+
+end PartialOrder
+
 /-! ### `C_c` as a functor
 
 For each `β` with sufficient structure, there is a contravariant functor `C_c(-, β)` from the
@@ -540,6 +561,19 @@ noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
 @[simp]
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
+
+lemma exist_add_eq {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁.1 ≤ f₂.1) : ∃ (g : C_c(α, ℝ≥0)), f₁ + g = f₂ := by
+  refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
+  · apply (f₁.hasCompactSupport'.union f₂.hasCompactSupport').of_isClosed_subset isClosed_closure
+    rw [tsupport, tsupport, ← closure_union]
+    apply closure_mono
+    intro x hx
+    contrapose! hx
+    simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, Set.mem_union, Function.mem_support,
+      ne_eq, not_or, Decidable.not_not, ContinuousMap.coe_sub, Pi.sub_apply] at hx ⊢
+    simp [hx.1, hx.2]
+  · ext x
+    simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)
 
 end CompactlySupportedContinuousMap
 
