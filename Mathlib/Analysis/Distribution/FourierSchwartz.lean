@@ -50,9 +50,9 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
     simp only [mul_assoc]
     gcongr
     calc
-    ∑ p in Finset.range (n + 1) ×ˢ Finset.range (k + 1),
+    ∑ p ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
         ∫ (v : V), ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 (⇑f) v‖
-      ≤ ∑ p in Finset.range (n + 1) ×ˢ Finset.range (k + 1),
+      ≤ ∑ p ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
         2 ^ integrablePower (volume : Measure V) *
         (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2 *
         ((Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
