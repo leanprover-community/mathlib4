@@ -155,7 +155,6 @@ def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → 
     Subtype p → Subtype q :=
   fun x ↦ ⟨f x, h x x.prop⟩
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [Subtype.map] -/
 theorem map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
     map f h = fun x ↦ ⟨f x, h x x.prop⟩ :=
   rfl

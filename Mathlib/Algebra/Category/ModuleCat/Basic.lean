@@ -247,7 +247,7 @@ theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
 
 @[simp]
 theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
-    (forget₂ (ModuleCat R) AddCommGrp).map f = f.hom.toAddMonoidHom :=
+    (forget₂ (ModuleCat R) AddCommGrp).map f = AddCommGrp.ofHom f.hom :=
   rfl
 
 instance : Inhabited (ModuleCat R) :=
@@ -390,7 +390,7 @@ instance : AddCommGroup (M ⟶ N) :=
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
-    (∑ i in s, f i).hom = ∑ i in s, (f i).hom :=
+    (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
   map_sum ({ toFun := ModuleCat.Hom.hom, map_zero' := ModuleCat.hom_zero, map_add' := hom_add } :
     (M ⟶ N) →+ (M →ₗ[R] N)) _ _
 
@@ -473,14 +473,14 @@ variable (M N : ModuleCat.{v} R)
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
-  toFun r :=
+  toFun r := AddCommGrp.ofHom
     { toFun := fun (m : M) => r • m
       map_zero' := by dsimp; rw [smul_zero]
       map_add' := fun x y => by dsimp; rw [smul_add] }
-  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
-  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul]; rfl)
-  map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
-  map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
+  map_one' := AddCommGrp.ext (fun x => by simp)
+  map_zero' := AddCommGrp.ext (fun x => by simp)
+  map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)
+  map_add' r s := AddCommGrp.ext (fun (x : M) => add_smul r s x)
 
 lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
     (forget₂ (ModuleCat R) AddCommGrp).map f ≫ N.smul r =
@@ -555,7 +555,7 @@ with the scalar multiplication. -/
 @[simps]
 def homMk : M ⟶ N where
   hom'.toFun := φ
-  hom'.map_add' _ _ := φ.map_add _ _
+  hom'.map_add' _ _ := φ.hom.map_add _ _
   hom'.map_smul' r x := (congr_hom (hφ r) x).symm
 
 lemma forget₂_map_homMk :

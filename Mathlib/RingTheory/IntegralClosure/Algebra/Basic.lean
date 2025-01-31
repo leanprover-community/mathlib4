@@ -210,8 +210,15 @@ def integralClosure : Subalgebra R A where
   mul_mem' := IsIntegral.mul
   algebraMap_mem' _ := isIntegral_algebraMap
 
-end
-
-theorem mem_integralClosure_iff (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] {a : A} :
-    a ∈ integralClosure R A ↔ IsIntegral R a :=
+theorem mem_integralClosure_iff {a : A} : a ∈ integralClosure R A ↔ IsIntegral R a :=
   Iff.rfl
+
+variable {R} {A B : Type*} [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+/-- Product of two integral algebras is an integral algebra. -/
+instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R B] :
+    Algebra.IsIntegral R (A × B) :=
+  Algebra.isIntegral_def.mpr fun x ↦
+    (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
+
+end
