@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -754,13 +754,13 @@ theorem mem_inv_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {g : G} {S T : ValuationSubring K} :
-    g • S ≤ g • T ↔ S ≤ T := Set.set_smul_subset_set_smul_iff
+    g • S ≤ g • T ↔ S ≤ T := Set.smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {g : G} {S T : ValuationSubring K} : g • S ≤ T ↔ S ≤ g⁻¹ • T :=
-  Set.set_smul_subset_iff
+  Set.smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {g : G} {S T : ValuationSubring K} : S ≤ g • T ↔ g⁻¹ • S ≤ T :=
-  Set.subset_set_smul_iff
+  Set.subset_smul_set_iff
 
 end PointwiseActions
 

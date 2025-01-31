@@ -130,17 +130,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     · exact hin
     · convert hin.add_mul_left_left (-1) using 1
       rw [mul_neg_one, sub_eq_add_neg]
-  on_goal 2 =>
-    split_ifs with h₂
-    · exact mod_cast h
-    suffices (i - n : ℤ).natAbs = n - i by
-      rw [this]
-      apply tsub_lt_self hn.bot_lt
-      contrapose! h₂
-      rw [Nat.eq_zero_of_le_zero h₂, zero_mul]
-      exact zero_le _
-    rw [← Int.natAbs_neg, neg_sub, Int.natAbs_eq_iff]
-    exact Or.inl (Int.ofNat_sub h.le).symm
+  on_goal 2 => omega
   split_ifs with h₂
   · convert Complex.arg_cos_add_sin_mul_I _
     · push_cast; rfl

@@ -205,8 +205,9 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
   refine f.induction ?_ ?_
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x _ _ hx
+    -- `simp` doesn't pick up on `diagonalSucc_inv_single_single` unless it has parentheses.
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
-      diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
+      (diagonalSucc_inv_single_single), hx, Finsupp.sum_single_index, mul_comm b,
       zero_mul, single_zero]
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
@@ -215,7 +216,8 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   refine g.induction ?_ ?_
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
+    -- `simp` doesn't pick up on `diagonalSucc_inv_single_single` unless it has parentheses.
+    simp only [lift_apply, smul_single', map_add, hx, (diagonalSucc_inv_single_single),
       TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero]
 
 end Rep
@@ -494,7 +496,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
 /- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
 so using Finset.sum_congr to get rid of the binder -/
   refine Finset.sum_congr rfl fun _ _ => ?_
-  simp only [ModuleCat.hom_smul, SimplexCategory.len_mk]
+  simp only [ModuleCat.hom_smul, SimplexCategory.len_mk, ModuleCat.hom_ofHom]
   erw [LinearMap.smul_apply]
   rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
   rfl
@@ -560,7 +562,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
         LinearMap.id fun i => rfl,
       LinearMap.id_comp]
     rfl
-  · congr
+  · rw [ModuleCat.hom_comp]
+    congr
     · ext x
       dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
         Finsupp.LinearEquiv.finsuppUnique]
