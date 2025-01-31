@@ -144,8 +144,8 @@ scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 in a category equipped with a `MonoidalCategoryStruct`. -/
 def Pentagon {C :Type u} [Category.{v} C] [MonoidalCategoryStruct C]
     (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
-    (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
-      (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
+  (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
+    (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
 
 end MonoidalCategory
 
