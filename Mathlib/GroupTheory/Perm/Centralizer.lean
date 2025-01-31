@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.Perm.ConjAct
@@ -643,5 +644,3 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
 
 end Equiv.Perm
-
-
