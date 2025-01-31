@@ -52,7 +52,7 @@ theorem posLog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [posLog]
 theorem posLog_neg (x : ℝ) : log⁺ (-x) = log⁺ x := by simp [posLog]
 
 /-- The function `log⁺` is even. -/
-theorem posLog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [posLog]
+@[simp] theorem posLog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [posLog]
 
 /-- The function `log⁺` is zero in the interval [-1,1]. -/
 theorem posLog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
