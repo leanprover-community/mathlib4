@@ -134,7 +134,7 @@ def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
-  toFun n := match n with
+  toFun
     | 0 => a
     | _ => b
   monotone' _ _ _ := by aesop

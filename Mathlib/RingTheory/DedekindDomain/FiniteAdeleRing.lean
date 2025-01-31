@@ -270,7 +270,7 @@ open scoped Multiplicative
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
-    Valued.valuedCompletion_apply, not_le]
+    adicCompletion, Valued.valuedCompletion_apply, not_le]
   change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
   -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
   -- then v(k)>1 for only finitely many v.
@@ -367,11 +367,12 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
     simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
     exact mt (mul_le_one' (rhat v).2) hv
     ⟩
-  toFun r := ⟨r, by simp_all⟩
-  map_one' := by ext; rfl
-  map_mul' _ _ := by ext; rfl
-  map_zero' := by ext; rfl
-  map_add' _ _ := by ext; rfl
+  algebraMap :=
+  { toFun r := ⟨r, by simp_all⟩
+    map_one' := by ext; rfl
+    map_mul' _ _ := by ext; rfl
+    map_zero' := by ext; rfl
+    map_add' _ _ := by ext; rfl }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
