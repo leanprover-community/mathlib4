@@ -141,6 +141,11 @@ noncomputable def compLeft {γ : Type*} [TopologicalSpace γ] [Zero γ] (g : C(�
       simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
       exact HasCompactSupport.zero
 
+lemma toContinuousMap_compLeft (hg : g 0 = 0) : (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
+
+lemma coe_compLeft (hg : g 0 = 0) : f.compLeft g = g ∘ f := sorry
+
+lemma compLeft_apply (hg : g 0 = 0) (a : α) : f.compLeft g a = g (f a) := sorry
 end Basics
 
 /-! ### Algebraic structure
