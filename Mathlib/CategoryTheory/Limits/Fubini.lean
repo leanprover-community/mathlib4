@@ -41,7 +41,7 @@ namespace CategoryTheory.Limits
 
 variable {J K : Type*} [Category J] [Category K]
 variable {C : Type*} [Category C]
-variable (F : J ⥤ K ⥤ C)
+variable (F : J ⥤ K ⥤ C) (G : J × K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
 /-- A structure carrying a diagram of cones over the functors `F.obj j`.
@@ -122,6 +122,24 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
               NatTrans.id_app] at this
             exact this) }
 
+/-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
+we can construct a cone over the diagram consisting of the cone points from `D`.
+-/
+@[simps]
+def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.obj j))
+    (c : Cone G) : Cone D.conePoints where
+  pt := c.pt
+  π :=
+    { app := fun j =>
+        (Q j).lift
+          { pt := c.pt
+            π :=
+              { app := fun k => c.π.app (j, k)
+                naturality := fun k k' f => by
+                  simp } }
+      naturality := fun j j' f => (Q j').hom_ext (by simp) }
+
+
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
 -/
@@ -155,6 +173,22 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
             simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
               NatTrans.id_app] at this
             exact this) }
+
+/-- Given a diagram `D` of colimit cocones under the `curry.obj G j`, and a cocone under `G`,
+we can construct a cocone under the diagram consisting of the cocone points from `D`.
+-/
+@[simps]
+def coconeOfCoconeCurry {D : DiagramOfCocones (curry.obj G)} (Q : ∀ j, IsColimit (D.obj j))
+    (c : Cocone G) : Cocone D.coconePoints where
+  pt := c.pt
+  ι :=
+    { app := fun j =>
+        (Q j).desc
+          { pt := c.pt
+            ι :=
+              { app := fun k => c.ι.app (j, k)
+                naturality := fun k k' f => by simp } }
+      naturality := fun j j' f => (Q j).hom_ext (by simp) }
 
 /-- `coneOfConeUncurry Q c` is a limit cone when `c` is a limit cone.
 -/
@@ -256,8 +290,59 @@ theorem DiagramOfCones.mkOfHasLimits_conePoints :
     (DiagramOfCones.mkOfHasLimits F).conePoints = F ⋙ lim :=
   rfl
 
-variable [HasLimit (uncurry.obj F)]
-variable [HasLimit (F ⋙ lim)]
+section
+
+variable [HasLimit (curry.obj G ⋙ lim)]
+
+/-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ lim)` makes sense and has a limit,
+we can construct a cone over `G` with `limit (curry.obj G ⋙ lim)` as a cone point -/
+noncomputable def coneOfHasLimitCurryCompLim : Cone G :=
+  let c := limit.cone (curry.obj G ⋙ lim)
+  let Q : DiagramOfCones (curry.obj G) := .mkOfHasLimits _
+  { pt := c.pt,
+    π :=
+    { app x := (c.π.app x.fst) ≫ (Q.obj x.fst).π.app x.snd
+      naturality := by
+        intro x y f
+        dsimp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, lim_obj]
+        simp only [limit.cone_x, limit.cone_π, ← limit.w (F := curry.obj G ⋙ lim) (f := f.1),
+          Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Category.assoc, Category.id_comp, c]
+        haveI : f = (Prod.sectR _ _).map f.2 ≫ (Prod.sectL _ _).map f.1 := by ext <;> simp
+        rw [this, G.map_comp]
+        dsimp only [Prod.sectR_obj, Prod.sectR_map, Prod.sectL_map]
+        rw [← curry_obj_obj_map G, ← (Q.obj x.1).π.naturality_assoc]
+        simp [Q] }}
+
+
+/-- The cone `coneOfHasLimitCurryCompLim` is in fact a limit cone.
+-/
+noncomputable def isLimitConeOfHasLimitCurryCompLim : IsLimit (coneOfHasLimitCurryCompLim G) :=
+  let Q : DiagramOfCones (curry.obj G) := .mkOfHasLimits _
+  let Q' : ∀ j, IsLimit (Q.obj j) := fun j => limit.isLimit _
+  { lift c' := limit.lift (F := curry.obj G ⋙ lim) (coneOfConeCurry G Q' c')
+    fac c' f := by simp [coneOfHasLimitCurryCompLim, Q, Q']
+    uniq c' f h := by
+      dsimp only [coneOfHasLimitCurryCompLim, limit.cone_x, Functor.const_obj_obj, Functor.comp_obj,
+        lim_obj, limit.cone_π, DiagramOfCones.mkOfHasLimits_obj, coneOfConeCurry,
+        DiagramOfCones.mkOfHasLimits_conePoints, limit.isLimit_lift, Q, Q'] at f h ⊢
+      rw [IsLimit.hom_lift (limit.isLimit _) f]
+      simp only [Functor.const_obj_obj, limit.cone_x, Functor.comp_obj, lim_obj, limit.cone_π,
+        Functor.comp_map, lim_map, limit.isLimit_lift, Q, Q']
+      congr; ext j k
+      simp only [Prod.forall, Q', coneOfHasLimitCurryCompLim, Q] at h
+      specialize h j k
+      simpa using h }
+
+/-- The functor `G` has a limit if `C` has `K`-shaped limits and `(curry.obj G ⋙ lim)` has a limit.
+-/
+instance : HasLimit G where
+  exists_limit :=
+    ⟨ { cone := coneOfHasLimitCurryCompLim G
+        isLimit := isLimitConeOfHasLimitCurryCompLim G }⟩
+
+end
+
+variable [HasLimit (uncurry.obj F)] [HasLimit (F ⋙ lim)]
 
 /-- The Fubini theorem for a functor `F : J ⥤ K ⥤ C`,
 showing that the limit of `uncurry.obj F` can be computed as
@@ -311,8 +396,62 @@ theorem DiagramOfCocones.mkOfHasColimits_coconePoints :
     (DiagramOfCocones.mkOfHasColimits F).coconePoints = F ⋙ colim :=
   rfl
 
-variable [HasColimit (uncurry.obj F)]
-variable [HasColimit (F ⋙ colim)]
+section
+
+variable [HasColimit (curry.obj G ⋙ colim)]
+
+/-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ colim)` makes sense and has a colimit,
+we can construct a cocone under `G` with `colimit (curry.obj G ⋙ colim)` as a cocone point -/
+noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
+  let c := colimit.cocone (curry.obj G ⋙ colim)
+  let Q : DiagramOfCocones (curry.obj G) := .mkOfHasColimits _
+  { pt := c.pt,
+    ι :=
+    { app x := (Q.obj x.fst).ι.app x.snd ≫ (c.ι.app x.fst)
+      naturality := by
+        intro x y f
+        dsimp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, lim_obj]
+        simp only [colimit.cocone_x, colimit.cocone_ι,
+          ← colimit.w (F := curry.obj G ⋙ colim) (f := f.1), Functor.comp_obj, colim_obj,
+          Functor.comp_map, colim_map, Category.comp_id, c]
+        haveI : f = (Prod.sectL _ _).map f.1 ≫ (Prod.sectR _ _).map f.2  := by ext <;> simp
+        rw [this, G.map_comp]
+        dsimp only [Prod.sectR_obj, Prod.sectR_map, Prod.sectL_map]
+        rw [← curry_obj_obj_map G]
+        simp only [Category.assoc, (Q.obj y.1).ι.naturality_assoc]
+        simp [Q] }}
+
+
+/-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.
+-/
+noncomputable def isColimitCoconeOfHasColimitCurryCompColim :
+    IsColimit (coconeOfHasColimitCurryCompColim G) :=
+  let Q : DiagramOfCocones (curry.obj G) := .mkOfHasColimits _
+  let Q' : ∀ j, IsColimit (Q.obj j) := fun j => colimit.isColimit _
+  { desc c' := colimit.desc (F := curry.obj G ⋙ colim) (coconeOfCoconeCurry G Q' c')
+    fac c' f := by simp [coconeOfHasColimitCurryCompColim, Q, Q']
+    uniq c' f h := by
+      dsimp only [coconeOfHasColimitCurryCompColim, colimit.cocone_x,
+        DiagramOfCocones.mkOfHasColimits_obj, Functor.const_obj_obj, colimit.cocone_ι, Q', Q]
+        at f h ⊢
+      rw [IsColimit.hom_desc (colimit.isColimit _) f]
+      simp only [Functor.comp_obj, colim_obj, colimit.cocone_x, Functor.const_obj_obj,
+        colimit.cocone_ι, Functor.comp_map, colim_map, colimit.isColimit_desc, Q', Q]
+      congr; ext j k
+      simp only [Prod.forall, Q', coconeOfHasColimitCurryCompColim, Q] at h
+      specialize h j k
+      simpa using h }
+
+/-- The functor `G` has a colimit if `C` has `K`-shaped colimits and `(curry.obj G ⋙ colim)` has a
+colimit. -/
+instance : HasColimit G where
+  exists_colimit :=
+    ⟨ { cocone := coconeOfHasColimitCurryCompColim G
+        isColimit := isColimitCoconeOfHasColimitCurryCompColim G }⟩
+
+end
+
+variable [HasColimit (uncurry.obj F)] [HasColimit (F ⋙ colim)]
 
 /-- The Fubini theorem for a functor `F : J ⥤ K ⥤ C`,
 showing that the colimit of `uncurry.obj F` can be computed as
@@ -349,9 +488,6 @@ section
 
 variable (F) [HasLimitsOfShape J C] [HasLimitsOfShape K C]
 
--- With only moderate effort these could be derived if needed:
-variable [HasLimitsOfShape (J × K) C] [HasLimitsOfShape (K × J) C]
-
 /-- The limit of `F.flip ⋙ lim` is isomorphic to the limit of `F ⋙ lim`. -/
 noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ limit (F ⋙ lim) :=
   (limitUncurryIsoLimitCompLim _).symm ≪≫
@@ -382,7 +518,6 @@ end
 section
 
 variable (F) [HasColimitsOfShape J C] [HasColimitsOfShape K C]
-variable [HasColimitsOfShape (J × K) C] [HasColimitsOfShape (K × J) C]
 
 /-- The colimit of `F.flip ⋙ colim` is isomorphic to the colimit of `F ⋙ colim`. -/
 noncomputable def colimitFlipCompColimIsoColimitCompColim :
@@ -413,13 +548,9 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
 
 end
 
-variable (G : J × K ⥤ C)
-
 section
 
-variable [HasLimitsOfShape K C]
-variable [HasLimit G]
-variable [HasLimit (curry.obj G ⋙ lim)]
+variable [HasLimitsOfShape K C] [HasLimit (curry.obj G ⋙ lim)]
 
 /-- The Fubini theorem for a functor `G : J × K ⥤ C`,
 showing that the limit of `G` can be computed as
@@ -449,9 +580,7 @@ end
 
 section
 
-variable [HasColimitsOfShape K C]
-variable [HasColimit G]
-variable [HasColimit (curry.obj G ⋙ colim)]
+variable [HasColimitsOfShape K C] [HasColimit (curry.obj G ⋙ colim)]
 
 /-- The Fubini theorem for a functor `G : J × K ⥤ C`,
 showing that the colimit of `G` can be computed as
@@ -481,8 +610,7 @@ end
 
 section
 
-variable [HasLimitsOfShape K C] [HasLimitsOfShape J C] [HasLimitsOfShape (K × J) C] [HasLimit G]
-  [HasLimit (curry.obj G ⋙ lim)]
+variable [HasLimitsOfShape K C] [HasLimitsOfShape J C] [HasLimit (curry.obj G ⋙ lim)]
 
 open CategoryTheory.prod
 
@@ -520,8 +648,7 @@ end
 
 section
 
-variable [HasColimitsOfShape K C] [HasColimitsOfShape J C] [HasColimitsOfShape (K × J) C]
-  [HasColimit G] [HasColimit (curry.obj G ⋙ colim)]
+variable [HasColimitsOfShape K C] [HasColimitsOfShape J C] [HasColimit (curry.obj G ⋙ colim)]
 
 open CategoryTheory.prod
 
