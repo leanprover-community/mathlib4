@@ -37,14 +37,14 @@ section
 variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
 theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
-  simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
+  simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.ofNat_ne_top
 
 theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memℒp_one_iff_integrable]
-  convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.two_ne_top).symm
+  convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
   · simp
-  · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
+  · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
 theorem memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
@@ -70,10 +70,12 @@ theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Mem�
 
 variable {f : α → E}
 
+@[fun_prop]
 theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
     Integrable (fun x => ⟪c, f x⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 
+@[fun_prop]
 theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
     Integrable (fun x => ⟪f x, c⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
@@ -154,7 +156,7 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
   ext1 x
   have h_two : (2 : ℝ) = ((2 : ℕ) : ℝ) := by simp
   rw [← Real.rpow_natCast _ 2, ← h_two, ←
-    ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_coe_nnnorm]
+    ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_enorm]
   norm_cast
 
 @[deprecated (since := "2024-07-27")]
@@ -164,11 +166,11 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_eLpNorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
     ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
-  · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.two_ne_top, eLpNorm', ←
+  · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top, eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
     simp [enorm_eq_nnnorm]
-  · refine (lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top zero_lt_two ?_).ne
-    rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.two_ne_top]
+  · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two ?_).ne
+    rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top]
     exact Lp.eLpNorm_lt_top f
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :

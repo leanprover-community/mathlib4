@@ -37,6 +37,7 @@ product, sum, disjoint union, subspace, quotient space
 noncomputable section
 
 open Topology TopologicalSpace Set Filter Function
+open scoped Set.Notation
 
 universe u v
 
@@ -1153,8 +1154,20 @@ protected lemma Topology.IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding
 @[deprecated (since := "2024-10-26")]
 alias Embedding.codRestrict := IsEmbedding.codRestrict
 
-protected lemma Topology.IsEmbedding.inclusion {s t : Set X} (h : s ⊆ t) :
+variable {s t : Set X}
+
+protected lemma Topology.IsEmbedding.inclusion (h : s ⊆ t) :
     IsEmbedding (inclusion h) := IsEmbedding.subtypeVal.codRestrict _ _
+
+protected lemma Topology.IsOpenEmbedding.inclusion (hst : s ⊆ t) (hs : IsOpen (t ↓∩ s)) :
+    IsOpenEmbedding (inclusion hst) where
+  toIsEmbedding := .inclusion _
+  isOpen_range := by rwa [range_inclusion]
+
+protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClosed (t ↓∩ s)) :
+    IsClosedEmbedding (inclusion hst) where
+  toIsEmbedding := .inclusion _
+  isClosed_range := by rwa [range_inclusion]
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_inclusion := IsEmbedding.inclusion
