@@ -166,7 +166,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         rw [D]
         simp only
         have TT := TT l'
-        rwa [Seq.destruct_eq_nil D, Seq.tail_nil] at TT
+        rwa [Seq.destruct_eq_none D, Seq.tail_nil] at TT
       · have D : Seq.destruct S = some (o, S.tail) := by
           dsimp [Seq.destruct]
           rw [e]
