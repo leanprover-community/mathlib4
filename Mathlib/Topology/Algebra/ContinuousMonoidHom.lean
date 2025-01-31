@@ -89,7 +89,9 @@ add_decl_doc ContinuousAddMonoidHom.toContinuousMap
 
 namespace ContinuousMonoidHom
 
+/-- The type of continuous monoid homomorphisms from `A` to `B`.-/
 infixr:25 " →ₜ+ " => ContinuousAddMonoidHom
+/-- The type of continuous monoid homomorphisms from `A` to `B`.-/
 infixr:25 " →ₜ* " => ContinuousMonoidHom
 
 variable {A B C D E}
