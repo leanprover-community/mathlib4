@@ -19,7 +19,7 @@ section Monoid
 
 variable {M N : Type*} [TopologicalSpace M]  [TopologicalSpace N]
 
-/-- The lift of a `MonoidHom M N` to `MonoidHom (SeparationQuotient M) N`. -/
+/-- The lift of a monoid hom from `M` to a monoid hom from `SeparationQuotient M`. -/
 @[to_additive "The lift of a `AddMonoidHom M N` to `AddMonoidHom (SeparationQuotient M) N`."]
 noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N]
     (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
