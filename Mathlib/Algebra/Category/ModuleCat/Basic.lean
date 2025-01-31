@@ -470,11 +470,6 @@ variable (M N : ModuleCat.{v} R)
 /-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
 @[deprecated (since := "2025-01-23")] alias endMulEquiv := endRingEquiv
 
-/-- `ModuleCat.Hom.hom` as an isomorphism of rings. -/
-@[simps!] def endRingEquiv : End M ≃+* (M →ₗ[R] M) where
-  __ := endMulEquiv M
-  map_add' _ _ := rfl
-
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
