@@ -908,7 +908,7 @@ theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
 /-- The product of a finite number of elements in the commutative semiring `R` lies in the
   prime ideal `p` if and only if at least one of those elements is in `p`. -/
 theorem IsPrime.prod_mem_iff {s : Finset ι} {x : ι → R} {p : Ideal R} [hp : p.IsPrime] :
-    ∏ i in s, x i ∈ p ↔ ∃ i ∈ s, x i ∈ p := by
+    ∏ i ∈ s, x i ∈ p ↔ ∃ i ∈ s, x i ∈ p := by
   simp_rw [← span_singleton_le_iff_mem, ← prod_span_singleton]
   exact hp.prod_le
 

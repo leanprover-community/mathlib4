@@ -398,19 +398,19 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _
     hk ContinuousMultilinearMap.norm_smulRightL_le).trans
   calc
-  ∑ i in Finset.range (k + 1),
+  ∑ i ∈ Finset.range (k + 1),
     k.choose i * ‖iteratedFDeriv ℝ i (fun (y : V) ↦ T (fun _ ↦ L y)) v‖ *
       ‖iteratedFDeriv ℝ (k - i) f v‖
-    ≤ ∑ i in Finset.range (k + 1),
+    ≤ ∑ i ∈ Finset.range (k + 1),
       k.choose i * (n.descFactorial i * ‖L‖ ^ n * ‖v‖ ^ (n - i)) *
         ‖iteratedFDeriv ℝ (k - i) f v‖ := by
     gcongr with i _hi
     exact I₃ i
-  _ = ∑ i in Finset.range (k + 1), (k.choose i * n.descFactorial i * ‖L‖ ^ n) *
+  _ = ∑ i ∈ Finset.range (k + 1), (k.choose i * n.descFactorial i * ‖L‖ ^ n) *
         (‖v‖ ^ (n - i) * ‖iteratedFDeriv ℝ (k - i) f v‖) := by
     congr with i
     ring
-  _ ≤ ∑ i in Finset.range (k + 1), (k.choose i * (n + 1 : ℕ) ^ k * ‖L‖ ^ n) * C := by
+  _ ≤ ∑ i ∈ Finset.range (k + 1), (k.choose i * (n + 1 : ℕ) ^ k * ‖L‖ ^ n) * C := by
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
@@ -581,7 +581,7 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
     intro k hk
     simpa only [norm_iteratedFDeriv_zero] using h'f k 0 hk bot_le
   · intro m hm
-    have I : Integrable (fun v ↦ ∑ p in Finset.range (k + 1) ×ˢ Finset.range (m + 1),
+    have I : Integrable (fun v ↦ ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (m + 1),
         ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
       apply integrable_finset_sum _ (fun p hp ↦ ?_)
       simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
@@ -607,7 +607,7 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
     {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) {w : W} :
     ‖fourierPowSMulRight (-L.flip)
       (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ ≤
-    (2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k * ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+    (2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k * ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
       ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := by
   rw [fourierPowSMulRight_iteratedFDeriv_fourierIntegral L hf h'f hk hn]
   apply (norm_fourierIntegral_le_integral_norm _ _ _ _ _).trans
@@ -637,7 +637,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) (v : V) (w : W) :
     |L v w| ^ n * ‖(iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w‖ ≤
       ‖v‖ ^ n * (2 * π * ‖L‖) ^ k * (2 * k + 2) ^ n *
-        ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+        ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
           ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := calc
   |L v w| ^ n * ‖(iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w‖
   _ ≤ (2 * π) ^ n
@@ -652,13 +652,13 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _ : Fin n, ‖v‖ :=
     le_opNorm _ _
   _ ≤ ((2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k *
-      ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+      ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
         ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ) * ‖v‖ ^ n := by
     gcongr
     · apply norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le _ hf h'f hk hn
     · simp
   _ = ‖v‖ ^ n * (2 * π * ‖L‖) ^ k * (2 * k + 2) ^ n *
-        ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+        ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
           ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := by
     simp [mul_pow]
     ring
@@ -728,7 +728,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖))
     {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) (w : V) :
     ‖w‖ ^ n * ‖iteratedFDeriv ℝ k (𝓕 f) w‖ ≤ (2 * π) ^ k * (2 * k + 2) ^ n *
-      ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+      ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
         ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ := by
   have Z : ‖w‖ ^ n * (‖w‖ ^ n * ‖iteratedFDeriv ℝ k (𝓕 f) w‖) ≤
       ‖w‖ ^ n * ((2 * (π * ‖innerSL (E := V) ℝ‖)) ^ k * ((2 * k + 2) ^ n *

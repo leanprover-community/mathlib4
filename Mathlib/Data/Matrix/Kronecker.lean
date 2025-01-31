@@ -291,10 +291,9 @@ theorem kronecker_smul [Monoid R] [Monoid α] [MulAction R α] [SMulCommClass R 
   kroneckerMap_smul_right _ _ (fun _ _ => mul_smul_comm _ _ _) _ _
 
 theorem stdBasisMatrix_kronecker_stdBasisMatrix
-    [MulZeroClass α] [DecidableEq m] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
-    (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p) (a b : α) :
-    stdBasisMatrix i₁ j₁ a ⊗ₖ stdBasisMatrix i₂ j₂ b =
-      stdBasisMatrix (i₁, i₂) (j₁, j₂) (a * b) :=
+    [MulZeroClass α] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
+    (ia : l) (ja : m) (ib : n) (jb : p) (a b : α) :
+    stdBasisMatrix ia ja a ⊗ₖ stdBasisMatrix ib jb b = stdBasisMatrix (ia, ib) (ja, jb) (a * b) :=
   kroneckerMap_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ zero_mul mul_zero _ _
 
 theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [DecidableEq n] (a : m → α)
