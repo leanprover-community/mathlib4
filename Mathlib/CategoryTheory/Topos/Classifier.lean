@@ -120,7 +120,7 @@ terminal.from U              χ_ m
 ```
 is a pullback square.
 -/
-lemma pullback : IsPullback m (terminal.from U) (χ_ m) (t C) :=
+lemma isPullback : IsPullback m (terminal.from U) (χ_ m) (t C) :=
   ((classifierIsClassifier C).char m).default.prop
 
 /-- The diagram
