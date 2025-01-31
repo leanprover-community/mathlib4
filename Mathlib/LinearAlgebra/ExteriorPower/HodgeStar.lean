@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.ExteriorPower.InducedForm
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.ExteriorPower.WedgeProduct
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 Documentation
@@ -79,6 +80,26 @@ noncomputable def HodgePairing {k : ℕ} (hk : k ≤ finrank F V) :
     simp only [map_smul, LinearMap.smul_apply, smul_eq_mul, LinearMap.compAlternatingMap_apply,
       LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_compAlternatingMap,
       AlternatingMap.smul_apply]
+
+variable {k : ℕ} (hk : k ≤ finrank F V) in
+#check WedgeProduct (R := F) (M := V) (Nat.add_sub_of_le hk)
+
+
+#check LinearEquiv.injective
+#check Function.Injective.comp
+#check Function.Injective.injective_linearMapComp_left
+
+noncomputable def HodgePairing' {k : ℕ} (hk : k ≤ finrank F V) :
+  PerfectPairing F (⋀[F]^k V) (⋀[F]^(finrank F V - k) V) := PerfectPairing.mkOfInjective
+    ((WedgeProduct (R := F) (M := V) (Nat.add_sub_of_le hk)).compr₂ (equivOfVol B vol volNormOne))
+    (by
+      rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+      intro α h
+
+      sorry)
+    ( by
+
+      sorry)
 
 variable (hN : B.Nondegenerate)
 
