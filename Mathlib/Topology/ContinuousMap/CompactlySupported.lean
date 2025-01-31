@@ -436,7 +436,7 @@ instance sup : Max C_c(α, β) where max f g :=
 @[simp] lemma sup_apply (f g : C_c(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 
 instance semilatticeSup : SemilatticeSup C_c(α, β) :=
-  DFunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.semilatticeSup _ coe_sup
 
 lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
