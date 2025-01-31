@@ -101,19 +101,20 @@ noncomputable instance instRankOneValuedAdicCompletion :
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
   Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
 
-/-- The `v`-adic distance on the `v`-adic completion of `K`. -/
-noncomputable instance dist : Dist (adicCompletion K v) := ⟨fun x y ↦ ‖x - y‖⟩
+/-- The `v`-adic norm on the `v`-adic completion of `K` satisfies the ultrametric inequailty. -/
+theorem vadic_norm_ultrametric (x y : adicCompletion K v) : ‖x + y‖ ≤ ‖x‖ ⊔ ‖y‖ := by
+  rw [le_sup_iff, Valued.toNormedField.norm_le_iff, Valued.toNormedField.norm_le_iff, ← le_sup_iff]
+  exact Valuation.map_add Valued.v x y
 
-/-- The `v`-adic distance on the `v`-adic completion of `K` satisfies the ultrametric inequality. -/
-noncomputable instance isUltrametricDist : IsUltrametricDist (adicCompletion K v) := ⟨
-  fun x y z ↦ by
-    simp only [dist, le_sup_iff, Valued.toNormedField.norm_le_iff]
-    rw [← le_sup_iff, ← sub_add_sub_cancel x y z]
-    exact Valued.v.map_add (x - y) (y - z)
-⟩
+/-- The `v`-adic distance on the `v`-adic completion of `K`. -/
+noncomputable instance vadic_dist : Dist (adicCompletion K v) := ⟨fun x y ↦ ‖x - y‖⟩
+
+/-- The `v`-adic distance on the `v`-adic completion of `K` is an ultrametric distance. -/
+noncomputable instance vadicIsUltrametricDist : IsUltrametricDist (adicCompletion K v) :=
+  ⟨dist_triangle_max⟩
 
 /-- The `v`-adic norm of a natural number is `≤ 1`. -/
-theorem forall_norm_natCast_le_one (n : ℕ) : ‖(n : adicCompletion K v)‖ ≤ 1 :=
+theorem forall_vadic_norm_natCast_le_one (n : ℕ) : ‖(n : adicCompletion K v)‖ ≤ 1 :=
   IsUltrametricDist.norm_natCast_le_one (adicCompletion K v) n
 
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
