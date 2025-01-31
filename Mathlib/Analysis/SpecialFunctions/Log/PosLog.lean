@@ -158,8 +158,6 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving
 multiple summands. -/
 theorem posLog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
-  convert posLog_sum (Finset.univ : Finset (Fin 2))
-    (fun i => match i with | 0 => a | 1 => b : Fin 2 → ℝ) using 1
-  <;> simp [add_assoc]
+  convert posLog_sum Finset.univ ![a, b] using 1 <;> simp [add_assoc]
 
 end Real
