@@ -165,16 +165,6 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
   m.leadingCoeff_eq_zero_iff
 
-@[simp]
-theorem leadingCoeff_of_subsingleton [Subsingleton R] (f : MvPolynomial σ R) :
-    m.leadingCoeff f = 0 :=
-  Subsingleton.elim _ 0
-
-@[simp]
-theorem degree_of_subsingleton [Subsingleton R] (f : MvPolynomial σ R) :
-    m.degree f = 0 := by
-  simp [Subsingleton.elim f 0]
-
 theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
     m.degree f = 0 ↔ f.totalDegree = 0 := by
   rw [← m.toSyn.injective.eq_iff]
@@ -391,7 +381,7 @@ theorem degree_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
     m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
   cases subsingleton_or_nontrivial R with
-  | inl _ => simp
+  | inl _ => simp [Subsingleton.elim _ (0 : MvPolynomial σ R)]
   | inr _ =>
     apply m.toSyn.injective
     refine le_antisymm degree_prod_le (m.le_degree ?_)
