@@ -27,10 +27,10 @@ structure HashMemo where
   /-- The location of each module's source file -/
   pathMap  : Std.HashMap Name FilePath := {}
   /-- The hashes of each module's content -/
-  hashMap  : HashMap := {}
+  hashMap  : NameHashMap := {}
   deriving Inhabited
 
-partial def insertDeps (hashMap : HashMap) (mod : Name) (hashMemo : HashMemo) : HashMap :=
+partial def insertDeps (hashMap : NameHashMap) (mod : Name) (hashMemo : HashMemo) : NameHashMap :=
   if hashMap.contains mod then hashMap else
   match (hashMemo.depsMap[mod]?, hashMemo.hashMap[mod]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert mod hash)
@@ -42,7 +42,7 @@ Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs s
 * Corresponds to a module that's imported (transitively of not) by
   some module in the list module names
 -/
-def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO HashMap := do
+def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO NameHashMap := do
   let mut hashMap := ∅
   for mod in mods do
     if hashMemo.hashMap.contains mod then

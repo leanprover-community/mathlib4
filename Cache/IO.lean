@@ -25,15 +25,8 @@ as the `.lean`-files are located outside the `.lake/` folders.
 -/
 def getCleanSearchPath : IO SearchPath := do
   let sp ← addSearchPathFromEnv {}
-  return sp.map (System.mkFilePath <| dropLastThree ·.components)
-where
-  /-- helper function to remove last 3 entries, namely `.lake`, `build`, and `lib`. -/
-  dropLastThree  : List String → List String
-    | []    => []
-    | [_]   => []
-    | [_, _]   => []
-    | [_, _, _]   => []
-    | a :: rest@(_ :: _ :: _) => a :: dropLastThree rest
+  return sp.map fun path =>
+    System.mkFilePath (path.components |> fun p => p.take (p.length - 3))
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
@@ -130,7 +123,10 @@ private def CacheM.getContext : IO CacheM.Context := do
   let root ← match rootFile.parent with
     | some dir => pure dir
     | none => throw <| IO.userError s!"Mathlib not found in dependencies"
-  return ⟨root, sp, LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
+  return {
+    mathlibDepPath := root
+    searchPath := sp
+    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build" }
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
@@ -249,28 +245,27 @@ partial def getFilesWithExtension
   else return if fp.extension == some extension then acc.push fp else acc
 
 /--
-The Hash map of the cache. Note that this shares a name with `Std.HashMap`
-and the deprecated `Lean.HashMap`. Do not confuse them.
+The Hash map of the cache.
 -/
-abbrev HashMap := Std.HashMap Name UInt64
+abbrev NameHashMap := Std.HashMap Name UInt64
 
-namespace HashMap
+namespace NameHashMap
 
 /-- Filter the hashmap by whether the entries exist as files in the cache directory.
 
 If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
-def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
+def filterExists (hashMap : NameHashMap) (keep : Bool) : IO NameHashMap :=
   hashMap.foldM (init := default) fun acc mod hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
     if add then return acc.insert mod hash else return acc
 
-def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
+def hashes (hashMap : NameHashMap) : Lean.RBTree UInt64 compare :=
   hashMap.fold (init := default) fun acc _ hash => acc.insert hash
 
-end HashMap
+end NameHashMap
 
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
@@ -300,7 +295,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (pathMap : Std.HashMap Name FilePath) (overwrite verbose unpackedOnly : Bool)
+def packCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath) (overwrite verbose unpackedOnly : Bool)
     (comment : Option String := none) :
     CacheM <| Array String := do
   mkDir CACHEDIR
@@ -338,7 +333,7 @@ def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) (pathMap : Std.HashMap Name FilePath) (force : Bool) : CacheM Unit := do
+def unpackCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
@@ -375,7 +370,7 @@ def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
 
 /-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
 file) regarding the files with specified paths. -/
-def lookup (hashMap : HashMap) (modules : List Name) : IO Unit := do
+def lookup (hashMap : NameHashMap) (modules : List Name) : IO Unit := do
   let mut err := false
   for mod in modules do
     let some hash := hashMap[mod]? | err := true
