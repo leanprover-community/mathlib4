@@ -175,18 +175,6 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
   m.leadingCoeff_eq_zero_iff
 
-theorem lCoeff_of_not_nontrivial (hR : ¬ (Nontrivial R)) (f : MvPolynomial σ R) :
-    m.lCoeff f = 0 := by
-  by_contra H
-  apply hR
-  exact nontrivial_of_ne (m.lCoeff f) 0 H
-
-theorem degree_of_not_nontrivial (hR : ¬ (Nontrivial R)) (f : MvPolynomial σ R) :
-    m.degree f = 0 := by
-  convert m.degree_zero
-  rw [← m.lCoeff_eq_zero_iff]
-  exact lCoeff_of_not_nontrivial hR f
-
 theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
     m.degree f = 0 ↔ f.totalDegree = 0 := by
   rw [← m.toSyn.injective.eq_iff]
@@ -206,9 +194,9 @@ theorem degree_C (r : R) :
   rw [degree_eq_zero_iff_totalDegree_eq_zero, totalDegree_C]
 
 theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
-    f = C (m.lCoeff f) := by
+    f = C (m.leadingCoeff f) := by
   ext d
-  simp only [lCoeff, hf]
+  simp only [leadingCoeff, hf]
   classical
   by_cases hd : d = 0
   · simp [hd]
@@ -312,7 +300,7 @@ theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀
 
 /-- Multiplicativity of leading coefficients -/
 theorem coeff_mul_of_degree_add {f g : MvPolynomial σ R} :
-    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g :=
+    (f * g).coeff (m.degree f + m.degree g) = m.leadingCoeff f * m.leadingCoeff g :=
   coeff_mul_of_add_of_degree_le (le_of_eq rfl) (le_of_eq rfl)
 
 /-- Multiplicativity of leading coefficients -/
@@ -404,7 +392,7 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
     simp only [map_add, add_le_add_iff_left, hrec]
 
 theorem coeff_prod_of_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι) :
-    coeff (∑ i ∈ s, m.degree (P i)) (∏ i ∈ s, P i) = ∏ i ∈ s, m.lCoeff (P i) := by
+    coeff (∑ i ∈ s, m.degree (P i)) (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -415,7 +403,7 @@ theorem coeff_prod_of_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s 
 
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem degree_prod_of_regular {ι : Type*}
-    {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.lCoeff (P i))) :
+    {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
     m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
   by_cases hR : Nontrivial R
   · apply m.toSyn.injective
@@ -431,14 +419,14 @@ theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s 
   apply degree_prod_of_regular
   intro i hi
   apply isRegular_of_ne_zero
-  rw [lCoeff_ne_zero_iff]
+  rw [leadingCoeff_ne_zero_iff]
   exact H i hi
 
 -- TODO : it suffices that all leading coefficients but one are regular
-theorem lCoeff_prod_of_regular {ι : Type*}
-    {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.lCoeff (P i))) :
-    m.lCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.lCoeff (P i) := by
-  simp only [lCoeff, degree_prod_of_regular H, coeff_prod_of_sum_degree]
+theorem leadingCoeff_prod_of_regular {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
+    m.leadingCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
+  simp only [leadingCoeff, degree_prod_of_regular H, coeff_prod_of_sum_degree]
 
 end Semiring
 
