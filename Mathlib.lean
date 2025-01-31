@@ -2436,6 +2436,8 @@ import Mathlib.Computability.NFA
 import Mathlib.Computability.Partrec
 import Mathlib.Computability.PartrecCode
 import Mathlib.Computability.Primrec
+import Mathlib.Computability.QueryComplexity.Basic
+import Mathlib.Computability.QueryComplexity.Defs
 import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
