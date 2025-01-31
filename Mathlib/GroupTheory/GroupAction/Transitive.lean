@@ -12,25 +12,24 @@ When `f : X →ₑ[φ] Y` is an equivariant map with respect to a map
 of monoids `φ: M → N`,
 
 - `IsPretransitive.of_surjective_map` shows that
-the action of `N` on `Y` is pretransitive
-if that of `M` on `X`  is pretransitive.
+  the action of `N` on `Y` is pretransitive
+  if that of `M` on `X`  is pretransitive.
 
 - `IsPretransitive.of_bijective_map` shows that when
-`φ` is surjective, the action of `N` on `Y` is pretransitive
-iff that of `M` on `X`  is pretransitive.
+  `φ` is surjective, the action of `N` on `Y` is pretransitive
+  iff that of `M` on `X`  is pretransitive.
 
 Given `MulAction G X` where `G` is a group,
 
 - `IsPretransitive.mk_base G a` shows that `IsPretransitive G X`
-iff every element is translated from `a`
+  iff every element is translated from `a`
 
 - `IsPretransitive.iff_orbit_eq_top G a` shows that `IsPretransitive G X`
-iff the `orbit G a` is full.
-
+  iff the `orbit G a` is full.
 
 -/
 
-variable (G : Type _) [Group G] {X : Type _} [MulAction G X]
+variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 
 namespace MulAction.IsPretransitive
 
@@ -63,9 +62,9 @@ theorem iff_orbit_eq_top (a : X) :
   intro x
   simp_rw [Set.top_eq_univ, Set.mem_univ, iff_true, mem_orbit_iff]
 
-variable {M : Type _} [Monoid M] {α : Type _} [MulAction M α]
+variable {M : Type*} [Monoid M] {α : Type*} [MulAction M α]
 
-variable {N β : Type _} [Monoid N] [MulAction N β]
+variable {N β : Type*} [Monoid N] [MulAction N β]
 
 @[to_additive]
 theorem of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
