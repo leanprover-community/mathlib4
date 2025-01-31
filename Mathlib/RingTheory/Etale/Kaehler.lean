@@ -267,6 +267,8 @@ noncomputable
 def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     T ⊗[S] H1Cotangent R S ≃ₗ[T] H1Cotangent R T := by
   letI P : Extension R S := (Generators.self R S).toExtension
+  -- this is needed after #21050
+  letI : Algebra P.Ring S := P.algebra₂
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')
     (f := (IsScalarTower.toAlgHom R S T).comp (IsScalarTower.toAlgHom R P.Ring S)) (fun ⟨y, hy⟩ ↦
@@ -339,6 +341,8 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth,  LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension
+  -- this is needed after #21050
+  letI : Algebra P.Ring S := P.algebra₂
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')
     (f := (IsScalarTower.toAlgHom R S T).comp (IsScalarTower.toAlgHom R P.Ring S)) (fun ⟨y, hy⟩ ↦
@@ -352,6 +356,9 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     simp only [fQ, IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe]
     rw [IsLocalization.lift_mk'_spec]
     simp)
+  -- this is needed after #21050
+  letI : Algebra Q.Ring T := Q.algebra₂
+  letI : Algebra (Generators.self R T).toExtension.Ring T := (Generators.self R T).algebra
   letI f : (Generators.self R T).toExtension.Hom Q :=
   { toRingHom := (MvPolynomial.aeval Q.σ).toRingHom
     toRingHom_algebraMap := (MvPolynomial.aeval Q.σ).commutes
