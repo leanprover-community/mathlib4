@@ -61,6 +61,22 @@ instance instLieRing : LieRing (LoopAlgebra R L) :=
 instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
   LieAlgebra.RestrictScalars.lieAlgebra R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
+def monomial (n : ℤ) : L →ₗ[R] LoopAlgebra R L where
+  toFun x := (RestrictScalars.addEquiv R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)).symm
+    (LaurentPolynomial.T n ⊗ₜ x)
+  map_add' x y := by
+    rw [AddEquiv.symm_apply_eq, map_add, AddEquiv.apply_symm_apply, AddEquiv.apply_symm_apply,
+      ← TensorProduct.tmul_add]
+  map_smul' r x := by
+    rw [AddEquiv.symm_apply_eq, RestrictScalars.addEquiv_map_smul, AddEquiv.apply_symm_apply,
+      IsScalarTower.algebraMap_smul, RingHom.id_apply, TensorProduct.tmul_smul]
+
+@[simp]
+lemma addEquiv_monomial (n : ℤ) (x : L) :
+    (RestrictScalars.addEquiv R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L))
+      (monomial R L n x) = (LaurentPolynomial.T n ⊗ₜ x) :=
+  rfl
+
 -- I need a way to construct linear maps out of LoopAlgebra, by specifying the map on
 -- `x ⊗ T ^ n` for `x ∈ L`.  Maybe first a lemma saying LoopAlgebra is spanned by such things.
 

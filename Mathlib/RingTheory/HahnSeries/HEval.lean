@@ -264,7 +264,7 @@ theorem powerSeriesFamily_ext (g : PowerSeries R) :
       ∀n, powerSeriesFamily hx f n = powerSeriesFamily hx g n :=
   SummableFamily.ext_iff
 
-theorem sum_coeff {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
+theorem coeff_sum {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
     (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) :=
   cons_induction_on s (by simp) fun i t hit hc => by rw [sum_cons, sum_cons, add_coeff, hc]
 

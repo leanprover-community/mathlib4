@@ -25,7 +25,7 @@ Also, I think this gives an equivalence between dg Lie algebras and CDGAs with s
 
 
 ## References
-
+* [Cartan, H., Eilenberg, S., *Homological Algebra*][cartanEilenberg1956]
 * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 1--3*][bourbaki1975]
 -- cohomology is Exercises section 3 (p116, near end of book)
 -/
