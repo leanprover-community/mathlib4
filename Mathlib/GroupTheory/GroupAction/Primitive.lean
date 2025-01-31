@@ -67,15 +67,15 @@ class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransiti
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
 
 /-- An action is preprimitive if it is pretransitive and
-  the only blocks are the trivial ones -/
+the only blocks are the trivial ones -/
 @[to_additive]
 class IsPreprimitive [SMul G X] extends IsPretransitive G X : Prop where
 /-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-  has_trivial_blocks' : ∀ {B : Set X}, IsBlock G B → IsTrivialBlock B
+  has_trivial_blocks : ∀ {B : Set X}, IsBlock G B → IsTrivialBlock B
 
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
-  that has no fixed point acts pretransitively -/
+that has no fixed point acts pretransitively -/
 class _root_.AddAction.IsQuasipreprimitive
     [AddGroup G] [AddAction G X] extends AddAction.IsPretransitive G X : Prop where
   pretransitive_of_normal :
@@ -83,7 +83,7 @@ class _root_.AddAction.IsQuasipreprimitive
       AddAction.IsPretransitive N X
 
 /-- A `MulAction` of a group is quasipreprimitive if any normal subgroup
-  that has no fixed point acts pretransitively -/
+that has no fixed point acts pretransitively -/
 @[to_additive]
 class IsQuasipreprimitive [Group G] [MulAction G X] extends IsPretransitive G X : Prop where
   pretransitive_of_normal :
@@ -95,7 +95,8 @@ namespace IsPreprimitive
 
 @[to_additive]
 theorem subsingleton_or_eq_univ_of_isBlock [SMul G X] (h : IsPreprimitive G X) {B : Set X}
-    (hB : IsBlock G B) : B.Subsingleton ∨ B = univ := by apply h.has_trivial_blocks'; exact hB
+    (hB : IsBlock G B) : B.Subsingleton ∨ B = .univ :=
+  h.has_trivial_blocks hB
 
 @[to_additive]
 theorem on_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
@@ -164,7 +165,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     exact H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
-    (pretransitivity is automatic) -/
+(pretransitivity is automatic) -/
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic)"]
@@ -192,8 +193,7 @@ theorem IsPreprimitive.of_surjective
   · intro B hB
     rw [← Set.image_preimage_eq B hf]
     apply IsTrivialBlock.image hf
-    apply h.has_trivial_blocks
-    exact IsBlock.preimage f hB
+    exact h.has_trivial_blocks (IsBlock.preimage f hB)
 
 @[to_additive]
 theorem IsPreprimitive.iff_of_bijective
@@ -243,7 +243,7 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks
     · right; rw [hB']; rfl
 
 /-- A pretransitive action is preprimitive
-  iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
+iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
   "A pretransitive action is preprimitive
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5)"]
@@ -270,9 +270,8 @@ section Normal
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 
-/-- In a preprimitive action,
-  any normal subgroup that acts nontrivially is pretransitive
-  (Wielandt, th. 7.1)-/
+/-- In a preprimitive action, any normal subgroup that acts nontrivially is pretransitive
+(Wielandt, th. 7.1)-/
 @[to_additive "In a preprimitive additive action,
   any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1)"]
 theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) :
