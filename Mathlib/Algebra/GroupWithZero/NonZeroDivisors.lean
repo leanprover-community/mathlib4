@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -27,6 +26,8 @@ Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access th
 your own code.
 
 -/
+
+assert_not_exists Ring
 
 section
 variable (M₀ : Type*) [MonoidWithZero M₀]
@@ -110,7 +111,6 @@ open nonZeroDivisors
 
 section MonoidWithZero
 variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
-  [Ring R] [CommRing R']
 
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 
