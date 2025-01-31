@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
+import Mathlib.Algebra.CharP.Reduced
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite fields

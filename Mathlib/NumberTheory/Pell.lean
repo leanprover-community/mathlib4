@@ -3,10 +3,10 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.DiophantineApproximation.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
+import Mathlib.Tactic.Qify
 
 /-!
 # Pell's Equation

@@ -3095,6 +3095,7 @@ import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.Data.ZMod.Units
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.ByteArray
