@@ -29,13 +29,11 @@ Given `MulAction G X` where `G` is a group,
 
 -/
 
-variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
+variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 
 namespace MulAction.IsPretransitive
 
 open MulAction
-
-variable {G}
 
 /-- An action of a group is pretransitive iff any element can be moved from a fixed given one. -/
 @[to_additive

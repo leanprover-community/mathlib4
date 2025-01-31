@@ -36,9 +36,12 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
+- `Block.boundedOrderOfMem` : the type of blocks containing a given element is a bounded order.
+
 ## References
 
 We follow [Wielandt-1964].
+
 -/
 
 open Set
@@ -614,7 +617,9 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
       apply hB'.smul_eq_of_mem ha'
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
-@[to_additive]
+/-- The set of blocks for a group action containing a given element is a bounder order -/
+@[to_additive
+"The set of blocks for an additive group action containing a given element is a bounded order"]
 instance Block.boundedOrderOfMem (a : X) :
     BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
   top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
@@ -638,7 +643,7 @@ theorem Block.boundedOrderOfMem.bot_eq (a : X) :
   rfl
 
 @[to_additive]
-theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
+instance [Nontrivial X] (a : X) :
     Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
   rw [nontrivial_iff]
   use (Block.boundedOrderOfMem G a).bot

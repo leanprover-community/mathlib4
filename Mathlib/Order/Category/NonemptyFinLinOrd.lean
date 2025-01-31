@@ -170,7 +170,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [coe_of, comp_apply]
+      simp only [CategoryTheory.comp_apply]
       change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
