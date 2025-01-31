@@ -9,6 +9,9 @@ import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Composable arrows

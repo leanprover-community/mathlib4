@@ -2593,7 +2593,10 @@ import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Functor
 import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Image.Basic
+import Mathlib.Data.Finset.Image.Defs
+import Mathlib.Data.Finset.Image.Range
+import Mathlib.Data.Finset.Image.Union
 import Mathlib.Data.Finset.Insert
 import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice.Basic
@@ -2621,6 +2624,7 @@ import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Finset.Subtype
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Finset.Sym
