@@ -337,7 +337,3 @@ theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace ‚
   haveI := Fact.mk ht.lt_top
   rw [‚Üê restrict_apply_univ]
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_const_or_norm_set_integral_lt_of_norm_le_const :=
-  ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const

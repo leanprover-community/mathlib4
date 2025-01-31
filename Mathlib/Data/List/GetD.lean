@@ -62,17 +62,11 @@ def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List �
 @[simp]
 theorem getElem?_getD_singleton_default_eq (n : ℕ) : [d][n]?.getD d = d := by cases n <;> simp
 
-@[deprecated (since := "2024-06-12")]
-alias getD_singleton_default_eq := getElem?_getD_singleton_default_eq
-
 @[simp]
 theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.getD d = d := by
   induction r generalizing n with
   | zero => simp
   | succ n ih => simp at ih; cases n <;> simp [ih, replicate_succ]
-
-@[deprecated (since := "2024-06-12")]
-alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
 
 theorem getD_replicate {y i n} (h : i < n) :
     getD (replicate n x) i y = x := by

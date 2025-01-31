@@ -862,6 +862,4 @@ theorem isNilpotent_of_finite_tfae :
   | ⟨e⟩ => isNilpotent_of_product_of_sylow_group e
   tfae_finish
 
-@[deprecated (since := "2024-06-05")] alias isNilpotent_of_finite_tFAE := isNilpotent_of_finite_tfae
-
 end WithFiniteGroup

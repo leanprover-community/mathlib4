@@ -332,15 +332,9 @@ theorem not_summable_natCast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) :=
     mt (summable_nat_pow_inv (p := 1)).1 (lt_irrefl 1)
   simpa
 
-@[deprecated (since := "2024-04-17")]
-alias not_summable_nat_cast_inv := not_summable_natCast_inv
-
 /-- Harmonic series is not unconditionally summable. -/
 theorem not_summable_one_div_natCast : ¬Summable (fun n => 1 / n : ℕ → ℝ) := by
   simpa only [inv_eq_one_div] using not_summable_natCast_inv
-
-@[deprecated (since := "2024-04-17")]
-alias not_summable_one_div_nat_cast := not_summable_one_div_natCast
 
 /-- **Divergence of the Harmonic Series** -/
 theorem tendsto_sum_range_one_div_nat_succ_atTop :

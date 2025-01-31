@@ -109,11 +109,6 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
   · simp
   · simpa using ih _ (by simpa using h)
 
-@[deprecated drop_take_succ_eq_cons_getElem (since := "2024-06-11")]
-theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
-    (L.take (i + 1)).drop i = [get L i] := by
-  simp [drop_take_succ_eq_cons_getElem]
-
 set_option linter.deprecated false in
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
@@ -131,13 +126,6 @@ theorem drop_take_succ_flatten_eq_getElem' (L : List (List α)) (i : Nat) (h : i
 
 @[deprecated (since := "2024-10-15")]
 alias drop_take_succ_join_eq_getElem' := drop_take_succ_flatten_eq_getElem'
-
-set_option linter.deprecated false in
-@[deprecated drop_take_succ_flatten_eq_getElem' (since := "2024-06-11")]
-theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
-    (L.flatten.take (Nat.sum ((L.map length).take (i + 1)))).drop
-      (Nat.sum ((L.map length).take i)) = get L i := by
-   simp [drop_take_succ_flatten_eq_getElem']
 
 theorem flatten_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).flatten = L.getLast h := by

@@ -287,9 +287,6 @@ instance : NatCast c.Quotient :=
 theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 end NatCast
 
 section IntCast
@@ -302,9 +299,6 @@ instance : IntCast c.Quotient :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 end IntCast
 

@@ -584,11 +584,6 @@ theorem disjoint_cocompact_right (f : Filter X) :
   simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
   tauto
 
-@[deprecated "see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`"
-  (since := "2024-02-07")]
-theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
-  (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
-
 theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {y}
     (hf : Tendsto f (cocompact X) (𝓝 y)) (hfc : Continuous f) : IsCompact (insert y (range f)) := by
   intro l hne hle

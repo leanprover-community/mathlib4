@@ -61,14 +61,8 @@ namespace Function
 lemma support_natCast (hn : n ≠ 0) : support (n : α → M) = univ :=
   support_const <| Nat.cast_ne_zero.2 hn
 
-@[deprecated (since := "2024-04-17")]
-alias support_nat_cast := support_natCast
-
 lemma mulSupport_natCast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
   mulSupport_const <| Nat.cast_ne_one.2 hn
-
-@[deprecated (since := "2024-04-17")]
-alias mulSupport_nat_cast := mulSupport_natCast
 
 end Function
 end AddMonoidWithOne
@@ -108,13 +102,9 @@ variable {R : Type*} [DivisionSemiring R] [NeZero (2 : R)]
 
 @[simp] lemma add_self_div_two (a : R) : (a + a) / 2 = a := by
   rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-@[deprecated (since := "2024-07-16")] alias half_add_self := add_self_div_two
-
 
 @[simp]
 theorem add_halves (a : R) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
-@[deprecated (since := "2024-07-16")] alias add_halves' := add_halves
-
 end
 section
 

@@ -445,9 +445,6 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   rw [norm_le_pow_iff_mem_span_pow]
   apply appr_spec
 
-@[deprecated (since := "2024-04-17")]
-alias denseRange_nat_cast := denseRange_natCast
-
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_natCast x ?_ ?_
@@ -455,9 +452,6 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   · intro a
     apply subset_closure
     exact Set.mem_range_self _
-
-@[deprecated (since := "2024-04-17")]
-alias denseRange_int_cast := denseRange_intCast
 
 end RingHoms
 

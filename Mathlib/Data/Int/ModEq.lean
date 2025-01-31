@@ -266,6 +266,4 @@ theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 
-@[deprecated (since := "2024-04-02")] alias coe_nat_modEq_iff := natCast_modEq_iff
-
 end Int
