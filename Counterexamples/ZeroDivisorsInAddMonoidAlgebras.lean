@@ -7,7 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Examples of zero-divisors in `AddMonoidAlgebra`s
@@ -256,3 +256,4 @@ example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   exact fun x y => ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩
 
 end Counterexample
+#min_imports

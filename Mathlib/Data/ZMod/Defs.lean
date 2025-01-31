@@ -16,7 +16,7 @@ This file provides the basic details of `ZMod n`, including its commutative ring
 
 ## Implementation details
 
-This used to be inlined into `Data.ZMod.ValMinAbs`. This file imports `CharP.Lemmas`, which is an
+This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Lemmas`, which is an
 issue; all `CharP` instances create an `Algebra (ZMod p) R` instance; however, this instance may
 not be definitionally equal to other `Algebra` instances (for example, `GaloisField` also has an
 `Algebra` instance as it is defined as a `SplittingField`). The way to fix this is to use the

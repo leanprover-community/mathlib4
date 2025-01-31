@@ -5,9 +5,6 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # The Friendship Theorem

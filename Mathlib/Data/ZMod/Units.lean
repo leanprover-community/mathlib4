@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 
@@ -69,7 +68,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     rw [Nat.add_sub_cancel] at h
     contradiction
 
--- This needs `Nat.primeFactors`, so cannot go into `Mathlib.Data.ZMod.ValMinAbs`.
+-- This needs `Nat.primeFactors`, so cannot go into `Mathlib.Data.ZMod.Basic`.
 open Nat in
 lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
     ¬ IsUnit (p : ZMod n) := by

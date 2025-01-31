@@ -7,8 +7,6 @@ import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
-import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.NumberTheory.Divisors
 
 /-!
 # Euler's totient function

@@ -9,7 +9,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Complex.Module
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 

@@ -3,22 +3,18 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Tactic.Group
-import Mathlib.GroupTheory.Exponent
 
 /-!
 # Cyclic groups
 
 A group `G` is called cyclic if there exists an element `g : G` such that every element of `G` is of
 the form `g ^ n` for some `n : ℕ`. This file only deals with the predicate on a group to be cyclic.
-For the concrete cyclic group of order `n`, see `Data.ZMod.ValMinAbs`.
+For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 
 ## Main definitions
 
