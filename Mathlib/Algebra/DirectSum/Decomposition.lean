@@ -91,6 +91,12 @@ def decompose : M ≃ ⨁ i, ℳ i where
   left_inv := Decomposition.left_inv
   right_inv := Decomposition.right_inv
 
+omit [AddSubmonoidClass σ M] in
+/-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
+  of `m` are in `p`. -/
+def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
+  ∀ (i : ι) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
+
 protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
     ∀ m, p m := by
@@ -173,6 +179,15 @@ theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M)
     rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (decompose ℳ r)]
   rw [decompose_symm_sum]
   simp_rw [decompose_symm_of]
+
+theorem AddSubmonoidClass.IsHomogeneous.mem_iff
+    {P : Type*} [SetLike P M] [AddSubmonoidClass P M] (p : P)
+    (hp : SetLike.IsHomogeneous ℳ p) {x} :
+    x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p := by
+  classical
+  refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
+  rw [← DirectSum.sum_support_decompose ℳ x]
+  exact sum_mem (fun i _ ↦ hx i)
 
 end AddCommMonoid
 
