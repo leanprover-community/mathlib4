@@ -97,7 +97,7 @@ infixr:25 " →ₜ* " => ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance instFunLike : FunLike ((A →ₜ* B)) A B where
+instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -105,19 +105,19 @@ instance instFunLike : FunLike ((A →ₜ* B)) A B where
     congr
 
 @[to_additive]
-instance instMonoidHomClass : MonoidHomClass ((A →ₜ* B)) A B where
+instance instMonoidHomClass : MonoidHomClass (A →ₜ* B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
 @[to_additive]
-instance instContinuousMapClass : ContinuousMapClass ((A →ₜ* B)) A B where
+instance instContinuousMapClass : ContinuousMapClass (A →ₜ* B) A B where
   map_continuous f := f.continuous_toFun
 
 @[to_additive (attr := simp)]
-lemma coe_toMonoidHom (f : (A →ₜ* B)) : f.toMonoidHom = f := rfl
+lemma coe_toMonoidHom (f : A →ₜ* B) : f.toMonoidHom = f := rfl
 
 @[to_additive (attr := simp)]
-lemma coe_toContinuousMap (f : (A →ₜ* B)) : f.toContinuousMap = f := rfl
+lemma coe_toContinuousMap (f : A →ₜ* B) : f.toContinuousMap = f := rfl
 
 section
 
@@ -130,33 +130,32 @@ into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` t
 @[to_additive (attr := coe) "Turn an element of a type `F` satisfying
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`."]
-def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    (A →ₜ* B) :=
+def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHomClass.toMonoidHom f with }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
 @[to_additive "Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`."]
-instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F ((A →ₜ* B)) :=
+instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F (A →ₜ* B) :=
   ⟨ContinuousMonoidHom.toContinuousMonoidHom⟩
 
 @[to_additive (attr := simp)]
 lemma coe_coe [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    ⇑(f : (A →ₜ* B)) = f := rfl
+    ⇑(f : A →ₜ* B) = f := rfl
 
 @[to_additive (attr := simp, norm_cast)]
 lemma toMonoidHom_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    ((f : (A →ₜ* B)) : A →* B) = f := rfl
+    ((f : A →ₜ* B) : A →* B) = f := rfl
 
 @[to_additive (attr := simp, norm_cast)]
 lemma toContinuousMap_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B]
-    (f : F) : ((f : (A →ₜ* B)) : C(A, B)) = f := rfl
+    (f : F) : ((f : A →ₜ* B) : C(A, B)) = f := rfl
 
 end
 
 @[to_additive (attr := ext)]
-theorem ext {f g : (A →ₜ* B)} (h : ∀ x, f x = g x) : f = g :=
+theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 @[to_additive]
@@ -173,12 +172,12 @@ attribute [to_additive existing] ContinuousMonoidHom.mk'
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) "Composition of two continuous homomorphisms."]
-def comp (g : B →ₜ* C) (f : (A →ₜ* B)) : A →ₜ* C :=
+def comp (g : B →ₜ* C) (f : A →ₜ* B) : A →ₜ* C :=
   ⟨g.toMonoidHom.comp f.toMonoidHom, (map_continuous g).comp (map_continuous f)⟩
 
 /-- Product of two continuous homomorphisms on the same space. -/
 @[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
-def prod (f : (A →ₜ* B)) (g : A →ₜ* C) : A →ₜ* (B × C) :=
+def prod (f : A →ₜ* B) (g : A →ₜ* C) : A →ₜ* (B × C) :=
   ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prod_mk g.continuous_toFun⟩
 
 /-- Product of two continuous homomorphisms on different spaces. -/
@@ -199,11 +198,11 @@ variable (A B C D E)
 
 /-- The trivial continuous homomorphism. -/
 @[to_additive (attr := simps!) "The trivial continuous homomorphism."]
-def one : (A →ₜ* B) :=
+def one : A →ₜ* B :=
   ⟨1, continuous_const⟩
 
 @[to_additive]
-instance : Inhabited ((A →ₜ* B)) :=
+instance : Inhabited (A →ₜ* B) :=
   ⟨one A B⟩
 
 /-- The identity continuous homomorphism. -/
@@ -269,7 +268,7 @@ instance : CommGroup (A →ₜ* E) where
   inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
 
 @[to_additive]
-instance : TopologicalSpace ((A →ₜ* B)) :=
+instance : TopologicalSpace (A →ₜ* B) :=
   TopologicalSpace.induced toContinuousMap ContinuousMap.compactOpen
 
 variable (A B C D E)
@@ -289,12 +288,12 @@ theorem isEmbedding_toContinuousMap :
 alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
-instance instContinuousEvalConst : ContinuousEvalConst ((A →ₜ* B)) A B :=
+instance instContinuousEvalConst : ContinuousEvalConst (A →ₜ* B) A B :=
   .of_continuous_forget (isInducing_toContinuousMap A B).continuous
 
 @[to_additive]
 instance instContinuousEval [LocallyCompactPair A B] :
-    ContinuousEval ((A →ₜ* B)) A B :=
+    ContinuousEval (A →ₜ* B) A B :=
   .of_continuous_forget (isInducing_toContinuousMap A B).continuous
 
 @[to_additive]
@@ -322,7 +321,7 @@ alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 variable {A B C D E}
 
 @[to_additive]
-instance [T2Space B] : T2Space ((A →ₜ* B)) :=
+instance [T2Space B] : T2Space (A →ₜ* B) :=
   (isEmbedding_toContinuousMap A B).t2Space
 
 @[to_additive]
@@ -347,14 +346,14 @@ theorem continuous_comp [LocallyCompactSpace B] :
       ((isInducing_toContinuousMap A B).prodMap (isInducing_toContinuousMap B C)).continuous
 
 @[to_additive]
-theorem continuous_comp_left (f : (A →ₜ* B)) :
+theorem continuous_comp_left (f : A →ₜ* B) :
     Continuous fun g : B →ₜ* C => g.comp f :=
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_precomp.comp (isInducing_toContinuousMap B C).continuous
 
 @[to_additive]
 theorem continuous_comp_right (f : B →ₜ* C) :
-    Continuous fun g : (A →ₜ* B) => f.comp g :=
+    Continuous fun g : A →ₜ* B => f.comp g :=
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
@@ -362,7 +361,7 @@ variable (E)
 
 /-- `ContinuousMonoidHom _ f` is a functor. -/
 @[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
-def compLeft (f : (A →ₜ* B)) : (B →ₜ* E) →ₜ* (A →ₜ* E) where
+def compLeft (f : A →ₜ* B) : (B →ₜ* E) →ₜ* (A →ₜ* E) where
   toFun g := g.comp f
   map_one' := rfl
   map_mul' _g _h := rfl
