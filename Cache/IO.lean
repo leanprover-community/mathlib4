@@ -32,6 +32,20 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
+/--
+TODO: is there a better test to see if a module is part of Lean core?
+-/
+def isInLeanCore (mod : Name) :=
+  #[`Init, `Lean, `Std, `Lake].contains mod.getRoot
+
+/--
+TODO: write a better test which modules are part of the mathlib cache
+-/
+def isMathlibOrUpstream (mod : Name) :=
+  #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph,
+    `LeanSearchClient, `Plausible, `Qq,
+    `ProofWidgets].contains mod.getRoot
+
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with

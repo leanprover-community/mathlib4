@@ -23,7 +23,7 @@ additionally, it contains the `rootHash` which reflects changes to Mathlib's
 Lake project settings.
 -/
 structure HashMemo where
-  /-- hashes `lakefile`, `lean-toolchain` and `lake-manifest`. -/
+  /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
   /-- Stores the imports of a module -/
   depsMap  : Std.HashMap Name (Array Name) := ∅
@@ -47,7 +47,7 @@ partial def insertDeps (hashMap : NameHashMap) (mod : Name) (hashMemo : HashMemo
 /--
 Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
 * Belongs to the given list of module names or
-* Corresponds to a module that's imported (transitively of not) by
+* Corresponds to a module that's imported (transitively or not) by
   some module in the list module names
 -/
 def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO NameHashMap := do
@@ -63,7 +63,7 @@ def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO NameHas
 abbrev HashM := StateT HashMemo CacheM
 
 /--
-Read the imports from the raw file `content` and returns an array of tuples
+Read the imports from the raw file `content` and return an array of tuples
 `(module name, source file)`.
 
 Note: `mod` is the name of the parsed module and is only used for displaying an error
@@ -72,12 +72,11 @@ message if the parsing fails.
 def getFileImports (content : String) (mod : Name := default) :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).searchPath
-  -- Core files cannot be modified and therefore we do not need to process imported core files
-  -- TODO: is there a better test to see if a module is part of Lean core?
-  let coreModuleRoots : Array Name := #[`Init, `Lean, `Std, `Lake]
-  let fileImports ← Lean.parseImports' content mod.toString
+  let fileImports : Array Import ← Lean.parseImports' content mod.toString
   let out ← fileImports
-    |>.filter (!coreModuleRoots.contains ·.module.getRoot)
+    -- Lean core files can never be modified and therefore we do not need to process these
+    -- moreover, it seems that `Lean.findLean` fails on these.
+    |>.filter (! isInLeanCore ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
       pure (imp.module, impSourceFile)
@@ -140,10 +139,8 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
     let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
     let modHash := hash c -- TODO: change to `hash mod`
     let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
-    -- TODO: Write a test which module is part of the mathlib cache
-    if #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph, `LeanSearchClient, `Plausible, `Qq,
-        `ProofWidgets].contains mod.getRoot then
-      -- part of mathlib/upstream: add hash to `hashMap`
+    if isMathlibOrUpstream mod then
+      -- mathlib/upstream: add hash to `hashMap`
       modifyGet fun stt =>
         (some fileHash, { stt with
           depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
