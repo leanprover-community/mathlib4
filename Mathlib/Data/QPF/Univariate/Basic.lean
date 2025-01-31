@@ -218,8 +218,6 @@ def Wsetoid : Setoid q.P.W :=
 attribute [local instance] Wsetoid
 
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 
