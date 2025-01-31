@@ -384,6 +384,7 @@ lemma Algebra.intNorm_ne_zero {x : B} : Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
+set_option synthInstance.maxHeartbeats 22000 -- TODO Investigate / remove
 variable [Algebra.IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
 include M in
