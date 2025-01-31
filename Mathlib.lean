@@ -264,6 +264,7 @@ import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Equidecomp
 import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
