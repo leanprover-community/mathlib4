@@ -31,7 +31,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {M N α : Type*}
+variable {G M N O α : Type*}
 
 section
 variable [Monoid M] [MulAction M α]
@@ -167,3 +167,65 @@ def MulAction.toEndHom [Monoid M] [MulAction M α] : M →* Function.End α wher
 See note [reducible non-instances]. -/
 abbrev MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α :=
   MulAction.compHom α f
+
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid N] [Monoid O] [MulDistribMulAction M N] [MulDistribMulAction N O]
+
+/-- Pullback a multiplicative distributive multiplicative action along an injective monoid
+homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Injective.mulDistribMulAction [SMul M O] (f : O →* N) (hf : Injective f)
+  (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M O where
+  __ := hf.mulAction f smul
+  smul_mul c x y := hf <| by simp only [smul, f.map_mul, smul_mul']
+  smul_one c := hf <| by simp only [smul, f.map_one, smul_one]
+
+/-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
+homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Surjective.mulDistribMulAction [SMul M O] (f : N →* O) (hf : Surjective f)
+    (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M O where
+  __ := hf.mulAction f smul
+  smul_mul c := by simp only [hf.forall, smul_mul', ← smul, ← f.map_mul, implies_true]
+  smul_one c := by rw [← f.map_one, ← smul, smul_one]
+
+variable (N) in
+/-- Scalar multiplication by `r` as a `MonoidHom`. -/
+def MulDistribMulAction.toMonoidHom (r : M) : N →* N where
+  toFun := (r • ·)
+  map_one' := smul_one r
+  map_mul' := smul_mul' r
+
+@[simp]
+lemma MulDistribMulAction.toMonoidHom_apply (r : M) (x : N) : toMonoidHom N r x = r • x := rfl
+
+@[simp] lemma smul_pow' (r : M) (x : N) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
+  (MulDistribMulAction.toMonoidHom ..).map_pow ..
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Monoid M] [Group G] [MulDistribMulAction M G]
+
+@[simp]
+lemma smul_inv' (r : M) (x : G) : r • x⁻¹ = (r • x)⁻¹ :=
+  (MulDistribMulAction.toMonoidHom G r).map_inv x
+
+lemma smul_div' (r : M) (x y : G) : r • (x / y) = r • x / r • y :=
+  map_div (MulDistribMulAction.toMonoidHom G r) x y
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Group G] [Monoid M] [MulDistribMulAction G M]
+variable (M)
+
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPerm`. -/
+@[simps (config := { simpRhs := true })]
+def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
+  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
+
+end MulDistribMulAction
