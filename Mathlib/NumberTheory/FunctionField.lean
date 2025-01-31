@@ -207,7 +207,6 @@ theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by
   rw [inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
 
-@[simp]
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
