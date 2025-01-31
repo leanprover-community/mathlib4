@@ -6,7 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.FieldTheory.Finite.Basic
 
 /-!

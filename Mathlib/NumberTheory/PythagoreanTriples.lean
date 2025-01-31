@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 
 /-!
 # Pythagorean Triples

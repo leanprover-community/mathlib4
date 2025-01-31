@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.GroupTheory.Sylow
 
 /-!

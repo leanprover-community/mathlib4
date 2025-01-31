@@ -3,7 +3,7 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.PowMod

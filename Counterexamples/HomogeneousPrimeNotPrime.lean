@@ -5,7 +5,7 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Tactic.DeriveFintype
 
 /-!

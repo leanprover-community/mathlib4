@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 

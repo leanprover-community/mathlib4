@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Algebra.CharP.Two
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 
 /-!
 # `QuadraticForm R M` and `Subtype LinearMap.IsSymm` are distinct notions in characteristic 2
