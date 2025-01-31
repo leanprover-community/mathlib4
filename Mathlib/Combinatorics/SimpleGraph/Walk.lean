@@ -985,7 +985,7 @@ lemma takeUntil_first (p : G.Walk u v) :
     p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
-lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
+lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := by
   refine ⟨?_, fun h => by subst h; simp⟩
   intro hnil
@@ -1140,7 +1140,7 @@ lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
   apply p.getVert_takeUntil h
   by_contra! hc
-  simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil_iff] at hc
+  simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil] at hc
   exact hsu hc.symm
 
 lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
