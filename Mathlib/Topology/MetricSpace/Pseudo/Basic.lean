@@ -144,6 +144,12 @@ theorem tendstoUniformlyOn_iff {F : ι → β → α} {f : β → α} {p : Filte
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
   exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
 
+lemma tendstouniformlyOn_iff_restrict [Preorder ι] {f : ι → β → α} {g : β → α} (K : Set β) :
+    TendstoUniformlyOn f g atTop K ↔
+    TendstoUniformly (fun n : ι => K.restrict (f n)) (K.restrict g) atTop := by
+  simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, ←
+    tendstoUniformlyOn_univ, Set.mem_univ, Set.restrict_apply, true_implies, Subtype.forall] at *
+
 /-- Expressing locally uniform convergence using `dist`. -/
 theorem tendstoLocallyUniformly_iff [TopologicalSpace β] {F : ι → β → α} {f : β → α}
     {p : Filter ι} :
