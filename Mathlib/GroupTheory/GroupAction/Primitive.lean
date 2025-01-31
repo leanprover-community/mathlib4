@@ -223,7 +223,7 @@ open scoped BigOperators Pointwise
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
 theorem isPreprimitive_iff_isSimpleOrder_blocks
-    [htGX : IsPretransitive G X] [Nontrivial X] (a : X) :
+    [IsPretransitive G X] [Nontrivial X] (a : X) :
     IsPreprimitive G X ↔ IsSimpleOrder { B : Set X // a ∈ B ∧ IsBlock G B } := by
   constructor
   · intro hGX'; apply IsSimpleOrder.mk
@@ -231,14 +231,9 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks
     simp only [← Subtype.coe_inj, Subtype.coe_mk]
     cases hGX'.has_trivial_blocks hB with
     | inl h =>
-      apply Or.intro_left
-      change B = ↑(Block.boundedOrderOfMem G a).bot
-      rw [Block.boundedOrderOfMem.bot_eq]
-      exact Set.Subsingleton.eq_singleton_of_mem h haB
+      simp [BlockMem.coe_bot, h.eq_singleton_of_mem haB]
     | inr h =>
-      apply Or.intro_right
-      change B = ↑(Block.boundedOrderOfMem G a).top
-      exact h
+      simp [BlockMem.coe_top, h]
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
     apply IsPreprimitive.mk_mem_of_pretransitive a
     intro B haB hB
