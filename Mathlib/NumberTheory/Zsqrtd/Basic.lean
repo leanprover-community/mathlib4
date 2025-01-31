@@ -3,11 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Ring.Associated
 import Mathlib.Algebra.Star.Unitary
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -326,7 +326,7 @@ theorem gcd_eq_zero_iff (a : ℤ√d) : Int.gcd a.re a.im = 0 ↔ a = 0 := by
 theorem gcd_pos_iff (a : ℤ√d) : 0 < Int.gcd a.re a.im ↔ a ≠ 0 :=
   pos_iff_ne_zero.trans <| not_congr a.gcd_eq_zero_iff
 
-theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) (hdvd : b ∣ a) :
+theorem isCoprime_of_dvd_isCoprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) (hdvd : b ∣ a) :
     IsCoprime b.re b.im := by
   apply isCoprime_of_dvd
   · rintro ⟨hre, him⟩
@@ -342,13 +342,15 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
       exact ⟨hzdvdu, hzdvdv⟩
     exact hcoprime.isUnit_of_dvd' ha hb
 
+@[deprecated (since := "2025-01-23")] alias coprime_of_dvd_coprime := isCoprime_of_dvd_isCoprime
+
 theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
     ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
   rw [mul_comm] at Hre Him
   refine ⟨⟨re, im⟩, ?_, ?_⟩
   · rw [smul_val, ← Hre, ← Him]
-  · rw [← Int.gcd_eq_one_iff_coprime, H1]
+  · rw [Int.isCoprime_iff_gcd_eq_one, H1]
 
 end Gcd
 

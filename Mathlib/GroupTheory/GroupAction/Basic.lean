@@ -69,25 +69,21 @@ section FixedPoints
 
 variable {M α}
 
-@[to_additive] theorem mem_fixedPoints_iff_subsingleton_orbit {a : α} :
-    a ∈ fixedPoints M α ↔ (orbit M a).Subsingleton := by
+@[to_additive (attr := simp)]
+theorem subsingleton_orbit_iff_mem_fixedPoints {a : α} :
+    (orbit M a).Subsingleton ↔ a ∈ fixedPoints M α := by
   rw [mem_fixedPoints]
   constructor
+  · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
   · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
     simp only [h]
-  · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
 
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
-  rw [mem_fixedPoints, Fintype.card_eq_one_iff]
-  constructor
-  · exact fun h => ⟨⟨a, mem_orbit_self _⟩, fun ⟨a, ⟨x, hx⟩⟩ => Subtype.eq <| by simp [h x, hx.symm]⟩
-  · intro h x
-    rcases h with ⟨⟨z, hz⟩, hz₁⟩
-    calc
-      x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
-      _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
+  simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
+    Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, orbit_nonempty, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
@@ -111,6 +107,18 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
 
 namespace MulAction
 variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
+
+/-- If a subgroup acts nontrivially, then the type is nontrivial -/
+@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial"]
+theorem isnontrivial_of_nontrivial_action {H : Subgroup G} (h : fixedPoints H α ≠ ⊤) :
+    Nontrivial α := by
+  apply Or.resolve_left (subsingleton_or_nontrivial α)
+  intro hα
+  apply h
+  rw [eq_top_iff]
+  intro x hx
+  rw [mem_fixedPoints]
+  exact fun _ ↦ Subsingleton.elim ..
 
 section Orbit
 

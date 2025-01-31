@@ -328,9 +328,8 @@ instance involutiveStar : InvolutiveStar (Subalgebra R A) where
 theorem mem_star_iff (S : Subalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ S :=
   Iff.rfl
 
--- Porting note: removed `@[simp]` tag because `simp` can prove this
 theorem star_mem_star_iff (S : Subalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
-  simp only [mem_star_iff, star_star]
+  simp
 
 @[simp]
 theorem coe_star (S : Subalgebra R A) : ((star S : Subalgebra R A) : Set A) = star (S : Set A) :=

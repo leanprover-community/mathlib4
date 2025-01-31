@@ -3,15 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Order.T5
 import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.Order.T5
 
 /-!
 # Topology on extended non-negative reals
@@ -237,6 +236,20 @@ protected theorem tendsto_nhds {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ�
 protected theorem tendsto_nhds_zero {f : Filter α} {u : α → ℝ≥0∞} :
     Tendsto u f (𝓝 0) ↔ ∀ ε > 0, ∀ᶠ x in f, u x ≤ ε :=
   nhds_zero_basis_Iic.tendsto_right_iff
+
+theorem tendsto_const_sub_nhds_zero_iff {l : Filter α} {f : α → ℝ≥0∞} {a : ℝ≥0∞} (ha : a ≠ ∞)
+    (hfa : ∀ n, f n ≤ a) :
+    Tendsto (fun n ↦ a - f n) l (𝓝 0) ↔ Tendsto (fun n ↦ f n) l (𝓝 a) := by
+  rw [ENNReal.tendsto_nhds_zero, ENNReal.tendsto_nhds ha]
+  refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
+  · filter_upwards [h ε hε] with n hn
+    refine ⟨?_, (hfa n).trans (le_add_right le_rfl)⟩
+    rw [tsub_le_iff_right] at hn ⊢
+    rwa [add_comm]
+  · filter_upwards [h ε hε] with n hn
+    have hN_left := hn.1
+    rw [tsub_le_iff_right] at hN_left ⊢
+    rwa [add_comm]
 
 protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} {a : ℝ≥0∞}
     (ha : a ≠ ∞) : Tendsto f atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ∈ Icc (a - ε) (a + ε) :=

@@ -90,8 +90,6 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
@@ -173,7 +171,6 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
 -/
@@ -195,21 +192,24 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
+      rw [← CategoryTheory.comp_apply, ← comp_base, D.t_inv, id_base, CategoryTheory.id_apply]
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
+      rw [← CategoryTheory.comp_apply, ← comp_base, IsIso.inv_hom_id, id_base,
+        CategoryTheory.id_apply]
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
+      rw [← CategoryTheory.comp_apply, ← comp_base, IsIso.hom_inv_id, id_base,
+        CategoryTheory.id_apply]
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
-    erw [← comp_c_app]
-    rw [congr_app (D.t_fac k i j), comp_c_app]
+    dsimp
+    rw [← comp_c_app, congr_app (D.t_fac k i j), comp_c_app]
+    dsimp
     simp_rw [Category.assoc]
-    erw [IsOpenImmersion.inv_naturality, IsOpenImmersion.inv_naturality_assoc,
+    rw [IsOpenImmersion.inv_naturality, IsOpenImmersion.inv_naturality_assoc,
       IsOpenImmersion.app_inv_app'_assoc]
     · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp]; rfl
     rintro x ⟨y, -, eq⟩
@@ -222,7 +222,6 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     congr 2
     rw [IsIso.inv_comp_eq, 𝖣.t_fac_assoc, 𝖣.t_inv, Category.comp_id]
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/q6X1GJ9.png) commute. -/
 @[simp, reassoc]
 theorem snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :
@@ -393,8 +392,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             rw [← (D.V (j, k)).presheaf.map_comp]
             erw [← (D.V (j, k)).presheaf.map_comp]
             repeat rw [← (D.V (j, k)).presheaf.map_comp]
-            -- Porting note: was just `congr`
-            exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
+            rfl } }
 
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
@@ -553,8 +551,6 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData (SheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, SheafedSpace.IsOpenImmersion (f i j)
 
@@ -626,8 +622,6 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData LocallyRingedSpace where
   f_open : ∀ i j, LocallyRingedSpace.IsOpenImmersion (f i j)
 
