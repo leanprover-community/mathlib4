@@ -88,17 +88,12 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f :
     induction L₁ with | _ L₁ => ?_
     induction L₂ with | _ L₂ => ?_
     induction L₃ with | _ L₃ => ?_
-  let alg32 : Algebra L₃ L₂ := RingHom.toAlgebra (Subsemiring.inclusion g.unop.le)
-  let alg21 : Algebra L₂ L₁ := RingHom.toAlgebra (Subsemiring.inclusion f.unop.le)
-  let alg31 : Algebra L₃ L₁ :=
-    RingHom.toAlgebra (Subsemiring.inclusion (g.unop.le.trans f.unop.le))
-  letI : SMul L₃ L₂ := alg32.toSMul
-  letI : SMul L₂ L₁ := alg21.toSMul
-  letI : SMul L₃ L₁ := alg31.toSMul
-  haveI : IsScalarTower k L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsScalarTower k L₃ L₁ := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsScalarTower k L₃ L₂ := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsScalarTower L₃ L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
+  algebraize [Subsemiring.inclusion g.unop.le, Subsemiring.inclusion f.unop.le,
+    Subsemiring.inclusion (g.unop.le.trans f.unop.le)]
+  have : IsScalarTower k L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower k L₃ L₁ := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower k L₃ L₂ := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower L₃ L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
   apply IsScalarTower.AlgEquiv.restrictNormalHom_comp k L₃ L₂ L₁
 
 end finGaloisGroupMap
@@ -135,9 +130,9 @@ noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGrou
     val := fun L => (AlgEquiv.restrictNormalHom L.unop) σ
     property := fun {L₁ L₂} π ↦ by
       dsimp [finGaloisGroupFunctor, finGaloisGroupMap]
-      letI : Algebra L₂.unop L₁.unop := RingHom.toAlgebra (Subsemiring.inclusion π.1.le)
-      letI : IsScalarTower k L₂.unop L₁.unop := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-      letI : IsScalarTower L₂.unop L₁.unop K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+      algebraize [Subsemiring.inclusion π.1.le]
+      have : IsScalarTower k L₂.unop L₁.unop := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+      have : IsScalarTower L₂.unop L₁.unop K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
       apply (IsScalarTower.AlgEquiv.restrictNormalHom_comp_apply L₂.unop L₁.unop σ).symm }
   map_one' := by
     simp only [map_one]
