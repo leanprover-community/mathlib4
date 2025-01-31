@@ -15,9 +15,9 @@ open MonomialOrder Finsupp
 open scoped MonomialOrder
 
 variable {σ : Type*} [LinearOrder σ] {R : Type*} [CommSemiring R] [WellFoundedGT σ]
-  {f g : MvPolynomial σ R} :
+  {f g : MvPolynomial σ R}
 
-theorem degree_degLexDegree (degLex.degree f).degree = f.totalDegree := by
+theorem degree_degLexDegree : (degLex.degree f).degree = f.totalDegree := by
   by_cases hf : f = 0
   · simp [hf]
   apply le_antisymm
