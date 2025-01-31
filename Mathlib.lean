@@ -5604,6 +5604,7 @@ import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.Topology.Separation.CountableSeparatingOn
+import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.Separation.NotNormal
@@ -5654,6 +5655,7 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompareReals
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.UniformSpace.CoveringProfinite
 import Mathlib.Topology.UniformSpace.Dini
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
