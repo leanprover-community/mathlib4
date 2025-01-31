@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
 
