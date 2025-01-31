@@ -53,7 +53,7 @@ section
 
 variable (a b c : α) (hab : a < b) (hbc : b < c)
 
-/-- This is the order isomorphisms from `Fin 3`
+/-- This is the order isomorphism from `Fin 3`
 to a finset `{a, b, c}` when `a < b` and `b < c`. -/
 noncomputable def orderIsoTriple :
     Fin 3 ≃o ({a, b, c} : Finset α) :=
