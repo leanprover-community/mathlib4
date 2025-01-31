@@ -19,7 +19,7 @@ namespace Fin
 
 variable {α : Type*} [Preorder α]
 
-/-- This is the order isomorphisms from `Fin 1` to a finset `{a}`. -/
+/-- This is the order isomorphism from `Fin 1` to a finset `{a}`. -/
 noncomputable def orderIsoSingleton (a : α) :
     Fin 1 ≃o ({a} : Finset α) :=
   OrderIso.ofUnique _ _
