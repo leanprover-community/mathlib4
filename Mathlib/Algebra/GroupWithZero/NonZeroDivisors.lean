@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -27,6 +26,8 @@ Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access th
 your own code.
 
 -/
+
+assert_not_exists Ring
 
 section
 variable (M₀ : Type*) [MonoidWithZero M₀]
@@ -110,7 +111,6 @@ open nonZeroDivisors
 
 section MonoidWithZero
 variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
-  [Ring R] [CommRing R']
 
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 
@@ -129,35 +129,6 @@ theorem mul_left_mem_nonZeroDivisors_eq_zero_iff {r x : M₁} (hr : r ∈ M₁�
 @[simp]
 theorem mul_left_coe_nonZeroDivisors_eq_zero_iff {c : M₁⁰} {x : M₁} : (c : M₁) * x = 0 ↔ x = 0 :=
   mul_left_mem_nonZeroDivisors_eq_zero_iff c.prop
-
-theorem mul_cancel_right_mem_nonZeroDivisors {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y := by
-  refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
-  rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
-
-theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * c ↔ x = y :=
-  mul_cancel_right_mem_nonZeroDivisors c.prop
-
-@[simp]
-theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) :
-    r * x = r * y ↔ x = y := by
-  simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
-
-theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=
-  mul_cancel_left_mem_nonZeroDivisors c.prop
-
-theorem dvd_cancel_right_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : x * r ∣ y * r ↔ x ∣ y :=
-  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_right_mem_nonZeroDivisors hr, mul_assoc, mul_comm z r,
-    ← mul_assoc]⟩, fun ⟨z, h⟩ ↦ ⟨z, by rw [h, mul_assoc, mul_comm z r, ← mul_assoc]⟩⟩
-
-theorem dvd_cancel_right_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : x * c ∣ y * c ↔ x ∣ y :=
-  dvd_cancel_right_mem_nonZeroDivisors c.prop
-
-theorem dvd_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x ∣ r * y ↔ x ∣ y :=
-  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_left_mem_nonZeroDivisors hr, ← mul_assoc]⟩,
-    fun ⟨z, h⟩ ↦ ⟨z, by rw [h, ← mul_assoc]⟩⟩
-
-theorem dvd_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : c * x ∣ c * y ↔ x ∣ y :=
-  dvd_cancel_left_mem_nonZeroDivisors c.prop
 
 theorem zero_not_mem_nonZeroDivisors [Nontrivial M] : 0 ∉ M⁰ :=
   fun h ↦ one_ne_zero <| h 1 <| mul_zero _
@@ -247,15 +218,6 @@ theorem mem_nonZeroDivisor_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
 theorem comap_nonZeroDivisor_le_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
     (hf : Function.Injective f) : M'⁰.comap f ≤ M⁰ :=
   fun _ ha ↦ mem_nonZeroDivisor_of_injective hf (Submonoid.mem_comap.mp ha)
-
-/-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
-lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
-    IsUnit a ↔ a ∈ nonZeroDivisors R := by
-  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ ?_⟩
-  rw [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
-  intro b c hbc
-  rw [← sub_eq_zero, ← sub_mul] at hbc
-  exact sub_eq_zero.mp (ha _ hbc)
 
 end MonoidWithZero
 
