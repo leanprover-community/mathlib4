@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
+Authors: Jujian Zhang, Junyan Xu
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -40,7 +40,7 @@ noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
       { toFun := (x.1 • ·)
         map_add' := by aesop
         map_smul' r := by simp [← mul_smul, mem_center_iff.1 x.2 r] } }
-  invFun f := centerMulOppositeEquiv <| centerCongr
+  invFun f := centerToMulOpposite.symm <| centerCongr
     ((ModuleCat.of R (Shrink.{v} R)).endRingEquiv.trans
       ((Module.moduleEndSelf R).trans (linearEquivShrink R R).conjRingEquiv).symm)
     ⟨f.app _, mem_center_iff.mpr fun g ↦ (f.naturality _).symm⟩
