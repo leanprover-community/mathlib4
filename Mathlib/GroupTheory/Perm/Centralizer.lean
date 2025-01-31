@@ -427,7 +427,7 @@ theorem range_toPermHom_eq_range_toPermHom' :
 
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
-      ∏ n in g.cycleType.toFinset, (g.cycleType.count n)! := by
+      ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
   classical
   set sc : (c : g.cycleFactorsFinset) → ℕ := fun c ↦ (c : Perm α).support.card with hsc
   suffices Fintype.card (toPermHom g).range =
@@ -565,7 +565,7 @@ variable (g : Perm α)
 theorem nat_card_centralizer :
     Nat.card (centralizer {g}) =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
-        (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) := by
+        (∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)!) := by
   rw [← (toPermHom g).ker.card_mul_index, index_ker, nat_card_range_toPermHom,
     ← kerParam_range_card, ← Nat.card_eq_fintype_card, kerParam_range_eq, card_subtype]
 
@@ -573,7 +573,7 @@ theorem card_isConj_mul_eq :
     Nat.card {h : Perm α | IsConj g h} *
       ((Fintype.card α - g.cycleType.sum)! *
       g.cycleType.prod *
-      (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!)) =
+      (∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)!)) =
     (Fintype.card α)! := by
   classical
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
@@ -589,7 +589,7 @@ theorem card_isConj_eq :
       (Fintype.card α)! /
         ((Fintype.card α - g.cycleType.sum)! *
           g.cycleType.prod *
-          (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!)) := by
+          (∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)!)) := by
   rw [← card_isConj_mul_eq g, Nat.div_eq_of_eq_mul_left _]
   · rfl
   -- This is the cardinal of the centralizer
@@ -608,7 +608,7 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     ({g | g.cycleType = m} : Finset (Perm α)).card *
         ((Fintype.card α - m.sum)! * m.prod *
-          (∏ n in m.toFinset, (m.count n)!)) =
+          (∏ n ∈ m.toFinset, (m.count n)!)) =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α)! else 0 := by
   split_ifs with hm
   · -- nonempty case
@@ -626,7 +626,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     ({g | g.cycleType = m} : Finset (Perm α)).card =
       if m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a then
         (Fintype.card α)! /
-          ((Fintype.card α - m.sum)! * m.prod * (∏ n in m.toFinset, (m.count n)!))
+          ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!))
       else 0 := by
   split_ifs with hm
   · -- nonempty case
