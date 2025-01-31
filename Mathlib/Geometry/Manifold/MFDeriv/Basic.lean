@@ -600,8 +600,7 @@ theorem mdifferentiable_of_subsingleton [Subsingleton E] : MDifferentiable I I' 
   intro x
   have : Subsingleton H := I.injective.subsingleton
   have : DiscreteTopology M := discreteTopology H M
-  have : ContinuousAt f x := continuous_of_discreteTopology.continuousAt
-  simp only [mdifferentiableAt_iff, this, true_and]
+  simp only [mdifferentiableAt_iff, continuous_of_discreteTopology.continuousAt, true_and]
   exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
 
 theorem mdifferentiableWithinAt_of_isInvertible_mfderivWithin

@@ -898,21 +898,19 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 
 theorem isInvertible_zero_iff :
     IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · rcases h with ⟨e, he⟩
-    have A : Subsingleton M := by
+  refine ⟨fun ⟨e, he⟩ ↦ ?_, ?_⟩
+  · have A : Subsingleton M := by
       refine ⟨fun x y ↦ e.injective ?_⟩
-      change (e : M →L[R] M₂) x = (e : M →L[R] M₂) y
-      simp [he]
+      simp [he, ← ContinuousLinearEquiv.coe_coe]
     exact ⟨A, e.toEquiv.symm.subsingleton⟩
   · rintro ⟨hM, hM₂⟩
     let e : M ≃L[R] M₂ :=
     { toFun := 0
       invFun := 0
-      left_inv := fun x ↦ Subsingleton.elim _ _
-      right_inv := fun x ↦ Subsingleton.elim _ _
-      map_add' := fun x y ↦ Subsingleton.elim _ _
-      map_smul' := fun x y ↦ Subsingleton.elim _ _ }
+      left_inv x := Subsingleton.elim _ _
+      right_inv x := Subsingleton.elim _ _
+      map_add' x y := Subsingleton.elim _ _
+      map_smul' c x := Subsingleton.elim _ _ }
     refine ⟨e, ?_⟩
     ext x
     exact Subsingleton.elim _ _
