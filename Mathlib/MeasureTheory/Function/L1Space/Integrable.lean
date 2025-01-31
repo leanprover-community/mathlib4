@@ -134,6 +134,13 @@ theorem Memℒp.integrable_norm_rpow' [IsFiniteMeasure μ] {f : α → β} {p : 
   · simp [h_top, integrable_const]
   exact hf.integrable_norm_rpow h_zero h_top
 
+lemma Memℒp.integrable_norm_pow {f : α → β} {p : ℕ} (hf : Memℒp f p μ) (hp : p ≠ 0) :
+    Integrable (fun x : α => ‖f x‖ ^ p) μ := by
+  simpa using hf.integrable_norm_rpow (mod_cast hp) (by simp)
+
+lemma Memℒp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : Memℒp f p μ) :
+    Integrable (fun x : α => ‖f x‖ ^ p) μ := by simpa using hf.integrable_norm_rpow'
+
 lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
     Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ ↔ Memℒp f p μ := by

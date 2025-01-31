@@ -115,7 +115,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
-  map f := AddMonoidHom.mk' (M.map f) (by simp)
+  map f := AddCommGrp.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
 
 @[simp]
 lemma presheaf_obj_coe (X : Cᵒᵖ) :
@@ -123,7 +123,7 @@ lemma presheaf_obj_coe (X : Cᵒᵖ) :
 
 @[simp]
 lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
-    DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f) x = M.map f x := rfl
+    DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f).hom x = M.map f x := rfl
 
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
@@ -134,7 +134,7 @@ variable (R) in
 def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
-    { app := fun X ↦ AddMonoidHom.mk' (Hom.app f X) (by simp)
+    { app := fun X ↦ AddCommGrp.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
 @[simp]
@@ -144,7 +144,7 @@ lemma toPresheaf_obj_coe (X : Cᵒᵖ) :
 @[simp]
 lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X) :
     DFunLike.coe (α := M₁.obj X) (β := fun _ ↦ M₂.obj X)
-      (((toPresheaf R).map f).app X) x = f.app X x := rfl
+      (((toPresheaf R).map f).app X).hom x = f.app X x := rfl
 
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
