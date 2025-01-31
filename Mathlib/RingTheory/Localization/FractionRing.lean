@@ -81,15 +81,15 @@ variable (R K)
 protected theorem injective : Function.Injective (algebraMap R K) :=
   IsLocalization.injective _ (le_of_eq rfl)
 
+instance : FaithfulSMul R K :=
+  (faithfulSMul_iff_algebraMap_injective R K).mpr <| IsFractionRing.injective R K
+
 variable {R K}
 
 @[norm_cast, simp]
 -- Porting note: using `↑` didn't work, so I needed to explicitly put in the cast myself
 theorem coe_inj {a b : R} : (Algebra.cast a : K) = Algebra.cast b ↔ a = b :=
   (IsFractionRing.injective R K).eq_iff
-
-instance (priority := 100) [NoZeroDivisors K] : NoZeroSMulDivisors R K :=
-  NoZeroSMulDivisors.of_algebraMap_injective <| IsFractionRing.injective R K
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=
@@ -468,10 +468,11 @@ theorem algebraMap_injective_of_field_isFractionRing (K L : Type*) [Field K] [Se
   rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R K L]
   exact (algebraMap K L).injective.comp (IsFractionRing.injective R K)
 
-theorem NoZeroSMulDivisors.of_field_isFractionRing [NoZeroDivisors S] (K L : Type*) [Field K]
-    [Semiring L] [Nontrivial L] [Algebra R K] [IsFractionRing R K] [Algebra S L] [Algebra K L]
-    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] : NoZeroSMulDivisors R S :=
-  of_algebraMap_injective (algebraMap_injective_of_field_isFractionRing R S K L)
+theorem FaithfulSMul.of_field_isFractionRing (K L : Type*) [Field K] [Semiring L]
+    [Nontrivial L] [Algebra R K] [IsFractionRing R K] [Algebra S L] [Algebra K L] [Algebra R L]
+    [IsScalarTower R S L] [IsScalarTower R K L] : FaithfulSMul R S :=
+  (faithfulSMul_iff_algebraMap_injective R S).mpr <|
+    algebraMap_injective_of_field_isFractionRing R S K L
 
 end algebraMap_injective
 
@@ -526,10 +527,9 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
-instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) := by
-  apply NoZeroSMulDivisors.of_algebraMap_injective
-  rw [IsScalarTower.algebraMap_eq R A]
-  apply Function.Injective.comp (FaithfulSMul.algebraMap_injective A (FractionRing A))
+instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := by
+  rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
+  exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
     (FaithfulSMul.algebraMap_injective R A)
 
 end FractionRing
