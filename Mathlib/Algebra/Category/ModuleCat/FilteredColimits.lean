@@ -133,8 +133,8 @@ def colimit : ModuleCatMax.{v, u, u} R :=
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
-    { (AddCommGrp.FilteredColimits.colimitCocone
-      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j with
+    { ((AddCommGrp.FilteredColimits.colimitCocone
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j).hom with
     map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
 
 /-- The cocone over the proposed colimit module. -/
@@ -152,9 +152,9 @@ it is a linear map, i.e. preserves scalar multiplication.
 -/
 def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   ofHom
-    { (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
+    { ((AddCommGrp.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGrp.{max v u})).desc
-      ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t) with
+      ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t)).hom with
     map_smul' := fun r x => by
       refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
       erw [colimit_smul_mk_eq]

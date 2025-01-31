@@ -214,7 +214,7 @@ private lemma is_integer {p : ℤ[X]} (a b : ℤ) {k : ℕ} (hp : p.natDegree �
   · rcases k.eq_zero_or_pos with rfl | hk
     · exact ⟨p.coeff 0, by simp⟩
     exact ⟨0, by simp [hk.ne']⟩
-  refine ⟨∑ i in p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
+  refine ⟨∑ i ∈ p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
   conv => lhs; rw [← sum_monomial_eq p]
   rw [eval₂_sum, sum, Finset.sum_mul, Int.cast_sum]
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
