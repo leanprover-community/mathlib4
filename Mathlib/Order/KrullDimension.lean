@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
+import Mathlib.Order.LatticeIntervals
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -777,6 +778,22 @@ lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := 
 lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
   rw [← krullDim_orderDual]
   exact height_top_eq_krullDim (α := αᵒᵈ)
+
+lemma height_eq_krullDim_Iic {α : Type*} [Preorder α] (x : α) :
+    (height x : ℕ∞) = krullDim (Set.Iic x) := by
+  rw [← height_top_eq_krullDim, height, height, WithBot.coe_inj]
+  apply le_antisymm
+  · apply iSup_le; intro p; apply iSup_le; intro hp
+    let q := LTSeries.mk p.length (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩
+     : Set.Iic x)) (fun _ _ h ↦ p.strictMono h)
+    rw [show p.length = q.length by rfl]
+    simp only [le_top, iSup_pos, ge_iff_le]
+    apply le_iSup (fun p ↦ (p.length : ℕ∞)) q
+  · apply iSup_le; intro p; apply iSup_le; intro _
+    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
+    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
+    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
+    exact (p.toFun (Fin.last p.length)).2
 
 end krullDim
 

@@ -57,6 +57,30 @@ theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
 
 alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
+/-- A ring has finite Krull dimension if its Krull dimension is not ⊤ -/
+class FiniteRingKrullDim (R : Type*) [CommRing R] : Prop where
+  ringKrullDim_ne_top : ringKrullDim R ≠ ⊤
+
+lemma ringKrullDim_ne_top [h : FiniteRingKrullDim R] :
+  ringKrullDim R ≠ ⊤ := h.ringKrullDim_ne_top
+
+lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
+  ringKrullDim R < ⊤ := by
+  exact Ne.lt_top (ringKrullDim_ne_top)
+
+lemma finiteRingKrullDim_iff_lt :
+  FiniteRingKrullDim R ↔ ringKrullDim R < ⊤ := by
+  constructor
+  · intro h
+    exact ringKrullDim_lt_top
+  · intro h
+    exact ⟨ne_top_of_lt h⟩
+
+instance (priority := 100) finiteRingKrullDimOfSubsingleton [Subsingleton R] :
+  FiniteRingKrullDim R := by
+  rw [finiteRingKrullDim_iff_lt, ringKrullDim_eq_bot_of_subsingleton]
+  exact bot_lt_top
+
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
 
