@@ -130,8 +130,7 @@ noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteG
   with
   map_mul' := (toLimit P).hom.map_mul' }
 
-instance toLimit_isIso (P : ProfiniteGrp.{u}) :
-    IsIso (toLimit P) := by
+instance toLimit_isIso (P : ProfiniteGrp.{u}) : IsIso (toLimit P) := by
   rw [CategoryTheory.ConcreteCategory.isIso_iff_bijective]
   exact ⟨toLimit_injective P, toLimit_surjective P⟩
 
