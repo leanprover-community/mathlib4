@@ -486,7 +486,7 @@ section Lattice
 
 instance [Lattice β] [TopologicalSpace β] [TopologicalLattice β] [Zero β] :
     Lattice C_c(α, β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.lattice _ coe_sup coe_inf
 
 -- TODO transfer this lattice structure to `BoundedContinuousFunction`
 
