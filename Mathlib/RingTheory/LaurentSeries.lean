@@ -121,10 +121,10 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
     (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
   map_add' f g := by
     ext
-    simp only [ofSuppBddBelow, add_coeff', Pi.add_apply, smul_add]
+    simp only [ofSuppBddBelow, coeff_add', Pi.add_apply, smul_add]
   map_smul' r f := by
     ext
-    simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply, smul_comm r]
+    simp only [ofSuppBddBelow, HahnSeries.coeff_smul, RingHom.id_apply, smul_comm r]
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
@@ -154,7 +154,7 @@ theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
 theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k (hasseDeriv R l f)).coeff n =
       ((Nat.choose (k + l) k) • hasseDeriv R (k + l) f).coeff n := by
-  rw [nsmul_coeff]
+  rw [coeff_nsmul]
   simp only [hasseDeriv_coeff, Pi.smul_apply, Nat.cast_add]
   rw [smul_smul, mul_comm, ← Ring.choose_add_smul_choose (n + k), add_assoc, Nat.choose_symm_add,
     smul_assoc]
@@ -186,7 +186,7 @@ theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
 @[simp]
 theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     ((derivative R)^[k] f).coeff n = (descPochhammer ℤ k).smeval (n + k) • f.coeff (n + k) := by
-  rw [derivative_iterate, nsmul_coeff, Pi.smul_apply, hasseDeriv_coeff,
+  rw [derivative_iterate, coeff_nsmul, Pi.smul_apply, hasseDeriv_coeff,
     Ring.descPochhammer_eq_factorial_smul_choose, smul_assoc]
 
 end HasseDeriv
@@ -240,7 +240,7 @@ theorem powerSeriesPart_eq_zero (x : R⸨X⸩) : x.powerSeriesPart = 0 ↔ x = 0
 theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
     (single x.order 1 : R⸨X⸩) * x.powerSeriesPart = x := by
   ext n
-  rw [← sub_add_cancel n x.order, single_mul_coeff_add, sub_add_cancel, one_mul]
+  rw [← sub_add_cancel n x.order, coeff_single_mul_add, sub_add_cancel, one_mul]
   by_cases h : x.order ≤ n
   · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
       powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
@@ -698,7 +698,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
   · exact fun _ => by rw [triv]
   · intro hn
     apply eq_of_sub_eq_zero
-    rw [← HahnSeries.sub_coeff]
+    rw [← HahnSeries.coeff_sub]
     apply coeff_zero_of_lt_valuation K H hn
 
 /- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series. -/
@@ -877,7 +877,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
   intro _ hf
   apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
   intro n hn
-  rw [HahnSeries.sub_coeff, sub_eq_zero, hf n hn |>.symm]; rfl
+  rw [HahnSeries.coeff_sub, sub_eq_zero, hf n hn |>.symm]; rfl
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance instLaurentSeriesComplete : CompleteSpace K⸨X⸩ :=
