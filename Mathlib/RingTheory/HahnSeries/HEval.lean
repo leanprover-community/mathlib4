@@ -189,7 +189,10 @@ lemma supp_eq_univ_of_pos_fintype (σ : Type*) [Fintype σ] (y : σ →₀ HahnS
 variable [CommRing V] [Algebra R V] {x : HahnSeries Γ V} (hx : 0 < x.orderTop)
     (f : PowerSeries R)
 
-/-- The scalar multiples are given by the coefficients of a power series. -/
+/-- A summable family of Hahn series whose elements are scalar multiples of non-negative powers of a
+fixed positive-order Hahn series.
+
+The scalar multiples are given by the coefficients of a power series. -/
 abbrev powerSeriesFamily : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff R n) (powers x hx)
 
@@ -258,8 +261,8 @@ theorem hsum_powerSeriesFamily_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
 
 theorem powerSeriesFamily_ext (g : PowerSeries R) :
     powerSeriesFamily hx f = powerSeriesFamily hx g ↔
-      ∀n, powerSeriesFamily hx f n = powerSeriesFamily hx g n := by
-  exact SummableFamily.ext_iff
+      ∀n, powerSeriesFamily hx f n = powerSeriesFamily hx g n :=
+  SummableFamily.ext_iff
 
 theorem sum_coeff {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
     (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) :=
@@ -492,10 +495,8 @@ open HahnSeries SummableFamily
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
 (hx : 0 < x.orderTop)
 
--- Should I call this PowerSeries.heval?
-
 /-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
-variable `X` to a positive order element `x`. -/
+variable `X` to a positive order element `x` and extending to infinite sums. -/
 @[simps]
 def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   toFun f := (powerSeriesFamily hx f).hsum
@@ -529,14 +530,14 @@ theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
   use heval hx u.inv
   rw [← heval_mul, Units.val_inv, map_one]
 
-theorem heval_coeff (f : PowerSeries R) (g : Γ) :
+theorem coeff_heval (f : PowerSeries R) (g : Γ) :
     (heval hx f).coeff g = ∑ᶠ n, ((powerSeriesFamily hx f).coeff g) n := by
   rw [heval_apply, hsum_coeff]
   exact rfl
 
-theorem heval_coeff_zero (f : PowerSeries R) :
+theorem coeff_heval_zero (f : PowerSeries R) :
     (heval hx f).coeff 0 = PowerSeries.constantCoeff R f := by
-  rw [heval_coeff, finsum_eq_single (fun n => ((powerSeriesFamily hx f).coeff 0) n) 0,
+  rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily hx f).coeff 0) n) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn

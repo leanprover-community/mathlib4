@@ -37,11 +37,11 @@ variable {L M R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup
 
 /-- The first sum in the Lie algebra coboundary map. -/
 def coboundary_first_sum (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) (g : Fin (n + 1) → L) : M :=
-  ∑ i in Finset.Icc 0 n, ((-1: ℤˣ) ^ i • ⁅g i, f (fun j => g (Fin.succAbove i j))⁆)
+  ∑ i ∈ Finset.Icc 0 n, ((-1: ℤˣ) ^ i • ⁅g i, f (fun j => g (Fin.succAbove i j))⁆)
 
 /-- The second sum in the Lie algebra cohomology map. Note that this is offset by one. -/
 def coboundary_second_sum (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) (g : Fin (n + 2) → L) : M :=
-  ∑ j in Finset.Icc 0 (n + 1), ∑ i in Finset.Ico 0 j, ((-1: ℤˣ) ^ (i + j) •
+  ∑ j ∈ Finset.Icc 0 (n + 1), ∑ i ∈ Finset.Ico 0 j, ((-1: ℤˣ) ^ (i + j) •
       f (fun k => if hk : k = 0 then ⁅g i, g j⁆ else
         g (Fin.succAbove j (Fin.succAbove (Nat.cast i : Fin (n + 1)) (k.pred hk)))))
 
