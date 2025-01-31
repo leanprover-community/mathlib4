@@ -14,7 +14,7 @@ import Mathlib.Tactic.IntervalCases
 
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
-- the predicate `IsBlock G B` states that `B : Set X` is a block,
+- the predicate `MulAction.IsBlock G B` states that `B : Set X` is a block,
   which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
   Under `Group G` and `MulAction G X`, this is equivalent to the classical
   definition `MulAction.IsBlock.def_one`
@@ -26,17 +26,20 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 ## Results for actions on finite sets
 
-- `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
+- `MulAction.IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
   multiplied by the number of its translates is the cardinal of the ambient type
 
-- `IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
+- `MulAction.IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
-- `IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
+- `MulAction.IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
-- `IsBlock.of_subset` : the intersections of the translates of a finite subset
+- `MulAction.IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
-- `Block.boundedOrderOfMem` : the type of blocks containing a given element is a bounded order.
+- `MulAction.BlockMem` : the type of blocks containing a given element
+
+- `MulAction.BlockMem.boundedOrder` :
+  the type of blocks containing a given element is a bounded order.
 
 ## References
 
