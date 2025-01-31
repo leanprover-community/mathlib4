@@ -44,8 +44,7 @@ variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
-    -- porting note (#10745): was `simp [NormedAddTorsor.dist_eq_norm']`
-    rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
+    simp [NormedAddTorsor.dist_eq_norm']⟩
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
 instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
@@ -99,8 +98,7 @@ theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) 
 
 @[simp]
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
-  -- porting note (#10745): was `simp [dist_eq_norm_vsub V _ x]`
-  rw [dist_eq_norm_vsub V _ x, vadd_vsub]
+  simp [dist_eq_norm_vsub V _ x]
 
 @[simp]
 theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
@@ -237,7 +235,7 @@ variable [TopologicalSpace α]
 
 theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g) :
     Continuous (f -ᵥ g) :=
-  continuous_vsub.comp (hf.prod_mk hg : _)
+  continuous_vsub.comp (hf.prod_mk hg :)
 
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) :

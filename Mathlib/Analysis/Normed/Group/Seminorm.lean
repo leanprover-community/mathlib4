@@ -3,7 +3,8 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.NNReal.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
@@ -43,6 +44,7 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 norm, seminorm
 -/
 
+assert_not_exists Finset
 
 open Set
 
@@ -181,12 +183,6 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ where
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-@[to_additive "Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun`. "]
-instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
-  ⟨DFunLike.coe⟩
-
 @[to_additive (attr := simp)]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
@@ -257,7 +253,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 -- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
 @[to_additive]
-instance : Sup (GroupSeminorm E) :=
+instance : Max (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_one' := by
@@ -340,7 +336,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
     positivity⟩
 
 @[to_additive]
-noncomputable instance : Inf (GroupSeminorm E) :=
+noncomputable instance : Min (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
@@ -447,11 +443,6 @@ instance nonarchAddGroupSeminormClass :
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
-  ⟨DFunLike.coe⟩
-
--- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
@@ -498,7 +489,7 @@ instance : Inhabited (NonarchAddGroupSeminorm E) :=
 
 -- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
-instance : Sup (NonarchAddGroupSeminorm E) :=
+instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_zero' := by rw [Pi.sup_apply, ← map_zero p, sup_eq_left, map_zero p, map_zero q]
@@ -667,14 +658,6 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_inv_eq_map f := f.inv'
   eq_one_of_map_eq_zero f := f.eq_one_of_map_eq_zero' _
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-@[to_additive "Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun` directly. "]
-instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
-  DFunLike.hasCoeToFun
-
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
@@ -722,7 +705,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 
 -- TODO: define `SupSet`
 @[to_additive]
-instance : Sup (GroupNorm E) :=
+instance : Max (GroupNorm E) :=
   ⟨fun p q =>
     { p.toGroupSeminorm ⊔ q.toGroupSeminorm with
       eq_one_of_map_eq_zero' := fun _x hx =>
@@ -799,11 +782,6 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   map_neg_eq_map' f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
-  DFunLike.hasCoeToFun
-
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
 theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl
@@ -831,7 +809,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 
 variable (p q)
 
-instance : Sup (NonarchAddGroupNorm E) :=
+instance : Max (NonarchAddGroupNorm E) :=
   ⟨fun p q =>
     { p.toNonarchAddGroupSeminorm ⊔ q.toNonarchAddGroupSeminorm with
       eq_zero_of_map_eq_zero' := fun _x hx =>

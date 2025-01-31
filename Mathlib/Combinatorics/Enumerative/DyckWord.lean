@@ -3,7 +3,6 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Tactic.Positivity
 
@@ -98,7 +97,7 @@ lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 instance : Unique (AddUnits DyckWord) where
   uniq p := by
     obtain ⟨a, b, h, -⟩ := p
-    obtain ⟨ha, hb⟩ := append_eq_nil.mp (toList_eq_nil.mpr h)
+    obtain ⟨ha, hb⟩ := append_eq_nil_iff.mp (toList_eq_nil.mpr h)
     congr
     · exact toList_eq_nil.mp ha
     · exact toList_eq_nil.mp hb
@@ -206,8 +205,7 @@ def denest (hn : p.IsNested) : DyckWord where
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by
-      rw [l3, add_comm, min_add_add_right]; omega
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,

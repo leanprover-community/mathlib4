@@ -3,14 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Finite
-import Mathlib.Order.Category.FinPartOrd
-import Mathlib.Order.Category.LinOrd
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Category.FinPartOrd
+import Mathlib.Order.Category.LinOrd
 
 /-!
 # Nonempty finite linear orders
@@ -60,8 +59,8 @@ instance : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder 
 deriving instance LargeCategory for NonemptyFinLinOrd
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory NonemptyFinLinOrd :=
-  BundledHom.concreteCategory _
+instance : HasForget NonemptyFinLinOrd :=
+  BundledHom.hasForget _
 
 instance : CoeSort NonemptyFinLinOrd Type* :=
   Bundled.coeSort
@@ -121,7 +120,6 @@ instance {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
     ext x
     exact congr_fun h x
 
--- porting note (#10670): this instance was not necessary in mathlib
 instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
   map_rel f _ _ h := f.monotone h
 
@@ -172,7 +170,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [coe_of, comp_apply]
+      simp only [CategoryTheory.comp_apply]
       change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
@@ -180,7 +178,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [Y, DFunLike.coe] at h
+    simp [Y, p₁, p₂, DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 

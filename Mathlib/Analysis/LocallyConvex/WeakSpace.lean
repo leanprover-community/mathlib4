@@ -57,7 +57,7 @@ theorem LinearMap.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e : E
     (he : ∀ f : F →L[𝕜] 𝕜, Continuous (e.dualMap f)) :
     e '' (closure s) ⊆ closure (e '' s) := by
   suffices he' : Continuous (toWeakSpace 𝕜 F <| e <| (toWeakSpace 𝕜 E).symm ·) by
-    have h_convex : Convex ℝ (e '' s) := hs.linear_image e
+    have h_convex : Convex ℝ (e '' s) := hs.linear_image (F := F) e
     rw [← Set.image_subset_image_iff (toWeakSpace 𝕜 F).injective, h_convex.toWeakSpace_closure 𝕜]
     simpa only [Set.image_image, ← hs.toWeakSpace_closure 𝕜, LinearEquiv.symm_apply_apply]
       using he'.continuousOn.image_closure (s := toWeakSpace 𝕜 E '' s)

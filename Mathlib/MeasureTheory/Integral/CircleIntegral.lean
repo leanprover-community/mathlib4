@@ -54,7 +54,7 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
   The case `n = -1`, `|w -c| > R` is not covered by these lemmas. While it is possible to construct
   an explicit primitive, it is easier to apply Cauchy theorem, so we postpone the proof till we have
-  this theorem (see #10000).
+  this theorem (see https://github.com/leanprover-community/mathlib4/pull/10000).
 
 ## Notation
 
@@ -300,10 +300,11 @@ theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
 
 variable [NormedSpace ℂ E]
 
-/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$. -/
+/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$ -/
 def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in (0)..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 
+/-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) => r
 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :

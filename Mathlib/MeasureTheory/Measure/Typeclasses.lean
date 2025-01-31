@@ -34,13 +34,14 @@ variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂ : Mea
 section IsFiniteMeasure
 
 /-- A measure `μ` is called finite if `μ univ < ∞`. -/
+@[mk_iff]
 class IsFiniteMeasure (μ : Measure α) : Prop where
   measure_univ_lt_top : μ univ < ∞
 
-theorem not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := by
-  refine ⟨fun h => ?_, fun h => fun h' => h'.measure_univ_lt_top.ne h⟩
-  by_contra h'
-  exact h ⟨lt_top_iff_ne_top.mpr h'⟩
+lemma not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ univ = ∞ := by simp [isFiniteMeasure_iff]
+
+lemma isFiniteMeasure_restrict : IsFiniteMeasure (μ.restrict s) ↔ μ s ≠ ∞ := by
+  simp [isFiniteMeasure_iff, lt_top_iff_ne_top]
 
 instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
     IsFiniteMeasure (μ.restrict s) :=
@@ -53,7 +54,7 @@ theorem measure_lt_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ 
 instance isFiniteMeasureRestrict (μ : Measure α) (s : Set α) [h : IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.restrict s) := ⟨by simp⟩
 
-@[simp]
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_ne_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s ≠ ∞ :=
   ne_of_lt (measure_lt_top μ s)
 
@@ -122,6 +123,14 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
   · rw [map_of_not_aemeasurable hf]
     exact MeasureTheory.isFiniteMeasureZero
 
+instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
+  measure_univ_lt_top := by
+    by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ
+    · rw [Measure.comap_apply₀ _ _ hf.1 hf.2 MeasurableSet.univ.nullMeasurableSet]
+      exact measure_lt_top μ _
+    · rw [Measure.comap, dif_neg hf]
+      exact zero_lt_top
+
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
   rw [← MeasureTheory.Measure.measure_univ_eq_zero, ← coe_measureUnivNNReal]
@@ -171,8 +180,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
-  -- TODO: `by measurability` fails
-  have key := tendsto_measure_iInter (μ := μ) (fun n ↦ .iUnion fun _ ↦ .iUnion fun _ ↦ Es_mble _)
+  have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
   convert key
@@ -276,6 +284,9 @@ variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+
+instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
+  rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable
 
 /-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
 Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
@@ -530,8 +541,6 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   about the sets, such as that they are monotone.
   `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
   finite spanning sets in the collection of all measurable sets. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
   protected set : ℕ → Set α
   protected set_mem : ∀ i, set i ∈ C
@@ -557,7 +566,7 @@ instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
   h.1.choose_spec.1 n
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
 instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
   isFiniteMeasure_sfiniteSeq n
 
@@ -657,14 +666,21 @@ def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
   monotone_accumulate
 
-theorem measurable_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
+@[gcongr]
+lemma spanningSets_mono [SigmaFinite μ] {m n : ℕ} (hmn : m ≤ n) :
+    spanningSets μ m ⊆ spanningSets μ n := monotone_spanningSets _ hmn
+
+theorem measurableSet_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     MeasurableSet (spanningSets μ i) :=
   MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
+
+@[deprecated (since := "2024-10-16")] alias measurable_spanningSets := measurableSet_spanningSets
 
 theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     μ (spanningSets μ i) < ∞ :=
   measure_biUnion_lt_top (finite_le_nat i) fun j _ => μ.toFiniteSpanningSetsIn.finite j
 
+@[simp]
 theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ := by
   simp_rw [spanningSets, iUnion_accumulate, μ.toFiniteSpanningSetsIn.spanning]
 
@@ -678,9 +694,9 @@ noncomputable def spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) 
   Nat.find <| iUnion_eq_univ_iff.1 (iUnion_spanningSets μ) x
 
 open scoped Classical in
-theorem measurable_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
+theorem measurableSet_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
     Measurable (spanningSetsIndex μ) :=
-  measurable_find _ <| measurable_spanningSets μ
+  measurable_find _ <| measurableSet_spanningSets μ
 
 open scoped Classical in
 theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] (n : ℕ) :
@@ -710,7 +726,7 @@ theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) 
 theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
     sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
   rw [← restrict_iUnion (disjoint_disjointed _)
-      (MeasurableSet.disjointed (measurable_spanningSets _)),
+      (MeasurableSet.disjointed (measurableSet_spanningSets _)),
     iUnion_disjointed, iUnion_spanningSets, restrict_univ]
 
 instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
@@ -783,7 +799,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
       simp only [fairmeas]
       rfl
     simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
-      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
+      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (fun n => (as_mem n).1) as_lim]
   rw [countable_union]
   refine countable_iUnion fun n => Finite.countable ?_
   exact finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
@@ -972,9 +988,9 @@ theorem iSup_restrict_spanningSets [SigmaFinite μ] (s : Set α) :
     ⨆ i, μ.restrict (spanningSets μ i) s = μ s := by
   rw [← measure_toMeasurable s,
     ← iSup_restrict_spanningSets_of_measurableSet (measurableSet_toMeasurable _ _)]
-  simp_rw [restrict_apply' (measurable_spanningSets μ _), Set.inter_comm s,
-    ← restrict_apply (measurable_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
-    restrict_apply (measurable_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
+  simp_rw [restrict_apply' (measurableSet_spanningSets μ _), Set.inter_comm s,
+    ← restrict_apply (measurableSet_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
+    restrict_apply (measurableSet_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
 
 /-- In a σ-finite space, any measurable set of measure `> r` contains a measurable subset of
 finite measure `> r`. -/
@@ -985,7 +1001,7 @@ theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : Mea
   rcases h's with ⟨n, hn⟩
   simp only [restrict_apply hs] at hn
   refine
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left, hn, ?_⟩
+    ⟨s ∩ spanningSets μ n, hs.inter (measurableSet_spanningSets _ _), inter_subset_left, hn, ?_⟩
   exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top _ _)
 
 namespace FiniteSpanningSetsIn
@@ -1065,7 +1081,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
   haveI : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ
-  have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurable_spanningSets μ
+  have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurableSet_spanningSets μ
   simp_rw [MeasurableSpace.measurableSet_bot_iff] at hs_meas
   by_cases h_univ_empty : (Set.univ : Set α) = ∅
   · rw [h_univ_empty, measure_empty]
@@ -1081,14 +1097,14 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
 instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
   refine ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => ?_, iUnion_spanningSets μ⟩⟩⟩
-  rw [Measure.restrict_apply (measurable_spanningSets μ i)]
+  rw [Measure.restrict_apply (measurableSet_spanningSets μ i)]
   exact (measure_mono inter_subset_left).trans_lt (measure_spanningSets_lt_top μ i)
 
 instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (sum μ) := by
   cases nonempty_fintype ι
   have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
-    MeasurableSet.iInter fun i => measurable_spanningSets (μ i) n
+    MeasurableSet.iInter fun i => measurableSet_spanningSets (μ i) n
   refine ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
   · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top]
     rintro i -
@@ -1125,7 +1141,7 @@ instance [SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) :=
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
   ⟨⟨⟨fun n => f ⁻¹' spanningSets (μ.map f) n, fun _ => trivial, fun n => by
-        simp only [← map_apply_of_aemeasurable hf, measurable_spanningSets,
+        simp only [← map_apply_of_aemeasurable hf, measurableSet_spanningSets,
           measure_spanningSets_lt_top],
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 
@@ -1151,10 +1167,10 @@ theorem ae_of_forall_measure_lt_top_ae_restrict' {μ : Measure α} (ν : Measure
   have : ∀ n, ∀ᵐ x ∂μ, x ∈ spanningSets (μ + ν) n → P x := by
     intro n
     have := h
-      (spanningSets (μ + ν) n) (measurable_spanningSets _ _)
+      (spanningSets (μ + ν) n) (measurableSet_spanningSets _ _)
       ((self_le_add_right _ _).trans_lt (measure_spanningSets_lt_top (μ + ν) _))
       ((self_le_add_left _ _).trans_lt (measure_spanningSets_lt_top (μ + ν) _))
-    exact (ae_restrict_iff' (measurable_spanningSets _ _)).mp this
+    exact (ae_restrict_iff' (measurableSet_spanningSets _ _)).mp this
   filter_upwards [ae_all_iff.2 this] with _ hx using hx _ (mem_spanningSetsIndex _ _)
 
 /-- To prove something for almost all `x` w.r.t. a σ-finite measure, it is sufficient to show that
@@ -1314,14 +1330,14 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
-  refine induction_on_inter hA hC (by simp) hμν ?_ ?_ hs
-  · intro t h1t h2t
-    have h1t_ : @MeasurableSet α m₀ t := h _ h1t
-    rw [@measure_compl α m₀ μ t h1t_ (@measure_ne_top α m₀ μ _ t),
-      @measure_compl α m₀ ν t h1t_ (@measure_ne_top α m₀ ν _ t), h_univ, h2t]
-  · intro f h1f h2f h3f
-    have h2f_ : ∀ i : ℕ, @MeasurableSet α m₀ (f i) := fun i => h _ (h2f i)
-    simp [measure_iUnion, h1f, h3f, h2f_]
+  induction s, hs using induction_on_inter hA hC with
+  | empty => simp
+  | basic t ht => exact hμν t ht
+  | compl t htm iht =>
+    rw [measure_compl (h t htm) (measure_ne_top _ _), measure_compl (h t htm) (measure_ne_top _ _),
+      iht, h_univ]
+  | iUnion f hfd hfm ihf =>
+    simp [measure_iUnion, hfd, h _ (hfm _), ihf]
 
 /-- Two finite measures are equal if they are equal on the π-system generating the σ-algebra
   (and `univ`). -/

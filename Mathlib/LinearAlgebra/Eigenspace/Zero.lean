@@ -3,11 +3,12 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -35,7 +36,7 @@ variable [Module K M] [Module.Finite K M]
 
 open Module Module.Free Polynomial
 
-lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpotent φ) :
+lemma IsNilpotent.charpoly_eq_X_pow_finrank {φ : Module.End R M} (h : IsNilpotent φ) :
     φ.charpoly = X ^ finrank R M := by
   rw [← sub_eq_zero]
   apply IsNilpotent.eq_zero
@@ -45,6 +46,11 @@ lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpote
 
 namespace LinearMap
 
+lemma isNilpotent_iff_charpoly (φ : End R M) :
+    IsNilpotent φ ↔ charpoly φ = X ^ finrank R M :=
+  ⟨IsNilpotent.charpoly_eq_X_pow_finrank,
+    fun h ↦ ⟨finrank R M, by rw [← @aeval_X_pow R, ← h, aeval_self_charpoly φ]⟩⟩
+
 open Module.Free in
 lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     List.TFAE [
@@ -52,7 +58,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
       φ.charpoly = X ^ finrank R M,
       ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
       natTrailingDegree φ.charpoly = finrank R M ] := by
-  tfae_have 1 → 2 := IsNilpotent.charpoly_eq_X_pow_finrank _
+  tfae_have 1 → 2 := IsNilpotent.charpoly_eq_X_pow_finrank
   tfae_have 2 → 3
   | h, m => by
     use finrank R M
@@ -132,7 +138,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
-    simp [V, Module.End.maxGenEigenspace_def, Module.End.genEigenspace_def]
+    simp [V, ← Module.End.iSup_genEigenspace_eq, Module.End.genEigenspace_nat]
   let W := ⨅ (n : ℕ), LinearMap.range (φ ^ n)
   have hVW : IsCompl V W := by
     rw [hV]

@@ -98,7 +98,7 @@ theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
   simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
-  simpa using Multiset.mem_of_le (degrees_add _ _) hx
+  simpa using Multiset.mem_of_le degrees_add_le hx
 
 theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
@@ -110,7 +110,7 @@ section Mul
 
 theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
   simp_rw [vars_def, ← Multiset.toFinset_add, Multiset.toFinset_subset]
-  exact Multiset.subset_of_le (degrees_mul φ ψ)
+  exact Multiset.subset_of_le degrees_mul_le
 
 @[simp]
 theorem vars_one : (1 : MvPolynomial σ R).vars = ∅ :=
@@ -194,7 +194,8 @@ section Map
 variable [CommSemiring S] (f : R →+* S)
 variable (p)
 
-theorem vars_map : (map f p).vars ⊆ p.vars := by classical simp [vars_def, degrees_map]
+theorem vars_map : (map f p).vars ⊆ p.vars := by
+  classical simp [vars_def, Multiset.subset_of_le degrees_map_le]
 
 variable {f}
 
@@ -306,6 +307,15 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
     ∃ i : σ, i ∈ φ.vars ∧ f i = j := by
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
+
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+    [∀ i, Decidable (i ∈ s)] :
+    MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr rfl fun u hu ↦ ?_
+  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
+  congr 1
+  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
 
 end EvalVars
 

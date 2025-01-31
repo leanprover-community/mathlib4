@@ -83,14 +83,13 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct MvPolynomial Classical
+open TensorProduct MvPolynomial
 
 variable (n m : ℕ)
 
 namespace Algebra
 
-variable (R : Type u) [CommRing R]
-variable (S : Type v) [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /--
 A `PreSubmersivePresentation` of an `R`-algebra `S` is a `Presentation`
@@ -136,6 +135,17 @@ noncomputable def differential : (P.rels → P.Ring) →ₗ[P.Ring] (P.rels → 
   Basis.constr P.basis P.Ring
     (fun j i : P.rels ↦ MvPolynomial.pderiv (P.map i) (P.relation j))
 
+/-- `PreSubmersivePresentation.differential` pushed forward to `S` via `aeval P.val`. -/
+noncomputable def aevalDifferential : (P.rels → S) →ₗ[S] (P.rels → S) :=
+  (Pi.basisFun S P.rels).constr S
+    (fun j i : P.rels ↦ aeval P.val <| pderiv (P.map i) (P.relation j))
+
+@[simp]
+lemma aevalDifferential_single [DecidableEq P.rels] (i j : P.rels) :
+    P.aevalDifferential (Pi.single i 1) j = aeval P.val (pderiv (P.map j) (P.relation i)) := by
+  dsimp only [aevalDifferential]
+  rw [← Pi.basisFun_apply, Basis.constr_basis]
+
 /-- The jacobian of a `P : PreSubmersivePresentation` is the determinant
 of `P.differential` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
@@ -159,6 +169,13 @@ lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
 
+lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
+    P.aevalDifferential.toMatrix' = (aeval P.val).mapMatrix P.jacobiMatrix := by
+  ext i j : 1
+  rw [← LinearMap.toMatrix_eq_toMatrix']
+  rw [LinearMap.toMatrix_apply]
+  simp [jacobiMatrix_apply]
+
 end Matrix
 
 section Constructions
@@ -181,6 +198,7 @@ instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebra
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
+  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)
@@ -262,23 +280,27 @@ the lower-right block has determinant jacobian of `P`.
 
 -/
 
-variable [Fintype (Q.comp P).rels]
+variable [DecidableEq (Q.comp P).rels] [Fintype (Q.comp P).rels]
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
+  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
   simp at hmem
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ = 0 := by
   ext i j : 1
   simp [Matrix.toBlocks₁₂, jacobiMatrix_comp_inl_inr]
 
 section Q
 
-variable [Fintype Q.rels]
+variable [DecidableEq Q.rels] [Fintype Q.rels]
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
       ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
@@ -286,20 +308,23 @@ private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
     ← Q.comp_aeval_relation_inl P.toPresentation]
   apply aeval_sum_elim_pderiv_inl
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_₁₁_det :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₁₁.det = Q.jacobian := by
   rw [jacobian_eq_jacobiMatrix_det, AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det]
   congr
   ext i j : 1
-  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
+  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P,
+    Q.algebraMap_apply]
   apply aeval_sum_elim
 
 end Q
 
 section P
 
-variable [Fintype P.rels]
+variable [Fintype P.rels] [DecidableEq P.rels]
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
       MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
@@ -307,6 +332,7 @@ private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
   simp only [comp_map, Sum.elim_inr]
   apply pderiv_rename Sum.inr_injective
 
+open scoped Classical in
 private lemma jacobiMatrix_comp_₂₂_det :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = algebraMap S T P.jacobian := by
   rw [jacobian_eq_jacobiMatrix_det]
@@ -333,6 +359,7 @@ end
 /-- The jacobian of the composition of presentations is the product of the jacobians. -/
 @[simp]
 lemma comp_jacobian_eq_jacobian_smul_jacobian : (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
+  classical
   cases nonempty_fintype Q.rels
   cases nonempty_fintype P.rels
   letI : Fintype (Q.comp P).rels := inferInstanceAs <| Fintype (Q.rels ⊕ P.rels)
@@ -376,6 +403,7 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
     rfl
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
+  rw [P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange
@@ -462,6 +490,44 @@ end BaseChange
 
 end Constructions
 
+variable {R S}
+
+open Classical in
+/-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
+noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S) :
+    (P.rels → S) ≃ₗ[S] (P.rels → S) :=
+  haveI : Fintype P.rels := Fintype.ofFinite P.rels
+  have : IsUnit (LinearMap.toMatrix (Pi.basisFun S P.rels) (Pi.basisFun S P.rels)
+        P.aevalDifferential).det := by
+    convert P.jacobian_isUnit
+    rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
+      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
+    simp [RingHom.map_det]
+  LinearEquiv.ofIsUnitDet this
+
+variable (P : SubmersivePresentation R S)
+
+@[simp]
+lemma aevalDifferentialEquiv_apply (x : P.rels → S) :
+    P.aevalDifferentialEquiv x = P.aevalDifferential x :=
+  rfl
+
+/-- If `P` is a submersive presentation, the partial derivatives of `P.relation i` by
+`P.map j` form a basis of `P.rels → S`. -/
+noncomputable def basisDeriv (P : SubmersivePresentation R S) : Basis P.rels S (P.rels → S) :=
+  Basis.map (Pi.basisFun S P.rels) P.aevalDifferentialEquiv
+
+@[simp]
+lemma basisDeriv_apply (i j : P.rels) :
+    P.basisDeriv i j = (aeval P.val) (pderiv (P.map j) (P.relation i)) := by
+  classical
+  simp [basisDeriv]
+
+lemma linearIndependent_aeval_val_pderiv_relation :
+    LinearIndependent S (fun i j ↦ (aeval P.val) (pderiv (P.map j) (P.relation i))) := by
+  simp_rw [← SubmersivePresentation.basisDeriv_apply]
+  exact P.basisDeriv.linearIndependent
+
 end SubmersivePresentation
 
 /--
@@ -504,6 +570,11 @@ variable (R) in
 instance IsStandardSmoothOfRelativeDimension.id :
     IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
+
+instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
+    FinitePresentation R S := by
+  obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact P.finitePresentation_of_isFinite
 
 section Composition
 
@@ -556,26 +627,3 @@ instance IsStandardSmoothOfRelativeDimension.baseChange
 end BaseChange
 
 end Algebra
-
-namespace RingHom
-
-variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S]
-
-/-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
-def IsStandardSmooth (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
-
-/-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
-`S` is standard smooth of relative dimension `n` as `R`-algebra. -/
-def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
-
-lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    IsStandardSmooth.{t, w} f :=
-  letI : Algebra R S := f.toAlgebra
-  letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
-  Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
-
-end RingHom

@@ -36,15 +36,13 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 These require `open Kronecker`:
 
 * `A ⊗ₖ B` for `kroneckerMap (*) A B`. Lemmas about this notation use the token `kronecker`.
-* `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.  Lemmas about this notation use the token
-  `kroneckerTMul`.
+* `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.
+  Lemmas about this notation use the token `kroneckerTMul`.
 
 -/
 
 
 namespace Matrix
-
-open Matrix
 open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
@@ -56,7 +54,7 @@ section KroneckerMap
 def kroneckerMap (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) : Matrix (l × n) (m × p) γ :=
   of fun (i : l × n) (j : m × p) => f (A i.1 j.1) (B i.2 j.2)
 
--- TODO: set as an equation lemma for `kroneckerMap`, see mathlib4#3024
+-- TODO: set as an equation lemma for `kroneckerMap`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem kroneckerMap_apply (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (i j) :
     kroneckerMap f A B i j = f (A i.1 j.1) (B i.2 j.2) :=
@@ -107,6 +105,16 @@ theorem kroneckerMap_smul_right [SMul R β] [SMul R γ] (f : α → β → γ) (
     (hf : ∀ a b, f a (r • b) = r • f a b) (A : Matrix l m α) (B : Matrix n p β) :
     kroneckerMap f A (r • B) = r • kroneckerMap f A B :=
   ext fun _ _ => hf _ _
+
+theorem kroneckerMap_stdBasisMatrix_stdBasisMatrix
+    [Zero α] [Zero β] [Zero γ] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
+    (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p)
+    (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : α) (b : β) :
+    kroneckerMap f (stdBasisMatrix i₁ j₁ a) (stdBasisMatrix i₂ j₂ b) =
+      stdBasisMatrix (i₁, i₂) (j₁, j₂) (f a b) := by
+  ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
+  dsimp [stdBasisMatrix]
+  aesop
 
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
@@ -241,6 +249,7 @@ open Matrix
 def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m × p) α :=
   kroneckerMap (· * ·)
 
+@[inherit_doc Matrix.kroneckerMap]
 scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
 open Kronecker
@@ -259,11 +268,9 @@ def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
 hypotheses which can be filled by properties of `*`. -/
 
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem zero_kronecker [MulZeroClass α] (B : Matrix n p α) : (0 : Matrix l m α) ⊗ₖ B = 0 :=
   kroneckerMap_zero_left _ zero_mul B
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem kronecker_zero [MulZeroClass α] (A : Matrix l m α) : A ⊗ₖ (0 : Matrix n p α) = 0 :=
   kroneckerMap_zero_right _ mul_zero A
 
@@ -282,6 +289,12 @@ theorem smul_kronecker [Monoid R] [Monoid α] [MulAction R α] [IsScalarTower R 
 theorem kronecker_smul [Monoid R] [Monoid α] [MulAction R α] [SMulCommClass R α α] (r : R)
     (A : Matrix l m α) (B : Matrix n p α) : A ⊗ₖ (r • B) = r • A ⊗ₖ B :=
   kroneckerMap_smul_right _ _ (fun _ _ => mul_smul_comm _ _ _) _ _
+
+theorem stdBasisMatrix_kronecker_stdBasisMatrix
+    [MulZeroClass α] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
+    (ia : l) (ja : m) (ib : n) (jb : p) (a b : α) :
+    stdBasisMatrix ia ja a ⊗ₖ stdBasisMatrix ib jb b = stdBasisMatrix (ia, ib) (ja, jb) (a * b) :=
+  kroneckerMap_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ zero_mul mul_zero _ _
 
 theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [DecidableEq n] (a : m → α)
     (b : n → α) : diagonal a ⊗ₖ diagonal b = diagonal fun mn => a mn.1 * b mn.2 :=
@@ -317,17 +330,16 @@ theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : M
     simp [(Nat.cast_commute a _).eq]
 
 theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
-    A ⊗ₖ (no_index (OfNat.ofNat b) : Matrix n n α) =
-      blockDiagonal fun _ => A <• (OfNat.ofNat b : α) :=
+    A ⊗ₖ (ofNat(b) : Matrix n n α) =
+      blockDiagonal fun _ => A <• (ofNat(b) : α) :=
   kronecker_diagonal _ _
 
 theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :
-    (no_index (OfNat.ofNat a) : Matrix l l α) ⊗ₖ B =
+    (ofNat(a) : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (.prodComm _ _) (.prodComm _ _)
-        (blockDiagonal fun _ => (OfNat.ofNat a : α) • B) :=
+        (blockDiagonal fun _ => (ofNat(a) : α) • B) :=
   diagonal_kronecker _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :
     (1 : Matrix m m α) ⊗ₖ (1 : Matrix n n α) = 1 :=
   kroneckerMap_one_one _ zero_mul mul_zero (one_mul _)
@@ -422,10 +434,11 @@ Prefer the notation `⊗ₖₜ` rather than this definition. -/
 def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMap (· ⊗ₜ ·)
 
+@[inherit_doc kroneckerTMul]
 scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (· ⊗ₜ ·)
 
-scoped[Kronecker]
-  notation:100 x " ⊗ₖₜ[" R "] " y:100 => Matrix.kroneckerMap (TensorProduct.tmul R) x y
+@[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
+  Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
 open Kronecker
 
@@ -439,15 +452,17 @@ def kroneckerTMulBilinear :
     Matrix l m α →ₗ[R] Matrix n p β →ₗ[R] Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMapBilinear (TensorProduct.mk R α β)
 
+@[simp]
+theorem kroneckerTMulBilinear_apply (A : Matrix l m α) (B : Matrix n p β) :
+    kroneckerTMulBilinear R A B = A ⊗ₖₜ B := rfl
+
 /-! What follows is a copy, in order, of every `Matrix.kroneckerMap` lemma above that has
 hypotheses which can be filled by properties of `⊗ₜ`. -/
 
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem zero_kroneckerTMul (B : Matrix n p β) : (0 : Matrix l m α) ⊗ₖₜ[R] B = 0 :=
   kroneckerMap_zero_left _ (zero_tmul α) B
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem kroneckerTMul_zero (A : Matrix l m α) : A ⊗ₖₜ[R] (0 : Matrix n p β) = 0 :=
   kroneckerMap_zero_right _ (tmul_zero β) A
 
@@ -466,6 +481,13 @@ theorem smul_kroneckerTMul (r : R) (A : Matrix l m α) (B : Matrix n p α) :
 theorem kroneckerTMul_smul (r : R) (A : Matrix l m α) (B : Matrix n p α) :
     A ⊗ₖₜ[R] (r • B) = r • A ⊗ₖₜ B :=
   kroneckerMap_smul_right _ _ (fun _ _ => tmul_smul _ _ _) _ _
+
+theorem stdBasisMatrix_kroneckerTMul_stdBasisMatrix
+    [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
+    (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p) (a : α) (b : β) :
+    stdBasisMatrix i₁ j₁ a ⊗ₖₜ[R] stdBasisMatrix i₂ j₂ b =
+      stdBasisMatrix (i₁, i₂) (j₁, j₂) (a ⊗ₜ b) :=
+  kroneckerMap_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ (zero_tmul _) (tmul_zero _) _ _
 
 theorem diagonal_kroneckerTMul_diagonal [DecidableEq m] [DecidableEq n] (a : m → α) (b : n → α) :
     diagonal a ⊗ₖₜ[R] diagonal b = diagonal fun mn => a mn.1 ⊗ₜ b mn.2 :=

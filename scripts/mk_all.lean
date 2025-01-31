@@ -7,6 +7,8 @@ import Cli.Basic
 import Lake.CLI.Main
 import Mathlib.Util.GetAllModules
 
+-- The `style.header` linter flags `import Lake.CLI.Main` as a potential performance issue.
+set_option linter.style.header false
 /-!
 # Script to create a file importing all files from a folder
 
@@ -24,11 +26,13 @@ it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
+  let some ws ← loadWorkspace config |>.toBaseIO
+    | throw <| IO.userError "failed to load Lake workspace"
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
   return if package.name == `mathlib then
-    libs.erase "Cache" |>.erase "LongestPole" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
+    libs.erase "Cache" |>.erase "LongestPole" |>.erase "MathlibTest"
+      |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
     libs
 
@@ -51,9 +55,9 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
     let fileName := addExtension d "lean"
     let mut allFiles ← getAllModulesSorted git d
-    -- mathlib exception: manually import Batteries in `Mathlib.lean`
+    -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
-      allFiles := #["Batteries"] ++ allFiles
+      allFiles := #["Std", "Batteries"] ++ allFiles
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       if check then

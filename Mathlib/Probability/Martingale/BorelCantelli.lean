@@ -3,9 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+import Mathlib.Probability.Martingale.Centering
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalStopping
-import Mathlib.Probability.Martingale.Centering
 
 /-!
 
@@ -34,7 +35,7 @@ and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 open Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
@@ -320,7 +321,7 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
   have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot
     (martingalePart_bdd_difference ℱ hbdd)
   have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n|ℱ n]) ω := by
-    refine ae_all_iff.2 fun n => condexp_nonneg ?_
+    refine ae_all_iff.2 fun n => condExp_nonneg ?_
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω
   filter_upwards [h₁, h₂, h₃, hfmono] with ω hω₁ hω₂ hω₃ hω₄
   constructor <;> intro ht
@@ -361,7 +362,9 @@ everywhere equal to the set for which `∑ k, ℙ(s (k + 1) | ℱ k) = ∞`. -/
 theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
-      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop :=
-  (limsup_eq_tendsto_sum_indicator_atTop ℝ s).symm ▸ tendsto_sum_indicator_atTop_iff' hs
+      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
+  rw [← limsup_nat_add s 1,
+    Set.limsup_eq_tendsto_sum_indicator_atTop (zero_lt_one (α := ℝ)) (fun n ↦ s (n + 1))]
+  exact tendsto_sum_indicator_atTop_iff' hs
 
 end MeasureTheory

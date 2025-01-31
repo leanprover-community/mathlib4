@@ -3,10 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Fin.VecNotation
+import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.LinearRecurrence
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Nat.Fib.Basic
+import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.Prime
 
@@ -201,7 +202,7 @@ theorem Real.coe_fib_eq' :
 
 /-- Binet's formula as a dependent equality. -/
 theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
-  rw [← Function.funext_iff, Real.coe_fib_eq']
+  rw [← funext_iff, Real.coe_fib_eq']
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by

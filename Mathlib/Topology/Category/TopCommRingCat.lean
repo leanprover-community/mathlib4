@@ -48,7 +48,7 @@ instance : Category TopCommRingCat.{u} where
       cases g
       dsimp; apply Continuous.comp <;> assumption⟩
 
-instance : ConcreteCategory TopCommRingCat.{u} where
+instance : HasForget TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
       map := fun f => f.val }
@@ -77,7 +77,8 @@ instance forgetTopologicalRing (R : TopCommRingCat) :
   R.isTopologicalRing
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
-  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f => f.val) HEq.rfl
+  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl)
+    (fun f => CommRingCat.ofHom f.val) HEq.rfl
 
 instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
     TopologicalSpace ((forget₂ TopCommRingCat CommRingCat).obj R) :=
