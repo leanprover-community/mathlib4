@@ -139,7 +139,7 @@ theorem toΓSpecCApp_iff
   -- Porting Note: Type class problem got stuck in `IsLocalization.Away.AwayMap.lift_comp`
   -- created instance manually. This replaces the `pick_goal` tactics
   have loc_inst := IsLocalization.to_basicOpen (Γ.obj (op X)) r
-  refine CommRingCat.hom_ext_iff.trans ?_
+  refine ConcreteCategory.ext_iff.trans ?_
   rw [← @IsLocalization.Away.lift_comp _ _ _ _ _ _ _ r loc_inst _
       (X.isUnit_res_toΓSpecMapBasicOpen r)]
   --pick_goal 5; exact is_localization.to_basic_open _ r
@@ -420,7 +420,7 @@ theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
     (Scheme.toSpecΓ X).base x =
       (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
     f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
   ΓSpec.adjunction.unit.naturality f
@@ -555,6 +555,15 @@ def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
   invFun := Spec.map
   left_inv := Spec.map_preimage
   right_inv := Spec.preimage_map
+
+@[simp]
+lemma Spec.preimage_id {R : CommRingCat} : Spec.preimage (𝟙 (Spec R)) = 𝟙 R :=
+  Spec.map_injective (by simp)
+
+@[simp, reassoc]
+lemma Spec.preimage_comp {R S T : CommRingCat} (f : Spec R ⟶ Spec S) (g : Spec S ⟶ Spec T) :
+    Spec.preimage (f ≫ g) = Spec.preimage g ≫ Spec.preimage f :=
+  Spec.map_injective (by simp)
 
 end
 
