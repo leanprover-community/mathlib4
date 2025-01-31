@@ -146,16 +146,24 @@ open scoped Manifold Filter Topology ContDiff
 instance foo (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SMul 𝕜 E := by infer_instance
 
--- instance bar (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
---     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : NormedSpace ℝ E := by infer_instance--sorry -- TODO!
+instance bar (𝕜 : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
+    (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E] : NormedSpace ℝ E := by
+  sorry
+
+instance baz (𝕜 : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
+    (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SMul ℝ E := by
+  have : SMul 𝕜 E := by infer_instance
+  have : NormedSpace ℝ E := by infer_instance
+  infer_instance
 
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
-We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and `TODO`, which
-are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
-useful for technical reasons. The former makes sure that manifold derivatives are uniquely defined,
+We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and
+`convex_interior_range`, which are satisfied in the relevant cases
+(where `range I = univ` or a half space or a quadrant) and useful for technical reasons.
+The former makes sure that manifold derivatives are uniquely defined,
 the second condition ensures that for `C^2` maps the second derivatives are symmetric even for
 points on the boundary, as these are limit points of interior points where symmetry holds.
 
@@ -167,39 +175,39 @@ If further conditions turn out to be useful, they can be added here.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [SMul ℝ E] (H : Type*) [TopologicalSpace H] extends
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
   /-- For real or complex models, the interior of the model's range is convex. -/
-  convex_interior_range : IsRCLikeNormedField 𝕜 → Convex ℝ (interior (range toPartialEquiv))
+  -- TODO: cannot even state this; Convex ℝ needs an SMul ℝ E instance...
+  --convex_interior_range : RCLike 𝕜 → Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
--- need a better constructor!
-def ModelWithCorners.mk_of_IsRCLikeNormedField {𝕜 E H : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [SMul ℝ E]
-    [TopologicalSpace H] (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E)
-    (hsource : e.source = univ) (hcont : Continuous e) (hinv : Continuous e.symm)
-    (hconvex : Convex ℝ (interior (range e))) : ModelWithCorners 𝕜 E H where
-  __ := e
-  source_eq := hsource
-  continuous_toFun := hcont
-  continuous_invFun := hinv
-  convex_interior_range _ := hconvex
-  uniqueDiffOn' := by
-    have : e.target ⊆ closure (interior e.target) := sorry
-    have : UniqueDiffOn 𝕜 (closure (interior e.target)) := by
-      sorry
-    sorry--apply hconvex.uniqueDiff
-  target_subset_closure_interior := by
-    show e.target ⊆ closure (interior e.target)
-    have h := hconvex --hK
-    -- XXX: how to prove?
-    sorry -- prove from hconvex
+-- -- need a better constructor!
+-- def ModelWithCorners.mk_of_IsRCLikeNormedField {𝕜 E H : Type*}
+--     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [SMul ℝ E]
+--     [TopologicalSpace H] (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E)
+--     (hsource : e.source = univ) (hcont : Continuous e) (hinv : Continuous e.symm)
+--     (hconvex : Convex ℝ (interior (range e))) : ModelWithCorners 𝕜 E H where
+--   __ := e
+--   source_eq := hsource
+--   continuous_toFun := hcont
+--   continuous_invFun := hinv
+--   convex_interior_range _ := hconvex
+--   uniqueDiffOn' := by
+--     -- have : e.target ⊆ closure (interior e.target) := sorry
+--     -- have : UniqueDiffOn 𝕜 (closure (interior e.target)) := by
+--     --   sorry
+--     apply hconvex.uniqueDiff
+--   target_subset_closure_interior := by
+--     show e.target ⊆ closure (interior e.target)
+--     have h := hconvex --hK
+--     -- XXX: how to prove?
+--     sorry -- prove from hconvex
 
-#exit
 -- TODO: toReal for a complex model...
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
@@ -214,6 +222,7 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 
+#exit
 @[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 
 /-- A normed field is a model with corners. -/
