@@ -33,6 +33,8 @@ open CategoryTheory TopCat
 
 universe u
 
+namespace CategoryTheory
+
 namespace RelativeCWComplex
 
 /-- The inclusion map from the `n`-sphere to the `(n + 1)`-disk. (For `n = -1`, this
@@ -98,3 +100,5 @@ instance : Coe RelativeCWComplex TopCat where coe X := toTopCat X
 end Topology
 
 end RelativeCWComplex
+
+end CategoryTheory
