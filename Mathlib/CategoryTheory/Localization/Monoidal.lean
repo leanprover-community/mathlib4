@@ -26,18 +26,6 @@ namespace CategoryTheory
 
 open Category MonoidalCategory
 
-namespace MonoidalCategory
-
-variable {C : Type*} [Category C] [MonoidalCategoryStruct C]
-
--- to be moved
-/-- The pentagon axiom in monoidal categories. -/
-def Pentagon (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
-    (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
-      (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
-
-end MonoidalCategory
-
 variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C]
 
