@@ -313,7 +313,7 @@ def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u -
 /-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l, u]``
   to the closed strip ``re ⁻¹' [0, 1]``. -/
 lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
-    (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l)  ∈ verticalClosedStrip l u := by
+    (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l) ∈ verticalClosedStrip l u := by
   simp only [verticalClosedStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im,
     ofReal_im, sub_self, mul_zero, sub_zero, mem_Icc, le_add_iff_nonneg_right]
   simp only [verticalClosedStrip, mem_preimage, mem_Icc] at hz
