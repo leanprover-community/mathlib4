@@ -136,15 +136,18 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
  -/
-def RePred {α} [Primcodable α] (p : α → Prop) :=
+def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
-theorem RePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : RePred p) (H : ∀ a, p a ↔ q a) :
-    RePred q :=
+@[deprecated (since := "2025-01-31")]
+alias RePred := REPred
+
+theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
+    REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
-    RePred fun a => (f a).Dom :=
+    REPred fun a => (f a).Dom :=
   (h.map (Computable.const ()).to₂).of_eq fun n => Part.ext fun _ => by simp [Part.dom_iff_mem]
 
 theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : ComputablePred p)
@@ -181,9 +184,9 @@ theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computa
   obtain ⟨inst, hc⟩ := hc
   convert hc.cond hf₁ hf₂
 
-theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
+theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
-  unfold RePred
+  unfold REPred
   dsimp only []
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
@@ -225,7 +228,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
             Computable.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
-theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
+theorem halting_problem_re (n) : REPred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 
 /-- The **Halting problem** is not computable -/
@@ -237,7 +240,7 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
 -- unless we assume Markov's principle or LEM.
 -- @[nolint decidable_classical]
 theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
-    ComputablePred p ↔ RePred p ∧ RePred fun a => ¬p a :=
+    ComputablePred p ↔ REPred p ∧ REPred fun a => ¬p a :=
   ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>
     ⟨‹_›, by
       obtain ⟨k, pk, hk⟩ :=
@@ -254,10 +257,10 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
       apply Decidable.em⟩⟩
 
 theorem computable_iff_re_compl_re' {p : α → Prop} :
-    ComputablePred p ↔ RePred p ∧ RePred fun a => ¬p a := by
+    ComputablePred p ↔ REPred p ∧ REPred fun a => ¬p a := by
   classical exact computable_iff_re_compl_re
 
-theorem halting_problem_not_re (n) : ¬RePred fun c => ¬(eval c n).Dom
+theorem halting_problem_not_re (n) : ¬REPred fun c => ¬(eval c n).Dom
   | h => halting_problem _ <| computable_iff_re_compl_re'.2 ⟨halting_problem_re _, h⟩
 
 end ComputablePred
