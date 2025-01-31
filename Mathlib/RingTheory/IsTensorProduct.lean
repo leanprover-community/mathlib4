@@ -468,11 +468,11 @@ lemma Algebra.IsPushout.equiv_tmul [h : Algebra.IsPushout R S R' S'] (a : S) (b 
     equiv R S R' S' (a ⊗ₜ b) = algebraMap _ _ a * algebraMap _ _ b :=
   (h.out.equiv_tmul _ _).trans (Algebra.smul_def _ _)
 
-lemma Algebra.IsPushout.equiv_symm_algebraMap_left [h : Algebra.IsPushout R S R' S'] (a : S) :
+lemma Algebra.IsPushout.equiv_symm_algebraMap_left [Algebra.IsPushout R S R' S'] (a : S) :
     (equiv R S R' S').symm (algebraMap S S' a) = a ⊗ₜ 1 := by
   rw [(equiv R S R' S').symm_apply_eq, equiv_tmul, map_one, mul_one]
 
-lemma Algebra.IsPushout.equiv_symm_algebraMap_right [h : Algebra.IsPushout R S R' S'] (a : R') :
+lemma Algebra.IsPushout.equiv_symm_algebraMap_right [Algebra.IsPushout R S R' S'] (a : R') :
     (equiv R S R' S').symm (algebraMap R' S' a) = 1 ⊗ₜ a := by
   rw [(equiv R S R' S').symm_apply_eq, equiv_tmul, map_one, one_mul]
 

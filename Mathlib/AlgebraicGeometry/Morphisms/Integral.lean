@@ -82,7 +82,7 @@ instance (priority := 100) {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIntegralHom f] :
     rw [← cancel_left_of_respectsIso (P := @IsIntegralHom) X.isoSpec.inv] at H
     exact this _ _ ⟨_, rfl⟩ H
   obtain ⟨S, rfl⟩ := hX
-  obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   rw [SpecMap_iff]
   exact PrimeSpectrum.isClosedMap_comap_of_isIntegral _
 
@@ -104,8 +104,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
   rw [SpecMap_iff]
   apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
-  letI := φ.1.toAlgebra
-  letI := (Polynomial.mapRingHom φ.1).toAlgebra
+  algebraize [φ.1, Polynomial.mapRingHom φ.1]
   haveI : IsScalarTower R (Polynomial R) (Polynomial S) :=
     .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
   refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
