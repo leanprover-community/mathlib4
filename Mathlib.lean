@@ -2052,6 +2052,7 @@ import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.HomEquiv
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.LocallySmall
+import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Predicate
@@ -3806,6 +3807,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.MeasureTheory.Function.SpecialFunctions.RCLike
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner

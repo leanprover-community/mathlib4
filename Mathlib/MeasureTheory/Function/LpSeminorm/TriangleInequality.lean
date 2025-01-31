@@ -87,7 +87,7 @@ theorem LpAddConst_zero : LpAddConst 0 = 1 := by
 theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.two_ne_top
+  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
     rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.one_toReal]
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
