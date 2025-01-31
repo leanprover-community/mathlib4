@@ -176,20 +176,22 @@ instance isIso_right [IsIso sq] : IsIso sq.right where
       eq_self_iff_true, and_self_iff]
     simp
 
-lemma isIso_iff_isIso_of_isIso_sq {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (sq : mk f ⟶ mk g)
+lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [IsIso sq] [IsIso f] :
+    IsIso g.hom := by
+  rw [iso_w' (asIso sq)]
+  infer_instance
+
+lemma isIso_iff_isIso_of_isIso {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (sq : mk f ⟶ mk g)
     [IsIso sq] : IsIso f ↔ IsIso g :=
-  ⟨fun _ => by rw [iso_w' (asIso sq)]; infer_instance,
-    fun _ => by rw [iso_w' (asIso sq).symm]; infer_instance⟩
+  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
 
-lemma isIso_hom_iff_isIso_of_isIso_sq {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f ⟶ mk g)
+lemma isIso_hom_iff_isIso_of_isIso {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f ⟶ mk g)
     [IsIso sq] : IsIso f.hom ↔ IsIso g :=
-  ⟨fun _ => by rw [iso_w' (asIso sq)]; infer_instance,
-    fun _ => by rw [iso_w' (asIso sq).symm]; infer_instance⟩
+  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
 
-lemma isIso_hom_iff_isIso_hom_of_isIso_sq {f g : Arrow T} (sq : f ⟶ g)
+lemma isIso_hom_iff_isIso_hom_of_isIso {f g : Arrow T} (sq : f ⟶ g)
     [IsIso sq] : IsIso f.hom ↔ IsIso g.hom :=
-  ⟨fun _ => by rw [iso_w' (asIso sq)]; infer_instance,
-    fun _ => by rw [iso_w' (asIso sq).symm]; infer_instance⟩
+  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
 
 @[simp]
 theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
