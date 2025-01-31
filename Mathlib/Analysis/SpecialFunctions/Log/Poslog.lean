@@ -17,13 +17,13 @@ namespace Real
 /-!
 ## Definition, Notation and Reformulations
 -/
-/-- Definition: the real part of the logarithm. -/
+/-- Definition: the positive part of the logarithm. -/
 noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
 
 /-- Notation `log⁺` for the real part of the logarithm. -/
 scoped notation "log⁺" => posLog
 
-/-- Definition of the real part of the logarithm, formulated as a theorem. -/
+/-- Definition of the positive part of the logarithm, formulated as a theorem. -/
 theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
 
 /-!
