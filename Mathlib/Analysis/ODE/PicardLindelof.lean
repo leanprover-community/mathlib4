@@ -65,7 +65,7 @@ differential equation, dynamical system, initial value problem
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
 
-/-! ## Assumptions of the Picard-Lindelof theorem-/
+/-! ## Assumptions of the Picard-Lindelof theorem -/
 
 /-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
 `IsPicardLindelof f t₀ x₀ a r L K` means that the time-dependent vector field `f` satisfies the
@@ -491,6 +491,91 @@ lemma hasDerivWithinAt_integrate_Icc
     exact Icc_subset_Icc ht.1 ht₀.2
   · rw [uIcc_of_le (not_lt.mp h)]
     exact Icc_subset_Icc ht₀.1 ht.2
+
+/-- Converse of `hasDerivWithinAt_integrate_Icc`: if `f` is the derivative along `α`, then `α`
+satisfies the integral equation. -/
+lemma integrate_eq_of_hasDerivAt {t : ℝ}
+    (hf : ContinuousOn (uncurry f) ((uIcc t₀ t) ×ˢ u))
+    (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
+    (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
+    integrate f t₀ (α t₀) α t = α t :=
+  calc
+    _ = α t₀ + (α t - α t₀) := by
+      rw [integrate_apply, integral_eq_sub_of_hasDeriv_right]
+      · intro t' ht'
+        exact hα t' ht' |>.continuousWithinAt
+      · intro t' ht'
+        apply HasDerivAt.hasDerivWithinAt
+        exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
+      · apply ContinuousOn.intervalIntegrable -- kind of repeated later
+        apply continuousOn_comp hf _ hmap
+        intro t' ht' -- repeat
+        exact hα t' ht' |>.continuousWithinAt
+    _ = α t := add_sub_cancel _ _
+
+/-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
+`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
+lemma contDiffOn_nat_integrate_Icc
+    (ht₀ : t₀ ∈ Icc tmin tmax) (hlt : tmin < tmax) {n : ℕ}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
+    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
+    (heqon : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ x₀ α t) :
+    ContDiffOn ℝ n (integrate f t₀ x₀ α) (Icc tmin tmax) := by
+  have {t} (ht : t ∈ Icc tmin tmax) :=
+    hasDerivWithinAt_integrate_Icc ht₀ hf.continuousOn hα hmem x₀ ht
+  induction n with
+  | zero =>
+    simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
+    exact fun _ ht ↦ this ht |>.continuousWithinAt
+  | succ n hn =>
+    simp only [Nat.cast_add, Nat.cast_one] at *
+    rw [contDiffOn_succ_iff_derivWithin <| uniqueDiffOn_Icc hlt]
+    refine ⟨fun _ ht ↦ HasDerivWithinAt.differentiableWithinAt (this ht), by simp, ?_⟩
+    have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
+    apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
+    intro t ht
+    apply HasDerivWithinAt.derivWithin (this ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
+
+/-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
+`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`. -/
+lemma contDiffOn_enat_integrate_Icc
+    (ht₀ : t₀ ∈ Icc tmin tmax) (hlt : tmin < tmax) {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
+    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
+    (heqon : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ x₀ α t) :
+    ContDiffOn ℝ n (integrate f t₀ x₀ α) (Icc tmin tmax) := by
+  induction n with
+  | top =>
+    rw [contDiffOn_infty] at *
+    intro k
+    exact contDiffOn_nat_integrate_Icc ht₀ hlt (hf k) hα hmem x₀ heqon
+  | coe n =>
+    simp only [WithTop.coe_natCast] at *
+    exact contDiffOn_nat_integrate_Icc ht₀ hlt hf hα hmem x₀ heqon
+
+/-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
+theorem contDiffOn_enat_Ioo_of_hasDerivAt
+    (hlt : tmin < tmax) {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t)
+    (hmem : MapsTo α (Icc tmin tmax) u) :
+    ContDiffOn ℝ n α (Icc tmin tmax) := by
+  set t₀ := (tmin + tmax) / 2 with h
+  have ht₀ : t₀ ∈ Icc tmin tmax := ⟨by linarith, by linarith⟩
+  have : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ (α t₀) α t := by
+    intro t ht
+    have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
+    rw [integrate_eq_of_hasDerivAt (hf.continuousOn.mono _)]
+    · intro t' ht'
+      exact hα t' (this ht') |>.mono this
+    · apply hmem.mono_left this
+    · -- missing `left/right` lemmas for `prod_subset_prod_iff`
+      rw [prod_subset_prod_iff]
+      exact Or.inl ⟨this, subset_rfl⟩
+  exact contDiffOn_enat_integrate_Icc ht₀ hlt hf
+    (fun t ht ↦ hα t ht |>.continuousWithinAt) hmem (α t₀) this |>.congr this
 
 end
 
