@@ -3,6 +3,7 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
@@ -100,6 +101,15 @@ noncomputable instance instRankOneValuedAdicCompletion :
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
   Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
 
+/-- The `v`-adic norm on the `v`-adic completion of `K` satisfies the ultrametric inequality. -/
+theorem vadic_norm_add_le_sup (x y : adicCompletion K v) : ‖x + y‖ ≤ ‖x‖ ⊔ ‖y‖ := by
+  rw [le_sup_iff, Valued.toNormedField.norm_le_iff, Valued.toNormedField.norm_le_iff, ← le_sup_iff]
+  exact Valuation.map_add Valued.v x y
+
+/-- The `v`-adic norm of a natural number is `≤ 1`. -/
+theorem forall_vadic_norm_natCast_le_one (n : ℕ) : ‖(n : adicCompletion K v)‖ ≤ 1 :=
+  IsUltrametricDist.norm_natCast_le_one (adicCompletion K v) n
+
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
 def FinitePlace (K : Type*) [Field K] [NumberField K] :=
@@ -132,6 +142,20 @@ to the power of the `v`-adic valuation for integers. -/
 theorem FinitePlace.norm_def_int (x : 𝓞 K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
     (v.intValuationDef x) := by
   rw [norm_def, vadicAbv_def, valuation_eq_intValuationDef]
+
+/-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
+theorem vadicAbv_add_le_sup (x y : K) : vadicAbv v (x + y) ≤ (vadicAbv v x) ⊔ (vadicAbv v y) :=
+  by simp [← FinitePlace.norm_def]
+
+/-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
+theorem forall_vadicAbv_natCast_le_one (n : ℕ) : vadicAbv v n ≤ 1 := by
+  rw [← FinitePlace.norm_def, map_natCast]
+  exact forall_vadic_norm_natCast_le_one v n
+
+/-- The `v`-adic absolute value of an integer is `≤ 1`. -/
+theorem forall_vadicAbv_intCast_le_one (n : ℤ) : vadicAbv v n ≤ 1 := by
+  rw [← AbsoluteValue.apply_natAbs_eq]
+  exact forall_vadicAbv_natCast_le_one v n.natAbs
 
 open FinitePlace
 
