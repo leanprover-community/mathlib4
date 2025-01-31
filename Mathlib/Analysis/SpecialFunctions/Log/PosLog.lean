@@ -147,7 +147,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     simp [Finset.sum_const]
   _ ≤ log s.card + log⁺ |f t_max| := posLog_nat_mul
   _ ≤ log s.card + ∑ t ∈ s, log⁺ (f t) := by
-    apply add_le_add (by rfl)
+    gcongr
     rw [posLog_abs]
     apply Finset.single_le_sum (fun _ _ ↦ posLog_nonneg) ht_max.1
 
