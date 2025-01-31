@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
 import Mathlib.RingTheory.WittVector.Domain
-import Mathlib.RingTheory.WittVector.MulCoeff
+import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
