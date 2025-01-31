@@ -211,8 +211,6 @@ variable [AddGroupWithOne A]
 theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
 
-@[deprecated (since := "2024-04-17")]
-alias eq_int_castAddHom := eq_intCastAddHom
 
 end AddMonoidHom
 

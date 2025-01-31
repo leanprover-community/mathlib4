@@ -257,13 +257,6 @@ instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_if
 @[simp]
 theorem ofInt_eq_intCast (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
 
-@[deprecated (since := "2024-04-05")] alias coe_nat_re := natCast_re
-@[deprecated (since := "2024-04-05")] alias coe_nat_im := natCast_im
-@[deprecated (since := "2024-04-05")] alias coe_nat_val := natCast_val
-@[deprecated (since := "2024-04-05")] alias coe_int_re := intCast_re
-@[deprecated (since := "2024-04-05")] alias coe_int_im := intCast_im
-@[deprecated (since := "2024-04-05")] alias coe_int_val := intCast_val
-@[deprecated (since := "2024-04-05")] alias ofInt_eq_coe := ofInt_eq_intCast
 
 @[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
@@ -450,15 +443,11 @@ theorem norm_one : norm (1 : ℤ√d) = 1 := by simp [norm]
 @[simp]
 theorem norm_intCast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
 
-@[deprecated (since := "2024-04-17")]
-alias norm_int_cast := norm_intCast
 
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : ℤ√d) = n * n :=
   norm_intCast n
 
-@[deprecated (since := "2024-04-17")]
-alias norm_nat_cast := norm_natCast
 
 @[simp]
 theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by

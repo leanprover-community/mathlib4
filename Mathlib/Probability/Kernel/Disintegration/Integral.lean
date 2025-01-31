@@ -119,8 +119,6 @@ lemma setIntegral_condKernel (a : α) {s : Set β} (hs : MeasurableSet s)
   rw [← κ.disintegrate κ.condKernel] at hf
   rw [setIntegral_compProd hs ht hf]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condKernel := setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right (a : α) {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) (κ a)) :
@@ -128,8 +126,6 @@ lemma setIntegral_condKernel_univ_right (a : α) {s : Set β} (hs : MeasurableSe
       = ∫ x in s ×ˢ Set.univ, f x ∂(κ a) := by
   rw [← setIntegral_condKernel a hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condKernel_univ_right := setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left (a : α) {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) (κ a)) :
@@ -137,8 +133,6 @@ lemma setIntegral_condKernel_univ_left (a : α) {t : Set Ω} (ht : MeasurableSet
       = ∫ x in Set.univ ×ˢ t, f x ∂(κ a) := by
   rw [← setIntegral_condKernel a MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condKernel_univ_left := setIntegral_condKernel_univ_left
 
 end Integral
 
@@ -236,24 +230,18 @@ lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
   rw [← ρ.disintegrate ρ.condKernel] at hf
   rw [setIntegral_compProd hs ht hf]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condKernel := setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) ρ) :
     ∫ b in s, ∫ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x in s ×ˢ Set.univ, f x ∂ρ := by
   rw [← setIntegral_condKernel hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condKernel_univ_right := setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) ρ) :
     ∫ b, ∫ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x in Set.univ ×ˢ t, f x ∂ρ := by
   rw [← setIntegral_condKernel MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condKernel_univ_left := setIntegral_condKernel_univ_left
 
 end Integral
 

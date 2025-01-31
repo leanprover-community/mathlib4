@@ -25,7 +25,6 @@ defined in this file but is introduced in
 
 -/
 
-
 open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory
@@ -63,10 +62,6 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
 
-@[deprecated (since := "2024-04-17")]
-alias lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
-
 variable (𝕜)
 
 include 𝕜 in
@@ -89,10 +84,6 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
 
-@[deprecated (since := "2024-04-17")]
-alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero' :=
-  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
-
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/
 theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
@@ -114,9 +105,6 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     exact (hf_int_finite s hs hμs).sub (hg_int_finite s hs hμs)
   exact Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
     <| (hf_meas.sub hg_meas).congr (Lp.coeFn_sub f g).symm
-
-@[deprecated (since := "2024-04-17")]
-alias Lp.ae_eq_of_forall_set_integral_eq' := Lp.ae_eq_of_forall_setIntegral_eq'
 
 variable {𝕜}
 
@@ -160,10 +148,6 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
       integral_congr_ae (ae_restrict_of_ae hgm.ae_eq_mk.symm)]
     exact hfg_eq s hs hμs
   exact ae_eq_of_forall_setIntegral_eq_of_sigmaFinite hf_mk_int_finite hg_mk_int_finite hfg_mk_eq
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_of_forall_set_integral_eq_of_sigmaFinite' :=
-  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
 
 end UniquenessOfConditionalExpectation
 

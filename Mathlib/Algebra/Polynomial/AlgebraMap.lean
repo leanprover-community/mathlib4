@@ -144,9 +144,6 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
 
-@[deprecated (since := "2024-04-17")]
-alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
-
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
@@ -267,9 +264,6 @@ theorem aeval_one : aeval x (1 : R[X]) = 1 :=
 
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
-
-@[deprecated (since := "2024-04-17")]
-alias aeval_nat_cast := aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   map_mul _ _ _

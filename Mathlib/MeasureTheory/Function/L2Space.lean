@@ -245,10 +245,6 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
     exact inner_zero_left _
   rw [h_left, h_right, add_zero]
 
-@[deprecated (since := "2024-04-17")]
-alias inner_indicatorConstLp_eq_set_integral_inner :=
-  inner_indicatorConstLp_eq_setIntegral_inner
-
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
 theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpace ℝ E]
@@ -256,10 +252,6 @@ theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpa
     (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ⟪c, ∫ x in s, f x ∂μ⟫ := by
   rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs),
     L2.inner_indicatorConstLp_eq_setIntegral_inner]
-
-@[deprecated (since := "2024-04-17")]
-alias inner_indicatorConstLp_eq_inner_set_integral :=
-  inner_indicatorConstLp_eq_inner_setIntegral
 
 variable {𝕜}
 
