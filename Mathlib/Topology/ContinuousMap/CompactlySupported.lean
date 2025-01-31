@@ -472,7 +472,7 @@ instance inf : Min C_c(α, β) where min f g :=
 instance semilatticeInf : SemilatticeInf C_c(α, β) :=
   DFunLike.coe_injective.semilatticeInf _ coe_inf
 
-lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
+lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
   Finset.comp_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
 
