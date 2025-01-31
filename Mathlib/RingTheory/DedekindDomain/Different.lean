@@ -116,12 +116,11 @@ end Submodule
 
 open Submodule
 
-set_option synthInstance.maxHeartbeats 23000 -- TODO Investigate / remove
 variable [IsFractionRing A K]
 
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
-    [NoZeroSMulDivisors A B] (I : Submodule B (FractionRing B)) :
+    [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
       traceDual A K (I.map (FractionRing.algEquiv B L)) := by
   show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
@@ -391,7 +390,6 @@ end FractionalIdeal
 
 variable (B)
 variable [IsIntegrallyClosed A] [IsDedekindDomain B]
-set_option synthInstance.maxHeartbeats 28000 -- TODO Investigate / remove
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/

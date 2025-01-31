@@ -510,11 +510,11 @@ theorem mk_eq_div {r s} :
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
 noncomputable abbrev liftAlgebra [IsDomain R] [Field K] [Algebra R K]
-    [NoZeroSMulDivisors R K] : Algebra (FractionRing R) K :=
+    [FaithfulSMul R K] : Algebra (FractionRing R) K :=
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _))
 
 -- Porting note: had to fill in the `_` by hand for this instance
-instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
+instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [FaithfulSMul R K] :
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
   exact IsScalarTower.of_algebraMap_eq fun x =>
