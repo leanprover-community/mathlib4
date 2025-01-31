@@ -57,9 +57,7 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp ‹_›
   letI : Algebra (ResidueField R) (S ⧸ mR) := inferInstanceAs (Algebra (R ⧸ _) _)
   have : IsScalarTower R (ResidueField R) (S ⧸ mR) := inferInstanceAs (IsScalarTower R (R ⧸ _) _)
-  have : FormallyUnramified R (S ⧸ mR) := .comp _ S _
   have : FormallyUnramified (ResidueField R) (S ⧸ mR) := .of_comp R _ _
-  have : EssFiniteType R (S ⧸ mR) := .comp _ S _
   have : EssFiniteType (ResidueField R) (S ⧸ mR) := .of_comp R _ _
   have : Module.Finite (ResidueField R) (S ⧸ mR) := FormallyUnramified.finite_of_free _ _
   have : IsReduced (S ⧸ mR) := FormallyUnramified.isReduced_of_field (ResidueField R) (S ⧸ mR)
@@ -128,10 +126,7 @@ lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
     fun x ↦ (Localization.localRingHom_to_map p q (algebraMap R S) Ideal.LiesOver.over x).symm
   letI : IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
     Localization.isLocalHom_localRingHom _ _ _ Ideal.LiesOver.over
-  have : EssFiniteType S (Localization.AtPrime q) := .of_isLocalization _ q.primeCompl
-  have : EssFiniteType R (Localization.AtPrime q) := .comp _ S _
   have : EssFiniteType (Localization.AtPrime p) (Localization.AtPrime q) := .of_comp R _ _
-  have : FormallyUnramified R (Localization.AtPrime p) := .of_isLocalization p.primeCompl
   trans Algebra.FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q)
   · exact ⟨fun _ ↦ .of_comp R _ _, fun _ ↦ .comp _ (Localization.AtPrime p) _⟩
   rw [FormallyUnramified.iff_map_maximalIdeal_eq]

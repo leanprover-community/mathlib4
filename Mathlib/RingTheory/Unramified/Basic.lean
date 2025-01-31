@@ -255,6 +255,10 @@ theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ :=
   ext
   simp
 
+instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Localization M) :=
+  have := of_isLocalization (Rₘ := Localization M) M
+  .comp _ S _
+
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
