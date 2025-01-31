@@ -7,6 +7,12 @@ Authors: Jujian Zhang
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
+/-!
+# Simpleness is preserved by ring isomorphism
+
+If `R` is a simple ring then any ring isomorphic to `R` is also simple.
+-/
+
 namespace IsSimpleRing
 
 lemma of_ringEquiv {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
