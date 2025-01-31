@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # The power operator on `ℤˣ` by `ZMod 2`, `ℕ`, and `ℤ`

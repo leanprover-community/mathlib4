@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Ring.AddAut
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Automorphism Group of `ZMod`.

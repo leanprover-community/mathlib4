@@ -3,8 +3,9 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Zify
 
 /-!

@@ -5,7 +5,7 @@ Authors: Moritz Firsching
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Facts about factorials in ZMod

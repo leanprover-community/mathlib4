@@ -8,7 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
