@@ -12,6 +12,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.Orientable
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Tactic.Module
 
