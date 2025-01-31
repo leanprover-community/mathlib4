@@ -458,6 +458,12 @@ theorem degree_smul_le (a : R) (p : R[X]) : degree (a • p) ≤ degree p := by
 theorem natDegree_smul_le (a : R) (p : R[X]) : natDegree (a • p) ≤ natDegree p :=
   natDegree_le_natDegree (degree_smul_le a p)
 
+theorem degree_smul_of_isRightRegular_leadingCoeff {k : R} (hk: k ≠ 0)
+    {p : R[X]} (hp : IsRightRegular p.leadingCoeff) : (k • p).degree = p.degree := by
+  apply le_antisymm (degree_smul_le k p) <| degree_le_degree ?_
+  rw [coeff_smul, coeff_natDegree, smul_eq_mul, ne_eq]
+  exact hp.mul_right_eq_zero_iff.ne.mpr hk
+
 theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
   haveI := Nontrivial.of_polynomial_ne hp
   have : leadingCoeff p * leadingCoeff X ≠ 0 := by simpa
