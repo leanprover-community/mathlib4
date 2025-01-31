@@ -510,14 +510,14 @@ Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
 noncomputable abbrev liftAlgebra [IsDomain R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Algebra (FractionRing R) K :=
-  RingHom.toAlgebra (IsFractionRing.lift (NoZeroSMulDivisors.algebraMap_injective R _))
+  RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _))
 
 -- Porting note: had to fill in the `_` by hand for this instance
 instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
   exact IsScalarTower.of_algebraMap_eq fun x =>
-    (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K) x).symm
+    (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R K) x).symm
 
 /-- Given a ring `A` and a localization map to a fraction ring
 `f : A →+* K`, we get an `A`-isomorphism between the fraction ring of `A` as a quotient
@@ -529,7 +529,7 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
 instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) := by
   apply NoZeroSMulDivisors.of_algebraMap_injective
   rw [IsScalarTower.algebraMap_eq R A]
-  apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))
-    (NoZeroSMulDivisors.algebraMap_injective R A)
+  apply Function.Injective.comp (FaithfulSMul.algebraMap_injective A (FractionRing A))
+    (FaithfulSMul.algebraMap_injective R A)
 
 end FractionRing

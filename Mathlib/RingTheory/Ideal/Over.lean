@@ -541,7 +541,7 @@ variable (A : Type*) [CommRing A] (B : Type*) [Ring B] [Nontrivial B]
 
 @[simp]
 theorem under_bot : under A (⊥ : Ideal B) = ⊥ :=
-  comap_bot_of_injective (algebraMap A B) (NoZeroSMulDivisors.algebraMap_injective A B)
+  comap_bot_of_injective (algebraMap A B) (FaithfulSMul.algebraMap_injective A B)
 
 instance bot_liesOver_bot : (⊥ : Ideal B).LiesOver (⊥ : Ideal A) where
   over := (under_bot A B).symm

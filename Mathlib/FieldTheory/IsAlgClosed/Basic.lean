@@ -289,10 +289,10 @@ variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZ
 variable {M}
 
 private instance FractionRing.isAlgebraic :
-    letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+    letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have := (IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 inferInstance
@@ -305,7 +305,7 @@ private instance FractionRing.isAlgebraic :
   closed extension of R. -/
 @[stacks 09GU]
 noncomputable irreducible_def lift : S →ₐ[R] M := by
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
   letI := FractionRing.liftAlgebra R (FractionRing S)
   have := FractionRing.isScalarTower_liftAlgebra R M
@@ -382,8 +382,8 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
   letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
     rw [IsScalarTower.algebraMap_eq R S L]
-    exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) :)
+    exact (Function.Injective.comp (FaithfulSMul.algebraMap_injective S L)
+            (FaithfulSMul.algebraMap_injective R S) :)
   letI : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }
@@ -406,8 +406,8 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
     { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } := by
   letI : Algebra R S := RingHom.toAlgebra hSR.symm.toRingHom
   letI : Algebra S R := RingHom.toAlgebra hSR.toRingHom
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R M).isDomain _
-  letI : IsDomain S := (NoZeroSMulDivisors.algebraMap_injective S L).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R M).isDomain _
+  letI : IsDomain S := (FaithfulSMul.algebraMap_injective S L).isDomain _
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
   haveI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq fun _ => rfl
   haveI : IsScalarTower S R L :=

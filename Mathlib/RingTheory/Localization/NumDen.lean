@@ -85,9 +85,9 @@ lemma num_zero : IsFractionRing.num A (0 : K) = 0 := by
   have := mk'_num_den' A (0 : K)
   simp only [div_eq_zero_iff] at this
   rcases this with h | h
-  · exact NoZeroSMulDivisors.algebraMap_injective A K (by convert h; simp)
+  · exact FaithfulSMul.algebraMap_injective A K (by convert h; simp)
   · replace h : algebraMap A K (den A (0 : K)) = algebraMap A K 0 := by convert h; simp
-    absurd NoZeroSMulDivisors.algebraMap_injective A K h
+    absurd FaithfulSMul.algebraMap_injective A K h
     apply nonZeroDivisors.coe_ne_zero
 
 @[simp]
@@ -116,8 +116,8 @@ theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteg
       · simp only [mk'_num_den']
       intro h
       replace h : algebraMap A K (den A x : A) = algebraMap A K 0 := by convert h; simp
-      exact nonZeroDivisors.coe_ne_zero _ <| NoZeroSMulDivisors.algebraMap_injective A K h
-    exact NoZeroSMulDivisors.algebraMap_injective A K
+      exact nonZeroDivisors.coe_ne_zero _ <| FaithfulSMul.algebraMap_injective A K h
+    exact FaithfulSMul.algebraMap_injective A K
 
 theorem isUnit_den_zero : IsUnit (den A (0 : K) : A) := by
   simp [isUnit_den_iff, IsLocalization.isInteger_zero]
@@ -130,11 +130,11 @@ lemma associated_den_num_inv (x : K) (hx : x ≠ 0) : Associated (den A x : A) (
   associated_of_dvd_dvd
     (IsRelPrime.dvd_of_dvd_mul_right (IsFractionRing.num_den_reduced A x).symm <|
       dvd_of_mul_left_dvd (a := (den A x⁻¹ : A)) <| dvd_of_eq <|
-      NoZeroSMulDivisors.algebraMap_injective A K <| Eq.symm <| eq_of_div_eq_one
+      FaithfulSMul.algebraMap_injective A K <| Eq.symm <| eq_of_div_eq_one
       (by simp [mul_div_mul_comm, hx]))
     (IsRelPrime.dvd_of_dvd_mul_right (IsFractionRing.num_den_reduced A x⁻¹) <|
       dvd_of_mul_left_dvd (a := (num A x : A)) <| dvd_of_eq <|
-      NoZeroSMulDivisors.algebraMap_injective A K <| eq_of_div_eq_one
+      FaithfulSMul.algebraMap_injective A K <| eq_of_div_eq_one
       (by simp [mul_div_mul_comm, hx]))
 
 lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (den A x⁻¹) := by

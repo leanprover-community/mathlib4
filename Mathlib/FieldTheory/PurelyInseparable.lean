@@ -199,7 +199,7 @@ theorem IsPurelyInseparable.surjective_algebraMap_of_isSeparable
 theorem IsPurelyInseparable.bijective_algebraMap_of_isSeparable
     [Nontrivial E] [NoZeroSMulDivisors F E]
     [IsPurelyInseparable F E] [Algebra.IsSeparable F E] : Function.Bijective (algebraMap F E) :=
-  ⟨NoZeroSMulDivisors.algebraMap_injective F E, surjective_algebraMap_of_isSeparable F E⟩
+  ⟨FaithfulSMul.algebraMap_injective F E, surjective_algebraMap_of_isSeparable F E⟩
 
 variable {F E} in
 /-- If a subalgebra of `E / F` is both purely inseparable and separable, then it is equal

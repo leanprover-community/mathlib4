@@ -547,7 +547,7 @@ instance CyclotomicField.noZeroSMulDivisors [IsFractionRing A K] :
   refine NoZeroSMulDivisors.of_algebraMap_injective ?_
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
-    (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
+    (Function.Injective.comp (FaithfulSMul.algebraMap_injective K (CyclotomicField n K))
       (IsFractionRing.injective A K) :)
 
 /-- If `A` is a domain with fraction field `K` and `n : ℕ+`, we define `CyclotomicRing n A K` as
@@ -586,7 +586,7 @@ instance [IsFractionRing A K] :
 
 theorem algebraBase_injective [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
   (adjoin A _).toAlgebra

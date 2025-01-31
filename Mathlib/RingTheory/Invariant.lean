@@ -72,11 +72,11 @@ theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K 
   rw [h, IntermediateField.mem_bot] at hb
   obtain ⟨k, hk⟩ := hb
   have hb : IsIntegral A b := IsIntegralClosure.isIntegral A L b
-  rw [← isIntegral_algebraMap_iff (NoZeroSMulDivisors.algebraMap_injective B L), ← hk,
-    isIntegral_algebraMap_iff (NoZeroSMulDivisors.algebraMap_injective K L)] at hb
+  rw [← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective B L), ← hk,
+    isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective K L)] at hb
   obtain ⟨a, rfl⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral hb
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
-    (NoZeroSMulDivisors.algebraMap_injective B L).eq_iff] at hk
+    (FaithfulSMul.algebraMap_injective B L).eq_iff] at hk
   exact ⟨a, hk⟩
 
 end Galois

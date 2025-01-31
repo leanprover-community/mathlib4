@@ -72,13 +72,13 @@ lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K
   non-trivial, then `B` is central. -/
 lemma left_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial C]
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K B :=
-  left_of_tensor K B C <| NoZeroSMulDivisors.algebraMap_injective K C
+  left_of_tensor K B C <| FaithfulSMul.algebraMap_injective K C
 
 /-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `A` is
   non-trivial, then `B` is central. -/
 lemma right_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial B]
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K C :=
-  right_of_tensor K B C <| NoZeroSMulDivisors.algebraMap_injective K B
+  right_of_tensor K B C <| FaithfulSMul.algebraMap_injective K B
 
 
 end Algebra.IsCentral

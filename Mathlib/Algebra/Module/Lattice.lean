@@ -166,7 +166,7 @@ injective. -/
 instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
   haveI : NoZeroSMulDivisors R V := by
     apply NoZeroSMulDivisors.of_algebraMap_injective' (A := K)
-    exact NoZeroSMulDivisors.algebraMap_injective R K
+    exact FaithfulSMul.algebraMap_injective R K
   -- any torsion free finite module over a PID is free
   infer_instance
 
