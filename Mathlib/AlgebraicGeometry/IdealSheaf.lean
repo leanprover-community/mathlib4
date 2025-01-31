@@ -172,9 +172,8 @@ lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
   rw [← I.map_ideal_basicOpen] at this
   apply_fun Ideal.map (X.presheaf.germ (X.basicOpen g) x (hfg ▸ hxf)).hom at this
   simp only [Ideal.map_map, ← RingHom.comp_apply, ← CommRingCat.hom_comp,
-    X.presheaf.germ_res] at this ⊢
-  erw [X.presheaf.germ_res] at this ⊢
-  exact this.symm
+    affineBasicOpen_coe, X.presheaf.germ_res] at this ⊢
+  simp only [homOfLE_leOfHom, TopCat.Presheaf.germ_res', this]
 
 /-- A form of `map_ideal` that is easier to rewrite with. -/
 lemma map_ideal' {U V : X.affineOpens} (h : Opposite.op V.1 ⟶ .op U.1) :
@@ -279,14 +278,14 @@ lemma support_antitone : Antitone (support (X := X)) :=
   fun _ _ h ↦ Set.iInter_mono fun U ↦ X.zeroLocus_mono (h U)
 
 lemma support_ofIdealTop (I : Ideal Γ(X, ⊤)) : (ofIdealTop I).support = X.zeroLocus (U := ⊤) I := by
-    suffices ∀ U : X.affineOpens, (ofIdealTop I).support ∩ U = X.zeroLocus (U := ⊤) I ∩ U by
-      ext x
-      obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-        (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-      simpa [hxU] using congr(x ∈ $(this ⟨U, hU⟩))
-    intro U
-    rw [support_inter, ofIdealTop_ideal, Ideal.map, zeroLocus_span, zeroLocus_map,
-      Set.union_inter_distrib_right, Set.compl_inter_self, Set.union_empty]
+  suffices ∀ U : X.affineOpens, (ofIdealTop I).support ∩ U = X.zeroLocus (U := ⊤) I ∩ U by
+    ext x
+    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+      (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+    simpa [hxU] using congr(x ∈ $(this ⟨U, hU⟩))
+  intro U
+  rw [support_inter, ofIdealTop_ideal, Ideal.map, zeroLocus_span, zeroLocus_map,
+    Set.union_inter_distrib_right, Set.compl_inter_self, Set.union_empty]
 
 @[simp]
 lemma support_eq_empty_iff : support I = ∅ ↔ I = ⊤ := by
