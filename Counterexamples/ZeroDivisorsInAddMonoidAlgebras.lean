@@ -7,7 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 
 /-!
 # Examples of zero-divisors in `AddMonoidAlgebra`s

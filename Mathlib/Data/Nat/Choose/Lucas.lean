@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
 import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
