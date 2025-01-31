@@ -64,44 +64,6 @@ theorem neg_one_le_mulExpNegMulSq_one (x : ℝ) : -1 ≤ mulExpNegMulSq 1 x := b
 theorem abs_mulExpNegMulSq_one_le_one (x : ℝ) : |mulExpNegMulSq 1 x| ≤ 1 :=
   abs_le.mpr ⟨neg_one_le_mulExpNegMulSq_one x, mulExpNegMulSq_one_le_one x⟩
 
-theorem differentiableAt_expNegSq (y : ℝ) :
-    DifferentiableAt ℝ (fun (x : ℝ) => exp (-x * x)) y := by
-  simp only [neg_mul, differentiableAt_neg_iff, differentiableAt_id', DifferentiableAt.mul,
-    DifferentiableAt.exp, implies_true]
-
-theorem differentiable_expNegSq : Differentiable ℝ (fun (x : ℝ) => exp (-x * x)) :=
-  fun _ => differentiableAt_expNegSq _
-
-theorem hasDerivAt_expNegSq (y : ℝ) :
-    HasDerivAt (fun (x : ℝ) => exp (-x * x)) (exp (-y * y) * (-2 * y)) y :=
-  HasDerivAt.exp (HasDerivAt.congr_deriv
-      (HasDerivAt.mul (hasDerivAt_neg' y) (hasDerivAt_id' y)) (by ring))
-
-theorem deriv_expNegSq (y : ℝ) :
-    deriv (fun (x : ℝ) => exp (-x * x)) y = exp (-y * y) * (-2 * y) :=
-  HasDerivAt.deriv (hasDerivAt_expNegSq y)
-
-theorem differentiableAt_mulExpNegSq (y : ℝ) :
-    DifferentiableAt ℝ (fun x => x * exp (-x * x)) y := by
-  simp only [differentiableAt_id', differentiableAt_expNegSq, DifferentiableAt.mul]
-
-theorem differentiable_mulExpNegSq : Differentiable ℝ (fun x => x * exp (-x * x)) :=
-  fun _ => differentiableAt_mulExpNegSq _
-
-theorem hasDerivAt_mulExpNegSq (y : ℝ) :
-    HasDerivAt (fun x => x * exp (-x * x)) (exp (-y * y) + y * (exp (-y * y) * (-2 * y))) y := by
-  nth_rw 1 [← one_mul (exp (-y * y))]
-  exact HasDerivAt.mul (hasDerivAt_id' y) (hasDerivAt_expNegSq y)
-
-theorem deriv_mulExpNegSq (y : ℝ) : deriv (fun x => x * exp (- x * x)) y =
-    exp (-y * y) + y * (exp (-y * y) * (-2 * y)) :=
-  HasDerivAt.deriv (hasDerivAt_mulExpNegSq y)
-
-theorem deriv_mulExpNegMulSq_one (x : ℝ) : deriv (mulExpNegMulSq 1) x =
-    exp (-x * x) + x * (exp (-x * x) * (-2 * x)) := by
-  rw [← deriv_mulExpNegSq]
-  exact EventuallyEq.deriv_eq (Eventually.of_forall (mulExpNegSq_one))
-
 theorem differentiableAt_mulExpNegMulSq {ε : ℝ} (y : ℝ) :
     DifferentiableAt ℝ (mulExpNegMulSq ε) y := by
   apply DifferentiableAt.mul differentiableAt_id' (by fun_prop)
@@ -151,6 +113,11 @@ theorem nnnorm_deriv_mulExpNegMulSq_le_one {ε : ℝ} (hε : 0 < ε) (x : ℝ)
   rw [← NNReal.coe_le_coe, coe_nnnorm]
   exact norm_deriv_mulExpNegMulSq_le_one hε x
 
+theorem lipschitzWith_one_mulExpNegMulSq {ε : ℝ} (hε : ε > 0) :
+    LipschitzWith 1 (mulExpNegMulSq ε) := by
+  apply lipschitzWith_of_nnnorm_deriv_le differentiable_mulExpNegMulSq
+  exact nnnorm_deriv_mulExpNegMulSq_le_one hε
+
 theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (x : ℝ) {ε : ℝ} (hε : ε > 0) :
     mulExpNegMulSq ε x = (sqrt ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * x) := by
   simp only [mulExpNegMulSq, one_mul]
@@ -163,11 +130,6 @@ theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (x : ℝ) {ε : ℝ} (hε 
     rw [← pow_eq_zero_iff (Ne.symm (Nat.zero_ne_add_one 1)), sq_sqrt hε.le] at h
     linarith
 
-theorem lipschitzWith_one_mulExpNegMulSq {ε : ℝ} (hε : ε > 0) :
-    LipschitzWith 1 (mulExpNegMulSq ε) := by
-  apply lipschitzWith_of_nnnorm_deriv_le differentiable_mulExpNegMulSq
-  exact nnnorm_deriv_mulExpNegMulSq_le_one hε
-
 end mulExpNegMulSq
 
 section mulExpNegMulSq_comp
@@ -175,12 +137,6 @@ section mulExpNegMulSq_comp
 /-! ### Properties of `(mulExpNegMulSq ε) ∘ g` -/
 
 variable {E : Type*} {g : E → ℝ} {ε : ℝ} {x : E}
-
---theorem mulExpNegMulSq_comp_eq_sqrt_mul_mulExpNegMulSq_one (hε : ε > 0) :
---    ((mulExpNegMulSq ε) ∘ g) x
---    = (sqrt ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * g x) := by
-  --simp only [Function.comp_apply]
---  exact mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one hε
 
 /-- if `ε > 0`, then `(mulExpNegMulSq ε) ∘ g` is bounded by `(sqrt ε)⁻¹` -/
 theorem abs_mulExpNegMulSq_comp_le (hε : ε > 0) : |((mulExpNegMulSq ε) ∘ g) x| ≤ (sqrt ε)⁻¹ := by
