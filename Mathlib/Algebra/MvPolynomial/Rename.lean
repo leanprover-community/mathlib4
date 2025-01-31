@@ -65,9 +65,8 @@ theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
     simp only [hp, rename_X, map_X, map_mul]
 
 lemma map_comp_rename (f : R →+* S) (g : σ → τ) :
-    (map f).comp (rename g).toRingHom = (rename g).toRingHom.comp (map f) := by
-  apply RingHom.ext
-  simp [map_rename]
+    (map f).comp (rename g).toRingHom = (rename g).toRingHom.comp (map f) :=
+  RingHom.ext fun p ↦ map_rename f g p
 
 @[simp]
 theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
@@ -82,14 +81,12 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
 
 lemma rename_comp_rename (f : σ → τ) (g : τ → α) :
-    (rename (R := R) g).comp (rename f) = rename (g ∘ f) := by
-  ext
-  simp
+    (rename (R := R) g).comp (rename f) = rename (g ∘ f) :=
+  AlgHom.ext fun p ↦ rename_rename f g p
 
 @[simp]
-theorem rename_id : rename id = AlgHom.id R (MvPolynomial σ R) := by
-  ext
-  simp
+theorem rename_id : rename id = AlgHom.id R (MvPolynomial σ R) :=
+  AlgHom.ext fun p ↦ eval₂_eta p
 
 theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
     rename f (monomial d r) = monomial (d.mapDomain f) r := by
@@ -184,9 +181,8 @@ theorem aeval_rename [Algebra R S] : aeval g (rename k p) = aeval (g ∘ k) p :=
   eval₂Hom_rename _ _ _ _
 
 lemma aeval_comp_rename [Algebra R S] :
-    (aeval (R := R) g).comp (rename k) = MvPolynomial.aeval (g ∘ k) := by
-  ext
-  simp
+    (aeval (R := R) g).comp (rename k) = MvPolynomial.aeval (g ∘ k) :=
+  AlgHom.ext fun p ↦ aeval_rename k g p
 
 theorem rename_eval₂ (g : τ → MvPolynomial σ R) :
     rename k (p.eval₂ C (g ∘ k)) = (rename k p).eval₂ C (rename k ∘ g) := by
