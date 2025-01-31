@@ -93,12 +93,7 @@ instance : Preadditive SemiNormedGrp.{u} where
     rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
     convert map_add g (f x) (f' x)
-  comp_add _ _ _ _ _ _ := by
-    ext
-    -- Porting note: failing simps probably due to instance synthesis issues with concrete
-    -- cats; see the gymnastics below for what used to be
-    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
-      CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
+  comp_add _ _ _ _ _ _ := by rfl
 
 instance : Functor.Additive completion where
   map_add := NormedAddGroupHom.completion_add _ _
