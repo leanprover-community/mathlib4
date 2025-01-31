@@ -3,12 +3,12 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Lean.Data.Json.Parser
+
 import Cache.Hashing
 
 namespace Cache.Requests
 
--- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
+-- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
 def useFROCache : Bool := false
 
 /-- Public URL for mathlib cache -/
@@ -79,7 +79,7 @@ def downloadFiles (hashMap : IO.NameHashMap) (forceDownload : Bool) (parallel : 
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
-    IO.mkDir IO.CACHEDIR
+    IO.FS.createDirAll IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
@@ -257,7 +257,7 @@ The file name is the current Git hash and the `c/` prefix means that it's a comm
 def commit (hashMap : IO.NameHashMap) (overwrite : Bool) (token : String) : IO Unit := do
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
-  IO.mkDir IO.CACHEDIR
+  IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
   if useFROCache then
     -- TODO: reimplement using HEAD requests?

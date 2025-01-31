@@ -6,21 +6,17 @@ Authors: Jon Eugster
 
 import Lean.Data.Name
 import Lean.Util.Path
-import Init.System.FilePath
-import Std
-
-set_option autoImplicit false
 
 /-!
 # Helper Functions
 
 This file contains helper functions that could potentially be upstreamed to Lean
-or modify basic types from Lean.
+or replaced by an appropriate function from Lean.
 
 Some functions here are duplicates from the folder `Mathlib/Lean/`.
 -/
 
-/--  -/
+/-- Format as hex digit string. Used by `Cache` to format hashes. -/
 def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
   | 0, s => s
   | len+1, s =>
@@ -28,19 +24,21 @@ def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
     Nat.toHexDigits n len <|
       s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
 
+/-- Format hash as hex digit with extension `.ltar` -/
 def UInt64.asLTar (n : UInt64) : String :=
   s!"{Nat.toHexDigits n.toNat 8}.ltar"
 
 namespace Lean
 
-open System hiding SearchPath in
-/-- TODO: This is copied (without modification) from  the Lean source. It should
-be in v4.17.0-rc1, I think. -/
-partial def findLean (sp : SearchPath) (mod : Name) : IO FilePath := do
+/--
+TODO: This is copied (without modification) from the Lean source. It should
+be available in v4.17.0-rc1.
+-/
+partial def findLean (sp : SearchPath) (mod : Name) : IO System.FilePath := do
   if let some fname ← sp.findWithExt "lean" mod then
     return fname
   else
-    let pkg := FilePath.mk <| mod.getRoot.toString (escape := false)
+    let pkg := System.FilePath.mk <| mod.getRoot.toString (escape := false)
     throw <| IO.userError s!"unknown module prefix '{pkg}'\n\n\
       No directory '{pkg}' or file '{pkg}.lean' in the search path entries:\n\
       {"\n".intercalate <| sp.map (·.toString)}"
@@ -57,46 +55,44 @@ end Lean
 namespace System.FilePath
 
 /--
-Returns true if `target` lives inside `path`.
-Does not check if the two actually exist.
+Test if the `target` path lies inside `parent`.
 
-The paths can contain arbitrary amounts of ".", "" or "..".
-However, if the paths do not contain the same amount of leading "..", it
-will return `False` as the real system path is unknown to the function.
+This is purely done by comparing the paths' components.
+It does not have access to `IO` so it does not check if any paths actually exist.
 
-For example, `contains (".." / "myFolder") ("myFolder" / "..")` will always return `false`
-even though it might be true depending on which local working directory on is in
-(which `contains` doesn't know about since it's not in `IO`)
+The paths can contain arbitrary amounts of `"."`, `""` or `".."`.
+However, if the paths do not contain the same amount of leading `".."`, it
+will return `false`.
 -/
-def contains (path target : FilePath) : Bool :=
-  go path.components target.components
+def contains (parent target : FilePath) : Bool :=
+  go parent.components target.components
 where
   go : List String → List String → Bool
-    -- ignore leading "." or ""
-    | "." :: path, target => go path target
-    | path, "." :: target => go path target
-    | "" :: path, target => go path target
-    | path, "" :: target => go path target
-    -- must not start with unequal quantity of ".."
-    | ".." :: path, ".." :: target => go path target
-    | ".." :: _, _ => false
-    | _, ".." :: _ => false
-    -- cancel entry with following ".."
-    | _ :: ".." :: path, target => go path target
-    | path, _ :: ".." :: target => go path target
-    -- base cases
-    | [], _ => true
-    | _ :: _, [] => false
-    -- recursion
-    | p :: ath, t :: arget => if p == t then go ath arget else false
+  -- ignore leading "." or ""
+  | "." :: parent, target => go parent target
+  | parent, "." :: target => go parent target
+  | "" :: parent, target => go parent target
+  | parent, "" :: target => go parent target
+  -- must not start with unequal quantity of ".."
+  | ".." :: parent, ".." :: target => go parent target
+  | ".." :: _, _ => false
+  | _, ".." :: _ => false
+  -- cancel entry with following ".."
+  | _ :: ".." :: parent, target => go parent target
+  | parent, _ :: ".." :: target => go parent target
+  -- base cases
+  | [], _ => true
+  | _ :: _, [] => false
+  -- recursion
+  | p :: arent, t :: arget => if p == t then go arent arget else false
 
 /-- Removes a parent path from the beginning of a path -/
 def withoutParent (path parent : FilePath) : FilePath :=
-  mkFilePath <| aux path.components parent.components
+  mkFilePath <| go path.components parent.components
 where
-  aux : List String → List String → List String
-    | z@(x :: xs), y :: ys => if x == y then aux xs ys else z
-    | [], _ => []
-    | x, [] => x
+  go : List String → List String → List String
+  | path@(x :: xs), y :: ys => if x == y then go xs ys else path
+  | [], _ => []
+  | path, [] => path
 
 end System.FilePath

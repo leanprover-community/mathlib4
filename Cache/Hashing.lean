@@ -1,33 +1,41 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jon Eugster
 -/
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
-import Lake.Build.Trace
 
 namespace Cache.Hashing
 
 open Lean IO
 open System hiding SearchPath
 
+/--
+The `HashMemo` contains all information `Cache` needs about the modules:
+* the name
+* its imports
+* the path to the `.lean` file
+* the file's hash (in `hashMap` and `cache`)
+
+additionally, it contains the `rootHash` which reflects changes to Mathlib's
+Lake project settings.
+-/
 structure HashMemo where
   /-- hashes `lakefile`, `lean-toolchain` and `lake-manifest`. -/
   rootHash : UInt64
-  /-- Array of imports for each module -/
-  depsMap  : Std.HashMap Name (Array Name) := {}
+  /-- Stores the imports of a module -/
+  depsMap  : Std.HashMap Name (Array Name) := ∅
+  /-- Stores the location of the source file of a module -/
+  pathMap  : Std.HashMap Name FilePath := ∅
   /--
-  For cached files (i.e. mathlib + upstream) this contains the same
-  information as `hashMap`. Non-cached files get `none`
-  here and do not appear in `hashMap`.
+  For modules in Mathlib or upstream, this contains the same information
+  as `hashMap`. Downstream modules have `none` here and do not appear in `hashMap`.
   -/
-  cache    : Std.HashMap Name (Option UInt64) := {}
-  /-- The location of each module's source file -/
-  pathMap  : Std.HashMap Name FilePath := {}
-  /-- The hashes of each module's content -/
-  hashMap  : NameHashMap := {}
+  cache    : Std.HashMap Name (Option UInt64) := ∅
+  /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
+  hashMap  : NameHashMap := ∅
   deriving Inhabited
 
 partial def insertDeps (hashMap : NameHashMap) (mod : Name) (hashMemo : HashMemo) : NameHashMap :=
@@ -126,31 +134,30 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
     let rootHash := (← get).rootHash
-    -- TODO: Ideally, we could hash the module name here, but since that
-    -- invalidates all existing cache, we recontruct this `c` which used to be
-    -- cached previously. Change this at an appropriate time!
+    -- TODO: One might hash the modules name instead of this `c`,
+    -- which exists in order to not change any generated hashes compared to previous versions.
+    -- Changing this means the entire cache gets invalidated once and has to be rebuilt once.
     let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
-    let pathHash := hash c -- TODO: change to `hash mod`
-    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
-    -- if a file is part of a cache then we need to add it to the `hashMap`, otherwise
-    -- we should add it as `none` to the hashMap
+    let modHash := hash c -- TODO: change to `hash mod`
+    let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
     -- TODO: Write a test which module is part of the mathlib cache
     if #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph, `LeanSearchClient, `Plausible, `Qq,
         `ProofWidgets].contains mod.getRoot then
+      -- part of mathlib/upstream: add hash to `hashMap`
       modifyGet fun stt =>
         (some fileHash, { stt with
-          hashMap := stt.hashMap.insert mod fileHash
+          depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
           pathMap := stt.pathMap.insert mod sourceFile
           cache   := stt.cache.insert   mod (some fileHash)
-          depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
+          hashMap := stt.hashMap.insert mod fileHash })
     else
+      -- downstream: add `none` to `cache` and do not add hash to `hashMap`
       modifyGet fun stt =>
         (none, { stt with
-          hashMap := stt.hashMap
+          depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
           pathMap := stt.pathMap.insert mod sourceFile
           cache   := stt.cache.insert   mod none
-          depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
-
+          hashMap := stt.hashMap })
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo := do
