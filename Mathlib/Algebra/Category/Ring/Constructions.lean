@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Tactic.Algebraize
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -105,8 +106,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     rw [← h.hom.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
 
-lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
-    [Algebra R A] [Algebra R B] :
+lemma isPushout_tensorProduct :
     IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
       (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeLeftRingHom)
       (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeRight.toRingHom) where
@@ -114,6 +114,28 @@ lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRi
     ext
     simp
   isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
+
+lemma closure_range_union_range_eq_top_of_isPushout
+    {R A B X : CommRingCat.{u}} {f : R ⟶ A} {g : R ⟶ B} {a : A ⟶ X} {b : B ⟶ X}
+    (H : IsPushout f g a b) :
+    Subring.closure (Set.range a ∪ Set.range b) = ⊤ := by
+  algebraize [f.hom, g.hom]
+  let e := ((isPushout_tensorProduct R A B).isoIsPushout _ _ H).commRingCatIsoToRingEquiv
+  rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
+    ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
+  simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
+  rw [← hom_comp, ← hom_comp, IsPushout.inl_isoIsPushout_inv, IsPushout.inr_isoIsPushout_inv,
+    hom_ofHom, hom_ofHom]
+  rintro x -
+  induction x with
+  | zero => exact zero_mem _
+  | tmul x y =>
+    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+      (Algebra.TensorProduct.includeRight y) ∈ _
+    · simp
+    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
+        (Subring.subset_closure (.inr ⟨_, rfl⟩))
+  | add x y _ _ => exact add_mem ‹_› ‹_›
 
 end Pushout
 
