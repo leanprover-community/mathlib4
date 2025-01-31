@@ -615,7 +615,9 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
       apply hB'.smul_eq_of_mem ha'
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
-@[to_additive]
+/-- The set of blocks for a group action containing a given element is a bounder order -/
+@[to_additive
+"The set of blocks for an additive group action containing a given element is a bounded order"]
 instance Block.boundedOrderOfMem (a : X) :
     BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
   top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
