@@ -75,14 +75,18 @@ def downloadFile (hash : UInt64) : IO Bool := do
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Exit the process with exit code 1 if any files failed to download. -/
-def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
-  let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
-  let size := hashMap.size
+def downloadAndUnpack (hashMap : IO.HashMap) (force : Bool) (parallel : Bool) (unpackMap? : Option <| Std.HashMap String String := none) : IO Unit := do
+  let toDownload ← if force then pure hashMap else hashMap.filterExists false
+  let size := toDownload.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
-    IO.println s!"Attempting to download {size} file(s)"
+    IO.println <| "Attempting to download " ++
+      (if unpackMap?.isSome then "and unpack " else "") ++
+      s!"{size} file" ++
+      (if size == 1 then "" else "s")
+
     let failed ← if parallel then
-      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
+      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent toDownload)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
@@ -95,9 +99,23 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           let result ← IO.ofExcept <| Lean.Json.parse line
           match result.getObjValAs? Nat "http_code" with
           | .ok 200 =>
+            --TODO: what's with the `else` clause here?
             if let .ok fn := result.getObjValAs? String "filename_effective" then
-              if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-                IO.FS.rename fn (fn.dropRight 5)
+              let cacheFile ← if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
+                  IO.FS.rename fn (fn.dropRight 5)
+                  pure <| fn.dropRight 5
+                else
+                  pure fn
+              -- Unpack the file directly
+              -- TODO: I don't think a failure here should directly ERROR
+              match unpackMap? with
+              | none => pure ()
+              | some unpackMap =>
+                let some hash ← pure <| ((cacheFile : FilePath).withExtension "").fileName
+                  | throw <| IO.userError s!"could not get hash from file name {cacheFile}!"
+                let some pkgDir ← pure unpackMap[hash]?
+                  | throw <| IO.userError s!"{hash} is not in the map!\nkeys: {unpackMap.keys}"
+                IO.unpackCacheSingle cacheFile pkgDir force
             success := success + 1
           | .ok 404 => pure ()
           | _ =>
@@ -139,9 +157,15 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
-Print and error and exit the process with error code 1 otherwise. -/
+Print and error and exit the process with error code 1 otherwise.
+
+Does nothing if the current project is mathlib.
+-/
 def checkForToolchainMismatch : IO.CacheM Unit := do
-  let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
+  let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
+  if mathlibToolchainFile.normalize == ("lean-toolchain" : FilePath).normalize then
+    -- we are in mathlib, nothing to check
+    return ()
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then
@@ -184,16 +208,38 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
     throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
+def getFiles (hashMap : IO.HashMap) (pathMap : Std.HashMap Lean.Name FilePath) (force parallel decompress : Bool) :
     IO.CacheM Unit := do
-  let isMathlibRoot ← IO.isMathlibRoot
-  unless isMathlibRoot do checkForToolchainMismatch
+  checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
-  downloadFiles hashMap forceDownload parallel
+
+
+
+
+  let toDownload ← if force then pure hashMap else hashMap.filterExists false
   if decompress then
-    IO.unpackCache hashMap forceUnpack
+    let unpackMap : Std.HashMap String String ←
+      hashMap.foldM (init := ∅) fun acc mod hash => do
+        let some sourceFile ← pure pathMap[mod]?
+          | throw <| IO.userError "did not find source file for {mod}."
+        let pkgDir ← IO.getPackageDir sourceFile
+          -- note: this should correspond to
+        pure <| acc.insert hash.toHexDigits pkgDir.toString
+    downloadAndUnpack toDownload force parallel unpackMap
+  else
+    downloadAndUnpack toDownload force parallel
+
+  if decompress then
+    let toUnpack ← if force then pure ∅ else hashMap.filterExists true
+    IO.unpackCache toUnpack pathMap force
+    IO.println "Completed successfully!"
   else
     IO.println "Downloaded all files successfully!"
+
+  --   IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
+  --   IO.println "Completed successfully!"
+  -- else IO.println "No cache files to decompress"
+
 
 end Get
 
