@@ -197,3 +197,8 @@ theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreduc
   (prime_of_factor x h).irreducible
 
 end UniqueFactorizationMonoid
+
+lemma Irreducible.unit_pow_iff {M : Type*} [Monoid M] {x : M} (hx : Irreducible x) {n : ℕ} :
+    IsUnit (x ^ n) ↔ n = 0 := by
+  rcases n with (_|n) <;>
+  simp [hx.not_unit]
