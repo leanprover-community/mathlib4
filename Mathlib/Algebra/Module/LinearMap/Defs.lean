@@ -106,6 +106,8 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
     [Module R M] [Module S M₂] [FunLike F M M₂]
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
 
+attribute [instance 50] SemilinearMapClass.toAddHomClass
+
 end
 
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to https://github.com/leanprover/lean4/pull/3701.
