@@ -327,7 +327,7 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
     simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
-    mapIdxM' f as = mapIdxM as f *> pure PUnit.unit :=
+    mapIdxM' f as = mapIdxM f as *> pure PUnit.unit :=
   mapIdxMAux'_eq_mapIdxMGo f as #[]
 
 end MapIdxM'
