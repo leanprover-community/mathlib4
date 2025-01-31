@@ -256,4 +256,3 @@ example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   exact fun x y => ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩
 
 end Counterexample
-#min_imports
