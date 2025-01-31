@@ -21,7 +21,7 @@ namespace Real
 noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
 
 /-- Notation `log⁺` for the real part of the logarithm. -/
-notation "log⁺" => posLog
+scoped notation "log⁺" => posLog
 
 /-- Definition of the real part of the logarithm, formulated as a theorem. -/
 theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
@@ -30,7 +30,7 @@ theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
 ## Elementary Properties
 -/
 /-- Presentation of `log` in terms of its positive part. -/
-theorem log_eq_posLog_sub_posLog_inv {r : ℝ} : log r = log⁺ r - log⁺ r⁻¹ := by
+theorem posLog_sub_posLog_inv {r : ℝ} : log⁺ r - log⁺ r⁻¹ = log r := by
   rw [posLog_def, posLog_def, log_inv]
   by_cases h : 0 ≤ log r
   · simp [h]
@@ -38,7 +38,7 @@ theorem log_eq_posLog_sub_posLog_inv {r : ℝ} : log r = log⁺ r - log⁺ r⁻�
     simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
 
 /-- Presentation of `log⁺` in terms of `log`. -/
-theorem posLog_eq_half_mul_log_add_log_abs {r : ℝ} : log⁺ r = 2⁻¹ * (log r + |log r|) := by
+theorem half_mul_log_add_log_abs {r : ℝ} : 2⁻¹ * (log r + |log r|) = log⁺ r := by
   by_cases hr : 0 ≤ log r
   · simp [posLog, hr, abs_of_nonneg]
     ring
@@ -48,7 +48,8 @@ theorem posLog_eq_half_mul_log_add_log_abs {r : ℝ} : log⁺ r = 2⁻¹ * (log 
 theorem posLog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [posLog]
 
 /-- The function `log⁺` is even. -/
-theorem posLog_neg (x : ℝ) : log⁺ x = log⁺ (-x) := by simp [posLog]
+@[simp]
+theorem posLog_neg (x : ℝ) : log⁺ (-x) = log⁺ x := by simp [posLog]
 
 /-- The function `log⁺` is even. -/
 theorem posLog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [posLog]
@@ -65,7 +66,7 @@ theorem posLog_eq_log {x : ℝ} (hx : 1 ≤ |x|) : log⁺ x = log x := by
   apply log_nonneg hx
 
 /-- The function `log⁺` equals `log` for all natural numbers. -/
-theorem posLog_eq_log_of_nat {n : ℕ} : log n = log⁺ n := by
+theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   by_cases hn : n = 0
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
@@ -98,9 +99,9 @@ theorem posLog_mul {a b : ℝ} :
 
 /-- Estimate for `log⁺` of a product. Special case of `Real.posLog_mul` where one of
 the factors is a natural number. -/
-theorem posLog_mul_nat {n : ℕ} {a : ℝ} :
+theorem posLog_nat_mul {n : ℕ} {a : ℝ} :
     log⁺ (n * a) ≤ log n + log⁺ a := by
-  rw [posLog_eq_log_of_nat]
+  rw [← log_of_nat_eq_posLog]
   exact posLog_mul
 
 /-- Estimate for `log⁺` of a product. See `Real.posLog_mul` for a variant with
@@ -143,7 +144,7 @@ theorem posLog_sum {α : Type} (s : Finset α) (f : α → ℝ) :
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
-  _ ≤ log s.card + log⁺ |f t_max| := posLog_mul_nat
+  _ ≤ log s.card + log⁺ |f t_max| := posLog_nat_mul
   _ ≤ log s.card + ∑ t ∈ s, log⁺ (f t) := by
     apply add_le_add (by rfl)
     rw [posLog_abs]
