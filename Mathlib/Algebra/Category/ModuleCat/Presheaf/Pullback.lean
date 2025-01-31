@@ -18,7 +18,7 @@ The existence of this left adjoint functor is obtained under suitable universe a
 
 -/
 
-universe v v₁ v₂ u₁ u₂ u
+universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
 open CategoryTheory Limits Opposite
 
@@ -89,6 +89,115 @@ lemma pullbackObjIsDefined_eq_top :
 instance : (pushforward.{u} φ).IsRightAdjoint :=
   Functor.isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (pullbackObjIsDefined_eq_top φ)
+
+end
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
+
+variable {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
+  {G : D ⥤ E} {T : Eᵒᵖ ⥤ RingCat.{u}} (ψ : R ⟶ G.op ⋙ T)
+
+instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardId.{v} S).symm
+
+variable (S) in
+noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
+  ((conjugateIsoEquiv (pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))
+    Adjunction.id).symm (pushforwardId S)).symm
+
+lemma pullbackId_inv_app (M : PresheafOfModules.{v} S) :
+    (pullbackId S).inv.app M =
+      (pullbackPushforwardAdjunction (F := 𝟭 C) (𝟙 S)).unit.app M ≫
+        (pushforwardId S).hom.app ((pullback (F := 𝟭 C) (𝟙 S)).obj M) := rfl
+
+variable [(pushforward.{v} φ).IsRightAdjoint]
+
+section
+
+variable [(pushforward.{v} ψ).IsRightAdjoint]
+
+instance : (pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ).symm
+
+noncomputable def pullbackComp :
+    pullback.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ≅
+      pullback.{v} φ ⋙ pullback.{v} ψ :=
+  (conjugateIsoEquiv
+    ((pullbackPushforwardAdjunction φ).comp (pullbackPushforwardAdjunction ψ))
+    (pullbackPushforwardAdjunction (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ))).symm
+      (pushforwardComp φ ψ).symm
+
+@[reassoc]
+lemma unit_app_comp_pushforward_map_pullbackComp_hom (M : PresheafOfModules.{v} S) :
+    (pullbackPushforwardAdjunction (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ)).unit.app M ≫
+        (pushforward _).map ((pullbackComp φ ψ).hom.app M) =
+    (pullbackPushforwardAdjunction φ).unit.app M ≫
+      (pushforward φ).map ((pullbackPushforwardAdjunction ψ).unit.app _) ≫
+        (pushforwardComp φ ψ).inv.app _ := by
+  simp [pullbackComp]
+
+variable {T' : E'ᵒᵖ ⥤ RingCat.{u}} {G' : E ⥤ E'} (ψ' : T ⟶ G'.op ⋙ T')
+  [(pushforward.{v} ψ').IsRightAdjoint]
+
+lemma pullback_assoc :
+    pullbackComp.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ' ≪≫
+      isoWhiskerRight (pullbackComp.{v} φ ψ) _ =
+    pullbackComp.{v} (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ') ≪≫
+      isoWhiskerLeft _ (pullbackComp.{v} ψ ψ') ≪≫ (Functor.associator _ _ _).symm := by
+  ext M : 3
+  apply ((pullbackPushforwardAdjunction _).homEquiv _ _).injective
+  dsimp
+  conv_lhs =>
+    simp only [Functor.map_comp, unit_app_comp_pushforward_map_pullbackComp_hom_assoc,
+      CategoryTheory.Functor.map_id, Category.comp_id, ← NatTrans.naturality,
+      Functor.comp_obj, Functor.comp_map]
+    simp only [← Functor.map_comp_assoc, Adjunction.unit_naturality]
+    simp only [Functor.map_comp, Category.assoc,
+       unit_app_comp_pushforward_map_pullbackComp_hom_assoc,
+      ← (pushforwardComp.{v} φ ψ).inv.naturality_assoc, pushforward_inv_app_assoc]
+    dsimp
+  conv_rhs =>
+    simp only [Functor.map_comp, CategoryTheory.Functor.map_id, Category.comp_id]
+  sorry
+    --erw [unit_app_comp_pushforward_map_pullbackComp_hom_assoc.{v} (G := G ⋙ G')
+    --  φ (ψ ≫ whiskerLeft G.op ψ'), ← NatTrans.naturality]
+    --dsimp
+    --rw [← Functor.map_comp_assoc, unit_app_comp_pushforward_map_pullbackComp_hom,
+    --  Functor.map_comp, Functor.map_comp]
+    --simp only [Category.assoc]
+
+end
+
+instance : (pushforward.{v} (F := 𝟭 C ⋙ F) (𝟙 S ≫ whiskerLeft (𝟭 C).op φ)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardComp (F := 𝟭 C) (𝟙 S) φ).symm
+
+instance : (pushforward.{v} (F := F ⋙ 𝟭 D) (φ ≫ whiskerLeft F.op (𝟙 R))).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardComp (G := 𝟭 D) φ (𝟙 R)).symm
+
+lemma pullback_id_comp :
+    pullbackComp.{v} (F := 𝟭 C) (𝟙 S) φ =
+      (Functor.leftUnitor _).symm ≪≫ isoWhiskerRight (pullbackId S).symm _ := by
+  ext M : 3
+  apply ((pullbackPushforwardAdjunction _).homEquiv _ _).injective
+  dsimp
+  sorry
+  --erw [unit_app_comp_pushforward_map_pullbackComp_hom]
+  --simp [pushforward_id_comp, pullbackId_inv_app]
+  --rfl
+
+lemma pullback_comp_id :
+    pullbackComp.{v} (G := 𝟭 _) φ (𝟙 R) =
+      (Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft _ (pullbackId R).symm := by
+  ext M : 3
+  apply ((pullbackPushforwardAdjunction _).homEquiv _ _).injective
+  dsimp [pullbackId_inv_app]
+  sorry
+  --erw [unit_app_comp_pushforward_map_pullbackComp_hom (G := 𝟭 _) φ (𝟙 R)]
+  --simp
+  --rfl
 
 end
 
