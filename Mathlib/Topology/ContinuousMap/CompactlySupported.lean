@@ -130,7 +130,7 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
  If `g` doesn't send `0` to `0`, `f.compLeft g` defaults to `0`. -/
 noncomputable def compLeft {γ : Type*} [TopologicalSpace γ] [Zero γ] (g : C(β, γ))
     (f : C_c(α, β)) : C_c(α, γ) where
-  toContinuousMap := if g 0 = 0 then g.comp f else 0
+  toContinuousMap := by classical exact if g 0 = 0 then g.comp f else 0
   hasCompactSupport' := by
     classical
     split hg
