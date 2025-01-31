@@ -68,7 +68,7 @@ terminal.from U               χ
 ```
 -/
 structure IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
-  /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω` -/
+  /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
   char {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
   /-- `char m` forms the appropriate pullback square. -/
   isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (terminal.from U) (char m) t
@@ -87,6 +87,9 @@ class Classifier where
   t : ⊤_ C ⟶ obj
   /-- the pair `obj` and `t` form a subobject classifier -/
   isClassifier : IsClassifier t
+
+class HasClassifier : Prop where
+  exists_classifier : Nonempty (Classifier C)
 
 variable [Classifier C]
 
