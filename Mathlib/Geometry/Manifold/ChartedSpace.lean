@@ -747,7 +747,7 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
   refine Subset.antisymm (by simp) ?_
   simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
   intro y hy h'y
-  exact (chartAt H x).injOn hy (ChartedSpace.mem_chart_source x) h'y
+  exact (chartAt H x).injOn hy (mem_chart_source _ x) h'y
 
 end
 
