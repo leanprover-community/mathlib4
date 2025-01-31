@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Use
-import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.SymmDiff
@@ -51,9 +49,10 @@ variable {f : α → β} {g : β → γ}
 theorem preimage_empty : f ⁻¹' ∅ = ∅ :=
   rfl
 
-theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x) : f ⁻¹' s = g ⁻¹' s := by
-  congr with x
-  simp [h]
+theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x)
+    : f ⁻¹' s = g ⁻¹' s := by
+  ext x
+  repeat rw [Set.mem_preimage,Set.mem_preimage,h x]
 
 @[gcongr]
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f ⁻¹' s ⊆ f ⁻¹' t := fun _ hx => h hx
@@ -215,9 +214,40 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
 
 @[gcongr]
 lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by
-  rintro - ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
+  rintro y ⟨a,ha,hay⟩
+  exact hay ▸ mem_image_of_mem f (h ha)
+
 
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by aesop
+
+theorem image_comp_1 (f : β → γ) (g : α → β) (s : Set α) : f ∘ g '' s = f '' (g '' s) := by
+  ext z
+  apply Iff.intro
+  · intro ⟨x,hx,hxz⟩
+    apply Exists.intro (g x)
+    apply And.intro
+    · apply Exists.intro x
+      apply And.intro hx rfl
+    exact hxz
+  intro ⟨y,⟨x,hx,hxy⟩,hyz⟩
+  apply Exists.intro x
+  apply And.intro hx
+  have h1 := (hxy ▸ hyz)
+  exact h1
+
+theorem image_comp_2 (f : β → γ) (g : α → β) (s : Set α) : f ∘ g '' s = f '' (g '' s) := by
+  ext z
+  apply Iff.intro
+  · exact fun ⟨x,hx,hxz⟩ => ⟨(g x), ⟨⟨x,⟨ hx,rfl⟩⟩, hxz⟩⟩
+  exact fun ⟨y,⟨x,hx,hxy⟩,hyz⟩ =>
+    ⟨x,⟨hx,(@Function.comp_apply β γ α f g x ▸ (hxy ▸ hyz))⟩⟩
+
+theorem image_comp_3 (f : β → γ) (g : α → β) (s : Set α) : f ∘ g '' s = f '' (g '' s) :=
+  ext fun _z =>
+  Iff.intro
+    (fun ⟨x,hx,hxz⟩ => ⟨(g x), ⟨⟨x,⟨ hx,rfl⟩⟩, hxz⟩⟩)
+    (fun ⟨_y,⟨x,hx,hxy⟩,hyz⟩ =>
+    ⟨x,⟨hx,(@Function.comp_apply β γ α f g x ▸ (hxy ▸ hyz))⟩⟩)
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by ext; simp
 
