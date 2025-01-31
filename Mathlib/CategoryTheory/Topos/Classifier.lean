@@ -204,5 +204,5 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
 
 end CategoryTheory.MonoClassifier
 
-#lint docBlameThm
+-- #lint docBlameThm
 -- is a docstring needed for the auto-generated `comm_assoc`?
