@@ -165,9 +165,6 @@ noncomputable instance monoIsRegularMono {A B : C} (m : A ⟶ B) [Mono m] : Regu
 instance balanced : Balanced C where
   isIso_of_mono_of_epi := fun f => isIso_of_epi_of_strongMono f
 
-/-- Since `C` is balanced, so is `Cᵒᵖ`. -/
-instance balancedOp : Balanced Cᵒᵖ := balanced_opposite
-
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.
 -/
