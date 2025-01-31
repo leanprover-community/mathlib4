@@ -20,7 +20,7 @@ Given `SMul G X`, an action of a type `G` on a type `X`, we define
   definition `MulAction.IsBlock.def_one`
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
-and non trivial blocks: orbit of the group, orbit of a normal subgroup…
+  and non trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 
@@ -346,25 +346,6 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
     rw [← this]; rfl
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
-theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
-    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddEquiv.toAddMonoidHom (AddAut.conj g))) (g +ᵥ B) := by
-  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
-  intro h'
-  obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
-  simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
-  suffices h' +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    simp only [this]
-    apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
-    · intro hB'; congr
-    · exact Set.disjoint_image_of_injective (AddAction.injective g)
-  suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    exact this
-  rw [← hh, vadd_vadd, vadd_vadd]
-  erw [AddAut.conj_apply]
-  simp
-
 /-- A translate of a block is a block -/
 theorem _root_.AddAction.IsBlock.translate
     {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
@@ -393,8 +374,8 @@ variable (G) in
  for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
-/-- Translates of a block form a block system. -/
-@[to_additive]
+/-- Translates of a block form a block system -/
+@[to_additive "Translates of a block form a block system"]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
