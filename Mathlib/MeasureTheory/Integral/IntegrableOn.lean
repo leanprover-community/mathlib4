@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.L1Space
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 
 /-! # Functions integrable on a set and at a filter
@@ -232,8 +232,8 @@ theorem MeasurePreserving.integrableOn_image [MeasurableSpace β] {e : α → β
 
 theorem integrable_indicator_iff (hs : MeasurableSet s) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
-  simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_nnnorm,
-    nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator, lintegral_indicator hs,
+  simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_enorm,
+    enorm_indicator_eq_indicator_enorm, lintegral_indicator hs,
     aestronglyMeasurable_indicator_iff hs]
 
 theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
@@ -335,7 +335,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
     (∫⁻ x, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   calc
-    (∫⁻ x, ENNReal.ofReal (f x) ∂μ) ≤ ∫⁻ x, ↑‖f x‖₊ ∂μ := lintegral_ofReal_le_lintegral_nnnorm f
+    (∫⁻ x, ENNReal.ofReal (f x) ∂μ) ≤ ∫⁻ x, ↑‖f x‖₊ ∂μ := lintegral_ofReal_le_lintegral_enorm f
     _ < ∞ := hf.2
 
 theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : IntegrableOn f s μ) :
@@ -375,6 +375,18 @@ theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
 protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
   Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
+
+theorem integrableAtFilter_atBot_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≥ x2]
+    [Nonempty α] :
+    IntegrableAtFilter f atBot μ ↔ ∃ a, IntegrableOn f (Iic a) μ := by
+  refine ⟨fun ⟨s, hs, hi⟩ ↦ ?_, fun ⟨a, ha⟩ ↦ ⟨Iic a, Iic_mem_atBot a, ha⟩⟩
+  obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
+  exact ⟨t, hi.mono_set fun _ hx ↦ ht _ hx⟩
+
+theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≤ x2]
+    [Nonempty α] :
+    IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
+  integrableAtFilter_atBot_iff (α := αᵒᵈ)
 
 protected theorem IntegrableAtFilter.add {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
