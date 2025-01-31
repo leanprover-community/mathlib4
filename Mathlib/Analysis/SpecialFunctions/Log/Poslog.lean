@@ -12,25 +12,25 @@ This file defines the function `log⁺ = r ↦ max 0 (log r)`, and establishes
 standard estimates.
 -/
 
-open Real
+namespace Real
 
 /-!
 ## Definition, Notation and Reformulations
 -/
 /-- Definition: the real part of the logarithm. -/
-noncomputable def Real.poslog : ℝ → ℝ := fun r ↦ max 0 (log r)
+noncomputable def poslog : ℝ → ℝ := fun r ↦ max 0 (log r)
 
 /-- Notation `log⁺` for the real part of the logarithm. -/
 notation "log⁺" => poslog
 
 /-- Definition of the real part of the logarithm, formulated as a theorem. -/
-theorem Real.poslog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
+theorem poslog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
 
 /-!
 ## Elementary Properties
 -/
 /-- Presentation of `log` in terms of its positive part. -/
-theorem Real.log_eq_poslog_sub_poslog_inv {r : ℝ} : log r = log⁺ r - log⁺ r⁻¹ := by
+theorem log_eq_poslog_sub_poslog_inv {r : ℝ} : log r = log⁺ r - log⁺ r⁻¹ := by
   rw [poslog_def, poslog_def, log_inv]
   by_cases h : 0 ≤ log r
   · simp [h]
@@ -38,40 +38,40 @@ theorem Real.log_eq_poslog_sub_poslog_inv {r : ℝ} : log r = log⁺ r - log⁺ 
     simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
 
 /-- Presentation of `log⁺` in terms of `log`. -/
-theorem Real.poslog_eq_half_mul_log_add_log_abs {r : ℝ} : log⁺ r = 2⁻¹ * (log r + |log r|) := by
+theorem poslog_eq_half_mul_log_add_log_abs {r : ℝ} : log⁺ r = 2⁻¹ * (log r + |log r|) := by
   by_cases hr : 0 ≤ log r
   · simp [poslog, hr, abs_of_nonneg]
     ring
   · simp [poslog, le_of_not_ge hr, abs_of_nonpos]
 
 /-- The positive part of `log` is never negative. -/
-theorem Real.poslog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [poslog]
+theorem poslog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [poslog]
 
 /-- The function `log⁺` is even. -/
-theorem Real.poslog_neg (x : ℝ) : log⁺ x = log⁺ (-x) := by simp [poslog]
+theorem poslog_neg (x : ℝ) : log⁺ x = log⁺ (-x) := by simp [poslog]
 
 /-- The function `log⁺` is even. -/
-theorem Real.poslog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [poslog]
+theorem poslog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [poslog]
 
 /-- The function `log⁺` is zero in the interval [-1,1]. -/
-theorem Real.poslog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
+theorem poslog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
   rw [← poslog_abs, ← log_nonpos_iff (abs_nonneg x)]
   simp [poslog]
 
 /-- The function `log⁺` equals `log` outside of in the interval (-1,1). -/
-theorem Real.poslog_eq_log {x : ℝ} (hx : 1 ≤ |x|) : log⁺ x = log x := by
+theorem poslog_eq_log {x : ℝ} (hx : 1 ≤ |x|) : log⁺ x = log x := by
   simp [poslog]
   rw [← log_abs]
   apply log_nonneg hx
 
 /-- The function `log⁺` equals `log` for all natural numbers. -/
-theorem Real.poslog_eq_log_of_nat {n : ℕ} : log n = log⁺ n := by
+theorem poslog_eq_log_of_nat {n : ℕ} : log n = log⁺ n := by
   by_cases hn : n = 0
   · simp [hn, poslog]
   · simp [poslog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
 /-- The function `log⁺` is monotone in the positive axis. -/
-theorem Real.monotoneOn_poslog : MonotoneOn log⁺ (Set.Ici 0) := by
+theorem monotoneOn_poslog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
   simp [poslog]
   by_cases h : log x ≤ 0
@@ -86,7 +86,7 @@ theorem Real.monotoneOn_poslog : MonotoneOn log⁺ (Set.Ici 0) := by
 -/
 /-- Estimate for `log⁺` of a product. See `Real.poslog_prod` for a variant involving
 multiple factors. -/
-theorem Real.poslog_mul {a b : ℝ} :
+theorem poslog_mul {a b : ℝ} :
     log⁺ (a * b) ≤ log⁺ a + log⁺ b := by
   by_cases ha : a = 0
   · simp [ha, poslog]
@@ -98,14 +98,14 @@ theorem Real.poslog_mul {a b : ℝ} :
 
 /-- Estimate for `log⁺` of a product. Special case of `Real.poslog_mul` where one of
 the factors is a natural number. -/
-theorem Real.poslog_mul_nat {n : ℕ} {a : ℝ} :
+theorem poslog_mul_nat {n : ℕ} {a : ℝ} :
     log⁺ (n * a) ≤ log n + log⁺ a := by
   rw [poslog_eq_log_of_nat]
   exact poslog_mul
 
 /-- Estimate for `log⁺` of a product. See `Real.poslog_mul` for a variant with
 only two factors. -/
-theorem Real.poslog_prod {α : Type} [DecidableEq α] (s : Finset α) (f : α → ℝ) :
+theorem poslog_prod {α : Type} [DecidableEq α] (s : Finset α) (f : α → ℝ) :
     log⁺ (∏ t ∈ s, f t) ≤ ∑ t ∈ s, log⁺ (f t) := by
   apply Finset.induction (p := fun (S : Finset α) ↦ (log⁺ (∏ t ∈ S, f t) ≤ ∑ t ∈ S, log⁺ (f t)))
   · -- Empty set
@@ -123,7 +123,7 @@ theorem Real.poslog_prod {α : Type} [DecidableEq α] (s : Finset α) (f : α �
 -/
 /-- Estimate for `log⁺` of a sum. See `Real.poslog_add` for a variant involving
 just two summands. -/
-theorem Real.poslog_sum {α : Type} (s : Finset α) (f : α → ℝ) :
+theorem poslog_sum {α : Type} (s : Finset α) (f : α → ℝ) :
     log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum
   by_cases hs : s = ∅
@@ -151,7 +151,7 @@ theorem Real.poslog_sum {α : Type} (s : Finset α) (f : α → ℝ) :
 
 /-- Estimate for `log⁺` of a sum. See `Real.poslog_sum` for a variant involving
 multiple summands. -/
-theorem Real.poslog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
+theorem poslog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
   convert Real.poslog_sum (Finset.univ : Finset (Fin 2))
     (fun i => match i with | 0 => a | 1 => b : Fin 2 → ℝ) using 1
   <;> simp [add_assoc]
