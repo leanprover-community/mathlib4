@@ -162,34 +162,7 @@ lemma measurableSet_sigmaFiniteSetWRT' [IsFiniteMeasure ν] :
 lemma sigmaFinite_restrict_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] :
     SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT' ν)) := by
   have := sigmaFinite_restrict_sigmaFiniteSetGE μ ν
-  let f : ℕ × ℕ → Set α := fun p : ℕ × ℕ ↦ (μ.sigmaFiniteSetWRT' ν)ᶜ
-    ∪ (spanningSets (μ.restrict (μ.sigmaFiniteSetGE ν p.1)) p.2 ∩ (μ.sigmaFiniteSetGE ν p.1))
-  suffices (μ.restrict (μ.sigmaFiniteSetWRT' ν)).FiniteSpanningSetsIn (Set.range f) from
-    this.sigmaFinite
-  let e : ℕ ≃ ℕ × ℕ := Nat.pairEquiv.symm
-  refine ⟨fun n ↦ f (e n), fun _ ↦ by simp, fun n ↦ ?_, ?_⟩
-  · simp only [Nat.pairEquiv_symm_apply, gt_iff_lt, measure_union_lt_top_iff, f, e]
-    rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT', Set.compl_inter_self,
-      Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT']
-    simp only [measure_empty, ENNReal.zero_lt_top, true_and]
-    refine (measure_mono Set.inter_subset_left).trans_lt ?_
-    rw [← Measure.restrict_apply' (measurableSet_sigmaFiniteSetGE _)]
-    exact measure_spanningSets_lt_top _ _
-  · simp only [Nat.pairEquiv_symm_apply, f, e]
-    rw [← Set.union_iUnion]
-    suffices ⋃ n, (spanningSets (μ.restrict (μ.sigmaFiniteSetGE ν (Nat.unpair n).1)) n.unpair.2
-        ∩ μ.sigmaFiniteSetGE ν n.unpair.1) = μ.sigmaFiniteSetWRT' ν by
-      rw [this, Set.compl_union_self]
-    calc ⋃ n, (spanningSets (μ.restrict (μ.sigmaFiniteSetGE ν (Nat.unpair n).1)) n.unpair.2
-        ∩ μ.sigmaFiniteSetGE ν n.unpair.1)
-      = ⋃ n, ⋃ m, (spanningSets (μ.restrict (μ.sigmaFiniteSetGE ν n)) m
-            ∩ μ.sigmaFiniteSetGE ν n) :=
-          Set.iUnion_unpair (fun n m ↦ spanningSets (μ.restrict (μ.sigmaFiniteSetGE ν n)) m
-            ∩ μ.sigmaFiniteSetGE ν n)
-    _ = ⋃ n, μ.sigmaFiniteSetGE ν n := by
-        refine Set.iUnion_congr (fun n ↦ ?_)
-        rw [← Set.iUnion_inter, iUnion_spanningSets, Set.univ_inter]
-    _ = μ.sigmaFiniteSetWRT' ν := rfl
+  exact sigmaFinite_iUnion_of_measurableSet _ measurableSet_sigmaFiniteSetWRT'
 
 /-- `μ.sigmaFiniteSetWRT' ν` has maximal `ν`-measure among all measurable sets `s` with sigma-finite
 `μ.restrict s`. -/
