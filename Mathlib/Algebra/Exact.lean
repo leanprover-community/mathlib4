@@ -206,6 +206,18 @@ lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
     Exact (Submodule.subtype (ker g)) g :=
   exact_iff.mpr <| (Submodule.range_subtype _).symm
 
+lemma injective_iff_exact {M N : Type*} (P : Type*)
+    [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
+    [Module R P] (f : M →ₗ[R] N) :
+    Function.Injective f ↔ Function.Exact (0 : P →ₗ[R] M) f := by
+  simp [← ker_eq_bot, exact_iff]
+
+lemma surjective_iff_exact {M N : Type*} (P : Type*)
+    [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
+    [Module R P] (f : M →ₗ[R] N) :
+    Function.Surjective f ↔ Function.Exact f (0 : N →ₗ[R] P) := by
+  simp [← range_eq_top, exact_iff, eq_comm]
+
 end LinearMap
 
 variable (f g) in
