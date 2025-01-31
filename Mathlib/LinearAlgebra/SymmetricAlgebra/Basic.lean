@@ -311,3 +311,5 @@ theorem mvPolynomial :
       rw [hf]
       simp only [LinearMap.coe_comp, LieHom.coe_toLinearMap, AlgHom.coe_toLieHom,
         Function.comp_apply, Basis.constr_basis, AlgHom.toLinearMap_apply]
+
+end IsSymmetricAlgebra
