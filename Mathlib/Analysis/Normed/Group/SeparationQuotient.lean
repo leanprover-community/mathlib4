@@ -64,13 +64,14 @@ lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomCla
 /-- The lift of a group hom to the separation quotient as a group hom. -/
 @[simps]
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
-    (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
-  { SeparationQuotient.liftContinuousAddMonoidHom f
-      <| apply_eq_apply_of_inseparable f hf with
-    bound' := by
-      refine ⟨‖f‖, fun v ↦ ?_⟩
-      obtain ⟨v, rfl⟩ := surjective_mk v
-      exact le_opNorm f v }
+    (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N where
+  toFun := SeparationQuotient.liftContinuousAddMonoidHom f <| apply_eq_apply_of_inseparable f hf
+  map_add' v₁ v₂ := by
+    apply map_add
+  bound' := by
+    refine ⟨‖f‖, fun v ↦ ?_⟩
+    obtain ⟨v, rfl⟩ := surjective_mk v
+    exact le_opNorm f v
 
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) (x : SeparationQuotient M) :

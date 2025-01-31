@@ -196,8 +196,7 @@ instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (Separatio
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-theorem nhds_mk (x : G) :
-    𝒩 (mk x) = .map mk (𝒩 x) :=
+theorem nhds_mk (x : G) : nhds (mk x) = Filter.map mk (nhds x) :=
   le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
 
 end Group
