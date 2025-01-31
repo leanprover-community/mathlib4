@@ -341,8 +341,14 @@ def unpackCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath) (f
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      -- TODO: I don't understand why we still need this case distinction.
-      -- Does `leantar` make the same case distinction in reverse?
+      -- TODO: We could do this with `pkgDir` for all modules, not only ones in mathlib.
+      -- This would be more flexible and allow cached dependencies to live somewhere else (locally).
+      -- However, this change invalidates existing .ltar files, so it needs
+      -- to be accompanied with some hash change.
+      -- In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
+      -- (mathllib lakefile/manifest would need to reflect this) and therefore would
+      -- invalidate cache anyways, therefore we leave it as is.
+      -- see: https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
       if mod.getRoot == `Mathlib then
         -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         let sourceFile := pathMap[mod]!
