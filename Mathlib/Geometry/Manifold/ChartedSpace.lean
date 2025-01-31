@@ -120,9 +120,9 @@ variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 `PartialHomeomorph.trans` and `PartialEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
-scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
 
-scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
 open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
@@ -777,9 +777,8 @@ instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
--- Porting note: simpNF false positive
--- Next lemma shows up often when dealing with derivatives, register it as simp.
-@[simp, mfld_simps, nolint simpNF]
+-- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
+@[simp, mfld_simps]
 theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
@@ -852,7 +851,7 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
 section sum
 
 variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
-    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H] [Nonempty M] [Nonempty M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H]
 
 /-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
@@ -911,8 +910,6 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   /-- An atlas of charts, which are only `PartialEquiv`s -/
   atlas : Set (PartialEquiv M H)
@@ -1283,8 +1280,6 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →
