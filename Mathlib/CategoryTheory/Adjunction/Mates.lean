@@ -491,7 +491,7 @@ def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
 
 end ConjugateIsomorphism
 
-section IteratedmateEquiv
+section IteratedMateEquiv
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
 variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C] [Category.{v₄} D]
 variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
@@ -523,9 +523,9 @@ theorem iterated_mateEquiv_conjugateEquiv_symm (α : U₂ ⋙ R₁ ⟶ R₂ ⋙ 
   rw [Equiv.eq_symm_apply, ← iterated_mateEquiv_conjugateEquiv]
   simp only [Equiv.apply_symm_apply]
 
-end IteratedmateEquiv
+end IteratedMateEquiv
 
-section mateEquivconjugateEquivVComp
+section mateEquiv_conjugateEquiv_vcomp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
 variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
@@ -562,9 +562,9 @@ theorem mateEquiv_conjugateEquiv_vcomp
     rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
   exact vcompb
 
-end mateEquivconjugateEquivVComp
+end mateEquiv_conjugateEquiv_vcomp
 
-section conjugateEquivmateEquivVComp
+section conjugateEquiv_mateEquiv_vcomp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
 variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
@@ -601,6 +601,6 @@ theorem conjugateEquiv_mateEquiv_vcomp
     rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
   exact vcompb
 
-end conjugateEquivmateEquivVComp
+end conjugateEquiv_mateEquiv_vcomp
 
 end CategoryTheory
