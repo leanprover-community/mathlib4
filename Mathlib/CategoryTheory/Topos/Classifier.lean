@@ -78,7 +78,7 @@ structure IsClassifier {Ω : C} (t : ⊤_ C ⟶ Ω) where
 
 variable (C)
 
-/-- A category C has a subobject classifier if there is some object `Ω` such that
+/-- A category `C` has a subobject classifier if there is some object `Ω` such that
 a morphism `t : ⊤_ C ⟶ Ω` is a subobject classifier. -/
 class Classifier where
   /-- the target of the "truth arrow" in a subobject classifier -/
@@ -88,6 +88,7 @@ class Classifier where
   /-- the pair `obj` and `t` form a subobject classifier -/
   isClassifier : IsClassifier t
 
+/-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
 class HasClassifier : Prop where
   exists_classifier : Nonempty (Classifier C)
 
