@@ -20,7 +20,6 @@ of monoids `φ: M → N`,
   iff that of `M` on `X`  is pretransitive.
 
 Given `MulAction G X` where `G` is a group,
-
 - `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
   iff every element is translated from `a`
 

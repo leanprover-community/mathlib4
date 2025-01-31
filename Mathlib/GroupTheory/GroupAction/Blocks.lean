@@ -20,7 +20,7 @@ Given `SMul G X`, an action of a type `G` on a type `X`, we define
   definition `MulAction.IsBlock.def_one`
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
-and non trivial blocks: orbit of the group, orbit of a normal subgroup…
+  and non trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 
@@ -36,9 +36,12 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
+- `Block.boundedOrderOfMem` : the type of blocks containing a given element is a bounded order.
+
 ## References
 
 We follow [Wielandt-1964].
+
 -/
 
 open Set
@@ -94,6 +97,8 @@ Note: It is not necessarily a block when the action is not by a group. -/
 Note: It is not necessarily a block when the action is not by a group. "]
 def IsInvariantBlock (B : Set X) := ∀ g : G, g • B ⊆ B
 
+section IsTrivialBlock
+
 /-- A trivial block is a `Set X` which is either a subsingleton or `univ`.
 
 Note: It is not necessarily a block when the action is not by a group. -/
@@ -102,6 +107,57 @@ Note: It is not necessarily a block when the action is not by a group. -/
 
 Note: It is not necessarily a block when the action is not by a group."]
 def IsTrivialBlock (B : Set X) := B.Subsingleton ∨ B = univ
+
+variable {M α N β : Type*}
+
+section monoid
+
+variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
+
+
+@[to_additive]
+theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
+    (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
+    IsTrivialBlock (f '' B) := by
+  cases' hB with hB hB
+  · apply Or.intro_left; apply Set.Subsingleton.image hB
+  · apply Or.intro_right; rw [hB]
+    simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
+
+@[to_additive]
+theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
+    (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
+    IsTrivialBlock (f ⁻¹' B) := by
+  cases' hB with hB hB
+  · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
+  · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
+
+end monoid
+
+variable [Group M] [MulAction M α] [Monoid N] [MulAction N β]
+
+@[to_additive]
+theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
+    IsTrivialBlock (g • B) := by
+  cases hB with
+  | inl h =>
+    left
+    exact (Function.Injective.subsingleton_image_iff (MulAction.injective g)).mpr h
+  | inr h =>
+    right
+    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MulAction.surjective g)]
+
+@[to_additive]
+theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
+    IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
+  constructor
+  · intro H
+    convert IsTrivialBlock.smul H g⁻¹
+    simp only [inv_smul_smul]
+  · intro H
+    exact IsTrivialBlock.smul H g
+
+end IsTrivialBlock
 
 /-- A set `B` is a `G`-block iff the sets of the form `g • B` are pairwise equal or disjoint. -/
 @[to_additive
@@ -346,25 +402,6 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
     rw [← this]; rfl
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
-theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
-    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddEquiv.toAddMonoidHom (AddAut.conj g))) (g +ᵥ B) := by
-  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
-  intro h'
-  obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
-  simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
-  suffices h' +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    simp only [this]
-    apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
-    · intro hB'; congr
-    · exact Set.disjoint_image_of_injective (AddAction.injective g)
-  suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    exact this
-  rw [← hh, vadd_vadd, vadd_vadd]
-  erw [AddAut.conj_apply]
-  simp
-
 /-- A translate of a block is a block -/
 theorem _root_.AddAction.IsBlock.translate
     {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
@@ -393,8 +430,8 @@ variable (G) in
  for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
-/-- Translates of a block form a block system. -/
-@[to_additive]
+/-- Translates of a block form a block system -/
+@[to_additive "Translates of a block form a block system"]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
@@ -579,6 +616,45 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     · intro hBB' g hgB
       apply hB'.smul_eq_of_mem ha'
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
+
+/-- The set of blocks for a group action containing a given element is a bounder order -/
+@[to_additive
+"The set of blocks for an additive group action containing a given element is a bounded order"]
+instance Block.boundedOrderOfMem (a : X) :
+    BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
+  top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
+  le_top := by
+    rintro ⟨B, ha, hB⟩
+    simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
+  bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
+  bot_le := by
+    rintro ⟨B, ha, hB⟩
+    simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
+    exact ha
+
+@[to_additive]
+theorem Block.boundedOrderOfMem.top_eq (a : X) :
+    ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
+  rfl
+
+@[to_additive]
+theorem Block.boundedOrderOfMem.bot_eq (a : X) :
+    ((Block.boundedOrderOfMem G a).bot : Set X) = {a} :=
+  rfl
+
+@[to_additive]
+instance [Nontrivial X] (a : X) :
+    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
+  rw [nontrivial_iff]
+  use (Block.boundedOrderOfMem G a).bot
+  use (Block.boundedOrderOfMem G a).top
+  intro h
+  rw [← Subtype.coe_inj] at h
+  simp only [Block.boundedOrderOfMem.top_eq, Block.boundedOrderOfMem.bot_eq] at h
+  obtain ⟨b, hb⟩ := exists_ne a
+  apply hb
+  rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
+  apply Set.mem_univ
 
 end Stabilizer
 
