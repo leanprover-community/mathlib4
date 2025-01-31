@@ -56,10 +56,6 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 /-- The topological dual of a seminormed space `E`. -/
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
--- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
--- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
-instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
-
 /-- The inclusion of a normed space in its double (topological) dual, considered
    as a bounded linear map. -/
 def inclusionInDoubleDual : E →L[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
@@ -182,6 +178,7 @@ theorem polar_closure (s : Set E) : polar 𝕜 (closure s) = polar 𝕜 s :=
 
 variable {𝕜}
 
+set_option maxSynthPendingDepth 2 in
 /-- If `x'` is a dual element such that the norms `‖x' z‖` are bounded for `z ∈ s`, then a
 small scalar multiple of `x'` is in `polar 𝕜 s`. -/
 theorem smul_mem_polar {s : Set E} {x' : Dual 𝕜 E} {c : 𝕜} (hc : ∀ z, z ∈ s → ‖x' z‖ ≤ ‖c‖) :
