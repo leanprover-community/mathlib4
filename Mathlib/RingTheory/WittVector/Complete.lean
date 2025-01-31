@@ -30,7 +30,7 @@ variable {p : ℕ} [hp : Fact (Nat.Prime p)] {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 
-theorem sub_coeff_eq_zero_of_le_coeff_eq {x y : 𝕎 k} {n : ℕ} :
+theorem le_coeff_eq_iff_le_sub_coeff_eq_zero {x y : 𝕎 k} {n : ℕ} :
     (∀ i < n, x.coeff i = y.coeff i) ↔ ∀ i < n, (x - y).coeff i = 0 := by
   calc
   _ ↔ x.truncate n = y.truncate n := by
@@ -47,7 +47,8 @@ section PerfectRing
 variable [CharP k p] [PerfectRing k p]
 
 /--
-If `k` is a perfect ring of characteristic `p`, then the Witt vector `𝕎 k` is `p`-torsion free.
+If `k` is a perfect ring of characteristic `p`, then the ring of Witt vectors `𝕎 k` is
+`p`-torsion free.
 -/
 theorem eq_zero_of_p_mul_eq_zero (x : 𝕎 k) (h : x * p = 0) : x = 0 := by
   rwa [← frobenius_verschiebung, map_eq_zero_iff _ (frobenius_bijective p k).injective,
@@ -111,7 +112,7 @@ instance isAdicCompleteIdealSpanP : IsAdicComplete (Ideal.span {(p : 𝕎 k)}) (
     use .mk p (fun n ↦ (x (n + 1)).coeff n)
     intro n
     simp only [Ideal.span_singleton_pow, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem,
-      mem_span_p_pow_iff_le_coeff_eq_zero, ← sub_coeff_eq_zero_of_le_coeff_eq] at h ⊢
+      mem_span_p_pow_iff_le_coeff_eq_zero, ← le_coeff_eq_iff_le_sub_coeff_eq_zero] at h ⊢
     intro i hi
     exact (h hi i (Nat.lt_succ_self i)).symm
 
