@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
