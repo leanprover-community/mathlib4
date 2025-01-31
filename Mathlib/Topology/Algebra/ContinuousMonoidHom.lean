@@ -135,7 +135,7 @@ def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f :
   { MonoidHomClass.toMonoidHom f with }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
-`ContinuousMnoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
+`ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
 @[to_additive "Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`."]
 instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F ((A →ₜ* B)) :=
@@ -446,10 +446,11 @@ variable {X : Type} [TopologicalSpace X] [TopologicalGroup A] [TopologicalGroup 
   [TopologicalGroup C]
 
 /--
-The continuous homomorphism from a commutative topological group `A` to `C(X,A)`,
-taking an element `a : A` to the constant function `fun _ ↦ a`.
+The continuous homomorphism `A →ₜ* C(X,A)`, taking an element of `A` to the constant function.
 -/
-@[to_additive] def constₜ  : A →ₜ* C(X,A) where
+@[to_additive "The continuous homomorphism `A →ₜ+ C(X,A)`, taking an element of `A` to
+  the constant function."]
+def constₜ : A →ₜ* C(X,A) where
   toFun             := ContinuousMap.const X
   map_one'          := rfl
   map_mul' _ _      := rfl
