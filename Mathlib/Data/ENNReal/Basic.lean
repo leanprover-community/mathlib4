@@ -94,7 +94,7 @@ variable {α : Type*}
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
-  deriving Zero, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
+  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
@@ -105,6 +105,7 @@ scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
 namespace ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
+instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
 instance : Min ℝ≥0∞ := SemilatticeInf.toMin
@@ -127,8 +128,8 @@ instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop
 noncomputable instance : LinearOrderedAddCommMonoid ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
-noncomputable instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
-noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
+instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
+instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
@@ -152,7 +153,7 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
-noncomputable instance : Unique (AddUnits ℝ≥0∞) where
+instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
   uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
 
@@ -185,6 +186,12 @@ lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
+instance : NNRatCast ℝ≥0∞ where
+  nnratCast r := ofNNReal r
+
+@[norm_cast]
+theorem coe_nnratCast (q : ℚ≥0) : ↑(q : ℝ≥0) = (q : ℝ≥0∞) := rfl
+
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
 protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 
@@ -192,7 +199,7 @@ protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
-protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
+protected def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 
 @[simp, norm_cast] lemma toNNReal_coe (r : ℝ≥0) : (r : ℝ≥0∞).toNNReal = r := rfl
 
@@ -390,10 +397,6 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 
-theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
-
-theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
-
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
   ⟨le_rfl⟩
@@ -484,6 +487,12 @@ lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) ≠ ∞ := natCast_ne
 lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
+
+@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ ofNat(n) :=
+  ofNat_ne_top.symm
+
+@[deprecated ofNat_ne_top (since := "2025-01-21")] lemma two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
+@[deprecated ofNat_lt_top (since := "2025-01-21")] lemma two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
@@ -685,6 +694,12 @@ theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdCon
 end OrdConnected
 
 end Set
+
+/-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
+unsafe instance : Repr ℝ≥0∞ where
+  reprPrec
+  | (r : ℝ≥0), p => Repr.addAppParen f!"ENNReal.ofReal ({repr r.val})" p
+  | ∞, _ => "∞"
 
 namespace Mathlib.Meta.Positivity
 
