@@ -122,7 +122,7 @@ theorem Real.poslog_prod {α : Type} [DecidableEq α] (s : Finset α) (f : α �
 ## Estimates for Sums
 -/
 /-- Estimate for `log⁺` of a sum. See `Real.poslog_add` for a variant involving
-multiple summands. -/
+just two summands. -/
 theorem Real.poslog_sum {α : Type} (s : Finset α) (f : α → ℝ) :
     log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum
