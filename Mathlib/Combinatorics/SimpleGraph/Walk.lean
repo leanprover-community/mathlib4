@@ -807,7 +807,7 @@ lemma not_nil_iff {p : G.Walk v w} :
   cases p <;> simp [*]
 
 @[simp]
-lemma nil_append {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
+lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
   cases p <;> cases q <;> simp
 
 @[simp]
@@ -976,13 +976,13 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · assumption)
 
 lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
-    (hadj : G.Adj u v) :
+    (hadj : G.Adj u v') :
     (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
   simp [Walk.takeUntil, h]
 
 @[simp]
-lemma takeUntil_first (p : G.Walk u v) (h : u ∈ p.support := p.start_mem_support) :
-    p.takeUntil u h = .nil := by cases p <;> simp [Walk.takeUntil]
+lemma takeUntil_first (p : G.Walk u v) :
+    p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
 lemma nil_takeUntil_iff (p : G.Walk u v) (hwp : w ∈ p.support) :
@@ -1136,7 +1136,7 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
     apply q.getVert_takeUntil hw
     omega
 
-lemma snd_takeUntil {p : G.Walk u v} (hsu : w ≠ u) (h : w ∈ p.support) :
+lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
   apply p.getVert_takeUntil h
   by_contra! hc
