@@ -168,7 +168,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     IsScalarTower.of_algebraMap_eq (fun x =>
       (IsLocalization.map_eq (T := P') (Q := Localization P') P.primeCompl.le_comap_map x).symm)
   have h : P' ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
+    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
       P.primeCompl_le_nonZeroDivisors
   haveI : IsDomain (Localization P') := IsLocalization.isDomain_localization h
   haveI : IsDedekindDomain (Localization P') := IsLocalization.isDedekindDomain S h _

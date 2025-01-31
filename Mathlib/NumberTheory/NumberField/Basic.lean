@@ -206,15 +206,15 @@ variable {K}
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
-This is a convenient abbreviation for `NoZeroSMulDivisors.algebraMap_injective`.
+This is a convenient abbreviation for `FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
 This is a convenient abbreviation for `map_eq_zero_iff` applied to
-`NoZeroSMulDivisors.algebraMap_injective`.
+`FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
   map_eq_zero_iff _ coe_injective
@@ -222,7 +222,7 @@ lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
 This is a convenient abbreviation for `map_ne_zero_iff` applied to
-`NoZeroSMulDivisors.algebraMap_injective`.
+`FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
@@ -339,8 +339,8 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap.injective K L)
+instance : FaithfulSMul (𝓞 K) (𝓞 L) :=
+  (faithfulSMul_iff_algebraMap_injective (𝓞 K) (𝓞 L)).mpr <| algebraMap.injective K L
 
 instance : NoZeroSMulDivisors (𝓞 K) L :=
   NoZeroSMulDivisors.trans (𝓞 K) (𝓞 L) L

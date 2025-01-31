@@ -39,7 +39,7 @@ variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix 
 
 lemma finite_real_spectrum : (spectrum ℝ A).Finite := by
   rw [← spectrum.preimage_algebraMap 𝕜]
-  exact A.finite_spectrum.preimage (NoZeroSMulDivisors.algebraMap_injective ℝ 𝕜).injOn
+  exact A.finite_spectrum.preimage (FaithfulSMul.algebraMap_injective ℝ 𝕜).injOn
 
 instance : Finite (spectrum ℝ A) := A.finite_real_spectrum
 

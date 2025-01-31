@@ -120,7 +120,7 @@ variable [IsFractionRing A K]
 
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
-    [NoZeroSMulDivisors A B] (I : Submodule B (FractionRing B)) :
+    [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
       traceDual A K (I.map (FractionRing.algEquiv B L)) := by
   show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
@@ -580,7 +580,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
   have hp' := (Ideal.map_eq_bot_iff_of_injective
-    (NoZeroSMulDivisors.algebraMap_injective A B)).not.mpr hp
+    (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
   have hPbot : P ≠ ⊥ := by
     rintro rfl; apply hp'

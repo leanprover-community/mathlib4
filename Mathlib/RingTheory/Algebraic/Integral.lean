@@ -251,7 +251,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
   have : IsAlgebraic (integralClosure R S) a := by
     refine ⟨p, ?_, ?_⟩
-    · have := NoZeroSMulDivisors.of_algebraMap_injective hRS
+    · have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
       simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
         p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
     rw [← eval_map_algebraMap, Subalgebra.algebraMap_eq, ← map_map, ← Subalgebra.toSubring_subtype,

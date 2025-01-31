@@ -91,7 +91,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     dsimp [adicCompletion]
     rw [valuedAdicCompletion_eq_valuation' v (x : K)]
     constructor
-    · simpa only [ne_eq, map_eq_zero, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
+    · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
     · apply ne_of_lt
       rw [valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
       exact dvd_span_singleton.mpr hx1
@@ -235,8 +235,7 @@ theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
 theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
   rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
-  simp_all only [ne_eq, div_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff, not_or,
-    map_div₀]
+  simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
   apply ((mulSupport_finite_int ha).union (mulSupport_finite_int hb)).subset

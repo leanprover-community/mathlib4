@@ -48,6 +48,6 @@ variable [Nontrivial R] [NoZeroSMulDivisors S R]
 @[simp]
 lemma cartanMatrixIn_apply_same (i : b.support) :
     b.cartanMatrixIn S i i = 2 :=
-  NoZeroSMulDivisors.algebraMap_injective S R <| by simp [cartanMatrixIn_def, map_ofNat]
+  FaithfulSMul.algebraMap_injective S R <| by simp [cartanMatrixIn_def, map_ofNat]
 
 end RootPairing.Base
