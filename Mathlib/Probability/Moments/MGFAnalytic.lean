@@ -125,21 +125,22 @@ lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
 lemma differentiableAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
     DifferentiableAt ℝ (mgf X μ) t := (analyticAt_mgf ht).differentiableAt
 
-lemma analyticOnNhd_iterated_deriv_mgf (n : ℕ) :
-    AnalyticOnNhd ℝ (deriv^[n] (mgf X μ)) (interior (integrableExpSet X μ)) :=
-  analyticOnNhd_mgf.iterated_deriv n
+lemma analyticOnNhd_iteratedDeriv_mgf (n : ℕ) :
+    AnalyticOnNhd ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) := by
+  rw [iteratedDeriv_eq_iterate]
+  exact analyticOnNhd_mgf.iterated_deriv n
 
-lemma analyticOn_iterated_deriv_mgf (n : ℕ) :
-    AnalyticOn ℝ (deriv^[n] (mgf X μ)) (interior (integrableExpSet X μ)) :=
-  (analyticOnNhd_iterated_deriv_mgf n).analyticOn
+lemma analyticOn_iteratedDeriv_mgf (n : ℕ) :
+    AnalyticOn ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) :=
+  (analyticOnNhd_iteratedDeriv_mgf n).analyticOn
 
-lemma analyticAt_iterated_deriv_mgf (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    AnalyticAt ℝ (deriv^[n] (mgf X μ)) v :=
-  analyticOnNhd_iterated_deriv_mgf n v hv
+lemma analyticAt_iteratedDeriv_mgf (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    AnalyticAt ℝ (iteratedDeriv n (mgf X μ)) v :=
+  analyticOnNhd_iteratedDeriv_mgf n v hv
 
-lemma differentiableAt_iterated_deriv_mgf (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    DifferentiableAt ℝ (deriv^[n] (mgf X μ)) v :=
-  (analyticAt_iterated_deriv_mgf hv n).differentiableAt
+lemma differentiableAt_iteratedDeriv_mgf (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    DifferentiableAt ℝ (iteratedDeriv n (mgf X μ)) v :=
+  (analyticAt_iteratedDeriv_mgf hv n).differentiableAt
 
 end AnalyticMGF
 
@@ -196,8 +197,8 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   _ = (deriv (fun u ↦ ∫ ω, X ω * rexp (u * X ω) ∂μ) v * mgf X μ v -
       (∫ ω, X ω * rexp (v * X ω) ∂μ) * deriv (mgf X μ) v) / mgf X μ v ^ 2 := by
     rw [deriv_div]
-    · rw [h_d_mgf.symm.differentiableAt_iff]
-      exact differentiableAt_iterated_deriv_mgf h 1
+    · rw [h_d_mgf.symm.differentiableAt_iff, ← iteratedDeriv_one]
+      exact differentiableAt_iteratedDeriv_mgf h 1
     · exact differentiableAt_mgf h
     · exact (mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)).ne'
   _ = (deriv (fun u ↦ ∫ ω, X ω * rexp (u * X ω) ∂μ) v * mgf X μ v -
