@@ -406,20 +406,13 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
 
-
 /-- The canonical coloring of a CompleteMultiPartiteGraph. -/
 def CompleteMultipartiteGraph.coloring {ι : Type*} (V : ι → Type*) :
     (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v => v.1) (by simp)
 
-theorem CompleteMultipartiteGraph.chromaticNumber {ι : Type*} [Fintype ι] (V : ι → Type*)
-    [∀ i, Nonempty (V i)] : (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
-  rw [chromaticNumber_eq_card_iff_forall_surjective
-      (CompleteMultipartiteGraph.coloring V).colorable]
-  intro c i
-  by_contra! h
-  
-  sorry
-
+lemma CompleteMultipartiteGraph.colorable {ι : Type*} [Fintype ι] (V : ι → Type*) :
+    (completeMultipartiteGraph V).Colorable (Fintype.card ι) :=
+  (CompleteMultipartiteGraph.coloring V).colorable
 
 /-! ### Cliques -/
 
@@ -465,5 +458,12 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← ENat.coe_toNat_eq_self] at hne
   rw [← hne] at hc
   simpa using hc
+
+theorem CompleteMultipartiteGraph.chromaticNumber {ι : Type*} [Fintype ι] (V : ι → Type*)
+    [∀ i, Nonempty (V i)] : (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+  apply le_antisymm
+  · apply (CompleteMultipartiteGraph.coloring V).colorable.chromaticNumber_le
+  · by_contra! h
+    apply notCliqueFree_completeMultipartiteGraph V (le_rfl) <| cliqueFree_of_chromaticNumber_lt h
 
 end SimpleGraph
