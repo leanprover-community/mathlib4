@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -73,10 +75,10 @@ protected theorem polynomial : FiniteType R R[X] :=
       rw [Finset.coe_singleton]
       exact Polynomial.adjoin_X⟩⟩
 
-open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image (FreeAlgebra.ι R), by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -84,6 +86,7 @@ protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgeb
 
 protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image MvPolynomial.X, by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -195,7 +198,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   apply
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom
-  erw [← Set.range_iff_surjective, ← AlgHom.coe_range, ←
+  erw [← Set.range_eq_univ, ← AlgHom.coe_range, ←
     Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
   rfl
 

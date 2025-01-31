@@ -238,7 +238,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
     rw [eq_top_iff, ← hn]
     exact ascending_central_series_le_upper H hH n
 
-theorem is_decending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊤)
+theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊤)
     (hasc : IsAscendingCentralSeries H) : IsDescendingCentralSeries fun m : ℕ => H (n - m) := by
   cases' hasc with h0 hH
   refine ⟨hn, fun x m hx g => ?_⟩
@@ -252,6 +252,9 @@ theorem is_decending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
     apply hH
     convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
+
+@[deprecated (since := "2024-12-25")]
+alias is_decending_rev_series_of_is_ascending := is_descending_rev_series_of_is_ascending
 
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
@@ -273,7 +276,7 @@ theorem nilpotent_iff_finite_descending_central_series :
   rw [nilpotent_iff_finite_ascending_central_series]
   constructor
   · rintro ⟨n, H, hH, hn⟩
-    refine ⟨n, fun m => H (n - m), is_decending_rev_series_of_is_ascending G hn hH, ?_⟩
+    refine ⟨n, fun m => H (n - m), is_descending_rev_series_of_is_ascending G hn hH, ?_⟩
     dsimp only
     rw [tsub_self]
     exact hH.1
@@ -352,23 +355,24 @@ theorem nilpotent_iff_lowerCentralSeries : IsNilpotent G ↔ ∃ n, lowerCentral
 
 section Classical
 
-open scoped Classical
-
 variable [hG : IsNilpotent G]
 variable (G)
 
+open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
 the `n`'th term of the upper central series is `G`. -/
 noncomputable def Group.nilpotencyClass : ℕ := Nat.find (IsNilpotent.nilpotent G)
 
 variable {G}
 
+open scoped Classical in
 @[simp]
 theorem upperCentralSeries_nilpotencyClass : upperCentralSeries G (Group.nilpotencyClass G) = ⊤ :=
   Nat.find_spec (IsNilpotent.nilpotent G)
 
 theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
     upperCentralSeries G n = ⊤ ↔ Group.nilpotencyClass G ≤ n := by
+  classical
   constructor
   · intro h
     exact Nat.find_le h
@@ -376,6 +380,7 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
     rw [eq_top_iff, ← upperCentralSeries_nilpotencyClass]
     exact upperCentralSeries_mono _ h
 
+open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which an ascending
 central series reaches `G` in its `n`'th term. -/
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
@@ -388,6 +393,7 @@ theorem least_ascending_central_series_length_eq_nilpotencyClass :
     rw [← top_le_iff, ← hn]
     exact ascending_central_series_le_upper H hH n
 
+open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which the descending
 central series reaches `⊥` in its `n`'th term. -/
 theorem least_descending_central_series_length_eq_nilpotencyClass :
@@ -396,7 +402,7 @@ theorem least_descending_central_series_length_eq_nilpotencyClass :
   rw [← least_ascending_central_series_length_eq_nilpotencyClass]
   refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_)
   · rintro n ⟨H, ⟨hH, hn⟩⟩
-    refine ⟨fun m => H (n - m), is_decending_rev_series_of_is_ascending G hn hH, ?_⟩
+    refine ⟨fun m => H (n - m), is_descending_rev_series_of_is_ascending G hn hH, ?_⟩
     dsimp only
     rw [tsub_self]
     exact hH.1
@@ -406,6 +412,7 @@ theorem least_descending_central_series_length_eq_nilpotencyClass :
     rw [tsub_self]
     exact hH.1
 
+open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the length of the lower central series. -/
 theorem lowerCentralSeries_length_eq_nilpotencyClass :
     Nat.find (nilpotent_iff_lowerCentralSeries.mp hG) = Group.nilpotencyClass (G := G) := by
@@ -420,11 +427,13 @@ theorem lowerCentralSeries_length_eq_nilpotencyClass :
 @[simp]
 theorem lowerCentralSeries_nilpotencyClass :
     lowerCentralSeries G (Group.nilpotencyClass G) = ⊥ := by
+  classical
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   exact Nat.find_spec (nilpotent_iff_lowerCentralSeries.mp hG)
 
 theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
     lowerCentralSeries G n = ⊥ ↔ Group.nilpotencyClass G ≤ n := by
+  classical
   constructor
   · intro h
     rw [← lowerCentralSeries_length_eq_nilpotencyClass]
@@ -524,7 +533,7 @@ theorem nilpotent_of_surjective {G' : Type*} [Group G'] [h : IsNilpotent G] (f :
   use n
   apply eq_top_iff.mpr
   calc
-    ⊤ = f.range := symm (f.range_top_of_surjective hf)
+    ⊤ = f.range := symm (f.range_eq_top_of_surjective hf)
     _ = Subgroup.map f ⊤ := MonoidHom.range_eq_map _
     _ = Subgroup.map f (upperCentralSeries G n) := by rw [hn]
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
@@ -539,7 +548,7 @@ theorem nilpotencyClass_le_of_surjective {G' : Type*} [Group G'] (f : G →* G')
   intro n hn
   rw [eq_top_iff]
   calc
-    ⊤ = f.range := symm (f.range_top_of_surjective hf)
+    ⊤ = f.range := symm (f.range_eq_top_of_surjective hf)
     _ = Subgroup.map f ⊤ := MonoidHom.range_eq_map _
     _ = Subgroup.map f (upperCentralSeries G n) := by rw [hn]
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
@@ -596,7 +605,7 @@ theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
   · suffices Group.nilpotencyClass (G ⧸ center G) = n by simpa
     apply le_antisymm
     · apply upperCentralSeries_eq_top_iff_nilpotencyClass_le.mp
-      apply comap_injective (f := (mk' (center G))) (surjective_quot_mk _)
+      apply comap_injective (f := (mk' (center G))) Quot.mk_surjective
       rw [comap_upperCentralSeries_quotient_center, comap_top, Nat.succ_eq_add_one, ← hn]
       exact upperCentralSeries_nilpotencyClass
     · apply le_of_add_le_add_right
@@ -781,7 +790,7 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
   · intro G _ _ ih H hH
     have hch : center G ≤ H := Subgroup.center_le_normalizer.trans (le_of_eq hH)
     have hkh : (mk' (center G)).ker ≤ H := by simpa using hch
-    have hsur : Function.Surjective (mk' (center G)) := surjective_quot_mk _
+    have hsur : Function.Surjective (mk' (center G)) := Quot.mk_surjective
     let H' := H.map (mk' (center G))
     have hH' : H'.normalizer = H' := by
       apply comap_injective hsur

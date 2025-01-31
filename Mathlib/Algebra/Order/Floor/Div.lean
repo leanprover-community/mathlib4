@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.GaloisConnection
 
 /-!
 # Flooring, ceiling division
@@ -243,7 +242,7 @@ lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = f.mapRange (· �
 @[simp] lemma floorDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
 lemma support_floorDiv_subset : (f ⌊/⌋ a).support ⊆ f.support := by
-  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
+  simp +contextual [Finset.subset_iff, not_imp_not]
 
 end FloorDiv
 
@@ -262,7 +261,7 @@ lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = f.mapRange (· ⌈
 @[simp] lemma ceilDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌈/⌉ a) i = f i ⌈/⌉ a := rfl
 
 lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
-  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
+  simp +contextual [Finset.subset_iff, not_imp_not]
 
 end CeilDiv
 end Finsupp

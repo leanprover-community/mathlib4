@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 #  Lemmas about the support of a finitely supported function

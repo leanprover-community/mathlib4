@@ -15,9 +15,9 @@ the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of
 
 universe w u
 
-open CategoryTheory Limits CompHausLike
+open CategoryTheory Limits CompHausLike Topology
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 namespace Stonean
 

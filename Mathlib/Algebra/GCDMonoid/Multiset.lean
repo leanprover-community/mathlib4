@@ -55,7 +55,7 @@ theorem lcm_add (s₁ s₂ : Multiset α) : (s₁ + s₂).lcm = GCDMonoid.lcm s�
 
 theorem lcm_dvd {s : Multiset α} {a : α} : s.lcm ∣ a ↔ ∀ b ∈ s, b ∣ a :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [or_imp, forall_and, lcm_dvd_iff])
+    (by simp +contextual [or_imp, forall_and, lcm_dvd_iff])
 
 theorem dvd_lcm {s : Multiset α} {a : α} (h : a ∈ s) : a ∣ s.lcm :=
   lcm_dvd.1 dvd_rfl _ h
@@ -63,11 +63,7 @@ theorem dvd_lcm {s : Multiset α} {a : α} (h : a ∈ s) : a ∣ s.lcm :=
 theorem lcm_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.lcm ∣ s₂.lcm :=
   lcm_dvd.2 fun _ hb ↦ dvd_lcm (h hb)
 
-/- Porting note: Following `Algebra.GCDMonoid.Basic`'s version of `normalize_gcd`, I'm giving
-this lower priority to avoid linter complaints about simp-normal form -/
-/- Porting note: Mathport seems to be replacing `Multiset.induction_on s $` with
-`(Multiset.induction_on s)`, when it should be `Multiset.induction_on s <|`. -/
-@[simp 1100]
+@[simp]
 theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 
@@ -131,7 +127,7 @@ theorem gcd_add (s₁ s₂ : Multiset α) : (s₁ + s₂).gcd = GCDMonoid.gcd s�
 
 theorem dvd_gcd {s : Multiset α} {a : α} : a ∣ s.gcd ↔ ∀ b ∈ s, a ∣ b :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [or_imp, forall_and, dvd_gcd_iff])
+    (by simp +contextual [or_imp, forall_and, dvd_gcd_iff])
 
 theorem gcd_dvd {s : Multiset α} {a : α} (h : a ∈ s) : s.gcd ∣ a :=
   dvd_gcd.1 dvd_rfl _ h
@@ -139,9 +135,7 @@ theorem gcd_dvd {s : Multiset α} {a : α} (h : a ∈ s) : s.gcd ∣ a :=
 theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s₁.gcd :=
   dvd_gcd.2 fun _ hb ↦ gcd_dvd (h hb)
 
-/- Porting note: Following `Algebra.GCDMonoid.Basic`'s version of `normalize_gcd`, I'm giving
-this lower priority to avoid linter complaints about simp-normal form -/
-@[simp 1100]
+@[simp]
 theorem normalize_gcd (s : Multiset α) : normalize s.gcd = s.gcd :=
   Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 
