@@ -240,29 +240,22 @@ open scoped BigOperators Pointwise
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
 theorem isPreprimitive_iff_isSimpleOrder_blocks
-    [htGX : IsPretransitive G X] [Nontrivial X] (a : X) :
-    IsPreprimitive G X ↔ IsSimpleOrder { B : Set X // a ∈ B ∧ IsBlock G B } := by
+    [IsPretransitive G X] [Nontrivial X] (a : X) :
+    IsPreprimitive G X ↔ IsSimpleOrder (BlockMem G a) := by
   constructor
   · intro hGX'; apply IsSimpleOrder.mk
     rintro ⟨B, haB, hB⟩
     simp only [← Subtype.coe_inj, Subtype.coe_mk]
     cases hGX'.has_trivial_blocks hB with
-    | inl h =>
-      apply Or.intro_left
-      change B = ↑(Block.boundedOrderOfMem G a).bot
-      rw [Block.boundedOrderOfMem.bot_eq]
-      exact Set.Subsingleton.eq_singleton_of_mem h haB
-    | inr h =>
-      apply Or.intro_right
-      change B = ↑(Block.boundedOrderOfMem G a).top
-      exact h
+    | inl h => simp [BlockMem.coe_bot, h.eq_singleton_of_mem haB]
+    | inr h => simp [BlockMem.coe_top, h]
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
     apply IsPreprimitive.mk_mem_of_pretransitive a
     intro B haB hB
     cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
       simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
-    · left; rw [hB']; exact Set.subsingleton_singleton
-    · right; rw [hB']; rfl
+    · left; simp [hB']
+    · right; simp [hB']
 
 /-- A pretransitive action is preprimitive
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
@@ -280,7 +273,7 @@ theorem maximal_stabilizer_iff_preprimitive
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
 @[to_additive "In a preprimitive action, stabilizers are maximal subgroups."]
 theorem hasMaximalStabilizersOfPreprimitive
-    [hnX : Nontrivial X] (hpGX : IsPreprimitive G X) (a : X) :
+    [Nontrivial X] (hpGX : IsPreprimitive G X) (a : X) :
     IsCoatom (stabilizer G a) := by
   haveI : IsPretransitive G X := hpGX.toIsPretransitive
   rw [maximal_stabilizer_iff_preprimitive]
