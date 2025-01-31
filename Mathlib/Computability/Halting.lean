@@ -139,6 +139,9 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
+@[deprecated (since := "2025-01-31")]
+alias RePred := REPred
+
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
