@@ -125,7 +125,9 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   right_inv _ := rfl
 
 /-- Composition of a continuous function `f` with compact support with another continuous function
-`g` from the left yields another continuous function `g ∘ f` with compact support. -/
+`g` sending `0` to `0` from the left yields another continuous function `g ∘ f` with compact support.
+
+ If `g` doesn't send `0` to `0`, `f.compLeft g` defaults to `0`. -/
 noncomputable def compLeft {γ : Type*} [TopologicalSpace γ] [Zero γ] (g : C(β, γ))
     (f : C_c(α, β)) : C_c(α, γ) where
   toContinuousMap := if g 0 = 0 then g.comp f else 0
