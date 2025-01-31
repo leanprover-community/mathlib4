@@ -389,6 +389,7 @@ def mkCLM : M →L[R] SeparationQuotient M where
 variable {R M}
 
 /-- The lift (as a continuous linear map) of `f` with `f x = f y` for `Inseparable x y`. -/
+@[simps]
 noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     SeparationQuotient M →SL[σ] N where
   toFun := SeparationQuotient.lift f hf
