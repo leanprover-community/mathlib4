@@ -355,7 +355,8 @@ theorem clopen_of_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : Meromor
     simp_rw [MeromorphicAt.order_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff] at *
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
-    simp [isOpen_induced h₂t', h₃t']
+    simp only [Set.mem_compl_iff, Set.mem_singleton_iff, isOpen_induced h₂t', Set.mem_preimage,
+      h₃t', and_self, and_true]
     intro w hw
     simp
     -- Trivial case: w = z
@@ -363,13 +364,11 @@ theorem clopen_of_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : Meromor
     · rw [h₁w]
       tauto
     -- Nontrivial case: w ≠ z
-    use t' \ {z.1}
+    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (Set.mem_of_mem_diff h₁y) (Set.mem_of_mem_inter_right h₁y)
     constructor
-    · exact fun y h₁y _ ↦ h₁t' y (Set.mem_of_mem_diff h₁y) (Set.mem_of_mem_inter_right h₁y)
-    · constructor
-      · exact h₂t'.sdiff isClosed_singleton
-      · apply (Set.mem_diff w).1
-        exact ⟨hw, Set.mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    · exact h₂t'.sdiff isClosed_singleton
+    · apply (Set.mem_diff w).1
+      exact ⟨hw, Set.mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 section arithmetic
 
