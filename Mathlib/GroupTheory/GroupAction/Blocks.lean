@@ -114,7 +114,6 @@ section monoid
 
 variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
 
-
 @[to_additive]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
