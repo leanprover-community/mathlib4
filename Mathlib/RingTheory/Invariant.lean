@@ -163,7 +163,7 @@ end transitivity
 
 section surjectivity
 
-open IsScalarTower NoZeroSMulDivisors Polynomial
+open FaithfulSMul IsScalarTower Polynomial
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]

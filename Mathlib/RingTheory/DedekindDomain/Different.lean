@@ -116,6 +116,7 @@ end Submodule
 
 open Submodule
 
+set_option synthInstance.maxHeartbeats 23000 -- TODO Investigate / remove
 variable [IsFractionRing A K]
 
 variable (A K) in
@@ -390,6 +391,7 @@ end FractionalIdeal
 
 variable (B)
 variable [IsIntegrallyClosed A] [IsDedekindDomain B]
+set_option synthInstance.maxHeartbeats 28000 -- TODO Investigate / remove
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
