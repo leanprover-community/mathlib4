@@ -124,16 +124,17 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   left_inv _ := rfl
   right_inv _ := rfl
 
+variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 /-- Composition of a continuous function `f` with compact support with another continuous function
-`g` sending `0` to `0` from the left yields another continuous function `g ∘ f` with compact support.
+`g` sending `0` to `0` from the left yields another continuous function `g ∘ f` with compact
+support.
 
  If `g` doesn't send `0` to `0`, `f.compLeft g` defaults to `0`. -/
-noncomputable def compLeft {γ : Type*} [TopologicalSpace γ] [Zero γ] (g : C(β, γ))
-    (f : C_c(α, β)) : C_c(α, γ) where
+noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
   toContinuousMap := by classical exact if g 0 = 0 then g.comp f else 0
   hasCompactSupport' := by
     classical
-    split hg
+    by_cases hg : g 0 = 0
     · rw [if_pos hg]
       simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
       exact HasCompactSupport.comp_left f.hasCompactSupport' hg
@@ -141,11 +142,20 @@ noncomputable def compLeft {γ : Type*} [TopologicalSpace γ] [Zero γ] (g : C(�
       simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
       exact HasCompactSupport.zero
 
-lemma toContinuousMap_compLeft (hg : g 0 = 0) : (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
+lemma toContinuousMap_compLeft {g : C(β, γ)} (f : C_c(α, β)) (hg : g 0 = 0) :
+    (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
 
-lemma coe_compLeft (hg : g 0 = 0) : f.compLeft g = g ∘ f := sorry
+lemma coe_compLeft {g : C(β, γ)} (f : C_c(α, β)) (hg : g 0 = 0) : f.compLeft g = g ∘ f := by
+  rw [compLeft]
+  simp only [coe_mk]
+  rw [if_pos hg]
+  simp
 
-lemma compLeft_apply (hg : g 0 = 0) (a : α) : f.compLeft g a = g (f a) := sorry
+lemma compLeft_apply {g : C(β, γ)} (f : C_c(α, β)) (hg : g 0 = 0) (a : α) :
+    f.compLeft g a = g (f a) := by
+  rw [coe_compLeft f hg]
+  simp
+
 end Basics
 
 /-! ### Algebraic structure
