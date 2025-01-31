@@ -350,9 +350,15 @@ def unpackCache (hashMap : HashMap) (pathMap : Std.HashMap Name FilePath) (force
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      let sourceFile := pathMap[mod]!
-      let pkgDir := (← getPackageDir sourceFile).toString
-      pure <| config.push <| .mkObj [("file", pathStr), ("base", pkgDir)]
+      -- TODO: I don't understand why we still need this case distinction.
+      -- Does `leantar` make the same case distinction in reverse?
+      if mod.getRoot == `Mathlib then
+        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
+        let sourceFile := pathMap[mod]!
+        let pkgDir := (← getPackageDir sourceFile).toString
+        pure <| config.push <| .mkObj [("file", pathStr), ("base", pkgDir)]
+      else
+        pure <| config.push <| .str pathStr
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
