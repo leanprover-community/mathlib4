@@ -269,3 +269,17 @@ def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
   inr <| inr c
 
 end Sum3
+
+/-!
+### PSum
+-/
+
+namespace PSum
+
+variable {α β : Sort*}
+
+theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
+
+theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
+
+end PSum

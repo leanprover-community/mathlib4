@@ -217,6 +217,9 @@ namespace Matroid
 
 variable {α : Type*} {M : Matroid α}
 
+instance (M : Matroid α) : Nonempty {B // M.Base B} :=
+  nonempty_subtype.2 M.exists_base
+
 /-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
 @[mk_iff] protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/

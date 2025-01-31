@@ -856,6 +856,13 @@ instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [fst_univ]
     exact measure_univ
 
+instance fst.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.fst := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, fst_zero]
+    infer_instance
+  · infer_instance
+
 @[simp]
 lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
@@ -913,6 +920,13 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
   measure_univ := by
     rw [snd_univ]
     exact measure_univ
+
+instance snd.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.snd := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, snd_zero]
+    infer_instance
+  · infer_instance
 
 @[simp]
 lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
