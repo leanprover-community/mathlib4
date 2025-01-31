@@ -462,9 +462,8 @@ theorem HasCompactSupport.inf {f g : α → β} (hf : HasCompactSupport f) (hg :
 variable [TopologicalSpace β] [ContinuousInf β]
 
 instance inf : Min C_c(α, β) where min f g :=
-  { toFun := fun a ↦ f a ⊓ g a
-    hasCompactSupport' := HasCompactSupport.inf f.hasCompactSupport g.hasCompactSupport}
-
+  { toFun := f ⊓ g
+    hasCompactSupport' := f.hasCompactSupport.inf g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_inf (f g : C_c(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
 
