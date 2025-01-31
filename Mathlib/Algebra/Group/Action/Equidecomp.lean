@@ -41,10 +41,10 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 ## TODO
 
-* Prove that if two sets embeddidecompose into eachother, they are equidecomposable
+* Prove that if two sets equidecompose into subsets of eachother, they are equidecomposable
   (Schroeder-Bernstein type theorem)
-* Define embeddidecomposability as a preorder on sets and prove that its induced equivalence
-  relation is equidecomposability.
+* Define equidecomposability into subsets as a preorder on sets and
+  prove that its induced equivalence relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
 
@@ -79,7 +79,7 @@ More familiarly, `f` is the result of partitioning `f.source` into finitely many
 then applying a single element of `G` to each to get a partition of `f.target`.
 -/
 structure _root_.Equidecomp extends PartialEquiv X X where
-  decomp' : ∃ S : Finset G, IsDecompOn toFun source S
+  isDecompOn' : ∃ S : Finset G, IsDecompOn toFun source S
 
 variable {X G}
 
@@ -88,9 +88,10 @@ instance : CoeFun (Equidecomp X G) fun _ => X → X := ⟨fun f => f.toFun⟩
 
 /-- A finite set of group elements witnessing that `f` is an equidecomposition. -/
 noncomputable
-def witness (f : Equidecomp X G) : Finset G := f.decomp'.choose
+def witness (f : Equidecomp X G) : Finset G := f.isDecompOn'.choose
 
-theorem decomp (f : Equidecomp X G) : IsDecompOn f f.source f.witness := f.decomp'.choose_spec
+theorem isDecompOn (f : Equidecomp X G) : IsDecompOn f f.source f.witness :=
+  f.isDecompOn'.choose_spec
 
 @[simp]
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
@@ -110,8 +111,8 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
 @[simps!]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
-  decomp' := ⟨f.witness,
-    f.decomp.mono (source_restr_subset_source _ _) fun _ ↦ congrFun rfl⟩
+  isDecompOn' := ⟨f.witness,
+    f.isDecompOn.mono (source_restr_subset_source _ _) fun _ ↦ congrFun rfl⟩
 
 @[simp]
 theorem toPartialEquiv_restr (f : Equidecomp X G) (A : Set X) :
@@ -143,7 +144,7 @@ variable (X G)
 @[simps toPartialEquiv]
 def refl : Equidecomp X G where
   toPartialEquiv := .refl _
-  decomp' := ⟨{1}, by simp [IsDecompOn]⟩
+  isDecompOn' := ⟨{1}, by simp [IsDecompOn]⟩
 
 variable {X} {G}
 
@@ -166,7 +167,7 @@ theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
 @[simps toPartialEquiv, trans]
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
-  decomp' := ⟨g.witness * f.witness, g.decomp.comp' f.decomp⟩
+  isDecompOn' := ⟨g.witness * f.witness, g.isDecompOn.comp' f.isDecompOn⟩
 
 end Monoid
 
@@ -185,8 +186,8 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
 @[symm, simps toPartialEquiv]
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
-  decomp' := ⟨f.witness⁻¹, by
-    convert f.decomp.of_leftInvOn f.leftInvOn
+  isDecompOn' := ⟨f.witness⁻¹, by
+    convert f.isDecompOn.of_leftInvOn f.leftInvOn
     rw [image_source_eq_target, symm_source]⟩
 
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
