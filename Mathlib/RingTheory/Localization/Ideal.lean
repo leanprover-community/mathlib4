@@ -181,6 +181,17 @@ def orderIsoOfPrime :
         map_comap M S I'.val ▸ Ideal.map_mono h)
     exact fun h x hx => h hx
 
+include M in
+lemma map_radical (I : Ideal R) :
+    I.radical.map (algebraMap R S) = (I.map (algebraMap R S)).radical := by
+  refine (I.map_radical_le (algebraMap R S)).antisymm ?_
+  rintro x ⟨n, hn⟩
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M,
+    Submonoid.mem_powers_iff, exists_exists_eq_and] at hn ⊢
+  obtain ⟨s, hs, h⟩ := hn
+  refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
+
 end CommSemiring
 
 section CommRing
