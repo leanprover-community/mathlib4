@@ -112,23 +112,6 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
     rw [← hs_eq_t] at h_dis
     exact Disjoint.eq_bot_of_self h_dis
 
-section OrderedAddCommMonoid
-
-/-- Subadditivity of the sum over a finset. -/
-lemma Finset.sum_image_le_of_nonneg {ι α β : Type*} [DecidableEq α]
-    [OrderedAddCommMonoid β] [SMulPosMono ℕ β]
-    {J : Finset ι} {g : ι → α} {f : α → β} (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
-    ∑ u ∈ J.image g, f u ≤ ∑ u in J, f (g u) := by
-  rw [sum_comp f g]
-  refine sum_le_sum fun a hag ↦ ?_
-  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
-  conv_lhs => rw [← one_nsmul (f a)]
-  refine smul_le_smul_of_nonneg_right ?_ (hf a hag)
-  rw [Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, card_pos]
-  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
-
-end OrderedAddCommMonoid
-
 section IsSetSemiring
 
 lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
@@ -168,7 +151,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
 
 /-- For an `m : addContent C` on a `SetSemiring C` and `s t : Set α` with `s ⊆ t`, we can write
 `m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`.-/
-theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C) (m : Set α → ℝ≥0∞)
+theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C) (m : AddContent C)
     (m_add : ∀ (I : Finset (Set α)) (_ : ↑I ⊆ C) (_ : PairwiseDisjoint (I : Set (Set α)) id)
         (_h_mem : ⋃₀ ↑I ∈ C), m (⋃₀ I) = ∑ u in I, m u)
     (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) [DecidableEq (Set α)] :
