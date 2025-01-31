@@ -7,6 +7,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
+import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 import Mathlib.Algebra.Order.Group.TypeTags
 
 /-!
@@ -592,51 +593,14 @@ theorem AdicCompletion.valued_eq_intValuationDef (v : HeightOneSpectrum R) (r : 
     Valued.v (algebraMap _ (v.adicCompletion K) r) = v.intValuationDef r := by
   rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
 
-theorem AdicCompletion.valued_le_one (v : HeightOneSpectrum R) (r : R) :
-    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 :=
-  valued_eq_intValuationDef K _ r ▸ v.intValuation_le_one r
-
-theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivisors R) :
-    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 :=
-  valued_eq_intValuationDef K _ r.1 ▸ v.intValuation_ne_zero' _
-
-open Filter WithZero Multiplicative in
-/-- Powers of `x` tend to zero in `Kᵥ` if `x` has valuation `≤ -1`. -/
-theorem AdicCompletion.tendsto_zero_pow_of_le_neg_one (v : HeightOneSpectrum R)
-    {x : v.adicCompletion K} (hx : Valued.v x ≤ ofAdd (-1 : ℤ)) :
-    Tendsto (fun (n : ℕ) => x ^ n) atTop (𝓝 0) := by
-  simp only [HasBasis.tendsto_right_iff (Valued.hasBasis_nhds_zero _ _), Set.mem_setOf_eq,
-    map_pow, eventually_atTop]
-  have h_lt : ofAdd (-1 : ℤ) < (1 : ℤₘ₀) := by
-    rw [← coe_one, coe_lt_coe, ← ofAdd_zero, ofAdd_lt]; linarith
-  intro γ _
-  by_cases hγ : γ.val ≤ 1
-  · let m := - toAdd (unitsWithZeroEquiv γ) + 1 |>.toNat
-    refine ⟨m, fun b hb => lt_of_le_of_lt
-      (pow_le_pow_of_le_one zero_le' (le_trans hx <| le_of_lt h_lt) hb) ?_⟩
-    replace hγ : 0 ≤ -toAdd (unitsWithZeroEquiv γ) + 1 := by
-      rw [← coe_unitsWithZeroEquiv_eq_units_val, ← coe_one, coe_le_coe, ← toAdd_le, toAdd_one] at hγ
-      linarith
-    apply lt_of_le_of_lt <| pow_le_pow_left₀ zero_le' hx m
-    rw [← coe_unitsWithZeroEquiv_eq_units_val, ← coe_pow, coe_lt_coe, ← ofAdd_nsmul,
-      nsmul_eq_mul, Int.toNat_of_nonneg hγ]
-    simp
-    rw [← ofAdd_zero, ofAdd_lt]
-    exact zero_lt_one
-  · refine ⟨1, fun b hb => lt_of_le_of_lt
-      (pow_le_pow_of_le_one zero_le' (le_trans hx <| le_of_lt h_lt) hb) ?_⟩
-    apply lt_trans _ (lt_of_not_le hγ)
-    apply lt_of_le_of_lt (pow_one (Valued.v x) ▸ hx)
-    exact h_lt
-
 open Valued Filter in
 /-- There exists a non-zero integer of value `< γ` for a given `γ`. -/
 theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
     ∃ (r : nonZeroDivisors R), Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ := by
   let ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
-  have := tendsto_zero_pow_of_le_neg_one K v (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
-  let ⟨a, ha⟩ := eventually_atTop.1 <|
-    (HasBasis.tendsto_right_iff (hasBasis_nhds_zero _ _)).1 this γ trivial
+  have := WithZeroMulInt.tendsto_zero_pow_of_le_neg_one
+    (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
+  let ⟨a, ha⟩ := eventually_atTop.1 <| ((hasBasis_nhds_zero _ _).tendsto_right_iff).1 this γ trivial
   use ⟨algebraMap _ _ π ^ a,
     mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ <| v.intValuation_uniformizer_ne_zero hπ)⟩
   convert ha _ le_rfl
