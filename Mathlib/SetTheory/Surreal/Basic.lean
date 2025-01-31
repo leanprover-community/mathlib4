@@ -97,16 +97,20 @@ theorem numeric_rec {C : PGame → Prop}
   | ⟨_, _, _, _⟩, ⟨h, hl, hr⟩ =>
     H _ _ _ _ h hl hr (fun i => numeric_rec H _ (hl i)) fun i => numeric_rec H _ (hr i)
 
-theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y := by
+theorem Identical.numeric_imp {x y : PGame.{u}} (r : x ≡ y) (ox : Numeric x) : Numeric y := by
   induction' x using PGame.moveRecOn with x IHl IHr generalizing y
   apply Numeric.mk (fun i j => ?_) (fun i => ?_) fun j => ?_
-  · rw [← lt_congr (r.moveLeftSymm i).equiv (r.moveRightSymm j).equiv]
+  · obtain ⟨l, hl⟩ := r.moveLeft_symm i
+    obtain ⟨r, hr⟩ := r.moveRight_symm j
+    rw [← lt_congr hl.equiv hr.equiv]
     apply ox.left_lt_right
-  · exact IHl _ (r.moveLeftSymm i) (ox.moveLeft _)
-  · exact IHr _ (r.moveRightSymm j) (ox.moveRight _)
+  · obtain ⟨l, hl⟩ := r.moveLeft_symm i
+    exact IHl _ hl (ox.moveLeft _)
+  · obtain ⟨r, hr⟩ := r.moveRight_symm j
+    exact IHr _ hr (ox.moveRight _)
 
-/-- Relabellings preserve being numeric. -/
-theorem Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ Numeric y :=
+/-- Identity preserve being numeric. -/
+theorem Identical.numeric_congr {x y : PGame.{u}} (r : x ≡ y) : Numeric x ↔ Numeric y :=
   ⟨r.numeric_imp, r.symm.numeric_imp⟩
 
 theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by

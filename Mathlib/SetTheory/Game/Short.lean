@@ -7,6 +7,7 @@ Authors: Kim Morrison
 import Mathlib.Data.Fintype.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Game.Birthday
+import Mathlib.SetTheory.Game.Relabelling
 
 /-!
 # Short games
@@ -17,6 +18,10 @@ In particular, this means there is a finite set of moves at every point.
 We prove that the order relations `≤` and `<`, and the equivalence relation `≈`, are decidable on
 short games, although unfortunately in practice `decide` doesn't seem to be able to
 prove anything using these instances.
+
+TODO: This is not the real "short game". It is only defined for `PGame`.
+The real "short game" will be defined once `IGame` (`Game` over the `Identical` setoid)
+is added.
 -/
 
 -- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)

@@ -126,11 +126,11 @@ instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
   exact isEmpty_toType_zero
 
 /-- `nim 0` has exactly the same moves as `0`. -/
-def nimZeroRelabelling : nim 0 ≡r 0 :=
-  Relabelling.isEmpty _
+lemma nim_zero : nim 0 ≡ 0 :=
+  identical_zero _
 
 theorem nim_zero_equiv : nim 0 ≈ 0 :=
-  Equiv.isEmpty _
+  equiv_zero _
 
 noncomputable instance uniqueNimOneLeftMoves : Unique (nim 1).LeftMoves :=
   (Equiv.cast <| leftMoves_nim 1).unique
@@ -163,14 +163,13 @@ theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp
 theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 
 /-- `nim 1` has exactly the same moves as `star`. -/
-def nimOneRelabelling : nim 1 ≡r star := by
-  rw [nim_def]
-  refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
-  any_goals dsimp; apply Equiv.ofUnique
-  all_goals simpa [enumIsoToType] using nimZeroRelabelling
+lemma nim_one : nim 1 ≡ star := by
+  refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
+  · simpa [memₗ_def, Unique.exists_iff] using nim_zero.congr_right
+  · simpa [memᵣ_def, Unique.exists_iff] using nim_zero.congr_right
 
 theorem nim_one_equiv : nim 1 ≈ star :=
-  nimOneRelabelling.equiv
+  nim_one.equiv
 
 @[simp]
 theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
@@ -189,7 +188,7 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
 instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
-  refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
+  refine ⟨refl _, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
   rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
