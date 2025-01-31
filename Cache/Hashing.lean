@@ -139,7 +139,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath) : HashM <| Option UInt6
     let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
     let modHash := hash c -- TODO: change to `hash mod`
     let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
-    if isMathlibOrUpstream mod then
+    if isPartOfMathlibCache mod then
       -- mathlib/upstream: add hash to `hashMap`
       modifyGet fun stt =>
         (some fileHash, { stt with

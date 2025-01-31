@@ -41,10 +41,10 @@ def isInLeanCore (mod : Name) :=
 /--
 TODO: write a better test which modules are part of the mathlib cache
 -/
-def isMathlibOrUpstream (mod : Name) :=
+def isPartOfMathlibCache (mod : Name) :=
   #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph,
-    `LeanSearchClient, `Plausible, `Qq,
-    `ProofWidgets].contains mod.getRoot
+    `LeanSearchClient, `Plausible, `Qq, `ProofWidgets,
+    `Archive, `Counterexamples, `MathlibTest].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -111,19 +111,6 @@ structure CacheM.Context where
 abbrev CacheM := ReaderT CacheM.Context IO
 
 section
-
--- private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
---   let deps ← (← json.getObjVal? "packages").getArr?
---   for d in deps do
---     let n := ← (← d.getObjVal? "name").getStr?
---     if n != "mathlib" then
---       continue
---     let t := ← (← d.getObjVal? "type").getStr?
---     if t == "path" then
---       return some ⟨← (← d.getObjVal? "dir").getStr?⟩
---     else
---       return LAKEPACKAGESDIR / "mathlib"
---   return none
 
 @[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
@@ -418,8 +405,6 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           IO.Process.exit 1
         if arg'.extension == "lean" then
           -- provided existing `.lean` file
-          --   These are local files but I think `lake exe` must always be called from
-          --   project root.
           pure <| acc.insert mod arg
         else
           -- provided existing directory: walk it
@@ -433,8 +418,9 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           -- provided valid module
           pure <| acc.insert mod sourceFile
         else
-          -- provided "folder-like" module like `Mathlib.Data` which
-          -- does not correspond to a Lean file
+          -- provided "pseudo-module" like `Mathlib.Data` which
+          -- does not correspond to a Lean file, but to an existing folder
+          -- `Mathlib/Data/`
           let folder := sourceFile.withExtension ""
           if ← folder.pathExists then
             -- case 2: "module name" of an existing folder: walk dir
