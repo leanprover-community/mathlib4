@@ -30,7 +30,7 @@ variable {A} in
 /-- We say that an `R`-algebra `A` is unramified at a prime `q` of `A`
 if `A_q` is formally unramified over `R`.
 
-If `A` is finite over `R` and `q` is lying over `p`, then this is equivalent to
+If `A` is of finite type over `R` and `q` is lying over `p`, then this is equivalent to
 `κ(q)/κ(p)` being separable and `pA_q = qA_q`.
 See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing` -/
 abbrev IsUnramifiedAt (q : Ideal A) [q.IsPrime] : Prop :=
