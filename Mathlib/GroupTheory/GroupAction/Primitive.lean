@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.Data.Setoid.Partition
 
 /-!
 # Primitive actions
@@ -14,22 +14,22 @@ import Mathlib.Data.Setoid.Partition
 ## Definitions
 
 - `IsPreprimitive G X`
-a structure that says that the action of a type `G` on a type `X`
-(defined by an instance `SMul G X`) is *preprimitive*,
-namely, it is pretransitive and the only blocks are ⊤ and subsingletons.
-(The pretransitivity assumption is essentially trivial,
-because orbits are blocks, unless the action itself is trivial.)
+  A structure that says that the action of a type `G` on a type `X`
+  (defined by an instance `SMul G X`) is *preprimitive*,
+  namely, it is pretransitive and the only blocks are ⊤ and subsingletons.
+  (The pretransitivity assumption is essentially trivial,
+  because orbits are blocks, unless the action itself is trivial.)
 
-The notion which is introduced in classical books on group theory
-is restricted to group actions.
-In fact, it may be irrelevant if the action is degenerate,
-when “trivial blocks” might not be blocks.
-Moreover, the classical notion is *primitive*,
-which assumes moreover that `X` is not empty.
+  The notion which is introduced in classical books on group theory
+  is restricted to group actions.
+  In fact, it may be irrelevant if the action is degenerate,
+  when “trivial blocks” might not be blocks.
+  Moreover, the classical notion is *primitive*,
+  which assumes moreover that `X` is not empty.
 
 - `IsQuasipreprimitive G X`
-a structure that says that the action of the group `G` on the type `X` is *quasipreprimitive*,
-namely, normal subgroups of `G` which act nontrivially act pretransitively.
+  A structure that says that the action of the group `G` on the type `X` is *quasipreprimitive*,
+  namely, normal subgroups of `G` which act nontrivially act pretransitively.
 
 - We prove some straightforward theorems that relate preprimitivity
   under equivariant maps, for images and preimages.
@@ -37,74 +37,22 @@ namely, normal subgroups of `G` which act nontrivially act pretransitively.
 ## Relation with stabilizers
 
 - `isPreprimitive_of_block_order`
-relates primitivity and the fact that the inclusion
-order on blocks containing is simple.
+  relates primitivity and the fact that the inclusion
+  order on blocks containing is simple.
 
 - `maximal_stabilizer_iff_preprimitive`
-an action is preprimitive iff the stabilizers of points are maximal subgroups.
+  An action is preprimitive iff the stabilizers of points are maximal subgroups.
 
 ## Relation with normal subgroups
 
 - `IsPreprimitive.isQuasipreprimitive`
-preprimitive actions are quasipreprimitive
+  Preprimitive actions are quasipreprimitive
 
 -/
 
 open Pointwise
 
 namespace MulAction
-
-section IsTrivialBlock
-
-variable {M α N β : Type*}
-
-section monoid
-
-variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
-
-@[to_additive]
-theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
-    (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
-    IsTrivialBlock (f '' B) := by
-  cases' hB with hB hB
-  · apply Or.intro_left; apply Set.Subsingleton.image hB
-  · apply Or.intro_right; rw [hB]
-    simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
-
-@[to_additive]
-theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
-    (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
-    IsTrivialBlock (f ⁻¹' B) := by
-  cases' hB with hB hB
-  · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
-  · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
-
-end monoid
-
-variable [Group M] [MulAction M α] [Monoid N] [MulAction N β]
-
-@[to_additive]
-theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
-    IsTrivialBlock (g • B) := by
-  cases hB with
-  | inl h =>
-    left
-    exact (Function.Injective.subsingleton_image_iff (MulAction.injective g)).mpr h
-  | inr h =>
-    right
-    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MulAction.surjective g)]
-
-@[to_additive]
-theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
-    IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
-  constructor
-  · intro H
-    convert IsTrivialBlock.smul H g⁻¹
-    simp only [inv_smul_smul]
-  · intro H
-    exact IsTrivialBlock.smul H g
-
-end IsTrivialBlock
 
 section Primitive
 
@@ -269,43 +217,6 @@ variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 
 open scoped BigOperators Pointwise
 
-@[to_additive]
-instance Block.boundedOrderOfMem (a : X) :
-    BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
-  top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
-  le_top := by
-    rintro ⟨B, ha, hB⟩
-    simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
-  bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
-  bot_le := by
-    rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
-    exact ha
-
-@[to_additive]
-theorem Block.boundedOrderOfMem.top_eq (a : X) :
-    ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
-  rfl
-
-@[to_additive]
-theorem Block.boundedOrderOfMem.bot_eq (a : X) :
-    ((Block.boundedOrderOfMem G a).bot : Set X) = {a} :=
-  rfl
-
-@[to_additive]
-theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
-    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
-  rw [nontrivial_iff]
-  use (Block.boundedOrderOfMem G a).bot
-  use (Block.boundedOrderOfMem G a).top
-  intro h
-  rw [← Subtype.coe_inj] at h
-  simp only [Block.boundedOrderOfMem.top_eq, Block.boundedOrderOfMem.bot_eq] at h
-  obtain ⟨b, hb⟩ := exists_ne a
-  apply hb
-  rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
-  apply Set.mem_univ
-
 /-- A pretransitive action on a nontrivial type is preprimitive iff
     the set of blocks containing a given element is a simple order -/
 @[to_additive
@@ -365,21 +276,6 @@ end Stabilizer
 section Normal
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
-
-/-- If a subgroup acts nontrivially, then the type is nontrivial -/
-@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial"]
-theorem isnontrivial_of_nontrivial_action {N : Subgroup M} (h : fixedPoints N α ≠ ⊤) :
-    Nontrivial α := by
-  apply Or.resolve_left (subsingleton_or_nontrivial α)
-  intro hα
-  apply h
-  rw [eq_top_iff]
-  intro x hx
-  rw [mem_fixedPoints]
-  intro g
-  rw [subsingleton_iff] at hα
-  apply hα
-
 
 /-- In a preprimitive action,
   any normal subgroup that acts nontrivially is pretransitive

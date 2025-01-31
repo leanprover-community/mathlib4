@@ -94,6 +94,8 @@ Note: It is not necessarily a block when the action is not by a group. -/
 Note: It is not necessarily a block when the action is not by a group. "]
 def IsInvariantBlock (B : Set X) := ∀ g : G, g • B ⊆ B
 
+section IsTrivialBlock
+
 /-- A trivial block is a `Set X` which is either a subsingleton or `univ`.
 
 Note: It is not necessarily a block when the action is not by a group. -/
@@ -102,6 +104,57 @@ Note: It is not necessarily a block when the action is not by a group. -/
 
 Note: It is not necessarily a block when the action is not by a group."]
 def IsTrivialBlock (B : Set X) := B.Subsingleton ∨ B = univ
+
+variable {M α N β : Type*}
+
+section monoid
+
+variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
+
+
+@[to_additive]
+theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
+    (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
+    IsTrivialBlock (f '' B) := by
+  cases' hB with hB hB
+  · apply Or.intro_left; apply Set.Subsingleton.image hB
+  · apply Or.intro_right; rw [hB]
+    simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
+
+@[to_additive]
+theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
+    (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
+    IsTrivialBlock (f ⁻¹' B) := by
+  cases' hB with hB hB
+  · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
+  · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
+
+end monoid
+
+variable [Group M] [MulAction M α] [Monoid N] [MulAction N β]
+
+@[to_additive]
+theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
+    IsTrivialBlock (g • B) := by
+  cases hB with
+  | inl h =>
+    left
+    exact (Function.Injective.subsingleton_image_iff (MulAction.injective g)).mpr h
+  | inr h =>
+    right
+    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MulAction.surjective g)]
+
+@[to_additive]
+theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
+    IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
+  constructor
+  · intro H
+    convert IsTrivialBlock.smul H g⁻¹
+    simp only [inv_smul_smul]
+  · intro H
+    exact IsTrivialBlock.smul H g
+
+end IsTrivialBlock
 
 /-- A set `B` is a `G`-block iff the sets of the form `g • B` are pairwise equal or disjoint. -/
 @[to_additive
@@ -560,6 +613,43 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     · intro hBB' g hgB
       apply hB'.smul_eq_of_mem ha'
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
+
+@[to_additive]
+instance Block.boundedOrderOfMem (a : X) :
+    BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
+  top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
+  le_top := by
+    rintro ⟨B, ha, hB⟩
+    simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
+  bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
+  bot_le := by
+    rintro ⟨B, ha, hB⟩
+    simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
+    exact ha
+
+@[to_additive]
+theorem Block.boundedOrderOfMem.top_eq (a : X) :
+    ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
+  rfl
+
+@[to_additive]
+theorem Block.boundedOrderOfMem.bot_eq (a : X) :
+    ((Block.boundedOrderOfMem G a).bot : Set X) = {a} :=
+  rfl
+
+@[to_additive]
+theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
+    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
+  rw [nontrivial_iff]
+  use (Block.boundedOrderOfMem G a).bot
+  use (Block.boundedOrderOfMem G a).top
+  intro h
+  rw [← Subtype.coe_inj] at h
+  simp only [Block.boundedOrderOfMem.top_eq, Block.boundedOrderOfMem.bot_eq] at h
+  obtain ⟨b, hb⟩ := exists_ne a
+  apply hb
+  rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
+  apply Set.mem_univ
 
 end Stabilizer
 
