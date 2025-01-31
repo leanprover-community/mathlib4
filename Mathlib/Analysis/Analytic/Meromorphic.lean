@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: David Loeffler, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Algebra.Order.AddGroupWithTop
@@ -34,6 +34,23 @@ def MeromorphicAt (f : 𝕜 → E) (x : 𝕜) :=
 lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
+
+/- Analogue of the principle of isolated zeros for an analytic function: if a function is
+meromorphic at `z₀`, then either it is identically zero in a punctured neighborhood of `z₀`, or it
+does not vanish there at all. -/
+theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} {z₀ : 𝕜}
+    (hf : MeromorphicAt f z₀) :
+    (∀ᶠ z in 𝓝[≠] z₀, f z = 0) ∨ (∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0) := by
+  obtain ⟨n, h⟩ := hf
+  rcases h.eventually_eq_zero_or_eventually_ne_zero with h₁ | h₂
+  · left
+    filter_upwards [nhdsWithin_le_nhds h₁, self_mem_nhdsWithin] with y h₁y h₂y
+    rcases (smul_eq_zero.1 h₁y) with h₃ | h₄
+    · exact False.elim (h₂y (sub_eq_zero.1 (pow_eq_zero_iff'.1 h₃).1))
+    · assumption
+  · right
+    filter_upwards [h₂, self_mem_nhdsWithin] with y h₁y h₂y
+    exact (smul_ne_zero_iff.1 h₁y).2
 
 namespace MeromorphicAt
 
@@ -333,6 +350,53 @@ lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
 
 lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
   fun x _ ↦ .const e x
+
+/-- The set where a meromorphic function has infinite order is clopen in its domain of meromorphy.
+-/
+theorem clopen_of_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : MeromorphicOn f U) :
+    IsClopen { u : U | (h₁f u.1 u.2).order = ⊤ } := by
+  constructor
+  · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
+    intro z hz
+    rcases (h₁f z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    · -- Case: f is locally zero in a punctured neighborhood of z
+      rw [← (h₁f z.1 z.2).order_eq_top_iff] at h
+      tauto
+    · -- Case: f is locally nonzero in a punctured neighborhood of z
+      obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 (eventually_nhdsWithin_iff.1
+        (h.and (h₁f z.1 z.2).eventually_analyticAt))
+      use Subtype.val ⁻¹' t'
+      constructor
+      · intro w hw
+        simp
+        by_cases h₁w : w = z
+        · rwa [h₁w]
+        · have h₂f := (h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w)
+          simp [h₂f.2.meromorphicAt_order, h₂f.2.order_eq_zero_iff.2 h₂f.1]
+      · exact ⟨isOpen_induced h₂t', h₃t'⟩
+  · apply isOpen_iff_forall_mem_open.mpr
+    intro z hz
+    conv =>
+      arg 1; intro; left; right; arg 1; intro
+      rw [MeromorphicAt.order_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff]
+    simp only [Set.mem_setOf_eq] at hz
+    rw [MeromorphicAt.order_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff] at hz
+    obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
+    use Subtype.val ⁻¹' t'
+    simp only [Set.mem_compl_iff, Set.mem_singleton_iff, isOpen_induced h₂t', Set.mem_preimage,
+      h₃t', and_self, and_true]
+    intro w hw
+    simp
+    -- Trivial case: w = z
+    by_cases h₁w : w = z
+    · rw [h₁w]
+      tauto
+    -- Nontrivial case: w ≠ z
+    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (Set.mem_of_mem_diff h₁y) (Set.mem_of_mem_inter_right h₁y)
+    constructor
+    · exact h₂t'.sdiff isClosed_singleton
+    · apply (Set.mem_diff w).1
+      exact ⟨hw, Set.mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 section arithmetic
 
