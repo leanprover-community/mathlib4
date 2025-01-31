@@ -147,8 +147,8 @@ the product of linear terms `λ + X i` is equal to a linear combination of
 the symmetric polynomials `esymm σ R j`. -/
 theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i))) =
-      ∑ j ∈ range (card σ + 1), Polynomial.C
-        (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
+      ∑ j ∈ range (Fintype.card σ + 1), Polynomial.C
+        (MvPolynomial.esymm σ R j) * Polynomial.X ^ (Fintype.card σ - j) := by
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
@@ -158,7 +158,7 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
 
 theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i)) : Polynomial _).coeff k =
-    MvPolynomial.esymm σ R (card σ - k) := by
+    MvPolynomial.esymm σ R (Fintype.card σ - k) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
