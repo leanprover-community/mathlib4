@@ -807,7 +807,7 @@ lemma not_nil_iff {p : G.Walk v w} :
   cases p <;> simp [*]
 
 @[simp]
-lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
+lemma nil_append {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
   cases p <;> cases q <;> simp
 
 @[simp]
@@ -834,7 +834,7 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
-theorem end_mem_tail_support {u v : V} (p : G.Walk u v) (h : ¬ p.Nil) : v ∈ p.support.tail :=
+theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
@@ -976,8 +976,8 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · assumption)
 
 lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
-    (hadj : G.Adj u v') (hwp' : w ∈ (p.cons hadj).support := List.mem_of_mem_tail hwp) :
-    (p.cons hadj).takeUntil w hwp' = (p.takeUntil w hwp).cons hadj := by
+    (hadj : G.Adj u v) :
+    (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
   simp [Walk.takeUntil, h]
 
 @[simp]
@@ -1149,7 +1149,7 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
-lemma takeUntil_takeUntil {p : G.Walk u v} (w x : V) (hw : w ∈ p.support)
+lemma takeUntil_takeUntil (p : G.Walk u v) (w x : V) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
   induction p, w, hw using takeUntil.induct with
