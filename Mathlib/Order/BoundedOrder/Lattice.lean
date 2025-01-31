@@ -24,9 +24,9 @@ instances for `Prop` and `fun`.
 
 open Function OrderDual
 
-universe u v
+universe u
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u}
 
 /-! ### Top, bottom element -/
 

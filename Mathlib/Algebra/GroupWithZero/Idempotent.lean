@@ -12,10 +12,10 @@ import Mathlib.Algebra.GroupWithZero.Defs
 
 assert_not_exists Ring
 
-variable {M N S M₀ M₁ R G G₀ : Type*}
-variable [MulOneClass M₁] [CancelMonoidWithZero G₀]
+variable {M₀ G₀ : Type*}
 
 namespace IsIdempotentElem
+
 section MulZeroClass
 variable [MulZeroClass M₀]
 
@@ -28,7 +28,8 @@ instance : Zero { p : M₀ // IsIdempotentElem p } where zero := ⟨0, zero⟩
 end MulZeroClass
 
 section CancelMonoidWithZero
-variable [CancelMonoidWithZero M₀]
+
+variable [CancelMonoidWithZero G₀]
 
 @[simp]
 lemma iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 where

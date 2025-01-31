@@ -38,7 +38,7 @@ namespace MeasureTheory
 
 variable {X M E : Type*}
   [TopologicalSpace X] [R1Space X] [MeasurableSpace X] [BorelSpace X]
-  [Monoid M] [TopologicalSpace M] [MeasurableSpace M] [OpensMeasurableSpace M]
+  [TopologicalSpace M] [MeasurableSpace M] [OpensMeasurableSpace M]
   [SMul M X] [ContinuousSMul M X]
   [NormedAddCommGroup E]
   {μ : Measure X} [IsLocallyFiniteMeasure μ] [μ.InnerRegularCompactLTTop]
