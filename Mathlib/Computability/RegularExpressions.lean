@@ -351,7 +351,7 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 1 => rfl
   | char _ => rfl
   | R + S => by simp_rw [map, map_id]
-  | R * S => by simp_rw [map, map_id]; rfl
+  | R * S => by simp_rw [map, map_id]
   | star R => by simp_rw [map, map_id]
 
 @[simp]
