@@ -1146,10 +1146,8 @@ lemma snd_takeUntil {p : G.Walk u v} (hsu : w ≠ u) (h : w ∈ p.support) :
 lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
   rw [(p.length_takeUntil_le h).lt_iff_ne]
-  intro hl
-  apply huw
-  simpa using (hl ▸ getVert_takeUntil h (by rfl) :
-    (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length)
+  exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
+    (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
 lemma takeUntil_takeUntil {p : G.Walk u v} (w x : V) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
@@ -1163,8 +1161,7 @@ lemma takeUntil_takeUntil {p : G.Walk u v} (w x : V) (hw : w ∈ p.support)
   | case3 a w' v' hadj q u' hu' hau' _ ih =>
     rw [← Ne.eq_def] at hau'
     simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
-    rw [cons_takeUntil hu' hau' hadj] at hx
-    simp only [support_cons, List.mem_cons] at hx
+    simp only [cons_takeUntil hu' hau' hadj, support_cons, List.mem_cons] at hx
     by_cases hx' : x = a
     · aesop
     · simp [hx'] at hx
