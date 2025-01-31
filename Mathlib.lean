@@ -4767,7 +4767,6 @@ import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.SimpleRing.Field
 import Mathlib.RingTheory.SimpleRing.Matrix
 import Mathlib.RingTheory.Smooth.Basic
-import Mathlib.RingTheory.Smooth.CotangentComplex
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.Local
 import Mathlib.RingTheory.Smooth.Locus
@@ -5214,6 +5213,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.IntermediateField
+import Mathlib.Topology.Algebra.IsOpenUnits
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
