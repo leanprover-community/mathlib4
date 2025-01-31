@@ -162,13 +162,13 @@ section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp) zero_le]
-theorem one_le (a : α) : 1 ≤ a :=
+theorem one_le : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
 @[to_additive]
 instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
   bot := 1
-  bot_le := one_le
+  bot_le _ := one_le
 
 end LE
 
@@ -177,7 +177,7 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  (one_le _).trans_lt h
+  one_le.trans_lt h
 
 end Preorder
 
@@ -186,18 +186,18 @@ variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem bot_eq_one : (⊥ : α) = 1 :=
-  le_antisymm bot_le (one_le ⊥)
+  le_antisymm bot_le one_le
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
+  one_le.le_iff_eq
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
-  (one_le a).lt_iff_ne.trans ne_comm
+  one_le.lt_iff_ne.trans ne_comm
 
 @[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt.imp_left Eq.symm
 
 @[to_additive]
 lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
@@ -282,7 +282,7 @@ namespace NeZero
 
 theorem pos {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
     (a : M) [NeZero a] : 0 < a :=
-  (zero_le a).lt_of_ne <| NeZero.out.symm
+  zero_le.lt_of_ne <| NeZero.out.symm
 
 theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     {x y : M} (h : x < y) : NeZero y :=
@@ -337,11 +337,11 @@ theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) 
 
 @[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
-  min_eq_left (one_le a)
+  min_eq_left one_le
 
 @[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
-  min_eq_right (one_le a)
+  min_eq_right one_le
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
