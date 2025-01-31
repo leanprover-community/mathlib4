@@ -23,8 +23,8 @@ theorem degree_degLexDegree [WellFoundedGT σ] {f : MvPolynomial σ R} :
   apply le_antisymm
   · apply MvPolynomial.le_totalDegree
     rw [MvPolynomial.mem_support_iff]
-    change degLex.lCoeff f ≠ 0
-    rw [lCoeff_ne_zero_iff]
+    change degLex.leadingCoeff f ≠ 0
+    rw [leadingCoeff_ne_zero_iff]
     exact hf
   · unfold MvPolynomial.totalDegree
     apply Finset.sup_le
