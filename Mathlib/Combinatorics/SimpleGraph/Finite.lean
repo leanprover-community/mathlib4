@@ -249,6 +249,12 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   induction e
   simp [mk'_mem_incidenceSet_iff]
 
+variable {G v} {H: SimpleGraph V} [Fintype (H.neighborSet v)]
+/-- If G ≤ H then d_G(v) ≤ d_H(v) for any vertex v -/
+lemma degree_le_of_le (hle : G ≤ H) : G.degree v ≤ H.degree v:=by
+  simp only [← card_neighborSet_eq_degree]
+  apply Set.card_le_card fun v hv  => by exact hle hv
+
 end FiniteAt
 
 section LocallyFinite
@@ -336,6 +342,22 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rcases G.exists_minimal_degree_vertex with ⟨v, hv⟩
   rw [hv]
   apply h
+
+/-- If there are no vertices then the minDegree is zero -/
+@[simp]
+lemma minDegree_eq_zero [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0:= by
+  rw [minDegree,WithTop.untop'_eq_self_iff]
+  right
+  simp
+
+/--If G is a subgraph of H then δ(G) ≤ δ(H) -/
+lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.minDegree  ≤ H.minDegree := by
+  by_cases hne : Nonempty V
+  · apply le_minDegree_of_forall_le_degree;
+    intro v; apply (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
+  · rw [not_nonempty_iff] at hne
+    simp
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
