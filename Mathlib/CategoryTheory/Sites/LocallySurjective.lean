@@ -47,7 +47,7 @@ def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) : 
   downward_closed := by
     rintro V W i ⟨t, ht⟩ j
     refine ⟨F.map j.op t, ?_⟩
-    rw [op_comp, G.map_comp, comp_apply, ← ht, elementwise_of% f.naturality]
+    rw [op_comp, G.map_comp, CategoryTheory.comp_apply, ← ht, elementwise_of% f.naturality]
 
 theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) :
     imageSieve f s = (Subpresheaf.range (whiskerRight f (forget A))).sieveOfSection s :=
@@ -137,8 +137,8 @@ instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ 
         imageSieve (f₁ ≫ f₂) s := by
       rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
       refine ⟨t', ?_⟩
-      rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
-        elementwise_of% f₂.naturality, H.choose_spec]
+      rw [op_comp, F₃.map_comp, NatTrans.comp_app, CategoryTheory.comp_apply,
+        CategoryTheory.comp_apply, ht', elementwise_of% f₂.naturality, H.choose_spec]
     apply J.superset_covering this
     apply J.bind_covering
     · apply imageSieve_mem
@@ -200,8 +200,8 @@ lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J (f₁ ≫ f₂)
       dsimp
-      rw [comp_apply, comp_apply, app_localPreimage, app_localPreimage,
-        NatTrans.naturality_apply, NatTrans.naturality_apply, h]
+      rw [CategoryTheory.comp_apply, CategoryTheory.comp_apply, app_localPreimage,
+        app_localPreimage, NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
 lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective_fac
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)
@@ -226,7 +226,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J f₂
       rw [NatTrans.naturality_apply, ← app_localPreimage (f₁ ≫ f₂) _ _ hf,
-        NatTrans.comp_app, comp_apply]
+        NatTrans.comp_app, CategoryTheory.comp_apply]
 
 lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective_fac
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)

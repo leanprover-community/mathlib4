@@ -240,6 +240,12 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
 
+/-- Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
+
 /--
 The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.

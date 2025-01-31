@@ -419,8 +419,16 @@ theorem eq_of_forall_le_iff [PartialOrder α] {a b : α} (H : ∀ c, c ≤ a ↔
 theorem le_of_forall_le [Preorder α] {a b : α} (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b :=
   H _ le_rfl
 
-theorem le_of_forall_le' [Preorder α] {a b : α} (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a :=
+theorem le_of_forall_ge [Preorder α] {a b : α} (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a :=
   H _ le_rfl
+
+@[deprecated (since := "2025-01-30")] alias le_of_forall_le' := le_of_forall_ge
+
+theorem forall_le_iff_le [Preorder α] {a b : α} : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
+  ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
+
+theorem forall_le_iff_ge [Preorder α] {a b : α} : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
+  ⟨le_of_forall_ge, fun h _ hca ↦ le_trans h hca⟩
 
 theorem le_of_forall_lt [LinearOrder α] {a b : α} (H : ∀ c, c < a → c < b) : a ≤ b :=
   le_of_not_lt fun h ↦ lt_irrefl _ (H _ h)
