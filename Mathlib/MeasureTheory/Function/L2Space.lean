@@ -111,9 +111,6 @@ theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
   rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_rpow_two_norm_lt_top := eLpNorm_rpow_two_norm_lt_top
-
 theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
   have h : ∀ x, ‖⟪f x, g x⟫‖ ≤ ‖‖f x‖ ^ (2 : ℝ) + ‖g x‖ ^ (2 : ℝ)‖ := by
     intro x
@@ -130,9 +127,6 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
   · exact ((Lp.aestronglyMeasurable g).norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [ENNReal.add_lt_top]
   exact ⟨eLpNorm_rpow_two_norm_lt_top f, eLpNorm_rpow_two_norm_lt_top g⟩
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_inner_lt_top := eLpNorm_inner_lt_top
 
 section InnerProductSpace
 
@@ -158,9 +152,6 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
   rw [← Real.rpow_natCast _ 2, ← h_two, ←
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_enorm]
   norm_cast
-
-@[deprecated (since := "2024-07-27")]
-alias integral_inner_eq_sq_snorm := integral_inner_eq_sq_eLpNorm
 
 private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
@@ -245,10 +236,6 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
     exact inner_zero_left _
   rw [h_left, h_right, add_zero]
 
-@[deprecated (since := "2024-04-17")]
-alias inner_indicatorConstLp_eq_set_integral_inner :=
-  inner_indicatorConstLp_eq_setIntegral_inner
-
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
 theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpace ℝ E]
@@ -256,10 +243,6 @@ theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpa
     (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ⟪c, ∫ x in s, f x ∂μ⟫ := by
   rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs),
     L2.inner_indicatorConstLp_eq_setIntegral_inner]
-
-@[deprecated (since := "2024-04-17")]
-alias inner_indicatorConstLp_eq_inner_set_integral :=
-  inner_indicatorConstLp_eq_inner_setIntegral
 
 variable {𝕜}
 

@@ -160,8 +160,6 @@ theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
 
-@[deprecated (since := "2024-06-08")] alias floor_coe := floor_natCast
-
 @[simp]
 theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_natCast]
 

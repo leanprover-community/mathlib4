@@ -914,9 +914,6 @@ lemma finsetSum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (�
     {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 
-@[deprecated (since := "2024-07-14")]
-alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
-
 lemma le_iInf_mul_iInf {g : κ → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : ∃ j, g j ≠ ∞)
     (ha : ∀ i j, a ≤ f i * g j) : a ≤ (⨅ i, f i) * ⨅ j, g j := by
   rw [← iInf_ne_top_subtype]

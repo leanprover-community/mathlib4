@@ -33,10 +33,6 @@ universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
-/-- `≤` implies not `>` for lists. -/
-@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
-theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
-
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
 
@@ -343,8 +339,6 @@ lemma getLast_filter' {p : α → Bool} :
 
 @[deprecated (since := "2024-09-06")] alias getLast?_eq_none := getLast?_eq_none_iff
 
-@[deprecated (since := "2024-06-20")] alias getLast?_isNone := getLast?_eq_none
-
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx => False.elim <| by simp at hx
   | [a], x, hx =>
@@ -620,11 +614,6 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
-@[deprecated "No deprecation message was provided." (since := "2024-04-07")]
-theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
-
-@[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
-
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
 
@@ -744,19 +733,9 @@ section deprecated
 @[simp]
 theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
 
-@[deprecated getElem?_length (since := "2024-06-12")]
-theorem get?_length (l : List α) : l.get? l.length = none := get?_eq_none le_rfl
-
-@[deprecated (since := "2024-05-03")] alias get?_injective := get?_inj
-
 /-- A version of `getElem_map` that can be used for rewriting. -/
 theorem getElem_map_rev (f : α → β) {l} {n : Nat} {h : n < l.length} :
     f l[n] = (map f l)[n]'((l.length_map f).symm ▸ h) := Eq.symm (getElem_map _)
-
-/-- A version of `get_map` that can be used for rewriting. -/
-@[deprecated getElem_map_rev (since := "2024-06-12")]
-theorem get_map_rev (f : α → β) {l n} :
-    f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (getElem_map _)
 
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
@@ -837,14 +816,6 @@ theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy :
 
 @[deprecated (since := "2025-01-30")] alias indexOf_inj := idxOf_inj
 
-@[deprecated getElem_reverse (since := "2024-06-12")]
-theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
-    get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
-  rw [get_eq_getElem, get_eq_getElem, getElem_reverse]
-  congr
-  dsimp
-  omega
-
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
@@ -862,8 +833,6 @@ alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
 
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
-@[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
-
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
 
 @[simp]
@@ -873,20 +842,12 @@ theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
   rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne h,
     List.getElem?_eq_getElem]
 
-@[deprecated getElem_set_of_ne (since := "2024-06-12")]
-theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
-    (hj : j < (l.set i a).length) :
-    (l.set i a).get ⟨j, hj⟩ = l.get ⟨j, by simpa using hj⟩ := by
-  simp [getElem_set_of_ne, h]
-
 /-! ### map -/
 
 -- `List.map_const` (the version with `Function.const` instead of a lambda) is already tagged
 -- `simp` in Core
 -- TODO: Upstream the tagging to Core?
 attribute [simp] map_const'
-
-@[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
 theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ f) = map f l :=
   .symm <| map_eq_flatMap ..
@@ -1195,19 +1156,11 @@ theorem getElem?_scanl_zero : (scanl f b l)[0]? = some b := by
   · simp [scanl_nil]
   · simp [scanl_cons, singleton_append]
 
-@[deprecated getElem?_scanl_zero (since := "2024-06-12")]
-theorem get?_zero_scanl : (scanl f b l).get? 0 = some b := by
-  simp [getElem?_scanl_zero]
-
 @[simp]
 theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b := by
   cases l
   · simp [scanl_nil]
   · simp [scanl_cons, singleton_append]
-
-@[deprecated getElem_scanl_zero (since := "2024-06-12")]
-theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, h⟩ = b := by
-  simp [getElem_scanl_zero]
 
 theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
     ((scanl f b l).get? i).bind fun x => (l.get? i).map fun y => f x y := by
@@ -1548,17 +1501,6 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
   · omega
   · specialize ih ‹_›
     omega
-
-@[deprecated attach_map_coe (since := "2024-07-29")] alias attach_map_coe' := attach_map_coe
-@[deprecated attach_map_val (since := "2024-07-29")] alias attach_map_val' := attach_map_val
-
-/-! ### find -/
-
-section find?
-
-@[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
-
-end find?
 
 /-! ### lookmap -/
 
@@ -2022,23 +1964,6 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     (List.dropSlice i j xs).length < xs.length := by
   simp; omega
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-07-25")]
-theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
-    SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
-  induction xs generalizing i j hj with
-  | nil => cases hi
-  | cons x xs xs_ih =>
-    cases i <;> simp only [List.dropSlice]
-    · cases j with
-      | zero => contradiction
-      | succ n =>
-        dsimp only [drop]; apply lt_of_le_of_lt (drop_sizeOf_le xs n)
-        simp only [cons.sizeOf_spec]; omega
-    · simp only [cons.sizeOf_spec, Nat.add_lt_add_iff_left]
-      apply xs_ih _ j hj
-      apply lt_of_succ_lt_succ hi
 
 section Disjoint
 
