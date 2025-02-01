@@ -156,7 +156,7 @@ variable {𝕜 V E F : Type*}
 /-- The Fourier transform of a function in `L^p` which has a Schwartz representative is also a
 function in `L^q` with a Schwartz representative, with `q` arbitrary. -/
 theorem Lp.LpSchwartzMap.memℒp_fourierIntegral {p : ℝ≥0∞}
-    (f : LpSchwartzMap (E := V) E p) (q : ℝ≥0∞) : Memℒp (𝓕 f) q volume :=
+    (f : LpSchwartzMap E p (volume : Measure V)) (q : ℝ≥0∞) : Memℒp (𝓕 f) q volume :=
   induction_on f (fun g ↦ Memℒp (𝓕 g) q volume)
     (fun _ hfg ↦ Eq.subst (motive := fun (f : V → E) ↦ Memℒp f q volume)
       (Real.fourierIntegral_congr_ae hfg).symm)
@@ -181,7 +181,7 @@ theorem Lp.LpSchwartzMap.coeFn_fourierTransform {p : ℝ≥0∞} (q : ℝ≥0∞
 
 /-- The Fourier transform is uniform continuous as a map `L^1 → L^∞`. -/
 theorem Lp.LpSchwartzMap.uniformContinuous_fourierTransform_one_top :
-    UniformContinuous (fun f : LpSchwartzMap (E := V) E 1 ↦ fourierTransform ⊤ f) := by
+    UniformContinuous (fun f : LpSchwartzMap E 1 (volume : Measure V) ↦ fourierTransform ⊤ f) := by
   refine EMetric.uniformContinuous_iff.mpr ?_
   simp only [Subtype.edist_eq, edist_def]
   intro ε hε
@@ -230,9 +230,27 @@ theorem Lp.LpSchwartzMap.uniformContinuous_fourierTransform_one_top :
     simpa using h
   _ < ε := h
 
+theorem Lp.LpSchwartzMap.norm_fourier_two_eq_norm_two (f : LpSchwartzMap F 2 (volume : Measure V)) :
+    ‖fourierTransform 2 f‖ = ‖f‖ := by
+  suffices ‖(fourierTransform 2 f).val‖ₑ = ‖f.val‖ₑ by
+    simpa [enorm_eq_nnnorm, ← NNReal.coe_inj] using this
+  calc ‖(fourierTransform 2 f).val‖ₑ
+  _ = eLpNorm (fourierTransform 2 f) 2 volume := enorm_def _
+  _ = eLpNorm (𝓕 f) 2 volume := eLpNorm_congr_ae (coeFn_fourierTransform 2 f)
+  _ = eLpNorm f 2 volume := by
+    refine induction_on f (fun f ↦ eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume)
+      ?_ SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
+    intro f' hf h
+    rw [Real.fourierIntegral_congr_ae hf, eLpNorm_congr_ae hf]
+    exact h
+  _ = ‖f.val‖ₑ := .symm <| enorm_def _
+
+-- TODO: Would this be easier to prove using `fourierTransformLM`?
+-- TODO: Use `‖fourierTransform 2 f‖ = ‖f‖` from above?
+
 /-- The Fourier transform is uniform continuous under the `L^2` norm. -/
 theorem Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_two :
-    UniformContinuous (fun f : LpSchwartzMap (E := V) F 2 ↦ fourierTransform 2 f) := by
+    UniformContinuous (fun f : LpSchwartzMap F 2 (volume : Measure V) ↦ fourierTransform 2 f) := by
   refine EMetric.uniformContinuous_iff.mpr ?_
   simp only [Subtype.edist_eq, edist_def]
   intro ε hε
@@ -263,12 +281,11 @@ theorem Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_two :
     filter_upwards [coeFn_sub f.val g.val] with x h
     simpa using h.symm
   _ = eLpNorm (f - g) 2 volume := by
-    refine induction_on (f - g) (fun r ↦ eLpNorm (𝓕 r) 2 volume = eLpNorm r 2 volume) ?_ ?_
-    · intro r hr h
-      rw [Real.fourierIntegral_congr_ae hr, eLpNorm_congr_ae hr]
-      exact h
-    -- TODO: Just need to generalize beyond `ℂ`?
-    exact SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
+    refine induction_on (f - g) (fun r ↦ eLpNorm (𝓕 r) 2 volume = eLpNorm r 2 volume) ?_
+      SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
+    intro r hr h
+    rw [Real.fourierIntegral_congr_ae hr, eLpNorm_congr_ae hr]
+    exact h
   _ = eLpNorm (⇑f - ⇑g) 2 volume := by
     refine eLpNorm_congr_ae ?_
     filter_upwards [coeFn_sub f.val g.val] with x h
@@ -366,21 +383,43 @@ noncomputable def Lp.LpSchwartzMap.fourierTransformCLM_two_two :
   { fourierTransformLM 𝕜 V F 2 2 with
     cont := uniformContinuous_fourierTransform_two_two.continuous }
 
+theorem Lp.LpSchwartzMap.fourierTransformCLM_two_two_apply
+    (f : LpSchwartzMap F 2 (volume : Measure V)) :
+    LpSchwartzMap.fourierTransformCLM_two_two 𝕜 V F f = fourierTransform 2 f := rfl
+
 variable (𝕜 V E) in
 /-- The Fourier transform as a continuous linear map from `L^1` to `L^∞`. -/
 noncomputable def Lp.fourierTransformCLM_one_top :
     Lp E 1 (volume : Measure V) →L[𝕜] Lp E ⊤ (volume : Measure V) :=
-  .extend (LpSchwartzMap.subtypeL 𝕜 E ⊤ _ ∘L LpSchwartzMap.fourierTransformCLM_one_top 𝕜 V E)
-    (LpSchwartzMap.subtypeL 𝕜 E 1 _) (LpSchwartzMap.dense E ENNReal.one_ne_top _).denseRange_val
-    (isUniformInducing_val _)
+  .extend (LpSchwartzMap.subtypeL 𝕜 E ⊤ volume ∘L LpSchwartzMap.fourierTransformCLM_one_top 𝕜 V E)
+    (LpSchwartzMap.subtypeL 𝕜 E 1 volume)
+    (LpSchwartzMap.dense E ENNReal.one_ne_top volume).denseRange_val (isUniformInducing_val _)
 
 variable (𝕜 V F) in
 /-- The Fourier transform as a continuous linear map from `L^2` to `L^2`. -/
 noncomputable def Lp.fourierTransformCLM_two_two :
     Lp F 2 (volume : Measure V) →L[𝕜] Lp F 2 (volume : Measure V) :=
-  .extend (LpSchwartzMap.subtypeL 𝕜 F 2 _ ∘L LpSchwartzMap.fourierTransformCLM_two_two 𝕜 V F)
-    (LpSchwartzMap.subtypeL 𝕜 F 2 _) (LpSchwartzMap.dense F ENNReal.two_ne_top _).denseRange_val
-    (isUniformInducing_val _)
+  .extend (LpSchwartzMap.subtypeL 𝕜 F 2 volume ∘L LpSchwartzMap.fourierTransformCLM_two_two 𝕜 V F)
+    (LpSchwartzMap.subtypeL 𝕜 F 2 volume)
+    (LpSchwartzMap.dense F ENNReal.two_ne_top volume).denseRange_val (isUniformInducing_val _)
+
+theorem Lp.fourierTransformCLM_two_two_apply_coe (f : LpSchwartzMap F 2 (volume : Measure V)) :
+    fourierTransformCLM_two_two 𝕜 V F (f : Lp F 2 volume) = LpSchwartzMap.fourierTransform 2 f :=
+  ContinuousLinearMap.extend_eq _ _ _ _ f
+
+/-- Plancherel's theorem: The Fourier transform preserves the `L^2` norm. -/
+theorem Lp.norm_fourierTransformCLM_two_two_apply (f : Lp F 2 (volume : Measure V)) :
+    ‖fourierTransformCLM_two_two 𝕜 V F f‖ = ‖f‖ := by
+  -- TODO: How does this manage to avoid specifying `P`?
+  refine Dense.induction (LpSchwartzMap.dense F ENNReal.two_ne_top (volume : Measure V)) ?_
+    (isClosed_eq (ContinuousLinearMap.continuous _).norm continuous_norm) f
+  suffices ∀ f : LpSchwartzMap F 2 (volume : Measure V),
+      ‖fourierTransformCLM_two_two 𝕜 V F f.val‖ = ‖f.val‖ by simpa using this
+  intro f
+  rw [fourierTransformCLM_two_two_apply_coe]
+  simpa using LpSchwartzMap.norm_fourier_two_eq_norm_two f
+
+-- TODO: Define `LinearIsometry(Equiv)`?
 
 end LinearMap
 

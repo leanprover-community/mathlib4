@@ -78,6 +78,7 @@ variable [NormedField 𝕜] [MeasurableSpace E] [BorelSpace E]
 -- TODO: Maybe this should go under `SchwartzMap.LpSchwartzMap` instead?
 namespace MeasureTheory
 
+-- TODO: Should we just define this with `volume`??
 variable (F) in
 /-- The Schwartz functions (or rather, the equivalence class of functions with a Schwartz
 representative) as an additive subgroup of `L^p`, equipped with the `L^p` norm.
@@ -154,17 +155,17 @@ noncomputable def Lp.LpSchwartzMap.choose {p : ℝ≥0∞} {μ : Measure E}
 /-- Prove `p ⇑f` with `f : LpSchwartzMap F q μ` by showing that
 (1) ae-equality `f =ᵐ[μ] f'` is sufficient to prove `p f' → p f` and
 (2) `p ⇑g` holds for all Schwartz functions `g : 𝓢(E, F)`. -/
-theorem Lp.LpSchwartzMap.induction_on {q : ℝ≥0∞} {μ : Measure E}
-    (f : LpSchwartzMap F q μ) (p : (E → F) → Prop)
-    (h_congr : ∀ ⦃f' : E → F⦄, f =ᵐ[μ] f' → p f' → p f) (h : ∀ g : 𝓢(E, F), p g) : p f := by
+theorem Lp.LpSchwartzMap.induction_on {p : ℝ≥0∞} {μ : Measure E}
+    (f : LpSchwartzMap F p μ) (P : (E → F) → Prop)
+    (h_congr : ∀ ⦃f' : E → F⦄, f =ᵐ[μ] f' → P f' → P f) (h : ∀ g : 𝓢(E, F), P g) : P f := by
   obtain ⟨f, hf⟩ := f
   obtain ⟨g, hg⟩ := mem_iff_ae.mp hf
   exact h_congr hg (h g)
 
-theorem Lp.LpSchwartzMap.induction_on₂ {q : ℝ≥0∞} {μ : Measure E}
-    (f g : LpSchwartzMap F q μ) (p : (E → F) → (E → F) → Prop)
-    (h_congr : ∀ ⦃f' g' : E → F⦄, f =ᵐ[μ] f' → g =ᵐ[μ] g' → p f' g' → p f g)
-    (h : ∀ f₀ g₀ : 𝓢(E, F), p f₀ g₀) : p f g := by
+theorem Lp.LpSchwartzMap.induction_on₂ {p : ℝ≥0∞} {μ : Measure E}
+    (f g : LpSchwartzMap F p μ) (P : (E → F) → (E → F) → Prop)
+    (h_congr : ∀ ⦃f' g' : E → F⦄, f =ᵐ[μ] f' → g =ᵐ[μ] g' → P f' g' → P f g)
+    (h : ∀ f₀ g₀ : 𝓢(E, F), P f₀ g₀) : P f g := by
   obtain ⟨f, hf⟩ := f
   obtain ⟨g, hg⟩ := g
   obtain ⟨f₀, hf₀⟩ := mem_iff_ae.mp hf
