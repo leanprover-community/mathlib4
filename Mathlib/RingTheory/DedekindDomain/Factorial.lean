@@ -110,43 +110,6 @@ lemma lemma_12 (pOrder: Set.pOrdering S p) (k: ℕ) (c: Fin (k + 1) → R) (e: �
 example (k l : ℕ) : (k ! * l !) ∣ (k + l) ! := k.factorial_mul_factorial_dvd_factorial_add l
 example (k l : ℤ) (hk : 0 ≤ k) (hl : 0 ≤ l) : (k.toNat ! * l.toNat !) ∣ (k + l).toNat ! := sorry
 
-
-lemma factorial_coe_dvd_ofPos (k : ℕ) (n : ℤ) (hn : 0 ≤ n) :
-    (k ! : ℤ) ∣ ∏ i ∈ Finset.range k, (n + i) := by
-  obtain ⟨x, hx⟩ := Int.eq_ofNat_of_zero_le hn
-  have hdivk := x.factorial_dvd_ascFactorial k
-  zify [x.ascFactorial_eq_prod_range k] at hdivk
-  rwa [hx]
-
-lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ Finset.range k, (n + i) := by
-  by_cases hn : 0 ≤ n
-  · exact factorial_coe_dvd_ofPos k n hn
-  · rw [not_le] at hn
-    by_cases hnk : 0 < n + k
-    · have negn : 0 ≤ -n := by linarith
-      · have : ∏ i ∈ Finset.range k, (n + ↑i) = 0 := Finset.prod_eq_zero_iff.mpr <| by
-          have ⟨negn, _⟩ : ∃ (negn : ℕ), -n = ↑negn := Int.eq_ofNat_of_zero_le <| by linarith
-          exact ⟨negn, by rw [Finset.mem_range]; omega⟩
-        exact Int.modEq_zero_iff_dvd.mp congr($this % ↑k !)
-    · rw [not_lt] at hnk
-      rw [← dvd_abs, Finset.abs_prod]
-      have prod_eq: ∏ x ∈ Finset.range k, |n + ↑x| =  ∏ x ∈ Finset.range k, -(n + ↑x) := by
-        apply Finset.prod_congr (rfl)
-        intro x hx
-        rw [abs_of_neg]
-        simp at hx
-        linarith
-      simp only [prod_eq, neg_add_rev, add_comm]
-      rw [← Finset.prod_range_reflect]
-      have prod_cast:  ∏ j ∈ Finset.range k, (-n + -↑(k - 1 - j)) =  ∏ j ∈ Finset.range k, (-n + -↑(k - 1) + j) := by
-        apply Finset.prod_congr rfl
-        intro x hx
-        simp at hx
-        omega
-      rw [prod_cast]
-      exact factorial_coe_dvd_ofPos k (-n + -↑(k - 1)) (by omega)
-
-
 /-- ℕ is a p-ordering of ℤ for any prime `p`. -/
 def natPOrdering : (univ : Set ℤ).pOrdering p where
   elems := (⟨·, mem_univ _⟩)
