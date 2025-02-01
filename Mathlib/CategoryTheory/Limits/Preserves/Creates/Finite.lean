@@ -134,7 +134,7 @@ instance (priority := 100) CreatesColimits.createsFiniteColimits (F : C ⥤ D)
   CreatesColimitsOfSize.createsFiniteColimits F
 
 /-- If `F` creates finite colimits in any universe, then it creates finite colimits. -/
-def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
+def createsFiniteColimitsOfCreatesFiniteColimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesColimitsOfShape J F) :
     CreatesFiniteColimits F where
   createsFiniteColimits J _ _ :=
