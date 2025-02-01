@@ -181,17 +181,17 @@ lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [Is
   rw [iso_w' (asIso sq)]
   infer_instance
 
-lemma isIso_iff_isIso_of_isIso {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (sq : mk f ⟶ mk g) [IsIso sq] :
-    IsIso f ↔ IsIso g :=
-  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
-
-lemma isIso_hom_iff_isIso_of_isIso {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f ⟶ mk g) [IsIso sq] :
-    IsIso f.hom ↔ IsIso g :=
-  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
-
 lemma isIso_hom_iff_isIso_hom_of_isIso {f g : Arrow T} (sq : f ⟶ g) [IsIso sq] :
     IsIso f.hom ↔ IsIso g.hom :=
   ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
+
+lemma isIso_iff_isIso_of_isIso {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (sq : mk f ⟶ mk g) [IsIso sq] :
+    IsIso f ↔ IsIso g :=
+  isIso_hom_iff_isIso_hom_of_isIso sq
+
+lemma isIso_hom_iff_isIso_of_isIso {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f ⟶ mk g) [IsIso sq] :
+    IsIso f.hom ↔ IsIso g :=
+  isIso_hom_iff_isIso_hom_of_isIso sq
 
 @[simp]
 theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
