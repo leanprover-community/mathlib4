@@ -16,8 +16,6 @@ A category is countable in this sense if it has countably many objects and count
 
 universe w v u
 
-open scoped Classical
-
 noncomputable section
 
 namespace CategoryTheory
@@ -34,6 +32,8 @@ attribute [instance] CountableCategory.countableObj CountableCategory.countableH
 
 instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
+
+instance : CountableCategory ℕ where
 
 namespace CountableCategory
 
@@ -78,6 +78,8 @@ noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
 end CountableCategory
 
 instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
+
+instance : CountableCategory ℕ where
 
 open Opposite
 

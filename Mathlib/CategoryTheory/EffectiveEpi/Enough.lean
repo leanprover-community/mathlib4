@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 
 # Effectively enough objects in the image of a functor
 
-We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object
+We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object
 in `D`, there exists an effective epi to it from an object in the image of `F`.
 -/
 
@@ -21,11 +21,11 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 namespace Functor
 
 /--
-An effective presentation of an object `X` with respect to a functor `F` is the data of an effective
+An effective presentation of an object `X` with respect to a functor `F` is the data of an effective
 epimorphism of the form `F.obj p ⟶ X`.
 -/
 structure EffectivePresentation (X : D) where
-  /-- The object of `C` giving the source of the effective epi -/
+  /-- The object of `C` giving the source of the effective epi -/
   p : C
   /-- The morphism `F.obj p ⟶ X` -/
   f : F.obj p ⟶ X
@@ -33,11 +33,11 @@ structure EffectivePresentation (X : D) where
   effectiveEpi : EffectiveEpi f
 
 /--
-`D` has *effectively enough objects with respect to the functor `F` if every object has an
+`D` has *effectively enough objects with respect to the functor `F` if every object has an
 effective presentation.
 -/
 class EffectivelyEnough : Prop where
-  /-- For every `X : D`, there exists an object `p` of `C` with an effective epi `F.obj p ⟶ X`. -/
+  /-- For every `X : D`, there exists an object `p` of `C` with an effective epi `F.obj p ⟶ X`. -/
   presentation : ∀ (X : D), Nonempty (F.EffectivePresentation X)
 
 variable [F.EffectivelyEnough]
@@ -70,3 +70,5 @@ instance [IsEquivalence F] : EffectivelyEnough F where
   presentation X := ⟨equivalenceEffectivePresentation F.asEquivalence X⟩
 
 end Functor
+
+end CategoryTheory

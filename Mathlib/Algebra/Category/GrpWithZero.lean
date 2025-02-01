@@ -6,8 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.CategoryTheory.Category.Bipointed
-
-#align_import algebra.category.GroupWithZero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of groups with zero
@@ -22,8 +21,6 @@ open CategoryTheory Order
 /-- The category of groups with zero. -/
 def GrpWithZero :=
   Bundled GroupWithZero
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero GrpWithZero
 
 namespace GrpWithZero
 
@@ -36,8 +33,6 @@ instance (X : GrpWithZero) : GroupWithZero X :=
 /-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
 def of (α : Type*) [GroupWithZero α] : GrpWithZero :=
   Bundled.of α
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.of GrpWithZero.of
 
 instance : Inhabited GrpWithZero :=
   ⟨of (WithZero PUnit)⟩
@@ -62,7 +57,7 @@ lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
+instance groupWithZeroHasForget : HasForget GrpWithZero where
   forget :=
   { obj := fun G => G
     map := fun f => f.toFun }
@@ -75,15 +70,11 @@ instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
         map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.has_forget_to_Bipointed GrpWithZero.hasForgetToBipointed
 
 instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
-      { obj := fun X => ⟨ X , _ ⟩
-        map := fun f => f.toMonoidHom }
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.has_forget_to_Mon GrpWithZero.hasForgetToMon
+      { obj := fun X => MonCat.of X
+        map := fun f => MonCat.ofHom f.toMonoidHom }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
@@ -96,7 +87,5 @@ def Iso.mk {α β : GrpWithZero.{u}} (e : α ≃* β) : α ≅ β where
   inv_hom_id := by
     ext
     exact e.apply_symm_apply _
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.iso.mk GrpWithZero.Iso.mk
 
 end GrpWithZero

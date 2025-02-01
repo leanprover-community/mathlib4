@@ -8,8 +8,6 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.DeriveFintype
 
-#align_import homogeneous_prime_not_prime from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
 
@@ -44,7 +42,6 @@ open DirectSum
 
 abbrev Two :=
   WithZero Unit
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
 instance Two.instLinearOrder : LinearOrder Two :=
   inferInstance
@@ -66,23 +63,19 @@ def submoduleZ : Submodule R (R × R) where
   zero_mem' := rfl
   add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
   smul_mem' a _ hb := congr_arg (a * ·) hb
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.submodule_z Counterexample.CounterexampleNotPrimeButHomogeneousPrime.submoduleZ
 
 /-- The grade 1 part of `R²` is `{(0, b) | b ∈ R}`. -/
 def submoduleO : Submodule R (R × R) :=
   LinearMap.ker (LinearMap.fst R R R)
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.submodule_o Counterexample.CounterexampleNotPrimeButHomogeneousPrime.submoduleO
 
 /-- Given the above grading (see `submoduleZ` and `submoduleO`),
   we turn `R²` into a graded ring. -/
 def grading : Two → Submodule R (R × R)
   | 0 => submoduleZ R
   | 1 => submoduleO R
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.grading Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading
 
 theorem grading.one_mem : (1 : R × R) ∈ grading R 0 :=
   Eq.refl (1, 1).fst
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.one_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.one_mem
 
 theorem grading.mul_mem :
     ∀ ⦃i j : Two⦄ {a b : R × R} (_ : a ∈ grading R i) (_ : b ∈ grading R j),
@@ -92,7 +85,6 @@ theorem grading.mul_mem :
     show a.1 * b.1 = 0 by rw [hb, mul_zero]
   | 1, 0, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, zero_mul]
   | 1, 1, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, zero_mul]
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.mul_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.mul_mem
 
 end
 
@@ -112,22 +104,15 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
     dsimp only [Prod.mk_add_mk]
     simp_rw [add_sub_add_comm]
     congr
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.decompose Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.decompose
 
 theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) grading.decompose :=
   fun zz => by
   induction' zz using DirectSum.induction_on with i zz d1 d2 ih1 ih2
   · simp only [map_zero]
   · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab <;>
-      cases hab <;>
-      -- Porting note: proof was `decide`
-      -- now we need a `simp` and two `erw` subproofs...
-      simp only [coeLinearMap_of, decompose, AddMonoidHom.coe_mk,
-        ZeroHom.coe_mk, sub_self, sub_zero]
-    · erw [map_zero (of (grading R ·) 1), add_zero]; rfl
-    · erw [map_zero (of (grading R ·) 0), zero_add]; rfl
+      -- Porting note: proof was `decide` (without reverting any free variables).
+      cases hab <;> decide +revert
   · simp only [map_add, ih1, ih2]
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.right_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.right_inv
 
 theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) grading.decompose :=
   fun zz => by
@@ -135,7 +120,6 @@ theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) gradi
   unfold grading.decompose
   simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, map_add, coeLinearMap_of, Prod.mk_add_mk,
     add_zero, add_sub_cancel]
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.left_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.left_inv
 
 instance : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R
@@ -144,12 +128,10 @@ instance : GradedAlgebra (grading R) where
   left_inv := by convert grading.left_inv
   right_inv := by convert grading.right_inv
 
-set_option linter.uppercaseLean3 false
 
 /-- The counterexample is the ideal `I = span {(2, 2)}`. -/
 def I : Ideal (R × R) :=
   Ideal.span {((2, 2) : R × R)}
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.I Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I
 
 theorem I_not_prime : ¬I.IsPrime := by
   rintro ⟨rid1, rid2⟩
@@ -160,14 +142,12 @@ theorem I_not_prime : ¬I.IsPrime := by
   simpa only [I, Ideal.mem_span_singleton, Ideal.eq_top_iff_one, prod_dvd_iff, and_self, and_imp,
     Prod.fst_mul, Prod.snd_mul, Prod.forall, Prod.fst_one, Prod.snd_one, one_mul, mul_one,
     dvd_refl, and_true, true_and, or_self, forall_true_left] using rid2
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.I_not_prime Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_not_prime
 
 theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
   refine ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, ?_⟩
   rw [Set.image_singleton]
   rfl
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_isHomogeneous
 
 theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading R) x)
     (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ I) : x ∈ I ∨ y ∈ I := by
@@ -179,11 +159,11 @@ theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading
     have aux2 : (Fin.mk 2 _ : R) = 2 := rfl
     have aux3 : (Fin.mk 3 _ : R) = -1 := rfl
     fin_cases a <;>
-      simp (config := {contextual := true}) only
+      simp +contextual only
         [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
           Fin.mk_one, one_mul, aux2, dvd_refl]
     fin_cases b <;>
-      simp (config := {contextual := true}) only
+      simp +contextual only
         [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
           Fin.mk_one, mul_one, aux2, dvd_refl, aux3, or_self, neg_one_mul, neg_neg, dvd_neg]
   simp only [I, Ideal.mem_span_singleton] at hxy ⊢
@@ -196,7 +176,6 @@ theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading
     simp only [prod_dvd_iff, dvd_zero, true_and, and_self,
       Prod.mk_mul_mk, mul_zero, zero_mul] at hxy ⊢ <;>
     apply h2.dvd_or_dvd hxy
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.homogeneous_mem_or_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.homogeneous_mem_or_mem
 
 end CounterexampleNotPrimeButHomogeneousPrime
 

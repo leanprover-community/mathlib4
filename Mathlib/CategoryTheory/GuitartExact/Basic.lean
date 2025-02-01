@@ -70,7 +70,7 @@ variable {T L R B}
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
     w = w' :=
-  NatTrans.ext _ _ (funext h)
+  NatTrans.ext (funext h)
 
 variable (w : TwoSquare T L R B)
 
@@ -116,14 +116,15 @@ abbrev CostructuredArrowDownwards :=
 section
 
 variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
-  (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 
 /-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
-abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
+abbrev StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+    w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CostructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
+abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+    w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
 
@@ -213,8 +214,8 @@ def costructuredArrowDownwardsPrecomp
     dsimp
     rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
     rfl)
-  map_id A := rfl
-  map_comp φ φ' := rfl
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 end
 

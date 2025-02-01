@@ -6,16 +6,12 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Group.Synonym
 
-#align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
-
 /-!
 # Group with zero structure on the order type synonyms
 
 Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
-
-open scoped Classical
 
 open Function
 

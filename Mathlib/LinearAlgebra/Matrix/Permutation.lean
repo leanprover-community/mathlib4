@@ -25,7 +25,7 @@ This file defines the matrix associated with a permutation
 
 -/
 
-open BigOperators Matrix Equiv
+open Equiv
 
 variable {n R : Type*} [DecidableEq n] [Fintype n] (σ : Perm n)
 
@@ -39,9 +39,8 @@ namespace Matrix
 /-- The determinant of a permutation matrix equals its sign. -/
 @[simp]
 theorem det_permutation [CommRing R] : det (σ.permMatrix R) = Perm.sign σ := by
-  rw [← Matrix.mul_one (σ.permMatrix R), PEquiv.toPEquiv_mul_matrix,
+  rw [← Matrix.mul_one (σ.permMatrix R), PEquiv.toMatrix_toPEquiv_mul,
     det_permute, det_one, mul_one]
-#align matrix.det_permutation Matrix.det_permutation
 
 /-- The trace of a permutation matrix equals the number of fixed points. -/
 theorem trace_permutation [AddCommMonoidWithOne R] :

@@ -23,7 +23,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     (hF : ∀ t ∈ Ioi 0, HasSum (fun i ↦ a i * rexp (-p i * t)) (F t))
     (h_sum : Summable fun i ↦ ‖a i‖ / (p i) ^ s.re) :
     HasSum (fun i ↦ Gamma s * a i / p i ^ s) (mellin F s) := by
-  simp_rw [mellin, smul_eq_mul, ← setIntegral_congr measurableSet_Ioi
+  simp_rw [mellin, smul_eq_mul, ← setIntegral_congr_fun measurableSet_Ioi
     (fun t ht ↦ congr_arg _ (hF t ht).tsum_eq), ← tsum_mul_left]
   convert hasSum_integral_of_summable_integral_norm
     (F := fun i t ↦ t ^ (s - 1) * (a i * rexp (-p i * t))) (fun i ↦ ?_) ?_ using 2 with i
@@ -35,14 +35,14 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     rw [this, one_div, inv_cpow _ _ (arg_ofReal_of_nonneg hpi.le ▸ pi_pos.ne), div_eq_inv_mul]
   · -- integrability of terms
     rcases hp i with hai | hpi
-    · simpa only [hai, zero_mul, mul_zero] using integrable_zero _ _ _
+    · simp [hai]
     simp_rw [← mul_assoc, mul_comm _ (a i), mul_assoc]
     have := Complex.GammaIntegral_convergent hs
     rw [← mul_zero (p i), ← integrableOn_Ioi_comp_mul_left_iff _ _ hpi] at this
     refine (IntegrableOn.congr_fun (this.const_mul (1 / p i ^ (s - 1)))
       (fun t (ht : 0 < t) ↦ ?_) measurableSet_Ioi).const_mul _
     simp_rw [mul_comm (↑(rexp _) : ℂ), ← mul_assoc, neg_mul, ofReal_mul]
-    rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel, one_mul]
+    rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel₀, one_mul]
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
   · -- summability of integrals of norms
@@ -51,12 +51,12 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     simp_rw [← mul_assoc, mul_comm _ (a i), mul_assoc, norm_mul (a i), integral_mul_left]
     rw [← mul_div_assoc, mul_comm (Real.Gamma _), mul_div_assoc, norm_mul ‖a i‖, norm_norm]
     rcases hp i with hai | hpi
-    · simp only [hai, norm_zero, zero_mul]
+    · simp [hai]
     congr 1
     have := Real.integral_rpow_mul_exp_neg_mul_Ioi hs hpi
     simp_rw [← neg_mul (p i), one_div, inv_rpow hpi.le, ← div_eq_inv_mul] at this
     rw [norm_of_nonneg (integral_nonneg (fun _ ↦ norm_nonneg _)), ← this]
-    refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+    refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
     rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp, Complex.norm_eq_abs,
       abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
 
@@ -92,11 +92,11 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
   let a' i := if p i = 0 then 0 else a i
   have hp' i : a' i = 0 ∨ 0 < p i := by
     simp only [a']
-    split_ifs with h <;> tauto
+    split_ifs with h <;> try tauto
     exact Or.inr (lt_of_le_of_ne (hp i) (Ne.symm h))
   have (i t) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
       a' i * rexp (-π * p i * t) := by
-    simp only [a', ite_mul, zero_mul]
+    simp [a']
   simp_rw [this] at hF
   convert hasSum_mellin_pi_mul hp' hs hF ?_ using 2 with i
   · rcases eq_or_ne (p i) 0 with h | h <;>
@@ -142,7 +142,7 @@ lemma hasSum_mellin_pi_mul_sq' {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → �
   · rcases eq_or_ne (r i) 0 with h | h
     · rw [h, abs_zero, ofReal_zero, zero_cpow hs₁, zero_cpow hs₃, div_zero, div_zero]
     · rw [cpow_add _ _ (ofReal_ne_zero.mpr <| abs_ne_zero.mpr h), cpow_one]
-      conv_rhs => enter [1]; rw [← sign_mul_abs (r i), ofReal_mul, ← ofReal_eq_coe,
+      conv_rhs => enter [1]; rw [← sign_mul_abs (r i), ofReal_mul, ← ofRealHom_eq_coe,
         SignType.map_cast]
       field_simp [h]
       ring_nf
