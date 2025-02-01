@@ -243,7 +243,7 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
   let _ : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
   .of H
 
-/--Build an isomorphism in the category `ProfiniteGrp` from
+/-- Build an isomorphism in the category `ProfiniteGrp` from
 a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
   hom := ⟨e⟩
@@ -263,7 +263,7 @@ instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
 
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
-    let i := asIso ((forget₂ ProfiniteGrp.{u_1} Profinite).map f)
+    let i := asIso ((forget₂ ProfiniteGrp Profinite).map f)
     let e : X ≃ₜ* Y := {
       CompHausLike.homeoOfIso i with
       map_mul' := map_mul f.hom}
