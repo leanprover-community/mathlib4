@@ -32,7 +32,7 @@ open CategoryTheory Topology
 
 namespace CommRingCat.HomTopology
 
-variable {R S T : CommRingCat.{u}}
+variable {A B R S T : CommRingCat.{u}}
 
 /--
 The topology on `Hom(R, S)` for a topological ring `S`, given by the coarsest topology that
@@ -70,8 +70,7 @@ lemma isHomeomorph_comp_right [TopologicalSpace T] (f : R ⟶ S) [IsIso f] :
 
 /-- `Hom(R/I, T)` has the subspace topology of `Hom(R, T)`. -/
 lemma isEmbedding_comp_right_of_surjective
-    [TopologicalSpace T]
-    (f : R ⟶ S) (hf : Function.Surjective f) :
+    [TopologicalSpace T] (f : R ⟶ S) (hf : Function.Surjective f) :
     Topology.IsEmbedding ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) := by
   refine IsEmbedding.of_comp (continuous_comp_right _) (IsInducing.induced _).continuous ?_
   suffices IsEmbedding ((· ∘ f.hom) : (S → T) → (R → T)) from
@@ -80,8 +79,7 @@ lemma isEmbedding_comp_right_of_surjective
 
 /-- `Hom(R/I, T)` is a closed subspace of `Hom(R, T)` if `T` is T1. -/
 lemma isClosedEmbedding_comp_right_of_surjective
-    [TopologicalSpace T] [T1Space T]
-    (f : R ⟶ S) (hf : Function.Surjective f) :
+    [TopologicalSpace T] [T1Space T] (f : R ⟶ S) (hf : Function.Surjective f) :
     Topology.IsClosedEmbedding ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) := by
   refine ⟨isEmbedding_comp_right_of_surjective f hf, ?_⟩
   have : IsClosed (⋂ i : RingHom.ker f.hom, { f : R ⟶ T | f i = 0 }) :=
@@ -95,10 +93,11 @@ lemma isClosedEmbedding_comp_right_of_surjective
   · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
       by ext; simp [RingHom.liftOfRightInverse_comp_apply]⟩
 
+variable (R S) in
 /-- `Hom(S[Xᵢ], R)` is homeomorphic to `Hom(S, R) × Rⁱ`. -/
 @[simps! apply_fst apply_snd symm_apply_hom]
 noncomputable
-def mvPolynomialHomeo (σ) (R S : CommRingCat.{u}) [TopologicalSpace R] [TopologicalRing R] :
+def mvPolynomialHomeo (σ : Type*) [TopologicalSpace R] [TopologicalRing R] :
     (CommRingCat.of (MvPolynomial σ S) ⟶ R) ≃ₜ ((S ⟶ R) × (σ → R)) where
   toFun f := ⟨CommRingCat.ofHom MvPolynomial.C ≫ f, fun i ↦ f (.X i)⟩
   invFun fx := CommRingCat.ofHom (MvPolynomial.eval₂Hom fx.1.hom fx.2)
@@ -111,13 +110,15 @@ def mvPolynomialHomeo (σ) (R S : CommRingCat.{u}) [TopologicalSpace R] [Topolog
     simp only [Function.comp_apply, hom_ofHom, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_eq]
     fun_prop
 
-lemma isEmbedding_hom (R S : CommRingCat.{u}) [TopologicalSpace S] :
+variable (R S) in
+lemma isEmbedding_hom [TopologicalSpace S] :
     IsEmbedding (fun f : R ⟶ S ↦ (f.hom : R → S)) :=
   ⟨.induced _, fun _ _ e ↦ by ext; rw [e]⟩
 
 open Limits
 
-lemma isClosedEmbedding_hom (R S : CommRingCat.{u})
+variable (R S) in
+lemma isClosedEmbedding_hom
     [TopologicalSpace S] [TopologicalRing S] [T1Space S] :
     IsClosedEmbedding (fun f : R ⟶ S ↦ (f.hom : R → S)) := by
   let f : CommRingCat.of (MvPolynomial R (⊥_ CommRingCat)) ⟶ R :=
@@ -139,7 +140,7 @@ instance [TopologicalSpace S] [TopologicalRing S] [T1Space S] [CompactSpace S] :
 open Limits
 
 /-- `Hom(A ⊗[S] B, R)` has the subspace topology from `Hom(A, R) × Hom(B, R)`. -/
-lemma isEmbedding_pushout (A B S : CommRingCat.{u}) [TopologicalSpace R] [TopologicalRing R]
+lemma isEmbedding_pushout [TopologicalSpace R] [TopologicalRing R]
     (φ : S ⟶ A) (ψ : S ⟶ B) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by
   let PA := CommRingCat.of (MvPolynomial A S)
@@ -164,8 +165,8 @@ lemma isEmbedding_pushout (A B S : CommRingCat.{u}) [TopologicalSpace R] [Topolo
     fun x ↦ ⟨⟨x.1, x.2 ∘ Sum.inl⟩, ⟨x.1, x.2 ∘ Sum.inr⟩⟩
   have hF : IsEmbedding F := (Homeomorph.prodProdProdComm _ _ _ _).isEmbedding.comp
     ((isEmbedding_graph continuous_id).prodMap Homeomorph.sumArrowHomeomorphProdArrow.isEmbedding)
-  have H := (mvPolynomialHomeo A R S).symm.isEmbedding.prodMap
-    (mvPolynomialHomeo B R S).symm.isEmbedding
+  have H := (mvPolynomialHomeo R S A).symm.isEmbedding.prodMap
+    (mvPolynomialHomeo R S B).symm.isEmbedding
   convert ((H.comp hF).comp (mvPolynomialHomeo _ R S).isEmbedding).comp
     (isEmbedding_comp_right_of_surjective (T := R) fAB hfAB)
   have (s) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
