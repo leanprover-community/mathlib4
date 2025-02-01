@@ -59,7 +59,8 @@ def partition : G.Partition where
     use s
 
 variable [DecidableRel G.Adj]
-instance : DecidableRel h.setoid.r :=
+
+instance : DecidableRel h.setoid.r:=
   inferInstanceAs <| DecidableRel (¬ G.Adj · ·)
 
 variable [DecidableEq α] [Fintype α]
@@ -201,5 +202,18 @@ lemma isCompletePartite_iff : G.IsCompletePartite ↔ ∃ (ι : Type u_1) (V : �
     intro _ _ _ h1 h2
     rw [← e.map_rel_iff] at *
     exact (completeMultipartiteGraph_isCompletePartite _) h1 h2
+
+lemma isCompletePartite_iff_of_fintype [Fintype α] [DecidableRel G.Adj] : G.IsCompletePartite ↔
+    ∃ (ι : Type u_1) (_ : Fintype ι) (V : ι → Type u_1) (_ : ∀ i, Nonempty (V i)),
+    Nonempty (G ≃g (completeMultipartiteGraph V)) := by
+  constructor <;> intro h
+  · have : DecidableRel h.setoid.r := inferInstance
+    refine ⟨_, inferInstance, _, ?_, ⟨h.iso⟩⟩
+    · intro i; use i.out
+  · obtain ⟨ι,_,V,hn,h⟩:=h
+    apply isCompletePartite_iff.mpr
+    use ι, V, hn
+
+
 
 end SimpleGraph
