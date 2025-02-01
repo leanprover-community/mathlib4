@@ -60,8 +60,6 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
         p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
   QuadraticMap.map_sum _ _ _
 
-lemma test (a b c d : M) : a + b - c = d ↔ a + b = c + d := by exact sub_eq_iff_eq_add'
-
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
