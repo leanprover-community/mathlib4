@@ -760,7 +760,7 @@ lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : 
 
 include hU in
 lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
-    s ∈ I ↔ ∀ x hxU, X.presheaf.germ U x hxU s ∈ I.map (X.presheaf.germ U x hxU).hom := by
+    s ∈ I ↔ ∀ (x : X) (h : x ∈ U), X.presheaf.germ U x h s ∈ I.map (X.presheaf.germ U x h).hom := by
   refine ⟨fun hs x hxU ↦ Ideal.mem_map_of_mem _ hs, fun H ↦ ?_⟩
   letI (x) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec.base x)) :=
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
@@ -777,13 +777,15 @@ lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
 
 include hU in
 lemma ideal_le_iff {I J : Ideal Γ(X, U)} :
-    I ≤ J ↔ ∀ x hxU, I.map (X.presheaf.germ U x hxU).hom ≤ J.map (X.presheaf.germ U x hxU).hom :=
+    I ≤ J ↔ ∀ (x : X) (h : x ∈ U),
+      I.map (X.presheaf.germ U x h).hom ≤ J.map (X.presheaf.germ U x h).hom :=
   ⟨fun h _ _ ↦ Ideal.map_mono h,
     fun H _ hs ↦ hU.mem_ideal_iff.mpr fun x hx ↦ H x hx (Ideal.mem_map_of_mem _ hs)⟩
 
 include hU in
 lemma ideal_ext_iff {I J : Ideal Γ(X, U)} :
-    I = J ↔ ∀ x hxU, I.map (X.presheaf.germ U x hxU).hom = J.map (X.presheaf.germ U x hxU).hom := by
+    I = J ↔ ∀ (x : X) (h : x ∈ U),
+      I.map (X.presheaf.germ U x h).hom = J.map (X.presheaf.germ U x h).hom := by
   simp_rw [le_antisymm_iff, hU.ideal_le_iff, forall_and]
 
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/

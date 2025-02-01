@@ -73,31 +73,31 @@ instance : CompleteSemilatticeSup (IdealSheafData X) where
   sSup_le s i hi := sSup_le (s := ideal '' s) (Set.forall_mem_image.mpr hi)
 
 /-- The largest ideal sheaf contained in a family of ideals. -/
-def ofIdeals (I : Π U : X.affineOpens, Ideal Γ(X, U)) : IdealSheafData X :=
+def ofIdeals (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) : IdealSheafData X :=
   sSup { J : IdealSheafData X | J.ideal ≤ I }
 
-lemma ideal_ofIdeals_le (I : Π U : X.affineOpens, Ideal Γ(X, U)) :
+lemma ideal_ofIdeals_le (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) :
     (ofIdeals I).ideal ≤ I :=
   sSup_le (Set.forall_mem_image.mpr fun _ ↦ id)
 
 /-- The galois coinsertion between ideal sheaves and arbitrary families of ideals. -/
-protected def gi : GaloisCoinsertion ideal (ofIdeals (X := X)) where
+protected def gci : GaloisCoinsertion ideal (ofIdeals (X := X)) where
   choice I hI := ⟨I, fun U f ↦
     (ideal_ofIdeals_le I).antisymm hI ▸ (ofIdeals I).map_ideal_basicOpen U f⟩
   gc _ _ := ⟨(le_sSup ·), (le_trans · (ideal_ofIdeals_le _))⟩
   u_l_le _ := sSup_le fun _ ↦ id
   choice_eq I hI := IdealSheafData.ext (hI.antisymm (ideal_ofIdeals_le I))
 
-lemma strictMono_ideal : StrictMono (ideal (X := X)) := IdealSheafData.gi.strictMono_l
+lemma strictMono_ideal : StrictMono (ideal (X := X)) := IdealSheafData.gci.strictMono_l
 lemma ideal_mono : Monotone (ideal (X := X)) := strictMono_ideal.monotone
-lemma ofIdeals_mono : Monotone (ofIdeals (X := X)) := IdealSheafData.gi.gc.monotone_u
-lemma ofIdeals_ideal (I : IdealSheafData X) : ofIdeals I.ideal = I := IdealSheafData.gi.u_l_eq _
+lemma ofIdeals_mono : Monotone (ofIdeals (X := X)) := IdealSheafData.gci.gc.monotone_u
+lemma ofIdeals_ideal (I : IdealSheafData X) : ofIdeals I.ideal = I := IdealSheafData.gci.u_l_eq _
 lemma le_ofIdeals_iff {I : IdealSheafData X} {J} : I ≤ ofIdeals J ↔ I.ideal ≤ J :=
-  IdealSheafData.gi.gc.le_iff_le.symm
+  IdealSheafData.gci.gc.le_iff_le.symm
 
 instance : CompleteLattice (IdealSheafData X) where
   __ := inferInstanceAs (CompleteSemilatticeSup (IdealSheafData X))
-  __ := IdealSheafData.gi.liftCompleteLattice
+  __ := IdealSheafData.gci.liftCompleteLattice
 
 @[simp]
 lemma ideal_top : ideal (X := X) ⊤ = ⊤ :=
