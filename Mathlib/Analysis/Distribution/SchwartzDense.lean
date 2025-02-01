@@ -37,7 +37,7 @@ variable {𝕜 D E F : Type*}
 section DenseSchwartz
 
 /-- Make a Schwartz function from an infinitely differentiable, compactly supported function. -/
-def SchwartzMap.ofHasCompactSupport (f : E → F) (hf_smooth : ContDiff ℝ ∞ f)
+def SchwartzMap.of_smooth_of_hasCompactSupport (f : E → F) (hf_smooth : ContDiff ℝ ∞ f)
     (hf_supp : HasCompactSupport f) : 𝓢(E, F) where
   toFun x := f x
   smooth' := hf_smooth
@@ -64,7 +64,8 @@ theorem SchwartzMap.toLp_denseRange (hp_top : p ≠ ⊤)
     DenseRange (fun f : 𝓢(E, F) ↦ f.toLp p μ) := by
   refine Dense.mono ?_ (ContDiff.toLp_denseRange hp_top μ)
   exact Set.range_comp_subset_range
-    (fun f : { f // ContDiff ℝ ∞ f ∧ HasCompactSupport f } ↦ ofHasCompactSupport f.1 f.2.1 f.2.2)
+    (fun f : { f // ContDiff ℝ ∞ f ∧ HasCompactSupport f } ↦
+      of_smooth_of_hasCompactSupport f.1 f.2.1 f.2.2)
     (fun f ↦ f.toLp p μ)
 
 end DenseSchwartz
@@ -107,6 +108,15 @@ theorem Lp.LpSchwartzMap.mem_iff_ae {p : ℝ≥0∞} {μ : Measure E} {f : Lp F 
   · ext
     filter_upwards [g.toBoundedContinuousFunction.toContinuousMap.coeFn_toAEEqFun μ, h] with x h₁ h₂
     simp [h₁, h₂]
+
+-- TODO: Does this change anything?
+instance Lp.LpSchwartzMap.instCoe {p : ℝ≥0∞} {μ : Measure E} :
+    Coe (LpSchwartzMap F p μ) (Lp F p μ) where
+  coe f := f
+
+noncomputable instance Lp.LpSchwartzMap.instCoeFun {p : ℝ≥0∞} {μ : Measure E} :
+    CoeFun (LpSchwartzMap F p μ) (fun _ ↦ E → F) where
+  coe f := f
 
 variable (𝕜 F) in
 /-- `LpSchwartzMap` as a `Submodule`; used to obtain `Module`, `NormedSpace`. -/
@@ -161,6 +171,19 @@ theorem Lp.LpSchwartzMap.induction_on₂ {q : ℝ≥0∞} {μ : Measure E}
   obtain ⟨g₀, hg₀⟩ := mem_iff_ae.mp hg
   exact h_congr hf₀ hg₀ (h f₀ g₀)
 
+variable (𝕜 F) in
+/-- The map from the subtype `LpSchwartzMap` to `Lp` as a continuous linear map. -/
+def Lp.LpSchwartzMap.subtypeL (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E) :
+    LpSchwartzMap F p μ →L[𝕜] Lp F p μ where
+  toFun f := f.val
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_subtype_val
+
+@[simp]
+theorem Lp.LpSchwartzMap.coeFn_subtypeL (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E) :
+    ⇑(subtypeL 𝕜 F p μ) = Subtype.val := rfl
+
 end MeasureTheory
 
 end LpSchwartzMap
@@ -178,7 +201,7 @@ theorem MeasureTheory.Memℒp.exists_LpSchwartzMap_eLpNorm_sub_le (hp_top : p �
     ∃ g : 𝓢(E, F), eLpNorm (f - (g : E → F)) p μ ≤ ε := by
   obtain ⟨g, hg_smooth, hg_supp, hg_dist⟩ :=
     exists_contDiff_hasCompactSupport_eLpNorm_sub_le hp_top hf hε
-  exact ⟨SchwartzMap.ofHasCompactSupport g hg_smooth hg_supp, hg_dist⟩
+  exact ⟨SchwartzMap.of_smooth_of_hasCompactSupport g hg_smooth hg_supp, hg_dist⟩
 
 variable (F) in
 /-- The set of `L^p` functions with a Schwartz representative is dense in `L^p`. -/
