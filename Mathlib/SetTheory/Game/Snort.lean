@@ -32,10 +32,10 @@ inductive Color : Type where
   deriving DecidableEq, Repr
 
 structure Position (V : Type u) where
-  graph : SimpleGraph.Finsubgraph (completeGraph V)
+  graph : SimpleGraph.Subgraph (completeGraph V)
   getColor : V → Color
-  deicdableMemVerts : (v : V) → Decidable (v ∈ graph.val.verts)
-  decidableMemNeighbor : (v u : V) → Decidable (v ∈ graph.val.neighborSet u)
+  deicdableMemVerts : (v : V) → Decidable (v ∈ graph.verts)
+  decidableMemNeighbor : (v u : V) → Decidable (v ∈ graph.neighborSet u)
 
 instance {V : Type u} [Fintype V] [DecidableEq V] : DecidableEq (Position V) := by
   intro a b
@@ -51,29 +51,29 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : DecidableEq (Position V) := 
       · sorry
 
 def left {V : Type u} (p : Position V) : Set V :=
-  {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
+  {v | v ∈ p.graph.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
 
 def leftFin {V : Type u} [Fintype V] (p : Position V)
   : Finset V :=
   have : DecidablePred fun v => v ∈
-    p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank) := fun v =>
+    p.graph.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank) := fun v =>
       @instDecidableAnd _ _ (p.deicdableMemVerts v) instDecidableOr
-  {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
+  {v | v ∈ p.graph.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
 
 def right {V : Type u} (p : Position V) : Set V :=
-  {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)}
+  {v | v ∈ p.graph.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)}
 
 def rightFin {V : Type u} [Fintype V] (p : Position V)
   : Finset V :=
   have : DecidablePred fun v => v ∈
-    p.graph.val.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank) := fun v =>
+    p.graph.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank) := fun v =>
       @instDecidableAnd _ _ (p.deicdableMemVerts v) instDecidableOr
-  {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)}
+  {v | v ∈ p.graph.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)}
 
 def Position.deleteVerts
   {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (s: Finset V)
   : Position V :=
-  ⟨ ⟨p.graph.val.deleteVerts s, Set.Finite.diff p.graph.property⟩
+  ⟨ p.graph.deleteVerts s
   , p.getColor
   , by
       intro v
@@ -96,17 +96,17 @@ def Position.deleteVerts
   ⟩
 
 def leftMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) : Position V :=
-  have : (v : V) → Decidable (v ∈ p.graph.val.neighborSet m) := fun v => p.decidableMemNeighbor v m
+  have : (v : V) → Decidable (v ∈ p.graph.neighborSet m) := fun v => p.decidableMemNeighbor v m
   -- Remove vertex we just moved in and if the move vertex was adjacent to a vertex of opposite
   -- tint then we remove it as well otherwise it would be tinted in both colors so no player can
   -- move
   let without_double_tinted :=
-    p.deleteVerts (({v | v ∈ p.graph.val.neighborSet m ∧ p.getColor v = Color.Red} : Finset V)
+    p.deleteVerts (({v | v ∈ p.graph.neighborSet m ∧ p.getColor v = Color.Red} : Finset V)
                     ∪ {m})
   -- Now every vertex that was adjacent to move vertex is either our tint or blank so we can tint it
   ⟨ without_double_tinted.graph
   , fun v =>
-      if v ∈ p.graph.val.neighborSet m
+      if v ∈ p.graph.neighborSet m
       then Color.Blue
       else p.getColor v
   , fun v => without_double_tinted.deicdableMemVerts v
@@ -114,13 +114,13 @@ def leftMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) :
   ⟩
 
 def rightMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) : Position V :=
-  have : (v : V) → Decidable (v ∈ p.graph.val.neighborSet m) := fun v => p.decidableMemNeighbor v m
+  have : (v : V) → Decidable (v ∈ p.graph.neighborSet m) := fun v => p.decidableMemNeighbor v m
   let without_double_tinted :=
-    p.deleteVerts (({v | v ∈ p.graph.val.neighborSet m ∧ p.getColor v = Color.Blue} : Finset V)
+    p.deleteVerts (({v | v ∈ p.graph.neighborSet m ∧ p.getColor v = Color.Blue} : Finset V)
                   ∪ {m})
   ⟨ without_double_tinted.graph
   , fun v =>
-      if v ∈ p.graph.val.neighborSet m
+      if v ∈ p.graph.neighborSet m
       then Color.Red
       else p.getColor v
   , fun v => without_double_tinted.deicdableMemVerts v
@@ -129,14 +129,14 @@ def rightMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) 
 
 theorem mem_leftFin_mem_position {V : Type u} [Fintype V] [DecidableEq V]
   {v : V} {p : Position V} (h : v ∈ leftFin p)
-  : v ∈ p.graph.val.verts := by
+  : v ∈ p.graph.verts := by
   unfold leftFin at h
   simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ, true_and] at h
   exact h.left
 
 theorem mem_rightFin_mem_position {V : Type u} [Fintype V] [DecidableEq V]
   {v : V} {p : Position V} (h : v ∈ rightFin p)
-  : v ∈ p.graph.val.verts := by
+  : v ∈ p.graph.verts := by
   unfold rightFin at h
   simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ, true_and] at h
   exact h.left
@@ -144,7 +144,7 @@ theorem mem_rightFin_mem_position {V : Type u} [Fintype V] [DecidableEq V]
 instance state {V : Type u} [Fintype V] [DecidableEq V] : State (Position V) where
   turnBound p := by
     have := p.deicdableMemVerts
-    exact p.graph.val.verts.toFinset.card
+    exact p.graph.verts.toFinset.card
   l p := Finset.image (leftMove p) (leftFin p)
   r p := Finset.image (rightMove p) (rightFin p)
   left_bound := by
@@ -189,9 +189,7 @@ def snort {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) : PGame :=
 
 def snort.zero : PGame :=
   snort
-  ⟨ ⟨ ( completeGraph Empty).toSubgraph (completeGraph Empty) (fun ⦃_ _⦄ a => a )
-      , Set.toFinite (SimpleGraph.toSubgraph (completeGraph Empty) fun ⦃_ _⦄ a ↦ a).verts
-      ⟩
+  ⟨ (completeGraph Empty).toSubgraph (completeGraph Empty) (fun ⦃_ _⦄ a => a)
   , Empty.elim
   , fun v => isTrue trivial
   , fun v u => by
@@ -201,8 +199,7 @@ def snort.zero : PGame :=
 
 def snort.one : PGame :=
   snort
-  ⟨ ⟨( completeGraph Unit).toSubgraph (completeGraph Unit) (fun ⦃_ _⦄ a => a )
-     , Set.toFinite (SimpleGraph.toSubgraph (completeGraph Unit) fun ⦃_ _⦄ a ↦ a).verts ⟩
+  ⟨ (completeGraph Unit).toSubgraph (completeGraph Unit) (fun ⦃_ _⦄ a => a)
   , fun _ => Color.Blue
   , fun v => isTrue trivial
   , fun v u => by
