@@ -111,9 +111,9 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 @[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
     fixedPoints G α = .univ := by
   apply Set.eq_univ_of_forall
+  simp only [mem_fixedPoints]
   intro x hx
-  rw [mem_fixedPoints]
-  exact fun _ ↦ Subsingleton.elim ..
+  apply Subsingleton.elim ..
 
 /-- If a group acts nontrivially, then the type is nontrivial -/
 @[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
