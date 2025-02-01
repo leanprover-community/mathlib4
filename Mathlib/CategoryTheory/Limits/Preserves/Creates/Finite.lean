@@ -54,7 +54,7 @@ instance (priority := 100) CreatesLimits.createsFiniteLimits (F : C ⥤ D)
   CreatesLimitsOfSize.createsFiniteLimits F
 
 /-- If `F` creates finite limits in any universe, then it creates finite limits. -/
-def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
+def createsFiniteLimitsOfCreatesFiniteLimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesLimitsOfShape J F) :
     CreatesFiniteLimits F where
   createsFiniteLimits J _ _ :=
