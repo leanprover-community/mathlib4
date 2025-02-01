@@ -35,7 +35,7 @@ def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R →
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      ∑ p ∈ f.support.sym2, polar_lift Q f g p - ∑ i ∈ f.support, Q (g i (f i)) :=
+      ∑ p ∈ f.support.sym2, Q.polar_lift f g p - ∑ i ∈ f.support, Q (g i (f i)) :=
   Q.map_sum' _ (fun i => g i (f i))
 
 variable [DecidableEq ι]
@@ -68,7 +68,7 @@ theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : 
 open Finsupp in
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      f.sum (fun i r => Q (g i r)) + ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, polar_lift Q f g p :=
+      f.sum (fun i r => Q (g i r)) + ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, Q.polar_lift f g p :=
   Q.map_sum _ _
 
 -- c.f. `Finsupp.apply_linearCombination`
