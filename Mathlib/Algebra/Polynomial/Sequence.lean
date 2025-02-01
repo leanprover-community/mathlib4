@@ -33,15 +33,6 @@ open scoped Function
 
 universe u
 
-theorem IsSMulRegular.of_ne_zero {R M : Type u} [Ring R] [Zero M] [SMulWithZero R M]
-  [NoZeroDivisors R]
-  {a : R} {b : M} (hx : a • b ≠ 0) : IsSMulRegular R a := by
-  intro w v hwv
-  have hgwv : a • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
-  cases' smul_eq_zero.mp hgwv with ha hsub
-  · exact hx (smul_eq_zero_of_left ha _) |>.elim
-  · exact sub_eq_zero.mp hsub
-
 open Polynomial in
 theorem degree_smul_of_ne_zero
     {R : Type*} [Semiring R] {k : R} [NoZeroDivisors R] {p : R[X]} (hkp : k • p ≠ 0) :
@@ -133,67 +124,65 @@ lemma linearIndependent [NoZeroDivisors R] :
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
     exact hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
 
-section Nontrivial
-
-variable [Nontrivial R]
-
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
 protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ :=
   eq_top_iff'.mpr fun P ↦ by
-  induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
-  by_cases p_ne_zero : P = 0
-  · simp [p_ne_zero]
+  cases subsingleton_or_nontrivial R
+  · simp [Subsingleton.eq_zero P]
+  · induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
+    by_cases p_ne_zero : P = 0
+    · simp [p_ne_zero]
 
-  obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
+    obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
 
-  let head := P.leadingCoeff • u • S n
-  let tail := P - head
+    let head := P.leadingCoeff • u • S n
+    let tail := P - head
 
-  have head_mem_span : head ∈ span R (Set.range S) := by
-    have in_span : S n ∈ span R (Set.range S) := subset_span (by simp)
-    have smul_span := smul_mem (span R (Set.range S)) (P.leadingCoeff • u) in_span
-    rwa [smul_assoc] at smul_span
+    have head_mem_span : head ∈ span R (Set.range S) := by
+      have in_span : S n ∈ span R (Set.range S) := subset_span (by simp)
+      have smul_span := smul_mem (span R (Set.range S)) (P.leadingCoeff • u) in_span
+      rwa [smul_assoc] at smul_span
 
-  by_cases tail_eq_zero : tail = 0
-  · simp [head_mem_span, sub_eq_iff_eq_add.mp tail_eq_zero]
-  · refine sub_mem_iff_left _ head_mem_span |>.mp ?_
-    simp only [mem_top, forall_const] at ih
-    refine ih tail.natDegree ?_ _ rfl
+    by_cases tail_eq_zero : tail = 0
+    · simp [head_mem_span, sub_eq_iff_eq_add.mp tail_eq_zero]
+    · refine sub_mem_iff_left _ head_mem_span |>.mp ?_
+      simp only [mem_top, forall_const] at ih
+      refine ih tail.natDegree ?_ _ rfl
 
-    have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-      simp [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
-      exact isRegular_one.right
+      have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
+        simp [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
+        exact isRegular_one.right
 
-    have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
-      (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
+      have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
+        (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
 
-    have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
-      (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
-    rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
-        ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
+      have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
+        (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
+      rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
+          ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
 
-    have head_nonzero : head ≠ 0 := by
-      by_cases n_eq_zero : n = 0
-      · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
+      have head_nonzero : head ≠ 0 := by
+        by_cases n_eq_zero : n = 0
+        · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
+          dsimp [head]
+          rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
+                smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
+                mul_one, C_eq_zero, leadingCoeff_eq_zero]
+        · apply head.ne_zero_of_degree_gt
+          rw [← head_degree_eq]
+          exact natDegree_pos_iff_degree_pos.mp (by omega)
+
+      have hPhead : P.leadingCoeff = head.leadingCoeff := by
+        rw [degree_eq_natDegree, degree_eq_natDegree head_nonzero] at head_degree_eq
+        nth_rw 2 [← coeff_natDegree]
+        rw_mod_cast [← head_degree_eq, hp]
         dsimp [head]
-        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-              smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-              mul_one, C_eq_zero, leadingCoeff_eq_zero]
-      · apply head.ne_zero_of_degree_gt
-        rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by omega)
+        nth_rw 2 [← S.natDegree_eq n]
+        rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
 
-    have hPhead : P.leadingCoeff = head.leadingCoeff := by
-      rw [degree_eq_natDegree, degree_eq_natDegree head_nonzero] at head_degree_eq
-      nth_rw 2 [← coeff_natDegree]
-      rw_mod_cast [← head_degree_eq, hp]
-      dsimp [head]
-      nth_rw 2 [← S.natDegree_eq n]
-      rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
-
-    refine natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_
-    have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
-    rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
+      refine natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_
+      have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
+      rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
 section NoZeroDivisors
 
@@ -222,8 +211,6 @@ lemma basis_natDegree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).natDegre
   simpa [basis_eq_self] using h
 
 end NoZeroDivisors
-
-end Nontrivial
 
 end Ring
 
