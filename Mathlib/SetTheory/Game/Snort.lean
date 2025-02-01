@@ -29,10 +29,13 @@ inductive Color : Type where
   | Blank : Color
   | Blue : Color
   | Red : Color
+  deriving DecidableEq, Repr
 
 structure Position (V : Type u) where
   graph : SimpleGraph.Finsubgraph (completeGraph V)
   getColor : V → Color
+  deicdableMemVerts : (v : V) → Decidable (v ∈ graph.val.verts)
+  decidableMemNeighbor : (v u : V) → Decidable (v ∈ graph.val.neighborSet u)
 
 noncomputable instance {V : Type u} : DecidableEq (Position V) :=
   Classical.typeDecidableEq (Position V)
@@ -40,62 +43,82 @@ noncomputable instance {V : Type u} : DecidableEq (Position V) :=
 def left {V : Type u} (p : Position V) : Set V :=
   {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
 
-noncomputable def leftFin {V : Type u} (p : Position V)
+def leftFin {V : Type u} [Fintype V] (p : Position V)
   : Finset V :=
-  have : (v : V) → (c : Color) → Decidable (p.getColor v = c) :=
-    fun v c => Classical.propDecidable (p.getColor v = c)
-  Finset.filter
-    (fun v => p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)
-    p.graph.property.toFinset
+  have : DecidablePred fun v => v ∈
+    p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank) := fun v =>
+      @instDecidableAnd _ _ (p.deicdableMemVerts v) instDecidableOr
+  {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
 
 def right {V : Type u} (p : Position V) : Set V :=
   {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)}
 
-noncomputable def rightFin {V : Type u} (p : Position V)
+def rightFin {V : Type u} [Fintype V] (p : Position V)
   : Finset V :=
-  have : (v : V) → (c : Color) → Decidable (p.getColor v = c) :=
-    fun v c => Classical.propDecidable (p.getColor v = c)
-  Finset.filter
-    (fun v => p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)
-    p.graph.property.toFinset
+  have : DecidablePred fun v => v ∈
+    p.graph.val.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank) := fun v =>
+      @instDecidableAnd _ _ (p.deicdableMemVerts v) instDecidableOr
+  {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Red ∨ p.getColor v = Color.Blank)}
 
 def Position.deleteVerts
-  {V : Type u} (p : Position V) (s: Set V)
+  {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (s: Finset V)
   : Position V :=
   ⟨ ⟨p.graph.val.deleteVerts s, Set.Finite.diff p.graph.property⟩
   , p.getColor
+  , by
+      intro v
+      unfold SimpleGraph.Subgraph.deleteVerts
+      simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.induce_verts, Set.mem_diff,
+                 Finset.mem_coe]
+      have := p.deicdableMemVerts v
+      infer_instance
+  , by
+      intro v u
+      have hv := p.deicdableMemVerts v
+      have hu := p.deicdableMemVerts u
+      have h2 := p.decidableMemNeighbor v u
+      -- FIXME: How to get it to infer everything at once?
+      refine @instDecidableAnd _ _ ?_ ?_
+      · infer_instance
+      · refine @instDecidableAnd _ _ ?_ ?_
+        · infer_instance
+        · exact h2
   ⟩
 
-noncomputable def leftMove {V : Type u} (p : Position V) (m : V) : Position V :=
-  have : (v : V) → Decidable (v ∈ p.graph.val.neighborSet m) := fun v =>
-    Classical.propDecidable (v ∈ p.graph.val.neighborSet m)
+def leftMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) : Position V :=
+  have : (v : V) → Decidable (v ∈ p.graph.val.neighborSet m) := fun v => p.decidableMemNeighbor v m
   -- Remove vertex we just moved in and if the move vertex was adjacent to a vertex of opposite
   -- tint then we remove it as well otherwise it would be tinted in both colors so no player can
   -- move
   let without_double_tinted :=
-    p.deleteVerts ({v | v ∈ p.graph.val.neighborSet m ∧ p.getColor v = Color.Red} ∪ {m})
+    p.deleteVerts (({v | v ∈ p.graph.val.neighborSet m ∧ p.getColor v = Color.Red} : Finset V)
+                    ∪ {m})
   -- Now every vertex that was adjacent to move vertex is either our tint or blank so we can tint it
   ⟨ without_double_tinted.graph
   , fun v =>
       if v ∈ p.graph.val.neighborSet m
       then Color.Blue
       else p.getColor v
+  , fun v => without_double_tinted.deicdableMemVerts v
+  , fun v u => without_double_tinted.decidableMemNeighbor v u
   ⟩
 
-noncomputable def rightMove {V : Type u} (p : Position V) (m : V) : Position V :=
-  have : (v : V) → Decidable (v ∈ p.graph.val.neighborSet m) := fun v =>
-    Classical.propDecidable (v ∈ p.graph.val.neighborSet m)
+def rightMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) : Position V :=
+  have : (v : V) → Decidable (v ∈ p.graph.val.neighborSet m) := fun v => p.decidableMemNeighbor v m
   let without_double_tinted :=
-    p.deleteVerts ({v | v ∈ p.graph.val.neighborSet m ∧ p.getColor v = Color.Blue} ∪ {m})
+    p.deleteVerts (({v | v ∈ p.graph.val.neighborSet m ∧ p.getColor v = Color.Blue} : Finset V)
+                  ∪ {m})
   ⟨ without_double_tinted.graph
   , fun v =>
       if v ∈ p.graph.val.neighborSet m
       then Color.Red
       else p.getColor v
+  , fun v => without_double_tinted.deicdableMemVerts v
+  , fun v u => without_double_tinted.decidableMemNeighbor v u
   ⟩
 
 -- TODO: golf proofs
-noncomputable instance state {V : Type u} : State (Position V) where
+noncomputable instance state {V : Type u} [Fintype V] [DecidableEq V] : State (Position V) where
   turnBound p := p.graph.property.toFinset.card
   l p := Finset.image (leftMove p) (leftFin p)
   r p := Finset.image (rightMove p) (rightFin p)
@@ -120,12 +143,12 @@ noncomputable instance state {V : Type u} : State (Position V) where
     simp only [Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff] at h_d
     have h_v := v_in_left
     unfold leftFin at h_v
-    simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Set.Finite.mem_toFinset] at h_v
+    simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ,
+               true_and] at h_v
     obtain ⟨v_in_verts, v_color⟩ := h_v
     have singleton_empty := h_d
       (Set.singleton_subset_iff.mpr v_in_verts)
-      (Set.singleton_subset_iff.mpr
-        (Set.mem_insert v {v_1 | s.graph.val.Adj v v_1 ∧ s.getColor v_1 = Color.Red}))
+      (Set.singleton_subset_iff.mpr (by simp))
     exact Set.singleton_ne_empty v singleton_empty
   right_bound := by
     intro s t ht
@@ -148,15 +171,17 @@ noncomputable instance state {V : Type u} : State (Position V) where
     simp only [Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff] at h_d
     have h_v := v_in_right
     unfold rightFin at h_v
-    simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Set.Finite.mem_toFinset] at h_v
+    simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ,
+               true_and] at h_v
     obtain ⟨v_in_verts, v_color⟩ := h_v
+
     have singleton_empty := h_d
       (Set.singleton_subset_iff.mpr v_in_verts)
-      (Set.singleton_subset_iff.mpr
-        (Set.mem_insert v {v_1 | s.graph.val.Adj v v_1 ∧ s.getColor v_1 = Color.Blue}))
+      (Set.singleton_subset_iff.mpr (by simp))
     exact Set.singleton_ne_empty v singleton_empty
 
-noncomputable def snort {V : Type u} (p : Position V) : PGame := PGame.ofState p
+noncomputable def snort {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) : PGame :=
+  PGame.ofState p
 
 noncomputable def snort.zero : PGame :=
   snort
@@ -164,6 +189,10 @@ noncomputable def snort.zero : PGame :=
       , Set.toFinite (SimpleGraph.toSubgraph (completeGraph Empty) fun ⦃_ _⦄ a ↦ a).verts
       ⟩
   , Empty.elim
+  , fun v => isTrue trivial
+  , fun v u => by
+      simp
+      infer_instance
   ⟩
 
 noncomputable def snort.one : PGame :=
@@ -171,6 +200,10 @@ noncomputable def snort.one : PGame :=
   ⟨ ⟨( completeGraph Unit).toSubgraph (completeGraph Unit) (fun ⦃_ _⦄ a => a )
      , Set.toFinite (SimpleGraph.toSubgraph (completeGraph Unit) fun ⦃_ _⦄ a ↦ a).verts ⟩
   , fun _ => Color.Blue
+  , fun v => isTrue trivial
+  , fun v u => by
+      simp
+      infer_instance
   ⟩
 
 -- FIXME: Borked because Decidable (snort.one ≈ 1) does not hold
