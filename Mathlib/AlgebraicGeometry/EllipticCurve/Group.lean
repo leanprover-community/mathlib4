@@ -93,11 +93,11 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : Affine R) (f :
 -- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
 -- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
-/-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`. -/
+/-- The coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of `W`. -/
 abbrev CoordinateRing : Type u :=
   AdjoinRoot W.polynomial
 
-/-- The function field $R(W) := \mathrm{Frac}(R[W])$ of `W`. -/
+/-- The function field `R(W) := Frac(R[W])` of `W`. -/
 abbrev FunctionField : Type u :=
   FractionRing W.CoordinateRing
 
@@ -125,7 +125,7 @@ noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
 -- Porting note: added `classical` explicitly
-/-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
+/-- The basis `{1, Y}` for the coordinate ring `R[W]` over the polynomial ring `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' W.monic_polynomial).basis.reindex <| finCongr W.natDegree_polynomial
@@ -223,7 +223,7 @@ section Ring
 
 /-! ### Ideals in the coordinate ring over a ring -/
 
-/-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
+/-- The class of the element `X - x` in `R[W]` for some `x` in `R`. -/
 noncomputable def XClass (x : R) : W.CoordinateRing :=
   mk W <| C <| X - C x
 
@@ -231,7 +231,7 @@ lemma XClass_ne_zero [Nontrivial R] (x : R) : XClass W x ≠ 0 :=
   AdjoinRoot.mk_ne_zero_of_natDegree_lt W.monic_polynomial (C_ne_zero.mpr <| X_sub_C_ne_zero x) <|
     by rw [natDegree_polynomial, natDegree_C]; norm_num1
 
-/-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
+/-- The class of the element `Y - y(X)` in `R[W]` for some `y(X)` in `R[X]`. -/
 noncomputable def YClass (y : R[X]) : W.CoordinateRing :=
   mk W <| Y - C y
 
@@ -239,41 +239,41 @@ lemma YClass_ne_zero [Nontrivial R] (y : R[X]) : YClass W y ≠ 0 :=
   AdjoinRoot.mk_ne_zero_of_natDegree_lt W.monic_polynomial (X_sub_C_ne_zero y) <|
     by rw [natDegree_polynomial, natDegree_X_sub_C]; norm_num1
 
-lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
-    mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
+lemma C_addPolynomial (x y ℓ : R) : mk W (C <| W.addPolynomial x y ℓ) =
+    mk W ((Y - C (linePolynomial x y ℓ)) * (W.negPolynomial - C (linePolynomial x y ℓ))) :=
   AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel_left, mul_one]⟩
 
-/-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
+/-- The ideal `⟨X - x⟩` of `R[W]` for some `x` in `R`. -/
 noncomputable def XIdeal (x : R) : Ideal W.CoordinateRing :=
   span {XClass W x}
 
-/-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
+/-- The ideal `⟨Y - y(X)⟩` of `R[W]` for some `y(X)` in `R[X]`. -/
 noncomputable def YIdeal (y : R[X]) : Ideal W.CoordinateRing :=
   span {YClass W y}
 
-/-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
+/-- The ideal `⟨X - x, Y - y(X)⟩` of `R[W]` for some `x` in `R` and `y(X)` in `R[X]`. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
 
-lemma XYIdeal_eq₁ (x y L : R) : XYIdeal W x (C y) = XYIdeal W x (linePolynomial x y L) := by
+lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W x (C y) = XYIdeal W x (linePolynomial x y ℓ) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
-  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -L, ← _root_.map_mul, ← map_add]
+  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -ℓ, ← _root_.map_mul, ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
 
-lemma XYIdeal_add_eq (x₁ x₂ y₁ L : R) : XYIdeal W (W.addX x₁ x₂ L) (C <| W.addY x₁ x₂ y₁ L) =
-    span {mk W <| W.negPolynomial - C (linePolynomial x₁ y₁ L)} ⊔ XIdeal W (W.addX x₁ x₂ L) := by
+lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W (W.addX x₁ x₂ ℓ) (C <| W.addY x₁ x₂ y₁ ℓ) =
+    span {mk W <| W.negPolynomial - C (linePolynomial x₁ y₁ ℓ)} ⊔ XIdeal W (W.addX x₁ x₂ ℓ) := by
   simp only [XYIdeal, XIdeal, XClass, YClass, addY, negAddY, negY, negPolynomial, linePolynomial]
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
-    ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + L, ← _root_.map_mul,
+    ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + ℓ, ← _root_.map_mul,
     ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
 
-/-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to $R$ obtained by
-evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
+/-- The `R`-algebra isomorphism from `R[W] / ⟨X - x, Y - y(X)⟩` to `R` obtained by evaluation at
+some `y(X)` in `R[X]` and at some `x` in `R` provided that `W(x, y(x)) = 0`. -/
 noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
     (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
   ((quotientEquivAlgOfEq R <| by
@@ -395,7 +395,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     C_simp
     ring1
 
-/-- The non-zero fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ for some $x, y \in F$. -/
+/-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
   Units.mkOfMulEqOne _ _ <| XYIdeal'_mul_inv h
@@ -426,10 +426,9 @@ section Norm
 
 /-! ### Norms on the coordinate ring -/
 
-lemma norm_smul_basis (p q : R[X]) :
-    Algebra.norm R[X] (p • (1 : W.CoordinateRing) + q • mk W Y) =
-      p ^ 2 - p * q * (C W.a₁ * X + C W.a₃) -
-        q ^ 2 * (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) := by
+lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W.CoordinateRing) + q • mk W Y) =
+    p ^ 2 - p * q * (C W.a₁ * X + C W.a₃) -
+      q ^ 2 * (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) := by
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W, Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
@@ -502,15 +501,15 @@ namespace Point
 
 variable {F : Type u} [Field F] {W : Affine F}
 
-/-- The set function mapping an affine point $(x, y)$ of `W` to the class of the non-zero fractional
-ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
+/-- The set function mapping an affine point `(x, y)` of `W` to the class of the non-zero fractional
+ideal `⟨X - x, Y - y⟩` of `F(W)` in the class group of `F[W]`. -/
 @[simp]
 noncomputable def toClassFun : W.Point → Additive (ClassGroup W.CoordinateRing)
   | 0 => 0
   | some h => Additive.ofMul <| ClassGroup.mk <| CoordinateRing.XYIdeal' h
 
-/-- The group homomorphism mapping an affine point $(x, y)$ of `W` to the class of the non-zero
-fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
+/-- The group homomorphism mapping an affine point `(x, y)` of `W` to the class of the non-zero
+fractional ideal `⟨X - x, Y - y⟩` of `F(W)` in the class group of `F[W]`. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun := toClassFun

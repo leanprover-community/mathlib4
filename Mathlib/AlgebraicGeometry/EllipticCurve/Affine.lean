@@ -19,33 +19,33 @@ abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 ## Mathematical background
 
 Let `W` be a Weierstrass curve over a field `F`. A rational point on `W` is simply a point
-$[X:Y:Z]$ defined over `F` in the projective plane satisfying the homogeneous cubic equation
-$Y^2Z + a_1XYZ + a_3YZ^2 = X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3$. Any such point either lies in the
-affine chart $Z \ne 0$ and satisfies the Weierstrass equation obtained by replacing $X/Z$ with $X$
-and $Y/Z$ with $Y$, or is the unique point at infinity $0 := [0:1:0]$ when $Z = 0$. With this new
-description, a nonsingular rational point on `W` is either $0$ or an affine point $(x, y)$ where
-the partial derivatives $W_X(X, Y)$ and $W_Y(X, Y)$ do not vanish simultaneously. For a field
-extension `K` of `F`, a `K`-rational point is simply a rational point on `W` base changed to `K`.
+`[X:Y:Z]` defined over `F` in the projective plane satisfying the homogeneous cubic equation
+`Y²Z + a₁XYZ + a₃YZ² = X³ + a₂X²Z + a₄XZ² + a₆Z³`. Any such point either lies in the affine chart
+`Z ≠ 0` and satisfies the Weierstrass equation obtained by replacing `X / Z` with `X` and `Y / Z`
+with `Y`, or is the unique point at infinity `𝓞 := [0:1:0]` when `Z = 0`. With this new description,
+a nonsingular rational point on `W` is either `𝓞` or an affine point `(x, y)` where the partial
+derivatives `W_X(X, Y)` and `W_Y(X, Y)` do not vanish simultaneously. For a field extension `K` of
+`F`, a `K`-rational point is simply a rational point on `W` base changed to `K`.
 
 The set of nonsingular rational points forms an abelian group under a secant-and-tangent process.
  * The identity rational point is `0`.
  * Given a nonsingular rational point `P`, its negation `-P` is defined to be the unique third
     point of intersection between `W` and the line through `0` and `P`.
-    Explicitly, if `P` is $(x, y)$, then `-P` is $(x, -y - a_1x - a_3)$.
+    Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
  * Given two points `P` and `Q`, their addition `P + Q` is defined to be the negation of the unique
     third point of intersection between `W` and the line `L` through `P` and `Q`.
-    Explicitly, let `P` be $(x_1, y_1)$ and let `Q` be $(x_2, y_2)$.
-      * If $x_1 = x_2$ and $y_1 = -y_2 - a_1x_2 - a_3$, then `L` is vertical and `P + Q` is `0`.
-      * If $x_1 = x_2$ and $y_1 \ne -y_2 - a_1x_2 - a_3$, then `L` is the tangent of `W` at `P = Q`,
-        and has slope $\ell := (3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$.
-      * Otherwise $x_1 \ne x_2$, then `L` is the secant of `W` through `P` and `Q`, and has slope
-        $\ell := (y_1 - y_2) / (x_1 - x_2)$.
+    Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
+      * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical and `P + Q` is `𝓞`.
+      * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`,
+        and has slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
+      * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
+        `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
 
-    In the latter two cases, the $X$-coordinate of `P + Q` is then the unique third solution of the
-    equation obtained by substituting the line $Y = \ell(X - x_1) + y_1$ into the Weierstrass
-    equation, and can be written down explicitly as $x := \ell^2 + a_1\ell - a_2 - x_1 - x_2$ by
-    inspecting the $X^2$ terms. The $Y$-coordinate of `P + Q`, after applying the final negation
-    that maps $Y$ to $-Y - a_1X - a_3$, is precisely $y := -(\ell(x - x_1) + y_1) - a_1x - a_3$.
+    In the latter two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
+    equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,
+    and can be written down explicitly as `x := ℓ² + a₁ℓ - a₂ - x₁ - x₂` by inspecting the `X²`
+    terms. The `Y`-coordinate of `P + Q`, after applying the final negation that maps `Y` to
+    `-Y - a₁X - a₃`, is precisely `y := -(ℓ(x - x₁) + y₁) - a₁x - a₃`.
 
 The group law on this set is then uniquely determined by these constructions.
 
@@ -119,11 +119,11 @@ section Equation
 
 /-! ### Weierstrass equations -/
 
-/-- The polynomial $W(X, Y) := Y^2 + a_1XY + a_3Y - (X^3 + a_2X^2 + a_4X + a_6)$ associated to a
-Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term
-of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
-For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial`
-scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
+/-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y = X³ + a₂X² + a₄X + a₆` associated to a Weierstrass
+curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term of type
+`R[X][X]`, where the inner variable represents `X` and the outer variable represents `Y`. For
+clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial` scope to
+represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
 
@@ -175,7 +175,7 @@ lemma evalEval_polynomial (x y : R) : W.polynomial.evalEval x y =
 lemma evalEval_polynomial_zero : W.polynomial.evalEval 0 0 = -W.a₆ := by
   simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
-/-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
+/-- The proposition that an affine point `(x, y)` lies in `W`. In other words, `W(x, y) = 0`. -/
 def Equation (x y : R) : Prop :=
   W.polynomial.evalEval x y = 0
 
@@ -203,7 +203,7 @@ section Nonsingular
 
 /-! ### Nonsingular Weierstrass equations -/
 
-/-- The partial derivative $W_X(X, Y)$ of $W(X, Y)$ with respect to $X$.
+/-- The partial derivative `W_X(X, Y)` of `W(X, Y)` with respect to `X`.
 
 TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialX : R[X][Y] :=
@@ -218,7 +218,7 @@ lemma evalEval_polynomialX (x y : R) :
 lemma evalEval_polynomialX_zero : W.polynomialX.evalEval 0 0 = -W.a₄ := by
   simp only [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
-/-- The partial derivative $W_Y(X, Y)$ of $W(X, Y)$ with respect to $Y$.
+/-- The partial derivative `W_Y(X, Y)` of `W(X, Y)` with respect to `Y`.
 
 TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialY : R[X][Y] :=
@@ -241,8 +241,8 @@ lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
 @[deprecated (since := "2024-06-19")] alias eval_polynomialY := evalEval_polynomialY
 @[deprecated (since := "2024-06-19")] alias eval_polynomialY_zero := evalEval_polynomialY_zero
 
-/-- The proposition that an affine point $(x, y)$ in `W` is nonsingular.
-In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$.
+/-- The proposition that an affine point `(x, y)` in `W` is nonsingular. In other words, either
+`W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
 
 Note that this definition is only mathematically accurate for fields.
 TODO: generalise this definition to be mathematically accurate for a larger class of rings. -/
@@ -294,19 +294,21 @@ section Ring
 
 /-! ### Group operation polynomials over a ring -/
 
-/-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
+/-- The polynomial `-Y - a₁X - a₃` associated to negation. -/
 noncomputable def negPolynomial : R[X][Y] :=
   -(Y : R[X][Y]) - C (C W.a₁ * X + C W.a₃)
 
 lemma Y_sub_polynomialY : Y - W.polynomialY = W.negPolynomial := by
-  rw [polynomialY, negPolynomial]; C_simp; ring
+  rw [polynomialY, negPolynomial]
+  C_simp
+  ring1
 
 lemma Y_sub_negPolynomial : Y - W.negPolynomial = W.polynomialY := by
   rw [← Y_sub_polynomialY, sub_sub_cancel]
 
-/-- The $Y$-coordinate of the negation of an affine point in `W`.
+/-- The `Y`-coordinate of the negation of an affine point in `W`.
 
-This depends on `W`, and has argument order: $x$, $y$. -/
+This depends on `W`, and has argument order: `x`, `y`. -/
 @[simp]
 def negY (x y : R) : R :=
   -y - W.a₁ * x - W.a₃
@@ -319,62 +321,62 @@ lemma eval_negPolynomial (x y : R) : W.negPolynomial.evalEval x y = W.negY x y :
   rw [negY, sub_sub, negPolynomial]
   eval_simp
 
-/-- The polynomial $L(X - x) + y$ associated to the line $Y = L(X - x) + y$,
-with a slope of $L$ that passes through an affine point $(x, y)$.
+/-- The polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y`, with a slope of `ℓ`
+that passes through an affine point `(x, y)`.
 
-This does not depend on `W`, and has argument order: $x$, $y$, $L$. -/
-noncomputable def linePolynomial (x y L : R) : R[X] :=
-  C L * (X - C x) + C y
+This does not depend on `W`, and has argument order: `x`, `y`, `ℓ`. -/
+noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
+  C ℓ * (X - C x) + C y
 
-/-- The polynomial obtained by substituting the line $Y = L*(X - x) + y$, with a slope of $L$
-that passes through an affine point $(x, y)$, into the polynomial $W(X, Y)$ associated to `W`.
-If such a line intersects `W` at another point $(x', y')$, then the roots of this polynomial are
-precisely $x$, $x'$, and the $X$-coordinate of the addition of $(x, y)$ and $(x', y')$.
+/-- The polynomial obtained by substituting the line `Y = ℓ*(X - x) + y`, with a slope of `ℓ` that
+passes through an affine point `(x, y)`, into the polynomial `W(X, Y)` associated to `W`. If such a
+line intersects `W` at another point `(x', y')`, then the roots of this polynomial are precisely
+`x`, `x'`, and the `X`-coordinate of the addition of `(x, y)` and `(x', y')`.
 
-This depends on `W`, and has argument order: $x$, $y$, $L$. -/
-noncomputable def addPolynomial (x y L : R) : R[X] :=
-  W.polynomial.eval <| linePolynomial x y L
+This depends on `W`, and has argument order: `x`, `y`, `ℓ`. -/
+noncomputable def addPolynomial (x y ℓ : R) : R[X] :=
+  W.polynomial.eval <| linePolynomial x y ℓ
 
-lemma C_addPolynomial (x y L : R) : C (W.addPolynomial x y L) =
-    (Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L)) +
+lemma C_addPolynomial (x y ℓ : R) : C (W.addPolynomial x y ℓ) =
+    (Y - C (linePolynomial x y ℓ)) * (W.negPolynomial - C (linePolynomial x y ℓ)) +
       W.polynomial := by
   rw [addPolynomial, linePolynomial, polynomial, negPolynomial]
   eval_simp
   C_simp
   ring1
 
-lemma addPolynomial_eq (x y L : R) : W.addPolynomial x y L = -Cubic.toPoly
-    ⟨1, -L ^ 2 - W.a₁ * L + W.a₂,
-      2 * x * L ^ 2 + (W.a₁ * x - 2 * y - W.a₃) * L + (-W.a₁ * y + W.a₄),
-      -x ^ 2 * L ^ 2 + (2 * x * y + W.a₃ * x) * L - (y ^ 2 + W.a₃ * y - W.a₆)⟩ := by
+lemma addPolynomial_eq (x y ℓ : R) : W.addPolynomial x y ℓ = -Cubic.toPoly
+    ⟨1, -ℓ ^ 2 - W.a₁ * ℓ + W.a₂,
+      2 * x * ℓ ^ 2 + (W.a₁ * x - 2 * y - W.a₃) * ℓ + (-W.a₁ * y + W.a₄),
+      -x ^ 2 * ℓ ^ 2 + (2 * x * y + W.a₃ * x) * ℓ - (y ^ 2 + W.a₃ * y - W.a₆)⟩ := by
   rw [addPolynomial, linePolynomial, polynomial, Cubic.toPoly]
   eval_simp
   C_simp
   ring1
 
-/-- The $X$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
-where the line through them is not vertical and has a slope of $L$.
+/-- The `X`-coordinate of the addition of two affine points `(x₁, y₁)` and `(x₂, y₂)` in `W`, where
+the line through them is not vertical and has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $L$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `ℓ`. -/
 @[simp]
-def addX (x₁ x₂ L : R) : R :=
-  L ^ 2 + W.a₁ * L - W.a₂ - x₁ - x₂
+def addX (x₁ x₂ ℓ : R) : R :=
+  ℓ ^ 2 + W.a₁ * ℓ - W.a₂ - x₁ - x₂
 
-/-- The $Y$-coordinate of the negated addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$,
-where the line through them is not vertical and has a slope of $L$.
+/-- The `Y`-coordinate of the negated addition of two affine points `(x₁, y₁)` and `(x₂, y₂)`, where
+the line through them is not vertical and has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
 @[simp]
-def negAddY (x₁ x₂ y₁ L : R) : R :=
-  L * (W.addX x₁ x₂ L - x₁) + y₁
+def negAddY (x₁ x₂ y₁ ℓ : R) : R :=
+  ℓ * (W.addX x₁ x₂ ℓ - x₁) + y₁
 
-/-- The $Y$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
-where the line through them is not vertical and has a slope of $L$.
+/-- The `Y`-coordinate of the addition of two affine points `(x₁, y₁)` and `(x₂, y₂)` in `W`, where
+the line through them is not vertical and has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
 @[simp]
-def addY (x₁ x₂ y₁ L : R) : R :=
-  W.negY (W.addX x₁ x₂ L) (W.negAddY x₁ x₂ y₁ L)
+def addY (x₁ x₂ y₁ ℓ : R) : R :=
+  W.negY (W.addX x₁ x₂ ℓ) (W.negAddY x₁ x₂ y₁ ℓ)
 
 lemma equation_neg_iff (x y : R) : W.Equation x (W.negY x y) ↔ W.Equation x y := by
   rw [equation_iff, equation_iff, negY]
@@ -386,9 +388,9 @@ lemma nonsingular_neg_iff (x y : R) : W.Nonsingular x (W.negY x y) ↔ W.Nonsing
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
     not_congr <| and_congr_left fun h => by rw [← h]
 
-lemma equation_add_iff (x₁ x₂ y₁ L : R) :
-    W.Equation (W.addX x₁ x₂ L) (W.negAddY x₁ x₂ y₁ L) ↔
-      (W.addPolynomial x₁ y₁ L).eval (W.addX x₁ x₂ L) = 0 := by
+lemma equation_add_iff (x₁ x₂ y₁ ℓ : R) :
+    W.Equation (W.addX x₁ x₂ ℓ) (W.negAddY x₁ x₂ y₁ ℓ) ↔
+      (W.addPolynomial x₁ y₁ ℓ).eval (W.addX x₁ x₂ ℓ) = 0 := by
   rw [Equation, negAddY, addPolynomial, linePolynomial, polynomial]
   eval_simp
 
@@ -408,10 +410,10 @@ lemma nonsingular_neg_of {x y : R} (h : W.Nonsingular x <| W.negY x y) : W.Nonsi
 lemma nonsingular_neg {x y : R} (h : W.Nonsingular x y) : W.Nonsingular x <| W.negY x y :=
   (W.nonsingular_neg_iff ..).mpr h
 
-lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ L : R}
-    (hx' : W.Equation (W.addX x₁ x₂ L) (W.negAddY x₁ x₂ y₁ L))
-    (hx : (W.addPolynomial x₁ y₁ L).derivative.eval (W.addX x₁ x₂ L) ≠ 0) :
-    W.Nonsingular (W.addX x₁ x₂ L) (W.negAddY x₁ x₂ y₁ L) := by
+lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ ℓ : R}
+    (hx' : W.Equation (W.addX x₁ x₂ ℓ) (W.negAddY x₁ x₂ y₁ ℓ))
+    (hx : (W.addPolynomial x₁ y₁ ℓ).derivative.eval (W.addX x₁ x₂ ℓ) ≠ 0) :
+    W.Nonsingular (W.addX x₁ x₂ ℓ) (W.negAddY x₁ x₂ y₁ ℓ) := by
   rw [Nonsingular, and_iff_right hx', negAddY, polynomialX, polynomialY]
   eval_simp
   contrapose! hx
@@ -420,7 +422,7 @@ lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ L : R}
   derivative_simp
   simp only [zero_add, add_zero, sub_zero, zero_mul, mul_one]
   eval_simp
-  linear_combination (norm := (norm_num1; ring1)) hx.left + L * hx.right
+  linear_combination (norm := (norm_num1; ring1)) hx.left + ℓ * hx.right
 
 end Ring
 
@@ -429,14 +431,13 @@ section Field
 /-! ### Group operation polynomials over a field -/
 
 open Classical in
-/-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
-If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
-and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
-then this line is the tangent of `W` at $(x_1, y_1) = (x_2, y_2)$, and has slope
-$(3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$. Otherwise, this line is vertical,
-and has undefined slope, in which case this function returns the value 0.
+/-- The slope of the line through two affine points `(x₁, y₁)` and `(x₂, y₂)` in `W`. If `x₁ ≠ x₂`,
+then this line is the secant of `W` through `(x₁, y₁)` and `(x₂, y₂)`, and has slope
+`(y₁ - y₂) / (x₁ - x₂)`. Otherwise, if `y₁ ≠ -y₁ - a₁x₁ - a₃`, then this line is the tangent of `W`
+at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
+Otherwise, this line is vertical, in which case this function returns the value `0`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $y_2$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
 noncomputable def slope {F : Type u} [Field F] (W : Affine F) (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
@@ -553,36 +554,33 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   nonsingular_neg <| nonsingular_negAdd h₁ h₂ hxy
 
-variable {x₁ x₂ : F} (y₁ y₂ : F)
-
-/-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
-where ψ(x,y) = 2y + a₁x + a₃. -/
-lemma addX_eq_addX_negY_sub (hx : x₁ ≠ x₂) :
-    W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ (W.negY x₂ y₂))
-      - (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
+/-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
+where `ψ(x,y) = 2y + a₁x + a₃`. -/
+lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
+    W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ <| W.negY x₂ y₂) -
+      (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
   simp_rw [slope_of_X_ne hx, addX, negY, ← neg_sub x₁, neg_sq]
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
-assuming that P₁ + P₂ + P₃ = O. -/
-lemma cyclic_sum_Y_mul_X_sub_X (hx : x₁ ≠ x₂) :
-    letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
+/-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
+assuming that `P₁ + P₂ + P₃ = O`. -/
+lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
+    let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
   simp_rw [slope_of_X_ne hx, negAddY, addX]
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula
-ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
-where ψ(x,y) = 2y + a₁x + a₃. -/
-lemma addY_sub_negY_addY (hx : x₁ ≠ x₂) :
-    letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
-    letI y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
+/-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,
+where `ψ(x,y) = 2y + a₁x + a₃`. -/
+lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
+    let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
+    let y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
     y₃ - W.negY x₃ y₃ =
       ((y₂ - W.negY x₂ y₂) * (x₁ - x₃) - (y₁ - W.negY x₁ y₁) * (x₂ - x₃)) / (x₂ - x₁) := by
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
-  linear_combination 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
+  linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
 
 end Field
 
@@ -592,7 +590,7 @@ section Group
 
 /-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
 the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
-`WeierstrassCurve.Affine.Point.some` $(x, y)$ satisfying the Weierstrass equation of `W`. -/
+`WeierstrassCurve.Affine.Point.some` `(x, y)` satisfying the Weierstrass equation of `W`. -/
 inductive Point
   | zero
   | some {x y : R} (h : W.Nonsingular x y)
@@ -766,29 +764,29 @@ lemma map_negY (x y : R) : (W.map f).toAffine.negY (f x) (f y) = f (W.negY x y) 
   simp only [negY]
   map_simp
 
-lemma map_linePolynomial (x y L : R) :
-    linePolynomial (f x) (f y) (f L) = (linePolynomial x y L).map f := by
+lemma map_linePolynomial (x y ℓ : R) :
+    linePolynomial (f x) (f y) (f ℓ) = (linePolynomial x y ℓ).map f := by
   simp only [linePolynomial]
   map_simp
 
-lemma map_addPolynomial (x y L : R) :
-    (W.map f).toAffine.addPolynomial (f x) (f y) (f L) = (W.addPolynomial x y L).map f := by
+lemma map_addPolynomial (x y ℓ : R) :
+    (W.map f).toAffine.addPolynomial (f x) (f y) (f ℓ) = (W.addPolynomial x y ℓ).map f := by
   rw [addPolynomial, map_polynomial, eval_map, linePolynomial, addPolynomial, ← coe_mapRingHom,
     ← eval₂_hom, linePolynomial]
   map_simp
 
-lemma map_addX (x₁ x₂ L : R) :
-    (W.map f).toAffine.addX (f x₁) (f x₂) (f L) = f (W.addX x₁ x₂ L) := by
+lemma map_addX (x₁ x₂ ℓ : R) :
+    (W.map f).toAffine.addX (f x₁) (f x₂) (f ℓ) = f (W.addX x₁ x₂ ℓ) := by
   simp only [addX]
   map_simp
 
-lemma map_negAddY (x₁ x₂ y₁ L : R) :
-    (W.map f).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f L) = f (W.negAddY x₁ x₂ y₁ L) := by
+lemma map_negAddY (x₁ x₂ y₁ ℓ : R) :
+    (W.map f).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W.negAddY x₁ x₂ y₁ ℓ) := by
   simp only [negAddY, map_addX]
   map_simp
 
-lemma map_addY (x₁ x₂ y₁ L : R) :
-    (W.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f L) = f (W.toAffine.addY x₁ x₂ y₁ L) := by
+lemma map_addY (x₁ x₂ y₁ ℓ : R) :
+    (W.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W.toAffine.addY x₁ x₂ y₁ ℓ) := by
   simp only [addY, map_negAddY, map_addX, map_negY]
 
 lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (f : F →+* K)
@@ -845,24 +843,24 @@ lemma baseChange_negY (x y : A) :
     (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-lemma baseChange_addPolynomial (x y L : A) :
-    (W.baseChange B).toAffine.addPolynomial (f x) (f y) (f L) =
-      ((W.baseChange A).toAffine.addPolynomial x y L).map f := by
+lemma baseChange_addPolynomial (x y ℓ : A) :
+    (W.baseChange B).toAffine.addPolynomial (f x) (f y) (f ℓ) =
+      ((W.baseChange A).toAffine.addPolynomial x y ℓ).map f := by
   rw [← RingHom.coe_coe, ← map_addPolynomial, map_baseChange]
 
-lemma baseChange_addX (x₁ x₂ L : A) :
-    (W.baseChange B).toAffine.addX (f x₁) (f x₂) (f L) =
-      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
+lemma baseChange_addX (x₁ x₂ ℓ : A) :
+    (W.baseChange B).toAffine.addX (f x₁) (f x₂) (f ℓ) =
+      f ((W.baseChange A).toAffine.addX x₁ x₂ ℓ) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY (x₁ x₂ y₁ L : A) :
-    (W.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
+lemma baseChange_negAddY (x₁ x₂ y₁ ℓ : A) :
+    (W.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f ℓ) =
+      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ ℓ) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY (x₁ x₂ y₁ L : A) :
-    (W.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
+lemma baseChange_addY (x₁ x₂ y₁ ℓ : A) :
+    (W.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) =
+      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ ℓ) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
 variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]

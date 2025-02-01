@@ -21,20 +21,20 @@ that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/Elliptic
 ## Mathematical background
 
 Let `W` be a Weierstrass curve over a field `F`. A point on the projective plane is an equivalence
-class of triples $[x:y:z]$ with coordinates in `F` such that $(x, y, z) \sim (x', y', z')$ precisely
-if there is some unit `u` of `F` such that $(x, y, z) = (ux', uy', uz')$, with an extra condition
-that $(x, y, z) \ne (0, 0, 0)$. As described in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, a
-rational point is a point on the projective plane satisfying a homogeneous Weierstrass equation, and
-being nonsingular means the partial derivatives $W_X(X, Y, Z)$, $W_Y(X, Y, Z)$, and $W_Z(X, Y, Z)$
-do not vanish simultaneously. Note that the vanishing of the Weierstrass equation and its partial
-derivatives are independent of the representative for $[x:y:z]$, and the nonsingularity condition
-already implies that $(x, y, z) \ne (0, 0, 0)$, so a nonsingular rational point on `W` can simply be
-given by a tuple consisting of $[x:y:z]$ and the nonsingular condition on any representative.
+class of triples `[x:y:z]` with coordinates in `F` such that `(x, y, z) ∼ (x', y', z')` precisely
+if there is some unit `u` of `F` such that `(x, y, z) = (ux', uy', uz')`, with an extra condition
+that `(x, y, z) ≠ (0, 0, 0)`. As described in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`,
+a rational point is a point on the projective plane satisfying a homogeneous Weierstrass equation,
+and being nonsingular means the partial derivatives `W_X(X, Y, Z)`, `W_Y(X, Y, Z)`, and
+`W_Z(X, Y, Z)` do not vanish simultaneously. Note that the vanishing of the Weierstrass equation and
+its partial derivatives are independent of the representative for `[x:y:z]`, and the nonsingularity
+condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a nonsingular rational point on `W` can simply
+be given by a tuple consisting of `[x:y:z]` and the nonsingular condition on any representative.
 
-As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular rational points forms
-an abelian group under the same secant-and-tangent process, but the polynomials involved are
-homogeneous, and any instances of division become multiplication in the $Z$-coordinate.
-Note that most computational proofs follow from their analogous proofs for affine coordinates.
+As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of nonsingular rational points
+forms an abelian group under the same secant-and-tangent process, but the polynomials involved are
+homogeneous, and any instances of division become multiplication in the `Z`-coordinate. Note that
+most computational proofs follow from their analogous proofs for affine coordinates.
 
 ## Main definitions
 
@@ -235,9 +235,9 @@ section Equation
 /-! ### Weierstrass equations -/
 
 variable (W') in
-/-- The polynomial $W(X, Y, Z) := Y^2Z + a_1XYZ + a_3YZ^2 - (X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3)$
-associated to a Weierstrass curve `W'` over `R`. This is represented as a term of type
-`MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2` represent $X$, $Y$, and $Z$ respectively. -/
+/-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
+Weierstrass curve `W'` over `R`. This is represented as a term of type `MvPolynomial (Fin 3) R`,
+where `X 0`, `X 1`, and `X 2` represent `X`, `Y`, and `Z` respectively. -/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 * X 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 2
     - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 + C W'.a₄ * X 0 * X 2 ^ 2 + C W'.a₆ * X 2 ^ 3)
@@ -256,8 +256,8 @@ lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P 
       - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
 
 variable (W') in
-/-- The proposition that a point representative $(x, y, z)$ lies in `W'`.
-In other words, $W(x, y, z) = 0$. -/
+/-- The proposition that a point representative `(x, y, z)` lies in `W'`. In other words,
+`W(x, y, z) = 0`. -/
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W'.polynomial = 0
 
@@ -301,7 +301,7 @@ section Nonsingular
 /-! ### Nonsingular Weierstrass equations -/
 
 variable (W') in
-/-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
+/-- The partial derivative `W_X(X, Y, Z)` of `W(X, Y, Z)` with respect to `X`. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
@@ -323,7 +323,7 @@ lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       - W.a₄ * div_self (pow_ne_zero 2 hPz)
 
 variable (W') in
-/-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
+/-- The partial derivative `W_Y(X, Y, Z)` of `W(X, Y, Z)` with respect to `Y`. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
@@ -345,7 +345,7 @@ lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       + W.a₃ * div_self (pow_ne_zero 2 hPz)
 
 variable (W') in
-/-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
+/-- The partial derivative `W_Z(X, Y, Z)` of `W(X, Y, Z)` with respect to `Z`. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W'.polynomial
 
@@ -369,8 +369,8 @@ theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =
   ring1
 
 variable (W') in
-/-- The proposition that a point representative $(x, y, z)$ in `W'` is nonsingular.
-In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$.
+/-- The proposition that a point representative `(x, y, z)` in `W'` is nonsingular. In other words,
+either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
 
 Note that this definition is only mathematically accurate for fields. -/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
@@ -496,7 +496,7 @@ section Negation
 /-! ### Negation formulae -/
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-P` for a point `P`. -/
 def negY (P : Fin 3 → R) : R :=
   -P y - W'.a₁ * P x - W'.a₃ * P z
 
@@ -604,7 +604,7 @@ lemma isUnit_dblU_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
   (dblU_ne_zero_of_Y_eq hP hPz hQz hx hy hy').isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Z`-coordinate of a representative of `2 • P` for a point `P`. -/
 def dblZ (P : Fin 3 → R) : R :=
   P z * (P y - W'.negY P) ^ 3
 
@@ -649,7 +649,7 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `X`-coordinate of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblX (P : Fin 3 → R) : R :=
   2 * P x * P y ^ 3 + 3 * W'.a₁ * P x ^ 2 * P y ^ 2 + 6 * W'.a₂ * P x ^ 3 * P y
     - 8 * W'.a₂ * P y ^ 3 * P z + 9 * W'.a₃ * P x ^ 4 - 6 * W'.a₃ * P x * P y ^ 2 * P z
@@ -719,7 +719,7 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-(2 • P)` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-(2 • P)` for a point `P`. -/
 noncomputable def negDblY (P : Fin 3 → R) : R :=
   -P y ^ 4 - 3 * W'.a₁ * P x * P y ^ 3 - 9 * W'.a₃ * P x ^ 3 * P y + 3 * W'.a₃ * P y ^ 3 * P z
     - 3 * W'.a₄ * P x * P y ^ 2 * P z - 27 * W'.a₆ * P x ^ 3 * P z + 9 * W'.a₆ * P y ^ 2 * P z ^ 2
@@ -804,7 +804,7 @@ lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblY (P : Fin 3 → R) : R :=
   W'.negY ![W'.dblX P, W'.negDblY P, W'.dblZ P]
 
@@ -906,8 +906,8 @@ lemma isUnit_addU_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0
   (addU_ne_zero_of_Y_ne hPz hQz hy).isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Z`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def addZ (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q z + 3 * P x * Q x ^ 2 * P z + P y ^ 2 * Q z ^ 2 - Q y ^ 2 * P z ^ 2
     + W'.a₁ * P x * P y * Q z ^ 2 - W'.a₁ * Q x * Q y * P z ^ 2 - W'.a₂ * P x ^ 2 * Q z ^ 2
@@ -963,8 +963,8 @@ private lemma toAffine_slope_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : 
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `X`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def addX (P Q : Fin 3 → R) : R :=
   -P x * Q y ^ 2 * P z + Q x * P y ^ 2 * Q z - 2 * P x * P y * Q y * Q z + 2 * Q x * P y * Q y * P z
     - W'.a₁ * P x ^ 2 * Q y * Q z + W'.a₁ * Q x ^ 2 * P y * P z + W'.a₂ * P x ^ 2 * Q x * Q z
@@ -1031,8 +1031,8 @@ lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`. Note
+that this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def negAddY (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q y + 3 * P x * Q x ^ 2 * P y - P y ^ 2 * Q y * Q z + P y * Q y ^ 2 * P z
     + W'.a₁ * P x * Q y ^ 2 * P z - W'.a₁ * Q x * P y ^ 2 * Q z - W'.a₂ * P x ^ 2 * Q y * Q z
@@ -1110,8 +1110,8 @@ lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, W'.addZ P Q]
 
@@ -1155,8 +1155,8 @@ lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
+/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
 noncomputable def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
   ![W'.addX P Q, W'.addY P Q, W'.addZ P Q]
 

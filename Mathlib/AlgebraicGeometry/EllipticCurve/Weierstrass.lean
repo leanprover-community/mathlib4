@@ -23,10 +23,10 @@ is smooth and proper and the fibres are geometrically-connected one-dimensional 
 the special case where `S` is the spectrum of some commutative ring `R` whose Picard group is zero
 (this includes all fields, all PIDs, and many other commutative rings) it can be shown (using a lot
 of algebro-geometric machinery) that every elliptic curve `E` is a projective plane cubic isomorphic
-to a Weierstrass curve given by the equation $Y^2 + a_1XY + a_3Y = X^3 + a_2X^2 + a_4X + a_6$ for
-some $a_i$ in `R`, and such that a certain quantity called the discriminant of `E` is a unit in `R`.
-If `R` is a field, this quantity divides the discriminant of a cubic polynomial whose roots over a
-splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsion points of `E`.
+to a Weierstrass curve given by the equation `Y² + a₁XY + a₃Y = X³ + a₂X² + a₄X + a₆` for some `aᵢ`
+in `R`, and such that a certain quantity called the discriminant of `E` is a unit in `R`. If `R` is
+a field, this quantity divides the discriminant of a cubic polynomial whose roots over a splitting
+field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points of `E`.
 
 ## Main definitions
 
@@ -46,10 +46,10 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
 
 The definition of elliptic curves in this file makes sense for all commutative rings `R`, but it
 only gives a type which can be beefed up to a category which is equivalent to the category of
-elliptic curves over the spectrum $\mathrm{Spec}(R)$ of `R` in the case that `R` has trivial Picard
-group $\mathrm{Pic}(R)$ or, slightly more generally, when its 12-torsion is trivial. The issue is
-that for a general ring `R`, there might be elliptic curves over $\mathrm{Spec}(R)$ in the sense of
-algebraic geometry which are not globally defined by a cubic equation valid over the entire base.
+elliptic curves over the spectrum `Spec(R)` of `R` in the case that `R` has trivial Picard group
+`Pic(R)` or, slightly more generally, when its 12-torsion is trivial. The issue is that for a
+general ring `R`, there might be elliptic curves over `Spec(R)` in the sense of algebraic geometry
+which are not globally defined by a cubic equation valid over the entire base.
 
 ## References
 
@@ -69,7 +69,7 @@ universe s u v w
 
 /-! ## Weierstrass curves -/
 
-/-- A Weierstrass curve $Y^2 + a_1XY + a_3Y = X^3 + a_2X^2 + a_4X + a_6$ with parameters $a_i$. -/
+/-- A Weierstrass curve `Y² + a₁XY + a₃Y = X³ + a₂X² + a₄X + a₆` with parameters `aᵢ`. -/
 @[ext]
 structure WeierstrassCurve (R : Type u) where
   /-- The `a₁` coefficient of a Weierstrass curve. -/
@@ -294,7 +294,7 @@ section TorsionPolynomial
 
 /-- A cubic polynomial whose discriminant is a multiple of the Weierstrass curve discriminant. If
 `W` is an elliptic curve over a field `R` of characteristic different from 2, then its roots over a
-splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsion points of `W`. -/
+splitting field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points of `W`. -/
 def twoTorsionPolynomial : Cubic R :=
   ⟨4, W.b₂, 2 * W.b₄, W.b₆⟩
 
@@ -363,12 +363,14 @@ lemma isUnit_Δ : IsUnit W.Δ := IsElliptic.isUnit
 /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`.
 Note that to prove two equal elliptic curves have the same `Δ'`, you need to use `simp_rw`,
 as `rw` cannot transfer instance `WeierstrassCurve.IsElliptic` automatically. -/
-noncomputable def Δ' : Rˣ := W.isUnit_Δ.unit
+noncomputable def Δ' : Rˣ :=
+  W.isUnit_Δ.unit
 
 /-- The discriminant `Δ'` of an elliptic curve is equal to the
 discriminant `Δ` of it as a Weierstrass curve. -/
 @[simp]
-lemma coe_Δ' : W.Δ' = W.Δ := rfl
+lemma coe_Δ' : W.Δ' = W.Δ :=
+  rfl
 
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`.
 Note that to prove two equal elliptic curves have the same `j`, you need to use `simp_rw`,
