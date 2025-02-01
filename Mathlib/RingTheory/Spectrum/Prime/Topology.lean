@@ -589,6 +589,12 @@ lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
   rw [range_comap_of_surjective _ _ surj, localization_away_comap_range _ (C c)]
   simp [Polynomial.ker_mapRingHom, Ideal.map_span]
 
+lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
+    IsRetrocompact U ↔ IsCompact U := by
+  refine isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact ?_ hU
+  simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
+    using fun _ _ ↦ isCompact_basicOpen _
+
 end BasicOpen
 
 section DiscreteTopology

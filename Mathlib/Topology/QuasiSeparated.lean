@@ -111,14 +111,21 @@ instance (priority := 100) NoetherianSpace.to_quasiSeparatedSpace [NoetherianSpa
     QuasiSeparatedSpace α :=
   ⟨fun _ _ _ _ _ _ => NoetherianSpace.isCompact _⟩
 
-theorem IsQuasiSeparated.of_quasiSeparatedSpace (s : Set α) [QuasiSeparatedSpace α] :
-    IsQuasiSeparated s :=
+section QuasiSeparatedSpace
+variable [QuasiSeparatedSpace α] {U V : Set α}
+
+lemma IsQuasiSeparated.of_quasiSeparatedSpace (s : Set α) : IsQuasiSeparated s :=
   isQuasiSeparated_univ.of_subset (Set.subset_univ _)
 
-theorem QuasiSeparatedSpace.of_isOpenEmbedding (h : IsOpenEmbedding f) [QuasiSeparatedSpace β] :
-    QuasiSeparatedSpace α :=
-  isQuasiSeparated_univ_iff.mp
-    (h.isQuasiSeparated_iff.mpr <| IsQuasiSeparated.of_quasiSeparatedSpace _)
+lemma QuasiSeparatedSpace.of_isOpenEmbedding {f : β → α} (h : IsOpenEmbedding f) :
+    QuasiSeparatedSpace β :=
+  isQuasiSeparated_univ_iff.mp (h.isQuasiSeparated_iff.mpr <| .of_quasiSeparatedSpace _)
 
 @[deprecated (since := "2024-10-18")]
 alias QuasiSeparatedSpace.of_openEmbedding := QuasiSeparatedSpace.of_isOpenEmbedding
+
+lemma IsCompact.inter_of_isOpen (hUcomp : IsCompact U) (hVcomp : IsCompact V) (hUopen : IsOpen U)
+    (hVopen : IsOpen V) : IsCompact (U ∩ V) :=
+  QuasiSeparatedSpace.inter_isCompact _ _ hUopen hUcomp hVopen hVcomp
+
+end QuasiSeparatedSpace
