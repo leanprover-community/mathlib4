@@ -51,6 +51,15 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
 
+open Finsupp in
+theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+      ∑ p ∈ (bm.repr x).support.sym2,
+        p.lift
+          ⟨fun i j => (bm.repr x i * bm.repr x j) • polar Q (bm i) (bm j), fun i j => by
+            simp only [polar_comm, mul_comm]⟩ -
+        linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) = Q x := by
+  rw [← apply_linearCombination', Basis.linearCombination_repr]
+
 -- c.f. `_root_.map_finsupp_sum`
 open Finsupp in
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
