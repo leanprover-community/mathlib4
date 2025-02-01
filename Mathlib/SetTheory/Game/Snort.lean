@@ -37,8 +37,18 @@ structure Position (V : Type u) where
   deicdableMemVerts : (v : V) → Decidable (v ∈ graph.val.verts)
   decidableMemNeighbor : (v u : V) → Decidable (v ∈ graph.val.neighborSet u)
 
-noncomputable instance {V : Type u} : DecidableEq (Position V) :=
-  Classical.typeDecidableEq (Position V)
+instance {V : Type u} [Fintype V] [DecidableEq V] : DecidableEq (Position V) := by
+  intro a b
+  obtain ⟨aGraph, aGetColor, aDeicdableMemVerts, aDecidableMemNeighbor⟩ := a
+  obtain ⟨bGraph, bGetColor, bDeicdableMemVerts, aDecidableMemNeighbor⟩ := b
+  simp
+  refine @instDecidableAnd _ _ ?_ ?_
+  · sorry
+  · refine @instDecidableAnd _ _ ?_ ?_
+    · exact decEq aGetColor bGetColor
+    · refine @instDecidableAnd _ _ ?_ ?_
+      · sorry
+      · sorry
 
 def left {V : Type u} (p : Position V) : Set V :=
   {v | v ∈ p.graph.val.verts ∧ (p.getColor v = Color.Blue ∨ p.getColor v = Color.Blank)}
@@ -117,73 +127,67 @@ def rightMove {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) (m : V) 
   , fun v u => without_double_tinted.decidableMemNeighbor v u
   ⟩
 
--- TODO: golf proofs
-noncomputable instance state {V : Type u} [Fintype V] [DecidableEq V] : State (Position V) where
-  turnBound p := p.graph.property.toFinset.card
+theorem mem_leftFin_mem_position {V : Type u} [Fintype V] [DecidableEq V]
+  {v : V} {p : Position V} (h : v ∈ leftFin p)
+  : v ∈ p.graph.val.verts := by
+  unfold leftFin at h
+  simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ, true_and] at h
+  exact h.left
+
+theorem mem_rightFin_mem_position {V : Type u} [Fintype V] [DecidableEq V]
+  {v : V} {p : Position V} (h : v ∈ rightFin p)
+  : v ∈ p.graph.val.verts := by
+  unfold rightFin at h
+  simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ, true_and] at h
+  exact h.left
+
+instance state {V : Type u} [Fintype V] [DecidableEq V] : State (Position V) where
+  turnBound p := by
+    have := p.deicdableMemVerts
+    exact p.graph.val.verts.toFinset.card
   l p := Finset.image (leftMove p) (leftFin p)
   r p := Finset.image (rightMove p) (rightFin p)
   left_bound := by
     intro s t ht
     simp only [Finset.mem_image] at ht
     obtain ⟨v, ⟨v_in_left, h_sv⟩⟩ := ht
-    simp only [SimpleGraph.completeGraph_eq_top]
     rw [<-h_sv]
-    unfold leftMove
-    simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.mem_neighborSet,
-               Set.union_singleton]
     refine Finset.card_lt_card ?_
-    refine Set.Finite.toFinset_ssubset_toFinset.mpr ?_
-    unfold Position.deleteVerts
-    simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.induce_verts]
-    refine Set.ssubset_iff_subset_ne.mpr ?_
-    refine And.intro (Set.diff_subset) ?_
-    simp only [ne_eq, sdiff_eq_left]
-    unfold Disjoint
-    intro h_d
-    simp only [Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff] at h_d
-    have h_v := v_in_left
-    unfold leftFin at h_v
-    simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ,
-               true_and] at h_v
-    obtain ⟨v_in_verts, v_color⟩ := h_v
-    have singleton_empty := h_d
-      (Set.singleton_subset_iff.mpr v_in_verts)
-      (Set.singleton_subset_iff.mpr (by simp))
-    exact Set.singleton_ne_empty v singleton_empty
+    refine Finset.ssubset_iff.mpr ?_
+    use v
+    simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.mem_neighborSet,
+               Finset.coe_union, Finset.coe_filter, Finset.mem_univ, true_and, Finset.coe_singleton,
+               Set.union_singleton, SimpleGraph.Subgraph.induce_verts, eq_mpr_eq_cast, cast_eq,
+               id_eq, Set.mem_toFinset, Set.mem_diff, Set.mem_insert_iff, Set.mem_setOf_eq, true_or,
+               not_true_eq_false, and_false, not_false_eq_true, Set.subset_toFinset,
+               Finset.coe_insert, Set.coe_toFinset, Position.deleteVerts, leftMove]
+    refine Set.insert_subset_iff.mpr ?_
+    have v_in_verts := mem_leftFin_mem_position v_in_left
+    refine And.intro v_in_verts ?_
+    exact Set.diff_subset
   right_bound := by
     intro s t ht
     simp only [Finset.mem_image] at ht
     obtain ⟨v, ⟨v_in_right, h_sv⟩⟩ := ht
-    simp only [SimpleGraph.completeGraph_eq_top]
     rw [<-h_sv]
-    unfold rightMove
-    simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.mem_neighborSet,
-               Set.union_singleton]
     refine Finset.card_lt_card ?_
-    refine Set.Finite.toFinset_ssubset_toFinset.mpr ?_
-    unfold Position.deleteVerts
-    simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.induce_verts]
-    refine Set.ssubset_iff_subset_ne.mpr ?_
-    refine And.intro (Set.diff_subset) ?_
-    simp only [ne_eq, sdiff_eq_left]
-    unfold Disjoint
-    intro h_d
-    simp only [Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff] at h_d
-    have h_v := v_in_right
-    unfold rightFin at h_v
-    simp only [SimpleGraph.completeGraph_eq_top, Finset.mem_filter, Finset.mem_univ,
-               true_and] at h_v
-    obtain ⟨v_in_verts, v_color⟩ := h_v
+    refine Finset.ssubset_iff.mpr ?_
+    use v
+    simp only [SimpleGraph.completeGraph_eq_top, SimpleGraph.Subgraph.mem_neighborSet,
+               Finset.coe_union, Finset.coe_filter, Finset.mem_univ, true_and, Finset.coe_singleton,
+               Set.union_singleton, SimpleGraph.Subgraph.induce_verts, eq_mpr_eq_cast, cast_eq,
+               id_eq, Set.mem_toFinset, Set.mem_diff, Set.mem_insert_iff, Set.mem_setOf_eq, true_or,
+               not_true_eq_false, and_false, not_false_eq_true, Set.subset_toFinset,
+               Finset.coe_insert, Set.coe_toFinset, Position.deleteVerts, rightMove]
+    refine Set.insert_subset_iff.mpr ?_
+    have v_in_verts := mem_rightFin_mem_position v_in_right
+    refine And.intro v_in_verts ?_
+    exact Set.diff_subset
 
-    have singleton_empty := h_d
-      (Set.singleton_subset_iff.mpr v_in_verts)
-      (Set.singleton_subset_iff.mpr (by simp))
-    exact Set.singleton_ne_empty v singleton_empty
-
-noncomputable def snort {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) : PGame :=
+def snort {V : Type u} [Fintype V] [DecidableEq V] (p : Position V) : PGame :=
   PGame.ofState p
 
-noncomputable def snort.zero : PGame :=
+def snort.zero : PGame :=
   snort
   ⟨ ⟨ ( completeGraph Empty).toSubgraph (completeGraph Empty) (fun ⦃_ _⦄ a => a )
       , Set.toFinite (SimpleGraph.toSubgraph (completeGraph Empty) fun ⦃_ _⦄ a ↦ a).verts
@@ -195,7 +199,7 @@ noncomputable def snort.zero : PGame :=
       infer_instance
   ⟩
 
-noncomputable def snort.one : PGame :=
+def snort.one : PGame :=
   snort
   ⟨ ⟨( completeGraph Unit).toSubgraph (completeGraph Unit) (fun ⦃_ _⦄ a => a )
      , Set.toFinite (SimpleGraph.toSubgraph (completeGraph Unit) fun ⦃_ _⦄ a ↦ a).verts ⟩
