@@ -70,35 +70,13 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
         p.lift
           ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
             simp only [polar_comm, mul_comm]⟩ := by
-  rw [apply_linearCombination']
-  conv_lhs => rw [← Finset.sum_filter_add_sum_filter_not l.support.sym2 Sym2.IsDiag]
-  rw [sub_eq_iff_eq_add']
-  rw [← add_assoc]
-  simp_all only [add_left_inj]
-
-
-  rw [← two_smul ℕ]
-
-  sorry
-  /-
-  apply  (add_left_inj ( ∑ p ∈ Finset.filter (fun p ↦ ¬p.IsDiag) l.support.sym2,
-      Sym2.lift ⟨fun i j ↦ (l i * l j) • polar (⇑Q) (g i) (g j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ p)).mpr
-  sorry
-
-  have e1 : ∑ p ∈ l.support.sym2, Sym2.lift ⟨fun i j ↦ (l i * l j) • polar (⇑Q) (g i) (g j), ⋯⟩ p =
-    ∑ p ∈ l.support.sym2, Sym2.lift ⟨fun i j ↦ (l i * l j) • polar (⇑Q) (g i) (g j), ⋯⟩ p := sorry
-  rw [← Finset.diag_union_offDiag ]
-  rw [Finset.sum_union (Finset.disjoint_diag_offDiag _)]
   simp_rw [linearCombination_apply, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
     mul_smul, add_left_inj]
-  rw [Finsupp.sum]
-  rw [Finsupp.sum_of_support_subset (l * l)
+  rw [Finsupp.sum, Finsupp.sum_of_support_subset (l * l)
     (subset_trans Finsupp.support_mul (by rw [Finset.inter_self])) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
-  -/
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
