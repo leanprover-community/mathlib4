@@ -25,8 +25,7 @@ of compact open subsets are still compact.
   a quasi-separated space, then so is `α`.
 -/
 
-
-open TopologicalSpace Topology
+open Set TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
@@ -110,6 +109,17 @@ instance (priority := 100) T2Space.to_quasiSeparatedSpace [T2Space α] : QuasiSe
 instance (priority := 100) NoetherianSpace.to_quasiSeparatedSpace [NoetherianSpace α] :
     QuasiSeparatedSpace α :=
   ⟨fun _ _ _ _ _ _ => NoetherianSpace.isCompact _⟩
+
+lemma QuasiSeparatedSpace.of_isTopologicalBasis {ι : Type*} {b : ι → Set α}
+    (basis : IsTopologicalBasis (range b)) (isCompact_inter : ∀ i j, IsCompact (b i ∩ b j)) :
+    QuasiSeparatedSpace α where
+  inter_isCompact U V hUopen hUcomp hVopen hVcomp := by
+    have aux := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis b basis fun i ↦ by
+      simpa using isCompact_inter i i
+    obtain ⟨s, hs, rfl⟩ := (aux _).1 ⟨hUcomp, hUopen⟩
+    obtain ⟨t, ht, rfl⟩ := (aux _).1 ⟨hVcomp, hVopen⟩
+    rw [iUnion₂_inter_iUnion₂]
+    exact hs.isCompact_biUnion fun i hi ↦ ht.isCompact_biUnion fun j hj ↦ isCompact_inter ..
 
 section QuasiSeparatedSpace
 variable [QuasiSeparatedSpace α] {U V : Set α}
