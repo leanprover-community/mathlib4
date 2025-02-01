@@ -138,6 +138,6 @@ instance isIso_toLimit (P : ProfiniteGrp.{u}) : IsIso (toLimit P) := by
 the projective limit of its quotients by open normal subgroups -/
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≅ (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) :=
-  asIso (toLimit P)
+  ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
 
 end ProfiniteGrp
