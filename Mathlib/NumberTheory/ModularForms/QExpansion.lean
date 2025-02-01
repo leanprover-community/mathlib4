@@ -149,7 +149,7 @@ lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
 
 lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
     1 ≤ (qExpansionFormalMultilinearSeries n f).radius := by
-  refine le_of_forall_ge_of_dense fun r hr ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
   apply FormalMultilinearSeries.le_radius_of_summable
   simp only [qExpansionFormalMultilinearSeries_apply_norm]
