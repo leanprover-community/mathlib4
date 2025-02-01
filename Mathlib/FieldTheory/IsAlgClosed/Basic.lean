@@ -184,16 +184,6 @@ theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K
   have : Algebra.IsIntegral k K := ⟨hf⟩
   algebraMap_surjective_of_isIntegral
 
-/--
-Deprecated: `algebraMap_surjective_of_isIntegral` is identical apart from the `IsIntegral` argument,
-which can be found by instance synthesis
--/
-@[deprecated algebraMap_surjective_of_isIntegral (since := "2024-05-08")]
-theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [IsDomain K]
-    [IsAlgClosed k] [Algebra k K] [Algebra.IsAlgebraic k K] :
-    Function.Surjective (algebraMap k K) :=
-  algebraMap_surjective_of_isIntegral
-
 end IsAlgClosed
 
 /-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field
