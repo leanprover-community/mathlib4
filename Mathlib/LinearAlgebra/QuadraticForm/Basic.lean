@@ -345,7 +345,7 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) =
-      ∑ ij in s.sym2,
+      ∑ ij ∈ s.sym2,
         ij.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩
       - ∑ i ∈ s, Q (f i) := by
   induction s using Finset.cons_induction with
