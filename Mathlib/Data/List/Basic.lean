@@ -671,18 +671,22 @@ variable [DecidableEq α]
 
 
 -- fun e => if_pos e
-theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
-  | e => by rw [← e]; exact indexOf_cons_self
+theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
+  | e => by rw [← e]; exact idxOf_cons_self
+
+@[deprecated (since := "2025-01-30")] alias indexOf_cons_eq := idxOf_cons_eq
 
 -- fun n => if_neg n
 @[simp]
-theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
-  | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
+theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = succ (idxOf a l)
+  | h => by simp only [idxOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 
-theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
+@[deprecated (since := "2025-01-30")] alias indexOf_cons_ne := idxOf_cons_ne
+
+theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons, indexOf_cons, eq_comm]
+  simp only [length, mem_cons, idxOf_cons, eq_comm]
   rw [cond_eq_if]
   split_ifs with h <;> simp at h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
@@ -691,35 +695,45 @@ theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l �
     exact succ_inj'
 
 @[simp]
-theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = length l :=
-  indexOf_eq_length_iff.2
+theorem idxOf_of_not_mem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
+  idxOf_eq_length_iff.2
 
-theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
+@[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_not_mem
+
+theorem idxOf_le_length {a : α} {l : List α} : idxOf a l ≤ length l := by
   induction' l with b l ih; · rfl
-  simp only [length, indexOf_cons, cond_eq_if, beq_iff_eq]
+  simp only [length, idxOf_cons, cond_eq_if, beq_iff_eq]
   by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
 
-theorem indexOf_lt_length_iff {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length_iff.2 al,
-   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length_iff.1 h al⟩
+@[deprecated (since := "2025-01-30")] alias indexOf_le_length := idxOf_le_length
 
-theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
+theorem idxOf_lt_length_iff {a} {l : List α} : idxOf a l < length l ↔ a ∈ l :=
+  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| idxOf_eq_length_iff.2 al,
+   fun al => (lt_of_le_of_ne idxOf_le_length) fun h => idxOf_eq_length_iff.1 h al⟩
+
+@[deprecated (since := "2025-01-30")] alias indexOf_lt_length_iff := idxOf_lt_length_iff
+
+theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
   · exfalso
     exact not_mem_nil a h
   rw [List.cons_append]
   by_cases hh : d₁ = a
-  · iterate 2 rw [indexOf_cons_eq _ hh]
-  rw [indexOf_cons_ne _ hh, indexOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
+  · iterate 2 rw [idxOf_cons_eq _ hh]
+  rw [idxOf_cons_ne _ hh, idxOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
 
-theorem indexOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
-    indexOf a (l₁ ++ l₂) = l₁.length + indexOf a l₂ := by
+@[deprecated (since := "2025-01-30")] alias indexOf_append_of_mem := idxOf_append_of_mem
+
+theorem idxOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
+    idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
   induction' l₁ with d₁ t₁ ih
   · rw [List.nil_append, List.length, Nat.zero_add]
-  rw [List.cons_append, indexOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
+  rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
     ih (not_mem_of_not_mem_cons h), Nat.succ_add]
+
+@[deprecated (since := "2025-01-30")] alias indexOf_append_of_not_mem := idxOf_append_of_not_mem
 
 end IndexOf
 
@@ -783,35 +797,45 @@ theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n 
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
 
 @[simp]
-theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : indexOf a l < l.length),
-    l[indexOf a l] = a
+theorem getElem_idxOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : idxOf a l < l.length),
+    l[idxOf a l] = a
   | b :: l, h => by
     by_cases h' : b = a <;>
-    simp [h', if_pos, if_false, getElem_indexOf]
+    simp [h', if_pos, if_false, getElem_idxOf]
 
--- This is incorrectly named and should be `get_indexOf`;
+@[deprecated (since := "2025-01-30")] alias getElem_indexOf := getElem_idxOf
+
+-- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
-theorem indexOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨indexOf a l, h⟩ = a := by
+theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a l, h⟩ = a := by
   simp
 
+@[deprecated (since := "2025-01-30")] alias indexOf_get := idxOf_get
+
 @[simp]
-theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    l[indexOf a l]? = some a := by
-  rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length_iff.2 h)]
+theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
+    l[idxOf a l]? = some a := by
+  rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
 
--- This is incorrectly named and should be `get?_indexOf`;
+@[deprecated (since := "2025-01-30")] alias getElem?_indexOf := getElem?_idxOf
+
+-- This is incorrectly named and should be `get?_idxOf`;
 -- this already exists, so will require a deprecation dance.
-theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    get? l (indexOf a l) = some a := by simp [h]
+theorem idxOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
+    get? l (idxOf a l) = some a := by simp [h]
 
-theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
-    indexOf x l = indexOf y l ↔ x = y :=
+@[deprecated (since := "2025-01-30")] alias indexOf_get? := idxOf_get?
+
+theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
+    idxOf x l = idxOf y l ↔ x = y :=
   ⟨fun h => by
     have x_eq_y :
-        get l ⟨indexOf x l, indexOf_lt_length_iff.2 hx⟩ =
-        get l ⟨indexOf y l, indexOf_lt_length_iff.2 hy⟩ := by
+        get l ⟨idxOf x l, idxOf_lt_length_iff.2 hx⟩ =
+        get l ⟨idxOf y l, idxOf_lt_length_iff.2 hy⟩ := by
       simp only [h]
-    simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
+    simp only [idxOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
+
+@[deprecated (since := "2025-01-30")] alias indexOf_inj := idxOf_inj
 
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
