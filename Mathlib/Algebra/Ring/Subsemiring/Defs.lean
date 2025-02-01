@@ -293,6 +293,8 @@ def subtype : s →+* R :=
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
+theorem subtype_injective : Function.Injective s.subtype := Subtype.coe_injective
+
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
   nsmul_mem hx n
 
