@@ -394,6 +394,9 @@ protected lemma add_le_mul {a : ℕ} (ha : 2 ≤ a) : ∀ {b : ℕ} (_ : 2 ≤ b
 
 /-! ### `div` -/
 
+lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by
+  rw [Nat.le_div_iff_mul_le Nat.zero_lt_two, ← Int.ofNat_le, Int.ofNat_mul]; rfl
+
 attribute [simp] Nat.div_self
 
 lemma div_le_iff_le_mul_add_pred (hb : 0 < b) : a / b ≤ c ↔ a ≤ b * c + (b - 1) := by
