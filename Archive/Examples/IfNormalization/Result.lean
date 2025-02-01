@@ -31,7 +31,11 @@ attribute [local simp] apply_ite ite_eq_iff'
 attribute [grind] Subtype
 grind_pattern Subtype.property => self.val
 
-attribute [grind] List.mem_cons List.not_mem_nil Option.elim_none
+attribute [grind] List.mem_cons List.not_mem_nil List.mem_append Option.elim_none Option.elim_some id
+
+attribute [grind] List.disjoint
+
+attribute [grind] AList.lookup_insert_eq_none AList.lookup_insert_ne AList.lookup_insert List.cons_append List.nil_append
 
 attribute [local grind] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
 
@@ -69,7 +73,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     match h : l.lookup v with
     | none => ⟨var v, by grind⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true)   t e => ⟨(normalize l t).1, by grind⟩
+  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, by grind⟩
   | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, by grind⟩
   | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, by grind⟩
   | .ite (var v)      t e =>
@@ -85,21 +89,20 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
           · simp_all
             congr
             ext w
-            by_cases w = v <;> ◾
+            by_cases w = v <;> grind
           · simp [h, ht₁]
             congr
             ext w
-            by_cases w = v <;> ◾
+            by_cases w = v <;> grind
         · -- normalized
-          have := ht₃ v
-          have := he₃ v
-          split <;> ◾
+          split
+          · grind
+          · simp only [normalized, disjoint]
+            grind
         · -- lookup = none
-          have := ht₃ w
-          have := he₃ w
-          by_cases w = v <;> ◾⟩
+          by_cases w = v <;> grind⟩
     | some b =>
-      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
+      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, by grind⟩
   termination_by e => e.normSize
 
 /-
