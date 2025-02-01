@@ -1610,6 +1610,8 @@ import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
+import Mathlib.Analysis.SpecialFunctions.MulExpNegSq
+import Mathlib.Analysis.SpecialFunctions.MulExpNegSqIntegral
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
@@ -3888,6 +3890,7 @@ import Mathlib.MeasureTheory.Measure.DiracProba
 import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Measure.EverywherePos
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
+import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Haar.Basic
