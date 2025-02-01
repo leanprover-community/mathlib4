@@ -51,6 +51,9 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
 
 variable [DecidableEq ι]
 
+/--
+Lift `i j => (l i * l j)` to `Sym2 ι`
+-/
 noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinset
     ((l.support.product l.support).image Sym2.mk)
     (Sym2.lift ⟨fun i j => (l i * l j), fun _ _ => mul_comm _ _⟩) (fun p hp => by
@@ -66,10 +69,14 @@ noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinse
       · aesop
     )
 
-variable (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R)
-
-#check Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l)
-
+/-
+I think this statement should be:
+```
+    Q (linearCombination R g l) =
+      linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l) -
+      linearCombination R (Q ∘ g) (l * l)
+```
+-/
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
