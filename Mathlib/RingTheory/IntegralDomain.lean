@@ -85,12 +85,13 @@ section Ring
 
 variable [Ring R] [IsDomain R] [Fintype R]
 
+set_option trace.profiler true in
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
+  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
-  __ := ‹Ring R›
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _

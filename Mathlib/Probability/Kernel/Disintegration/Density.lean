@@ -131,15 +131,16 @@ lemma measurable_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) 
     Measurable (fun (p : α × γ) ↦ densityProcess κ ν n p.1 p.2 s) :=
   (measurable_densityProcess_aux κ ν n hs).ennreal_toReal
 
+-- The following two lemmas also work without the `( :)`, but it's slow
 lemma measurable_densityProcess_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (x : γ) {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ densityProcess κ ν n a x s) :=
-  (measurable_densityProcess κ ν n hs).comp (measurable_id.prod_mk measurable_const)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prod_mk measurable_const):)
 
 lemma measurable_densityProcess_right (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     {s : Set β} (a : α) (hs : MeasurableSet s) :
     Measurable (fun x ↦ densityProcess κ ν n a x s) :=
-  (measurable_densityProcess κ ν n hs).comp (measurable_const.prod_mk measurable_id)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prod_mk measurable_id):)
 
 lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
