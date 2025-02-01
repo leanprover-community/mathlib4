@@ -701,6 +701,11 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
 theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
   Finset.le_card_of_inj_on_range (x ^ ·) (fun _ _ ↦ Finset.mem_univ _) pow_injOn_Iio_orderOf
 
+@[to_additive]
+theorem orderOf_le_card [Finite G] : orderOf x ≤ Nat.card G := by
+  obtain ⟨⟩ := nonempty_fintype G
+  simpa using orderOf_le_card_univ
+
 end FiniteMonoid
 
 section FiniteCancelMonoid

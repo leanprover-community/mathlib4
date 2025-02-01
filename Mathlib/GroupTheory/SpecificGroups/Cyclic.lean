@@ -120,11 +120,10 @@ lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
 @[to_additive]
 lemma isCyclic_iff_exists_natCard_le_orderOf [Finite α] :
     IsCyclic α ↔ ∃ g : α, Nat.card α ≤ orderOf g := by
-  obtain ⟨⟩ := nonempty_fintype α
-  rw [isCyclic_iff_exists_orderOf_eq_natCard, Nat.card_eq_fintype_card]
+  rw [isCyclic_iff_exists_orderOf_eq_natCard]
   apply exists_congr
   intro g
-  exact ⟨Eq.ge, le_antisymm orderOf_le_card_univ⟩
+  exact ⟨Eq.ge, le_antisymm orderOf_le_card⟩
 
 @[deprecated (since := "2024-12-20")]
 alias isCyclic_iff_exists_ofOrder_eq_natCard := isCyclic_iff_exists_orderOf_eq_natCard
