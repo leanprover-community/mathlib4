@@ -45,11 +45,30 @@ lemma recover {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → 
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      ∑ p ∈ f.support.sym2, Q.polar_lift f g p - ∑ i ∈ f.support, Q (g i (f i)) := by
+      ∑ p ∈ f.support.sym2, (Q.polar_lift f g p) - ∑ i ∈ f.support, Q (g i (f i)) := by
   rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
 variable [DecidableEq ι]
+
+noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinset
+    ((l.support.product l.support).image Sym2.mk)
+    (Sym2.lift ⟨fun i j => (l i * l j), fun _ _ => mul_comm _ _⟩) (fun p hp => by
+      simp only [Finset.product_eq_sprod, Finset.mem_image, Finset.mem_product,
+        Finsupp.mem_support_iff, ne_eq, Prod.exists]
+      simp only [ne_eq] at hp
+      obtain ⟨a,b⟩ := p
+      simp only [Sym2.lift_mk] at hp
+      use a
+      use b
+      constructor
+      · aesop
+      · aesop
+    )
+
+variable (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R)
+
+#check Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l)
 
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
