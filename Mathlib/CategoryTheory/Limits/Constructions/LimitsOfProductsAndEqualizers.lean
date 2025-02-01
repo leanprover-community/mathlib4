@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 
@@ -189,6 +190,37 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · refine Cones.ext (Iso.refl _) ?_
       intro j; dsimp [P, Q, I, i]; simp
 -- See note [dsimp, simp].
+
+end
+
+section
+
+variable [HasLimitsOfShape (Discrete J) D] [HasLimitsOfShape (Discrete (Σp : J × J, p.1 ⟶ p.2)) D]
+  [HasEqualizers D]
+
+variable (G : C ⥤ D) [G.ReflectsIsomorphisms] [CreatesLimitsOfShape WalkingParallelPair G]
+  [CreatesLimitsOfShape (Discrete.{w} J) G]
+  [CreatesLimitsOfShape (Discrete.{w} (Σp : J × J, p.1 ⟶ p.2)) G]
+
+attribute [local instance] preservesLimit_of_preservesEqualizers_and_product in
+noncomputable def createsLimit_of_createsEqualizers_and_product :
+    CreatesLimitsOfShape J G where
+  CreatesLimit {K} := by
+    have : HasLimitsOfShape (Discrete J) C :=
+      hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+    have : HasLimitsOfShape (Discrete (Σp : J × J, p.1 ⟶ p.2)) C :=
+      hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+    have : HasEqualizers C :=
+      hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+    let P := ∏ᶜ K.obj
+    let Q := ∏ᶜ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
+    let s : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨_⟩ ≫ K.map f.2
+    let t : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨f.1.2⟩
+    let c := buildLimit s t (by simp [P, s]) (by simp [P, t]) (equalizer.fork _ _)
+    refine createsLimitOfReflectsIso' (c := G.mapCone c) (isLimitOfPreserves _ ?a)
+      ⟨⟨c, Iso.refl _⟩, ?a⟩
+    exact buildIsLimit s t (by simp [P, s]) (by simp [P, t]) (limit.isLimit _) (limit.isLimit _)
+      (limit.isLimit _)
 
 end
 
