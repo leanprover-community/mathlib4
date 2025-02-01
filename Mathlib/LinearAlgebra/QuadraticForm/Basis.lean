@@ -29,14 +29,23 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N
 /--
 Lift the polar
 -/
+def polar_sym2 (Q : QuadraticMap R M N) : Sym2 M → N :=
+  Sym2.lift ⟨fun m₁ m₂ => (polar Q) m₁ m₂, fun i j => by simp only [polar_comm]⟩
+
+/--
+Lift the polar
+-/
 def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
-  Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩
+  Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i)))
 
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      ∑ p ∈ f.support.sym2, Q.polar_lift f g p - ∑ i ∈ f.support, Q (g i (f i)) :=
-  Q.map_sum' _ (fun i => g i (f i))
+      ∑ p ∈ f.support.sym2, Q.polar_lift f g p - ∑ i ∈ f.support, Q (g i (f i)) := by
+  rw [polar_lift, polar_sym2, Sym2.map]
+  simp only [Function.comp_apply]
+  sorry
+  --apply Q.map_sum' _ (fun i => g i (f i))
 
 variable [DecidableEq ι]
 
