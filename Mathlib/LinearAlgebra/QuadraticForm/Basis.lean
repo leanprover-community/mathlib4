@@ -32,7 +32,7 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
       ∑ p ∈ f.support.sym2,
         p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ -
         ∑ i ∈ f.support, Q (g i (f i)) :=
-  QuadraticMap.map_sum' Q _ (fun i => g i (f i))
+  Q.map_sum' _ (fun i => g i (f i))
 
 variable [DecidableEq ι]
 
@@ -67,7 +67,7 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
       f.sum (fun i r => Q (g i r)) +
       ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
         p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
-  QuadraticMap.map_sum _ _ _
+  Q.map_sum _ _
 
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
