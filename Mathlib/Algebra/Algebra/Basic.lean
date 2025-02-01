@@ -353,7 +353,8 @@ end FaithfulSMul
 
 namespace NoZeroSMulDivisors
 
-instance instOfFaithfulSMul {R A : Type*}
+-- see Note [lower instance priority]
+instance (priority := 100) instOfFaithfulSMul {R A : Type*}
     [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
     NoZeroSMulDivisors R A :=
   ⟨fun hcx => (mul_eq_zero.mp ((Algebra.smul_def _ _).symm.trans hcx)).imp_left
