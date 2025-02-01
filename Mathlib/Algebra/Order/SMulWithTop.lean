@@ -31,7 +31,7 @@ variable {g : WithTop G} {p : WithTop P}
 instance [_root_.SMul G P] : SMul (WithTop G) (WithTop P) :=
   ⟨Option.map₂ (· • ·)⟩
 
-@[to_additive (attr := simp)]
+@[to_additive] -- global simpNF says simping this runs afoul of WithTop.coe_nsmul
 lemma coe_SMul [SMul G P] (g : G) (p : P) :
     ↑(g • p) = (g : WithTop G) • (p : WithTop P) :=
   rfl
