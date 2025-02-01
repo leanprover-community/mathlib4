@@ -199,7 +199,7 @@ lemma basis_natDegree_eq (i : ℕ) : (S.basis hCoeff i).natDegree = i := by simp
 lemma basis_degree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).degree ≠ j := by
   simpa [basis_eq_self] using h
 
-/-- The `i`'th basis vector has natural degree `i`. -/
+/-- The `i`'th basis vector does not have natural degree `j` for `i ≠ j`. -/
 lemma basis_natDegree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).natDegree ≠ j := by
   simpa [basis_eq_self] using h
 
