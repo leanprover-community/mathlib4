@@ -110,20 +110,6 @@ section Ring
 
 variable [Ring R] (S : Sequence R)
 
-/-- Polynomials in a polynomial sequence are linearly independent. -/
-lemma linearIndependent [NoZeroDivisors R] :
-    LinearIndependent R S := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
-  by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
-  · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
-    exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
-  · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
-      intro _ ⟨_, hx⟩ _ ⟨_, hy⟩ xney
-      simpa [degree_smul_of_ne_zero hx, degree_smul_of_ne_zero hy] using S.degree_ne xney
-    obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
-    refine degree_ne_bot.mp ?_ eqzero |>.elim
-    have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
-    exact hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
-
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
 protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ :=
   eq_top_iff'.mpr fun P ↦ by
@@ -186,7 +172,23 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
 
 section NoZeroDivisors
 
-variable [NoZeroDivisors R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
+variable [NoZeroDivisors R]
+
+/-- Polynomials in a polynomial sequence are linearly independent. -/
+lemma linearIndependent :
+    LinearIndependent R S := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
+  by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
+  · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
+    exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
+  · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
+      intro _ ⟨_, hx⟩ _ ⟨_, hy⟩ xney
+      simp [degree_smul_of_ne_zero hx, degree_smul_of_ne_zero hy, xney]
+    obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
+    refine degree_ne_bot.mp ?_ eqzero |>.elim
+    have hsum := degree_sum_eq_of_disjoint _ s hpairwise
+    exact hsum.trans hn |>.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
+
+variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 
 /-- Every polynomial sequence is a basis of `R[X]`. -/
 noncomputable def basis : Basis ℕ R R[X] :=
