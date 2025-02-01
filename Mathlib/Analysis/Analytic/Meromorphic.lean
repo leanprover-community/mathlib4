@@ -329,7 +329,7 @@ lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
 
 /-- The set where a meromorphic function has infinite order is clopen in its domain of meromorphy.
 -/
-theorem clopen_of_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : MeromorphicOn f U) :
+theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : MeromorphicOn f U) :
     IsClopen { u : U | (h₁f u.1 u.2).order = ⊤ } := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
