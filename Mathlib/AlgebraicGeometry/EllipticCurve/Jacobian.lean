@@ -283,7 +283,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
-  ⟨fun h => by convert hP hu.unit.inv h; erw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
+  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -1354,25 +1354,25 @@ lemma addMap_eq (P Q : Fin 3 → R) : W'.addMap ⟦P⟧ ⟦Q⟧ = ⟦W'.add P Q�
 
 lemma addMap_of_Z_eq_zero_left {P : Fin 3 → F} {Q : PointClass F} (hP : W.Nonsingular P)
     (hQ : W.NonsingularLift Q) (hPz : P z = 0) : W.addMap ⟦P⟧ Q = Q := by
-  rcases Q with ⟨Q⟩
+  revert hQ
+  refine Q.inductionOn (motive := fun Q => _ → W.addMap _ Q = Q) fun Q hQ => ?_
   by_cases hQz : Q z = 0
-  · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hQ hQz
-  · erw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).mul <| Ne.isUnit hQz]
-    rfl
 
 lemma addMap_of_Z_eq_zero_right {P : PointClass F} {Q : Fin 3 → F} (hP : W.NonsingularLift P)
     (hQ : W.Nonsingular Q) (hQz : Q z = 0) : W.addMap P ⟦Q⟧ = P := by
-  rcases P with ⟨P⟩
+  revert hP
+  refine P.inductionOn (motive := fun P => _ → W.addMap P _ = P) fun P hP => ?_
   by_cases hPz : P z = 0
-  · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hP hPz
-  · erw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
       smul_eq _ ((isUnit_X_of_Z_eq_zero hQ hQz).mul <| Ne.isUnit hPz).neg]
-    rfl
 
 lemma addMap_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
@@ -1618,7 +1618,7 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
       exact Quotient.eq.mpr <| Setoid.symm <| equiv_some_of_Z_ne_zero hPz
   right_inv := by
     rintro (_ | _)
-    · erw [fromAffine_zero, toAffineLift_zero, Affine.Point.zero_def]
+    · rw [← Affine.Point.zero_def, fromAffine_zero, toAffineLift_zero]
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 

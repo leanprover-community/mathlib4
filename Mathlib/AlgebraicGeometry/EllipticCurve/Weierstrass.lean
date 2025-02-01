@@ -18,8 +18,8 @@ Weierstrass equation, which is mathematically accurate in many cases but also go
 ## Mathematical background
 
 Let `S` be a scheme. The actual category of elliptic curves over `S` is a large category, whose
-objects are schemes `E` equipped with a map `E → S`, a section `S → E`, and some axioms (the map
-is smooth and proper and the fibres are geometrically-connected one-dimensional group varieties). In
+objects are schemes `E` equipped with a map `E → S`, a section `S → E`, and some axioms (the map is
+smooth and proper and the fibres are geometrically-connected one-dimensional group varieties). In
 the special case where `S` is the spectrum of some commutative ring `R` whose Picard group is zero
 (this includes all fields, all PIDs, and many other commutative rings) it can be shown (using a lot
 of algebro-geometric machinery) that every elliptic curve `E` is a projective plane cubic isomorphic

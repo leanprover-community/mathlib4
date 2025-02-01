@@ -30,7 +30,7 @@ this is well-defined and preserves addition reduce to checking several equalitie
 ideals, which is done in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
 `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations. Now
 `F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of the
-form `p + qY` for some `p, q ∈ F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
+form `p + qY` for some `p, q` in `F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
 can then be shown by computing the degree of such a norm `N(p + qY)` in two different ways, which is
 done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the auxiliary lemmas
 in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
@@ -52,8 +52,8 @@ pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve
     affine Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
     element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
- * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on
-    an affine Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on an
+    affine Weierstrass curve forms an abelian group under addition.
  * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational points on a
     Jacobian Weierstrass curve forms an abelian group under addition.
  * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular rational points on
@@ -119,12 +119,10 @@ instance : IsScalarTower R R[X] W.CoordinateRing :=
 instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 
--- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- The natural ring homomorphism mapping an element of `R[X][Y]` to an element of `R[W]`. -/
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
--- Porting note: added `classical` explicitly
 /-- The basis `{1, Y}` for the coordinate ring `R[W]` over the polynomial ring `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
@@ -138,17 +136,14 @@ lemma basis_apply (n : Fin 2) :
     PowerBasis.basis_eq_pow]
   rfl
 
--- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 
--- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 
--- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n
@@ -162,14 +157,14 @@ variable {W} in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W.CoordinateRing) + q • mk W Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W).linearIndependent ![p, q]
-  erw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, basis_one] at h
+  rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
 variable {W} in
 lemma exists_smul_basis_eq (x : W.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W.CoordinateRing) + q • mk W Y = x := by
   have h := (CoordinateRing.basis W).sum_equivFun x
-  erw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, basis_one] at h
+  rw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨_, _, h⟩
 
 lemma smul_basis_mul_C (y : R[X]) (p q : R[X]) :
@@ -404,11 +399,11 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
   rfl
 
-lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.Nonsingular x y) :
+lemma mk_XYIdeal'_neg_mul_mk_XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| nonsingular_neg h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← _root_.map_mul]
   exact
-    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
+    (ClassGroup.mk_eq_one_of_coe_ideal <| (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
       FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 
 lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
@@ -416,11 +411,14 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
-  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul ..).symm) <|
-      XYIdeal'_eq _).mpr
-    ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
+  exact
+    (ClassGroup.mk_eq_mk_of_coe_ideal (FractionalIdeal.coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
+      ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 
 end Field
+
+@[deprecated (since := "2025-02-01")]
+alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq := mk_XYIdeal'_neg_mul_mk_XYIdeal'
 
 section Norm
 
@@ -483,8 +481,7 @@ lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
   rw [degree_norm_smul_basis]
   rcases p.degree with (_ | _ | _ | _) <;> cases q.degree
   any_goals rintro (_ | _)
-  -- Porting note: replaced `dec_trivial` with `by exact (cmp_eq_lt_iff ..).mp rfl`
-  exact (lt_max_of_lt_right <| by exact (cmp_eq_lt_iff ..).mp rfl).ne'
+  exact (lt_max_of_lt_right <| (cmp_eq_lt_iff ..).mp rfl).ne'
 
 variable {W} in
 lemma natDegree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
@@ -519,7 +516,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
     any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
     by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
     · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
-      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
+      exact (CoordinateRing.mk_XYIdeal'_neg_mul_mk_XYIdeal' h₂).symm
     · simp only [add_some hxy]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
 
@@ -556,7 +553,7 @@ lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
   rintro (_ | h) _ hP
   all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
-  · exact CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h
+  · exact CoordinateRing.mk_XYIdeal'_neg_mul_mk_XYIdeal' h
 
 noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
