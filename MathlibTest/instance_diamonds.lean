@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
