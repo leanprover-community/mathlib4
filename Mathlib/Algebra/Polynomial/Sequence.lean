@@ -33,19 +33,6 @@ open scoped Function
 
 universe u
 
-open Polynomial in
-theorem degree_smul_of_ne_zero
-    {R : Type*} [Semiring R] {k : R} [NoZeroDivisors R] {p : R[X]} (hkp : k • p ≠ 0) :
-    (k • p).degree = p.degree := by
-  refine le_antisymm (degree_smul_le k p) ?_
-  by_cases nezero : p = 0
-  · simp [nezero]
-  · by_contra! hdeg
-    suffices hk : k = 0 by simp_all
-    have h := coeff_eq_zero_of_natDegree_lt <| natDegree_lt_natDegree hkp hdeg
-    simp only [coeff_smul, coeff_natDegree, smul_eq_mul, mul_eq_zero, leadingCoeff_eq_zero] at h
-    exact h.resolve_right nezero
-
 variable (R : Type u)
 
 namespace Polynomial
@@ -181,8 +168,12 @@ lemma linearIndependent :
   · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
   · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
-      intro _ ⟨_, hx⟩ _ ⟨_, hy⟩ xney
-      simp [degree_smul_of_ne_zero hx, degree_smul_of_ne_zero hy, xney]
+      intro x ⟨_, hx⟩ y ⟨_, hy⟩ xney
+      have zgx : g x ≠ 0 := (smul_ne_zero_iff.mp hx).1
+      have zgy : g y ≠ 0 := (smul_ne_zero_iff.mp hy).1
+      have rx : IsRightRegular (S x).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
+      have ry : IsRightRegular (S y).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
+      simp [degree_smul_of_isRightRegular_leadingCoeff, rx, ry, zgx, zgy, xney]
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
     refine degree_ne_bot.mp ?_ eqzero |>.elim
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise
