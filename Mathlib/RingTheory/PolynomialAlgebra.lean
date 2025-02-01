@@ -320,12 +320,17 @@ lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
 
-instance {R S} [CommRing R] [CommRing S] [Algebra R S] :
-    letI := (mapRingHom (algebraMap R S)).toAlgebra
-    haveI : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+/-- If `S` is an `R`-algebra, then `S[X]` is an `R[X]` algebra.
+This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
+@[reducible] def Polynomial.algebra [Algebra R S] :
+    Algebra R[X] S[X] := (mapRingHom (algebraMap R S)).toAlgebra
+
+attribute [local instance] Polynomial.algebra
+
+instance [Algebra R S] : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
     Algebra.IsPushout R S R[X] S[X] := by
-  letI := (mapRingHom (algebraMap R S)).toAlgebra
-  haveI : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
   constructor
   let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
   convert (TensorProduct.isBaseChange R R[X] S).comp (.ofEquiv e.symm.toLinearEquiv) using 1
