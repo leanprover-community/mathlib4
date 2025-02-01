@@ -1318,18 +1318,14 @@ alias rat_cast_imK := ratCast_imK
 alias coe_rat_cast := coe_ratCast
 
 instance instDivisionRing : DivisionRing ℍ[R] where
-  __ := Quaternion.instGroupWithZero
   __ := Quaternion.instRing
+  __ := Quaternion.instGroupWithZero
   nnqsmul := (· • ·)
   qsmul := (· • ·)
-  nnratCast_def _ := by simp only [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast]
-  ratCast_def _ := by simp only [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
-  nnqsmul_def _ _ := by
-    simp only [← coe_nnratCast, coe_mul_eq_smul]
-    ext <;> exact NNRat.smul_def ..
-  qsmul_def _ _ := by
-    simp only [← coe_ratCast, coe_mul_eq_smul]
-    ext <;> exact Rat.smul_def ..
+  nnratCast_def _ := by rw [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast, coe_natCast]
+  ratCast_def _ := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
+  nnqsmul_def _ _ := by rw [← coe_nnratCast, coe_mul_eq_smul]; ext <;> exact NNRat.smul_def ..
+  qsmul_def _ _ := by rw [← coe_ratCast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def ..
 
 theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
   map_inv₀ normSq _
