@@ -51,7 +51,7 @@ noncomputable def toCNF [DecidableEq T] (g : ContextFreeGrammar T) [DecidableEq 
 variable {g : ContextFreeGrammar T}
 
 lemma newTerminalRules_terminal_output {r : ContextFreeRule T g.NT} :
-    ∀ r' ∈ newTerminalRules r, ∃ t, r'.output = [Symbol.terminal t] := by
+    ∀ r' ∈ newTerminalRules r, ∃ t, r'.output = [.terminal t] := by
   simp only [newTerminalRules, List.mem_filterMap, forall_exists_index, and_imp]
   intro r' s hs
   split <;> intro hr' <;> simp only [reduceCtorEq, Option.some.injEq] at hr'
@@ -67,7 +67,7 @@ lemma restrictTerminals_nonUnit_output (hrₒ : ∀ r ∈ g.rules, NonUnit r.out
   intro r' r hrg hr'
   cases hr' with
   | inl hr' =>
-    have : (∀ t : T, r.output ≠ [Symbol.terminal t]) → NonUnit (rightEmbedString r.output) :=
+    have : (∀ t : T, r.output ≠ [.terminal t]) → NonUnit (rightEmbedString r.output) :=
       rightEmbed_string_nonUnit (hrₒ _ hrg)
     aesop
   | inr hr' =>
@@ -91,8 +91,8 @@ lemma restrictTerminals_not_empty_output (hne : ∀ r ∈ g.rules, r.output ≠ 
     simp
 
 lemma restrictTerminals_terminal_or_nonterminals :
-    ∀ r ∈ g.restrictTerminals.rules, (∃ t, r.output = [Symbol.terminal t])
-      ∨ (∀ s ∈ r.output, ∃ nt, s = Symbol.nonterminal nt) := by
+    ∀ r ∈ g.restrictTerminals.rules, (∃ t, r.output = [.terminal t])
+      ∨ (∀ s ∈ r.output, ∃ nt, s = .nonterminal nt) := by
   simp only [restrictTerminals, restrictTerminalRules, restrictTerminalRule, List.mem_toFinset,
     List.mem_flatten, List.mem_map, Finset.mem_toList, exists_exists_and_eq_and, List.mem_cons,
     Sum.exists, forall_exists_index, and_imp]
@@ -155,10 +155,10 @@ theorem toCNF_correct : g.language \ {[]} = g.toCNF.language := by
   | [] =>
     exact False.elim (restrictTerminals_not_empty_output
       (eliminateUnitRules_not_empty_output eliminateEmpty_not_empty_output) _ hrg hrₒ)
-  | [Symbol.terminal _] =>
+  | [.terminal _] =>
     cases r; simp only at hrₒ; rw [hrₒ]
     constructor
-  | [Symbol.nonterminal _] =>
+  | [.nonterminal _] =>
     exfalso
     apply restrictTerminals_nonUnit_output eliminateUnitRules_output_nonUnit at hrg
     · rw [hrₒ] at hrg

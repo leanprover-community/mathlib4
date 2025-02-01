@@ -39,15 +39,15 @@ variable {N : Type*}
 or if the output is more than one symbol, it is only nonterminals -/
 inductive Wellformed : (ContextFreeRule T N) → Prop where
   /-- Rule rewriting to a single terminal is wellformed -/
-  | terminal {n : N} (t : T) : Wellformed ⟨n, [Symbol.terminal t]⟩
+  | terminal {n : N} (t : T) : Wellformed ⟨n, [.terminal t]⟩
   /-- Rule rewriting to mulitple nonterminals is wellformed -/
   | nonterminals {n : N} (u : List (Symbol T N)) (h2 : 2 ≤ u.length)
-      (hu : ∀ s ∈ u, match s with | Symbol.nonterminal _ => True | _ => False) :
+      (hu : ∀ s ∈ u, match s with | .nonterminal _ => True | _ => False) :
       Wellformed ⟨n, u⟩
 
 lemma only_nonterminals {u : List (Symbol T N)}
-    (hu : ∀ s ∈ u, match s with | Symbol.nonterminal _ => True | _ => False) :
-    ∃ v : List N, v.map Symbol.nonterminal = u := by
+    (hu : ∀ s ∈ u, match s with | .nonterminal _ => True | _ => False) :
+    ∃ v : List N, v.map .nonterminal = u := by
   induction u with
   | nil => use []; rfl
   | cons a _ ih =>
@@ -62,7 +62,7 @@ lemma only_nonterminals {u : List (Symbol T N)}
 
 lemma Wellformed.mem_nonterminal {r : ContextFreeRule T N} (hr : r.Wellformed)
     (i : Fin r.output.length) (h2 : 2 ≤ r.output.length) :
-    ∃ n, r.output[i] = Symbol.nonterminal n := by
+    ∃ n, r.output[i] = .nonterminal n := by
   induction hr with
   | terminal => simp at h2
   | nonterminals u _ hu =>
@@ -71,17 +71,17 @@ lemma Wellformed.mem_nonterminal {r : ContextFreeRule T N} (hr : r.Wellformed)
     aesop
 
 lemma Wellformed.cases {r : ContextFreeRule T N} (hr : r.Wellformed) :
-    (∃ t : T, r.output = [Symbol.terminal t]) ∨
+    (∃ t : T, r.output = [.terminal t]) ∨
     (∃ (n₁ n₂ : N) (u : List N),
-      r.output = Symbol.nonterminal n₁ :: Symbol.nonterminal n₂ :: u.map Symbol.nonterminal) := by
+      r.output = .nonterminal n₁ :: .nonterminal n₂ :: u.map .nonterminal) := by
   induction hr with
   | terminal t => left; use t
   | nonterminals u _ hu =>
     match u with
     | [] => contradiction
     | [_] => contradiction
-    | .terminal t :: _ :: _ => specialize hu (Symbol.terminal t); simp at hu
-    | _ :: .terminal t :: _ => specialize hu (Symbol.terminal t); simp at hu
+    | .terminal t :: _ :: _ => specialize hu (.terminal t); simp at hu
+    | _ :: .terminal t :: _ => specialize hu (.terminal t); simp at hu
     | .nonterminal n₁ :: .nonterminal n₂ :: u =>
       simp only [List.mem_cons, forall_eq_or_imp, true_and] at hu
       obtain ⟨u', huu⟩ := only_nonterminals hu
@@ -105,24 +105,24 @@ variable {g : ContextFreeGrammar.{uN, uT} T}
 
 /-- Intuitive embedding of symbols of the original grammar into symbols of the new grammar's type -/
 def embedSymbol : Symbol T g.NT → Symbol T g.NT'
-  | .terminal t => Symbol.terminal t
-  | .nonterminal n => Symbol.nonterminal (Sum.inl n)
+  | .terminal t => .terminal t
+  | .nonterminal n => .nonterminal (.inl n)
 
 lemma embedSymbol_nonterminal {n : g.NT} :
-    embedSymbol (Symbol.nonterminal n) = Symbol.nonterminal (Sum.inl n) := by rfl
+    embedSymbol (.nonterminal n) = .nonterminal (.inl n) := by rfl
 
 lemma embedSymbol_terminal {t : T} :
-    embedSymbol (Symbol.terminal t) = (.terminal t : Symbol T g.NT') := by rfl
+    embedSymbol (.terminal t) = (.terminal t : Symbol T g.NT') := by rfl
 
 /-- Intuitive embedding of strings of the original grammar into strings of the new grammar's type -/
 abbrev embedString (u : List (Symbol T g.NT)) : List (Symbol T g.NT') := u.map embedSymbol
 
 lemma embedString_nonterminal {n : g.NT} :
-    embedString [Symbol.nonterminal n] = [Symbol.nonterminal (Sum.inl n)] :=
+    embedString [.nonterminal n] = [.nonterminal (.inl n)] :=
   rfl
 
 lemma embedString_terminals {u : List T} :
-    embedString (u.map Symbol.terminal) = (u.map .terminal : List (Symbol T g.NT')) := by
+    embedString (u.map .terminal) = (u.map .terminal : List (Symbol T g.NT')) := by
   induction u with
   | nil => rfl
   | cons _ _ ih =>
@@ -135,9 +135,9 @@ lemma embedString_append {u v : List (Symbol T g.NT)} :
 
 /-- Projection from symbols of the new grammars type into symbols of the original grammar -/
 def projectSymbol : Symbol T g.NT' → List (Symbol T g.NT)
-  | .terminal t => [Symbol.terminal t]
-  | .nonterminal (Sum.inl n) => [Symbol.nonterminal n]
-  | .nonterminal (Sum.inr ⟨r, ⟨i, _⟩⟩) => List.drop (r.output.length - 2 - i) r.output
+  | .terminal t => [.terminal t]
+  | .nonterminal (.inl n) => [.nonterminal n]
+  | .nonterminal (.inr ⟨r, ⟨i, _⟩⟩) => List.drop (r.output.length - 2 - i) r.output
 
 /-- Projection from strings of the new grammars type into strings of the original grammar -/
 abbrev projectString (u : List (Symbol T g.NT')) : List (Symbol T g.NT) :=
@@ -160,16 +160,16 @@ lemma projectString_embedString_id {u : List (Symbol T g.NT)} :
     cases d <;> rfl
 
 lemma projectString_nonterminal {n : g.NT} :
-    projectString [Symbol.nonterminal (Sum.inl n)] = [Symbol.nonterminal n] := by
+    projectString [.nonterminal (.inl n)] = [.nonterminal n] := by
   simp [projectString, projectSymbol]
 
 @[simp]
 lemma projectSymbol_terminal {t : T} :
-    projectSymbol (.terminal t : Symbol T g.NT') = [Symbol.terminal t] := by
+    projectSymbol (.terminal t : Symbol T g.NT') = [.terminal t] := by
   simp [projectSymbol]
 
 lemma projectString_terminals {u : List T} :
-    projectString (u.map .terminal : List (Symbol T g.NT')) = u.map Symbol.terminal := by
+    projectString (u.map .terminal : List (Symbol T g.NT')) = u.map .terminal := by
   induction u with
   | nil => rfl
   | cons =>
@@ -193,13 +193,13 @@ def computeRulesRec (r : ContextFreeRule T g.NT) (i : Fin (r.output.length - 2))
   match i with
   | ⟨0, p⟩ => match r.output.get ⟨r.output.length - 2, by omega⟩,
                 r.output.get ⟨r.output.length - 1, by omega⟩ with
-             | Symbol.nonterminal n₁, Symbol.nonterminal n₂ =>
-               [(ChomskyNormalFormRule.node (Sum.inr ⟨r, ⟨0, p⟩⟩) (Sum.inl n₁) (Sum.inl n₂))]
+             | .nonterminal n₁, .nonterminal n₂ =>
+               [(ChomskyNormalFormRule.node (.inr ⟨r, ⟨0, p⟩⟩) (.inl n₁) (.inl n₂))]
              | _, _ => []
   | ⟨n + 1, p⟩ => match r.output.get ⟨r.output.length - 2 - i.val, by omega⟩ with
-                 | Symbol.nonterminal n' =>
-                   (ChomskyNormalFormRule.node (Sum.inr ⟨r, ⟨i.val, by omega⟩⟩) (Sum.inl n')
-                     (Sum.inr ⟨r, ⟨n, by omega⟩⟩))
+                 | .nonterminal n' =>
+                   (ChomskyNormalFormRule.node (.inr ⟨r, ⟨i.val, by omega⟩⟩) (.inl n')
+                     (.inr ⟨r, ⟨n, by omega⟩⟩))
                    :: computeRulesRec r ⟨n, by omega⟩
                  | _ => []
 
@@ -208,13 +208,10 @@ at least 3 nonterminals. In the first two cases we can directly translate them, 
 generate new rules using `compute_rules_rec`. -/
 def computeRules (r : ContextFreeRule T g.NT) : List (ChomskyNormalFormRule T g.NT') :=
   match hr : r.output with
-  | [Symbol.nonterminal n₁, Symbol.nonterminal n₂] =>
-      [ChomskyNormalFormRule.node (Sum.inl r.input) (Sum.inl n₁) (Sum.inl n₂)]
-  | [Symbol.terminal t] =>
-      [ChomskyNormalFormRule.leaf (Sum.inl r.input) t]
-  | Symbol.nonterminal n :: _ :: _ :: _ =>
-      ChomskyNormalFormRule.node (Sum.inl r.input) (Sum.inl n)
-        (Sum.inr ⟨r, ⟨r.output.length - 3, by simp [hr]⟩⟩)
+  | [.nonterminal n₁, .nonterminal n₂] => [.node (.inl r.input) (.inl n₁) (.inl n₂)]
+  | [.terminal t] => [.leaf (.inl r.input) t]
+  | .nonterminal n :: _ :: _ :: _ =>
+      .node (.inl r.input) (.inl n) (.inr ⟨r, ⟨r.output.length - 3, by simp [hr]⟩⟩)
       :: computeRulesRec r ⟨r.output.length - 3, by simp [hr]⟩
   | _ => []
 
@@ -227,14 +224,14 @@ end RestrictLength
 /-- Construct a `ChomskyNormalGrammar` corresponding to the original `ContextFreeGrammar` -/
 noncomputable def restrictLength [DecidableEq T] (g : ContextFreeGrammar.{uN,uT} T)
     [e : DecidableEq g.NT] :=
-  ChomskyNormalFormGrammar.mk g.NT' (Sum.inl g.initial) (restrictLengthRules g.rules.toList)
+  ChomskyNormalFormGrammar.mk g.NT' (.inl g.initial) (restrictLengthRules g.rules.toList)
 
 variable {g : ContextFreeGrammar.{uN, uT} T}
 
 lemma mem_computeRulesRec_projectString_input_eq_output {r : ContextFreeRule T g.NT}
     {i : Fin (r.output.length - 2)} {r' : ChomskyNormalFormRule T g.NT'}
     (hrri : r' ∈ computeRulesRec r i) :
-    projectString r'.output = projectString [Symbol.nonterminal r'.input] := by
+    projectString r'.output = projectString [.nonterminal r'.input] := by
   obtain ⟨m, _⟩ := i
   induction m with
   | zero =>
@@ -269,7 +266,7 @@ lemma mem_computeRulesRec_projectString_input_eq_output {r : ContextFreeRule T g
 
 lemma left_not_mem_computeRulesRec {n : g.NT} {r : ContextFreeRule T g.NT}
     {r' : ChomskyNormalFormRule T g.NT'} {i : Fin (r.output.length - 2)}
-    (hrn : r'.input = Sum.inl n) :
+    (hrn : r'.input = .inl n) :
     r' ∉ computeRulesRec r i := by
   obtain ⟨m, _⟩ := i
   induction m with
@@ -293,7 +290,7 @@ lemma left_not_mem_computeRulesRec {n : g.NT} {r : ContextFreeRule T g.NT}
 
 lemma mem_computRules_right_length {n : Σ r : ContextFreeRule T g.NT, Fin (r.output.length - 2)}
     {r : ContextFreeRule T g.NT} {r' : ChomskyNormalFormRule T g.NT'} (hrr : r' ∈ computeRules r)
-    (hrn : r'.input = Sum.inr n) :
+    (hrn : r'.input = .inr n) :
     3 ≤ r.output.length := by
   unfold computeRules at hrr
   split at hrr <;> try rw [List.mem_singleton] at hrr
@@ -305,7 +302,7 @@ lemma mem_computRules_right_length {n : Σ r : ContextFreeRule T g.NT, Fin (r.ou
 lemma mem_computeRules_right_mem_computeRulesRec
     {n : Σ r : ContextFreeRule T g.NT, Fin (r.output.length - 2)} {r : ContextFreeRule T g.NT}
     {r' : ChomskyNormalFormRule T g.NT'} (hrₒ : r.output.length - 3 < r.output.length - 2)
-    (hrr : r' ∈ computeRules r) (hrn : r'.input = Sum.inr n) :
+    (hrr : r' ∈ computeRules r) (hrn : r'.input = .inr n) :
     r' ∈ computeRulesRec r ⟨r.output.length - 3, hrₒ⟩ := by
   unfold computeRules at hrr
   split at hrr <;> simp at hrr
@@ -317,7 +314,7 @@ lemma mem_computeRules_right_mem_computeRulesRec
 
 lemma mem_computeRules_left {n : g.NT} {r : ContextFreeRule T g.NT}
     {r' : ChomskyNormalFormRule T g.NT'}
-    (hrr : r' ∈ computeRules r) (hrn : r'.input = Sum.inl n) :
+    (hrr : r' ∈ computeRules r) (hrn : r'.input = .inl n) :
     projectString r'.output = r.output ∧ n = r.input := by
   unfold computeRules at hrr
   split at hrr
@@ -388,7 +385,7 @@ lemma computeRulesRec_derives [DecidableEq T] [DecidableEq g.NT] {r : ContextFre
     {i : Fin (r.output.length - 2)} {n : g.NT'} {x : List (ChomskyNormalFormRule T g.NT')}
     (hrix : computeRulesRec r i ⊆ x) (hr : r.Wellformed) :
     (ChomskyNormalFormGrammar.mk g.NT' n x.toFinset).Derives
-      [Symbol.nonterminal (Sum.inr ⟨r, i⟩)]
+      [.nonterminal (.inr ⟨r, i⟩)]
       (embedString (List.drop (r.output.length - 2 - i) r.output)) := by
   obtain ⟨n, p⟩ := i
   induction n with
@@ -399,7 +396,7 @@ lemma computeRulesRec_derives [DecidableEq T] [DecidableEq g.NT] {r : ContextFre
     · rename_i n₁ n₂ hrn₁ hrn₂
       have heq :
           (r.output.map embedSymbol).drop (r.output.length - 2) =
-          embedString [Symbol.nonterminal n₁, Symbol.nonterminal n₂] := by
+          embedString [.nonterminal n₁, .nonterminal n₂] := by
         have hrₒ : r.output.length - 2 + 1 + 1 = r.output.length := by omega
         rw [← List.map_drop, ← List.getElem_cons_drop_succ_eq_drop,
           ← List.getElem_cons_drop_succ_eq_drop]
@@ -450,7 +447,7 @@ lemma computeRules_derives_embedString [DecidableEq T] [DecidableEq g.NT]
     {r : ContextFreeRule T g.NT} {n : g.NT'} {x : List (ChomskyNormalFormRule T g.NT')}
     (hrx : computeRules r ⊆ x) (hr : r.Wellformed) :
     (ChomskyNormalFormGrammar.mk g.NT' n x.toFinset).Derives
-      [Symbol.nonterminal (Sum.inl r.input)]
+      [.nonterminal (.inl r.input)]
       (embedString r.output) := by
   unfold computeRules at hrx
   split at hrx <;> rename_i hrn
@@ -471,7 +468,7 @@ lemma computeRules_derives_embedString [DecidableEq T] [DecidableEq g.NT]
     rw [List.cons_subset] at hrx
     obtain ⟨hx₁, hx₂⟩ := hrx
     apply ChomskyNormalFormGrammar.Produces.trans_derives
-    · refine ⟨_, ⟨by (rwa [List.mem_toFinset]), .input_output⟩⟩
+    · exact ⟨_, ⟨by (rwa [List.mem_toFinset]), .input_output⟩⟩
     · nth_rewrite 4 [hrn]
       simp only [ChomskyNormalFormRule.output, List.map_cons]
       rw [← List.singleton_append, ← (@List.singleton_append _ (embedSymbol _)),
