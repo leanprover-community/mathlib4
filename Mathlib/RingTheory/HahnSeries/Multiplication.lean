@@ -342,16 +342,18 @@ theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x 
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
     [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
     {y : HahnModule Γ' R V} :
-    x.orderTop +ᵥ ((of R).symm y).orderTop ≤ ((of R).symm (x • y)).orderTop := by
+    x.orderTop +ᵥ VAddTop.of Γ' ((of R).symm y).orderTop ≤
+      VAddTop.of Γ' ((of R).symm (x • y)).orderTop := by
   by_cases hx : x = 0; · simp_all
   by_cases hy : y = 0; · simp_all
   have hhy : ((of R).symm y) ≠ 0 := hy
-  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← WithTop.coe_VAdd,
+  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← VAddTop.coe_VAdd,
       ← Set.IsWF.min_vadd]
   by_cases hxy : (of R).symm (x • y) = 0
   · rw [hxy, HahnSeries.orderTop_zero]
     exact OrderTop.le_top (α := WithTop Γ') _
-  · rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
+  · rw [HahnSeries.orderTop_of_ne hxy, VAddTop.le_iff, Equiv.symm_apply_apply,
+      Equiv.symm_apply_apply, WithTop.coe_le_coe]
     exact Set.IsWF.min_le_min_of_subset support_smul_subset_vadd_support
 
 theorem coeff_smul_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
