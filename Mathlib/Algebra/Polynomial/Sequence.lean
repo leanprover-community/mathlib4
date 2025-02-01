@@ -53,7 +53,7 @@ theorem degree_smul_of_ne_zero
     suffices hk : k = 0 by simp_all
     have h := coeff_eq_zero_of_natDegree_lt <| natDegree_lt_natDegree hkp hdeg
     simp only [coeff_smul, coeff_natDegree, smul_eq_mul, mul_eq_zero, leadingCoeff_eq_zero] at h
-    exact h.resolve_right <| right_ne_zero_of_smul hkp
+    exact h.resolve_right nezero
 
 variable (R : Type u)
 
@@ -99,8 +99,19 @@ lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
 lemma natDegree_ne {i j : ℕ} (h : i ≠ j) : (S i).natDegree ≠ (S j).natDegree := by
   simp [S.natDegree_eq i, S.natDegree_eq j, h]
 
+/-- . -/
+lemma degree_lt {i j : ℕ} (h : i < j) : (S i).degree < j := by
+  simp [S.degree_eq i, S.degree_eq j, h]
+
+/-- . -/
+lemma natDegree_lt {i j : ℕ} (h : i < j) : (S i).natDegree < j := by
+  simp [S.natDegree_eq i, S.natDegree_eq j, h]
+
 /-- No two elements in the sequence have the same degree. -/
 lemma degree_inj : Function.Injective <| degree ∘ S := fun _ _  ↦ by simp
+
+/-- No two elements in the sequence have the same natural degree. -/
+lemma natDegree_inj : Function.Injective <| natDegree ∘ S := fun _ _  ↦ by simp
 
 end Semiring
 
