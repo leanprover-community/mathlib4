@@ -425,6 +425,16 @@ theorem sum_properPower_vonMangoldt_div_id_isBigO_one :
   have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
   positivity
 
+theorem tmp_eventually {f g : ℕ → ℝ} (hfg : f =O[atTop] g) (l : Filter ℕ) (h : ∀ᶠ n in l, g n = 0 → f n = 0) :
+    f =O[l] g := by
+  obtain ⟨C, hC_pos, hC⟩ := Asymptotics.bound_of_isBigO_nat_atTop hfg
+  refine isBigO_iff.mpr ?_
+  use C
+  filter_upwards [h] with x h
+  by_cases hf : f x = 0
+  · simp [hf, hC_pos]
+  apply hC
+  exact fun a ↦ hf (h a)
 
 theorem tmp {f g : ℕ → ℝ} (hfg : f =O[atTop] g) (h : ∀ n, g n = 0 → f n = 0) : f =O[⊤] g := by
   obtain ⟨C, hC_pos, hC⟩ := Asymptotics.bound_of_isBigO_nat_atTop hfg
@@ -781,6 +791,7 @@ like `positivity` and `field_simp` can't work with this very well.
 -/
 
 
+-- TODO : replace 1 / p with p⁻¹
 theorem mertens_second (a : ℝ) (ha : 1 < a) (ha' : a < 2)
 : (fun t : ℝ ↦ (∑ p ∈ primesBelow (⌊t⌋₊+1), 1 / (p : ℝ)) - (Real.log (Real.log t) + mertens₂Const))
     =O[𝓟 (Set.Ioi a)] (fun n ↦ (Real.log n)⁻¹) := by
@@ -957,7 +968,7 @@ theorem tsum_inv_pow_div_id_le (p : ℕ) (hp : 1 < p)  :
     field_simp [show (p : ℝ) ≠ 0 by positivity]
     ring
 
-theorem hassum_aux :
+theorem summable_aux :
     Summable (fun n : ℕ ↦ (n * (n-1):ℝ)⁻¹) := by
   apply summable_of_isBigO_nat (g := fun n:ℕ ↦ n ^ (-2:ℝ))
   · simp only [summable_nat_rpow, neg_lt_neg_iff, one_lt_ofNat]
@@ -965,7 +976,7 @@ theorem hassum_aux :
 
 theorem summable_thing :
   Summable (fun p : ℕ ↦ ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2)) := by
-  apply Summable.of_norm_bounded_eventually_nat _ hassum_aux
+  apply Summable.of_norm_bounded_eventually_nat _ summable_aux
   filter_upwards [eventually_gt_atTop 1] with p hp
   rw [norm_eq_abs, abs_of_nonneg]
   · exact tsum_inv_pow_div_id_le p hp
@@ -973,10 +984,12 @@ theorem summable_thing :
     intro n
     positivity
 
+
 theorem summable_thing' :
   Summable (fun p : ℕ ↦ if p.Prime then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0) := by
-  -- apply Summable.comp_injective summable_thing Primes.coe_nat_injective
-  sorry
+  simp_rw (singlePass := true)[← Set.mem_setOf (p := Nat.Prime), ← Set.indicator_apply {n : ℕ | n.Prime} (fun p ↦ ∑' (n : ℕ), (↑p:ℝ)⁻¹ ^ (n + 2) / (↑n + 2))]
+  apply Summable.indicator
+  exact summable_thing
 
 -- theorem hasSum_primes_iff (f : ℕ → ℝ) (x : ℝ):
 --   HasSum (fun p : Primes ↦ f p) x ↔ HasSum (({n | n.Prime}.indicator f)) x := by
@@ -996,7 +1009,7 @@ theorem summable_thing' :
 --   --evil
 --   rfl
 
-example (k : ℕ):
+theorem sum_primesBelow_tsum_eq_tsum_sub_tsum (k : ℕ):
     ∑ p in primesBelow (k+1), ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) =
       (∑' p : ℕ, if p.Prime then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0)
       - (∑' p : ℕ, if (p + k + 1).Prime then ∑' n : ℕ, (↑(p+k+1):ℝ)⁻¹^(n+2) / (n+2) else 0) := by
@@ -1040,27 +1053,175 @@ theorem tsum_mul_succ_inv (k : ℕ) (hk : 0 < k) : (∑' n : ℕ, (↑(n+k+1) * 
     apply tendsto_natCast_atTop_atTop.comp
     exact tendsto_add_atTop_nat k
 
-example (a : ℝ) : (fun k ↦ ∑' p : ℕ, if (p + k + 1).Prime then ∑' n : ℕ, (↑(p+k+1):ℝ)⁻¹^(n+2) / (n+2) else 0)
-    =O[atTop] fun t : ℕ ↦ (t:ℝ)⁻¹ := by
+private theorem tailSum_isBigO_inv_nat : (fun k ↦ ∑' p : ℕ, if (p + k + 1).Prime then ∑' n : ℕ, (↑(p+k+1):ℝ)⁻¹^(n+2) / (n+2) else 0)
+    =O[atTop] fun n : ℕ ↦ (n:ℝ)⁻¹ := by
+  calc
+    _ =O[atTop] fun k : ℕ ↦ (∑' p : ℕ, (↑(p + k + 1) * (↑(p + k + 1) - 1))⁻¹ : ℝ) := by
+      apply Filter.Eventually.isBigO
+      filter_upwards [eventually_gt_atTop 1] with k hk
+      rw [norm_eq_abs, abs_of_nonneg ?nonneg]
+      case nonneg =>
+        -- all because positivity doesn't support tsum_nonneg / intros. This seems like an easy extension to write. See Mathlib/Tactic/Positivity/Finset.lean
+        -- ditto with `ite`.
+        apply tsum_nonneg
+        intros
+        split_ifs
+        · apply tsum_nonneg
+          intros
+          positivity
+        · rfl
+      apply tsum_le_tsum
+      · intro p
+        split_ifs
+        · exact tsum_inv_pow_div_id_le (p+k+1) (by omega)
+        · push_cast
+          ring_nf
+          positivity
+      · apply (summable_nat_add_iff (k+1)).mpr summable_thing'
+      · apply (summable_nat_add_iff (k+1)).mpr summable_aux
+    _ =ᶠ[atTop] _ := by
+      filter_upwards [eventually_gt_atTop 0] with k hk
+      apply tsum_mul_succ_inv k hk
 
+private theorem tailSum_isBigO_inv_nat_Ici : (fun k ↦ ∑' p : ℕ, if (p + k + 1).Prime then ∑' n : ℕ, (↑(p+k+1):ℝ)⁻¹^(n+2) / (n+2) else 0)
+    =O[𝓟 <| Set.Ici 1] fun n : ℕ ↦ (n:ℝ)⁻¹ := by
+  apply tmp_eventually tailSum_isBigO_inv_nat
+  simp only [inv_eq_zero, cast_eq_zero, cast_add, cast_one, inv_pow, eventually_principal,
+    Set.mem_Ici]
+  intros
+  omega
 
-  sorry
-def mertens₃Const : ℝ := sorry
+theorem tendsto_floor_Ici_Ici (n : ℕ) : Tendsto (Nat.floor : ℝ → ℕ) (𝓟 <| Set.Ici n) (𝓟 <| Set.Ici n) := by
+  simp +contextual [Nat.le_floor]
 
-theorem mertens_third_log_aux (a : ℝ) (ha : 1 < a):
+private theorem tailSum_isBigO_inv : (fun x:ℝ ↦ ∑' p : ℕ, if (p + ⌊x⌋₊ + 1).Prime then ∑' n : ℕ, (↑(p+⌊x⌋₊+1):ℝ)⁻¹^(n+2) / (n+2) else 0)
+    =O[𝓟 <| Set.Ici 1] fun x : ℝ ↦ (⌊x⌋₊:ℝ)⁻¹ := by
+  apply tailSum_isBigO_inv_nat_Ici.comp_tendsto (mod_cast (tendsto_floor_Ici_Ici 1))
+
+theorem le_two_mul_floor (x : ℝ) : x / ↑⌊x⌋₊ ≤ 2 := by
+  by_cases hx' : x < 1
+  · rw [Nat.floor_eq_zero.mpr hx']
+    · simp
+  rw [div_le_iff₀ (by rw_mod_cast [Nat.floor_pos]; linarith)]
+  by_cases h : 2 ≤ x
+  · have := Nat.lt_floor_add_one x
+    have := Nat.floor_le (show 0 ≤ x by linarith)
+    linarith
+  · have : ⌊x⌋₊ = 1 := by
+      rw [Nat.floor_eq_iff]
+      · constructor <;> norm_num <;> linarith
+      linarith
+    simp [this]
+    linarith
+
+theorem floor_inv_isBigO_inv : (fun x : ℝ ↦ (⌊x⌋₊ : ℝ)⁻¹) =O[⊤] (fun x : ℝ ↦ x⁻¹) := by
+  rw [Asymptotics.isBigO_iff]
+  use 2
+  simp only [norm_inv, RCLike.norm_natCast, norm_eq_abs, eventually_top]
+  intro x
+  by_cases hx' : x < 1
+  · rw [Nat.floor_eq_zero.mpr hx']
+    · simp
+  rw [abs_of_nonneg (by linarith), le_mul_inv_iff₀ (by linarith), mul_comm,
+    ← div_eq_mul_inv]
+  exact le_two_mul_floor x
+
+  -- simp only [floor_nat, tendsto_principal, id_eq, Set.mem_Ici, eventually_principal, imp_self,
+  --   implies_true]
+
+-- example (a : ℝ) (ha : 1 < a) :
+
+theorem mertens3_sub_mertens2_isBigO (a : ℝ) (ha : 1 < a) : (fun x ↦ (∑ p in primesBelow (⌊x⌋₊ + 1), -Real.log (1 - (p:ℝ)⁻¹)
+  - ∑ p in primesBelow (⌊x⌋₊ + 1), (p:ℝ)⁻¹)
+  - (∑' p : ℕ, if p.Prime then ∑' n : ℕ, (↑(p):ℝ)⁻¹^(n+2) / (n+2) else 0))
+    =O[𝓟 <| Set.Ioi a]  (fun x ↦ x⁻¹) := by
+  simp_rw [sum_inv_sub_sum_log, sum_primesBelow_tsum_eq_tsum_sub_tsum]
+  apply (tailSum_isBigO_inv.neg_left.mono _).trans (floor_inv_isBigO_inv.mono le_top) |>.congr'
+  · filter_upwards with x
+    ring
+  · rfl
+  · simp [ha.le]
+
+noncomputable def mertens₃Const : ℝ := (∑' p : ℕ, if p.Prime then ∑' n : ℕ, (p:ℝ)⁻¹^(n+2) / (n+2) else 0) + mertens₂Const
+
+theorem inv_isBigO_inv_log_Ioi (a : ℝ) (ha : 1 < a) :
+  (fun x : ℝ ↦ x⁻¹) =O[𝓟 (Set.Ioi a)] (fun x : ℝ ↦ (Real.log x)⁻¹) := by
+  rw [isBigO_iff]
+  use 1
+  simp only [norm_inv, norm_eq_abs, one_mul, eventually_principal, Set.mem_Ioi]
+  intro x hx
+  have hxpos : 0 < x := by linarith
+  rw [abs_of_nonneg hxpos.le, abs_of_nonneg (Real.log_nonneg (ha.trans hx).le), inv_le_inv₀]
+  · apply Real.log_le_self hxpos.le
+  · linarith
+  · apply Real.log_pos (ha.trans hx)
+
+theorem mertens_third_log_aux (a : ℝ) (ha : 1 < a) (ha' : a < 2) :
     (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), -Real.log (1 - (p:ℝ)⁻¹) -
-      (Real.log (Real.log x) - mertens₃Const))
+      (Real.log (Real.log x) + mertens₃Const))
       =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
-  sorry
+  have h₀ := mertens3_sub_mertens2_isBigO a ha |>.trans <| inv_isBigO_inv_log_Ioi a ha
+  have h₁ := mertens_second a ha ha'
+  simp_rw [sub_sub] at h₀
+  rw [mertens₃Const]
+  -- have h₂ {a b c d e : ℝ} : a - (b + c) + (b - (d + e)) = a - (d + (c + e)) := by ring
+  apply (h₀.add h₁).congr
+  · simp_rw [one_div]
+    intro x
+    ring
+  · intro
+    rfl
 
-theorem mertens_third_log (a : ℝ) (ha : 1 < a):
+theorem mertens_third_log (a : ℝ) (ha : 1 < a) (ha' : a < 2):
   (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), Real.log (1 - (p:ℝ)⁻¹) -
-    (-Real.log (Real.log x) + mertens₃Const))
+    (-Real.log (Real.log x) - mertens₃Const))
     =O[𝓟 (Set.Ioi a)] (fun x ↦ (Real.log x)⁻¹) := by
-  convert (mertens_third_log_aux a ha).neg_left using 2 with x
+  convert (mertens_third_log_aux a ha ha').neg_left using 2 with x
   simp only [sum_neg_distrib, neg_sub, sub_neg_eq_add]
   ring
 
+theorem mertens_third_log_isLittleO_one :
+  (fun x : ℝ ↦ ∑ p in primesBelow (⌊x⌋₊ + 1), Real.log (1 - (p:ℝ)⁻¹) -
+  (-Real.log (Real.log x) - mertens₃Const))
+    =o[atTop] (fun _ ↦ (1:ℝ)) := by
+  have h₀ : (fun x ↦ (Real.log x)⁻¹) =o[atTop] (fun x ↦ (1:ℝ)) := by
+    simp_rw [Asymptotics.isLittleO_one_iff]
+    apply tendsto_inv_atTop_zero.comp  tendsto_log_atTop
+  apply (mertens_third_log (3/2) (by norm_num) (by norm_num)).mono ?_ |>.trans_isLittleO h₀
+  intro s hs
+  have := Filter.Ioi_mem_atTop (3/2:ℝ)
+  apply Filter.mem_of_superset this
+  simpa [this]
+
+
+-- Asymptotics.isEquivalent_iff_tendsto_one
+
+theorem mertens_third :
+  IsEquivalent atTop (fun x ↦ ∏ p in primesBelow (⌊x⌋₊ + 1), (1 - (p : ℝ)⁻¹)) (fun x ↦ exp (- mertens₃Const) * (Real.log x)⁻¹) := by
+  rw [Asymptotics.isEquivalent_iff_tendsto_one]
+  · have h₀ := mertens_third_log_isLittleO_one
+    rw [Asymptotics.isLittleO_one_iff] at h₀
+    have h₁ := tendsto_exp_nhds_zero_nhds_one.comp h₀
+    apply h₁.congr'
+    filter_upwards [eventually_gt_atTop 1] with x hx
+    simp
+    rw [exp_sub, sub_eq_add_neg, exp_sum]
+    congr 1
+    · apply prod_congr rfl
+      intro p hp
+      simp only [mem_primesBelow] at hp
+      have hp' : 1 < (p:ℝ) := mod_cast hp.2.one_lt
+      rw [exp_log]
+      rw [sub_pos, inv_lt_one₀ (by linarith)]
+      exact hp'
+    · rw [add_comm, exp_add, exp_neg (Real.log _), exp_log]
+      apply Real.log_pos hx
+  · filter_upwards [eventually_gt_atTop 100] with x hx
+    have : 0 < Real.log x := Real.log_pos (by linarith)
+    positivity
+
+
+#print axioms mertens_third
 
 
 end MertensThird
