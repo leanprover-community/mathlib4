@@ -385,9 +385,9 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₃⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₃
       refine ⟨Z, w₁.s ≫ u, u, ?_, ?_, ?_⟩
-      · dsimp
+      · dsimp [p₁]
         simp only [assoc]
-      · dsimp
+      · dsimp [p₁]
         simp only [assoc, fac₃]
       · dsimp
         simp only [assoc]
@@ -401,9 +401,9 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₄
       refine ⟨Z, q.f ≫ u, q.s ≫ u, ?_, ?_, ?_⟩
-      · simp only [assoc, reassoc_of% fac₃]
+      · simp only [p₁, p₂, assoc, reassoc_of% fac₃]
       · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
-      · simp only [assoc, ← reassoc_of% fac₃]
+      · simp only [p₁, p₂, assoc, ← reassoc_of% fac₃]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs
           (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ q.hs hu)))
     · have eq : a₂.s ≫ z₂.f ≫ w₂.s = a₂.s ≫ t₂ ≫ w₂.f := by
@@ -411,11 +411,11 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₂.hs eq
       simp only [assoc] at fac₄
       refine ⟨Z, u, w₂.s ≫ u, ?_, ?_, ?_⟩
-      · dsimp
+      · dsimp [p₁, p₂]
         simp only [assoc]
-      · dsimp
+      · dsimp [p₁, p₂]
         simp only [assoc, fac₄]
-      · dsimp
+      · dsimp [p₁, p₂]
         simp only [assoc]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs (W.comp_mem _ _ w₂.hs hu))
 

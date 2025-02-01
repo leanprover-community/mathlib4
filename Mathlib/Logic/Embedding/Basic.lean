@@ -15,8 +15,6 @@ universe u v w x
 
 namespace Function
 
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/

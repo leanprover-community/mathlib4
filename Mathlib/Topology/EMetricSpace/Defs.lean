@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -24,9 +25,8 @@ theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y`
 to `EMetricSpace` at the end.
 -/
 
-assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists IsUniformEmbedding
-assert_not_exists TendstoUniformlyOnFilter
+
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
 
 open Filter Set Topology
 
@@ -213,8 +213,8 @@ theorem uniformity_basis_edist_inv_nat :
 
 theorem uniformity_basis_edist_inv_two_pow :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | edist p.1 p.2 < 2⁻¹ ^ n } :=
-  EMetric.mk_uniformity_basis (fun _ _ => ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.two_ne_top) _)
-    fun _ε ε₀ =>
+  EMetric.mk_uniformity_basis (fun _ _ ↦ ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.ofNat_ne_top) _)
+    fun _ε ε₀ ↦
     let ⟨n, hn⟩ := ENNReal.exists_inv_two_pow_lt (ne_of_gt ε₀)
     ⟨n, trivial, le_of_lt hn⟩
 
@@ -275,8 +275,15 @@ instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricS
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
-the original pseudodistance, by definition -/
+the original pseudodistance, by definition. -/
 theorem Subtype.edist_eq {p : α → Prop} (x y : Subtype p) : edist x y = edist (x : α) y := rfl
+
+/-- The extended pseudodistance on a subtype of a pseudoemetric space is the restriction of
+the original pseudodistance, by definition. -/
+@[simp]
+theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
+    edist (⟨x, hx⟩ : Subtype p) ⟨y, hy⟩ = edist x y :=
+  rfl
 
 namespace MulOpposite
 
@@ -496,7 +503,7 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
 
 section Compact
 
--- Porting note (#11215): TODO: generalize to a uniform space with metrizable uniformity
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
@@ -589,7 +596,7 @@ theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
-  eq_of_edist_eq_zero (eq_of_le_of_forall_le_of_dense bot_le h)
+  eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
@@ -656,11 +663,11 @@ theorem edist_ofAdd (a b : X) : edist (ofAdd a) (ofAdd b) = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toMul (a b : Additive X) : edist (toMul a) (toMul b) = edist a b :=
+theorem edist_toMul (a b : Additive X) : edist a.toMul b.toMul = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist a b :=
+theorem edist_toAdd (a b : Multiplicative X) : edist a.toAdd b.toAdd = edist a b :=
   rfl
 
 end

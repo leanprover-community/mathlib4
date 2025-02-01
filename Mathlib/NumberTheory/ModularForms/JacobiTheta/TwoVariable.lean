@@ -3,9 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
+import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
+import Mathlib.Data.Complex.FiniteDimensional
 
 /-!
 # The two-variable Jacobi theta function
@@ -325,7 +326,7 @@ lemma continuousAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
 /-- Differentiability of `Θ z τ` in `z`, for fixed `τ`. -/
 lemma differentiableAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ (jacobiTheta₂ · τ) z :=
- ((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prod_mk_left z τ)).differentiableAt
+ ((hasFDerivAt_jacobiTheta₂ z hτ).comp (𝕜 := ℂ) z (hasFDerivAt_prod_mk_left z τ) :).differentiableAt
 
 /-- Differentiability of `Θ z τ` in `τ`, for fixed `z`. -/
 lemma differentiableAt_jacobiTheta₂_snd (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -401,6 +402,7 @@ lemma jacobiTheta₂_add_left' (z τ : ℂ) :
   ring_nf
 
 /-- The two-variable Jacobi theta function is even in `z`. -/
+@[simp]
 lemma jacobiTheta₂_neg_left (z τ : ℂ) : jacobiTheta₂ (-z) τ = jacobiTheta₂ z τ := by
   conv_lhs => rw [jacobiTheta₂, ← Equiv.tsum_eq (Equiv.neg ℤ)]
   refine tsum_congr (fun n ↦ ?_)

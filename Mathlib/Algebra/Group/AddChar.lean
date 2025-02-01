@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Ring
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -115,7 +117,7 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 -- this instance was a bad idea and conflicted with `instFunLike` above
 
 @[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
-  ψ.toMonoidHom a = ψ (Multiplicative.toAdd a) :=
+  ψ.toMonoidHom a = ψ a.toAdd :=
   rfl
 
 /-- An additive character maps multiples by natural numbers to powers. -/
@@ -142,7 +144,7 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
     ⇑(toMonoidHomEquiv.symm ψ) = ψ ∘ Multiplicative.ofAdd := rfl
 
 @[simp] lemma toMonoidHomEquiv_apply (ψ : AddChar A M) (a : Multiplicative A) :
-    toMonoidHomEquiv ψ a = ψ (Multiplicative.toAdd a) := rfl
+    toMonoidHomEquiv ψ a = ψ a.toAdd := rfl
 
 @[simp] lemma toMonoidHomEquiv_symm_apply (ψ : Multiplicative A →* M) (a : A) :
     toMonoidHomEquiv.symm ψ a = ψ (Multiplicative.ofAdd a) := rfl
@@ -180,7 +182,7 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
     toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
 
 @[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
-    toAddMonoidHomEquiv.symm ψ a = Additive.toMul (ψ a) := rfl
+    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul  := rfl
 
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
@@ -253,7 +255,7 @@ lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 lemma ne_zero_iff : ψ ≠ 0 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-@[deprecated (since := "2024-06-06")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-06")]
 def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
 
 set_option linter.deprecated false in
@@ -281,11 +283,11 @@ instance instAddCommMonoid : AddCommMonoid (AddChar A M) := Additive.addCommMono
 @[simp, norm_cast] lemma coe_nsmul (n : ℕ) (ψ : AddChar A M) : ⇑(n • ψ) = ψ ^ n := rfl
 
 @[simp, norm_cast]
-lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i in s, ψ i = ∏ i in s, ⇑(ψ i) := by
+lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
 @[simp, norm_cast]
-lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i in s, ψ i = ∏ i in s, ⇑(ψ i) := by
+lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
 @[simp] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
@@ -294,14 +296,14 @@ lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i in s, ψ i = ∏
 @[simp] lemma nsmul_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (n • ψ) a = (ψ a) ^ n := rfl
 
 lemma prod_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
-    (∏ i in s, ψ i) a = ∏ i in s, ψ i a := by rw [coe_prod, Finset.prod_apply]
+    (∏ i ∈ s, ψ i) a = ∏ i ∈ s, ψ i a := by rw [coe_prod, Finset.prod_apply]
 
 lemma sum_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
-    (∑ i in s, ψ i) a = ∏ i in s, ψ i a := by rw [coe_sum, Finset.prod_apply]
+    (∑ i ∈ s, ψ i) a = ∏ i ∈ s, ψ i a := by rw [coe_sum, Finset.prod_apply]
 
 lemma mul_eq_add (ψ χ : AddChar A M) : ψ * χ = ψ + χ := rfl
 lemma pow_eq_nsmul (ψ : AddChar A M) (n : ℕ) : ψ ^ n = n • ψ := rfl
-lemma prod_eq_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i in s, ψ i = ∑ i in s, ψ i := rfl
+lemma prod_eq_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∑ i ∈ s, ψ i := rfl
 
 @[simp] lemma toMonoidHomEquiv_add (ψ φ : AddChar A M) :
     toMonoidHomEquiv (ψ + φ) = toMonoidHomEquiv ψ * toMonoidHomEquiv φ := rfl

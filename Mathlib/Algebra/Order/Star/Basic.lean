@@ -160,11 +160,17 @@ alias LE.le.isSelfAdjoint := IsSelfAdjoint.of_nonneg
 lemma LE.le.star_eq {x : R} (hx : 0 ≤ x) : star x = x :=
   hx.isSelfAdjoint.star_eq
 
+@[simp]
 theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
 
+@[simp]
 theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
+
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
+  simpa [ha.star_eq] using star_mul_self_nonneg a
 
 @[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
@@ -294,6 +300,10 @@ lemma one_lt_star_iff {x : R} : 1 < star x ↔ 1 < x := by
 @[simp]
 lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
   simpa using star_lt_star_iff (x := x) (y := 1)
+
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+protected theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a ^ 2 := by
+  simp [sq, ha.mul_self_nonneg]
 
 end Semiring
 

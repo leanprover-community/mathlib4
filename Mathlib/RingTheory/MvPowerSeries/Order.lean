@@ -33,7 +33,7 @@ than the weighted order vanish
 
 - `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only `f = 0`.
 
-- `MvPowerSerie.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
+- `MvPowerSeries.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
 weighted order is at least `n`.
 
 - `MvPowerSeries.weightedOrder_eq_nat_iff`: the weighted order is some integer `n` iff there
@@ -244,7 +244,7 @@ theorem min_weightedOrder_le_add :
 private theorem weightedOrder_add_of_weightedOrder_lt.aux
     (H : f.weightedOrder w < g.weightedOrder w) :
     (f + g).weightedOrder w = f.weightedOrder w := by
-  obtain ⟨n, hn : (n : ℕ∞) = _⟩ := ne_top_iff_exists.mp (ne_top_of_lt H)
+  obtain ⟨n, hn : (n : ℕ∞) = _⟩ := ENat.ne_top_iff_exists.mp (ne_top_of_lt H)
   rw [← hn, weightedOrder_eq_nat]
   obtain ⟨d, hd', hd⟩ := ((weightedOrder_eq_nat w).mp hn.symm).1
   constructor
@@ -314,7 +314,7 @@ theorem coeff_mul_right_one_sub_of_lt_weightedOrder
 theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (d : σ →₀ ℕ)
     (s : Finset ι) (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R) :
     (∀ i ∈ s, (weight w d) < weightedOrder w (g i)) →
-      coeff R d (f * ∏ i in s, (1 - g i)) = coeff R d f := by
+      coeff R d (f * ∏ i ∈ s, (1 - g i)) = coeff R d f := by
   classical
   induction s using Finset.induction_on with
   | empty => simp only [imp_true_iff, Finset.prod_empty, mul_one, eq_self_iff_true]
@@ -400,7 +400,7 @@ theorem order_eq_nat {n : ℕ} :
 
 /-- The order of the monomial `a*X^d` is infinite if `a = 0` and `degree d` otherwise.-/
 theorem order_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
-    order (monomial R d a) = if a = 0 then (⊤ : ℕ∞) else degree d := by
+    order (monomial R d a) = if a = 0 then (⊤ : ℕ∞) else ↑(degree d) := by
   rw [degree_eq_weight_one]
   exact weightedOrder_monomial _
 
@@ -444,7 +444,7 @@ theorem coeff_mul_right_one_sub_of_lt_order (d : σ →₀ ℕ) (h : degree d < 
 
 theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ →₀ ℕ) (s : Finset ι)
     (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R) :
-    (∀ i ∈ s, degree d < order (g i)) → coeff R d (f * ∏ i in s, (1 - g i)) = coeff R d f := by
+    (∀ i ∈ s, degree d < order (g i)) → coeff R d (f * ∏ i ∈ s, (1 - g i)) = coeff R d f := by
   rw [degree_eq_weight_one]
   exact coeff_mul_prod_one_sub_of_lt_weightedOrder _ d s f g
 

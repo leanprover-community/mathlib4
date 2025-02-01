@@ -21,7 +21,7 @@ universe u
 
 open Condensed CondensedSet CategoryTheory CompHaus
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 variable (X : CondensedSet.{u})
 

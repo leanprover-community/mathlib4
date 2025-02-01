@@ -711,7 +711,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
         exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
     apply (norm_sum_le_of_le B' this).trans
     simp_rw [← sum_mul, μ.toBoxAdditive_apply, ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
-    suffices (∑ J in B', μ J).toReal ≤ ε₂ by
+    suffices (∑ J ∈ B', μ J).toReal ≤ ε₂ by
       linarith [mul_le_mul_of_nonneg_right this <| (mul_nonneg_iff_of_pos_left two_pos).2 C0]
     rw [← toReal_ofReal (le_of_lt ε₂0)]
     refine toReal_mono ofReal_ne_top (le_trans ?_ (le_of_lt hU))
@@ -745,7 +745,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
   · obtain ⟨C, hC⟩ := (NormedSpace.isBounded_iff_subset_smul_closedBall ℝ).1
                         (I.isCompact_Icc.image_of_continuousOn hc).isBounded
     use ‖C‖, fun x hx ↦ by
-      simpa only [smul_closedUnitBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
+      simpa only [smul_unitClosedBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
   · refine eventually_of_mem ?_ (fun x hx ↦ hc.continuousWithinAt hx)
     rw [mem_ae_iff, μ.restrict_apply] <;> simp [MeasurableSet.compl_iff.2 I.measurableSet_Icc]
 

@@ -17,9 +17,10 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 ## Main results
 * Ext
 ## TODO
-* `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W` (needs PR#10846).  This means we
-  can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is
-  expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
+* `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`
+  (needs https://github.com/leanprover-community/mathlib4/pull/19062.
+  This means we can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`,
+  where `(X-Y)^n` is expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
@@ -61,7 +62,7 @@ def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
   toFun v := ((of R).symm (A v)).coeff n
   map_add' _ _ := by simp
   map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.smul_coeff]
+    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.coeff_smul]
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
 
@@ -91,6 +92,20 @@ def of_coeff (f : Γ → V →ₗ[R] W)
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
+@[simp]
+theorem coeff_add (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
+  ext
+  simp
+
+@[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
+
+@[simp]
+theorem coeff_smul (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
+  ext
+  simp
+
+@[deprecated (since := "2025-01-31")] alias smul_coeff := coeff_smul
+
 end Coeff
 
 section Products
@@ -112,21 +127,21 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     intro g' hg' hAB
     apply hg'
     simp_rw [hAB]
-    simp_all only [map_zero, HahnSeries.zero_coeff, not_true_eq_false]
+    simp_all only [map_zero, HahnSeries.coeff_zero, not_true_eq_false]
 
 @[simp]
 theorem compHahnSeries_add (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
-  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
-  rw [← HahnSeries.add_coeff]
+  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.coeff_add', Pi.add_apply]
+  rw [← HahnSeries.coeff_add]
 
 @[simp]
 theorem compHahnSeries_smul (r : R) (u : U) :
     compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
-  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply, HahnSeries.smul_coeff]
-  rw [← HahnSeries.smul_coeff]
+  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply, HahnSeries.coeff_smul]
+  rw [← HahnSeries.coeff_smul]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
@@ -136,17 +151,19 @@ def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
     intro u v
     ext g
     simp only [HahnSeries.ofIterate, compHahnSeries_add, Equiv.symm_apply_apply,
-      HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
+      HahnModule.of_symm_add, HahnSeries.coeff_add', Pi.add_apply]
   map_smul' := by
     intro r x
     ext g
-    simp only [HahnSeries.ofIterate, compHahnSeries_smul, HahnSeries.smul_coeff,
+    simp only [HahnSeries.ofIterate, compHahnSeries_smul, HahnSeries.coeff_smul,
       compHahnSeries_coeff, coeff_apply, Equiv.symm_apply_apply, RingHom.id_apply, of_symm_smul]
 
 @[simp]
-theorem comp_coeff (g : Γ' ×ₗ Γ) :
+theorem coeff_comp (g : Γ' ×ₗ Γ) :
     (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
+
+@[deprecated (since := "2025-01-31")] alias comp_coeff := coeff_comp
 
 end Products
 

@@ -86,11 +86,12 @@ theorem hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] 
 attribute [local instance] hasPullback_of_preservesPullback
 
 /-- A functor that preserves pullbacks and binary products also presrves equalizers. -/
-def preservesEqualizersOfPreservesPullbacksAndBinaryProducts [HasBinaryProducts C] [HasPullbacks C]
+lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
+    [HasBinaryProducts C] [HasPullbacks C]
     [PreservesLimitsOfShape (Discrete WalkingPair) G] [PreservesLimitsOfShape WalkingCospan G] :
     PreservesLimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesLimitOfPreservesLimitCone (equalizerConeIsLimit K) <|
+    preservesLimit_of_preserves_limit_cone (equalizerConeIsLimit K) <|
       { lift := fun c => by
           refine pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
           · exact c.π.app WalkingParallelPair.zero
@@ -180,11 +181,11 @@ theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproduct
 attribute [local instance] hasPushout_of_preservesPushout
 
 /-- A functor that preserves pushouts and binary coproducts also presrves coequalizers. -/
-def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoproducts C]
+lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinaryCoproducts C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete WalkingPair) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesColimitOfPreservesColimitCocone (coequalizerCoconeIsColimit K) <|
+    preservesColimit_of_preserves_colimit_cocone (coequalizerCoconeIsColimit K) <|
       { desc := fun c => by
           refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one
