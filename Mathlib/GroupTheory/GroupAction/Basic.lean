@@ -110,7 +110,7 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
 @[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
     fixedPoints G α = .univ := by
-  rw [← Set.top_eq_univ, eq_top_iff]
+  apply Set.eq_univ_of_forall
   intro x hx
   rw [mem_fixedPoints]
   exact fun _ ↦ Subsingleton.elim ..
