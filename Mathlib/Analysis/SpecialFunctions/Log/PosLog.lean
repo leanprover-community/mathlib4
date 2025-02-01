@@ -8,8 +8,9 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 /-!
 # The Positive Part of the Logarithm
 
-This file defines the function `Real.posLog = r ↦ max 0 (log r)`, introduces the notation `log⁺,
-For a finite length-`n` sequence `f i` of reals, it establishes the following standard estimates.
+This file defines the function `Real.posLog = r ↦ max 0 (log r)` and introduces the notation
+`log⁺`. For a finite length-`n` sequence `f i` of reals, it establishes the following standard
+estimates.
 
 - `theorem posLog_prod : log⁺ (∏ i, f i) ≤ ∑ i, log⁺ (f i)`
 
@@ -25,7 +26,7 @@ namespace Real
 /-- Definition: the positive part of the logarithm. -/
 noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
 
-/-- Notation `log⁺` for the real part of the logarithm. -/
+/-- Notation `log⁺` for the positive part of the logarithm. -/
 scoped notation "log⁺" => posLog
 
 /-- Definition of the positive part of the logarithm, formulated as a theorem. -/
@@ -63,7 +64,7 @@ theorem posLog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
   rw [← posLog_abs, ← log_nonpos_iff (abs_nonneg x)]
   simp [posLog]
 
-/-- The function `log⁺` equals `log` outside of in the interval (-1,1). -/
+/-- The function `log⁺` equals `log` outside of the interval (-1,1). -/
 theorem posLog_eq_log {x : ℝ} (hx : 1 ≤ |x|) : log⁺ x = log x := by
   simp only [posLog, sup_eq_right]
   rw [← log_abs]
@@ -75,7 +76,7 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
-/-- The function `log⁺` is monotone in the positive axis. -/
+/-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
   simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
