@@ -344,7 +344,7 @@ theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : Me
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
-        simp
+        simp only [Set.mem_compl_iff, Set.mem_setOf_eq]
         by_cases h₁w : w = z
         · rwa [h₁w]
         · have h₂f := (h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w)
@@ -362,7 +362,7 @@ theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (h₁f : Me
     simp only [Set.mem_compl_iff, Set.mem_singleton_iff, isOpen_induced h₂t', Set.mem_preimage,
       h₃t', and_self, and_true]
     intro w hw
-    simp
+    simp only [Set.mem_setOf_eq]
     -- Trivial case: w = z
     by_cases h₁w : w = z
     · rw [h₁w]
