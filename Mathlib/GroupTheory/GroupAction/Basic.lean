@@ -108,17 +108,18 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
 namespace MulAction
 variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
-/-- If a subgroup acts nontrivially, then the type is nontrivial -/
-@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial"]
-theorem isnontrivial_of_nontrivial_action {H : Subgroup G} (h : fixedPoints H α ≠ ⊤) :
-    Nontrivial α := by
-  apply Or.resolve_left (subsingleton_or_nontrivial α)
-  intro hα
-  apply h
-  rw [eq_top_iff]
+@[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
+    fixedPoints G α = .univ := by
+  rw [← Set.top_eq_univ, eq_top_iff]
   intro x hx
   rw [mem_fixedPoints]
   exact fun _ ↦ Subsingleton.elim ..
+
+/-- If a group acts nontrivially, then the type is nontrivial -/
+@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
+theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
+    Nontrivial α :=
+  Or.resolve_left (subsingleton_or_nontrivial α) (fun _ ↦ h fixedPoints_of_subsingleton)
 
 section Orbit
 

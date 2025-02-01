@@ -40,7 +40,7 @@ import Mathlib.GroupTheory.GroupAction.Transitive
   relates primitivity and the fact that the inclusion
   order on blocks containing is simple.
 
-- `maximal_stabilizer_iff_preprimitive`
+- `isCoatom_stabilizer_iff_preprimitive`
   An action is preprimitive iff the stabilizers of points are maximal subgroups.
 
 ## Relation with normal subgroups
@@ -78,7 +78,7 @@ the only blocks are the trivial ones -/
 that has no fixed point acts pretransitively -/
 class _root_.AddAction.IsQuasipreprimitive
     [AddGroup G] [AddAction G X] extends AddAction.IsPretransitive G X : Prop where
-  pretransitive_of_normal :
+  isPretransitive_of_normal :
     ∀ {N : AddSubgroup G} (_ : N.Normal), AddAction.fixedPoints N X ≠ ⊤ →
       AddAction.IsPretransitive N X
 
@@ -99,7 +99,7 @@ theorem subsingleton_or_eq_univ_of_isBlock [SMul G X] (h : IsPreprimitive G X) {
   h.has_trivial_blocks hB
 
 @[to_additive]
-theorem on_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
+theorem of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
     IsPreprimitive G X := by
   have : IsPretransitive G X := by
     apply IsPretransitive.mk
@@ -196,7 +196,7 @@ theorem IsPreprimitive.of_surjective
     exact h.has_trivial_blocks (IsBlock.preimage f hB)
 
 @[to_additive]
-theorem IsPreprimitive.iff_of_bijective
+theorem isPreprimitive_congr
     (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPreprimitive M α ↔ IsPreprimitive N β := by
   constructor
@@ -219,13 +219,19 @@ open scoped BigOperators Pointwise
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/
-@[to_additive
+@[to_additive (attr := simp)
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
-theorem isPreprimitive_iff_isSimpleOrder_blocks
-    [IsPretransitive G X] [Nontrivial X] (a : X) :
-    IsPreprimitive G X ↔ IsSimpleOrder (BlockMem G a) := by
+theorem isSimpleOrderBlockMem_iff_isPreprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
+    IsSimpleOrder (BlockMem G a) ↔ IsPreprimitive G X := by
   constructor
+  · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
+    apply IsPreprimitive.mk_mem_of_pretransitive a
+    intro B haB hB
+    cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
+      simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
+    · left; rw [hB']; exact Set.subsingleton_singleton
+    · right; rw [hB']; rfl
   · intro hGX'; apply IsSimpleOrder.mk
     rintro ⟨B, haB, hB⟩
     simp only [← Subtype.coe_inj, Subtype.coe_mk]
@@ -234,35 +240,23 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks
       simp [BlockMem.coe_bot, h.eq_singleton_of_mem haB]
     | inr h =>
       simp [BlockMem.coe_top, h]
-  · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
-    apply IsPreprimitive.mk_mem_of_pretransitive a
-    intro B haB hB
-    cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
-      simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
-    · left; rw [hB']; exact Set.subsingleton_singleton
-    · right; rw [hB']; rfl
 
 /-- A pretransitive action is preprimitive
 iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
   "A pretransitive action is preprimitive
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5)"]
-theorem maximal_stabilizer_iff_preprimitive
-    [htGX : IsPretransitive G X] [hnX : Nontrivial X] (a : X) :
+theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
     IsCoatom (stabilizer G a) ↔ IsPreprimitive G X := by
-  rw [isPreprimitive_iff_isSimpleOrder_blocks G a,
-    ← Set.isSimpleOrder_Ici_iff_isCoatom]
+  rw [← isSimpleOrderBlockMem_iff_isPreprimitive G a, ← Set.isSimpleOrder_Ici_iff_isCoatom]
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
 @[to_additive "In a preprimitive action, stabilizers are maximal subgroups."]
-theorem hasMaximalStabilizersOfPreprimitive
-    [hnX : Nontrivial X] (hpGX : IsPreprimitive G X) (a : X) :
+theorem isCoatom_stabilizer_of_isPreprimitive [Nontrivial X] [IsPreprimitive G X] (a : X) :
     IsCoatom (stabilizer G a) := by
-  haveI : IsPretransitive G X := hpGX.toIsPretransitive
-  rw [maximal_stabilizer_iff_preprimitive]
-  exact hpGX
+  rwa [isCoatom_stabilizer_iff_preprimitive]
 
 end Stabilizer
 

@@ -38,9 +38,8 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 - `MulAction.BlockMem` : the type of blocks containing a given element
 
-## instance
-
-- The type of blocks containing a given element is a bounded order.
+- `MulAction.BlockMem.instBoundedOrder` :
+  The type of blocks containing a given element is a bounded order.
 
 ## References
 
