@@ -26,12 +26,16 @@ variable {ι R M N}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
+/--
+Lift the polar
+--/
+def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
+  Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩
+
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      ∑ p ∈ f.support.sym2,
-        p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ -
-        ∑ i ∈ f.support, Q (g i (f i)) :=
+      ∑ p ∈ f.support.sym2, polar_lift Q f g p - ∑ i ∈ f.support, Q (g i (f i)) :=
   Q.map_sum' _ (fun i => g i (f i))
 
 variable [DecidableEq ι]
@@ -43,8 +47,8 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
         p.lift
           ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
             simp only [polar_comm, mul_comm]⟩ - linearCombination R (Q ∘ g) (l * l)  := by
-  simp_rw [linearCombination_apply, map_finsuppSum', polar_smul_left, polar_smul_right, map_smul,
-    mul_smul, sub_right_inj]
+  simp_rw [linearCombination_apply, map_finsuppSum', polar_lift, polar_smul_left, polar_smul_right,
+    map_smul, mul_smul, sub_right_inj]
   rw [Finsupp.sum_of_support_subset (l * l)
     (subset_trans Finsupp.support_mul (by rw [Finset.inter_self])) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
@@ -64,9 +68,7 @@ theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : 
 open Finsupp in
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      f.sum (fun i r => Q (g i r)) +
-      ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
-        p.lift ⟨fun i j => polar Q (g i (f i)) (g j (f j)), fun _ _ => polar_comm _ _ _⟩ :=
+      f.sum (fun i r => Q (g i r)) + ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, polar_lift Q f g p :=
   Q.map_sum _ _
 
 -- c.f. `Finsupp.apply_linearCombination`
@@ -77,8 +79,8 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
         p.lift
           ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
             simp only [polar_comm, mul_comm]⟩ := by
-  simp_rw [linearCombination_apply, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
-    mul_smul, add_left_inj]
+  simp_rw [linearCombination_apply, map_finsuppSum, polar_lift, polar_smul_left, polar_smul_right,
+    map_smul, mul_smul, add_left_inj]
   rw [Finsupp.sum, Finsupp.sum_of_support_subset (l * l)
     (subset_trans Finsupp.support_mul (by rw [Finset.inter_self])) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
