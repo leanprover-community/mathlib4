@@ -518,10 +518,8 @@ Grothendieck (G.functor ⋙ F) ≌ Grothendieck F ⥤ Grothendieck F' ≌ Grothe
 -/
 def mapWhiskerLeftIsoConjPreMap {F' : C ⥤ Cat} (G : D ≌ C) (α : F ⟶ F') :
     map (whiskerLeft G.functor α) ≅
-      (preEquivalence F G).functor ⋙ map α ⋙ (preEquivalence F' G).inverse := by
-  apply Iso.symm
-  apply preEquivalence F' G |>.congrRight.fullyFaithfulFunctor.preimageIso
-  exact isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F' G).counitIso
+      (preEquivalence F G).functor ⋙ map α ⋙ (preEquivalence F' G).inverse :=
+  (Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft _ (preEquivalence F' G).unitIso
 
 end Pre
 
