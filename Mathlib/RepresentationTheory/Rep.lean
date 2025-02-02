@@ -246,12 +246,16 @@ noncomputable abbrev leftRegular : Rep k G :=
 noncomputable def diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
+/-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
+multiplication in `G`. -/
 @[simps! hom_hom inv_hom]
 def diagonalOneIsoLeftRegular [Monoid G] :
     diagonal k G 1 ≅ leftRegular k G :=
   Action.mkIso (Finsupp.domLCongr <| Equiv.funUnique (Fin 1) G).toModuleIso fun _ =>
     ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal]
 
+/-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
+isomorphic to the trivial representation on `k`. -/
 @[simps! hom_hom inv_hom]
 def ofMulActionSubsingletonIsoTrivial
     (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
