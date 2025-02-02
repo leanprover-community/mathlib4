@@ -376,7 +376,7 @@ theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (hf : Merom
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
-theorem exists_order_ne_top_iff_all_order_ne_top {U : Set 𝕜} [CompleteSpace E]
+theorem exists_order_ne_top_iff_forall {U : Set 𝕜} [CompleteSpace E]
     (hf : MeromorphicOn f U) (hU : IsConnected U) :
     (∃ u : U, (hf u u.2).order ≠ ⊤) ↔ (∀ u : U, (hf u u.2).order ≠ ⊤) := by
   constructor
