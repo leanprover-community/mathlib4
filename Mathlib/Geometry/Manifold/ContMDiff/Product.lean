@@ -404,8 +404,20 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
   cases p with
   | inl x =>
     let F := (extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm
+    have aux : ((extChartAt I (Sum.inl (β := M') x)) (Sum.inl x)) = (extChartAt I x) x := by
+      simp only [extChartAt]
+      --show I ((chartAt H (Sum.inl x)) (Sum.inl x)) = I ((chartAt H x) x)
+      --congr
+      rw [ChartedSpace.sum_chartAt_inl]
+      -- rw [PartialHomeomorph.lift_openEmbedding_apply] -- need sum_chartAt_inl_apply!
+      -- --rw [PartialHomeomorph.lift_openEmbedding_apply]
+      sorry
+
     have : ContDiffWithinAt 𝕜 n F (range I) ((extChartAt I (Sum.inl (β := M') x)) (Sum.inl x)) := by
-      sorry -- easy, TODO insert!
+      unfold F
+      let hf' := hf x
+      rw [contMDiffAt_iff] at hf'
+      exact aux ▸ hf'.2
     apply this.congr_of_eventuallyEq
     · simp only [F, extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
       simp only [PartialHomeomorph.extend, PartialEquiv.coe_trans,
@@ -421,17 +433,13 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
       set X := I (extend Sum.inl (chartAt H x) (fun x ↦ Classical.arbitrary H) (Sum.inl x))
       have : X = I ((chartAt H x) x) := sorry
       rw [this]
-
   --     show (↑J ∘ ↑(chartAt H' (f x))) ∘
   --   Sum.elim f g ∘
   --     (Sum.inl ∘ ↑(chartAt H x).symm) ∘
   --       ↑I.symm =ᶠ[𝓝[range ↑I] ↑I (extend Sum.inl (↑(chartAt H x)) (fun x ↦ Classical.arbitrary H) (Sum.inl x))]
   -- (↑J ∘ ↑(chartAt H' (f x))) ∘ f ∘ ↑(chartAt H x).symm ∘ ↑I.symm
 
-
-
-      simp only [Sum.elim_inl]
-      -- elim inl
+      -- simp only [Sum.elim_inl]
       sorry -- fns are eventually equal
     -- Is a neighbourhood...
     simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
