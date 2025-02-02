@@ -28,8 +28,8 @@ This file implements diffeomorphisms.
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
 * `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ∞`
-* `E ≃ₘ^n[𝕜] E'`      := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
-* `E ≃ₘ[𝕜] E'`        := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
+* `E ≃ₘ^n[𝕜] E'`     := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
+* `E ≃ₘ[𝕜] E'`       := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
 
 ## Implementation notes
 
@@ -326,58 +326,6 @@ theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1
     h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
 
-section Constructions
-
-/-- Product of two diffeomorphisms. -/
-def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
-    (M × N) ≃ₘ^n⟮I.prod J, I'.prod J'⟯ M' × N' where
-  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prod_mk (h₂.contMDiff.comp contMDiff_snd)
-  contMDiff_invFun :=
-    (h₁.symm.contMDiff.comp contMDiff_fst).prod_mk (h₂.symm.contMDiff.comp contMDiff_snd)
-  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
-
-@[simp]
-theorem prodCongr_symm (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
-    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
-  rfl
-
-@[simp]
-theorem coe_prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
-    ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
-  rfl
-
-section
-
-variable (I J J' M N N' n)
-
-/-- `M × N` is diffeomorphic to `N × M`. -/
-def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
-  contMDiff_toFun := contMDiff_snd.prod_mk contMDiff_fst
-  contMDiff_invFun := contMDiff_snd.prod_mk contMDiff_fst
-  toEquiv := Equiv.prodComm M N
-
-@[simp]
-theorem prodComm_symm : (prodComm I J M N n).symm = prodComm J I N M n :=
-  rfl
-
-@[simp]
-theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
-  rfl
-
-/-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
-def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
-  contMDiff_toFun :=
-    (contMDiff_fst.comp contMDiff_fst).prod_mk
-      ((contMDiff_snd.comp contMDiff_fst).prod_mk contMDiff_snd)
-  contMDiff_invFun :=
-    (contMDiff_fst.prod_mk (contMDiff_fst.comp contMDiff_snd)).prod_mk
-      (contMDiff_snd.comp contMDiff_snd)
-  toEquiv := Equiv.prodAssoc M N N'
-
-end
-
-end Constructions
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
@@ -482,6 +430,8 @@ end ModelWithCorners
 
 namespace Diffeomorph
 
+section
+
 variable [NeZero n] (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F)
 
 instance instIsManifoldTransDiffeomorph [IsManifold I n M] :
@@ -561,6 +511,62 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
 
 @[deprecated (since := "2024-11-21")]
 alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
+
+end
+
+section Constructions
+
+section Product
+
+/-- Product of two diffeomorphisms. -/
+def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
+    (M × N) ≃ₘ^n⟮I.prod J, I'.prod J'⟯ M' × N' where
+  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prod_mk (h₂.contMDiff.comp contMDiff_snd)
+  contMDiff_invFun :=
+    (h₁.symm.contMDiff.comp contMDiff_fst).prod_mk (h₂.symm.contMDiff.comp contMDiff_snd)
+  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
+
+@[simp]
+theorem prodCongr_symm (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
+    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
+  rfl
+
+@[simp]
+theorem coe_prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
+    ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+  rfl
+
+section
+
+variable (I J J' M N N' n)
+
+/-- `M × N` is diffeomorphic to `N × M`. -/
+def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
+  contMDiff_toFun := contMDiff_snd.prod_mk contMDiff_fst
+  contMDiff_invFun := contMDiff_snd.prod_mk contMDiff_fst
+  toEquiv := Equiv.prodComm M N
+
+@[simp]
+theorem prodComm_symm : (prodComm I J M N n).symm = prodComm J I N M n :=
+  rfl
+
+@[simp]
+theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
+  rfl
+
+/-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
+def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
+  contMDiff_toFun :=
+    (contMDiff_fst.comp contMDiff_fst).prod_mk
+      ((contMDiff_snd.comp contMDiff_fst).prod_mk contMDiff_snd)
+  contMDiff_invFun :=
+    (contMDiff_fst.prod_mk (contMDiff_fst.comp contMDiff_snd)).prod_mk
+      (contMDiff_snd.comp contMDiff_snd)
+  toEquiv := Equiv.prodAssoc M N N'
+
+end
+
+end Product
 
 section disjointUnion
 
@@ -678,5 +684,7 @@ lemma sumComm_inr : (Diffeomorph.sumComm I M n M') ∘ Sum.inr = Sum.inl := by
   exact Sum.swap_inr
 
 end disjointUnion
+
+end Constructions
 
 end Diffeomorph
