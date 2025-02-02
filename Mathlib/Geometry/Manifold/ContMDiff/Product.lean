@@ -403,6 +403,37 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
   refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
   cases p with
   | inl x =>
+    let F := (extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm
+    have : ContDiffWithinAt 𝕜 n F (range I) ((extChartAt I (Sum.inl (β := M') x)) (Sum.inl x)) := by
+      sorry -- easy, TODO insert!
+    apply this.congr_of_eventuallyEq
+    · simp only [F, extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
+      simp only [PartialHomeomorph.extend, PartialEquiv.coe_trans,
+        ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+        PartialHomeomorph.lift_openEmbedding_toFun, comp_apply, PartialEquiv.coe_trans_symm,
+        PartialHomeomorph.coe_coe_symm, PartialHomeomorph.lift_openEmbedding_symm,
+        ModelWithCorners.toPartialEquiv_coe_symm]
+      -- after congr, goal should become
+      -- have : (↑J ∘ ↑(chartAt H' (f x))) ∘ Sum.elim f g ∘ (@Sum.inl M M')
+      --   =ᶠ[𝓝[range ↑I] I (extend Sum.inl (↑(chartAt H x)) (fun x ↦ Classical.arbitrary H) (Sum.inl x))]
+      --     (J ∘ ↑(chartAt H' (f x))) ∘ f := sorry
+      -- `X` is (((chartAt H x).lift_openEmbedding ⋯).extend I) (Sum.inl x), before calling simp
+      set X := I (extend Sum.inl (chartAt H x) (fun x ↦ Classical.arbitrary H) (Sum.inl x))
+      have : X = I ((chartAt H x) x) := sorry
+      rw [this]
+
+  --     show (↑J ∘ ↑(chartAt H' (f x))) ∘
+  --   Sum.elim f g ∘
+  --     (Sum.inl ∘ ↑(chartAt H x).symm) ∘
+  --       ↑I.symm =ᶠ[𝓝[range ↑I] ↑I (extend Sum.inl (↑(chartAt H x)) (fun x ↦ Classical.arbitrary H) (Sum.inl x))]
+  -- (↑J ∘ ↑(chartAt H' (f x))) ∘ f ∘ ↑(chartAt H x).symm ∘ ↑I.symm
+
+
+
+      simp only [Sum.elim_inl]
+      -- elim inl
+      sorry -- fns are eventually equal
+    -- Is a neighbourhood...
     simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
     -- In charts around x : M, the map .elim f g looks like f.
     sorry
