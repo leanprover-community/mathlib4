@@ -347,7 +347,7 @@ alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
 
 
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
-theorem isClopen_setOf_order_eq_top [CompleteSpace E] (h₁f : AnalyticOnNhd 𝕜 f U) :
+theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
     IsClopen { u : U | (h₁f u.1 u.2).order = ⊤ } := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
@@ -357,15 +357,14 @@ theorem isClopen_setOf_order_eq_top [CompleteSpace E] (h₁f : AnalyticOnNhd �
       rw [← (h₁f z.1 z.2).order_eq_top_iff] at h
       tauto
     · -- Case: f is locally nonzero in a punctured neighborhood of z
-      obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 ((eventually_nhdsWithin_iff.1 h).and
-        (h₁f z.1 z.2).eventually_analyticAt)
+      obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 (eventually_nhdsWithin_iff.1 h)
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
         simp only [mem_compl_iff, mem_setOf_eq]
         by_cases h₁w : w = z
         · rwa [h₁w]
-        · rw [(h₁t' w hw).2.order_eq_zero_iff.2 ((h₁t' w hw).1 (Subtype.coe_ne_coe.mpr h₁w))]
+        · rw [(h₁f _ w.2).order_eq_zero_iff.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
           exact ENat.zero_ne_top
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr
