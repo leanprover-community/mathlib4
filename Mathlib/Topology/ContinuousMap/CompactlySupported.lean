@@ -152,7 +152,7 @@ lemma coe_compLeft {g : C(β, γ)} (f : C_c(α, β)) (hg : g 0 = 0) : f.compLeft
   rw [if_pos hg]
   simp
 
-lemma compLeft_apply {g : C(β, γ)} (f : C_c(α, β)) (hg : g 0 = 0) (a : α) :
+lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by
   rw [coe_compLeft f hg]
   simp
