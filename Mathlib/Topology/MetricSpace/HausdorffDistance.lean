@@ -471,10 +471,13 @@ theorem infDist_le_dist_of_mem (h : y ∈ s) : infDist x s ≤ dist x y := by
 theorem infDist_le_infDist_of_subset (h : s ⊆ t) (hs : s.Nonempty) : infDist x t ≤ infDist x s :=
   ENNReal.toReal_mono (infEdist_ne_top hs) (infEdist_anti h)
 
+lemma le_infDist {r : ℝ} (hs : s.Nonempty) : r ≤ infDist x s ↔ ∀ ⦃y⦄, y ∈ s → r ≤ dist x y := by
+  simp_rw [infDist, ← ENNReal.ofReal_le_iff_le_toReal (infEdist_ne_top hs), le_infEdist,
+    ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_edist]
+
 /-- The minimal distance to a set `s` is `< r` iff there exists a point in `s` at distance `< r`. -/
 theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y ∈ s, dist x y < r := by
-  simp_rw [infDist, ← ENNReal.lt_ofReal_iff_toReal_lt (infEdist_ne_top hs), infEdist_lt_iff,
-    ENNReal.lt_ofReal_iff_toReal_lt (edist_ne_top _ _), ← dist_edist]
+  simp [← not_le, le_infDist hs]
 
 /-- The minimal distance from `x` to `s` is bounded by the distance from `y` to `s`, modulo
 the distance between `x` and `y`. -/
