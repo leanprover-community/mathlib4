@@ -18,7 +18,7 @@ namespace CategoryTheory.Limits
 
 variable {C : Type*} [Category C]
 
-attribute [local instance] IsFiltered.nonempty
+attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 
 instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
