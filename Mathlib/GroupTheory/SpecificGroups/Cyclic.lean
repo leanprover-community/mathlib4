@@ -859,5 +859,3 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
-
-#min_imports
