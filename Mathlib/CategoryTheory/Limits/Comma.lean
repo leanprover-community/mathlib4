@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Unit
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
 # Limits and colimits in comma categories
@@ -186,10 +185,6 @@ namespace StructuredArrow
 
 variable {X : T} {G : A ⥤ T} (F : J ⥤ StructuredArrow X G)
 
-instance hasInitial [G.Faithful] [G.Full] {Y : A} :
-    HasInitial (StructuredArrow (G.obj Y) G) :=
-  StructuredArrow.mkIdInitial.hasInitial
-
 instance hasLimit [i₁ : HasLimit (F ⋙ proj X G)] [i₂ : PreservesLimit (F ⋙ proj X G) G] :
     HasLimit F := by
   haveI : HasLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) := i₁
@@ -276,38 +271,6 @@ namespace Over
 
 instance {X : T} : HasTerminal (Over X) := CostructuredArrow.hasTerminal
 
-instance {X : T} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
-  refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
-  obtain i := Nonempty.some (inferInstanceAs (Nonempty J))
-  let s' : Cone F := ⟨Over.mk (s.π.app i ≫ (F.obj i).hom), fun j ↦ Over.homMk (s.π.app j) (by
-    obtain ⟨k, hik, hjk, -⟩ := IsCofilteredOrEmpty.cone_objs i j
-    simp only [Functor.const_obj_obj, Functor.id_obj, Over.mk_left, Over.mk_hom,
-      ← s.w hjk, ← s.w hik]
-    simp), fun j k e ↦ by ext; simpa using (s.w e).symm⟩
-  refine ⟨(hc.lift s').left, fun j ↦ congr($(hc.fac s' j).left), fun f hf ↦ ?_⟩
-  dsimp at hf
-  exact congr($(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
-    fun j ↦ Over.OverMorphism.ext (hf j)).left)
-
 end Over
-
-namespace Under
-
-instance {X : T} : HasInitial (Under X) := StructuredArrow.hasInitial (G := 𝟭 T) (Y := X)
-
-instance {X : T} : PreservesFilteredColimitsOfSize (Under.forget X) := by
-  refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
-  obtain i := Nonempty.some (inferInstanceAs (Nonempty J))
-  let s' : Cocone F := ⟨Under.mk ((F.obj i).hom ≫ s.ι.app i), fun j ↦ Under.homMk (s.ι.app j) (by
-    obtain ⟨k, hik, hjk, -⟩ := IsFilteredOrEmpty.cocone_objs i j
-    simp only [Functor.const_obj_obj, Functor.id_obj, Under.mk_right, Under.mk_hom,
-      ← s.w hjk, ← s.w hik]
-    simp), fun j k e ↦ by ext; simpa using s.w e⟩
-  refine ⟨(hc.desc s').right, fun j ↦ congr($(hc.fac s' j).right), fun f hf ↦ ?_⟩
-  dsimp at hf
-  exact congr($(hc.uniq s' (Under.homMk f (by simp [s', ← hf]))
-    fun j ↦ Under.UnderMorphism.ext (hf j)).right)
-
-end Under
 
 end CategoryTheory
