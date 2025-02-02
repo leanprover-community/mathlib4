@@ -150,7 +150,7 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
     rw [degree_map]
     exact ne_of_gt (degree_pos_of_irreducible hp)
-  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm) hpe with ⟨x, hx⟩
+  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm.toRingHom) hpe with ⟨x, hx⟩
   use e x
   rw [IsRoot] at hx
   apply e.symm.injective
