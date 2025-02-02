@@ -143,7 +143,7 @@ noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
       simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
       exact HasCompactSupport.zero
 
-lemma toContinuousMap_compLeft {g : C(β, γ)} (f : C_c(α, β)) (hg : g 0 = 0) :
+lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
     (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
 
 lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft g = g ∘ f := by
