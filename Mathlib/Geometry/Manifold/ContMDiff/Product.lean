@@ -395,18 +395,6 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   rw [← I.image_eq (chartAt H x).target]
   exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
--- TODO: move to ChartedSpace, sum section
--- make some of these simp?
-lemma sum_chartAt_inl_apply {x : M} :
-    ((chartAt H (.inl x : M ⊕ M')) (Sum.inl x)) = (chartAt H x) x := by
-  rw [ChartedSpace.sum_chartAt_inl]
-  exact PartialHomeomorph.lift_openEmbedding_apply _ _
-
-lemma sum_chartAt_inr_apply {x : M'} :
-    ((chartAt H (.inr x : M ⊕ M')) (Sum.inr x)) = (chartAt H x) x := by
-  rw [ChartedSpace.sum_chartAt_inr]
-  exact PartialHomeomorph.lift_openEmbedding_apply _ _
-
 lemma extChartAt_inl_apply {x : M} :
     ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) = (extChartAt I x) x := by
   simp [sum_chartAt_inl_apply]
@@ -460,33 +448,28 @@ lemma ContMDiff.sum_map {f : M → N} {g : M' → N'}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
   ContMDiff.sum_elim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
 
--- Better names welcome!
 omit [Nonempty H] in
 lemma contMDiff_of_contMDiff_inl [Nonempty N] {f : M → N}
     (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : ContMDiff I J n f := by
   inhabit N
   let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ inhabited_h.default)
-  rw [← contMDiffOn_univ] at h ⊢
   have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux, Function.comp_apply]; rfl
   rw [← this]
-  have : univ ⊆ (Sum.inl ∘ f) ⁻¹' (@Sum.inl N N' '' univ) := by
-    intro x _hx
-    rw [mem_preimage, Function.comp_apply]
-    use f x, trivial
-  apply (contMDiff_id.sum_elim contMDiff_const).contMDiffOn.comp h this
+  rw [← contMDiffOn_univ] at h ⊢
+  apply (contMDiff_id.sum_elim contMDiff_const).contMDiffOn (s := @Sum.inl N N' '' univ).comp h
+  intro x _hx
+  rw [mem_preimage, Function.comp_apply]
+  use f x, trivial
 
--- in fact, have an iff, but the other direction is easy :-)
 omit [Nonempty H] in
 lemma contMDiff_of_contMDiff_inr [Nonempty N'] {g : M' → N'}
     (h : ContMDiff I J n ((@Sum.inr N N') ∘ g)) : ContMDiff I J n g := by
   inhabit N'
   let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ inhabited_h.default) (@id N')
-  have haux : ContMDiffOn J J n aux (Sum.inr '' univ) :=
-    (contMDiff_const.sum_elim contMDiff_id).contMDiffOn
-  rw [← contMDiffOn_univ] at h ⊢
   have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux, Function.comp_apply]; rfl
   rw [← this]
-  apply ContMDiffOn.comp haux h
+  rw [← contMDiffOn_univ] at h ⊢
+  apply ((contMDiff_const.sum_elim contMDiff_id).contMDiffOn (s := Sum.inr '' univ)).comp h
   intro x _hx
   rw [mem_preimage, Function.comp_apply]
   use g x, trivial
