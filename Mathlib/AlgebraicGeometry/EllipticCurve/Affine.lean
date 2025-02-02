@@ -63,9 +63,10 @@ The group law on this set is then uniquely determined by these constructions.
  * `WeierstrassCurve.Affine.equation_add`: addition preserves the Weierstrass equation.
  * `WeierstrassCurve.Affine.nonsingular_neg`: negation preserves the nonsingular condition.
  * `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
- * `WeierstrassCurve.Affine.nonsingular_of_Δ_ne_zero`: an affine Weierstrass curve is nonsingular at
-    every point if its discriminant is non-zero.
- * `WeierstrassCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
+ * `WeierstrassCurve.Affine.equation_iff_nonsingular_of_Δ_ne_zero`: an affine Weierstrass curve is
+    nonsingular at every point if its discriminant is non-zero.
+ * `WeierstrassCurve.Affine.equation_iff_nonsingular`: an affine elliptic curve is nonsingular at
+    every point.
 
 ## Notations
 
@@ -223,8 +224,7 @@ TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
 
-lemma evalEval_polynomialY (x y : R) :
-    W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
+lemma evalEval_polynomialY (x y : R) : W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [polynomialY]
   eval_simp
   rw [← add_assoc]
@@ -270,22 +270,32 @@ lemma nonsingular_iff_variableChange (x y : R) :
   simp only [variableChange]
   congr! 3 <;> ring1
 
-lemma nonsingular_zero_of_Δ_ne_zero (h : W.Equation 0 0) (hΔ : W.Δ ≠ 0) : W.Nonsingular 0 0 := by
-  simp only [equation_zero, nonsingular_zero] at *
+variable {W} in
+lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W.Δ ≠ 0) :
+    W.Equation 0 0 ↔ W.Nonsingular 0 0 := by
+  simp only [equation_zero, nonsingular_zero, iff_self_and]
   contrapose! hΔ
-  simp only [b₂, b₄, b₆, b₈, Δ, h, hΔ]
+  simp only [b₂, b₄, b₆, b₈, Δ, hΔ]
   ring1
 
+variable {W} in
 /-- A Weierstrass curve is nonsingular at every point if its discriminant is non-zero. -/
-lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.Equation x y) (hΔ : W.Δ ≠ 0) : W.Nonsingular x y :=
-  (W.nonsingular_iff_variableChange x y).mpr <|
-    nonsingular_zero_of_Δ_ne_zero _ ((W.equation_iff_variableChange x y).mp h) <| by
-      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]
+lemma equation_iff_nonsingular_of_Δ_ne_zero {x y : R} (hΔ : W.Δ ≠ 0) :
+    W.Equation x y ↔ W.Nonsingular x y := by
+  rw [equation_iff_variableChange, nonsingular_iff_variableChange,
+    equation_zero_iff_nonsingular_zero_of_Δ_ne_zero <| by
+      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]]
 
 /-- An elliptic curve is nonsingular at every point. -/
-lemma nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} (h : W.toAffine.Equation x y) :
-    W.toAffine.Nonsingular x y :=
-  W.toAffine.nonsingular_of_Δ_ne_zero h <| W.coe_Δ' ▸ W.Δ'.ne_zero
+lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
+    W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
+  W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
+
+@[deprecated (since := "2025-02-01")] alias nonsingular_zero_of_Δ_ne_zero :=
+  equation_zero_iff_nonsingular_zero_of_Δ_ne_zero
+@[deprecated (since := "2025-02-01")] alias nonsingular_of_Δ_ne_zero :=
+  equation_iff_nonsingular_of_Δ_ne_zero
+@[deprecated (since := "2025-02-01")] alias nonsingular := equation_iff_nonsingular
 
 end Nonsingular
 
@@ -585,7 +595,7 @@ end Field
 
 section Group
 
-/-! ### Group operations -/
+/-! ### Nonsingular rational points -/
 
 /-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
 the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
@@ -597,9 +607,11 @@ inductive Point
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
 scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
+variable {W}
+
 namespace Point
 
-variable {W}
+/-! ### Group operations -/
 
 instance : Inhabited W.Point :=
   ⟨zero⟩
@@ -732,8 +744,9 @@ lemma evalEval_baseChange_polynomial_X_Y :
   rw [baseChange, toAffine, map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 
 variable {W} in
-lemma Equation.map {x y : R} (h : W.Equation x y) : Equation (W.map f) (f x) (f y) := by
-  rw [Equation, map_polynomial, map_mapRingHom_evalEval, ← f.map_zero]; exact congr_arg f h
+lemma Equation.map {x y : R} (h : W.Equation x y) : (W.map f).toAffine.Equation (f x) (f y) := by
+  rw [Equation, map_polynomial, map_mapRingHom_evalEval, ← f.map_zero]
+  exact congr_arg f h
 
 variable {f} in
 lemma map_equation (hf : Function.Injective f) (x y : R) :
@@ -928,8 +941,8 @@ end Point
 end BaseChange
 
 @[deprecated (since := "2024-06-03")] alias addY' := negAddY
-@[deprecated (since := "2024-06-03")] alias
-  nonsingular_add_of_eval_derivative_ne_zero := nonsingular_negAdd_of_eval_derivative_ne_zero
+@[deprecated (since := "2024-06-03")] alias nonsingular_add_of_eval_derivative_ne_zero :=
+  nonsingular_negAdd_of_eval_derivative_ne_zero
 @[deprecated (since := "2024-06-03")] alias slope_of_Yeq := slope_of_Y_eq
 @[deprecated (since := "2024-06-03")] alias slope_of_Yne := slope_of_Y_ne
 @[deprecated (since := "2024-06-03")] alias slope_of_Xne := slope_of_X_ne

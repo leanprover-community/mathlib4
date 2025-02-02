@@ -417,8 +417,8 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
 
 end Field
 
-@[deprecated (since := "2025-02-01")]
-alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq := mk_XYIdeal'_neg_mul_mk_XYIdeal'
+@[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
+  mk_XYIdeal'_neg_mul_mk_XYIdeal'
 
 section Norm
 
