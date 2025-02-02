@@ -3,8 +3,8 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+import Mathlib.Topology.Algebra.Order.Support
 
 /-!
 # Compactly supported continuous functions
@@ -416,21 +416,12 @@ end PartialOrder
 
 section SemilatticeSup
 
-variable [SemilatticeSup β] [Zero β]
-
-theorem HasCompactSupport.sup {f g : α → β} (hf : HasCompactSupport f) (hg : HasCompactSupport g) :
-    HasCompactSupport (f ⊔ g) := by
-  apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_tsupport _)
-  rw [tsupport, tsupport, tsupport, ← closure_union]
-  apply closure_mono
-  exact Function.support_sup f g
-
-variable [TopologicalSpace β] [ContinuousSup β]
+variable [SemilatticeSup β] [Zero β] [TopologicalSpace β] [ContinuousSup β]
 
 instance instSup : Max C_c(α, β) where max f g :=
   { toFun := f ⊔ g
     continuous_toFun := Continuous.sup f.continuous g.continuous
-    hasCompactSupport' := HasCompactSupport.sup f.hasCompactSupport g.hasCompactSupport }
+    hasCompactSupport' := f.hasCompactSupport.sup g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_sup (f g : C_c(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
 
@@ -451,21 +442,12 @@ end SemilatticeSup
 
 section SemilatticeInf
 
-variable [SemilatticeInf β] [Zero β]
-
-theorem HasCompactSupport.inf {f g : α → β} (hf : HasCompactSupport f) (hg : HasCompactSupport g) :
-    HasCompactSupport (f ⊓ g) := by
-  apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_tsupport _)
-  rw [tsupport, tsupport, tsupport, ← closure_union]
-  apply closure_mono
-  exact Function.support_inf f g
-
-variable [TopologicalSpace β] [ContinuousInf β]
+variable [SemilatticeInf β] [Zero β] [TopologicalSpace β] [ContinuousInf β]
 
 instance instInf : Min C_c(α, β) where min f g :=
   { toFun := f ⊓ g
     continuous_toFun := Continuous.inf f.continuous g.continuous
-    hasCompactSupport' := HasCompactSupport.inf f.hasCompactSupport g.hasCompactSupport }
+    hasCompactSupport' := f.hasCompactSupport.inf g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_inf (f g : C_c(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
 
