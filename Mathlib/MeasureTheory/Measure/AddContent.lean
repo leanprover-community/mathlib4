@@ -316,7 +316,7 @@ lemma addContent_diff_of_ne_top (m : AddContent C) (hC : IsSetRing C)
 
 lemma addContent_accumulate (m : AddContent C) (hC : IsSetRing C)
     {s : ℕ → Set α} (hs_disj : Pairwise (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
-      m (Set.Accumulate s n) = ∑ i in Finset.range (n + 1), m (s i) := by
+      m (Set.Accumulate s n) = ∑ i ∈ Finset.range (n + 1), m (s i) := by
   induction n with
   | zero => simp
   | succ n hn =>
@@ -370,7 +370,7 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     · simp_rw [s, Set.diff_eq]
       rw [Set.iInter_inter_distrib, Set.iInter_const, ← Set.compl_iUnion, Set.iUnion_accumulate]
       exact Set.inter_compl_self _
-  have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i in Finset.range (n + 1), m (f i) := by
+  have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i ∈ Finset.range (n + 1), m (f i) := by
     rw [addContent_diff_of_ne_top m hC hm_ne_top hUf (hC.accumulate_mem hf n)
       (Set.accumulate_subset_iUnion _), addContent_accumulate m hC h_disj hf n]
   simp_rw [hmsn] at h_tendsto

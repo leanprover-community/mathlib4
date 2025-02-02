@@ -214,11 +214,6 @@ theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := 
   intro hχ
   simp only [hχ, one_apply a.isUnit, one_ne_zero, reduceCtorEq] at ha
 
-set_option linter.deprecated false in
-@[deprecated quadraticChar_ne_one (since := "2024-06-16")]
-theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial :=
-  (isNontrivial_iff _).mpr <| quadraticChar_ne_one hF
-
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
 theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :

@@ -625,9 +625,6 @@ theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
 theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
 
-@[deprecated (since := "2024-04-05")] alias adjoin_int := adjoin_intCast
-@[deprecated (since := "2024-04-05")] alias adjoin_nat := adjoin_natCast
-
 end AdjoinIntermediateFieldLattice
 
 section Induction
