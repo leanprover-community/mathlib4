@@ -128,6 +128,11 @@ lemma comp_lift {V W X Y : C} (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
 @[simp]
 lemma lift_fst_snd {X Y : C} : lift (fst X Y) (snd X Y) = 𝟙 (X ⊗ Y) := by ext <;> simp
 
+@[simp]
+lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
+    lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
+  aesop_cat
+
 @[reassoc (attr := simp)]
 lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     (f ⊗ g) ≫ fst _ _ = fst _ _ ≫ f := lift_fst _ _
@@ -165,6 +170,16 @@ lemma whiskerRight_snd {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
   (tensorHom_snd _ _).trans (by simp)
 
 @[reassoc (attr := simp)]
+lemma lift_whiskerRight {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Y ⟶ W) :
+    lift f g ≫ (h ▷ Z) = lift (f ≫ h) g := by
+  aesop_cat
+
+@[reassoc (attr := simp)]
+lemma lift_whiskerLeft {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Z ⟶ W) :
+    lift f g ≫ (Y ◁ h) = lift f (g ≫ h) := by
+  aesop_cat
+
+@[reassoc (attr := simp)]
 lemma associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ fst _ _ = fst _ _ ≫ fst _ _ := lift_fst _ _
 
@@ -197,6 +212,16 @@ lemma associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ snd _ _ = snd _ _ ≫ snd _ _ := lift_snd _ _
 
 @[reassoc (attr := simp)]
+lemma lift_lift_associator_hom {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
+    lift (lift f g) h ≫ (α_ Y Z W).hom = lift f (lift g h) := by
+  aesop_cat
+
+@[reassoc (attr := simp)]
+lemma lift_lift_associator_inv {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
+    lift f (lift g h) ≫ (α_ Y Z W).inv = lift (lift f g) h := by
+  aesop_cat
+
+@[reassoc (attr := simp)]
 lemma leftUnitor_inv_fst (X : C) :
     (λ_ X).inv ≫ fst _ _ = toUnit _ := toUnit_unique _ _
 
@@ -211,6 +236,18 @@ lemma rightUnitor_inv_fst (X : C) :
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_snd (X : C) :
     (ρ_ X).inv ≫ snd _ _ = toUnit _ := toUnit_unique _ _
+
+@[reassoc (attr := simp)]
+lemma lift_leftUnitor_hom {X Y : C} (f : X ⟶ 𝟙_ C) (g : X ⟶ Y) :
+    lift f g ≫ (λ_ Y).hom = g := by
+  rw [← Iso.eq_comp_inv]
+  aesop_cat
+
+@[reassoc (attr := simp)]
+lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
+    lift f g ≫ (ρ_ Y).hom = f := by
+  rw [← Iso.eq_comp_inv]
+  aesop_cat
 
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
@@ -546,5 +583,51 @@ noncomputable def monoidalOfChosenFiniteProducts : F.Monoidal :=
   Functor.Monoidal.ofOplaxMonoidal F
 
 end Functor
+
+namespace Functor.Monoidal
+
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+
+section
+
+attribute [local instance] oplaxMonoidalOfChosenFiniteProducts
+
+@[reassoc (attr := simp)]
+lemma δ_fst {X Y : C} : OplaxMonoidal.δ F X Y ≫ fst _ _ = F.map (fst _ _) := by
+  simp [δ_of_chosenFiniteProducts]
+
+@[reassoc (attr := simp)]
+lemma δ_snd {X Y : C} : OplaxMonoidal.δ F X Y ≫ snd _ _ = F.map (snd _ _) := by
+  simp [δ_of_chosenFiniteProducts]
+
+@[reassoc (attr := simp)]
+lemma lift_δ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
+    F.map (lift f g) ≫ OplaxMonoidal.δ F _ _ = lift (F.map f) (F.map g) := by
+  apply hom_ext <;> simp [← F.map_comp]
+
+end
+
+section
+
+open Limits
+
+variable [PreservesLimit (Functor.empty.{0} C) F]
+  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+attribute [local instance] monoidalOfChosenFiniteProducts
+
+@[reassoc]
+lemma toUnit_ε {X : C} : toUnit (F.obj X) ≫ LaxMonoidal.ε F = F.map (toUnit X) :=
+  (cancel_mono (εIso _).inv).1 (toUnit_unique _ _)
+
+@[reassoc]
+lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
+    lift (F.map f) (F.map g) ≫ LaxMonoidal.μ F _ _ = F.map (lift f g) :=
+  (cancel_mono (μIso _ _ _).inv).1 (by simp)
+
+end
+
+end Functor.Monoidal
 
 end CategoryTheory
