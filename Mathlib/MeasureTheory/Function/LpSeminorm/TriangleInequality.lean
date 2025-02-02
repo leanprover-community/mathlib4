@@ -28,7 +28,7 @@ theorem eLpNorm'_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
         (∫⁻ a, ((fun a => (‖f a‖₊ : ℝ≥0∞)) + fun a => (‖g a‖₊ : ℝ≥0∞)) a ^ q ∂μ) ^ (1 / q) := by
       gcongr with a
       simp only [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe, nnnorm_add_le]
-    _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.ennnorm hg.ennnorm hq1
+    _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.enorm hg.enorm hq1
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_add_le := eLpNorm'_add_le
@@ -41,7 +41,7 @@ theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ 
       gcongr with a
       simp only [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe, nnnorm_add_le]
     _ ≤ (2 : ℝ≥0∞) ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
-      ENNReal.lintegral_Lp_add_le_of_le_one hf.ennnorm hq0 hq1
+      ENNReal.lintegral_Lp_add_le_of_le_one hf.enorm hq0 hq1
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_add_le_of_le_one := eLpNorm'_add_le_of_le_one
@@ -49,7 +49,7 @@ alias snorm'_add_le_of_le_one := eLpNorm'_add_le_of_le_one
 theorem eLpNormEssSup_add_le {f g : α → E} :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
   refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
-  simp_rw [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe]
+  simp_rw [Pi.add_apply, enorm_eq_nnnorm, ← ENNReal.coe_add, ENNReal.coe_le_coe]
   exact nnnorm_add_le _ _
 
 @[deprecated (since := "2024-07-27")]
@@ -87,7 +87,7 @@ theorem LpAddConst_zero : LpAddConst 0 = 1 := by
 theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.two_ne_top
+  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
     rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.one_toReal]
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
@@ -191,7 +191,7 @@ theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ 
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [zero_mem_ℒp', Finset.sum_empty, imp_true_iff]
+  · simp only [Memℒp.zero', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))

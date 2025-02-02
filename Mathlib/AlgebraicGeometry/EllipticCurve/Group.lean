@@ -30,7 +30,7 @@ this is well-defined and preserves addition reduce to checking several equalitie
 ideals, which is done in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
 `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations. Now
 `F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of the
-form `p + qY` for some `p, q ∈ F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
+form `p + qY` for some `p, q` in `F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
 can then be shown by computing the degree of such a norm `N(p + qY)` in two different ways, which is
 done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the auxiliary lemmas
 in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
@@ -52,8 +52,8 @@ pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve
     affine Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
     element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
- * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on
-    an affine Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on an
+    affine Weierstrass curve forms an abelian group under addition.
  * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational points on a
     Jacobian Weierstrass curve forms an abelian group under addition.
  * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular rational points on
@@ -93,11 +93,11 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : Affine R) (f :
 -- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
 -- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
-/-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`. -/
+/-- The coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of `W`. -/
 abbrev CoordinateRing : Type u :=
   AdjoinRoot W.polynomial
 
-/-- The function field $R(W) := \mathrm{Frac}(R[W])$ of `W`. -/
+/-- The function field `R(W) := Frac(R[W])` of `W`. -/
 abbrev FunctionField : Type u :=
   FractionRing W.CoordinateRing
 
@@ -119,13 +119,11 @@ instance : IsScalarTower R R[X] W.CoordinateRing :=
 instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 
--- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- The natural ring homomorphism mapping an element of `R[X][Y]` to an element of `R[W]`. -/
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
--- Porting note: added `classical` explicitly
-/-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
+/-- The basis `{1, Y}` for the coordinate ring `R[W]` over the polynomial ring `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' W.monic_polynomial).basis.reindex <| finCongr W.natDegree_polynomial
@@ -138,17 +136,14 @@ lemma basis_apply (n : Fin 2) :
     PowerBasis.basis_eq_pow]
   rfl
 
--- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 
--- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 
--- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n
@@ -162,14 +157,14 @@ variable {W} in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W.CoordinateRing) + q • mk W Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W).linearIndependent ![p, q]
-  erw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, basis_one] at h
+  rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
 variable {W} in
 lemma exists_smul_basis_eq (x : W.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W.CoordinateRing) + q • mk W Y = x := by
   have h := (CoordinateRing.basis W).sum_equivFun x
-  erw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, basis_one] at h
+  rw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨_, _, h⟩
 
 lemma smul_basis_mul_C (y : R[X]) (p q : R[X]) :
@@ -223,7 +218,7 @@ section Ring
 
 /-! ### Ideals in the coordinate ring over a ring -/
 
-/-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
+/-- The class of the element `X - x` in `R[W]` for some `x` in `R`. -/
 noncomputable def XClass (x : R) : W.CoordinateRing :=
   mk W <| C <| X - C x
 
@@ -231,7 +226,7 @@ lemma XClass_ne_zero [Nontrivial R] (x : R) : XClass W x ≠ 0 :=
   AdjoinRoot.mk_ne_zero_of_natDegree_lt W.monic_polynomial (C_ne_zero.mpr <| X_sub_C_ne_zero x) <|
     by rw [natDegree_polynomial, natDegree_C]; norm_num1
 
-/-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
+/-- The class of the element `Y - y(X)` in `R[W]` for some `y(X)` in `R[X]`. -/
 noncomputable def YClass (y : R[X]) : W.CoordinateRing :=
   mk W <| Y - C y
 
@@ -239,41 +234,41 @@ lemma YClass_ne_zero [Nontrivial R] (y : R[X]) : YClass W y ≠ 0 :=
   AdjoinRoot.mk_ne_zero_of_natDegree_lt W.monic_polynomial (X_sub_C_ne_zero y) <|
     by rw [natDegree_polynomial, natDegree_X_sub_C]; norm_num1
 
-lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
-    mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
+lemma C_addPolynomial (x y ℓ : R) : mk W (C <| W.addPolynomial x y ℓ) =
+    mk W ((Y - C (linePolynomial x y ℓ)) * (W.negPolynomial - C (linePolynomial x y ℓ))) :=
   AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel_left, mul_one]⟩
 
-/-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
+/-- The ideal `⟨X - x⟩` of `R[W]` for some `x` in `R`. -/
 noncomputable def XIdeal (x : R) : Ideal W.CoordinateRing :=
   span {XClass W x}
 
-/-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
+/-- The ideal `⟨Y - y(X)⟩` of `R[W]` for some `y(X)` in `R[X]`. -/
 noncomputable def YIdeal (y : R[X]) : Ideal W.CoordinateRing :=
   span {YClass W y}
 
-/-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
+/-- The ideal `⟨X - x, Y - y(X)⟩` of `R[W]` for some `x` in `R` and `y(X)` in `R[X]`. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
 
-lemma XYIdeal_eq₁ (x y L : R) : XYIdeal W x (C y) = XYIdeal W x (linePolynomial x y L) := by
+lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W x (C y) = XYIdeal W x (linePolynomial x y ℓ) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
-  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -L, ← _root_.map_mul, ← map_add]
+  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -ℓ, ← _root_.map_mul, ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
 
-lemma XYIdeal_add_eq (x₁ x₂ y₁ L : R) : XYIdeal W (W.addX x₁ x₂ L) (C <| W.addY x₁ x₂ y₁ L) =
-    span {mk W <| W.negPolynomial - C (linePolynomial x₁ y₁ L)} ⊔ XIdeal W (W.addX x₁ x₂ L) := by
+lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W (W.addX x₁ x₂ ℓ) (C <| W.addY x₁ x₂ y₁ ℓ) =
+    span {mk W <| W.negPolynomial - C (linePolynomial x₁ y₁ ℓ)} ⊔ XIdeal W (W.addX x₁ x₂ ℓ) := by
   simp only [XYIdeal, XIdeal, XClass, YClass, addY, negAddY, negY, negPolynomial, linePolynomial]
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
-    ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + L, ← _root_.map_mul,
+    ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + ℓ, ← _root_.map_mul,
     ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
 
-/-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to $R$ obtained by
-evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
+/-- The `R`-algebra isomorphism from `R[W] / ⟨X - x, Y - y(X)⟩` to `R` obtained by evaluation at
+some `y(X)` in `R[X]` and at some `x` in `R` provided that `W(x, y(x)) = 0`. -/
 noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
     (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
   ((quotientEquivAlgOfEq R <| by
@@ -291,18 +286,20 @@ section Field
 variable {F : Type u} [Field F] {W : Affine F}
 
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
+    mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
       -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) := by
   simp only [addPolynomial_slope h₁ h₂ hxy, C_neg, mk, map_neg, neg_inj, _root_.map_mul]
   rfl
 
-lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
-    (h₂ : W.Equation x₂ y₂) (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have hy₂ : y₂ = (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂).eval x₂ := by
     by_cases hx : x₁ = x₂
-    · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx <| hxy hx with ⟨rfl, rfl⟩
-      field_simp [linePolynomial, sub_ne_zero_of_ne <| hxy rfl]
+    · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+      rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
+      field_simp [linePolynomial, sub_ne_zero_of_ne hy]
     · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
@@ -351,7 +348,7 @@ private lemma XYIdeal'_mul_inv {x y : F} (h : W.Nonsingular x y) :
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x]
 
 lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) * (XYIdeal W x₁ (C y₁) * XYIdeal W x₂ (C y₂)) =
       YIdeal W (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) *
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
@@ -374,9 +371,10 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
-  · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx (hxy hx) with ⟨rfl, rfl⟩
+  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+    rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
-    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne <| hxy rfl
+    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne hy
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
@@ -392,7 +390,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     C_simp
     ring1
 
-/-- The non-zero fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ for some $x, y \in F$. -/
+/-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
   Units.mkOfMulEqOne _ _ <| XYIdeal'_mul_inv h
@@ -401,32 +399,34 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
   rfl
 
-lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.Nonsingular x y) :
+lemma mk_XYIdeal'_neg_mul_mk_XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| nonsingular_neg h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← _root_.map_mul]
   exact
-    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
+    (ClassGroup.mk_eq_one_of_coe_ideal <| (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
       FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 
 lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
-    (h₂ : W.Nonsingular x₂ y₂) (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
-  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul ..).symm) <|
-      XYIdeal'_eq _).mpr
-    ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
+  exact
+    (ClassGroup.mk_eq_mk_of_coe_ideal (FractionalIdeal.coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
+      ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 
 end Field
+
+@[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
+  mk_XYIdeal'_neg_mul_mk_XYIdeal'
 
 section Norm
 
 /-! ### Norms on the coordinate ring -/
 
-lemma norm_smul_basis (p q : R[X]) :
-    Algebra.norm R[X] (p • (1 : W.CoordinateRing) + q • mk W Y) =
-      p ^ 2 - p * q * (C W.a₁ * X + C W.a₃) -
-        q ^ 2 * (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) := by
+lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W.CoordinateRing) + q • mk W Y) =
+    p ^ 2 - p * q * (C W.a₁ * X + C W.a₃) -
+      q ^ 2 * (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) := by
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W, Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
@@ -481,8 +481,7 @@ lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
   rw [degree_norm_smul_basis]
   rcases p.degree with (_ | _ | _ | _) <;> cases q.degree
   any_goals rintro (_ | _)
-  -- Porting note: replaced `dec_trivial` with `by exact (cmp_eq_lt_iff ..).mp rfl`
-  exact (lt_max_of_lt_right <| by exact (cmp_eq_lt_iff ..).mp rfl).ne'
+  exact (lt_max_of_lt_right <| (cmp_eq_lt_iff ..).mp rfl).ne'
 
 variable {W} in
 lemma natDegree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
@@ -499,15 +498,15 @@ namespace Point
 
 variable {F : Type u} [Field F] {W : Affine F}
 
-/-- The set function mapping an affine point $(x, y)$ of `W` to the class of the non-zero fractional
-ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
+/-- The set function mapping an affine point `(x, y)` of `W` to the class of the non-zero fractional
+ideal `⟨X - x, Y - y⟩` of `F(W)` in the class group of `F[W]`. -/
 @[simp]
 noncomputable def toClassFun : W.Point → Additive (ClassGroup W.CoordinateRing)
   | 0 => 0
   | some h => Additive.ofMul <| ClassGroup.mk <| CoordinateRing.XYIdeal' h
 
-/-- The group homomorphism mapping an affine point $(x, y)$ of `W` to the class of the non-zero
-fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
+/-- The group homomorphism mapping an affine point `(x, y)` of `W` to the class of the non-zero
+fractional ideal `⟨X - x, Y - y⟩` of `F(W)` in the class group of `F[W]`. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun := toClassFun
@@ -515,12 +514,11 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
     any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
-    obtain ⟨rfl, rfl⟩ | h := em (x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)
-    · rw [add_of_Y_eq rfl rfl]
-      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
-    · have h hx hy := h ⟨hx, hy⟩
-      rw [add_of_imp h]
-      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ h).symm
+    by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
+    · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
+      exact (CoordinateRing.mk_XYIdeal'_neg_mul_mk_XYIdeal' h₂).symm
+    · simp only [add_some hxy]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
@@ -532,11 +530,12 @@ lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
-  · rw [← zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
+  · rw [← zero_def, zero_add, eq_comm (a := 0), neg_eq_iff_eq_neg, neg_zero]
   · rw [neg_some, some.injEq]
     constructor
-    · contrapose!; intro h; rw [add_of_imp h]; exact some_ne_zero _
-    · exact fun ⟨hx, hy⟩ ↦ add_of_Y_eq hx hy
+    · contrapose
+      exact fun hxy => by simpa only [add_some hxy] using some_ne_zero _
+    · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
 
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
@@ -547,15 +546,14 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
       apply (p.natDegree_norm_ne_one _).elim
       rw [← finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) h0,
         ← (quotientEquivAlgOfEq F hp).toLinearEquiv.finrank_eq,
-        (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq,
-        Module.finrank_self]
+        (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq, Module.finrank_self]
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
   rintro (_ | h) _ hP
   all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
-  · exact CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h
+  · exact CoordinateRing.mk_XYIdeal'_neg_mul_mk_XYIdeal' h
 
 noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
@@ -569,26 +567,6 @@ noncomputable instance : AddCommGroup W.Point where
 end Point
 
 end WeierstrassCurve.Affine
-
-namespace WeierstrassCurve.Projective.Point
-
-/-! ## Weierstrass curves in projective coordinates -/
-
-variable {F : Type u} [Field F] {W : Projective F}
-
-noncomputable instance : AddCommGroup W.Point where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
-
-end WeierstrassCurve.Projective.Point
 
 namespace WeierstrassCurve.Jacobian.Point
 
@@ -609,3 +587,23 @@ noncomputable instance : AddCommGroup W.Point where
   add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
 
 end WeierstrassCurve.Jacobian.Point
+
+namespace WeierstrassCurve.Projective.Point
+
+/-! ## Weierstrass curves in projective coordinates -/
+
+variable {F : Type u} [Field F] {W : Projective F}
+
+noncomputable instance : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  zero_add _ := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
+  add_zero _ := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
+  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
+  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+
+end WeierstrassCurve.Projective.Point

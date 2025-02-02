@@ -64,7 +64,7 @@ universe u
 
 open CategoryTheory
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 variable (P : TopCat.{u} → Prop)
 
@@ -89,8 +89,8 @@ instance : CoeSort (CompHausLike P) (Type u) :=
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
 
-instance concreteCategory : ConcreteCategory (CompHausLike P) :=
-  InducedCategory.concreteCategory _
+instance hasForget : HasForget (CompHausLike P) :=
+  InducedCategory.hasForget _
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
   InducedCategory.hasForget₂ _

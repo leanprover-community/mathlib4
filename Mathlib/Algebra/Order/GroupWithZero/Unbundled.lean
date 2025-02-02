@@ -957,6 +957,21 @@ end LinearOrder
 
 end MulOneClass
 
+section MulZero
+
+variable [Mul M₀] [Zero M₀] [Preorder M₀] [Preorder α] {f g : α → M₀}
+
+lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
+    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
+  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
+
+lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α } (hf : MonotoneOn f s)
+    (hg : MonotoneOn g s) (hf₀ : ∀ x ∈ s, 0 ≤ f x) (hg₀ : ∀ x ∈ s, 0 ≤ g x) :
+    MonotoneOn (f * g) s :=
+  fun _ ha _ hb h ↦ mul_le_mul (hf ha hb h) (hg ha hb h) (hg₀ _ ha) (hf₀ _ hb)
+
+end MulZero
+
 section MonoidWithZero
 variable [MonoidWithZero M₀]
 
@@ -1084,10 +1099,6 @@ lemma Antitone.mul_const [MulPosMono M₀] (hf : Antitone f) (ha : 0 ≤ a) :
 
 lemma Antitone.const_mul [PosMulMono M₀] (hf : Antitone f) (ha : 0 ≤ a) :
     Antitone fun x ↦ a * f x := (monotone_mul_left_of_nonneg ha).comp_antitone hf
-
-lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
-    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
-  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
 
 end Preorder
 
@@ -1618,6 +1629,30 @@ lemma zpow_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
 lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
     a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_lt
 
+@[simp] lemma one_le_zpow_iff_right₀ (ha : 1 < a) : 1 ≤ a ^ n ↔ 0 ≤ n := by
+  simp [← zpow_le_zpow_iff_right₀ ha]
+
+@[simp] lemma one_lt_zpow_iff_right₀ (ha : 1 < a) : 1 < a ^ n ↔ 0 < n := by
+  simp [← zpow_lt_zpow_iff_right₀ ha]
+
+@[simp] lemma one_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 ≤ a ^ n ↔ n ≤ 0 := by
+  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma one_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 < a ^ n ↔ n < 0 := by
+  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma zpow_le_one_iff_right₀ (ha : 1 < a) : a ^ n ≤ 1 ↔ n ≤ 0 := by
+  simp [← zpow_le_zpow_iff_right₀ ha]
+
+@[simp] lemma zpow_lt_one_iff_right₀ (ha : 1 < a) : a ^ n < 1 ↔ n < 0 := by
+  simp [← zpow_lt_zpow_iff_right₀ ha]
+
+@[simp] lemma zpow_le_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n ≤ 1 ↔ 0 ≤ n := by
+  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma zpow_lt_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n < 1 ↔ 0 < n := by
+  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
 end PosMulStrictMono
 
 section MulPosStrictMono
@@ -1637,7 +1672,7 @@ lemma mul_inv_lt_iff₀ (hc : 0 < c) : b * c⁻¹ < a ↔ b < a * c where
 lemma lt_div_iff₀ (hc : 0 < c) : a < b / c ↔ a * c < b := by
   rw [div_eq_mul_inv, lt_mul_inv_iff₀ hc]
 
-/-- See `div_le_iff₀'` for a version with multiplication on the other side. -/
+/-- See `div_lt_iff₀'` for a version with multiplication on the other side. -/
 lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
   rw [div_eq_mul_inv, mul_inv_lt_iff₀ hc]
 
@@ -1882,4 +1917,4 @@ lemma div_lt_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b < c ↔ a / c < b := by
 end PosMulStrictMono
 end CommGroupWithZero
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000

@@ -16,25 +16,25 @@ This file defines the type of points on a Weierstrass curve as a tuple, consisti
 class of triples up to scaling by a unit, satisfying a Weierstrass equation with a nonsingular
 condition. This file also defines the negation and addition operations of the group law for this
 type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
-that they form an abelian group is proven in `Mathlib.AlgebraicGeometry.EllipticCurve.Group`.
+that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 
 ## Mathematical background
 
 Let `W` be a Weierstrass curve over a field `F`. A point on the projective plane is an equivalence
-class of triples $[x:y:z]$ with coordinates in `F` such that $(x, y, z) \sim (x', y', z')$ precisely
-if there is some unit `u` of `F` such that $(x, y, z) = (ux', uy', uz')$, with an extra condition
-that $(x, y, z) \ne (0, 0, 0)$. As described in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, a
-rational point is a point on the projective plane satisfying a homogeneous Weierstrass equation, and
-being nonsingular means the partial derivatives $W_X(X, Y, Z)$, $W_Y(X, Y, Z)$, and $W_Z(X, Y, Z)$
-do not vanish simultaneously. Note that the vanishing of the Weierstrass equation and its partial
-derivatives are independent of the representative for $[x:y:z]$, and the nonsingularity condition
-already implies that $(x, y, z) \ne (0, 0, 0)$, so a nonsingular rational point on `W` can simply be
-given by a tuple consisting of $[x:y:z]$ and the nonsingular condition on any representative.
+class of triples `[x:y:z]` with coordinates in `F` such that `(x, y, z) ∼ (x', y', z')` precisely
+if there is some unit `u` of `F` such that `(x, y, z) = (ux', uy', uz')`, with an extra condition
+that `(x, y, z) ≠ (0, 0, 0)`. As described in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`,
+a rational point is a point on the projective plane satisfying a homogeneous Weierstrass equation,
+and being nonsingular means the partial derivatives `W_X(X, Y, Z)`, `W_Y(X, Y, Z)`, and
+`W_Z(X, Y, Z)` do not vanish simultaneously. Note that the vanishing of the Weierstrass equation and
+its partial derivatives are independent of the representative for `[x:y:z]`, and the nonsingularity
+condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a nonsingular rational point on `W` can simply
+be given by a tuple consisting of `[x:y:z]` and the nonsingular condition on any representative.
 
-As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular rational points forms
-an abelian group under the same secant-and-tangent process, but the polynomials involved are
-homogeneous, and any instances of division become multiplication in the $Z$-coordinate.
-Note that most computational proofs follow from their analogous proofs for affine coordinates.
+As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of nonsingular rational points
+forms an abelian group under the same secant-and-tangent process, but the polynomials involved are
+homogeneous, and any instances of division become multiplication in the `Z`-coordinate. Note that
+most computational proofs follow from their analogous proofs for affine coordinates.
 
 ## Main definitions
 
@@ -50,7 +50,7 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Projective.Point.neg`: the negation operation on a nonsingular rational point.
  * `WeierstrassCurve.Projective.Point.add`: the addition operation on a nonsingular rational point.
  * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the nonsingular
-    rational points on a projective Weierstrass curve with those on an affine Weierstrass curve.
+    rational points in projective coordinates with those in affine coordinates.
 
 ## Main statements
 
@@ -87,7 +87,7 @@ local macro "matrix_simp" : tactic =>
   `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
 
-universe u v
+universe r s u v w
 
 /-! ## Weierstrass curves -/
 
@@ -105,6 +105,10 @@ open MvPolynomial
 
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow])
+
+local macro "map_simp" : tactic =>
+  `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
+    map_div₀, WeierstrassCurve.map, Function.comp_apply])
 
 local macro "pderiv_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
@@ -136,8 +140,12 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
 
+lemma comp_smul {S : Type v} [CommRing S] (f : R →+* S) (P : Fin 3 → R) (u : R) :
+    f ∘ (u • P) = f u • f ∘ P := by
+  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+
 /-- The equivalence setoid for a point representative. -/
-scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
+scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
@@ -162,16 +170,16 @@ variable (W') in
 abbrev toAffine : Affine R :=
   W'
 
-lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
+lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ∈ nonZeroDivisors R) :
     P ≈ Q ↔ P = Q := by
-  refine ⟨?_, by rintro rfl; exact Setoid.refl _⟩
+  refine ⟨?_, Quotient.exact.comp <| congrArg _⟩
   rintro ⟨u, rfl⟩
-  rw [← one_mul (Q z)] at hz
-  simp_rw [Units.smul_def, (mul_cancel_right_mem_nonZeroDivisors mem).mp hz, one_smul]
+  simp only [Units.smul_def, (mul_cancel_right_mem_nonZeroDivisors hQz).mp <| one_mul (Q z) ▸ hz]
+  rw [one_smul]
 
 lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ≠ 0) :
     P ≈ Q ↔ P = Q :=
-  equiv_iff_eq_of_Z_eq' hz (mem_nonZeroDivisors_of_ne_zero hQz)
+  equiv_iff_eq_of_Z_eq' hz <| mem_nonZeroDivisors_of_ne_zero hQz
 
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨_, rfl⟩
@@ -227,9 +235,9 @@ section Equation
 /-! ### Weierstrass equations -/
 
 variable (W') in
-/-- The polynomial $W(X, Y, Z) := Y^2Z + a_1XYZ + a_3YZ^2 - (X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3)$
-associated to a Weierstrass curve `W'` over `R`. This is represented as a term of type
-`MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2` represent $X$, $Y$, and $Z$ respectively. -/
+/-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
+Weierstrass curve `W'` over `R`. This is represented as a term of type `MvPolynomial (Fin 3) R`,
+where `X 0`, `X 1`, and `X 2` represent `X`, `Y`, and `Z` respectively. -/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 * X 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 2
     - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 + C W'.a₄ * X 0 * X 2 ^ 2 + C W'.a₆ * X 2 ^ 3)
@@ -248,8 +256,8 @@ lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P 
       - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
 
 variable (W') in
-/-- The proposition that a point representative $(x, y, z)$ lies in `W'`.
-In other words, $W(x, y, z) = 0$. -/
+/-- The proposition that a point representative `(x, y, z)` lies in `W'`. In other words,
+`W(x, y, z) = 0`. -/
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W'.polynomial = 0
 
@@ -262,7 +270,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 3 * hP
-  ⟨fun h => by convert hP hu.unit.inv h; erw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
+  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -293,7 +301,7 @@ section Nonsingular
 /-! ### Nonsingular Weierstrass equations -/
 
 variable (W') in
-/-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
+/-- The partial derivative `W_X(X, Y, Z)` of `W(X, Y, Z)` with respect to `X`. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
@@ -315,7 +323,7 @@ lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       - W.a₄ * div_self (pow_ne_zero 2 hPz)
 
 variable (W') in
-/-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
+/-- The partial derivative `W_Y(X, Y, Z)` of `W(X, Y, Z)` with respect to `Y`. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
@@ -337,7 +345,7 @@ lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       + W.a₃ * div_self (pow_ne_zero 2 hPz)
 
 variable (W') in
-/-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
+/-- The partial derivative `W_Z(X, Y, Z)` of `W(X, Y, Z)` with respect to `Z`. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W'.polynomial
 
@@ -361,8 +369,8 @@ theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =
   ring1
 
 variable (W') in
-/-- The proposition that a point representative $(x, y, z)$ in `W'` is nonsingular.
-In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$.
+/-- The proposition that a point representative `(x, y, z)` in `W'` is nonsingular. In other words,
+either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
 
 Note that this definition is only mathematically accurate for fields. -/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
@@ -441,6 +449,19 @@ lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P 
     P ≈ ![0, 1, 0] :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
+lemma comp_equiv_comp {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · by_cases hz : f (P z) = 0
+    · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
+        (map_eq_zero_iff f f.injective).mp <| (Z_eq_zero_of_equiv h).mp hz
+    · refine equiv_of_X_eq_of_Y_eq ((map_ne_zero_iff f f.injective).mp hz)
+        ((map_ne_zero_iff f f.injective).mp <| hz.comp (Z_eq_zero_of_equiv h).mpr) ?_ ?_
+      all_goals apply f.injective; map_simp
+      exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
+  · rcases h with ⟨u, rfl⟩
+    exact ⟨Units.map f u, (comp_smul ..).symm⟩
+
 variable (W') in
 /-- The proposition that a point class on `W'` is nonsingular. If `P` is a point representative,
 then `W.NonsingularLift ⟦P⟧` is definitionally equivalent to `W.Nonsingular P`. -/
@@ -461,12 +482,12 @@ end Nonsingular
 
 @[deprecated (since := "2024-08-27")] alias equation_smul_iff := equation_smul
 @[deprecated (since := "2024-08-27")] alias nonsingularLift_zero' := nonsingularLift_zero
-@[deprecated (since := "2024-08-27")]
-alias nonsingular_affine_of_Z_ne_zero := nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")]
-alias nonsingular_iff_affine_of_Z_ne_zero := nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")]
-alias nonsingular_of_affine_of_Z_ne_zero := nonsingular_of_Z_ne_zero
+@[deprecated (since := "2024-08-27")] alias nonsingular_affine_of_Z_ne_zero :=
+  nonsingular_of_Z_ne_zero
+@[deprecated (since := "2024-08-27")] alias nonsingular_iff_affine_of_Z_ne_zero :=
+  nonsingular_of_Z_ne_zero
+@[deprecated (since := "2024-08-27")] alias nonsingular_of_affine_of_Z_ne_zero :=
+  nonsingular_of_Z_ne_zero
 @[deprecated (since := "2024-08-27")] alias nonsingular_smul_iff := nonsingular_smul
 @[deprecated (since := "2024-08-27")] alias nonsingular_zero' := nonsingular_zero
 
@@ -475,7 +496,7 @@ section Negation
 /-! ### Negation formulae -/
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-P` for a point `P`. -/
 def negY (P : Fin 3 → R) : R :=
   -P y - W'.a₁ * P x - W'.a₃ * P z
 
@@ -583,7 +604,7 @@ lemma isUnit_dblU_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
   (dblU_ne_zero_of_Y_eq hP hPz hQz hx hy hy').isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Z`-coordinate of a representative of `2 • P` for a point `P`. -/
 def dblZ (P : Fin 3 → R) : R :=
   P z * (P y - W'.negY P) ^ 3
 
@@ -628,7 +649,7 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `X`-coordinate of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblX (P : Fin 3 → R) : R :=
   2 * P x * P y ^ 3 + 3 * W'.a₁ * P x ^ 2 * P y ^ 2 + 6 * W'.a₂ * P x ^ 3 * P y
     - 8 * W'.a₂ * P y ^ 3 * P z + 9 * W'.a₃ * P x ^ 4 - 6 * W'.a₃ * P x * P y ^ 2 * P z
@@ -698,7 +719,7 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-(2 • P)` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-(2 • P)` for a point `P`. -/
 noncomputable def negDblY (P : Fin 3 → R) : R :=
   -P y ^ 4 - 3 * W'.a₁ * P x * P y ^ 3 - 9 * W'.a₃ * P x ^ 3 * P y + 3 * W'.a₃ * P y ^ 3 * P z
     - 3 * W'.a₄ * P x * P y ^ 2 * P z - 27 * W'.a₆ * P x ^ 3 * P z + 9 * W'.a₆ * P y ^ 2 * P z ^ 2
@@ -783,7 +804,7 @@ lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblY (P : Fin 3 → R) : R :=
   W'.negY ![W'.dblX P, W'.negDblY P, W'.dblZ P]
 
@@ -885,8 +906,8 @@ lemma isUnit_addU_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0
   (addU_ne_zero_of_Y_ne hPz hQz hy).isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Z`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def addZ (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q z + 3 * P x * Q x ^ 2 * P z + P y ^ 2 * Q z ^ 2 - Q y ^ 2 * P z ^ 2
     + W'.a₁ * P x * P y * Q z ^ 2 - W'.a₁ * Q x * Q y * P z ^ 2 - W'.a₂ * P x ^ 2 * Q z ^ 2
@@ -942,8 +963,8 @@ private lemma toAffine_slope_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : 
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `X`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def addX (P Q : Fin 3 → R) : R :=
   -P x * Q y ^ 2 * P z + Q x * P y ^ 2 * Q z - 2 * P x * P y * Q y * Q z + 2 * Q x * P y * Q y * P z
     - W'.a₁ * P x ^ 2 * Q y * Q z + W'.a₁ * Q x ^ 2 * P y * P z + W'.a₂ * P x ^ 2 * Q x * Q z
@@ -1010,8 +1031,8 @@ lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`. Note
+that this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def negAddY (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q y + 3 * P x * Q x ^ 2 * P y - P y ^ 2 * Q y * Q z + P y * Q y ^ 2 * P z
     + W'.a₁ * P x * Q y ^ 2 * P z - W'.a₁ * Q x * P y ^ 2 * Q z - W'.a₂ * P x ^ 2 * Q y * Q z
@@ -1089,8 +1110,8 @@ lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `0` if the representatives of `P` and `Q` are equal. -/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, W'.addZ P Q]
 
@@ -1134,8 +1155,8 @@ lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
+/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
+this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
 noncomputable def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
   ![W'.addX P Q, W'.addY P Q, W'.addZ P Q]
 
@@ -1317,25 +1338,25 @@ lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
 
 lemma add_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z = 0) (hQz : Q z = 0) : W.add P Q = P y ^ 4 • ![0, 1, 0] := by
-  rw [add, if_pos <| equiv_of_Z_eq_zero hP hQ hPz hQz, dblXYZ_of_Z_eq_zero hP.left hPz]
+  rw [add_of_equiv <| equiv_of_Z_eq_zero hP hQ hPz hQz, dblXYZ_of_Z_eq_zero hP.left hPz]
 
 lemma add_of_Z_eq_zero_left [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
     (hPz : P z = 0) (hQz : Q z ≠ 0) : W'.add P Q = (P y ^ 2 * Q z) • Q := by
-  rw [add, if_neg <| not_equiv_of_Z_eq_zero_left hPz hQz, addXYZ_of_Z_eq_zero_left hP hPz]
+  rw [add_of_not_equiv <| not_equiv_of_Z_eq_zero_left hPz hQz, addXYZ_of_Z_eq_zero_left hP hPz]
 
 lemma add_of_Z_eq_zero_right [NoZeroDivisors R] {P Q : Fin 3 → R} (hQ : W'.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z = 0) : W'.add P Q = -(Q y ^ 2 * P z) • P := by
-  rw [add, if_neg <| not_equiv_of_Z_eq_zero_right hPz hQz, addXYZ_of_Z_eq_zero_right hQ hQz]
+  rw [add_of_not_equiv <| not_equiv_of_Z_eq_zero_right hPz hQz, addXYZ_of_Z_eq_zero_right hQ hQz]
 
 lemma add_of_Y_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) (hy' : P y * Q z = W.negY Q * P z) :
     W.add P Q = W.dblU P • ![0, 1, 0] := by
-  rw [add, if_pos <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy, dblXYZ_of_Y_eq hP hPz hQz hx hy hy']
+  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy, dblXYZ_of_Y_eq hP hPz hQz hx hy hy']
 
 lemma add_of_Y_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ Q y * P z) :
     W.add P Q = addU P Q • ![0, 1, 0] := by
-  rw [add, if_neg <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
+  rw [add_of_not_equiv <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
 
 lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
@@ -1344,7 +1365,7 @@ lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1] := by
-  rw [add, if_pos <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy,
+  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy,
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
 lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
@@ -1353,17 +1374,17 @@ lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (h
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1] := by
-  rw [add, if_neg <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
+  rw [add_of_not_equiv <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
 
 private lemma nonsingular_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z) : W.Nonsingular
+    (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : W.Nonsingular
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1] :=
   (nonsingular_some ..).mpr <| Affine.nonsingular_add ((nonsingular_of_Z_ne_zero hPz).mp hP)
-    ((nonsingular_of_Z_ne_zero hQz).mp hQ) (by rwa [← X_eq_iff hPz hQz, ne_eq, ← Y_eq_iff' hPz hQz])
+    ((nonsingular_of_Z_ne_zero hQz).mp hQ) <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]
 
 lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     W.Nonsingular <| W.add P Q := by
@@ -1376,20 +1397,19 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
   · by_cases hQz : Q z = 0
     · simpa only [add_of_Z_eq_zero_right hQ.left hPz hQz,
         nonsingular_smul _ (((isUnit_Y_of_Z_eq_zero hQ hQz).pow 2).mul <| Ne.isUnit hPz).neg]
-    · by_cases hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z
-      · by_cases hx : P x * Q z = Q x * P z
-        · simp only [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx,
-            nonsingular_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx,
-            nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy]
-        · simp only [add_of_X_ne hP.left hQ.left hPz hQz hx,
-            nonsingular_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx,
-            nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy]
-      · rw [_root_.not_imp, not_ne_iff] at hxy
-        by_cases hy : P y * Q z = Q y * P z
+    · by_cases hxy : P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z
+      · by_cases hy : P y * Q z = Q y * P z
         · simp only [add_of_Y_eq hP.left hPz hQz hxy.left hy hxy.right, nonsingular_smul _ <|
               isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, nonsingular_zero]
         · simp only [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             nonsingular_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, nonsingular_zero]
+      · have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
+        by_cases hx : P x * Q z = Q x * P z
+        · simpa only [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx,
+            nonsingular_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <|
+              not_and.mp hxy hx]
+        · simpa only [add_of_X_ne hP.left hQ.left hPz hQz hx,
+            nonsingular_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx]
 
 variable (W') in
 /-- The addition of two point classes. If `P` is a point representative,
@@ -1402,25 +1422,25 @@ lemma addMap_eq (P Q : Fin 3 → R) : W'.addMap ⟦P⟧ ⟦Q⟧ = ⟦W'.add P Q�
 
 lemma addMap_of_Z_eq_zero_left {P : Fin 3 → F} {Q : PointClass F} (hP : W.Nonsingular P)
     (hQ : W.NonsingularLift Q) (hPz : P z = 0) : W.addMap ⟦P⟧ Q = Q := by
-  rcases Q with ⟨Q⟩
+  revert hQ
+  refine Q.inductionOn (motive := fun Q => _ → W.addMap _ Q = Q) fun Q hQ => ?_
   by_cases hQz : Q z = 0
-  · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_Y_of_Z_eq_zero hP hPz).pow 4, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hQ hQz
-  · erw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
       smul_eq _ <| ((isUnit_Y_of_Z_eq_zero hP hPz).pow 2).mul <| Ne.isUnit hQz]
-    rfl
 
 lemma addMap_of_Z_eq_zero_right {P : PointClass F} {Q : Fin 3 → F} (hP : W.NonsingularLift P)
     (hQ : W.Nonsingular Q) (hQz : Q z = 0) : W.addMap P ⟦Q⟧ = P := by
-  rcases P with ⟨P⟩
+  revert hP
+  refine P.inductionOn (motive := fun P => _ → W.addMap P _ = P) fun P hP => ?_
   by_cases hPz : P z = 0
-  · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_Y_of_Z_eq_zero hP hPz).pow 4, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hP hPz
-  · erw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
       smul_eq _ (((isUnit_Y_of_Z_eq_zero hQ hQz).pow 2).mul <| Ne.isUnit hPz).neg]
-    rfl
 
 lemma addMap_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy' : P y * Q z = W.negY Q * P z) :
@@ -1432,14 +1452,15 @@ lemma addMap_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Equation
       smul_eq _ <| isUnit_addU_of_Y_ne hPz hQz hy]
 
 lemma addMap_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z) : W.addMap ⟦P⟧ ⟦Q⟧ =
+    (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) :
+    W.addMap ⟦P⟧ ⟦Q⟧ =
       ⟦![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1]⟧ := by
   by_cases hx : P x * Q z = Q x * P z
-  · rw [addMap_eq, add_of_Y_ne' hP hQ hPz hQz hx <| hxy hx,
-      smul_eq _ <| isUnit_dblZ_of_Y_ne' hP hQ hPz hQz hx <| hxy hx]
+  · rw [addMap_eq, add_of_Y_ne' hP hQ hPz hQz hx <| not_and.mp hxy hx,
+      smul_eq _ <| isUnit_dblZ_of_Y_ne' hP hQ hPz hQz hx <| not_and.mp hxy hx]
   · rw [addMap_eq, add_of_X_ne hP hQ hPz hQz hx, smul_eq _ <| isUnit_addZ_of_X_ne hP hQ hx]
 
 lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
@@ -1465,7 +1486,7 @@ namespace Point
 lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
   rfl
 
-instance instZeroPoint [Nontrivial R] : Zero W'.Point :=
+instance [Nontrivial R] : Zero W'.Point :=
   ⟨⟨nonsingularLift_zero⟩⟩
 
 lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
@@ -1473,6 +1494,9 @@ lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
 
 lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![0, 1, 0]⟧ :=
   rfl
+
+lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]⟧) : mk h ≠ 0 :=
+  (not_equiv_of_Z_eq_zero_right one_ne_zero rfl).comp <| Quotient.eq.mp.comp Point.ext_iff.mp
 
 /-- The map from a nonsingular rational point on a Weierstrass curve `W'` in affine coordinates
 to the corresponding nonsingular rational point on `W'` in projective coordinates. -/
@@ -1487,17 +1511,18 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
     fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
-lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
-  obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
-  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
+lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 :=
+  mk_ne_zero <| (nonsingularLift_some ..).mpr h
+
+@[deprecated (since := "2025-02-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
-instance instNegPoint : Neg W.Point :=
+instance : Neg W.Point :=
   ⟨neg⟩
 
 lemma neg_def (P : W.Point) : -P = P.neg :=
@@ -1511,7 +1536,7 @@ Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance : Add W.Point :=
   ⟨add⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
@@ -1577,7 +1602,7 @@ lemma toAffine_neg {P : Fin 3 → F} (hP : W.Nonsingular P) :
 
 private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z) : toAffine W
+    (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : toAffine W
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
@@ -1585,7 +1610,7 @@ private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular 
         1] = toAffine W P + toAffine W Q := by
   rw [toAffine_some <| nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy, toAffine_of_Z_ne_zero hP hPz,
     toAffine_of_Z_ne_zero hQ hQz,
-    Affine.Point.add_of_imp <| by rwa [← X_eq_iff hPz hQz, ne_eq, ← Y_eq_iff' hPz hQz]]
+    Affine.Point.add_some <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]]
 
 lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     toAffine W (W.add P Q) = toAffine W P + toAffine W Q := by
@@ -1600,21 +1625,20 @@ lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingula
     · rw [add_of_Z_eq_zero_right hQ.left hPz hQz,
         toAffine_smul _ (((isUnit_Y_of_Z_eq_zero hQ hQz).pow 2).mul <| Ne.isUnit hPz).neg,
         toAffine_of_Z_eq_zero hQz, add_zero]
-    · by_cases hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z
-      · by_cases hx : P x * Q z = Q x * P z
-        · rw [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx,
-            toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx,
-            toAffine_add_of_Z_ne_zero hP hQ hPz hQz hxy]
-        · rw [add_of_X_ne hP.left hQ.left hPz hQz hx, toAffine_smul _ <|
-              isUnit_addZ_of_X_ne hP.left hQ.left hx, toAffine_add_of_Z_ne_zero hP hQ hPz hQz hxy]
-      · rw [_root_.not_imp, not_ne_iff] at hxy
-        rw [toAffine_of_Z_ne_zero hP hPz, toAffine_of_Z_ne_zero hQ hQz, Affine.Point.add_of_Y_eq
+    · by_cases hxy : P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z
+      · rw [toAffine_of_Z_ne_zero hP hPz, toAffine_of_Z_ne_zero hQ hQz, Affine.Point.add_of_Y_eq
             ((X_eq_iff hPz hQz).mp hxy.left) ((Y_eq_iff' hPz hQz).mp hxy.right)]
         by_cases hy : P y * Q z = Q y * P z
         · rw [add_of_Y_eq hP.left hPz hQz hxy.left hy hxy.right,
             toAffine_smul _ <| isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, toAffine_zero]
         · rw [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             toAffine_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, toAffine_zero]
+      · have := toAffine_add_of_Z_ne_zero hP hQ hPz hQz hxy
+        by_cases hx : P x * Q z = Q x * P z
+        · rwa [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx,
+            toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx]
+        · rwa [add_of_X_ne hP.left hQ.left hPz hQz hx,
+            toAffine_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx]
 
 /-- The map from a nonsingular rational point on a Weierstrass curve `W` in projective coordinates
 to the corresponding nonsingular rational point on `W` in affine coordinates. -/
@@ -1665,13 +1689,238 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
       exact Quotient.eq.mpr <| Setoid.symm <| equiv_some_of_Z_ne_zero hPz
   right_inv := by
     rintro (_ | _)
-    · erw [fromAffine_zero, toAffineLift_zero, Affine.Point.zero_def]
+    · rw [← Affine.Point.zero_def, fromAffine_zero, toAffineLift_zero]
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
 end Point
 
 end Affine
+
+section Map
+
+/-! ### Maps across ring homomorphisms -/
+
+variable {S : Type v} [CommRing S] (f : R →+* S)
+
+@[simp]
+lemma map_polynomial : (W'.map f).toProjective.polynomial = MvPolynomial.map f W'.polynomial := by
+  simp only [polynomial]
+  map_simp
+
+lemma Equation.map {P : Fin 3 → R} (h : W'.Equation P) :
+    (W'.map f).toProjective.Equation (f ∘ P) := by
+  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, ← map_zero f]
+  exact congr_arg f h
+
+variable {f} in
+@[simp]
+lemma map_equation (hf : Function.Injective f) (P : Fin 3 → R) :
+    (W'.map f).toProjective.Equation (f ∘ P) ↔ W'.Equation P := by
+  simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
+
+@[simp]
+lemma map_polynomialX :
+    (W'.map f).toProjective.polynomialX = MvPolynomial.map f W'.polynomialX := by
+  simp only [polynomialX, map_polynomial, pderiv_map]
+
+@[simp]
+lemma map_polynomialY :
+    (W'.map f).toProjective.polynomialY = MvPolynomial.map f W'.polynomialY := by
+  simp only [polynomialY, map_polynomial, pderiv_map]
+
+@[simp]
+lemma map_polynomialZ :
+    (W'.map f).toProjective.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+  simp only [polynomialZ, map_polynomial, pderiv_map]
+
+variable {f} in
+@[simp]
+lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
+    (W'.map f).toProjective.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
+  simp only [Nonsingular, map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
+    eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
+
+@[simp]
+lemma map_negY (P : Fin 3 → R) : (W'.map f).toProjective.negY (f ∘ P) = f (W'.negY P) := by
+  simp only [negY]
+  map_simp
+
+@[simp]
+protected lemma map_neg (P : Fin 3 → R) : (W'.map f).toProjective.neg (f ∘ P) = f ∘ W'.neg P := by
+  simp only [neg, map_negY, comp_fin3]
+  map_simp
+
+@[simp]
+lemma map_dblU {K : Type v} [Field K] (f : F →+* K) (P : Fin 3 → F) :
+    (W.map f).toProjective.dblU (f ∘ P) = f (W.dblU P) := by
+  simp only [dblU_eq]
+  map_simp
+
+@[simp]
+lemma map_dblZ (P : Fin 3 → R) : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
+  simp only [dblZ, negY]
+  map_simp
+
+@[simp]
+lemma map_dblX (P : Fin 3 → R) : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
+  simp only [dblX, map_dblU, map_negY]
+  map_simp
+
+@[simp]
+lemma map_negDblY (P : Fin 3 → R) : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
+  simp only [negDblY, map_dblU, map_dblX, map_negY]
+  map_simp
+
+@[simp]
+lemma map_dblY (P : Fin 3 → R) : (W'.map f).toProjective.dblY (f ∘ P) = f (W'.dblY P) := by
+  simp only [dblY, negY_eq, map_negDblY, map_dblX, map_dblZ]
+  map_simp
+
+@[simp]
+lemma map_dblXYZ (P : Fin 3 → R) : (W'.map f).toProjective.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+  simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
+
+@[simp]
+lemma map_addU {K : Type v} [Field K] (f : F →+* K) (P Q : Fin 3 → F) :
+    addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
+  simp only [addU]
+  map_simp
+
+@[simp]
+lemma map_addZ (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addZ (f ∘ P) (f ∘ Q) = f (W'.addZ P Q) := by
+  simp only [addZ]
+  map_simp
+
+@[simp]
+lemma map_addX (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+  simp only [addX]
+  map_simp
+
+@[simp]
+lemma map_negAddY (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+  simp only [negAddY]
+  map_simp
+
+@[simp]
+lemma map_addY (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+  simp only [addY, negY_eq, map_negAddY, map_addX, map_addZ]
+  map_simp
+
+@[simp]
+lemma map_addXYZ (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+  simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
+
+@[simp]
+protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+    (W.map f).toProjective.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+  by_cases h : P ≈ Q
+  · rw [add_of_equiv <| (comp_equiv_comp f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
+  · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
+
+end Map
+
+section BaseChange
+
+/-! ### Base changes across algebra homomorphisms -/
+
+variable {R : Type r} [CommRing R] (W' : Projective R) {S : Type s} [CommRing S] [Algebra R S]
+  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+
+lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
+  rw [← map_polynomial, map_baseChange]
+
+variable {f} in
+lemma baseChange_equation (hf : Function.Injective f) (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.Equation (f ∘ P) ↔
+      (W'.baseChange A).toProjective.Equation P := by
+  rw [← RingHom.coe_coe, ← map_equation hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+
+lemma baseChange_polynomialX : (W'.baseChange B).toProjective.polynomialX =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialX := by
+  rw [← map_polynomialX, map_baseChange]
+
+lemma baseChange_polynomialY : (W'.baseChange B).toProjective.polynomialY =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialY := by
+  rw [← map_polynomialY, map_baseChange]
+
+lemma baseChange_polynomialZ : (W'.baseChange B).toProjective.polynomialZ =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialZ := by
+  rw [← map_polynomialZ, map_baseChange]
+
+variable {f} in
+lemma baseChange_nonsingular (hf : Function.Injective f) (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.Nonsingular (f ∘ P) ↔
+      (W'.baseChange A).toProjective.Nonsingular P := by
+  rw [← RingHom.coe_coe, ← map_nonsingular hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+
+lemma baseChange_negY (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.negY (f ∘ P) = f ((W'.baseChange A).toProjective.negY P) := by
+  rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
+
+lemma baseChange_neg (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.neg (f ∘ P) = f ∘ (W'.baseChange A).toProjective.neg P := by
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_neg, map_baseChange]
+
+lemma baseChange_dblZ (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblZ (f ∘ P) =
+    f ((W'.baseChange A).toProjective.dblZ P) := by
+  rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
+
+lemma baseChange_dblX (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblX (f ∘ P) =
+    f ((W'.baseChange A).toProjective.dblX P) := by
+  rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
+
+lemma baseChange_negDblY (P : Fin 3 → A) : (W'.baseChange B).toProjective.negDblY (f ∘ P) =
+    f ((W'.baseChange A).toProjective.negDblY P) := by
+  rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
+
+lemma baseChange_dblY (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblY (f ∘ P) =
+    f ((W'.baseChange A).toProjective.dblY P) := by
+  rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
+
+lemma baseChange_dblXYZ (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblXYZ (f ∘ P) =
+    f ∘ (W'.baseChange A).toProjective.dblXYZ P := by
+  rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
+
+lemma baseChange_addX (P Q : Fin 3 → A) : (W'.baseChange B).toProjective.addX (f ∘ P) (f ∘ Q) =
+    f ((W'.baseChange A).toProjective.addX P Q) := by
+  rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
+
+lemma baseChange_negAddY (P Q : Fin 3 → A) :
+    (W'.baseChange B).toProjective.negAddY (f ∘ P) (f ∘ Q) =
+      f ((W'.baseChange A).toProjective.negAddY P Q) := by
+  rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
+
+lemma baseChange_addY (P Q : Fin 3 → A) : (W'.baseChange B).toProjective.addY (f ∘ P) (f ∘ Q) =
+    f ((W'.baseChange A).toProjective.addY P Q) := by
+  rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
+
+lemma baseChange_addXYZ (P Q : Fin 3 → A) : (W'.baseChange B).toProjective.addXYZ (f ∘ P) (f ∘ Q) =
+    f ∘ (W'.baseChange A).toProjective.addXYZ P Q := by
+  rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
+
+variable [Algebra R F] [Algebra S F] [IsScalarTower R S F] {K : Type v} [Field K] [Algebra R K]
+  [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
+
+lemma baseChange_dblU (P : Fin 3 → F) : (W'.baseChange K).toProjective.dblU (f ∘ P) =
+    f ((W'.baseChange F).toProjective.dblU P) := by
+  rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
+
+lemma baseChange_add {P Q : Fin 3 → F} (hP : (W'.baseChange F).toProjective.Nonsingular P)
+    (hQ : (W'.baseChange F).toProjective.Nonsingular Q) :
+    (W'.baseChange K).toProjective.add (f ∘ P) (f ∘ Q) =
+      f ∘ (W'.baseChange F).toProjective.add P Q := by
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add f hP hQ (K := K), map_baseChange]
+
+end BaseChange
 
 end WeierstrassCurve.Projective
 
@@ -1680,4 +1929,4 @@ abbrev WeierstrassCurve.Affine.Point.toProjective {R : Type u} [CommRing R] [Non
     {W : Affine R} (P : W.Point) : W.toProjective.Point :=
   Projective.Point.fromAffine P
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 2100

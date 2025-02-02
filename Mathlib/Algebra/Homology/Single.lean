@@ -44,8 +44,8 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · #adaptation_note /-- after nightly-2024-03-07, the previous sensible proof
-      `rw [if_neg h]; simp` fails with "motive not type correct".
+    · #adaptation_note /-- nightly-2024-03-07
+      the previous sensible proof `rw [if_neg h]; simp` fails with "motive not type correct".
       The following is horrible. -/
       convert (id_zero (C := V)).symm
       all_goals simp [if_neg h]
@@ -220,7 +220,7 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
   left_inv φ := by aesop_cat
-  right_inv f := by aesop_cat
+  right_inv f := by simp
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}

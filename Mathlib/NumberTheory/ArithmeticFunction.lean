@@ -568,6 +568,7 @@ theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) 
 
 end MonoidWithZero
 
+open scoped Function in -- required for scoped `on` notation
 theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by
@@ -589,6 +590,12 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
     (t : Finset ℕ) (ht : t ⊆ l.primeFactors) :
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
+
+theorem map_div_of_coprime [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l/d).Coprime d) (hd : f d ≠ 0) :
+    f (l / d) = f l / f d := by
+  apply (div_eq_of_eq_mul hd ..).symm
+  rw [← hf.right hl, Nat.div_mul_cancel hdl]
 
 @[arith_mult]
 theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
@@ -771,6 +778,24 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply Finset.inter_subset_union
   · simp [factorization_lcm hx hy]
 
+theorem map_gcd [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_lcm : f (x.lcm y) ≠ 0) :
+    f (x.gcd y) = f x * f y / f (x.lcm y) := by
+  rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_left₀ _ hf_lcm]
+
+theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_gcd : f (x.gcd y) ≠ 0) :
+    f (x.lcm y) = f x * f y / f (x.gcd y) := by
+  rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_right₀ _ hf_gcd]
+
+theorem eq_zero_of_squarefree_of_dvd_eq_zero [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (hf : IsMultiplicative f) {m n : ℕ} (hn : Squarefree n) (hmn : m ∣ n)
+    (h_zero : f m = 0) :
+    f n = 0 := by
+  rcases hmn with ⟨k, rfl⟩
+  simp only [MulZeroClass.zero_mul, eq_self_iff_true, hf.map_mul_of_coprime
+    (coprime_of_squarefree_mul hn), h_zero]
+
 end IsMultiplicative
 
 section SpecialFunctions
@@ -813,13 +838,13 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
 
 theorem sigma_apply_prime_pow {k p i : ℕ} (hp : p.Prime) :
-    σ k (p ^ i) = ∑ j in .range (i + 1), p ^ (j * k) := by
+    σ k (p ^ i) = ∑ j ∈ .range (i + 1), p ^ (j * k) := by
   simp [sigma_apply, divisors_prime_pow hp, Nat.pow_mul]
 
 theorem sigma_one_apply (n : ℕ) : σ 1 n = ∑ d ∈ divisors n, d := by simp [sigma_apply]
 
 theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
-    σ 1 (p ^ i) = ∑ k in .range (i + 1), p ^ k := by
+    σ 1 (p ^ i) = ∑ k ∈ .range (i + 1), p ^ k := by
   simp [sigma_apply_prime_pow hp]
 
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]

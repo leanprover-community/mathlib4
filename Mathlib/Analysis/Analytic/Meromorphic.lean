@@ -26,9 +26,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- Meromorphy of `f` at `x` (more precisely, on a punctured neighbourhood of `x`; the value at
 `x` itself is irrelevant). -/
+@[fun_prop]
 def MeromorphicAt (f : 𝕜 → E) (x : 𝕜) :=
   ∃ (n : ℕ), AnalyticAt 𝕜 (fun z ↦ (z - x) ^ n • f z) x
 
+@[fun_prop]
 lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
@@ -37,9 +39,11 @@ namespace MeromorphicAt
 
 lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
 
+@[fun_prop]
 lemma const (e : E) (x : 𝕜) : MeromorphicAt (fun _ ↦ e) x :=
   analyticAt_const.meromorphicAt
 
+@[fun_prop]
 lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f + g) x := by
   rcases hf with ⟨m, hf⟩
@@ -53,34 +57,62 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
   exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
    (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
+@[fun_prop]
+lemma add' {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z + g z) x :=
+  hf.add hg
+
+@[fun_prop]
 lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul hg using 2 with z
+  convert hf.smul' hg using 2 with z
   rw [Pi.smul_apply', smul_eq_mul]
   module
 
+@[fun_prop]
+lemma smul' {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z • g z) x :=
+  hf.smul hg
+
+@[fun_prop]
 lemma mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x :=
   hf.smul hg
 
+@[fun_prop]
+lemma mul' {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z * g z) x :=
+  hf.smul hg
+
+@[fun_prop]
 lemma neg {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
   convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
+
+@[fun_prop]
+lemma neg' {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ -f z) x :=
+  hf.neg
 
 @[simp]
 lemma neg_iff {f : 𝕜 → E} {x : 𝕜} :
     MeromorphicAt (-f) x ↔ MeromorphicAt f x :=
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, MeromorphicAt.neg⟩
 
+@[fun_prop]
 lemma sub {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
   convert hf.add hg.neg using 1
   ext1 z
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.neg_apply, sub_eq_add_neg]
+
+@[fun_prop]
+lemma sub' {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z - g z) x :=
+  hf.sub hg
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
 neighbourhood of `x` (not on `f x`) -/
@@ -89,13 +121,14 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
   have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
-  refine (this.smul hf).congr ?_
+  refine (this.smul' hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
   · simp
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
 
+@[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
   by_cases h_eq : (fun z ↦ (z - x) ^ m • f z) =ᶠ[𝓝 x] 0
@@ -110,7 +143,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
-    refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr ?_⟩
+    refine ⟨n + 1, (this.smul' <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
@@ -123,24 +156,46 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
       rw [pow_succ', mul_assoc, hfg]
       ring
 
+@[fun_prop]
+lemma inv' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ (f z)⁻¹) x :=
+  hf.inv
+
 @[simp]
 lemma inv_iff {f : 𝕜 → 𝕜} {x : 𝕜} :
     MeromorphicAt f⁻¹ x ↔ MeromorphicAt f x :=
   ⟨fun h ↦ by simpa only [inv_inv] using h.inv, MeromorphicAt.inv⟩
 
+@[fun_prop]
 lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f / g) x :=
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
 
+@[fun_prop]
+lemma div' {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z / g z) x :=
+  hf.div hg
+
+@[fun_prop]
 lemma pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
   | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
   | succ m hm => simpa only [pow_succ] using hm.mul hf
 
+@[fun_prop]
+lemma pow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
+    MeromorphicAt (fun z ↦ (f z) ^ n) x :=
+  hf.pow n
+
+@[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   induction n with
   | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
+
+@[fun_prop]
+lemma zpow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
+    MeromorphicAt (fun z ↦ (f z) ^ n) x :=
+  hf.zpow n
 
 theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y := by
@@ -170,14 +225,14 @@ lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, WithTop.map_top, ← WithTop.coe_natCast,
+  · rw [h, ENat.map_top, ← WithTop.coe_natCast,
       top_sub, eq_self, true_iff, eventually_nhdsWithin_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
-  · obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← hm, WithTop.map_coe, sub_eq_top_iff, eq_false_intro WithTop.coe_ne_top, false_or]
-    simp only [WithTop.natCast_ne_top, false_iff]
+  · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
+    simp only [← hm, ENat.map_coe, WithTop.coe_natCast, sub_eq_top_iff, WithTop.natCast_ne_top,
+      or_self, false_iff]
     contrapose! h
     rw [AnalyticAt.order_eq_top_iff]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
@@ -189,7 +244,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, WithTop.map_top, ← WithTop.coe_natCast, top_sub,
+  · rw [h, ENat.map_top, ← WithTop.coe_natCast, top_sub,
       eq_false_intro WithTop.top_ne_coe, false_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
@@ -200,8 +255,8 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     filter_upwards [h, hg_eq] with z hfz hfz_eq hz
     rwa [hfz_eq hz, ← mul_smul, smul_eq_zero_iff_right] at hfz
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
-  · obtain ⟨m, h⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← h, WithTop.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
+  · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
+    rw [← h, ENat.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
     obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
@@ -216,12 +271,36 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
 lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     hf.meromorphicAt.order = hf.order.map (↑) := by
   rcases eq_or_ne hf.order ⊤ with ho | ho
-  · rw [ho, WithTop.map_top, order_eq_top_iff]
+  · rw [ho, ENat.map_top, order_eq_top_iff]
     exact (hf.order_eq_top_iff.mp ho).filter_mono nhdsWithin_le_nhds
-  · obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp ho
-    simp_rw [← hn, WithTop.map_coe, order_eq_int_iff, zpow_natCast]
+  · obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp ho
+    simp_rw [← hn, ENat.map_coe, order_eq_int_iff, zpow_natCast]
     rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
+
+/-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
+theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜}
+    (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    (hf.smul hg).order = hf.order + hg.order := by
+  -- Trivial cases: one of the functions vanishes around z₀
+  cases' h₂f : hf.order with m h₂f
+  · simp only [top_add, order_eq_top_iff] at h₂f ⊢
+    filter_upwards [h₂f] with z hz using by simp [hz]
+  cases' h₂g : hg.order with n h₂f
+  · simp only [add_top, order_eq_top_iff] at h₂g ⊢
+    filter_upwards [h₂g] with z hz using by simp [hz]
+  -- Non-trivial case: both functions do not vanish around z₀
+  rw [← WithTop.coe_add, order_eq_int_iff]
+  obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff _).1 h₂f
+  obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff _).1 h₂g
+  use F • G, h₁F.smul h₁G, by simp [h₂F, h₂G]
+  filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
+  simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
+
+/-- The order is additive when multiplying meromorphic functions. -/
+theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    (hf.mul hg).order = hf.order + hg.order :=
+  hf.order_smul hg
 
 lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : MeromorphicAt f x ↔
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by

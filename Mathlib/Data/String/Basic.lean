@@ -28,10 +28,12 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
     else true
   else false
 
+/-- This overrides an instance in core Lean. -/
 instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 
-instance decidableLT : DecidableRel (α := String) (· < ·) := by
+/-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
+instance decidableLT' : DecidableRel (α := String) (· < ·) := by
   simp only [LT']
   infer_instance -- short-circuit type class inference
 

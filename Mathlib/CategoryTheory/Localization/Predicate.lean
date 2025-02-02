@@ -432,7 +432,9 @@ same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`.
 def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
-lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := rfl
+lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
+  dsimp [uniq, Equivalence.trans]
+  ext <;> aesop
 
 /-- The functor of equivalence of localized categories given by `Localization.uniq` is
 compatible with the localization functors. -/
