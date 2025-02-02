@@ -58,11 +58,11 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
 namespace AddCommGrp
 
 theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
-    Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
+    Injective (C := AddCommGrp) (AddCommGrp.of A) :=
   ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
-    Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
+    Injective (C := AddCommGrp) (AddCommGrp.of A) :=
   (injective_as_module_iff A).mp <|
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
 

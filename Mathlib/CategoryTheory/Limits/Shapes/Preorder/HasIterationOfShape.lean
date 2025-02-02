@@ -25,9 +25,9 @@ namespace CategoryTheory.Limits
 variable (J : Type w) [LinearOrder J] (C : Type u) [Category.{v} C]
   (K : Type u') [Category.{v'} K]
 
-/-- A category `C` has iterations of shape a preordered type `J`
+/-- A category `C` has iterations of shape a linearly ordered type `J`
 when certain specific shapes of colimits exists: colimits indexed by `J`,
-and by `Set.Iio j` for `j : J`.  -/
+and by `Set.Iio j` for `j : J`. -/
 class HasIterationOfShape : Prop where
   hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
     HasColimitsOfShape (Set.Iio j) C := by infer_instance
@@ -72,20 +72,20 @@ lemma hasColimitsOfShape_of_initialSeg
     obtain ⟨i, hi₀⟩ : ∃ i, i = s.top := ⟨_, rfl⟩
     induction i using SuccOrder.limitRecOn with
     | hm i hi =>
-        subst hi₀
-        exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
+      subst hi₀
+      exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
     | hs i hi _ =>
-        obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
-          simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)
-        have : OrderTop α :=
-          { top := a
-            le_top b := by
-              rw [← s.le_iff_le]
-              exact Order.le_of_lt_succ (by simpa only [hi₀] using s.lt_top b) }
-        infer_instance
+      obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
+        simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)
+      have : OrderTop α :=
+        { top := a
+          le_top b := by
+            rw [← s.le_iff_le]
+            exact Order.le_of_lt_succ (by simpa only [hi₀] using s.lt_top b) }
+      infer_instance
     | hl i hi =>
-        subst hi₀
-        exact hasColimitsOfShape_of_isSuccLimit' C s hi
+      subst hi₀
+      exact hasColimitsOfShape_of_isSuccLimit' C s hi
 
 lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
     (h : α ≤i J) [Nonempty α] :
