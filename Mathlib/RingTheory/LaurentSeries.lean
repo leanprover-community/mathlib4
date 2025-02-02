@@ -65,9 +65,9 @@ inside the `X`-adic completion of `RatFunc K`.
 
 ## Implementation details
 
-* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
+* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ R`, the definition of the
 coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go back-and-forth
-from `X : ⸨_⸩` to `single 1 1 : HahnSeries ℤ _`.
+from `X : R⸨X⸩` to `single 1 1 : HahnSeries ℤ R`.
 * To prove the isomorphism between the `X`-adic completion of `RatFunc K` and `K⸨X⸩` we construct
 two completions of `RatFunc K`: the first (`LaurentSeries.ratfuncAdicComplPkg`) is its abstract
 uniform completion; the second (`LaurentSeries.LaurentSeriesPkg`) is simply `K⸨X⸩`, once we prove
