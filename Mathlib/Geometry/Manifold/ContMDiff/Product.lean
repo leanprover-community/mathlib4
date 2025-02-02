@@ -354,7 +354,6 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
-  [IsManifold J n N] [IsManifold J n N'] [Nonempty H']
 
 open Topology
 
@@ -438,6 +437,21 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
     · -- They agree at the image of x.
       simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
       congr
-  | inr x => sorry -- should be analogous
+  | inr x =>
+    -- In charts around x : M, the map f ⊔ g looks like g.
+    -- This is how they both look like in extended charts.
+    have : ContDiffWithinAt 𝕜 n ((extChartAt J (g x)) ∘ g ∘ (extChartAt I x).symm)
+        (range I) ((extChartAt I (.inr x : M ⊕ M')) (Sum.inr x)) := by
+      let hg' := hg x
+      rw [contMDiffAt_iff] at hg'
+      simpa only [extChartAt_inr_apply] using hg'.2
+    apply this.congr_of_eventuallyEq
+    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl,
+        Sum.inl_injective.extend_apply]
+      filter_upwards with a
+      congr
+    · -- They agree at the image of x.
+      simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
+      congr
 
 end disjointUnion
