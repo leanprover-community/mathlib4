@@ -19,6 +19,8 @@ namespace WalkingMulticospan
 
 deriving instance Fintype for WalkingMulticospan
 
+attribute [nolint unusedArguments] WalkingMulticospan.proxyType
+
 instance : FinCategory (WalkingMulticospan fst snd) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
@@ -43,6 +45,8 @@ end WalkingMulticospan
 namespace WalkingMultispan
 
 deriving instance Fintype for WalkingMultispan
+
+attribute [nolint unusedArguments] WalkingMultispan.proxyType
 
 instance : FinCategory (WalkingMultispan fst snd) where
   fintypeHom
