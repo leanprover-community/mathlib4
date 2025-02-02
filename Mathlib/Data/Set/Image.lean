@@ -686,10 +686,6 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
     (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) := by
   rw [← exists_range_iff, range_image]; rfl
 
-@[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
-theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
-    (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
-
 @[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
@@ -973,6 +969,13 @@ theorem range_some_union_none (α : Type*) : range (some : α → Option α) ∪
 @[simp]
 theorem insert_none_range_some (α : Type*) : insert none (range (some : α → Option α)) = univ :=
   (isCompl_range_some_none α).symm.sup_eq_top
+
+lemma image_of_range_union_range_eq_univ {α β γ γ' δ δ' : Type*}
+    {h : β → α} {f : γ → β} {f₁ : γ' → α} {f₂ : γ → γ'} {g : δ → β} {g₁ : δ' → α} {g₂ : δ → δ'}
+    (hf : h ∘ f = f₁ ∘ f₂) (hg : h ∘ g = g₁ ∘ g₂) (hfg : range f ∪ range g = univ) (s : Set β) :
+    h '' s = f₁ '' (f₂ '' (f ⁻¹' s)) ∪ g₁ '' (g₂ '' (g ⁻¹' s)) := by
+  rw [← image_comp, ← image_comp, ← hf, ← hg, image_comp, image_comp, image_preimage_eq_inter_range,
+    image_preimage_eq_inter_range, ← image_union, ← inter_union_distrib_left, hfg, inter_univ]
 
 end Range
 

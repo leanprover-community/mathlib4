@@ -3,14 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
-import Mathlib.Data.ZMod.Quotient
-import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Tactic.Group
-import Mathlib.GroupTheory.Exponent
 
 /-!
 # Cyclic groups
@@ -39,6 +36,7 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 cyclic group
 -/
 
+assert_not_exists TwoSidedIdeal
 
 variable {α G G' : Type*} {a : α}
 
@@ -73,21 +71,25 @@ theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCy
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
 
+@[to_additive]
+instance IsCyclic.commutative [Group α] [IsCyclic α] :
+    Std.Commutative (· * · : α → α → α) where
+  comm x y :=
+    let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+    let ⟨_, hx⟩ := hg x
+    let ⟨_, hy⟩ := hg y
+    hy ▸ hx ▸ zpow_mul_comm _ _ _
+
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
       "A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`."]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
-  { hg with
-    mul_comm := fun x y =>
-      let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-      let ⟨_, hn⟩ := hg x
-      let ⟨_, hm⟩ := hg y
-      hm ▸ hn ▸ zpow_mul_comm _ _ _ }
+  { hg with mul_comm := commutative.comm }
 
 instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
-  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
+  ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
 
@@ -111,6 +113,14 @@ lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
     IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
   simp_rw [isCyclic_iff_exists_zpowers_eq_top, ← card_eq_iff_eq_top, Nat.card_zpowers]
 
+@[to_additive]
+lemma isCyclic_iff_exists_natCard_le_orderOf [Finite α] :
+    IsCyclic α ↔ ∃ g : α, Nat.card α ≤ orderOf g := by
+  rw [isCyclic_iff_exists_orderOf_eq_natCard]
+  apply exists_congr
+  intro g
+  exact ⟨Eq.ge, le_antisymm orderOf_le_card⟩
+
 @[deprecated (since := "2024-12-20")]
 alias isCyclic_iff_exists_ofOrder_eq_natCard := isCyclic_iff_exists_orderOf_eq_natCard
 
@@ -129,6 +139,11 @@ alias IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
 theorem isCyclic_of_orderOf_eq_card [Finite α] (x : α) (hx : orderOf x = Nat.card α) :
     IsCyclic α :=
   isCyclic_iff_exists_orderOf_eq_natCard.mpr ⟨x, hx⟩
+
+@[to_additive]
+theorem isCyclic_of_card_le_orderOf [Finite α] (x : α) (hx : Nat.card α ≤ orderOf x) :
+    IsCyclic α :=
+  isCyclic_iff_exists_natCard_le_orderOf.mpr ⟨x, hx⟩
 
 @[to_additive]
 theorem Subgroup.eq_bot_or_eq_top_of_prime_card
@@ -283,8 +298,7 @@ open Finset Nat
 
 section Classical
 
-open scoped Classical
-
+open scoped Classical in
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
     #{a : α | a ^ n = 1} ≤ n :=
@@ -451,8 +465,8 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
   have h2 :
     (∑ m ∈ d.divisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.divisors, φ m := by
-    rw [← filter_dvd_eq_divisors hd0, sum_card_orderOf_eq_card_pow_eq_one hd0,
-      filter_dvd_eq_divisors hd0, sum_totient, ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
+    rw [sum_card_orderOf_eq_card_pow_eq_one hd0, sum_totient,
+      ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
   simpa [← cons_self_properDivisors hd0, ← h1] using h2
 
 @[to_additive]
@@ -467,7 +481,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   apply lt_irrefl c
   calc
     c = ∑ m ∈ c.divisors, #{a : α | orderOf a = m} := by
-      simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
+      simp only [sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
       simp [c]
     _ = ∑ m ∈ c.divisors.erase d, #{a : α | orderOf a = m} := by
@@ -858,3 +872,13 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
+
+lemma DihedralGroup.not_isCyclic {n : ℕ} (h1 : n ≠ 1) : ¬IsCyclic (DihedralGroup n) := fun h' => by
+  by_cases h2 : n = 2
+  · simpa [exponent, card, h2] using h'.exponent_eq_card
+  · exact not_commutative h1 h2 h'.commutative
+
+lemma DihedralGroup.isCyclic_iff {n : ℕ} :
+    IsCyclic (DihedralGroup n) ↔ n = 1 where
+  mp := by contrapose; exact not_isCyclic
+  mpr := by rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card

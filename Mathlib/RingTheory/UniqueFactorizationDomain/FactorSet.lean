@@ -247,8 +247,6 @@ theorem factors_eq_top_iff_zero {a : Associates α} : a.factors = ⊤ ↔ a = 0 
   nontriviality α
   exact ⟨fun h ↦ by rwa [← factors_prod a, FactorSet.prod_eq_zero_iff], fun h ↦ h ▸ factors_zero⟩
 
-@[deprecated (since := "2024-04-16")] alias factors_eq_none_iff_zero := factors_eq_top_iff_zero
-
 theorem factors_eq_some_iff_ne_zero {a : Associates α} :
     (∃ s : Multiset { p : Associates α // Irreducible p }, a.factors = s) ↔ a ≠ 0 := by
   simp_rw [@eq_comm _ a.factors, ← WithTop.ne_top_iff_exists]

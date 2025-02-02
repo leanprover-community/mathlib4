@@ -161,7 +161,7 @@ end Approx
 open Approx
 
 /-- Internal definition for `M`. It is needed to avoid name clashes
-between `M.mk` and `M.cases_on` and the declarations generated for
+between `M.mk` and `M.casesOn` and the declarations generated for
 the structure -/
 structure MIntl where
   /-- An `n`-th level approximation, for each depth `n` -/
@@ -378,8 +378,7 @@ theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
 /-- `IsPath p x` tells us if `p` is a valid path through `x` -/
 inductive IsPath : Path F → M F → Prop
   | nil (x : M F) : IsPath [] x
-  |
-  cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
+  | cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
     x = M.mk ⟨a, f⟩ → IsPath xs (f i) → IsPath (⟨a, i⟩ :: xs) x
 
 theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :

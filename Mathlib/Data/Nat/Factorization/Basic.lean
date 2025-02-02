@@ -556,10 +556,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
     ∏ p ∈ range m with p.Prime, p ^ padicValNat p n = n := by
-  -- Porting note: was `nth_rw_rhs`
-  conv =>
-    rhs
-    rw [← factorization_prod_pow_eq_self hn]
+  nth_rw 2 [← factorization_prod_pow_eq_self hn]
   rw [eq_comm]
   apply Finset.prod_subset_one_on_sdiff
   · exact fun p hp => Finset.mem_filter.mpr ⟨Finset.mem_range.2 <| pr.trans_le' <|

@@ -77,10 +77,6 @@ theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
   ext p
   simp
 
-@[deprecated (since := "2024-07-16")] alias factors_count_eq := primeFactorsList_count_eq
-@[deprecated (since := "2024-07-16")]
-alias factorization_eq_factors_multiset := factorization_eq_primeFactorsList_multiset
-
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
     0 < n.factorization p := by
     rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
