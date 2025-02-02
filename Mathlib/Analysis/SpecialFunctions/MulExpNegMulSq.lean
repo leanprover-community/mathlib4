@@ -45,9 +45,6 @@ def mulExpNegMulSq (ε x : ℝ) := x * exp (- (ε * x * x))
 
 theorem mulExpNegSq_apply (ε x : ℝ) : mulExpNegMulSq ε x = x * exp (- (ε * x * x)) := rfl
 
-theorem mulExpNegSq_one (x : ℝ) : mulExpNegMulSq 1 x = x * exp (-x * x) := by
-  simp [mulExpNegMulSq]
-
 theorem neg_mulExpNegMulSq_neg (ε x : ℝ) : - mulExpNegMulSq ε (-x) = mulExpNegMulSq ε x := by
   simp [mulExpNegMulSq]
 
@@ -155,8 +152,8 @@ theorem dist_mulExpNegMulSq_comp_le_two_mul_sqrt (hε : ε > 0) (x y : E) :
 theorem dist_mulExpNegMulSq_comp_le_dist {f : E → ℝ} (hε : ε > 0) :
     dist (((mulExpNegMulSq ε) ∘ g) x) (((mulExpNegMulSq ε) ∘ f) x) ≤ dist (g x) (f x) := by
   simp only [Function.comp_apply]
-  have := lipschitzWith_one_mulExpNegMulSq hε (g x) (f x)
-  rwa [ENNReal.coe_one, one_mul, ← (toReal_le_toReal (edist_ne_top _ _) (edist_ne_top _ _))] at this
+  have h := lipschitzWith_one_mulExpNegMulSq hε (g x) (f x)
+  rwa [ENNReal.coe_one, one_mul, ← (toReal_le_toReal (edist_ne_top _ _) (edist_ne_top _ _))] at h
 
 /--
 For fixed function `g`, `(mulExpNegMulSq ε) ∘ g` converges pointwise to `g`, as `ε → 0`.
