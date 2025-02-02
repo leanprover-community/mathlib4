@@ -101,7 +101,7 @@ theorem caratheodory_semiring_extension' (hC : IsSetSemiring C) (m : AddContent 
   let A : ℕ → Finset (Set α) := fun i ↦ hC.disjointOfDiff (hf i) (hC.inter_mem _ (hf i) _ hs)
   have h_diff_eq_sUnion i : f i \ s = ⋃₀ A i := by simp [A, IsSetSemiring.sUnion_disjointOfDiff]
   classical
-  have h_m_eq i : m (f i) = m (f i ∩ s) + ∑ u in A i, m u :=
+  have h_m_eq i : m (f i) = m (f i ∩ s) + ∑ u ∈ A i, m u :=
     eq_add_disjointOfDiff_of_subset hC (hC.inter_mem (f i) (hf i) s hs) (hf i) inter_subset_left
   simp_rw [h_m_eq]
   rw [tsum_add ENNReal.summable ENNReal.summable]
