@@ -81,7 +81,7 @@ variable {G V}
 theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
-variable {k G V}
+variable {k}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
@@ -517,6 +517,10 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
 noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
   finsupp (leftRegular k G) α
+
+noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
+    AddCommGroup (free k G α).asModule :=
+  Finsupp.instAddCommGroup
 
 @[simp]
 lemma free_single_single (g h : G) (i : α) (r : k) :
