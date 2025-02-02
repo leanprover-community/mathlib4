@@ -20,9 +20,11 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 * `normedMk` : the normed group hom from `M` to `SeparationQuotient M`.
 
-* `liftNormedAddGroupHom` : implements the universal property of `SeparationQuotient M`. Here
-    `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)` and
-    `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N`.
+* `liftNormedAddGroupHom` :
+Any bounded group hom `f : M → N` such that `∀ x, ‖x‖ = 0 → f x = 0` descends to a bounded group hom
+`SeparationQuotient M → N`. Here, `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)`
+and `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N` such that
+`liftNormedAddGroupHom f hf (mk x) = f x`.
 
 ## Main results
 
@@ -31,7 +33,7 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
 
-noncomputable section
+section
 
 open SeparationQuotient NNReal
 
@@ -78,7 +80,7 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
 /-- The equivalence between `NormedAddGroupHom M N` vanishing on the inseparable setoid and
 `NormedAddGroupHom (SeparationQuotient M) N`. -/
 @[simps]
-def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup N] :
+noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup N] :
     {f : NormedAddGroupHom M N // ∀ x, ‖x‖ = 0 → f x = 0} ≃
     NormedAddGroupHom (SeparationQuotient M) N where
   toFun f := liftNormedAddGroupHom f f.prop
@@ -128,3 +130,5 @@ theorem normedMk_eq_zero (h : ∀ x : M, ‖x‖ = 0) :
   simpa [← norm_eq_zero] using h x
 
 end SeparationQuotient
+
+end
