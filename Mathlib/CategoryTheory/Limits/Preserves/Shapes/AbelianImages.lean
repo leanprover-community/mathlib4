@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 /-!
 # Preservation of coimage-image comparisons
 
-If a functor preserves kernel and cokernels, then it preserves abelian images, abelian coimages
+If a functor preserves kernels and cokernels, then it preserves abelian images, abelian coimages
 and coimage-image comparisons.
 -/
 
