@@ -25,10 +25,10 @@ variable {X M : Type*} [TopologicalSpace X] [One M]
 
 section SemilatticeSup
 
-variable [SemilatticeSup β]
+variable [SemilatticeSup M]
 
 @[to_additive]
-theorem HasCompactMulSupport.sup {f g : α → β} (hf : HasCompactMulSupport f)
+theorem HasCompactMulSupport.sup {f g : X → M} (hf : HasCompactMulSupport f)
     (hg : HasCompactMulSupport g) :  HasCompactMulSupport (f ⊔ g) := by
   apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_mulTSupport _)
   rw [mulTSupport, mulTSupport, mulTSupport, ← closure_union]
@@ -39,10 +39,10 @@ end SemilatticeSup
 
 section SemilatticeInf
 
-variable [SemilatticeInf β]
+variable [SemilatticeInf M]
 
 @[to_additive]
-theorem HasCompactMulSupport.inf {f g : α → β} (hf : HasCompactMulSupport f)
+theorem HasCompactMulSupport.inf {f g : X → M} (hf : HasCompactMulSupport f)
     (hg : HasCompactMulSupport g) :  HasCompactMulSupport (f ⊓ g) := by
   apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_mulTSupport _)
   rw [mulTSupport, mulTSupport, mulTSupport, ← closure_union]
