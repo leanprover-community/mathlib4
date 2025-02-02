@@ -21,7 +21,7 @@ has compact support if so do `f` and `g`.
   definitions that are in the root namespace (compare `Embedding` vs `Function.Embedding`).
 -/
 
-variable {α β : Type*} [TopologicalSpace α] [One β]
+variable {X M : Type*} [TopologicalSpace X] [One M]
 
 section SemilatticeSup
 
