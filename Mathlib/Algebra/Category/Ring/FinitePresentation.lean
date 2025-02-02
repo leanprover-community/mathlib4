@@ -29,8 +29,6 @@ variable (R : CommRingCat.{u}) (F : J ⥤ CommRingCat.{u}) (α : (Functor.const 
 variable {S : CommRingCat.{u}} (f : R ⟶ S) (c : Cocone F) (hc : IsColimit c)
 variable [PreservesColimit F (forget CommRingCat)]
 
-attribute [local instance] IsFiltered.nonempty
-
 include hc in
 /--
 Given a filtered diagram `F` of rings over `R`, `S` an (essentially) of finite type `R`-algebra,
