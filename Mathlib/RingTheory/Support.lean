@@ -50,7 +50,8 @@ lemma Module.not_mem_support_iff :
 
 lemma Module.not_mem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
-  simp [not_mem_support_iff, LocalizedModule.subsingleton_iff, Ideal.primeCompl]
+  simp only [not_mem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
