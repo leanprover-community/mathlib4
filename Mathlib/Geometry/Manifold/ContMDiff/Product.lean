@@ -454,4 +454,49 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
       simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
       congr
 
+variable [Nonempty H']
+
+lemma ContMDiff.sum_map {f : M → N} {g : M' → N'}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
+  ContMDiff.sum_elim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
+
+-- Better names welcome!
+omit [Nonempty H] in
+lemma contMDiff_of_contMDiff_inl [Nonempty N] {f : M → N}
+    (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : ContMDiff I J n f := by
+  inhabit N
+  let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ inhabited_h.default)
+  rw [← contMDiffOn_univ] at h ⊢
+  have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux, Function.comp_apply]; rfl
+  rw [← this]
+  have : univ ⊆ (Sum.inl ∘ f) ⁻¹' (@Sum.inl N N' '' univ) := by
+    intro x _hx
+    rw [mem_preimage, Function.comp_apply]
+    use f x, trivial
+  apply (contMDiff_id.sum_elim contMDiff_const).contMDiffOn.comp h this
+
+-- in fact, have an iff, but the other direction is easy :-)
+omit [Nonempty H] in
+lemma contMDiff_of_contMDiff_inr [Nonempty N'] {g : M' → N'}
+    (h : ContMDiff I J n ((@Sum.inr N N') ∘ g)) : ContMDiff I J n g := by
+  inhabit N'
+  let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ inhabited_h.default) (@id N')
+  have haux : ContMDiffOn J J n aux (Sum.inr '' univ) :=
+    (contMDiff_const.sum_elim contMDiff_id).contMDiffOn
+  rw [← contMDiffOn_univ] at h ⊢
+  have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux, Function.comp_apply]; rfl
+  rw [← this]
+  apply ContMDiffOn.comp haux h
+  intro x _hx
+  rw [mem_preimage, Function.comp_apply]
+  use g x, trivial
+
+lemma contMDiff_sum_map [Nonempty N] [Nonempty N'] {f : M → N} {g : M' → N'} :
+    ContMDiff I J n (Sum.map f g) ↔ ContMDiff I J n f ∧ ContMDiff I J n g :=
+  ⟨fun h ↦ ⟨contMDiff_of_contMDiff_inl (h.comp ContMDiff.inl),
+    contMDiff_of_contMDiff_inr (h.comp ContMDiff.inr)⟩,
+   fun h ↦ ContMDiff.sum_map h.1 h.2⟩
+
+lemma ContMDiff.swap : ContMDiff I I n (@Sum.swap M M') := ContMDiff.sum_elim inr inl
+
 end disjointUnion
