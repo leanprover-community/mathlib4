@@ -45,8 +45,7 @@ open NormedAddGroupHom
 @[simps]
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
   __ := mkAddMonoidHom
-  bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-    mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩
+  bound' := ⟨1, by simp⟩
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
