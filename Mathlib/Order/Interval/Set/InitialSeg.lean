@@ -46,7 +46,7 @@ def initialSegIicIicOfLE {i j : α} (h : i ≤ j) :
   map_rel_iff' := by aesop
   mem_range_of_rel' x k h := ⟨⟨k.1, (Subtype.coe_le_coe.2 h.le).trans x.2⟩, rfl⟩
 
-/-- If `i ≤ j`, then `Set.Iio i` is a principal segment of `Set.Iic`. -/
+/-- If `i ≤ j`, then `Set.Iio i` is a principal segment of `Set.Iic j`. -/
 @[simps top]
 def principalSegIioIicOfLE {i j : α} (h : i ≤ j) :
     Set.Iio i <i Set.Iic j where
