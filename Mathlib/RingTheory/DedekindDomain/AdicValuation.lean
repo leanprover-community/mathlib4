@@ -395,7 +395,7 @@ theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation x :=
 
 variable (K)
 
--- TODO: We would be fighting Lean in this section a lot less if "`K` equipped with its `ν`-adic
+-- TODO: We would be fighting Lean in this section a lot less if "`K` equipped with its `v`-adic
 -- valuation existed as a type synonym
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
