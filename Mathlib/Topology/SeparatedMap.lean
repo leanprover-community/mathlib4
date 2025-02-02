@@ -183,25 +183,11 @@ section eqLocus
 variable {f : X → Y} {g₁ g₂ : A → X} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
 include h₁ h₂
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter flags `g` here,
-but it is used in a type ascription to direct `fun_prop`.
--/
-set_option linter.unusedVariables false in
 theorem IsSeparatedMap.isClosed_eqLocus (sep : IsSeparatedMap f) (he : f ∘ g₁ = f ∘ g₂) :
     IsClosed {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter flags `g` here,
-but it is used in a type ascription to direct `fun_prop`.
--/
-set_option linter.unusedVariables false in
 theorem IsLocallyInjective.isOpen_eqLocus (inj : IsLocallyInjective f) (he : f ∘ g₁ = f ∘ g₂) :
     IsOpen {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩

@@ -13,7 +13,7 @@ and `Submodule.annihilator`.
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
-assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
+  Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
 
@@ -823,6 +823,16 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
 
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
     r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
+
+open LinearMap in
+theorem annihilator_span (s : Set M) :
+    (Submodule.span R s).annihilator = ⨅ g : s, ker (toSpanSingleton R M g.1) := by
+  ext; simp [mem_annihilator_span]
+
+open LinearMap in
+theorem annihilator_span_singleton (g : M) :
+    (Submodule.span R {g}).annihilator = ker (toSpanSingleton R M g) := by
+  simp [annihilator_span]
 
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]

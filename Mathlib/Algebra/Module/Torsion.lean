@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.ZMod
 import Mathlib.GroupTheory.Torsion
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Torsion submodules
@@ -910,7 +911,7 @@ namespace AddSubgroup
 
 variable (A : Type*) [AddCommGroup A] (n : ℤ)
 
-/-- The additive `n`-torsion subgroup for an integer `n`. -/
+/-- The additive `n`-torsion subgroup for an integer `n`, denoted as `A[n]`. -/
 @[reducible]
 def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup

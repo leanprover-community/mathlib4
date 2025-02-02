@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Basic
@@ -10,8 +12,8 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sums and products from lists
@@ -470,8 +472,6 @@ namespace MonoidHom
 @[to_additive]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
-
-attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom
 

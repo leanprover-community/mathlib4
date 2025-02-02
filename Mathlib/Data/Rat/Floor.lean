@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Round
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
@@ -58,7 +58,7 @@ protected theorem ceil_def (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
 @[norm_cast]
 theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / (↑d : ℤ) := by
   rw [Rat.floor_def]
-  obtain rfl | hd := @eq_zero_or_pos _ _ d
+  obtain rfl | hd := eq_zero_or_pos (a := d)
   · simp
   set q := (n : ℚ) / d with q_eq
   obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den := by
@@ -86,8 +86,6 @@ theorem natFloor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋₊ 
   rw [← Int.ofNat_inj, Int.natCast_floor_eq_floor (by positivity)]
   push_cast
   exact floor_intCast_div_natCast n d
-
-@[deprecated (since := "2024-07-23")] alias floor_int_div_nat_eq_div := floor_intCast_div_natCast
 
 @[simp, norm_cast]
 theorem floor_cast (x : ℚ) : ⌊(x : α)⌋ = ⌊x⌋ :=

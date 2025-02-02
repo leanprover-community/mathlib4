@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
@@ -13,6 +13,7 @@ import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.ProdSigma
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists
@@ -145,16 +146,6 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
-
-@[deprecated (since := "2024-06-11")]
-alias drop_take_succ_join_eq_getElem := drop_take_succ_flatten_eq_getElem
-
-@[deprecated drop_take_succ_flatten_eq_getElem (since := "2024-06-11")]
-lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
-    (L.flatten.take ((L.map length).take (i + 1)).sum).drop
-      ((L.map length).take i).sum = get L i := by
-  rw [drop_take_succ_flatten_eq_getElem _ _ i.2]
-  simp
 
 end List
 

@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 # Homology of complexes in concrete categories
 
 The homology of short complexes in concrete categories was studied in
-`Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory`. In this file,
+`Mathlib.Algebra.Homology.ShortComplex.HasForget`. In this file,
 we introduce specific definitions and lemmas for the homology
 of homological complexes in concrete categories. In particular,
 we give a computation of the connecting homomorphism of
@@ -22,7 +22,7 @@ open CategoryTheory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab.{v}]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] [HasForget₂ C Ab.{v}]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
   {ι : Type*} {c : ComplexShape ι}
 
@@ -75,20 +75,30 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
         (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk (by
           have := hS.mono_f
           apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
-          rw [← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply, hx₁,
-            ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, map_zero,
-            AddMonoidHom.zero_apply])) := by
+          -- Since `C` is only a `HasForget`, not a `ConcreteCategory` (for now),
+          -- we need to rewrite everything to `HasForget`.
+          have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
+            @DFunLike.coe _ _ _ (HasForget.toFunLike _ _ _) f := by intros; ext; rfl
+          rw [this, this, ← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply,
+            ← this, ← this, hx₁, this, this,
+            ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, ← this, ← this,
+            map_zero]; rfl)) := by
+  -- Since `C` is only a `HasForget`, not a `ConcreteCategory` (for now),
+  -- we need to rewrite everything to `HasForget`.
+  have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
+  @DFunLike.coe _ _ _ (HasForget.toFunLike _ _ _) f := by intros; ext; rfl
   refine hS.δ_apply' i j hij _ ((forget₂ C Ab).map (S.X₂.pOpcycles i) x₂) _ ?_ ?_
-  · rw [← forget₂_comp_apply, ← forget₂_comp_apply,
-      HomologicalComplex.p_opcyclesMap, Functor.map_comp, comp_apply,
-      HomologicalComplex.homology_π_ι, forget₂_comp_apply, hx₂, HomologicalComplex.i_cyclesMk]
+  · rw [this, this, ← forget₂_comp_apply, this, this, ← forget₂_comp_apply,
+      HomologicalComplex.p_opcyclesMap, Functor.map_comp, CategoryTheory.comp_apply,
+      HomologicalComplex.homology_π_ι, forget₂_comp_apply, ← this, ← this, hx₂, ← this,
+      HomologicalComplex.i_cyclesMk]
   · apply (Preadditive.mono_iff_injective (S.X₂.iCycles j)).1 inferInstance
     conv_lhs =>
-      rw [← forget₂_comp_apply, HomologicalComplex.cyclesMap_i, forget₂_comp_apply,
-        HomologicalComplex.i_cyclesMk, hx₁]
+      rw [this, this, ← forget₂_comp_apply, HomologicalComplex.cyclesMap_i, forget₂_comp_apply,
+        ← this ((forget₂ C Ab).map (S.X₁.iCycles j)), HomologicalComplex.i_cyclesMk, ← this, hx₁]
     conv_rhs =>
-      rw [← forget₂_comp_apply, ← forget₂_comp_apply,
-        HomologicalComplex.pOpcycles_opcyclesToCycles_assoc, HomologicalComplex.toCycles_i]
+      rw [this, this, ← forget₂_comp_apply, this, ← forget₂_comp_apply,
+        HomologicalComplex.pOpcycles_opcyclesToCycles_assoc, HomologicalComplex.toCycles_i, ← this]
 
 end ShortExact
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.List.GetD
 
 /-!
@@ -79,17 +79,6 @@ theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
 theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
   ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
-
-@[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
-theorem toFinsupp_cons_apply_zero (x : M) (xs : List M)
-    [DecidablePred (getD (x::xs) · 0 ≠ 0)] : (x::xs).toFinsupp 0 = x :=
-  rfl
-
-@[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
-theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
-    [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
-    (x::xs).toFinsupp n.succ = xs.toFinsupp n :=
-  rfl
 
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]

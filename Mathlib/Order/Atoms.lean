@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
@@ -182,6 +183,39 @@ theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
   toDual_covBy_toDual_iff.symm.trans bot_covBy_iff
 
 alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B]
+
+theorem isAtom_iff [OrderBot A] {K : A} :
+    IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
+  simp_rw [IsAtom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+
+theorem isCoatom_iff [OrderTop A] {K : A} :
+    IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
+  simp_rw [IsCoatom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+
+theorem covBy_iff {K L : A} :
+    K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
+  push_neg
+  rw [lt_iff_le_not_le, lt_iff_le_and_ne, and_and_and_comm]
+  simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
+    SetLike.not_le_iff_exists, and_comm, implies_true]
+
+/-- Dual variant of `SetLike.covBy_iff` -/
+theorem covBy_iff' {K L : A} :
+    K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
+  push_neg
+  rw [lt_iff_le_and_ne, lt_iff_le_not_le, and_and_and_comm]
+  simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
+    SetLike.not_le_iff_exists, ne_comm, implies_true]
+
+end SetLike
 
 end PartialOrder
 
@@ -653,9 +687,6 @@ theorem eq_top_of_lt : b = ⊤ :=
 
 alias _root_.LT.lt.eq_bot := eq_bot_of_lt
 alias _root_.LT.lt.eq_top := eq_top_of_lt
-@[deprecated (since := "2024-05-29")] alias LT.lt.eq_bot := _root_.LT.lt.eq_bot
-@[deprecated (since := "2024-05-29")] alias LT.lt.eq_top := _root_.LT.lt.eq_top
-
 end Preorder
 
 section BoundedOrder
