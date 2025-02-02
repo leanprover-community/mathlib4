@@ -458,14 +458,19 @@ def main (args : List String) : IO UInt32 := do
   else pure none
 
   -- Read the config file
-  let cfg ← if let some file := cfgFile then
+  -- `isValidCfgFile` is `false` if and only if the config file is present and invalid.
+  let (cfg, isValidCfgFile) ← if let some file := cfgFile then
     try
-      IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg))
+      pure (← IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg)), true)
     catch e =>
+      -- The `cfgFile` is invalid, so we print the error and return `isValidCfgFile = false`.
       println! "{e.toString}"
-      pure {}
-  else pure {}
-
+      pure ({}, false)
+    else pure ({}, true)
+  if !isValidCfgFile then
+    IO.println s!"Invalid config file '{cfgFile.get!}'"
+    IO.Process.exit 1
+  else
   -- the list of root modules
   let mods := if args.mods.isEmpty then #[`Mathlib] else args.mods
   -- Only submodules of `pkg` will be edited or have info reported on them

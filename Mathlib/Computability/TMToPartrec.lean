@@ -122,10 +122,6 @@ def Code.eval : Code → List ℕ →. List ℕ
 
 namespace Code
 
-/- Porting note: The equation lemma of `eval` is too strong; it simplifies terms like the LHS of
-`pred_eval`. Even `eqns` can't fix this. We removed `simp` attr from `eval` and prepare new simp
-lemmas for `eval`. -/
-
 @[simp]
 theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
 

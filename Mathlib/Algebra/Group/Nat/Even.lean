@@ -72,7 +72,7 @@ lemma even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and
 lemma even_mul_succ_self (n : ℕ) : Even (n * (n + 1)) := by rw [even_mul, even_add_one]; exact em _
 
 lemma even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
-  | 0 => even_zero
+  | 0 => .zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 
 lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦

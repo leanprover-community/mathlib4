@@ -338,11 +338,6 @@ theorem cancel_right_of_respectsIso
     P (f ≫ g) ↔ P f := by rw [← P.toProperty_apply, ← P.toProperty_apply,
       P.toProperty.cancel_right_of_respectsIso]
 
-@[deprecated (since := "2024-07-02")] alias affine_cancel_left_isIso :=
-  AffineTargetMorphismProperty.cancel_left_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias affine_cancel_right_isIso :=
-  AffineTargetMorphismProperty.cancel_right_of_respectsIso
-
 theorem arrow_mk_iso_iff
     (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y X' Y' : Scheme} {f : X ⟶ Y} {f' : X' ⟶ Y'}
