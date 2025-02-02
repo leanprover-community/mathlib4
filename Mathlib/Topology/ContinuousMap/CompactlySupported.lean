@@ -135,12 +135,10 @@ noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
   toContinuousMap := by classical exact if g 0 = 0 then g.comp f else 0
   hasCompactSupport' := by
     classical
-    by_cases hg : g 0 = 0
-    · rw [if_pos hg]
-      simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
+    split_ifs with hg
+    · simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
       exact HasCompactSupport.comp_left f.hasCompactSupport' hg
-    · rw [if_neg hg]
-      simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
+    · simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
       exact HasCompactSupport.zero
 
 lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
@@ -154,7 +152,7 @@ lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft
 
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by
-  rw [coe_compLeft f hg]
+  rw [coe_compLeft hg f]
   simp
 
 end Basics
