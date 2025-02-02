@@ -134,26 +134,18 @@ If `g` doesn't send `0` to `0`, `f.compLeft g` defaults to `0`. -/
 noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
   toContinuousMap := by classical exact if g 0 = 0 then g.comp f else 0
   hasCompactSupport' := by
-    classical
     split_ifs with hg
-    · simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
-      exact HasCompactSupport.comp_left f.hasCompactSupport' hg
-    · simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_zero]
-      exact HasCompactSupport.zero
+    · exact f.hasCompactSupport'.comp_left hg
+    · exact .zero
 
 lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
     (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
 
 lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft g = g ∘ f := by
-  rw [compLeft]
-  simp only [coe_mk]
-  rw [if_pos hg]
-  simp
+  simp [compLeft, if_pos hg]
 
-lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
-    f.compLeft g a = g (f a) := by
-  rw [coe_compLeft hg f]
-  simp
+lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) : 
+    f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
 
 end Basics
 
