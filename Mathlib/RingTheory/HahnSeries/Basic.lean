@@ -465,7 +465,7 @@ theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order
 theorem leadingTerm_eq {x : HahnSeries Γ R} :
     x.leadingTerm = single x.order (x.coeff x.order) := by
   by_cases h : x = 0
-  · rw [h, leadingTerm_zero, order_zero, zero_coeff, single_eq_zero]
+  · rw [h, leadingTerm_zero, order_zero, coeff_zero, single_eq_zero]
   · rw [leadingTerm_of_ne h, leadingCoeff_eq, order_of_ne h]
 
 end Order
@@ -550,7 +550,7 @@ theorem le_orderTop_iff [LinearOrder Γ] [Zero R] {x : HahnSeries Γ R} {i : Wit
   refine { mp := fun hi j hj =>
     coeff_eq_zero_of_lt_orderTop (lt_of_lt_of_le hj hi), mpr := fun hj => ?_ }
   by_cases hx : x = 0
-  · simp_all only [zero_coeff, implies_true, orderTop_zero, le_top]
+  · simp_all only [coeff_zero, implies_true, orderTop_zero, le_top]
   · by_contra h
     specialize hj (x.isWF_support.min (support_nonempty_iff.2 hx))
     simp_all [not_le, orderTop_of_ne hx, ← leadingCoeff_of_ne hx, leadingCoeff_ne_iff.mpr hx]

@@ -77,7 +77,7 @@ theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.
 
 @[deprecated (since := "2025-01-31")] alias nsmul_coeff := coeff_nsmul
 
-theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
+theorem coeffTop_add {x y : HahnSeries Γ R} {a : WithTop Γ} :
     (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
   match a with
   | ⊤ => simp
@@ -87,7 +87,7 @@ theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
 theorem add_coeffTop_map {x y : HahnSeries Γ R} :
     (x + y).coeffTop = x.coeffTop + y.coeffTop := by
   ext
-  exact add_coeffTop
+  exact coeffTop_add
 
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
@@ -141,11 +141,12 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
+classical
   simp only [leadingCoeff, coeffTop, orderTop, AddOpposite.unop_op, mk_eq_zero,
     EmbeddingLike.map_eq_zero_iff, addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
-  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
+  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
   split_ifs <;> rfl
 
 @[simp]
@@ -267,12 +268,12 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
 @[simp]
 theorem coeff_sum {x : α → HahnSeries Γ R} {s : Finset α} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
-  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
+  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, coeff_add, hsum]) s
 
 theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] {α : Type*} {x : α → HahnSeries Γ R}
     {s : Finset α} : (s.inf fun i => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
   refine le_orderTop_iff.mpr fun g hg => ?_
-  simp_all only [gt_iff_lt, WithTop.coe_lt_top, Finset.lt_inf_iff, sum_coeff]
+  simp_all only [gt_iff_lt, WithTop.coe_lt_top, Finset.lt_inf_iff, coeff_sum]
   exact Finset.sum_eq_zero fun i hi ↦ coeff_eq_zero_of_lt_orderTop (hg i hi)
 
 end AddCommMonoid
@@ -339,26 +340,15 @@ theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
 @[deprecated (since := "2025-01-31")] alias sub_coeff := coeff_sub
 
 @[simp]
-theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
+theorem coeff_zsmul {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
   cases n with
-  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
-  | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
+  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, coeff_nsmul]
+  | negSucc _ => simp_all only [negSucc_zsmul, coeff_neg', coeff_nsmul]
 
 @[simp]
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
   ext; simp
-
-theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
-  by_cases hx : x = 0
-  · rw [hx, neg_zero]
-  · simp only [orderTop, support_neg, neg_eq_zero]
-
-@[simp]
-theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
-  by_cases hf : f = 0
-  · simp only [hf, neg_zero]
-  simp only [order, support_neg, neg_eq_zero]
 
 theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
     min x.orderTop y.orderTop ≤ (x - y).orderTop := by
@@ -494,11 +484,11 @@ def ofIterate.linearMap [PartialOrder Γ'] :
   map_add' := by
     intro _ _
     ext _
-    simp only [ofIterate, add_coeff', Pi.add_apply]
+    simp only [ofIterate, coeff_add', Pi.add_apply]
   map_smul' := by
     intro _ _
     ext _
-    simp only [ofIterate, RingHom.id_apply, smul_coeff]
+    simp only [ofIterate, RingHom.id_apply, coeff_smul]
 
 /-- `toIterate` as a linear map. -/
 @[simps]
@@ -508,11 +498,11 @@ def toIterate.linearMap [PartialOrder Γ'] :
   map_add' := by
     intro _ _
     ext _
-    simp only [toIterate, add_coeff', Pi.add_apply]
+    simp only [toIterate, coeff_add', Pi.add_apply]
   map_smul' := by
     intro _ _
     ext _
-    simp only [toIterate, RingHom.id_apply, smul_coeff]
+    simp only [toIterate, RingHom.id_apply, coeff_smul]
 
 @[simp]
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
@@ -562,9 +552,9 @@ theorem coeff_add_leading (hxy : x = y + x.leadingTerm) (h : x ≠ 0) :
     y.coeff (x.isWF_support.min (support_nonempty_iff.2 h)) = 0 := by
   let xo := x.isWF_support.min (support_nonempty_iff.2 h)
   have hx : x.coeff xo = y.coeff xo + x.leadingTerm.coeff xo := by
-    nth_rw 1 [hxy, add_coeff]
+    nth_rw 1 [hxy, coeff_add]
   have hxx : (leadingTerm x).coeff xo = x.leadingTerm.leadingCoeff := by
-    rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, single_coeff_same]
+    rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, coeff_single_same]
   rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, self_eq_add_left] at hx
   exact hx
 
@@ -581,12 +571,12 @@ theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
 
 theorem coeff_eq_of_not_orderTop (hxy : x = y + x.leadingTerm) (g : Γ) (hg : ↑g ≠ x.orderTop) :
     y.coeff g = x.coeff g := by
-  rw [hxy, add_coeff, leadingTerm]
+  rw [hxy, coeff_add, leadingTerm]
   simp only [self_eq_add_right]
   split_ifs with hx
-  · simp only [zero_coeff]
+  · simp only [coeff_zero]
   · simp only [orderTop_of_ne hx, ne_eq, WithTop.coe_eq_coe] at hg
-    exact single_coeff_of_ne hg
+    exact coeff_single_of_ne hg
 
 theorem support_subset_add_single_support (hxy : x = y + x.leadingTerm) :
     y.support ⊆ x.support := by

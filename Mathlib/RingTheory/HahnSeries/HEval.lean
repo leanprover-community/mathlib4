@@ -44,10 +44,9 @@ The scalar multiples are given by the coefficients of a power series. -/
 abbrev powerSeriesFamily : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff R n) (powers x hx)
 
-@[simp]
 theorem powerSeriesFamily_apply (n : ℕ) :
-    powerSeriesFamily hx f n = f.coeff R n • x ^ n :=
-  rfl
+    powerSeriesFamily hx f n = f.coeff R n • x ^ n := by
+  simp
 
 theorem powerSeriesFamily_add (g : PowerSeries R) :
     powerSeriesFamily hx (f + g) = powerSeriesFamily hx f + powerSeriesFamily hx g := by
@@ -97,9 +96,9 @@ theorem hsum_powerSeriesFamily_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
           (PowerSeries.coeff R j a • (x ^ j * x ^ k).coeff g) = 0 := by
         intro m n
         contrapose!
-        simp only [coeff_support, mul_toFun, smulFamily_toFun, Algebra.mul_smul_comm,
-          Algebra.smul_mul_assoc, Set.Finite.coe_toFinset, Set.mem_image,
-          Prod.exists, not_exists, not_and] at his
+        simp only [coeff_support, mul_toFun, smulFamily_toFun, powers_toFun, Algebra.mul_smul_comm,
+          Algebra.smul_mul_assoc, HahnSeries.coeff_smul, Set.Finite.coe_toFinset, Set.mem_image,
+          Function.mem_support, ne_eq, Prod.exists, not_exists, not_and] at his
         exact his m n
       simp only [mem_sigma, mem_antidiagonal] at hi
       rw [mul_comm ((PowerSeries.coeff R i.snd.1) a), ← hi.2, mul_smul, pow_add]
@@ -112,3 +111,63 @@ end PowerSeriesFamily
 end SummableFamily
 
 end HahnSeries
+
+namespace PowerSeries
+
+open HahnSeries SummableFamily
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
+(hx : 0 < x.orderTop)
+
+/-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
+variable `X` to a positive order element `x`. -/
+@[simps]
+def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
+  toFun f := (powerSeriesFamily hx f).hsum
+  map_one' := by
+    simp only [hsum, powerSeriesFamily_apply, PowerSeries.coeff_one, ite_smul, one_smul, zero_smul]
+    ext g
+    simp only
+    rw [finsum_eq_single (fun i => (if i = 0 then x ^ i else 0).coeff g) (0 : ℕ)
+      (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
+  map_mul' a b := by
+    simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
+  map_zero' := by
+    simp only [hsum, powerSeriesFamily_apply, map_zero, zero_smul, coeff_zero, finsum_zero]
+    exact rfl
+  map_add' a b := by
+    simp only [powerSeriesFamily_add, hsum_add]
+  commutes' r := by
+    simp only [algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply]
+    ext g
+    simp only [coeff_hsum, powerSeriesFamily_apply, SummableFamily.coeff_smul, smul_eq_mul,
+      PowerSeries.coeff_C]
+    rw [finsum_eq_single _ 0 fun n hn => by simp_all]
+    by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
+
+theorem heval_mul {a b : PowerSeries R} :
+    heval hx (a * b) = (heval hx a) * heval hx b :=
+  map_mul (heval hx) a b
+
+theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
+  refine isUnit_iff_exists_inv.mpr ?_
+  use heval hx u.inv
+  rw [← heval_mul, Units.val_inv, map_one]
+
+theorem heval_coeff (f : PowerSeries R) (g : Γ) :
+    (heval hx f).coeff g = ∑ᶠ n, ((powerSeriesFamily hx f).coeff g) n := by
+  rw [heval_apply, coeff_hsum]
+  exact rfl
+
+theorem heval_coeff_zero (f : PowerSeries R) :
+    (heval hx f).coeff 0 = PowerSeries.constantCoeff R f := by
+  rw [heval_coeff, finsum_eq_single (fun n => ((powerSeriesFamily hx f).coeff 0) n) 0,
+    ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
+  · simp_all
+  · intro n hn
+    simp_all only [ne_eq, coeff_toFun, powerSeriesFamily_apply, SummableFamily.coeff_smul,
+      smul_eq_mul]
+    exact mul_eq_zero_of_right ((PowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop
+      (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr hx) orderTop_nsmul_le_orderTop_pow))
+
+end PowerSeries

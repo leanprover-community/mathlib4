@@ -40,8 +40,6 @@ variable {Γ Γ' R V α β σ : Type*}
 
 namespace HahnSeries
 
-section
-
 /-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
@@ -530,7 +528,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
     (funext₂ fun j hj => False.elim ((List.mem_nil_iff j).mp hj))
   | cons a s' has hp =>
     simp_all only [ne_eq, dite_true, not_false_eq_true, or_false, or_true]
-    simp only [prod_cons, mem_cons, true_or, ↓reduceDIte, mul_coeff]
+    simp only [prod_cons, mem_cons, true_or, ↓reduceDIte, coeff_mul]
     have hor : ∀ b : (i : σ) → i ∈ (cons a s' has) → α i,
         ∏ i ∈ s', (if h : i ∈ cons a s' has then t i (b i h) else 1) =
         ∏ i ∈ s', if h : i ∈ s' then t i (b i (mem_cons_of_mem h)) else 1 :=
@@ -571,7 +569,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
       refine ⟨⟨?_, ?_⟩, hhx.choose_spec.2⟩
       · use x a (mem_cons_self a s')
         exact left_ne_zero_of_mul hhx.choose_spec.2
-      · refine ⟨?_, ((mem_vaddAntidiagonal _ _ g).mp hhx.choose_spec.1).2.2⟩
+      · refine ⟨?_, (mem_addAntidiagonal (a := g).mp hhx.choose_spec.1).2.2⟩
         use fun i hi => x i (mem_cons_of_mem hi)
         have h := right_ne_zero_of_mul hhx.choose_spec.2
         have hpr :
@@ -624,7 +622,7 @@ theorem hsum_pi_family (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
   induction s using cons_induction with
   | empty =>
     ext g
-    simp only [hsum_coeff, PiFamily_toFun, not_mem_empty, ↓reduceDIte, prod_const_one, one_coeff,
+    simp only [coeff_hsum, PiFamily_toFun, not_mem_empty, ↓reduceDIte, prod_const_one, coeff_one,
       prod_empty]
     classical
     refine finsum_eq_single (fun _ ↦ if g = 0 then 1 else 0)
@@ -878,5 +876,127 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
   qsmul_def := fun _ _ => rfl
 
 end Inversion
+
+theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
+    (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
+  induction n with
+  | zero =>
+    intro g hn
+    rw [pow_zero] at hn
+    rw [eq_of_mem_support_single hn, SetLike.mem_coe]
+    exact AddSubmonoid.zero_mem _
+  | succ n ih =>
+    intro g hn
+    obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
+    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
+
+theorem support_smul_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R]
+    (f : ℕ → R) (x : HahnSeries Γ R) (n : ℕ) :
+    (f n • x ^ n).support ⊆ AddSubmonoid.closure x.support :=
+  (Function.support_const_smul_subset (f n) (x ^ n).coeff).trans (support_pow_subset_closure x n)
+
+theorem support_prod_subset_add_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (s : Finset σ):
+    (∏ i ∈ s, (x i)).support ⊆ ∑ i ∈ s, (x i).support := by
+  refine Finset.cons_induction ?_ ?_ s
+  · rw [prod_empty, sum_empty, ← single_zero_one, ← Set.singleton_zero]
+    exact support_single_subset
+  · intros _ _ _ his _ hg
+    simp_all only [prod_cons, mem_support, ne_eq, sum_cons]
+    exact support_mul_subset_add_support.trans (Set.add_subset_add (fun ⦃a⦄ a ↦ a) his) hg
+
+theorem support_MVpow_subset_closure_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+    (∏ i ∈ x.support, (x i) ^ (n i)).support ⊆ AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
+  refine Finset.cons_induction ?_ ?_ x.support
+  · rw [prod_empty, ← single_zero_one]
+    have h₂ : 0 ∈ AddSubmonoid.closure (⋃ i, (x i).support) := by
+      exact AddSubmonoid.zero_mem (AddSubmonoid.closure (⋃ i, (x i).support))
+    intro g hg
+    simp_all
+  · intro i _ _ hx
+    rw [prod_cons]
+    have hi : (x i ^ n i).support ⊆ AddSubmonoid.closure (⋃ i, (x i).support) :=
+      (support_pow_subset_closure (x i) (n i)).trans <| AddSubmonoid.closure_mono <|
+        Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
+    exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
+
+theorem support_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    {σ : Type*} (s : Finset σ) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+    (∏ i ∈ s, (x i) ^ (n i)).support ⊆ AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
+  refine Finset.cons_induction ?_ ?_ s
+  · rw [prod_empty, ← single_zero_one]
+    have h₂ : 0 ∈ AddSubmonoid.closure (⋃ i, (x i).support) := by
+      exact AddSubmonoid.zero_mem (AddSubmonoid.closure (⋃ i, (x i).support))
+    intro g hg
+    simp_all
+  · intro i _ _ hx
+    rw [prod_cons]
+    have hi : (x i ^ n i).support ⊆ AddSubmonoid.closure (⋃ i, (x i).support) :=
+      (support_pow_subset_closure (x i) (n i)).trans <| AddSubmonoid.closure_mono <|
+        Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
+    exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
+
+theorem support_smul_MVpow_subset_closure_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+    support (f n • ∏ i ∈ x.support, (x i) ^ (n i)) ⊆
+      AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
+  exact (Function.support_const_smul_subset (f n) (∏ i ∈ x.support, x i ^ n i).coeff).trans
+    (support_MVpow_subset_closure_support σ x n)
+
+theorem support_smul_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) [Fintype σ] (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+    support (f n • ∏ i, (x i) ^ (n i)) ⊆
+      AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
+  exact (Function.support_const_smul_subset (f n) (∏ i, x i ^ n i).coeff).trans
+    (support_MVpow_subset_closure Finset.univ x n)
+
+theorem isPWO_iUnion_support_MVpow_support [LinearOrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (hx : ∀ i : σ, 0 ≤ (x i).order) :
+    (⋃ n : σ →₀ ℕ, (f n •  ∏ i ∈ x.support, (x i) ^ (n i)).support).IsPWO := by
+  refine Set.IsPWO.mono (Set.IsPWO.addSubmonoid_closure ?_ ?_)
+    (Set.iUnion_subset fun n => support_smul_MVpow_subset_closure_support σ f x n)
+  · intro g hg
+    simp only [Set.mem_iUnion, mem_support, ne_eq] at hg
+    obtain ⟨i, hi⟩ := hg
+    exact (hx i).trans (order_le_of_coeff_ne_zero hi)
+  · have h : ⋃ i, (x i).support =
+        (⋃ i ∈ x.support, (x i).support) ∪ (⋃ i ∉ x.support, (x i).support) := by
+      classical
+      simp_rw [← Set.iUnion_ite, ite_id (x _).support]
+    rw [h, Set.isPWO_union]
+    constructor
+    · exact (isPWO_bUnion x.support).mpr fun i _ ↦ isPWO_support (x i)
+    · have h : (⋃ i, ⋃ (_ : i ∉ x.support), (x i).support) = ∅ := by
+        simp only [Finsupp.mem_support_iff, ne_eq, ne_zero_iff_orderTop, Decidable.not_not,
+          Set.iUnion_eq_empty, support_eq_empty_iff]
+        exact fun i i_1 ↦ orderTop_eq_top_iff.mp i_1
+      rw [h]
+      exact Set.isPWO_empty
+
+theorem isPWO_iUnion_support_MVpow [LinearOrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    {σ : Type*} [Fintype σ] (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R)
+    (hx : ∀ i : σ, 0 ≤ (x i).order) :
+    (⋃ n : σ →₀ ℕ, (f n •  ∏ i, (x i) ^ (n i)).support).IsPWO := by
+  refine Set.IsPWO.mono ?_ (Set.iUnion_subset fun n => support_smul_MVpow_subset_closure σ f x n)
+  refine Set.IsPWO.addSubmonoid_closure ?_ ?_
+  · intro g hg
+    simp only [Set.mem_iUnion, mem_support, ne_eq] at hg
+    obtain ⟨i, hi⟩ := hg
+    exact (hx i).trans (order_le_of_coeff_ne_zero hi)
+  · rw [show ⋃ i, (x i).support = ⋃ i ∈ univ, (x i).support by simp]
+    exact (isPWO_bUnion univ).mpr fun i _ => isPWO_support (x i)
+
+theorem isPWO_iUnion_support_smul_pow [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] (f : ℕ → R)
+    (x : HahnSeries Γ R) (hx : 0 ≤ x.order) :
+    (⋃ n : ℕ, (f n • x ^ n).support).IsPWO :=
+  (x.isPWO_support'.addSubmonoid_closure
+    fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
+    (Set.iUnion_subset fun n => support_smul_pow_subset_closure f x n)
+
+theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
+    (x : HahnSeries Γ R) (hx : 0 ≤ x.order) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
+  have _ := isPWO_iUnion_support_smul_pow (fun n => 1) x hx
+  simp_all only [one_smul]
 
 end HahnSeries
