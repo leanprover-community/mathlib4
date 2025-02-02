@@ -18,9 +18,7 @@ i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 -/
 
-section Category
-
-open CategoryTheory Limit
+open CategoryTheory Limits
 
 universe vJ uJ u
 
@@ -164,5 +162,3 @@ lemma preservesColimit_coyoneda_of_finitePresentation
 lemma preservesFilteredColimits_coyoneda (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     PreservesFilteredColimits (coyoneda.obj (.op S)) :=
   ⟨fun _ _ _ ↦ ⟨preservesColimit_coyoneda_of_finitePresentation R S hS _⟩⟩
-
-end Category
