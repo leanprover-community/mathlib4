@@ -434,9 +434,6 @@ theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
   rw [degree_zero]
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
 
-@[deprecated (since := "2024-06-30")]
-alias mul_div_mod_by_monic_cancel_left := mul_divByMonic_cancel_left
-
 lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = coeff p (n + 1) + a * (p /ₘ (X - C a)).coeff (n + 1) := by
   nontriviality R

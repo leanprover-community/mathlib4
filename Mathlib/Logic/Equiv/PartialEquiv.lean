@@ -493,6 +493,8 @@ theorem restr_coe_symm (s : Set α) : ((e.restr s).symm : β → α) = e.symm :=
 theorem restr_source (s : Set α) : (e.restr s).source = e.source ∩ s :=
   rfl
 
+theorem source_restr_subset_source (s : Set α) : (e.restr s).source ⊆ e.source := inter_subset_left
+
 @[simp, mfld_simps]
 theorem restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻¹' s :=
   rfl
@@ -559,6 +561,19 @@ theorem ofSet_coe (s : Set α) : (PartialEquiv.ofSet s : α → α) = id :=
 @[simp, mfld_simps]
 theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofSet s :=
   rfl
+
+/-- `Function.const` as a `PartialEquiv`.
+It consists of two constant maps in opposite directions. -/
+@[simps]
+def single (a : α) (b : β) : PartialEquiv α β where
+  toFun := Function.const α b
+  invFun := Function.const β a
+  source := {a}
+  target := {b}
+  map_source' _ _ := rfl
+  map_target' _ _ := rfl
+  left_inv' a' ha' := by rw [eq_of_mem_singleton ha', const_apply]
+  right_inv' b' hb' := by rw [eq_of_mem_singleton hb', const_apply]
 
 /-- Composing two partial equivs if the target of the first coincides with the source of the
 second. -/
