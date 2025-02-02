@@ -401,13 +401,13 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
   intro p
   rw [contMDiffAt_iff]
   refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
-  by_cases h: p.isLeft
-  · set x := Sum.getLeft p h
-    have : p = Sum.inl x := Sum.eq_left_getLeft_of_isLeft h
-    rw [this]
+  cases p with--by_cases h: p.isLeft
+  | inl x =>--· set x := Sum.getLeft p h
+    --have : p = Sum.inl x := Sum.eq_left_getLeft_of_isLeft h
+    --rw [this]
     simp only [extChartAt, ChartedSpace.sum_chartAt_inl]
     -- In charts around x : M, the map .elim f g looks like f.
     sorry
-  · sorry -- should be analogous
+  | inr x => sorry -- should be analogous
 
 end disjointUnion
