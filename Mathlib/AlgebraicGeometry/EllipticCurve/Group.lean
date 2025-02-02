@@ -3,8 +3,7 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
@@ -54,10 +53,6 @@ pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve
     element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
  * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on an
     affine Weierstrass curve forms an abelian group under addition.
- * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational points on a
-    Jacobian Weierstrass curve forms an abelian group under addition.
- * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular rational points on
-    a projective Weierstrass curve forms an abelian group under addition.
 
 ## References
 
@@ -567,43 +562,3 @@ noncomputable instance : AddCommGroup W.Point where
 end Point
 
 end WeierstrassCurve.Affine
-
-namespace WeierstrassCurve.Jacobian.Point
-
-/-! ## Weierstrass curves in Jacobian coordinates -/
-
-variable {F : Type u} [Field F] {W : Jacobian F}
-
-noncomputable instance : AddCommGroup W.Point where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
-
-end WeierstrassCurve.Jacobian.Point
-
-namespace WeierstrassCurve.Projective.Point
-
-/-! ## Weierstrass curves in projective coordinates -/
-
-variable {F : Type u} [Field F] {W : Projective F}
-
-noncomputable instance : AddCommGroup W.Point where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
-
-end WeierstrassCurve.Projective.Point

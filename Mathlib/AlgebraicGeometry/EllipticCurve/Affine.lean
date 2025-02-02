@@ -609,6 +609,10 @@ scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 variable {W}
 
+namespace Point
+
+/-! ### Group operations -/
+
 instance : Inhabited W.Point :=
   ⟨.zero⟩
 
@@ -620,10 +624,6 @@ lemma zero_def : 0 = (.zero : W.Point) :=
 
 lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
-
-namespace Point
-
-/-! ### Group operations -/
 
 /-- The negation of a nonsingular rational point on `W`.
 
