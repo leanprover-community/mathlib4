@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Tactic.Ring
 
 /-!
@@ -292,20 +291,3 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     return .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
 
 end Mathlib.Meta.Positivity
-
-section OrderedAddCommMonoid
-
-/-- Subadditivity of the sum over a finset. -/
-lemma Finset.sum_image_le_of_nonneg {ι α β : Type*} [DecidableEq α]
-    [OrderedAddCommMonoid β] [SMulPosMono ℕ β]
-    {J : Finset ι} {g : ι → α} {f : α → β} (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
-    ∑ u ∈ J.image g, f u ≤ ∑ u in J, f (g u) := by
-  rw [sum_comp f g]
-  refine sum_le_sum fun a hag ↦ ?_
-  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
-  conv_lhs => rw [← one_nsmul (f a)]
-  refine smul_le_smul_of_nonneg_right ?_ (hf a hag)
-  rw [Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, card_pos]
-  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
-
-end OrderedAddCommMonoid
