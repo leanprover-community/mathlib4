@@ -283,7 +283,7 @@ end Int
 
 section FaithfulSMul
 
-instance (R : Type*) [NonAssocRing R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
+instance (R : Type*) [NonAssocSemiring R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
 variable (R A : Type*) [CommSemiring R] [Semiring A]
 
@@ -296,32 +296,28 @@ lemma faithfulSMul_iff_injective_smul_one [Module R A] [IsScalarTower R A A] :
 
 variable [Algebra R A]
 
-lemma faithfulSMul_iff_algebraMap_injective :
-    FaithfulSMul R A ↔ Injective (algebraMap R A) := by
+lemma faithfulSMul_iff_algebraMap_injective : FaithfulSMul R A ↔ Injective (algebraMap R A) := by
   rw [faithfulSMul_iff_injective_smul_one, Algebra.algebraMap_eq_smul_one']
 
 variable [FaithfulSMul R A]
 
 namespace FaithfulSMul
 
-lemma algebraMap_injective :
-    Injective (algebraMap R A) :=
+lemma algebraMap_injective : Injective (algebraMap R A) :=
   (faithfulSMul_iff_algebraMap_injective R A).mp inferInstance
 
 @[deprecated (since := "2025-01-31")]
 alias _root_.NoZeroSMulDivisors.algebraMap_injective := algebraMap_injective
 
 @[simp]
-lemma algebraMap_eq_zero_iff {r : R} :
-    algebraMap R A r = 0 ↔ r = 0 :=
+lemma algebraMap_eq_zero_iff {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
   map_eq_zero_iff (algebraMap R A) <| algebraMap_injective R A
 
 @[deprecated (since := "2025-01-31")]
 alias _root_.NoZeroSMulDivisors.algebraMap_eq_zero_iff := algebraMap_eq_zero_iff
 
 @[simp]
-lemma algebraMap_eq_one_iff {r : R} :
-    algebraMap R A r = 1 ↔ r = 1 :=
+lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
   map_eq_one_iff _ <| FaithfulSMul.algebraMap_injective R A
 
 @[deprecated (since := "2025-01-31")]
@@ -336,8 +332,7 @@ alias _root_.NeZero.of_noZeroSMulDivisors := NeZero.of_faithfulSMul
 
 end FaithfulSMul
 
-lemma Algebra.charZero_of_charZero [CharZero R] :
-    CharZero A :=
+lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
   have := algebraMap_comp_nat_cast_eq_cast R A
   ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩
 
@@ -360,17 +355,18 @@ instance (priority := 100) instOfFaithfulSMul {R A : Type*}
   ⟨fun hcx => (mul_eq_zero.mp ((Algebra.smul_def _ _).symm.trans hcx)).imp_left
     (map_eq_zero_iff (algebraMap R A) <| FaithfulSMul.algebraMap_injective R A).mp⟩
 
+@[deprecated (since := "2025-01-31")]
+alias of_algebraMap_injective := instOfFaithfulSMul
+
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
-instance [Nontrivial A] [NoZeroSMulDivisors R A] :
-    FaithfulSMul R A where
+instance [Nontrivial A] [NoZeroSMulDivisors R A] : FaithfulSMul R A where
   eq_of_smul_eq_smul {r₁ r₂} h := by
     specialize h 1
     rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at h
     exact h.resolve_right one_ne_zero
 
-theorem iff_faithfulSMul [IsDomain A] :
-    NoZeroSMulDivisors R A ↔ FaithfulSMul R A :=
+theorem iff_faithfulSMul [IsDomain A] : NoZeroSMulDivisors R A ↔ FaithfulSMul R A :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 theorem iff_algebraMap_injective [IsDomain A] :
@@ -394,20 +390,17 @@ theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-lemma NoZeroSMulDivisors.of_algebraMap_injective' {R A M : Type*} [CommSemiring R] [Semiring A]
-    [Algebra R A] [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-    [NoZeroSMulDivisors A M] [FaithfulSMul R A] :
-    NoZeroSMulDivisors R M where
+theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
     rw [← algebraMap_smul (A := A)] at hx
     obtain (hc|hx) := eq_zero_or_eq_zero_of_smul_eq_zero hx
     · exact Or.inl <| (map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A).mp hc
     · exact Or.inr hx
 
-theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
-    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M :=
-  of_algebraMap_injective' (A := A)
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.of_algebraMap_injective' := NoZeroSMulDivisors.trans
 
 variable {A}
 

@@ -583,12 +583,15 @@ instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
 instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
   isNoetherian_of_tower A inferInstance
 
-instance : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
+instance instFaithfulSMul : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   rintro ⟨a⟩ ⟨b⟩ hab
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
   rw [RingHom.map_sub]
   exact Quotient.eq.mp hab
+
+@[deprecated (since := "2025-01-31")]
+alias algebraMap_injective_of_liesOver := instFaithfulSMul
 
 variable {p} in
 theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=

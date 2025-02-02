@@ -1046,3 +1046,9 @@ theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semir
 
 @[deprecated (since := "2025-01-31")]
 alias NoZeroSMulDivisors.iff_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
+
+@[deprecated (since := "2025-01-31")]
+alias of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
+
+@[deprecated (since := "2025-01-31")]
+alias ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
