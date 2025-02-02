@@ -24,6 +24,15 @@ This file implements diffeomorphisms.
 * `Diffeomorph.toTransDiffeomorph`: the identity diffeomorphism between `M` with model `I` and `M`
   with model `I.trans_diffeomorph e`.
 
+This file also provides diffeomorphisms related to products and disjoint unions.
+* `Diffeomorph.prodCongr`: the product of two diffeomorphisms
+* `Diffeomorph.prodComm`: `M × N` is diffeomorphic to `N × M`
+* `Diffeomorph.prodAssoc`: `(M × N) × N'` is diffeomorphic to `M × (N × N')`
+* `Diffeomorph.sumCongr`: the disjoint union of two diffeomorphisms
+* `Diffeomorph.sumComm`: a diffeomorphism `M ⊕ M' → M' × M`
+* `Diffeomorph.sumAssoc`: a diffeomorphism `(M ⊕ N) ⊕ P → M ⊕ (N ⊕ P)`
+* `Diffeomorph.sumEmpty`: a diffeomorphism `M ⊕ ∅ → M
+
 ## Notations
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
@@ -571,117 +580,81 @@ end Product
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
-  [IsManifold I n M] [IsManifold I n M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
-variable {N J : Type*} [TopologicalSpace N] [ChartedSpace H N]
-  {J : ModelWithCorners 𝕜 E' H} [IsManifold J n N]
-  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N'] [IsManifold J n N']
-  [Nonempty H] [Nonempty H']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+variable {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N'] [Nonempty H] [Nonempty H']
 
--- is this really missing? move to right file!
-/-- TODO: add doc-string! add Homeomorph also -/
-def _root_.Equiv.sum_map {α β γ δ : Type*} (f : Equiv α β) (g : Equiv γ δ) :
-    Equiv (α ⊕ γ) (β ⊕ δ) where
-  toFun := Sum.map f g
-  invFun := Sum.map f.symm g.symm
-  left_inv := by
-    apply congrFun
-    -- XXX: can simp simplify this? also for right_inv!
-    calc (Sum.map f.symm g.symm) ∘ Sum.map f g
-      _ = Sum.map (f.symm ∘ f) (g.symm ∘ g) := by apply Sum.map_comp_map
-      _ = Sum.map id id := by
-        have h : f.symm ∘ f = id := by ext x; apply f.left_inv x
-        have : g.symm ∘ g = id := by ext x; apply g.left_inv x
-        rw [h, this]
-      _ = id := Sum.map_id_id
-  right_inv := by
-    apply congrFun
-    calc (Sum.map f g) ∘ (Sum.map f.symm g.symm)
-      _ = Sum.map (f ∘ f.symm) (g ∘ g.symm) := by apply Sum.map_comp_map
-      _ = Sum.map id id := by
-        have h : f ∘ f.symm = id := by ext x; apply f.right_inv x
-        have : g ∘ g.symm = id := by ext x; apply g.right_inv x
-        rw [h, this]
-      _ = id := Sum.map_id_id
+-- XXX: should Equiv.sumCongr, Homeomorph.sumCongr also get a _symm lemma? is currently missing
 
-@[simp]
-lemma Equiv.sum_map_toFun {α β γ δ : Type*} (f : Equiv α β) (g : Equiv γ δ) :
-    (f.sum_map g).toFun = Sum.map f g := rfl
-
-@[simp]
-lemma Equiv.sum_map_invFun {α β γ δ : Type*} (f : Equiv α β) (g : Equiv γ δ) :
-    (f.sum_map g).invFun = Sum.map f.symm g.symm := rfl
-
-/- TODO: add doc-string! -/
--- does the Homeomorph exist already?
-def sum_map (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+/-- The sum of two diffeomorphisms -/
+def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
-  toEquiv := Equiv.sum_map φ.toEquiv ψ.toEquiv
+  toEquiv := Equiv.sumCongr φ.toEquiv ψ.toEquiv
   contMDiff_toFun := ContMDiff.sum_map φ.contMDiff_toFun ψ.contMDiff_toFun
   contMDiff_invFun := ContMDiff.sum_map φ.contMDiff_invFun ψ.contMDiff_invFun
 
-lemma sum_map_symm_symm
-    (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  Diffeomorph.sum_map φ.symm ψ.symm = (Diffeomorph.sum_map φ ψ).symm := rfl
+lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
 
-lemma sum_map_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  Diffeomorph.sum_map φ ψ = Sum.map φ ψ := rfl
+@[simp]
+lemma sumCongr_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  sumCongr φ ψ = Sum.map φ ψ := rfl
 
-lemma sum_map_inl (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  (Diffeomorph.sum_map φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
+lemma sumCongr_inl (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  (sumCongr φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
 
-lemma sum_map_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  (Diffeomorph.sum_map φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
+lemma sumCongr_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+  (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
 
-variable (I M M' n) in -- TODO: argument order is weird!
-/-- A diffeomorphism `M ⊕ M' → M' → M` -/
+variable (I M M' n) in
+/-- A diffeomorphism `M ⊕ M' → M' ⊕ M` -/
 def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
   toEquiv := Equiv.sumComm M M'
   contMDiff_toFun := ContMDiff.swap
   contMDiff_invFun := ContMDiff.swap
 
-theorem coe_sumComm : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
+@[simp]
+theorem sumComm_coe : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
 
 @[simp]
 theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := rfl
 
 variable (I M M' n) in
-/-- A diffeomorphism `M ⊕ (N ⊕ P) → (M ⊕ N) ⊕ P` -/
-def sumAssoc : Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') n where
-  toEquiv := (Equiv.sumAssoc M M' M'').symm
-  contMDiff_toFun := by
-    apply ContMDiff.sum_elim
-    · exact ContMDiff.inl.comp ContMDiff.inl -- xxx: can I power up fun_prop to do this?
-    · exact ContMDiff.inr.sum_map contMDiff_id
-  contMDiff_invFun := by
-    apply ContMDiff.sum_elim
-    · exact contMDiff_id.sum_map ContMDiff.inl
-    · exact ContMDiff.inr.comp ContMDiff.inr
-
--- TODO: move this next to contMDiff_const
-lemma contMDiff_of_const {f : M → N} (h : ∀ (x y : M), f x = f y) : ContMDiff I J n f := by
-  intro x
-  have : f = fun _ ↦ f x := by ext y; exact h y x
-  rw [this]
-  apply contMDiff_const
-
-variable (M) in
-@[simps]
-/-- A diffeomorphism `M ⊕ ∅ → M` -/
-def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
-  toEquiv := Equiv.sumEmpty M M'
-  contMDiff_toFun := contMDiff_id.sum_elim (contMDiff_of_const (fun _ ↦ congrFun rfl))
-  contMDiff_invFun := ContMDiff.inl
-
-variable (M M' I n) in
 lemma sumComm_inl : (Diffeomorph.sumComm I M n M') ∘ Sum.inl = Sum.inr := by
   ext
   exact Sum.swap_inl
 
-variable (M M' I n) in
+variable (I M M' n) in
 lemma sumComm_inr : (Diffeomorph.sumComm I M n M') ∘ Sum.inr = Sum.inl := by
   ext
   exact Sum.swap_inr
+
+variable (I M M' M'' n) in
+/-- A diffeomorphism `(M ⊕ N) ⊕ P → M ⊕ (N ⊕ P)` -/
+def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
+  toEquiv := Equiv.sumAssoc M M' M''
+  contMDiff_toFun := by
+    apply ContMDiff.sum_elim
+    · exact contMDiff_id.sum_map ContMDiff.inl
+    · exact ContMDiff.inr.comp ContMDiff.inr
+  contMDiff_invFun := by
+    apply ContMDiff.sum_elim
+    · exact ContMDiff.inl.comp ContMDiff.inl
+    · exact ContMDiff.inr.sum_map contMDiff_id
+
+@[simp]
+theorem sumAssoc_coe :
+    (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := rfl
+
+variable (I M n) in
+/-- A diffeomorphism `M ⊕ ∅ → M` -/
+def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
+  toEquiv := Equiv.sumEmpty M M'
+  contMDiff_toFun := contMDiff_id.sum_elim fun x ↦ (IsEmpty.false x).elim
+  contMDiff_invFun := ContMDiff.inl
+
+@[simp]
+theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
 
 end disjointUnion
 
