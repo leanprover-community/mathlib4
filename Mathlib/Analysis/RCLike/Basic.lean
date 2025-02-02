@@ -809,15 +809,15 @@ protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
   rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
-theorem inv_nonneg_of_nonneg {x : 𝕜} (h : 0 ≤ x) : 0 ≤ x⁻¹ := by
-  by_cases h0 : x = 0
-  · subst x
+theorem inv_nonneg_of_nonneg (h : 0 ≤ z) : 0 ≤ z⁻¹ := by
+  by_cases h0 : z = 0
+  · subst z
     simp only [_root_.inv_zero, le_refl]
   · exact (RCLike.inv_pos.mpr (lt_of_le_of_ne h (Ne.symm h0))).le
 
 @[simp]
-theorem inv_nonneg {x : 𝕜} : 0 ≤ x⁻¹ ↔ 0 ≤ x :=
-  ⟨by simpa only [inv_inv] using inv_nonneg_of_nonneg (x := x⁻¹), inv_nonneg_of_nonneg⟩
+theorem inv_nonneg : 0 ≤ z⁻¹ ↔ 0 ≤ z :=
+  ⟨by simpa only [inv_inv] using inv_nonneg_of_nonneg (x := z⁻¹), inv_nonneg_of_nonneg⟩
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
