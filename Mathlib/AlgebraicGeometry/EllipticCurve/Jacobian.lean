@@ -52,13 +52,13 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Jacobian.Point.neg`: the negation operation on a nonsingular rational point.
  * `WeierstrassCurve.Jacobian.Point.add`: the addition operation on a nonsingular rational point.
  * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the nonsingular
-    rational points on a Weierstrass curve in Jacobian coordinates with those in affine coordinates.
+    rational points in Jacobian coordinates with those in affine coordinates.
 
 ## Main statements
 
  * `WeierstrassCurve.Jacobian.polynomial_relation`: Euler's homogeneous function theorem.
- * `WeierstrassCurve.Jacobian.NonsingularNeg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Jacobian.NonsingularAdd`: addition preserves the nonsingular condition.
+ * `WeierstrassCurve.Jacobian.nonsingular_neg`: negation preserves the nonsingular condition.
+ * `WeierstrassCurve.Jacobian.nonsingular_add`: addition preserves the nonsingular condition.
 
 ## Implementation notes
 
@@ -181,16 +181,16 @@ variable (W') in
 abbrev toAffine : Affine R :=
   W'
 
-lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
+lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ∈ nonZeroDivisors R) :
     P ≈ Q ↔ P = Q := by
-  refine ⟨?_, by rintro rfl; exact Setoid.refl _⟩
+  refine ⟨?_, Quotient.exact.comp <| congrArg _⟩
   rintro ⟨u, rfl⟩
-  rw [← one_mul (Q z)] at hz
-  simp_rw [Units.smul_def, (mul_cancel_right_mem_nonZeroDivisors mem).mp hz, one_smul]
+  simp only [Units.smul_def, (mul_cancel_right_mem_nonZeroDivisors hQz).mp <| one_mul (Q z) ▸ hz]
+  rw [one_smul]
 
 lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ≠ 0) :
     P ≈ Q ↔ P = Q :=
-  equiv_iff_eq_of_Z_eq' hz (mem_nonZeroDivisors_of_ne_zero hQz)
+  equiv_iff_eq_of_Z_eq' hz <| mem_nonZeroDivisors_of_ne_zero hQz
 
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨_, rfl⟩
@@ -1428,6 +1428,9 @@ lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
 lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![1, 1, 0]⟧ :=
   rfl
 
+lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]⟧) : mk h ≠ 0 :=
+  (not_equiv_of_Z_eq_zero_right one_ne_zero rfl).comp <| Quotient.eq.mp.comp Point.ext_iff.mp
+
 /-- The map from a nonsingular rational point on a Weierstrass curve `W'` in affine coordinates
 to the corresponding nonsingular rational point on `W'` in Jacobian coordinates. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
@@ -1441,10 +1444,11 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
     fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
-lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
-  obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
-  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
+lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 :=
+  mk_ne_zero <| (nonsingularLift_some ..).mpr h
+
+@[deprecated (since := "2025-02-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
