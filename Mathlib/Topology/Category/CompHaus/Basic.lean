@@ -168,7 +168,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
-        simp only [comp_apply, Functor.const_obj_map, id_apply]
+        simp only [CategoryTheory.comp_apply, Functor.const_obj_map, CategoryTheory.id_apply]
         exact (hx f).symm } }
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/

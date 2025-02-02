@@ -240,17 +240,11 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
   simp [mul_eq_one, Prod.ext_iff]
 
-/- Porting note: simpnf linter; added aux lemma below
-Left-hand side simplifies from
-  Prod.swap x ∈ Nat.divisorsAntidiagonal n
-to
-  x.snd * x.fst = n ∧ ¬n = 0-/
--- @[simp]
+-- The left hand side is not in simp normal form, see the variant below.
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
--- Porting note: added below thm to replace the simp from the previous thm
 @[simp]
 theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
     x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
@@ -481,16 +475,10 @@ theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
   · ext q
     simpa [hn, hn.ne', mem_primeFactorsList] using and_comm
 
-@[deprecated (since := "2024-07-17")]
-alias prime_divisors_eq_to_filter_divisors_prime := primeFactors_eq_to_filter_divisors_prime
-
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
     {p ∈ n.primeFactors | p ∣ m} = m.primeFactors := by
   simp_rw [primeFactors_eq_to_filter_divisors_prime, filter_comm,
     divisors_filter_dvd_of_dvd hn hmn]
-
-@[deprecated (since := "2024-07-17")]
-alias prime_divisors_filter_dvd_of_dvd := primeFactors_filter_dvd_of_dvd
 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
