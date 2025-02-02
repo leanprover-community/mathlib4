@@ -427,7 +427,7 @@ theorem HasCompactSupport.sup {f g : α → β} (hf : HasCompactSupport f) (hg :
 
 variable [TopologicalSpace β] [ContinuousSup β]
 
-instance sup : Max C_c(α, β) where max f g :=
+instance instSup : Max C_c(α, β) where max f g :=
   { toFun := f ⊔ g
     continuous_toFun := Continuous.sup f.continuous g.continuous
     hasCompactSupport' := HasCompactSupport.sup f.hasCompactSupport g.hasCompactSupport }
