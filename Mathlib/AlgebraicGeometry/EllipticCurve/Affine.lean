@@ -609,36 +609,48 @@ scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 variable {W}
 
+instance : Inhabited W.Point :=
+  ⟨.zero⟩
+
+instance : Zero W.Point :=
+  ⟨.zero⟩
+
+lemma zero_def : 0 = (.zero : W.Point) :=
+  rfl
+
+lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : Point.some h ≠ 0 := by
+  rintro (_ | _)
+
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` satisfying a
 predicate `p` with the union of `0` and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
-def pointEquivNonsingularSubtype {p : W.Point → Prop} (p0 : p .zero) : {P : W.Point // p P} ≃
+def pointEquivNonsingularSubtype {p : W.Point → Prop} (p0 : p 0) : {P : W.Point // p P} ≃
     WithZero {xy : R × R // ∃ h : W.Nonsingular xy.fst xy.snd, p <| .some h} where
   toFun P := match P with
-    | ⟨.zero, _⟩ => none
+    | ⟨0, _⟩ => none
     | ⟨@Point.some _ _ _ x y h, ph⟩ => .some ⟨⟨x, y⟩, h, ph⟩
-  invFun P := P.casesOn ⟨.zero, p0⟩ fun xy => ⟨.some xy.property.choose, xy.property.choose_spec⟩
+  invFun P := P.casesOn ⟨0, p0⟩ fun xy => ⟨.some xy.property.choose, xy.property.choose_spec⟩
   left_inv := by rintro (_ | _) <;> rfl
   right_inv := by rintro (_ | _) <;> rfl
 
 @[simp]
-lemma pointEquivNonsingularSubtype_zero {p : W.Point → Prop} (p0 : p .zero) :
-    pointEquivNonsingularSubtype p0 ⟨.zero, p0⟩ = none :=
+lemma pointEquivNonsingularSubtype_zero {p : W.Point → Prop} (p0 : p 0) :
+    pointEquivNonsingularSubtype p0 ⟨0, p0⟩ = none :=
   rfl
 
 @[simp]
 lemma pointEquivNonsingularSubtype_some {x y : R} {h : W.Nonsingular x y} {p : W.Point → Prop}
-    (p0 : p .zero) (ph : p <| .some h) :
+    (p0 : p 0) (ph : p <| .some h) :
     pointEquivNonsingularSubtype p0 ⟨.some h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
   rfl
 
 @[simp]
-lemma pointEquivNonsingularSubtype_symm_none {p : W.Point → Prop} (p0 : p .zero) :
-    (pointEquivNonsingularSubtype p0).symm none = ⟨.zero, p0⟩ :=
+lemma pointEquivNonsingularSubtype_symm_none {p : W.Point → Prop} (p0 : p 0) :
+    (pointEquivNonsingularSubtype p0).symm none = ⟨0, p0⟩ :=
   rfl
 
 @[simp]
 lemma pointEquivNonsingularSubtype_symm_some {x y : R} {h : W.Nonsingular x y} {p : W.Point → Prop}
-    (p0 : p .zero) (ph : p <| .some h) :
+    (p0 : p 0) (ph : p <| .some h) :
     (pointEquivNonsingularSubtype p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨.some h, ph⟩ :=
   rfl
 
@@ -651,7 +663,7 @@ def pointEquivNonsingular : W.Point ≃ WithZero {xy : R × R // W.Nonsingular x
 
 variable (W) in
 @[simp]
-lemma pointEquivNonsingular_zero : W.pointEquivNonsingular .zero = none :=
+lemma pointEquivNonsingular_zero : W.pointEquivNonsingular 0 = none :=
   rfl
 
 @[simp]
@@ -661,7 +673,7 @@ lemma pointEquivNonsingular_some {x y : R} (h : W.Nonsingular x y) :
 
 variable (W) in
 @[simp]
-lemma pointEquivNonsingular_symm_none : W.pointEquivNonsingular.symm none = .zero :=
+lemma pointEquivNonsingular_symm_none : W.pointEquivNonsingular.symm none = 0 :=
   rfl
 
 @[simp]
@@ -672,18 +684,6 @@ lemma pointEquivNonsingular_symm_some {x y : R} {h : W.Nonsingular x y} :
 namespace Point
 
 /-! ### Group operations -/
-
-instance : Inhabited W.Point :=
-  ⟨zero⟩
-
-instance : Zero W.Point :=
-  ⟨zero⟩
-
-lemma zero_def : 0 = (zero : W.Point) :=
-  rfl
-
-lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : some h ≠ 0 := by
-  rintro (_|_)
 
 /-- The negation of a nonsingular rational point on `W`.
 

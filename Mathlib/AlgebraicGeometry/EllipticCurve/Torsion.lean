@@ -14,6 +14,8 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 open Pointwise Polynomial
 
+open scoped Polynomial.Bivariate
+
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow])
 
@@ -24,26 +26,6 @@ local macro "map_simp" : tactic =>
     WeierstrassCurve.map])
 
 universe u v
-
-namespace Polynomial
-
-lemma evalEval_add {R : Type u} [Semiring R] (x y : R) (p q : R[X][Y]) :
-    (p + q).evalEval x y = p.evalEval x y + q.evalEval x y := by
-  simp only [evalEval, eval_add]
-
-lemma evalEval_sub {R : Type u} [Ring R] (x y : R) (p q : R[X][Y]) :
-    (p - q).evalEval x y = p.evalEval x y - q.evalEval x y := by
-  simp only [evalEval, eval_sub]
-
-lemma evalEval_mul {R : Type u} [CommSemiring R] (x y : R) (p q : R[X][Y]) :
-    (p * q).evalEval x y = p.evalEval x y * q.evalEval x y := by
-  simp only [evalEval, eval_mul]
-
-lemma evalEval_pow {R : Type u} [CommSemiring R] (x y : R) (p : R[X][Y]) (n : ℕ) :
-    (p ^ n).evalEval x y = p.evalEval x y ^ n := by
-  simp only [evalEval, eval_pow]
-
-end Polynomial
 
 namespace WeierstrassCurve
 
@@ -95,30 +77,27 @@ lemma degree_polynomialEvalX [Nontrivial R] (x : R) : (W'.polynomialEvalX x).deg
   compute_degree!
 
 lemma equation_iff_eval_polynomialEvalX (x y : R) :
-    W'.toAffine.Equation x y ↔ eval y (W'.polynomialEvalX x) = 0 := by
+    W'.Equation x y ↔ eval y (W'.polynomialEvalX x) = 0 := by
   rw [Equation, polynomialEvalX, map_evalRingHom_eval]
 
 variable {W} in
-lemma equation_X_surjective_of_splits {x : F}
-    (hx : (W.toAffine.polynomialEvalX x).Splits <| RingHom.id F) :
-    ∃ y : F, W.toAffine.Equation x y := by
+lemma equation_X_surjective_of_splits {x : F} (hx : (W.polynomialEvalX x).Splits <| RingHom.id F) :
+    ∃ y : F, W.Equation x y := by
   simp only [equation_iff_eval_polynomialEvalX]
   exact exists_root_of_splits (RingHom.id F) hx <| W.degree_polynomialEvalX x ▸ two_ne_zero
 
-lemma equation_X_surjective [IsAlgClosed F] (x : F) : ∃ y : F, W.toAffine.Equation x y :=
+lemma equation_X_surjective [IsAlgClosed F] (x : F) : ∃ y : F, W.Equation x y :=
   equation_X_surjective_of_splits <| IsAlgClosed.splits <| W.toAffine.polynomialEvalX x
 
 variable {W} in
-lemma nonsingular_X_surjective_of_splits (hΔ : W.Δ ≠ 0) {x : F}
-    (hx : (W.toAffine.polynomialEvalX x).Splits <| RingHom.id F) :
-    ∃ y : F, W.toAffine.Nonsingular x y := by
+lemma nonsingular_X_surjective_of_splits [W.IsElliptic] {x : F}
+    (hx : (W.polynomialEvalX x).Splits <| RingHom.id F) : ∃ y : F, W.Nonsingular x y := by
   rcases equation_X_surjective_of_splits hx with ⟨x, hx⟩
-  exact ⟨x, (equation_iff_nonsingular hΔ).mp hx⟩
+  exact ⟨x, W.equation_iff_nonsingular.mp hx⟩
 
-variable {W} in
-lemma nonsingular_X_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (x : F) :
+lemma nonsingular_X_surjective [IsAlgClosed F] [W.IsElliptic] (x : F) :
     ∃ y : F, W.toAffine.Nonsingular x y :=
-  nonsingular_X_surjective_of_splits hΔ <| IsAlgClosed.splits <| W.toAffine.polynomialEvalX x
+  W.nonsingular_X_surjective_of_splits <| IsAlgClosed.splits <| W.toAffine.polynomialEvalX x
 
 noncomputable def polynomialEvalY (y : R) : R[X] :=
   W'.polynomial.eval <| C y
@@ -137,26 +116,23 @@ lemma equation_iff_eval_polynomialEvalY (x y : R) :
   rw [Equation, evalEval, polynomialEvalY]
 
 variable {W} in
-lemma equation_Y_surjective_of_splits {y : F}
-    (hx : (W.toAffine.polynomialEvalY y).Splits <| RingHom.id F) :
-    ∃ x : F, W.toAffine.Equation x y := by
+lemma equation_Y_surjective_of_splits {y : F} (hx : (W.polynomialEvalY y).Splits <| RingHom.id F) :
+    ∃ x : F, W.Equation x y := by
   simp only [equation_iff_eval_polynomialEvalY]
   exact exists_root_of_splits (RingHom.id F) hx <| W.degree_polynomialEvalY y ▸ three_ne_zero
 
-lemma equation_Y_surjective [IsAlgClosed F] (y : F) : ∃ x : F, W.toAffine.Equation x y :=
-  equation_Y_surjective_of_splits <| IsAlgClosed.splits <| W.toAffine.polynomialEvalY y
+lemma equation_Y_surjective [IsAlgClosed F] (y : F) : ∃ x : F, W.Equation x y :=
+  equation_Y_surjective_of_splits <| IsAlgClosed.splits <| W.polynomialEvalY y
 
 variable {W} in
-lemma nonsingular_Y_surjective_of_splits (hΔ : W.Δ ≠ 0) {y : F}
-    (hx : (W.toAffine.polynomialEvalY y).Splits <| RingHom.id F) :
-    ∃ x : F, W.toAffine.Nonsingular x y := by
+lemma nonsingular_Y_surjective_of_splits [W.IsElliptic] {y : F}
+    (hx : (W.polynomialEvalY y).Splits <| RingHom.id F) : ∃ x : F, W.Nonsingular x y := by
   rcases equation_Y_surjective_of_splits hx with ⟨x, hx⟩
-  exact ⟨x, (equation_iff_nonsingular hΔ).mp hx⟩
+  exact ⟨x, W.equation_iff_nonsingular.mp hx⟩
 
-variable {W} in
-lemma nonsingular_Y_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (y : F) :
-    ∃ x : F, W.toAffine.Nonsingular x y :=
-  nonsingular_Y_surjective_of_splits hΔ <| IsAlgClosed.splits <| W.toAffine.polynomialEvalY y
+lemma nonsingular_Y_surjective [IsAlgClosed F] [W.IsElliptic] (y : F) :
+    ∃ x : F, W.Nonsingular x y :=
+  nonsingular_Y_surjective_of_splits <| IsAlgClosed.splits <| W.polynomialEvalY y
 
 namespace Point
 
@@ -164,15 +140,17 @@ def pointZSMulKerEquivNonsingular (n : ℤ) : (zsmulAddGroupHom n : W.Point →+
     WithZero {xy : F × F // ∃ h : W.Nonsingular xy.1 xy.2, n • some h = 0} :=
   pointEquivNonsingularSubtype <| smul_zero n
 
+variable {W}
+
 @[simp]
 lemma pointZSMulKerEquivNonsingular_zero (n : ℤ) :
     pointZSMulKerEquivNonsingular W n ⟨0, zero_mem _⟩ = none :=
   rfl
 
-variable {W} in
 @[simp]
 lemma pointZSMulKerEquivNonsingular_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
-    (hn : n • some h = 0) : pointZSMulKerEquivNonsingular W n ⟨some h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
+    (hn : n • some h = 0) :
+    pointZSMulKerEquivNonsingular W n ⟨some h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
   rfl
 
 @[simp]
@@ -180,7 +158,6 @@ lemma pointZSMulKerEquivNonsingular_symm_none (n : ℤ) :
     (pointZSMulKerEquivNonsingular W n).symm none = 0 :=
   rfl
 
-variable {W} in
 @[simp]
 lemma pointZSMulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
     (hn : n • some h = 0) :
@@ -207,7 +184,7 @@ lemma equiv_zero_or_equiv_some {P : Fin 3 → F} (hP : W.Nonsingular P) :
 lemma eq_zero_or_eq_some {P : PointClass F} (hP : W.NonsingularLift P) :
     P = ⟦![1, 1, 0]⟧ ∨ ∃ x y : F, P = ⟦![x, y, 1]⟧ := by
   rcases P
-  exact (equiv_zero_or_equiv_some hP).casesOn (Or.inl ∘ Quotient.eq.mpr)
+  exact (equiv_zero_or_equiv_some hP).casesOn (Or.inl.comp Quotient.eq.mpr)
     (Or.inr ⟨_, _, Quotient.eq.mpr ·⟩)
 
 namespace Point
@@ -288,12 +265,12 @@ noncomputable def equivNonsingular :
     (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
 
 lemma equivNonsingular_zero : equivNonsingular W 0 = none := by
-  erw [equivNonsingular_apply, toAffineEquivSubtype_zero]
+  rw [equivNonsingular_apply, toAffineEquivSubtype_zero]
   rfl
 
 lemma equivNonsingular_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
     equivNonsingular W (mk h) = .some ⟨⟨x, y⟩, h⟩ := by
-  erw [equivNonsingular_apply, toAffineEquivSubtype_some]
+  rw [equivNonsingular_apply, toAffineEquivSubtype_some]
   rfl
 
 lemma equivNonsingular_symm_none : (equivNonsingular W).symm none = 0 :=
@@ -319,19 +296,20 @@ lemma zsmulKerEquivNonsingular_symm_none (n : ℤ) : (zsmulKerEquivNonsingular W
   rfl
 
 lemma zsmulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
-    (hn : n • mk h = 0) : (zsmulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨mk h, hn⟩ :=
+    (hn : n • mk h = 0) :
+    (zsmulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨mk h, hn⟩ :=
   rfl
 
 lemma nonsingular_zsmul (n : ℤ) (P : W.Point) : W.NonsingularLift (n • P).point := by
   induction n using Int.negInduction with
   | nat n => induction n with
     | zero => simp [zero_point, nonsingularLift_zero]
-    | succ _ h => simp only [Nat.cast_add, Nat.cast_one, _root_.add_smul, one_smul, add_point,
+    | succ _ h => simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul, add_point,
       nonsingularLift_addMap h P.nonsingular]
-  | neg _ h => simp only [_root_.neg_smul, neg_point, nonsingularLift_negMap h]
+  | neg h n => simp only [_root_.neg_smul, neg_point, nonsingularLift_negMap <| h n]
 
 theorem zsmul (n : ℤ) {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
-    (n • mk h).point = ⟦evalEval x y ∘ ![W.φ n, W.ω n, W.ψ n]⟧ := by
+    (n • mk h).point = ⟦(evalEval x y).comp ![W.φ n, W.ω n, W.ψ n]⟧ := by
   sorry
 
 lemma zsmul_eq_zero_iff (n : ℤ) {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
@@ -343,11 +321,11 @@ end Point
 
 end Jacobian
 
-lemma isCoprime_Φ_ΨSq [IsAlgClosed F] {W : WeierstrassCurve F} (hΔ : W.Δ ≠ 0) (n : ℤ) :
+lemma isCoprime_Φ_ΨSq [IsAlgClosed F] (W : WeierstrassCurve F) [W.IsElliptic] (n : ℤ) :
     IsCoprime (W.Φ n) (W.ΨSq n) := by
   refine (isCoprime_iff_aeval_ne_zero_of_isAlgClosed _ F ..).mpr fun x => not_and_or.mp
     fun ⟨hΦ, hΨ⟩ => ?_
-  rcases W.toAffine.nonsingular_X_surjective hΔ x with ⟨y, h⟩
+  rcases W.toAffine.nonsingular_X_surjective x with ⟨y, h⟩
   have hn {n : ℤ} := Jacobian.Point.zsmul_eq_zero_iff n <| (Jacobian.nonsingularLift_some ..).mpr h
   rw [coe_aeval_eq_eval, ← evalEval_Ψ_sq n h.left, ← evalEval_ψ n h.left,
     pow_eq_zero_iff two_ne_zero] at hΨ
