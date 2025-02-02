@@ -5,11 +5,11 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.MultiEqualizer
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Data.Fintype.Option
-import Mathlib.Tactic.deriveFintype
+import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Categories with finite limits.
