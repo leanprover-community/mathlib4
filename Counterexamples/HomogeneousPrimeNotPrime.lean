@@ -5,7 +5,7 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Data.Fintype.Units
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
