@@ -666,27 +666,6 @@ theorem isTwoBoundary_of_mem_twoBoundaries
 
 end ofDistribMulAction
 
-section Homology
-variable [DecidableEq G]
-
-/-- We define the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`, to be
-the coinvariants of the representation, `A_G`. -/
-abbrev H0 := A.ρ.coinvariants
-
-/-- We define the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`, to be
-1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo 1-boundaries
-(i.e. `B₁(G, A) := Im(d₁ : (G →₀ A) → A)`). -/
-abbrev H1 := oneCycles A ⧸ LinearMap.range
-  ((dOne A).codRestrict (oneCycles A) dOne_apply_mem_oneCycles)
-
-/-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
-2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
-(i.e. `B²(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
-abbrev H2 := twoCycles A ⧸ LinearMap.range
-  ((dTwo A).codRestrict (twoCycles A) dTwo_apply_mem_twoCycles)
-
-end Homology
-
 section groupHomologyIso
 
 open ShortComplex
@@ -711,8 +690,12 @@ end
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (mkQ_comp_dZero A)
 
+/-- We define the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`, to be
+the coinvariants of the representation, `A_G`. -/
+abbrev H0 := (shortComplexH0 A).X₃
+
 /-- The quotient map `Z₀(G, A) → H₀(G, A).` -/
-abbrev H0π : ModuleCat.of k A ⟶ ModuleCat.of k (H0 A) := (shortComplexH0 A).g
+abbrev H0π : ModuleCat.of k A ⟶ H0 A := (shortComplexH0 A).g
 
 lemma H0π_eq_zero_iff (x : A) : H0π A x = 0 ↔ x ∈ augmentationSubmodule A.ρ :=
   Submodule.Quotient.mk_eq_zero _
@@ -777,8 +760,8 @@ def H0LequivOfIsTrivial :
     H0 A ≃ₗ[k] A := Submodule.quotEquivOfEqBot _ (augmentationSubmodule_eq_bot_of_isTrivial A)
 
 @[simp]
-theorem H0LequivOfIsTrivial_symm_eq_mkQ :
-    (H0LequivOfIsTrivial A).symm = coinvariantsMkQ A.ρ := rfl
+theorem H0LequivOfIsTrivial_symm_eq_π :
+    (H0LequivOfIsTrivial A).symm = (H0π A).hom := rfl
 
 @[simp]
 theorem H0LequivOfIsTrivial_mk (x : A) :
@@ -799,8 +782,13 @@ variable [DecidableEq G]
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dOne A) (dZero A) (dZero_comp_dOne A)
 
+/-- We define the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`, to be
+1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo 1-boundaries
+(i.e. `B₁(G, A) := Im(d₁ : (G →₀ A) → A)`). -/
+abbrev H1 := moduleCatHomology <| shortComplexH1 A
+
 /-- The quotient map `Z₁(G, A) → H₁(G, A).` -/
-def H1π : ModuleCat.of k (oneCycles A) ⟶ ModuleCat.of k (H1 A) :=
+abbrev H1π : ModuleCat.of k (oneCycles A) ⟶ H1 A :=
   moduleCatHomologyπ (shortComplexH1 A)
 
 variable {A} in
@@ -869,8 +857,13 @@ variable [DecidableEq G]
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   moduleCatMk (dTwo A) (dOne A) (dOne_comp_dTwo A)
 
+/-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
+2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
+(i.e. `B²(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
+abbrev H2 := moduleCatHomology <| shortComplexH2 A
+
 /-- The quotient map `Z₂(G, A) → H₂(G, A).` -/
-def H2π : ModuleCat.of k (twoCycles A) ⟶ ModuleCat.of k (H2 A) :=
+abbrev H2π : ModuleCat.of k (twoCycles A) ⟶ H2 A :=
   moduleCatHomologyπ (shortComplexH2 A)
 
 variable {A} in
