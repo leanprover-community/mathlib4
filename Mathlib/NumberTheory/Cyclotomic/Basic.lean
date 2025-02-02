@@ -595,8 +595,8 @@ theorem adjoin_algebra_injective :
     Function.Injective <| algebraMap (CyclotomicRing n A K) (CyclotomicField n K) :=
   Subtype.val_injective
 
-instance : FaithfulSMul (CyclotomicRing n A K) (CyclotomicField n K) :=
-  (faithfulSMul_iff_algebraMap_injective _ _).mpr <| adjoin_algebra_injective n A K
+instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
 
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
