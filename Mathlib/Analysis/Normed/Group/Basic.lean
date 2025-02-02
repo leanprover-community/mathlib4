@@ -667,14 +667,14 @@ theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm :=
   rfl
 
-@[to_additive norm_toNNReal]
+@[to_additive (attr := simp) norm_toNNReal]
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
   @Real.toNNReal_coe ‖a‖₊
 
-@[to_additive toReal_enorm]
+@[to_additive (attr := simp) toReal_enorm]
 lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 
-@[to_additive ofReal_norm]
+@[to_additive (attr := simp) ofReal_norm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
   simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
 
