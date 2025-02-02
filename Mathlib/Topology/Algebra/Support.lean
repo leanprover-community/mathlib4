@@ -20,6 +20,12 @@ Furthermore, we say that `f` has compact support if the topological support of `
 
 * `mulTSupport` & `tsupport`
 * `HasCompactMulSupport` & `HasCompactSupport`
+
+## TODO
+
+The definitions have been put in the root namespace following many other topological definitions,
+like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
+worth reconsidering namespacing the definitions here.
 -/
 
 
