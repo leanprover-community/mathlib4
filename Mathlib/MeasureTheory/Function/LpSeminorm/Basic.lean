@@ -380,21 +380,23 @@ lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : 
   simp_rw [ENNReal.coe_le_coe]
   exact h
 
-theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
+theorem eLpNorm'_mono_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
-  eLpNorm'_mono_nnnorm_ae hq h
+  eLpNorm'_mono_enorm_ae hq h
 
-theorem eLpNorm'_congr_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
+theorem eLpNorm'_congr_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm' f q μ = eLpNorm' g q μ := by
   have : (‖f ·‖ₑ ^ q) =ᵐ[μ] (‖g ·‖ₑ ^ q) := hfg.mono fun x hx ↦ by simp [enorm, hx]
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_congr_ae this]
 
+@[deprecated (since := "2025-02-02")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_enorm_ae
+
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
-  eLpNorm'_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
+  eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 
 theorem eLpNorm'_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) : eLpNorm' f q μ = eLpNorm' g q μ :=
-  eLpNorm'_congr_nnnorm_ae (hfg.fun_comp _)
+  eLpNorm'_congr_enorm_ae (hfg.fun_comp _)
 
 theorem eLpNormEssSup_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) :
     eLpNormEssSup f μ = eLpNormEssSup g μ :=
