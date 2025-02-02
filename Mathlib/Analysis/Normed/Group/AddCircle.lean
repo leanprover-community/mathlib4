@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Topology.Instances.AddCircle
 
 /-!
@@ -25,7 +26,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 noncomputable section
 
-open Set
+open Metric QuotientAddGroup Set
 
 open Int hiding mem_zmultiples_iff
 
@@ -35,35 +36,19 @@ namespace AddCircle
 
 variable (p : ℝ)
 
-instance : NormedAddCommGroup (AddCircle p) :=
-  AddSubgroup.normedAddCommGroupQuotient _
+instance : NormedAddCommGroup (AddCircle p) := QuotientAddGroup.instNormedAddCommGroup _
 
 @[simp]
 theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
-  have aux : ∀ {a b c : ℝ}, a ∈ zmultiples b → c * a ∈ zmultiples (c * b) := fun {a b c} h => by
-    simp only [mem_zmultiples_iff] at h ⊢
-    obtain ⟨n, rfl⟩ := h
-    exact ⟨n, (mul_smul_comm n c b).symm⟩
-  rcases eq_or_ne t 0 with (rfl | ht); · simp
-  have ht' : |t| ≠ 0 := (not_congr abs_eq_zero).mpr ht
-  simp only [quotient_norm_eq, Real.norm_eq_abs]
-  conv_rhs => rw [← smul_eq_mul, ← Real.sInf_smul_of_nonneg (abs_nonneg t)]
-  simp only [QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_iff_sub_mem]
-  congr 1
-  ext z
-  rw [mem_smul_set_iff_inv_smul_mem₀ ht']
-  show
-    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = |t|⁻¹ * z
-  constructor
-  · rintro ⟨y, hy, rfl⟩
-    refine ⟨t⁻¹ * y, ?_, by rw [abs_mul, abs_inv]⟩
-    rw [← inv_mul_cancel_left₀ ht x, ← inv_mul_cancel_left₀ ht p, ← mul_sub]
-    exact aux hy
-  · rintro ⟨w, hw, hw'⟩
-    refine ⟨t * w, ?_, by rw [← (eq_inv_mul_iff_mul_eq₀ ht').mp hw', abs_mul]⟩
-    rw [← mul_sub]
-    exact aux hw
+  obtain rfl | ht := eq_or_ne t 0
+  · simp
+  simp only [norm_eq_infDist, Real.norm_eq_abs, ← Real.norm_eq_abs, ← infDist_smul₀ ht, smul_zero]
+  congr with m
+  simp only [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mem_mk, mem_setOf_eq,
+    mem_smul_set_iff_inv_smul_mem₀ ht, smul_eq_mul]
+  simp_rw [mul_left_comm, ← smul_eq_mul, Set.range_smul, mem_smul_set_iff_inv_smul_mem₀ ht]
+  simp [mul_sub, ht, -mem_range]
 
 theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCircle p)‖ := by
   suffices ‖(↑(-1 * x) : AddCircle (-1 * p))‖ = ‖(x : AddCircle p)‖ by
@@ -74,9 +59,9 @@ theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCirc
 @[simp]
 theorem norm_eq_of_zero {x : ℝ} : ‖(x : AddCircle (0 : ℝ))‖ = |x| := by
   suffices { y : ℝ | (y : AddCircle (0 : ℝ)) = (x : AddCircle (0 : ℝ)) } = {x} by
-    rw [quotient_norm_eq, this, image_singleton, Real.norm_eq_abs, csInf_singleton]
+    simp [norm_eq_infDist, this]
   ext y
-  simp [QuotientAddGroup.eq_iff_sub_mem, mem_zmultiples_iff, sub_eq_zero]
+  simp [eq_iff_sub_mem, mem_zmultiples_iff, sub_eq_zero]
 
 theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * p| := by
   suffices ∀ x : ℝ, ‖(x : AddCircle (1 : ℝ))‖ = |x - round x| by
@@ -87,29 +72,17 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     rw [← hx, inv_mul_cancel₀ hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
   clear! x p
   intros x
-  rw [quotient_norm_eq, abs_sub_round_eq_min]
-  have h₁ : BddBelow (abs '' { m : ℝ | (m : AddCircle (1 : ℝ)) = x }) :=
-    ⟨0, by simp [mem_lowerBounds]⟩
-  have h₂ : (abs '' { m : ℝ | (m : AddCircle (1 : ℝ)) = x }).Nonempty := ⟨|x|, ⟨x, rfl, rfl⟩⟩
-  apply le_antisymm
-  · simp_rw [Real.norm_eq_abs, csInf_le_iff h₁ h₂, le_min_iff]
-    intro b h
-    refine
-      ⟨mem_lowerBounds.1 h _ ⟨fract x, ?_, abs_fract⟩,
-        mem_lowerBounds.1 h _ ⟨fract x - 1, ?_, by rw [abs_sub_comm, abs_one_sub_fract]⟩⟩
-    · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
-        QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one]
-    · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
-        QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one, sub_sub,
-        (by norm_cast : (⌊x⌋ : ℝ) + 1 = (↑(⌊x⌋ + 1) : ℝ))]
-  · simp only [QuotientAddGroup.mk'_apply, Real.norm_eq_abs, le_csInf_iff h₁ h₂]
-    rintro b' ⟨b, hb, rfl⟩
-    simp only [mem_setOf, QuotientAddGroup.eq_iff_sub_mem, mem_zmultiples_iff,
-      smul_one_eq_cast] at hb
-    obtain ⟨z, hz⟩ := hb
-    rw [(by rw [hz]; abel : x = b - z), fract_sub_int, ← abs_sub_round_eq_min]
-    convert round_le b 0
-    simp
+  simp only [le_antisymm_iff, le_norm_iff, Real.norm_eq_abs]
+  refine ⟨le_of_forall_le fun r hr ↦ ?_, ?_⟩
+  · rw [abs_sub_round_eq_min, le_inf_iff]
+    rw [le_norm_iff] at hr
+    constructor
+    · simpa [abs_of_nonneg] using hr (fract x)
+    · simpa [abs_sub_comm (fract x)]
+        using hr (fract x - 1) (by simp [← self_sub_floor, ← sub_eq_zero, sub_sub]; simp)
+  · simpa [zmultiples, QuotientAddGroup.eq, zsmul_eq_mul, mul_one, mem_mk, mem_range, and_imp,
+      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_swap (α := ℕ)]
+      using round_le _
 
 theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
   conv_rhs =>
