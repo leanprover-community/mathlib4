@@ -238,8 +238,8 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
 
 variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
-@[simps! (config := .lemmasOnly) apply symm_apply]
-noncomputable def linearEquiv₀ : ⋀[R]^0 M ≃ₗ[R] R :=
+@[simps! (config := .lemmasOnly) symm_apply]
+noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
   LinearEquiv.ofLinear
     (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
@@ -247,19 +247,20 @@ noncomputable def linearEquiv₀ : ⋀[R]^0 M ≃ₗ[R] R :=
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
     (by aesop) (by aesop)
 
-lemma linearEquiv₀_naturality (f : M →ₗ[R] N) :
-    (linearEquiv₀ R N).comp (map 0 f) = linearEquiv₀ R M := by
-  ext
-  dsimp [linearEquiv₀]
-  simp
+@[simp]
+lemma zeroEquiv_ιMulti (f : Fin 0 → M) :
+    zeroEquiv R M (ιMulti _ _ f) = 1 := by
+  simp [zeroEquiv]
+
+lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
+    (zeroEquiv R N).comp (map 0 f) = zeroEquiv R M := by aesop
 
 variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
-@[simps! (config := .lemmasOnly) apply symm_apply]
-noncomputable def linearEquiv₁ : ⋀[R]^1 M ≃ₗ[R] M :=
+@[simps! (config := .lemmasOnly) symm_apply]
+noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
   LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id))
-    (by
+    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
       have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
         ext i
         fin_cases i
@@ -276,10 +277,12 @@ noncomputable def linearEquiv₁ : ⋀[R]^1 M ≃ₗ[R] M :=
             simp only [Fin.isValue, AlternatingMap.map_update_smul] })
     (by aesop) (by aesop)
 
-lemma linearEquiv₁_naturality (f : M →ₗ[R] N) :
-    (linearEquiv₁ R N).comp (map 1 f) = f.comp (linearEquiv₁ R M).toLinearMap := by
-  ext
-  dsimp [linearEquiv₁]
-  simp
+@[simp]
+lemma oneEquiv_ιMulti (f : Fin 1 → M) :
+    oneEquiv R M (ιMulti _ _ f) = f 0 := by
+  simp [oneEquiv]
+
+lemma oneEquiv_naturality (f : M →ₗ[R] N) :
+    (oneEquiv R N).comp (map 1 f) = f.comp (oneEquiv R M).toLinearMap := by aesop
 
 end exteriorPower
