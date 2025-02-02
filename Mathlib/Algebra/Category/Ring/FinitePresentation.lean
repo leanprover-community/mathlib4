@@ -20,7 +20,7 @@ i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 section Category
 
-open CategoryTheory Limits
+open CategoryTheory Limit
 
 universe vJ uJ u
 
@@ -28,6 +28,8 @@ variable {J : Type uJ} [Category.{vJ} J] [IsFiltered J]
 variable (R : CommRingCat.{u}) (F : J ⥤ CommRingCat.{u}) (α : (Functor.const _).obj R ⟶ F)
 variable {S : CommRingCat.{u}} (f : R ⟶ S) (c : Cocone F) (hc : IsColimit c)
 variable [PreservesColimit F (forget CommRingCat)]
+
+attribute [local instance] IsFiltered.nonempty
 
 include hc in
 /--
