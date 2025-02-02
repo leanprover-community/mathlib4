@@ -3,6 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Kim Morrison
 -/
+import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Preadditive.Biproducts
@@ -324,12 +325,12 @@ namespace Equivalence
 
 universe uC vC uC' vC' uD vD uD' vD'
 
-variable {C : Type uC} [Category.{vC} C] [Preadditive C]
+variable {C : Type uC} [Category.{vC} C] [Preadditive C] [Limits.HasBinaryBiproducts C]
 variable {C' : Type uC'} [Category.{vC'} C'] [Preadditive C']
-variable {D : Type uD} [Category.{vD} D] [Preadditive D]
+variable {D : Type uD} [Category.{vD} D] [Preadditive D] [Limits.HasBinaryBiproducts D]
 variable {D' : Type uD'} [Category.{vD'} D'] [Preadditive D']
 variable {f : C ⥤ D}  {g : C' ⥤ D'}
-variable {e : C ≌ C'} {e' : D ≌ D'} [e.functor.Additive] [e'.functor.Additive]
+variable {e : C ≌ C'} {e' : D ≌ D'}
 
 /--
 Suppose we have categories `C, C', D, D'` such that the diagram of functors
@@ -347,12 +348,14 @@ noncomputable def endRingEquiv
     (sq₀ : e.congrLeft.functor.obj f ≅ e'.congrRight.inverse.obj g) : End f ≃+* End g where
   __ := endMonoidEquiv sq₀
   map_add' α β := by
+    haveI : e.functor.Additive := e.functor.additive_of_preserves_binary_products
+    haveI : e'.functor.Additive := e'.functor.additive_of_preserves_binary_products
     simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
     refine NatTrans.ext <| funext fun c ↦ show _ = _ + _ from ?_
     rw [endMonoidEquiv_apply_app, Iso.conj_apply, NatTrans.comp_app, NatTrans.comp_app]
     erw [Functor.FullyFaithful.mulEquivEnd_apply]
     rw [whiskeringLeft_obj_map, whiskerLeft_app, NatTrans.app_add]
-    simp only [Functor.comp_obj, Preadditive.add_comp, Preadditive.comp_add, Functor.map_add,
+    simp [Functor.comp_obj, Preadditive.add_comp, Preadditive.comp_add, Functor.map_add,
       Functor.map_comp, Category.assoc, endMonoidEquiv_apply_app, Iso.conj, Iso.homCongr,
       MulEquiv.coe_mk]
     rw [← e'.functor.map_comp_assoc, ← e'.functor.map_comp_assoc, ← e'.functor.map_comp_assoc,
