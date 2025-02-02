@@ -37,6 +37,10 @@ def principalSegIio (j : α) :
   map_rel_iff' := by aesop
   mem_range_iff_rel' := by aesop
 
+@[simp]
+lemma principalSegIio_toRelEmbedding {j : α} (k : Iio j) :
+    (Set.principalSegIio j).toRelEmbedding k = k.1 := rfl
+
 /-- If `i ≤ j`, then `Set.Iic i` is an initial segment of `Set.Iic j`. -/
 @[simps]
 def initialSegIicIicOfLE {i j : α} (h : i ≤ j) :
@@ -58,8 +62,8 @@ def principalSegIioIicOfLE {i j : α} (h : i ≤ j) :
 
 @[simp]
 lemma principalSegIioIicOfLE_toRelEmbedding {i j : α} (h : i ≤ j)
-    (k : α) (hk : k < i) :
-    ((Set.principalSegIioIicOfLE h).toRelEmbedding ⟨k, hk⟩ : α) = k := rfl
+    (k : Iio i) :
+    (Set.principalSegIioIicOfLE h).toRelEmbedding k = ⟨k, k.2.le.trans h⟩ := rfl
 
 end Set
 
