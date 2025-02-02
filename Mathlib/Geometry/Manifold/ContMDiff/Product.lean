@@ -368,12 +368,12 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
     congr
     apply Sum.inl_injective.extend_apply (chartAt _ x)
   set C := chartAt H x
-  have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
+  have aux : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
       (((C.lift_openEmbedding (IsOpenEmbedding.inl (Y := M'))).extend I)
         ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  apply Filter.mem_of_superset ?_ aux₁
+  apply Filter.mem_of_superset ?_ aux
   rw [← I.image_eq (chartAt H x).target]
   exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
@@ -387,12 +387,12 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
     congr
     apply Sum.inr_injective.extend_apply (chartAt _ x)
   set C := chartAt H x
-  have aux₁ : ∀ e ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I,
+  have aux : ∀ e ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I,
       (((C.lift_openEmbedding (IsOpenEmbedding.inr (X := M))).extend I)
         ∘ Sum.inr ∘ (C.extend I).symm) e = e := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inr_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  apply Filter.mem_of_superset ?_ aux₁
+  apply Filter.mem_of_superset ?_ aux
   rw [← I.image_eq (chartAt H x).target]
   exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
@@ -401,11 +401,9 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
   intro p
   rw [contMDiffAt_iff]
   refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
-  cases p with--by_cases h: p.isLeft
-  | inl x =>--· set x := Sum.getLeft p h
-    --have : p = Sum.inl x := Sum.eq_left_getLeft_of_isLeft h
-    --rw [this]
-    simp only [extChartAt, ChartedSpace.sum_chartAt_inl]
+  cases p with
+  | inl x =>
+    simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
     -- In charts around x : M, the map .elim f g looks like f.
     sorry
   | inr x => sorry -- should be analogous
