@@ -85,9 +85,8 @@ noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] 
     Arrow (Shrink.{w} C) ≃ Arrow C where
   toFun := (Shrink.equivalence C).inverse.mapArrow.obj
   invFun := (Shrink.equivalence C).functor.mapArrow.obj
-  left_inv f := by
-    refine Arrow.ext (Equiv.apply_symm_apply _ _)
-      ((Equiv.apply_symm_apply _ _)) (by simp; rfl)
+  left_inv _ := Arrow.ext (Equiv.apply_symm_apply _ _)
+      ((Equiv.apply_symm_apply _ _)) (by simp ; rfl)
   right_inv _ := Arrow.ext (by simp [Shrink.equivalence])
     (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence])
 
