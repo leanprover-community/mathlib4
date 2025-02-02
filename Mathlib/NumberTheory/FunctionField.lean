@@ -207,6 +207,8 @@ theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by
   rw [inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
 
+-- Dropped attribute `@[simp]` due to issue described here:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
