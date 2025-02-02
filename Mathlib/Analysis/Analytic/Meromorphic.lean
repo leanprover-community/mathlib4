@@ -397,11 +397,11 @@ theorem exists_order_ne_top_iff_forall {U : Set 𝕜} [CompleteSpace E]
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
-theorem order_ne_top_of_isPreconnected {U : Set 𝕜} [CompleteSpace E] {x y : U}
-    (hf : MeromorphicOn f U) (hU : IsPreconnected U) (hx : (hf x x.2).order ≠ ⊤) :
-    (hf y y.2).order ≠ ⊤ :=
-  (hf.exists_order_ne_top_iff_all_order_ne_top ⟨Set.nonempty_of_mem (Subtype.coe_prop x), hU⟩).1
-    (by use x) y
+theorem order_ne_top_of_isPreconnected {U : Set 𝕜} [CompleteSpace E] {x y : 𝕜}
+    (hf : MeromorphicOn f U) (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U)
+    (h₂x : (hf x h₁x).order ≠ ⊤) :
+    (hf y hy).order ≠ ⊤ :=
+  (hf.exists_order_ne_top_iff_forall ⟨Set.nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
 
 section arithmetic
 
