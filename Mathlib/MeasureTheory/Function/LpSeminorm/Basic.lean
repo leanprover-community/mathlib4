@@ -40,8 +40,8 @@ open TopologicalSpace MeasureTheory Filter
 
 open scoped NNReal ENNReal Topology ComplexConjugate
 
-variable {α ε E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε]
+variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
 
 namespace MeasureTheory
 
@@ -366,13 +366,19 @@ end Const
 
 variable {f : α → F}
 
-lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
+lemma eLpNorm'_mono_enorm_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ := by
   simp only [eLpNorm'_eq_lintegral_enorm]
   gcongr ?_ ^ (1/q)
   refine lintegral_mono_ae (h.mono fun x hx => ?_)
-  dsimp [enorm]
   gcongr
+
+lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
+    eLpNorm' f q μ ≤ eLpNorm' g q μ := by
+  apply eLpNorm'_mono_enorm_ae hq
+  dsimp [enorm]
+  simp_rw [ENNReal.coe_le_coe]
+  exact h
 
 theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
