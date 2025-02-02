@@ -119,9 +119,6 @@ instance (priority := 900) locallyCoverDense_of_isCoverDense [G.IsCoverDense K] 
 instance (priority := 900) [G.IsCoverDense K] : G.IsDenseSubsite (G.inducedTopology K) K where
   functorPushforward_mem_iff := Iff.rfl
 
-@[deprecated (since := "2024-07-23")]
-alias inducedTopologyOfIsCoverDense := inducedTopology
-
 variable (J)
 
 instance over_forget_locallyCoverDense (X : C) : (Over.forget X).LocallyCoverDense J where
