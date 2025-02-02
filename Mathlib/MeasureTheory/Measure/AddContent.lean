@@ -109,27 +109,27 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
 
 section IsSetSemiring
 
-lemma addContent_eq_add_diffFinset₀_of_subset (hC : IsSetSemiring C)
+lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
-    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.diffFinset₀ hs hI, m i := by
+    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.disjointOfDiffUnion hs hI, m i := by
   classical
-  conv_lhs => rw [← hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
+  conv_lhs => rw [← hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
   rw [addContent_sUnion]
   · rw [sum_union]
-    exact hC.disjoint_diffFinset₀ hs hI
+    exact hC.disjoint_disjointOfDiffUnion hs hI
   · rw [coe_union]
-    exact Set.union_subset hI (hC.diffFinset₀_subset hs hI)
+    exact Set.union_subset hI (hC.disjointOfDiffUnion_subset hs hI)
   · rw [coe_union]
-    exact hC.pairwiseDisjoint_union_diffFinset₀ hs hI h_dis
-  · rwa [hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
+    exact hC.pairwiseDisjoint_union_disjointOfDiffUnion hs hI h_dis
+  · rwa [hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
 
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
     ∑ u ∈ I, m u ≤ m t := by
   classical
-  rw [addContent_eq_add_diffFinset₀_of_subset hC ht h_ss hJt h_dis]
+  rw [addContent_eq_add_disjointOfDiffUnion_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
 
 lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
@@ -189,7 +189,7 @@ lemma addContent_diff_of_ne_top (m : AddContent C) (hC : IsSetRing C)
 
 lemma addContent_accumulate (m : AddContent C) (hC : IsSetRing C)
     {s : ℕ → Set α} (hs_disj : Pairwise (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
-      m (Set.Accumulate s n) = ∑ i in Finset.range (n + 1), m (s i) := by
+      m (Set.Accumulate s n) = ∑ i ∈ Finset.range (n + 1), m (s i) := by
   induction n with
   | zero => simp
   | succ n hn =>
@@ -243,7 +243,7 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     · simp_rw [s, Set.diff_eq]
       rw [Set.iInter_inter_distrib, Set.iInter_const, ← Set.compl_iUnion, Set.iUnion_accumulate]
       exact Set.inter_compl_self _
-  have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i in Finset.range (n + 1), m (f i) := by
+  have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i ∈ Finset.range (n + 1), m (f i) := by
     rw [addContent_diff_of_ne_top m hC hm_ne_top hUf (hC.accumulate_mem hf n)
       (Set.accumulate_subset_iUnion _), addContent_accumulate m hC h_disj hf n]
   simp_rw [hmsn] at h_tendsto

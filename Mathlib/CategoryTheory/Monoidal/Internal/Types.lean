@@ -34,7 +34,7 @@ instance monMonoid (A : Mon_ (Type u)) : Monoid A.X where
 -/
 noncomputable def functor : Mon_ (Type u) ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
-  map f :=
+  map f := MonCat.ofHom
     { toFun := f.hom
       map_one' := congr_fun f.one_hom PUnit.unit
       map_mul' := fun x y => congr_fun f.mul_hom (x, y) }
@@ -70,11 +70,11 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
   counitIso :=
     NatIso.ofComponents
       (fun A =>
-        { hom :=
+        { hom := MonCat.ofHom
             { toFun := id
               map_one' := rfl
               map_mul' := fun _ _ => rfl }
-          inv :=
+          inv := MonCat.ofHom
             { toFun := id
               map_one' := rfl
               map_mul' := fun _ _ => rfl } })
@@ -100,7 +100,7 @@ instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
 -/
 noncomputable def functor : CommMon_ (Type u) ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
-  map f := MonTypeEquivalenceMon.functor.map f
+  map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f).hom
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
@@ -131,11 +131,11 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
   counitIso :=
     NatIso.ofComponents
       (fun A =>
-        { hom :=
+        { hom := CommMonCat.ofHom
             { toFun := id
               map_one' := rfl
               map_mul' := fun _ _ => rfl }
-          inv :=
+          inv := CommMonCat.ofHom
             { toFun := id
               map_one' := rfl
               map_mul' := fun _ _ => rfl } })

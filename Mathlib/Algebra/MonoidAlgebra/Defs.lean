@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.LSum
 import Mathlib.Algebra.Module.Submodule.Basic
 
@@ -256,9 +256,6 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_def := natCast_def
-
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -325,9 +322,6 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
 theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_def := intCast_def
 
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
@@ -1064,9 +1058,6 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
 theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_def := natCast_def
-
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -1137,9 +1128,6 @@ instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
 theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_def := intCast_def
 
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
