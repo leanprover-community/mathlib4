@@ -27,7 +27,7 @@ Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we h
 * `MeasureTheory.sum_addContent_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
   and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.
 * `MeasureTheory.addContent_mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
-* `MeasureTheory.addContent_sUnion_le_sum`: an `addContent C` on a `SetSemiring C` is
+* `MeasureTheory.addContent_sUnion_le_sum`: an `AddContent C` on a `SetSemiring C` is
   sub-additive.
 * `MeasureTheory.addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le`: if an
   `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive.
