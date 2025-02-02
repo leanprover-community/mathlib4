@@ -55,11 +55,11 @@ lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ ran
   by_cases hn : n < 0
   · by_cases hnk : 0 < n + k
     · have : ∏ i ∈ range k, (n + ↑i) = 0 := prod_eq_zero_iff.mpr <| by
-        have ⟨negn, _⟩ : ∃ (negn : ℕ), -n = ↑negn := Int.eq_ofNat_of_zero_le <| by linarith
-        exact ⟨negn, by rw [mem_range]; omega⟩
+        use n.natAbs
+        simp [abs_of_nonpos, hn.le, ← Int.ofNat_lt, hnk, neg_lt_iff_pos_add, add_comm]
       rw [this]
       exact (k ! : ℤ).dvd_zero
-    · have prod_eq : ∏ x ∈ range k, |n + ↑x| =  ∏ x ∈ range k, -(n + ↑x) := by
+    · have prod_eq : ∏ x ∈ range k, |n + ↑x| = ∏ x ∈ range k, -(n + ↑x) := by
         refine prod_congr rfl fun _ hx ↦ ?_
         rw [mem_range] at hx
         rw [abs_of_neg]
