@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Algebra.Category.ModuleCat.Limits
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Small.Module
 
 /-!
