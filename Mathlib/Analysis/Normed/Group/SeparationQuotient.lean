@@ -123,7 +123,7 @@ theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
     obtain ⟨x, _⟩ := h
     exact one_le_of_le_mul_right₀ (by positivity) (hle x)
 
-/-- The the projection is `0` if all the elements have norm `0`. -/
+/-- The projection is `0` if all the elements have norm `0`. -/
 theorem normedMk_eq_zero (h : ∀ x : M, ‖x‖ = 0) :
     normedMk (M := M) = 0 := by
   ext x
