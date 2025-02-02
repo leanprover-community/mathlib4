@@ -392,44 +392,52 @@ theorem eLpNorm'_congr_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x�
 @[deprecated (since := "2025-02-02")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_enorm_ae
 
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
-    eLpNorm' f q μ = eLpNorm' g q μ :=
-  eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
+    eLpNorm' f q μ = eLpNorm' g q μ := by
+  refine eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx => ?_; sorry -- was: NNReal.eq hx
 
-theorem eLpNorm'_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) : eLpNorm' f q μ = eLpNorm' g q μ :=
+theorem eLpNorm'_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm' f q μ = eLpNorm' g q μ :=
   eLpNorm'_congr_enorm_ae (hfg.fun_comp _)
 
-theorem eLpNormEssSup_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) :
+theorem eLpNormEssSup_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) :
     eLpNormEssSup f μ = eLpNormEssSup g μ :=
-  essSup_congr_ae (hfg.fun_comp (((↑) : ℝ≥0 → ℝ≥0∞) ∘ nnnorm))
+  essSup_congr_ae (hfg.fun_comp _)
 
-theorem eLpNormEssSup_mono_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
-    eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
-  essSup_mono_ae <| hfg.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
+theorem eLpNormEssSup_mono_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
+    eLpNormEssSup f μ ≤ eLpNormEssSup g μ := by
+  refine essSup_mono_ae <| hfg.mono fun _x hx => ?_
+  sorry -- was: ENNReal.coe_le_coe.mpr hx
 
-theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
+theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   simp only [eLpNorm]
   split_ifs
   · exact le_rfl
-  · exact essSup_mono_ae (h.mono fun x hx => ENNReal.coe_le_coe.mpr hx)
-  · exact eLpNorm'_mono_nnnorm_ae ENNReal.toReal_nonneg h
+  · refine essSup_mono_ae (h.mono fun x hx => ?_); sorry -- was: ENNReal.coe_le_coe.mpr hx)
+  · sorry --refine eLpNorm'_mono_enorm_ae ?_
+    -- sorry -- was: ENNReal.toReal_nonneg h
 
-theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
-    eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_nnnorm_ae h
+@[deprecated (since := "2025-02-02")]
+alias eLpNorm_mono_nnnorm_ae := eLpNorm_mono_enorm_ae
 
-theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
+theorem eLpNorm_mono_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_ae <| h.mono fun _x hx =>
+  eLpNorm_mono_enorm_ae h
+
+theorem eLpNorm_mono_ae_real {f : α → ε} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ g x) :
+    eLpNorm f p μ ≤ eLpNorm g p μ :=
+  eLpNorm_mono_ae <| h.mono fun _x hx => -- XXX will need adjustments
     hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
 
-theorem eLpNorm_mono_nnnorm {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖₊ ≤ ‖g x‖₊) :
+theorem eLpNorm_mono {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_nnnorm_ae (Eventually.of_forall fun x => h x)
+  eLpNorm_mono_enorm_ae (Eventually.of_forall fun x => h x)
 
-theorem eLpNorm_mono {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖ ≤ ‖g x‖) :
+@[deprecated (since := "2025-02-02")]
+alias eLpNorm_mono_nnnorm := eLpNorm_mono
+
+theorem eLpNorm_mono_norm {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_ae (Eventually.of_forall fun x => h x)
+  sorry -- was: eLpNorm_mono_ae (Eventually.of_forall fun x => h x)
 
 theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -468,7 +476,7 @@ theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, �
 
 theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
-  le_antisymm (eLpNorm_mono_nnnorm_ae <| EventuallyEq.le hfg)
+  le_antisymm (eLpNorm_mono_enorm_ae <| EventuallyEq.le hfg)
     (eLpNorm_mono_nnnorm_ae <| (EventuallyEq.symm hfg).le)
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
