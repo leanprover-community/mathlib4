@@ -21,6 +21,8 @@ which is a continuous linear map `SeparationQuotient E →L[K] E`.
 
 assert_not_exists LinearIndependent
 
+open scoped Topology
+
 namespace SeparationQuotient
 
 section SMul
@@ -196,7 +198,7 @@ instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (Separatio
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-theorem nhds_mk (x : G) : nhds (mk x) = Filter.map mk (nhds x) :=
+theorem nhds_mk (x : G) : 𝓝 (mk x) = .map mk (𝓝 x) :=
   le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
 
 end Group
