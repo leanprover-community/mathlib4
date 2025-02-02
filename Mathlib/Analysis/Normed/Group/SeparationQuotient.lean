@@ -123,11 +123,19 @@ theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
     obtain ⟨x, _⟩ := h
     exact one_le_of_le_mul_right₀ (by positivity) (hle x)
 
-/-- The projection is `0` if all the elements have norm `0`. -/
-theorem normedMk_eq_zero (h : ∀ x : M, ‖x‖ = 0) :
-    normedMk (M := M) = 0 := by
-  ext x
-  simpa [← norm_eq_zero] using h x
+/-- The projection is `0` if and only if all the elements have norm `0`. -/
+theorem normedMk_eq_zero_iff : normedMk (M := M) = 0 ↔ ∀ (x : M), ‖x‖ = 0 := by
+  constructor
+  · intro h x
+    rw [SeparationQuotient.mk_eq_zero_iff.mp]
+    have : normedMk x = 0 := by
+      rw [h]
+      simp only [zero_apply]
+    rw [← this]
+    simp
+  · intro h
+    ext x
+    simpa [← norm_eq_zero] using h x
 
 end SeparationQuotient
 
