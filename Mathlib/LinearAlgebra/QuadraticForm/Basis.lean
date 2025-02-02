@@ -77,20 +77,52 @@ I think this statement should be:
       linearCombination R (Q ∘ g) (l * l)
 ```
 -/
+variable (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R)
+
+#check Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l)
+
+#check Sym2.lift
+
+lemma test (p : Sym2 ι) :
+    Q.polar_sym2 (Sym2.map (fun i ↦ l i • g i) p) = (scalar l p) • Q.polar_sym2 (Sym2.map g p) := by
+  rw [scalar]
+  simp_all only [Finset.product_eq_sprod, Finsupp.onFinset_apply]
+  rw [polar_sym2]
+  rw [← Function.comp_apply]
+
+  sorry
+
+lemma recover2 : Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l) =
+    ∑ p ∈ l.support.sym2,
+        p.lift
+          ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
+            simp only [polar_comm, mul_comm]⟩ := by
+  simp_rw [Finsupp.linearCombination_apply]
+  simp_rw [scalar]
+  simp_all only [Finset.product_eq_sprod, Function.comp_apply]
+  sorry
+
+
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
-      ∑ p ∈ l.support.sym2,
-        p.lift
-          ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ - linearCombination R (Q ∘ g) (l * l)  := by
-  simp_rw [linearCombination_apply, map_finsuppSum', recover, polar_smul_left, polar_smul_right,
-    map_smul, mul_smul, sub_right_inj]
+      Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l) -
+      linearCombination R (Q ∘ g) (l * l)  := by
+  simp_rw [linearCombination_apply, map_finsuppSum',
+    map_smul, mul_smul]
   rw [Finsupp.sum_of_support_subset (l * l)
     (subset_trans Finsupp.support_mul (by rw [Finset.inter_self])) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
+  simp_all only [sub_left_inj]
+  rw [polar_lift]
+  simp_all only [Function.comp_apply]
+  simp_rw [test]
+
+  sorry
+
+  sorry
 
 open Finsupp in
 theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
