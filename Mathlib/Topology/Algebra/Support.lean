@@ -20,13 +20,6 @@ Furthermore, we say that `f` has compact support if the topological support of `
 
 * `mulTSupport` & `tsupport`
 * `HasCompactMulSupport` & `HasCompactSupport`
-
-## Implementation Notes
-
-* We write all lemmas for multiplicative functions, and use `@[to_additive]` to get the more common
-  additive versions.
-* We do not put the definitions in the `Function` namespace, following many other topological
-  definitions that are in the root namespace (compare `Embedding` vs `Function.Embedding`).
 -/
 
 
