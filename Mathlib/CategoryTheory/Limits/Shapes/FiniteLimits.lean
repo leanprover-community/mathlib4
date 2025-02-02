@@ -5,10 +5,11 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.MultiEqualizer
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Data.Fintype.Option
+import Mathlib.Tactic.deriveFintype
 
 /-!
 # Categories with finite limits.
@@ -127,11 +128,7 @@ section
 
 open WalkingParallelPair WalkingParallelPairHom
 
-instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
-  elems := [WalkingParallelPair.zero, WalkingParallelPair.one].toFinset
-  complete x := by cases x <;> simp
-
--- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
+deriving instance Fintype for WalkingParallelPair
 
 instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
     Fintype (WalkingParallelPairHom j j') where
@@ -146,7 +143,6 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
 end
 
 instance : FinCategory WalkingParallelPair where
-  fintypeObj := fintypeWalkingParallelPair
   fintypeHom := instFintypeWalkingParallelPairHom -- Porting note: could not be inferred
 
 /-- Equalizers are finite limits, so if `C` has all finite limits, it also has all equalizers -/
@@ -205,10 +201,64 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
 end WidePushoutShape
 
 instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
-  fintypeHom := WidePullbackShape.fintypeHom
 
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
-  fintypeHom := WidePushoutShape.fintypeHom
+
+namespace WalkingMulticospan
+
+variable {L : Type w} {R : Type w'} {fst snd : R → L}
+
+deriving instance Fintype for WalkingMulticospan
+
+instance [Fintype L] [Fintype R] [DecidableEq L] [DecidableEq R] :
+    FinCategory (WalkingMulticospan fst snd) where
+  fintypeHom
+    | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
+    | .left a, .right b => ⟨⟨(if e : fst b = a then {eqToHom (e ▸ rfl) ≫ Hom.fst b} else 0) +
+        (if e : snd b = a then {eqToHom (e ▸ rfl) ≫ Hom.snd b} else 0), by
+        split_ifs with h₁ h₂
+        · simp only [Multiset.singleton_add, Multiset.nodup_cons, Multiset.mem_singleton,
+            Multiset.nodup_singleton, and_true]
+          let f : ((left a : WalkingMulticospan fst snd) ⟶ right b) → Prop
+            | .fst a => True
+            | .snd a => False
+          apply ne_of_apply_ne f
+          conv_lhs => tactic => subst h₁; simp only [eqToHom_refl, Category.id_comp, f]
+          conv_rhs => tactic => subst h₂; simp only [eqToHom_refl, Category.id_comp, f]
+          simp
+        all_goals simp⟩, by rintro ⟨⟩ <;> simp⟩
+    | .right a, .left b => ⟨∅, by rintro ⟨⟩⟩
+    | .right a, .right b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
+
+end WalkingMulticospan
+
+namespace WalkingMultispan
+
+variable {L : Type w} {R : Type w'} {fst snd : R → L}
+
+deriving instance Fintype for WalkingMultispan
+
+instance [Fintype L] [Fintype R] [DecidableEq L] [DecidableEq R] :
+    FinCategory (WalkingMultispan fst snd) where
+  fintypeHom
+    | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
+    | .left a, .right b => ⟨⟨(if e : fst a = b then {Hom.fst a ≫ eqToHom (e ▸ rfl)} else 0) +
+        (if e : snd a = b then {Hom.snd a ≫ eqToHom (e ▸ rfl)} else 0), by
+        split_ifs with h₁ h₂
+        · simp only [Multiset.singleton_add, Multiset.nodup_cons, Multiset.mem_singleton,
+            Multiset.nodup_singleton, and_true]
+          let f : ((left a : WalkingMultispan fst snd) ⟶ right b) → Prop
+            | .fst a => True
+            | .snd a => False
+          apply ne_of_apply_ne f
+          conv_lhs => tactic => subst h₁; simp only [eqToHom_refl, Category.id_comp, f]
+          conv_rhs => tactic => subst h₂; simp only [eqToHom_refl, Category.id_comp, f]
+          simp
+        all_goals simp⟩, by rintro ⟨⟩ <;> simp⟩
+    | .right a, .left b => ⟨∅, by rintro ⟨⟩⟩
+    | .right a, .right b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
+
+end WalkingMultispan
 
 -- We can't just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
@@ -250,9 +300,7 @@ instance (priority := 900) hasFiniteWidePushouts_of_has_finite_limits [HasFinite
     HasFiniteWidePushouts C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteColimits.out _⟩
 
-instance fintypeWalkingPair : Fintype WalkingPair where
-  elems := {WalkingPair.left, WalkingPair.right}
-  complete x := by cases x <;> simp
+deriving instance Fintype for WalkingPair
 
 /-- Pullbacks are finite limits, so if `C` has all finite limits, it also has all pullbacks -/
 example [HasFiniteWidePullbacks C] : HasPullbacks C := by infer_instance

@@ -6,8 +6,6 @@ Authors: Adam Topaz
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.Tactic.deriveFintype
-import Mathlib.CategoryTheory.FinCategory.Basic
 
 /-!
 
@@ -90,28 +88,6 @@ lemma Hom.id_eq_id (X : WalkingMulticospan fst snd) :
 lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan fst snd}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
-deriving instance Fintype for WalkingMulticospan
-
-instance [Fintype L] [Fintype R] [DecidableEq L] [DecidableEq R] :
-    FinCategory (WalkingMulticospan fst snd) where
-  fintypeHom
-    | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
-    | .left a, .right b => ⟨⟨(if e : fst b = a then {eqToHom (e ▸ rfl) ≫ Hom.fst b} else 0) +
-        (if e : snd b = a then {eqToHom (e ▸ rfl) ≫ Hom.snd b} else 0), by
-        split_ifs with h₁ h₂
-        · simp only [Multiset.singleton_add, Multiset.nodup_cons, Multiset.mem_singleton,
-            Multiset.nodup_singleton, and_true]
-          let f : ((left a : WalkingMulticospan fst snd) ⟶ right b) → Prop
-            | .fst a => True
-            | .snd a => False
-          apply ne_of_apply_ne f
-          conv_lhs => tactic => subst h₁; simp only [eqToHom_refl, Category.id_comp, f]
-          conv_rhs => tactic => subst h₂; simp only [eqToHom_refl, Category.id_comp, f]
-          simp
-        all_goals simp⟩, by rintro ⟨⟩ <;> simp⟩
-    | .right a, .left b => ⟨∅, by rintro ⟨⟩⟩
-    | .right a, .right b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
-
 end WalkingMulticospan
 
 namespace WalkingMultispan
@@ -155,28 +131,6 @@ lemma Hom.id_eq_id (X : WalkingMultispan fst snd) : Hom.id X = 𝟙 X := rfl
 @[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
-
-deriving instance Fintype for WalkingMultispan
-
-instance [Fintype L] [Fintype R] [DecidableEq L] [DecidableEq R] :
-    FinCategory (WalkingMultispan fst snd) where
-  fintypeHom
-    | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
-    | .left a, .right b => ⟨⟨(if e : fst a = b then {Hom.fst a ≫ eqToHom (e ▸ rfl)} else 0) +
-        (if e : snd a = b then {Hom.snd a ≫ eqToHom (e ▸ rfl)} else 0), by
-        split_ifs with h₁ h₂
-        · simp only [Multiset.singleton_add, Multiset.nodup_cons, Multiset.mem_singleton,
-            Multiset.nodup_singleton, and_true]
-          let f : ((left a : WalkingMultispan fst snd) ⟶ right b) → Prop
-            | .fst a => True
-            | .snd a => False
-          apply ne_of_apply_ne f
-          conv_lhs => tactic => subst h₁; simp only [eqToHom_refl, Category.id_comp, f]
-          conv_rhs => tactic => subst h₂; simp only [eqToHom_refl, Category.id_comp, f]
-          simp
-        all_goals simp⟩, by rintro ⟨⟩ <;> simp⟩
-    | .right a, .left b => ⟨∅, by rintro ⟨⟩⟩
-    | .right a, .right b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
 
 end WalkingMultispan
 

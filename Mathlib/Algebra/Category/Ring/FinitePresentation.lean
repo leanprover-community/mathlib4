@@ -5,7 +5,7 @@ Authors: Andrew Yang, Christian Merten
 -/
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.FinitePresentation
 
