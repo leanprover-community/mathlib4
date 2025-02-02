@@ -396,6 +396,26 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   rw [← I.image_eq (chartAt H x).target]
   exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
+-- TODO: move to ChartedSpace, sum section
+-- make some of these simp?
+lemma sum_chartAt_inl_apply {x : M} :
+    ((chartAt H (.inl x : M ⊕ M')) (Sum.inl x)) = (chartAt H x) x := by
+  rw [ChartedSpace.sum_chartAt_inl]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma sum_chartAt_inr_apply {x : M'} :
+    ((chartAt H (.inr x : M ⊕ M')) (Sum.inr x)) = (chartAt H x) x := by
+  rw [ChartedSpace.sum_chartAt_inr]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma extChartAt_inl_apply {x : M} :
+    ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) = (extChartAt I x) x := by
+  simp [sum_chartAt_inl_apply]
+
+lemma extChartAt_inr_apply {x : M'} :
+    ((extChartAt I (.inr x : M ⊕ M')) (Sum.inr x)) = (extChartAt I x) x := by
+  simp [sum_chartAt_inr_apply]
+
 lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
   intro p
@@ -404,20 +424,10 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
   cases p with
   | inl x =>
     let F := (extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm
-    have aux : ((extChartAt I (Sum.inl (β := M') x)) (Sum.inl x)) = (extChartAt I x) x := by
-      simp only [extChartAt]
-      --show I ((chartAt H (Sum.inl x)) (Sum.inl x)) = I ((chartAt H x) x)
-      --congr
-      rw [ChartedSpace.sum_chartAt_inl]
-      -- rw [PartialHomeomorph.lift_openEmbedding_apply] -- need sum_chartAt_inl_apply!
-      -- --rw [PartialHomeomorph.lift_openEmbedding_apply]
-      sorry
-
-    have : ContDiffWithinAt 𝕜 n F (range I) ((extChartAt I (Sum.inl (β := M') x)) (Sum.inl x)) := by
-      unfold F
+    have : ContDiffWithinAt 𝕜 n F (range I) ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) := by
       let hf' := hf x
       rw [contMDiffAt_iff] at hf'
-      exact aux ▸ hf'.2
+      simpa only [F, extChartAt_inl_apply] using hf'.2
     apply this.congr_of_eventuallyEq
     · simp only [F, extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
       simp only [PartialHomeomorph.extend, PartialEquiv.coe_trans,
