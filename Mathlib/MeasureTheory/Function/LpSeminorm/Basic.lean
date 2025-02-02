@@ -407,14 +407,20 @@ theorem eLpNormEssSup_mono_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖
   refine essSup_mono_ae <| hfg.mono fun _x hx => ?_
   sorry -- was: ENNReal.coe_le_coe.mpr hx
 
+@[deprecated (since := "2025-02-02")]
+alias eLpNormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_enorm_ae
+
+@[deprecated (since := "2024-07-27")]
+alias snormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_nnnorm_ae
+
 theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   simp only [eLpNorm]
   split_ifs
   · exact le_rfl
-  · refine essSup_mono_ae (h.mono fun x hx => ?_); sorry -- was: ENNReal.coe_le_coe.mpr hx)
-  · sorry --refine eLpNorm'_mono_enorm_ae ?_
-    -- sorry -- was: ENNReal.toReal_nonneg h
+  · exact essSup_mono_ae (h.mono fun x hx => hx)
+  · sorry -- type mismatch... refine eLpNorm'_mono_enorm_ae (f := f) (g := g) ?_
+    -- was: ENNReal.toReal_nonneg h
 
 @[deprecated (since := "2025-02-02")]
 alias eLpNorm_mono_nnnorm_ae := eLpNorm_mono_enorm_ae
@@ -423,19 +429,23 @@ theorem eLpNorm_mono_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, �
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_enorm_ae h
 
-theorem eLpNorm_mono_ae_real {f : α → ε} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ g x) :
+theorem eLpNorm_mono_ae' {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_ae <| h.mono fun _x hx => -- XXX will need adjustments
-    hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
+  sorry -- TODO! proof was eLpNorm_mono_enorm_ae h
+
+theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
+    eLpNorm f p μ ≤ eLpNorm g p μ := by
+  refine eLpNorm_mono_ae <| h.mono fun _x hx => ?_-- TODO: hypothesis doesn't apply directly!
+  sorry -- was: hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
 
 theorem eLpNorm_mono {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_enorm_ae (Eventually.of_forall fun x => h x)
+  eLpNorm_mono_enorm_ae (Eventually.of_forall fun x ↦ h x)
 
 @[deprecated (since := "2025-02-02")]
 alias eLpNorm_mono_nnnorm := eLpNorm_mono
 
-theorem eLpNorm_mono_norm {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖ ≤ ‖g x‖) :
+theorem eLpNorm_mono_norm {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   sorry -- was: eLpNorm_mono_ae (Eventually.of_forall fun x => h x)
 
@@ -443,17 +453,24 @@ theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ 
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae_real (Eventually.of_forall fun x => h x)
 
-theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
+theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
-  essSup_le_of_ae_le (C : ℝ≥0∞) <| hfC.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
+  essSup_le_of_ae_le (C : ℝ≥0∞) <| hfC.mono fun _x hx ↦ hx
+
+@[deprecated (since := "2025-02-02")]
+alias eLpNormEssSup_le_of_ae_nnnorm_bound := eLpNormEssSup_le_of_ae_enorm_bound
 
 theorem eLpNormEssSup_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
-    eLpNormEssSup f μ ≤ ENNReal.ofReal C :=
-  eLpNormEssSup_le_of_ae_nnnorm_bound <| hfC.mono fun _x hx => hx.trans C.le_coe_toNNReal
+    eLpNormEssSup f μ ≤ ENNReal.ofReal C := by
+  refine eLpNormEssSup_le_of_ae_enorm_bound <| hfC.mono fun _x hx => ?_
+  sorry -- was: hx.trans C.le_coe_toNNReal
 
-theorem eLpNormEssSup_lt_top_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
+theorem eLpNormEssSup_lt_top_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
-  (eLpNormEssSup_le_of_ae_nnnorm_bound hfC).trans_lt ENNReal.coe_lt_top
+  (eLpNormEssSup_le_of_ae_enorm_bound hfC).trans_lt ENNReal.coe_lt_top
+
+@[deprecated (since := "2025-02-02")]
+alias eLpNormEssSup_lt_top_of_ae_nnnorm_bound := eLpNormEssSup_lt_top_of_ae_enorm_bound
 
 theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
@@ -466,6 +483,7 @@ theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ
   by_cases hp : p = 0
   · simp [hp]
   have : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖(C : ℝ)‖₊ := hfC.mono fun x hx => hx.trans_eq C.nnnorm_eq.symm
+  sorry /-
   refine (eLpNorm_mono_ae this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), C.enorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
 
@@ -474,15 +492,22 @@ theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, �
   rw [← mul_comm]
   exact eLpNorm_le_of_ae_nnnorm_bound (hfC.mono fun x hx => hx.trans C.le_coe_toNNReal)
 
-theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
+@[deprecated (since := "2024-07-27")]
+alias snorm_le_of_ae_bound := eLpNorm_le_of_ae_bound
+
+theorem eLpNorm_congr_enorm_ae {f : α → ε} {g : α → ε'} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_enorm_ae <| EventuallyEq.le hfg)
-    (eLpNorm_mono_nnnorm_ae <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_enorm_ae <| (EventuallyEq.symm hfg).le)
+
+@[deprecated (since := "2025-02-02")]
+alias eLpNorm_congr_nnnorm_ae := eLpNorm_congr_enorm_ae
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 
+-- XXXMR: need a zero element in ε
 open scoped symmDiff in
 theorem eLpNorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
     eLpNorm (s.indicator f - t.indicator f) p μ = eLpNorm ((s ∆ t).indicator f) p μ :=
@@ -494,8 +519,26 @@ theorem eLpNorm'_norm {f : α → F} :
     eLpNorm' (fun a => ‖f a‖) q μ = eLpNorm' f q μ := by simp [eLpNorm'_eq_lintegral_enorm]
 
 @[simp]
+theorem eLpNorm'_enorm {f : α → ε} :
+    eLpNorm' (fun a => ‖f a‖ₑ) q μ = eLpNorm' f q μ := by simp [eLpNorm'_eq_lintegral_enorm]
+
+@[deprecated (since := "2024-07-27")]
+alias snorm'_norm := eLpNorm'_norm
+
+@[simp]
 theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNorm f p μ :=
   eLpNorm_congr_norm_ae <| Eventually.of_forall fun _ => norm_norm _
+
+--@[simp]
+theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x => ‖f x‖ₑ) p μ = eLpNorm f p μ := by
+  --apply eLpNorm_congr_norm_ae --<| Eventually.of_forall fun _ => norm_norm _
+  sorry -- WIP!
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_norm := eLpNorm_norm
+
+theorem eLpNorm'_enorm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
+    eLpNorm' (fun x => ‖f x‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by sorry -- WIP!
 
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
