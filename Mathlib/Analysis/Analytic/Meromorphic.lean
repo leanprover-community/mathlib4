@@ -329,7 +329,7 @@ lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
 
 /-- The set where a meromorphic function has infinite order is clopen in its domain of meromorphy.
 -/
-theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (hf : MeromorphicOn f U) :
+theorem isClopen_setOf_order_eq_top {U : Set 𝕜} (hf : MeromorphicOn f U) :
     IsClopen { u : U | (hf u.1 u.2).order = ⊤ } := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
@@ -339,16 +339,18 @@ theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (hf : Merom
       rw [← (hf z.1 z.2).order_eq_top_iff] at h
       tauto
     · -- Case: f is locally nonzero in a punctured neighborhood of z
-      obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 (eventually_nhdsWithin_iff.1
-        (h.and (hf z.1 z.2).eventually_analyticAt))
+      obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 (eventually_nhdsWithin_iff.1 h)
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
         simp only [Set.mem_compl_iff, Set.mem_setOf_eq]
         by_cases h₁w : w = z
         · rwa [h₁w]
-        · have h₂f := (h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w)
-          simp [h₂f.2.meromorphicAt_order, h₂f.2.order_eq_zero_iff.2 h₂f.1]
+        · rw [MeromorphicAt.order_eq_top_iff, not_eventually]
+          apply Filter.Eventually.frequently
+          rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
+          use t' \ {z.1}, fun y h₁y h₂y ↦ h₁t' y h₁y.1 h₁y.2, h₂t'.sdiff isClosed_singleton, hw,
+            Set.mem_singleton_iff.not.2 (Subtype.coe_ne_coe.mpr h₁w)
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr
     intro z hz
@@ -376,8 +378,7 @@ theorem isClopen_setOf_order_eq_top {U : Set 𝕜} [CompleteSpace E] (hf : Merom
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
-theorem exists_order_ne_top_iff_forall {U : Set 𝕜} [CompleteSpace E]
-    (hf : MeromorphicOn f U) (hU : IsConnected U) :
+theorem exists_order_ne_top_iff_forall {U : Set 𝕜} (hf : MeromorphicOn f U) (hU : IsConnected U) :
     (∃ u : U, (hf u u.2).order ≠ ⊤) ↔ (∀ u : U, (hf u u.2).order ≠ ⊤) := by
   constructor
   · intro h₂f
@@ -397,9 +398,8 @@ theorem exists_order_ne_top_iff_forall {U : Set 𝕜} [CompleteSpace E]
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
-theorem order_ne_top_of_isPreconnected {U : Set 𝕜} [CompleteSpace E] {x y : 𝕜}
-    (hf : MeromorphicOn f U) (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U)
-    (h₂x : (hf x h₁x).order ≠ ⊤) :
+theorem order_ne_top_of_isPreconnected {U : Set 𝕜} {x y : 𝕜} (hf : MeromorphicOn f U)
+    (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U) (h₂x : (hf x h₁x).order ≠ ⊤) :
     (hf y hy).order ≠ ⊤ :=
   (hf.exists_order_ne_top_iff_forall ⟨Set.nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
 
