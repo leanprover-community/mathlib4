@@ -462,7 +462,7 @@ theorem HasCompactSupport.inf {f g : α → β} (hf : HasCompactSupport f) (hg :
 
 variable [TopologicalSpace β] [ContinuousInf β]
 
-instance inf : Min C_c(α, β) where min f g :=
+instance instInf : Min C_c(α, β) where min f g :=
   { toFun := f ⊓ g
     continuous_toFun := Continuous.inf f.continuous g.continuous
     hasCompactSupport' := HasCompactSupport.inf f.hasCompactSupport g.hasCompactSupport }
