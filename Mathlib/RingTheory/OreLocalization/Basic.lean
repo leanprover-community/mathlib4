@@ -267,18 +267,22 @@ protected theorem neg_add_cancel (x : X[S⁻¹]) : -x + x = 0 := by
 
 /-- `zsmul` of `OreLocalization` -/
 @[irreducible]
-protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
+protected def zsmul [SMul ℤ R] : ℤ → X[S⁻¹] → X[S⁻¹] := OreLocalization.hsmul
+
 
 unseal OreLocalization.zsmul in
-instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
+instance instAddGroupOreLocalization [SMul ℤ R] : AddGroup X[S⁻¹] where
   neg_add_cancel := OreLocalization.neg_add_cancel
   zsmul := OreLocalization.zsmul
+  zsmul_zero' := sorry
+  zsmul_succ' := sorry
+  zsmul_neg' := sorry
 
 end AddGroup
 
 section AddCommGroup
 
-variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] [SMul ℤ R]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
