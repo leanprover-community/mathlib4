@@ -80,8 +80,8 @@ theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f �
 
 end FreeMagma
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-instead of `x * y`. --/
+#adaptation_note /-- nightly-2024-02-25
+we need to write `mul x y` in the second pattern, instead of `x * y`. --/
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
@@ -185,8 +185,8 @@ end Category
 
 end FreeMagma
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-  instead of `x * y`. -/
+#adaptation_note /-- nightly-2024-02-25
+we need to write `mul x y` in the second pattern, instead of `x * y`. -/
 /-- `FreeMagma` is traversable. -/
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
@@ -262,8 +262,8 @@ end Category
 
 end FreeMagma
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-instead of `x * y`. -/
+#adaptation_note /-- nightly-2024-02-25
+we need to write `mul x y` in the second pattern, instead of `x * y`. -/
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
@@ -279,8 +279,8 @@ attribute [to_additive existing] FreeMagma.repr
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-instead of `x * y`. -/
+#adaptation_note /-- nightly-2024-02-25
+we need to write `mul x y` in the second pattern, instead of `x * y`. -/
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1

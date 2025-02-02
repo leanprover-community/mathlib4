@@ -79,7 +79,7 @@ namespace Grp
   "The universe lift functor for additive groups is fully faithful."]
 def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   preimage f := Grp.ofHom (MulEquiv.ulift.toMonoidHom.comp
-    (f.comp MulEquiv.ulift.symm.toMonoidHom))
+    (f.hom.comp MulEquiv.ulift.symm.toMonoidHom))
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -131,8 +131,8 @@ namespace CommGrp
 @[to_additive
   "The universe lift functor for commutative additive groups is fully faithful."]
 def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
-  preimage f := Grp.ofHom (MulEquiv.ulift.toMonoidHom.comp
-    (f.comp MulEquiv.ulift.symm.toMonoidHom))
+  preimage f := CommGrp.ofHom (MulEquiv.ulift.toMonoidHom.comp
+    (f.hom.comp MulEquiv.ulift.symm.toMonoidHom))
   map_preimage _ := rfl
   preimage_map _ := rfl
 
