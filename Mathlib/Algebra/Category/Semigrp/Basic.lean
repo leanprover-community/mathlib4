@@ -100,7 +100,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 /-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/
 add_decl_doc AddMagmaCat.ofHom
 
-@[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
+@[to_additive]
 theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
 
@@ -180,7 +180,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 /-- Typecheck an `AddHom` as a morphism in `AddSemigrp`. -/
 add_decl_doc AddSemigrp.ofHom
 
-@[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
+@[to_additive]
 theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     ofHom f x = f x :=
   rfl
@@ -209,7 +209,8 @@ def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y wher
   inv := e.symm.toMulHom
   hom_inv_id := by
     ext
-    simp_rw [comp_apply, toMulHom_eq_coe, MagmaCat.mulEquiv_coe_eq, symm_apply_apply, id_apply]
+    simp_rw [CategoryTheory.comp_apply, toMulHom_eq_coe, MagmaCat.mulEquiv_coe_eq, symm_apply_apply,
+      CategoryTheory.id_apply]
 
 end
 

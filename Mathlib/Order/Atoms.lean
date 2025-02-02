@@ -687,9 +687,6 @@ theorem eq_top_of_lt : b = ⊤ :=
 
 alias _root_.LT.lt.eq_bot := eq_bot_of_lt
 alias _root_.LT.lt.eq_top := eq_top_of_lt
-@[deprecated (since := "2024-05-29")] alias LT.lt.eq_bot := _root_.LT.lt.eq_bot
-@[deprecated (since := "2024-05-29")] alias LT.lt.eq_top := _root_.LT.lt.eq_top
-
 end Preorder
 
 section BoundedOrder

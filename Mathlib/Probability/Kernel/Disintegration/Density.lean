@@ -186,9 +186,6 @@ lemma eLpNorm_densityProcess_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (s : 
       densityProcess_le_one hκν n a x s]
   · simp
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_densityProcess_le := eLpNorm_densityProcess_le
-
 lemma integrable_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ densityProcess κ ν n a x s) (ν a) := by
@@ -238,9 +235,6 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0, mul_one]
   exact measure_ne_top _ _
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_densityProcess_of_mem := setIntegral_densityProcess_of_mem
-
 open scoped Function in -- required for scoped `on` notation
 lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ}
@@ -271,9 +265,6 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact h_disj
   · exact (integrable_densityProcess hκν _ _ hs).integrableOn
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_densityProcess := setIntegral_densityProcess
-
 lemma integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫ x, densityProcess κ ν n a x s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
@@ -285,26 +276,25 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
     ∫ x in A, densityProcess κ ν m a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal :=
   setIntegral_densityProcess hκν m a hs ((countableFiltration γ).mono hnm A hA)
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_densityProcess_of_le := setIntegral_densityProcess_of_le
-
-lemma condexp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
+lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
     (ν a)[fun x ↦ densityProcess κ ν j a x s | countableFiltration γ i]
       =ᵐ[ν a] fun x ↦ densityProcess κ ν i a x s := by
-  refine (ae_eq_condexp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
+  refine (ae_eq_condExp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
   · exact integrable_densityProcess hκν j a hs
   · exact fun _ _ _ ↦ (integrable_densityProcess hκν _ _ hs).integrableOn
   · intro x hx _
     rw [setIntegral_densityProcess hκν i a hs hx,
       setIntegral_densityProcess_of_le hκν hij a hs hx]
-  · exact StronglyMeasurable.aeStronglyMeasurable'
+  · exact StronglyMeasurable.aestronglyMeasurable
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
+
+@[deprecated (since := "2025-01-21")] alias condexp_densityProcess := condExp_densityProcess
 
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Martingale (fun n x ↦ densityProcess κ ν n a x s) (countableFiltration γ) (ν a) :=
-  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condexp_densityProcess hκν h a hs⟩
+  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condExp_densityProcess hκν h a hs⟩
 
 lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ)
     {s s' : Set β} (h : s ⊆ s') :
@@ -418,10 +408,6 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
         exact mod_cast (densityProcess_le_one hκν _ _ _ _)
       · simp
 
-@[deprecated (since := "2024-07-27")]
-alias tendsto_snorm_one_densityProcess_limitProcess :=
-  tendsto_eLpNorm_one_densityProcess_limitProcess
-
 lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel ν]
     (hκν : fst κ ≤ ν) (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set γ) :
     Tendsto (fun n ↦ eLpNorm ((fun x ↦ densityProcess κ ν n a x s)
@@ -430,10 +416,6 @@ lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel �
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le')
     (fun _ ↦ eLpNorm_restrict_le _ _ _ _)
-
-@[deprecated (since := "2024-07-27")]
-alias tendsto_snorm_one_restrict_densityProcess_limitProcess :=
-  tendsto_eLpNorm_one_restrict_densityProcess_limitProcess
 
 end DensityProcess
 
@@ -505,9 +487,6 @@ lemma eLpNorm_density_le (hκν : fst κ ≤ ν) (a : α) (s : Set β) :
       density_le_one hκν a t s]
   · simp
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_density_le := eLpNorm_density_le
-
 lemma integrable_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ density κ ν a x s) (ν a) := by
@@ -527,9 +506,6 @@ lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)
   refine eLpNorm_congr_ae ?_
   exact EventuallyEq.rfl.sub (density_ae_eq_limitProcess hκν a hs).symm
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_set_integral_densityProcess := tendsto_setIntegral_densityProcess
-
 /-- Auxiliary lemma for `setIntegral_density`. -/
 lemma setIntegral_density_of_measurableSet (hκν : fst κ ≤ ν)
     [IsFiniteKernel ν] (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ}
@@ -548,9 +524,6 @@ lemma setIntegral_density_of_measurableSet (hκν : fst κ ≤ ν)
   -- use L1 convergence
   have h := tendsto_setIntegral_densityProcess hκν a hs A
   rw [h.limsup_eq]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_density_of_measurableSet := setIntegral_density_of_measurableSet
 
 lemma integral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -595,9 +568,6 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     · exact hf_disj.mono fun _ _ h ↦ h.set_prod_left _ _
     · exact fun i ↦ (hf i).prod hs
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_density := setIntegral_density
-
 lemma setLIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫⁻ x in A, ENNReal.ofReal (density κ ν a x s) ∂(ν a) = κ a (A ×ˢ s) := by
@@ -607,9 +577,6 @@ lemma setLIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
       ENNReal.ofReal_toReal (measure_ne_top _ _)]
   · exact (integrable_density hκν a hs).restrict
   · exact ae_of_all _ (fun _ ↦ density_nonneg hκν _ _ _)
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_density := setLIntegral_density
 
 lemma lintegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :

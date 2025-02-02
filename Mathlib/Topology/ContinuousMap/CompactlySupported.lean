@@ -231,11 +231,11 @@ instance [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
 
 @[simp]
 theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
-    ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=
   map_sum coeFnMonoidHom f s
 
 theorem sum_apply [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β))
-    (a : α) : (∑ i in s, f i) a = ∑ i in s, f i a := by simp
+    (a : α) : (∑ i ∈ s, f i) a = ∑ i ∈ s, f i a := by simp
 
 section AddGroup
 

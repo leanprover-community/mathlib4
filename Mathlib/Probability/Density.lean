@@ -163,9 +163,6 @@ theorem setLIntegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : M
   apply (withDensity_apply_le _ s).trans
   exact withDensity_pdf_le_map _ _ _ s
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_pdf_le_map := setLIntegral_pdf_le_map
-
 theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] :
     map X ℙ = μ.withDensity (pdf X ℙ μ) := by
@@ -175,9 +172,6 @@ theorem map_eq_setLIntegral_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : M
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] {s : Set E}
     (hs : MeasurableSet s) : map X ℙ s = ∫⁻ x in s, pdf X ℙ μ x ∂μ := by
   rw [← withDensity_apply _ hs, map_eq_withDensity_pdf X ℙ μ]
-
-@[deprecated (since := "2024-06-29")]
-alias map_eq_set_lintegral_pdf := map_eq_setLIntegral_pdf
 
 namespace pdf
 
@@ -289,15 +283,14 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
     _ = _ := integral_pdf_smul measurable_id.aestronglyMeasurable
 
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
-    (hgi : ∫⁻ x, ‖f x‖₊ * g x ≠ ∞) :
+    (hgi : ∫⁻ x, ‖f x‖ₑ * g x ≠ ∞) :
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
-  rw [hasFiniteIntegral_iff_nnnorm]
-  have : (fun x => ↑‖f x‖₊ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖₊ := by
-    refine ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x => (‖f x‖₊ : ℝ≥0∞))
-      (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
-    simp_rw [← smul_eq_mul, nnnorm_smul, ENNReal.coe_mul, smul_eq_mul]
-    refine Filter.EventuallyEq.mul (ae_eq_refl _) ?_
-    simp only [Real.ennnorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+  rw [hasFiniteIntegral_iff_enorm]
+  have : (fun x => ‖f x‖ₑ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖ₑ := by
+    refine ae_eq_trans ((ae_eq_refl _).mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
+    simp_rw [← smul_eq_mul, enorm_smul, smul_eq_mul]
+    refine .mul (ae_eq_refl _) ?_
+    simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real

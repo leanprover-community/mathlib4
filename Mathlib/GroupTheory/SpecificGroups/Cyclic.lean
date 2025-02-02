@@ -3,14 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Tactic.Group
-import Mathlib.GroupTheory.Exponent
 
 /-!
 # Cyclic groups
@@ -455,8 +452,8 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
   have h2 :
     (∑ m ∈ d.divisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.divisors, φ m := by
-    rw [← filter_dvd_eq_divisors hd0, sum_card_orderOf_eq_card_pow_eq_one hd0,
-      filter_dvd_eq_divisors hd0, sum_totient, ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
+    rw [sum_card_orderOf_eq_card_pow_eq_one hd0, sum_totient,
+      ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
   simpa [← cons_self_properDivisors hd0, ← h1] using h2
 
 @[to_additive]
@@ -471,7 +468,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   apply lt_irrefl c
   calc
     c = ∑ m ∈ c.divisors, #{a : α | orderOf a = m} := by
-      simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
+      simp only [sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
       simp [c]
     _ = ∑ m ∈ c.divisors.erase d, #{a : α | orderOf a = m} := by

@@ -102,11 +102,11 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
       _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
 
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ ≠ ∞) :
+    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
-  have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
+  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
     refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono ?_
@@ -124,7 +124,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     apply AEMeasurable.nnreal_tsum
     exact fun i => (hf i).nnnorm.aemeasurable
   · dsimp [HasFiniteIntegral]
-    have : ∫⁻ a, ∑' n, ‖f n a‖₊ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
+    have : ∫⁻ a, ∑' n, ‖f n a‖ₑ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
     apply lintegral_congr_ae
     simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, enorm_eq_nnnorm, NNReal.nnnorm_eq]
@@ -140,14 +140,13 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
   · simp [integral, hE, hasSum_zero]
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
-  have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
+  have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
+    dsimp [enorm]
     rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
       Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
     simp only [coe_nnnorm]
-  rw [funext this, ← ENNReal.coe_tsum]
-  · apply coe_ne_top
-  · simp_rw [← NNReal.summable_coe, coe_nnnorm]
-    exact hF_sum.abs
+  rw [funext this]
+  exact ENNReal.tsum_coe_ne_top_iff_summable.2 <| NNReal.summable_coe.1 hF_sum.abs
 
 lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
@@ -180,9 +179,6 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     refine fun n => Eventually.of_forall fun x => ?_
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
-
-@[deprecated (since := "2024-04-17")]
-alias _root_.Antitone.tendsto_set_integral :=  _root_.Antitone.tendsto_setIntegral
 
 end TendstoMono
 
