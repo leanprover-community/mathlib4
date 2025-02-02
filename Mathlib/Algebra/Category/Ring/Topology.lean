@@ -26,7 +26,7 @@ This is the subspace topology `Hom(R, S) ↪ Hom(ℤ[x₁,...,xₙ], S) = Sⁿ`.
 
 -/
 
-universe u
+universe u v
 
 open CategoryTheory Topology
 
@@ -93,11 +93,11 @@ lemma isClosedEmbedding_comp_right_of_surjective
   · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
       by ext; simp [RingHom.liftOfRightInverse_comp_apply]⟩
 
-variable (R S) in
 /-- `Hom(S[Xᵢ], R)` is homeomorphic to `Hom(S, R) × Rⁱ`. -/
 @[simps! apply_fst apply_snd symm_apply_hom]
 noncomputable
-def mvPolynomialHomeo (σ : Type*) [TopologicalSpace R] [TopologicalRing R] :
+def mvPolynomialHomeo (σ : Type v) (R S : CommRingCat.{max u v})
+    [TopologicalSpace R] [TopologicalRing R] :
     (CommRingCat.of (MvPolynomial σ S) ⟶ R) ≃ₜ ((S ⟶ R) × (σ → R)) where
   toFun f := ⟨CommRingCat.ofHom MvPolynomial.C ≫ f, fun i ↦ f (.X i)⟩
   invFun fx := CommRingCat.ofHom (MvPolynomial.eval₂Hom fx.1.hom fx.2)
@@ -165,8 +165,8 @@ lemma isEmbedding_pushout [TopologicalSpace R] [TopologicalRing R]
     fun x ↦ ⟨⟨x.1, x.2 ∘ Sum.inl⟩, ⟨x.1, x.2 ∘ Sum.inr⟩⟩
   have hF : IsEmbedding F := (Homeomorph.prodProdProdComm _ _ _ _).isEmbedding.comp
     ((isEmbedding_graph continuous_id).prodMap Homeomorph.sumArrowHomeomorphProdArrow.isEmbedding)
-  have H := (mvPolynomialHomeo R S A).symm.isEmbedding.prodMap
-    (mvPolynomialHomeo R S B).symm.isEmbedding
+  have H := (mvPolynomialHomeo A R S).symm.isEmbedding.prodMap
+    (mvPolynomialHomeo B R S).symm.isEmbedding
   convert ((H.comp hF).comp (mvPolynomialHomeo _ R S).isEmbedding).comp
     (isEmbedding_comp_right_of_surjective (T := R) fAB hfAB)
   have (s) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
