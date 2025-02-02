@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Units
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
