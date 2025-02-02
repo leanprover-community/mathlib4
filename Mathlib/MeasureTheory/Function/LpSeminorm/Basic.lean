@@ -199,6 +199,7 @@ theorem eLpNorm_exponent_zero {f : α → ε} : eLpNorm f 0 μ = 0 := by simp [e
 theorem memℒp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} :
     Memℒp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [Memℒp, eLpNorm_exponent_zero]
 
+-- XXXMR: needs ENormedSpace (or perhaps seminormed), well-behaved zero
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → F) q μ = 0 := by
   simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
@@ -209,6 +210,7 @@ theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α �
   · exact eLpNorm'_zero (lt_of_le_of_ne hq0 hq0_ne.symm)
   · simp [eLpNorm'_eq_lintegral_enorm, ENNReal.rpow_eq_zero_iff, hμ, hq_neg]
 
+-- XXXMR: needs ENormedSpace (or perhaps seminormed), well-behaved zero
 @[simp]
 theorem eLpNormEssSup_zero : eLpNormEssSup (0 : α → F) μ = 0 := by
   simp [eLpNormEssSup, ← bot_eq_zero', essSup_const_bot]
