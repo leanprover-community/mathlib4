@@ -130,6 +130,12 @@ instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : �
     Epi ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h => h) i
 
+theorem cochainsMap_congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ₁ : (Action.res _ f₁).obj A ⟶ B}
+    {φ₂ : (Action.res _ f₂).obj A ⟶ B} (h' : φ₁.hom = φ₂.hom) :
+    cochainsMap f₁ φ₁ = cochainsMap f₂ φ₂ := by
+  subst h
+  rw [Action.Hom.ext h']
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map `Zⁿ(H, A) ⟶ Zⁿ(G, B)` sending `x : (Fin n → H) → A)` to
 `(g : Fin n → G) ↦ φ (x (f ∘ g))`. -/
