@@ -817,7 +817,7 @@ theorem inv_nonneg_of_nonneg (h : 0 ≤ z) : 0 ≤ z⁻¹ := by
 
 @[simp]
 theorem inv_nonneg : 0 ≤ z⁻¹ ↔ 0 ≤ z :=
-  ⟨by simpa only [inv_inv] using inv_nonneg_of_nonneg (x := z⁻¹), inv_nonneg_of_nonneg⟩
+  ⟨(by simpa only [inv_inv] using inv_nonneg_of_nonneg ·), inv_nonneg_of_nonneg⟩
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
