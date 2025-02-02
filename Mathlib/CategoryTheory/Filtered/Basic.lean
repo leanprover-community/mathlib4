@@ -82,6 +82,8 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
   /-- a filtered category must be non empty -/
   [nonempty : Nonempty C]
 
+attribute [instance 100] CategoryTheory.IsFiltered.nonempty
+
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
     IsFilteredOrEmpty α where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
@@ -507,6 +509,8 @@ class IsCofilteredOrEmpty : Prop where
 class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
   /-- a cofiltered category must be non empty -/
   [nonempty : Nonempty C]
+
+attribute [instance 100] CategoryTheory.IsCofiltered.nonempty
 
 instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [SemilatticeInf α] :
     IsCofilteredOrEmpty α where
