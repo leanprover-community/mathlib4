@@ -108,7 +108,6 @@ def wp : MvPFunctor n where
   B := P.WPath
 
 /-- W-type of `P` -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): used to have @[nolint has_nonempty_instance]
 def W (α : TypeVec n) : Type _ :=
   P.wp α
 

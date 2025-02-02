@@ -6,8 +6,8 @@ Authors: Kim Morrison, Nicolò Cavalleri
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -50,7 +50,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
-  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
+  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous :)⟩⟩
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
@@ -92,15 +92,9 @@ instance [NatCast β] : NatCast C(α, β) :=
 theorem coe_natCast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 @[simp]
 theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_apply := natCast_apply
 
 /-! ### `Int.cast` -/
 
@@ -111,15 +105,9 @@ instance [IntCast β] : IntCast C(α, β) :=
 theorem coe_intCast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
-
 @[simp]
 theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_apply := intCast_apply
 
 /-! ### `nsmul` and `pow` -/
 
@@ -617,6 +605,13 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
 
+/-- Evaluation at a point, as a continuous linear map. -/
+@[simps apply]
+def evalCLM (x : α) : C(α, M) →L[R] M where
+  toFun f := f x
+  map_add' _ _ := add_apply _ _ x
+  map_smul' _ _ := smul_apply _ _ x
+
 end ContinuousMap
 
 end ModuleStructure
@@ -663,7 +658,7 @@ theorem ContinuousMap.C_apply (r : R) (a : α) : ContinuousMap.C r a = algebraMa
   rfl
 
 instance ContinuousMap.algebra : Algebra R C(α, A) where
-  toRingHom := ContinuousMap.C
+  algebraMap := ContinuousMap.C
   commutes' c f := by ext x; exact Algebra.commutes' _ _
   smul_def' c f := by ext x; exact Algebra.smul_def' _ _
 
@@ -760,8 +755,8 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine ⟨f', f'.prop, ?_, ?_⟩
-  · simp [f']
-  · simp [f', inv_mul_cancel_right₀ hxy]
+  · simp [a, b, f']
+  · simp [a, b, f', inv_mul_cancel_right₀ hxy]
 
 end ContinuousMap
 

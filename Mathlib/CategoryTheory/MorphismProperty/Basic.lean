@@ -61,6 +61,26 @@ lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
+@[simp]
+lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
+    sSup S f ↔ ∃ (W : S), W.1 f := by
+  dsimp [sSup, iSup]
+  constructor
+  · rintro ⟨_, ⟨⟨_, ⟨⟨_, ⟨_, h⟩, rfl⟩, rfl⟩⟩, rfl⟩, hf⟩
+    exact ⟨⟨_, h⟩, hf⟩
+  · rintro ⟨⟨W, hW⟩, hf⟩
+    exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
+
+@[simp]
+lemma iSup_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    iSup W f ↔ ∃ i, W i f := by
+  apply (sSup_iff (Set.range W) f).trans
+  constructor
+  · rintro ⟨⟨_, i, rfl⟩, hf⟩
+    exact ⟨i, hf⟩
+  · rintro ⟨i, hf⟩
+    exact ⟨⟨_, i, rfl⟩, hf⟩
+
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
 def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
@@ -94,6 +114,15 @@ lemma monotone_map (F : C ⥤ D) :
     Monotone (map · F) := by
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
+
+lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
+    {X' Y' : C} {f' : X' ⟶ Y'}
+    (hX : X = X') (hY : Y = Y') (h : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
+    P f' := by
+  obtain rfl := hX
+  obtain rfl := hY
+  obtain rfl : f' = f := by simpa using h
+  exact hf
 
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
@@ -385,14 +414,6 @@ instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
       simp only [isomorphisms.iff]
       intro
       exact IsIso.comp_isIso
-
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_left_isIso :=
-  cancel_left_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_right_isIso :=
-  cancel_right_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_iso_iff := arrow_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_mk_iso_iff := arrow_mk_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.isoClosure_eq := isoClosure_eq_self
 
 /-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
 this is the induced morphism property on `C₁ × C₂`. -/

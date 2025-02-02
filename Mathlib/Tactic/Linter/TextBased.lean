@@ -51,8 +51,8 @@ deriving BEq
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
-  /-- The bare string "Adaptation note" (or variants thereof): instead, the
-  #adaptation_note command should be used. -/
+  /-- The bare string "Adaptation note" (or variants thereof):
+  instead, the #adaptation_note command should be used. -/
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
@@ -276,14 +276,13 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
 Print formatted errors for all unexpected style violations to standard output;
 correct automatically fixable style errors if configured so.
 Return the number of files which had new style errors.
-`moduleNames` are all the modules to lint,
+`nolints` is a list of style exceptions to take into account.
+`moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (moduleNames : Array Lean.Name) (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
-  -- Read the `nolints` file, with manual exceptions for the linter.
-  let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
+def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style : ErrorFormat)
+    (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
-
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do

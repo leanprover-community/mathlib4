@@ -94,7 +94,7 @@ theorem tendsto_const_mul_pow_atTop_iff :
     exact pos_of_mul_pos_left hck (pow_nonneg hk _)
 
 lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
-  lift n to ℕ+ using hn; simp
+  lift n to ℕ using hn.le; simp [(Int.ofNat_pos.mp hn).ne']
 
 end LinearOrderedSemifield
 
@@ -303,18 +303,6 @@ theorem tendsto_neg_const_mul_pow_atTop {c : α} {n : ℕ} (hn : n ≠ 0) (hc : 
 theorem tendsto_const_mul_pow_atBot_iff {c : α} {n : ℕ} :
     Tendsto (fun x => c * x ^ n) atTop atBot ↔ n ≠ 0 ∧ c < 0 := by
   simp only [← tendsto_neg_atTop_iff, ← neg_mul, tendsto_const_mul_pow_atTop_iff, neg_pos]
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.neg_const_mul_atTop := Tendsto.const_mul_atTop_of_neg
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.atTop_mul_neg_const := Tendsto.atTop_mul_const_of_neg
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.neg_const_mul_atBot := Tendsto.const_mul_atBot_of_neg
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.atBot_mul_neg_const := Tendsto.atBot_mul_const_of_neg
 
 end LinearOrderedField
 end Filter
