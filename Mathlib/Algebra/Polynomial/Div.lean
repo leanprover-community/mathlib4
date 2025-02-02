@@ -111,12 +111,12 @@ noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X
     else ⟨0, p⟩
   termination_by p => p
 
-/-- `divByMonic` gives the quotient of `p` by a monic polynomial `q`. -/
+/-- `divByMonic`, denoted as `p /ₘ q`, gives the quotient of `p` by a monic polynomial `q`. -/
 def divByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).1 else 0
 
-/-- `modByMonic` gives the remainder of `p` by a monic polynomial `q`. -/
+/-- `modByMonic`, denoted as `p  %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
 def modByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).2 else p
@@ -433,9 +433,6 @@ theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
   refine (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], ?_⟩).1
   rw [degree_zero]
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
-
-@[deprecated (since := "2024-06-30")]
-alias mul_div_mod_by_monic_cancel_left := mul_divByMonic_cancel_left
 
 lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = coeff p (n + 1) + a * (p /ₘ (X - C a)).coeff (n + 1) := by
