@@ -144,9 +144,9 @@ Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
 @[simps!]
 noncomputable def endMonoidEquiv
     (sq₀ : e.congrLeft.functor.obj f ≅ e'.congrRight.inverse.obj g) : End f ≃* End g :=
-      ((e.congrLeft.fullyFaithfulFunctor).mulEquivEnd f).trans <|
-      sq₀.conj.trans
-      ((e'.congrRight.fullyFaithfulInverse).mulEquivEnd g).symm
+  ((e.congrLeft.fullyFaithfulFunctor).mulEquivEnd f).trans <|
+    sq₀.conj.trans
+    ((e'.congrRight.fullyFaithfulInverse).mulEquivEnd g).symm
 
 end Equivalence
 
