@@ -646,19 +646,11 @@ def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
 theorem sumAssoc_coe :
     (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := rfl
 
--- TODO: move this next to contMDiff_const
-omit [Nonempty H] in
-lemma contMDiff_of_const {f : M → N} (h : ∀ (x y : M), f x = f y) : ContMDiff I J n f := by
-  intro x
-  have : f = fun _ ↦ f x := by ext y; exact h y x
-  rw [this]
-  apply contMDiff_const
-
 variable (I M n) in
 /-- A diffeomorphism `M ⊕ ∅ → M` -/
 def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
   toEquiv := Equiv.sumEmpty M M'
-  contMDiff_toFun := contMDiff_id.sum_elim (contMDiff_of_const (fun _ ↦ congrFun rfl))
+  contMDiff_toFun := contMDiff_id.sum_elim fun x ↦ (IsEmpty.false x).elim
   contMDiff_invFun := ContMDiff.inl
 
 @[simp]
