@@ -744,22 +744,42 @@ end
 instance : EnoughProjectives (Rep k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.moduleCat_enoughProjectives.{u}
 
+instance free_projective {G α : Type u} [Group G] :
+    Projective (Rep.free k G α) :=
+  Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
+    @ModuleCat.projective_of_free.{u} _ _
+      (ModuleCat.of (MonoidAlgebra k G) (Representation.free k G α).asModule)
+      _ (Representation.freeAsModuleBasis k G α)
+
 end Rep
 
-namespace Representation
+section
 open Rep
 
 variable (k G : Type u) [CommRing k] [Group G] (n : ℕ)
 
 /-- `Gⁿ` defines a `k[G]`-basis of `k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ)` to
 `single (1, g₁, g₁g₂, ..., g₁...gₙ).` -/
-def ofMulActionAsModuleBasis :
-    Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule where
+def Representation.diagonalAsModuleBasis :
+    Basis (Fin n → G) (MonoidAlgebra k G) (diagonal k G (n + 1)).asModule where
   repr := (equivalenceModuleMonoidAlgebra.functor.mapIso
     (diagonalSuccIsoFree k G n)).toLinearEquiv ≪≫ₗ (finsuppLEquivFreeAsModule k G (Fin n → G)).symm
 
-theorem ofMulAction_asModule_free :
-    Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  Module.Free.of_basis (ofMulActionAsModuleBasis k G n)
+theorem Representation.diagonal_asModule_free :
+    Module.Free (MonoidAlgebra k G) (diagonal k G (n + 1)).asModule :=
+  Module.Free.of_basis (diagonalAsModuleBasis k G n)
 
-end Representation
+instance Rep.diagonal_succ_projective :
+    Projective (diagonal k G (n + 1)) :=
+  Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
+
+instance Rep.leftRegular_projective :
+    Projective (Rep.leftRegular k G) :=
+  Projective.of_iso (diagonalOneIsoLeftRegular k G) inferInstance
+
+instance Rep.trivial_projective_of_subsingleton [Subsingleton G] :
+    Projective (Rep.trivial k G k) :=
+  Projective.of_iso (ofMulActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) <|
+    diagonal_succ_projective _ _ _
+
+end

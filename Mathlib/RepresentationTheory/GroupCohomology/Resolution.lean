@@ -222,10 +222,7 @@ def xIso [Monoid G] : (standardComplex k G).X n ≅ Rep.ofMulAction k G Gⁿ⁺�
 
 instance x_projective [Group G] :
     Projective ((standardComplex k G).X n) :=
-  Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
-    @ModuleCat.projective_of_free.{u} _ _
-      (ModuleCat.of (MonoidAlgebra k G) (Representation.ofMulAction k G Gⁿ⁺¹).asModule)
-      _ (Representation.ofMulActionAsModuleBasis k G n)
+  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
