@@ -543,8 +543,9 @@ instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicF
   SplittingField.isScalarTower _
 
 instance [IsFractionRing A K] :
-    FaithfulSMul A (CyclotomicField n K) := by
-  rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
+    NoZeroSMulDivisors A (CyclotomicField n K) := by
+  rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
+    IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
     (Function.Injective.comp (FaithfulSMul.algebraMap_injective K (CyclotomicField n K))
       (IsFractionRing.injective A K) :)
