@@ -3,6 +3,7 @@ Copyright (c) 2024 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
+import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.MonoidAlgebra.Ideal
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Prime.Defs
@@ -10,7 +11,6 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib
 /-!
 # The generalized factorial function over subsets of a Dedekind Domain
 
@@ -80,11 +80,6 @@ structure Set.pOrdering where
 
 instance : CoeFun (S.pOrdering p) (fun _ ↦ ℕ → R) := ⟨fun ν k ↦ ν.elems k |>.val⟩
 
-example : emultiplicity 3 18 = 2 := by
-  erw [emultiplicity_eq_coe]
-  decide
-
-
 /-- The associated p-sequence for a p-ordering.
 
   Technically in the paper, this sequence is defined to be the powers, rather than the exponents
@@ -125,7 +120,7 @@ def natPOrdering : (univ : Set ℤ).pOrdering p where
       simp at hx
       omega
     conv_rhs => rw [← Finset.prod_range_reflect, prod_cast]
-    obtain ⟨a, ha⟩ := factorial_coe_dvd_prod k (s - ↑(k - 1))
+    obtain ⟨a, ha⟩ := k.factorial_coe_dvd_prod (s - ↑(k - 1))
     have fac_range := k.descFactorial_eq_prod_range k
     zify at fac_range
     have sub_cast: ∏ i ∈ Finset.range k, ↑(k - i) = ∏ i ∈ Finset.range k, ((k : ℤ) - (i : ℤ)) := by
