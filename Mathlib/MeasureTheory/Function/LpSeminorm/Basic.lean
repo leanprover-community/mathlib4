@@ -202,7 +202,8 @@ theorem memℒp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → 
 -- XXXMR: needs ENormedSpace (or perhaps seminormed), well-behaved zero
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → F) q μ = 0 := by
-  simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
+  simp only [eLpNorm'_eq_lintegral_enorm, Pi.zero_apply, enorm_zero, hp0_lt,
+    ENNReal.zero_rpow_of_pos, lintegral_const, zero_mul, one_div, inv_pos]
 
 @[simp]
 theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α → F) q μ = 0 := by
@@ -353,7 +354,7 @@ theorem memℒp_const (c : E) [IsFiniteMeasure μ] : Memℒp (fun _ : α => c) p
   refine ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)
   simp
 
-theorem memℒp_top_const (c : E) : Memℒp (fun _ : α => c) ∞ μ :=
+theorem memℒp_top_const (c : F) : Memℒp (fun _ : α => c) ∞ μ :=
   ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h]⟩
 
 theorem memℒp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
