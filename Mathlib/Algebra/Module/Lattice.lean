@@ -164,7 +164,7 @@ variable [IsPrincipalIdealRing R]
 Note that under our conditions, `NoZeroSMulDivisors R K` simply says that `algebraMap R K` is
 injective. -/
 instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
-  have := NoZeroSMulDivisors.trans R K V
+  have := NoZeroSMulDivisors.trans_faithfulSMul R K V
   -- any torsion free finite module over a PID is free
   infer_instance
 

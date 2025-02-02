@@ -245,7 +245,7 @@ instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
   ⟨fun P Q => by ext; simp⟩
 
 @[simp]
-lemma algebraMap_comp_nat_cast_eq_cast (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+lemma algebraMap_comp_natCast (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
     algebraMap R A ∘ Nat.cast = Nat.cast := by
   ext; simp
 
@@ -275,7 +275,7 @@ instance int_algebra_subsingleton : Subsingleton (Algebra ℤ R) :=
   ⟨fun P Q => Algebra.algebra_ext P Q <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 @[simp]
-lemma algebraMap_comp_int_cast_eq_cast (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
+lemma algebraMap_comp_intCast (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
     algebraMap R A ∘ Int.cast = Int.cast := by
   ext; simp
 
@@ -333,7 +333,7 @@ alias _root_.NeZero.of_noZeroSMulDivisors := NeZero.of_faithfulSMul
 end FaithfulSMul
 
 lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
-  have := algebraMap_comp_nat_cast_eq_cast R A
+  have := algebraMap_comp_natCast R A
   ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩
 
 -- see note [lower instance priority]
@@ -390,7 +390,7 @@ theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
+theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
     [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
@@ -400,7 +400,7 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [Algebra 
     · exact Or.inr hx
 
 @[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.of_algebraMap_injective' := NoZeroSMulDivisors.trans
+alias NoZeroSMulDivisors.of_algebraMap_injective' := NoZeroSMulDivisors.trans_faithfulSMul
 
 variable {A}
 

@@ -542,8 +542,7 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance [IsFractionRing A K] :
-    NoZeroSMulDivisors A (CyclotomicField n K) := by
+instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
   rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
     IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact

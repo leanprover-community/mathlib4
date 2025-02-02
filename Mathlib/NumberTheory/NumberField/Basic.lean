@@ -339,11 +339,11 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-instance : FaithfulSMul (𝓞 K) (𝓞 L) :=
-  (faithfulSMul_iff_algebraMap_injective (𝓞 K) (𝓞 L)).mpr <| algebraMap.injective K L
+instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
 instance : NoZeroSMulDivisors (𝓞 K) L :=
-  NoZeroSMulDivisors.trans (𝓞 K) (𝓞 L) L
+  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
 
 end extension
 
