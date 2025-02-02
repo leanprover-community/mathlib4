@@ -129,7 +129,7 @@ def PreservesKernel.iso : G.obj (kernel f) ≅ kernel (G.map f) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasKernelOfPreservesLimit G f) (limit.isLimit _)
 
 @[reassoc (attr := simp)]
-theorem PreservesKernel.ι_iso_hom :
+theorem PreservesKernel.iso_inv_ι :
     (PreservesKernel.iso G f).inv ≫ G.map (kernel.ι f) = kernel.ι (G.map f) :=
   IsLimit.conePointUniqueUpToIso_inv_comp (isLimitOfHasKernelOfPreservesLimit G f)
     (limit.isLimit _) (WalkingParallelPair.zero)
