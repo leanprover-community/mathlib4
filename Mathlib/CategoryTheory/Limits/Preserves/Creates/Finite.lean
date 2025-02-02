@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.FinCategory.AsType
 
 /-!
 # Creation of finite limits
@@ -54,7 +54,7 @@ instance (priority := 100) CreatesLimits.createsFiniteLimits (F : C ⥤ D)
   CreatesLimitsOfSize.createsFiniteLimits F
 
 /-- If `F` creates finite limits in any universe, then it creates finite limits. -/
-def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
+def createsFiniteLimitsOfCreatesFiniteLimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesLimitsOfShape J F) :
     CreatesFiniteLimits F where
   createsFiniteLimits J _ _ :=
@@ -134,7 +134,7 @@ instance (priority := 100) CreatesColimits.createsFiniteColimits (F : C ⥤ D)
   CreatesColimitsOfSize.createsFiniteColimits F
 
 /-- If `F` creates finite colimits in any universe, then it creates finite colimits. -/
-def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
+def createsFiniteColimitsOfCreatesFiniteColimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesColimitsOfShape J F) :
     CreatesFiniteColimits F where
   createsFiniteColimits J _ _ :=
