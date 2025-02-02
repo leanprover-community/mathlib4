@@ -9,16 +9,10 @@ import Mathlib.Topology.Algebra.Support
 /-!
 # The topological support of sup and inf of functions
 
-In a topological space `α` and a space `β` with `Sup` structure, for `f g : α → β` with compact
+In a topological space `X` and a space `M` with `Sup` structure, for `f g : X → M` with compact
 support, we show that `f ⊔ g` has compact support. Similarly, in `β` with `Inf` structure, `f ⊓ g`
 has compact support if so do `f` and `g`.
 
-## Implementation Notes
-
-* We write all lemmas for multiplicative functions, and use `@[to_additive]` to get the more common
-  additive versions.
-* We do not put the definitions in the `Function` namespace, following many other topological
-  definitions that are in the root namespace (compare `Embedding` vs `Function.Embedding`).
 -/
 
 variable {X M : Type*} [TopologicalSpace X] [One M]
