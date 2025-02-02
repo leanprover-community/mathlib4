@@ -49,6 +49,23 @@ end
 
 namespace Representation
 
+section
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+@[simp]
+theorem ρ_inv_self_apply (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+@[simp]
+theorem ρ_self_inv_apply (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+end
+
 section trivial
 
 variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
@@ -64,7 +81,7 @@ variable {G V}
 theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
-variable {k}
+variable {k G V}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
@@ -261,6 +278,9 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 
 /-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
 noncomputable abbrev leftRegular := ofMulAction k G G
+
+/-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
+noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
 
 variable {k G H}
 
