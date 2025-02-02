@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Data.Fintype.Option
-import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Categories with finite limits.
@@ -128,7 +127,11 @@ section
 
 open WalkingParallelPair WalkingParallelPairHom
 
-deriving instance Fintype for WalkingParallelPair
+instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
+  elems := [WalkingParallelPair.zero, WalkingParallelPair.one].toFinset
+  complete x := by cases x <;> simp
+
+-- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
 
 instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
     Fintype (WalkingParallelPairHom j j') where
@@ -143,6 +146,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
 end
 
 instance : FinCategory WalkingParallelPair where
+  fintypeObj := fintypeWalkingParallelPair
   fintypeHom := instFintypeWalkingParallelPairHom -- Porting note: could not be inferred
 
 /-- Equalizers are finite limits, so if `C` has all finite limits, it also has all equalizers -/
@@ -201,8 +205,10 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
 end WidePushoutShape
 
 instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
+  fintypeHom := WidePullbackShape.fintypeHom
 
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
+  fintypeHom := WidePushoutShape.fintypeHom
 
 -- We can't just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
@@ -244,7 +250,9 @@ instance (priority := 900) hasFiniteWidePushouts_of_has_finite_limits [HasFinite
     HasFiniteWidePushouts C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteColimits.out _⟩
 
-deriving instance Fintype for WalkingPair
+instance fintypeWalkingPair : Fintype WalkingPair where
+  elems := {WalkingPair.left, WalkingPair.right}
+  complete x := by cases x <;> simp
 
 /-- Pullbacks are finite limits, so if `C` has all finite limits, it also has all pullbacks -/
 example [HasFiniteWidePullbacks C] : HasPullbacks C := by infer_instance
