@@ -6,14 +6,15 @@ Authors: Andrew Yang, Christian Merten
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
+import Mathlib.CategoryTheory.Presentable.Finite
 import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.FinitePresentation
 
 /-!
 
-# Finitely presented objects in `Under R` with `R : CommRingCat`
+# Finitely presentable objects in `Under R` with `R : CommRingCat`
 
-In this file, we show that finitely presented algebras are finitely presented objects in `Under R`,
+In this file, we show that finitely presented algebras are finitely presentable in `Under R`,
 i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 -/
@@ -162,3 +163,9 @@ lemma preservesColimit_coyoneda_of_finitePresentation
 lemma preservesFilteredColimits_coyoneda (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     PreservesFilteredColimits (coyoneda.obj (.op S)) :=
   ⟨fun _ _ _ ↦ ⟨preservesColimit_coyoneda_of_finitePresentation R S hS _⟩⟩
+
+/-- If `S` is a finitely presented `R`-algebra, `S : Under R` is finitely presentable. -/
+lemma isFinitelyPresentable (S : Under R) (hS : S.hom.hom.FinitePresentation) :
+    IsFinitelyPresentable S := by
+  rw [IsFinitelyPresentable, Functor.IsFinitelyAccessible_iff_preservesFilteredColimits]
+  exact preservesFilteredColimits_coyoneda R S hS
