@@ -140,19 +140,6 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 
-@[to_additive
-"Subadditivity of the sum over a finset."]
-lemma prod_image_le_of_one_le {ι α β : Type*} [DecidableEq α]
-    [OrderedCommMonoid β]
-    {J : Finset ι} {g : ι → α} {f : α → β} (hf : ∀ u ∈ J.image g, 1 ≤ f u) :
-    ∏ u ∈ J.image g, f u ≤ ∏ u ∈ J, f (g u) := by
-  rw [prod_comp f g]
-  refine prod_le_prod' fun a hag ↦ ?_
-  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
-  apply le_self_pow (hf a hag)
-  rw [← Nat.pos_iff_ne_zero, card_pos]
-  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
-
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' :
@@ -219,6 +206,17 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
     (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
+
+@[to_additive]
+lemma prod_image_le_of_one_le
+    {g : ι → ι'} {f : ι' → N} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
+    ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
+  rw [prod_comp f g]
+  refine prod_le_prod' fun a hag ↦ ?_
+  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
+  apply le_self_pow (hf a hag)
+  rw [← Nat.pos_iff_ne_zero, card_pos]
+  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
 
 end OrderedCommMonoid
 

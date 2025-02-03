@@ -53,11 +53,11 @@ theorem iUnion_accumulate [Preorder α] : ⋃ x, Accumulate s x = ⋃ x, s x := 
   · exact iUnion_mono fun i => subset_accumulate
 
 @[simp]
-lemma accumulate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : Set.Accumulate s ⊥ = s ⊥ := by
+lemma accumulate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : Accumulate s ⊥ = s ⊥ := by
   simp [Set.accumulate_def]
 
 @[simp]
-lemma accumulate_zero_nat (s : ℕ → Set β) : Set.Accumulate s 0 = s 0 := by
+lemma accumulate_zero_nat (s : ℕ → Set β) : Accumulate s 0 = s 0 := by
   simp [accumulate_def]
 
 open Function in

@@ -153,7 +153,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
 `m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`.-/
 theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) :
-    m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i := by
+    m t = m s + ∑ i ∈ hC.disjointOfDiff ht hs, m i := by
   classical
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
   rw [← coe_insert, addContent_sUnion]
@@ -169,7 +169,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
 /-- An `addContent C` on a `SetSemiring C` is sub-additive.-/
 lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
-    m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
+    m (⋃₀ ↑J) ≤ ∑ u ∈ J, m u := by
   classical
   have h1 : (disjiUnion J (hC.disjointOfUnion h_ss)
       (hC.pairwiseDisjoint_disjointOfUnion h_ss) : Set (Set α)) ⊆ C := by
@@ -194,7 +194,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
 
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
     {J : Finset (Set α)} (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
-    m t ≤ ∑ u in J, m u := by
+    m t ≤ ∑ u ∈ J, m u := by
   -- we can't apply `addContent_mono` and `addContent_sUnion_le_sum` because `⋃₀ ↑J` might not
   -- be in `C`
   classical
