@@ -125,10 +125,9 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℚ) ↔ IsSquare n := by
 theorem isSquare_intCast_iff {z : ℤ} : IsSquare (z : ℚ) ↔ IsSquare z := by
   simp_rw [isSquare_iff, intCast_num, intCast_den, IsSquare.one, and_true]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem isSquare_ofNat_iff {n : ℕ} :
-    IsSquare (no_index (OfNat.ofNat n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+    IsSquare (ofNat(n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
 
 section Casts
@@ -230,8 +229,6 @@ theorem den_div_intCast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).
 theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m :=
   (den_div_intCast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
 
-@[deprecated (since := "2024-05-11")] alias den_div_cast_eq_one_iff := den_div_intCast_eq_one_iff
-
 theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
   apply num_div_eq_of_coprime ha0
@@ -265,7 +262,7 @@ theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
   inv_intCast_num a
 
 @[simp]
-theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
+theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :=
   inv_natCast_num_of_pos (Nat.pos_of_neZero a)
 
 @[simp]
@@ -286,22 +283,9 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
   simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
 
-@[deprecated (since := "2024-04-05")] alias coe_int_div_self := intCast_div_self
-@[deprecated (since := "2024-04-05")] alias coe_nat_div_self := natCast_div_self
-@[deprecated (since := "2024-04-05")] alias coe_int_div := intCast_div
-@[deprecated (since := "2024-04-05")] alias coe_nat_div := natCast_div
-@[deprecated (since := "2024-04-05")] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
-@[deprecated (since := "2024-04-05")] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
-@[deprecated (since := "2024-04-05")] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
-@[deprecated (since := "2024-04-05")] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
-@[deprecated (since := "2024-04-05")] alias inv_coe_int_num := inv_intCast_num
-@[deprecated (since := "2024-04-05")] alias inv_coe_nat_num := inv_natCast_num
-@[deprecated (since := "2024-04-05")] alias inv_coe_int_den := inv_intCast_den
-@[deprecated (since := "2024-04-05")] alias inv_coe_nat_den := inv_natCast_den
-
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
-    (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
+    (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a :=
   inv_natCast_den_of_pos (Nat.pos_of_neZero a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=

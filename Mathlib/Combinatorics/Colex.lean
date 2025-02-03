@@ -529,26 +529,26 @@ lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
   (geomSum_ofColex_strictMono hn).lt_iff_lt
 
 theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
-    Function.Injective (fun s : Finset ℕ ↦ ∑ i in s, n ^ i) := by
+    Function.Injective (fun s : Finset ℕ ↦ ∑ i ∈ s, n ^ i) := by
   intro _ _ h
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
 
-theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
+theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i ∈ s, n ^ i :=
   (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
 
 @[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
-    (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by
+    (∑ i ∈ s, 2 ^ i).bitIndices.toFinset = s := by
   simp [← (geomSum_injective rfl.le).eq_iff, List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
 @[simp] theorem twoPowSum_toFinset_bitIndices (n : ℕ) :
-    ∑ i in n.bitIndices.toFinset, 2 ^ i = n := by
+    ∑ i ∈ n.bitIndices.toFinset, 2 ^ i = n := by
   simp [List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
-/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`. -/
+/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
-  invFun s := ∑ i in s, 2^i
+  invFun s := ∑ i ∈ s, 2^i
   left_inv := twoPowSum_toFinset_bitIndices
   right_inv := toFinset_bitIndices_twoPowSum
 

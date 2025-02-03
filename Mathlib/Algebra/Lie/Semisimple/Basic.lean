@@ -48,7 +48,7 @@ variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable {R L} in
 theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
-    (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
+    (I : LieIdeal R L) [hI : IsSolvable I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
 @[simp]
@@ -56,19 +56,19 @@ theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = �
   HasTrivialRadical.eq_bot_of_isSolvable _
 
 variable {R L} in
-theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
+theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable I → I = ⊥) :
     HasTrivialRadical R L :=
   ⟨sSup_eq_bot.mpr h⟩
 
 theorem hasTrivialRadical_iff_no_solvable_ideals :
-    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
+    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
 
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
   constructor <;> intro h₁ I h₂
-  · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable R I
+  · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable I
   · rw [← abelian_of_solvable_ideal_eq_bot_iff]
     exact h₁ _ <| abelian_derivedAbelianOfIdeal I
 
@@ -212,8 +212,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   set K := s'.sup id
   suffices I ≤ K by
     obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
-    #adaptation_note
-    /-- Prior to https://github.com/leanprover/lean4/pull/6024
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     we could write `hts'.trans hs'.subset` instead of
     `Finset.Subset.trans hts' hs'.subset` in the next line. -/
     exact ⟨t, Finset.Subset.trans hts' hs'.subset, htI⟩
@@ -318,7 +317,7 @@ to be reductive.
 Note that there is absolutely [no agreement](https://mathoverflow.net/questions/284713/) on what
 the label 'reductive' should mean when the coefficients are not a field of characteristic zero. -/
 theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
-    IsLieAbelian (radical R L) ↔ ∀ I : LieIdeal R L, IsSolvable R I → IsLieAbelian I := by
+    IsLieAbelian (radical R L) ↔ ∀ I : LieIdeal R L, IsSolvable I → IsLieAbelian I := by
   constructor
   · rintro h₁ I h₂
     rw [LieIdeal.solvable_iff_le_radical] at h₂

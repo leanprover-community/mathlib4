@@ -131,13 +131,11 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
   simpa only [birthday_neg, ← neg_le_iff] using le_birthday (-x)
 
 @[simp]
-theorem birthday_add : ∀ x y : PGame, (x + y).birthday = x.birthday ♯ y.birthday
+theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    rw [birthday_def, nadd_def, lsub_sum, lsub_sum]
+    rw [birthday_def, nadd, lsub_sum, lsub_sum]
     simp only [mk_add_moveLeft_inl, mk_add_moveLeft_inr, mk_add_moveRight_inl, mk_add_moveRight_inr,
       moveLeft_mk, moveRight_mk]
-    -- Porting note: Originally `simp only [birthday_add]`, but this causes an error in
-    -- `termination_by`. Use a workaround.
     conv_lhs => left; left; right; intro a; rw [birthday_add (xL a) ⟨yl, yr, yL, yR⟩]
     conv_lhs => left; right; right; intro b; rw [birthday_add ⟨xl, xr, xL, xR⟩ (yL b)]
     conv_lhs => right; left; right; intro a; rw [birthday_add (xR a) ⟨yl, yr, yL, yR⟩]
@@ -145,13 +143,16 @@ theorem birthday_add : ∀ x y : PGame, (x + y).birthday = x.birthday ♯ y.birt
     rw [max_max_max_comm]
     congr <;> apply le_antisymm
     any_goals
-      exact
-        max_le_iff.2
-          ⟨lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_moveLeft_lt _),
-            lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_moveRight_lt _)⟩
+      refine max_le_iff.2 ⟨?_, ?_⟩
+      all_goals
+        refine lsub_le_iff.2 fun i ↦ ?_
+        rw [← Order.succ_le_iff]
+        refine Ordinal.le_iSup (fun _ : Set.Iio _ ↦ _) ⟨_, ?_⟩
+        apply_rules [birthday_moveLeft_lt, birthday_moveRight_lt]
     all_goals
-      refine blsub_le_iff.2 fun i hi => ?_
-      rcases lt_birthday_iff.1 hi with (⟨j, hj⟩ | ⟨j, hj⟩)
+      rw [Ordinal.iSup_le_iff]
+      rintro ⟨i, hi⟩
+      obtain ⟨j, hj⟩ | ⟨j, hj⟩ := lt_birthday_iff.1 hi <;> rw [Order.succ_le_iff]
     · exact lt_max_of_lt_left ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_right ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_left ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
@@ -215,10 +216,9 @@ theorem birthday_natCast (n : ℕ) : birthday n = n := by
   rw [← toGame_natCast]
   exact birthday_ordinalToGame _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem birthday_ofNat (n : ℕ) [n.AtLeastTwo] :
-    birthday (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    birthday ofNat(n) = OfNat.ofNat n :=
   birthday_natCast n
 
 @[simp]

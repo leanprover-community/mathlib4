@@ -133,12 +133,6 @@ theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (√
 theorem irrational_sqrt_two : Irrational (√2) := by
   simpa using Nat.prime_two.irrational_sqrt
 
-@[deprecated irrational_sqrt_ratCast_iff (since := "2024-06-16")]
-theorem irrational_sqrt_rat_iff (q : ℚ) :
-    Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q := by
-  rw [irrational_sqrt_ratCast_iff, ne_eq, ← Rat.exists_mul_self]
-  simp only [eq_comm, IsSquare]
-
 /--
 This can be used as
 ```lean

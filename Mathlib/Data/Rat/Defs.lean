@@ -31,10 +31,7 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero
-assert_not_exists Lattice
-assert_not_exists PNat
-assert_not_exists Nat.dvd_mul
+assert_not_exists MonoidWithZero Lattice PNat Nat.dvd_mul
 
 open Function
 
@@ -62,9 +59,6 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 @[simp, norm_cast] lemma num_intCast (n : ℤ) : (n : ℚ).num = n := rfl
 
 @[simp, norm_cast] lemma den_intCast (n : ℤ) : (n : ℚ).den = 1 := rfl
-
-@[deprecated (since := "2024-04-29")] alias coe_int_num := num_intCast
-@[deprecated (since := "2024-04-29")] alias coe_int_den := den_intCast
 
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
@@ -167,23 +161,13 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 
 attribute [simp] divInt_add_divInt
 
-@[deprecated divInt_add_divInt (since := "2024-03-18")]
-theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
-
 attribute [simp] neg_divInt
 
 lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_divInt_den]
 
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 
-@[deprecated (since := "2024-03-18")] alias divInt_neg_den := divInt_neg
-
 attribute [simp] divInt_sub_divInt
-
-@[deprecated divInt_sub_divInt (since := "2024-03-18")]
-lemma sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
 
 @[simp]
 lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /. d₂) = (n₁ * n₂) /. (d₁ * d₂) := by
@@ -206,8 +190,6 @@ lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) :
 
 -- TODO: Rename `divInt_eq_iff` in Batteries to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
-
-@[deprecated (since := "2024-04-29")] alias mul_num_den := mul_eq_mkRat
 
 instance instPowNat : Pow ℚ ℕ where
   pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
@@ -248,8 +230,6 @@ lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', nu
 lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
 
-@[deprecated (since := "2024-04-15")] alias div_num_den := div_def'
-
 variable (a b c : ℚ)
 
 protected lemma add_zero : a + 0 = a := by simp [add_def, normalize_eq_mkRat]
@@ -270,16 +250,10 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
 protected lemma neg_add_cancel : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 
-@[deprecated zero_divInt (since := "2024-03-18")]
-lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _
-
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
 @[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_one]
-
-@[deprecated divInt_one (since := "2024-03-18")]
-lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one, intCast_neg, intCast_one]
 
 protected theorem mul_assoc : a * b * c = a * (b * c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
@@ -456,9 +430,6 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
-
-@[deprecated (since := "2024-04-05")] alias coe_int_eq_divInt := intCast_eq_divInt
-@[deprecated (since := "2024-04-05")] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
