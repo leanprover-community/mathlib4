@@ -304,7 +304,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
         RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.injective_respectsIso
       show P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
-      exact NoZeroSMulDivisors.algebraMap_injective S.R S.K
+      exact FaithfulSMul.algebraMap_injective S.R S.K
     rw [Scheme.comp_appTop] at this
     exact Function.Injective.of_comp this
   · rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
