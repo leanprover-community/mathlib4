@@ -202,23 +202,19 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   cases' x with _ x
   · exact of_decide_eq_true rfl
-  cases' x with head tail
-  · rw [rmatch, deriv]
-    split_ifs
-    · tauto
-    · simp [List.singleton_inj]; tauto
-  · rw [rmatch, rmatch, deriv]
-    split_ifs with h
-    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
-    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
+  · cases' x with head tail
+    · rw [rmatch, deriv, List.singleton_inj]
+      split <;> tauto
+    · rw [rmatch, rmatch, deriv, cons.injEq]
+      split
+      · simp_rw [deriv_one, zero_rmatch, reduceCtorEq, and_false]
+      · simp_rw [deriv_zero, zero_rmatch, reduceCtorEq, and_false]
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
-  induction x generalizing P Q with
-  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
-  | cons _ _ ih =>
-    repeat rw [rmatch]
-    rw [deriv_add]
+  induction' x with _ _ ih generalizing P Q
+  · simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  · rw [rmatch, deriv_add]
     exact ih _ _
 
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
@@ -232,8 +228,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
       cases' List.append_eq_nil_iff.1 h₁.symm with ht hu
-      subst ht
-      subst hu
+      subst ht hu
       repeat rw [rmatch] at h₂
       simp [h₂]
   · rw [rmatch]; simp only [deriv]
