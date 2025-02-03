@@ -70,8 +70,8 @@ noncomputable section
 open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
 
-variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+variable {α E F G ε : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε]
 
 namespace MeasureTheory
 
@@ -83,13 +83,13 @@ The space of equivalence classes of measurable functions for which `eLpNorm f p 
 
 
 @[simp]
-theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
-    {p : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) :
+theorem eLpNorm_aeeqFun {α : Type*} [MeasurableSpace α] {μ : Measure α}
+    [TopologicalSpace ε] {p : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm (AEEqFun.mk f hf) p μ = eLpNorm f p μ :=
   eLpNorm_congr_ae (AEEqFun.coeFn_mk _ _)
 
-theorem Memℒp.eLpNorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : Memℒp f p μ) :
+theorem Memℒp.eLpNorm_mk_lt_top {α : Type*} [MeasurableSpace α] {μ : Measure α}
+    [TopologicalSpace ε] {p : ℝ≥0∞} {f : α → ε} (hfp : Memℒp f p μ) :
     eLpNorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
 
 /-- Lp space -/
@@ -342,11 +342,17 @@ theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
 theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     ‖f‖ ≤ ‖g‖ := by
   rw [norm_def, norm_def]
-  exact ENNReal.toReal_mono (eLpNorm_ne_top _) (eLpNorm_mono_ae h)
+  refine ENNReal.toReal_mono (eLpNorm_ne_top _) (eLpNorm_mono_ae ?_)
+  sorry -- apply foo_leq under binders
 
 theorem mem_Lp_of_nnnorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
   mem_Lp_iff_memℒp.2 <| Memℒp.of_nnnorm_le_mul (Lp.memℒp g) f.aestronglyMeasurable h
+
+theorem mem_Lp_of_enorm_ae_le_mul2 {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : f ∈ Lp E p μ := by
+  refine mem_Lp_iff_memℒp.2 ?_
+  sorry -- refine Memℒp.of_enorm_le_mul (f := f) (Lp.memℒp g) f.aestronglyMeasurable h
 
 theorem mem_Lp_of_ae_le_mul {c : ℝ} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : f ∈ Lp E p μ :=
@@ -354,7 +360,7 @@ theorem mem_Lp_of_ae_le_mul {c : ℝ} {f : α →ₘ[μ] E} {g : Lp F p μ}
 
 theorem mem_Lp_of_nnnorm_ae_le {f : α →ₘ[μ] E} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     f ∈ Lp E p μ :=
-  mem_Lp_iff_memℒp.2 <| Memℒp.of_le (Lp.memℒp g) f.aestronglyMeasurable h
+  mem_Lp_iff_memℒp.2 <| sorry -- was: Memℒp.of_le (Lp.memℒp g) f.aestronglyMeasurable h
 
 theorem mem_Lp_of_ae_le {f : α →ₘ[μ] E} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     f ∈ Lp E p μ :=
@@ -362,28 +368,44 @@ theorem mem_Lp_of_ae_le {f : α →ₘ[μ] E} {g : Lp F p μ} (h : ∀ᵐ x ∂�
 
 theorem mem_Lp_of_ae_nnnorm_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ≥0)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : f ∈ Lp E p μ :=
+  sorry -- mem_Lp_iff_memℒp.2 <| Memℒp.of_bound f.aestronglyMeasurable _ hfC
+
+theorem mem_Lp_of_ae_enorm_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) : f ∈ Lp E p μ :=
   mem_Lp_iff_memℒp.2 <| Memℒp.of_bound f.aestronglyMeasurable _ hfC
 
-theorem mem_Lp_of_ae_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
+theorem mem_Lp_of_ae_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) :
     f ∈ Lp E p μ :=
   mem_Lp_iff_memℒp.2 <| Memℒp.of_bound f.aestronglyMeasurable _ hfC
 
-theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
-    (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+-- theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
+--     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+--   by_cases hμ : μ = 0
+--   · by_cases hp : p.toReal⁻¹ = 0
+--     · simp [hp, hμ, nnnorm_def]
+--     · simp [hμ, nnnorm_def, Real.zero_rpow hp]
+--   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
+--   refine (eLpNorm_le_of_ae_enorm_bound hfC).trans_eq ?_
+--   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
+--     ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
+
+theorem enorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : ‖f‖ₑ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
   by_cases hμ : μ = 0
   · by_cases hp : p.toReal⁻¹ = 0
     · simp [hp, hμ, nnnorm_def]
     · simp [hμ, nnnorm_def, Real.zero_rpow hp]
-  rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
-  refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
+  rw [enorm_def]
+  refine (eLpNorm_le_of_ae_enorm_bound hfC).trans_eq ?_
   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
-    ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
+    mul_comm, ENNReal.smul_def, smul_eq_mul]
 
 theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
   lift C to ℝ≥0 using hC
-  have := nnnorm_le_of_ae_bound hfC
-  rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
+  sorry -- previous proof was:
+  -- have := nnnorm_le_of_ae_bound hfC
+  -- rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
@@ -517,7 +539,8 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 /-- A bounded measurable function with compact support is in L^p. -/
 theorem _root_.HasCompactSupport.memℒp_of_bound {f : X → E} (hf : HasCompactSupport f)
-    (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ := by
+    (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) :
+    Memℒp f p μ := by
   have := memℒp_top_of_bound h2f C hfC
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_nmem_tsupport) (hf.measure_lt_top.ne) le_top
@@ -1503,20 +1526,29 @@ variable [IsFiniteMeasure μ]
 
 /-- A bounded continuous function on a finite-measure space is in `Lp`. -/
 theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ := by
-  refine Lp.mem_Lp_of_ae_bound ‖f‖ ?_
+  refine Lp.mem_Lp_of_ae_bound ‖f‖ₑ.toNNReal ?_
   filter_upwards [f.toContinuousMap.coeFn_toAEEqFun μ] with x _
-  convert f.norm_coe_le_norm x using 2
+  sorry -- need enorm version: convert f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
 theorem Lp_nnnorm_le (f : α →ᵇ E) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
-  apply Lp.nnnorm_le_of_ae_bound
+  sorry /- apply Lp.nnnorm_le_of_ae_bound
   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
   intro x hx
   rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-  convert f.norm_coe_le_norm x using 2
+  convert f.norm_coe_le_norm x using 2 -/
+
+theorem Lp_enorm_le (f : α →ᵇ E) :
+    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ₑ ≤
+      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ₑ := by
+  apply Lp.enorm_le_of_ae_bound
+  refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
+  intro x hx
+  sorry -- was: rw [coe_enorm, coe_nnnorm] and something!
+  --convert f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
