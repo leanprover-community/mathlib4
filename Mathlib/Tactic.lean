@@ -108,6 +108,7 @@ import Mathlib.Tactic.GCongr.ForwardAttr
 import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
+import Mathlib.Tactic.GroupExp
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
