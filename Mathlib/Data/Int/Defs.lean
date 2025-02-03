@@ -46,8 +46,9 @@ protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_i
 
 end Order
 
-@[simp] protected alias add_neg_cancel := Int.add_right_neg
-@[simp] protected alias neg_add_cancel := Int.add_left_neg
+-- We want to use these lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF] protected alias add_neg_cancel := Int.add_right_neg
+@[simp, nolint simpNF] protected alias neg_add_cancel := Int.add_left_neg
 
 -- TODO: Tag in Lean
 attribute [simp] natAbs_pos
