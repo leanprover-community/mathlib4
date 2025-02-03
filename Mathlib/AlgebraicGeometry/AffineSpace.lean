@@ -89,7 +89,7 @@ def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
       Iso.cancel_iso_inv_left, ← Iso.eq_inv_comp]
     apply of_mvPolynomial_int_ext
     intro i
-    rw [coe_eval₂Hom, eval₂_X]
+    rw [ConcreteCategory.hom_ofHom, coe_eval₂Hom, eval₂_X]
     rfl
   right_inv v := by
     ext i
@@ -203,7 +203,7 @@ def isoOfIsAffine [IsAffine S] :
         ext : 1
         apply ringHom_ext'
         · show _ = (CommRingCat.ofHom C ≫ _).hom
-          rw [CommRingCat.hom_comp, RingHom.comp_assoc, eval₂Hom_comp_C,
+          rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom, eval₂Hom_comp_C,
             ← CommRingCat.hom_comp, ← CommRingCat.hom_ext_iff,
             ← cancel_mono (Scheme.ΓSpecIso _).hom]
           rw [← Scheme.comp_appTop, homOfVector_over, Scheme.comp_appTop]
@@ -212,7 +212,7 @@ def isoOfIsAffine [IsAffine S] :
           rw [← Scheme.comp_appTop_assoc, Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id]
           simp
         · intro i
-          rw [CommRingCat.comp_apply, coe_eval₂Hom]
+          rw [CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, coe_eval₂Hom]
           simp only [eval₂_X]
           exact homOfVector_appTop_coord _ _ _
 
@@ -328,7 +328,7 @@ lemma map_Spec_map {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     conv_lhs => enter[2]; tactic => exact map_appTop_coord _ _
     conv_rhs => enter[2]; tactic => exact SpecIso_inv_appTop_coord _ _
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
-        CommRingCat.comp_apply, map_X]
+        CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
 
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/

@@ -41,7 +41,8 @@ section AuxLemmas
 variable {Ω F : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → F}
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [TopologicalSpace F]
-    (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x : Ω × Ω => f x.2)
+    (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
   rw [← aestronglyMeasurable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
@@ -129,19 +130,22 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel [Normed
 alias _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel :=
   _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel
 
-theorem aestronglyMeasurable'_integral_condExpKernel [NormedSpace ℝ F]
+theorem aestronglyMeasurable_integral_condExpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable' m (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
+    AEStronglyMeasurable[m] (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
-  have h := aestronglyMeasurable'_integral_condDistrib
+  have h := aestronglyMeasurable_integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
   rw [MeasurableSpace.comap_id] at h
-  exact AEStronglyMeasurable'.mono h inf_le_left
+  exact h.mono inf_le_left
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_integral_condExpKernel := aestronglyMeasurable_integral_condExpKernel
 
 @[deprecated (since := "2025-01-21")]
-alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable'_integral_condExpKernel
+alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable_integral_condExpKernel
 
 end Measurability
 
@@ -235,10 +239,9 @@ alias condexpKernel_ae_eq_condexp := condExpKernel_ae_eq_condExp
 lemma condExpKernel_ae_eq_trim_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
-  rw [ae_eq_trim_iff hm _ stronglyMeasurable_condExp]
-  · exact condExpKernel_ae_eq_condExp hm hs
-  · refine Measurable.stronglyMeasurable ?_
-    exact @Measurable.ennreal_toReal _ m _ (measurable_condExpKernel hs)
+  rw [(measurable_condExpKernel hs).ennreal_toReal.stronglyMeasurable.ae_eq_trim_iff hm
+    stronglyMeasurable_condExp]
+  exact condExpKernel_ae_eq_condExp hm hs
 
 @[deprecated (since := "2025-01-21")]
 alias condexpKernel_ae_eq_trim_condexp := condExpKernel_ae_eq_trim_condExp
@@ -285,9 +288,8 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
   refine ae_eq_trans (condExp_restrict_ae_eq_restrict
     (generateFrom_singleton_le hs)
     (measurableSet_generateFrom rfl) hf).symm ?_
-  · refine (ae_eq_condExp_of_forall_setIntegral_eq
-      (generateFrom_singleton_le hs) hf.restrict ?_ ?_
-      stronglyMeasurable_const.aeStronglyMeasurable').symm
+  · refine (ae_eq_condExp_of_forall_setIntegral_eq (generateFrom_singleton_le hs) hf.restrict ?_ ?_
+      stronglyMeasurable_const.aestronglyMeasurable).symm
     · rintro t - -
       rw [integrableOn_const]
       exact Or.inr <| measure_lt_top (μ.restrict s) t

@@ -147,16 +147,6 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
-@[deprecated (since := "2024-06-11")]
-alias drop_take_succ_join_eq_getElem := drop_take_succ_flatten_eq_getElem
-
-@[deprecated drop_take_succ_flatten_eq_getElem (since := "2024-06-11")]
-lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
-    (L.flatten.take ((L.map length).take (i + 1)).sum).drop
-      ((L.map length).take i).sum = get L i := by
-  rw [drop_take_succ_flatten_eq_getElem _ _ i.2]
-  simp
-
 end List
 
 
