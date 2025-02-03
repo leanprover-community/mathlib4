@@ -32,38 +32,26 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y : C} (α : X ≅ Y)
 
 /-- An isomorphism between two objects defines a monoid isomorphism between their
-monoid of endomorphisms. -/
-def conj : End X ≃* End Y :=
+monoids of endomorphisms. -/
+@[simps!] def conj : End X ≃* End Y :=
   { homCongr α α with map_mul' := fun f g => homCongr_comp α α α g f }
 
-theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
-  rfl
-
-@[simp]
 theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
   map_mul α.conj g f
 
-@[simp]
 theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
   map_one α.conj
 
-@[simp]
-theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
-  rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]
+theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by simp
 
-@[simp]
 theorem trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β.conj (α.conj f) :=
   homCongr_trans α α β β f
 
-@[simp]
-theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
-  rw [← trans_conj, α.self_symm_id, refl_conj]
+theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by simp
 
-@[simp]
 theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
   α.symm.symm_self_conj f
 
-@[simp]
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
@@ -126,7 +114,7 @@ variable {C : Type uC} [Category.{vC} C]
 variable {C' : Type uC'} [Category.{vC'} C']
 variable {D : Type uD} [Category.{vD} D]
 variable {D' : Type uD'} [Category.{vD'} D']
-variable {f : C ⥤ D}  {g : C' ⥤ D'}
+variable {f : C ⥤ D} {g : C' ⥤ D'}
 variable {e : C ≌ C'} {e' : D ≌ D'}
 
 /--
@@ -142,11 +130,9 @@ commutes where `e` and `e'` are equivalence of categories.
 Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
 -/
 @[simps!]
-noncomputable def endMonoidEquiv
-    (sq₀ : e.congrLeft.functor.obj f ≅ e'.congrRight.inverse.obj g) : End f ≃* End g :=
-  ((e.congrLeft.fullyFaithfulFunctor).mulEquivEnd f).trans <|
-    sq₀.conj.trans
-    ((e'.congrRight.fullyFaithfulInverse).mulEquivEnd g).symm
+noncomputable def endMonoidEquiv (sq₀ : f ⋙ e'.functor ≅ e.functor ⋙ g) : End f ≃* End g :=
+  (e'.congrRight.fullyFaithfulFunctor.mulEquivEnd f).trans <| sq₀.conj.trans
+    (e.congrLeft.fullyFaithfulInverse.mulEquivEnd g).symm
 
 end Equivalence
 
