@@ -18,6 +18,9 @@ naming convention is to distinguish this internal categorical notion of
 a subobject classifier from a classifier of terms of type `Subobject B`
 for `B : C`.
 
+c.f. the following Lean 3 code, where similar work was done:
+https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
+
 ## Main definitions
 
 Let `C` refer to a category with a terminal object.
