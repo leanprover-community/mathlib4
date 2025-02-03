@@ -8,6 +8,7 @@ import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
@@ -109,6 +110,18 @@ open Lean Meta Elab.Tactic in
     throwError "The goal does not contain `sorry`"
 
 /--
+`rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
+doing the more expensive `aesop` tactic.
+
+Note on `refine id ?_`.
+In some cases it is important that the type of the proof matches the expected type exactly.
+e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
+starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
+the expected type, in this case `2 = 1 + 1`.
+-/
+macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; rfl))
+
+/--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
@@ -116,7 +129,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry | refine id ?_; intros; rfl |
+  first | sorry_if_sorry | rfl_cat |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
@@ -125,7 +138,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | try_this rfl_cat |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
