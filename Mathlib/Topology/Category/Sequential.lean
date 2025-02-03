@@ -18,8 +18,6 @@ for defining categories of topological spaces, by giving it the induced category
 
 open CategoryTheory
 
-attribute [local instance] HasForget.instFunLike
-
 universe u
 
 /-- The type sequential topological spaces. -/

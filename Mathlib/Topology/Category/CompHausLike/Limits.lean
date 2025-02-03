@@ -40,8 +40,6 @@ namespace CompHausLike
 
 universe w u
 
-attribute [local instance] HasForget.instFunLike
-
 section FiniteCoproducts
 
 variable {P : TopCat.{max u w} → Prop} {α : Type w} [Finite α] (X : α → CompHausLike P)
@@ -102,7 +100,7 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
     (fun s ↦ desc _ fun a ↦ s.inj a)
     (fun _ _ ↦ ι_desc _ _ _)
     fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
-      (DFunLike.ext _ _ fun t ↦ congrFun (congrArg DFunLike.coe (hm a)) t)
+      (ConcreteCategory.hom_ext _ _ fun t ↦ congrFun (congrArg _ (hm a)) t)
 
 lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduct.ι X a) := by
   intro x y hxy

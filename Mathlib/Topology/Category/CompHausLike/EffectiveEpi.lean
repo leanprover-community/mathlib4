@@ -21,8 +21,6 @@ universe u
 
 open CategoryTheory Limits Topology
 
-attribute [local instance] HasForget.instFunLike
-
 namespace CompHausLike
 
 variable {P : TopCat.{u} → Prop}
@@ -35,20 +33,20 @@ def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Sur
     EffectiveEpiStruct π where
   desc e h := ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).lift e.hom
     fun a b hab ↦
-      DFunLike.congr_fun (h
+      CategoryTheory.congr_fun (h
         (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
         (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
       (by ext; exact hab)) a)
   fac e h := TopCat.hom_ext ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).lift_comp
     e.hom
-    fun a b hab ↦ DFunLike.congr_fun (h
+    fun a b hab ↦ CategoryTheory.congr_fun (h
       (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
       (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a)
   uniq e h g hm := by
     suffices g = ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).liftEquiv
       ⟨e.hom,
-      fun a b hab ↦ DFunLike.congr_fun
+      fun a b hab ↦ CategoryTheory.congr_fun
         (h
           (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
           (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)

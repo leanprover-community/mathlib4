@@ -17,8 +17,6 @@ universe w u
 
 open CategoryTheory Limits CompHausLike Topology
 
-attribute [local instance] HasForget.instFunLike
-
 namespace Stonean
 
 instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ ExtremallyDisconnected Y) where

@@ -24,8 +24,6 @@ universe w u
 
 open CategoryTheory LocallyConstant CompHausLike Functor Category Functor Opposite
 
-attribute [local instance] HasForget.instFunLike
-
 variable {P : TopCat.{u} → Prop}
 
 namespace CompHausLike.LocallyConstantModule

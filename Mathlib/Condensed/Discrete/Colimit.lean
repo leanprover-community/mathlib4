@@ -21,8 +21,6 @@ noncomputable section
 
 open CategoryTheory Functor Limits FintypeCat CompHausLike.LocallyConstant
 
-attribute [local instance] HasForget.instFunLike
-
 namespace Condensed
 
 section LocallyConstantAsColimit

@@ -25,8 +25,6 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
-attribute [local instance] HasForget.instFunLike
-
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
 

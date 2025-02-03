@@ -64,8 +64,6 @@ universe u
 
 open CategoryTheory
 
-attribute [local instance] HasForget.instFunLike
-
 variable (P : TopCat.{u} → Prop)
 
 /-- The type of Compact Hausdorff topological spaces satisfying an additional property `P`. -/
