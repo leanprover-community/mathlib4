@@ -774,6 +774,34 @@ theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable' [Algebra.IsSeparable F E] (
     (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((· ^ q) '' S) :=
   pow_one q ▸ adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E S q 1
 
+-- Special cases for simple adjoin
+
+/-- If `F` is a field of exponential characteristic `q`, `a : E` is separable over `F`, then
+`F⟮a⟯ = F⟮a ^ q ^ n⟯` for any natural number `n`. -/
+theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable {a : E} (ha : IsSeparable F a)
+    (q : ℕ) [ExpChar F q] (n : ℕ) : F⟮a⟯ = F⟮a ^ q ^ n⟯ := by
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).mpr ha
+  simpa using adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E {a} q n
+
+/-- If `E / F` is a separable field extension of exponential characteristic `q`, then
+`F⟮a⟯ = F⟮a ^ q ^ n⟯` for any subset `a : E` and any natural number `n`. -/
+theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (a : E)
+    (q : ℕ) [ExpChar F q] (n : ℕ) : F⟮a⟯ = F⟮a ^ q ^ n⟯ := by
+  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F F⟮a⟯ E
+  simpa using adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E {a} q n
+
+/-- If `F` is a field of exponential characteristic `q`, `a : E` is separable over `F`, then
+`F⟮a⟯ = F⟮a ^ q⟯`. -/
+theorem adjoin_simple_eq_adjoin_pow_expChar_of_isSeparable {a : E} (ha : IsSeparable F a)
+    (q : ℕ) [ExpChar F q] : F⟮a⟯ = F⟮a ^ q⟯ :=
+  pow_one q ▸ adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable F E ha q 1
+
+/-- If `E / F` is a separable field extension of exponential characteristic `q`, then
+`F⟮a⟯ = F⟮a ^ q⟯` for any `a : E`. -/
+theorem adjoin_simple_eq_adjoin_pow_expChar_of_isSeparable' [Algebra.IsSeparable F E] (a : E)
+    (q : ℕ) [ExpChar F q] : F⟮a⟯ = F⟮a ^ q⟯ :=
+  pow_one q ▸ adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable' F E a q 1
+
 end IntermediateField
 
 section
@@ -959,7 +987,7 @@ theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
-  simp only [coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
+  simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
 

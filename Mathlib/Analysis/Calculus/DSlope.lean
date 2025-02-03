@@ -34,13 +34,13 @@ noncomputable def dslope (f : 𝕜 → E) (a : 𝕜) : 𝕜 → E :=
 @[simp]
 theorem dslope_same (f : 𝕜 → E) (a : 𝕜) : dslope f a a = deriv f a := by
   classical
-  exact update_same _ _ _
+  exact update_self ..
 
 variable {f : 𝕜 → E} {a b : 𝕜} {s : Set 𝕜}
 
 theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b := by
   classical
-  exact update_noteq h _ _
+  exact update_of_ne h ..
 
 theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     (f : E →L[𝕜] F) (g : 𝕜 → E) (a b : 𝕜) (H : a = b → DifferentiableAt 𝕜 g a) :

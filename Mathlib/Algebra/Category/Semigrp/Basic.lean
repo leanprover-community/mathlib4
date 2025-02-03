@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
@@ -44,15 +44,15 @@ namespace MagmaCat
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
-    by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
+    by intros; apply @DFunLike.coe_injective, by aesop_cat, by simp⟩
 
--- Porting note: deriving failed for `ConcreteCategory`,
+-- Porting note: deriving failed for `HasForget`,
 -- "default handlers have not been implemented yet"
 -- https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for MagmaCat
-instance instConcreteCategory : ConcreteCategory MagmaCat := BundledHom.concreteCategory MulHom
+instance instHasForget : HasForget MagmaCat := BundledHom.hasForget MulHom
 
-attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
+attribute [to_additive] instMagmaCatLargeCategory instHasForget
 
 @[to_additive]
 instance : CoeSort MagmaCat Type* where
@@ -90,7 +90,7 @@ theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
     (@DFunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
-      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+      HasForget.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
@@ -100,7 +100,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 /-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/
 add_decl_doc AddMagmaCat.ofHom
 
-@[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
+@[to_additive]
 theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
 
@@ -125,13 +125,13 @@ instance : BundledHom.ParentProjection @Semigroup.toMul := ⟨⟩
 
 deriving instance LargeCategory for Semigrp
 
--- Porting note: deriving failed for `ConcreteCategory`,
+-- Porting note: deriving failed for `HasForget`,
 -- "default handlers have not been implemented yet"
 -- https://github.com/leanprover-community/mathlib4/issues/5020
-instance instConcreteCategory : ConcreteCategory Semigrp :=
-  BundledHom.concreteCategory (fun _ _ => _)
+instance instHasForget : HasForget Semigrp :=
+  BundledHom.hasForget (fun _ _ => _)
 
-attribute [to_additive] instSemigrpLargeCategory Semigrp.instConcreteCategory
+attribute [to_additive] instSemigrpLargeCategory Semigrp.instHasForget
 
 @[to_additive]
 instance : CoeSort Semigrp Type* where
@@ -169,7 +169,7 @@ theorem coe_of (R : Type u) [Semigroup R] : (Semigrp.of R : Type u) = R :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :
     (@DFunLike.coe (Semigrp.of X ⟶ Semigrp.of Y) _ (fun _ => (forget Semigrp).obj _)
-      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+      HasForget.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `Semigrp`. -/
@@ -180,7 +180,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 /-- Typecheck an `AddHom` as a morphism in `AddSemigrp`. -/
 add_decl_doc AddSemigrp.ofHom
 
-@[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
+@[to_additive]
 theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     ofHom f x = f x :=
   rfl
@@ -209,7 +209,8 @@ def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y wher
   inv := e.symm.toMulHom
   hom_inv_id := by
     ext
-    simp_rw [comp_apply, toMulHom_eq_coe, MagmaCat.mulEquiv_coe_eq, symm_apply_apply, id_apply]
+    simp_rw [CategoryTheory.comp_apply, toMulHom_eq_coe, MagmaCat.mulEquiv_coe_eq, symm_apply_apply,
+      CategoryTheory.id_apply]
 
 end
 
@@ -279,7 +280,7 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
 
 -- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
--- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
+-- we could have used `CategoryTheory.HasForget.ReflectsIso` alternatively
 @[to_additive]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨f, rfl⟩

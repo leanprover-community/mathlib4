@@ -3,6 +3,7 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set
 import Mathlib.Order.Basic
+import Mathlib.Data.One.Defs
 import Mathlib.Data.Nat.Defs
 
 set_option autoImplicit true

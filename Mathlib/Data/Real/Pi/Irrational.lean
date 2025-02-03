@@ -214,7 +214,7 @@ private lemma is_integer {p : ℤ[X]} (a b : ℤ) {k : ℕ} (hp : p.natDegree �
   · rcases k.eq_zero_or_pos with rfl | hk
     · exact ⟨p.coeff 0, by simp⟩
     exact ⟨0, by simp [hk.ne']⟩
-  refine ⟨∑ i in p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
+  refine ⟨∑ i ∈ p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
   conv => lhs; rw [← sum_monomial_eq p]
   rw [eval₂_sum, sum, Finset.sum_mul, Int.cast_sum]
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
@@ -291,7 +291,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   obtain ⟨n, hn⟩ := j.exists
   have hn' : 0 < a ^ (2 * n + 1) / n ! * I n (π / 2) := mul_pos (k _) I_pos
   obtain ⟨z, hz⟩ : ∃ z : ℤ, (sinPoly n).eval₂ (Int.castRingHom ℝ) (a / b) * b ^ (2 * n + 1) = z :=
-    is_integer a b ((sinPoly_natDegree_le _).trans (by linarith))
+    is_integer a b ((sinPoly_natDegree_le _).trans (by omega))
   have e := sinPoly_add_cosPoly_eval (π / 2) n
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, mul_one, add_zero] at e
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =

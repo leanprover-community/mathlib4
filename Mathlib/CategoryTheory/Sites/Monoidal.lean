@@ -5,11 +5,19 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.SheafHom
 
 /-!
 # Monoidal category structure on categories of sheaves
+
+If `A` is a closed braided category with suitable limits,
+and `J` is a Grothendieck topology with `HasWeakSheafify J A`,
+then `Sheaf J A` can be equipped with a monoidal category
+structure. This is not made an instance as in some cases
+it may conflict with monoidal structure deduced from
+chosen finite products.
 
 -/
 
@@ -71,14 +79,12 @@ lemma functorEnrichedHomCoyonedaObjEquiv_naturality
     [HasFunctorEnrichedHom A F G]
     (y : (functorEnrichedHom A F G ⋙ coyoneda.obj (op M)).obj (op Y)) :
     functorEnrichedHomCoyonedaObjEquiv M F G X
-      (y ≫ precompEnrichedHom _ _ _ (Under.map f.op)) =
+      (y ≫ precompEnrichedHom' _ (Under.map f.op) (Iso.refl _) (Iso.refl _)) =
     (presheafHom (F ⊗ (Functor.const Cᵒᵖ).obj M) G).map f.op
       (functorEnrichedHomCoyonedaObjEquiv M F G Y y) := by
   dsimp
   ext ⟨j⟩
-  dsimp [functorEnrichedHomCoyonedaObjEquiv, presheafHom]
-  rw [Category.assoc]
-  erw [precompEnrichedHom_π]
+  simp [functorEnrichedHomCoyonedaObjEquiv, presheafHom]
   rfl
 
 lemma isSheaf_functorEnrichedHom (F G : Cᵒᵖ ⥤ A) (hG : Presheaf.IsSheaf J G)
@@ -117,8 +123,39 @@ lemma whiskerRight [BraidedCategory A]
     J.W (f ▷ G) :=
   (J.W.arrow_mk_iso_iff (Arrow.isoMk (β_ F₁ G) (β_ F₂ G))).2 (hf.whiskerLeft G)
 
+instance monoidal [BraidedCategory A] : (J.W (A := A)).IsMonoidal where
+  whiskerLeft F _ _ _ hg := hg.whiskerLeft F
+  whiskerRight _ hf G := hf.whiskerRight G
+
 end W
 
 end GrothendieckTopology
+
+namespace Sheaf
+
+variable (J A)
+
+/-- The monoidal category structure on `Sheaf J A` that is obtained
+by localization of the monoidal category structure on the category
+of presheaves. -/
+noncomputable def monoidal [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
+    MonoidalCategory (Sheaf J A) :=
+  inferInstanceAs (MonoidalCategory
+    (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
+
+noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
+    letI := monoidal J A
+    (presheafToSheaf J A).Monoidal :=
+  inferInstanceAs (Localization.Monoidal.toMonoidalCategory
+    (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Monoidal
+
+noncomputable example
+    [HasWeakSheafify J A] [MonoidalClosed A] [BraidedCategory A]
+    [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
+    [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
+    MonoidalCategory (Sheaf J A) :=
+  monoidal J A
+
+end Sheaf
 
 end CategoryTheory

@@ -83,9 +83,10 @@ A presheaf is a sheaf (resp, separated) if every *compatible* family of elements
 (resp, at most one) amalgamation.
 
 This data is referred to as a `family` in [MM92], Chapter III, Section 4. It is also a concrete
-version of the elements of the middle object in https://stacks.math.columbia.edu/tag/00VM which is
+version of the elements of the middle object in the Stacks entry which is
 more useful for direct calculations. It is also used implicitly in Definition C2.1.2 in [Elephant].
 -/
+@[stacks 00VM "This is a concrete version of the elements of the middle object there."]
 def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → P.obj (op Y)
 
@@ -416,8 +417,8 @@ This version is also useful to establish that being a sheaf is preserved under i
 presheaves.
 
 See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See also C2.1.4 of
-[Elephant]. This is also a direct reformulation of <https://stacks.math.columbia.edu/tag/00Z8>.
--/
+[Elephant]. -/
+@[stacks 00Z8 "Direct reformulation"]
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
@@ -533,7 +534,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   intro x
   constructor
   · intro z hx
-    exact exists_unique_of_exists_of_unique (z.2 hx) z.1
+    exact existsUnique_of_exists_of_unique (z.2 hx) z.1
   · intro h
     refine ⟨?_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
@@ -608,7 +609,7 @@ presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a shea
 lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
     (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
     (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
-    e (P₁.map f.op x) = P₂.map f.op (e x))
+      e (P₁.map f.op x) = P₂.map f.op (e x))
     {X : C} {R : Presieve X} (hP₁ : IsSheafFor P₁ R) :
     IsSheafFor P₂ R := fun x₂ hx₂ ↦ by
   have he' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₂.obj (op Y)),

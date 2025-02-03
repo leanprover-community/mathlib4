@@ -50,8 +50,7 @@ Some properties of the operations are also used to discuss general tools on ordi
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-assert_not_exists Field
-assert_not_exists Module
+assert_not_exists Field Module
 
 noncomputable section
 
@@ -94,8 +93,12 @@ instance instAddLeftReflectLE :
     refine (RelEmbedding.ofMonotone g fun _ _ h ↦ ?_).ordinal_type_le
     rwa [← @Sum.lex_inr_inr _ t _ s, ← hg, ← hg, f.map_rel_iff, Sum.lex_inr_inr]
 
-theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
-  simp only [le_antisymm_iff, add_le_add_iff_left]
+instance : IsLeftCancelAdd Ordinal where
+  add_left_cancel a b c h := by simpa only [le_antisymm_iff, add_le_add_iff_left] using h
+
+@[deprecated add_left_cancel_iff (since := "2024-12-11")]
+protected theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c :=
+  add_left_cancel_iff
 
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]
@@ -334,7 +337,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
   use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert enum_lt_enum (o₁ := ⟨_, typein_lt_type r x⟩) (o₂ := ⟨_, h _ (typein_lt_type r x)⟩).mpr _
+  convert enum_lt_enum.mpr _
   · rw [enum_typein]
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
@@ -359,12 +362,6 @@ theorem typein_ordinal (o : Ordinal.{u}) :
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
-
--- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
-@[deprecated typein_ordinal (since := "2024-09-19")]
-theorem type_subrel_lt (o : Ordinal.{u}) :
-    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
-  typein_ordinal o
 
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
@@ -1359,6 +1356,11 @@ theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
     (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
   Ordinal.iSup_eq_of_range_eq h
 
+theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o := by
+  apply (le_of_forall_lt _).antisymm'
+  · simp [Ordinal.iSup_le_iff]
+  · exact fun a ha ↦ (lt_succ a).trans_le <| Ordinal.le_iSup (fun x : Iio _ ↦ _) ⟨a, ha⟩
+
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β]:
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
@@ -1466,17 +1468,28 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
   conv_lhs => change range (ord ∘ f)
   rw [range_comp]
 
+theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
+    Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
+  rw [← mk_Iio_ordinal]
+  refine mk_le_mk_of_subset fun x (hx : x < _) ↦ ?_
+  rw [← not_not_mem]
+  exact not_mem_of_lt_csInf' hx
+
+theorem card_sInf_range_compl_le_lift {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    (sInf (range f)ᶜ).card ≤ Cardinal.lift.{v} #ι := by
+  rw [← Cardinal.lift_le.{max u v + 1}, Cardinal.lift_lift]
+  apply (lift_card_sInf_compl_le _).trans
+  rw [← Cardinal.lift_id'.{u, max u v + 1} #(range _)]
+  exact mk_range_le_lift
+
+theorem card_sInf_range_compl_le {ι : Type u} (f : ι → Ordinal.{u}) :
+    (sInf (range f)ᶜ).card ≤ #ι :=
+  Cardinal.lift_id #ι ▸ card_sInf_range_compl_le_lift f
+
 theorem sInf_compl_lt_lift_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sInf (range f)ᶜ < lift.{v} (succ #ι).ord := by
-  by_contra! h
-  have : Iio (lift.{v} (succ #ι).ord) ⊆ range f := by
-    intro o ho
-    have := not_mem_of_lt_csInf' (ho.trans_le h)
-    rwa [not_mem_compl_iff] at this
-  have := mk_le_mk_of_subset this
-  rw [mk_Iio_ordinal, ← lift_card, Cardinal.lift_lift, card_ord, Cardinal.lift_succ,
-    succ_le_iff, ← Cardinal.lift_id'.{u, max (u + 1) (v + 1)} #_] at this
-  exact this.not_le mk_range_le_lift
+  rw [lift_ord, Cardinal.lift_succ, ← card_le_iff]
+  exact card_sInf_range_compl_le_lift f
 
 theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
@@ -2231,13 +2244,9 @@ theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rw [← Nat.cast_one, ← Nat.cast_add, add_comm]
   rfl
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias one_add_nat_cast := one_add_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
-    1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
+    1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
   one_add_natCast m
 
 @[simp, norm_cast]
@@ -2245,55 +2254,30 @@ theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | 0 => by simp
   | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, natCast_mul m n, Nat.cast_succ, mul_add_one]
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_mul := natCast_mul
-
 @[deprecated Nat.cast_le (since := "2024-10-17")]
 theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := Nat.cast_le
-
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_le := natCast_le
 
 @[deprecated Nat.cast_inj (since := "2024-10-17")]
 theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := Nat.cast_inj
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_inj := natCast_inj
-
 @[deprecated Nat.cast_lt (since := "2024-10-17")]
 theorem natCast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
-
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_lt := natCast_lt
 
 @[deprecated Nat.cast_eq_zero (since := "2024-10-17")]
 theorem natCast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_eq_zero := natCast_eq_zero
-
 @[deprecated Nat.cast_ne_zero (since := "2024-10-17")]
 theorem natCast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
-
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_ne_zero := natCast_ne_zero
 
 @[deprecated Nat.cast_pos' (since := "2024-10-17")]
 theorem natCast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_pos := natCast_pos
-
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
   rcases le_total m n with h | h
-  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (Nat.cast_le.2 h)]
-    rfl
-  · apply (add_left_cancel n).1
-    rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (Nat.cast_le.2 h)]
-
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_sub := natCast_sub
+  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (Nat.cast_le.2 h), Nat.cast_zero]
+  · rw [← add_left_cancel_iff (a := ↑n), ← Nat.cast_add, add_tsub_cancel_of_le h,
+      Ordinal.add_sub_cancel_of_le (Nat.cast_le.2 h)]
 
 @[simp, norm_cast]
 theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
@@ -2307,29 +2291,19 @@ theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
         ← Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
       apply Nat.lt_succ_self
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_div := natCast_div
-
 @[simp, norm_cast]
 theorem natCast_mod (m n : ℕ) : ((m % n : ℕ) : Ordinal) = m % n := by
-  rw [← add_left_cancel, div_add_mod, ← natCast_div, ← natCast_mul, ← Nat.cast_add,
+  rw [← add_left_cancel_iff, div_add_mod, ← natCast_div, ← natCast_mul, ← Nat.cast_add,
     Nat.div_add_mod]
-
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_mod := natCast_mod
 
 @[simp]
 theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
   | 0 => by simp
   | n + 1 => by simp [lift_natCast n]
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias lift_nat_cast := lift_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
 /-! ### Properties of ω -/
@@ -2350,6 +2324,11 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
+
+theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · exact Or.inl <| lt_omega0.1 ho
+  · exact Or.inr ho
 
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
@@ -2389,14 +2368,6 @@ alias omega_le := omega0_le
 @[simp]
 theorem iSup_natCast : iSup Nat.cast = ω :=
   (Ordinal.iSup_le fun n => (nat_lt_omega0 n).le).antisymm <| omega0_le.2 <| Ordinal.le_iSup _
-
-set_option linter.deprecated false in
-@[deprecated iSup_natCast (since := "2024-04-17")]
-theorem sup_natCast : sup Nat.cast = ω :=
-  iSup_natCast
-
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias sup_nat_cast := sup_natCast
 
 theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
   | 0 => h.pos
