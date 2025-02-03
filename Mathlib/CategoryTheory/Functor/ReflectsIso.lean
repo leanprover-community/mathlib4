@@ -39,8 +39,6 @@ class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   /-- For any `f`, if `F.map f` is an iso, then so was `f`-/
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
 
-@[deprecated (since := "2024-04-06")] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
-
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
     [F.ReflectsIsomorphisms] : IsIso f :=

@@ -154,7 +154,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
   rw [mul_comm, ← ENNReal.le_div_iff_mul_le] at this
   · refine (lt_of_le_of_lt this (ENNReal.div_lt_top ?_ ?_)).ne
     · have hR' : ∀ n, ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ R + ‖a‖₊ * μ Set.univ := by
-        simp_rw [eLpNorm_one_eq_lintegral_nnnorm] at hbdd
+        simp_rw [eLpNorm_one_eq_lintegral_enorm] at hbdd
         intro n
         refine (lintegral_mono ?_ : ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ ∫⁻ ω, ‖f n ω‖₊ + ‖a‖₊ ∂μ).trans ?_
         · intro ω
@@ -215,7 +215,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
     simp_rw [g', dif_pos hω]
     exact hω.choose_spec
-  have hg'm : @AEStronglyMeasurable _ _ _ (⨆ n, ℱ n) g' (μ.trim hle) :=
+  have hg'm : AEStronglyMeasurable[⨆ n, ℱ n] g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
       (fun n => ((hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩ : ℱ n ≤ ⨆ n, ℱ n)
         le_rfl).aemeasurable) hg').aestronglyMeasurable
@@ -314,9 +314,6 @@ theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ
     (memℒp_limitProcess_of_eLpNorm_bdd hmeas hR) hunif.2.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 
-@[deprecated (since := "2024-07-27")]
-alias Submartingale.tendsto_snorm_one_limitProcess := Submartingale.tendsto_eLpNorm_one_limitProcess
-
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) :=
@@ -342,12 +339,6 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
 
 @[deprecated (since := "2025-01-21")]
 alias Martingale.eq_condexp_of_tendsto_eLpNorm := Martingale.eq_condExp_of_tendsto_eLpNorm
-
-@[deprecated (since := "2024-07-27")]
-alias Martingale.eq_condExp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_eLpNorm
-
-@[deprecated (since := "2025-01-21")]
-alias Martingale.eq_condexp_of_tendsto_snorm := Martingale.eq_condExp_of_tendsto_snorm
 
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
 adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
@@ -388,8 +379,8 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     filter_upwards [(martingale_condExp g ℱ μ).ae_eq_condExp_limitProcess hunif n] with x hx _
     rw [hx]
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
-    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aeStronglyMeasurable'
-    stronglyMeasurable_limitProcess.aeStronglyMeasurable'
+    (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aestronglyMeasurable
+    stronglyMeasurable_limitProcess.aestronglyMeasurable
   have hpi : IsPiSystem {s | ∃ n, MeasurableSet[ℱ n] s} := by
     rw [Set.setOf_exists]
     exact isPiSystem_iUnion_of_monotone _ (fun n ↦ (ℱ n).isPiSystem_measurableSet) fun _ _ ↦ ℱ.mono
@@ -437,12 +428,6 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
 @[deprecated (since := "2025-01-21")]
 alias Integrable.tendsto_eLpNorm_condexp := Integrable.tendsto_eLpNorm_condExp
 
-@[deprecated (since := "2024-07-27")]
-alias Integrable.tendsto_snorm_condExp := Integrable.tendsto_eLpNorm_condExp
-
-@[deprecated (since := "2025-01-21")]
-alias Integrable.tendsto_snorm_condexp := Integrable.tendsto_snorm_condExp
-
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_ae_condExp (g : Ω → ℝ) :
@@ -470,11 +455,6 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
   simp only [hxeq, Pi.sub_apply]
 
 @[deprecated (since := "2025-01-21")] alias tendsto_eLpNorm_condexp := tendsto_eLpNorm_condExp
-
-@[deprecated (since := "2024-07-27")]
-alias tendsto_snorm_condExp := tendsto_eLpNorm_condExp
-
-@[deprecated (since := "2025-01-21")] alias tendsto_snorm_condexp := tendsto_snorm_condExp
 
 end L1Convergence
 

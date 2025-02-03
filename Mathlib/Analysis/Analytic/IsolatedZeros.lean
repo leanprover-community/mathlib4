@@ -241,6 +241,44 @@ lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
   simp [hf.order_eq_zero_iff]
   tauto
 
+/- Helper lemma for `AnalyticAt.order_mul` -/
+lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
+    (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
+    (hf.mul hg).order = ⊤ := by
+  rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at *
+  obtain ⟨t, h₁t, h₂t, h₃t⟩ := h'f
+  exact ⟨t, fun y hy ↦ (by simp [h₁t y hy]), h₂t, h₃t⟩
+
+/-- The order is additive when multiplying analytic functions. -/
+theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+    (hf.mul hg).order = hf.order + hg.order := by
+  -- Trivial cases: one of the functions vanishes around z₀
+  by_cases h₂f : hf.order = ⊤
+  · simp [hf.order_mul_of_order_eq_top hg h₂f, h₂f]
+  by_cases h₂g : hg.order = ⊤
+  · simp [mul_comm f g, hg.order_mul_of_order_eq_top hf h₂g, h₂g]
+  -- Non-trivial case: both functions do not vanish around z₀
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_neq_top_iff.1 h₂f
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_neq_top_iff.1 h₂g
+  rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.mul hg).order_eq_nat_iff]
+  use g₁ * g₂, by exact h₁g₁.mul h₁g₂
+  constructor
+  · simp
+    tauto
+  · obtain ⟨t, h₁t, h₂t, h₃t⟩ := eventually_nhds_iff.1 h₃g₁
+    obtain ⟨s, h₁s, h₂s, h₃s⟩ := eventually_nhds_iff.1 h₃g₂
+    exact eventually_nhds_iff.2
+      ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; ring), h₂t.inter h₂s, h₃t, h₃s⟩
+
+/-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
+theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
+    (hf.pow n).order = n • hf.order := by
+  induction n
+  case zero =>
+    simp [AnalyticAt.order_eq_zero_iff]
+  case succ n hn =>
+    simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
+
 end AnalyticAt
 
 namespace AnalyticOnNhd
@@ -306,6 +344,49 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 @[deprecated (since := "2024-09-26")]
 alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
+
+/-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
+theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
+    IsClopen { u : U | (h₁f u.1 u.2).order = ⊤ } := by
+  constructor
+  · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
+    intro z hz
+    rcases (h₁f z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    · -- Case: f is locally zero in a punctured neighborhood of z
+      rw [← (h₁f z.1 z.2).order_eq_top_iff] at h
+      tauto
+    · -- Case: f is locally nonzero in a punctured neighborhood of z
+      obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 (eventually_nhdsWithin_iff.1 h)
+      use Subtype.val ⁻¹' t'
+      constructor
+      · intro w hw
+        simp only [mem_compl_iff, mem_setOf_eq]
+        by_cases h₁w : w = z
+        · rwa [h₁w]
+        · rw [(h₁f _ w.2).order_eq_zero_iff.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
+          exact ENat.zero_ne_top
+      · exact ⟨isOpen_induced h₂t', h₃t'⟩
+  · apply isOpen_iff_forall_mem_open.mpr
+    intro z hz
+    conv =>
+      arg 1; intro; left; right; arg 1; intro
+      rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff]
+    simp only [Set.mem_setOf_eq] at hz
+    rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at hz
+    obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
+    use Subtype.val ⁻¹' t'
+    simp only [Set.mem_compl_iff, Set.mem_singleton_iff, isOpen_induced h₂t', Set.mem_preimage,
+      h₃t', and_self, and_true]
+    intro w hw
+    simp only [mem_setOf_eq]
+    -- Trivial case: w = z
+    by_cases h₁w : w = z
+    · rw [h₁w]
+      tauto
+    -- Nontrivial case: w ≠ z
+    use t' \ {z.1}, fun y h₁y ↦ h₁t' y h₁y.1, h₂t'.sdiff isClosed_singleton
+    apply (Set.mem_diff w).1
+    exact ⟨hw, Set.mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 section Mul
 /-!

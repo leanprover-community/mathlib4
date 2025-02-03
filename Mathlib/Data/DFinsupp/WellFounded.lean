@@ -212,9 +212,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot
-      · #adaptation_note /-- nightly-2024-03-16: simp was
-        simp (config := { unfoldPartialApp := true }) only [Function.swap] -/
-        simp only [Function.swap_def]
+      · simp +unfoldPartialApp only [Function.swap]
         exact IsWellFounded.wf
     refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange e fun _ ↦ rfl) this
     have := IsStrictOrder.swap (@WellOrderingRel ι)

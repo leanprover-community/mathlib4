@@ -241,7 +241,7 @@ theorem widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
     (h : ∀ j, π f j x = π f j y) : x = y := by
   apply Concrete.widePullback_ext _ _ _ _ h
   inhabit ι
-  simp only [← π_arrow f default, comp_apply, h]
+  simp only [← π_arrow f default, CategoryTheory.comp_apply, h]
 
 end WidePullback
 
@@ -256,7 +256,8 @@ theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
   apply Concrete.limit_ext
   rintro (a | b)
   · apply h
-  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), comp_apply, comp_apply]
+  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), CategoryTheory.comp_apply,
+      CategoryTheory.comp_apply]
     simp [h]
 
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
@@ -337,7 +338,7 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
   rcases Concrete.widePushout_exists_rep f x with (⟨y, rfl⟩ | ⟨i, y, rfl⟩)
   · inhabit α
     use default, f _ y
-    simp only [← arrow_ι _ default, comp_apply]
+    simp only [← arrow_ι _ default, CategoryTheory.comp_apply]
   · use i, y
 
 end WidePushout
