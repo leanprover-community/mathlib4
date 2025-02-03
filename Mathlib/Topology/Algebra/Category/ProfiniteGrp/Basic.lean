@@ -264,9 +264,9 @@ instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget₂ ProfiniteGrp Profinite).map f)
-    let e : X ≃ₜ* Y := {
-      CompHausLike.homeoOfIso i with
-      map_mul' := map_mul f.hom}
+    let e : X ≃ₜ* Y :=
+      { CompHausLike.homeoOfIso i with
+          map_mul' := map_mul f.hom }
     exact (ContinuousMulEquiv.toProfiniteGrpIso e).isIso_hom
 
 instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
