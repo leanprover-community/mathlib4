@@ -246,11 +246,29 @@ lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
 section IndepFun
 
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
+theorem Kernel.IndepFun.exp_mul
+    {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {κ : Kernel Ω' Ω}
+    {X Y : Ω → ℝ} (h_indep : IndepFun X Y κ ν) (s t : ℝ) :
+    IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) κ ν := by
+  have h_meas : ∀ t, Measurable fun x => exp (t * x) := fun t => (measurable_id'.const_mul t).exp
+  change IndepFun ((fun x => exp (s * x)) ∘ X) ((fun x => exp (t * x)) ∘ Y) κ ν
+  exact IndepFun.comp h_indep (h_meas s) (h_meas t)
+
+/-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
     IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
   have h_meas : ∀ t, Measurable fun x => exp (t * x) := fun t => (measurable_id'.const_mul t).exp
   change IndepFun ((fun x => exp (s * x)) ∘ X) ((fun x => exp (t * x)) ∘ Y) μ
   exact IndepFun.comp h_indep (h_meas s) (h_meas t)
+
+theorem Kernel.IndepFun.mgf_add
+    {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {κ : Kernel Ω' Ω}
+    {X Y : Ω → ℝ} (h_indep : IndepFun X Y κ ν)
+    (hX : ∃ expX', StronglyMeasurable expX' ∧ ∀ᵐ ω' ∂ν, (fun ω ↦ exp (t * X ω)) =ᵐ[κ ω'] expX')
+    (hY : ∃ expY', StronglyMeasurable expY' ∧ ∀ᵐ ω' ∂ν, (fun ω ↦ exp (t * Y ω)) =ᵐ[κ ω'] expY') :
+    ∀ᵐ ω' ∂ν, mgf (X + Y) (κ ω') t = mgf X (κ ω') t * mgf Y (κ ω') t := by
+  simp_rw [mgf, Pi.add_apply, mul_add, exp_add]
+  exact (h_indep.exp_mul t t).integral_mul hX hY
 
 theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
     (hX : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ)
@@ -300,15 +318,15 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
 theorem Kernel.IndepFun.integrable_exp_mul_add
     {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {κ : Kernel Ω' Ω}
     {X Y : Ω → ℝ} (h_indep : IndepFun X Y κ ν)
-    (h_int_X : (∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, (fun ω => exp (t * X ω)) =ᵐ[κ ω'] X')
-      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω => exp (t * X ω)) (κ ω'))
-    (h_int_Y : (∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, (fun ω => exp (t * Y ω)) =ᵐ[κ ω'] Y')
-      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω => exp (t * Y ω)) (κ ω')) :
+    (h_int_X : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, (fun ω ↦ exp (t * X ω)) =ᵐ[κ ω'] X')
+    (h_int_Y : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, (fun ω ↦ exp (t * Y ω)) =ᵐ[κ ω'] Y') :
     (∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, (fun ω => exp (t * (X + Y) ω)) =ᵐ[κ ω'] f)
-      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω => exp (t * (X + Y) ω)) (κ ω') := by
+      ∧ ∀ᵐ ω' ∂ν, Integrable (fun ω ↦ exp (t * X ω)) (κ ω')
+        → Integrable (fun ω ↦ exp (t * Y ω)) (κ ω')
+        → Integrable (fun ω ↦ exp (t * (X + Y) ω)) (κ ω') := by
   simp_rw [Pi.add_apply, mul_add, exp_add]
   refine Kernel.IndepFun.integrable_mul ?_ h_int_X h_int_Y
-  refine h_indep.comp (φ := fun x ↦ exp (t * x)) (ψ := fun x ↦ exp ( t * x)) (by fun_prop)
+  refine h_indep.comp (φ := fun x ↦ exp (t * x)) (ψ := fun x ↦ exp (t * x)) (by fun_prop)
     (by fun_prop)
 
 theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)

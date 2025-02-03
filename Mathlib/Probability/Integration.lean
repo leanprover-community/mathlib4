@@ -208,16 +208,14 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq �
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem Kernel.IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y κ ν)
-    (hX : (∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
-      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral X (κ ω'))
-    (hY : (∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y')
-      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral Y (κ ω')) :
+    (hX : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hY : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
     (∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, X * Y =ᵐ[κ ω'] f)
-      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (X * Y) (κ ω') := by
+      ∧ ∀ᵐ ω' ∂ν, Integrable X (κ ω') → Integrable Y (κ ω') → Integrable (X * Y) (κ ω') := by
   have hXY' : IndepFun (fun a => ‖X a‖ₑ) (fun a => ‖Y a‖ₑ) κ ν :=
     hXY.comp measurable_enorm measurable_enorm
-  obtain ⟨X', hX', hXX'⟩ := hX.1
-  obtain ⟨Y', hY', hYY'⟩ := hY.1
+  obtain ⟨X', hX', hXX'⟩ := hX
+  obtain ⟨Y', hY', hYY'⟩ := hY
   have h_mul := lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' ?_ ?_ hXY'
   rotate_left
   · refine ⟨fun a => ‖X' a‖ₑ, ?_, ?_⟩
@@ -225,27 +223,72 @@ theorem Kernel.IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : 
       fun_prop
     · filter_upwards [hXX'] with ω' hω'
       filter_upwards [hω'] with ω hω
-      rw [← hω]
+      rw [hω]
   · refine ⟨fun a => ‖Y' a‖ₑ, ?_, ?_⟩
     · have := hY'.measurable
       fun_prop
     · filter_upwards [hYY'] with ω' hω'
       filter_upwards [hω'] with ω hω
-      rw [← hω]
+      rw [hω]
   refine ⟨⟨X' * Y', hX'.mul hY', ?_⟩, ?_⟩
   · filter_upwards [hXX', hYY'] with ω' hX' hY' using hX'.mul hY'
-  filter_upwards [h_mul, hX.2, hY.2] with ω' hmul hX hY
+  filter_upwards [h_mul, hXX', hYY'] with ω' hmul hXX' hYY' hX_int hY_int
   simp only [Pi.mul_apply] at hmul
-  simp_rw [hasFiniteIntegral_iff_enorm, Pi.mul_apply, enorm_mul, hmul]
-  exact ENNReal.mul_lt_top hX hY
+  refine ⟨?_, ?_⟩
+  · refine ⟨X' * Y', hX'.mul hY', ?_⟩
+    filter_upwards [hXX', hYY'] with ω hXX' hYY'
+    simp [hXX', hYY']
+  · simp_rw [hasFiniteIntegral_iff_enorm, Pi.mul_apply, enorm_mul, hmul]
+    exact ENNReal.mul_lt_top hX_int.2 hY_int.2
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : Integrable (X * Y) μ := by
   have h := Kernel.IndepFun.integrable_mul hXY ?_ ?_
-  all_goals simp_all only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
-  exacts [h, hX, hY]
+  all_goals simp_all only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure, forall_const]
+  exacts [hX.1, hY.1]
+
+theorem Kernel.IndepFun.integrable_left_of_integrable_mul
+    {β : Type*} [MeasurableSpace β] {X Y : Ω → β} [NormedDivisionRing β] [BorelSpace β]
+    (hXY : IndepFun X Y κ ν)
+    (hX : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hY : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
+    ∀ᵐ ω' ∂ν, Integrable (X * Y) (κ ω') → ¬Y =ᵐ[κ ω'] 0 → Integrable X (κ ω') := by
+  let ⟨X', hX', hXX'⟩ := hX
+  let ⟨Y', hY', hYY'⟩ := hY
+  have J : IndepFun (‖X ·‖ₑ) (‖Y ·‖ₑ) κ ν := hXY.comp measurable_enorm measurable_enorm
+  have h_ind := Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' ?_ ?_ J
+  rotate_left
+  · refine ⟨fun ω ↦ ‖X' ω‖ₑ, ?_, ?_⟩
+    · have := hX'.measurable
+      fun_prop
+    · filter_upwards [hXX'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [hω]
+  · refine ⟨fun ω ↦ ‖Y' ω‖ₑ, ?_, ?_⟩
+    · have := hY'.measurable
+      fun_prop
+    · filter_upwards [hYY'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [hω]
+  filter_upwards [hXX', hYY', h_ind] with ω' hXX' hYY' h_ind hXY_int h'Y
+  refine ⟨⟨X', hX', hXX'⟩, ?_⟩
+  have I : (∫⁻ ω, ‖Y ω‖ₑ ∂(κ ω')) ≠ 0 := fun H ↦ by
+    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[κ ω'] 0 := (lintegral_eq_zero_iff' ?_).1 H
+    · apply h'Y
+      filter_upwards [I] with ω hω
+      simpa using hω
+    · refine ⟨fun ω ↦ ‖Y' ω‖ₑ, ?_, ?_⟩
+      · have := hY'.measurable
+        fun_prop
+      · filter_upwards [hYY'] with ω hω
+        rw [hω]
+  refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
+  have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂(κ ω') < ∞ := hXY_int.2
+  simp only [enorm_mul, ENNReal.coe_mul] at A
+  rw [h_ind, H] at A
+  simp only [ENNReal.top_mul I, lt_self_iff_false] at A
 
 /-- If the product of two independent real-valued random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/
@@ -253,18 +296,51 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'Y : ¬Y =ᵐ[μ] 0) :
     Integrable X μ := by
-  refine ⟨hX, ?_⟩
-  have I : (∫⁻ ω, ‖Y ω‖ₑ ∂μ) ≠ 0 := fun H ↦ by
-    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.enorm).1 H
-    apply h'Y
-    filter_upwards [I] with ω hω
-    simpa using hω
+  have h := Kernel.IndepFun.integrable_left_of_integrable_mul hXY ?_ ?_
+  all_goals simp_all only [Kernel.const_apply, not_false_eq_true, forall_const, ae_dirac_eq,
+    Filter.eventually_pure]
+  exacts [hX, hY]
+
+theorem Kernel.IndepFun.integrable_right_of_integrable_mul
+    {β : Type*} [MeasurableSpace β] {X Y : Ω → β} [NormedDivisionRing β] [BorelSpace β]
+    (hXY : IndepFun X Y κ ν)
+    (hX : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hY : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
+    ∀ᵐ ω' ∂ν, Integrable (X * Y) (κ ω') → ¬X =ᵐ[κ ω'] 0 → Integrable Y (κ ω') := by
+  let ⟨X', hX', hXX'⟩ := hX
+  let ⟨Y', hY', hYY'⟩ := hY
+  have J : IndepFun (‖X ·‖ₑ) (‖Y ·‖ₑ) κ ν := hXY.comp measurable_enorm measurable_enorm
+  have h_ind := Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' ?_ ?_ J
+  rotate_left
+  · refine ⟨fun ω ↦ ‖X' ω‖ₑ, ?_, ?_⟩
+    · have := hX'.measurable
+      fun_prop
+    · filter_upwards [hXX'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [hω]
+  · refine ⟨fun ω ↦ ‖Y' ω‖ₑ, ?_, ?_⟩
+    · have := hY'.measurable
+      fun_prop
+    · filter_upwards [hYY'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [hω]
+  filter_upwards [hXX', hYY', h_ind] with ω' hXX' hYY' h_ind hXY_int h'X
+  refine ⟨⟨Y', hY', hYY'⟩, ?_⟩
+  have I : (∫⁻ ω, ‖X ω‖ₑ ∂(κ ω')) ≠ 0 := fun H ↦ by
+    have I : (fun ω => ‖X ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[κ ω'] 0 := (lintegral_eq_zero_iff' ?_).1 H
+    · apply h'X
+      filter_upwards [I] with ω hω
+      simpa using hω
+    · refine ⟨fun ω ↦ ‖X' ω‖ₑ, ?_, ?_⟩
+      · have := hX'.measurable
+        fun_prop
+      · filter_upwards [hXX'] with ω hω
+        rw [hω]
   refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
-  have J : IndepFun (‖X ·‖ₑ) (‖Y ·‖ₑ) μ := hXY.comp measurable_enorm measurable_enorm
-  have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
+  have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂(κ ω') < ∞ := hXY_int.2
   simp only [enorm_mul, ENNReal.coe_mul] at A
-  rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
-  simp only [ENNReal.top_mul I, lt_self_iff_false] at A
+  rw [h_ind, H] at A
+  simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
 /-- If the product of two independent real-valued random variables is integrable and the
 first one is not almost everywhere zero, then the second one is integrable. -/
@@ -272,19 +348,46 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'X : ¬X =ᵐ[μ] 0) :
     Integrable Y μ := by
-  refine ⟨hY, ?_⟩
-  have I : ∫⁻ ω, ‖X ω‖ₑ ∂μ ≠ 0 := fun H ↦ by
-    have I : ((‖X ·‖ₑ) : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hX.enorm).1 H
-    apply h'X
-    filter_upwards [I] with ω hω
-    simpa using hω
-  refine lt_top_iff_ne_top.2 fun H => ?_
-  have J : IndepFun (fun ω => ‖X ω‖ₑ : Ω → ℝ≥0∞) (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) μ :=
-    IndepFun.comp hXY measurable_enorm measurable_enorm
-  have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
-  simp only [enorm_mul, ENNReal.coe_mul] at A
-  rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
-  simp only [ENNReal.mul_top I, lt_self_iff_false] at A
+  have h := Kernel.IndepFun.integrable_right_of_integrable_mul hXY ?_ ?_
+  all_goals simp_all only [Kernel.const_apply, not_false_eq_true, forall_const, ae_dirac_eq,
+    Filter.eventually_pure]
+  exacts [hX, hY]
+
+theorem Kernel.IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y κ ν) (hXp : 0 ≤ X) (hYp : 0 ≤ Y)
+    (hXm : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hYm : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
+    ∀ᵐ ω' ∂ν , integral (κ ω') (X * Y) = integral (κ ω') X * integral (κ ω') Y := by
+  obtain ⟨X', hX', hXX'⟩ := hXm
+  obtain ⟨Y', hY', hYY'⟩ := hYm
+  have h_ind_ofReal : IndepFun (fun a ↦ ENNReal.ofReal (X a)) (fun a ↦ ENNReal.ofReal (Y a)) κ ν :=
+    hXY.comp ENNReal.measurable_ofReal ENNReal.measurable_ofReal
+  have h_mul := lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' ?_ ?_ h_ind_ofReal
+  rotate_left
+  · refine ⟨fun a => ENNReal.ofReal (X' a), ?_, ?_⟩
+    · have := hX'.measurable
+      fun_prop
+    · filter_upwards [hXX'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [hω]
+  · refine ⟨fun a => ENNReal.ofReal (Y' a), ?_, ?_⟩
+    · have := hY'.measurable
+      fun_prop
+    · filter_upwards [hYY'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [hω]
+  filter_upwards [h_mul, hXX', hYY'] with ω' h_mul hXX' hYY'
+  rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun ω ↦ ?_),
+    integral_eq_lintegral_of_nonneg_ae (ae_of_all _ hXp),
+    integral_eq_lintegral_of_nonneg_ae (ae_of_all _ hYp)]
+  rotate_left
+  · exact ⟨Y', hY', hYY'⟩
+  · exact ⟨X', hX', hXX'⟩
+  · refine ⟨X' * Y', hX'.mul hY', ?_⟩
+    filter_upwards [hXX', hYY'] with ω hX hY
+    simp [hX, hY]
+  · simpa using mul_nonneg (hXp ω) (hYp ω)
+  simp only [Pi.mul_apply, ENNReal.ofReal_mul (hXp _), ← ENNReal.toReal_mul]
+  congr
 
 /-- The (Bochner) integral of the product of two independent, nonnegative random
   variables is the product of their integrals. The proof is just plumbing around
@@ -292,32 +395,21 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
 theorem IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y μ) (hXp : 0 ≤ X) (hYp : 0 ≤ Y)
     (hXm : AEMeasurable X μ) (hYm : AEMeasurable Y μ) :
     integral μ (X * Y) = integral μ X * integral μ Y := by
-  have h1 : AEMeasurable (fun a => ENNReal.ofReal (X a)) μ :=
-    ENNReal.measurable_ofReal.comp_aemeasurable hXm
-  have h2 : AEMeasurable (fun a => ENNReal.ofReal (Y a)) μ :=
-    ENNReal.measurable_ofReal.comp_aemeasurable hYm
-  have h3 : AEMeasurable (X * Y) μ := hXm.mul hYm
-  have h4 : 0 ≤ᵐ[μ] X * Y := ae_of_all _ fun ω => mul_nonneg (hXp ω) (hYp ω)
-  rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ hXp) hXm.aestronglyMeasurable,
-    integral_eq_lintegral_of_nonneg_ae (ae_of_all _ hYp) hYm.aestronglyMeasurable,
-    integral_eq_lintegral_of_nonneg_ae h4 h3.aestronglyMeasurable]
-  simp_rw [← ENNReal.toReal_mul, Pi.mul_apply, ENNReal.ofReal_mul (hXp _)]
-  congr
-  apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h1 h2
-  exact hXY.comp ENNReal.measurable_ofReal ENNReal.measurable_ofReal
+  have h := Kernel.IndepFun.integral_mul_of_nonneg hXY ?_ ?_ ?_ ?_
+  all_goals simp_all only [Kernel.const_apply, not_false_eq_true, ae_dirac_eq,
+    Filter.eventually_pure, forall_const]
+  exacts [hXm.aestronglyMeasurable, hYm.aestronglyMeasurable]
 
-/-- The (Bochner) integral of the product of two independent, integrable random
-  variables is the product of their integrals. The proof is pedestrian decomposition
-  into their positive and negative parts in order to apply `IndepFun.integral_mul_of_nonneg`
-  four times. -/
-theorem IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integrable X μ)
-    (hY : Integrable Y μ) : integral μ (X * Y) = integral μ X * integral μ Y := by
+theorem Kernel.IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y κ ν)
+    (hX : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hY : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
+    ∀ᵐ ω' ∂ν, Integrable X (κ ω') → Integrable Y (κ ω') →
+      integral (κ ω') (X * Y) = integral (κ ω') X * integral (κ ω') Y := by
   let pos : ℝ → ℝ := fun x => max x 0
   let neg : ℝ → ℝ := fun x => max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
   have negm : Measurable neg := measurable_id'.neg.max measurable_const
   let Xp := pos ∘ X
-  -- `X⁺` would look better but it makes `simp_rw` below fail
   let Xm := neg ∘ X
   let Yp := pos ∘ Y
   let Ym := neg ∘ Y
@@ -327,57 +419,117 @@ theorem IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integr
   have hp2 : 0 ≤ Xp := fun ω => le_max_right _ _
   have hp3 : 0 ≤ Ym := fun ω => le_max_right _ _
   have hp4 : 0 ≤ Yp := fun ω => le_max_right _ _
-  have hm1 : AEMeasurable Xm μ := hX.1.aemeasurable.neg.max aemeasurable_const
-  have hm2 : AEMeasurable Xp μ := hX.1.aemeasurable.max aemeasurable_const
-  have hm3 : AEMeasurable Ym μ := hY.1.aemeasurable.neg.max aemeasurable_const
-  have hm4 : AEMeasurable Yp μ := hY.1.aemeasurable.max aemeasurable_const
-  have hv1 : Integrable Xm μ := hX.neg_part
-  have hv2 : Integrable Xp μ := hX.pos_part
-  have hv3 : Integrable Ym μ := hY.neg_part
-  have hv4 : Integrable Yp μ := hY.pos_part
-  have hi1 : IndepFun Xm Ym μ := hXY.comp negm negm
-  have hi2 : IndepFun Xp Ym μ := hXY.comp posm negm
-  have hi3 : IndepFun Xm Yp μ := hXY.comp negm posm
-  have hi4 : IndepFun Xp Yp μ := hXY.comp posm posm
-  have hl1 : Integrable (Xm * Ym) μ := hi1.integrable_mul hv1 hv3
-  have hl2 : Integrable (Xp * Ym) μ := hi2.integrable_mul hv2 hv3
-  have hl3 : Integrable (Xm * Yp) μ := hi3.integrable_mul hv1 hv4
-  have hl4 : Integrable (Xp * Yp) μ := hi4.integrable_mul hv2 hv4
-  have hl5 : Integrable (Xp * Yp - Xm * Yp) μ := hl4.sub hl3
-  have hl6 : Integrable (Xp * Ym - Xm * Ym) μ := hl2.sub hl1
-  rw [hXpm, hYpm, mul_sub, sub_mul, sub_mul]
-  rw [integral_sub' hl5 hl6, integral_sub' hl4 hl3, integral_sub' hl2 hl1, integral_sub' hv2 hv1,
-    integral_sub' hv4 hv3, hi1.integral_mul_of_nonneg hp1 hp3 hm1 hm3,
-    hi2.integral_mul_of_nonneg hp2 hp3 hm2 hm3, hi3.integral_mul_of_nonneg hp1 hp4 hm1 hm4,
-    hi4.integral_mul_of_nonneg hp2 hp4 hm2 hm4]
+  obtain ⟨X', hX', hXX'⟩ := hX
+  obtain ⟨Y', hY', hYY'⟩ := hY
+  have hm1 : ∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, Xm =ᵐ[κ ω'] f := by
+    refine ⟨neg ∘ X', (negm.comp hX'.measurable).stronglyMeasurable, ?_⟩
+    filter_upwards [hXX'] with ω' hω'
+    filter_upwards [hω'] with ω hω
+    simp [hω, Xm]
+  have hm2 : ∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, Xp =ᵐ[κ ω'] f := by
+    refine ⟨pos ∘ X', (posm.comp hX'.measurable).stronglyMeasurable, ?_⟩
+    filter_upwards [hXX'] with ω' hω'
+    filter_upwards [hω'] with ω hω
+    simp [hω, Xp]
+  have hm3 : ∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, Ym =ᵐ[κ ω'] f := by
+    refine ⟨neg ∘ Y', (negm.comp hY'.measurable).stronglyMeasurable, ?_⟩
+    filter_upwards [hYY'] with ω' hω'
+    filter_upwards [hω'] with ω hω
+    simp [hω, Ym]
+  have hm4 : ∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, Yp =ᵐ[κ ω'] f := by
+    refine ⟨pos ∘ Y', (posm.comp hY'.measurable).stronglyMeasurable, ?_⟩
+    filter_upwards [hYY'] with ω' hω'
+    filter_upwards [hω'] with ω hω
+    simp [hω, Yp]
+  have hi1 : IndepFun Xm Ym κ ν := hXY.comp negm negm
+  have hi2 : IndepFun Xp Ym κ ν := hXY.comp posm negm
+  have hi3 : IndepFun Xm Yp κ ν := hXY.comp negm posm
+  have hi4 : IndepFun Xp Yp κ ν := hXY.comp posm posm
+  have hl1' : ∀ᵐ ω' ∂ν, Integrable Xm (κ ω') → Integrable Ym (κ ω') → Integrable (Xm * Ym) (κ ω') :=
+    (hi1.integrable_mul hm1 hm3).2
+  have hl2' : ∀ᵐ ω' ∂ν, Integrable Xp (κ ω') → Integrable Ym (κ ω') → Integrable (Xp * Ym) (κ ω') :=
+    (hi2.integrable_mul hm2 hm3).2
+  have hl3' : ∀ᵐ ω' ∂ν, Integrable Xm (κ ω') → Integrable Yp (κ ω') → Integrable (Xm * Yp) (κ ω') :=
+    (hi3.integrable_mul hm1 hm4).2
+  have hl4' : ∀ᵐ ω' ∂ν, Integrable Xp (κ ω') → Integrable Yp (κ ω') → Integrable (Xp * Yp) (κ ω') :=
+    (hi4.integrable_mul hm2 hm4).2
+  have h_mul_1 := hi1.integral_mul_of_nonneg hp1 hp3 hm1 hm3
+  have h_mul_2 := hi2.integral_mul_of_nonneg hp2 hp3 hm2 hm3
+  have h_mul_3 := hi3.integral_mul_of_nonneg hp1 hp4 hm1 hm4
+  have h_mul_4 := hi4.integral_mul_of_nonneg hp2 hp4 hm2 hm4
+  filter_upwards [h_mul_1, h_mul_2, h_mul_3, h_mul_4, hl1', hl2', hl3', hl4']
+    with ω' h1 h2 h3 h4 hl1' hl2' hl3' hl4' hX_int hY_int
+  have hv1 : Integrable Xm (κ ω') := hX_int.neg_part
+  have hv2 : Integrable Xp (κ ω') := hX_int.pos_part
+  have hv3 : Integrable Ym (κ ω') := hY_int.neg_part
+  have hv4 : Integrable Yp (κ ω') := hY_int.pos_part
+  have hl1 : Integrable (Xm * Ym) (κ ω') := hl1' hv1 hv3
+  have hl2 : Integrable (Xp * Ym) (κ ω') := hl2' hv2 hv3
+  have hl3 : Integrable (Xm * Yp) (κ ω') := hl3' hv1 hv4
+  have hl4 : Integrable (Xp * Yp) (κ ω') := hl4' hv2 hv4
+  have hl5 : Integrable (Xp * Yp - Xm * Yp) (κ ω') := hl4.sub hl3
+  have hl6 : Integrable (Xp * Ym - Xm * Ym) (κ ω') := hl2.sub hl1
+  rw [hXpm, hYpm, mul_sub, sub_mul, sub_mul, integral_sub' hl5 hl6, integral_sub' hl4 hl3,
+    integral_sub' hl2 hl1, integral_sub' hv2 hv1, integral_sub' hv4 hv3, h1, h2, h3, h4]
   ring
+
+/-- The (Bochner) integral of the product of two independent, integrable random
+  variables is the product of their integrals. The proof is pedestrian decomposition
+  into their positive and negative parts in order to apply `IndepFun.integral_mul_of_nonneg`
+  four times. -/
+theorem IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integrable X μ)
+    (hY : Integrable Y μ) : integral μ (X * Y) = integral μ X * integral μ Y := by
+  have h := Kernel.IndepFun.integral_mul_of_integrable hXY ?_ ?_
+  all_goals simp_all only [Kernel.const_apply, not_false_eq_true, ae_dirac_eq,
+    Filter.eventually_pure, forall_const]
+  exacts [hX.1, hY.1]
+
+theorem Kernel.IndepFun.integral_mul (hXY : IndepFun X Y κ ν)
+    (hX : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hY : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
+    ∀ᵐ ω' ∂ν, integral (κ ω') (X * Y) = integral (κ ω') X * integral (κ ω') Y := by
+  have h_left := hXY.integrable_left_of_integrable_mul hX hY
+  have h_right := hXY.integrable_right_of_integrable_mul hX hY
+  have h_mul := hXY.integral_mul_of_integrable hX hY
+  have h_int := hXY.integrable_mul hX hY
+  filter_upwards [h_left, h_right, h_mul, h_int.2] with ω' h_left h_right h_mul h_int
+  by_cases h'X : X =ᵐ[κ ω'] 0
+  · have h' : X * Y =ᵐ[κ ω'] 0 := by
+      filter_upwards [h'X] with ω hω
+      simp [hω]
+    simp only [integral_congr_ae h'X, integral_congr_ae h', Pi.zero_apply, integral_const,
+      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
+  by_cases h'Y : Y =ᵐ[κ ω'] 0
+  · have h' : X * Y =ᵐ[κ ω'] 0 := by
+      filter_upwards [h'Y] with ω hω
+      simp [hω]
+    simp only [integral_congr_ae h'Y, integral_congr_ae h', Pi.zero_apply, integral_const,
+      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
+  by_cases h : Integrable (X * Y) (κ ω')
+  · have HX : Integrable X (κ ω') := h_left h h'Y
+    have HY : Integrable Y (κ ω') := h_right h h'X
+    exact h_mul HX HY
+  · rw [integral_undef h]
+    have I : ¬(Integrable X (κ ω') ∧ Integrable Y (κ ω')) := by
+      rintro ⟨HX, HY⟩
+      exact h (h_int HX HY)
+    rw [not_and_or] at I
+    cases' I with I I <;> simp [integral_undef I]
 
 /-- The (Bochner) integral of the product of two independent random
   variables is the product of their integrals. -/
 theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : integral μ (X * Y) = integral μ X * integral μ Y := by
-  by_cases h'X : X =ᵐ[μ] 0
-  · have h' : X * Y =ᵐ[μ] 0 := by
-      filter_upwards [h'X] with ω hω
-      simp [hω]
-    simp only [integral_congr_ae h'X, integral_congr_ae h', Pi.zero_apply, integral_const,
-      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
-  by_cases h'Y : Y =ᵐ[μ] 0
-  · have h' : X * Y =ᵐ[μ] 0 := by
-      filter_upwards [h'Y] with ω hω
-      simp [hω]
-    simp only [integral_congr_ae h'Y, integral_congr_ae h', Pi.zero_apply, integral_const,
-      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
-  by_cases h : Integrable (X * Y) μ
-  · have HX : Integrable X μ := hXY.integrable_left_of_integrable_mul h hX hY h'Y
-    have HY : Integrable Y μ := hXY.integrable_right_of_integrable_mul h hX hY h'X
-    exact hXY.integral_mul_of_integrable HX HY
-  · rw [integral_undef h]
-    have I : ¬(Integrable X μ ∧ Integrable Y μ) := by
-      rintro ⟨HX, HY⟩
-      exact h (hXY.integrable_mul HX HY)
-    rw [not_and_or] at I
-    cases' I with I I <;> simp [integral_undef I]
+  have h := Kernel.IndepFun.integral_mul hXY ?_ ?_
+  all_goals simp_all only [Kernel.const_apply, not_false_eq_true, ae_dirac_eq,
+    Filter.eventually_pure, forall_const]
+  exacts [hX, hY]
+
+theorem Kernel.IndepFun.integral_mul' (hXY : IndepFun X Y κ ν)
+    (hX : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (hY : ∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y') :
+    ∀ᵐ ω' ∂ν, (integral (κ ω') fun ω ↦ X ω * Y ω) = integral (κ ω') X * integral (κ ω') Y :=
+  hXY.integral_mul hX hY
 
 theorem IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) :

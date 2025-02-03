@@ -29,7 +29,7 @@ TODO: this def forces the mean to be 0.
 
 open MeasureTheory Real
 
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
@@ -79,20 +79,46 @@ lemma integrableExpSet_eq_univ (h : IsSubGaussianWith X c κ ν) :
   ext t
   simp [h_int t, integrableExpSet]
 
+lemma hasFiniteIntegral_exp_mul_of_int
+    (h_meas : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+    (h_int : ∀ n : ℤ, ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω ↦ exp (n * X ω)) (κ ω')) :
+    ∀ᵐ ω' ∂ν, ∀ t, HasFiniteIntegral (fun ω ↦ rexp (t * X ω)) (κ ω') := by
+  rw [← ae_all_iff] at h_int
+  obtain ⟨X', hX', hXX'⟩ := h_meas
+  filter_upwards [h_int, hXX'] with ω' h_int hXX' t
+  refine (integrable_exp_mul_of_le_of_le ?_ ?_ (Int.floor_le t) (Int.le_ceil t)).2
+  · refine ⟨⟨fun ω ↦ exp (⌊t⌋ * X' ω), ?_, ?_⟩, h_int _⟩
+    · exact continuous_exp.comp_stronglyMeasurable (hX'.const_mul _)
+    · filter_upwards [hXX'] with ω hω
+      rw [hω]
+  · refine ⟨⟨fun ω ↦ exp (⌈t⌉ * X' ω), ?_, ?_⟩, h_int _⟩
+    · exact continuous_exp.comp_stronglyMeasurable (hX'.const_mul _)
+    · filter_upwards [hXX'] with ω hω
+      rw [hω]
+
+lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    Continuous (fun t ↦ mgf X μ t) := by
+  sorry
+
+open Filter in
 def mkRat (h_meas : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
     (h_int : ∀ n : ℤ, ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω ↦ exp (n * X ω)) (κ ω'))
     (h_mgf : ∀ q : ℚ, ∀ᵐ ω' ∂ν, mgf X (κ ω') q ≤ exp (c * q ^ 2 / 2)) :
     Kernel.IsSubGaussianWith X c κ ν where
   aestronglyMeasurable := h_meas
-  hasFiniteIntegral_exp_mul := by
-    rw [← ae_all_iff] at h_int
-    filter_upwards [h_int] with ω' h_int t
-    refine (integrable_exp_mul_of_le_of_le ?_ ?_ (Int.floor_le t) (Int.le_ceil t)).2
-    · sorry
-    · sorry
+  hasFiniteIntegral_exp_mul := hasFiniteIntegral_exp_mul_of_int h_meas h_int
   mgf_le := by
     rw [← ae_all_iff] at h_mgf
-    sorry
+    let ⟨X', hX', hXX'⟩ := h_meas
+    filter_upwards [h_mgf, hasFiniteIntegral_exp_mul_of_int h_meas h_int, hXX']
+      with ω' h_mgf h_int hXX' t
+    refine Rat.denseRange_cast.induction_on t ?_ h_mgf
+    refine isClosed_le ?_ (by fun_prop)
+    refine continuous_mgf fun u ↦ ?_
+    refine ⟨⟨fun ω ↦ exp (u * X' ω), ?_, ?_⟩, h_int u⟩
+    · exact continuous_exp.comp_stronglyMeasurable (hX'.const_mul _)
+    · filter_upwards [hXX'] with ω hω
+      rw [hω]
 
 lemma cgf_le (h : IsSubGaussianWith X c κ ν) (t : ℝ) :
     ∀ᵐ ω' ∂ν, cgf X (κ ω') t ≤ c * t ^ 2 / 2 := by
@@ -144,46 +170,43 @@ section Indep
 
 lemma add_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : IsSubGaussianWith X cX κ ν)
     (hY : IsSubGaussianWith Y cY κ ν) (hindep : IndepFun X Y κ ν) :
-    IsSubGaussianWith (X + Y) (cX + cY) κ ν where
-  aestronglyMeasurable := by
+    IsSubGaussianWith (X + Y) (cX + cY) κ ν := by
+  obtain ⟨X', hX', hXX'⟩ := hX.aestronglyMeasurable
+  obtain ⟨Y', hY', hYY'⟩ := hY.aestronglyMeasurable
+  have h_expX (t : ℝ) : ∃ X', StronglyMeasurable X'
+      ∧ ∀ᵐ ω' ∂ν, (fun ω ↦ exp (t * X ω)) =ᶠ[ae (κ ω')] X' := by
     obtain ⟨X', hX', hXX'⟩ := hX.aestronglyMeasurable
+    refine ⟨fun ω ↦ exp (t * X' ω), continuous_exp.comp_stronglyMeasurable (hX'.const_mul _), ?_⟩
+    filter_upwards [hXX'] with ω' hω'
+    filter_upwards [hω'] with ω hω
+    rw [hω]
+  have h_expY (t : ℝ) : ∃ Y', StronglyMeasurable Y'
+      ∧ ∀ᵐ ω' ∂ν, (fun ω ↦ exp (t * Y ω)) =ᶠ[ae (κ ω')] Y' := by
     obtain ⟨Y', hY', hYY'⟩ := hY.aestronglyMeasurable
-    refine ⟨X' + Y', hX'.add hY', ?_⟩
+    refine ⟨fun ω ↦ exp (t * Y' ω), continuous_exp.comp_stronglyMeasurable (hY'.const_mul _), ?_⟩
+    filter_upwards [hYY'] with ω' hω'
+    filter_upwards [hω'] with ω hω
+    rw [hω]
+  refine mkRat ?_ ?_ ?_
+  · refine ⟨X' + Y', hX'.add hY', ?_⟩
     filter_upwards [hXX', hYY'] with ω hX hY
     exact hX.add hY
-  hasFiniteIntegral_exp_mul := by
-    suffices ∀ᵐ ω' ∂ν, ∀ (n : ℕ), HasFiniteIntegral (fun ω ↦ rexp (n * (X + Y) ω)) (κ ω') by
-      sorry
-    rw [ae_all_iff]
-    intro n
-    refine (hindep.integrable_exp_mul_add ⟨?_, ?_⟩ ⟨?_, ?_⟩).2
-    · obtain ⟨X', hX', hXX'⟩ := hX.aestronglyMeasurable
-      refine ⟨fun ω ↦ exp (n * X' ω), ?_, ?_⟩
-      · exact continuous_exp.comp_stronglyMeasurable (hX'.const_mul _)
-      · filter_upwards [hXX'] with ω' hω'
-        filter_upwards [hω'] with ω hω
-        rw [hω]
-    · filter_upwards [hX.hasFiniteIntegral_exp_mul] with ω hX
-      exact hX n
-    · obtain ⟨Y', hY', hYY'⟩ := hY.aestronglyMeasurable
-      refine ⟨fun ω ↦ exp (n * Y' ω), ?_, ?_⟩
-      · exact continuous_exp.comp_stronglyMeasurable (hY'.const_mul _)
-      · filter_upwards [hYY'] with ω' hω'
-        filter_upwards [hω'] with ω hω
-        rw [hω]
-    · filter_upwards [hY.hasFiniteIntegral_exp_mul] with ω hY
-      exact hY n
-  mgf_le := by
-    filter_upwards [hX.integrable_exp_mul, hY.integrable_exp_mul, hX.mgf_le, hY.mgf_le,
-      IndepFun.ae_indepFun hindep] with ω' hX_int hY_int hX hY hindep t
-    calc mgf (X + Y) (κ ω') t
-    _ = mgf X (κ ω') t * mgf Y (κ ω') t := by rw [hindep.mgf_add (hX_int t).1 (hY_int t).1]
-    _ ≤ exp (cX * t ^ 2 / 2) * exp (cY * t ^ 2 / 2) := by
+  · intro n
+    have h := hindep.integrable_exp_mul_add (h_expX n) (h_expY n)
+    filter_upwards [h.2, hX.integrable_exp_mul, hY.integrable_exp_mul] with ω' h hX hY
+    specialize h (hX n) (hY n)
+    exact h.2
+  · intro q
+    have h := hindep.mgf_add (h_expX q) (h_expY q)
+    filter_upwards [h, hX.mgf_le, hY.mgf_le] with ω' h hX hY
+    calc mgf (X + Y) (κ ω') q
+    _ = mgf X (κ ω') q * mgf Y (κ ω') q := by rw [h]
+    _ ≤ exp (cX * q ^ 2 / 2) * exp (cY * q ^ 2 / 2) := by
       gcongr
       · exact mgf_nonneg
-      · exact hX t
-      · exact hY t
-    _ = exp ((cX + cY) * t ^ 2 / 2) := by
+      · exact hX q
+      · exact hY q
+    _ = exp ((cX + cY) * q ^ 2 / 2) := by
       rw [← exp_add]
       congr
       ring
@@ -203,8 +226,23 @@ def IsSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) : Prop :=
 
 lemma isSubGaussianWith_iff_kernel :
   IsSubGaussianWith X c μ
-    ↔ Kernel.IsSubGaussianWith X c (Kernel.const Unit μ) (Measure.dirac ()) :=
-  ⟨fun ⟨h1, h2⟩ ↦ ⟨by simpa, by simpa⟩, fun ⟨h1, h2⟩ ↦ ⟨by simpa using h1, by simpa using h2⟩⟩
+    ↔ Kernel.IsSubGaussianWith X c (Kernel.const Unit μ) (Measure.dirac ()) := by
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨h1, h2, h3⟩ ↦ ?_⟩
+  · constructor
+    · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
+      exact (aemeasurable_of_aemeasurable_exp_mul one_ne_zero
+        (h1 1).1.aemeasurable).aestronglyMeasurable
+    · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
+      exact fun t ↦ (h1 t).2
+    · simpa
+  · constructor
+    · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure] at h1 h2
+      obtain ⟨X', hX', hXX'⟩ := h1
+      refine fun t ↦ ⟨⟨fun ω ↦ exp (t * X' ω),
+        continuous_exp.comp_stronglyMeasurable (hX'.const_mul t), ?_⟩, h2 t⟩
+      filter_upwards [hXX'] with ω hω
+      rw [hω]
+    · simpa using h3
 
 lemma isSubGaussian_iff_kernel :
   IsSubGaussian X μ ↔ Kernel.IsSubGaussian X (Kernel.const Unit μ) (Measure.dirac ()) := by
