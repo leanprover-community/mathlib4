@@ -233,13 +233,6 @@ lemma evalEval_polynomialY (x y : R) : W.polynomialY.evalEval x y = 2 * y + W.a�
 lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
   simp only [evalEval_polynomialY, zero_add, mul_zero]
 
-@[deprecated (since := "2024-06-19")] alias eval_polynomial := evalEval_polynomial
-@[deprecated (since := "2024-06-19")] alias eval_polynomial_zero := evalEval_polynomial_zero
-@[deprecated (since := "2024-06-19")] alias eval_polynomialX := evalEval_polynomialX
-@[deprecated (since := "2024-06-19")] alias eval_polynomialX_zero := evalEval_polynomialX_zero
-@[deprecated (since := "2024-06-19")] alias eval_polynomialY := evalEval_polynomialY
-@[deprecated (since := "2024-06-19")] alias eval_polynomialY_zero := evalEval_polynomialY_zero
-
 /-- The proposition that an affine point `(x, y)` in `W` is nonsingular. In other words, either
 `W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
 
