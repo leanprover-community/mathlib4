@@ -20,8 +20,7 @@ universe u
 open CategoryTheory
 
 /-- The category of finite distributive lattices with bounded lattice morphisms. -/
-structure FinBddDistLat where
-  toBddDistLat : BddDistLat
+structure FinBddDistLat extends BddDistLat where
   [isFintype : Fintype toBddDistLat]
 
 namespace FinBddDistLat
@@ -37,18 +36,14 @@ instance (X : FinBddDistLat) : BoundedOrder X :=
 
 attribute [instance] FinBddDistLat.isFintype
 
-/-- Construct a bundled `FinBddDistLat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
-def of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat :=
-  -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
-  -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨⟨{α := α}⟩⟩
+/-- Construct a bundled `FinBddDistLat` from a `Fintype` `BoundedOrder` `DistribLattice`. -/
+abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
+  carrier := α
 
-/-- Construct a bundled `FinBddDistLat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
-def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat :=
-  haveI := Fintype.toBoundedOrder α
-  -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
-  -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨⟨{α := α}⟩⟩
+/-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
+abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
+  carrier := α
+  isBoundedOrder := Fintype.toBoundedOrder α
 
 instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
@@ -56,15 +51,15 @@ instance : Inhabited FinBddDistLat :=
 instance largeCategory : LargeCategory FinBddDistLat :=
   InducedCategory.category toBddDistLat
 
-instance hasForget : HasForget FinBddDistLat :=
-  InducedCategory.hasForget toBddDistLat
+instance concreteCategory : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) :=
+  InducedCategory.concreteCategory toBddDistLat
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
   InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
   forget₂.obj X := FinPartOrd.of X
-  forget₂.map {X Y} f := (show BoundedLatticeHom X Y from f : X →o Y)
+  forget₂.map {X Y} f := PartOrd.ofHom (show BoundedLatticeHom X Y from f : X →o Y)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/

@@ -44,10 +44,9 @@ instance : CoeSort SemilatSupCat Type* :=
 attribute [instance] isSemilatticeSup isOrderBot
 
 /-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
-def of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
+abbrev of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
   ⟨α⟩
 
-@[simp]
 theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
   rfl
 
@@ -62,23 +61,13 @@ instance : LargeCategory.{u} SemilatSupCat where
   comp_id := SupBotHom.id_comp
   assoc _ _ _ := SupBotHom.comp_assoc _ _ _
 
--- Porting note: added
--- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (SupBotHom X Y) X Y from inferInstance
-
-instance : HasForget SemilatSupCat where
-  forget :=
-    { obj := SemilatSupCat.X
-      map := DFunLike.coe }
-  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
+instance : ConcreteCategory SemilatSupCat (SupBotHom · ·) where
+  hom f := f
+  ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
-  forget₂ :=
-    -- Porting note: was ⟨X⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
-    { obj := fun X => {α := X}
-      -- Porting note: was `map := fun f => f`
-      map := fun f => ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩ }
+  forget₂.obj X := PartOrd.of X
+  forget₂.map f := PartOrd.ofHom ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩
 
 @[simp]
 theorem coe_forget_to_partOrd (X : SemilatSupCat) :
@@ -95,10 +84,9 @@ instance : CoeSort SemilatInfCat Type* :=
 attribute [instance] isSemilatticeInf isOrderTop
 
 /-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
-def of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
+abbrev of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
   ⟨α⟩
 
-@[simp]
 theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
   rfl
 
@@ -113,21 +101,13 @@ instance : LargeCategory.{u} SemilatInfCat where
   comp_id := InfTopHom.id_comp
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
-instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (InfTopHom X Y) X Y from inferInstance
-
-instance : HasForget SemilatInfCat where
-  forget :=
-    { obj := SemilatInfCat.X
-      map := DFunLike.coe }
-  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
+instance : ConcreteCategory SemilatInfCat (InfTopHom · ·) where
+  hom f := f
+  ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
-  forget₂ :=
-    { obj := fun X => ⟨X, inferInstance⟩
-      -- Porting note: was `map := fun f => f`
-      map := fun f => ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩ }
+  forget₂.obj X := PartOrd.of X
+  forget₂.map f := PartOrd.ofHom ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩
 
 @[simp]
 theorem coe_forget_to_partOrd (X : SemilatInfCat) :

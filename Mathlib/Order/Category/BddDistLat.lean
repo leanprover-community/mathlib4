@@ -21,10 +21,11 @@ universe u
 open CategoryTheory
 
 /-- The category of bounded distributive lattices with bounded lattice morphisms. -/
-structure BddDistLat where
-  /-- The underlying distrib lattice of a bounded distributive lattice. -/
-  toDistLat : DistLat
+structure BddDistLat extends DistLat where
   [isBoundedOrder : BoundedOrder toDistLat]
+
+/-- The underlying distrib lattice of a bounded distributive lattice. -/
+add_decl_doc BddDistLat.toDistLat
 
 namespace BddDistLat
 
@@ -37,12 +38,9 @@ instance (X : BddDistLat) : DistribLattice X :=
 attribute [instance] BddDistLat.isBoundedOrder
 
 /-- Construct a bundled `BddDistLat` from a `BoundedOrder` `DistribLattice`. -/
-def of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat :=
-  -- Porting note: was `⟨⟨α⟩⟩`
-  -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨{α := α}⟩
+abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
+  carrier := α
 
-@[simp]
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
@@ -60,15 +58,12 @@ theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
 instance : LargeCategory.{u} BddDistLat :=
   InducedCategory.category toBddLat
 
-instance : HasForget BddDistLat :=
-  InducedCategory.hasForget toBddLat
+instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) :=
+  InducedCategory.concreteCategory toBddLat
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
-  forget₂ :=
-    -- Porting note: was `⟨X⟩`
-    -- see https://github.com/leanprover-community/mathlib4/issues/4998
-    { obj := fun X => { α := X }
-      map := fun {_ _} => BoundedLatticeHom.toLatticeHom }
+  forget₂.obj X := DistLat.of X
+  forget₂.map f := DistLat.ofHom f.toLatticeHom
 
 instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
   InducedCategory.hasForget₂ toBddLat

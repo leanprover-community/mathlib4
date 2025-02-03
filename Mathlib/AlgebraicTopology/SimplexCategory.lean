@@ -653,10 +653,10 @@ of `NonemptyFinLinOrd` -/
 @[simps obj map]
 def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
   obj a := NonemptyFinLinOrd.of (Fin (a.len + 1))
-  map f := f.toOrderHom
+  map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    ↑(skeletalFunctor.map f) = f.toOrderHom :=
+    ↑(skeletalFunctor.map f).hom = f.toOrderHom :=
   rfl
 
 theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
@@ -669,12 +669,12 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  map_surjective f := ⟨SimplexCategory.Hom.mk f, rfl⟩
+  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
-    ext1
-    exact h
+    ext : 3
+    exact CategoryTheory.congr_fun h _
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
@@ -685,10 +685,10 @@ instance : skeletalFunctor.EssSurj where
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine
-          { hom := ⟨f, hf.monotone⟩
-            inv := ⟨f.symm, ?_⟩
-            hom_inv_id := by ext1; apply f.symm_apply_apply
-            inv_hom_id := by ext1; apply f.apply_symm_apply }
+          { hom := LinOrd.ofHom ⟨f, hf.monotone⟩
+            inv := LinOrd.ofHom ⟨f.symm, ?_⟩
+            hom_inv_id := by ext; apply f.symm_apply_apply
+            inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h
         show f.symm i ≤ f.symm j
         rw [← hf.le_iff_le]
@@ -746,11 +746,9 @@ end Truncated
 
 section Concrete
 
-instance : HasForget.{0} SimplexCategory where
-  forget :=
-    { obj := fun i => Fin (i.len + 1)
-      map := fun f => f.toOrderHom }
-  forget_faithful := ⟨fun h => by ext : 2; exact h⟩
+instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin (j.len + 1)) where
+  hom := Hom.toOrderHom
+  ofHom f := Hom.mk f
 
 end Concrete
 
@@ -763,7 +761,7 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
-    NonemptyFinLinOrd.mono_iff_injective, NonemptyFinLinOrd.coe_of]
+    NonemptyFinLinOrd.mono_iff_injective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 /-- A morphism in `SimplexCategory` is an epimorphism if and only if it is a surjective function
 -/
@@ -772,7 +770,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
-    NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of]
+    NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 /-- A monomorphism in `SimplexCategory` must increase lengths -/
 theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
