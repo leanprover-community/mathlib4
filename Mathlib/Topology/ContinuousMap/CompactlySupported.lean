@@ -644,7 +644,7 @@ lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
 noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
-  @f.compLeft _ _ _ _ _ _ _ _ ContinuousMap.coeNNRealReal
+  f.compLeft ContinuousMap.coeNNRealReal
 
 @[simp]
 lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
