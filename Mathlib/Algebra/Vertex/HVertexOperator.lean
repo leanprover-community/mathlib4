@@ -57,8 +57,6 @@ variable [PartialOrder Γ] [CommRing R] [AddCommGroup V] [Module R V] [AddCommGr
 theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
-@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.ext := ext
-
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
 coefficients in linear maps. -/
 @[simps]
@@ -66,24 +64,17 @@ def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
   toFun v := ((of R).symm (A v)).coeff n
   map_add' _ _ := by simp
   map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.smul_coeff]
-
-@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
+    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.coeff_smul]
 
 theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
-
-@[deprecated (since := "2024-06-18")]
-alias _root_.VertexAlg.coeff_isPWOsupport := coeff_isPWOsupport
 
 @[ext]
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ → (V →ₗ[R] W)) := by
   intro _ _ h
   ext v n
   exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
-
-@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff_inj := coeff_inj
 
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
@@ -106,12 +97,14 @@ theorem zero_coeff : (0 : HVertexOperator Γ R V W).coeff = 0 :=
   rfl
 
 @[simp]
-theorem add_coeff (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
+theorem coeff_add (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
   ext
   simp
 
+@[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
+
 @[simp]
-theorem smul_coeff (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
+theorem coeff_smul (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
   ext
   simp
 

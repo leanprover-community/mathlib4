@@ -1612,9 +1612,6 @@ protected lemma Antitone.sSup (hs : ∀ f ∈ s, Antitone f) : Antitone (sSup s)
 protected lemma Antitone.sInf (hs : ∀ f ∈ s, Antitone f) : Antitone (sInf s) :=
   fun _ _ h ↦ iInf_mono fun f ↦ hs f f.2 h
 
-@[deprecated (since := "2024-05-29")] alias monotone_sSup_of_monotone := Monotone.sSup
-@[deprecated (since := "2024-05-29")] alias monotone_sInf_of_monotone := Monotone.sInf
-
 protected lemma Monotone.iSup (hf : ∀ i, Monotone (f i)) : Monotone (⨆ i, f i) :=
   Monotone.sSup (by simpa)
 protected lemma Monotone.iInf (hf : ∀ i, Monotone (f i)) : Monotone (⨅ i, f i) :=

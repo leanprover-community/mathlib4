@@ -215,7 +215,7 @@ theorem support_powerSeriesFamily_subset (hx : 0 < x.orderTop) (a b : PowerSerie
     ((powerSeriesFamily hx (a * b)).coeff g).support ⊆
     (((powerSeriesFamily hx a).mul (powerSeriesFamily hx b)).coeff g).support.image
       fun i => i.1 + i.2 := by
-  simp only [coeff_support, smulFamily_toFun, HahnSeries.smul_coeff, Set.Finite.toFinset_subset,
+  simp only [coeff_support, smulFamily_toFun, HahnSeries.coeff_smul, Set.Finite.toFinset_subset,
     coe_image, support_subset_iff, Set.mem_image, Prod.exists]
   intro n hn
   simp_rw [PowerSeries.coeff_mul, sum_smul, mul_smul] at hn
@@ -224,7 +224,7 @@ theorem support_powerSeriesFamily_subset (hx : 0 < x.orderTop) (a b : PowerSerie
   use he.choose.1, he.choose.2
   refine ⟨?_, he.choose_spec.1⟩
   simp only [mul_toFun, smulFamily_toFun, powers_toFun, Algebra.mul_smul_comm,
-    Algebra.smul_mul_assoc, HahnSeries.smul_coeff, Set.Finite.coe_toFinset, ne_eq, Prod.mk.eta,
+    Algebra.smul_mul_assoc, HahnSeries.coeff_smul, Set.Finite.coe_toFinset, ne_eq, Prod.mk.eta,
     Function.mem_support]
   rw [← pow_add, smul_comm, he.choose_spec.1]
   exact he.choose_spec.2
@@ -234,7 +234,7 @@ theorem hsum_powerSeriesFamily_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
     ((powerSeriesFamily hx a).mul (powerSeriesFamily hx b)).hsum := by
   ext g
   simp only [powerSeriesFamily_apply, PowerSeries.coeff_mul, Finset.sum_smul, ← Finset.sum_product,
-    hsum_coeff_eq_sum, mul_toFun]
+    coeff_hsum_eq_sum, mul_toFun]
   rw [sum_subset (support_powerSeriesFamily_subset hx a b g)]
   · rw [← coeff_sum, sum_sigma', coeff_sum]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp_all) ?_ ?_
