@@ -40,7 +40,7 @@ section Monotone
 
 lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   intro f₁ f₂ h
-  obtain ⟨g, hg⟩ := exist_add_eq h
+  obtain ⟨g, hg⟩ := CompactlySupportedContinuousMap.exists_add_of_le h
   rw [← hg]
   simp
 

@@ -641,7 +641,8 @@ noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
 
-protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)), f₁ + g = f₂ := by
+protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
+    f₁ + g = f₂ := by
   refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
   · apply (f₁.hasCompactSupport'.union f₂.hasCompactSupport').of_isClosed_subset isClosed_closure
     rw [tsupport, tsupport, ← closure_union]
