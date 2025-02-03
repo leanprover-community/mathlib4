@@ -248,7 +248,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       m.base =
         colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) := by
       dsimp
-      -- `colimit.hom_ext` used to be automatically applied by `ext`
+      -- `colimit.hom_ext` used to be automatically applied by `ext` before https://github.com/leanprover-community/mathlib4/pull/21302
       apply colimit.hom_ext fun j => ?_
       ext
       rw [colimit.ι_desc, mapCocone_ι_app, ← w j]
