@@ -586,7 +586,7 @@ lemma LinearMap.toMatrixOrthonormal_apply_apply (f : E →ₗ[𝕜] E) (i j : n)
     _ = ⟪v₁ i, f (v₁ j)⟫_𝕜 := v₁.repr_apply_apply ..
 
 lemma LinearMap.toMatrixOrthonormal_reindex (e : n ≃ m) (f : E →ₗ[𝕜] E) :
-    toMatrixOrthonormal (v₁.reindex e) f = Matrix.reindex e e (toMatrixOrthonormal v₁ f) :=
+    toMatrixOrthonormal (v₁.reindex e) f = (toMatrixOrthonormal v₁ f).reindex e e :=
   Matrix.ext fun i j =>
     calc toMatrixOrthonormal (v₁.reindex e) f i j
       _ = (v₁.reindex e).repr (f (v₁.reindex e j)) i := f.toMatrix_apply ..
