@@ -104,7 +104,7 @@ lemma tendstoUniformlyOn_tprod_bounded {f : ℕ → α → ℂ} {K : Set α}
   exact funext fun y ↦ Complex.exp_log (hfn ⟨x, hx⟩ y) -/
 
 lemma tendstoUniformlyOn_tsum_iff_range {f : ℕ → α → ℂ} {K : Set α} : TendstoUniformlyOn
-  (fun n : ℕ => fun a : α => ∑ i in Finset.range n, (f i a))
+  (fun n : ℕ => fun a : α => ∑ i ∈ Finset.range n, (f i a))
     (fun a : α => ∑' n : ℕ, (f n a)) atTop K ↔ TendstoUniformlyOn (fun n a => ∑ i ∈ n, (f i a))
       (fun a : α => ∑' n : ℕ, (f n a)) atTop K := by
   constructor
@@ -120,7 +120,7 @@ lemma tendstoUniformlyOn_tsum_iff_range {f : ℕ → α → ℂ} {K : Set α} : 
 
 lemma tendstoUniformlyOn_tprod_nat {f : ℕ → α → ℂ} {K : Set α}
     (h : ∀ x, x ∈ K → Summable fun n => log (f n x))
-    (hf : TendstoUniformlyOn (fun n : ℕ => fun a : α => ∑ i in Finset.range n, log (f i a))
+    (hf : TendstoUniformlyOn (fun n : ℕ => fun a : α => ∑ i ∈ Finset.range n, log (f i a))
     (fun a : α => ∑' n : ℕ, log (f n a)) atTop K) (hfn : ∀ x : K, ∀ n : ℕ, f n x ≠ 0)
     (hg : BddAbove ((fun x => (∑' n : ℕ, log (f n x)).re) '' K)) :
     TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i ∈ Finset.range n, (f i a))
