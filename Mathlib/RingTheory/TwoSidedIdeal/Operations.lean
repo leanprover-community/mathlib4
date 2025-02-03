@@ -97,6 +97,10 @@ def comap : TwoSidedIdeal S →o TwoSidedIdeal R where
     specialize @h (f x)
     simpa [mem_iff, RingCon.comap]
 
+lemma comap_le_comap {I J : TwoSidedIdeal S} (h : I ≤ J) :
+    comap f I ≤ comap f J :=
+  (comap f).monotone h
+
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
@@ -109,6 +113,12 @@ def orderIsoOfRingEquiv (e : R ≃+* S) : TwoSidedIdeal R ≃o TwoSidedIdeal S :
   OrderIso.ofHomInv (comap e.symm) (comap e) (by ext; simp [mem_comap])
     (by ext; simp [mem_comap])
 
+lemma orderIsoOfRingEquiv_apply (e : R ≃+* S) (I : TwoSidedIdeal R) :
+    orderIsoOfRingEquiv e I = I.comap e.symm := rfl
+
+lemma orderIsoOfRingEquiv_symm_apply (e : R ≃+* S) (I : TwoSidedIdeal S) :
+    (orderIsoOfRingEquiv e).symm I = I.comap e := rfl
+
 end NonUnitalNonAssocRing
 
 section NonAssocRing
@@ -116,8 +126,8 @@ section NonAssocRing
 variable {R S T : Type*}
 variable [NonAssocRing R] [NonAssocRing S] [NonAssocRing T]
 
-lemma comap_comp (I : TwoSidedIdeal T) (f : R →+* S) (g : S →+* T) :
-    I.comap (g.comp f) = (I.comap g).comap f := by
+lemma comap_comap (I : TwoSidedIdeal T) (f : R →+* S) (g : S →+* T) :
+    (I.comap g).comap f = I.comap (g.comp f) := by
   ext; simp [mem_comap]
 
 end NonAssocRing
