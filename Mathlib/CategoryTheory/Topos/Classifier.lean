@@ -3,7 +3,6 @@ Copyright (c) 2024 Charlie Conneen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Charlie Conneen
 -/
-
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.Tactic.ApplyFun
@@ -25,7 +24,7 @@ https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
 
 Let `C` refer to a category with a terminal object.
 
-* `CategoryTheory.MonoClassifier C` is the data of a subobject classifier
+* `CategoryTheory.Classifier C` is the data of a subobject classifier
   in `C`.
 
 * `CategoryTheory.HasClassifier C` says that there is at least one
@@ -50,7 +49,6 @@ Let `C` refer to a category with a terminal object.
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MLM92]
 
 -/
-
 
 universe u v u₀ v₀
 
@@ -144,7 +142,6 @@ is a pullback square.
 -/
 lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m :=
   HasClassifier.exists_classifier.some.uniq m χ hχ
-
 
 /-- `t C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (t C) :=
