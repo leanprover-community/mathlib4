@@ -44,21 +44,13 @@ lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
 
 /-- An ideal has finite height if it is either the unit ideal or its height is finite.
 We include the unit ideal in order to have the instance `IsNoetherianRing R → FiniteHeight I`. -/
+@[mk_iff]
 class Ideal.FiniteHeight : Prop where
   eq_top_or_height_ne_top : I = ⊤ ∨ I.height ≠ ⊤
 
 lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
     Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
-  constructor
-  · intro h
-    cases h.eq_top_or_height_ne_top with
-    | inl h => exact Or.inl h
-    | inr h => exact Or.inr (lt_of_le_of_ne le_top h)
-  · intro h
-    constructor
-    cases h with
-    | inl h => exact Or.inl h
-    | inr h => exact Or.inr (ne_top_of_lt h)
+  rw [Ideal.finiteHeight_iff, lt_top_iff_ne_top]
 
 lemma Ideal.height_ne_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
     I.height ≠ ⊤ :=
