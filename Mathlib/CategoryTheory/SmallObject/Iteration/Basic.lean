@@ -137,7 +137,7 @@ def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
 
 variable (Φ : SuccStruct C)
 
-/-- The class of morphisms that are of the morphism `toSucc X : X ⟶ succ X`. -/
+/-- The class of morphisms that are of the form `toSucc X : X ⟶ succ X`. -/
 def prop : MorphismProperty C := .ofHoms (fun (X : C) ↦ Φ.toSucc X)
 
 lemma prop_toSucc (X : C) : Φ.prop (Φ.toSucc X) := ⟨_⟩
