@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Directed
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras
@@ -72,8 +73,14 @@ class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
-  /-- `⊓` distributes over `⨆`. -/
-  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
+
+
+/-- `⊓` distributes over `⨆`. -/
+theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α) :
+  a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b := by
+    have h (b : α) : GaloisConnection (b ⊓ ·) (b ⇨ ·) := by
+      simp [GaloisConnection, inf_comm]
+    exact le_of_eq (GaloisConnection.l_sSup (h a))
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
@@ -146,7 +153,8 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
   simp only [inf_iSup_eq]
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
-def of [Frame α] : MinimalAxioms α := { ‹Frame α› with }
+def of [Frame α] : MinimalAxioms α := { ‹Frame α› with
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf}
 
 end MinimalAxioms
 
@@ -349,10 +357,10 @@ variable [Frame α] {s t : Set α} {a b : α}
 instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf := @Frame.inf_sSup_le_iSup_inf α _
+  iInf_sup_le_sup_sInf := @inf_sSup_le_iSup_inf α _
 
 theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
-  (Frame.inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
+  (inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
 
 theorem sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using @inf_sSup_eq α _ s b
@@ -429,14 +437,10 @@ instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
 instance Prod.instFrame [Frame α] [Frame β] : Frame (α × β) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-  inf_sSup_le_iSup_inf a s := by
-    simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
 instance Pi.instFrame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-  inf_sSup_le_iSup_inf a s i := by
-    simp only [sSup_apply, iSup_apply, inf_apply, inf_iSup_eq, ← iSup_subtype'']; rfl
 
 end Frame
 
@@ -447,7 +451,6 @@ variable [Coframe α] {s t : Set α} {a b : α}
 instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-  inf_sSup_le_iSup_inf := @Coframe.iInf_sup_le_sup_sInf α _
 
 theorem sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
   @inf_sSup_eq αᵒᵈ _ _ _
