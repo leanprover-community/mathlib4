@@ -978,7 +978,7 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
-lemma cons_takeUntil {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
+lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
     (hadj : G.Adj u v') :
     (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
   simp [Walk.takeUntil, h]
