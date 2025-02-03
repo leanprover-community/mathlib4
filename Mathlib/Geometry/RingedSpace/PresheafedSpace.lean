@@ -61,18 +61,6 @@ attribute [coe] PresheafedSpace.carrier
 -- in downstream files.
 instance : CoeSort (PresheafedSpace C) Type* where coe X := X.carrier
 
--- Porting note: the following lemma is removed because it is a syntactic tauto
-/-@[simp]
-theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
-  rfl-/
-
--- Porting note: removed @[simp] as the `simpVarHead` linter complains
--- @[simp]
-theorem mk_coe (carrier) (presheaf) :
-    (({ carrier
-        presheaf } : PresheafedSpace C) : TopCat) = carrier :=
-  rfl
-
 instance (X : PresheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
