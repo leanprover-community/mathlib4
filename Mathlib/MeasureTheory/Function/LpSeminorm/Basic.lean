@@ -555,20 +555,20 @@ theorem memℒp_of_bounded [IsFiniteMeasure μ]
   (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
 @[gcongr, mono]
-theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
+theorem eLpNorm'_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by
   simp_rw [eLpNorm']
   gcongr
   exact lintegral_mono' hμν le_rfl
 
 @[gcongr, mono]
-theorem eLpNormEssSup_mono_measure (f : α → F) (hμν : ν ≪ μ) :
+theorem eLpNormEssSup_mono_measure (f : α → ε) (hμν : ν ≪ μ) :
     eLpNormEssSup f ν ≤ eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
   exact essSup_mono_measure hμν
 
 @[gcongr, mono]
-theorem eLpNorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : eLpNorm f p ν ≤ eLpNorm f p μ := by
+theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) : eLpNorm f p ν ≤ eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hp_top : p = ∞
@@ -576,11 +576,12 @@ theorem eLpNorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : eLpNorm f p ν
   simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_mono_measure f hμν ENNReal.toReal_nonneg
 
-theorem Memℒp.mono_measure {f : α → E} (hμν : ν ≤ μ) (hf : Memℒp f p μ) : Memℒp f p ν :=
+theorem Memℒp.mono_measure [TopologicalSpace ε] {f : α → ε} (hμν : ν ≤ μ) (hf : Memℒp f p μ) :
+    Memℒp f p ν :=
   ⟨hf.1.mono_measure hμν, (eLpNorm_mono_measure f hμν).trans_lt hf.2⟩
 
 section Indicator
-variable {c : F} {hf : AEStronglyMeasurable f μ} {s : Set α}
+variable {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
 lemma eLpNorm_indicator_eq_eLpNorm_restrict (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
@@ -640,6 +641,9 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) 
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem, enorm_eq_nnnorm]
 
+-- The following lemmas require [Zero F].
+variable {c : F}
+
 lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp hp_top
@@ -697,14 +701,14 @@ lemma memℒp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (h
   · have := Fact.mk hμ.lt_top
     apply memℒp_const
 
-lemma eLpNormEssSup_piecewise (f g : α → E) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNormEssSup (Set.piecewise s f g) μ
       = max (eLpNormEssSup f (μ.restrict s)) (eLpNormEssSup g (μ.restrict sᶜ)) := by
   simp only [eLpNormEssSup, ← ENNReal.essSup_piecewise hs]
   congr with x
   by_cases hx : x ∈ s <;> simp [hx]
 
-lemma eLpNorm_top_piecewise (f g : α → E) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNorm (Set.piecewise s f g) ∞ μ
       = max (eLpNorm f ∞ (μ.restrict s)) (eLpNorm g ∞ (μ.restrict sᶜ)) :=
   eLpNormEssSup_piecewise f g hs
@@ -750,10 +754,11 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → F} (hsf :
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
     simpa [this] using hsf
 
-theorem Memℒp.restrict (s : Set α) {f : α → E} (hf : Memℒp f p μ) : Memℒp f p (μ.restrict s) :=
+theorem Memℒp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : Memℒp f p μ) :
+    Memℒp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
-theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → F} (c : ℝ≥0∞) :
+theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm' f p (c • μ) = c ^ (1 / p) * eLpNorm' f p μ := by
   rw [eLpNorm', lintegral_smul_measure, ENNReal.mul_rpow_of_nonneg, eLpNorm']
   simp [hp]
@@ -771,7 +776,7 @@ end SMul
 
 /-- Use `eLpNorm_smul_measure_of_ne_top` instead. -/
 private theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0)
-    (hp_ne_top : p ≠ ∞) {f : α → F} (c : ℝ≥0∞) :
+    (hp_ne_top : p ≠ ∞) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
   simp_rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top]
   rw [eLpNorm'_smul_measure ENNReal.toReal_nonneg]
@@ -877,7 +882,7 @@ theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → E} (hf : AEStronglyMea
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
 
-theorem coe_nnnorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → F) (μ : Measure α) :
+theorem coe_nnnorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
   ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
 
@@ -896,7 +901,7 @@ theorem eLpNorm_eq_zero_of_ae_zero {f : α → E} (hf : f =ᵐ[μ] 0) : eLpNorm 
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (F := E)]
   exact eLpNorm_congr_ae hf
 
-theorem ae_le_eLpNormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
+theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
 lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
@@ -905,7 +910,7 @@ lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_toNNReal h.ne]; exact ae_le_eLpNormEssSup⟩
   mpr := by rintro ⟨C, hC⟩; exact eLpNormEssSup_lt_top_of_ae_nnnorm_bound (C := C) hC
 
-theorem meas_eLpNormEssSup_lt {f : α → F} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
+theorem meas_eLpNormEssSup_lt {f : α → ε} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
   meas_essSup_lt
 
 lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ < ∞ := by
@@ -1101,7 +1106,6 @@ end BoundedSMul
 ### Bounded actions by normed division rings
 The inequalities in the previous section are now tight.
 -/
-
 
 section NormedSpace
 
