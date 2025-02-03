@@ -49,7 +49,7 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
   map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
-/--The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
+/-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
 open normal subgroups ordered by inclusion.-/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
