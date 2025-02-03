@@ -53,10 +53,6 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
-  { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
-
 theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 
@@ -128,12 +124,6 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
--- see Note [lower instance priority]
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
-    IsStrictWeakOrder α r :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 /-! ### Well-order -/
 
 
@@ -178,10 +168,6 @@ theorem WellFounded.psigma_revLex
 theorem WellFounded.psigma_skipLeft (α : Type u) {β : Type v} {s : β → β → Prop}
     (hb : WellFounded s) : WellFounded (SkipLeft α s) :=
   psigma_revLex emptyWf.wf hb
-
-@[deprecated (since := "2024-07-24")] alias PSigma.lex_wf := WellFounded.psigma_lex
-@[deprecated (since := "2024-07-24")] alias PSigma.revLex_wf := WellFounded.psigma_revLex
-@[deprecated (since := "2024-07-24")] alias PSigma.skipLeft_wf := WellFounded.psigma_skipLeft
 
 end PSigma
 
@@ -706,9 +692,6 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
 
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
   transitive_of_trans _

@@ -976,11 +976,9 @@ section CommSemiring
 variable [CommSemiring R]
 
 open PrimeSpectrum in
-/--
-[Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
-Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
-irreducible component is a zero locus of some minimal prime ideal.
--/
+/-- Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
+irreducible component is a zero locus of some minimal prime ideal. -/
+@[stacks 00ES]
 protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
