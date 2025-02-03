@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 Once a category `C` has been endowed with a `CategoryWithCofibrations C`
 instance, it is possible to define the property `IsCofibrant X` for
 any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
+(Fibrant objects are defined similarly.)
 
 -/
 
