@@ -113,7 +113,7 @@ since users will have computable inverses in some applications.
 
 See note [reducible non-instances]. -/
 protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
-    GroupWithZero (R ⧸ I) :=
+    GroupWithZero (R ⧸ I) := fast_instance%
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
@@ -125,11 +125,11 @@ This is a `def` rather than `instance`, since users
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
-protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ I) where
-  __ := ring _
-  __ := Quotient.groupWithZero _
-  nnqsmul_def _ _ := rfl
-  qsmul_def _ _ := rfl
+protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ I) := fast_instance%
+  { __ := ring _
+    __ := Quotient.groupWithZero _
+    nnqsmul_def _ _ := rfl
+    qsmul_def _ _ := rfl }
 
 /-- The quotient of a commutative ring by a maximal ideal is a field.
 This is a `def` rather than `instance`, since users
@@ -137,9 +137,9 @@ will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
 protected noncomputable abbrev field {R} [CommRing R] (I : Ideal R) [I.IsMaximal] :
-    Field (R ⧸ I) where
-  __ := commRing _
-  __ := Quotient.divisionRing I
+    Field (R ⧸ I) := fast_instance%
+  { __ := commRing _
+    __ := Quotient.divisionRing I }
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
 theorem maximal_of_isField {R} [CommRing R] (I : Ideal R) (hqf : IsField (R ⧸ I)) :

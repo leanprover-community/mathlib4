@@ -55,12 +55,12 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
-  __ : AddCommGroup (R ⧸ I) := inferInstance
-  __ : Ring (Quotient.ringCon I).Quotient := inferInstance
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) := fast_instance%
+  { __ : AddCommGroup (R ⧸ I) := inferInstance
+    __ : Ring (Quotient.ringCon I).Quotient := inferInstance }
 
-instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
-  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) := fast_instance%
+  { mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b) }
 
 instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := inferInstance
 instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) := inferInstance
