@@ -96,22 +96,12 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.obj X := FinPartOrd.of X
-  forget₂.map {X Y} f := show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f)
+  forget₂.map {X Y} f := PartOrd.ofHom f
 
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
-  -- Porting note: original code
-  -- ⟨fun {X Y} f g h =>
-  --   haveI := congr_arg (coeFn : _ → X → Y) h
-  --   DFunLike.coe_injective this⟩
-  -- Porting note: the coercions to functions for the various bundled order categories
-  -- are quite inconsistent. We need to go back through and make all these files uniform.
   ⟨fun {X Y} f g h => by
-    dsimp at *
-    apply DFunLike.coe_injective
-    dsimp
     ext x
-    apply_fun (fun f => f x) at h
-    exact h ⟩
+    exact CategoryTheory.congr_fun h x ⟩
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/

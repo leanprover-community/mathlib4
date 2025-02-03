@@ -48,7 +48,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj
     · have hg : ∑ i : (forget SimplexCategory).obj x, g i = 1 := g.2
       convert hg
       simp [Finset.eq_univ_iff_forall]
-    · apply Set.pairwiseDisjoint_filter⟩
+    · convert Set.pairwiseDisjoint_filter _ _ _⟩
 
 open Classical in
 @[simp]
@@ -73,7 +73,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     ext f : 1
     apply toTopObj.ext
     funext i
-    change (Finset.univ.filter (· = i)).sum _ = _
+    dsimp
     simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
     classical
@@ -81,7 +81,6 @@ def toTop : SimplexCategory ⥤ TopCat where
     apply toTopObj.ext
     funext i
     dsimp
-    simp only [CategoryTheory.comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)

@@ -23,27 +23,23 @@ universe u
 open CategoryTheory
 
 /-- The category of bounded lattices with bounded lattice morphisms. -/
-structure BddLat where
-  /-- The underlying lattice of a bounded lattice. -/
-  toLat : Lat
+structure BddLat extends Lat where
   [isBoundedOrder : BoundedOrder toLat]
+
+/-- The underlying lattice of a bounded lattice. -/
+add_decl_doc BddLat.toLat
 
 namespace BddLat
 
 instance : CoeSort BddLat Type* :=
   ⟨fun X => X.toLat⟩
 
-instance (X : BddLat) : Lattice X :=
-  X.toLat.str
-
 attribute [instance] BddLat.isBoundedOrder
 
 /-- Construct a bundled `BddLat` from `Lattice` + `BoundedOrder`. -/
-def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat :=
-  -- Porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨{α := α}⟩
+abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
+  carrier := α
 
-@[simp]
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
@@ -58,36 +54,25 @@ instance : LargeCategory.{u} BddLat where
   comp_id := BoundedLatticeHom.id_comp
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
--- Porting note: added.
-instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
-
-instance : HasForget BddLat where
-  forget :=
-  { obj := (↑)
-    map := DFunLike.coe }
-  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
+instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
+  hom f := f
+  ofHom f := f
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
-  forget₂ :=
-    { obj := fun X => BddOrd.of X
-      map := fun {_ _} => BoundedLatticeHom.toBoundedOrderHom }
+  forget₂.obj X := BddOrd.of X
+  forget₂.map f := BddOrd.ofHom f.toBoundedOrderHom
 
 instance hasForgetToLat : HasForget₂ BddLat Lat where
-  forget₂ :=
-    -- Porting note: was `⟨X⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
-    { obj := fun X => {α := X}
-      map := fun {_ _} => BoundedLatticeHom.toLatticeHom }
+  forget₂.obj X := Lat.of X
+  forget₂.map f := Lat.ofHom f.toLatticeHom
 
 instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
-  forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun {_ _} => BoundedLatticeHom.toSupBotHom }
+  forget₂.obj X := SemilatSupCat.of X
+  forget₂.map := BoundedLatticeHom.toSupBotHom
 
 instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
-  forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun {_ _} => BoundedLatticeHom.toInfTopHom }
+  forget₂.obj X := SemilatInfCat.of X
+  forget₂.map := BoundedLatticeHom.toInfTopHom
 
 @[simp]
 theorem coe_forget_to_bddOrd (X : BddLat) : ↥((forget₂ BddLat BddOrd).obj X) = ↥X :=
@@ -169,7 +154,7 @@ theorem bddLat_dual_comp_forget_to_semilatInfCat :
 /-- The functor that adds a bottom and a top element to a lattice. This is the free functor. -/
 def latToBddLat : Lat.{u} ⥤ BddLat where
   obj X := BddLat.of <| WithTop <| WithBot X
-  map := LatticeHom.withTopWithBot
+  map f := LatticeHom.withTopWithBot f.hom
   map_id _ := LatticeHom.withTopWithBot_id
   map_comp _ _ := LatticeHom.withTopWithBot_comp _ _
 
@@ -177,26 +162,26 @@ def latToBddLat : Lat.{u} ⥤ BddLat where
 functor from `Lat` to `BddLat`. -/
 def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X _ =>
-        { toFun := fun f =>
+    { homEquiv X _ :=
+        { toFun f := Lat.ofHom
             { toFun := f ∘ some ∘ some
               map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.map_sup' _ _)
               map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.map_inf' _ _) }
-          invFun := fun f => LatticeHom.withTopWithBot' f
+          invFun f := LatticeHom.withTopWithBot' f.hom
           left_inv := fun f =>
             BoundedLatticeHom.ext fun a =>
               match a with
               | none => f.map_top'.symm
               | some none => f.map_bot'.symm
               | some (some _) => rfl
-          right_inv := fun _ => LatticeHom.ext fun _ => rfl }
+          right_inv := fun _ => Lat.ext fun _ => rfl }
       homEquiv_naturality_left_symm := fun _ _ =>
         BoundedLatticeHom.ext fun a =>
           match a with
           | none => rfl
           | some none => rfl
           | some (some _) => rfl
-      homEquiv_naturality_right := fun _ _ => LatticeHom.ext fun _ => rfl }
+      homEquiv_naturality_right := fun _ _ => Lat.ext fun _ => rfl }
 
 /-- `latToBddLat` and `OrderDual` commute. -/
 def latToBddLatCompDualIsoDualCompLatToBddLat :
