@@ -17,6 +17,7 @@ namespace SimpleGraph
 
 variable {V D : Type*}
 
+/-- A `CombinatorialMap` induces a `SimpleGraph`. -/
 def fromCombinatorialMap (M : CombinatorialMap D) : SimpleGraph M.vertices where
   Adj v₁ v₂ := ∃ d₁ d₂ : D, M.dartVertex d₁ = v₁ ∧ M.dartVertex d₂ = v₂ ∧ M.α d₁ = d₂ ∧ v₁ ≠ v₂
   symm := by
@@ -25,6 +26,7 @@ def fromCombinatorialMap (M : CombinatorialMap D) : SimpleGraph M.vertices where
     exact ⟨h₂, h₁, (M.involutive.eq_iff.mp h₃).symm, h₄.symm⟩
   loopless := by tauto
 
+/-- A `SimpleGraph` is planar if it is induced by a planar `CombinatorialMap`. -/
 def IsPlanar [Fintype D] (G : SimpleGraph V) : Prop :=
   ∃ M : CombinatorialMap D, Nonempty ((fromCombinatorialMap M) ≃g G) ∧ M.IsPlanar
 
