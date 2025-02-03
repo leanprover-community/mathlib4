@@ -882,13 +882,13 @@ theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
 lemma instPosMulReflectLE : PosMulReflectLE K := by
   constructor
   intro a b c (h : _ * _ ≤ _ * _)
-  obtain ⟨a',ha1,ha2⟩ := pos_iff_exists_ofReal.mp a.2
+  obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
   rw [← sub_nonneg]
   rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
-  rcases h with h|h
+  rcases h with h | h
   · rw [ofReal_mul_pos_iff] at h
-    classical exact le_of_lt <| h.by_cases (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
-  · exact le_of_eq ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp (h.symm)).symm
+    exact le_of_lt <| h.rec (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
+  · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
 
 scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
 
