@@ -29,7 +29,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
 
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -109,8 +108,9 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
   apply isClosed_biInter
   intro f _
   apply isClosed_eq
-  · continuity
-  · continuity
+  -- `continuity` can solve the two remaining goals but takes about 2s on each.
+  · exact (F.map f.snd.snd.snd.snd).hom.continuous.comp (continuous_apply f.fst)
+  · exact continuous_apply _
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
