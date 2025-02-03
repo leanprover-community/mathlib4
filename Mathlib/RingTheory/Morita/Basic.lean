@@ -114,7 +114,8 @@ noncomputable def ofAlgEquiv {A : Type u₁} {B : Type u₂}
 end MoritaEquivalence
 
 /--
-Two rings are Morita equivalent if their module categories are equivalent.
+Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent if the categories of
+`A`-modules and `B`-modules are equivalent as `R`-linear categories.
 -/
 structure IsMoritaEquivalent
     (A : Type u₁) [Ring A] [Algebra R A]
