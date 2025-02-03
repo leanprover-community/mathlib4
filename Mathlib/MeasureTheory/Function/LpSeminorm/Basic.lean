@@ -592,11 +592,9 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict (hs : MeasurableSet s) :
   rw [← lintegral_indicator hs]
   congr
   simp_rw [enorm_indicator_eq_indicator_enorm]
-  have h_zero : (fun x => x ^ p.toReal) (0 : ℝ≥0∞) = 0 := by
-    simp [ENNReal.toReal_pos hp_zero hp_top]
-  -- Porting note: The implicit argument should be specified because the elaborator can't deal with
-  --               `∘` well.
-  exact (Set.indicator_comp_of_zero (g := fun x : ℝ≥0∞ => x ^ p.toReal) h_zero).symm
+  rw [eq_comm, ← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal), Set.indicator_comp_of_zero,
+    Function.comp_def]
+  simp [ENNReal.toReal_pos hp_zero hp_top]
 
 @[deprecated (since := "2025-01-07")]
 alias eLpNorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
@@ -611,7 +609,7 @@ lemma eLpNorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s :
 
 lemma eLpNorm_indicator_le (f : α → E) : eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
   refine eLpNorm_mono_ae <| .of_forall fun x ↦ ?_
-  suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
+  suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ from NNReal.coe_mono this
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   exact s.indicator_le_self _ x
 
