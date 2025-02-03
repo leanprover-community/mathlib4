@@ -85,12 +85,12 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
   have h_eq_sum : μ[martingalePart f ℱ μ j|ℱ i] =ᵐ[μ]
       f 0 + ∑ k ∈ Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
     rw [martingalePart_eq_sum]
-    refine (condExp_add (hf_int 0) (by fun_prop)).trans ?_
-    refine (EventuallyEq.rfl.add (condExp_finset_sum fun i _ => by fun_prop)).trans ?_
+    refine (condExp_add (hf_int 0) (by fun_prop) _).trans ?_
+    refine (EventuallyEq.rfl.add (condExp_finset_sum (fun i _ => by fun_prop) _)).trans ?_
     refine EventuallyEq.add ?_ ?_
     · rw [condExp_of_stronglyMeasurable (ℱ.le _) _ (hf_int 0)]
       · exact (hf 0).mono (ℱ.mono (zero_le i))
-    · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condExp
+    · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condExp _
   refine h_eq_sum.trans ?_
   have h_ge : ∀ k, i ≤ k → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 := by
     intro k hk
