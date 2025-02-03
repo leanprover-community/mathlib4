@@ -212,7 +212,8 @@ variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
-def of [CompleteDistribLattice α] : MinimalAxioms α := { ‹CompleteDistribLattice α› with }
+def of [CompleteDistribLattice α] : MinimalAxioms α := { ‹CompleteDistribLattice α› with
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf}
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
@@ -580,16 +581,19 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
 
 section CompleteBooleanAlgebra
 
@@ -655,6 +659,7 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹CompleteAtomicBooleanAlgebra α›
   __ := CompletelyDistribLattice.toCompleteDistribLattice
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where
