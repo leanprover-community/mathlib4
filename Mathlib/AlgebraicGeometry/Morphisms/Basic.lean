@@ -174,6 +174,26 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
     P f ↔ ∀ i, P (𝒰.pullbackHom f i) :=
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
+lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
+    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+  let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
+  rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
+  apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance
+  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
+  · intro i
+    have heq : g ⁻¹ᵁ (⨆ i, U i).ι ⁻¹ᵁ U i = f ⁻¹ᵁ U i := by
+      show (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
+      simp [g]
+    let e : Arrow.mk (g ∣_ (⨆ i, U i).ι ⁻¹ᵁ U i) ≅ Arrow.mk (f ∣_ U i) :=
+        Arrow.isoMk (X.isoOfEq heq) (Scheme.Opens.isoOfLE (le_iSup U i)) <| by
+      simp [← CategoryTheory.cancel_mono (U i).ι, g]
+    rw [P.arrow_mk_iso_iff e]
+    exact hf i
+  apply (⨆ i, U i).ι.image_injective
+  dsimp
+  rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
+  simp [Scheme.Hom.image_preimage_eq_opensRange_inter, le_iSup U]
+
 end IsLocalAtTarget
 
 /--
