@@ -177,8 +177,8 @@ theorem contDiffOn_nat_iff_continuousOn_differentiableOn_deriv {n : ℕ} (hs : U
     contDiffOn_iff_continuousOn_differentiableOn_deriv hs]
   simp
 
-/-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
-differentiating the `n`-th iterated derivative. -/
+/-- The `n+1`-th iterated derivative within a set can be obtained by differentiating the `n`-th
+iterated derivative. -/
 theorem iteratedDerivWithin_succ {x : 𝕜} :
     iteratedDerivWithin (n + 1) f s x = derivWithin (iteratedDerivWithin n f s) s x := by
   by_cases hxs : AccPt x (𝓟 s)
@@ -192,8 +192,8 @@ theorem iteratedDerivWithin_succ {x : 𝕜} :
   · simp [derivWithin_zero_of_not_accPt hxs, iteratedDerivWithin, iteratedFDerivWithin,
       fderivWithin_zero_of_not_accPt hxs]
 
-/-- The `n`-th iterated derivative within a set with unique derivatives can be obtained by
-iterating `n` times the differentiation operation. -/
+/-- The `n`-th iterated derivative within a set can be obtained by iterating `n` times the
+differentiation operation. -/
 theorem iteratedDerivWithin_eq_iterate {x : 𝕜} :
     iteratedDerivWithin n f s x = (fun g : 𝕜 → F => derivWithin g s)^[n] f x := by
   induction n generalizing x with
@@ -202,8 +202,8 @@ theorem iteratedDerivWithin_eq_iterate {x : 𝕜} :
     rw [iteratedDerivWithin_succ, Function.iterate_succ']
     exact derivWithin_congr (fun y hy => IH) IH
 
-/-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
-taking the `n`-th derivative of the derivative. -/
+/-- The `n+1`-th iterated derivative within a can be obtained by taking the `n`-th derivative of
+the derivative. -/
 theorem iteratedDerivWithin_succ' {x : 𝕜} :
     iteratedDerivWithin (n + 1) f s x = (iteratedDerivWithin n (derivWithin f s) s) x := by
   rw [iteratedDerivWithin_eq_iterate, iteratedDerivWithin_eq_iterate]; rfl
