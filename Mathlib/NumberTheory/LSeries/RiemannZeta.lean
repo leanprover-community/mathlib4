@@ -225,19 +225,4 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
 aliases for the old names -/
 section aliases
 
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta₀ := completedRiemannZeta₀
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta := completedRiemannZeta
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_residue_one := completedRiemannZeta_residue_one
-
 end aliases
