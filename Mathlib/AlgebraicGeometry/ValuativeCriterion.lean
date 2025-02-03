@@ -126,7 +126,7 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
   dsimp only at hl₁ hl₂
   refine ⟨l.base (closedPoint A), ?_, ?_⟩
   · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]
-    exact (specializes_closedPoint _).map l.base.2
+    exact (specializes_closedPoint _).map l.base.hom.2
   · rw [← Scheme.comp_base_apply, hl₂]
     simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     have : (Spec.map stalk_y_to_A).base (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
