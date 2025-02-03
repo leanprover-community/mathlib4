@@ -105,6 +105,7 @@
   "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
+  "Mathlib.Tactic.GroupExp",
   "Mathlib.Tactic.GuardHypNums",
   "Mathlib.Tactic.HaveI",
   "Mathlib.Tactic.Hint",
