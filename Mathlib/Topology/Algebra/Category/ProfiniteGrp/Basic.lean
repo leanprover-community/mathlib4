@@ -25,12 +25,6 @@ disconnected.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
-# TODO
-
-As discussion in `https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Refactor.20
-Category.20of.20ProfiniteGrp.20and.20ContinuousMulEquiv/near/493290115`
-
-* Prove `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` using `profiniteGrpToProfinite`
 -/
 
 universe u v
@@ -254,6 +248,12 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
   let _ : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
   .of H
 
+/-- Build an isomorphism in the category `ProfiniteGrp` from
+a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
+def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
+  hom := ⟨e⟩
+  inv := ⟨e.symm⟩
+
 /-- The functor mapping a profinite group to its underlying profinite space. -/
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Profinite where
@@ -265,6 +265,17 @@ instance : HasForget₂ ProfiniteGrp Profinite where
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
   map_injective := fun {_ _} _ _ h =>
     ConcreteCategory.hom_ext _ _ (CategoryTheory.congr_fun h) }
+
+instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget₂ ProfiniteGrp Profinite).map f)
+    let e : X ≃ₜ* Y :=
+      { CompHausLike.homeoOfIso i with
+          map_mul' := map_mul f.hom }
+    exact (ContinuousMulEquiv.toProfiniteGrpIso e).isIso_hom
+
+instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
+  CategoryTheory.reflectsIsomorphisms_comp (forget₂ ProfiniteGrp Profinite) (forget Profinite)
 
 end ProfiniteGrp
 
