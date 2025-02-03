@@ -125,6 +125,13 @@ lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
 lemma differentiableAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
     DifferentiableAt ℝ (mgf X μ) t := (analyticAt_mgf ht).differentiableAt
 
+lemma differentiableOn_mgf : DifferentiableOn ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
+  fun _ hx => (differentiableAt_mgf hx).differentiableWithinAt
+
+-- todo: this should be extended to `integrableExpSet X μ`, not only its interior
+lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X μ)) :=
+  differentiableOn_mgf.continuousOn
+
 lemma analyticOnNhd_iteratedDeriv_mgf (n : ℕ) :
     AnalyticOnNhd ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) := by
   rw [iteratedDeriv_eq_iterate]

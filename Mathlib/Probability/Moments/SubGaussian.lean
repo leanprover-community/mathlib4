@@ -42,6 +42,16 @@ lemma toReal_prob_le_one {μ : Measure Ω} [IsZeroOrProbabilityMeasure μ] {s : 
   rw [ENNReal.ofReal_one]
   exact prob_le_one
 
+lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    Continuous (fun t ↦ mgf X μ t) := by
+  rw [continuous_iff_continuousOn_univ]
+  convert continuousOn_mgf
+  ext t
+  simp only [Set.mem_univ, true_iff]
+  rw [mem_interior]
+  refine ⟨Set.Ioo (t - 1) (t + 1), fun x hx ↦ ?_, isOpen_Ioo, by simp⟩
+  exact integrable_exp_mul_of_le_of_le (h (t - 1)) (h (t + 1)) hx.1.le hx.2.le
+
 section Kernel
 
 /-- A random variable is sub-Gaussian with parameter `c` with respect to a kernel `κ` and
@@ -96,10 +106,6 @@ lemma hasFiniteIntegral_exp_mul_of_int
     · filter_upwards [hXX'] with ω hω
       rw [hω]
 
-lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
-    Continuous (fun t ↦ mgf X μ t) := by
-  sorry
-
 open Filter in
 def mkRat (h_meas : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
     (h_int : ∀ n : ℤ, ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω ↦ exp (n * X ω)) (κ ω'))
@@ -127,7 +133,7 @@ lemma cgf_le (h : IsSubGaussianWith X c κ ν) (t : ℝ) :
   _ = log (mgf X (κ ω') t) := rfl
   _ ≤ log (exp (c * t ^ 2 / 2)) := by
     by_cases h0 : κ ω' = 0
-    · simp only [h0, integral_zero_measure, sub_zero, mgf_zero_measure, log_zero, log_exp]
+    · simp only [h0, mgf_zero_measure, Pi.zero_apply, log_zero, log_exp]
       positivity
     gcongr
     · exact mgf_pos' h0 (h_int t)
@@ -265,6 +271,12 @@ lemma prob_ge_le [IsProbabilityMeasure μ] (h : IsSubGaussianWith X c μ) (hε :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   rw [isSubGaussianWith_iff_kernel] at h
   simpa using h.prob_ge_le hε
+
+lemma add_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : IsSubGaussianWith X cX μ)
+    (hY : IsSubGaussianWith Y cY μ) (hindep : IndepFun X Y μ) :
+    IsSubGaussianWith (X + Y) (cX + cY) μ := by
+  rw [isSubGaussianWith_iff_kernel] at hX hY ⊢
+  simpa using hX.add_indepFun hY hindep
 
 end IsSubGaussianWith
 
