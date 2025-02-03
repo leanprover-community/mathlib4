@@ -333,7 +333,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
     exact zero_le (g x)
 
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
-    (h : tsupport f ⊆ V) : ENNReal.ofNNReal (Λ f) ≤ rieszMeasure Λ V := by
+    (h : tsupport f ⊆ V) : .ofNNReal (Λ f) ≤ rieszMeasure Λ V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
   apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
