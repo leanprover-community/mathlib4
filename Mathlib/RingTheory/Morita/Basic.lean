@@ -48,8 +48,8 @@ variable (R : Type u₀) [CommSemiring R]
 open scoped ModuleCat.Algebra
 
 /--
-Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent if the categories of
-`A`-modules and `B`-modules are equivalent as `R`-linear categories.
+Let `A` and `B` be `R`-algebras. A Morita equivalence between `A` and `B` is an `R`-linear
+equivalence between the categories of `A`-modules and `B`-modules.
 -/
 @[ext]
 structure MoritaEquivalence
