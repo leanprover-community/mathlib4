@@ -702,9 +702,9 @@ theorem δ₁_apply (z : G → X.X₃) (hz : z ∈ oneCocycles X.X₃) (y : G �
     simp [δ₁, ← Category.assoc, (CommSq.vert_inv ⟨groupCohomologyπ_comp_isoH1_hom X.X₃⟩).w,
         isoOneCocycles_inv_apply_eq_cyclesMk X.X₃ ⟨z, hz⟩, HomologicalComplex.cyclesMk,
         groupCohomology]
-  · rw [moduleCatCyclesIso_inv_apply]
-    simp [(Iso.eq_inv_comp _).2 (groupCohomologyπ_comp_isoH2_hom X.X₁).symm,
-      -groupCohomologyπ_comp_isoH2_hom, isoTwoCocycles_inv_apply_eq_cyclesMk X.X₁ ⟨x, _⟩,
+  · rw [moduleCatCyclesIso_inv_apply,
+      (Iso.eq_inv_comp _).2 (groupCohomologyπ_comp_isoH2_hom X.X₁).symm]
+    simp [-groupCohomologyπ_comp_isoH2_hom, isoTwoCocycles_inv_apply_eq_cyclesMk X.X₁ ⟨x, _⟩,
       HomologicalComplex.cyclesMk]
 
 theorem epi_δ₁_of_isZero (h2 : IsZero (ModuleCat.of k <| H2 X.X₂)) :

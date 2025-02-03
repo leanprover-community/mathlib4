@@ -364,7 +364,7 @@ variable (k G) in
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
 abbrev free (α : Type u) : Rep k G :=
-  finsupp α (leftRegular k G)
+  Rep.of (V := α →₀ G →₀ k) (Representation.free k G α)
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
