@@ -60,11 +60,13 @@ theorem get_finRange {n : ℕ} {i : ℕ} (h) :
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 
-@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
-  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
-  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
+@[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
+  have : (finRange k).idxOf i < (finRange k).length := idxOf_lt_length_iff.mpr (by simp)
+  have h₁ : (finRange k).get ⟨(finRange k).idxOf i, this⟩ = i := idxOf_get this
   have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
   simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
+
+@[deprecated (since := "2025-01-30")] alias indexOf_finRange := idxOf_get
 
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by

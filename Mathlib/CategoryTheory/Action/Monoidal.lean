@@ -46,7 +46,11 @@ theorem tensorUnit_ρ' {g : G} :
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_ρ {g : G} :
+    -- Have to hint `F` here, otherwise `simp` doesn't reduce `↑(MonCat.of (End _))` to `End _`.
+    DFunLike.coe (F := _ →* End _)
+      -- Have to hint `Y` here for `simpNF` reasons.
+      (ConcreteCategory.hom (Y := MonCat.of (End (𝟙_ V))) (𝟙_ (Action V G)).ρ) g = 𝟙 (𝟙_ V) :=
   rfl
 
 /- Adding this solves `simpNF` linter report at `tensor_ρ` -/
@@ -56,7 +60,12 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
   rfl
 
 @[simp]
-theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensor_ρ {X Y : Action V G} {g : G} :
+    -- Have to hint `F` here, otherwise `simp` doesn't reduce `↑(MonCat.of (End _))` to `End _`.
+    DFunLike.coe (F := _ →* End _)
+      -- Have to hint `Y` here for `simpNF` reasons.
+      (ConcreteCategory.hom (Y := MonCat.of (End (tensorObj X.V Y.V))) (X ⊗ Y).ρ) g =
+    X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -183,13 +192,9 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 
@@ -212,16 +217,17 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
         change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
-        rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
+        rw [mul_inv_rev, ← X.ρ.hom.map_mul, inv_mul_cancel_right] }
   inv :=
     { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
+        dsimp [leftRegular] -- Unfold `leftRegular` so `rw` can see through `(leftRegular V).V = V`
         rw [tensor_ρ, tensor_ρ]
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [leftRegular_ρ_apply]
+        erw [leftRegular_ρ_hom_apply]
         rw [map_mul]
         rfl }
   hom_inv_id := by
