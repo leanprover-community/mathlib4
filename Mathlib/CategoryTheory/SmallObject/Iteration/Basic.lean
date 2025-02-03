@@ -157,7 +157,7 @@ lemma prop_iff {X Y : C} (f : X ⟶ Y) :
 variable [LinearOrder J]
 
 /-- Given a functor `F : Set.Iic ⥤ C`, this is the morphism in `C`, as an element
-in `Arrow C`, that is obtained by applying `F.map` to an inequality, -/
+in `Arrow C`, that is obtained by applying `F.map` to an inequality. -/
 def arrowMap {j : J} (F : Set.Iic j ⥤ C) (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ j) :
     Arrow C :=
   Arrow.mk (F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans h₂⟩ ⟶ ⟨i₂, h₂⟩))
