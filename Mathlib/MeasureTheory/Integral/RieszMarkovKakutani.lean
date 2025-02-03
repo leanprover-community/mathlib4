@@ -41,7 +41,7 @@ section Λ_mono
 
 @[gcongr]
 lemma Λ_mono (f₁ f₂ : C_c(X, ℝ≥0)) (h : f₁.1 ≤ f₂.1) : Λ f₁ ≤ Λ f₂ := by
-  obtain ⟨g, hg⟩ := exist_add_eq f₁ f₂ h
+  obtain ⟨g, hg⟩ := CompactlySupportedContinuousMap.exists_add_of_le h
   simp only [← hg, map_add, le_add_iff_nonneg_right, zero_le]
 
 end Λ_mono

@@ -57,7 +57,7 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- The measure induced for `Real`-linear positive functional `Λ`, defined through `toNNRealLinear`
 and the `NNReal`-version of `rieszContent`. -/
-def rieszMeasure := (rieszContent (toNNRealLinear hΛ)).measure
+def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
 `Λ f ≤ rieszMeasure K`. -/
@@ -69,12 +69,12 @@ lemma leRieszMeasure_of_Compacts {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x 
     simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply, coe_toContinuousMap]
     exact (hf x).1
   simp only [rieszMeasure, MeasureTheory.Content.measure_eq_content_of_regular
-    (rieszContent (toNNRealLinear hΛ)) (contentRegular_rieszContent (toNNRealLinear hΛ))]
+    (rieszContent (toNNRealLinear Λ hΛ)) (contentRegular_rieszContent (toNNRealLinear Λ hΛ))]
   rw [rieszContent]
   simp only [ENNReal.ofReal_eq_coe_nnreal Lfnonneg, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear hΛ) K
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ) K
     (Real.toNNReal_pos.mpr hε)
   simp only [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
   apply le_of_lt (lt_of_le_of_lt _ hg.2)
@@ -82,9 +82,10 @@ lemma leRieszMeasure_of_Compacts {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x 
   intro x
   simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
-  · exact le_trans (hf x).2 (hg.1 x (Set.mem_of_subset_of_mem h hx))
+  · simp only [coe_toRealLinearMap, toReal_apply]
+    exact le_trans (hf x).2 (hg.1 x (Set.mem_of_subset_of_mem h hx))
   · rw [image_eq_zero_of_nmem_tsupport hx]
-    exact NNReal.zero_le_coe
+    simp
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
@@ -358,11 +359,11 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         exact hErestmeasurable n
     -- take open sets `V` that include `E` with small error.
     set SpecV := fun (n : Fin (⌈N⌉₊ + 1)) =>
-      MeasureTheory.Content.outerMeasure_exists_open (rieszContent (toNNRealLinear hΛ))
+      MeasureTheory.Content.outerMeasure_exists_open (rieszContent (toNNRealLinear Λ hΛ))
       (ne_of_lt (lt_of_le_of_lt
-        ((rieszContent (toNNRealLinear hΛ)).outerMeasure.mono (hErestsubtsupport n))
+        ((rieszContent (toNNRealLinear Λ hΛ)).outerMeasure.mono (hErestsubtsupport n))
         (MeasureTheory.Content.outerMeasure_lt_top_of_isCompact
-          (rieszContent (toNNRealLinear hΛ)) f.2)))
+          (rieszContent (toNNRealLinear Λ hΛ)) f.2)))
       (ne_of_gt (Real.toNNReal_pos.mpr (div_pos hε'.1 (Nat.cast_pos.mpr (Nat.add_one_pos ⌈N⌉₊)))))
     set V : Fin (⌈N⌉₊ + 1) → Opens X := fun n => Classical.choose (SpecV n) ⊓
       ⟨(f ⁻¹' Iio (y (n + 1) + ε')), IsOpen.preimage f.1.2 isOpen_Iio⟩ with hV
@@ -402,8 +403,8 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         (rieszMeasure Λ hΛ (TopologicalSpace.Compacts.mk (tsupport f) f.2)) ≤
         ENNReal.ofReal (Λ (∑ n, ⟨g n, hg.2.2.2 n⟩)) := by
       rw [rieszMeasure]
-      rw [MeasureTheory.Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear hΛ))
-        (contentRegular_rieszContent (toNNRealLinear hΛ)) ⟨tsupport f, f.2⟩]
+      rw [MeasureTheory.Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
+        (contentRegular_rieszContent (toNNRealLinear Λ hΛ)) ⟨tsupport f, f.2⟩]
       rw [rieszContent]
       simp only [map_sum]
       apply ENNReal.coe_le_iff.mpr
@@ -444,10 +445,10 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         rw [hnng]
         simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk]
         apply congr (Eq.refl _)
-        simp only [CompactlySupportedContinuousMap.mk.injEq]
+        simp only [coe_toRealLinearMap]
         ext x
-        simp only [ContinuousMap.coe_mk, comp_apply, Real.coe_toNNReal', max_eq_left_iff,
-          NNReal.val_eq_coe, Real.coe_toNNReal', sup_eq_left]
+        simp only [toReal_apply, coe_mk, ContinuousMap.coe_mk, comp_apply, Real.coe_toNNReal',
+          sup_eq_left]
         exact (hg.2.2.1 n x).1
       · rw [← map_sum Λ _ Finset.univ]
         apply hΛ
@@ -562,10 +563,10 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
       intro n
       rw [rieszMeasure]
       rw [← TopologicalSpace.Opens.carrier_eq_coe]
-      rw [MeasureTheory.Content.measure_apply (rieszContent ((toNNRealLinear hΛ)))
+      rw [MeasureTheory.Content.measure_apply (rieszContent ((toNNRealLinear Λ hΛ)))
         (V n).2.measurableSet]
       rw [TopologicalSpace.Opens.carrier_eq_coe]
-      rw [MeasureTheory.Content.measure_apply (rieszContent ((toNNRealLinear hΛ)))
+      rw [MeasureTheory.Content.measure_apply (rieszContent ((toNNRealLinear Λ hΛ)))
         (hErestmeasurable n)]
       -- take `Un = V n` but with the condition with `Classical.choose`.
       set Un := Classical.choose (SpecV n) with hUn
@@ -573,9 +574,9 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
       have hVU : V n ≤ Un := by
         exact inf_le_left
       have hrieszMeasureVlerieszMeasureU :
-          (rieszContent (toNNRealLinear hΛ)).outerMeasure (V n)
-            ≤ (rieszContent (toNNRealLinear hΛ)).outerMeasure (Un) := by
-        exact MeasureTheory.OuterMeasure.mono (rieszContent (toNNRealLinear hΛ)).outerMeasure hVU
+          (rieszContent (toNNRealLinear Λ hΛ)).outerMeasure (V n)
+            ≤ (rieszContent (toNNRealLinear Λ hΛ)).outerMeasure (Un) := by
+        exact MeasureTheory.OuterMeasure.mono (rieszContent (toNNRealLinear Λ hΛ)).outerMeasure hVU
       apply le_trans hrieszMeasureVlerieszMeasureU
       rw [hUn]
       have hENNNR : ∀ (p : ℝ), ENNReal.ofReal p = p.toNNReal := by
