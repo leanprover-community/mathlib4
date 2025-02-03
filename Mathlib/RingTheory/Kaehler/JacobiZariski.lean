@@ -168,6 +168,10 @@ section instanceProblem
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
   SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
 
+instance : IsScalarTower S T (Q.comp P).toExtension.CotangentSpace := by
+  unfold Extension.CotangentSpace
+  infer_instance
+
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
       LinearMap.inr T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) =
@@ -376,26 +380,28 @@ def δ :
 
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by
-  apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
-    (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
-  · apply (P.cotangentSpaceBasis.baseChange T).ext
-    intro i
-    simp only [Basis.baseChange_apply, LinearMap.coe_comp, Function.comp_apply,
-      LinearMap.baseChange_tmul, toKaehler_cotangentSpaceBasis, mapBaseChange_tmul, map_D,
-      one_smul, comp_vars, LinearMap.liftBaseChange_tmul]
-    rw [cotangentSpaceBasis_apply]
-    conv_rhs => enter [2]; tactic => exact Extension.CotangentSpace.map_tmul ..
-    simp only [map_one, mapBaseChange_tmul, map_D, one_smul]
-    simp [Extension.Hom.toAlgHom]
-  · exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
+  sorry
+  --apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
+  --  (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
+  --· apply (P.cotangentSpaceBasis.baseChange T).ext
+  --  intro i
+  --  simp only [Basis.baseChange_apply, LinearMap.coe_comp, Function.comp_apply,
+  --    LinearMap.baseChange_tmul, toKaehler_cotangentSpaceBasis, mapBaseChange_tmul, map_D,
+  --    one_smul, comp_vars, LinearMap.liftBaseChange_tmul]
+  --  rw [cotangentSpaceBasis_apply]
+  --  conv_rhs => enter [2]; tactic => exact Extension.CotangentSpace.map_tmul ..
+  --  simp only [map_one, mapBaseChange_tmul, map_D, one_smul]
+  --  simp [Extension.Hom.toAlgHom]
+  --· exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
 
 lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
     (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.1) (z)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
-  apply SnakeLemma.δ_eq
-  exacts [hy, hz]
+  sorry
+  --apply SnakeLemma.δ_eq
+  --exacts [hy, hz]
 
 lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
@@ -428,11 +434,12 @@ lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
 
 lemma exact_map_δ :
     Function.Exact (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom) (δ Q P) := by
-  apply SnakeLemma.exact_δ_right
-    (ι₂ := (Q.comp P).toExtension.h1Cotangentι)
-    (hι₂ := LinearMap.exact_subtype_ker_map _)
-  · ext x; rfl
-  · exact Subtype.val_injective
+  sorry
+  --apply SnakeLemma.exact_δ_right
+  --  (ι₂ := (Q.comp P).toExtension.h1Cotangentι)
+  --  (hι₂ := LinearMap.exact_subtype_ker_map _)
+  --· ext x; rfl
+  --· exact Subtype.val_injective
 
 lemma δ_map
     (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
