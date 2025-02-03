@@ -58,22 +58,22 @@ structure MoritaEquivalence
     (B : Type u₂) [Ring B] [Algebra R B] where
   /--the underlying equivalence of categories-/
   eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
-  linear :
-    haveI := eqv.functor.additive_of_preserves_binary_products
-    eqv.functor.Linear R := by infer_instance
+  linear : eqv.functor.Linear R := by infer_instance
 
 namespace MoritaEquivalence
 
-attribute [scoped instance] CategoryTheory.Functor.additive_of_preserves_binary_products
-
 attribute [instance] MoritaEquivalence.linear
+
+instance {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
+    (e : MoritaEquivalence R A B) : e.eqv.functor.Additive :=
+  e.eqv.functor.additive_of_preserves_binary_products
 
 /--
 For any `R`-algebra `A`, `A` is Morita equivalent to itself.
 -/
 def refl (A : Type u₁) [Ring A] [Algebra R A] : MoritaEquivalence R A A where
   eqv := CategoryTheory.Equivalence.refl
-  linear := CategoryTheory.Functor.instLinearId
+  linear := Functor.instLinearId
 
 /--
 For any `R`-algebras `A` and `B`, if `A` is Morita equivalent to `B`, then `B` is Morita equivalent
@@ -100,7 +100,7 @@ def trans {A B C : Type u₁}
     (e : MoritaEquivalence R A B) (e' : MoritaEquivalence R B C) :
     MoritaEquivalence R A C where
   eqv := e.eqv.trans e'.eqv
-  linear := Functor.instLinearComp e.eqv.functor e'.eqv.functor
+  linear := e.eqv.functor.instLinearComp e'.eqv.functor
 
 variable {R} in
 /--
