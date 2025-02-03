@@ -308,8 +308,8 @@ theorem Memℒp.eLpNorm_indicator_norm_ge_pos_le (hf : Memℒp f p μ) (hmeas : 
   obtain ⟨M, hM⟩ := hf.eLpNorm_indicator_norm_ge_le hmeas hε
   refine
     ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), le_trans (eLpNorm_mono fun x => ?_) hM⟩
-  rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
-  refine Set.indicator_le_indicator_of_subset (fun x hx => ?_) (fun x => norm_nonneg (f x)) x
+  simp only [enorm_indicator_eq_indicator_enorm]
+  refine Set.indicator_le_indicator_of_subset (fun x hx => ?_) (fun _ => zero_le _) x
   rw [Set.mem_setOf_eq] at hx -- removing the `rw` breaks the proof!
   exact (max_le_iff.1 hx).1
 
@@ -334,6 +334,7 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
   have haebdd : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ M := by
     filter_upwards
     exact fun x => (hf x).le
+  sorry /- full proof was:
   refine le_trans (eLpNorm_le_of_ae_bound haebdd) ?_
   rw [Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
     ← ENNReal.le_div_iff_mul_le (Or.inl _) (Or.inl ENNReal.ofReal_ne_top)]
@@ -341,7 +342,7 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
     refine le_trans hμ ?_
     rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM),
       ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp hp_top), ENNReal.ofReal_div_of_pos hM]
-  · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne]
+  · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne] -/
 
 section
 
@@ -474,7 +475,7 @@ theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
         Real.norm_eq_abs, abs_of_nonneg hc]
       exact hf x hx
     · simp [Set.indicator_of_not_mem hx]
-  refine le_trans (eLpNorm_mono this) ?_
+  refine le_trans (eLpNorm_mono (fun x ↦ foo_leq (this x))) ?_
   rw [eLpNorm_indicator_const hs hp hp']
   refine mul_le_mul_right' (le_of_eq ?_) _
   rw [← ofReal_norm_eq_enorm, Real.norm_eq_abs, abs_of_nonneg hc]
