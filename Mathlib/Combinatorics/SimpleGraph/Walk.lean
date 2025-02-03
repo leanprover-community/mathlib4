@@ -999,7 +999,7 @@ lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     cases' hwp with hl hr
     · exact hl.symm
     · by_contra! hc
-      simp [cons_takeUntil hr hc] at hnil
+      simp [takeUntil_cons hr hc] at hnil
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
@@ -1134,7 +1134,7 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
     simp only [support_cons, List.mem_cons, huw, false_or] at hw
     by_cases hn0 : n = 0
     · aesop
-    simp only [cons_takeUntil hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
+    simp only [takeUntil_cons hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
       getVert_cons _ _ hn0] at hn ⊢
     apply q.getVert_takeUntil hw
     omega
@@ -1164,15 +1164,15 @@ lemma takeUntil_takeUntil (p : G.Walk u v) (w x : V) (hw : w ∈ p.support)
   | case3 a w' v' hadj q u' hu' hau' _ ih =>
     rw [← Ne.eq_def] at hau'
     simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
-    simp only [cons_takeUntil hu' hau' hadj, support_cons, List.mem_cons] at hx
+    simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
     by_cases hx' : x = a
     · aesop
     · simp [hx'] at hx
       push_neg at hx'
       conv_lhs =>
         enter [1]
-        rw [cons_takeUntil hu' hau' hadj]
-      rw [cons_takeUntil hx hx'.symm hadj, ih _, cons_takeUntil _ hx'.symm]
+        rw [takeUntil_cons hu' hau' hadj]
+      rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
