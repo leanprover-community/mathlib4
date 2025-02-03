@@ -296,9 +296,9 @@ noncomputable def functorEnrichedHom : J ⥤ V where
   map_id X := by
     dsimp
     ext j
-    dsimp
-    simp only [end_.lift_π, Functor.comp_obj, Under.forget_obj, Under.map_obj_right,
-      diagram_obj_obj, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom,
+    -- this was produced by `simp?`
+    simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, end_.lift_π,
+      Under.map_obj_right, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom,
       eHomWhiskerLeft_id, comp_id, id_comp]
     congr 1
     simp [Under.map, Comma.mapLeft]
@@ -306,6 +306,7 @@ noncomputable def functorEnrichedHom : J ⥤ V where
   map_comp f g := by
     dsimp
     ext j
+    -- this was produced by `simp?`
     simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, end_.lift_π,
       Under.map_obj_right, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom,
       eHomWhiskerLeft_id, comp_id, assoc]
@@ -330,10 +331,10 @@ noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
   end_.lift (fun j ↦ s.π.app j ≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))) (fun j j' f ↦ by
     dsimp
     rw [← s.w f, assoc, assoc, assoc]
-    dsimp
-    simp only [end_.lift_π_assoc, diagram_obj_obj, Functor.comp_obj, Under.forget_obj,
-      Under.mk_right, Under.map_obj_right, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id,
-      Iso.refl_hom, eHomWhiskerLeft_id, comp_id]
+    -- this was produced by `simp?`
+    simp only [functorEnrichedHom_obj, functorEnrichedHom_map, end_.lift_π_assoc, diagram_obj_obj,
+      Functor.comp_obj, Under.forget_obj, Under.mk_right, Under.map_obj_right, Iso.refl_inv,
+      NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom, eHomWhiskerLeft_id, comp_id]
     have := enrichedHom_condition V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
       (Under.homMk f : Under.mk (𝟙 j) ⟶ Under.mk f)
     dsimp at this
@@ -366,10 +367,7 @@ noncomputable def isLimitConeFunctorEnrichedHom :
   uniq s m hm := by
     dsimp
     ext j
-    have := ((hm j).trans (fac s j).symm) =≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))
-    dsimp [coneFunctorEnrichedHom] at this
-    rw [assoc, assoc, end_.lift_π] at this
-    simpa using this
+    simpa using ((hm j).trans (fac s j).symm) =≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))
 
 end
 
