@@ -51,7 +51,7 @@ lemma face_le_subcomplexHorn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
 lemma subcomplexHorn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     (subcomplexHorn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
   ext j
-  -- this was produced using `simp? [subcomplexHorn_eq_iSup] says`
+  -- this was produced using `simp? [subcomplexHorn_eq_iSup]`
   simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.top_eq_univ,
