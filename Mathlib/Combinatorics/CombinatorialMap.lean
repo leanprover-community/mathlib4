@@ -163,6 +163,7 @@ def vertices.deg [Fintype D] [DecidableEq D] (v : M.vertices) : ℕ :=
       ext
       exact ⟨h.symm.trans, h.trans⟩) v
 
+/-- Set of darts incident to a vertex. -/
 def vertices.darts (v : M.vertices) : Set D :=
   {d : D | M.dartVertex d = v}
 
@@ -175,9 +176,11 @@ noncomputable instance [Fintype D] : Fintype M.edges :=
 noncomputable instance [Fintype D] : Fintype M.faces :=
   Fintype.ofFinite M.faces
 
+/-- The Euler characteristic of a combinatorial map. -/
 noncomputable def EulerCharacteristic [Fintype D] : ℕ :=
   (Fintype.card M.vertices) - (Fintype.card M.edges) + (Fintype.card M.faces)
 
+/-- Planarity is characterized by Euler's formula. -/
 def IsPlanar [Fintype D] : Prop :=
   M.EulerCharacteristic = 2
 
