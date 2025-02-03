@@ -411,9 +411,6 @@ theorem eLpNormEssSup_mono_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖
 @[deprecated (since := "2025-02-02")]
 alias eLpNormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_enorm_ae
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_nnnorm_ae
-
 theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   simp only [eLpNorm]
@@ -481,9 +478,6 @@ theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ 
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_lt_top_of_ae_bound := eLpNormEssSup_lt_top_of_ae_bound
-
 theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
@@ -497,17 +491,11 @@ theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ
 @[deprecated (since := "2025-02-22")]
 alias eLpNorm_le_of_ae_nnnorm_bound := eLpNorm_le_of_ae_enorm_bound
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_of_ae_nnnorm_bound := eLpNorm_le_of_ae_nnnorm_bound
-
 -- FIXME: perhaps the statement makes no sense now: happy to change it
 theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) :
     eLpNorm f p μ ≤ μ Set.univ ^ p.toReal⁻¹ * ENNReal.ofReal C := by
   rw [← mul_comm]
   exact eLpNorm_le_of_ae_enorm_bound (hfC.mono fun x hx => hx)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_of_ae_bound := eLpNorm_le_of_ae_bound
 
 theorem eLpNorm_congr_enorm_ae {f : α → ε} {g : α → ε'} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm f p μ = eLpNorm g p μ :=
@@ -519,7 +507,7 @@ alias eLpNorm_congr_nnnorm_ae := eLpNorm_congr_enorm_ae
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm f p μ = eLpNorm g p μ :=
-  eLpNorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
+  eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => sorry -- TODO fix! was: NNReal.eq hx
 
 -- XXXMR: need a zero element in ε
 open scoped symmDiff in
@@ -536,9 +524,6 @@ theorem eLpNorm'_norm {f : α → F} :
 theorem eLpNorm'_enorm {f : α → ε} :
     eLpNorm' (fun a => ‖f a‖ₑ) q μ = eLpNorm' f q μ := by simp [eLpNorm'_eq_lintegral_enorm]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_norm := eLpNorm'_norm
-
 @[simp]
 theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNorm f p μ :=
   eLpNorm_congr_norm_ae <| Eventually.of_forall fun _ => norm_norm _
@@ -547,9 +532,6 @@ theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNor
 theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x => ‖f x‖ₑ) p μ = eLpNorm f p μ :=
   -- TODO: add a lemma enorm_enorm and use it here!
   eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => rfl
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_norm := eLpNorm_norm
 
 theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
@@ -569,9 +551,6 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, ← ofReal_norm_eq_enorm,
     Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm p,
     ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_norm_rpow := eLpNorm'_norm_rpow
 
 theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
@@ -599,13 +578,8 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
   -- missing: ‖f x‖ ^ q and ‖f x‖ₑ ^ q have the same eLpNorm
   sorry
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_norm_rpow := eLpNorm_norm_rpow
-
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl
-
-#exit
 
 theorem memℒp_congr_ae [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g) :
     Memℒp f p μ ↔ Memℒp g p μ := by
