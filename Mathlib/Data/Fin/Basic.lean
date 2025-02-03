@@ -1265,6 +1265,17 @@ lemma succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
   · rw [predAbove_of_le_castSucc _ _ (Fin.le_of_lt h), succAbove_castPred_of_lt _ _ h]
   · rw [predAbove_of_castSucc_lt _ _ h, succAbove_pred_of_lt _ _ h]
 
+/-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
+then back to `Fin (n+1)` with a gap around `p.succ` is the identity away from `p.succ`. -/
+@[simp]
+lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.succ) :
+    p.succ.succAbove (p.predAbove i) = i := by
+  obtain h | h := Fin.lt_or_lt_of_ne h
+  · rw [predAbove_of_le_castSucc _ _ (le_castSucc_iff.2 h),
+      succAbove_castPred_of_lt _ _ h]
+  · rw [predAbove_of_castSucc_lt _ _ (Fin.lt_of_le_of_lt (p.castSucc_le_succ) h),
+      succAbove_pred_of_lt _ _ h]
+
 /-- Sending `Fin n` into `Fin (n + 1)` with a gap at `p`
 then back to `Fin n` by subtracting one from anything above `p` is the identity. -/
 @[simp]
