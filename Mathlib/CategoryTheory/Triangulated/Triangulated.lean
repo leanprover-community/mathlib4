@@ -13,6 +13,7 @@ pretriangulated categories which satisfy the octahedron axiom.
 
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -31,8 +32,8 @@ variable {C}
 
 -- Porting note: see https://github.com/leanprover/lean4/issues/2188
 set_option genInjectivity false in
-/-- An octahedron is a type of datum whose existence is asserted by
-the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
+/-- An octahedron is a type of datum whose existence is asserted by the octahedron axiom (TR 4). -/
+@[stacks 05QK]
 structure Octahedron
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
@@ -159,7 +160,8 @@ end Triangulated
 open Triangulated
 
 /-- A triangulated category is a pretriangulated category which satisfies
-the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
+the octahedron axiom (TR 4). -/
+@[stacks 05QK]
 class IsTriangulated : Prop where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :

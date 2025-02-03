@@ -118,6 +118,7 @@ theorem AnalyticWithinAt.differentiableWithinAt (h : AnalyticWithinAt 𝕜 f s x
   obtain ⟨p, hp⟩ := h
   exact hp.differentiableWithinAt
 
+@[fun_prop]
 theorem AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt 𝕜 f x
   | ⟨_, hp⟩ => hp.differentiableAt
 
@@ -204,7 +205,7 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
-  simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
+  simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
@@ -219,7 +220,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   · dsimp only
     rw [← h.fderivWithin_eq _ _ hu, add_sub_cancel]
-    · simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz.2
+    · simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz.2
     · simpa using hz.1
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. For a
@@ -234,6 +235,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace
   exact this.symm
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
+@[fun_prop]
 protected theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (fderiv 𝕜 f) x := by
   rcases h with ⟨p, r, hp⟩
@@ -313,7 +315,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [← b.isEmbedding.hasSum_iff]
   have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
     a.comp_hasFPowerSeriesWithinOnBall h
-  have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_eq_coe_nnnorm] using hy)
+  have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_eq_enorm] using hy)
   have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
     apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
     exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
@@ -337,7 +339,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn
     (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
-  apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
+  apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_zero_eq_enorm] using h'y) hy
   · rw [insert_eq_of_mem hx] at hy ⊢
     apply DifferentiableWithinAt.hasFDerivWithinAt
     exact h.differentiableOn _ hy
@@ -487,7 +489,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
-  simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
+  simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function has a finite power series on a ball, then so does its derivative.
 This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
@@ -595,8 +597,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr; ext j
   obtain rfl | hj := eq_or_ne j i
-  · rw [Function.update_same, if_pos rfl]
-  · rw [Function.update_noteq hj, if_neg hj]
+  · rw [Function.update_self, if_pos rfl]
+  · rw [Function.update_of_ne hj, if_neg hj]
 
 protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
@@ -688,7 +690,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDIte, Pi.compRightL,
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
-      rw [Function.update_noteq]
+      rw [Function.update_of_ne]
       contrapose! hke
       rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
@@ -812,7 +814,7 @@ theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
     simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
       coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,
       MultilinearMap.coe_mkContinuous, MultilinearMap.coe_mk, ne_eq, reduceCtorEq,
-      not_false_eq_true, Function.update_noteq, coe_comp', coe_snd', Function.comp_apply,
+      not_false_eq_true, Function.update_of_ne, coe_comp', coe_snd', Function.comp_apply,
       proj_apply]
     congr
     ext j

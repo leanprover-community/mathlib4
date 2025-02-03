@@ -48,8 +48,6 @@ universe u v
 
 noncomputable section
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 variable {K : Type u}
@@ -320,6 +318,8 @@ open RatFunc
 
 variable {G₀ L R S F : Type*} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
 variable [FunLike F R[X] S[X]]
+
+open scoped Classical in
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `RatFunc R →* RatFunc S`,
 on the condition that `φ` maps non zero divisors to non zero divisors,
@@ -495,11 +495,12 @@ section IsDomain
 variable [IsDomain K]
 
 instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) where
-  toFun x := RatFunc.mk (algebraMap _ _ x) 1
-  map_add' x y := by simp only [mk_one', RingHom.map_add, ofFractionRing_add]
-  map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
-  map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
-  map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero]
+  algebraMap :=
+  { toFun x := RatFunc.mk (algebraMap _ _ x) 1
+    map_add' x y := by simp only [mk_one', RingHom.map_add, ofFractionRing_add]
+    map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
+    map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
+    map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero] }
   smul := (· • ·)
   smul_def' c x := by
     induction' x using RatFunc.induction_on' with p q hq
@@ -740,7 +741,7 @@ open GCDMonoid Polynomial
 
 variable [Field K]
 
-set_option tactic.skipAssignedInstances false in
+open scoped Classical in
 /-- `RatFunc.numDenom` are numerator and denominator of a rational function over a field,
 normalized such that the denominator is monic. -/
 def numDenom (x : RatFunc K) : K[X] × K[X] :=
@@ -775,6 +776,7 @@ def numDenom (x : RatFunc K) : K[X] × K[X] :=
         rw [inv_div, mul_comm, mul_div_assoc, ← mul_assoc, inv_inv, mul_inv_cancel₀ ha',
           one_mul, inv_div])
 
+open scoped Classical in
 @[simp]
 theorem numDenom_div (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     numDenom (algebraMap _ _ p / algebraMap _ _ q) =
@@ -790,6 +792,7 @@ normalized such that the denominator is monic. -/
 def num (x : RatFunc K) : K[X] :=
   x.numDenom.1
 
+open scoped Classical in
 private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) =
       Polynomial.C (q / gcd p q).leadingCoeff⁻¹ * (p / gcd p q) := by
@@ -798,6 +801,7 @@ private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
 @[simp]
 theorem num_zero : num (0 : RatFunc K) = 0 := by convert num_div' (0 : K[X]) one_ne_zero <;> simp
 
+open scoped Classical in
 @[simp]
 theorem num_div (p q : K[X]) :
     num (algebraMap _ _ p / algebraMap _ _ q) =
@@ -814,10 +818,12 @@ theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert num
 
 theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
+  classical
   rw [num_div _ q, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_left p q)
   · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 
+open scoped Classical in
 /-- A version of `num_div_dvd` with the LHS in simp normal form -/
 @[simp]
 theorem num_div_dvd' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
@@ -828,6 +834,7 @@ normalized such that it is monic. -/
 def denom (x : RatFunc K) : K[X] :=
   x.numDenom.2
 
+open scoped Classical in
 @[simp]
 theorem denom_div (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     denom (algebraMap _ _ p / algebraMap _ _ q) =
@@ -835,6 +842,7 @@ theorem denom_div (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
   rw [denom, numDenom_div _ hq]
 
 theorem monic_denom (x : RatFunc K) : (denom x).Monic := by
+  classical
   induction x using RatFunc.induction_on with
   | f p q hq =>
     rw [denom_div p hq, mul_comm]
@@ -857,6 +865,7 @@ theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ (RatFunc K) p) = 1 := 
 
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
+  classical
   by_cases hq : q = 0
   · simp [hq]
   rw [denom_div _ hq, C_mul_dvd]
@@ -865,6 +874,7 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
 
 @[simp]
 theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ (denom x) = x := by
+  classical
   induction' x using RatFunc.induction_on with p q hq
   have q_div_ne_zero : q / gcd p q ≠ 0 := right_div_gcd_ne_zero hq
   rw [num_div p q, denom_div p hq, RingHom.map_mul, RingHom.map_mul, mul_div_mul_left,
@@ -878,6 +888,7 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
     exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 
 theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
+  classical
   induction' x using RatFunc.induction_on with p q hq
   rw [num_div, denom_div _ hq]
   exact (isCoprime_mul_unit_left

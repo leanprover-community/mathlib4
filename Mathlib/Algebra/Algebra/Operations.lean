@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -67,6 +67,7 @@ section Module
 
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
+-- TODO: Why is this in a file about `Algebra`?
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
 TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
 once a version of `Algebra` without the `commutes'` field is introduced.
@@ -91,8 +92,7 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 
 @[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
-  -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
-  simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
+  simp [one_eq_span]
 
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
@@ -144,10 +144,6 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
 instance : CovariantClass (Submodule R A) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ => smul_mono le_rfl⟩
 
-@[deprecated smul_mono_right (since := "2024-03-31")]
-protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
-  _root_.smul_mono_right I h
-
 variable (I J N P)
 
 @[simp]
@@ -180,10 +176,6 @@ protected theorem smul_assoc {B} [Semiring B] [Module R B] [Module A B] [Module 
       (fun j hj n hn ↦ (smul_assoc r j n).symm ▸ smul_mem_smul (smul_mem_smul hr hj) hn)
       fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
-@[deprecated smul_inf_le (since := "2024-03-31")]
-protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
-    I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
-
 theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
     I • (⨆ i, t i)= ⨆ i, I • t i :=
   toAddSubmonoid_injective <| by
@@ -195,11 +187,6 @@ theorem iSup_smul {ι : Sort*} {t : ι → Submodule R A} {N : Submodule R M} :
     (fun i t ht ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
     (by simp_rw [zero_smul]; apply zero_mem) fun x y ↦ by simp_rw [add_smul]; apply add_mem)
     (iSup_le fun i ↦ Submodule.smul_mono_left <| le_iSup _ i)
-
-@[deprecated smul_iInf_le (since := "2024-03-31")]
-protected theorem smul_iInf_le {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
-    I • iInf t ≤ ⨅ i, I • t i :=
-  smul_iInf_le
 
 protected theorem one_smul : (1 : Submodule R A) • N = N := by
   refine le_antisymm (smul_le.mpr fun r hr m hm ↦ ?_) fun m hm ↦ ?_
@@ -337,6 +324,15 @@ theorem pow_subset_pow {n : ℕ} : (↑M : Set A) ^ n ⊆ ↑(M ^ n : Submodule 
 theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx
 
+lemma restrictScalars_pow {A B C : Type*} [Semiring A] [Semiring B]
+    [Semiring C] [SMul A B] [Module A C] [Module B C]
+    [IsScalarTower A C C] [IsScalarTower B C C] [IsScalarTower A B C]
+    {I : Submodule B C} :
+    ∀ {n : ℕ}, (hn : n ≠ 0) → (I ^ n).restrictScalars A = I.restrictScalars A ^ n
+  | 1, _ => by simp [Submodule.pow_one]
+  | n + 2, _ => by
+    simp [Submodule.pow_succ (n := n + 1), restrictScalars_mul, restrictScalars_pow n.succ_ne_zero]
+
 end Module
 
 variable {ι : Sort uι}
@@ -401,7 +397,8 @@ variable {R} (P Q)
 
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
-  erw [span_mul_span, mul_one, span_eq]
+  rw [span_mul_span]
+  simp
 
 protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
@@ -845,7 +842,9 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    erw [map_mul, h.apply_symm_apply, hxz]
+    rw [map_mul, h.apply_symm_apply]
+    simp only [AlgEquiv.toLinearMap_apply] at hxz
+    rw [hxz]
 
 end Quotient
 

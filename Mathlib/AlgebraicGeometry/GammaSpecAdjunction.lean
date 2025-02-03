@@ -88,13 +88,9 @@ theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
 
 /-- The canonical (bundled) continuous map from the underlying topological
 space of `X` to the prime spectrum of its global sections. -/
-@[simps]
 def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   toFun := X.toΓSpecFun
   continuous_toFun := X.toΓSpec_continuous
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 
 variable (r : Γ.obj (op X))
 
@@ -143,7 +139,7 @@ theorem toΓSpecCApp_iff
   -- Porting Note: Type class problem got stuck in `IsLocalization.Away.AwayMap.lift_comp`
   -- created instance manually. This replaces the `pick_goal` tactics
   have loc_inst := IsLocalization.to_basicOpen (Γ.obj (op X)) r
-  refine CommRingCat.hom_ext_iff.trans ?_
+  refine ConcreteCategory.ext_iff.trans ?_
   rw [← @IsLocalization.Away.lift_comp _ _ _ _ _ _ _ r loc_inst _
       (X.isUnit_res_toΓSpecMapBasicOpen r)]
   --pick_goal 5; exact is_localization.to_basic_open _ r
@@ -311,7 +307,8 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
--- Porting note: `simps` cause a time out, so `Unit` and `counit` will be added manually
+-- Porting note: `simps` generates lemmas not in `simp` normal form, so `unit` and `counit` have to
+-- be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
   unit := identityToΓSpec
   counit := (NatIso.op SpecΓIdentity).inv
@@ -423,7 +420,7 @@ theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
     (Scheme.toSpecΓ X).base x =
       (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
     f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
   ΓSpec.adjunction.unit.naturality f
@@ -480,15 +477,6 @@ theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).appTop ≫
       U.toScheme.toSpecΓ.appTop ≫ U.topIso.hom := by simp
 
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_naturality := Scheme.toSpecΓ_naturality
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_naturality_assoc := Scheme.toSpecΓ_naturality_assoc
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_app_app_top := Scheme.toSpecΓ_appTop
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_map_basicOpen := Scheme.toSpecΓ_preimage_basicOpen
-
 /-! Immediate consequences of the adjunction. -/
 
 
@@ -544,6 +532,13 @@ variable (φ) in
 @[simp] lemma Spec.preimage_map : Spec.preimage (Spec.map φ) = φ :=
   Spec.map_injective (Spec.map_preimage (Spec.map φ))
 
+/-- Useful for replacing `f` by `Spec.map φ` everywhere in proofs. -/
+lemma Spec.map_surjective {R S : CommRingCat} :
+    Function.Surjective (Spec.map : (R ⟶ S) → _) := by
+  intro f
+  use Spec.preimage f
+  simp
+
 /-- Spec is fully faithful -/
 @[simps]
 def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
@@ -551,6 +546,15 @@ def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
   invFun := Spec.map
   left_inv := Spec.map_preimage
   right_inv := Spec.preimage_map
+
+@[simp]
+lemma Spec.preimage_id {R : CommRingCat} : Spec.preimage (𝟙 (Spec R)) = 𝟙 R :=
+  Spec.map_injective (by simp)
+
+@[simp, reassoc]
+lemma Spec.preimage_comp {R S T : CommRingCat} (f : Spec R ⟶ Spec S) (g : Spec S ⟶ Spec T) :
+    Spec.preimage (f ≫ g) = Spec.preimage g ≫ Spec.preimage f :=
+  Spec.map_injective (by simp)
 
 end
 
@@ -565,9 +569,5 @@ instance : Reflective Spec.toLocallyRingedSpace where
 
 instance Spec.reflective : Reflective Scheme.Spec where
   adj := ΓSpec.adjunction
-
-@[deprecated (since := "2024-07-02")]
-alias LocallyRingedSpace.toΓSpec_preim_basicOpen_eq :=
-  LocallyRingedSpace.toΓSpec_preimage_basicOpen_eq
 
 end AlgebraicGeometry

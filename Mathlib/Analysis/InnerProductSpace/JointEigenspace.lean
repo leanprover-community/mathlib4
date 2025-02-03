@@ -111,6 +111,8 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB
 
+open scoped Function -- required for scoped `on` notation
+
 /-- A commuting family of symmetric linear maps on a finite dimensional inner
 product space is simultaneously diagonalizable. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}

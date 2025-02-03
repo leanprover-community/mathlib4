@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
 import Mathlib.RingTheory.Fintype
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Zify
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -30,6 +32,7 @@ This tactic was ported by Thomas Murrills to Lean 4, and then it was converted t
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
@@ -148,8 +151,6 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
 theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
-
-@[deprecated (since := "2024-05-25")] alias Int.coe_nat_pow_pred := Int.natCast_pow_pred
 
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   Int.natCast_pow_pred 2 p (by decide)
@@ -270,14 +271,12 @@ instance : NatCast (X q) where
 
 @[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
+    (ofNat(n) : X q).fst = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).snd = 0 :=
+    (ofNat(n) : X q).snd = 0 :=
   rfl
 
 instance : AddGroupWithOne (X q) :=
@@ -318,18 +317,11 @@ theorem fst_intCast (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
 theorem snd_intCast (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
   rfl
 
-@[deprecated (since := "2024-05-25")] alias nat_coe_fst := fst_natCast
-@[deprecated (since := "2024-05-25")] alias nat_coe_snd := snd_natCast
-@[deprecated (since := "2024-05-25")] alias int_coe_fst := fst_intCast
-@[deprecated (since := "2024-05-25")] alias int_coe_snd := snd_intCast
-
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

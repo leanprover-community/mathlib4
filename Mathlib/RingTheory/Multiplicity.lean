@@ -3,8 +3,9 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
@@ -25,6 +26,7 @@ several basic results on it.
 * `FiniteMultiplicity a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
 -/
 
+assert_not_exists Field
 
 variable {α β : Type*}
 
@@ -218,8 +220,6 @@ theorem Int.natCast_emultiplicity (a b : ℕ) :
 theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b :=
   multiplicity_eq_of_emultiplicity_eq (natCast_emultiplicity a b)
 
-@[deprecated (since := "2024-04-05")] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
-
 theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>
     Nat.casesOn n
@@ -283,7 +283,7 @@ alias multiplicity.Finite.not_pow_dvd_of_multiplicity_lt :=
   FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt
 
 theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < multiplicity a b := by
-  refine zero_lt_iff.2 fun h => ?_
+  refine Nat.pos_iff_ne_zero.2 fun h => ?_
   simpa [hdiv] using FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt
     (by by_contra! nh; simp [nh] at h) (lt_one_iff.mpr h)
 
@@ -352,6 +352,10 @@ theorem emultiplicity_eq_coe {n : ℕ} :
 theorem FiniteMultiplicity.multiplicity_eq_iff (hf : FiniteMultiplicity a b) {n : ℕ} :
     multiplicity a b = n ↔ a ^ n ∣ b ∧ ¬a ^ (n + 1) ∣ b := by
   simp [← emultiplicity_eq_coe, hf.emultiplicity_eq_multiplicity]
+
+theorem emultiplicity_eq_ofNat {a b n : ℕ} [n.AtLeastTwo] :
+    emultiplicity a b = (ofNat(n) : ℕ∞) ↔ a ^ ofNat(n) ∣ b ∧ ¬a ^ (ofNat(n) + 1) ∣ b :=
+  emultiplicity_eq_coe
 
 @[deprecated (since := "2024-11-30")]
 alias multiplicity.Finite.multiplicity_eq_iff := FiniteMultiplicity.multiplicity_eq_iff

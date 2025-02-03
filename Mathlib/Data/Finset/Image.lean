@@ -31,11 +31,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 Move the material about `Finset.range` so that the `Mathlib.Algebra.Group.Embedding` import can be
 removed.
 -/
-
--- TODO
--- assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists OrderedCommMonoid MonoidWithZero MulAction
 
 variable {α β γ : Type*}
 
@@ -492,7 +488,6 @@ theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : 
     (s ∆ t).image f = s.image f ∆ t.image f :=
   mod_cast Set.image_symmDiff hf s t
 
-@[simp]
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
   disjoint_iff_ne.2 fun _ ha _ hb =>
@@ -772,5 +767,27 @@ theorem finsetCongr_trans (e : α ≃ β) (e' : β ≃ γ) :
 theorem finsetCongr_toEmbedding (e : α ≃ β) :
     e.finsetCongr.toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
+
+/-- Given a predicate `p : α → Prop`, produces an equivalence between
+  `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
+
+@[simps]
+protected def finsetSubtypeComm (p : α → Prop) :
+    Finset {a : α // p a} ≃ {s : Finset α // ∀ a ∈ s, p a} where
+  toFun s := ⟨s.map ⟨fun a ↦ a.val, Subtype.val_injective⟩, fun _ h ↦
+    have ⟨v, _, h⟩ := Embedding.coeFn_mk _ _ ▸ mem_map.mp h; h ▸ v.property⟩
+  invFun s := s.val.attach.map (Subtype.impEmbedding _ _ s.property)
+  left_inv s := by
+    ext a; constructor <;> intro h <;>
+    simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
+      exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
+    · rcases h with ⟨_, ⟨_, h₁⟩, h₂⟩; exact h₂ ▸ h₁
+    · use a, ⟨a.property, h⟩
+  right_inv s := by
+    ext a; constructor <;> intro h <;>
+    simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
+      exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
+    · rcases h with ⟨_, _, h₁, h₂⟩; exact h₂ ▸ h₁
+    · use s.property _ h, a
 
 end Equiv
