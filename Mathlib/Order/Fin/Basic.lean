@@ -3,7 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Set
 
 /-!
@@ -71,13 +71,33 @@ instance instLattice      : Lattice (Fin n)      := inferInstance
 
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
-lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
+lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
 
 @[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
 theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
 theorem rev_last_eq_bot (n : ℕ) : rev (last n) = ⊥ := by rw [rev_last, bot_eq_zero]
+
+@[simp]
+theorem succ_top (n : ℕ) [NeZero n] : (⊤ : Fin n).succ = ⊤ := by
+  rw [← rev_zero_eq_top, ← rev_zero_eq_top, ← rev_castSucc, castSucc_zero']
+
+@[simp]
+theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
+
+@[simp]
+theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.le_iff_eq]
+  exact pos_of_neZero n
+
+@[simp]
+theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
+  eq_comm.trans zero_eq_top
+
+@[simp]
+theorem cast_top {m n : ℕ} [NeZero m] [NeZero n] (h : m = n) : (⊤ : Fin m).cast h = ⊤ := by
+  simp [← val_inj, h]
 
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
@@ -117,12 +137,22 @@ lemma strictAnti_iff_succ_lt : StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (cas
 lemma antitone_iff_succ_le : Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
 
+lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
+    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
+  constructor
+  · intro hf i hi
+    have := hf hi
+    simp [Fin.ext_iff] at this
+  · intro hf
+    refine (strictMono_iff_lt_succ (f := f).2 fun i ↦ ?_).injective
+    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
+
 end FromFin
 
 /-! #### Monotonicity -/
 
 lemma val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ ↦ id
-lemma cast_strictMono {k l : ℕ} (h : k = l) : StrictMono (cast h) := fun {_ _} h ↦ h
+lemma cast_strictMono {k l : ℕ} (h : k = l) : StrictMono (Fin.cast h) := fun {_ _} h ↦ h
 
 lemma strictMono_succ : StrictMono (succ : Fin n → Fin (n + 1)) := fun _ _ ↦ succ_lt_succ
 lemma strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m) := fun _ _ ↦ id
@@ -182,27 +212,19 @@ def orderIsoSubtype : Fin n ≃o {i // i < n} :=
 `castOrderIso eq i` embeds `i` into an equal `Fin` type. -/
 @[simps]
 def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
-  toEquiv := ⟨cast eq, cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
+  toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
-
-@[deprecated (since := "2024-05-23")] alias castIso := castOrderIso
 
 @[simp]
 lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
 
-@[deprecated (since := "2024-05-23")] alias symm_castIso := symm_castOrderIso
-
 @[simp]
 lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
-
-@[deprecated (since := "2024-05-23")] alias castIso_refl := castOrderIso_refl
 
 /-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
 apply a generic lemma about `cast`. -/
 lemma castOrderIso_toEquiv (h : n = m) : (castOrderIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h; rfl
-
-@[deprecated (since := "2024-05-23")] alias castIso_to_equiv := castOrderIso_toEquiv
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]
@@ -224,6 +246,8 @@ instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).i
 def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strictMono_succ
 
 @[simp, norm_cast] lemma coe_succOrderEmb : ⇑(succOrderEmb n) = Fin.succ := rfl
+
+@[simp] lemma succOrderEmb_toEmbedding : (succOrderEmb n).toEmbedding = succEmb n := rfl
 
 /-- `Fin.castLE` as an `OrderEmbedding`.
 

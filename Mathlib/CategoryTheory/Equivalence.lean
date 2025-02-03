@@ -71,11 +71,8 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
   The triangle equation is written as a family of equalities between morphisms, it is more
   complicated if we write it as an equality of natural transformations, because then we would have
-  to insert natural transformations like `F ⟶ F1`.
-
-See <https://stacks.math.columbia.edu/tag/001J>
--/
-@[ext]
+  to insert natural transformations like `F ⟶ F1`. -/
+@[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
   /-- A functor in one direction -/
   functor : C ⥤ D
@@ -182,7 +179,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   slice_lhs 2 3 =>
     erw [← map_comp e.inverse, ← e.counitIso.inv.naturality, (e.counitIso.app _).hom_inv_id,
       map_id]
-  erw [id_comp, (e.unitIso.app _).hom_inv_id]; rfl
+  simp
 
 @[reassoc (attr := simp)]
 theorem inverse_counitInv_comp (e : C ≌ D) (Y : D) :
@@ -269,20 +266,19 @@ variable {E : Type u₃} [Category.{v₃} E]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
-  unitIso := by
-    refine Iso.trans e.unitIso ?_
-    exact isoWhiskerLeft e.functor (isoWhiskerRight f.unitIso e.inverse)
-  counitIso := by
-    refine Iso.trans ?_ f.counitIso
-    exact isoWhiskerLeft f.inverse (isoWhiskerRight e.counitIso f.functor)
+  unitIso := e.unitIso ≪≫ isoWhiskerRight (e.functor.rightUnitor.symm ≪≫
+    isoWhiskerLeft _ f.unitIso ≪≫ (Functor.associator _ _ _ ).symm) _ ≪≫ Functor.associator _ _ _
+  counitIso := (Functor.associator _ _ _ ).symm ≪≫ isoWhiskerRight ((Functor.associator _ _ _ ) ≪≫
+      isoWhiskerLeft _ e.counitIso ≪≫ f.inverse.rightUnitor) _ ≪≫ f.counitIso
   -- We wouldn't have needed to give this proof if we'd used `Equivalence.mk`,
   -- but we choose to avoid using that here, for the sake of good structure projection `simp`
   -- lemmas.
   functor_unitIso_comp X := by
     dsimp
-    rw [← f.functor.map_comp_assoc, e.functor.map_comp, ← counitInv_app_functor, fun_inv_map,
-      Iso.inv_hom_id_app_assoc, assoc, Iso.inv_hom_id_app, counit_app_functor, ← Functor.map_comp]
-    erw [comp_id, Iso.hom_inv_id_app, Functor.map_id]
+    simp only [comp_id, id_comp, map_comp, fun_inv_map, comp_obj, id_obj, counitInv,
+      functor_unit_comp_assoc, assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, Iso.inv_hom_id_app]
+    simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/
@@ -293,13 +289,13 @@ def funInvIdAssoc (e : C ≌ D) (F : C ⥤ E) : e.functor ⋙ e.inverse ⋙ F �
 theorem funInvIdAssoc_hom_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).hom.app X = F.map (e.unitInv.app X) := by
   dsimp [funInvIdAssoc]
-  aesop_cat
+  simp
 
 @[simp]
 theorem funInvIdAssoc_inv_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).inv.app X = F.map (e.unit.app X) := by
   dsimp [funInvIdAssoc]
-  aesop_cat
+  simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/
@@ -310,13 +306,13 @@ def invFunIdAssoc (e : C ≌ D) (F : D ⥤ E) : e.inverse ⋙ e.functor ⋙ F �
 theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).hom.app X = F.map (e.counit.app X) := by
   dsimp [invFunIdAssoc]
-  aesop_cat
+  simp
 
 @[simp]
 theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).inv.app X = F.map (e.counitInv.app X) := by
   dsimp [invFunIdAssoc]
-  aesop_cat
+  simp
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
 @[simps! functor inverse unitIso counitIso]
@@ -426,10 +422,8 @@ theorem pow_neg_one (e : C ≌ C) : e ^ (-1 : ℤ) = e.symm :=
 -- Note: the better formulation of this would involve `HasShift`.
 end
 
-/-- The functor of an equivalence of categories is essentially surjective.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is essentially surjective. -/
+@[stacks 02C3]
 instance essSurj_functor (e : C ≌ E) : e.functor.EssSurj :=
   ⟨fun Y => ⟨e.inverse.obj Y, ⟨e.counitIso.app Y⟩⟩⟩
 
@@ -444,20 +438,16 @@ def fullyFaithfulFunctor (e : C ≌ E) : e.functor.FullyFaithful where
 def fullyFaithfulInverse (e : C ≌ E) : e.inverse.FullyFaithful where
   preimage {X Y} f := e.counitIso.inv.app X ≫ e.functor.map f ≫ e.counitIso.hom.app Y
 
-/-- The functor of an equivalence of categories is faithful.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is faithful. -/
+@[stacks 02C3]
 instance faithful_functor (e : C ≌ E) : e.functor.Faithful :=
   e.fullyFaithfulFunctor.faithful
 
 instance faithful_inverse (e : C ≌ E) : e.inverse.Faithful :=
   e.fullyFaithfulInverse.faithful
 
-/-- The functor of an equivalence of categories is full.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is full. -/
+@[stacks 02C3]
 instance full_functor (e : C ≌ E) : e.functor.Full :=
   e.fullyFaithfulFunctor.full
 
@@ -525,13 +515,11 @@ i.e. faithful, full, and essentially surjective. -/
 noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
-  map_id X := by apply F.map_injective; aesop_cat
+  map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
-/-- Interpret a functor that is an equivalence as an equivalence.
-
-See <https://stacks.math.columbia.edu/tag/02C3>. -/
-@[simps functor]
+/-- Interpret a functor that is an equivalence as an equivalence. -/
+@[simps functor, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
@@ -638,20 +626,5 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 end Iso
-
-@[deprecated (since := "2024-04-06")] alias IsEquivalence := Functor.IsEquivalence
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.ofIso := Equivalence.changeFunctor
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
 
 end CategoryTheory

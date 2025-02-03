@@ -181,7 +181,7 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
 
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
-  rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
+  rw [← sub_add_cancel (log (1 + z)) z]
   apply le_trans (norm_add_le _ _)
   exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
 

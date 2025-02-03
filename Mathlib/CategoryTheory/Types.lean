@@ -5,7 +5,7 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.CoeSort
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ToAdditive
 
@@ -224,10 +224,8 @@ def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
   ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
 
-/-- A morphism in `Type` is a monomorphism if and only if it is injective.
-
-See <https://stacks.math.columbia.edu/tag/003C>.
--/
+/-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
+@[stacks 003C]
 theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
@@ -238,10 +236,8 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
 theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
 
-/-- A morphism in `Type` is an epimorphism if and only if it is surjective.
-
-See <https://stacks.math.columbia.edu/tag/003C>.
--/
+/-- A morphism in `Type` is an epimorphism if and only if it is surjective. -/
+@[stacks 003C]
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩

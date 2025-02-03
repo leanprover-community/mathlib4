@@ -37,8 +37,7 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open scoped Classical
-
+open scoped Classical in
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/
 noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
@@ -71,6 +70,7 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
 
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
+  classical
   use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
   intro i
   rw [integerNormalization_coeff, coeffIntegerNormalization]
@@ -364,14 +364,14 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     refine IsIntegral.mul ?_ ?_
     · rw [← isAlgebraic_iff_isIntegral]
       refine .extendScalars
-        (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) ?_
+        (FaithfulSMul.algebraMap_injective R (FractionRing R)) ?_
       exact .algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
       use (f.map (algebraMap R (FractionRing R))).reverse
       constructor
       · rwa [Ne, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
           Polynomial.degree_map_eq_of_injective
-            (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)),
+            (FaithfulSMul.algebraMap_injective R (FractionRing R)),
           Polynomial.degree_eq_bot]
       · have : Invertible (algebraMap S K b) :=
           IsUnit.invertible
@@ -379,7 +379,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
               (mem_nonZeroDivisors_iff_ne_zero.2 fun h =>
                 nonZeroDivisors.ne_zero ha
                   ((injective_iff_map_eq_zero (algebraMap S K)).1
-                    (NoZeroSMulDivisors.algebraMap_injective _ _) b h)))
+                    (FaithfulSMul.algebraMap_injective _ _) b h)))
         rw [Polynomial.aeval_def, ← invOf_eq_inv, Polynomial.eval₂_reverse_eq_zero_iff,
           Polynomial.eval₂_map, ← IsScalarTower.algebraMap_eq, ← Polynomial.aeval_def,
           Polynomial.aeval_algebraMap_apply, hf₂, RingHom.map_zero]
@@ -388,7 +388,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     use f, hf₁
     rw [Polynomial.aeval_algebraMap_apply] at hf₂
     exact
-      (injective_iff_map_eq_zero (algebraMap S K)).1 (NoZeroSMulDivisors.algebraMap_injective _ _) _
+      (injective_iff_map_eq_zero (algebraMap S K)).1 (FaithfulSMul.algebraMap_injective _ _) _
         hf₂
 
 open nonZeroDivisors

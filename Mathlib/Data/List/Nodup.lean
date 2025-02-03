@@ -120,17 +120,21 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
-    indexOf l[i] l = i :=
-  suffices (⟨indexOf l[i] l, indexOf_lt_length.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
+theorem idxOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
+    idxOf l[i] l = i :=
+  suffices (⟨idxOf l[i] l, idxOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
--- This is incorrectly named and should be `indexOf_get`;
+@[deprecated (since := "2025-01-30")] alias indexOf_getElem := idxOf_getElem
+
+-- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
-theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    indexOf (get l i) l = i := by
-  simp [indexOf_getElem, H]
+theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
+    idxOf (get l i) l = i := by
+  simp [idxOf_getElem, H]
+
+@[deprecated (since := "2025-01-30")] alias get_indexOf := get_idxOf
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
@@ -238,9 +242,11 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         List.dropLast_cons_of_ne_nil hl, List.tail_cons]
       simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem, getElem_cons_zero,
         Nat.add_one_sub_one, Nat.lt_add_one, Option.some.injEq, List.getElem_cons,
-        show l.length ≠ 0 from by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
-      rw [h, show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup from by
-        simp [List.dropLast_eq_take, ← List.drop_length_sub_one], List.nodup_append_comm]
+        show l.length ≠ 0 by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
+      rw [h,
+        show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup by
+          simp [List.dropLast_eq_take, ← List.drop_length_sub_one],
+        List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
 theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
@@ -341,7 +347,7 @@ protected theorem Nodup.set :
 
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
     l.map (Function.update f x y) =
-      if x ∈ l then (l.map f).set (l.indexOf x) y else l.map f := by
+      if x ∈ l then (l.map f).set (l.idxOf x) y else l.map f := by
   induction' l with hd tl ihl; · simp
   rw [nodup_cons] at hl
   simp only [mem_cons, map, ihl hl.2]

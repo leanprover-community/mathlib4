@@ -93,7 +93,7 @@ open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
 /-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
-noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
+noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
   let l1 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
@@ -104,14 +104,14 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
         (Sum.inl ∘ Sum.map id (fun i => (1, i)))
   -- p(x) = p(y) as a formula
   let f1 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf Finset.univ l1
+    iInf l1
   let l2 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     fun i => .var (Sum.inl (Sum.inr (0, i))) =' .var (Sum.inl (Sum.inr (1, i)))
   -- x = y as a formula
   let f2 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf Finset.univ l2
+    iInf l2
   let injOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
-    Formula.iAlls (γ := Fin 2 × ι) id
+    Formula.iAlls (Fin 2 × ι)
       (φ.relabel (Sum.map Sum.inl (fun i => (0, i))) ⟹
        φ.relabel (Sum.map Sum.inl (fun i => (1, i))) ⟹
         (f1.imp f2).relabel (fun x => (Equiv.sumAssoc _ _ _).symm (Sum.inr x)))
@@ -120,25 +120,25 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
         (Sum.inl ∘ Sum.map id (fun i => (0, i))) ='
       .var (Sum.inl (Sum.inr (1, i)))
   let f3 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf Finset.univ l3
+    iInf l3
   let surjOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
-    Formula.iAlls (γ := ι) id
+    Formula.iAlls ι
       (Formula.imp (φ.relabel (Sum.map Sum.inl id)) <|
-        Formula.iExs (γ := ι)
+        Formula.iExs ι <|
+          ((φ.relabel (Sum.map Sum.inl (fun i => (0, i)))) ⊓
+            (f3.relabel (fun x => (Equiv.sumAssoc _ _ _).symm (Sum.inr x)))).relabel
         (fun (i : (α ⊕ (Σ i : ι, mons i)) ⊕ (Fin 2 × ι)) =>
           show ((α ⊕ (Σ i : ι, mons i)) ⊕ ι) ⊕ ι
           from Sum.elim (Sum.inl ∘ Sum.inl)
-            (fun i => if i.1 = 0 then Sum.inr i.2 else (Sum.inl (Sum.inr i.2))) i)
-          ((φ.relabel (Sum.map Sum.inl (fun i => (0, i)))) ⊓
-            (f3.relabel (fun x => (Equiv.sumAssoc _ _ _).symm (Sum.inr x)))))
+            (fun i => if i.1 = 0 then Sum.inr i.2 else (Sum.inl (Sum.inr i.2))) i))
   let mapsTo : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
-    Formula.iAlls (γ := ι) id
+    Formula.iAlls ι
       (Formula.imp (φ.relabel (Sum.map Sum.inl id))
         (φ.subst <| Sum.elim
           (fun a => .var (Sum.inl (Sum.inl a)))
           (fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
-  Formula.iAlls (γ := α ⊕ Σ i : ι, mons i) Sum.inr (mapsTo ⟹ injOn ⟹ surjOn)
+  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Fintype ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
