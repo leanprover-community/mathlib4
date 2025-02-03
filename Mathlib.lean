@@ -3185,7 +3185,9 @@ import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
+import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+import Mathlib.FieldTheory.PurelyInseparable.Tower
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.RatFunc.Defs
