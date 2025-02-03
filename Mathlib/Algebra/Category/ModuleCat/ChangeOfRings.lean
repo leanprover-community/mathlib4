@@ -271,7 +271,7 @@ instance restrictScalarsEquivalenceOfRingEquiv_additive {R S} [Ring R] [Ring S] 
 namespace Algebra
 
 scoped instance restrictScalarsEquivalenceOfRingEquiv_linear
-      {R₀ R S} [CommRing R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+      {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
       (e : R ≃ₐ[R₀] S) :
     (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ where
   map_smul {M N} f r₀ := by

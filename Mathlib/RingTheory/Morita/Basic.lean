@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Yunzhou Xie
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Morita equivalence
@@ -57,19 +58,21 @@ structure MoritaEquivalence
     (B : Type u₂) [Ring B] [Algebra R B] where
   /--the underlying equivalence of categories-/
   eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
-  additive : eqv.functor.Additive := by infer_instance
-  linear : eqv.functor.Linear R := by infer_instance
+  linear :
+    haveI := eqv.functor.additive_of_preserves_binary_products
+    eqv.functor.Linear R := by infer_instance
 
 namespace MoritaEquivalence
 
-attribute [instance] MoritaEquivalence.additive MoritaEquivalence.linear
+attribute [scoped instance] CategoryTheory.Functor.additive_of_preserves_binary_products
+
+attribute [instance] MoritaEquivalence.linear
 
 /--
 For any `R`-algebra `A`, `A` is Morita equivalent to itself.
 -/
 def refl (A : Type u₁) [Ring A] [Algebra R A] : MoritaEquivalence R A A where
   eqv := CategoryTheory.Equivalence.refl
-  additive := CategoryTheory.Functor.instAdditiveId
   linear := CategoryTheory.Functor.instLinearId
 
 /--
@@ -79,7 +82,6 @@ to `A`.
 def symm {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
     (e : MoritaEquivalence R A B) : MoritaEquivalence R B A where
   eqv := e.eqv.symm
-  additive := e.eqv.inverse_additive
   linear := e.eqv.inverseLinear R
 
 -- TODO: We have restricted all the rings to the same universe here because of the complication
@@ -98,7 +100,6 @@ def trans {A B C : Type u₁}
     (e : MoritaEquivalence R A B) (e' : MoritaEquivalence R B C) :
     MoritaEquivalence R A C where
   eqv := e.eqv.trans e'.eqv
-  additive := Functor.instAdditiveComp e.eqv.functor e'.eqv.functor
   linear := Functor.instLinearComp e.eqv.functor e'.eqv.functor
 
 variable {R} in
