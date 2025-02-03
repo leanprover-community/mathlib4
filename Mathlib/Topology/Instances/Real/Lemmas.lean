@@ -24,8 +24,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
-  isTopologicalBasis_of_isOpen_of_nhds (by
-    simp +contextual [-iUnion_singleton_eq_range, isOpen_Ioo])
+  isTopologicalBasis_of_isOpen_of_nhds (by simp +contextual [isOpen_Ioo])
     fun a _ hav hv =>
     let ⟨_, _, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
