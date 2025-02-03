@@ -330,44 +330,44 @@ theorem preimage_ceil_of_ne_zero (hn : n ≠ 0) : (Nat.ceil : α → ℕ) ⁻¹'
 
 @[simp]
 theorem preimage_Ioo {a b : α} (ha : 0 ≤ a) :
-    (Nat.cast : ℕ → α) ⁻¹' Set.Ioo a b = Set.Ioo ⌊a⌋₊ ⌈b⌉₊ := by
+    ((↑) : ℕ → α) ⁻¹' Set.Ioo a b = Set.Ioo ⌊a⌋₊ ⌈b⌉₊ := by
   ext
   simp [floor_lt, lt_ceil, ha]
 
 @[simp]
-theorem preimage_Ico {a b : α} : (Nat.cast : ℕ → α) ⁻¹' Set.Ico a b = Set.Ico ⌈a⌉₊ ⌈b⌉₊ := by
+theorem preimage_Ico {a b : α} : ((↑) : ℕ → α) ⁻¹' Set.Ico a b = Set.Ico ⌈a⌉₊ ⌈b⌉₊ := by
   ext
   simp [ceil_le, lt_ceil]
 
 @[simp]
 theorem preimage_Ioc {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    (Nat.cast : ℕ → α) ⁻¹' Set.Ioc a b = Set.Ioc ⌊a⌋₊ ⌊b⌋₊ := by
+    ((↑) : ℕ → α) ⁻¹' Set.Ioc a b = Set.Ioc ⌊a⌋₊ ⌊b⌋₊ := by
   ext
   simp [floor_lt, le_floor_iff, hb, ha]
 
 @[simp]
 theorem preimage_Icc {a b : α} (hb : 0 ≤ b) :
-    (Nat.cast : ℕ → α) ⁻¹' Set.Icc a b = Set.Icc ⌈a⌉₊ ⌊b⌋₊ := by
+    ((↑) : ℕ → α) ⁻¹' Set.Icc a b = Set.Icc ⌈a⌉₊ ⌊b⌋₊ := by
   ext
   simp [ceil_le, hb, le_floor_iff]
 
 @[simp]
-theorem preimage_Ioi {a : α} (ha : 0 ≤ a) : (Nat.cast : ℕ → α) ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋₊ := by
+theorem preimage_Ioi {a : α} (ha : 0 ≤ a) : ((↑) : ℕ → α) ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋₊ := by
   ext
   simp [floor_lt, ha]
 
 @[simp]
-theorem preimage_Ici {a : α} : (Nat.cast : ℕ → α) ⁻¹' Set.Ici a = Set.Ici ⌈a⌉₊ := by
+theorem preimage_Ici {a : α} : ((↑) : ℕ → α) ⁻¹' Set.Ici a = Set.Ici ⌈a⌉₊ := by
   ext
   simp [ceil_le]
 
 @[simp]
-theorem preimage_Iio {a : α} : (Nat.cast : ℕ → α) ⁻¹' Set.Iio a = Set.Iio ⌈a⌉₊ := by
+theorem preimage_Iio {a : α} : ((↑) : ℕ → α) ⁻¹' Set.Iio a = Set.Iio ⌈a⌉₊ := by
   ext
   simp [lt_ceil]
 
 @[simp]
-theorem preimage_Iic {a : α} (ha : 0 ≤ a) : (Nat.cast : ℕ → α) ⁻¹' Set.Iic a = Set.Iic ⌊a⌋₊ := by
+theorem preimage_Iic {a : α} (ha : 0 ≤ a) : ((↑) : ℕ → α) ⁻¹' Set.Iic a = Set.Iic ⌊a⌋₊ := by
   ext
   simp [le_floor_iff, ha]
 
