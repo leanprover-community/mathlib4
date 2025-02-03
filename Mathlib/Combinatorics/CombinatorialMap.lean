@@ -166,4 +166,19 @@ def vertices.deg [Fintype D] [DecidableEq D] (v : M.vertices) : ℕ :=
 def vertices.darts (v : M.vertices) : Set D :=
   {d : D | M.dartVertex d = v}
 
+noncomputable instance [Fintype D] : Fintype M.vertices :=
+  Fintype.ofFinite M.vertices
+
+noncomputable instance [Fintype D] : Fintype M.edges :=
+  Fintype.ofFinite M.edges
+
+noncomputable instance [Fintype D] : Fintype M.faces :=
+  Fintype.ofFinite M.faces
+
+noncomputable def EulerCharacteristic [Fintype D] : ℕ :=
+  (Fintype.card M.vertices) - (Fintype.card M.edges) + (Fintype.card M.faces)
+
+def IsPlanar [Fintype D] : Prop :=
+  M.EulerCharacteristic = 2
+
 end CombinatorialMap
