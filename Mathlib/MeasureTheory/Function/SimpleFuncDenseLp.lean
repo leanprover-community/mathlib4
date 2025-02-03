@@ -145,7 +145,7 @@ theorem memℒp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas 
   calc
     eLpNorm (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ ≤
         eLpNorm (fun x => ‖f x - y₀‖ + ‖f x - y₀‖) p μ :=
-      eLpNorm_mono_ae this
+      eLpNorm_mono_ae' this
     _ < ⊤ := eLpNorm_add_lt_top hf' hf'
 
 theorem tendsto_approxOn_range_Lp_eLpNorm [BorelSpace E] {f : β → E} (hp_ne_top : p ≠ ∞)
