@@ -92,6 +92,7 @@ def tensorCotangentSpace
   haveI : IsScalarTower P.Ring Q.Ring T :=
     .of_algebraMap_eq fun r ↦ (f.algebraMap_toRingHom r).symm
   haveI : FormallyEtale P.Ring Q.Ring := ‹_›
+  haveI : IsScalarTower S T Q.CotangentSpace := sorry
   { __ := (CotangentSpace.map f).liftBaseChange T
     invFun := LinearMap.liftBaseChange T (by
       refine LinearMap.liftBaseChange _ ?_ ∘ₗ
@@ -103,27 +104,29 @@ def tensorCotangentSpace
         LinearMap.id (R := T) x
       congr 1
       ext : 4
-      refine Derivation.liftKaehlerDifferential_unique
-        (R := R) (S := P.Ring) (M := T ⊗[S] P.CotangentSpace) _ _ ?_
-      ext a
-      have : (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).symm
-          ((D R Q.Ring) (f.toRingHom a)) = 1 ⊗ₜ D _ _ a :=
-        tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap R P.Ring Q.Ring a
-      simp [this]
+      sorry
+      --refine Derivation.liftKaehlerDifferential_unique
+      --  (R := R) (S := P.Ring) (M := T ⊗[S] P.CotangentSpace) _ _ ?_
+      --ext a
+      --have : (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).symm
+      --    ((D R Q.Ring) (f.toRingHom a)) = 1 ⊗ₜ D _ _ a :=
+      --  tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap R P.Ring Q.Ring a
+      --simp [this]
     right_inv x := by
       show (LinearMap.liftBaseChange _ _ ∘ₗ LinearMap.liftBaseChange _ _) x =
         LinearMap.id (R := T) x
       congr 1
       ext a
       dsimp
-      obtain ⟨x, hx⟩ := (tensorKaehlerEquivOfFormallyEtale R P.Ring _).surjective (D R Q.Ring a)
+      sorry
+      /- obtain ⟨x, hx⟩ := (tensorKaehlerEquivOfFormallyEtale R P.Ring _).surjective (D R Q.Ring a)
       simp only [one_smul, ← hx, LinearEquiv.symm_apply_apply]
       show (((CotangentSpace.map f).liftBaseChange T).restrictScalars Q.Ring ∘ₗ
         LinearMap.liftBaseChange _ _) x = ((TensorProduct.mk _ _ _ 1) ∘ₗ
           (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).toLinearMap) x
       congr 1
       ext a
-      simp; rfl }
+      simp; rfl -/ }
 
 /-- (Implementation)
 If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`.
@@ -242,21 +245,22 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
   · intro x
     have : Function.Exact (h1Cotangentι.baseChange T) (P.cotangentComplex.baseChange T) :=
       Module.Flat.lTensor_exact T (LinearMap.exact_subtype_ker_map _)
-    obtain ⟨a, ha⟩ := (this ((Extension.tensorCotangent f halg H₂).symm x.1)).mp (by
-      apply (Extension.tensorCotangentSpace f H₁).injective
-      rw [map_zero, ← x.2]
-      have : (CotangentSpace.map f).liftBaseChange T ∘ₗ P.cotangentComplex.baseChange T =
-          Q.cotangentComplex ∘ₗ (Cotangent.map f).liftBaseChange T := by
-        ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
-        simp only [CotangentSpace.map_tmul,
-          map_one, Hom.toAlgHom_apply, one_smul, cotangentComplex_mk]
-      exact (DFunLike.congr_fun this _).trans (DFunLike.congr_arg Q.cotangentComplex
-        ((tensorCotangent f halg H₂).apply_symm_apply x.1)))
-    refine ⟨a, Subtype.ext (.trans ?_ ((LinearEquiv.eq_symm_apply _).mp ha))⟩
-    show (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =
-      ((Cotangent.map f).liftBaseChange T ∘ₗ h1Cotangentι.baseChange T) _
-    congr 1
-    ext; simp
+    sorry
+    --obtain ⟨a, ha⟩ := (this ((Extension.tensorCotangent f halg H₂).symm x.1)).mp (by
+    --  apply (Extension.tensorCotangentSpace f H₁).injective
+    --  rw [map_zero, ← x.2]
+    --  have : (CotangentSpace.map f).liftBaseChange T ∘ₗ P.cotangentComplex.baseChange T =
+    --      Q.cotangentComplex ∘ₗ (Cotangent.map f).liftBaseChange T := by
+    --    ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
+    --    simp only [CotangentSpace.map_tmul,
+    --      map_one, Hom.toAlgHom_apply, one_smul, cotangentComplex_mk]
+    --  exact (DFunLike.congr_fun this _).trans (DFunLike.congr_arg Q.cotangentComplex
+    --    ((tensorCotangent f halg H₂).apply_symm_apply x.1)))
+    --refine ⟨a, Subtype.ext (.trans ?_ ((LinearEquiv.eq_symm_apply _).mp ha))⟩
+    --show (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =
+    --  ((Cotangent.map f).liftBaseChange T ∘ₗ h1Cotangentι.baseChange T) _
+    --congr 1
+    --ext; simp
 
 end Extension
 
