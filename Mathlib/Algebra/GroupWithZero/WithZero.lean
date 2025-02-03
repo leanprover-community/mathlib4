@@ -313,4 +313,9 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp
 
+theorem ofAdd_zpow_zpow_comm [DivisionMonoid α] (a : α) (b c : ℤ) :
+    ((↑a : WithZero α) ^ b) ^ c = ((a : α) ^ c) ^ b := by
+  simp only [← WithZero.coe_zpow]
+  rw [← zpow_mul, zpow_mul']
+
 end WithZero
