@@ -204,7 +204,7 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq_left hxy
   by_cases h : x + y = 0; · simp_all [ne_zero_iff_orderTop]
   rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
-  rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
+  rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, coeff_add,
     coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
 
 theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
@@ -261,7 +261,7 @@ open BigOperators
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
-  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
+  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, coeff_add, hsum]) s
 
 theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] {α : Type*} {x : α → HahnSeries Γ R}
     {s : Finset α} : (s.inf fun i => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
@@ -290,11 +290,11 @@ instance : AddGroup (HahnSeries Γ R) :=
       apply neg_add_cancel }
 
 @[simp]
-theorem neg_coeff {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
+theorem coeff_neg {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 
 @[simp]
-theorem neg_coeffTop {x : HahnSeries Γ R} : (-x).coeffTop = -x.coeffTop := by
+theorem coeffTop_neg {x : HahnSeries Γ R} : (-x).coeffTop = -x.coeffTop := by
   ext g
   match g with
   | ⊤ => simp
@@ -326,16 +326,16 @@ protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
 @[simp]
 theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
   cases n with
-  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
-  | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff, nsmul_coeff]
+  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, coeff_nsmul]
+  | negSucc _ => simp_all only [negSucc_zsmul, coeff_neg, coeff_nsmul]
 
 @[simp]
-theorem sub_coeff {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
+theorem coeff_sub {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
 
 @[simp]
-theorem sub_coeffTop {x y : HahnSeries Γ R} : (x - y).coeffTop = x.coeffTop - y.coeffTop := by
+theorem coeffTop_sub {x y : HahnSeries Γ R} : (x - y).coeffTop = x.coeffTop - y.coeffTop := by
   ext
   simp [sub_eq_add_neg]
 
@@ -368,7 +368,7 @@ theorem sub_orderTop_ne_of_leadingCoeff_eq {x y : HahnSeries Γ R} {g : Γ}
     (x - y).orderTop ≠ g := by
   refine orderTop_ne_of_coeffTop_zero ?_
   simp only [leadingCoeff] at hxyc
-  rw [sub_coeffTop, Pi.sub_apply, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
+  rw [coeffTop_sub, Pi.sub_apply, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
 
 end AddGroup
 
@@ -547,9 +547,9 @@ theorem coeff_add_leading (hxy : x = y + x.leadingTerm) (h : x ≠ 0) :
     y.coeff (x.isWF_support.min (support_nonempty_iff.2 h)) = 0 := by
   let xo := x.isWF_support.min (support_nonempty_iff.2 h)
   have hx : x.coeff xo = y.coeff xo + x.leadingTerm.coeff xo := by
-    nth_rw 1 [hxy, add_coeff]
+    nth_rw 1 [hxy, coeff_add]
   have hxx : (leadingTerm x).coeff xo = x.leadingTerm.leadingCoeff := by
-    rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, single_coeff_same]
+    rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, coeff_single_same]
   rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, self_eq_add_left] at hx
   exact hx
 
@@ -566,12 +566,12 @@ theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
 
 theorem coeff_eq_of_not_orderTop (hxy : x = y + x.leadingTerm) (g : Γ) (hg : ↑g ≠ x.orderTop) :
     y.coeff g = x.coeff g := by
-  rw [hxy, add_coeff, leadingTerm]
+  rw [hxy, coeff_add, leadingTerm]
   simp only [self_eq_add_right]
   split_ifs with hx
-  · simp only [zero_coeff]
+  · simp only [coeff_zero]
   · simp only [orderTop_of_ne hx, ne_eq, WithTop.coe_eq_coe] at hg
-    exact single_coeff_of_ne hg
+    exact coeff_single_of_ne hg
 
 theorem support_subset_add_single_support (hxy : x = y + x.leadingTerm) :
     y.support ⊆ x.support := by

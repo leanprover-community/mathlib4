@@ -247,20 +247,20 @@ theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
 
 theorem le_hsum_support_mem {s : SummableFamily Γ R α} {g g' : Γ}
     (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hg' : g' ∈ s.hsum.support) : g ≤ g' := by
-  rw [mem_support, hsum_coeff_eq_sum] at hg'
+  rw [mem_support, coeff_hsum_eq_sum] at hg'
   obtain ⟨i, _, hi⟩ := Finset.exists_ne_zero_of_sum_ne_zero hg'
   exact hg i g' hi
 
 theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
     (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.orderTop = g :=
-  orderTop_eq_of_le (ne_of_eq_of_ne (by rw [hsum_coeff, finsum_eq_single (fun i ↦ (s i).coeff g) a
+  orderTop_eq_of_le (ne_of_eq_of_ne (by rw [coeff_hsum, finsum_eq_single (fun i ↦ (s i).coeff g) a
     hna]) (coeff_orderTop_ne ha.symm)) fun _ hg' => le_hsum_support_mem hg hg'
 
 theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
     (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.leadingCoeff = (s a).coeff g := by
-  rw [leadingCoeff, hsum_orderTop_of_le ha hg hna, coeffTop_eq, hsum_coeff,
+  rw [leadingCoeff, hsum_orderTop_of_le ha hg hna, coeffTop_eq, coeff_hsum,
     finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
 
 end AddCommMonoid
@@ -276,7 +276,7 @@ instance : Neg (SummableFamily Γ R α) :=
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
       finite_co_support' := fun g => by
-        simp only [neg_coeff, Pi.neg_apply, Ne, neg_eq_zero]
+        simp only [coeff_neg, Pi.neg_apply, Ne, neg_eq_zero]
         exact s.finite_co_support g }⟩
 
 instance : AddCommGroup (SummableFamily Γ R α) :=
@@ -370,7 +370,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
       ((s a.1).coeff ij.1) • ((t a.2).coeff ij.2)
   · exact fun gh _ => smul_support_finite s t gh
   · exact fun a ha => by
-      simp only [smul_coeff, ne_eq, Set.mem_setOf_eq] at ha
+      simp only [coeff_smul, ne_eq, Set.mem_setOf_eq] at ha
       obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero ha
       simp only [mem_coe, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         Function.mem_support, exists_prop, Prod.exists]
@@ -589,7 +589,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
     (funext₂ fun j hj => False.elim ((List.mem_nil_iff j).mp hj))
   | cons a s' has hp =>
     simp_all only [ne_eq, dite_true, not_false_eq_true, or_false, or_true]
-    simp only [prod_cons, mem_cons, true_or, ↓reduceDIte, mul_coeff]
+    simp only [prod_cons, mem_cons, true_or, ↓reduceDIte, coeff_mul]
     have hor : ∀ b : (i : σ) → i ∈ (cons a s' has) → α i,
         ∏ i ∈ s', (if h : i ∈ cons a s' has then t i (b i h) else 1) =
         ∏ i ∈ s', if h : i ∈ s' then t i (b i (mem_cons_of_mem h)) else 1 :=
@@ -630,7 +630,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
       refine ⟨⟨?_, ?_⟩, hhx.choose_spec.2⟩
       · use x a (mem_cons_self a s')
         exact left_ne_zero_of_mul hhx.choose_spec.2
-      · refine ⟨?_, ((Finset.mem_vaddAntidiagonal _ _ g).mp hhx.choose_spec.1).2.2⟩
+      · refine ⟨?_, (Finset.mem_addAntidiagonal.mp hhx.choose_spec.1).2.2⟩
         use fun i hi => x i (mem_cons_of_mem hi)
         have h := right_ne_zero_of_mul hhx.choose_spec.2
         have hpr :
@@ -688,7 +688,7 @@ theorem hsum_pi_family (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
   induction s using cons_induction with
   | empty =>
     ext g
-    simp only [hsum_coeff, PiFamily_toFun, not_mem_empty, ↓reduceDIte, prod_const_one, one_coeff,
+    simp only [coeff_hsum, PiFamily_toFun, not_mem_empty, ↓reduceDIte, prod_const_one, coeff_one,
       prod_empty]
     classical
     refine finsum_eq_single (fun _ ↦ if g = 0 then 1 else 0)
@@ -1042,8 +1042,8 @@ theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
   rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
   refine
     isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
-      ((mul_coeff_order_add_order u i).symm.trans ?_)
-  rw [ui, one_coeff, if_pos]
+      ((coeff_mul_order_add_order u i).symm.trans ?_)
+  rw [ui, coeff_one, if_pos]
   rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
 
 end CommRing

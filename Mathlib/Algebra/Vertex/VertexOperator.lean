@@ -67,12 +67,12 @@ theorem coeff_eq_ncoeff (A : VertexOperator R V)
 @[simp]
 theorem ncoeff_add (A B : VertexOperator R V) (n : ℤ) :
     (A + B) [[n]] = A [[n]] + B [[n]] := by
-  rw [ncoeff, ncoeff, ncoeff, add_coeff, Pi.add_apply]
+  rw [ncoeff, ncoeff, ncoeff, coeff_add, Pi.add_apply]
 
 @[simp]
 theorem ncoeff_smul (A : VertexOperator R V) (r : R) (n : ℤ) :
     (r • A) [[n]] = r • (A [[n]]) := by
-  rw [ncoeff, ncoeff, smul_coeff, Pi.smul_apply]
+  rw [ncoeff, ncoeff, coeff_smul, Pi.smul_apply]
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order (A x)) : (A [[n]]) x = 0 := by
@@ -120,7 +120,7 @@ theorem one_apply (x : V) :
 theorem one_ncoeff_neg_one : (1 : VertexOperator R V) [[-1]] = LinearMap.id := by
   ext
   rw [show -1 = - 0 - 1 by omega, ← coeff_eq_ncoeff, coeff_apply, one_apply, Equiv.symm_apply_apply,
-    HahnSeries.single_coeff_same, LinearMap.id_apply]
+    HahnSeries.coeff_single_same, LinearMap.id_apply]
 
 theorem one_coeff_zero : HVertexOperator.coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
   ext; simp
@@ -130,7 +130,7 @@ theorem one_ncoeff_ne_neg_one {n : ℤ} (hn : n ≠ -1) :
     (1 : VertexOperator R V) [[n]] = 0 := by
   ext
   rw [LinearMap.zero_apply, show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoeff, coeff_apply,
-    one_apply, Equiv.symm_apply_apply, HahnSeries.single_coeff_of_ne (show -n - 1 ≠ 0 by omega)]
+    one_apply, Equiv.symm_apply_apply, HahnSeries.coeff_single_of_ne (show -n - 1 ≠ 0 by omega)]
 
 theorem one_coeff_of_ne {n : ℤ} (hn : n ≠ 0) :
     HVertexOperator.coeff (1 : VertexOperator R V) n = 0 := by
@@ -278,8 +278,8 @@ theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
   | zero => exact h
   | succ m ih =>
     intro k l
-    rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, subLeft_smul_coeff, pow_succ', mul_smul,
-      subRight_smul_coeff, ih, ih]
+    rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, coeff_subLeft_smul, pow_succ', mul_smul,
+      coeff_subRight_smul, ih, ih]
 
 /-!
 I need to add API about permutations on the indexing set of PiLex!

@@ -267,8 +267,8 @@ theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
     have hng : ¬ n • g = g := by
       nth_rw 2 [← one_nsmul g]
       exact fun hn1 => h1 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
-    simp_all [PowerSeries.coeff_X, single_coeff]
-  · rw [meval_notin_range hg r _ h, single_coeff_of_ne
+    simp_all [PowerSeries.coeff_X, coeff_single]
+  · rw [meval_notin_range hg r _ h, coeff_single_of_ne
       fun hgg' => h (Exists.intro 1 (by simp [hgg']))]
 
 theorem meval_X_npow [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (n : ℕ) :
@@ -285,8 +285,8 @@ theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
     by_cases h0 : n = 0; · simp [h0]
     have hng : ¬ n • g = 0 • g :=
       fun hn1 => h0 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
-    simp_all [PowerSeries.coeff_C, single_coeff]
-  · rw [meval_notin_range hg r _ h, C_apply, single_coeff_of_ne
+    simp_all [PowerSeries.coeff_C, coeff_single]
+  · rw [meval_notin_range hg r _ h, C_apply, coeff_single_of_ne
       fun hgg' => h (Exists.intro 0 (by simp [hgg']))]
 
 end meval

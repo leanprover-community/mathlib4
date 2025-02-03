@@ -93,7 +93,7 @@ theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
   rfl
 
 @[simp]
-theorem zero_coeff : (0 : HVertexOperator Γ R V W).coeff = 0 :=
+theorem coeff_zero : (0 : HVertexOperator Γ R V W).coeff = 0 :=
   rfl
 
 @[simp]
@@ -109,7 +109,7 @@ theorem coeff_smul (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r 
   simp
 
 @[simp]
-theorem nsmul_coeff (A : HVertexOperator Γ R V W) {n : ℕ} : (n • A).coeff = n • (A.coeff) := by
+theorem coeff_nsmul (A : HVertexOperator Γ R V W) {n : ℕ} : (n • A).coeff = n • (A.coeff) := by
   induction n with
   | zero => ext; simp
   | succ n ih => ext; simp [ih]
@@ -141,18 +141,18 @@ instance instHahnModule : Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W)
     simp only [LinearMap.smul_apply, mul_smul]
   smul_zero _ := by
     ext _ _
-    simp only [smul_zero, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
+    simp only [smul_zero, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.coeff_zero]
   smul_add _ _ _ := by
     ext _ _
     simp only [smul_add, LinearMap.add_apply, LinearMap.smul_apply, HahnModule.of_symm_add,
-      HahnSeries.add_coeff', Pi.add_apply]
+      HahnSeries.coeff_add', Pi.add_apply]
   add_smul _ _ _ := by
     ext _ _
-    simp only [coeff_apply, LinearMap.smul_apply, LinearMap.add_apply, HahnSeries.add_coeff']
+    simp only [coeff_apply, LinearMap.smul_apply, LinearMap.add_apply, HahnSeries.coeff_add']
     rw [HahnModule.add_smul Module.add_smul]
   zero_smul _ := by
     ext _ _
-    simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
+    simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.coeff_zero]
 
 @[simp]
 theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} :
@@ -224,14 +224,14 @@ def compHahnSeries (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U
 theorem compHahnSeries.add (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
-  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
-  rw [← @HahnSeries.add_coeff]
+  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.coeff_add', Pi.add_apply]
+  rw [← @HahnSeries.coeff_add]
 
 @[simp]
 theorem compHahnSeries.smul (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (r : R)
     (u : U) : compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
-  rw [HahnSeries.smul_coeff]
+  rw [HahnSeries.coeff_smul]
   simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
@@ -242,11 +242,11 @@ def comp (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) :
   map_add' u v := by
     ext g
     simp only [HahnSeries.ofIterate, compHahnSeries.add, Equiv.symm_apply_apply,
-      HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
+      HahnModule.of_symm_add, HahnSeries.coeff_add', Pi.add_apply]
   map_smul' r x := by
     ext g
     simp only [HahnSeries.ofIterate, compHahnSeries.smul, Equiv.symm_apply_apply, RingHom.id_apply,
-      HahnSeries.smul_coeff, compHahnSeries_coeff, coeff_apply]
+      HahnSeries.coeff_smul, compHahnSeries_coeff, coeff_apply]
     exact rfl
 
 @[simp]
@@ -421,19 +421,19 @@ theorem subLeft_order [Nontrivial R] : (subLeft R).val.order = toLex (0,1) := by
   rw [subLeft_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt (by simp)]
 
 @[simp]
-theorem subLeft_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
+theorem coeff_subLeft_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
     ((subLeft R).val • A).coeff (toLex (k, l)) =
       A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
-  rw [subLeft_eq, add_smul, add_coeff, Pi.add_apply]
+  rw [subLeft_eq, add_smul, coeff_add, Pi.add_apply]
   ext v
   simp only [LinearMap.add_apply, coeff_apply, LinearMap.smul_apply, LinearMap.sub_apply, smul_eq]
   nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
-  rw [sub_zero, HahnModule.single_smul_coeff_add, one_smul, ← toLex_vAdd_of_sub k l 0 1,
-    sub_zero, HahnModule.single_smul_coeff_add, neg_one_smul, ← sub_eq_add_neg]
+  rw [sub_zero, HahnModule.coeff_single_smul_vadd, one_smul, ← toLex_vAdd_of_sub k l 0 1,
+    sub_zero, HahnModule.coeff_single_smul_vadd, neg_one_smul, ← sub_eq_add_neg]
 
 /-!
 --describe coefficients of powers
-theorem subLeft_pow_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l n : ℤ) :
+theorem coeff_subLeft_pow_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l n : ℤ) :
     ((subLeft R) ^ n • A).coeff (toLex (k, l)) = ∑??
 -/
 
@@ -456,22 +456,22 @@ theorem subRight_smul_eq (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) :
     (subRight R) • A = (subRight R).val • A :=
   rfl
 
-theorem subRight_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
+theorem coeff_subRight_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
     ((subRight R) • A).coeff (toLex (k, l)) =
       A.coeff (toLex (k, l - 1)) - A.coeff (toLex (k - 1, l)) := by
-  rw [subRight_smul_eq, subRight_eq, add_smul, add_coeff, Pi.add_apply]
+  rw [subRight_smul_eq, subRight_eq, add_smul, coeff_add, Pi.add_apply]
   ext v
   simp only [LinearMap.add_apply, coeff_apply, LinearMap.sub_apply, smul_eq]
   nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
-  rw [sub_zero, HahnModule.single_smul_coeff_add, neg_one_smul, ← toLex_vAdd_of_sub k l 0 1,
-    sub_zero, HahnModule.single_smul_coeff_add, one_smul, neg_add_eq_sub]
+  rw [sub_zero, HahnModule.coeff_single_smul_vadd, neg_one_smul, ← toLex_vAdd_of_sub k l 0 1,
+    sub_zero, HahnModule.coeff_single_smul_vadd, one_smul, neg_add_eq_sub]
 
 --describe coefficients of powers
 
 theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V W)
     (h : ∀ (k l : ℤ), A.coeff (toLex (k, l)) = B.coeff (toLex (l, k))) (k l : ℤ) :
     ((subLeft R) • A).coeff (toLex (k, l)) = ((subRight R) • B).coeff (toLex (l, k)) := by
-  rw [subLeft_smul_eq, subLeft_smul_coeff, subRight_smul_coeff, h k (l-1), h (k-1) l]
+  rw [subLeft_smul_eq, coeff_subLeft_smul, coeff_subRight_smul, h k (l-1), h (k-1) l]
 
 end Binomial
 
