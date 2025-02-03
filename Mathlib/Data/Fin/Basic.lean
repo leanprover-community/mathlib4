@@ -240,6 +240,12 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
 
+/-- Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
+
 /--
 The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
@@ -565,9 +571,15 @@ theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast
 theorem rightInverse_cast (eq : n = m) : RightInverse (Fin.cast eq.symm) (Fin.cast eq) :=
   fun _ => rfl
 
+@[simp]
+theorem cast_inj (eq : n = m) {a b : Fin n} : a.cast eq = b.cast eq ↔ a = b := by
+  simp [← val_inj]
+
+@[simp]
 theorem cast_lt_cast (eq : n = m) {a b : Fin n} : a.cast eq < b.cast eq ↔ a < b :=
   Iff.rfl
 
+@[simp]
 theorem cast_le_cast (eq : n = m) {a b : Fin n} : a.cast eq ≤ b.cast eq ↔ a ≤ b :=
   Iff.rfl
 
@@ -1269,6 +1281,17 @@ lemma succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
   obtain h | h := Fin.lt_or_lt_of_ne h
   · rw [predAbove_of_le_castSucc _ _ (Fin.le_of_lt h), succAbove_castPred_of_lt _ _ h]
   · rw [predAbove_of_castSucc_lt _ _ h, succAbove_pred_of_lt _ _ h]
+
+/-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
+then back to `Fin (n+1)` with a gap around `p.succ` is the identity away from `p.succ`. -/
+@[simp]
+lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.succ) :
+    p.succ.succAbove (p.predAbove i) = i := by
+  obtain h | h := Fin.lt_or_lt_of_ne h
+  · rw [predAbove_of_le_castSucc _ _ (le_castSucc_iff.2 h),
+      succAbove_castPred_of_lt _ _ h]
+  · rw [predAbove_of_castSucc_lt _ _ (Fin.lt_of_le_of_lt (p.castSucc_le_succ) h),
+      succAbove_pred_of_lt _ _ h]
 
 /-- Sending `Fin n` into `Fin (n + 1)` with a gap at `p`
 then back to `Fin n` by subtracting one from anything above `p` is the identity. -/

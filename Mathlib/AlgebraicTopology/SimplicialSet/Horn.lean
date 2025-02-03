@@ -51,11 +51,11 @@ lemma face_le_subcomplexHorn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
 lemma subcomplexHorn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     (subcomplexHorn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
   ext j
-  simp? [subcomplexHorn_eq_iSup] says
-    simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iSup_eq_iUnion,
-      Set.iUnion_coe_set, Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion,
-      stdSimplex.mem_face_iff, Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton,
-      exists_prop, Set.top_eq_univ, Set.mem_univ, iff_true]
+  -- this was produced using `simp? [subcomplexHorn_eq_iSup] says`
+  simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
+    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
+    Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.top_eq_univ,
+    Set.mem_univ, iff_true]
   let S : Finset (Fin (n + 3)) := {i, j 0}
   have hS : ¬ (S = Finset.univ) := fun hS ↦ by
     have := Finset.card_le_card hS.symm.le
@@ -151,10 +151,10 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
-  simp? [subcomplexHorn_eq_iSup] says
-     simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iSup_eq_iUnion,
-      Set.iUnion_coe_set, Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion,
-      stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]
+  -- this was produced using `simp? [subcomplexHorn_eq_iSup]`
+  simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
+    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
+    Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]
   have hS : ¬ ({i, (⟨k, by omega⟩ : Fin (n + 4)), (⟨k + 1, by omega⟩ : Fin (n + 4)),
       (⟨k + 2, by omega⟩ : Fin (n + 4))} = Finset.univ) := fun hS ↦ by
     obtain ⟨i, hi⟩ := i
@@ -162,18 +162,18 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     · subst hk
       have := Finset.mem_univ (Fin.last _ : Fin (n + 4))
       rw [← hS] at this
-      simp? [Fin.ext_iff] at this says
-        simp only [Fin.zero_eta, zero_add, Fin.mk_one, mem_insert, Fin.ext_iff, Fin.val_last,
-          Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
-          Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
+      -- this was produced using `simp? [Fin.ext_iff] at this`
+      simp only [Fin.zero_eta, zero_add, Fin.mk_one, mem_insert, Fin.ext_iff, Fin.val_last,
+        Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
+        Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
       simp only [Fin.lt_iff_val_lt_val, Fin.val_last] at hₙ
       omega
     · have := Finset.mem_univ (0 : Fin (n + 4))
       rw [← hS] at this
-      simp? [Fin.ext_iff] at this says
-        simp only [mem_insert, Fin.ext_iff, Fin.val_zero, self_eq_add_left,
-          AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, mem_singleton,
-          OfNat.ofNat_ne_zero, or_self, or_false] at this
+      -- this was produced using `simp? [Fin.ext_iff] at this`
+      simp only [mem_insert, Fin.ext_iff, Fin.val_zero, self_eq_add_left,
+        AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, mem_singleton,
+        OfNat.ofNat_ne_zero, or_self, or_false] at this
       obtain rfl | rfl := this <;> tauto
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
   obtain ⟨l, hl⟩ := hS

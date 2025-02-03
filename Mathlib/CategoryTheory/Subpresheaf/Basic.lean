@@ -110,12 +110,12 @@ lemma sInf_obj (S : Set (Subpresheaf F)) (U : Cᵒᵖ) :
 
 @[simp]
 lemma iSup_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
-    (⨆ i, S i).obj U = ⨆ i, (S i).obj U := by
+    (⨆ i, S i).obj U = ⋃ i, (S i).obj U := by
   simp [iSup, sSup_obj]
 
 @[simp]
 lemma iInf_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
-    (⨅ i, S i).obj U = ⨅ i, (S i).obj U := by
+    (⨅ i, S i).obj U = ⋂ i, (S i).obj U := by
   simp [iInf, sInf_obj]
 
 @[simp]

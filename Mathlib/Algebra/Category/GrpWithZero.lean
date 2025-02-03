@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.CategoryTheory.Category.Bipointed
+import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of groups with zero
@@ -72,8 +73,8 @@ instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
 
 instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
-      { obj := fun X => ⟨ X , _ ⟩
-        map := fun f => f.toMonoidHom }
+      { obj := fun X => MonCat.of X
+        map := fun f => MonCat.ofHom f.toMonoidHom }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
