@@ -163,10 +163,20 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
-    SetLike.coe (polarSubmodule 𝕜 m) = polar 𝕜 m := rfl
+    (polarSubmodule 𝕜 m : Set (Dual 𝕜 E)) = polar 𝕜 m := rfl
 
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
+
+lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    polarSubmodule 𝕜 m = { y : Dual 𝕜 E | ∀ x ∈ m, y x = 0 } :=
+  (dualPairing 𝕜 E).flip.polar_subMulAction _
+
+lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) (y : Dual 𝕜 E) :
+    y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 := by
+  have := polarSubmodule_eq_setOf 𝕜 m
+  apply_fun (y ∈ ·) at this
+  rwa [propext_iff] at this
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=
@@ -250,7 +260,7 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
   apply le_antisymm
   · intro x hx
     rw [mem_closedBall_zero_iff]
-    apply le_of_forall_le_of_dense
+    apply le_of_forall_gt_imp_ge_of_dense
     intro a ha
     rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one

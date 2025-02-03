@@ -807,6 +807,16 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
     r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
 
+open LinearMap in
+theorem annihilator_span (s : Set M) :
+    (Submodule.span R s).annihilator = ⨅ g : s, ker (toSpanSingleton R M g.1) := by
+  ext; simp [mem_annihilator_span]
+
+open LinearMap in
+theorem annihilator_span_singleton (g : M) :
+    (Submodule.span R {g}).annihilator = ker (toSpanSingleton R M g) := by
+  simp [annihilator_span]
+
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
 
@@ -893,7 +903,7 @@ variable [CommRing R] [CommRing S]
 
 theorem map_ne_bot_of_ne_bot {S : Type*} [Ring S] [Nontrivial S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
-  (map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)).mp.mt h
+  (map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)).mp.mt h
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
     (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ RingHom.ker f = J ⊔ RingHom.ker f := by
@@ -1029,18 +1039,16 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
 
 end Algebra
 
-namespace NoZeroSMulDivisors
+@[simp]
+theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] : RingHom.ker (algebraMap R A) = ⊥ := by
+  ext; simp
 
-theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
-    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
-  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.iff_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
-theorem ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A] [Nontrivial A]
-    [Algebra R A] [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ := by
-  ext; simp [Algebra.algebraMap_eq_smul_one']
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
-theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
-    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
-  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
-
-end NoZeroSMulDivisors
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
