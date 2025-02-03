@@ -74,7 +74,6 @@ class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
 
-
 /-- `⊓` distributes over `⨆`. -/
 theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α) :
   a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b := by
