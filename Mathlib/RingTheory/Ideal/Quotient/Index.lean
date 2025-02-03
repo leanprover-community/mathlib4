@@ -91,7 +91,7 @@ lemma Ideal.finite_quotient_pow (hI : I.FG) [Finite (R ⧸ I)] (n) : Finite (R �
 
 lemma Ideal.index_pow_le
     (s : Finset R) (hs : Ideal.span s = I) [Finite (R ⧸ I)] (n) :
-    (I ^ n).toAddSubgroup.index ≤ I.toAddSubgroup.index ^ ∑ i in Finset.range n, s.card ^ i := by
+    (I ^ n).toAddSubgroup.index ≤ I.toAddSubgroup.index ^ ∑ i ∈ Finset.range n, s.card ^ i := by
   have := Ideal.finite_quotient_pow ⟨s, hs⟩
   induction n with
   | zero =>
