@@ -41,7 +41,7 @@ example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*
 syntax (name := group_exp) "group_exp" (location)? : tactic
 
 macro_rules
-| `(tactic| group $[$loc]?) =>
+| `(tactic| group_exp $[$loc]?) =>
   `(tactic| repeat (fail_if_no_progress (group $[$loc]? <;> ring_nf $[$loc]?)))
 
 end Mathlib.Tactic.Group
