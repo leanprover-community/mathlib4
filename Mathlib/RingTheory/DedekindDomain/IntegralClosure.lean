@@ -247,4 +247,9 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
 
+attribute [local instance] FractionRing.liftAlgebra in
+instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
+  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
+
 end IsIntegralClosure
