@@ -18,6 +18,7 @@ representations.
   * `Representation.tprod`
   * `Representation.linHom`
   * `Representation.dual`
+  * `Representation.free`
 
 ## Implementation notes
 
@@ -47,6 +48,23 @@ abbrev Representation :=
 end
 
 namespace Representation
+
+section
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+@[simp]
+theorem ρ_inv_self_apply (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+@[simp]
+theorem ρ_self_inv_apply (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+end
 
 section trivial
 
@@ -261,6 +279,9 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 /-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
 noncomputable abbrev leftRegular := ofMulAction k G G
 
+/-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
+noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
+
 variable {k G H}
 
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
@@ -470,13 +491,15 @@ theorem dualTensorHom_comm (g : G) :
 
 end LinearHom
 
+section
+
 variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
   [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
   [AddCommMonoid B] [Module k B] (τ : Representation k G B)
 
 open Finsupp
 
-/-- The natural representation on `α →₀ A` given a representation on `A`. -/
+/-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
 @[simps (config := .lemmasOnly)]
 noncomputable def finsupp (α : Type*) :
     Representation k G (α →₀ A) where
@@ -489,16 +512,19 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
     ρ.finsupp α g (single x a) = single x (ρ g a) := by
   simp [finsupp_apply]
 
-/-- The natural representation on `α →₀ k[G]` induced by the left regular representation on
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
-noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
   finsupp (leftRegular k G) α
 
-@[simp]
+noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
+    AddCommGroup (free k G α).asModule :=
+  Finsupp.instAddCommGroup
+
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = single i (single (g * h) r) := by
-  simp only [free, finsupp_single, ofMulAction_single, smul_eq_mul]
+  simp
 
 variable (k G) (α : Type*)
 
@@ -527,4 +553,5 @@ theorem free_asModule_free :
     Module.Free (MonoidAlgebra k G) (free k G α).asModule :=
   Module.Free.of_basis (freeAsModuleBasis k G α)
 
+end
 end Representation
