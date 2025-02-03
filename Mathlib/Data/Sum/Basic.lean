@@ -17,6 +17,8 @@ universe u v w x
 
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
+lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by simp
+
 namespace Sum
 
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
@@ -267,3 +269,17 @@ def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
   inr <| inr c
 
 end Sum3
+
+/-!
+### PSum
+-/
+
+namespace PSum
+
+variable {α β : Sort*}
+
+theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
+
+theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
+
+end PSum
