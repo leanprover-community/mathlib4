@@ -31,6 +31,45 @@ end fun_prop
 
 
 section MeasureTheory
+variable {α : Type*} {E : Type*} {F : Type*} [TopologicalSpace α] [Norm E] [Norm F]
+
+def Asymptotics.IsLocallyBigO  (l : Filter α) (f : α → E) (g : α → F) :
+  Prop :=
+  ∀ᶠ x in l, f =O[l ⊓ (nhds x)] g
+
+example : cocompact α ⊔ sSup (nhds '' Set.univ) = ⊤ := by
+  rw [← nhdsSet_univ, nhdsSet]
+  sorry
+
+example (f : α → E) (g : α → F) (l : Filter α) (h : f =O[cocompact α] g) (h' : IsLocallyBigO ⊤ f g) :
+  f =O[⊤] g := by
+  obtain ⟨c, h⟩ := h.isBigOWith
+  rw [IsBigOWith, Filter.Eventually, mem_cocompact] at h
+  obtain ⟨t, ht, htc⟩ := h
+  rw [IsLocallyBigO] at h'
+  simp only [le_top, inf_of_le_right, eventually_top, ]  at h'
+  simp only [IsBigO, IsBigOWith, Filter.eventually_iff_exists_mem] at h'
+  choose C h using h'
+  choose U hU hU' using h
+  obtain ⟨s, hs, ht_sub⟩ := ht.elim_nhds_subcover U (fun x _ ↦ hU x)
+  by_cases hs_empty : s = ∅
+  · simp_all
+    have (x : α) := Set.mem_univ x
+    simp [← htc] at this
+    exact ⟨c, this⟩
+  simp only at hs_empty
+  simp only [isBigO_top]
+  use max c (s.sup' (Finset.nonempty_of_ne_empty hs_empty) C )
+  --yes this works but the proof needs polishing
+  sorry
+
+
+
+open Bornology
+example (f g : ℝ → ℝ) (l : Filter ℝ) (h : f =O[cocompact ℝ ⊓ l] g) (hg : (fun _ ↦ (1:ℝ)) =O[l] g) (h : (cobounded ℝ).comap f ≤ cobounded ℝ) :
+    f =O[l] g := by
+
+  sorry
 
 theorem integrableAtFilter_principal_iff
   {α : Type*} {E : Type*} [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {S : Set α} {mu : Measure α}  :
