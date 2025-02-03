@@ -50,9 +50,28 @@ lemma Real.multipliable_one_add_of_summable (f : ι → ℝ) (hf : Summable f) :
   refine Real.multipliable_of_summable_log (fun n => 1 + |f n|) (fun _ ↦ by positivity) ?_
   simpa only [forall_const] using Real.summable_log_one_add_of_summable  hf
 
+lemma Complex.tendstoUniformlyOn_tsum_log_one_add {α : Type*} {f : ι → α → ℂ} (K : Set α)
+    {u : ι → ℝ} (hu : Summable u) (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
+    TendstoUniformlyOn (fun n a => ∑ i ∈ n, (Complex.log (1 + f i a)))
+    (fun a => ∑' i : ι, Complex.log (1 + f i a)) atTop K := by
+  apply tendstoUniformlyOn_tsum_of_cofinite_eventually (hu.mul_left (3/2))
+  have := ((Summable.tendsto_cofinite_zero hu.norm)).eventually_le_const (one_half_pos)
+  rw [eventually_iff_exists_mem] at *
+  obtain ⟨N, hn1, hN⟩ := this
+  obtain ⟨N2, hn2, hN2⟩ := h
+  refine ⟨min N N2, ?_ , fun n hn x hx => ?_⟩
+  · simp [hn1, hn2]
+  apply le_trans (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
+  · simp only [ Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
+    apply hN2
+    · exact Set.mem_of_mem_inter_right hn
+    · exact hx
+  · apply le_trans (hN2 n (Set.mem_of_mem_inter_right hn) x hx)
+      (le_trans (Real.le_norm_self (u n)) (hN n ((Set.mem_of_mem_inter_left hn))))
+
 lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
     {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun (n : ℕ) (a : α) => ∑ i ∈ Finset.range n,
+    TendstoUniformlyOn (fun n a => ∑ i ∈ Finset.range n,
     (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
   apply tendstoUniformlyOn_tsum_nat_eventually (hu.mul_left (3/2))
   obtain ⟨N, hN⟩ := Metric.tendsto_atTop.mp (Summable.tendsto_atTop_zero hu) (1/2) (one_half_pos)
@@ -64,3 +83,13 @@ lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → 
     exact hN2 n (le_of_max_le_right hn) x hx
   · apply le_trans (le_trans (hN2 n (le_of_max_le_right hn) x hx)
     (by simpa using Real.le_norm_self (u n))) (hN n (le_of_max_le_left hn)).le
+
+lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add2 {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
+    {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
+    TendstoUniformlyOn (fun n a => ∑ i ∈ Finset.range n,
+    (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
+  intro v hv
+  apply tendsto_finset_range.eventually
+    (Complex.tendstoUniformlyOn_tsum_log_one_add K hu (f := f) ?_ v hv)
+  rw [Nat.cofinite_eq_atTop]
+  exact h
