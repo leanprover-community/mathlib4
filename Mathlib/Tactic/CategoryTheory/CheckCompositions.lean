@@ -84,8 +84,8 @@ example (j : J) :
 
   -- `check_compositions` checks if the two morphisms we're composing are
   -- composed by abusing defeq, and indeed it tells us that we are abusing
-  -- definitional associativity of composition of -- functors here: it
-  -- prints the following.
+  -- definitional associativity of composition of functors here: it prints
+  -- the following.
 
   -- info: In composition
   --   colimit.ι ((F ⋙ G) ⋙ H) j ≫ (preservesColimitIso (G ⋙ H) F).inv
