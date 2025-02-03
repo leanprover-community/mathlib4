@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Group.Int.TypeTags
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Lemmas about `ℤₘ₀`.
 -/
+
+local notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 namespace WithZero
 
