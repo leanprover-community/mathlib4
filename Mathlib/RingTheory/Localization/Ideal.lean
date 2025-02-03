@@ -263,7 +263,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
-        (NoZeroSMulDivisors.algebraMap_injective _ _))
+        (FaithfulSMul.algebraMap_injective _ _))
   have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
     (algebraMap R S) (Submonoid.le_comap_map M) := by
@@ -277,7 +277,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
   simp only [← _root_.map_mul,
-    (injective_iff_map_eq_zero' _).mp (NoZeroSMulDivisors.algebraMap_injective R S)] at H
+    (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
   exact ⟨a, ha, H⟩
 
 end CommRing
