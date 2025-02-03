@@ -3,9 +3,9 @@ Copyright (c) 2024 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 
 /-!
 # Categories with chosen finite products
@@ -568,8 +568,7 @@ lemma δ_of_chosenFiniteProducts (X Y : C) : δ F X Y = prodComparison F X Y := 
 
 open Limits
 
-variable [PreservesLimit (Functor.empty.{0} C) F]
-  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+variable [PreservesFiniteProducts F]
 
 instance : IsIso (η F) :=
   terminalComparison_isIso_of_preservesLimits F
@@ -612,8 +611,7 @@ section
 
 open Limits
 
-variable [PreservesLimit (Functor.empty.{0} C) F]
-  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+variable [PreservesFiniteProducts F]
 
 attribute [local instance] monoidalOfChosenFiniteProducts
 

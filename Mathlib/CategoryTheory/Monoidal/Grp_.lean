@@ -206,8 +206,7 @@ end Grp_
 namespace CategoryTheory.Functor
 
 variable {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
-variable [PreservesLimit (Functor.empty.{0} C) F]
-  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+variable [PreservesFiniteProducts F]
 
 attribute [local instance] monoidalOfChosenFiniteProducts
 
