@@ -9,13 +9,9 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Path
 /-!
 # Strict Segal simplicial sets
 
-A simplicial set `X` satisfies the `StrictSegal` condition if, for all `m : ℕ`,
-the map `X.spine m : X _[m] → X.Path m` is an equivalence, with equivalence
-inverse `spineToSimplex {m : ℕ} : Path X m → X _[m]`. We define this
-construction first for `n + 1`-truncated simplicial sets in
-`SSet.Truncated.StrictSegal`. The data of a `StrictSegal` simplicial set is
-then defined by an `SSet.Truncated.StrictSegal` structure on the
-`n + 1`-truncation of `X` for all `n : ℕ`.
+A simplicial set `X` satisfies the `StrictSegal` condition if for all `n`, the map
+`X.spine n : X _[n] → X.Path n` is an equivalence, with equivalence inverse
+`spineToSimplex {n : ℕ} : Path X n → X _[n]`.
 
 Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
