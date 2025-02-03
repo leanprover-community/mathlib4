@@ -514,7 +514,7 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
 
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
-noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
   finsupp (leftRegular k G) α
 
@@ -522,10 +522,9 @@ noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
     AddCommGroup (free k G α).asModule :=
   Finsupp.instAddCommGroup
 
-@[simp]
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = single i (single (g * h) r) := by
-  simp only [free, finsupp_single, ofMulAction_single, smul_eq_mul]
+  simp
 
 variable (k G) (α : Type*)
 

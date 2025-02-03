@@ -338,7 +338,7 @@ variable (k G) in
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
 abbrev free (α : Type u) : Rep k G :=
-  finsupp α (leftRegular k G)
+  Rep.of (V := (α →₀ G →₀ k)) (Representation.free k G α)
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
@@ -405,7 +405,7 @@ def finsuppTensorRight [DecidableEq α] :
         instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
 
 variable (k G) in
-/-- The natural isormorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
+/-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
 @[simps! (config := .lemmasOnly) hom_hom inv_hom]
 def leftRegularTensorTrivialIsoFree (α : Type u) :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
