@@ -20,7 +20,8 @@ namespace MeasureTheory
 
 section SameSpace
 
-variable {α E : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E] {μ : Measure α} {f : α → E}
+variable {α E ε : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
+  [ENorm ε] [TopologicalSpace ε] {μ : Measure α} {f : α → ε}
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -37,12 +38,14 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   let r := p * q / (q - p)
   have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
   calc
-    (∫⁻ a : α, (↑‖f a‖₊ * g a) ^ p ∂μ) ^ (1 / p) ≤
-        (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
-      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.enorm aemeasurable_const
-    _ = (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
+    (∫⁻ a : α, (↑‖f a‖ₑ * g a) ^ p ∂μ) ^ (1 / p) ≤
+        (∫⁻ a : α, ↑‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) := by
+      refine ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ ?_ aemeasurable_const
+      sorry -- apply hf.enorm would solve this, but needs to be generalised!
+    _ = (∫⁻ a : α, ↑‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
       rw [hpqr]; simp [r, g]
 
+omit [TopologicalSpace ε] in
 theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     eLpNorm' f q μ ≤ eLpNormEssSup f μ * μ Set.univ ^ (1 / q) := by
   have h_le : (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ≤ ∫⁻ _ : α, eLpNormEssSup f μ ^ q ∂μ := by
@@ -87,6 +90,7 @@ theorem eLpNorm'_le_eLpNorm'_of_exponent_le {p q : ℝ} (hp0_lt : 0 < p)
   have h_le_μ := eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp0_lt hpq hf
   rwa [measure_univ, ENNReal.one_rpow, mul_one] at h_le_μ
 
+omit [TopologicalSpace ε] in
 theorem eLpNorm'_le_eLpNormEssSup {q : ℝ} (hq_pos : 0 < q) [IsProbabilityMeasure μ] :
     eLpNorm' f q μ ≤ eLpNormEssSup f μ :=
   (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hq_pos).trans_eq (by simp [measure_univ])
@@ -110,7 +114,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
       refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
       rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv₀ hq_pos hp_pos]
 
-theorem Memℒp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
+theorem Memℒp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : Memℒp f q μ)
     (hpq : p ≤ q) : Memℒp f p μ := by
   cases' hfq with hfq_m hfq_lt_top
   by_cases hp0 : p = 0
@@ -158,6 +162,8 @@ alias Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top :=
   Memℒp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
+
+-- TODO: try generalising from here onwards: needs stronger classes
 
 section Bilinear
 
