@@ -101,15 +101,6 @@ noncomputable instance instRankOneValuedAdicCompletion :
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
   Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
 
-/-- The `v`-adic norm on the `v`-adic completion of `K` satisfies the ultrametric inequality. -/
-theorem vadic_norm_add_le_sup (x y : adicCompletion K v) : ‖x + y‖ ≤ ‖x‖ ⊔ ‖y‖ := by
-  rw [le_sup_iff, Valued.toNormedField.norm_le_iff, Valued.toNormedField.norm_le_iff, ← le_sup_iff]
-  exact Valuation.map_add Valued.v x y
-
-/-- The `v`-adic norm of a natural number is `≤ 1`. -/
-theorem forall_vadic_norm_natCast_le_one (n : ℕ) : ‖(n : adicCompletion K v)‖ ≤ 1 :=
-  IsUltrametricDist.norm_natCast_le_one (adicCompletion K v) n
-
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
 def FinitePlace (K : Type*) [Field K] [NumberField K] :=
@@ -144,18 +135,16 @@ theorem FinitePlace.norm_def_int (x : 𝓞 K) : ‖embedding v x‖ = toNNReal (
   rw [norm_def, vadicAbv_def, valuation_eq_intValuationDef]
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
-theorem vadicAbv_add_le_sup (x y : K) : vadicAbv v (x + y) ≤ (vadicAbv v x) ⊔ (vadicAbv v y) :=
-  by simp [← FinitePlace.norm_def]
+theorem vadicAbv_add_le_max (x y : K) : vadicAbv v (x + y) ≤ (vadicAbv v x) ⊔ (vadicAbv v y) := by
+  simp [← FinitePlace.norm_def]
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
-theorem forall_vadicAbv_natCast_le_one (n : ℕ) : vadicAbv v n ≤ 1 := by
-  rw [← FinitePlace.norm_def, map_natCast]
-  exact forall_vadic_norm_natCast_le_one v n
+theorem vadicAbv_natCast_le_one (n : ℕ) : vadicAbv v n ≤ 1 := by
+  simp only [← FinitePlace.norm_def, map_natCast, IsUltrametricDist.norm_natCast_le_one]
 
 /-- The `v`-adic absolute value of an integer is `≤ 1`. -/
-theorem forall_vadicAbv_intCast_le_one (n : ℤ) : vadicAbv v n ≤ 1 := by
-  rw [← AbsoluteValue.apply_natAbs_eq]
-  exact forall_vadicAbv_natCast_le_one v n.natAbs
+theorem vadicAbv_intCast_le_one (n : ℤ) : vadicAbv v n ≤ 1 := by
+  simp [← AbsoluteValue.apply_natAbs_eq, vadicAbv_natCast_le_one]
 
 open FinitePlace
 
