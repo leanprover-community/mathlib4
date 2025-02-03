@@ -528,6 +528,10 @@ instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsR
 instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩
 
+theorem isAntisymm {r : α → α → Prop} [IsAntisymm α r] {f : β → α} (hf : f.Injective) :
+    IsAntisymm β (f ⁻¹'o r) :=
+  ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
+
 end Order.Preimage
 
 /-! ### Strict-non strict relations -/
