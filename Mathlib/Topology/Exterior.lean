@@ -61,7 +61,7 @@ theorem exterior_sUnion (S : Set (Set X)) : exterior (⋃₀ S) = ⋃ s ∈ S, e
   simp only [sUnion_eq_biUnion, exterior_iUnion]
 
 theorem mem_exterior_iff_specializes : x ∈ exterior s ↔ ∃ y ∈ s, x ⤳ y := calc
-  x ∈ exterior s ↔ x ∈ exterior (⋃ y ∈ s, {y}) := by simp
+  x ∈ exterior s ↔ x ∈ exterior (⋃ y ∈ s, {y}) := by simp [-iUnion_singleton_eq_range]
   _ ↔ ∃ y ∈ s, x ⤳ y := by
     simp only [exterior_iUnion, mem_exterior_singleton, mem_iUnion₂, exists_prop]
 
