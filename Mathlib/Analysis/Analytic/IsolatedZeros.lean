@@ -345,7 +345,6 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 @[deprecated (since := "2024-09-26")]
 alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
 
-
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
 theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
     IsClopen { u : U | (h₁f u.1 u.2).order = ⊤ } := by
