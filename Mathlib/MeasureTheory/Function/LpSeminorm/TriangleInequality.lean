@@ -18,7 +18,8 @@ open scoped ENNReal Topology
 
 namespace MeasureTheory
 
-variable {α E : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
+variable {α E ε : Type*}
+  {m : MeasurableSpace α} [NormedAddCommGroup E] [ENorm ε] [TopologicalSpace ε]
   {p : ℝ≥0∞} {q : ℝ} {μ : Measure α} {f g : α → E}
 
 theorem eLpNorm'_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
@@ -40,13 +41,13 @@ theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ 
     _ ≤ (2 : ℝ≥0∞) ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
       ENNReal.lintegral_Lp_add_le_of_le_one hf.enorm hq0 hq1
 
-theorem eLpNormEssSup_add_le {f g : α → E} :
+theorem eLpNormEssSup_add_le :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
   refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
   simp_rw [Pi.add_apply, enorm_eq_nnnorm, ← ENNReal.coe_add, ENNReal.coe_le_coe]
   exact nnnorm_add_le _ _
 
-theorem eLpNorm_add_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
+theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp1 : 1 ≤ p) : eLpNorm (f + g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
@@ -122,11 +123,11 @@ theorem eLpNorm_sub_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
     (p : ℝ≥0∞) : eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   simpa only [sub_eq_add_neg, eLpNorm_neg] using eLpNorm_add_le' hf hg.neg p
 
-theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
+theorem eLpNorm_sub_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp : 1 ≤ p) : eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
   simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' hf hg p
 
-theorem eLpNorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+theorem eLpNorm_add_lt_top (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     eLpNorm (f + g) p μ < ∞ :=
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
@@ -149,10 +150,10 @@ theorem eLpNorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
-theorem Memℒp.add {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f + g) p μ :=
+theorem Memℒp.add (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
 
-theorem Memℒp.sub {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f - g) p μ := by
+theorem Memℒp.sub (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f - g) p μ := by
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
