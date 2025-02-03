@@ -52,6 +52,9 @@ lemma Submodule.finite_quotient_smul [Finite (R ⧸ I)] [Finite (M ⧸ N)] (hN :
   have : Finite ((R ⧸ I) ⊗[R] N) := Module.finite_of_finite (R ⧸ I)
   exact Nat.card_pos.ne'
 
+-- We have `hs` and `N` instead of using `span R s` in the goal to make it easier to use.
+-- Usually we would like to bound the index of some abstract `I • N`, and we may construct `s` while
+-- applying this lemma instead of having to provide it beforehand.
 open TensorProduct in
 lemma Submodule.index_smul_le [Finite (R ⧸ I)]
     (s : Finset M) (hs : Submodule.span R s = N) :
