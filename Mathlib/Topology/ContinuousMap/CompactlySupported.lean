@@ -644,11 +644,14 @@ lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
 noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
-  @f.comp_left _ _ _ _ _ _ _ _ ContinuousMap.coeNNRealReal rfl
+  @f.compLeft _ _ _ _ _ _ _ _ ContinuousMap.coeNNRealReal
 
 @[simp]
 lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
-    f.toReal x = f x := rfl
+    f.toReal x = f x := by
+  have : ContinuousMap.coeNNRealReal 0 = 0 := rfl
+  rw [toReal, compLeft_apply this]
+  rfl
 
 lemma eq_nnrealPart_neg_nnrealPart (f : C_c(α, ℝ)) :
     f = (nnrealPart f).toReal - (nnrealPart (-f)).toReal := by
@@ -681,10 +684,12 @@ lemma LinearMap.toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
     LinearMap.toReal f x = (f x).toReal := rfl
 
 lemma LinearMap.coe_toReal (f : C_c(α, ℝ≥0)) :
-    LinearMap.toReal f = f.toReal := rfl
+    LinearMap.toReal f = f.toReal := by
+  ext x
+  simp
 
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
-noncomputable def toNNRealLinear {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ f) :
+noncomputable def toNNRealLinear {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) :
     C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 where
   toFun := fun f => ⟨Λ (LinearMap.toReal f),
                     by
@@ -699,11 +704,15 @@ noncomputable def toNNRealLinear {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ 
     exact rfl
 
 @[simp]
-lemma toNNRealLinear_apply {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ f) (f : C_c(α, ℝ≥0)) :
-    toNNRealLinear hΛ f = Λ (toReal f) := rfl
+lemma toNNRealLinear_apply {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) (f : C_c(α, ℝ≥0)) :
+    toNNRealLinear hΛ f = Λ (toReal f) := by
+  rw [toNNRealLinear]
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, NNReal.coe_mk]
+  congr
+  exact LinearMap.coe_toReal f
 
 lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
-    (hΛ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ f) (f : C_c(α, ℝ)) :
+    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) (f : C_c(α, ℝ)) :
     Λ f = toNNRealLinear hΛ (nnrealPart f)
             - toNNRealLinear hΛ (nnrealPart (-f)) := by
   simp only [toNNRealLinear_apply]
@@ -712,8 +721,8 @@ lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
   ext x
   simp
 
-lemma toNNRealLinear_eq_iff {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₁ f)
-    (hΛ₂ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₂ f) : Λ₁ = Λ₂ ↔ toNNRealLinear hΛ₁ = toNNRealLinear hΛ₂ := by
+lemma toNNRealLinear_eq_iff {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ : ∀ f, 0 ≤ f → 0 ≤ Λ₁ f)
+    (hΛ₂ : ∀ f, 0 ≤ f → 0 ≤ Λ₂ f) : Λ₁ = Λ₂ ↔ toNNRealLinear hΛ₁ = toNNRealLinear hΛ₂ := by
   constructor
   · intro h
     ext f
