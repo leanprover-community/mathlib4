@@ -809,16 +809,6 @@ protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
   rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
-theorem inv_nonneg_of_nonneg (h : 0 ≤ z) : 0 ≤ z⁻¹ := by
-  by_cases h0 : z = 0
-  · subst z
-    simp only [_root_.inv_zero, le_refl]
-  · exact (RCLike.inv_pos.mpr (lt_of_le_of_ne h (Ne.symm h0))).le
-
-@[simp]
-theorem inv_nonneg : 0 ≤ z⁻¹ ↔ 0 ≤ z :=
-  ⟨(by simpa only [inv_inv] using inv_nonneg_of_nonneg ·), inv_nonneg_of_nonneg⟩
-
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
@@ -888,6 +878,19 @@ theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
 theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
     x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
   simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
+
+lemma instPosMulReflectLE : PosMulReflectLE K := by
+  constructor
+  intro a b c (h : _ * _ ≤ _ * _)
+  obtain ⟨a',ha1,ha2⟩ := pos_iff_exists_ofReal.mp a.2
+  rw [← sub_nonneg]
+  rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
+  rcases h with h|h
+  · rw [ofReal_mul_pos_iff] at h
+    classical exact le_of_lt <| h.by_cases (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
+  · exact le_of_eq ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp (h.symm)).symm
+
+scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
 
 end Order
 
