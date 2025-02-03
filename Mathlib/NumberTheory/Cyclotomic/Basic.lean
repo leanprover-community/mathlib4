@@ -541,12 +541,11 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors [IsFractionRing A K] :
-    NoZeroSMulDivisors A (CyclotomicField n K) := by
-  refine NoZeroSMulDivisors.of_algebraMap_injective ?_
-  rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
+instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
+  rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
+    IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
-    (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
+    (Function.Injective.comp (FaithfulSMul.algebraMap_injective K (CyclotomicField n K))
       (IsFractionRing.injective A K) :)
 
 /-- If `A` is a domain with fraction field `K` and `n : ℕ+`, we define `CyclotomicRing n A K` as
@@ -585,7 +584,7 @@ instance [IsFractionRing A K] :
 
 theorem algebraBase_injective [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
   (adjoin A _).toAlgebra
@@ -595,7 +594,7 @@ theorem adjoin_algebra_injective :
   Subtype.val_injective
 
 instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (adjoin_algebra_injective n A K)
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
 
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
@@ -605,8 +604,8 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
   exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
     subst a
-    haveI := NeZero.of_noZeroSMulDivisors A K n
-    haveI := NeZero.of_noZeroSMulDivisors A (CyclotomicField n K) n
+    have := NeZero.of_faithfulSMul A K n
+    have := NeZero.of_faithfulSMul A (CyclotomicField n K) n
     obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_prim_root (mem_singleton n)
     refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff n.pos (CyclotomicField n K)).mpr

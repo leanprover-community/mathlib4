@@ -3185,7 +3185,9 @@ import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
+import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+import Mathlib.FieldTheory.PurelyInseparable.Tower
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.RatFunc.Defs
@@ -4596,6 +4598,7 @@ import Mathlib.RingTheory.Ideal.Prime
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Index
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 import Mathlib.RingTheory.Ideal.Quotient.Operations
