@@ -167,7 +167,7 @@ lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
     ScottContinuous f := by
   intro d hd₁ hd₂ p hdp
-  rw [Prod.IsLub (monotone_separately_iff_jointly.mp ⟨(fun a => (h₁ a).monotone),
+  rw [Prod.IsLub (monotone_prod_iff.mpr ⟨(fun a => (h₁ a).monotone),
     (fun a => (h₂ a).monotone)⟩) hd₂]
   rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
   rw [← isLUB_iUnion_iff_of_isLUB (fun a => step1 (Nonempty.image Prod.snd hd₁) hd₂.snd hdp h₁) _]
