@@ -300,13 +300,14 @@
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.CategoryTheory.Monoidal.Free.Coherence",
    "Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  "Mathlib.Tactic.CategoryTheory.CheckCompositions":
+  ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
+  "Mathlib.Tactic.CC.MkProof": ["Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.CC.Datatypes":
   ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
-  "Mathlib.Tactic.CC.MkProof":
-  ["Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
@@ -431,6 +432,8 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Functor.Basic":
+  ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
