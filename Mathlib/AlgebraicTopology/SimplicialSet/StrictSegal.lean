@@ -38,7 +38,7 @@ open SimplexCategory.Truncated Truncated.Hom SimplicialObject.Truncated
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
 /-- An `n + 1`-truncated simplicial set satisfies the strict Segal condition if
-its simplices are uniquely determined by their spine. -/
+its `m`-simplices are uniquely determined by their spine for all `m ≤ n + 1`. -/
 structure StrictSegal where
   /-- The inverse to `spine X m`. -/
   spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by omega) : Path X m → X _[m]ₙ₊₁
@@ -139,7 +139,7 @@ lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)} (sx : StrictSegal X)
   ext k
   dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
   rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
-  simp only [spineToSimplex_arrow, types_comp_apply, Path.map_arrow]
+  simp
 
 section spine_δ
 
@@ -296,9 +296,9 @@ lemma spineToSimplex_map {X Y : SSet.{u}} (sx : StrictSegal X)
     sy.spineToSimplex (f.map σ) = σ.app _ (sx.spineToSimplex f) := by
   apply sy.spineInjective
   ext k
-  dsimp only [spineEquiv, Equiv.coe_fn_mk, Path.map, spine_arrow]
+  dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
   rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
-  simp only [types_comp_apply, spineToSimplex_arrow, Path.map_arrow]
+  simp [Path.map_arrow]
 
 variable (f : Path X (n + 1))
 variable {i : Fin (n + 1)} {j : Fin (n + 2)}
@@ -375,7 +375,7 @@ noncomputable def CategoryTheory.Nerve.strictSegal
     · refine ComposableArrows.ext₁ ?_ ?_ ?_
       · exact Functor.congr_obj (F.arrow_src i).symm 0
       · exact Functor.congr_obj (F.arrow_tgt i).symm 0
-      · dsimp [truncation, SimplicialObject.truncation]
+      · dsimp
         apply ComposableArrows.mkOfObjOfMapSucc_map_succ
   spineToSimplex_spine n := by
     ext F
@@ -383,5 +383,5 @@ noncomputable def CategoryTheory.Nerve.strictSegal
     · intro i
       rfl
     · intro i hi
-      dsimp [truncation, SimplicialObject.truncation]
+      dsimp
       exact ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ i hi
