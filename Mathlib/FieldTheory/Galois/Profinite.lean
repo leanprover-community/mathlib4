@@ -347,7 +347,9 @@ instance [IsGalois k K] : T2Space (K ≃ₐ[k] K) := krullTopology_t2
 
 variable (k K)
 
-/--Turn `mulEquivToLimit` into a continuousMulEquiv. -/
+/--The `ContinuousMulEquiv` between `K ≃ₐ[k] K` and `lim Gal(L/k)` where `L` is a
+  `FiniteGaloisIntermediateField` ordered by inverse inclusion, obtained
+  from `InfiniteGalois.mulEquivToLimit`. -/
 noncomputable def continuousMulEquivToLimit [IsGalois k K] :
     ContinuousMulEquiv (K ≃ₐ[k] K) (limit (profinGaloisGroupFunctor k K)) where
   toMulEquiv := mulEquivToLimit k K
@@ -360,10 +362,21 @@ instance [IsGalois k K] : CompactSpace (K ≃ₐ[k] K) :=
 instance [IsGalois k K] : TotallyDisconnectedSpace (K ≃ₐ[k] K) :=
   (continuousMulEquivToLimit k K).symm.totallyDisconnectedSpace
 
-/--`InfiniteGalois.ProfiniteGalGrp` : Turn `Gal(K/k)` into a profinite group as there is
+/--Turn `Gal(K/k)` into a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above. -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
   ProfiniteGrp.ofContinuousMulEquiv (continuousMulEquivToLimit k K).symm
+
+/--`profiniteGalGrp` version of `continuousMulEquivToLimit`-/
+noncomputable def continuousMulEquivProfiniteGalGrpToLimit [IsGalois k K] :
+    profiniteGalGrp k K ≃ₜ* (limit (profinGaloisGroupFunctor k K)) :=
+  (continuousMulEquivToLimit k K)
+
+/--The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
+  `FiniteGaloisIntermediateField` ordered by inverse inclusion. -/
+noncomputable def IsoProfiniteGalGrpLimit [IsGalois k K] :
+    profiniteGalGrp k K ≅ (limit (profinGaloisGroupFunctor k K)) :=
+  ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivToLimit k K)
 
 end InfiniteGalois
 
