@@ -596,10 +596,6 @@ lemma _root_.finCongr_symm_apply_coe (h : m = n) (k : Fin n) : ((finCongr h).sym
 a generic theorem about `cast`. -/
 lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) := by subst h; simp
 
-@[simp]
-theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : (0 : Fin n).cast h =
-    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := rfl
-
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
 theorem cast_eq_cast (h : n = m) : (Fin.cast h : Fin n → Fin m) = _root_.cast (h ▸ rfl) := by
