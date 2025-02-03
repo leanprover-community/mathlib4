@@ -270,28 +270,30 @@ instance : KleeneAlgebra (Language α) :=
         exact le_trans (le_mul_congr ih le_rfl) h }
 
 /-- **Arden's lemma** -/
-theorem self_eq_kstar_mul {l m n : Language α} (hm : [] ∉ m) (h : l = m * l + n) : l = m∗ * n := by
-  apply le_antisymm
-  · intro x hx
-    induction' hlen : x.length using Nat.strong_induction_on with _ ih generalizing x
-    subst hlen
-    rw [h] at hx
-    obtain hx | _ := hx
-    · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
-      rw [length_append] at ih
-      have hal : a.length > 0 := by cases a <;> [contradiction; simp]
-      specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
-      rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
-      right
-      exact ⟨_, ha, _, ih, rfl⟩
-    · exact ⟨[], nil_mem_kstar _, _, by trivial⟩
-  · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
-    intro i
-    induction' i with _ ih <;> rw [h]
-    · rw [pow_zero, one_mul, add_comm]
-      exact le_add_right (by rfl)
-    · rw [add_comm, pow_add, pow_one, mul_assoc]
-      exact le_add_right (mul_le_mul_left' ih _)
+theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
+  mp h := by
+    apply le_antisymm
+    · intro x hx
+      induction' hlen : x.length using Nat.strong_induction_on with _ ih generalizing x
+      subst hlen
+      rw [h] at hx
+      obtain hx | _ := hx
+      · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
+        rw [length_append] at ih
+        have hal : a.length > 0 := by cases a <;> [contradiction; simp]
+        specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
+        rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
+        right
+        exact ⟨_, ha, _, ih, rfl⟩
+      · exact ⟨[], nil_mem_kstar _, _, by trivial⟩
+    · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
+      intro i
+      induction' i with _ ih <;> rw [h]
+      · rw [pow_zero, one_mul, add_comm]
+        exact le_add_right (by rfl)
+      · rw [add_comm, pow_add, pow_one, mul_assoc]
+        exact le_add_right (mul_le_mul_left' ih _)
+  mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
