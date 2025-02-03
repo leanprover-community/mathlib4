@@ -150,19 +150,11 @@ theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
   rw [← terminalIsTerminal.hom_ext (f ≫ terminal.from Y) (terminal.from X)]
   infer_instance
 
-instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
-    QuasiSeparatedSpace X := by
-  constructor
-  intro U V hU hU' hV hV'
-  obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_basicOpen_union _).mp ⟨hU', hU⟩
-  obtain ⟨s', hs', e'⟩ := (isCompactOpen_iff_eq_basicOpen_union _).mp ⟨hV', hV⟩
-  rw [e, e', Set.iUnion₂_inter]
-  simp_rw [Set.inter_iUnion₂]
-  apply hs.isCompact_biUnion
-  intro i _
-  apply hs'.isCompact_biUnion
-  intro i' _
-  change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
+instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X := by
+  -- TODO: This silly `simpa` would be unnecessary if we had indexed topological bases
+  refine .of_isTopologicalBasis
+    (by simpa [Opens.IsBasis, ← Set.range_comp] using isBasis_basicOpen X) fun i j ↦ ?_
+  change IsCompact (X.basicOpen i ⊓ X.basicOpen j).1
   rw [← Scheme.basicOpen_mul]
   exact ((isAffineOpen_top _).basicOpen _).isCompact
 
