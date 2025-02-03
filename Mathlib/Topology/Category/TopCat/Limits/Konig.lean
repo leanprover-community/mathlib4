@@ -107,10 +107,7 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
   rw [this]
   apply isClosed_biInter
   intro f _
-  apply isClosed_eq
-  -- `continuity` can solve the two remaining goals but takes about 2s on each.
-  · exact (F.map f.snd.snd.snd.snd).hom.continuous.comp (continuous_apply f.fst)
-  · exact continuous_apply _
+  apply isClosed_eq <;> fun_prop
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
