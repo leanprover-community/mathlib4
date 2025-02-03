@@ -176,8 +176,8 @@ noncomputable instance [Fintype D] : Fintype M.edges :=
 noncomputable instance [Fintype D] : Fintype M.faces :=
   Fintype.ofFinite M.faces
 
-/-- The Euler characteristic of a combinatorial map. -/
-noncomputable def EulerCharacteristic [Fintype D] : ℕ :=
+/-- The Euler characteristic of a `CombinatorialMap`. -/
+noncomputable def EulerCharacteristic [Fintype D] : ℤ :=
   (Fintype.card M.vertices) - (Fintype.card M.edges) + (Fintype.card M.faces)
 
 /-- Planarity is characterized by Euler's formula. -/
