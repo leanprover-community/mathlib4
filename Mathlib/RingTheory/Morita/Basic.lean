@@ -43,7 +43,7 @@ universe u₀ u₁ u₂ u₃
 
 open CategoryTheory
 
-variable (R : Type u₀) [CommRing R]
+variable (R : Type u₀) [CommSemiring R]
 
 open scoped ModuleCat.Algebra
 
