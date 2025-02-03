@@ -251,8 +251,8 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
 /-- Build an isomorphism in the category `ProfiniteGrp` from
 a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ofHom e
+  inv := ofHom e.symm
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
 @[to_additive]
