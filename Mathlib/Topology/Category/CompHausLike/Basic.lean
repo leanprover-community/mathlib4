@@ -117,12 +117,12 @@ abbrev of : CompHausLike P where
 theorem coe_of : (CompHausLike.of P X : Type _) = X := rfl
 
 @[simp]
-theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
+theorem coe_id (X : CompHausLike P) : (𝟙 X : X → X) = id :=
   rfl
 
 @[simp]
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
+    (f ≫ g : X → Z) = g ∘ f :=
   rfl
 
 section
@@ -135,7 +135,7 @@ abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 @[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl
 
-@[simp] lemma ofHom_id : ofHom P (ContinuousMap.id X) = 𝟙 X := rfl
+@[simp] lemma ofHom_id : ofHom P (ContinuousMap.id X) = 𝟙 (of _ X) := rfl
 
 @[simp] lemma ofHom_comp (f : C(X, Y)) (g : C(Y, Z)) :
     ofHom P (g.comp f) = ofHom _ f ≫ ofHom _ g := rfl
@@ -157,7 +157,7 @@ instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
 variable {P}
 
 /-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
-@[simps obj map]
+@[simps map]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
   obj X :=
@@ -183,7 +183,7 @@ end
 variable (P)
 
 /-- The fully faithful embedding of `CompHausLike P` in `TopCat`. -/
-@[simps!]
+@[simps! map]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
   inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 

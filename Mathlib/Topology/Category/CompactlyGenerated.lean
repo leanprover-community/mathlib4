@@ -61,6 +61,7 @@ section
 
 variable {X} {Y : Type w} [TopologicalSpace Y] [UCompactlyGeneratedSpace.{u} Y]
 
+/-- Typecheck a `ContinuousMap` as a morphism in `CompactlyGenerated`. -/
 abbrev ofHom (f : C(X, Y)) : of X ⟶ of Y := ConcreteCategory.ofHom f
 
 end
