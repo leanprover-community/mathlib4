@@ -663,12 +663,7 @@ noncomputable def LinearMap.toReal : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, �
     simp
   map_smul' a f := by
     ext x
-    simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.comp_apply,
-      CompactlySupportedContinuousMap.coe_toContinuousMap, CompactlySupportedContinuousMap.coe_smul,
-      Pi.smul_apply, smul_eq_mul, ContinuousMap.coeNNRealReal_apply,
-      RingHom.id_apply, ContinuousMap.coe_comp, Function.comp_apply]
-    rw [NNReal.smul_def, smul_eq_mul]
-    simp
+    simp [NNReal.smul_def]
 
 @[simp]
 lemma LinearMap.toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
