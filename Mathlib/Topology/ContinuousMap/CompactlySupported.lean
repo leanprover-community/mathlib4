@@ -711,8 +711,7 @@ lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
   constructor
   · intro h
     ext f
-    simp only [toNNRealLinear_apply, Real.coe_toNNReal'] at h
-    exact congrFun (congrArg DFunLike.coe h) (toReal f)
+    rw [eq_toNNRealLinear_nnrealPart_sub hΛ₁, eq_toNNRealLinear_nnrealPart_sub hΛ₂, h]
   · intro h
     ext f
     simp only [toNNRealLinear_apply]
