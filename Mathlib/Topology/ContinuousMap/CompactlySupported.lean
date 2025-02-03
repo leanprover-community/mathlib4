@@ -683,26 +683,15 @@ noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ 
   map_smul' a f := by ext; simp [NNReal.smul_def]
 
 @[simp]
-lemma toNNRealLinear_apply {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) (f : C_c(α, ℝ≥0)) :
-    toNNRealLinear Λ hΛ f = Λ (toReal f) := by
-  rw [toNNRealLinear]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, NNReal.coe_mk]
-  congr
+lemma toNNRealLinear_apply (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ) (f : C_c(α, ℝ≥0)) :
+    toNNRealLinear Λ hΛ f = Λ (toReal f) := rfl
 
-lemma eq_toNNRealLinear_nnrealPart_sub (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ) (f : C_c(α, ℝ)) :
-    Λ f = toNNRealLinear Λ hΛ (nnrealPart f) - toNNRealLinear Λ hΛ (nnrealPart (-f)) := by
-  simp [toNNRealLinear_apply, ← map_sub, nnrealPart_sub_nnrealPart_neg]
-
-@[simp] lemma toNNRealLinear_inj {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ hΛ₂) :
+@[simp] lemma toNNRealLinear_inj (Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ₁ hΛ₂) :
     toNNRealLinear Λ₁ hΛ₁ = toNNRealLinear Λ₂ hΛ₂ ↔ Λ₁ = Λ₂ := by
-  constructor
-  · intro h
-    ext f
-    rw [eq_toNNRealLinear_nnrealPart_sub, eq_toNNRealLinear_nnrealPart_sub, h]
-  · intro h
-    ext f
-    simp only [toNNRealLinear_apply]
-    rw [h]
+  simp only [LinearMap.ext_iff, NNReal.eq_iff, toNNRealLinear_apply]
+  refine ⟨fun h f ↦ ?_, fun h f ↦ by rw [LinearMap.ext h]⟩
+  rw [← nnrealPart_sub_nnrealPart_neg f]
+  simp_rw [map_sub, h]
 
 end CompactlySupportedContinuousMap
 
