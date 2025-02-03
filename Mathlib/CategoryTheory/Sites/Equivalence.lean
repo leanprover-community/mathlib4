@@ -269,7 +269,7 @@ lemma PreservesSheafification.transport
       K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
 
 variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
-variable [G.IsCocontinuous K J] [ConcreteCategory A]
+variable [G.IsCocontinuous K J] [HasForget A]
   [K.WEqualsLocallyBijective A]
 
 lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
