@@ -72,10 +72,31 @@ noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinse
 
 variable (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R)
 
-/-
-lemma test (p : Sym2 ι) :
-    Q.polar_sym2 (Sym2.map (fun i ↦ l i • g i) p) = (scalar l p) • Q.polar_sym2 (Sym2.map g p) := by
+#check scalar l
+
+#check Q.polar_sym2 ∘ (Sym2.map g)
+
+lemma test :
+    Q.polar_sym2 ∘ Sym2.map (l * g)  = (scalar l) * Q.polar_sym2 ∘ (Sym2.map g) := by
+  --rw [scalar]
+  --simp_all only [Finset.product_eq_sprod]
+  rw [polar_sym2]
+  rw [← Sym2.lift_comp_map]
+  rw [← Sym2.lift_comp_map]
   rw [scalar]
+  simp_all only [Finset.product_eq_sprod]
+  ext ⟨i,j⟩
+  simp_all only [Sym2.lift_mk]
+  have e1 (k : ι): (l * g) k = (l k) • (g k) := rfl
+  rw [e1, e1]
+  simp_rw [polar_smul_right, polar_smul_left]
+  refine Eq.symm (Finsupp.apply_eq_of_mem_graph ?_)
+  simp_all only [Finsupp.mem_graph_iff, ne_eq]
+  apply And.intro
+  · sorry
+  · apply Aesop.BuiltinRules.not_intro
+    intro a
+    sorry
   simp_all only [Finset.product_eq_sprod, Finsupp.onFinset_apply]
   rw [polar_sym2]
   rw [← Sym2.lift_comp_map_apply]
@@ -83,7 +104,7 @@ lemma test (p : Sym2 ι) :
   simp_all only [polar_smul_right, polar_smul_left]
   sorry
 
-
+/-
 lemma recover2 : Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l) =
     ∑ p ∈ l.support.sym2,
         p.lift
