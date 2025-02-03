@@ -22,8 +22,6 @@ universe u
 
 open LightCondensed LightCondSet CategoryTheory LightProfinite
 
-attribute [local instance] HasForget.instFunLike
-
 namespace LightCondSet
 
 variable (X : LightCondSet.{u})
@@ -107,9 +105,8 @@ def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSe
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [TopCat.toSheafCompHausLike_val_obj, CompHausLike.compHausLikeToTop_obj,
-        Opposite.op_unop, types_comp_apply, TopCat.toSheafCompHausLike_val_map,
-        ← FunctorToTypes.map_comp_apply]
+      simp only [TopCat.toSheafCompHausLike_val_obj, Opposite.op_unop, types_comp_apply,
+        TopCat.toSheafCompHausLike_val_map, ← FunctorToTypes.map_comp_apply]
       rfl }
 
 /-- The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/

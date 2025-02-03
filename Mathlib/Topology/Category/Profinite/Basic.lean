@@ -239,8 +239,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         rw [← cancel_epi f]
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
-        rw [ConcreteCategory.comp_apply, ContinuousMap.coe_mk, ConcreteCategory.comp_apply,
-          ContinuousMap.coe_mk, ConcreteCategory.hom_ofHom, ConcreteCategory.hom_ofHom,
+        rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, ConcreteCategory.hom_ofHom,
           ContinuousMap.coe_mk, Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
         simp [U, C]

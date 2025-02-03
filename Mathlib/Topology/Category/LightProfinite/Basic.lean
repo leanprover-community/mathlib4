@@ -216,16 +216,13 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         rw [← cancel_epi f]
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
-        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        rw [ConcreteCategory.comp_apply, ContinuousMap.coe_mk,
-          ConcreteCategory.comp_apply, ContinuousMap.coe_mk, hom_ofHom, hom_ofHom,
-          ContinuousMap.coe_mk, Function.comp_apply, if_neg]
+        rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, hom_ofHom, ContinuousMap.coe_mk,
+          Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
         simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map

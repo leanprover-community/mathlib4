@@ -59,10 +59,9 @@ def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
 lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P) := by
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
-  dsimp only [Functor.comp_obj, CompHausLike.toCompHausLike_obj, CompHausLike.compHausLikeToTop_obj,
-    CompHausLike.coe_of, Functor.comp_map, CompHausLike.toCompHausLike_map,
-    CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, toLimit_fun,
-    MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+  dsimp only [Functor.comp_obj, CompHausLike.coe_of, Functor.comp_map,
+    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
+    toLimit_fun, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
   rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
