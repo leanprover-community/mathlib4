@@ -51,7 +51,7 @@ lemma TendstoUniformlyOn_Eventually_le_const (f : ι → α → β) [NormedAddGr
   apply le_trans (norm_add_le _ _) _
   linarith [this, hg x hx] -/
 
-lemma tendstoUniformlyOn_comp_cexp [Preorder ι] {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
+lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove ((fun x => (g x).re) '' K)) :
     TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) p K := by
   obtain ⟨T, hT⟩ := hg
