@@ -88,6 +88,9 @@ lemma rename_comp_rename (f : σ → τ) (g : τ → α) :
 theorem rename_id : rename id = AlgHom.id R (MvPolynomial σ R) :=
   AlgHom.ext fun p ↦ eval₂_eta p
 
+lemma rename_id_apply (p : MvPolynomial σ R) : rename id p = p := by
+  simp
+
 theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
     rename f (monomial d r) = monomial (d.mapDomain f) r := by
   rw [rename, aeval_monomial, monomial_eq (s := Finsupp.mapDomain f d),
@@ -144,8 +147,8 @@ def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R 
   { rename f with
     toFun := rename f
     invFun := rename f.symm
-    left_inv := fun p => by simp [rename_rename, f.symm_comp_self]
-    right_inv := fun p => by simp [rename_rename, f.self_comp_symm] }
+    left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id_apply]
+    right_inv := fun p => by rw [rename_rename, f.self_comp_symm, rename_id_apply] }
 
 @[simp]
 theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
