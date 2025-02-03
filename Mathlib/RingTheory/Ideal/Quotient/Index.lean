@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
-
 # Indices of ideals
 
 ## Main result
