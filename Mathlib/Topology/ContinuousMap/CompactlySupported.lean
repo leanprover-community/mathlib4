@@ -699,8 +699,8 @@ lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
   ext x
   simp
 
-lemma toNNRealLinear_eq_iff {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ : ∀ f, 0 ≤ f → 0 ≤ Λ₁ f)
-    (hΛ₂ : ∀ f, 0 ≤ f → 0 ≤ Λ₂ f) : Λ₁ = Λ₂ ↔ toNNRealLinear hΛ₁ = toNNRealLinear hΛ₂ := by
+@[simp] lemma toNNRealLinear_inj {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ hΛ₂) :
+    toNNRealLinear Λ₁ hΛ₁ = toNNRealLinear Λ₂ hΛ₂ ↔ Λ₁ = Λ₂ := by
   constructor
   · intro h
     ext f
