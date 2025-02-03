@@ -3,8 +3,7 @@ Copyright (c) 2024 María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Skew Monoid Algebras
@@ -418,7 +417,7 @@ theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoi
 
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :
-    c • v.sum h = v.sum fun a b ↦ c • h a b := Finset.smul_sum
+    c • v.sum h = v.sum fun a b ↦ c • h a b := Finsupp.smul_sum
 
 theorem sum_congr {f : SkewMonoidAlgebra k G} {M : Type*} [AddCommMonoid M] {g₁ g₂ : G → k → M}
     (h : ∀ x ∈ f.support, g₁ x (f.coeff x) = g₂ x (f.coeff x)) :

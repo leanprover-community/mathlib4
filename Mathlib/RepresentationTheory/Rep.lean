@@ -61,7 +61,7 @@ instance (V : Rep k G) : Module k V := by
 -/
 def ρ (V : Rep k G) : Representation k G V :=
 -- Porting note: was `V.ρ`
-  (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V).hom
 
 /-- Lift an unbundled representation to `Rep`. -/
 def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
@@ -77,7 +77,7 @@ theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k
   rfl
 
 theorem Action_ρ_eq_ρ {A : Rep k G} :
-    Action.ρ A = (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp A.ρ :=
+    Action.ρ A = MonCat.ofHom ((ModuleCat.endRingEquiv _).symm.toMonoidHom.comp A.ρ) :=
   rfl
 
 @[simp]

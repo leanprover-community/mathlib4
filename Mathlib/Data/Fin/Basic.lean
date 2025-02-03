@@ -240,6 +240,12 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
 
+/-- Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
+@[simp]
+theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
+
 /--
 The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
@@ -384,9 +390,6 @@ theorem ofNat'_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat' n a = a :=
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias val_nat_cast := val_natCast
-
 -- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number. -/
@@ -405,19 +408,11 @@ in the same value. -/
 -- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
 @[simp high] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_self := natCast_self
-
 @[simp] lemma natCast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
   simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_eq_zero := natCast_eq_zero
-
 @[simp]
 theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
-
-@[deprecated (since := "2024-05-04")] alias cast_nat_eq_last := natCast_eq_last
 
 theorem le_val_last (i : Fin (n + 1)) : i ≤ n := by
   rw [Fin.natCast_eq_last]
@@ -639,8 +634,6 @@ theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
   simp [Fin.lt_def, -val_fin_lt]; omega
-
-@[deprecated (since := "2024-05-30")] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -1041,10 +1034,6 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 
-@[deprecated "No deprecation message was provided." (since := "2024-05-30")]
-lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
-    castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
-
 /-- Embedding `i : Fin n` into `Fin (n + 1)` using a pivot `p` that is greater
 results in a value that is less than `p`. -/
 lemma succAbove_lt_iff_castSucc_lt (p : Fin (n + 1)) (i : Fin n) :
@@ -1275,6 +1264,17 @@ lemma succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
   obtain h | h := Fin.lt_or_lt_of_ne h
   · rw [predAbove_of_le_castSucc _ _ (Fin.le_of_lt h), succAbove_castPred_of_lt _ _ h]
   · rw [predAbove_of_castSucc_lt _ _ h, succAbove_pred_of_lt _ _ h]
+
+/-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
+then back to `Fin (n+1)` with a gap around `p.succ` is the identity away from `p.succ`. -/
+@[simp]
+lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.succ) :
+    p.succ.succAbove (p.predAbove i) = i := by
+  obtain h | h := Fin.lt_or_lt_of_ne h
+  · rw [predAbove_of_le_castSucc _ _ (le_castSucc_iff.2 h),
+      succAbove_castPred_of_lt _ _ h]
+  · rw [predAbove_of_castSucc_lt _ _ (Fin.lt_of_le_of_lt (p.castSucc_le_succ) h),
+      succAbove_pred_of_lt _ _ h]
 
 /-- Sending `Fin n` into `Fin (n + 1)` with a gap at `p`
 then back to `Fin n` by subtracting one from anything above `p` is the identity. -/
