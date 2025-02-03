@@ -107,7 +107,7 @@ lemma hasFiniteIntegral_exp_mul_of_int
       rw [hω]
 
 open Filter in
-def mkRat (h_meas : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+lemma isSubGaussianWith_of_rat (h_meas : ∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
     (h_int : ∀ n : ℤ, ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω ↦ exp (n * X ω)) (κ ω'))
     (h_mgf : ∀ q : ℚ, ∀ᵐ ω' ∂ν, mgf X (κ ω') q ≤ exp (c * q ^ 2 / 2)) :
     Kernel.IsSubGaussianWith X c κ ν where
@@ -193,7 +193,7 @@ lemma add_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : IsSubGaussianWith X 
     filter_upwards [hYY'] with ω' hω'
     filter_upwards [hω'] with ω hω
     rw [hω]
-  refine mkRat ?_ ?_ ?_
+  refine isSubGaussianWith_of_rat ?_ ?_ ?_
   · refine ⟨X' + Y', hX'.add hY', ?_⟩
     filter_upwards [hXX', hYY'] with ω hX hY
     exact hX.add hY
