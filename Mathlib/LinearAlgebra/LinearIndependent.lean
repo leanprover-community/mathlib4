@@ -398,8 +398,9 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
   · simp_rw [hgs i hi]
   · simpa only [smul_assoc, smul_comm] using hsum
 
-@[simp] theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [DistribMulAction G R]
-    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M} {w : ι → G} :
+@[simp]
+theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [DistribMulAction G R]
+    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
   convert h.group_smul (fun i ↦ (w i)⁻¹)
@@ -416,7 +417,8 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   · simp_rw [hgs i hi]
   · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using hsum
 
-@[simp] theorem LinearIndependent.units_smul_iff {v : ι → M} {w : ι → Rˣ} :
+@[simp]
+theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
   convert h.units_smul (fun i ↦ (w i)⁻¹)
