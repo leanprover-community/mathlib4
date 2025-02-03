@@ -77,8 +77,8 @@ theorem commutator_le
     (is_qprim : IsQuasipreprimitive M α) (IwaS : IwasawaStructure M α)
     {N : Subgroup M} (nN : N.Normal) (hNX : MulAction.fixedPoints N α ≠ ⊤) :
     commutator M ≤ N := by
-  have is_transN := is_qprim.pretransitive_of_normal nN hNX
-  have ntα : Nontrivial α := isnontrivial_of_nontrivial_action hNX
+  have is_transN := is_qprim.isPretransitive_of_normal hNX
+  have ntα : Nontrivial α := nontrivial_of_fixedPoints_ne_univ hNX
   obtain a : α := Nontrivial.to_nonempty.some
   apply nN.commutator_le_of_self_sup_commutative_eq_top ?_ (IwaS.is_comm a)
   -- We have to prove that N ⊔ IwaS.T x = ⊤
