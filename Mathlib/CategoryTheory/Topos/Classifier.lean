@@ -13,7 +13,7 @@ import Mathlib.Tactic.ApplyFun
 # Subobject Classifier
 
 We define what it means for a morphism in a category to be a subobject
-classifier as `CategoryTheory.HasMonoClassifier`. The reason for this
+classifier as `CategoryTheory.HasClassifier`. The reason for this
 naming convention is to distinguish this internal categorical notion of
 a subobject classifier from a classifier of terms of type `Subobject B`
 for `B : C`.
@@ -25,7 +25,7 @@ Let `C` refer to a category with a terminal object.
 * `CategoryTheory.MonoClassifier C` is the data of a subobject classifier
   in `C`.
 
-* `CategoryTheory.HasMonoClassifier C` says that there is at least one
+* `CategoryTheory.HasClassifier C` says that there is at least one
   subobject classifier.
 
 ## Main results
@@ -67,7 +67,7 @@ terminal.from U               χ
     ⊤_ C --------t----------> Ω
 ```
 -/
-structure MonoClassifier where
+structure Classifier where
   /-- The target of the truth morphism -/
   {Ω : C}
   /-- the truth morphism for a subobject classifier -/
@@ -82,28 +82,28 @@ structure MonoClassifier where
 
 
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
-class HasMonoClassifier : Prop where
+class HasClassifier : Prop where
   /-- There is some classifier. -/
-  exists_classifier : Nonempty (MonoClassifier C)
+  exists_classifier : Nonempty (Classifier C)
 
-namespace CategoryTheory.HasMonoClassifier
+namespace CategoryTheory.HasClassifier
 
-variable [HasMonoClassifier C]
+variable [HasClassifier C]
 
 noncomputable section
 
 /-- Notation for the object in an arbitrary choice of a subobject classifier -/
-abbrev Ω : C := HasMonoClassifier.exists_classifier.some.Ω
+abbrev Ω : C := HasClassifier.exists_classifier.some.Ω
 
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
-abbrev t : ⊤_ C ⟶ Ω C := HasMonoClassifier.exists_classifier.some.t
+abbrev t : ⊤_ C ⟶ Ω C := HasClassifier.exists_classifier.some.t
 
 variable {C}
 variable {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
 def characteristicMap : X ⟶ Ω C :=
-  HasMonoClassifier.exists_classifier.some.char m
+  HasClassifier.exists_classifier.some.char m
 
 /-- shorthand for the characteristic morphism, `ClassifierOf m` -/
 abbrev χ_ := characteristicMap m
@@ -120,7 +120,7 @@ terminal.from U              χ_ m
 is a pullback square.
 -/
 lemma isPullback : IsPullback m (terminal.from U) (χ_ m) (t C) :=
-  HasMonoClassifier.exists_classifier.some.isPullback m
+  HasClassifier.exists_classifier.some.isPullback m
 
 /-- The diagram
 ```
@@ -140,7 +140,7 @@ lemma comm : m ≫ (χ_ m) = terminal.from _ ≫ t C := (isPullback m).w
 is a pullback square.
 -/
 lemma unique (χ : X ⟶ Ω C) (hχ : IsPullback m (terminal.from _) χ (t C)) : χ = χ_ m :=
-  HasMonoClassifier.exists_classifier.some.uniq m χ hχ
+  HasClassifier.exists_classifier.some.uniq m χ hχ
 
 
 /-- `t C` is a regular monomorphism (because it is split). -/
@@ -183,4 +183,4 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 end
-end CategoryTheory.HasMonoClassifier
+end CategoryTheory.HasClassifier
