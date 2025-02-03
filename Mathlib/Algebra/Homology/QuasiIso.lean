@@ -294,7 +294,7 @@ def quasiIso [CategoryWithHomology C] :
 variable {C c} [CategoryWithHomology C]
 
 @[simp]
-lemma mem_quasiIso_iff  (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+lemma mem_quasiIso_iff (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
 
 instance : (quasiIso C c).IsMultiplicative where
   id_mem _ := by

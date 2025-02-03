@@ -142,6 +142,7 @@ theorem coeff_eq_zero_of_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : m.
   rw [← not_le] at hd
   by_contra hf
   apply hd (m.le_degree (mem_support_iff.mpr hf))
+
 theorem leadingCoeff_ne_zero_iff {f : MvPolynomial σ R} :
     m.leadingCoeff f ≠ 0 ↔ f ≠ 0 := by
   constructor

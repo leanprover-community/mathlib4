@@ -90,8 +90,8 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     (hbf : m.degree b ≤ m.degree f) (hf : m.degree f ≠ 0) :
     m.degree (m.reduce hb f) ≺[m] m.degree f := by
   have H : m.degree f =
-    m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.leadingCoeff f)) +
-      m.degree b := by
+      m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.leadingCoeff f)) +
+        m.degree b := by
     classical
     rw [degree_monomial, if_neg]
     · ext d
@@ -103,10 +103,8 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
   have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by
     simp only [reduce, coeff_sub, sub_eq_zero]
     nth_rewrite 2 [H]
-    rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial]
-    rw [mul_comm, ← mul_assoc]
-    simp only [IsUnit.mul_val_inv, one_mul]
-    rfl
+    rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
+      IsUnit.mul_val_inv, one_mul, ← leadingCoeff]
   rw [lt_iff_le_and_ne]
   constructor
   · classical
@@ -118,8 +116,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
   · intro K
     simp only [EmbeddingLike.apply_eq_iff_eq] at K
     nth_rewrite 1 [← K] at H'
-    change leadingCoeff m _ = 0 at H'
-    rw [leadingCoeff_eq_zero_iff] at H'
+    rw [← leadingCoeff, leadingCoeff_eq_zero_iff] at H'
     rw [H', degree_zero] at K
     exact hf K.symm
 
@@ -235,5 +232,3 @@ theorem div_set {B : Set (MvPolynomial σ R)}
   exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
 
 end MonomialOrder
-
-

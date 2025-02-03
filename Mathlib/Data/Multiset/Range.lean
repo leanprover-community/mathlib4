@@ -28,7 +28,7 @@ theorem range_zero : range 0 = 0 :=
 
 @[simp]
 theorem range_succ (n : ℕ) : range (succ n) = n ::ₘ range n := by
-  rw [range, List.range_succ, ← coe_add, Multiset.add_comm]; rfl
+  rw [range, List.range_succ, ← coe_add, Multiset.add_comm, range, coe_singleton, singleton_add]
 
 @[simp]
 theorem card_range (n : ℕ) : card (range n) = n :=
