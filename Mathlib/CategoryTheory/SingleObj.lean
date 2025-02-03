@@ -94,7 +94,7 @@ abbrev star : SingleObj M :=
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
      monoid M. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
-  { Equiv.refl M with map_mul' := fun _ _ => by rfl }
+  { Equiv.refl M with map_mul' := fun _ _ => rfl }
 
 theorem toEnd_def (x : M) : toEnd M x = x :=
   rfl
@@ -209,13 +209,13 @@ end MulEquiv
 
 namespace Units
 
-variable (M : Type u) [m : Monoid M]
+variable (M : Type u) [Monoid M]
 
 /-- The units in a monoid are (multiplicatively) equivalent to
 the automorphisms of `star` when we think of the monoid as a single-object category. -/
 def toAut : Mˣ ≃* Aut (SingleObj.star M) :=
-  MulEquiv.trans (Units.mapEquiv (SingleObj.toEnd M)) <|
-    Aut.unitsEndEquivAut (SingleObj.star M)
+  MulEquiv.trans (Units.mapEquiv (SingleObj.toEnd M))
+    (Aut.unitsEndEquivAut (SingleObj.star M))
 
 @[simp]
 theorem toAut_hom (x : Mˣ) : (toAut M x).hom = SingleObj.toEnd M x :=
