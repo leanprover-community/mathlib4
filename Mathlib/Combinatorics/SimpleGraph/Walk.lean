@@ -596,8 +596,7 @@ theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v
     List.Chain G.DartAdj d p.darts := by
   induction p generalizing d with
   | nil => exact List.Chain.nil
-  -- Porting note: needed to defer `h` and `rfl` to help elaboration
-  | cons h' p ih => exact List.Chain.cons (by exact h) (ih (by rfl))
+  | cons h' p ih => exact List.Chain.cons h (ih rfl)
 
 theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
   | nil => trivial
@@ -921,6 +920,10 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq _ hp]
 
+protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by cases p <;> aesop
+
+lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil := mt Nil.tail hp
+
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
@@ -1117,15 +1120,10 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 
-@[simp] lemma getVert_copy  {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
+@[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
   subst_vars
-  match p, i with
-  | .nil, _ =>
-    rw [getVert_of_length_le _ (by simp only [length_nil, Nat.zero_le] : nil.length ≤ _)]
-    rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
-  | .cons hadj q, 0 => simp only [copy_rfl_rfl, getVert_zero]
-  | .cons hadj q, (n + 1) => simp only [copy_cons, getVert_cons_succ]; rfl
+  rfl
 
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) :
     p.tail.getVert n = p.getVert (n + 1) := by
@@ -1151,25 +1149,23 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       Nat.le_add_right, and_self]
   · rintro ⟨n, hn⟩
     rw [SimpleGraph.Walk.mem_support_iff]
-    by_cases h0 : n = 0
-    · rw [h0, getVert_zero] at hn
+    cases n with
+    | zero =>
+      rw [getVert_zero] at hn
       left
       exact hn.1.symm
-    · right
+    | succ n =>
+      right
       have hnp : ¬ p.Nil := by
         rw [nil_iff_length_eq]
         omega
-      rw [← support_tail_of_not_nil _ hnp]
-      rw [mem_support_iff_exists_getVert]
-      use n - 1
-      simp only [Nat.sub_le_iff_le_add]
-      rw [getVert_tail, length_tail_add_one hnp]
-      have : (n - 1 + 1) = n := by omega
-      rwa [this]
+      rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
+      use n
+      rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]
 termination_by p.length
 decreasing_by
 · simp_wf
-  rw [@Nat.lt_iff_add_one_le]
+  rw [Nat.lt_iff_add_one_le]
   rw [length_tail_add_one hnp]
 
 end Walk
@@ -1300,9 +1296,6 @@ theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
 theorem length_transfer (hp) : (p.transfer H hp).length = p.length := by
   induction p <;> simp [*]
 
--- Porting note: this failed the simpNF linter since it was originally of the form
--- `(p.transfer H hp).transfer K hp' = p.transfer K hp''` with `hp'` a function of `hp` and `hp'`.
--- This was a mistake and it's corrected here.
 @[simp]
 theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
     (p.transfer H hp).transfer K hp' = p.transfer K (p.edges_transfer hp ▸ hp') := by

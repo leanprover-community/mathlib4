@@ -27,8 +27,7 @@ to `Algebra.Group.Even`.
 `Algebra.Group.Even` for the definition of even elements.
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists OrderedRing
+assert_not_exists DenselyOrdered OrderedRing
 
 open MulOpposite
 
@@ -55,7 +54,7 @@ lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, o
 
 end DivisionMonoid
 
-@[simp] lemma isSquare_zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
+@[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
@@ -256,7 +255,7 @@ lemma even_sub' (h : n ≤ m) : Even (m - n) ↔ (Odd m ↔ Odd n) := by
 
 lemma Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
   (le_total n m).elim (fun h ↦ by simp only [even_sub' h, *]) fun h ↦ by
-    simp only [Nat.sub_eq_zero_iff_le.2 h, even_zero]
+    simp only [Nat.sub_eq_zero_iff_le.2 h, Even.zero]
 
 alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
 

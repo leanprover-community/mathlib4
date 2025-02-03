@@ -74,8 +74,6 @@ private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
 proof of Szemerédi's regularity lemma. -/
--- Porting note: positivity extensions must now be global, and this did not seem like a good
--- match for positivity anymore, so I wrote a new tactic (kmill)
 scoped macro "sz_positivity" : tactic =>
   `(tactic|
       { try have := m_pos ‹_›
@@ -220,9 +218,9 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j ∈ t, f j) / #t)) h₂ hscard.ne'
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
-  -- `simp [← mul_div_right_comm _ (#t : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`
-  -- `  mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
-  -- `  ← mul_sum]`
+  -- simp [← mul_div_right_comm _ (#t : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,
+  --   mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,
+  --   ← mul_sum]
   simp_rw [sub_div' _ _ _ htcard.ne']
   conv_lhs => enter [2, 2, x]; rw [div_pow]
   rw [div_pow, ← sum_div, ← mul_div_right_comm _ (#t : 𝕜), ← add_div,

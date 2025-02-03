@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -92,8 +92,7 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 
 @[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
-  -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
-  simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
+  simp [one_eq_span]
 
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
