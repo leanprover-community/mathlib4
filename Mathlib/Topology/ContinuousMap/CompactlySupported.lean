@@ -647,11 +647,7 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
   f.compLeft ContinuousMap.coeNNRealReal
 
 @[simp]
-lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
-    f.toReal x = f x := by
-  have : ContinuousMap.coeNNRealReal 0 = 0 := rfl
-  rw [toReal, compLeft_apply this]
-  rfl
+lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) : f.toReal x = f x := compLeft_apply rfl
 
 lemma eq_nnrealPart_neg_nnrealPart (f : C_c(α, ℝ)) :
     f = (nnrealPart f).toReal - (nnrealPart (-f)).toReal := by
