@@ -657,13 +657,9 @@ lemma eq_nnrealPart_neg_nnrealPart (f : C_c(α, ℝ)) :
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
-  toFun f := f.compLeft ContinuousMap.coeNNRealReal
-  map_add' f g := by
-    ext x
-    simp
-  map_smul' a f := by
-    ext x
-    simp [NNReal.smul_def]
+  toFun := toReal f
+  map_add' f g := by ext x; simp
+  map_smul' a f := by ext x; simp [NNReal.smul_def]
 
 @[simp]
 lemma LinearMap.toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
