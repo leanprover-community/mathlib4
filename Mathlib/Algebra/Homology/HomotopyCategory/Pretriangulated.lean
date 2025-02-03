@@ -30,6 +30,8 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C D : Type*} [Category C] [Category D]

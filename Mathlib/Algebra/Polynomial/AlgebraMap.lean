@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
@@ -49,7 +50,7 @@ instance algebraOfAlgebra : Algebra R A[X] where
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
       convert Algebra.commutes' r p.toFinsupp
-  toRingHom := C.comp (algebraMap R A)
+  algebraMap := C.comp (algebraMap R A)
 
 @[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
@@ -135,16 +136,10 @@ theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[
     (r : R) : f (eval₂ (Int.castRingHom R) r p) = eval₂ (Int.castRingHom S) (f r) p :=
   algHom_eval₂_algebraMap p f.toIntAlgHom r
 
-@[deprecated (since := "2024-05-27")]
-alias ringHom_eval₂_cast_int_ringHom := ringHom_eval₂_intCastRingHom
-
 @[simp]
 theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
-
-@[deprecated (since := "2024-04-17")]
-alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
@@ -240,7 +235,6 @@ theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   map_zero (aeval x)
 
@@ -256,24 +250,17 @@ theorem aeval_C (r : R) : aeval x (C r) = algebraMap R A r :=
 theorem aeval_monomial {n : ℕ} {r : R} : aeval x (monomial n r) = algebraMap _ _ r * x ^ n :=
   eval₂_monomial _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_X_pow {n : ℕ} : aeval x ((X : R[X]) ^ n) = x ^ n :=
   eval₂_X_pow _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_add : aeval x (p + q) = aeval x p + aeval x q :=
   map_add _ _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_one : aeval x (1 : R[X]) = 1 :=
   map_one _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
-
-@[deprecated (since := "2024-04-17")]
-alias aeval_nat_cast := aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   map_mul _ _ _
@@ -372,6 +359,38 @@ theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ
 theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
     aeval (algebraMap R A x) p = algebraMap R A (p.eval x) :=
   aeval_algHom_apply (Algebra.ofId R A) x p
+
+/-- Polynomial evaluation on a pair is a product of the evaluations on the components. -/
+theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2) :=
+  aeval_algHom (.fst R A B) x ▸ aeval_algHom (.snd R A B) x ▸
+    (aeval x).prod_comp (.fst R A B) (.snd R A B)
+
+/-- Polynomial evaluation on a pair is a pair of evaluations. -/
+theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
+    p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
+
+section Pi
+
+variable {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable (x : Π i, A i) (p : R[X])
+
+/-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod` to indexed products. -/
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+  (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
+    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+
+theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
+  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+
+/-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod_apply` to indexed products. -/
+theorem aeval_pi_apply : p.aeval x = fun j ↦ p.aeval (x j) :=
+  funext fun j ↦ aeval_pi_apply₂ x p j
+
+end Pi
 
 @[simp]
 theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=

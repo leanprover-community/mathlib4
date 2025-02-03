@@ -142,6 +142,11 @@ lemma image_iSup₂ {ι : Sort*} {κ : ι → Sort*} (s : (i : ι) → κ i → 
   ext : 1
   simp [Set.image_iUnion₂]
 
+@[simp]
+lemma map_mem_image_iff {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
+    {U : X.Opens} {x : X} : f.base x ∈ f ''ᵁ U ↔ x ∈ U :=
+  f.isOpenEmbedding.injective.mem_set_image
+
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
 def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f.toLRSHom U).symm
@@ -180,7 +185,7 @@ theorem appIso_inv_app (U) :
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
 /--
-`elementwise` generates the `ConcreteCategory.instFunLike` lemma, we want `CommRingCat.Hom.hom`.
+`elementwise` generates the `HasForget.instFunLike` lemma, we want `CommRingCat.Hom.hom`.
 -/
 theorem appIso_inv_app_apply' (U) (x) :
     f.app (f ''ᵁ U) ((f.appIso U).inv x) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op x :=
@@ -392,11 +397,11 @@ lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion 
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsOpenImmersion f ↔ IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) :=
   ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
-    fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
+    fun ⟨h, _⟩ => IsOpenImmersion.of_stalk_iso f h⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsOpenImmersion f ∧ Epi f.base :=
-  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.to_iso _ _ f h₁ h₂⟩
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => IsOpenImmersion.to_iso f⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
@@ -677,14 +682,27 @@ end MorphismProperty
 
 namespace Scheme
 
-theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : X.Opens}
-    (r : Γ(X, U)) :
+variable {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
+
+theorem image_basicOpen {U : X.Opens} (r : Γ(X, U)) :
     f ''ᵁ X.basicOpen r = Y.basicOpen ((f.appIso U).inv r) := by
   have e := Scheme.preimage_basicOpen f ((f.appIso U).inv r)
   rw [Scheme.Hom.appIso_inv_app_apply', Scheme.basicOpen_res, inf_eq_right.mpr _] at e
   · rw [← e, f.image_preimage_eq_opensRange_inter, inf_eq_right]
     refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   · exact (X.basicOpen_le r).trans (f.preimage_image_eq _).ge
+
+lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
+    f.base '' X.zeroLocus s =
+      Y.zeroLocus (U := f ''ᵁ U) ((f.appIso U).inv.hom '' s) ∩ Set.range f.base := by
+  ext x
+  by_cases hx : x ∈ Set.range f.base
+  · obtain ⟨x, rfl⟩ := hx
+    simp only [f.isOpenEmbedding.injective.mem_set_image, Scheme.mem_zeroLocus_iff,
+      ← SetLike.mem_coe, Set.mem_inter_iff, Set.forall_mem_image, ← Scheme.image_basicOpen,
+      IsOpenMap.coe_functor_obj, Set.mem_range, exists_apply_eq_apply, and_true]
+  · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
+    exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
 end Scheme
 

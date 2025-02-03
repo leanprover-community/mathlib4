@@ -297,15 +297,30 @@ theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
 such that they are both injective, and compatible with the scalar
 multiplications on `M` and `M'`, then `j` sends linearly independent families of vectors to
 linearly independent families of vectors. As a special case, taking `R = R'`
-it is `LinearIndependent.map'`. -/
+it is `LinearIndependent.map_injOn`. -/
 theorem LinearIndependent.map_of_injective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : R' → R) (j : M →+ M') (hi : Function.Injective i) (hj : Function.Injective j)
+    (i : R' → R) (j : M →+ M') (hi : Injective i) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'ₛ] at hv ⊢
   intro S r₁ r₂ H s hs
   simp_rw [comp_apply, ← hc, ← map_sum] at H
   exact hi <| hv _ _ _ (hj H) s hs
+
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map,
+and `j : M →+ M'` is an injective monoid map, such that the scalar multiplications
+on `M` and `M'` are compatible, then `j` sends linearly independent families
+of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
+it is `LinearIndependent.map_injOn`. -/
+theorem LinearIndependent.map_of_surjective_injectiveₛ {R' M' : Type*}
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : Injective j)
+    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
+  obtain ⟨i', hi'⟩ := hi.hasRightInverse
+  refine hv.map_of_injective_injectiveₛ i' j (fun _ _ h ↦ ?_) hj fun r m ↦ ?_
+  · apply_fun i at h
+    rwa [hi', hi'] at h
+  rw [hc (i' r) m, hi']
 
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/
@@ -801,6 +816,17 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
   convert y.mem
   rw [← Subtype.mk.inj hy]
 
+theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
+    (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
+  have :=
+    eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
+      Set.subset_union_right (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
+  rw [← this]; apply Set.subset_union_left
+
+theorem span_le_span_iff [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
+    (hsu : s ⊆ u) (htu : t ⊆ u) : span R s ≤ span R t ↔ s ⊆ t :=
+  ⟨le_of_span_le_span hl hsu htu, span_mono⟩
+
 end Semiring
 
 section Module
@@ -914,15 +940,11 @@ theorem LinearIndependent.map_of_injective_injective {R' M' : Type*}
 scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly independent families
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
-theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
+theorem LinearIndependent.map_of_surjective_injective {R' M' : Type*}
     [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
-    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
-  obtain ⟨i', hi'⟩ := hi.hasRightInverse
-  refine hv.map_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_
-  · apply_fun i at h
-    rwa [hi', i.map_zero] at h
-  rw [hc (i' r) m, hi']
+    (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
+    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) :=
+  hv.map_of_surjective_injectiveₛ i _ hi ((injective_iff_map_eq_zero _).mpr hj) hc
 
 /-- If `f` is an injective linear map, then the family `f ∘ v` is linearly independent
 if and only if the family `v` is linearly independent. -/
@@ -1278,18 +1300,7 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
   apply (linearIndependent_algHom_toLinearMap K M L).restrict_scalars
   simp_rw [Algebra.smul_def, mul_one]
-  exact NoZeroSMulDivisors.algebraMap_injective K L
-
-theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
-    (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
-  have :=
-    eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
-      Set.subset_union_right (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
-  rw [← this]; apply Set.subset_union_left
-
-theorem span_le_span_iff [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
-    (hsu : s ⊆ u) (htu : t ⊆ u) : span R s ≤ span R t ↔ s ⊆ t :=
-  ⟨le_of_span_le_span hl hsu htu, span_mono⟩
+  exact FaithfulSMul.algebraMap_injective K L
 
 end Module
 

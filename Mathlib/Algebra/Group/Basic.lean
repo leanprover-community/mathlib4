@@ -19,8 +19,7 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Algebra/Group/Defs.lean`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -1032,6 +1031,3 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 
 end multiplicative
-
--- The name `add_sub_cancel` was reused
--- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right

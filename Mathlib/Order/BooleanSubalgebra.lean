@@ -344,6 +344,12 @@ lemma subset_closure : s ⊆ closure s := fun _ hx ↦ mem_closure.2 fun _ hK �
 
 lemma closure_mono (hst : s ⊆ t) : closure s ≤ closure t := sInf_le_sInf fun _L ↦ hst.trans
 
+lemma latticeClosure_subset_closure : latticeClosure s ⊆ closure s :=
+  latticeClosure_min subset_closure (closure s).isSublattice
+
+@[simp] lemma closure_latticeClosure (s : Set α) : closure (latticeClosure s) = closure s :=
+  le_antisymm (closure_le.2 latticeClosure_subset_closure) (closure_mono subset_latticeClosure)
+
 /-- An induction principle for closure membership. If `p` holds for `⊥` and all elements of `s`, and
 is preserved under suprema and complement, then `p` holds for all elements of the closure of `s`. -/
 @[elab_as_elim]

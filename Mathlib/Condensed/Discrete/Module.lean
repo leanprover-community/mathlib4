@@ -24,8 +24,6 @@ universe w u
 
 open CategoryTheory LocallyConstant CompHausLike Functor Category Functor Opposite
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 variable {P : TopCat.{u} → Prop}
 
 namespace CompHausLike.LocallyConstantModule
@@ -40,7 +38,7 @@ constant maps.
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
     obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
-    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop) }
+    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom) }
   map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
 
 variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]

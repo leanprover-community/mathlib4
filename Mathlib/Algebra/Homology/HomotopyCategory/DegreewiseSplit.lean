@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
-/-! Degreewise split exact sequences of cochain complexes
+/-!
+# Degreewise split exact sequences of cochain complexes
 
 The main result of this file is the lemma
 `HomotopyCategory.distinguished_iff_iso_trianglehOfDegreewiseSplit` which asserts
@@ -14,6 +15,8 @@ is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 

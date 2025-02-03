@@ -42,8 +42,7 @@ files, without importing `.Basic` theory development.
 
 These `assert_not_exists` statements guard against this returning.
 -/
-assert_not_exists DivisionMonoid.toDivInvOneMonoid
-assert_not_exists mul_rotate
+assert_not_exists DivisionMonoid.toDivInvOneMonoid mul_rotate
 
 
 universe u v
