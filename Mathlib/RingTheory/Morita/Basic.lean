@@ -123,8 +123,6 @@ structure IsMoritaEquivalent
 
 namespace IsMoritaEquivalent
 
--- variable {A : Type u₁} [Ring R] {B : Type u₂} [Ring B] {C : Type u₃} [Ring T]
-
 lemma refl {A : Type u₁} [Ring A] [Algebra R A] : IsMoritaEquivalent R A A where
   cond := ⟨.refl R A⟩
 
