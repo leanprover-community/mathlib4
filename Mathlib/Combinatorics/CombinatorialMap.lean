@@ -55,6 +55,7 @@ lemma composition_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
   rw [← M.composition]
   rfl
 
+/-- This order of permutations also results in the identity map. -/
 lemma composition' : M.α * M.φ * M.σ = 1 :=
   have (y : D) : (M.α * M.φ * M.σ) y = y := by
     obtain ⟨_, h⟩ := M.α.surjective y
@@ -137,14 +138,32 @@ lemma double_dual_eq (M : CombinatorialMap D) : M.dual.dual = M := rfl
 
 /-- The vertex corresponding to a dart `d`. -/
 @[reducible] def dartVertex (M : CombinatorialMap D) (d : D) : M.vertices :=
-  @Quotient.mk _ (Equiv.Perm.SameCycle.setoid M.σ) d
+  Quotient.mk (Equiv.Perm.SameCycle.setoid M.σ) d
 
 /-- The edge corresponding to a dart `d`. -/
 @[reducible] def dartEdge (M : CombinatorialMap D) (d : D) : M.edges :=
-  @Quotient.mk _ (Equiv.Perm.SameCycle.setoid M.α) d
+  Quotient.mk (Equiv.Perm.SameCycle.setoid M.α) d
 
 /-- The face corresponding to a dart `d`. -/
 @[reducible] def dartFace (M : CombinatorialMap D) (d : D) : M.faces :=
-  @Quotient.mk _ (Equiv.Perm.SameCycle.setoid M.φ) d
+  Quotient.mk (Equiv.Perm.SameCycle.setoid M.φ) d
+
+/-- The degree of a vertex is the number of incident darts. -/
+def vertices.deg [Fintype D] [DecidableEq D] (v : M.vertices) : ℕ :=
+  Quotient.lift (fun w ↦ Fintype.card {u | Equiv.Perm.SameCycle M.σ w u})
+    (by
+      intro w u h
+      simp only [Set.coe_setOf, Set.mem_setOf_eq]
+      convert_to (fun x ↦ M.σ.SameCycle w x) = fun x ↦ M.σ.SameCycle u x
+      · apply Iff.intro
+        · intro
+          ext
+          exact ⟨h.symm.trans, h.trans⟩
+        · simp_all
+      ext
+      exact ⟨h.symm.trans, h.trans⟩) v
+
+def vertices.darts (v : M.vertices) : Set D :=
+  {d : D | M.dartVertex d = v}
 
 end CombinatorialMap
