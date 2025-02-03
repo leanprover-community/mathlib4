@@ -414,13 +414,13 @@ noncomputable def Scheme.Opens.isoOfLE {X : Scheme.{u}} {U V : X.Opens}
     rw [Scheme.comp_coeBase, TopCat.coe_comp, Scheme.Opens.range_ι, Set.range_comp, ← this]
     simp
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma Scheme.Opens.isoOfLE_hom_ι {X : Scheme.{u}} {U V : X.Opens}
     (hUV : U ≤ V) :
     (Scheme.Opens.isoOfLE hUV).hom ≫ U.ι = (V.ι ⁻¹ᵁ U).ι ≫ V.ι := by
   simp [isoOfLE]
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
     (hUV : U ≤ V) :
     (Scheme.Opens.isoOfLE hUV).inv ≫ (V.ι ⁻¹ᵁ U).ι ≫ V.ι = U.ι := by
