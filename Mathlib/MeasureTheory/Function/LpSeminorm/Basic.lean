@@ -343,14 +343,16 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
   simpa [hμ, hc, hμ_top, hμ_top.lt_top] using
     ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
 
-theorem memℒp_const (c : E) [IsFiniteMeasure μ] : Memℒp (fun _ : α => c) p μ := by
+theorem memℒp_const [TopologicalSpace ε] (c : ε) [IsFiniteMeasure μ] :
+    Memℒp (fun _ : α => c) p μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
   by_cases h0 : p = 0
   · simp [h0]
   by_cases hμ : μ = 0
   · simp [hμ]
   rw [eLpNorm_const c h0 hμ]
-  refine ENNReal.mul_lt_top ENNReal.coe_lt_top ?_
+  refine ENNReal.mul_lt_top ?_ ?_
+  · sorry -- was: ENNReal.coe_lt_top
   refine ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)
   simp
 
@@ -374,12 +376,7 @@ lemma eLpNorm'_mono_enorm_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h 
   refine lintegral_mono_ae (h.mono fun x hx => ?_)
   gcongr
 
-lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
-    eLpNorm' f q μ ≤ eLpNorm' g q μ := by
-  apply eLpNorm'_mono_enorm_ae hq
-  dsimp [enorm]
-  simp_rw [ENNReal.coe_le_coe]
-  exact h
+@[deprecated (since := "2025-02-03")] alias eLpNorm'_mono_nnnorm_ae := eLpNorm'_mono_enorm_ae
 
 theorem eLpNorm'_mono_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
@@ -459,17 +456,11 @@ theorem eLpNorm_mono_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, �
 theorem eLpNorm_mono_ae' {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   apply eLpNorm_mono_enorm_ae --(foo h)
-  -- TODO: how to use foo under a binder?
-  sorry -- familiar sorry, equal norm => equal enorm
+  sorry -- TODO: want to use foo under a binder, with the same set; how to do that *nicely*?
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
-    eLpNorm f p μ ≤ eLpNorm g p μ := by
-  refine eLpNorm_mono_ae <| h.mono fun _x hx => ?_
-  have := hx.trans (le_abs_self _)
-  rw [← Real.norm_eq_abs] at this
-  apply foo_leq this
-  -- FIXME: golf this; original proof was
-  -- was: hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
+    eLpNorm f p μ ≤ eLpNorm g p μ :=
+  eLpNorm_mono_ae <| h.mono fun _x hx ↦ foo_leq ((Real.norm_eq_abs _) ▸ hx.trans (le_abs_self _))
 
 theorem eLpNorm_mono {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -506,6 +497,7 @@ theorem eLpNormEssSup_lt_top_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hf
 @[deprecated (since := "2025-02-02")]
 alias eLpNormEssSup_lt_top_of_ae_nnnorm_bound := eLpNormEssSup_lt_top_of_ae_enorm_bound
 
+-- TODO: generalise this?
 theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
@@ -628,23 +620,29 @@ theorem Memℒp.of_le [TopologicalSpace ε] [TopologicalSpace ε'] {f : α → �
 
 alias Memℒp.mono := Memℒp.of_le
 
-theorem Memℒp.mono' {f : α → E} {g : α → ℝ} (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)
+-- Is this version useful? The old version is now mono''.
+theorem Memℒp.mono' [TopologicalSpace ε] {f : α → ε} {g : α → ℝ≥0}
+    (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)
+    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : Memℒp f p μ :=
+  hg.mono hf <| h.mono fun _x hx ↦ hx.trans <|
+    by simp only [coe_le_enorm, NNReal.nnnorm_eq_self, le_refl]
+
+theorem Memℒp.mono'' {f : α → E} {g : α → ℝ} (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : Memℒp f p μ :=
   hg.mono hf <| h.mono fun _x hx ↦ foo_leq (hx.trans (le_abs_self _))
 
 theorem Memℒp.congr_norm [TopologicalSpace ε] [TopologicalSpace ε'] {f : α → ε} {g : α → ε'}
-    (hf : Memℒp f p μ) (hg : AEStronglyMeasurable g μ)
-    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : Memℒp g p μ :=
+    (hf : Memℒp f p μ) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    Memℒp g p μ :=
   hf.mono hg <| EventuallyEq.le <| EventuallyEq.symm h
 
 theorem memℒp_congr_norm [TopologicalSpace ε] [TopologicalSpace ε'] {f : α → ε} {g : α → ε'}
-    (hf : AEStronglyMeasurable f μ)
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : Memℒp f p μ ↔ Memℒp g p μ :=
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    Memℒp f p μ ↔ Memℒp g p μ :=
   ⟨fun h2f => h2f.congr_norm hg h, fun h2g => h2g.congr_norm hf <| EventuallyEq.symm h⟩
 
 theorem memℒp_top_of_bound [TopologicalSpace ε] {f : α → ε}
-    (hf : AEStronglyMeasurable f μ) (C : ℝ)
-    (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) : Memℒp f ∞ μ :=
+    (hf : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) : Memℒp f ∞ μ :=
   ⟨hf, by
     rw [eLpNorm_exponent_top]
     exact eLpNormEssSup_lt_top_of_ae_enorm_bound hfC⟩
@@ -654,14 +652,15 @@ theorem Memℒp.of_bound [TopologicalSpace ε] [IsFiniteMeasure μ] {f : α → 
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) : Memℒp f p μ := by
   refine (memℒp_const C).of_le hf (hfC.mono fun _x hx => ?_)
   apply hx.trans ?_
-  sorry -- left: C.toNNReal ≤ ‖C‖ₑ
+  simp only [coe_le_enorm]
+  sorry -- left: C.toNNReal ≤ ‖C‖₊... is this the right goal to have?
 
 theorem memℒp_of_bounded [IsFiniteMeasure μ]
     {a b : ℝ} {f : α → ℝ} (h : ∀ᵐ x ∂μ, f x ∈ Set.Icc a b)
     (hX : AEStronglyMeasurable f μ) (p : ENNReal) : Memℒp f p μ :=
   have ha : ∀ᵐ x ∂μ, a ≤ f x := h.mono fun ω h => h.1
   have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
-  (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
+  (memℒp_const (max |a| |b|)).mono'' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
 @[gcongr, mono]
 theorem eLpNorm'_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
@@ -719,7 +718,7 @@ lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
   simp_rw [← eLpNorm_exponent_top, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
-lemma eLpNorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
+lemma eLpNorm_restrict_le (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
   eLpNorm_mono_measure f Measure.restrict_le_self
 
@@ -789,11 +788,8 @@ lemma eLpNorm_indicator_const_le (c : G) (p : ℝ≥0∞) :
     exact eLpNormEssSup_indicator_const_le _ _
   let t := toMeasurable μ s
   calc
-    eLpNorm (s.indicator fun _ => c) p μ ≤ eLpNorm (t.indicator fun _ => c) p μ := by
-      refine eLpNorm_mono ?_
-      intro x
-      sorry -- apply enorm_indicator_le_of_subset -- recompile, then should work!
-      --eLpNorm_mono (norm_indicator_le_of_subset (subset_toMeasurable _ _) _)
+    eLpNorm (s.indicator fun _ => c) p μ ≤ eLpNorm (t.indicator fun _ => c) p μ :=
+      eLpNorm_mono fun x ↦ (enorm_indicator_le_of_subset (subset_toMeasurable _ _)) _ _
     _ = ‖c‖ₑ * μ t ^ (1 / p.toReal) :=
       eLpNorm_indicator_const (measurableSet_toMeasurable ..) hp h'p
     _ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by rw [measure_toMeasurable]
