@@ -92,10 +92,10 @@ variable [HasMonoClassifier C]
 
 noncomputable section
 
-/-- Notation for the object in a subobject classifier -/
+/-- Notation for the object in an arbitrary choice of a subobject classifier -/
 abbrev Ω : C := HasMonoClassifier.exists_classifier.some.Ω
 
-/-- Notation for the "truth arrow" in a subobject classifier -/
+/-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
 abbrev t : ⊤_ C ⟶ Ω C := HasMonoClassifier.exists_classifier.some.t
 
 variable {C}
