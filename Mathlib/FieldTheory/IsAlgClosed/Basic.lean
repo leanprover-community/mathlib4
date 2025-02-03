@@ -3,7 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.Integral
 
@@ -149,7 +150,7 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
     rw [degree_map]
     exact ne_of_gt (degree_pos_of_irreducible hp)
-  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm) hpe with ⟨x, hx⟩
+  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm.toRingHom) hpe with ⟨x, hx⟩
   use e x
   rw [IsRoot] at hx
   apply e.symm.injective
@@ -181,16 +182,6 @@ theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K
     [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
   let _ : Algebra k K := f.toAlgebra
   have : Algebra.IsIntegral k K := ⟨hf⟩
-  algebraMap_surjective_of_isIntegral
-
-/--
-Deprecated: `algebraMap_surjective_of_isIntegral` is identical apart from the `IsIntegral` argument,
-which can be found by instance synthesis
--/
-@[deprecated algebraMap_surjective_of_isIntegral (since := "2024-05-08")]
-theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [IsDomain K]
-    [IsAlgClosed k] [Algebra k K] [Algebra.IsAlgebraic k K] :
-    Function.Surjective (algebraMap k K) :=
   algebraMap_surjective_of_isIntegral
 
 end IsAlgClosed
@@ -382,7 +373,7 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
   letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) : _)
+            (NoZeroSMulDivisors.algebraMap_injective R S) :)
   letI : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }

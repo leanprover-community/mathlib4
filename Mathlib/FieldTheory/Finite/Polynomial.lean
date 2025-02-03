@@ -71,13 +71,12 @@ theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 :=
 theorem degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
-  refine le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => ?_)
   classical
-  refine le_trans (degrees_sub _ _) ?_
-  rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
-  refine le_trans (degrees_pow _ _) (nsmul_le_nsmul_right ?_ _)
-  refine le_trans (degrees_sub _ _) ?_
-  rw [degrees_C, ← bot_eq_zero, sup_bot_eq]
+  refine degrees_prod_le.trans <| Finset.sum_le_sum fun s _ ↦ degrees_sub_le.trans ?_
+  rw [degrees_one, Multiset.zero_union]
+  refine le_trans degrees_pow_le (nsmul_le_nsmul_right ?_ _)
+  refine degrees_sub_le.trans ?_
+  rw [degrees_C, Multiset.union_zero]
   exact degrees_X' _
 
 theorem indicator_mem_restrictDegree (c : σ → K) :

@@ -398,14 +398,16 @@ def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
-def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
+def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
+@[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
+
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
-def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := equivOfUnique α _
+def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
 def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniqueProp h
@@ -719,8 +721,6 @@ protected lemma forall_congr_right : (∀ a, q (e a)) ↔ ∀ b, q b :=
 protected lemma forall_congr_left : (∀ a, p a) ↔ ∀ b, p (e.symm b) :=
   e.symm.forall_congr_right.symm
 
-@[deprecated (since := "2024-06-11")] alias forall_congr_left' := Equiv.forall_congr_left
-
 protected lemma forall_congr (h : ∀ a, p a ↔ q (e a)) : (∀ a, p a) ↔ ∀ b, q b :=
   e.forall_congr_left.trans (by simp [h])
 
@@ -745,16 +745,8 @@ protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
 protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b) :=
   e.symm.existsUnique_congr_right.symm
 
-@[deprecated (since := "2024-06-11")]
-alias exists_unique_congr_left := Equiv.existsUnique_congr_right
-
-@[deprecated (since := "2024-06-11")]
-alias exists_unique_congr_left' := Equiv.existsUnique_congr_left
-
 protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
-
-@[deprecated (since := "2024-06-11")] alias exists_unique_congr := Equiv.existsUnique_congr
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]

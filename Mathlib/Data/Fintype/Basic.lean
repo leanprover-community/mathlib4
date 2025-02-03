@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
@@ -38,8 +39,7 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -72,9 +72,7 @@ def univ : Finset α :=
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
--- Porting note: removing @[simp], simp can prove it
-theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
-  mem_univ
+theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 := by simp
 
 theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
@@ -733,9 +731,8 @@ theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype
   ext
   simp
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
-    s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by rw [← coe_ssubset, coe_toFinset, coe_univ]
+    s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by simp
 
 @[simp]
 theorem toFinset_image [DecidableEq β] (f : α → β) (s : Set α) [Fintype s] [Fintype (f '' s)] :
@@ -857,11 +854,9 @@ since that relies on a subsingleton elimination for `Unique`. -/
 instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 
--- Porting note: removing @[simp], simp can prove it
 theorem Fintype.univ_empty : @univ Empty _ = ∅ :=
   rfl
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_pempty : @univ PEmpty _ = ∅ :=
   rfl
 
@@ -874,7 +869,6 @@ theorem Fintype.univ_unit : @univ Unit _ = {()} :=
 instance PUnit.fintype : Fintype PUnit :=
   Fintype.ofSubsingleton PUnit.unit
 
---@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 
@@ -1066,11 +1060,7 @@ variable [Fintype α] [DecidableEq β] {f : α → β}
 /-- `bijInv f` is the unique inverse to a bijection `f`. This acts
   as a computable alternative to `Function.invFun`. -/
 def bijInv (f_bij : Bijective f) (b : β) : α :=
-  Fintype.choose (fun a => f a = b)
-    (by
-      rcases f_bij.right b with ⟨a', fa_eq_b⟩
-      rw [← fa_eq_b]
-      exact ⟨a', ⟨rfl, fun a h => f_bij.left h⟩⟩)
+  Fintype.choose (fun a => f a = b) (f_bij.existsUnique b)
 
 theorem leftInverse_bijInv (f_bij : Bijective f) : LeftInverse (bijInv f_bij) f := fun a =>
   f_bij.left (choose_spec (fun a' => f a' = f a) _)

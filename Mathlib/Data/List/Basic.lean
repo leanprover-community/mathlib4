@@ -8,7 +8,6 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
-import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
@@ -18,10 +17,11 @@ import Mathlib.Tactic.Common
 # Basic properties of lists
 -/
 
-assert_not_exists Set.range
 assert_not_exists GroupWithZero
-assert_not_exists Ring
 assert_not_exists Lattice
+assert_not_exists Prod.swap_eq_iff_eq_swap
+assert_not_exists Ring
+assert_not_exists Set.range
 
 open Function
 
@@ -29,13 +29,13 @@ open Nat hiding one_pos
 
 namespace List
 
+-- Renamed in lean core; to be removed with the version bump.
+alias replicate_append_replicate := append_replicate_replicate
+alias append_eq_nil_iff := append_eq_nil
+
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
-
-/-- `≤` implies not `>` for lists. -/
-@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
-theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -73,7 +73,6 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-@[deprecated (since := "2024-03-23")] alias mem_split := append_of_mem
 
 -- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
 -- However this is a higher priority lemma.
@@ -209,10 +208,7 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
   | (b :: l) => by simp [eq_replicate_length, replicate_succ]
 
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
-  rw [append_replicate_replicate]
-
-theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
-  replicate_add n 1 a
+  rw [replicate_append_replicate]
 
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
@@ -300,7 +296,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
 @[simp]
@@ -332,7 +328,7 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 lemma getLast_filter' {p : α → Bool} :
     ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
       (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
-  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | [a], h, h' => by simp
   | a :: b :: as, h, h' => by
     rw [List.getLast_cons_cons] at h' ⊢
     simp only [List.filter_cons (x := a)] at h ⊢
@@ -346,8 +342,6 @@ lemma getLast_filter' {p : α → Bool} :
 /-! ### getLast? -/
 
 @[deprecated (since := "2024-09-06")] alias getLast?_eq_none := getLast?_eq_none_iff
-
-@[deprecated (since := "2024-06-20")] alias getLast?_isNone := getLast?_eq_none
 
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx => False.elim <| by simp at hx
@@ -383,7 +377,8 @@ theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.ge
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
 
-#adaptation_note /-- 2024-07-10: removed `@[simp]` since the LHS simplifies using the simp set. -/
+#adaptation_note /-- 2024-07-10
+removed `@[simp]` since the LHS simplifies using the simp set. -/
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -486,10 +481,6 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
-
-theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
-    (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
-  cases n <;> simp
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
@@ -627,11 +618,6 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
-@[deprecated "No deprecation message was provided." (since := "2024-04-07")]
-theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
-
-@[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
-
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
 
@@ -678,19 +664,19 @@ variable [DecidableEq α]
 
 -- indexOf_cons_eq _ rfl
 @[simp]
-theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
+theorem indexOf_cons_self {a : α} {l : List α} : indexOf a (a :: l) = 0 := by
   rw [indexOf, findIdx_cons, beq_self_eq_true, cond]
 
 -- fun e => if_pos e
 theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
-  | e => by rw [← e]; exact indexOf_cons_self b l
+  | e => by rw [← e]; exact indexOf_cons_self
 
 -- fun n => if_neg n
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 
-theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
+theorem indexOf_eq_length_iff {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
   simp only [length, mem_cons, indexOf_cons, eq_comm]
@@ -701,9 +687,12 @@ theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a 
     rw [← ih]
     exact succ_inj'
 
+@[deprecated (since := "2025-01-28")]
+alias indexOf_eq_length := indexOf_eq_length_iff
+
 @[simp]
 theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = length l :=
-  indexOf_eq_length.2
+  indexOf_eq_length_iff.2
 
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
@@ -712,9 +701,11 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
 
-theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
-   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
+theorem indexOf_lt_length_iff {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
+  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length_iff.2 al,
+   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length_iff.1 h al⟩
+
+@[deprecated (since := "2025-01-22")] alias indexOf_lt_length := indexOf_lt_length_iff
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
@@ -741,19 +732,9 @@ section deprecated
 @[simp]
 theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
 
-@[deprecated getElem?_length (since := "2024-06-12")]
-theorem get?_length (l : List α) : l.get? l.length = none := get?_eq_none le_rfl
-
-@[deprecated (since := "2024-05-03")] alias get?_injective := get?_inj
-
 /-- A version of `getElem_map` that can be used for rewriting. -/
 theorem getElem_map_rev (f : α → β) {l} {n : Nat} {h : n < l.length} :
     f l[n] = (map f l)[n]'((l.length_map f).symm ▸ h) := Eq.symm (getElem_map _)
-
-/-- A version of `get_map` that can be used for rewriting. -/
-@[deprecated getElem_map_rev (since := "2024-06-12")]
-theorem get_map_rev (f : α → β) {l n} :
-    f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (getElem_map _)
 
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
@@ -807,7 +788,8 @@ theorem indexOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨index
 
 @[simp]
 theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    l[indexOf a l]? = some a := by rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length.2 h)]
+    l[indexOf a l]? = some a := by
+  rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length_iff.2 h)]
 
 -- This is incorrectly named and should be `get?_indexOf`;
 -- this already exists, so will require a deprecation dance.
@@ -818,18 +800,10 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
     indexOf x l = indexOf y l ↔ x = y :=
   ⟨fun h => by
     have x_eq_y :
-        get l ⟨indexOf x l, indexOf_lt_length.2 hx⟩ =
-        get l ⟨indexOf y l, indexOf_lt_length.2 hy⟩ := by
+        get l ⟨indexOf x l, indexOf_lt_length_iff.2 hx⟩ =
+        get l ⟨indexOf y l, indexOf_lt_length_iff.2 hy⟩ := by
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
-
-@[deprecated getElem_reverse (since := "2024-06-12")]
-theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
-    get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
-  rw [get_eq_getElem, get_eq_getElem, getElem_reverse]
-  congr
-  dsimp
-  omega
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
@@ -848,8 +822,6 @@ alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
 
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
-@[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
-
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
 
 @[simp]
@@ -859,12 +831,6 @@ theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
   rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne h,
     List.getElem?_eq_getElem]
 
-@[deprecated getElem_set_of_ne (since := "2024-06-12")]
-theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
-    (hj : j < (l.set i a).length) :
-    (l.set i a).get ⟨j, hj⟩ = l.get ⟨j, by simpa using hj⟩ := by
-  simp [getElem_set_of_ne, h]
-
 /-! ### map -/
 
 -- `List.map_const` (the version with `Function.const` instead of a lambda) is already tagged
@@ -872,21 +838,14 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
 -- TODO: Upstream the tagging to Core?
 attribute [simp] map_const'
 
-@[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
-
 theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ f) = map f l :=
   .symm <| map_eq_flatMap ..
 
 @[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
-set_option linter.deprecated false in
-@[deprecated flatMap_pure_eq_map (since := "2024-03-24")]
-theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
-  bind_pure_eq_map f l
-
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
-    List.flatMap l f = List.flatMap l g :=
-  (congr_arg List.flatten <| map_congr_left h : _)
+    l.flatMap f = l.flatMap g :=
+  (congr_arg List.flatten <| map_congr_left h :)
 
 @[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
 
@@ -977,21 +936,6 @@ end map_bijectivity
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (const α b₂) l) :
     b₁ = b₂ := by rw [map_const] at h; exact eq_of_mem_replicate h
-
-/-! ### zipWith -/
-
-theorem nil_zipWith (f : α → β → γ) (l : List β) : zipWith f [] l = [] := by cases l <;> rfl
-
-theorem zipWith_nil (f : α → β → γ) (l : List α) : zipWith f l [] = [] := by cases l <;> rfl
-
-@[simp]
-theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as = zipWith f as bs
-  | [], [] => rfl
-  | [], _ :: _ => rfl
-  | _ :: _, [] => rfl
-  | a :: as, b :: bs => by
-    simp! [zipWith_flip]
-    rfl
 
 /-! ### take, drop -/
 
@@ -1201,19 +1145,11 @@ theorem getElem?_scanl_zero : (scanl f b l)[0]? = some b := by
   · simp [scanl_nil]
   · simp [scanl_cons, singleton_append]
 
-@[deprecated getElem?_scanl_zero (since := "2024-06-12")]
-theorem get?_zero_scanl : (scanl f b l).get? 0 = some b := by
-  simp [getElem?_scanl_zero]
-
 @[simp]
 theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b := by
   cases l
   · simp [scanl_nil]
   · simp [scanl_cons, singleton_append]
-
-@[deprecated getElem_scanl_zero (since := "2024-06-12")]
-theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, h⟩ = b := by
-  simp [getElem_scanl_zero]
 
 theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
     ((scanl f b l).get? i).bind fun x => (l.get? i).map fun y => f x y := by
@@ -1555,17 +1491,6 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
   · specialize ih ‹_›
     omega
 
-@[deprecated attach_map_coe (since := "2024-07-29")] alias attach_map_coe' := attach_map_coe
-@[deprecated attach_map_val (since := "2024-07-29")] alias attach_map_val' := attach_map_val
-
-/-! ### find -/
-
-section find?
-
-@[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
-
-end find?
-
 /-! ### lookmap -/
 
 section Lookmap
@@ -1646,12 +1571,7 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
 
 /-! ### filterMap -/
 
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_none
-
--- Later porting note (at time of this lemma moving to Batteries):
--- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
@@ -1700,11 +1620,9 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note
-/--
+#adaptation_note /-- nightly-2024-07-27
 This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27.
--/
+The prime should be removed at nightly-2024-07-27. -/
 @[simp]
 theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset
@@ -1979,225 +1897,6 @@ theorem choose_property (hp : ∃ a, a ∈ l ∧ p a) : p (choose p l hp) :=
 
 end Choose
 
-/-! ### map₂Left' -/
-
-section Map₂Left'
-
--- The definitional equalities for `map₂Left'` can already be used by the
--- simplifier because `map₂Left'` is marked `@[simp]`.
-@[simp]
-theorem map₂Left'_nil_right (f : α → Option β → γ) (as) :
-    map₂Left' f as [] = (as.map fun a => f a none, []) := by cases as <;> rfl
-
-end Map₂Left'
-
-/-! ### map₂Right' -/
-
-section Map₂Right'
-
-variable (f : Option α → β → γ) (a : α) (as : List α) (b : β) (bs : List β)
-
-@[simp]
-theorem map₂Right'_nil_left : map₂Right' f [] bs = (bs.map (f none), []) := by cases bs <;> rfl
-
-@[simp]
-theorem map₂Right'_nil_right : map₂Right' f as [] = ([], as) :=
-  rfl
-
-@[simp]
-theorem map₂Right'_nil_cons : map₂Right' f [] (b :: bs) = (f none b :: bs.map (f none), []) :=
-  rfl
-
-@[simp]
-theorem map₂Right'_cons_cons :
-    map₂Right' f (a :: as) (b :: bs) =
-      let r := map₂Right' f as bs
-      (f (some a) b :: r.fst, r.snd) :=
-  rfl
-
-end Map₂Right'
-
-/-! ### zipLeft' -/
-
-section ZipLeft'
-
-variable (a : α) (as : List α) (b : β) (bs : List β)
-
-@[simp]
-theorem zipLeft'_nil_right : zipLeft' as ([] : List β) = (as.map fun a => (a, none), []) := by
-  cases as <;> rfl
-
-@[simp]
-theorem zipLeft'_nil_left : zipLeft' ([] : List α) bs = ([], bs) :=
-  rfl
-
-@[simp]
-theorem zipLeft'_cons_nil :
-    zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a => (a, none), []) :=
-  rfl
-
-@[simp]
-theorem zipLeft'_cons_cons :
-    zipLeft' (a :: as) (b :: bs) =
-      let r := zipLeft' as bs
-      ((a, some b) :: r.fst, r.snd) :=
-  rfl
-
-end ZipLeft'
-
-/-! ### zipRight' -/
-
-section ZipRight'
-
-variable (a : α) (as : List α) (b : β) (bs : List β)
-
-@[simp]
-theorem zipRight'_nil_left : zipRight' ([] : List α) bs = (bs.map fun b => (none, b), []) := by
-  cases bs <;> rfl
-
-@[simp]
-theorem zipRight'_nil_right : zipRight' as ([] : List β) = ([], as) :=
-  rfl
-
-@[simp]
-theorem zipRight'_nil_cons :
-    zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b => (none, b), []) :=
-  rfl
-
-@[simp]
-theorem zipRight'_cons_cons :
-    zipRight' (a :: as) (b :: bs) =
-      let r := zipRight' as bs
-      ((some a, b) :: r.fst, r.snd) :=
-  rfl
-
-end ZipRight'
-
-/-! ### map₂Left -/
-
-section Map₂Left
-
-variable (f : α → Option β → γ) (as : List α)
-
--- The definitional equalities for `map₂Left` can already be used by the
--- simplifier because `map₂Left` is marked `@[simp]`.
-@[simp]
-theorem map₂Left_nil_right : map₂Left f as [] = as.map fun a => f a none := by cases as <;> rfl
-
-theorem map₂Left_eq_map₂Left' : ∀ as bs, map₂Left f as bs = (map₂Left' f as bs).fst
-  | [], _ => by simp
-  | a :: as, [] => by simp
-  | a :: as, b :: bs => by simp [map₂Left_eq_map₂Left']
-
-theorem map₂Left_eq_zipWith :
-    ∀ as bs, length as ≤ length bs → map₂Left f as bs = zipWith (fun a b => f a (some b)) as bs
-  | [], [], _ => by simp
-  | [], _ :: _, _ => by simp
-  | a :: as, [], h => by
-    simp at h
-  | a :: as, b :: bs, h => by
-    simp only [length_cons, succ_le_succ_iff] at h
-    simp [h, map₂Left_eq_zipWith]
-
-end Map₂Left
-
-/-! ### map₂Right -/
-
-section Map₂Right
-
-variable (f : Option α → β → γ) (a : α) (as : List α) (b : β) (bs : List β)
-
-@[simp]
-theorem map₂Right_nil_left : map₂Right f [] bs = bs.map (f none) := by cases bs <;> rfl
-
-@[simp]
-theorem map₂Right_nil_right : map₂Right f as [] = [] :=
-  rfl
-
-@[simp]
-theorem map₂Right_nil_cons : map₂Right f [] (b :: bs) = f none b :: bs.map (f none) :=
-  rfl
-
-@[simp]
-theorem map₂Right_cons_cons :
-    map₂Right f (a :: as) (b :: bs) = f (some a) b :: map₂Right f as bs :=
-  rfl
-
-theorem map₂Right_eq_map₂Right' : map₂Right f as bs = (map₂Right' f as bs).fst := by
-  simp only [map₂Right, map₂Right', map₂Left_eq_map₂Left']
-
-theorem map₂Right_eq_zipWith (h : length bs ≤ length as) :
-    map₂Right f as bs = zipWith (fun a b => f (some a) b) as bs := by
-  have : (fun a b => flip f a (some b)) = flip fun a b => f (some a) b := rfl
-  simp only [map₂Right, map₂Left_eq_zipWith, zipWith_flip, *]
-
-end Map₂Right
-
-/-! ### zipLeft -/
-
-section ZipLeft
-
-variable (a : α) (as : List α) (b : β) (bs : List β)
-
-@[simp]
-theorem zipLeft_nil_right : zipLeft as ([] : List β) = as.map fun a => (a, none) := by
-  cases as <;> rfl
-
-@[simp]
-theorem zipLeft_nil_left : zipLeft ([] : List α) bs = [] :=
-  rfl
-
-@[simp]
-theorem zipLeft_cons_nil :
-    zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a => (a, none) :=
-  rfl
-
-@[simp]
-theorem zipLeft_cons_cons : zipLeft (a :: as) (b :: bs) = (a, some b) :: zipLeft as bs :=
-  rfl
-
--- Porting note: arguments explicit for recursion
-theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zipLeft' as bs).fst := by
-  rw [zipLeft, zipLeft']
-  cases as with
-  | nil => rfl
-  | cons _ atl =>
-    cases bs with
-    | nil => rfl
-    | cons _ btl =>
-      rw [zipWithLeft, zipWithLeft', cons_inj_right]
-      exact @zipLeft_eq_zipLeft' atl btl
-
-end ZipLeft
-
-/-! ### zipRight -/
-
-section ZipRight
-
-variable (a : α) (as : List α) (b : β) (bs : List β)
-
-@[simp]
-theorem zipRight_nil_left : zipRight ([] : List α) bs = bs.map fun b => (none, b) := by
-  cases bs <;> rfl
-
-@[simp]
-theorem zipRight_nil_right : zipRight as ([] : List β) = [] :=
-  rfl
-
-@[simp]
-theorem zipRight_nil_cons :
-    zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b => (none, b) :=
-  rfl
-
-@[simp]
-theorem zipRight_cons_cons : zipRight (a :: as) (b :: bs) = (some a, b) :: zipRight as bs :=
-  rfl
-
-theorem zipRight_eq_zipRight' : zipRight as bs = (zipRight' as bs).fst := by
-  induction as generalizing bs <;> cases bs <;> simp [*]
-
-end ZipRight
-
 /-! ### Forall -/
 
 section Forall
@@ -2234,14 +1933,6 @@ end Forall
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
 
-@[simp 1100]
-theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
-    (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
-  induction' xs with x xs xs_ih
-  · simp only [not_mem_nil, map_nil]
-  · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
-
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs
   · cases xs <;> simp [dropSlice]
@@ -2262,23 +1953,6 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     (List.dropSlice i j xs).length < xs.length := by
   simp; omega
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-07-25")]
-theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
-    SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
-  induction xs generalizing i j hj with
-  | nil => cases hi
-  | cons x xs xs_ih =>
-    cases i <;> simp only [List.dropSlice]
-    · cases j with
-      | zero => contradiction
-      | succ n =>
-        dsimp only [drop]; apply lt_of_le_of_lt (drop_sizeOf_le xs n)
-        simp only [cons.sizeOf_spec]; omega
-    · simp only [cons.sizeOf_spec, Nat.add_lt_add_iff_left]
-      apply xs_ih _ j hj
-      apply lt_of_succ_lt_succ hi
 
 section Disjoint
 
@@ -2342,4 +2016,4 @@ end lookup
 
 end List
 
-set_option linter.style.longFile 2400
+set_option linter.style.longFile 2200

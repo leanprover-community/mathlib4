@@ -19,8 +19,7 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Algebra/Group/Defs.lean`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -797,14 +796,6 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 @[to_additive (attr := simp) natAbs_nsmul_eq_zero]
 lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
-set_option linter.existingAttributeWarning false in
-@[to_additive, deprecated pow_natAbs_eq_one (since := "2024-02-14")]
-lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
-    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
-
-attribute [deprecated natAbs_nsmul_eq_zero (since := "2024-02-14")]
-exists_nsmul_eq_zero_of_zsmul_eq_zero
-
 @[to_additive sub_nsmul]
 lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
   eq_mul_inv_of_mul_eq <| by rw [← pow_add, Nat.sub_add_cancel h]
@@ -1040,16 +1031,3 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 
 end multiplicative
-
-@[deprecated (since := "2024-03-20")] alias div_mul_cancel' := div_mul_cancel
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel'' := mul_div_cancel_right
--- The name `add_sub_cancel` was reused
--- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right
-@[deprecated (since := "2024-03-20")] alias div_mul_cancel''' := div_mul_cancel_right
-@[deprecated (since := "2024-03-20")] alias sub_add_cancel'' := sub_add_cancel_right
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel''' := mul_div_cancel_left
-@[deprecated (since := "2024-03-20")] alias add_sub_cancel' := add_sub_cancel_left
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel'_right := mul_div_cancel
-@[deprecated (since := "2024-03-20")] alias add_sub_cancel'_right := add_sub_cancel
-@[deprecated (since := "2024-03-20")] alias div_mul_cancel'' := div_mul_cancel_left
-@[deprecated (since := "2024-03-20")] alias sub_add_cancel' := sub_add_cancel_left

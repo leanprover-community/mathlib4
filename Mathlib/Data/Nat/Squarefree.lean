@@ -29,16 +29,10 @@ theorem squarefree_iff_nodup_primeFactorsList {n : ℕ} (h0 : n ≠ 0) :
   rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0, Nat.factors_eq]
   simp
 
-@[deprecated (since := "2024-07-17")]
-alias squarefree_iff_nodup_factors := squarefree_iff_nodup_primeFactorsList
-
 end Nat
 
 theorem Squarefree.nodup_primeFactorsList {n : ℕ} (hn : Squarefree n) : n.primeFactorsList.Nodup :=
   (Nat.squarefree_iff_nodup_primeFactorsList hn.ne_zero).mp hn
-
-@[deprecated (since := "2024-07-17")]
-alias Squarefree.nodup_factors := Squarefree.nodup_primeFactorsList
 
 namespace Nat
 variable {s : Finset ℕ} {m n p : ℕ}
@@ -318,7 +312,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   simp only [S, Finset.mem_filter, Finset.mem_range] at hs
   obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
   rw [hsa] at hn
-  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedCommSemiring.mul_pos.mp hn
+  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedAdd.mul_pos.mp hn
   rw [hsb] at hsa hn hlts
   refine ⟨a, b, hlta, (pow_pos_iff two_ne_zero).mp hlts, hsa.symm, ?_⟩
   rintro x ⟨y, hy⟩

@@ -330,18 +330,4 @@ lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTar
 
 end AffineTargetMorphismProperty
 
-@[deprecated (since := "2024-06-22")]
-alias diagonalTargetAffineLocallyOfOpenCover := HasAffineProperty.diagonal_of_openCover
-
-@[deprecated (since := "2024-06-22")]
-alias AffineTargetMorphismProperty.diagonalOfTargetAffineLocally :=
-  HasAffineProperty.diagonal_of_diagonal_of_isPullback
-
-@[deprecated (since := "2024-06-22")]
-alias universallyIsLocalAtTarget := universally_isLocalAtTarget
-
-@[deprecated (since := "2024-06-22")]
-alias universallyIsLocalAtTargetOfMorphismRestrict :=
-  universally_isLocalAtTarget
-
 end AlgebraicGeometry
