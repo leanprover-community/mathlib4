@@ -281,15 +281,9 @@ theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m 
 theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
   argmax_eq_none
 
-@[simp, deprecated maximum_eq_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] := maximum_eq_bot
-
 @[simp]
 theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
   argmin_eq_none
-
-@[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 
 theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax

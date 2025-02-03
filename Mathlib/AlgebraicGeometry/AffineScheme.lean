@@ -1178,38 +1178,4 @@ def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Prime
     simp
 
 end Stalks
-
-@[deprecated (since := "2024-06-21"), nolint defLemma]
-alias isAffineAffineScheme := isAffine_affineScheme
-@[deprecated (since := "2024-06-21"), nolint defLemma]
-alias SpecIsAffine := isAffine_Spec
-@[deprecated (since := "2024-06-21")]
-alias isAffineOfIso := isAffine_of_isIso
-@[deprecated (since := "2024-06-21")]
-alias rangeIsAffineOpenOfOpenImmersion := isAffineOpen_opensRange
-@[deprecated (since := "2024-06-21")]
-alias topIsAffineOpen := isAffineOpen_top
-@[deprecated (since := "2024-06-21"), nolint defLemma]
-alias Scheme.affineCoverIsAffine := Scheme.isAffine_affineCover
-@[deprecated (since := "2024-06-21"), nolint defLemma]
-alias Scheme.affineBasisCoverIsAffine := Scheme.isAffine_affineBasisCover
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.fromSpec_range := IsAffineOpen.range_fromSpec
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.imageIsOpenImmersion := IsAffineOpen.image_of_isOpenImmersion
-@[deprecated (since := "2024-06-21"), nolint defLemma]
-alias Scheme.quasi_compact_of_affine := Scheme.compactSpace_of_isAffine
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.fromSpec_base_preimage := IsAffineOpen.fromSpec_preimage_self
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.fromSpec_map_basicOpen' := IsAffineOpen.fromSpec_preimage_basicOpen'
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.fromSpec_map_basicOpen := IsAffineOpen.fromSpec_preimage_basicOpen
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.opensFunctor_map_basicOpen := IsAffineOpen.fromSpec_image_basicOpen
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.basicOpenIsAffine := IsAffineOpen.basicOpen
-@[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.mapRestrictBasicOpen := IsAffineOpen.ι_basicOpen_preimage
-
 end AlgebraicGeometry

@@ -351,8 +351,6 @@ theorem germ_stalkSpecializes (F : X.Presheaf C)
     F.germ U y hy ≫ F.stalkSpecializes h = F.germ U x (h.mem_open U.isOpen hy) :=
   colimit.ι_desc _ _
 
-@[deprecated (since := "2024-07-30")] alias germ_stalkSpecializes' := germ_stalkSpecializes
-
 @[simp]
 theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by

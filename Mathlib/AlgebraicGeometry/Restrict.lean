@@ -176,9 +176,6 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 
-@[deprecated (since := "2024-07-24")]
-noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
-
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :

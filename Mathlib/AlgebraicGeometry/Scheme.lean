@@ -290,9 +290,6 @@ theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
 
-@[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
-@[deprecated (since := "2024-06-23")] alias comp_val_c_app_assoc := comp_app_assoc
-
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
       (f ≫ g).appLE U W (e₂.trans ((Opens.map f.base).map (homOfLE e₁)).le) := by

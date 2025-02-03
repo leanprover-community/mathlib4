@@ -478,15 +478,6 @@ theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).appTop ≫
       U.toScheme.toSpecΓ.appTop ≫ U.topIso.hom := by simp
 
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_naturality := Scheme.toSpecΓ_naturality
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_naturality_assoc := Scheme.toSpecΓ_naturality_assoc
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_app_app_top := Scheme.toSpecΓ_appTop
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_map_basicOpen := Scheme.toSpecΓ_preimage_basicOpen
-
 /-! Immediate consequences of the adjunction. -/
 
 
@@ -579,9 +570,5 @@ instance : Reflective Spec.toLocallyRingedSpace where
 
 instance Spec.reflective : Reflective Scheme.Spec where
   adj := ΓSpec.adjunction
-
-@[deprecated (since := "2024-07-02")]
-alias LocallyRingedSpace.toΓSpec_preim_basicOpen_eq :=
-  LocallyRingedSpace.toΓSpec_preimage_basicOpen_eq
 
 end AlgebraicGeometry
