@@ -241,7 +241,7 @@ theorem tendsto_smoothingFun_of_map_one_le_one (hμ1 : μ 1 ≤ 1) (x : R) :
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ x` is nonnegative. -/
 theorem smoothingFun_nonneg (hμ1 : μ 1 ≤ 1) (x : R) : 0 ≤ smoothingFun μ x := by
   apply ge_of_tendsto (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x)
-  simpa only [eventually_atTop, ge_iff_le] using ⟨1, fun _ _ ↦ rpow_nonneg (apply_nonneg μ _) _⟩
+  simpa [eventually_atTop, ge_iff_le] using ⟨1, fun _ _ ↦ rpow_nonneg (apply_nonneg μ _) _⟩
 
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ 1 ≤ 1`. -/
 theorem smoothingFun_one_le (hμ1 : μ 1 ≤ 1) : smoothingFun μ 1 ≤ 1 := by
@@ -283,7 +283,7 @@ private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ
   (Classical.choose_spec (hn n)).2
 
 private theorem mu_le (n : ℕ) : mu μ hn n ≤ n := by
-  simpa only [mu, ← Nat.lt_succ_iff] using (Classical.choose_spec (hn n)).1
+  simpa [mu, ← Nat.lt_succ_iff] using (Classical.choose_spec (hn n)).1
 
 private theorem mu_bdd (n : ℕ) : (mu μ hn n : ℝ) / n ∈ Set.Icc (0 : ℝ) 1 := by
   refine Set.mem_Icc.mpr ⟨div_nonneg (cast_nonneg (mu μ hn n)) (cast_nonneg n), ?_⟩
@@ -505,7 +505,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
   apply le_trans (ciInf_le (smoothingSeminormSeq_bddBelow μ _)
     ⟨ψ N, lt_of_le_of_lt (_root_.zero_le (ψ 0)) (hψ_mono.lt_iff_lt.mpr N.pos)⟩)
   apply le_trans _ hN.le
-  simpa only [PNat.mk_coe, hnu, ← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _)] using
+  simpa [PNat.mk_coe, hnu, ← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _)] using
     mu_property μ hn (ψ N)
 
 end IsNonarchimedean
@@ -560,7 +560,7 @@ theorem isPowMul_smoothingFun (hμ1 : μ 1 ≤ 1) : IsPowMul (smoothingFun μ) :
     simp only [smoothingSeminormSeq]
     rw [pow_mul, ← rpow_natCast, ← rpow_mul (apply_nonneg μ _), cast_mul, ← one_div_mul_one_div,
       mul_comm (1 / (m : ℝ)), mul_assoc, one_div_mul_cancel hm', mul_one]
-  simpa only [h_eq] using tendsto_smoothingFun_of_map_one_le_one μ hμ1 _
+  simpa [h_eq] using tendsto_smoothingFun_of_map_one_le_one μ hμ1 _
 
 /-- If `μ 1 ≤ 1` and `∀ (1 ≤ n), μ (x ^ n) = μ x ^ n`, then `smoothingFun μ x = μ x`. -/
 theorem smoothingFun_of_powMul (hμ1 : μ 1 ≤ 1) {x : R}
