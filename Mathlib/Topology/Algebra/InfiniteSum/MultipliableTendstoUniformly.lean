@@ -66,7 +66,7 @@ lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : 
   · simp only [Set.mem_setOf_eq, Subtype.forall]
     apply fun a ha => le_trans (hT a ha) (by aesop)
 
-lemma tendstoUniformlyOn_tprod {f : ι → α → ℂ} {K : Set α}
+lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
     (h : ∀ x, x ∈ K → Summable fun n => log (f n x))
     (hf : TendstoUniformlyOn (fun n a => ∑ i ∈ n, log (f i a))
     (fun a : α => ∑' n : ι, log (f n a)) atTop K) (hfn : ∀ x, x ∈ K → ∀ n : ι, f n x ≠ 0)
@@ -84,22 +84,22 @@ lemma tendstoUniformlyOn_tprod {f : ι → α → ℂ} {K : Set α}
   congr
   exact funext fun y ↦ Complex.exp_log (hfn x hx y)
 
-lemma tendstoUniformlyOn_tprod_nat {f : ℕ → α → ℂ} {K : Set α}
+lemma tendstoUniformlyOn_tprod_nat_of_clog {f : ℕ → α → ℂ} {K : Set α}
     (h : ∀ x, x ∈ K → Summable fun n => log (f n x))
-    (hf : TendstoUniformlyOn (fun n a => ∑ i ∈ n, log (f i a))
-    (fun a : α => ∑' n : ℕ, log (f n a)) atTop K) (hfn : ∀ x, x ∈ K → ∀ n : ℕ, f n x ≠ 0)
+    (hf : TendstoUniformlyOn (fun n a => ∑ i ∈ n, log (f i a)) (fun a : α => ∑' n : ℕ, log (f n a))
+    atTop K) (hfn : ∀ x, x ∈ K → ∀ n : ℕ, f n x ≠ 0)
     (hg : BddAbove ((fun x => (∑' n : ℕ, log (f n x)).re) '' K)) :
     TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i ∈ Finset.range n, (f i a))
     (fun a => ∏' i, (f i a)) atTop K :=
-    fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tprod h hf hfn hg v hv)
+  fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tprod_of_clog h hf hfn hg v hv)
 
 /--This is the version for infinite products of with terms of the from `1 + f n x`. -/
-lemma tendstoUniformlyOn_tprod_nat' [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
+lemma tendstoUniformlyOn_tprod_nat [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ n x, x ∈ K → ‖f n x‖ ≤ u n)
     (hfn : ∀ x, x ∈ K → ∀ n : ℕ, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => (f n x)) K) :
     TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i ∈ Finset.range n, (1 + (f i a)))
     (fun a => ∏' i, (1 + (f i a))) atTop K := by
-  apply tendstoUniformlyOn_tprod_nat _ (?_) hfn
+  apply tendstoUniformlyOn_tprod_nat_of_clog ?_ ?_ hfn
   · have H : ContinuousOn (fun x ↦ (∑' (n : ℕ), Complex.log (1 + f n x)).re) K := by
       apply (tendstoUniformlyOn_tsum_nat_log_one_add K hu
         (Filter.Eventually.of_forall h)).re.continuousOn
@@ -109,16 +109,14 @@ lemma tendstoUniformlyOn_tprod_nat' [TopologicalSpace α] {f : ℕ → α → �
       intro c _
       simp_rw [log_re]
       apply ContinuousOn.log
-      · apply ContinuousOn.comp _ _ (Set.mapsTo_image (fun x ↦ 1 + f c x) K)
-        · apply Continuous.continuousOn Complex.continuous_abs
-        · apply (ContinuousOn.add continuousOn_const (hcts c))
+      · apply ContinuousOn.comp Complex.continuous_abs.continuousOn
+          (ContinuousOn.add continuousOn_const (hcts c)) (Set.mapsTo_image (fun x ↦ 1 + f c x) K)
       · intro z hz
         simpa using hfn z hz c
     apply IsCompact.bddAbove_image hK H
   · intro x hx
-    apply Complex.summable_log_one_add_of_summable
-    rw [← summable_norm_iff]
-    apply Summable.of_nonneg_of_le (fun b ↦ norm_nonneg (f b ↑x)) (fun _ => h _ _ hx) hu
+    apply Complex.summable_log_one_add_of_summable (summable_norm_iff.mp
+      (Summable.of_nonneg_of_le (fun b ↦ norm_nonneg (f b ↑x)) (fun _ => h _ _ hx) hu))
   · apply Complex.tendstoUniformlyOn_tsum_log_one_add K hu (Filter.Eventually.of_forall h)
 
 /--This is the local version for infinite products of with terms of the from `1 + f n x`. -/
@@ -130,7 +128,7 @@ lemma tendstoLocallyUniformlyOn_tprod_nat' [TopologicalSpace α] [ LocallyCompac
     (fun a => ∏' i, (1 + (f i a))) atTop K := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hK]
   intro S hS hS2
-  apply tendstoUniformlyOn_tprod_nat' hS2 hu
+  apply tendstoUniformlyOn_tprod_nat hS2 hu
   · exact fun n x hx ↦ h n x (hS hx)
   · exact fun x hx n => hfn x (hS hx) n
   · exact fun n => (hcts n).mono hS
