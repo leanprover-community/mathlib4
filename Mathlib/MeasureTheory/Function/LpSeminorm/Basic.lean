@@ -392,9 +392,40 @@ theorem eLpNorm'_congr_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x�
 
 @[deprecated (since := "2025-02-02")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_enorm_ae
 
+-- TODO: does this exist already? Is there a better proof? Better name!
+theorem foo {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {x : F} {y : G} (h : ‖x‖ = ‖y‖) : ‖x‖ₑ = ‖y‖ₑ := by
+  -- I can prove this first (this should also exist, if it doesn't already!)
+  have : ‖x‖₊ = ‖y‖₊ := by
+    simp only [← coe_nnnorm] at h
+    apply NNReal.coe_injective
+    exact h
+  simp only [enorm_eq_nnnorm]
+  congr
+
+theorem foo_leq {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {x : F} {y : G} (h : ‖x‖ ≤ ‖y‖) : ‖x‖ₑ ≤ ‖y‖ₑ := by
+  -- I can prove this first (this should also exist, if it doesn't already!)
+  have : ‖x‖₊ ≤ ‖y‖₊ := by
+    simp only [← coe_nnnorm] at h
+    apply NNReal.coe_mono
+    exact h
+  simp only [enorm_eq_nnnorm]
+  gcongr
+
+theorem foo_le {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {x : F} {y : G} (h : ‖x‖ < ‖y‖) : ‖x‖ₑ < ‖y‖ₑ := by
+  -- I can prove this first (this should also exist, if it doesn't already!)
+  have : ‖x‖₊ < ‖y‖₊ := by
+    simp only [← coe_nnnorm] at h
+    sorry -- apply NNReal.coe_mono
+    -- exact h
+  simp only [enorm_eq_nnnorm]
+  gcongr
+
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
-    eLpNorm' f q μ = eLpNorm' g q μ := by
-  refine eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx => ?_; sorry -- was: NNReal.eq hx
+    eLpNorm' f q μ = eLpNorm' g q μ :=
+  eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx ↦ foo hx
 
 theorem eLpNorm'_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm' f q μ = eLpNorm' g q μ :=
   eLpNorm'_congr_enorm_ae (hfg.fun_comp _)
@@ -404,9 +435,8 @@ theorem eLpNormEssSup_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) :
   essSup_congr_ae (hfg.fun_comp _)
 
 theorem eLpNormEssSup_mono_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
-    eLpNormEssSup f μ ≤ eLpNormEssSup g μ := by
-  refine essSup_mono_ae <| hfg.mono fun _x hx => ?_
-  sorry -- was: ENNReal.coe_le_coe.mpr hx
+    eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
+  essSup_mono_ae <| hfg.mono fun _x hx => hx
 
 @[deprecated (since := "2025-02-02")]
 alias eLpNormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_enorm_ae
@@ -428,7 +458,8 @@ theorem eLpNorm_mono_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, �
 
 theorem eLpNorm_mono_ae' {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
-  apply eLpNorm_mono_enorm_ae
+  apply eLpNorm_mono_enorm_ae --(foo h)
+  -- TODO: how to use foo under a binder?
   sorry -- familiar sorry, equal norm => equal enorm
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
@@ -436,8 +467,9 @@ theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ
   refine eLpNorm_mono_ae <| h.mono fun _x hx => ?_
   have := hx.trans (le_abs_self _)
   rw [← Real.norm_eq_abs] at this
-  -- now, the same familiar sorry as above
-  sorry -- was: hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
+  apply foo_leq this
+  -- FIXME: golf this; original proof was
+  -- was: hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
 
 theorem eLpNorm_mono {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -448,7 +480,7 @@ alias eLpNorm_mono_nnnorm := eLpNorm_mono
 
 theorem eLpNorm_mono_norm {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  sorry -- was: eLpNorm_mono_ae (Eventually.of_forall fun x => h x)
+  eLpNorm_mono_ae (Eventually.of_forall fun x => h x)
 
 theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -507,7 +539,7 @@ alias eLpNorm_congr_nnnorm_ae := eLpNorm_congr_enorm_ae
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm f p μ = eLpNorm g p μ :=
-  eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => sorry -- TODO fix! was: NNReal.eq hx
+  eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx ↦ foo hx
 
 -- XXXMR: need a zero element in ε
 open scoped symmDiff in
@@ -597,10 +629,8 @@ theorem Memℒp.of_le [TopologicalSpace ε] [TopologicalSpace ε'] {f : α → �
 alias Memℒp.mono := Memℒp.of_le
 
 theorem Memℒp.mono' {f : α → E} {g : α → ℝ} (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)
-    (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : Memℒp f p μ := by
-  refine hg.mono hf <| h.mono fun _x hx => ?_
-  have : ‖f _x‖ ≤ ‖g _x‖ := hx.trans (le_abs_self _)
-  sorry -- familiar sorry now
+    (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : Memℒp f p μ :=
+  hg.mono hf <| h.mono fun _x hx ↦ foo_leq (hx.trans (le_abs_self _))
 
 theorem Memℒp.congr_norm [TopologicalSpace ε] [TopologicalSpace ε'] {f : α → ε} {g : α → ε'}
     (hf : Memℒp f p μ) (hg : AEStronglyMeasurable g μ)
@@ -762,7 +792,7 @@ lemma eLpNorm_indicator_const_le (c : G) (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ eLpNorm (t.indicator fun _ => c) p μ := by
       refine eLpNorm_mono ?_
       intro x
-      sorry -- apply enorm_indicator_le_of_subset. TODO: wait until recompilation
+      sorry -- apply enorm_indicator_le_of_subset -- recompile, then should work!
       --eLpNorm_mono (norm_indicator_le_of_subset (subset_toMeasurable _ _) _)
     _ = ‖c‖ₑ * μ t ^ (1 / p.toReal) :=
       eLpNorm_indicator_const (measurableSet_toMeasurable ..) hp h'p
