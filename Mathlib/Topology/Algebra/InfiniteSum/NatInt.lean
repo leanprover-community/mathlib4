@@ -51,6 +51,12 @@ theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f)
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 (∏' i, f i)) :=
   HasProd.tendsto_prod_nat h.hasProd
 
+@[deprecated "use Multipliable.tendsto_prod_tprod_nat" (since := "2025-02-02")]
+alias HasProd.Multipliable.tendsto_prod_tprod_nat := Multipliable.tendsto_prod_tprod_nat
+
+@[deprecated "use Summable.tendsto_sum_tsum_nat" (since := "2025-02-02")]
+alias HasSum.Multipliable.tendsto_sum_tsum_nat := Summable.tendsto_sum_tsum_nat
+
 namespace HasProd
 
 section ContinuousMul
