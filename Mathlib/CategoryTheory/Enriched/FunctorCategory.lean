@@ -62,6 +62,12 @@ noncomputable abbrev enrichedHomπ (j : J) : enrichedHom V F₁ F₂ ⟶ F₁.ob
 
 @[reassoc]
 lemma enrichedHom_condition {i j : J} (f : i ⟶ j) :
+    enrichedHomπ V F₁ F₂ i ≫ eHomWhiskerLeft V (F₁.obj i) (F₂.map f) =
+    enrichedHomπ V F₁ F₂ j ≫ eHomWhiskerRight V (F₁.map f) (F₂.obj j) :=
+  end_.condition (diagram V F₁ F₂) f
+
+@[reassoc]
+lemma enrichedHom_condition' {i j : J} (f : i ⟶ j) :
     enrichedHomπ V F₁ F₂ i ≫ (ρ_ _).inv ≫
       _ ◁ (eHomEquiv V) (F₂.map f) ≫ eComp V _ _ _  =
     enrichedHomπ V F₁ F₂ j ≫ (λ_ _).inv ≫
@@ -88,7 +94,7 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
         simp only [eHomEquiv_comp, Equiv.apply_symm_apply, Iso.cancel_iso_inv_left]
         conv_rhs =>
           rw [tensorHom_def_assoc, MonoidalCategory.whiskerRight_id_assoc, assoc,
-            enrichedHom_condition V F₁ F₂ f]
+            enrichedHom_condition' V F₁ F₂ f]
         conv_lhs =>
           rw [tensorHom_def'_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
             id_whiskerLeft_assoc, id_whiskerLeft_assoc, Iso.inv_hom_id_assoc, unitors_equal]) }
@@ -232,18 +238,40 @@ variable {J C}
 section
 
 variable (G : K ⥤ J) [HasEnrichedHom V F₁ F₂]
-  [HasEnrichedHom V (G ⋙ F₁) (G ⋙ F₂)]
+
+variable {F₁ F₂} in
+/-- If `F₁` and `F₂` are functors `J ⥤ C`, `G : K ⥤ J`, and
+`F₁'` and `F₂'` are functors `K ⥤ C` that are respectively
+isomorphic to `G ⋙ F₁` and `G ⋙ F₂`, then this is the
+induced morphism `enrichedHom V F₁ F₂ ⟶ enrichedHom V F₁' F₂'` in `V`
+when `C` is a category enriched in `V`. -/
+noncomputable abbrev precompEnrichedHom' {F₁' F₂' : K ⥤ C}
+    [HasEnrichedHom V F₁' F₂'] (e₁ : G ⋙ F₁ ≅ F₁') (e₂ : G ⋙ F₂ ≅ F₂') :
+    enrichedHom V F₁ F₂ ⟶ enrichedHom V F₁' F₂' :=
+  end_.lift (fun x ↦ enrichedHomπ V F₁ F₂ (G.obj x) ≫
+    (eHomWhiskerRight _ (e₁.inv.app x) _ ≫ eHomWhiskerLeft _ _ (e₂.hom.app x)))
+    (fun i j f ↦ by
+      dsimp
+      rw [assoc, assoc, assoc, assoc, ← eHomWhiskerLeft_comp,
+        ← eHom_whisker_exchange, ← e₂.hom.naturality f,
+        eHomWhiskerLeft_comp_assoc]
+      dsimp
+      rw [enrichedHom_condition_assoc, eHom_whisker_exchange,
+        eHom_whisker_exchange, ← eHomWhiskerRight_comp_assoc,
+        ← eHomWhiskerRight_comp_assoc, NatTrans.naturality]
+      dsimp )
 
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, and `G : K ⥤ J`,
 then this is the induced morphism
 `enrichedHom V F₁ F₂ ⟶ enrichedHom V (G ⋙ F₁) (G ⋙ F₂)` in `V`
 when `C` is a category enriched in `V`. -/
-noncomputable abbrev precompEnrichedHom :
+noncomputable abbrev precompEnrichedHom
+    [HasEnrichedHom V (G ⋙ F₁) (G ⋙ F₂)] :
     enrichedHom V F₁ F₂ ⟶ enrichedHom V (G ⋙ F₁) (G ⋙ F₂) :=
-  end_.lift (fun x ↦ enrichedHomπ V F₁ F₂ (G.obj x))
-    (fun _ _ f ↦ enrichedHom_condition V F₁ F₂ (G.map f))
+  precompEnrichedHom' V G (Iso.refl _) (Iso.refl _)
 
 end
+
 
 section
 
@@ -264,20 +292,23 @@ this is the enriched hom functor from `F₁` to `F₂` in `J ⥤ V`. -/
 @[simps!]
 noncomputable def functorEnrichedHom : J ⥤ V where
   obj j := enrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
-  map f := precompEnrichedHom V (Under.forget _ ⋙ F₁) (Under.forget _ ⋙ F₂) (Under.map f)
+  map f := precompEnrichedHom' (V := V) (G := Under.map f) (Iso.refl _) (Iso.refl _)
   map_id X := by
     dsimp
     ext j
     dsimp
-    simp only [end_.lift_π, id_comp]
+    simp only [end_.lift_π, Functor.comp_obj, Under.forget_obj, Under.map_obj_right,
+      diagram_obj_obj, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom,
+      eHomWhiskerLeft_id, comp_id, id_comp]
     congr 1
     simp [Under.map, Comma.mapLeft]
     rfl
   map_comp f g := by
     dsimp
     ext j
-    rw [end_.lift_π, assoc]
-    erw [end_.lift_π, end_.lift_π]
+    simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, end_.lift_π,
+      Under.map_obj_right, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom,
+      eHomWhiskerLeft_id, comp_id, assoc]
     congr 1
     simp [Under.map, Comma.mapLeft]
 
@@ -288,16 +319,7 @@ is `enrichedHom V F₁ F₂`. -/
 @[simps]
 noncomputable def coneFunctorEnrichedHom : Cone (functorEnrichedHom V F₁ F₂) where
   pt := enrichedHom V F₁ F₂
-  π :=
-    { app := fun j ↦ precompEnrichedHom V F₁ F₂ (Under.forget j)
-      naturality := fun j j' f ↦ by
-        dsimp
-        rw [id_comp]
-        ext k
-        rw [assoc, end_.lift_π]
-        erw [end_.lift_π]
-        rw [end_.lift_π]
-        rfl }
+  π := { app := fun j ↦ precompEnrichedHom V F₁ F₂ (Under.forget j) }
 
 namespace isLimitConeFunctorEnrichedHom
 
@@ -308,10 +330,14 @@ noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
   end_.lift (fun j ↦ s.π.app j ≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))) (fun j j' f ↦ by
     dsimp
     rw [← s.w f, assoc, assoc, assoc]
-    dsimp [functorEnrichedHom]
-    erw [end_.lift_π_assoc,
-      enrichedHom_condition V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
-      (Under.homMk f : Under.mk (𝟙 j) ⟶ Under.mk f)]
+    dsimp
+    simp only [end_.lift_π_assoc, diagram_obj_obj, Functor.comp_obj, Under.forget_obj,
+      Under.mk_right, Under.map_obj_right, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id,
+      Iso.refl_hom, eHomWhiskerLeft_id, comp_id]
+    have := enrichedHom_condition V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
+      (Under.homMk f : Under.mk (𝟙 j) ⟶ Under.mk f)
+    dsimp at this
+    rw [this]
     congr 3
     simp [Under.map, Comma.mapLeft]
     rfl)
@@ -319,11 +345,12 @@ noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
 lemma fac (j : J) : lift s ≫ (coneFunctorEnrichedHom V F₁ F₂).π.app j = s.π.app j := by
   dsimp [coneFunctorEnrichedHom]
   ext k
-  rw [assoc]
-  erw [end_.lift_π, end_.lift_π, ← s.w k.hom]
-  rw [assoc]
-  dsimp
-  erw [end_.lift_π]
+  have := s.w k.hom
+  dsimp at this
+  -- this was produced by `simp? [lift, ← this]`
+  simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, lift, functorEnrichedHom_obj,
+    assoc, end_.lift_π, Iso.refl_inv, NatTrans.id_app, eHomWhiskerRight_id, Iso.refl_hom,
+    eHomWhiskerLeft_id, comp_id, ← this, Under.map_obj_right, Under.mk_right]
   congr
   simp [Under.map, Comma.mapLeft]
   rfl
@@ -342,7 +369,7 @@ noncomputable def isLimitConeFunctorEnrichedHom :
     have := ((hm j).trans (fac s j).symm) =≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))
     dsimp [coneFunctorEnrichedHom] at this
     rw [assoc, assoc, end_.lift_π] at this
-    exact this
+    simpa using this
 
 end
 
@@ -351,14 +378,6 @@ end
 noncomputable def functorEnrichedId [HasFunctorEnrichedHom V F₁ F₁] :
     𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₁ where
   app j := enrichedId V _
-  naturality j j' f := by
-    dsimp
-    ext k
-    dsimp
-    rw [assoc, assoc, id_comp, enrichedId_π]
-    erw [end_.lift_π]
-    rw [enrichedId_π]
-    dsimp
 
 /-- The composition for the `J ⥤ V`-enrichment of the category `J ⥤ C`. -/
 @[simps]
@@ -373,9 +392,7 @@ noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
     rw [assoc, assoc, enrichedComp_π]
     dsimp
     rw [← tensor_comp_assoc]
-    erw [end_.lift_π, end_.lift_π, end_.lift_π]
-    rw [enrichedComp_π]
-    dsimp
+    simp
 
 @[reassoc (attr := simp)]
 lemma functorEnriched_id_comp [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₁ F₁] :
@@ -432,12 +449,9 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
       ((functorHomEquiv V) f ⊗ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
   ext j
   dsimp
-  rw [homEquiv_comp]
   ext k
-  rw [assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π, enrichedComp_π,
-    ← tensor_comp_assoc, ← tensor_comp_assoc, assoc, assoc,
-    end_.lift_π, end_.lift_π]
-  dsimp
+  rw [homEquiv_comp, assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π]
+  simp [← tensor_comp_assoc]
 
 attribute [local instance] functorEnrichedCategory
 
