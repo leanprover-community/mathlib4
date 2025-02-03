@@ -88,9 +88,10 @@ theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
 
 /-- The canonical (bundled) continuous map from the underlying topological
 space of `X` to the prime spectrum of its global sections. -/
-def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
-  toFun := X.toΓSpecFun
-  continuous_toFun := X.toΓSpec_continuous
+def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) :=
+  TopCat.ofHom
+  { toFun := X.toΓSpecFun
+    continuous_toFun := X.toΓSpec_continuous }
 
 variable (r : Γ.obj (op X))
 
@@ -300,7 +301,7 @@ theorem right_triangle (R : CommRingCat) :
   apply LocallyRingedSpace.comp_ring_hom_ext
   · ext (p : PrimeSpectrum R)
     dsimp
-    ext x
+    refine PrimeSpectrum.ext (Ideal.ext fun x => ?_)
     erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
     rfl
