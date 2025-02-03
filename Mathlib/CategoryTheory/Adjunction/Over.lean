@@ -8,8 +8,12 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
-import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
+
+import Mathlib.CategoryTheory.ChosenFiniteProducts
+-- import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+
 
 /-!
 # Adjunctions related to the over category
@@ -39,19 +43,16 @@ namespace CategoryTheory
 
 open Category Limits Comonad
 
-variable {C : Type u} [Category.{v} C] (X : C)
-
+variable {C : Type u} [Category.{v} C]
 
 namespace Over
 
 open Limits
 
-variable [HasPullbacks C]
-
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
-def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
+def pullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
@@ -65,7 +66,7 @@ noncomputable alias baseChange := pullback
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
+def mapPullbackAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y =>
         { toFun := fun u =>
@@ -84,46 +85,83 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
 noncomputable alias mapAdjunction := mapPullbackAdj
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
-def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
+def pullbackId {X : C} [HasPullbacks C] : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
-def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+def pullbackComp [HasPullbacks C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
+instance pullbackIsRightAdjoint [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
-namespace mapPullbackAdj
+abbrev Sigma {X : C} (Y : Over X) (Z : Over (Y.left)) : Over X :=
+  (map Y.hom).obj Z
+namespace Sigma
 
-variable {X}
+variable {X : C}
 
 set_option quotPrecheck false in
-scoped notation " Σ_ " => fun (Y : Over X) => (Over.map (Y.hom)).obj
+scoped notation " Σ_ " => Sigma
+
+lemma hom (Y : Over X) (Z : Over (Y.left)) : (Σ_ Y Z).hom = Z.hom ≫ Y.hom := by
+  rfl
+
+/-- The first projection of the sigma object. -/
+def fst (Y : Over X) (Z : Over (Y.left)) : (Σ_ Y Z) ⟶ Y := Over.homMk Z.hom
+
+end Sigma
+
+abbrev Reindex [HasPullbacks C] {X : C} (Y : Over X) (Z : Over X) : Over Y.left :=
+  (Over.pullback Y.hom).obj Z
+
+namespace Reindex
+
+open Sigma
+
+variable [HasPullbacks C] {X : C}
 
 set_option quotPrecheck false in
-scoped notation " Δ_ " => fun (Y : Over X) => (Over.pullback (Y.hom)).obj
+scoped notation " Δ_ " => Reindex
+
+lemma hom (Y : Over X) (Z : Over X) :
+    (Δ_ Y Z).hom = pullback.snd Z.hom Y.hom := by
+  rfl
+
+def objSymmetry (Y Z : Over X) :
+    (Δ_ Y Z).left ≅ (Δ_ Z Y).left := pullbackSymmetry _ _
 
 /-- Push-pull of `Z` of along `Y` is isomorphic to the push-pull of `Y` along `Z` as objects in
 `Over X`. -/
 @[simps!]
-def swapIso (Y Z : Over X) :
+def mapPullbackSymmetry (Y Z : Over X) :
   Σ_ Y (Δ_ Y Z) ≅ Σ_ Z (Δ_ Z Y) := by
   apply Over.isoMk _ _
   · exact pullbackSymmetry _ _
   · simp [pullback.condition]
 
-lemma SwapIso_hom_pullbackSymmetry {Y Z : Over X} :
-    (Σ_ Y (Δ_ Y Z)).hom = (pullbackSymmetry _ _).hom ≫ (Σ_ Z (Δ_ Z Y)).hom  := by
+lemma mapPullbackSymmetry_hom {Y Z : Over X} :
+    (pullback.snd Z.hom Y.hom) ≫ Y.hom =
+    (pullbackSymmetry _ _).hom ≫ (pullback.snd Y.hom Z.hom) ≫ Z.hom  := by
   simp [← pullback.condition]
 
-set_option quotPrecheck false in
-scoped notation " μ_ " => fun Y Z => (mapPullbackAdj Y.hom).counit.app Z
+end Reindex
+
+namespace mapPullbackAdj
+
+open Sigma Reindex
+
+variable [HasPullbacks C] {X : C}
 
 set_option quotPrecheck false in
-scoped notation " π_ " => fun Y Z => (swapIso Y Z).hom ≫ (mapPullbackAdj Z.hom).counit.app Y
+scoped notation " μ_ " => (fun Y Z => (mapPullbackAdj Y.hom).counit.app Z)
+
+set_option quotPrecheck false in
+scoped notation " π_ " => (fun Y Z => (mapPullbackSymmetry Y Z).hom ≫
+  (mapPullbackAdj Z.hom).counit.app Y)
 
 lemma counit_app_pullback_fst {Y Z : Over X} :
     μ_ Y Z = Over.homMk (pullback.fst Z.hom Y.hom) (by simp [pullback.condition]) := by
@@ -133,44 +171,49 @@ lemma counit_app_pullback_snd {Y Z : Over X} :
     π_ Y Z = Over.homMk (pullback.snd Z.hom Y.hom) (by simp)  := by
   aesop
 
+lemma counit_app_pullback_snd_eq_homMk {Y Z : Over X} :
+    π_ Y Z = (homMk (Δ_ Y Z).hom : (Σ_ Y (Δ_ Y Z)) ⟶ Y) :=
+  OverMorphism.ext (by aesop)
+
 end mapPullbackAdj
 
-section tensorLeft
+section BinaryProduct
 
-open mapPullbackAdj MonoidalCategory Functor
+open Functor MonoidalCategory ChosenFiniteProducts mapPullbackAdj Sigma Reindex
 
-variable {X}
+variable [HasPullbacks C] {X : C}
+
+attribute [local instance] Over.ConstructProducts.over_binaryProduct_of_pullback
+attribute [local instance] Over.over_hasTerminal
+attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
+attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 
 /-- The binary fan provided by `μ_` and `π_` is a binary product in `Over X`. -/
-def isBinaryProduct (Y Z : Over X) :
+def isBinaryProductMapPulbackObj (Y Z : Over X) :
     IsLimit <| BinaryFan.mk (P:= Σ_ Y (Δ_ Y Z)) (π_ Y Z) (μ_ Y Z) := by
   rw [counit_app_pullback_fst, counit_app_pullback_snd]
   refine IsLimit.mk (?lift) ?fac ?uniq
   · intro s
     fapply Over.homMk
-    · refine pullback.lift (s.π.app ⟨.right⟩).left (s.π.app ⟨ .left ⟩).left (by aesop)
-
-  -- fapply IsLimit.mk
-  -- · intro s
-  --   fapply Over.homMk
-  --   · refine pullback.lift (s.π.app ⟨.right⟩).left (s.π.app ⟨ .left ⟩).left (by aesop) ?_
-  --   · simp
-  -- · rintro s ⟨⟨l⟩|⟨r⟩⟩ <;> apply Over.OverMorphism.ext <;> simp
-  -- · intro s m h
-  --   apply Over.OverMorphism.ext
-  --   apply pullback.hom_ext <;> simp
-  --   · exact congr_arg CommaMorphism.left (h ⟨ .right⟩)
-  --   · exact congr_arg CommaMorphism.left (h ⟨ .left ⟩)
-
-attribute [local instance] monoidalOfHasFiniteProducts
-attribute [local instance] Over.ConstructProducts.over_binaryProduct_of_pullback
+    · exact pullback.lift (s.π.app ⟨.right⟩).left (s.π.app ⟨ .left ⟩).left (by aesop)
+    · dsimp at s
+      aesop
+  · rintro s ⟨⟨l⟩|⟨r⟩⟩ <;> dsimp at s <;> apply Over.OverMorphism.ext <;> simp
+  · intro s m h
+    apply Over.OverMorphism.ext
+    apply pullback.hom_ext <;> dsimp at s <;> simp
+    · exact congr_arg CommaMorphism.left (h ⟨ .right⟩)
+    · exact congr_arg CommaMorphism.left (h ⟨ .left ⟩)
 
 /-- The object `(Σ_ Y) (Δ_ Y Z)` is isomorphic to the binary product `Y × Z`
 in `Over I`. -/
 @[simps! (config := { simpRhs := true})]
 def mapPulbackObjIsoProd (Y Z : Over X) :
     (Σ_ Y) (Δ_ Y Z) ≅ Limits.prod Y Z := by
-  apply IsLimit.conePointUniqueUpToIso (isBinaryProduct Y Z) (prodIsProd Y Z)
+  apply IsLimit.conePointUniqueUpToIso (isBinaryProductMapPulbackObj Y Z) (prodIsProd Y Z)
+
+instance (Y Z : Over X) : IsIso (mapPulbackObjIsoProd Y Z).hom := by
+  infer_instance
 
 /-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the `(map f).obj ((pullback f).obj Y)`
 is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
@@ -178,42 +221,55 @@ def mapPulbackObjIsoProdMk {X' : C} (f : X' ⟶ X) (Y : Over X) :
     (map f).obj ((pullback f).obj Y) ≅ Limits.prod (Over.mk f) Y :=
   mapPulbackObjIsoProd (Over.mk f) _
 
-@[simp]
 lemma mapPulbackObjIsoProd_hom_comp_fst (Y Z : Over X) :
-    (mapPulbackObjIsoProd Y Z).hom ≫ prod.fst = (π_ Y Z) :=
-  IsLimit.conePointUniqueUpToIso_hom_comp (isBinaryProduct Y Z) (Limits.prodIsProd Y Z) ⟨.left⟩
+    (mapPulbackObjIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
+  IsLimit.conePointUniqueUpToIso_hom_comp
+    (isBinaryProductMapPulbackObj Y Z) (Limits.prodIsProd Y Z) ⟨.left⟩
 
-@[simp]
 lemma mapPulbackObjIsoProd_hom_comp_snd {Y Z : Over X} :
-    (mapPulbackObjIsoProd Y Z).hom ≫ prod.snd = (μ_ Y Z) :=
-  IsLimit.conePointUniqueUpToIso_hom_comp (isBinaryProduct Y Z) (Limits.prodIsProd Y Z) ⟨.right⟩
+    (mapPulbackObjIsoProd Y Z).hom ≫ (snd Y Z) = (μ_ Y Z) :=
+  IsLimit.conePointUniqueUpToIso_hom_comp
+    (isBinaryProductMapPulbackObj Y Z) (Limits.prodIsProd Y Z) ⟨.right⟩
+
+end BinaryProduct
+
+end Over
+
+section TensorLeft
+
+open MonoidalCategory Over Functor ChosenFiniteProducts
+
+-- attribute [local instance] monoidalOfHasFiniteProducts
+attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
+attribute [local instance] monoidalOfChosenFiniteProducts
+
+variable [HasPullbacks C] {X : C}
 
 /-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
 to the left tensor product functor `Y × _` in `Over X`-/
-def natIsoTensorLeft [HasFiniteWidePullbacks C] (Y : Over X) :
+def Over.mapPulbackNatIsoTensorLeft [HasFiniteWidePullbacks C] (Y : Over X) :
     (pullback Y.hom) ⋙ (map Y.hom) ≅ tensorLeft Y := by
   fapply NatIso.ofComponents
   · intro Z
-    simp only [const_obj_obj, id_obj, comp_obj, tensorLeft_obj, tensorObj, pullback]
+    simp only [const_obj_obj, Functor.id_obj, comp_obj, tensorLeft_obj, tensorObj, Over.pullback]
     exact mapPulbackObjIsoProd Y Z
   · intro Z Z' f
     simp
     ext1 <;> simp_rw [assoc]
-    · simp_rw [prod.map_fst, comp_id]
+    · simp_rw [whiskerLeft_fst] --simp_rw [prod.map_fst, comp_id]
       iterate rw [mapPulbackObjIsoProd_hom_comp_fst]
       ext
       simp
-    · simp_rw [prod.map_snd]
+    · simp_rw [whiskerLeft_snd]
       iterate rw [mapPulbackObjIsoProd_hom_comp_snd, ← assoc, mapPulbackObjIsoProd_hom_comp_snd]
       ext
       simp
 
-/-- The pull-push composition `(pullback f) ⋙ (map f)` is is naturally isomorphic to the left
-tensor product functor `Over.mk f ⨯ _` in `Over X`. -/
-def natIsoTensorLeftOverMk [HasFiniteWidePullbacks C] {X' : C} (f : X' ⟶ X) :
-    (pullback f) ⋙ (map f) ≅ tensorLeft (Over.mk f) := natIsoTensorLeft (Over.mk f)
+end TensorLeft
 
-end tensorLeft
+namespace Over
+
+variable (X : C)
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
