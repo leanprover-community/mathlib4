@@ -73,7 +73,7 @@ variable (m : ℕ) (h : m ≤ n + 1 := by omega)
 /-- The fields of `StrictSegal` define an equivalence between `X _[m]ₙ₊₁`
 and `Path X m`. -/
 def spineEquiv : X _[m]ₙ₊₁ ≃ Path X m where
-  toFun := spine X m
+  toFun := X.spine m
   invFun := sx.spineToSimplex m h
   left_inv := sx.spineToSimplex_spine_apply m h
   right_inv := sx.spine_spineToSimplex_apply m h
@@ -235,10 +235,10 @@ lemma spineToSimplex_spine_apply (Δ : X _[n]) :
 /-- The fields of `StrictSegal` define an equivalence between `X _[n]`
 and `Path X n`. -/
 def spineEquiv (n : ℕ) : X _[n] ≃ Path X n where
-  toFun := spine X n
-  invFun := spineToSimplex sx
-  left_inv := spineToSimplex_spine_apply sx
-  right_inv := spine_spineToSimplex_apply sx
+  toFun := X.spine n
+  invFun := sx.spineToSimplex
+  left_inv := sx.spineToSimplex_spine_apply
+  right_inv := sx.spine_spineToSimplex_apply
 
 theorem spineInjective : Function.Injective (sx.spineEquiv n) :=
   Equiv.injective _
@@ -294,7 +294,7 @@ lemma spineToSimplex_map {X Y : SSet.{u}} (sx : StrictSegal X)
   ext k
   dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
   rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
-  simp [Path.map_arrow]
+  simp
 
 variable (f : Path X (n + 1))
 variable {i : Fin (n + 1)} {j : Fin (n + 2)}
