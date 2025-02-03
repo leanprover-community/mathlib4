@@ -48,11 +48,4 @@ instance (A : X.Subcomplex) :
     Mono A.ι :=
   inferInstanceAs (Mono (Subpresheaf.ι A))
 
-/-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
-abbrev Subcomplex.ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A
-
-instance (A : X.Subcomplex) :
-    Mono A.ι :=
-  inferInstanceAs (Mono (Subpresheaf.ι A))
-
 end SSet
