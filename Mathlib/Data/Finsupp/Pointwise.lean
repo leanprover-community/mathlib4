@@ -93,7 +93,7 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 -- TODO can this be generalized in the direction of `Pi.smul'`
 -- (i.e. dependent functions and finsupps)
 -- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
-instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
+instance pointwiseScalar [Semiring β] [AddCommMonoid γ] [Module β γ] : SMul (α → β) (α →₀ γ) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
@@ -110,5 +110,22 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
+
+section
+
+variable [Semiring β] [AddCommMonoid γ] [Module β γ]
+
+instance pointwiseModuleScalar : HMul (α →₀ β) (α → γ) (α →₀ γ) where
+  hMul f g :=
+    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
+      apply Set.Finite.subset f.finite_support
+      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
+        Finsupp.fun_support_eq, Finset.mem_coe]
+      intro x hx h
+      apply hx
+      rw [h, zero_smul])
+
+end
+
 
 end Finsupp
