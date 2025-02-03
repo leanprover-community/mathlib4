@@ -797,6 +797,57 @@ lemma height_eq_krullDim_Iic {α : Type*} [Preorder α] (x : α) :
 
 end krullDim
 
+section finiteDimensional
+
+variable {α : Type*} [Preorder α]
+
+@[simp]
+lemma krullDim_eq_bot_iff_isEmpty : krullDim α = ⊥ ↔ IsEmpty α := by
+  rw [krullDim]
+  constructor
+  · by_contra h; push_neg at h
+    obtain ⟨x⟩ : Nonempty α := by (rw [← not_isEmpty_iff]; exact h.2)
+    have := le_iSup (fun (q : LTSeries α) ↦ (q.length : WithBot ℕ∞)) ⟨0, fun _ ↦ x, by simp⟩
+    simp [h.1] at this
+  · intro h
+    rw [iSup_eq_bot]; intro p
+    exact False.elim (h.elim (p 0))
+
+lemma krullDim_eq_top_iff_infiniteDimensional : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
+  rw [krullDim, iSup_eq_top, InfiniteDimensionalOrder, Rel.infiniteDimensional_iff]
+  constructor
+  · intro h n
+    obtain ⟨p, hp⟩ := h n (Batteries.compareOfLessAndEq_eq_lt.mp rfl)
+    rw [Nat.cast_lt] at hp
+    refine ⟨⟨n, fun i ↦ p ⟨i.val, ?_⟩, fun i ↦ p.step ⟨i.val, ?_⟩⟩, rfl⟩
+    · exact lt_trans i.2 ((add_right_strictMono (a := 1)).lt_iff_lt.mpr hp)
+    · exact lt_trans i.2 hp
+  · intro h b hb
+    by_cases h' : b = ⊥
+    · obtain ⟨p, hp⟩ := h 0
+      exact ⟨p, by rw [hp, h']; exact Batteries.compareOfLessAndEq_eq_lt.mp rfl⟩
+    · set b' := WithBot.unbot b h' with hb'
+      rw [← WithBot.coe_unbot b h', ← hb', ← WithBot.coe_top, WithBot.coe_strictMono.lt_iff_lt,
+        WithTop.lt_top_iff_ne_top] at hb
+      set b'' := WithTop.untop b' hb with hb''
+      rw [← WithBot.coe_unbot b h', ← hb', ← WithTop.coe_untop b' hb, ← hb'']
+      obtain ⟨p, hp⟩ := h (b'' + 1)
+      have : p.length = (WithBot.some (WithTop.some p.length)) := rfl
+      exact ⟨p, by rw [this, WithBot.coe_strictMono.lt_iff_lt, WithTop.coe_strictMono.lt_iff_lt, hp]
+                   exact (lt_add_one b'')⟩
+
+lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
+    FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
+  by_cases h : Nonempty α
+  · haveI := h
+    rw [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff_infiniteDimensional]
+    simp
+  · constructor
+    · exact (fun h1 ↦ False.elim (h (@LTSeries.nonempty_of_finiteDimensionalType α ‹_› ‹_›)))
+    · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff_isEmpty.mpr (not_nonempty_iff.mp h))))
+
+end finiteDimensional
+
 /-!
 ## Concrete calculations
 -/

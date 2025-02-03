@@ -58,23 +58,19 @@ theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
 alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
 /-- A ring has finite Krull dimension if its Krull dimension is not ⊤ -/
-class FiniteRingKrullDim (R : Type*) [CommRing R] : Prop where
-  ringKrullDim_ne_top : ringKrullDim R ≠ ⊤
+abbrev FiniteRingKrullDim (R : Type*) [CommRing R] := FiniteDimensionalOrder (PrimeSpectrum R)
+-- ???
 
 lemma ringKrullDim_ne_top [h : FiniteRingKrullDim R] :
-  ringKrullDim R ≠ ⊤ := h.ringKrullDim_ne_top
+    ringKrullDim R ≠ ⊤ := Order.krullDim_ne_top_iff_finiteDimensionalOrder.mpr ‹_›
 
 lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
-  ringKrullDim R < ⊤ := by
-  exact Ne.lt_top (ringKrullDim_ne_top)
+    ringKrullDim R < ⊤ := Ne.lt_top (ringKrullDim_ne_top)
 
 lemma finiteRingKrullDim_iff_lt :
-  FiniteRingKrullDim R ↔ ringKrullDim R < ⊤ := by
-  constructor
-  · intro h
-    exact ringKrullDim_lt_top
-  · intro h
-    exact ⟨ne_top_of_lt h⟩
+    FiniteRingKrullDim R ↔ ringKrullDim R < ⊤ := by
+  rw [lt_top_iff_ne_top]
+  exact (Order.krullDim_ne_top_iff_finiteDimensionalOrder (α := (PrimeSpectrum R))).symm
 
 instance (priority := 100) finiteRingKrullDimOfSubsingleton [Subsingleton R] :
   FiniteRingKrullDim R := by
