@@ -117,13 +117,6 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
 
-/-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv (𝟙 Δ[n])
-
-lemma id_eq_objEquiv_symm (n : ℕ) : id n = objEquiv.symm (𝟙 _) := rfl
-
-lemma objEquiv_id (n : ℕ) : objEquiv (id n) = 𝟙 _ := rfl
-
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
   objMk (OrderHom.const _ k )

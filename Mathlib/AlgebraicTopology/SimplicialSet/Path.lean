@@ -111,7 +111,7 @@ lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
 def stdSimplex.spineId (n : ℕ) : Path Δ[n] n :=
-  spine Δ[n] n (stdSimplex.id n)
+  spine Δ[n] n (objEquiv.symm (𝟙 _))
 
 @[simp]
 lemma stdSimplex.spineId_vertex (n : ℕ) (i : Fin (n + 1)) :
