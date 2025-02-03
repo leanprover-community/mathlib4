@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Tactic.GroupExp
 
 /-!
 # Cyclic groups
@@ -559,7 +560,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
     _ = y ^ m * (y ^ n * (y ^ (-m) * a)) * (y ^ (-n) * b) := by rw [mem_center_iff.1 ha]
     _ = y ^ m * y ^ n * y ^ (-m) * (a * (y ^ (-n) * b)) := by simp [mul_assoc]
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
-    _ = b * a := by group
+    _ = b * a := by group_exp
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive
