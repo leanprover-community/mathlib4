@@ -151,6 +151,27 @@ instance (P) [IsLocalAtTarget P] : IsLocalAtTarget P.diagonal :=
   letI := HasAffineProperty.of_isLocalAtTarget P
   inferInstance
 
+open MorphismProperty in
+instance (P : MorphismProperty Scheme)
+    [P.HasOfPostcompProperty @IsOpenImmersion] [P.RespectsRight @IsOpenImmersion]
+    [IsLocalAtSource P] : IsLocalAtSource P.diagonal := by
+  let g {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens) :
+      pullback (U.ι ≫ f) (U.ι ≫ f) ⟶ pullback f f :=
+    pullback.map (U.ι ≫ f) (U.ι ≫ f) f f U.ι U.ι (𝟙 Y) (by simp) (by simp)
+  have heq {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens) :
+      U.ι ≫ pullback.diagonal f = pullback.diagonal (U.ι ≫ f) ≫ g f U := by
+    apply pullback.hom_ext <;> simp [g]
+  refine IsLocalAtSource.mk' (fun {X Y} f U hf ↦ ?_) (fun {X Y} f {ι} U hU hf ↦ ?_)
+  · show P _
+    apply P.of_postcomp (W' := @IsOpenImmersion) (pullback.diagonal (U.ι ≫ f)) (g f U) inferInstance
+    rw [← heq]
+    apply IsLocalAtSource.comp
+    exact hf
+  · show P _
+    refine IsLocalAtSource.of_iSup_eq_top U hU fun i ↦ ?_
+    rw [heq]
+    exact RespectsRight.postcomp (P := P) (Q := @IsOpenImmersion) (g _ _) inferInstance _ (hf i)
+
 end Diagonal
 
 section Universally
