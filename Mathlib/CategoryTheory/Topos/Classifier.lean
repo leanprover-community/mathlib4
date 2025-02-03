@@ -86,7 +86,7 @@ class HasMonoClassifier : Prop where
   /-- There is some classifier. -/
   exists_classifier : Nonempty (MonoClassifier C)
 
-namespace CategoryTheory.MonoClassifier
+namespace CategoryTheory.HasMonoClassifier
 
 variable [HasMonoClassifier C]
 
@@ -183,4 +183,4 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 end
-end CategoryTheory.MonoClassifier
+end CategoryTheory.HasMonoClassifier
