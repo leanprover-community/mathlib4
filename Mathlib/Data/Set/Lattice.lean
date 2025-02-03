@@ -1125,11 +1125,11 @@ theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι,
   iSup_const_mono (α := Set α) h
 
 @[simp]
-theorem iUnion_singleton_eq_range (f : α → β) : ⋃ x : α, {f x} = range f := by
+theorem iUnion_singleton_eq_range (f : ι → β) : ⋃ x : ι, {f x} = range f := by
   ext x
   simp [@eq_comm _ x]
 
-theorem iUnion_insert_eq_range_union_iUnion {ι : Type*} (x : ι → β) (t : ι → Set β) :
+theorem iUnion_insert_eq_range_union_iUnion (x : ι → β) (t : ι → Set β) :
     ⋃ i, insert (x i) (t i) = range x ∪ ⋃ i, t i := by
   simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range]
 
