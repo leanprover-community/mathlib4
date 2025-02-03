@@ -29,57 +29,64 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 
 noncomputable section
 
-open Set MeasureTheory
+open Set MeasureTheory ProbabilityTheory
 
 open scoped ENNReal MeasureTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f g : Ω → ℝ≥0∞} {X Y : Ω → ℝ}
+variable {Ω Ω' : Type*} {Mf Mg mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
+  {μ : Measure Ω} {ν : Measure Ω'} {κ : Kernel Ω' Ω} {f g : Ω → ℝ≥0∞} {X Y : Ω → ℝ}
 
 namespace ProbabilityTheory
 
-/-- If a random variable `f` in `ℝ≥0∞` is independent of an event `T`, then if you restrict the
-  random variable to `T`, then `E[f * indicator T c 0]=E[f] * E[indicator T c 0]`. It is useful for
-  `lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace`. -/
-theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : MeasurableSpace Ω}
-    {μ : Measure Ω} (hMf : Mf ≤ mΩ) (c : ℝ≥0∞) {T : Set Ω} (h_meas_T : MeasurableSet T)
-    (h_ind : IndepSets {s | MeasurableSet[Mf] s} {T} μ) (h_meas_f : Measurable[Mf] f) :
-    (∫⁻ ω, f ω * T.indicator (fun _ => c) ω ∂μ) =
-      (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, T.indicator (fun _ => c) ω ∂μ := by
+theorem Kernel.lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator
+    (hMf : Mf ≤ mΩ) (c : ℝ≥0∞) {T : Set Ω} (h_meas_T : MeasurableSet T)
+    (h_ind : IndepSets {s | MeasurableSet[Mf] s} {T} κ ν) (h_meas_f : Measurable[Mf] f) :
+    ∀ᵐ ω' ∂ν,
+      (∫⁻ ω, f ω * T.indicator (fun _ => c) ω ∂(κ ω')) =
+        (∫⁻ ω, f ω ∂(κ ω')) * ∫⁻ ω, T.indicator (fun _ => c) ω ∂(κ ω') := by
   revert f
   have h_mul_indicator : ∀ g, Measurable g → Measurable fun a => g a * T.indicator (fun _ => c) a :=
     fun g h_mg => h_mg.mul (measurable_const.indicator h_meas_T)
   apply @Measurable.ennreal_induction _ Mf
   · intro c' s' h_meas_s'
     simp_rw [← inter_indicator_mul]
+    filter_upwards [h_ind s' T h_meas_s' (mem_singleton _)] with ω' hω'
     rw [lintegral_indicator (MeasurableSet.inter (hMf _ h_meas_s') h_meas_T),
       lintegral_indicator (hMf _ h_meas_s'), lintegral_indicator h_meas_T]
-    simp only [measurable_const, lintegral_const, univ_inter, lintegral_const_mul,
-      MeasurableSet.univ, Measure.restrict_apply]
-    rw [IndepSets_iff] at h_ind
-    rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
+    simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
+      univ_inter]
+    rw [mul_mul_mul_comm, hω']
   · intro f' g _ h_meas_f' _ h_ind_f' h_ind_g
     have h_measM_f' : Measurable f' := h_meas_f'.mono hMf le_rfl
     simp_rw [Pi.add_apply, right_distrib]
+    filter_upwards [h_ind_f', h_ind_g] with ω' h_ind_f' h_ind_g
     rw [lintegral_add_left (h_mul_indicator _ h_measM_f'), lintegral_add_left h_measM_f',
       right_distrib, h_ind_f', h_ind_g]
   · intro f h_meas_f h_mono_f h_ind_f
     have h_measM_f : ∀ n, Measurable (f n) := fun n => (h_meas_f n).mono hMf le_rfl
     simp_rw [ENNReal.iSup_mul]
+    rw [← ae_all_iff] at h_ind_f
+    filter_upwards [h_ind_f] with ω' h_ind_f
     rw [lintegral_iSup h_measM_f h_mono_f, lintegral_iSup, ENNReal.iSup_mul]
     · simp_rw [← h_ind_f]
     · exact fun n => h_mul_indicator _ (h_measM_f n)
     · exact fun m n h_le a => mul_le_mul_right' (h_mono_f h_le a) _
 
-/-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
-   then `E[f * g] = E[f] * E[g]`. However, instead of directly using the independence
-   of the random variables, it uses the independence of measurable spaces for the
-   domains of `f` and `g`. This is similar to the sigma-algebra approach to
-   independence. See `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun` for
-   a more common variant of the product of independent variables. -/
-theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
-    {Mf Mg mΩ : MeasurableSpace Ω} {μ : Measure Ω} (hMf : Mf ≤ mΩ) (hMg : Mg ≤ mΩ)
-    (h_ind : Indep Mf Mg μ) (h_meas_f : Measurable[Mf] f) (h_meas_g : Measurable[Mg] g) :
-    ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
+/-- If a random variable `f` in `ℝ≥0∞` is independent of an event `T`, then if you restrict the
+  random variable to `T`, then `E[f * indicator T c 0]=E[f] * E[indicator T c 0]`. It is useful for
+  `lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace`. -/
+theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator
+    (hMf : Mf ≤ mΩ) (c : ℝ≥0∞) {T : Set Ω} (h_meas_T : MeasurableSet T)
+    (h_ind : IndepSets {s | MeasurableSet[Mf] s} {T} μ) (h_meas_f : Measurable[Mf] f) :
+    (∫⁻ ω, f ω * T.indicator (fun _ => c) ω ∂μ) =
+      (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, T.indicator (fun _ => c) ω ∂μ := by
+  simpa using Kernel.lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator hMf c h_meas_T
+    h_ind h_meas_f
+
+theorem Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
+    (hMf : Mf ≤ mΩ) (hMg : Mg ≤ mΩ)
+    (h_ind : Indep Mf Mg κ ν) (h_meas_f : Measurable[Mf] f) (h_meas_g : Measurable[Mg] g) :
+    ∀ᵐ ω' ∂ν, ∫⁻ ω, f ω * g ω ∂(κ ω') = (∫⁻ ω, f ω ∂(κ ω')) * ∫⁻ ω, g ω ∂(κ ω') := by
   revert g
   have h_measM_f : Measurable f := h_meas_f.mono hMf le_rfl
   apply @Measurable.ennreal_induction _ Mg
@@ -90,24 +97,60 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
   · intro f' g _ h_measMg_f' _ h_ind_f' h_ind_g'
     have h_measM_f' : Measurable f' := h_measMg_f'.mono hMg le_rfl
     simp_rw [Pi.add_apply, left_distrib]
+    filter_upwards [h_ind_f', h_ind_g'] with ω' h_ind_f' h_ind_g'
     rw [lintegral_add_left h_measM_f', lintegral_add_left (h_measM_f.mul h_measM_f'), left_distrib,
       h_ind_f', h_ind_g']
   · intro f' h_meas_f' h_mono_f' h_ind_f'
     have h_measM_f' : ∀ n, Measurable (f' n) := fun n => (h_meas_f' n).mono hMg le_rfl
     simp_rw [ENNReal.mul_iSup]
+    rw [← ae_all_iff] at h_ind_f'
+    filter_upwards [h_ind_f'] with ω' h_ind_f'
     rw [lintegral_iSup, lintegral_iSup h_measM_f' h_mono_f', ENNReal.mul_iSup]
     · simp_rw [← h_ind_f']
     · exact fun n => h_measM_f.mul (h_measM_f' n)
     · exact fun n m (h_le : n ≤ m) a => mul_le_mul_left' (h_mono_f' h_le a) _
 
 /-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
-   then `E[f * g] = E[f] * E[g]`. -/
-theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measurable f)
-    (h_meas_g : Measurable g) (h_indep_fun : IndepFun f g μ) :
-    (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
+   then `E[f * g] = E[f] * E[g]`. However, instead of directly using the independence
+   of the random variables, it uses the independence of measurable spaces for the
+   domains of `f` and `g`. This is similar to the sigma-algebra approach to
+   independence. See `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun` for
+   a more common variant of the product of independent variables. -/
+theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
+    (hMf : Mf ≤ mΩ) (hMg : Mg ≤ mΩ)
+    (h_ind : Indep Mf Mg μ) (h_meas_f : Measurable[Mf] f) (h_meas_g : Measurable[Mg] g) :
+    ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
+  simpa using Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace hMf hMg
+    h_ind h_meas_f h_meas_g
+
+theorem Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measurable f)
+    (h_meas_g : Measurable g) (h_indep_fun : IndepFun f g κ ν) :
+    ∀ᵐ ω' ∂ν, (∫⁻ ω, (f * g) ω ∂(κ ω')) = (∫⁻ ω, f ω ∂(κ ω')) * ∫⁻ ω, g ω ∂(κ ω') :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     (measurable_iff_comap_le.1 h_meas_f) (measurable_iff_comap_le.1 h_meas_g) h_indep_fun
     (Measurable.of_comap_le le_rfl) (Measurable.of_comap_le le_rfl)
+
+/-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
+   then `E[f * g] = E[f] * E[g]`. -/
+theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measurable f)
+    (h_meas_g : Measurable g) (h_indep_fun : IndepFun f g μ) :
+    (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
+  simpa using Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun h_meas_f h_meas_g
+    h_indep_fun
+
+theorem Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
+    -- todo: h_meas_f could be `AEMeasurable f (ν ⊗ₘ κ)`
+    (h_meas_f : ∃ f', Measurable f' ∧ ∀ᵐ ω' ∂ν, f =ᵐ[κ ω'] f')
+    (h_meas_g : ∃ g', Measurable g' ∧ ∀ᵐ ω' ∂ν, g =ᵐ[κ ω'] g')
+    (h_indep_fun : IndepFun f g κ ν) :
+    ∀ᵐ ω' ∂ν, ∫⁻ ω, (f * g) ω ∂(κ ω') = (∫⁻ ω, f ω ∂(κ ω')) * ∫⁻ ω, g ω ∂(κ ω') := by
+  obtain ⟨f', h_meas_f', hf⟩ := h_meas_f
+  obtain ⟨g', h_meas_g', hg⟩ := h_meas_g
+  have h := lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun h_meas_f' h_meas_g'
+    (h_indep_fun.ae_eq hf hg)
+  filter_upwards [h, hf, hg] with ω' h hf hg
+  have fg_ae : f * g =ᵐ[κ ω'] f' * g' := hf.mul hg
+  rw [lintegral_congr_ae hf, lintegral_congr_ae hg, lintegral_congr_ae fg_ae, h]
 
 /-- If `f` and `g` with values in `ℝ≥0∞` are independent and almost everywhere measurable,
    then `E[f * g] = E[f] * E[g]` (slightly generalizing
@@ -115,55 +158,94 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measura
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
-  have fg_ae : f * g =ᵐ[μ] h_meas_f.mk _ * h_meas_g.mk _ := h_meas_f.ae_eq_mk.mul h_meas_g.ae_eq_mk
-  rw [lintegral_congr_ae h_meas_f.ae_eq_mk, lintegral_congr_ae h_meas_g.ae_eq_mk,
-    lintegral_congr_ae fg_ae]
-  apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun h_meas_f.measurable_mk
-      h_meas_g.measurable_mk
-  exact h_indep_fun.ae_eq h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
+  convert Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' ?_ ?_ h_indep_fun
+  · simp
+  · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
+    exact h_meas_f
+  · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
+    exact h_meas_g
+
+theorem Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun''
+    (h_meas_f : ∃ f', Measurable f' ∧ ∀ᵐ ω' ∂ν, f =ᵐ[κ ω'] f')
+    (h_meas_g : ∃ g', Measurable g' ∧ ∀ᵐ ω' ∂ν, g =ᵐ[κ ω'] g')
+    (h_indep_fun : IndepFun f g κ ν) :
+    ∀ᵐ ω' ∂ν, ∫⁻ ω, f ω * g ω ∂(κ ω') = (∫⁻ ω, f ω ∂(κ ω')) * ∫⁻ ω, g ω ∂(κ ω') :=
+  lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 
+theorem Kernel.lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
+    (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X κ ν)
+    (x_mea : ∀ i, Measurable (X i)) :
+    ∀ᵐ ω' ∂ν, ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂(κ ω') = ∏ i ∈ s, ∫⁻ ω, X i ω ∂(κ ω') := by
+  have : ∀ᵐ ω' ∂ν, IsProbabilityMeasure (κ ω') := hX.ae_isProbabilityMeasure
+  induction s using Finset.induction
+  case empty => filter_upwards [this] with ω' h_prop; simp
+  case insert _ j s hj v =>
+    have h_prod : Measurable (∏ i ∈ s, X i) := by fun_prop
+    filter_upwards [v, lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (x_mea j) h_prod
+      (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm] with ω' v h_eq
+    calc  ∫⁻ ω, ∏ i ∈ insert j s, X i ω ∂(κ ω')
+      _ = ∫⁻ ω, (∏ i ∈ insert j s, X i) ω ∂(κ ω') := by simp only [Finset.prod_apply]
+      _ =  ∫⁻ ω, (X j * ∏ i ∈ s, X i) ω ∂(κ ω') :=
+        lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
+      _ = (∫⁻ ω, X j ω ∂(κ ω')) * ∫⁻ ω, (∏ i ∈ s, X i) ω ∂(κ ω') := h_eq
+      _ = ∏ i' ∈ insert j s, ∫⁻ ω, X i' ω ∂(κ ω') := by
+        simp only [Finset.prod_apply]
+        rw [v, Finset.prod_insert hj]
+
 theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq ι]
     (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
     (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X μ)
     (x_mea : ∀ i, Measurable (X i)) :
     ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ ω, X i ω ∂μ := by
-  have : IsProbabilityMeasure μ := hX.isProbabilityMeasure
-  induction s using Finset.induction
-  case empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
-  case insert _ j s hj v =>
-    calc  ∫⁻ (ω : Ω), ∏ i ∈ insert j s, X i ω ∂μ
-      _ = ∫⁻ (ω : Ω), (∏ i ∈ insert j s, X i) ω ∂μ := by simp only [Finset.prod_apply]
-      _ =  ∫⁻ (ω : Ω), (X j * ∏ i ∈ s, X i) ω ∂μ :=
-        lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
-      _ = (∫⁻ ω, X j ω ∂μ) * ∫⁻ ω, (∏ i ∈ s, X i) ω ∂μ := by
-        apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
-        · exact (x_mea j).aemeasurable
-        · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
-        · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm
-      _ = ∏ i' ∈ insert j s, ∫⁻ ω, X i' ω ∂μ := by
-        simp only [Finset.prod_apply]
-        rw [v, Finset.prod_insert hj]
+  simpa using Kernel.lintegral_prod_eq_prod_lintegral_of_indepFun s X hX x_mea
+
+/-- The product of two independent, integrable, real-valued random variables is integrable. -/
+theorem Kernel.IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
+    [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y κ ν)
+    (hX : (∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] X')
+      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral X (κ ω'))
+    (hY : (∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, Y =ᵐ[κ ω'] Y')
+      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral Y (κ ω')) :
+    (∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, X * Y =ᵐ[κ ω'] f)
+      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (X * Y) (κ ω') := by
+  have hXY' : IndepFun (fun a => ‖X a‖ₑ) (fun a => ‖Y a‖ₑ) κ ν :=
+    hXY.comp measurable_enorm measurable_enorm
+  obtain ⟨X', hX', hXX'⟩ := hX.1
+  obtain ⟨Y', hY', hYY'⟩ := hY.1
+  have h_mul := lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' ?_ ?_ hXY'
+  rotate_left
+  · refine ⟨fun a => ‖X' a‖ₑ, ?_, ?_⟩
+    · have := hX'.measurable
+      fun_prop
+    · filter_upwards [hXX'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [← hω]
+  · refine ⟨fun a => ‖Y' a‖ₑ, ?_, ?_⟩
+    · have := hY'.measurable
+      fun_prop
+    · filter_upwards [hYY'] with ω' hω'
+      filter_upwards [hω'] with ω hω
+      rw [← hω]
+  refine ⟨⟨X' * Y', hX'.mul hY', ?_⟩, ?_⟩
+  · filter_upwards [hXX', hYY'] with ω' hX' hY' using hX'.mul hY'
+  filter_upwards [h_mul, hX.2, hY.2] with ω' hmul hX hY
+  simp only [Pi.mul_apply] at hmul
+  simp_rw [hasFiniteIntegral_iff_enorm, Pi.mul_apply, enorm_mul, hmul]
+  exact ENNReal.mul_lt_top hX hY
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : Integrable (X * Y) μ := by
-  let nX : Ω → ℝ≥0∞ := fun a => ‖X a‖ₑ
-  let nY : Ω → ℝ≥0∞ := fun a => ‖Y a‖ₑ
-  have hXY' : IndepFun nX nY μ := hXY.comp measurable_enorm measurable_enorm
-  have hnX : AEMeasurable nX μ := hX.1.aemeasurable.enorm
-  have hnY : AEMeasurable nY μ := hY.1.aemeasurable.enorm
-  have hmul : ∫⁻ a, nX a * nY a ∂μ = (∫⁻ a, nX a ∂μ) * ∫⁻ a, nY a ∂μ :=
-    lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' hnX hnY hXY'
-  refine ⟨hX.1.mul hY.1, ?_⟩
-  simp only [nX, nY] at hmul
-  simp_rw [hasFiniteIntegral_iff_enorm, Pi.mul_apply, enorm_mul, hmul]
-  exact ENNReal.mul_lt_top hX.2 hY.2
+  have h := Kernel.IndepFun.integrable_mul hXY ?_ ?_
+  all_goals simp_all only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
+  exacts [h, hX, hY]
 
 /-- If the product of two independent real-valued random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/

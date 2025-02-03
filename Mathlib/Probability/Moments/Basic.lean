@@ -297,6 +297,20 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     rw [sum_insert hi_notin_s]
     apply aestronglyMeasurable_exp_mul_add (h_int i (mem_insert_self _ _)) h_rec
 
+theorem Kernel.IndepFun.integrable_exp_mul_add
+    {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {κ : Kernel Ω' Ω}
+    {X Y : Ω → ℝ} (h_indep : IndepFun X Y κ ν)
+    (h_int_X : (∃ X', StronglyMeasurable X' ∧ ∀ᵐ ω' ∂ν, (fun ω => exp (t * X ω)) =ᵐ[κ ω'] X')
+      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω => exp (t * X ω)) (κ ω'))
+    (h_int_Y : (∃ Y', StronglyMeasurable Y' ∧ ∀ᵐ ω' ∂ν, (fun ω => exp (t * Y ω)) =ᵐ[κ ω'] Y')
+      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω => exp (t * Y ω)) (κ ω')) :
+    (∃ f, StronglyMeasurable f ∧ ∀ᵐ ω' ∂ν, (fun ω => exp (t * (X + Y) ω)) =ᵐ[κ ω'] f)
+      ∧ ∀ᵐ ω' ∂ν, HasFiniteIntegral (fun ω => exp (t * (X + Y) ω)) (κ ω') := by
+  simp_rw [Pi.add_apply, mul_add, exp_add]
+  refine Kernel.IndepFun.integrable_mul ?_ h_int_X h_int_Y
+  refine h_indep.comp (φ := fun x ↦ exp (t * x)) (ψ := fun x ↦ exp ( t * x)) (by fun_prop)
+    (by fun_prop)
+
 theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
     (h_int_X : Integrable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : Integrable (fun ω => exp (t * Y ω)) μ) :
