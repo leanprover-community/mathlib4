@@ -671,7 +671,7 @@ lemma LinearMap.coe_toReal (f : C_c(α, ℝ≥0)) :
   simp
 
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
-noncomputable def toNNRealLinear {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) :
+noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) :
     C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 where
   toFun f := ⟨Λ (LinearMap.toReal f), hΛ (LinearMap.toReal f) <| by simp⟩
   map_add' f g := by
