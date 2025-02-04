@@ -74,7 +74,8 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
     fac := by
       rintro S ⟨T,g,hT⟩
       dsimp
-      nth_rewrite 1 [← hT, Category.assoc, Hf.fac]
+      simp_rw [← hT]
+      nth_rewrite 1 [Category.assoc, Hf.fac]
       let y : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let x : D := ⟨Over.mk T.hom, g, hT⟩
       let g' : x ⟶ y := Over.homMk g
@@ -124,7 +125,8 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       apply Hf.uniq (aux e h)
       rintro ⟨A,g,hA⟩
       dsimp
-      nth_rewrite 1 [← hA, Category.assoc, hm]
+      simp_rw [← hA]
+      nth_rewrite 1 [Category.assoc, hm]
       apply h
       generalize_proofs hh
       rwa [hh.choose_spec] }
@@ -185,7 +187,8 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     fac := by
       intro S ⟨T, a, (g : T.left ⟶ X a), hT⟩
       dsimp
-      nth_rewrite 1 [← hT, Category.assoc, H.fac]
+      simp_rw [← hT]
+      nth_rewrite 1 [Category.assoc, H.fac]
       let A : D := ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       let B : D := ⟨Over.mk T.hom, a, g, hT⟩
       let i : B ⟶ A := Over.homMk g
@@ -236,7 +239,8 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
       apply H.uniq (aux e h)
       rintro ⟨T, a, (g : T.left ⟶ _), ha⟩
       dsimp
-      nth_rewrite 1 [← ha, Category.assoc, hm]
+      simp_rw [← ha]
+      nth_rewrite 1 [Category.assoc, hm]
       apply h
       generalize_proofs h1 h2
       rwa [h2.choose_spec] }
