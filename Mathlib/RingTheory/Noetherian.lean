@@ -112,10 +112,6 @@ theorem isNoetherian_of_surjective (f : M →ₗ[R] P) (hf : LinearMap.range f =
 
 variable {M}
 
-instance isNoetherian_range (f : M →ₗ[R] P) [IsNoetherian R M] :
-    IsNoetherian R (LinearMap.range f) :=
-  isNoetherian_of_surjective _ _ f.range_rangeRestrict
-
 instance isNoetherian_quotient {R} [Ring R] {M} [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   isNoetherian_of_surjective _ _ (LinearMap.range_eq_top.mpr N.mkQ_surjective)
@@ -126,11 +122,10 @@ alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
 theorem isNoetherian_of_linearEquiv (f : M ≃ₗ[R] P) [IsNoetherian R M] : IsNoetherian R P :=
   isNoetherian_of_surjective _ f.toLinearMap f.range
 
-theorem LinearEquiv.isNoetherian_iff (f : M ≃ₗ[R] P) : IsNoetherian R M ↔ IsNoetherian R P :=
-  ⟨fun _ ↦ isNoetherian_of_linearEquiv f, fun _ ↦ isNoetherian_of_linearEquiv f.symm⟩
-
-theorem isNoetherian_top_iff : IsNoetherian R (⊤ : Submodule R M) ↔ IsNoetherian R M :=
-  Submodule.topEquiv.isNoetherian_iff
+theorem isNoetherian_top_iff : IsNoetherian R (⊤ : Submodule R M) ↔ IsNoetherian R M := by
+  constructor <;> intro h
+  · exact isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
+  · exact isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
 
 theorem isNoetherian_of_injective [IsNoetherian R P] (f : M →ₗ[R] P) (hf : Function.Injective f) :
     IsNoetherian R M :=
@@ -193,15 +188,8 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
         fun x ⟨_, hx2⟩ => ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 
-instance isNoetherian_sup (M₁ M₂ : Submodule R P) [IsNoetherian R M₁] [IsNoetherian R M₂] :
-    IsNoetherian R ↥(M₁ ⊔ M₂) := by
-  have := isNoetherian_range (M₁.subtype.coprod M₂.subtype)
-  rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
-
-variable {ι : Type*} [Finite ι]
-
-instance isNoetherian_pi :
-    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
+instance isNoetherian_pi {R ι : Type*} [Finite ι] :
+    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)]
       [∀ i, Module R (M i)] [∀ i, IsNoetherian R (M i)], IsNoetherian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · exact fun e h ↦ isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
@@ -211,15 +199,9 @@ instance isNoetherian_pi :
 /-- A version of `isNoetherian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isNoetherian_pi' [IsNoetherian R M] : IsNoetherian R (ι → M) :=
+instance isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+    [IsNoetherian R M] : IsNoetherian R (ι → M) :=
   isNoetherian_pi
-
-instance isNoetherian_iSup :
-    ∀ {M : ι → Submodule R P} [∀ i, IsNoetherian R (M i)], IsNoetherian R ↥(⨆ i, M i) := by
-  apply Finite.induction_empty_option _ _ _ ι
-  · intro _ _ e h _ _; rw [← e.iSup_comp]; apply h
-  · intros; rw [iSup_of_empty]; infer_instance
-  · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
 end
 
@@ -308,13 +290,6 @@ theorem eventuallyConst_of_isNoetherian [IsNoetherian R M] (f : ℕ →o Submodu
 theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
     (hgt : ∀ I, (∀ J > I, P J) → P I) (I : Submodule R M) : P I :=
   IsWellFounded.induction _ I hgt
-
-theorem LinearMap.isNoetherian_iff_of_bijective {S P} [Ring S] [AddCommGroup P] [Module S P]
-    {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :
-    IsNoetherian R M ↔ IsNoetherian S P := by
-  simp_rw [isNoetherian_iff']
-  let e := Submodule.orderIsoMapComapOfBijective l hl
-  exact ⟨fun _ ↦ e.symm.strictMono.wellFoundedGT, fun _ ↦ e.strictMono.wellFoundedGT⟩
 
 end
 
@@ -486,19 +461,46 @@ theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
   isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
 
+theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) [I : IsNoetherianRing R] (hN : N.FG) : IsNoetherian R N := by
+  let ⟨s, hs⟩ := hN
+  haveI := Classical.decEq M
+  haveI := Classical.decEq R
+  have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
+  refine
+    @isNoetherian_of_surjective
+      R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ ?_ ?_ isNoetherian_pi
+  · fapply LinearMap.mk
+    · fapply AddHom.mk
+      · exact fun f => ⟨∑ i ∈ s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
+      · intro f g
+        apply Subtype.eq
+        change (∑ i ∈ s.attach, (f i + g i) • _) = _
+        simp only [add_smul, Finset.sum_add_distrib]
+        rfl
+    · intro c f
+      apply Subtype.eq
+      change (∑ i ∈ s.attach, (c • f i) • _) = _
+      simp only [smul_eq_mul, mul_smul]
+      exact Finset.smul_sum.symm
+  · rw [LinearMap.range_eq_top]
+    rintro ⟨n, hn⟩
+    change n ∈ N at hn
+    rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_linearCombination] at hn
+    rcases hn with ⟨l, hl1, hl2⟩
+    refine ⟨fun x => l x, Subtype.ext ?_⟩
+    change (∑ i ∈ s.attach, l i • (i : M)) = n
+    rw [s.sum_attach fun i ↦ l i • i, ← hl2,
+      Finsupp.linearCombination_apply, Finsupp.sum, eq_comm]
+    refine Finset.sum_subset hl1 fun x _ hx => ?_
+    rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
+
 instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
-  have ⟨_, _, h⟩ := Module.Finite.exists_fin' R M
-  isNoetherian_of_surjective _ _ (LinearMap.range_eq_top.mpr h)
-
-theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
-    (N : Submodule R M) [I : IsNoetherianRing R] (hN : N.FG) : IsNoetherian R N := by
-  rw [← Module.Finite.iff_fg] at hN; infer_instance
-
-theorem IsNoetherianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarTower R S S]
-    [IsNoetherianRing R] [Module.Finite R S] : IsNoetherianRing S :=
-  isNoetherian_of_tower R inferInstance
+  have : IsNoetherian R (⊤ : Submodule R M) :=
+    isNoetherian_of_fg_of_noetherian _ <| Module.finite_def.mp inferInstance
+  isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 
 /-- In a module over a Noetherian ring, the submodule generated by finitely many vectors is
 Noetherian. -/
