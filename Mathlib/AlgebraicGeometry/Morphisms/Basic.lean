@@ -635,7 +635,7 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
     simp_rw [this, cancel_left_of_respectsIso (P := P), cancel_right_of_respectsIso (P := P)]
     exact H _ _ hfg
 
-instance (P : MorphismProperty Scheme) [P.RespectsIso] [P.IsStableUnderBaseChange] :
+instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
   HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
 
