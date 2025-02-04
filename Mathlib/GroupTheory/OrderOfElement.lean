@@ -8,7 +8,9 @@ import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
+import Mathlib.NumberTheory.Divisors
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.Positivity
 
@@ -212,10 +214,6 @@ theorem IsOfFinOrder.mono [Monoid β] {y : β} (hx : IsOfFinOrder x) (h : orderO
 @[to_additive]
 theorem pow_ne_one_of_lt_orderOf (n0 : n ≠ 0) (h : n < orderOf x) : x ^ n ≠ 1 := fun j =>
   not_isPeriodicPt_of_pos_of_lt_minimalPeriod n0 h ((isPeriodicPt_mul_iff_pow_eq_one x).mpr j)
-@[deprecated (since := "2024-07-20")] alias pow_ne_one_of_lt_orderOf' := pow_ne_one_of_lt_orderOf
-@[deprecated (since := "2024-07-20")] alias
-  nsmul_ne_zero_of_lt_addOrderOf' := nsmul_ne_zero_of_lt_addOrderOf
-
 @[to_additive]
 theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n :=
   IsPeriodicPt.minimalPeriod_le hn (by rwa [isPeriodicPt_mul_iff_pow_eq_one])
@@ -263,9 +261,6 @@ protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
 protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx : IsOfFinOrder x) :
     (Submonoid.powers x : Set G) = (Finset.range (orderOf x)).image (x ^ ·) :=
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
-@[deprecated (since := "2024-02-21")]
-alias IsOfFinAddOrder.powers_eq_image_range_orderOf :=
-  IsOfFinAddOrder.multiples_eq_image_range_addOrderOf
 
 @[to_additive]
 theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
@@ -662,13 +657,11 @@ noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
   (finEquivPowers x hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive]
 lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
     finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
 
- -- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive]
 lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
     (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
@@ -693,32 +686,21 @@ variable [Monoid G] {x : G} {n : ℕ}
 
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
-    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
+    (∑ m ∈ divisors n,
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
-      (Finset.univ.filter fun x : G => x ^ n = 1).card :=
-  calc
-    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
-          (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
-      (Finset.card_biUnion
-          (by
-            intros
-            apply Finset.disjoint_filter.2
-            rintro _ _ rfl; assumption)).symm
-    _ = _ :=
-      congr_arg Finset.card
-        (Finset.ext
-          (by
-            intro x
-            suffices orderOf x ≤ n ∧ orderOf x ∣ n ↔ x ^ n = 1 by simpa [Nat.lt_succ_iff]
-            exact
-              ⟨fun h => by
-                let ⟨m, hm⟩ := h.2
-                rw [hm, pow_mul, pow_orderOf_eq_one, one_pow], fun h =>
-                ⟨orderOf_le_of_pow_eq_one hn.bot_lt h, orderOf_dvd_of_pow_eq_one h⟩⟩))
+      (Finset.univ.filter fun x : G => x ^ n = 1).card := by
+  refine (Finset.card_biUnion ?_).symm.trans ?_
+  · simp +contextual [disjoint_iff, Finset.ext_iff]
+  · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]
 theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
   Finset.le_card_of_inj_on_range (x ^ ·) (fun _ _ ↦ Finset.mem_univ _) pow_injOn_Iio_orderOf
+
+@[to_additive]
+theorem orderOf_le_card [Finite G] : orderOf x ≤ Nat.card G := by
+  obtain ⟨⟩ := nonempty_fintype G
+  simpa using orderOf_le_card_univ
 
 end FiniteMonoid
 
@@ -1089,19 +1071,14 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 @[to_additive]
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
   minimalPeriod_prod_map _ _ _
-@[deprecated (since := "2024-02-21")] alias Prod.add_orderOf := Prod.addOrderOf
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
-@[deprecated (since := "2024-02-21")]
-alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
 
 @[to_additive]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
-@[deprecated (since := "2024-02-21")] alias
-add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf
 
 @[to_additive]
 theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=

@@ -205,6 +205,23 @@ instance isIso_right [IsIso sq] : IsIso sq.right where
       eq_self_iff_true, and_self_iff]
     simp
 
+lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [IsIso sq] [IsIso f] :
+    IsIso g.hom := by
+  rw [iso_w' (asIso sq)]
+  infer_instance
+
+lemma isIso_hom_iff_isIso_hom_of_isIso {f g : Arrow T} (sq : f ⟶ g) [IsIso sq] :
+    IsIso f.hom ↔ IsIso g.hom :=
+  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
+
+lemma isIso_iff_isIso_of_isIso {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (sq : mk f ⟶ mk g) [IsIso sq] :
+    IsIso f ↔ IsIso g :=
+  isIso_hom_iff_isIso_hom_of_isIso sq
+
+lemma isIso_hom_iff_isIso_of_isIso {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f ⟶ mk g) [IsIso sq] :
+    IsIso f.hom ↔ IsIso g :=
+  isIso_hom_iff_isIso_hom_of_isIso sq
+
 @[simp]
 theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
   IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
@@ -361,6 +378,27 @@ isomorphic arrows in `D`. -/
 def Arrow.isoOfNatIso {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right)
+
+variable (T)
+
+/-- `Arrow T` is equivalent to a sigma type. -/
+@[simps!]
+def Arrow.equivSigma :
+    Arrow T ≃ Σ (X Y : T), X ⟶ Y where
+  toFun f := ⟨_, _, f.hom⟩
+  invFun x := Arrow.mk x.2.2
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The equivalence `Arrow (Discrete S) ≃ S`. -/
+def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
+  toFun f := f.left.as
+  invFun s := Arrow.mk (𝟙 (Discrete.mk s))
+  left_inv := by
+    rintro ⟨⟨_⟩, ⟨_⟩, f⟩
+    obtain rfl := Discrete.eq_of_hom f
+    rfl
+  right_inv _ := rfl
 
 /-- Extensionality lemma for functors `C ⥤ D` which uses as an assumption
 that the induced maps `Arrow C → Arrow D` coincide. -/

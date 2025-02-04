@@ -5,6 +5,8 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The transfinite iteration of a successor structure
@@ -23,7 +25,7 @@ open Category Limits
 
 variable {C : Type u} [Category.{v} C] (Φ : SuccStruct C)
   (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
-  [HasIterationOfShape C J]
+  [HasIterationOfShape J C]
 
 variable {J} in
 /-- Given `Φ : SuccStruct C` and an element `j : J` in a well-ordered type,

@@ -81,7 +81,7 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasPushouts : HasPushouts C := by infer_instance
   hasCoproducts : HasCoproducts.{w} C := by infer_instance
-  hasIterationOfShape : HasIterationOfShape C κ.ord.toType
+  hasIterationOfShape : HasIterationOfShape κ.ord.toType C
   preservesColimit :
       ∀ {A B : C} (i : A ⟶ B) (_ : I i)
       (F : κ.ord.toType ⥤ C) [F.IsWellOrderContinuous]
@@ -110,7 +110,7 @@ lemma isSmall : IsSmall.{w} I :=
 lemma locallySmall : LocallySmall.{w} C :=
   IsCardinalForSmallObjectArgument.locallySmall I κ
 
-lemma hasIterationOfShape : HasIterationOfShape C κ.ord.toType :=
+lemma hasIterationOfShape : HasIterationOfShape κ.ord.toType C :=
   IsCardinalForSmallObjectArgument.hasIterationOfShape I
 
 lemma hasPushouts : HasPushouts C :=
@@ -139,7 +139,7 @@ lemma small_functorObjIndex {X Y : C} (p : X ⟶ Y) :
           (⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩)⟩
   have hφ : Function.Injective φ := by
     rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
-    obtain rfl : i₁ = i₂ := by simpa using congr_arg Sigma.fst h
+    obtain rfl : i₁ = i₂ := by simpa [φ] using congr_arg Sigma.fst h
     simpa [cancel_epi, φ] using h
   exact small_of_injective hφ
 

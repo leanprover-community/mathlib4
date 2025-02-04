@@ -3,12 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 
 /-!
 # Classes of morphisms that are stable under transfinite composition
@@ -101,7 +99,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace Functor
 
-variable {J : Type w} [Preorder J]
+variable {J : Type w} [PartialOrder J]
 
 /-- Given a functor `F : J ⥤ C` and `m : J`, this is the induced
 functor `Set.Iio j ⥤ C`. -/
@@ -124,9 +122,8 @@ def coconeLT (F : J ⥤ C) (m : J) :
 
 /-- Given a functor `F : J ⥤ C` and `j : J`, this is the induced
 functor `Set.Iic j ⥤ C`. -/
-@[simps!]
-def restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
-  Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
+abbrev restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
+  (Set.initialSegIic j).monotone.functor ⋙ F
 
 /-- Given a functor `F : J ⥤ C` and `j : J`, this is the (colimit) cocone
 with point `F.obj j` for the restriction of `F` to `Set.Iic m`. -/
@@ -150,73 +147,7 @@ def isColimitCoconeLE (F : J ⥤ C) (j : J) :
       using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
   uniq s m hm := by simp [← hm]
 
-/-- A functor `F : J ⥤ C` is well-order-continuous if for any limit element `m : J`,
-`F.obj m` identifies to the colimit of the `F.obj j` for `j < m`. -/
-class IsWellOrderContinuous (F : J ⥤ C) : Prop where
-  nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :
-    Nonempty (IsColimit (F.coconeLT m))
-
-/-- If `F : J ⥤ C` is well-order-continuous and `m : J` is a limit element, then
-the cocone `F.coconeLT m` is colimit, i.e. `F.obj m` identifies to the colimit
-of the `F.obj j` for `j < m`. -/
-noncomputable def isColimitOfIsWellOrderContinuous (F : J ⥤ C) [F.IsWellOrderContinuous]
-    (m : J) (hm : Order.IsSuccLimit m) :
-    IsColimit (F.coconeLT m) := (IsWellOrderContinuous.nonempty_isColimit m hm).some
-
-instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
-  nonempty_isColimit m hm := by simp at hm
-
-lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
-    G.IsWellOrderContinuous where
-  nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
-    ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).1
-      (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
-        (Cocones.ext (e.app _)))⟩
-
-instance {J : Type w} [Preorder J]
-    (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J) :
-    (F.restrictionLE j).IsWellOrderContinuous where
-  nonempty_isColimit m hm := ⟨
-    IsColimit.ofWhiskerEquivalence (Set.Iic.iioOrderIso m).equivalence.symm
-      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Iic.isSuccLimit_coe hm))⟩
-
 end Functor
-
-namespace Limits
-
-variable (J : Type w) [Preorder J]
-
-/-- A functor `G : C ⥤ D` satisfies `PreservesWellOrderContinuousOfShape J G`
-if for any limit element `j` in the preordered type `J`, the functor `G`
-preserves colimits of shape `Set.Iio j`. -/
-class PreservesWellOrderContinuousOfShape (G : C ⥤ D) : Prop where
-  preservesColimitsOfShape (j : J) (hj : Order.IsSuccLimit j) :
-    PreservesColimitsOfShape (Set.Iio j) G := by infer_instance
-
-variable {J} in
-lemma preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape (G : C ⥤ D)
-    [PreservesWellOrderContinuousOfShape J G]
-    (j : J) (hj : Order.IsSuccLimit j) :
-    PreservesColimitsOfShape (Set.Iio j) G :=
-  PreservesWellOrderContinuousOfShape.preservesColimitsOfShape j hj
-
-instance (F : J ⥤ C) (G : C ⥤ D) [F.IsWellOrderContinuous]
-    [PreservesWellOrderContinuousOfShape J G] :
-    (F ⋙ G).IsWellOrderContinuous where
-  nonempty_isColimit j hj := ⟨by
-    have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G j hj
-    exact isColimitOfPreserves G (F.isColimitOfIsWellOrderContinuous j hj)⟩
-
-instance {E : Type u''} [Category.{v''} E] (G₁ : C ⥤ D) (G₂ : D ⥤ E)
-    [PreservesWellOrderContinuousOfShape J G₁]
-    [PreservesWellOrderContinuousOfShape J G₂] :
-    PreservesWellOrderContinuousOfShape J (G₁ ⋙ G₂) where
-  preservesColimitsOfShape j hj := by
-    have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G₁ j hj
-    have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G₂ j hj
-    infer_instance
-
-end Limits
 
 namespace MorphismProperty
 
@@ -303,7 +234,6 @@ for any colimit cocone `c : Cocone F`. -/
 @[mk_iff]
 class IsStableUnderTransfiniteCompositionOfShape : Prop where
   le : W.transfiniteCompositionsOfShape J ≤ W
-
 
 lemma transfiniteCompositionsOfShape_le [W.IsStableUnderTransfiniteCompositionOfShape J] :
     W.transfiniteCompositionsOfShape J ≤ W :=

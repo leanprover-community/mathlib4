@@ -119,8 +119,11 @@ section
 
 variable (P : MorphismProperty C)
 
+/-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
 def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
 
+/-- The family of morphisms indexed by `P.toSet` which corresponds
+to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/
 def homFamily (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom
 
 lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.1.hom := rfl
@@ -455,14 +458,6 @@ instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
       simp only [isomorphisms.iff]
       intro
       exact IsIso.comp_isIso
-
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_left_isIso :=
-  cancel_left_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_right_isIso :=
-  cancel_right_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_iso_iff := arrow_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_mk_iso_iff := arrow_mk_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.isoClosure_eq := isoClosure_eq_self
 
 /-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
 this is the induced morphism property on `C₁ × C₂`. -/

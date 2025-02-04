@@ -72,7 +72,7 @@ def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Sugge
   let msg? ← msgs.toList.findM? fun m => do pure <|
     m.severity == MessageSeverity.information && (← m.data.toString).startsWith "Try this: "
   let suggestion ← match msg? with
-  | some m => pure <| SuggestionText.string (((← m.data.toString).drop 10).takeWhile (· != '\n'))
+  | some m => pure <| SuggestionText.string ((← m.data.toString).drop 10)
   | none => pure <| SuggestionText.tsyntax tac
   return { suggestion, postInfo?, style? }
 

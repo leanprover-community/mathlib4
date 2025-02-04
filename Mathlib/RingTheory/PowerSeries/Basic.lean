@@ -199,6 +199,8 @@ def constantCoeff : R⟦X⟧ →+* R :=
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R
 
+@[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C R := rfl
+
 variable {R}
 
 /-- The variable of the formal power series ring. -/
@@ -462,6 +464,11 @@ theorem map_X : map f X = X := by
   simp [coeff_X, apply_ite f]
 
 end Map
+
+@[simp]
+theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S] (φ : R⟦X⟧)
+    (f : R →+* S) : φ.map f = 0 ↔ φ = 0 :=
+  MvPowerSeries.map_eq_zero _ _
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff R m φ = 0 := by

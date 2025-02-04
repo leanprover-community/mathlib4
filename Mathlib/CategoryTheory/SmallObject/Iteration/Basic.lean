@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.Interval.Set.InitialSeg
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
-/-! # Transfinite iterations of a construction
+/-! # Transfinite iterations of a successor structure
 
 In this file, we introduce the structure `SuccStruct` on a category `C`.
 It consists of the data of an object `X₀ : C`, a successor map `succ : C → C`
@@ -43,14 +44,23 @@ all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
 obtained in the file `SmallObject.Iteration.Nonempty`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` are done in the
-file `SmallObject.Iteration.Iteration`.
+and of its colimit `Φ.iteration J : C` will done in the
+file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
 objects `X` and `Y` may have non isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
+
+## Note
+
+The iteration was first introduced in mathlib by Joël Riou, using
+a different approach as the one described above. After refactoring
+his code, he found that the approach described above had already
+been used in the pioneering formalization work in Lean 3 by
+Reid Barton in 2018 towards the model category structure on
+topological spaces.
 
 -/
 
@@ -60,26 +70,19 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {J : Type w}
-
-namespace Limits
-
-instance {J : Type*} [Preorder J] [OrderTop J] : HasTerminal J := hasTerminal_of_unique ⊤
-instance {J : Type*} [Preorder J] [OrderTop J] :
-    HasColimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
-
-end Limits
-
 namespace SmallObject
+
+variable {C : Type u} [Category.{v} C] {J : Type w}
 
 section
 
-variable [Preorder J] {j : J} (F : Set.Iic j ⥤ C) {i : J} (hi : i ≤ j)
+variable [PartialOrder J] {j : J} (F : Set.Iic j ⥤ C) {i : J} (hi : i ≤ j)
 
 /-- The functor `Set.Iio i ⥤ C` obtained by "restriction" of `F : Set.Iic j ⥤ C`
 when `i ≤ j`. -/
 def restrictionLT : Set.Iio i ⥤ C :=
-  (monotone_inclusion_lt_le_of_le hi).functor ⋙ F
+  (Set.principalSegIioIicOfLE hi).monotone.functor ⋙ F
+
 
 @[simp]
 lemma restrictionLT_obj (k : J) (hk : k < i) :
@@ -91,18 +94,14 @@ lemma restrictionLT_map {k₁ k₂ : Set.Iio i} (φ : k₁ ⟶ k₂) :
 
 /-- Given `F : Set.Iic j ⥤ C`, `i : J` such that `hi : i ≤ j`, this is the
 cocone consisting of all maps `F.obj ⟨k, hk⟩ ⟶ F.obj ⟨i, hi⟩` for `k : J` such that `k < i`. -/
-@[simps]
-def coconeOfLE : Cocone (restrictionLT F hi) where
-  pt := F.obj ⟨i, hi⟩
-  ι :=
-    { app := fun ⟨k, hk⟩ => F.map (homOfLE (by simpa using hk.le))
-      naturality := fun ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ _ => by
-        simp [comp_id, ← Functor.map_comp, homOfLE_comp] }
+@[simps!]
+def coconeOfLE : Cocone (restrictionLT F hi) :=
+  (Set.principalSegIioIicOfLE hi).cocone F
 
 /-- The functor `Set.Iic i ⥤ C` obtained by "restriction" of `F : Set.Iic j ⥤ C`
 when `i ≤ j`. -/
 def restrictionLE : Set.Iic i ⥤ C :=
-  (monotone_inclusion_le_le_of_le hi).functor ⋙ F
+  (Set.initialSegIicIicOfLE hi).monotone.functor ⋙ F
 
 @[simp]
 lemma restrictionLE_obj (k : J) (hk : k ≤ i) :
@@ -111,68 +110,6 @@ lemma restrictionLE_obj (k : J) (hk : k ≤ i) :
 @[simp]
 lemma restrictionLE_map {k₁ k₂ : Set.Iic i} (φ : k₁ ⟶ k₂) :
     (restrictionLE F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
-
-end
-
-section
-
-variable [Preorder J]
-
-variable (C J) in
-/-- A category `C` has iterations of shape `J` when certain shapes
-of colimits exists. When `J` is well ordered, this assumption is used in
-order to show that the category `Iteration ε j` is nonempty for any `j : J`,
-see the file `CategoryTheory.SmallObject.Iteration.Nonempty`. The API is developed
-further in `CategoryTheory.SmallObject.TransfiniteIteration`. -/
-class HasIterationOfShape : Prop where
-  hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
-    HasColimitsOfShape (Set.Iio j) C := by infer_instance
-  hasColimitsOfShape : HasColimitsOfShape J C := by infer_instance
-
-attribute [instance] HasIterationOfShape.hasColimitsOfShape
-
-variable (C) in
-lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
-    (hj : Order.IsSuccLimit j) :
-    HasColimitsOfShape (Set.Iio j) C :=
-  HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
-
-instance [HasIterationOfShape C J] (j : J):
-    HasIterationOfShape C (Set.Iic j) where
-  hasColimitsOfShape_of_isSuccLimit := by
-    rintro i hi
-    have := hasColimitsOfShape_of_isSuccLimit C i.1 (Set.Iic.isSuccLimit_coe hi)
-    exact hasColimitsOfShape_of_equivalence (Set.Iic.iioOrderIso i).equivalence.symm
-
-instance [HasIterationOfShape C J] :
-    HasIterationOfShape (Arrow C) J where
-  hasColimitsOfShape_of_isSuccLimit j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
-
-instance [HasIterationOfShape C J] {K : Type u'} [Category.{v'} K]:
-    HasIterationOfShape (K ⥤ C) J where
-  hasColimitsOfShape_of_isSuccLimit j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
-
-instance [HasIterationOfShape C J] (K : Type*) [Category K] (X : K) :
-    PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
-  preservesColimitsOfShape j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
-
-instance [HasIterationOfShape C J] :
-    PreservesWellOrderContinuousOfShape J (Arrow.leftFunc : _ ⥤ C) where
-  preservesColimitsOfShape j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
-
-instance [HasIterationOfShape C J] :
-    PreservesWellOrderContinuousOfShape J (Arrow.rightFunc : _ ⥤ C) where
-  preservesColimitsOfShape j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
 
 end
 
@@ -201,7 +138,7 @@ def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
 
 variable (Φ : SuccStruct C)
 
-/-- The class of morphisms that are of the morphism `toSucc X : X ⟶ succ X`. -/
+/-- The class of morphisms that are of the form `toSucc X : X ⟶ succ X`. -/
 def prop : MorphismProperty C := .ofHoms (fun (X : C) ↦ Φ.toSucc X)
 
 lemma prop_toSucc (X : C) : Φ.prop (Φ.toSucc X) := ⟨_⟩
@@ -221,7 +158,7 @@ lemma prop_iff {X Y : C} (f : X ⟶ Y) :
 variable [LinearOrder J]
 
 /-- Given a functor `F : Set.Iic ⥤ C`, this is the morphism in `C`, as an element
-in `Arrow C`, that is obtained by applying `F.map` to an inequality, -/
+in `Arrow C`, that is obtained by applying `F.map` to an inequality. -/
 def arrowMap {j : J} (F : Set.Iic j ⥤ C) (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ j) :
     Arrow C :=
   Arrow.mk (F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans h₂⟩ ⟶ ⟨i₂, h₂⟩))
@@ -238,14 +175,14 @@ lemma arrowMap_restrictionLE {j : J} (F : Set.Iic j ⥤ C) {j' : J} (hj' : j' �
 
 section
 
-variable [SuccOrder J]
+variable [SuccOrder J] {j : J} (F : Set.Iic j ⥤ C) (i : J) (hi : i < j)
 
 /-- Given a functor `F : Set.Iic j ⥤ C` and `i : J` such that `i < j`,
 this is the arrow `F.obj ⟨i, _⟩ ⟶ F.obj ⟨Order.succ i, _⟩`. -/
-def arrowSucc {j : J} (F : Set.Iic j ⥤ C) (i : J) (hi : i < j) : Arrow C :=
+def arrowSucc : Arrow C :=
     arrowMap F i (Order.succ i) (Order.le_succ i) (Order.succ_le_of_lt hi)
 
-lemma arrowSucc_def {j : J} (F : Set.Iic j ⥤ C) (i : J) (hi : i < j) :
+lemma arrowSucc_def :
     arrowSucc F i hi = arrowMap F i (Order.succ i) (Order.le_succ i) (Order.succ_le_of_lt hi) :=
   rfl
 
@@ -253,23 +190,22 @@ end
 
 section
 
-variable [HasIterationOfShape C J]
+variable [HasIterationOfShape J C]
+  {i : J} (F : Set.Iio i ⥤ C) (hi : Order.IsSuccLimit i) (k : J) (hk : k < i)
 
 /-- Given `F : Set.Iio i ⥤ C`, with `i` a limit element, and `k` such that `hk : k < i`,
 this is the map `colimit.ι F ⟨k, hk⟩`, as an element in `Arrow C`. -/
-noncomputable def arrowι {i : J} (F : Set.Iio i ⥤ C) (hi : Order.IsSuccLimit i)
-    (k : J) (hk : k < i) : Arrow C :=
+noncomputable def arrowι : Arrow C :=
   letI := hasColimitsOfShape_of_isSuccLimit C i hi
   Arrow.mk (colimit.ι F ⟨k, hk⟩)
 
-lemma arrowι_def {i : J} (F : Set.Iio i ⥤ C) (hi : Order.IsSuccLimit i)
-    (k : J) (hk : k < i) :
+lemma arrowι_def :
     letI := hasColimitsOfShape_of_isSuccLimit C i hi
     arrowι F hi k hk = Arrow.mk (colimit.ι F ⟨k, hk⟩) := rfl
 
 end
 
-variable [SuccOrder J] [OrderBot J] [HasIterationOfShape C J]
+variable [SuccOrder J] [OrderBot J] [HasIterationOfShape J C]
 
 /-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such

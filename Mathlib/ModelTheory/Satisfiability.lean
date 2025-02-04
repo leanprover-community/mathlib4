@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Skolem
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # First-Order Satisfiability

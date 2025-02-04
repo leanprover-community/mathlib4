@@ -338,7 +338,7 @@ instance : (W.limitsOfShape J).RespectsIso :=
     obtain hg : h₂'.lift (Cone.mk _ (c₁'.π ≫ f)) = g :=
       h₂'.hom_ext (fun j ↦ by
         rw [h₂'.fac]
-        simp [reassoc_of% fac])
+        simp [reassoc_of% fac, c₁', c₂'])
     rw [← hg]
     exact ⟨_, _, _, _, h₁', _, _, hf⟩)
 
@@ -357,10 +357,10 @@ def IsStableUnderLimitsOfShape : Prop :=
 
 lemma isStableUnderLimitsOfShape_iff_limitsOfShape_le :
     W.IsStableUnderLimitsOfShape J ↔ W.limitsOfShape J ≤ W := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rintro _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
+  constructor
+  · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
     exact h _ _ _ _ h₁ h₂ f hf
-  · intro _ _ _ _ h₁ h₂ f hf
+  · intro h _ _ _ _ h₁ h₂ f hf
     exact h _ ⟨_, _, _, _, h₁, _, _, hf⟩
 
 variable {W J}
@@ -429,7 +429,7 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
       h₁'.hom_ext (fun j ↦ by
         rw [h₁'.fac]
-        simp [fac])
+        simp [fac, c₁', c₂'])
     rw [← hg]
     exact ⟨_, _, _, _, _, h₂', _, hf⟩)
 
@@ -448,10 +448,10 @@ def IsStableUnderColimitsOfShape : Prop :=
 
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rintro _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
+  constructor
+  · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
     exact h _ _ _ _ h₁ h₂ f hf
-  · intro _ _ _ _ h₁ h₂ f hf
+  · intro h _ _ _ _ h₁ h₂ f hf
     exact h _ ⟨_, _, _, _, _, h₂, _, hf⟩
 
 variable {W J}
@@ -584,6 +584,11 @@ lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
     (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
     W.IsStableUnderProductsOfShape J :=
   IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
+
+lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
+    (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
 
 end Products
 

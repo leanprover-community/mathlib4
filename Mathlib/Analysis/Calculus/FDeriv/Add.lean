@@ -23,8 +23,6 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 open Filter Asymptotics ContinuousLinearMap
 
-open scoped Classical
-
 noncomputable section
 
 section
@@ -229,10 +227,11 @@ theorem differentiable_add_const_iff (c : F) :
   ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
 
 theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
-    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x :=
-  if hf : DifferentiableWithinAt 𝕜 f s x then (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
-  else by
-    rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
+    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x := by
+  classical
+  by_cases hf : DifferentiableWithinAt 𝕜 f s x
+  · exact (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
+  · rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
       fderivWithin_zero_of_not_differentiableWithinAt]
     simpa
 
@@ -424,10 +423,11 @@ theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differe
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x :=
-  if h : DifferentiableWithinAt 𝕜 f s x then h.hasFDerivWithinAt.neg.fderivWithin hxs
-  else by
-    rw [fderivWithin_zero_of_not_differentiableWithinAt h,
+    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
+  classical
+  by_cases h : DifferentiableWithinAt 𝕜 f s x
+  · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
+  · rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
 
@@ -615,28 +615,13 @@ theorem DifferentiableAt.sub_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
     DifferentiableAt 𝕜 (fun y => f y - c) x :=
   (hf.hasFDerivAt.sub_const c).differentiableAt
 
-@[deprecated DifferentiableAt.sub_iff_left (since := "2024-07-11")]
-theorem differentiableAt_sub_const_iff (c : F) :
-    DifferentiableAt 𝕜 (fun y => f y - c) x ↔ DifferentiableAt 𝕜 f x :=
-  (differentiableAt_const _).sub_iff_left
-
 @[fun_prop]
 theorem DifferentiableOn.sub_const (hf : DifferentiableOn 𝕜 f s) (c : F) :
     DifferentiableOn 𝕜 (fun y => f y - c) s := fun x hx => (hf x hx).sub_const c
 
-@[deprecated DifferentiableOn.sub_iff_left (since := "2024-07-11")]
-theorem differentiableOn_sub_const_iff (c : F) :
-    DifferentiableOn 𝕜 (fun y => f y - c) s ↔ DifferentiableOn 𝕜 f s :=
-  (differentiableOn_const _).sub_iff_left
-
 @[fun_prop]
 theorem Differentiable.sub_const (hf : Differentiable 𝕜 f) (c : F) :
     Differentiable 𝕜 fun y => f y - c := fun x => (hf x).sub_const c
-
-@[deprecated Differentiable.sub_iff_left (since := "2024-07-11")]
-theorem differentiable_sub_const_iff (c : F) :
-    (Differentiable 𝕜 fun y => f y - c) ↔ Differentiable 𝕜 f :=
-  (differentiable_const _).sub_iff_left
 
 theorem fderivWithin_sub_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     fderivWithin 𝕜 (fun y => f y - c) s x = fderivWithin 𝕜 f s x := by
@@ -679,28 +664,13 @@ theorem DifferentiableAt.const_sub (hf : DifferentiableAt 𝕜 f x) (c : F) :
     DifferentiableAt 𝕜 (fun y => c - f y) x :=
   (hf.hasFDerivAt.const_sub c).differentiableAt
 
-@[deprecated DifferentiableAt.sub_iff_right (since := "2024-07-11")]
-theorem differentiableAt_const_sub_iff (c : F) :
-    DifferentiableAt 𝕜 (fun y => c - f y) x ↔ DifferentiableAt 𝕜 f x :=
-  (differentiableAt_const _).sub_iff_right
-
 @[fun_prop]
 theorem DifferentiableOn.const_sub (hf : DifferentiableOn 𝕜 f s) (c : F) :
     DifferentiableOn 𝕜 (fun y => c - f y) s := fun x hx => (hf x hx).const_sub c
 
-@[deprecated DifferentiableOn.sub_iff_right (since := "2024-07-11")]
-theorem differentiableOn_const_sub_iff (c : F) :
-    DifferentiableOn 𝕜 (fun y => c - f y) s ↔ DifferentiableOn 𝕜 f s :=
-  (differentiableOn_const _).sub_iff_right
-
 @[fun_prop]
 theorem Differentiable.const_sub (hf : Differentiable 𝕜 f) (c : F) :
     Differentiable 𝕜 fun y => c - f y := fun x => (hf x).const_sub c
-
-@[deprecated Differentiable.sub_iff_right (since := "2024-07-11")]
-theorem differentiable_const_sub_iff (c : F) :
-    (Differentiable 𝕜 fun y => c - f y) ↔ Differentiable 𝕜 f :=
-  (differentiable_const _).sub_iff_right
 
 theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     fderivWithin 𝕜 (fun y => c - f y) s x = -fderivWithin 𝕜 f s x := by
@@ -739,6 +709,7 @@ theorem differentiableWithinAt_comp_add_right (a : E) :
 
 theorem fderivWithin_comp_add_right (a : E) :
     fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
+  classical
   simp only [fderivWithin, hasFDerivWithinAt_comp_add_right, DifferentiableWithinAt]
 
 theorem hasFDerivWithinAt_comp_add_left (a : E) :

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -57,8 +57,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace HasLiftingProperty
 
-variable {W : MorphismProperty C}
-  {J : Type w} [LinearOrder J] [OrderBot J]
+variable {J : Type w} [LinearOrder J] [OrderBot J]
 
 namespace transfiniteComposition
 

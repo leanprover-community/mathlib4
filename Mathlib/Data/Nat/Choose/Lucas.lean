@@ -70,20 +70,19 @@ theorem choose_modEq_choose_mod_mul_choose_div_nat :
 (⌊k / p ^ i⌋ % p)` over i < a, multiplied by `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
     choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
-      ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] :=
+      ∏ i ∈ range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] :=
   match a with
   | Nat.zero => by simp
   | Nat.succ a => (choose_modEq_choose_mul_prod_range_choose a).trans <| by
     rw [prod_range_succ, cast_mul, ← mul_assoc, mul_right_comm]
     gcongr
     apply choose_modEq_choose_mod_mul_choose_div.trans
-    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm]
-    rfl
+    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm, Int.ModEq.refl]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
 `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over `i` modulo `p`. -/
 theorem choose_modEq_prod_range_choose {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
-    choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
+    choose n k ≡ ∏ i ∈ range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
   apply (choose_modEq_choose_mul_prod_range_choose a).trans
   simp_rw [Nat.div_eq_of_lt ha₁, Nat.div_eq_of_lt ha₂, choose, cast_one, one_mul, cast_prod,
     Int.ModEq.refl]
@@ -91,7 +90,7 @@ theorem choose_modEq_prod_range_choose {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
 `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over `i` modulo `p`. -/
 theorem choose_modEq_prod_range_choose_nat {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
-    choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [MOD p] := by
+    choose n k ≡ ∏ i ∈ range a, choose (n / p ^ i % p) (k / p ^ i % p) [MOD p] := by
   rw [← Int.natCast_modEq_iff]
   exact_mod_cast choose_modEq_prod_range_choose ha₁ ha₂
 

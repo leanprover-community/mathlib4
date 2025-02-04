@@ -133,18 +133,6 @@ instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
 
 end Decidable
 
-lemma monotone_inclusion_le_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
-    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.trans hkj⟩ : { i // i ≤ k } → { i // i ≤ j}) :=
-  fun _ _ h => h
-
-lemma monotone_inclusion_lt_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
-    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.le.trans hkj⟩ : { i // i < k } → { i // i ≤ j}) :=
-  fun _ _ h => h
-
-lemma monotone_inclusion_lt_lt_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
-    Monotone (fun ⟨i, hi⟩ => ⟨i, lt_of_lt_of_le hi hkj⟩ : { i // i < k } → { i // i < j}) :=
-  fun _ _ h => h
-
 /-! ### Monotonicity on the dual order
 
 Strictly, many of the `*On.dual` lemmas in this section should use `ofDual ⁻¹' s` instead of `s`,
@@ -952,6 +940,18 @@ function `ℕ → α`. -/
 theorem exists_strictAnti [Nonempty α] [NoMinOrder α] : ∃ f : ℕ → α, StrictAnti f :=
   exists_strictMono αᵒᵈ
 
+lemma pow_self_mono : Monotone fun n : ℕ ↦ n ^ n := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
+  rw [Nat.pow_succ]
+  exact (Nat.pow_le_pow_left n.le_succ _).trans (Nat.le_mul_of_pos_right _ n.succ_pos)
+
+lemma pow_monotoneOn : MonotoneOn (fun p : ℕ × ℕ ↦ p.1 ^ p.2) {p | p.1 ≠ 0} := fun _p _ _q hq hpq ↦
+  (Nat.pow_le_pow_left hpq.1 _).trans (Nat.pow_le_pow_right (Nat.pos_iff_ne_zero.2 hq) hpq.2)
+
+lemma pow_self_strictMonoOn : StrictMonoOn (fun n : ℕ ↦ n ^ n) {n : ℕ | n ≠ 0} :=
+  fun _m hm _n hn hmn ↦
+    (Nat.pow_lt_pow_left hmn hm).trans_le (Nat.pow_le_pow_right (Nat.pos_iff_ne_zero.2 hn) hmn.le)
+
 end Nat
 
 theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℤ → β}
@@ -1055,6 +1055,18 @@ theorem Monotone.prod_map (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.m
 
 theorem Antitone.prod_map (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
+
+lemma monotone_prod_iff {h : α × β → γ} :
+    Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b))) where
+  mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
+    fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
+  mpr h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
+
+lemma antitone_prod_iff {h : α × β → γ} :
+    Antitone h ↔ (∀ a, Antitone (fun b => h (a, b))) ∧ (∀ b, Antitone (fun a => h (a, b))) where
+  mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
+    fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
+  mpr h _ _ hab:= le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
 
 end Preorder
 
