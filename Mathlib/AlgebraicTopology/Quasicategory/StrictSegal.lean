@@ -20,10 +20,9 @@ condition is a quasicategory.
 universe u
 
 open CategoryTheory
-open Simplicial SimplexCategory Truncated SimplicialObject
+open Simplicial SimplicialObject SimplexCategory
 
 namespace SSet.StrictSegal
-open SSet.Truncated
 
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by

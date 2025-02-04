@@ -26,7 +26,7 @@ open CategoryTheory Opposite Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
-open SimplexCategory.Truncated Hom SimplicialObject.Truncated
+open SimplexCategory.Truncated Hom
 
 /-- A path of length `n` in a 1-truncated simplicial set `X` is a directed path
 of `n` edges. -/
