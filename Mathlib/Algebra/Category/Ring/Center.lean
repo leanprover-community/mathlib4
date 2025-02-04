@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Small.Module
 
 /-!
@@ -28,26 +29,32 @@ variable (R : Type*) [Ring R]
 
 open CategoryTheory
 
+noncomputable abbrev test [Small.{v} R] : ModuleCat.{v} R ≌ ModuleCat.{v} (Shrink.{v} R) :=
+  ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R)
+
+variable (M : ModuleCat R)
+
+set_option synthInstance.maxHeartbeats 100000 in
 /--
 For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`, the endomorphism ring
 of the identity functor on the category of `R`-modules.
 -/
 @[simps]
-noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
-    center R ≃+* End (𝟭 (ModuleCat.{v} R)) where
-  toFun r := { app M := r • 𝟙 M }
+noncomputable def Subring.centerEquivEndIdFunctorAux [Small.{v} R] :
+    center (Shrink.{v} R) ≃+* End (𝟭 (ModuleCat.{v} (Shrink.{v} R))) where
+  toFun r :=
+    { app M := r • 𝟙 M }
   invFun f := centerToMulOpposite.symm <| centerCongr
-    ((ModuleCat.of R (Shrink.{v} R)).endRingEquiv.trans
-      ((Module.moduleEndSelf R).trans (linearEquivShrink R R).conjRingEquiv).symm)
+    ((ModuleCat.of _ (Shrink.{v} R)).endRingEquiv.trans
+      ((Module.moduleEndSelf (Shrink.{v} R))).symm)
     ⟨f.app _, mem_center_iff.mpr fun g ↦ (f.naturality _).symm⟩
-  left_inv r := Subtype.ext <| show (linearEquivShrink ..).symm (r.1 • _) = _ by simp
+  left_inv r := Subtype.ext <| show r.1 • (1 : Shrink R) = r.1 by simp
   right_inv f := by
     apply NatTrans.ext
     ext M (m : M)
-    simpa [linearEquivShrink, Equiv.linearEquiv] using
-      congr($(f.naturality (X := .of R <| Shrink.{v} R) (Y := .of R M) <|
-        ModuleCat.ofHom <| LinearMap.toSpanSingleton R M m ∘ₗ (linearEquivShrink R R).symm).hom
-      (equivShrink R 1)).symm
+    simpa using
+      congr($(f.naturality (X := .of _ (Shrink.{v} R)) (Y := .of _ M) <|
+        ModuleCat.ofHom <| LinearMap.toSpanSingleton _ M m).hom (1 : Shrink.{v} R)).symm
   map_mul' x y := by
     apply NatTrans.ext
     ext M (m : M)
@@ -56,6 +63,17 @@ noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
     apply NatTrans.ext
     ext M (m : M)
     simpa using add_smul x.1 y.1 m
+
+/--
+For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`, the endomorphism ring
+of the identity functor on the category of `R`-modules.
+-/
+noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
+    center R ≃+* End (𝟭 (ModuleCat.{v} R)) :=
+  (centerCongr (Shrink.ringEquiv R).symm).trans <| Subring.centerEquivEndIdFunctorAux R |>.trans
+    (Equivalence.endRingEquiv
+      (e := ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R))
+      (e' := ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R)) (by rfl)).symm
 
 /--
 For any two commutative rings `R` and `S`, if the categories of `R`-modules and `S`-modules are
