@@ -24,7 +24,7 @@ namespace Action
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
   V := H
-  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
@@ -80,7 +80,7 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat G where
   V := H
-  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]

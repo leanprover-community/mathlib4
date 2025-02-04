@@ -79,17 +79,17 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V).hom
+  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V)
 
 @[simp]
 lemma endRingEquiv_symm_comp_ρ (V : FDRep k G) :
     (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
-      (Action.ρ V).hom :=
+      (Action.ρ V) :=
   rfl
 
 @[simp]
 lemma endRingEquiv_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V).hom = ρ V := rfl
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
 
 @[simp]
 lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl

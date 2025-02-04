@@ -47,10 +47,7 @@ theorem tensorUnit_ρ' {g : G} :
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
-    -- Have to hint `F` here, otherwise `simp` doesn't reduce `↑(MonCat.of (End _))` to `End _`.
-    DFunLike.coe (F := _ →* End _)
-      -- Have to hint `Y` here for `simpNF` reasons.
-      (ConcreteCategory.hom (Y := MonCat.of (End (𝟙_ V))) (𝟙_ (Action V G)).ρ) g = 𝟙 (𝟙_ V) :=
+    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 /- Adding this solves `simpNF` linter report at `tensor_ρ` -/
@@ -61,11 +58,7 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
 
 @[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    -- Have to hint `F` here, otherwise `simp` doesn't reduce `↑(MonCat.of (End _))` to `End _`.
-    DFunLike.coe (F := _ →* End _)
-      -- Have to hint `Y` here for `simpNF` reasons.
-      (ConcreteCategory.hom (Y := MonCat.of (End (tensorObj X.V Y.V))) (X ⊗ Y).ρ) g =
-    X.ρ g ⊗ Y.ρ g :=
+    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -217,19 +210,13 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
         change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
-        rw [mul_inv_rev, ← X.ρ.hom.map_mul, inv_mul_cancel_right] }
+        rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
   inv :=
     { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        dsimp [leftRegular] -- Unfold `leftRegular` so `rw` can see through `(leftRegular V).V = V`
-        rw [tensor_ρ, tensor_ρ]
-        dsimp
-        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [leftRegular_ρ_hom_apply]
-        rw [map_mul]
-        rfl }
+        simp [leftRegular] }
   hom_inv_id := by
     apply Hom.ext
     funext x

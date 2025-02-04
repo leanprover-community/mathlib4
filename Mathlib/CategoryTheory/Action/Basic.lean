@@ -88,11 +88,7 @@ commuting with the action of `G`.
 @[ext]
 structure Hom (M N : Action V G) where
   hom : M.V ⟶ N.V
-  -- Have to insert type hint for `F`, otherwise it ends up as:
-  -- `(fun α β => ↑α →* β) (MonCat.of (End _)) G`
-  -- which `simp` reduces to `↑(MonCat.of (End _)) →* β` instead of `End _ →* β`.
-  -- Strangely enough, the `@[reassoc]` version works fine.
-  comm : ∀ g : G, DFunLike.coe (F := _ →* End _) M.ρ.hom g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
 
 namespace Hom
 
@@ -176,8 +172,8 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
     { obj := fun _ => M.V
       map := fun g => M.ρ g
-      map_id := fun _ => M.ρ.hom.map_one
-      map_comp := fun g h => M.ρ.hom.map_mul h g }
+      map_id := fun _ => M.ρ.map_one
+      map_comp := fun g h => M.ρ.map_mul h g }
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ g => f.comm g }
@@ -187,7 +183,7 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
 def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
     { V := F.obj PUnit.unit
-      ρ := MonCat.ofHom
+      ρ :=
         { toFun := fun g => F.map g
           map_one' := F.map_id PUnit.unit
           map_mul' := fun g h => F.map_comp h g } }
@@ -332,7 +328,7 @@ the categories of `G`-actions within those categories. -/
 def mapAction (F : V ⥤ W) (G : Type u) [Monoid G] : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
-      ρ := MonCat.ofHom
+      ρ :=
         { toFun := fun g => F.map (M.ρ g)
           map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id]
           map_mul' := fun g h => by
