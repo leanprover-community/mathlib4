@@ -48,10 +48,8 @@ noncomputable def double : HomologicalComplex C c where
     · subst hi
       by_cases hj : j = i₁
       · subst hj
-        nth_rw 2 [dif_neg]
-        · rw [comp_zero]
-        · rintro ⟨rfl, _, h⟩
-          exact h rfl
+        nth_rw 2 [dif_neg (by tauto)]
+        rw [comp_zero]
       · rw [dif_neg, zero_comp]
         rintro ⟨_, h, _⟩
         exact hj h
