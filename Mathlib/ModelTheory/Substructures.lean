@@ -989,7 +989,7 @@ theorem equivOfEq_symm {S T : L.Substructure M} (h : S = T) :
 
 @[simp]
 theorem equivOfEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
-    (equivOfEq h').comp (equivOfEq h) = (equivOfEq (h.trans h')) := by
+    (equivOfEq h').comp (equivOfEq h) = equivOfEq (h.trans h') := by
   cases h
   cases h'
   rfl
