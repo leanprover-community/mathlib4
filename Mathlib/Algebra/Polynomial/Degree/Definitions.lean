@@ -7,6 +7,8 @@ import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Degree of univariate polynomials
@@ -240,6 +242,11 @@ theorem degree_X_le : degree (X : R[X]) ≤ 1 :=
 
 theorem natDegree_X_le : (X : R[X]).natDegree ≤ 1 :=
   natDegree_le_of_degree_le degree_X_le
+
+@[simp]
+theorem degree_succ_eq_natDegree_succ (h : p ≠ 0) : p.degree.succ = p.natDegree + 1 := by
+  rw [degree_eq_natDegree h]
+  exact WithBot.succ_coe (p.natDegree)
 
 end Semiring
 
