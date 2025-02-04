@@ -21,6 +21,7 @@ open CategoryTheory
 
 /-- The category of boolean algebras. -/
 structure BoolAlg where
+  /-- The underlying boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
 
