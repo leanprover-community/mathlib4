@@ -507,11 +507,13 @@ theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀
   · simp
   by_cases hp : p = 0
   · simp [hp]
-  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖(C)‖ₑ := hfC--.mono fun x hx => hx.trans_eq C.nnnorm_eq.symm
-  refine (eLpNorm_mono_ae this).trans_eq ?_
-  rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, enorm_eq_self, smul_eq_mul]
-
-#exit
+  -- have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := by
+  --   simp_rw [enorm_leq_iff_norm_leq]
+  -- --  sorry --hfC--.mono fun x hx => hx.trans_eq C.nnnorm_eq.symm
+  -- #check eLpNorm_mono_ae
+  sorry -- TODO: fix proof!
+  --refine (eLpNorm_mono_ae hfC).trans_eq ?_
+  --rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, enorm_eq_self, smul_eq_mul]
 
 @[deprecated eLpNorm_le_of_ae_enorm_bound (since := "2025-02-04")]
 theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
