@@ -31,7 +31,6 @@ open CategoryTheory
 
 variable (M : ModuleCat R)
 
-set_option synthInstance.maxHeartbeats 100000 in
 /--
 For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`, the endomorphism ring
 of the identity functor on the category of `R`-modules.
@@ -62,7 +61,7 @@ noncomputable def Subring.centerEquivEndIdFunctorAux :
     apply NatTrans.ext
     ext M (m : M)
     simp
-    erw [NatTrans.app_add] -- why is this simp lemma not firing?
+    rw [NatTrans.app_add] -- why is this simp lemma not firing?
     simp
     exact add_smul x y m
 
