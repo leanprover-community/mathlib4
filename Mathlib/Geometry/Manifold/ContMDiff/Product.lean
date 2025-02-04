@@ -395,12 +395,10 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   rw [← I.image_eq (chartAt H x).target]
   exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
 
-@[simp]
 lemma extChartAt_inl_apply {x : M} :
     ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) = (extChartAt I x) x := by
   simp [sum_chartAt_inl_apply]
 
-@[simp]
 lemma extChartAt_inr_apply {x : M'} :
     ((extChartAt I (.inr x : M ⊕ M')) (Sum.inr x)) = (extChartAt I x) x := by
   simp [sum_chartAt_inr_apply]

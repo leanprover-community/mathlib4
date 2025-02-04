@@ -889,13 +889,11 @@ lemma ChartedSpace.sum_chartAt_inr (x' : M') :
     chartAt H (Sum.inr x') = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr :=
   rfl
 
-@[simp]
 lemma sum_chartAt_inl_apply {x : M} :
     ((chartAt H (.inl x : M ⊕ M')) (Sum.inl x)) = (chartAt H x) x := by
   rw [ChartedSpace.sum_chartAt_inl]
   exact PartialHomeomorph.lift_openEmbedding_apply _ _
 
-@[simp]
 lemma sum_chartAt_inr_apply {x : M'} :
     ((chartAt H (.inr x : M ⊕ M')) (Sum.inr x)) = (chartAt H x) x := by
   rw [ChartedSpace.sum_chartAt_inr]
