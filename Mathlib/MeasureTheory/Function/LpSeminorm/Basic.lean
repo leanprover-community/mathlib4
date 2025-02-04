@@ -547,14 +547,15 @@ theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x �
   le_antisymm (eLpNorm_mono_nnnorm_ae <| EventuallyEq.le hfg)
     (eLpNorm_mono_nnnorm_ae <| (EventuallyEq.symm hfg).le)
 
-theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
+theorem eLpNorm_congr_norm_ae {f : α → ε} {g : α → ε'} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm f p μ = eLpNorm g p μ :=
-  eLpNorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
+  eLpNorm_congr_enorm_ae <| hfg
 
 open scoped symmDiff in
 theorem eLpNorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
     eLpNorm (s.indicator f - t.indicator f) p μ = eLpNorm ((s ∆ t).indicator f) p μ :=
   eLpNorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
+    rw [← enorm_eq_iff_norm_eq]
     simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
 
 @[simp]
