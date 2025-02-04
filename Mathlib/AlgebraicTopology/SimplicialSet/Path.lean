@@ -254,4 +254,10 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
       Subtype.mk.injEq]
     exact stdSimplex.spineId (n + 2) |>.arrow_tgt
 
+@[simp]
+lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
+    (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
+    Path.map (horn.spineId i h₀ hₙ) (hornInclusion (n + 2) i) =
+      stdSimplex.spineId (n + 2) := rfl
+
 end SSet
