@@ -54,6 +54,17 @@ def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
 
 @[simp] lemma ιMulti_apply_coe (a : Fin n → M) : ιMulti R n a = ExteriorAlgebra.ιMulti R n a := rfl
 
+/-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
+family of `n`fold exterior products of elements of `v`, seen as members of the
+`n`th exterior power. -/
+noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
+    {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
+  fun ⟨s, hs⟩ => ιMulti R n (fun i => v (Finset.orderIsoOfFin s hs i))
+
+@[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
+  (s : {s : Finset I // Finset.card s = n}) :
+    ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
+
 variable (M)
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power. Variant of
 `ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites. -/
@@ -222,6 +233,22 @@ theorem map_comp_ιMulti (f : M →ₗ[R] N) :
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
     map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply]
+  rfl
+
+@[simp]
+lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N) :
+    (map n f) ∘ (ιMulti_family R n v) = ιMulti_family R n (f ∘ v) := by
+  ext ⟨s, hs⟩
+  unfold ιMulti_family
+  simp only [Function.comp_apply, map_apply_ιMulti]
+  rfl
+
+@[simp]
+lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
+  (s : {s : Finset I // s.card = n}) :
+    (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
+  unfold ιMulti_family
+  simp only [map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl
 
 @[simp]
