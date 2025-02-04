@@ -157,12 +157,12 @@ theorem hasSum_inner (f g : lp G 2) : HasSum (fun i => ⟪f i, g i⟫) ⟪f, g�
 theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪lp.single 2 i a, f⟫ = ⟪a, f i⟫ := by
   refine (hasSum_inner (lp.single 2 i a) f).unique ?_
+  simp_rw [lp.coeFn_single]
   convert hasSum_ite_eq i ⟪a, f i⟫ using 1
   ext j
-  rw [lp.single_apply]
   split_ifs with h
-  · subst h; rfl
-  · simp
+  · subst h; rw [Pi.single_eq_same]
+  · simp [Pi.single_eq_of_ne h]
 
 theorem inner_single_right [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪f, lp.single 2 i a⟫ = ⟪f i, a⟫ := by
@@ -411,7 +411,7 @@ protected theorem orthonormal (b : HilbertBasis ι 𝕜 E) : Orthonormal 𝕜 b 
   rw [orthonormal_iff_ite]
   intro i j
   rw [← b.repr.inner_map_map (b i) (b j), b.repr_self, b.repr_self, lp.inner_single_left,
-    lp.single_apply]
+    lp.single_apply, Pi.single_apply]
   simp
 
 protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, 𝕜)) :
