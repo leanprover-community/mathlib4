@@ -198,6 +198,7 @@ def mFourierBasis : HilbertBasis (d → ℤ) ℂ L²(UnitAddTorus d) :=
 
 /-- The elements of the Hilbert basis `mFourierBasis` are the functions `mFourierLp 2`, i.e. the
 monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/
+@[simp]
 theorem coe_mFourierBasis : ⇑(mFourierBasis (d := d)) = mFourierLp 2 := HilbertBasis.coe_mk _ _
 
 /-- Under the isometric isomorphism `mFourierBasis` from `L²(UnitAddTorus d)` to `ℓ²(ℤᵈ, ℂ)`,
