@@ -58,7 +58,7 @@ def function_superpose (a : (α → γ) → γ) (b : α → (β → γ) → γ) 
   fun ts ↦ a (b · ts)
 
 /-- The k-indexed family of "k-argument functions from T to T" forms a clone. -/
-instance Func_Clone {t : Type*} : Clone (fun k ↦ (Fin k → t) → t) where
+instance Func_Clone {t : Type*} : Clone Fin (fun k ↦ (Fin k → t) → t) where
   superpose := function_superpose
   proj := fun _ k ts ↦ ts k
   one := fun ts ↦ ts 0
@@ -96,7 +96,7 @@ theorem and_ClonalProperty {p1 p2} (h₁ : ClonalProperty γ p1)
 /-- The subtype of functions `t^k ↦ t` that obey a `ClonalProperty`, form a clone. This is a def,
   not an instance, because `h : ClonalProperty γ p` can't be inferred by instances. -/
 def clone_ClonalProperty {p} (h : ClonalProperty γ p) :
-    Clone (fun k ↦ Subtype (p (k := k))) where
+    Clone Fin (fun k ↦ Subtype (p (k := k))) where
   superpose := fun a b ↦ ⟨function_superpose a.1 (Subtype.val ∘ b), h.1 a b⟩
   proj := fun _ _ ↦ ⟨fun ts ↦ ts _, h.2 _ _⟩
   one := ⟨fun ts ↦ ts 0, h.2 1 0⟩
@@ -213,7 +213,7 @@ def Function.IsAffineMap [Ring γ] (f : (α → γ) → γ) : Prop :=
   ∃ a : AffineMap γ (α → γ) γ, a = f
 
 /-- `AffineMap`s form a clone. -/
-instance clone_AffineMap [Ring γ] : Clone (fun {k} ↦ AffineMap γ (Fin k → γ) γ) where
+instance clone_AffineMap [Ring γ] : Clone Fin (fun {k} ↦ AffineMap γ (Fin k → γ) γ) where
   superpose := (AffineMap.comp · <| AffineMap.pi ·)
   proj _ k := AffineMap.mk' (· k) ⟨⟨(· k), fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
     0 (fun _ ↦ eq_add_of_sub_eq rfl)
@@ -272,28 +272,28 @@ end affine
 
 local notation "FuncWithProperty[ " t "," p "]" => (fun k ↦ @Subtype ((Fin k → t) → t) p)
 
-instance Monotone_Clone [Preorder γ] : Clone FuncWithProperty[γ, Monotone] :=
+instance Monotone_Clone [Preorder γ] : Clone Fin FuncWithProperty[γ, Monotone] :=
   clone_ClonalProperty clonal_Monotone
 
-instance Conjunctive_Clone [Min γ] : Clone FuncWithProperty[γ, Function.Conjunctive] :=
+instance Conjunctive_Clone [Min γ] : Clone Fin FuncWithProperty[γ, Function.Conjunctive] :=
   clone_ClonalProperty clonal_Conjunctive
 
-instance Disjunctive_Clone [Max γ] : Clone FuncWithProperty[γ, Function.Disjunctive] :=
+instance Disjunctive_Clone [Max γ] : Clone Fin FuncWithProperty[γ, Function.Disjunctive] :=
   clone_ClonalProperty clonal_Disjunctive
 
 instance Commute_with_φ_Clone (φ : γ → γ) :
-    Clone FuncWithProperty[γ, Function.CommutesWithEndo φ] :=
+    Clone Fin FuncWithProperty[γ, Function.CommutesWithEndo φ] :=
   clone_ClonalProperty (clonal_CommutesWithEndo φ)
 
-instance EssentiallyUnary_Clone : Clone FuncWithProperty[γ, Function.EssentiallyUnary] :=
+instance EssentiallyUnary_Clone : Clone Fin FuncWithProperty[γ, Function.EssentiallyUnary] :=
   clone_ClonalProperty clonal_EssentiallyUnary
 
 instance kWisePropPreserving_Clone (k : WithTop ℕ) (P : γ → Prop) :
-    Clone FuncWithProperty[γ, kWisePropPreserving k P] :=
+    Clone Fin FuncWithProperty[γ, kWisePropPreserving k P] :=
   clone_ClonalProperty (clonal_kWisePropPreserving k P)
 
 instance IsMultiargAffine_Clone [Semiring γ] :
-    Clone FuncWithProperty[γ, Function.IsMultiargAffine] :=
+    Clone Fin FuncWithProperty[γ, Function.IsMultiargAffine] :=
   clone_ClonalProperty clonal_IsMultiargAffine
 
 end property_clones

@@ -7,8 +7,6 @@ import Mathlib.Algebra.Clone.Notation
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.Basic
 
-open Superposable
-
 /-! This file defines `Clone`s, which represent functions (or generally, some sort of composable
   objects) of different arities that can be "superposed": if the type is indiced as `A : ℕ → Type*`,
   the superposition has signature `A n → (Fin n → A m) → A m`. This is captured in the typeclass
@@ -28,45 +26,55 @@ open Superposable
   Interesting examples of Clones are given in `Mathlib.Algebra.Clone.Instances`.
 -/
 
+open Superposable
+
 /-- An abstract clone is a set of operations that have composition and all projections.
   Here we define it with the multi-argument composition, typically called "superposition".
-  Single-argument composition can be built from this using the identity `proj 1 0`. -/
-class Clone (A : ℕ → Type*) extends Superposable A, OneGradedOne A where
+  Single-argument composition can be built from this using the identity `proj 1 default`. -/
+class Clone {ι : Type*} [One ι] (T : outParam (ι → Type*)) [Unique (T 1)] (A : (ι → Type*))
+    extends Superposable T A, OneGradedOne A where
   /-- Superposition is associative -/
-  superpose_assoc {n m k : ℕ} (a : A n) (bs : Fin n → A m) (cs : Fin m → A k) :
+  superpose_assoc {n m k : ι} (a : A n) (bs : T n → A m) (cs : T m → A k) :
     (a ∘⚟ bs) ∘⚟ cs = a ∘⚟ (bs · ∘⚟ cs)
   /-- All projections are accessible -/
-  proj (n : ℕ) (k : Fin n) : A n
+  proj (n : ι) (k : T n) : A n
   /-- Projections are compatible on the left -/
-  proj_left {n m : ℕ} (l : Fin n) (cs : Fin n → A m) : proj n l ∘⚟ cs = cs l
+  proj_left {n m : ι} (l : T n) (cs : T n → A m) : proj n l ∘⚟ cs = cs l
   /-- Projections are compatible on the right -/
-  proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c
+  proj_right {n : ι} (c : A n) : c ∘⚟ (proj n ·) = c
   /-- The "1" element is the unary projection -/
-  one_proj : 1 = proj 1 0
+  one_proj : 1 = proj 1 default
 
 namespace Clone
+section generic
 
-variable {A : ℕ → Type*} [Clone A]
+variable {ι : Type*} [One ι] {T A : ι → Type*} [Unique (T 1)] [Clone T A]
 
 @[simp]
-theorem clone_proj_left {m n : ℕ} (l : Fin n) (cs : Fin n → A m) :
+theorem clone_proj_left {m n : ι} (l : T n) (cs : T n → A m) :
     proj n l ∘⚟ cs = cs l :=
   proj_left l cs
 
 @[simp]
-theorem clone_proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c :=
+theorem clone_proj_right {n : ι} (c : A n) : c ∘⚟ (proj n ·) = c :=
   proj_right c
 
 @[simp]
-theorem clone_id_left {n : ℕ} (a : Fin 1 → A n) : 1 ∘⚟ a = a 0 := by
+theorem clone_id_left {n : ι} (a : T 1 → A n) : 1 ∘⚟ a = a default := by
   rw [one_proj]
-  exact clone_proj_left 0 a
+  exact clone_proj_left default a
+
+end generic
+section nat
+--This padding is fairly specialized to nats / fins
+
+variable {A : ℕ → Type*} [Clone Fin A]
 
 /-- Pad a m-arity element of a clone to a larger arity, by adding projections that ignore
  the left- and right-most elements. This replaces the `k`th element out of `n` with the `m`
  many arguments of `p`. -/
 def clonePadTo {m : ℕ} (p : A m) (n : ℕ) (k : Fin n) : A (n+m-1) :=
-  p ∘⚟ fun i ↦ proj (n+m-1) ⟨k + i, by omega⟩
+  p ∘⚟ fun (i : Fin _) ↦ proj (n+m-1) ⟨k + i, by omega⟩
 
 @[simp]
 theorem clonePadTo_zero {m} (p : A m) (k : Fin 1) :
@@ -214,4 +222,5 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
           congr! 2
           omega
 
+end nat
 end Clone

@@ -7,14 +7,15 @@ import Mathlib.Data.One.Defs
 import Mathlib.Tactic.TypeStar
 
 /-! This file defines the notation typeclasse `Superposable` used for working with `Clone`.
-  There is a version with bare types `{n m : ℕ} : A n → (Fin n → A m) → A m`, and a version
-  for Sigma types `(x : Sigma A) (y : Fin x.fst → A m) : Sigma A`. In both of these,
-  `A : ℕ → Type*` is the carrier.
+  There is a version with bare types `{n m : ℕ} : A n → (T n → A m) → A m`, and a version
+  for Sigma types `(x : Sigma A) (y : T x.fst → A m) : Sigma A`. In both of these,
+  `A : ι → Type*` is the carrier. A prototypical could have `ι := ℕ`, `T := Fin`, and `A i`
+  as some `i`-arity functions.
 
   This also defines the `OneGradedOne` type class, which gives a graded `One (A 1)`.
 
   Classes:
-  - `Superposable`: A `superpose` operation `A n → (Fin n → A m) → A m`. This is the type of
+  - `Superposable`: A `superpose` operation `A n → (T n → A m) → A m`. This is the type of
     operation used in Clones.
   - `OneGradedOne`: There is a distinguished `1` element at grade 1, a notion of identity.
 
@@ -30,18 +31,15 @@ import Mathlib.Tactic.TypeStar
 /-- A Superposable is a structure that allows "superposition": given an n-arity object
  and n many m-arity objects, they can all enter and share arguments to make a new m-arity
 object. `Clone` is the canonical example. -/
-class Superposable (A : ℕ → Type*) where
+class Superposable {ι : Type*} (T : ι → Type*) (A : ι → Type*) where
   /-- Compose the (n+1)-arity object at location p on the m-arity object. -/
-  superpose {n m} : A n → (Fin n → A m) → A m
+  superpose {n m} : A n → (T n → A m) → A m
 
-/-- Families that have a "one" at grading 1. -/
-class OneGradedOne (A : ℕ → Type*) extends One (A 1) where
-
-variable {A} {m : ℕ}
+variable {ι : Type*} {T A : ι → Type*} {i : ι}
 
 /-- Upgrade `Superposable.superpose` to an operation on Sigma types. -/
-def superpose [Superposable A] (x : Sigma A) (y : Fin x.fst → A m) : Sigma A :=
-  ⟨m, Superposable.superpose x.snd y⟩
+def superpose [Superposable T A] (x : Sigma A) (y : T x.fst → A i) : Sigma A :=
+  ⟨i, Superposable.superpose x.snd y⟩
 
 namespace Superposable
 
@@ -49,18 +47,37 @@ namespace Superposable
 scoped infixr:70 " ∘⚟ " => Superposable.superpose
 
 /-- Notation for `superpose`, for working with Sigma types. -/
-scoped infixr:70 " ∘∈ " => superpose
+scoped infixr:70 " ∘∈ " => _root_.superpose
+
+variable [Superposable T A]
+
+@[simp]
+theorem superpose_fst {i : ι} (x : Sigma A) (y : T x.fst → A i) : (x ∘∈ y).fst = i :=
+  rfl
+
+@[simp]
+theorem superpose_snd {i : ι} (x : Sigma A) (y : T x.fst → A i) : (x ∘∈ y).snd = x.snd ∘⚟ y :=
+  rfl
 
 end Superposable
 
+/-- Families that have a "one" at grading 1. -/
+class OneGradedOne {ι : Type*} [One ι] (A : ι → Type*) extends One (A 1) where
+
+namespace OneGradedOne
+
+variable [One ι] [OneGradedOne A]
+
 /-- `OneGradedOne` yields a `One (Sigma A)` -/
-instance ComposableOne_toOne [OneGradedOne A] : One (Sigma A) :=
+instance OneGradedOne_toOne : One (Sigma A) :=
   ⟨⟨1, 1⟩⟩
 
 @[simp]
-theorem eq_id_sigma_id [OneGradedOne A] : (1 : Sigma A).snd = 1 :=
+theorem sigma_snd : (1 : Sigma A).snd = 1 :=
   rfl
 
 @[simp]
-theorem eq_id_sigma_one [OneGradedOne A] : (1 : Sigma A).fst = 1 :=
+theorem sigma_fst : (1 : Sigma A).fst = 1 :=
   rfl
+
+end OneGradedOne
