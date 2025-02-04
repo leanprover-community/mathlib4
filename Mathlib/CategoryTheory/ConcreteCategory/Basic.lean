@@ -185,7 +185,7 @@ instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [HasForg
 
 instance InducedCategory.hasForget {C : Type u} {D : Type u'}
     [Category.{v'} D] [HasForget.{w} D] (f : C → D) :
-      HasForget (InducedCategory D f) where
+    HasForget (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
 
 instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
@@ -425,6 +425,30 @@ abbrev Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ 
   ofHom f := f
 
 end
+
+open ConcreteCategory
+
+instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{v'} D]
+    {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory.{w} D FD] (f : C → D) :
+    ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
+  hom := hom (C := D)
+  ofHom := ofHom (C := D)
+  hom_ofHom := hom_ofHom (C := D)
+  ofHom_hom := ofHom_hom (C := D)
+  comp_apply := ConcreteCategory.comp_apply (C := D)
+  id_apply := ConcreteCategory.id_apply (C := D)
+
+instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory.{w} C FC]
+    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
+  hom := hom (C := C)
+  ofHom := ofHom (C := C)
+  hom_ofHom := hom_ofHom (C := C)
+  ofHom_hom := ofHom_hom (C := C)
+  comp_apply := ConcreteCategory.comp_apply (C := C)
+  id_apply := ConcreteCategory.id_apply (C := C)
 
 end ConcreteCategory
 

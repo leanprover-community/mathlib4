@@ -47,7 +47,8 @@ theorem tensorUnit_ρ' {g : G} :
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_ρ {g : G} :
+    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 /- Adding this solves `simpNF` linter report at `tensor_ρ` -/
@@ -57,7 +58,8 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
   rfl
 
 @[simp]
-theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensor_ρ {X Y : Action V G} {g : G} :
+    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action

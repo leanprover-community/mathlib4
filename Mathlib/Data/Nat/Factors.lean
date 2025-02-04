@@ -39,8 +39,6 @@ def primeFactorsList : ℕ → List ℕ
     m :: primeFactorsList ((k + 2) / m)
 decreasing_by exact factors_lemma
 
-@[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
-
 @[simp]
 theorem primeFactorsList_zero : primeFactorsList 0 = [] := by rw [primeFactorsList]
 
