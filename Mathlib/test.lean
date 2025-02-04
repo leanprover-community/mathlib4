@@ -5709,4 +5709,5 @@ import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
-import Mathlib.test
+
+#synth IsSuccArchimedean (Fin 42)
