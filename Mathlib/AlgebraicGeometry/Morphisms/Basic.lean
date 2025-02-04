@@ -622,7 +622,8 @@ end HasAffineProperty
 
 end targetAffineLocally
 
-open MorphismProperty in
+open MorphismProperty
+
 lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismProperty Scheme)
     [P.RespectsIso] (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens), P f → P (f ∣_ U)) :
     P.HasOfPostcompProperty @IsOpenImmersion where
@@ -635,9 +636,7 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
     exact H _ _ hfg
 
 instance (P : MorphismProperty Scheme) [P.RespectsIso] [P.IsStableUnderBaseChange] :
-    P.HasOfPostcompProperty @IsOpenImmersion := by
-  apply hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict
-  introv hf
-  exact P.of_isPullback (isPullback_morphismRestrict f U).flip hf
+    P.HasOfPostcompProperty @IsOpenImmersion :=
+  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
 
 end AlgebraicGeometry

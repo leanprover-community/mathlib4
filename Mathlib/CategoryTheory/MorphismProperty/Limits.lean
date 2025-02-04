@@ -211,6 +211,14 @@ theorem pullback_map [HasPullbacks C]
   exacts [baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
     baseChange_map _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
 
+instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
+    [P.IsStableUnderBaseChange] : P.HasOfPostcompProperty (MorphismProperty.monomorphisms C) where
+  of_postcomp {X Y Z} f g (hg : Mono g) hcomp := by
+    have : f = (asIso (pullback.fst (f ≫ g) g)).inv ≫ pullback.snd (f ≫ g) g := by
+      simp [Iso.eq_inv_comp, ← cancel_mono g, pullback.condition]
+    rw [this, cancel_left_of_respectsIso (P := P)]
+    exact P.pullback_snd _ _ hcomp
+
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.pullback_map := pullback_map
 
 lemma of_isPushout [P.IsStableUnderCobaseChange]
@@ -275,6 +283,14 @@ theorem pushout_inr [IsStableUnderCobaseChange P]
   of_isPushout (IsPushout.of_hasPushout f g).flip H
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inr := pushout_inr
+
+instance IsStableUnderCobaseChange.hasOfPrecompProperty_epimorphisms
+    [P.IsStableUnderCobaseChange] : P.HasOfPrecompProperty (MorphismProperty.epimorphisms C) where
+  of_precomp {X Y Z} f g (hf : Epi f) hcomp := by
+    have : g = pushout.inr (f ≫ g) f ≫ (asIso (pushout.inl (f ≫ g) f)).inv := by
+      rw [asIso_inv, IsIso.eq_comp_inv, ← cancel_epi f, ← pushout.condition, assoc]
+    rw [this, cancel_right_of_respectsIso (P := P)]
+    exact P.pushout_inr _ _ hcomp
 
 instance IsStableUnderCobaseChange.op [IsStableUnderCobaseChange P] :
     IsStableUnderBaseChange P.op where
