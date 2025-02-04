@@ -747,7 +747,8 @@ macro "trunc" : tactic =>
   `(tactic| first | decide | assumption |
     dsimp only [SimplexCategory.len_mk]; omega)
 
-/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. -/
+/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
+is equivalent to `@id ([a]ₙ ⟶ [b]ₙ) f`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
