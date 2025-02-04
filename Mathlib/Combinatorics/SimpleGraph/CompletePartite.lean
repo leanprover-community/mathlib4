@@ -12,8 +12,8 @@ A graph is complete (multi)-partite iff non-adjacency is transitive.
 ## Main declarations
 * `SimpleGraph.IsCompletePartite`: predicate for a graph to be complete-partite.
 * `SimpleGraph.IsCompletePartite.setoid`: the Setoid given by non-adjacency.
-* `SimpleGraph.IsCompletePartite.iso`: the graph isomorphism to the obvious completeMultipartite
-graph on
+* `SimpleGraph.IsCompletePartite.iso`: the graph isomorphism from G that IsCompetePartite
+to the completeMultipartite graph on the quotient.
 * `SimpleGraph.IsP2Complement`: predicate for 3 vertices to be a witness to not-complete-partiteness
    of a graph G
 -/
